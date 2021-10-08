@@ -1,0 +1,5 @@
+# Desc: buku -- add tags
+
+buku -u ${1} --tag + ${(j.,.)@:2}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

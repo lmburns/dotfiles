@@ -1,0 +1,26 @@
+# Desc: removes gnubins from \$PATH
+
+path=( "${path[@]:#/usr/local/opt/coreutils/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/gnu-sed/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/gnu-getopt/bin}" )
+path=( "${path[@]:#/usr/local/opt/grep/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/gnu-tar/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/gawk/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/util-linux/bin}" )
+path=( "${path[@]:#/usr/local/opt/findutils/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/ed/libexec/gnubin}" )
+path=( "${path[@]:#/usr/local/opt/file-formula/bin}" )
+path=( "${path[@]:#/usr/local/opt/unzip/bin}" )
+path=( "${path[@]:#/usr/local/opt/libressl/bin}" )
+path=( "${path[@]:#/usr/local/opt/flex/bin}" )
+
+manpath=( "${manpath[@]:#/usr/local/opt/grep/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/gnu-sed/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/gnu-getopt/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/gnu-tar/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/gawk/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/findutils/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/gnu-which/share/man}" )
+manpath=( "${manpath[@]:#/usr/local/opt/file-formula/share/man}" )
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

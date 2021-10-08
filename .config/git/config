@@ -1,0 +1,286 @@
+[user]
+  name = Lucas Burns
+	email = burnsac@me.com
+  signingkey = C011CBEF6628B679
+  # signingkey = E93ACCAAAEB024788C106EDEC011CBEF6628B679
+
+[core]
+  autocrlf = input
+  excludesfile = ~/.config/git/gitignore_global
+  pager = delta
+  commitGraph = true
+  # Set attributes on files. Used for general diff improvements.
+  # attributesfile = ~/.gitattributes
+  # Don't prompt for commit messages for merge commits.
+  # mergeoptions = --no-edit
+
+[credential]
+  helper = osxkeychain
+
+[help]
+  autocorrect = 1
+
+[init]
+  defaultBranch = master
+
+[color]
+  ui = auto
+  # diff = auto
+  # status = auto
+  # branch = auto
+
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
+
+[color "diff"]
+  meta = 39
+  whitespace = red reverse
+  new = green bold
+  old = red bold
+  commit = 222 bold
+  frag = magenta bold
+
+[color "status"]
+  untracked = red
+  changed = green
+  updated = blue
+  added = yellow
+
+[diff]
+  algorithm = patience
+  colorMoved = default
+	indentHeuristic = on
+  mnemonicPrefix = true
+	compactionHeuristic = true
+#  renames = copies
+
+[log]
+  decorate = auto
+  abbrevCommit = true
+
+[status]
+  short = true
+  branch = false
+
+[fetch]
+  prune = true
+
+[push]
+  # Push to the set upstream branch being tracked by default.
+  default = current
+
+# Forgot: what is this for?
+; [diff "gpg"]
+;   texconv = gpg --no-tty --decrypt --quiet
+
+[gpg]
+  program = /usr/bin/gpg
+
+[filter "lfs"]
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+
+[checkout]
+  defaultRemote = origin
+
+[commit]
+  gpgsign = true
+  template = ~/.config/git/gitmessage
+  verbose = true
+
+[stash]
+  showPatch = true
+
+[pull]
+  ff = only
+  default = current
+  rebase = false
+
+[apply]
+  # Cleanup whitespace by default when apply patches.
+  whitespace = fix
+
+[rebase]
+  # Run `git stash` if needed before a `git rebase`
+  autoStash = true
+  # Auto-add `--autosquash` to `git rebase`
+  autoSquash = true
+
+[merge]
+  tool = nvimdiff
+  conflictstyle = diff3
+
+[mergetool]
+  keepBackup = false
+  prompt = true
+
+[mergetool "nvimdiff"]
+  cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[url "git@github.com:"]
+  # Always use GitHub SSH protocol to push.
+  # Allows use of git:// for public repositories with push access
+  pushInsteadOf = git://github.com/
+
+[url "https://github.com/"]
+  # Use HTTP for GitHub instead of git:// or git@
+  # Enable this in networks where git:// or git@ are blocked.
+  #insteadOf = git://github.com/
+  #insteadOf = git@github.com:
+  insteadOf = gh:
+
+[url "git@github.com:"]
+  # Use SSH for GitHub instead of https://
+  # Enable this in networks where https:// has issues.
+  #insteadOf = https://github.com/
+
+[alias]
+  aliases = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\ \t => \\2/' | sort | bat
+  alias-grep = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
+  a = add
+  # Add origin url
+  addurl = remote set-url --add origin
+  # Ammed to last commit
+  amend = commit --amend --reuse-message=HEAD
+  b = branch
+  # List all branches - sorted
+  branches = branch -a --sort=-authordate --color=always
+  # Show all local and remote branches & commits within them
+  sba = show-branch --color=always -a --more=10 --no-name
+  # Create new branch off of default origin branch (origin/master or origin/main)
+  newbranch = "!f() { [[ -n $@ ]] && git fetch origin && git checkout -b \"$@\" origin/$(git main) && git branch --unset-upstream; }; f"
+  bclone = clone --bare
+  # Rebase interactive for all commits on feature branch
+  rebase-branch = !git rebase -i `git merge-base master HEAD`
+  # Get remote url
+  origin = remote get-url origin
+  # Get name of default head branch
+  main = !git remote show $(git upstream) | awk '/HEAD branch/ {print $NF}'
+  unstage = reset -q HEAD --
+  uncommit = reset --mixed HEAD~
+  # Repeat last commit message
+  recommit = commit --reuse-message=HEAD
+  # when Git loses upstream tracking branch (haven't figured out why exactly) run:
+  # git set-upstream
+  # git pull
+  set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+
+  cl = clone
+  co = checkout
+  c = commit
+  cm = commit -m
+  csm = commit -S -m
+  cs = commit -S
+
+  conflicts = !git --no-pager diff --name-only --diff-filter=U | xargs grep -c '^=======$'
+
+  d = diff
+  dc = diff --cached
+
+  l = log -p
+  lc = log ORIG_HEAD.. --stat --no-merges
+  lo = log --oneline --decorate --stat --graph
+  ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
+  lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+  lgo = log --pretty='format:%h %G? %aN  %s'
+  hist = log --pretty=format:"%h%Cred %ad%Cgreen | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
+  # preferred git log view
+  lg = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(white)%s%C(reset) %C(dim white)-%C(reset) %ar %C(dim white)<%an>%C(reset)%C(auto)%d%C(reset)' --all
+  lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(white)%s%C(reset) %C(dim white)-%C(reset) %ar %C(dim white)<%an>%C(reset)%C(auto)%d%C(reset)%n' --all --stat
+  lss = log --show-signature
+  # View the log and diff for a commit (previous if no SHA1 provided)
+  details = log -n1 -p --format=fuller
+
+  m = merge
+  ms = merge --squash
+  pl = pull
+  # Push to all remotes
+  pa = !git remote | xargs -L1 git push --all
+  ps = push
+  pom = push origin master
+  psf = push --force
+  rao = remote add origin
+  remotes = remote -v
+  rmc = rm --cached
+  s = status -sb
+  st = status
+  sh = stash
+  shp = stash pop
+  stashes = stash list
+  tags = tag --list
+  # List tracked files
+  tr = ls-tree -r master --name-only
+  # List tracked files in an actual tree with 'as-tree'
+  trr = !git ls-tree -r master --name-only | as-tree --color always
+  # List untracked files
+  utr = ls-files --other
+  # Get name of default remote
+  upstream = !git remote | egrep -o '(upstream|origin)' | tail -1
+  # Use difftool
+  vd = difftool --tool=nvimdiff --no-prompt
+  vdc = difftool --tool=nvimdiff --no-prompt --cached
+  # Generate changelog
+  chg = !git changelog -x > CHANGELOG.md
+  # Fzfgit
+  fs = !fstat
+  fad = !fadd
+  fun = !funtrack
+  # Grab a pull request
+  pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
+  # Open repository in the browser
+  open = "!open $(git remote get-url origin)"
+
+[blame "gpg"]
+  texconv = gpg --no-tty --decrypt --quiet
+
+# ================== THIRD PARTY ==============================
+[delta]
+  features = unobstrusive-line-numbers decorations color-moved side-by-side hyperlinks
+  paging = auto
+  whitespace-error-style = 22 reverse
+  syntax-theme = kimbro
+  line-numbers-left-format = ""
+  line-numbers-right-format = "│ "
+  max-line-distance = 0.3
+  hunk-header-style = syntax bold
+  hunk-header-decoration-style = "#4b5263" box
+# plus-style = "syntax #088649"
+# plus-emph-style = "syntax #088649"
+# minus-style = syntax "#7E5053"
+# minus-empty-line-marker-style = "syntax #7E5053"
+
+[delta "decorations"]
+  commit-decoration-style = bold magenta ul
+  file-style = bold magenta ul
+  file-decoration-style = none
+  hunk-header-decoration-style = yellow box ul
+
+[delta "unobstrusive-line-numbers"]
+  line-numbers-left-format = "{nm:>4}┊"
+  line-numbers-right-format = "{np:>4}│"
+  line-numbers-left-style = white
+  line-numbers-right-style = white
+  line-numbers-minus-style = 124
+  line-numbers-plus-style = 28
+
+[interactive]
+  diffFilter = delta --color-only
+
+[ghq]
+  vcs = git
+  root = ~/ghq
+
+[global]
+  ignore = .cargo,.zinit,.ipynb_checkpoints,Library,Applications,Downloads,Music,Movies,myMusic
+	basedir = /Users/lucasburns/projects/github
+# vim:ft=gitconfig:et

@@ -1,0 +1,24 @@
+#compdef rusty-man
+
+# zsh completions for 'rusty-man'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-e,--examples}'[show all examples for the item instead of opening the full documentation]'
+  {-h,--help}'[prints help information]'
+  '--no-default-sources[do not search the default documentation sources]'
+  '--no-search[do not read the search index if there is no exact match]'
+  '--no-syntax-highlight[disable syntax highlighting.]'
+  {-V,--version}'[prints version information]'
+  {-c,--config-file}'[the path to the configuration file to read]'
+  '--max-width[the maximum width of the text output]'
+  '--pager[the pager to use for the plain and rich viewers.]'
+  {-s,--source}'[...]'
+  '--theme[the color theme for syntax highlighting]'
+  '--viewer[the viewer for the rustdoc documentation (one of: plain, rich, tui)]'
+  '--width[the width of the text output]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

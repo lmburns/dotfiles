@@ -1,0 +1,10 @@
+
+# Desc: escape codes instead of prompt expansion
+
+local -a colors
+for i in {1..255}; do
+    colors+=( $'\e'"[38;5;${i}m${(l:3::0:)i} " )
+done
+print -c $colors
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

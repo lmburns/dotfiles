@@ -1,0 +1,7 @@
+#compdef fq
+
+_arguments \
+         '*:file:_files' \
+		'-a[Output all log files, even of already finished jobs.]' \
+		'-n[Don'"'"'t wait for new output. Can be used to look at enqueued commands.]' \
+		'-q[Only print the first line of each job output (i. e. the exec line).]'

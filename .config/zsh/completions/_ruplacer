@@ -1,0 +1,23 @@
+#compdef ruplacer
+
+# zsh completions for 'ruplacer'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--type-list[list the known file types]'
+  '--go[write the changes to the filesystem]'
+  {-h,--help}'[prints help information]'
+  '--hidden[also patch hidden files]'
+  '--ignored[also patch ignored files]'
+  '--no-regex[interpret pattern as a raw string. Default is: regex]'
+  '--subvert[replace all variants of the pattern (snake_case, CamelCase and so on)]'
+  {-V,--version}'[prints version information]'
+  {-w,--word-regex}'[interpret pattern as a word regex]'
+  '--color[whether to enable colorful output. Choose between always, auto, or]'
+  {-T,--type-not}'[...    Ignore files matching <file_type> or glob pattern.]'
+  {-t,--type}'[...       Only search files matching <file_type> or glob pattern.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

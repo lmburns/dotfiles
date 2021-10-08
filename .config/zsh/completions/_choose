@@ -1,0 +1,21 @@
+#compdef choose
+
+# zsh completions for 'choose'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--character-wise}'[choose fields by character number]'
+  {-d,--debug}'[activate debug mode]'
+  {-x,--exclusive}'[use exclusive ranges, similar to array indexing in many programming languages]'
+  {-h,--help}'[prints help information]'
+  {-n,--non-greedy}'[use non-greedy field separators]'
+  '--one-indexed[index from 1 instead of 0]'
+  {-V,--version}'[prints version information]'
+  {-f,--field-separator}'[specify field separator other than whitespace, using Rust `regex` syntax]'
+  {-i,--input}'[input file]'
+  {-o,--output-field-separator}'[specify output field separator]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

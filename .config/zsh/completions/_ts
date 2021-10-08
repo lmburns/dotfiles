@@ -1,0 +1,38 @@
+#compdef ts
+
+# zsh completions for 'ts'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-K[kill the task spooler server]'
+  '-C[clear the list of finished jobs]'
+  '-l[show the job list (default action)]'
+  '-S[get/set the number of max simultaneous jobs of the server.]'
+  '-t["tail -n 10 -f" the output of the job. Last run if not specified.]'
+  '-c[like -t, but shows all the lines. Last run if not specified.]'
+  '-p[show the pid of the job. Last run if not specified.]'
+  '-o[show the output file. Of last job run, if not specified.]'
+  '-i[show job information. Of last job run, if not specified.]'
+  '-s[show the job state. Of the last added, if not specified.]'
+  '-r[remove a job. The last added, if not specified.]'
+  '-w[wait for a job. The last added, if not specified.]'
+  '-k[send SIGTERM to the job process group. The last run, if not specified.]'
+  '-u[put that job first. The last added, if not specified.]'
+  '-U[swap two jobs in the queue.]'
+  '-B[in case of full queue on the server, quit (2) instead of waiting.]'
+  '-h[show this help]'
+  '-V[show the program version]'
+  '-n[dont store the output of the command.]'
+  '-E[keep stderr apart, in a name like the output file, but adding .e.]'
+  '-g[gzip the stored output (if not -n).]'
+  '-f[dont fork into background.]'
+  '-m[send the output by e-mail (uses sendmail).]'
+  '-d[the job will be run only if the job before ends well]'
+  '-D[the job will be run only if the job of given id ends well.]'
+  '-L[name this task with a label, to be distinguished on listing.]'
+  '-N[number of slots required by the job (1 default).]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

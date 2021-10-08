@@ -1,0 +1,19 @@
+# Desc: interactively close window with fzf
+
+local sel action="minimize"
+zmodload -F zsh/zutil b:zparseopts
+
+zparseopts -D -a opts -- c -close
+
+(( $+opts[-c] + $+opts[--close] )) && action="close"
+
+sel=$(yabai -m query --windows | jq -re ".[].app" | fzf)
+
+[[ -n "$sel" ]] &&
+  yabai -m window \
+    $(yabai -m query --windows \
+      | jq -re ".[] | select(.app == \"$sel\") | .id") \
+  --${action}
+
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

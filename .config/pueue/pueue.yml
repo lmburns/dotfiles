@@ -1,0 +1,27 @@
+---
+client:
+  restart_in_place: false
+  read_local_logs: true
+  show_confirmation_questions: false
+  show_expanded_aliases: true
+  dark_mode: false
+  max_status_lines: ~
+  status_time_format: "%H:%M:%S"
+  status_datetime_format: "%Y-%m-%d\n%H:%M:%S"
+daemon:
+  default_parallel_tasks: 2
+  pause_group_on_failure: false
+  pause_all_on_failure: false
+  callback: "osascript -e 'display notification \"Finished with status {{ result }}\" with title \"Pueue task {{ id }}\" subtitle \"{{ command }}\"'"
+  callback_log_lines: 10
+  groups:
+    default: 2
+shared:
+  pueue_directory: /home/lucas/.local/share/pueue
+  use_unix_socket: true
+  unix_socket_path: /home/lucas/.local/share/pueue/pueue_lucasburns.socket
+  host: 127.0.0.1
+  port: "6924"
+  daemon_cert: /home/lucas/.local/share/pueue/certs/daemon.cert
+  daemon_key: /home/lucas/.local/share/pueue/certs/daemon.key
+  shared_secret_path: /home/lucas/.local/share/pueue/shared_secret

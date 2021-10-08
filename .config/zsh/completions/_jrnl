@@ -1,0 +1,39 @@
+#compdef jrnl
+
+# zsh completions for 'jrnl'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--debug[print information useful for troubleshooting]'
+  '--help[show this help message]'
+  '--version[print version information]'
+  '--list[list all configured journals]'
+  '--encrypt[encrypt selected journal with a password]'
+  '--decrypt[decrypt selected journal and store it in plain text]'
+  '--import[import entries from another journal.]'
+  '--file[(default: uses stdin)]'
+  '--format[(default: jrnl)]'
+  '-on[show entries on this date]'
+  '-today-in-history[show entries of today over the years]'
+  '-month[show entries on this month of any year]'
+  '-day[show entries on this day of any month]'
+  '-year[show entries of a specific year]'
+  '-from[show entries after, or on, this date]'
+  '-to[show entries before, or on, this date (alias: -until)]'
+  '-contains[show entries containing specific text (put quotes around]'
+  '-and[show only entries that match all conditions, like saying]'
+  '-starred[show only starred entries (marked with *)]'
+  '-n[show a maximum of NUMBER entries (note: -n 3 and -3]'
+  '-not[exclude entries with this tag]'
+  '--edit[opens the selected entries in your configured editor]'
+  '--delete[interactively deletes selected entries]'
+  '--format[display selected entries in an alternate format.]'
+  '--file[write output to file instead of stdout]'
+  '--tags[alias for --format tags. Returns a list of all tags]'
+  '--short[show only titles or line containing the search tags]'
+  '--config-override[CONFIG_KV_PAIR]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

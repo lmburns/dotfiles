@@ -1,0 +1,26 @@
+* {
+    /* Custom colours */
+    bg-main:        #221a02;
+    bg-alt:         #291804;
+    fg-main:        #c2a383;
+    fg-alt:         #D9AE80;
+    red:            #dc3958;
+    green:          #088649;
+    yellow:         #f79a32;
+    blue:           #733e8b;
+    magenta:        #7e5053;
+    cyan:           #088649;
+    red-bright:     #f14a68;
+    green-bright:   #a3b95a;
+    yellow-bright:  #f79a32;
+    blue-bright:    #dc3958;
+    magenta-bright: #fe8019;
+    cyan-bright:    #4c96a8;
+    selection-bg:   #5e452b;
+
+    /* Global properties */
+    background-color: rgba (0,0,0, 0%);
+    highlight: bold underline #dc3958;
+}
+
+@import "modus-themes-common.rasi"

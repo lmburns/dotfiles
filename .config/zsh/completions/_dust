@@ -1,0 +1,25 @@
+#compdef dust
+
+# zsh completions for 'dust'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-f,--filecount}'[directory size is number of child files/dirs not disk size]'
+  {-s,--apparent-size}'[use file length instead of blocks]'
+  {-p,--full-paths}'[subdirectories will not have their path shortened]'
+  {-h,--help}'[prints help information]'
+  {-i,--ignore}'[_hidden       Obey .git_ignore rules & Do not display hidden files]'
+  {-x,--limit-filesystem}'[only count the files and directories on the same filesystem as the supplied directory]'
+  {-b,--no-percent-bars}'[no percent bars or percentages will be displayed]'
+  {-c,--no-colors}'[no colors will be printed (normally largest directories are colored)]'
+  {-r,--reverse}'[print tree upside down (biggest highest)]'
+  {-V,--version}'[prints version information]'
+  {-d,--depth}'[depth to show]'
+  {-X,--ignore-directory}'[...    Exclude any file or directory with this name]'
+  {-n,--number-of-lines}'[number of lines of output to show. This is Height, (but h is help) \[default: 20\]]'
+  {-w,--terminal}'[_width <width>]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,8 @@
+#compdef nq
+
+_arguments \
+         '*:file:_files' \
+		'-c[Clean up job id file when process exited with status 0.]' \
+		'-q[Suppress output of the job id after spawning new job.]' \
+		'-t[Enter test mode : exit with status 0 when all of the listed job ids are alrea…]' \
+		'-w[Enter waiting mode : wait in the foreground until all listed job ids are done.]'

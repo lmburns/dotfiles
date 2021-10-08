@@ -1,0 +1,41 @@
+# Desc: remove a line from history
+
+rmhist() {
+  local hist_bak="${HISTFILE}.bak"
+  cp "$HISTFILE" "$hist_bak"
+  zparseopts -D -a opts \
+    'r' '-range' \
+    'n' '-num' \
+    'u' '-undo'
+
+  # remove a until n (range starting from 0)
+  # if [[ "${opt[1]}" = -(r|-range) ]]; then
+  # if [[ ${+opts[(r)-r]} = 1 || ${+opts[(r)--range]} = 1 ]] {
+  if (( ${+opts[(r)-r]} )) || (( ${+opts[(r)--range]} )) {
+    local HISTORY_IGNORE="${(b)$(fc -ln $1 $2)}"
+    print -Pl -- "%F{4}Line range:%f %F{2}$1 - $2%f %F{4}was deleted%f"
+    fc -W && fc -p "$HISTFILE" "$HISTSIZE" "$SAVEHIST"
+  } elif (( ${+opts[(r)-n]} )) || (( ${+opts[(r)--num]} )) {
+    # why does this convert to array-special "${(t)1}"
+    # have to use negative numbers to access most recent
+    local HISTORY_IGNORE="${(b)$(fc -ln $1 $1)}"
+    print -Pl -- "%F{4}Line:%f %F{2}${1}%f -- %F{13}$(fc -ln $1 $1)%f %F{4}was deleted%f"
+    fc -W && fc -p "$HISTFILE" "$HISTSIZE" "$SAVEHIST"
+  } elif (( ${+opts[(r)-u]} )) || (( ${+opts[(r)--undo]} )) {
+    cp "$hist_bak" "$HISTFILE"
+  } else {
+    local line="$(fc -ln 1 | rg --line-number "${@}" | fzf)"
+    local line_n="$(cut -d: -f1 <<< $line)"
+    local HISTORY_IGNORE="${(b)$(fc -ln $line_n $line_n)}"
+    fc -W && fc -p "$HISTFILE" "$HISTSIZE" "$SAVEHIST"
+    print -Pl -- "%F{4}Line:%f %F{2}${line_n}%f -- %F{13}$(cut -d: -f2 <<< $line)%f %F{4}was deleted%f"
+  }
+}
+
+rmhist "$@"
+
+# vim:ft=zsh:et:sts=2:sw=0
+
+    # test "${1}" -eq "${1}"  && rmh="${1}" && fc -W
+    # head -n -"$(( rmh + 1))" "$HISTFILE" > "$hist_bak"
+    # mv "$hist_bak" "$HISTFILE" && fc -R

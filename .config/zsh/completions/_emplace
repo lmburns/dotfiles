@@ -1,0 +1,75 @@
+#compdef emplace
+
+autoload -U is-at-least
+
+_emplace() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-c+[The location of the configuration file]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_emplace_commands" \
+"*::: :->emplace" \
+&& ret=0
+    case $state in
+    (emplace)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:emplace-command-$line[1]:"
+        case $line[1] in
+            (install)
+_arguments "${_arguments_options[@]}" \
+'-c+[The location of the configuration file]' \
+'-y[Don'\''t prompt the user and try to install everything]' \
+'--yes[Don'\''t prompt the user and try to install everything]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(clean)
+_arguments "${_arguments_options[@]}" \
+'-c+[The location of the configuration file]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_emplace_commands] )) ||
+_emplace_commands() {
+    local commands; commands=(
+        "install:Install the packages that have been mirrored from other machines" \
+"clean:Remove package synching" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'emplace commands' commands "$@"
+}
+
+_emplace "$@"

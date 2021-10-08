@@ -1,0 +1,14 @@
+# Desc: open file interactively with twf
+
+vii() {
+  files=("$(
+    twf \
+      --height=0.8 \
+      --previewCmd='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+  )") || return
+  [[ -n "$files" ]] && ${EDITOR:-vim} "${files[@]}"
+}
+
+vii "$@"
+
+# vim:ft=zsh:et:sts=2:sw=0

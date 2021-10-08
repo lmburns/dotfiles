@@ -1,0 +1,41 @@
+#compdef keychain
+
+# zsh completions for 'keychain'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--list,--noask,--nocolor,--nogui,--nolock,--quick,--quiet,--version}'[\[ --agents list \] \[ --attempts num \] \[ --dir dirname \]]'
+  '--agents[start the agents listed. By default keychain will start ssh-agent if]'
+  '--attempts[try num times to add keys before giving up. The default is 1.]'
+  '--clear[delete all of ssh-agents keys. Typically this is used in]'
+  '--confhost[by default, keychain will look for key pairs in the ~/.ssh/]'
+  '--confirm[keys are subject to interactive confirmation by the SSH_ASKPASS]'
+  '--absolute[any arguments to "--dir" are interpreted to be absolute. The default]'
+  '--dir[keychain will use dirname rather than $HOME/.keychain]'
+  '--query[keychain will print lines in KEY=value format representing the]'
+  '--eval[keychain will print lines to be evaluated in the shell on stdout. It]'
+  '--env[after parsing options, keychain will load additional environment]'
+  '--gpg2[this option changes the default gpg calls to use gpg2 instead to]'
+  {-h,--help}'[show help that looks remarkably like this man-page. As of 2.6.10]'
+  '--host[set alternate hostname for creation of pidfiles]'
+  '--ignore-missing[dont warn if some keys on the command-line cant be found. This is]'
+  '--inherit[attempt to inherit agent variables from the environment. This can be]'
+  {-l,--list}'[list signatures of all active SSH keys, and exit, similar to]'
+  {-L,--list-fp}'[list fingerprints of all active SSH keys, and exit, similar to]'
+  '--lockwait[how long to wait for the lock to become available. Defaults to 5]'
+  '--noask[this option tells keychain do everything it normally does (ensure]'
+  '--nocolor[disable color highlighting for non ANSI-compatible terms.]'
+  '--nogui[dont honor SSH_ASKPASS, if it is set. This will cause ssh-add to]'
+  '--noinherit[dont inherit any agent processes, overriding the default "--inherit]'
+  '--nolock[dont attempt to use a lockfile while manipulating files, pids and]'
+  {-k,--stop}'[kill currently running agent processes. The following values are]'
+  '--systemd[inject environment variables into the systemd --user session.]'
+  {-Q,--quick}'[if an ssh-agent process is running then use it. Dont verify the]'
+  {-q,--quiet}'[only print messages in case of warning, error or required]'
+  '--timeout[allows a timeout to be set for identities added to ssh-agent. When]'
+  {-V,--version}'[show version information.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

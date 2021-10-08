@@ -1,0 +1,40 @@
+diff --git a/per-directory-history.zsh b/per-directory-history.zsh
+index 6a24694..d63b1cb 100644
+--- a/per-directory-history.zsh
++++ b/per-directory-history.zsh
+@@ -6,7 +6,7 @@
+ [[ -z $_per_directory_history_is_global ]] && _per_directory_history_is_global=true
+ [[ -z $PER_DIRECTORY_HISTORY_BASE ]] && PER_DIRECTORY_HISTORY_BASE="$HOME/.zsh_history_dirs"
+ [[ -z $PER_DIRECTORY_HISTORY_FILE ]] && PER_DIRECTORY_HISTORY_FILE="zsh-per-directory-history"
+-[[ -z $PER_DIRECTORY_HISTORY_TOGGLE ]] && PER_DIRECTORY_HISTORY_TOGGLE='^g'
++[[ -z $PER_DIRECTORY_HISTORY_TOGGLE ]] && PER_DIRECTORY_HISTORY_TOGGLE="^H"
+ 
+ #-------------------------------------------------------------------------------
+ # toggle global/directory history used for searching - alt-l by default
+@@ -46,7 +46,7 @@ function _per-directory-history-change-directory() {
+ 	if ! $_per_directory_history_is_global
+ 	then
+ 		fc -P
+-		mkdir -p ${_per_directory_history_path:h}
++    [ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
+ 		fc -p $_per_directory_history_path
+ 	fi
+ }
+@@ -73,7 +73,7 @@ function _per-directory-history-preexec() {
+ 			local fn
+ 			if $_per_directory_history_is_global
+ 			then
+-				mkdir -p ${_per_directory_history_path:h}
++        [ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
+ 				fn=$_per_directory_history_path
+ 			else
+ 				fn=$_per_directory_history_main_histfile
+@@ -96,7 +96,7 @@ function _per-directory-history-preexec() {
+ function _per-directory-history-set-directory-history() {
+ 	fc -P
+ 
+-	mkdir -p ${_per_directory_history_path:h}
++  [ -d ${_per_directory_history_path:h} ] || mkdir -p ${_per_directory_history_path:h}
+ 	fc -p $_per_directory_history_path
+ 	_per_directory_history_is_global=false
+ }

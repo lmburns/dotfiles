@@ -1,0 +1,58 @@
+# Desc: adds gnubins to PATH
+
+gnubin_off
+
+# PATH=/usr/local/opt/coreutils/libexec/gnubin:/usr/local/opt/gnu-sed/libexec/gnubin:/usr/local/opt/grep/libexec/gnubin:/usr/local/opt/gnu-tar/libexec/gnubin:/usr/local/opt/gawk/libexec/gnubin:/usr/local/opt/util-linux/bin:/usr/local/opt/findutils/libexec/gnubin:/usr/local/opt/ed/libexec/gnubin:/usr/local/opt/file-formula/bin:/usr/local/opt/unzip/bin:/usr/local/opt/libressl/bin:/usr/local/opt/flex/bin:$PATH
+
+# path=(
+#   ${BREW_PREFIX}/opt/{coreutils,gnu-sed,grep,gnu-tar}/libexec/gnubin
+#   ${BREW_PREFIX}/opt/{gawk,findutils,ed}/libexec/gnubin
+#   ${BREW_PREFIX}/opt/{gnu-getopt,file-formula,util-linux}/bin
+#   ${BREW_PREFIX}/opt/{flex,libressl,unzip}/bin
+#   ${BREW_PREFIX}/opt/openvpn/sbin
+#   ${BREW_PREFIX}/texlive/2021/bin
+#   ${HOME}/.ghg/bin
+#   "${path[@]}"
+# )
+#
+# manpath=(
+#   ${BREW_PREFIX}/opt/{grep,gawk,gnu-tar,gnu-getopt}/share/man
+#   ${BREW_PREFIX}/opt/{gnu-sed,findutils,gnu-which,file-formula}/share/man
+#   ${BREW_PREFIX}/opt/{gnu-getopt,task-spooler,util-linux}/share/man
+#   "${manpath[@]}"
+# )
+
+path=(
+  /usr/local/opt/coreutils/libexec/gnubin
+  /usr/local/opt/gnu-sed/libexec/gnubin
+  /usr/local/opt/gnu-getopt/bin
+  /usr/local/opt/grep/libexec/gnubin
+  /usr/local/opt/gnu-tar/libexec/gnubin
+  /usr/local/opt/gawk/libexec/gnubin
+  /usr/local/opt/findutils/libexec/gnubin
+  /usr/local/opt/ed/libexec/gnubin
+  /usr/local/opt/file-formula/bin
+  /usr/local/opt/util-linux/bin
+  /usr/local/opt/flex/bin
+  /usr/local/opt/libressl/bin
+  /usr/local/opt/unzip/bin
+  /usr/local/opt/openvpn/sbin
+  ${path[@]}
+)
+
+# $HOME/opt/anaconda3/man
+
+manpath=(
+  /usr/local/opt/gnu-sed/share/man
+  /usr/local/opt/grep/share/man
+  /usr/local/opt/gnu-getopt/share/man
+  /usr/local/opt/gnu-tar/share/man
+  /usr/local/opt/gawk/share/man
+  /usr/local/opt/findutils/share/man
+  /usr/local/opt/gnu-which/share/man
+  /usr/local/opt/file-formula/share/man
+  ${XDG_DATA_HOME}/man
+  ${manpath[@]}
+)
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

@@ -1,0 +1,72 @@
+diff --git i/functions/updatelocal w/functions/updatelocal
+index bad95a7..6fb08d7 100755
+--- i/functions/updatelocal
++++ w/functions/updatelocal
+@@ -60,15 +60,14 @@ UL_checkupdates(){
+ }
+ 
+ UL_git_current_branch () {
+-        local ref
+-        ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
+-        local ret=$?
+-        if [[ $ret != 0 ]]
+-        then
+-                [[ $ret == 128 ]] && return
+-                ref=$(command git rev-parse --short HEAD 2> /dev/null)  || return
+-        fi
+-        echo ${ref#refs/heads/}
++  local ref
++  ref=$(command git symbolic-ref --quiet HEAD 2> /dev/null)
++  local ret=$?
++  if [[ $ret != 0 ]]; then
++          [[ $ret == 128 ]] && return
++          ref=$(command git rev-parse --short HEAD 2> /dev/null)  || return
++  fi
++  echo ${ref#refs/heads/}
+ }
+ 
+ UL_changelogs(){
+@@ -112,7 +111,10 @@ UL_recentcommits(){
+ }
+ 
+ UL_connected(){
+-  ping -q -w 1 -c 1 $(ip r | grep -m1 default | cut -d ' ' -f 3) &> /dev/null && return 0 || { echo "You're not connected to the internet"; return 1; }
++  local ping_cmd
++  ping_cmd="ping -q -w 1 -c 1"
++  [[ $(uname) == Darwin ]] && ping_cmd="${ping_cmd/w/t}"
++  eval "$ping_cmd" $(ip r | grep -m1 default | cut -d ' ' -f 3) &> /dev/null && return 0 || { echo "You're not connected to the internet"; return 1; }
+ }
+ 
+ # Support for running a command when UL_Acond is true
+@@ -130,11 +132,11 @@ cores=$(nproc)
+ 
+ if [[ $1 != "-r" && $1 != "--repull" && $1 != "-h" && $1 != "--help" ]]; then
+     if [[ -z $UPDATELOCAL_GITDIR ]]; then
+-        echo "\$UPDATELOCAl_GITDIR is unset, set this variable before running"
++        echo "\$UPDATELOCAL_GITDIR is unset, set this variable before running"
+         UL_cleanup
+         return 1
+     elif cd -q $UPDATELOCAL_GITDIR; then
+-        ls --color=auto
++        command ls --color=auto
+         echo
+     else
+         echo "Error cd-ing into '$UPDATELOCAL_GITDIR', is it a real directory?"
+@@ -193,7 +195,10 @@ case $1 in
+     ;;
+   * )
+     echo "Fetching latest updates..."
+-    UL_connected && (for d in ./*/ ; do (builtin cd -q "$d" && UL_fetchupdates) & done | GREP_COLORS='ms=1;34' grep -E --color '.*From.*|$'; wait)
++    UL_connected && {
++      for d in ./*/ ; do (builtin cd -q "$d" && UL_fetchupdates) & done \
++        | GREP_COLORS='ms=1;34' grep -E --color '.*From.*|$'; wait
++      }
+     echo
+     unset UL_pending
+     for d in ${${+p_opt+$PWD}:-$UPDATELOCAL_GITDIR}/*/ ; do { builtin cd -q "$d" && UL_checkupdates; }; done
+@@ -202,3 +207,5 @@ esac
+ 
+ 
+ UL_cleanup "$@"
++
++# vim:ft=zsh:et

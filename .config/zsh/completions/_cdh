@@ -1,0 +1,22 @@
+#compdef cdh
+
+# for cdhist, cd alterative similar to autojump, z.lua, zoxide, etc.
+
+_cdh_options () {
+  _arguments -s \
+    '-l[list current directory stack]' \
+    '-n[change to dir stack "n"]' \
+    '--string[show list]' \
+    '-h[show help]'
+}
+
+# _cd_ "$@"
+
+setopt localoptions nonomatch extendedglob
+
+local -a tmpdstack
+tmpdstack=( ${${(@f)"$(<$HOME/.cd_history)"}##<-> ##} )
+
+_wanted -V recent-dirs expl 'recent directory' compadd -S '' -Q -a tmpdstack
+
+$_comps[cd] "$@"

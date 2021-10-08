@@ -1,0 +1,241 @@
+---
+shell: sh
+options:
+  bookmarks:
+    type: Command
+    widgets:
+      - type: FromCommand
+        command: shelf get bookmarks
+    command: echo "{0}" | awk -F '\t' '{print $2}' | xargs open
+
+  crates:
+    type: Command
+    command: open "https://crates.io/search?q={0}"
+    widgets:
+      - type: FreeText
+
+  duck:
+    type: Command
+    command: open "https://duckduckgo.com/?q={0}"
+    widgets:
+      - type: FreeText
+
+  test:
+    type: Command
+    command: echo 'hi'
+    widgets:
+      - type: FreeText
+
+  gh:
+    type: Select
+    options:
+      refresh:
+        type: Command
+        command: |
+          rm -f $JAIME_CACHE_DIR/github-repos.txt
+          declare -i page
+          page=1
+          for (( ; ; )); do
+            repos=($(curl -u $GITHUB_USER:$GITHUB_TOKEN -s "https://api.github.com/user/repos?per_page=100&page=$page" | jq -r "map(.full_name) | .[]"))
+            # Stop if page is empty
+            if [ ${#repos[@]} -eq 0 ]; then
+              break
+            fi
+            # Print repo name
+            for repo in "${repos[@]}"; do
+              echo $repo >> $JAIME_CACHE_DIR/github-repos.txt
+            done
+            # Go to next page
+            ((page+=1))
+          done
+      open:
+        type: Command
+        command: open "https://github.com/{0}"
+        widgets:
+          - type: FromCommand
+            command: |
+              if [[ -f $XDG_CONFIG_HOME/jaime/gh-repos.txt ]]; then
+                cat $XDG_CONFIG_HOME/jaime/gh-repos.txt
+              fi
+      pr-review:
+        type: Command
+        command: echo "{0}" | awk -F $'\t' '{print $1}' | xargs dev review
+        widgets:
+          - type: FromCommand
+            command: gh pr list | column -s $'\t' -t
+
+  buku:
+    description: Search the internet with buku
+    type: Select
+    options:
+      tag-search:
+        description: Search by tags
+        type: Command
+        command: echo {0} | hck -f1 | xargs open
+        widgets:
+          - type: FromCommand
+            command: |
+              db="$XDG_DATA_HOME/buku/bookmarks.db"
+              sql="SELECT URL,metadata,tags FROM bookmarks WHERE tags LIKE '%$@%';"
+              sqlite3 -separator $'\t' "$db" "$sql" \
+                  | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
+      w3m:
+        description: Open result in w3m
+        type: Command
+        command: echo {0} | hck -f2 | xargs w3m
+        widgets:
+          - type: FromCommand
+            command: |
+              db="$XDG_DATA_HOME/buku/bookmarks.db"
+              sql="SELECT id,URL,metadata,tags FROM bookmarks"
+              sqlite3 -separator $'\t' "$db" "$sql" \
+                  | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
+            preview: buku --nostdin -p {1}
+
+  tmux:
+    type: Select
+    options:
+      switch-session:
+        type: Command
+        command: tmux switch-client -t {0}
+        widgets:
+          - type: FromCommand
+            command: tmux list-sessions | sed -E 's/:.*$//'
+      # switch-create:
+      #   type: Command
+      #   widgets:
+      #     - type: FromCommand
+      #       command: |
+      #         [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
+      #         if [ $1 ]; then
+      #           tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
+      #         fi
+      #       session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
+
+  docker:
+    type: Select
+    options:
+      stop-container:
+        type: Command
+        command: echo "{0}" | awk '{print $1}' | xargs docker stop
+        widgets:
+          - type: FromCommand
+            command: docker ps | sed 1d
+
+  git:
+    type: Select
+    options:
+      log:
+        description: Git log
+        type: Command
+        command: echo "{0}" | awk '{print $1}' | xargs git show
+        widgets:
+          - type: FromCommand
+            # %C(red)%C(bold)%h%C(reset) %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset
+            command: git log --graph --format="%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset" --abbrev-commit --date=relative --color=always
+            preview: |
+              echo {} |
+                grep -Eo '[a-f0-9]+' | head -1 |
+                xargs -I% git show --color=always % -- $(sed -nE 's/.* -- (.*)/\1/p' <<< "$*") |
+                $(git config core.pager || echo 'cat')
+      log2:
+        type: Command
+        command: echo "{0}" | awk '{print $1}' | xargs git show
+        widgets:
+          - type: FromCommand
+            command: git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%ad) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --color=always
+            preview: echo {} | awk '{print $1}' | xargs git show --name-status
+      diff:
+        description: Git diff
+        type: Command
+        command: |
+          echo "{0}" |
+            sed 's/.*]  //' |
+            xargs -I% git diff --color=always $(git rev-parse --show-toplevel)/% |
+            $(git config core.pager) | LESS='-r' less
+        widgets:
+          - type: FromCommand
+            command: git diff --name-status "$@" | sed -E 's/^(.)[[:space:]]+(.*)$/[\1]  \2/'
+            preview: |
+              echo {} |
+                sed 's/.*]  //' |
+                xargs -I% git diff --color=always $(git rev-parse --show-toplevel)/% |
+                $(git config core.pager || echo 'cat')
+      stash:
+        description: Git stash list
+        type: Command
+        command: |
+          echo "{0}" |
+            hck -d: -f1 |
+            xargs -I% git stash show --color=always --ext-diff % |
+            $(git config core.pager || echo 'cat')
+        widgets:
+          - type: FromCommand
+            command: git stash list
+            preview: |
+              echo {} |
+              hck -d: -f1 |
+              xargs -I% git stash show --color=always --ext-diff % |
+                $(git config core.pager || echo 'cat')
+
+  lolcate:
+    description: Search databases
+    type: Select
+    options:
+      git:
+        description: Configuration database
+        type: Command
+        command: nvim {0}
+        widgets:
+          - type: FromCommand
+            command: lolcate --db git -mf --color=always
+            preview: (([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -T {} | less))) 2>/dev/null | head -200
+      config:
+        description: Default database
+        type: Command
+        command: nvim {0}
+        widgets:
+          - type: FromCommand
+            command: lolcate --db config -mf --color=always
+            preview: (([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -T {} | less))) 2>/dev/null | head -200
+
+  # Random scripts that have no specific category
+  fzf:
+    type: Select
+    options:
+      mpc:
+        description: View mpc interactively and play a song
+        type: Command
+        command: echo "{0}" | sed -n 's/^\([0-9]\+\)).*/\1/p' | xargs mpc -q play
+        widgets:
+          - type: FromCommand
+            command: mpc -f "%position%) %artist% - %title%" playlist
+
+      kill:
+        description: Kill running process
+        type: Command
+        command: echo "{0}" | awk '{print $1}' | xargs -I{} kill -TERM "{}"
+        widgets:
+          - type: FromCommand
+            command: px | sed 1d | awk 'BEGIN{OFS="\t"}{print $1, $2, $NF}'
+
+      mas:
+        description: Install macOS AppStore application
+        type: Command
+        command: echo "{0}" | hck -f1 | xargs mas install
+        widgets:
+          - type: FromCommand
+            command: mas search "$@" | column -ts $'\t'
+
+      copyq:
+        description: Copy to clipboard from copyq
+        type: Command
+        command: print -Pr "{0}" | perl -pe 's/\d+\s?//g && chomp if eof' | pbcopy
+        widgets:
+          - type: FromCommand
+            command: |
+              copyq eval -- \
+                "tab('&clipboard'); for(i=size(); i>0; --i) print(str(read(i-1)) + '\n');" \
+                | rg -v '^\s*$' \
+                | nl -w2 -s" " \
+                | tac

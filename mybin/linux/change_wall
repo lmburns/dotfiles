@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]}

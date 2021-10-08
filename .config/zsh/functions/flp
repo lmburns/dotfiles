@@ -1,0 +1,30 @@
+# Desc: lolcate fzf projects
+
+zparseopts -D -A opts -- u -update c -cd
+
+(( $+opts[-u] + $+opts[--update] )) && lolcate --db projects --update && return 0
+
+# lolcate --db "$@" \
+
+local sel
+sel=$(\
+  lolcate --db projects "$@" \
+  | fzf \
+    --delimiter / \
+    --with-nth 5.. \
+    --query "${*:-}"
+)
+
+[[ -n "$sel" ]] && {
+    if (( $+opts[-c] + $+opts[--cd] )) {
+        if [[ -d "$sel" ]] {
+            builtin cd "$sel"
+        } else {
+            builtin cd "$sel:h"
+        }
+    } else {
+        ${EDITOR:-vim} "$sel"
+    }
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

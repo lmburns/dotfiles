@@ -1,0 +1,16 @@
+# Desc: interactively kill process with fzf
+
+  # | awk 'BEGIN{OFS="\t"}{print $1, $2, $NF}' \
+
+fkill() {
+  px ${*:-} \
+    | sed 1d \
+    | choose -o "\t" 0 1 -1 \
+    | fzf --height=70% \
+    | awk '{print $1}' \
+    | xargs -I{} kill -TERM "{}"
+}
+
+fkill
+
+# vim:ft=zsh:

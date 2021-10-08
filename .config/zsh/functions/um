@@ -1,0 +1,39 @@
+# Desc: wrapper to colorize um man pages
+
+# taken from colorized man pages
+# ks       make the keypad send commands
+# ke       make the keypad send digits
+# vb       emit visual bell
+# mb       start blink
+# md       start bold
+# me       turn off bold, blink and underline
+# so       start standout (reverse video)
+# se       stop standout
+# us       start underline
+# ue       stop underline
+
+um() {
+  env \
+    LESS_TERMCAP_md=$(tput bold; tput setaf 3) \
+    LESS_TERMCAP_me=$(tput sgr0) \
+    LESS_TERMCAP_mb=$(tput blink) \
+    LESS_TERMCAP_us=$(tput setaf 2) \
+    LESS_TERMCAP_ue=$(tput sgr0) \
+    LESS_TERMCAP_so=$(tput smso) \
+    LESS_TERMCAP_se=$(tput rmso) \
+    PAGER="${commands[less]:-$PAGER}" \
+    um "$@"
+}
+
+# um() {
+#   if [[ -n "${MANPAGER}" ]]; then BAT_PAGER="$MANPAGER"; fi
+#   env \
+#     MANPAGER='sh -c "col -bx | bat -l man -p"' \
+#     MANROFFOPT='-c' \
+#     PAGER="${MANPAGER}" \
+#     um "$@"
+# }
+
+um "$@"
+
+# vim:ft=zsh:et:sts=2:sw=0

@@ -1,0 +1,139 @@
+priority 100
+
+snippet Imp "import ..." b
+import "${1:fmt}"
+endsnippet
+
+snippet pk "package ..." b
+package ${1:`!p snip.rv += os.path.basename(os.path.dirname(path))`}
+
+
+endsnippet
+
+snippet pm "package main" b
+package main
+
+
+endsnippet
+
+snippet imp "import (...)" b
+import (
+	"${1:fmt}"$2
+)
+
+
+endsnippet
+
+snippet sout "fmt.Println(...)" b
+fmt.Println(${1:"${2:message}"}$3)
+endsnippet
+
+snippet af "func(...){...}"
+func($1) $2{
+	$3
+}
+endsnippet
+
+snippet forr "for item := range itmes..." b
+for ${1:it} := range ${2:ch} {
+	$4
+}
+endsnippet
+
+snippet init "init function" b
+func init() {
+	$1
+}
+endsnippet
+
+snippet gof "go func() { ... }()" b,m
+go func() {
+	${1:${VISUAL}}
+}()
+endsnippet
+
+snippet ife "if err != nil {...}" b,m
+if err != nil {
+	${1:${VISUAL}}
+}
+endsnippet
+
+snippet usage "show usage..." b
+fmt.Fprintf(os.Stderr, "Usage: %s <${1:argument}>\n", filepath.Base(os.Args[0]))
+endsnippet
+
+snippet f "func() {...}()"
+func() {
+	${1:${VISUAL}}
+}()
+endsnippet
+
+snippet ui "unimplemented..." b
+panic("unimplemented")
+endsnippet
+
+snippet interface "interface {}"
+interface {}
+endsnippet
+
+snippet err "Basic error handling" b
+if err != nil {
+	${1}
+}
+endsnippet
+
+snippet errr "Basic error handling return err" b
+if err != nil {
+	return err
+}
+${1}
+endsnippet
+
+snippet errr, "Basic error handling return err with another return" b
+if err != nil {
+	return ${1:nil}, err
+}
+endsnippet
+
+snippet errw "Return wrapped error" b
+if err != nil {
+	return errors.Wrap(err, "${1}")
+}
+endsnippet
+
+snippet errwf "Basic error handling with wrapping format" b
+if err != nil {
+	return errors.Wrapf(err, "${1}", ${2})
+}
+endsnippet
+
+snippet errab "Basic abort with error from Gin Context" b
+if err != nil {
+	_ = c.AbortWithError(http.StatusInternalServerError, err)
+	return
+}
+endsnippet
+
+snippet errabwf "Basic abort with error from Gin Context" b
+if err != nil {
+	err =  errors.Wrapf(err, "${1}", ${2})
+	c.AbortWithError(http.StatusInternalServerError, err)
+	return
+}
+endsnippet
+
+snippet /^package/ "Package declaration" b
+// Package $1 provides ...
+package ${1:main}
+$2
+endsnippet
+
+snippet switcht "Switch type statement" b
+switch ${1:expression}${1/(.+)/ /} := ${2:var}.(Type) {
+case ${0:int}
+}
+endsnippet
+
+snippet e: "Variable declaration := with error" b
+${1:name}, err:= ${0:value}
+endsnippet

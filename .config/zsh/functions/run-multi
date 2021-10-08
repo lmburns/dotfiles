@@ -1,0 +1,19 @@
+# Desc: run tasks in parallel
+
+# taken from marlonrichert
+
+local -a fds=()
+local fd
+{
+  local cmd; for cmd in $@; do
+    exec {fd}< <( eval "$cmd" )
+    fds+=( $fd )
+  done
+} always {
+  for fd in $fds; do
+    <&$fd
+    exec {fd}<&-
+  done
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

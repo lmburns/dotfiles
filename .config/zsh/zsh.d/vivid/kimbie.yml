@@ -1,0 +1,160 @@
+# Author: https://github.com/lmburns
+colors:
+  black: '201f1f'        # #201f1f
+  red: 'EF1D55'          # #EF1D55
+  magenta: 'A06469'      # #A06469
+  orange: 'FF5813'       # #FF5813
+  green: '819C3B'        # #819C3B
+  yellow: 'FF9500'       # #FF9500
+  aqua: '7EB2B1'         # #7EB2B1
+  blue: '4C96A8'         # #4C96A8
+  purple: '98676A'       # #98676A
+
+  yellow_orange: 'fe8019' #fe8019
+  dark_red: 'DC3958'      # #DC3958
+  dark_purple: '733e8b'   # #733e8b
+  dark_green: '088649'    # #088649
+  bright_yellow: 'f79a32' # #f79a32
+  bright_green: 'a3b95a'  # #a3b95a
+
+  base0: 'D9AE80'         # #D9AE80
+  base1: 'c2a383'         # #c2a383
+  grey0: '7E602C'         # #7E602C
+  grey1: 'a89984'         # #a89984
+  grey2: '676767'         # #676767
+  grey3: '51412c'         # #51412c
+  operator_base: 'e8c097' # #e8c097
+  darkgrey: '6b7089'      # #6b7089
+  darkergrey: '36384a'    # #36384a
+
+core:
+  regular_file:
+    foreground: base0
+
+  directory:
+    foreground: dark_red
+    font-style: bold
+
+  executable_file:
+    foreground: bright_green
+    font-style: bold
+
+  symlink:
+    foreground: dark_green
+    font-style: underline
+
+  broken_symlink:
+    foreground: base1
+    background: red
+    font-style: bold
+
+  missing_symlink_target:
+    foreground: red
+    background: base1
+    font-style: bold
+
+  fifo:
+    foreground: yellow
+
+  socket:
+    foreground: magenta
+    font-style: bold
+
+  character_device:
+    foreground: yellow
+    background: black
+    font-style: bold
+
+  block_device:
+    foreground: yellow
+    background: black
+    font-style: bold
+
+  normal_text:
+    foreground: base0
+
+  other_writable:
+    {}
+
+  sticky:
+    {}
+
+  sticky_other_writable:
+    {}
+    # foreground; black
+    # background: green
+
+text:
+  special:
+    foreground: magenta
+
+  todo:
+    foreground: dark_purple
+    font-style: bold
+
+  licenses:
+    foreground: aqua
+
+  configuration:
+    foreground: yellow
+    font-style: bold
+
+    zshrc:
+      foreground: magenta
+      font-style: bold
+
+  gpg:
+    foreground: aqua
+
+  other:
+    foreground: purple
+
+markup:
+  foreground: blue
+
+programming:
+  source:
+    foreground: yellow_orange
+
+  tooling:
+    foreground: orange
+
+    build:
+      foreground: orange
+      font-style: bold
+
+    continuous-integration:
+      foreground: green
+
+media:
+  image:
+    foreground: magenta
+
+  audio:
+    foreground: yellow
+
+  video:
+    foreground: magenta
+
+  fonts:
+    foreground: dark_green
+
+office:
+  foreground: aqua
+  font-style: bold
+
+archives:
+  foreground: purple
+  font-style: bold
+
+executable:
+  foreground: bright_green
+
+unimportant:
+  foreground: darkgrey
+
+macos:
+  foreground: red
+
+torrent:
+  foreground: dark_purple

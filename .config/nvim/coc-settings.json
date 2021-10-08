@@ -1,0 +1,230 @@
+{
+  "coc.preferences.useQuickfixForLocations": true,
+  "coc.preferences.extensionUpdateCheck": "daily",
+  "diagnostic.errorSign": "••",
+  "diagnostic.warningSign": "•",
+  "diagnostic.infoSign": "•",
+  "diagnostic.hintSign": "•",
+  "diagnostic.checkCurrentLine": false,
+  "diagnostic.level": "hint",
+  "diagnostic.refreshOnInsertMode": false,
+  "diagnostic.virtualText": true,
+  "diagnostic-languageserver.filetypes": {
+    "sh": "shellcheck"
+    // "zsh": "shellcheck"
+  },
+  "diagnostic-languageserver.formatFiletypes": {
+    "sh": "shfmt"
+  //   "zsh": "shfmt"
+  },
+  "codeLens.enable": true,
+  "codeLens.separator": "‣",
+  "codeLens.subseparator": " | ",
+  "list.indicator": "➤",
+  "coc.preferences.formatOnSaveFiletypes": ["go"],
+  "coc.preferences.formatOnType": true,
+  "signature.enable": true,
+  "sh.enable": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "~/.local/share/pyenv/shims/black",
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.jediEnabled": true,
+  "python.pythonPath": "~/.local/share/pyenv/shims/python",
+  // "python.condaPath": "~/opt/anaconda3/bin/conda",
+  "suggest.disableMenu": false,
+  "suggest.snippetIndicator": "",
+  "suggest.noselect": false,
+  "coc.source.file.ignoreHidden": false,
+  "coc.source.file.shortcut": "\uf414",
+  "coc.source.around.firstMatch": false,
+  "coc.source.around.shortcut": "\uf667",
+  "coc.source.buffer.firstMatch": false,
+  "coc.source.buffer.shortcut": "\uf719",
+  "coc.source.syntax.firstMatch": false,
+  "coc.source.syntax.shortcut": "\uf670",
+  "tabnine.priority": 99,
+  "suggest.languageSourcePriority": 100,
+  "git.addedSign.text": "┃",
+  "git.changedSign.text": "┃",
+  "git.changeRemovedSign.text": "┃",
+  "git.removedSign.text": "◢",
+  "git.topRemovedSign.text": "◥",
+  "git.addedSign.hlGroup": "SignifySignAdd",
+  "git.changedSign.hlGroup": "SignifySignChange",
+  "git.changeRemovedSign.hlGroup": "SignifySignChange",
+  "git.removedSign.hlGroup": "SignifySignDelete",
+  "git.topRemovedSign.hlGroup": "SignifySignDelete",
+  // "git.addGBlameToVirtualText": true,
+  // "git.virtualTextPrefix": "     commit: ",
+
+  // coc-explorer
+  "explorer.icon.enableNerdfont": true,
+  "explorer.icon.source": "vim-devicons",
+  // "explorer.icon.enableVimDevicons": false,
+  "explorer.git.enable": true,
+  "explorer.quitOnOpen": true,
+  "explorer.position": "left",
+  "explorer.file.showHiddenFiles": true,
+  "explorer.file.column.clip.copy": "",
+  "explorer.file.column.clip.cut": "",
+  "explorer.file.column.indent.indentLine": true,
+  "explorer.openAction.select.filter": {
+    "buftypes": [
+      "terminal"
+    ],
+    "filetypes": [
+      "vista_kind",
+      "qf",
+      "minimap"
+    ],
+    "floatingWindows": true,
+    "sources": {
+      "buffer": {
+        "buftypes": []
+      }
+    }
+  },
+  "explorer.keyMappingMode": "none",
+  "explorer.keyMappings.global": {
+    "i": false,
+    "gk": "expandablePrev",
+    "gj": "expandableNext",
+
+    "<space>": "toggleSelection",
+    "<tab>": "actionMenu",
+
+    "h": "collapse",
+    "l": ["expandable?", "expand", "open"],
+    "J": ["toggleSelection", "nodeNext"],
+    "K": ["toggleSelection", "nodePrev"],
+    "<2-LeftMouse>": [
+      "expandable?",
+      ["expanded?", "collapse", "expand"],
+      "open"
+    ],
+    "o": ["expanded?", "collapse", "expand"],
+    "<cr>": ["expandable?", "cd", "open"],
+    // "o": ["expandable?", ["expanded?", "collapse", "expand"], "open"],
+    // "<cr>": "open",
+    // "l": "indentNext",
+    // "h": "indentPrev",
+    "H": ["gotoParent"],
+    "s": "open:split",
+    "S": "open:split:plain",
+    "V": "open:vsplit",
+    "t": "open:tab",
+    "<bs>": "gotoParent",
+    "gp": "preview:labeling",
+
+    "yf": "copyFile",
+    "yy": "copyFilename",
+    "x": "cutFile",
+    "p": "pasteFile",
+    "dd": "delete",
+
+    "mf": "addFile",
+    "md": "addDirectory",
+    "r": "rename",
+
+    ".": "toggleHidden",
+    "R": "refresh",
+
+    "?": "help",
+    "q": "quit",
+    "<esc>": "esc",
+    "!": "systemExecute",
+    "gd": "listDrive",
+    "<C-p>": "preview",
+
+    "f": "search",
+    "F": "searchRecursive",
+
+    "gf": "gotoSource:file",
+    "gb": "gotoSource:buffer",
+
+    "[[": "sourcePrev",
+    "]]": "sourceNext",
+
+    "[d": "diagnosticPrev",
+    "]d": "diagnosticNext",
+
+    "[c": "gitPrev",
+    "]c": "gitNext",
+    "<<": "gitStage",
+    ">>": "gitUnstage"
+  },
+    "snippets.ultisnips.directories": [
+    "UltiSnips",
+    "gosnippets/UltiSnips"
+  ],
+  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "suggest.enablePreview": true,
+  "suggest.removeDuplicateItems": true,
+  "suggest.detailField": "preview",
+  "suggest.detailMaxLength": 100,
+  "suggest.completionItemKindLabels": {
+    "keyword": "\uf1de",
+    "variable": "\uf169",
+    "value": "\uf89f",
+    "operator": "\u03a8",
+    "function": "\uf794",
+    "reference": "\uf838",
+    "constant": "\uf8ff",
+    "method": "\uf794",
+    "struct": "\ufb44",
+    "class": "\uf0e8",
+    "interface": "\ue60b",
+    "text": "\ue612",
+    "enum": "\uf435",
+    "enumMember": "\uf02b",
+    "module": "\ue79b",
+    "color": "\ue22b",
+    "property": "\ue624",
+    "field": "\uf02b",
+    "unit": "\uf475",
+    "event": "\ufacd",
+    "file": "\uf723",
+    "folder": "\uf114",
+    "snippet": "\uf672",
+    "typeParameter": "\uf728",
+    "default": "\uf29c"
+  },
+  "snippets.shortcut": "\uf672",
+  "clangd.enabled": true,
+  "clangd.arguments": ["--clang-tidy", "--completion-style=detailed", "--fallback-style=google", "--header-insertion=iwyu", "--suggest-missing-includes"],
+  "rust-analyzer.server.path": "rust-analyzer",
+  "rust-analyzer.updates.channel":"nightly",
+  "rust-analyzer.cargo.allFeatures": true,
+  "rust-analyzer.checkOnSave.allFeatures": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.updates.prompt": true,
+  "rust-analyzer.trace.server": "verbose",
+  "rust-analyzer.notifications.cargoTomlNotFound": true,
+  "rust-analyzer.lens.implementations": true,
+  "rust-analyzer.completion.postfix.enable": true,
+  "rust-analyzer.completion.addCallArgumentSnippets": true,
+  "rust-analyzer.completion.addCallParenthesis": true,
+  "rust-analyzer.inlayHints.chainingHints": true,
+  "rust-analyzer.inlayHints.typeHints": true,
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.diagnostics.enableExperimental": true,
+  "rust-analyzer.lens.enable": true,
+
+  // "rust.show_warnings": false,
+  // "rust.clippy_preference": "on",
+  // "rust.rustfmt_path": "/Users/lucasburns/.local/share/cargo/bin/rustfmt",
+
+  "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
+    }
+  },
+  "yank.highlight.duration": 100,
+  "clangd.path": "/Users/lucasburns/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
+  "solargraph.useBundler": true
+}

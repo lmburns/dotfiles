@@ -1,0 +1,25 @@
+#compdef arranger
+
+# zsh completions for 'arranger'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-m,--maxdepth}'[specify maxdepth (> 1)]'
+  {-h,--help}'[show this help message]'
+  {-dry,--dry-run}'[show what will happen without actually arranging]'
+  {-v,--verbose}'[print file name while moving]'
+  {-rev,--revert}'[revert the move (require a logfile)]'
+  {-log,--logfile}'[specify logfile (required for reverting)]'
+  '-no-log[dont save log]'
+  '-no-unknown[dont move unrecognised filetypes]'
+  '-no-arrange[dont move any file (helpful if you only want to delete empty dirs)]'
+  '-delete-empty[delete empty directories (if any)]'
+  {-ext,--extensions}'[specify extension(s) to move (requires a Directory)]'
+  '-name[STRS specify patterns (case sensitive) to move files (requires a Directory)]'
+  '-iname[STRs specify patterns (case insensitive) to move files (requires a Directory)]'
+  {-dir,--directory}'[specify the Directory to move files in (required by -ext)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

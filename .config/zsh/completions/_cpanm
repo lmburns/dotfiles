@@ -1,0 +1,34 @@
+#compdef cpanm
+
+# zsh completions for 'cpanm'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--verbose}'[turns on chatty output]'
+  {-q,--quiet}'[turns off the most output]'
+  '--interactive[turns on interactive configure (required for Task:: modules)]'
+  {-f,--force}'[force install]'
+  {-n,--notest}'[do not run unit tests]'
+  '--test-only[run tests only, do not install]'
+  {-S,--sudo}'[sudo to run install commands]'
+  '--installdeps[only install dependencies]'
+  '--showdeps[only display direct dependencies]'
+  '--reinstall[reinstall the distribution even if you already have the latest version installed]'
+  '--mirror[specify the base URL for the mirror (e.g. http://cpan.cpantesters.org/)]'
+  '--mirror-only[use the mirrors index file instead of the CPAN Meta DB]'
+  {-M,--from}'[use only this mirror base URL and its index file]'
+  '--prompt[prompt when configure/build/test fails]'
+  {-l,--local-lib}'[specify the install base to install modules]'
+  {-L,--local-lib-contained}'[specify the install base to install all non-core modules]'
+  '--self-contained[install all non-core modules, even if theyre already installed.]'
+  '--auto-cleanup[number of days that cpanms work directories expire in. Defaults to 7]'
+  '--self-upgrade[upgrades itself]'
+  '--info[displays distribution info on CPAN]'
+  '--look[opens the distribution with your SHELL]'
+  {-U,--uninstall}'[uninstalls the modules (EXPERIMENTAL)]'
+  {-V,--version}'[displays software version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,19 @@
+---
+# base_color: "#FF5813"
+# border_color: "#A06469"
+format: "yaml"
+max_depth: 2
+colors:
+  - "#FF5813"
+  - "#A06469"
+  - "#7EB2B1"
+  - "#4C96A8"
+  - "#FF9500"
+  - "#819C3B"
+  - "#EF1D55"
+  - "#83a598"
+  - "#d3869b"
+# ignores:
+#   - "src/"
+#   - "wutag_core/"
+...

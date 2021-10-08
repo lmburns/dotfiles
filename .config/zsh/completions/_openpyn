@@ -1,0 +1,40 @@
+#compdef openpyn
+
+# zsh completions for 'openpyn'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-v,--version}'[show programs version number and exit]'
+  '--init[initialise, store/change credentials, download/update]'
+  {-s,--server}'[server name, i.e. ca64 or au10]'
+  '--tcp[use port TCP-443 instead of the default UDP-1194]'
+  {-c,--country-code}'[specify country code with 2 letters, i.e. au]'
+  {-a,--area}'[specify area, city name or state e.g "openpyn au -a]'
+  {-d,--daemon}'[update and start systemd service openpyn.service]'
+  {-m,--max-load}'[specify load threshold, rejects servers with more load]'
+  {-t,--top-servers}'[specify the number of top servers to choose from the]'
+  {-p,--pings}'[specify number of pings to be sent to each server to]'
+  {-k,--kill}'[kill any running OpenVPN process, very useful to kill]'
+  {-x,--kill-flush}'[kill any running OpenVPN process, and flush iptables]'
+  '--update[fetch the latest config files from NordVPNs site]'
+  '--skip-dns-patch[skips DNS patching, leaves /etc/resolv.conf untouched.]'
+  {-f,--force-fw-rules}'[enforce firewall rules to drop traffic when tunnel]'
+  '--allow[\[INTERNALLY_ALLOWED ...\]]'
+  {-l,--list}'[if no argument given prints all Country Names and]'
+  '--silent[do not try to send notifications. Use if "libnotify"]'
+  '--p2p[only look for servers with "Peer To Peer" support]'
+  '--dedicated[only look for servers with "Dedicated IP" support]'
+  '--tor[only look for servers with "Tor Over VPN" support]'
+  '--double[only look for servers with "Double VPN" support]'
+  '--anti-ddos[only look for servers with "Anti DDoS" support]'
+  '--netflix[only look for servers that are optimised for "Netflix"]'
+  '--test[simulation only, do not actually connect to the VPN]'
+  {-n,--nvram}'[specify client to save configuration to NVRAM]'
+  {-o,--openvpn-options}'[pass through OpenVPN options, e.g. openpyn uk -o --]'
+  '-loc[longitude, --location latitude longitude]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

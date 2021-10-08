@@ -1,0 +1,289 @@
+# command_timeout = 1000
+add_newline = false
+# format = """
+# [╭─](white)$username$hostname in $directory$package$java$python$git_branch$battery$cmd_duration
+# [╰─](white)$character """
+
+# [│](white)  $golang$rust$java$python$custom$env_var
+format = """
+$battery
+[╭─](blue)\
+    [【](#f06431 bold)\
+      $username\
+      [@](#f79a32 bold)\
+      $hostname \
+      $directory\
+      $git_branch\
+      $git_commit\
+      $git_state\
+      $git_status\
+      $hg_branch\
+      $package$jobs\
+    [】](#f06431 bold)
+[│](blue)  \
+    $status\
+    $cmd_duration\
+    $memory_usage\
+    $shlvl\
+    $golang\
+    $rust\
+    $lua\
+    $python\
+    $custom\
+    $env_var
+[╰─](blue)\
+    $time\
+    $character
+"""
+
+[memory_usage]
+disabled = false
+# symbol = " "
+symbol = " "
+threshold = -1
+style = "bold dimmed green"
+format = " [$symbol$ram]($style)"
+# format = " [$symbol$ram(:$swap)]($style)"
+
+[username]
+style_user = "magenta bold"
+style_root = "green bold"
+show_always = true
+format = "[$user](#7e5053 bold)"
+
+[hostname]
+ssh_only = false
+style = "#418292 bold"
+format = "[$hostname]($style)"
+# trim_at = "."
+disabled = false
+
+[battery]
+full_symbol = ""
+charging_symbol = " "
+discharging_symbol = " "
+unknown_symbol = ""
+empty_symbol = ""
+[[battery.display]]
+threshold = 10
+style = "bold red"
+[[battery.display]]
+threshold = 40
+style = "bold yellow"
+
+[custom.docker]
+description = "Shows the docker symbol if the current directory has Dockerfile or docker-compose.{yml,yaml} files"
+command = "echo ' '"
+files = ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"]
+when = """ command -v docker &> /dev/null; exit (echo $?); """
+
+# [custom.direnv]
+# command = "echo 'direnv'"
+# format = "using [$output]($style) "
+# style = "purple bold"
+# when = "[[ -n \"${DIRENV_DIR}\" ]]"
+
+[custom.history_type]
+description = "Shows whether history is global or per-directory"
+command = "echo ''"
+when = """!$_per_directory_history_is_global"""
+format = " [$output](#98676A bold)"
+
+[character]
+success_symbol = " [\\$](bold purple)"
+error_symbol = " [✖](bold red)"
+
+[jobs]
+symbol = " "
+style = "bold red"
+threshold = 1
+number_threshold = 1
+format = "[$symbol$number]($style)"
+
+[time]
+disabled = true
+time_format = "%T"
+format = '  [$time]($style) '
+use_12hr = true
+
+[status]
+disabled = false
+symbol = ""
+style = "fg:#FF9500"
+format = "[$symbol $status]($style) "
+
+[directory]
+style = "bold blue"
+read_only = " "
+read_only_style = "fg:#DC3958"
+truncation_length = 4
+fish_style_pwd_dir_length = 2 # Not work?
+truncate_to_repo = false
+format = "[$read_only]($read_only_style)[$path]($style) "
+# home_symbol = ""
+# truncation_symbol = "…/"
+
+[directory.substitutions]
+"~/projects" = ""
+"~/.config" = ""
+"~" = ""
+
+# "/etc/*|/usr/local/etc/*" = ""
+# "~/.*" = ""
+# "~" = ""
+# "${(j.|.)${(s. .)bmark_dirs[@]}}"  BOOKMARK       ''
+# 
+
+[cmd_duration]
+min_time = 500
+show_milliseconds = true
+show_notifications = true
+min_time_to_notify = 45_000
+style = "bold yellow"
+format = "[ 祥$duration]($style)"
+
+[shell]
+fish_indicator = ""
+powershell_indicator = "_"
+disabled = false
+
+[env_var.SHELL]
+disabled = true
+symbol = " "
+variable = "SHELL"
+default = "unknown SHELL"
+format = "[$env_value]($style)"
+
+[hg_branch]
+disabled = false
+symbol = " "
+style = "green"
+# truncation_length = 8 # default = 2^63 - 1
+# truncation_symbol = "…"
+format = "[$symbol$branch]($style)"
+
+[git_status]
+# disabled = true
+style = "blue"
+stashed = " \\(${count}\\) "
+ahead = "ﲗ ${count}"
+behind = "ﲔ ${count}"
+diverged = "李 ${ahead_count} ${behind_count}"
+conflicted = "${count}"
+deleted = " [✘${count}](red bold)" # 
+renamed = "﫦${count}"
+modified = "[  \\(${count}\\) ](yellow bold)"
+# staged = '[++$count](green)'
+staged = " [ ${count}](green)"
+untracked = "  \\(${count}\\)"
+format = "([$all_status$ahead_behind]($style)) "
+# $stashed$staged$modified$renamed$untracked$deleted$conflicted$ahead_behind
+
+[git_branch]
+symbol = " "
+# symbol = "    "
+style = "green"
+# truncation_length = 4
+# truncation_symbol = ""
+format = "[$symbol$branch]($style)"
+
+[git_commit]
+style = "red"
+commit_hash_length = 4
+# only_detached = true
+format = "[#$hash]($style)"
+
+[git_state]
+style = "bg:#E0B25D fg:111111"
+rebase = "rebasing"
+merge = "merging"
+revert = "reverting"
+cherry_pick = " picking"
+bisect = "bisecting"
+am = "am'ing"
+am_or_rebase = "am/rebase"
+format = '\([$state($progress_current/$progress_total)]($style)\)'
+
+[shlvl]
+symbol = ""
+style = "bold fg:#FF5813"
+threshold = 3
+format = "[$symbol$shlvl]($style)"
+
+[package]
+symbol = " "
+style = "bold 208"
+display_private = true
+version_format = "v${raw}"
+format = "[$symbol$version]($style) "
+
+#
+# === LANGUAGES ===
+#
+
+[aws]
+disabled = true
+
+[golang]
+symbol = " "
+# symbol = " "
+
+[java]
+symbol = " "
+
+[lua]
+symbol = " "
+style = "fg:#7EB2B1 bold"
+format = " [$symbol($version)]($style)"
+
+[nodejs]
+disabled = true
+symbol = " "
+
+[ocaml]
+disabled = true
+symbol = "🐫 "
+
+[perl]
+symbol = " "
+style = "blue"
+
+[php]
+disabled = true
+symbol = " "
+
+[python]
+symbol = " "
+style = "bold yellow"
+# pyenv_version_name = true
+pyenv_prefix = "pyenv "
+python_binary = "python3"
+format = ' [$symbol$pyenv_prefix$version(\($virtualenv\))]($style)'
+
+[rlang]
+symbol = " "
+style = "fg:#D4745F"
+
+[ruby]
+disabled = true
+symbol = " "
+# symbol = " " # alternate
+
+[rust]
+symbol = " "
+style = "fg:#FF5733 bold"
+format = " [$symbol$version]($style)"
+
+[scala]
+symbol = " "
+disabled = true
+
+# COLORS
+
+# #DAF7A6
+# #FFC300
+# #FF5733
+# #C70039
+# #900C3F
+# #581845
+# #72dcaa

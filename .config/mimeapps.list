@@ -1,0 +1,14 @@
+[Default Applications]
+x-scheme-handler/mailto=userapp-Thunderbird-GTHUA1.desktop
+message/rfc822=userapp-Thunderbird-GTHUA1.desktop
+x-scheme-handler/mid=userapp-Thunderbird-GTHUA1.desktop
+x-scheme-handler/feed=userapp-Thunderbird-6WRUA1.desktop
+application/rss+xml=userapp-Thunderbird-6WRUA1.desktop
+application/x-extension-rss=userapp-Thunderbird-6WRUA1.desktop
+
+[Added Associations]
+x-scheme-handler/mailto=userapp-Thunderbird-GTHUA1.desktop;
+x-scheme-handler/mid=userapp-Thunderbird-GTHUA1.desktop;
+x-scheme-handler/feed=userapp-Thunderbird-6WRUA1.desktop;
+application/rss+xml=userapp-Thunderbird-6WRUA1.desktop;
+application/x-extension-rss=userapp-Thunderbird-6WRUA1.desktop;

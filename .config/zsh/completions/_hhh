@@ -1,0 +1,75 @@
+#compdef hello
+
+setopt localoptions warncreateglobal typesetsilent extendedglob
+
+autoload -U is-at-least
+typeset -a _arg_opts
+
+if is-at-least 5.2; then
+    _arg_opts=(-s -S -C)
+else
+    _arg_opts=(-s -C)
+fi
+
+local state ret=1
+typeset -a arguments
+
+arguments=(
+    '*--wutag[Also tag files with wutag]'
+    '*-w[Also tag files with wutag]'
+    '--query[<query> Start fzf with a query]: :->query'
+    '-q[<query> Start fzf with a query]: :->query'
+    '--help[Display a help message]'
+    '-h[Display a help message]'
+    '--boxes[Add a box aroud header with boxes]'
+    '-b[Add a box aroud header with boxes]'
+    '--lolcat[Color to header with lolcat]'
+    '-c[Color to header with lolcat]'
+    '--toilet[Color and format header with toilet]'
+    '-t[Color and format header with toilet]'
+    '--font[<font> Choose figlet font]: :->_figlet_fonts'
+    '-f[<font> Choose figlet font]: :->_figlet_fonts'
+    '--path[Open in a directory]: :->_path_files'
+    '-p[Open in a directory]: :->_path_files'
+    '--local[Use tags in local directory]: :->local_tags'
+    '-l[Use tags in local directory]: :->local_tags'
+    '--zoxide[Start zoxide to select directory to use tags]'
+    '-z[Start zoxide to select directory to use tags]'
+    '--jump[Start autojump to select directory to use tags]'
+    '-j[Start autojump to select directory to use tags]'
+    '--nocolor[Do not use color when displaying tags]'
+    '-n[Do not use color when displaying tags]'
+    '--sort[Sort tags (d|desc|++) for descending; (a|asc|+) for ascending]'
+    '-s[Sort tags (d|desc|++) for descending; (a|asc|+) for ascending]'
+  )
+
+_arguments "${_arg_opts[@]}" $arguments \
+    && ret=0
+
+# '*: :->tags'
+
+case $state in
+  query)
+    local -a tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    local -a gtags=( ${${(@f)"$(tag --usage)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}} )
+    _alternative \
+      'tags:--Local Tags --:compadd -a - tags' \
+      'gtags:--Global Tags--:compadd -a - gtags' && \
+          ret=0
+  ;;
+  local_tags)
+    local tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    _describe -t tags 'Local Tags' tags && \
+        ret=0
+  ;;
+  *)
+    typeset -a tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    typeset -a gtags=( ${${(@f)"$(tag --usage)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}} )
+    _alternative \
+      'tags:--Local Tags --:compadd -a - tags' \
+      'gtags:--Global Tags--:compadd -a - gtags' && \
+          ret=0
+  ;;
+esac
+
+return $ret

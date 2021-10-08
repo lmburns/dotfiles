@@ -1,0 +1,10 @@
+# vim:ft=zsh:
+
+# Desc: escape code for colors
+
+printc() {
+    local color="%F{$1}"
+    echo -E ${(qqqq)${(%)color}}
+}
+
+printc

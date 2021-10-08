@@ -1,0 +1,12 @@
+# Desc: search environment vars with fzf
+# taken: https://github.com/nikitavoloboev/dotfiles/blob/master/zsh/functions/fzf-functions.zsh
+
+fenv() {
+  local out
+  out=$(env | fzf)
+  echo $(echo $out | cut -d= -f2)
+}
+
+fenv "$@"
+
+# vim:ft=zsh:

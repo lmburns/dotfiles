@@ -1,0 +1,22 @@
+#compdef organize-rt
+
+# zsh completions for 'organize-rt'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--dry-run[prints where the file would move, but does not move]'
+  {-h,--help}'[prints help information]'
+  {-H,--hidden}'[include hidden files/directories]'
+  {-q,--quiet}'[quiet run, empty output]'
+  {-r,--recursive}'[]'
+  {-u,--undo}'[undo action (require log)]'
+  {-V,--version}'[prints version information]'
+  {-v,--verbose}'[show more info]'
+  '--log[path to save/load log \[default: ./organize-rt.log\]]'
+  {-o,--output}'[output directory]'
+  {-s,--source}'[directory to organize]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

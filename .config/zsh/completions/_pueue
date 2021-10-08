@@ -1,0 +1,468 @@
+#compdef pueue
+
+autoload -U is-at-least
+
+_pueue() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-c+[Path to a specific pueue config file to use. This ignores all other config files]' \
+'--config=[Path to a specific pueue config file to use. This ignores all other config files]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*-v[Verbose mode (-v, -vv, -vvv)]' \
+'*--verbose[Verbose mode (-v, -vv, -vvv)]' \
+":: :_pueue_commands" \
+"*::: :->Pueue client" \
+&& ret=0
+    case $state in
+    (Pueue client)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:pueue-command-$line[1]:"
+        case $line[1] in
+            (add)
+_arguments "${_arguments_options[@]}" \
+'-w+[Specify current working directory]' \
+'--working-directory=[Specify current working directory]' \
+'(-i --immediate)-d+[Prevents the task from being enqueued until <delay> elapses. See "enqueue" for accepted formats]' \
+'(-i --immediate)--delay=[Prevents the task from being enqueued until <delay> elapses. See "enqueue" for accepted formats]' \
+'-g+[Assign the task to a group. Groups kind of act as separate queues. I.e. all groups run in parallel and you can specify the amount of parallel tasks for each group. If no group is specified, the default group will be used]' \
+'--group=[Assign the task to a group. Groups kind of act as separate queues. I.e. all groups run in parallel and you can specify the amount of parallel tasks for each group. If no group is specified, the default group will be used]' \
+'*-a+[Start the task once all specified tasks have successfully finished. As soon as one of the dependencies fails, this task will fail as well]' \
+'*--after=[Start the task once all specified tasks have successfully finished. As soon as one of the dependencies fails, this task will fail as well]' \
+'-l+[Add some information for yourself. This string will be shown in the "status" table. There'\''s no additional logic connected to it]' \
+'--label=[Add some information for yourself. This string will be shown in the "status" table. There'\''s no additional logic connected to it]' \
+'-e[Escape any special shell characters (" ", "&", "!", etc.). Beware: This implicitly disables nearly all shell specific syntax ("&&", "&>")]' \
+'--escape[Escape any special shell characters (" ", "&", "!", etc.). Beware: This implicitly disables nearly all shell specific syntax ("&&", "&>")]' \
+'(-s --stashed)-i[Immediately start the task]' \
+'(-s --stashed)--immediate[Immediately start the task]' \
+'(-i --immediate)-s[Create the task in Stashed state. Useful to avoid immediate execution if the queue is empty]' \
+'(-i --immediate)--stashed[Create the task in Stashed state. Useful to avoid immediate execution if the queue is empty]' \
+'-p[Only return the task id instead of a text. This is useful when scripting and working with dependencies]' \
+'--print-task-id[Only return the task id instead of a text. This is useful when scripting and working with dependencies]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::command -- The command to be added:' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- The task ids to be removed:' \
+&& ret=0
+;;
+(switch)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+':task-id-1 -- The first task id:' \
+':task-id-2 -- The second task id:' \
+&& ret=0
+;;
+(stash)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Stash these specific tasks:' \
+&& ret=0
+;;
+(enqueue)
+_arguments "${_arguments_options[@]}" \
+'-d+[Delay enqueuing these tasks until <delay> elapses. See DELAY FORMAT below]' \
+'--delay=[Delay enqueuing these tasks until <delay> elapses. See DELAY FORMAT below]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Enqueue these specific tasks:' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'(-a --all)-g+[Resume a specific group and all paused tasks in it. The group will be set to running and its paused tasks will be resumed]' \
+'(-a --all)--group=[Resume a specific group and all paused tasks in it. The group will be set to running and its paused tasks will be resumed]' \
+'-a[Resume all groups! All groups will be set to running and paused tasks will be resumed]' \
+'--all[Resume all groups! All groups will be set to running and paused tasks will be resumed]' \
+'-c[Also resume direct child processes of your paused tasks. By default only the main process will get a SIGSTART]' \
+'--children[Also resume direct child processes of your paused tasks. By default only the main process will get a SIGSTART]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Start these specific tasks. Paused tasks will resumed. Queued or Stashed tasks will be force-started:' \
+&& ret=0
+;;
+(restart)
+_arguments "${_arguments_options[@]}" \
+'(-a --all-failed)-g+[Like `--all-failed`, but only restart tasks failed tasks of a specific group. The group will be set to running and its paused tasks will be resumed]' \
+'(-a --all-failed)--failed-in-group=[Like `--all-failed`, but only restart tasks failed tasks of a specific group. The group will be set to running and its paused tasks will be resumed]' \
+'-a[Restart all failed tasks accross all groups. Nice to use in combination with `-i/--in-place`]' \
+'--all-failed[Restart all failed tasks accross all groups. Nice to use in combination with `-i/--in-place`]' \
+'(-s --stashed)-k[Immediately start the tasks, no matter how many open slots there are. This will ignore any dependencies tasks may have]' \
+'(-s --stashed)--start-immediately[Immediately start the tasks, no matter how many open slots there are. This will ignore any dependencies tasks may have]' \
+'-s[Set the restarted task to a "Stashed" state. Useful to avoid immediate execution]' \
+'--stashed[Set the restarted task to a "Stashed" state. Useful to avoid immediate execution]' \
+'-i[Restart the task by reusing the already existing tasks. This will overwrite any previous logs of the restarted tasks]' \
+'--in-place[Restart the task by reusing the already existing tasks. This will overwrite any previous logs of the restarted tasks]' \
+'--not-in-place[Restart the task by creating a new identical tasks. Only applies, if you have the restart_in_place configuration set to true]' \
+'-e[Edit the tasks'\'' command before restarting]' \
+'--edit[Edit the tasks'\'' command before restarting]' \
+'-p[Edit the tasks'\'' path before restarting]' \
+'--edit-path[Edit the tasks'\'' path before restarting]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Restart these specific tasks:' \
+&& ret=0
+;;
+(pause)
+_arguments "${_arguments_options[@]}" \
+'(-a --all)-g+[Pause a specific group]' \
+'(-a --all)--group=[Pause a specific group]' \
+'-a[Pause all groups!]' \
+'--all[Pause all groups!]' \
+'-w[Only pause the specified group and let already running tasks finish by themselves]' \
+'--wait[Only pause the specified group and let already running tasks finish by themselves]' \
+'-c[Also pause direct child processes of a task'\''s main process. By default only the main process will get a SIGSTOP. This is useful when calling bash scripts, which start other processes themselves. This operation is not recursive!]' \
+'--children[Also pause direct child processes of a task'\''s main process. By default only the main process will get a SIGSTOP. This is useful when calling bash scripts, which start other processes themselves. This operation is not recursive!]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Pause these specific tasks. Does not affect the default group, groups or any other tasks:' \
+&& ret=0
+;;
+(kill)
+_arguments "${_arguments_options[@]}" \
+'(-a --all)-g+[Kill all running tasks in a group. This also pauses the group]' \
+'(-a --all)--group=[Kill all running tasks in a group. This also pauses the group]' \
+'-s+[Send a UNIX signal instead of simply killing the process. DISCLAIMER: This bypasses Pueue'\''s process handling logic! You might enter weird invalid states, use at your own descretion]' \
+'--signal=[Send a UNIX signal instead of simply killing the process. DISCLAIMER: This bypasses Pueue'\''s process handling logic! You might enter weird invalid states, use at your own descretion]' \
+'-a[Kill all running tasks across ALL groups. This also pauses all groups]' \
+'--all[Kill all running tasks across ALL groups. This also pauses all groups]' \
+'-c[Send the SIGTERM signal to all children as well. Useful when working with shell scripts]' \
+'--children[Send the SIGTERM signal to all children as well. Useful when working with shell scripts]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- Kill these specific tasks:' \
+&& ret=0
+;;
+(send)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+':task-id -- The id of the task:' \
+':input -- The input that should be sent to the process:' \
+&& ret=0
+;;
+(edit)
+_arguments "${_arguments_options[@]}" \
+'-p[Edit the path of the task]' \
+'--path[Edit the path of the task]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+':task-id -- The id of the task:' \
+&& ret=0
+;;
+(group)
+_arguments "${_arguments_options[@]}" \
+'(-r --remove)-a+[Add a group by name]' \
+'(-r --remove)--add=[Add a group by name]' \
+'-r+[Remove a group by name. This will move all tasks in this group to the default group!]' \
+'--remove=[Remove a group by name. This will move all tasks in this group to the default group!]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" \
+'-g+[Only show tasks of a specific group]' \
+'--group=[Only show tasks of a specific group]' \
+'-j[Print the current state as json to stdout. This does not include stdout/stderr of tasks. Use `log -j` if you want everything]' \
+'--json[Print the current state as json to stdout. This does not include stdout/stderr of tasks. Use `log -j` if you want everything]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(log)
+_arguments "${_arguments_options[@]}" \
+'(-f --full)-l+[Only print the last X lines of each task'\''s output. This is done by default if you'\''re looking at multiple tasks]' \
+'(-f --full)--lines=[Only print the last X lines of each task'\''s output. This is done by default if you'\''re looking at multiple tasks]' \
+'-j[Print the resulting tasks and output as json. By default only the last stdout/-err lines will be returned unless --full is provided. Take care, as the json cannot be streamed! If your logs are really huge, using --full can use all of your machine'\''s RAM]' \
+'--json[Print the resulting tasks and output as json. By default only the last stdout/-err lines will be returned unless --full is provided. Take care, as the json cannot be streamed! If your logs are really huge, using --full can use all of your machine'\''s RAM]' \
+'-f[Show the whole stdout and stderr output. This is the default if only a single task is being looked at]' \
+'--full[Show the whole stdout and stderr output. This is the default if only a single task is being looked at]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- View the task output of these specific tasks:' \
+&& ret=0
+;;
+(follow)
+_arguments "${_arguments_options[@]}" \
+'-e[Show stderr instead of stdout]' \
+'--err[Show stderr instead of stdout]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'::task-id -- The id of the task you want to watch. If no or multiple tasks are running, you have to specify the id. If only a single task is running, you can omit the id:' \
+&& ret=0
+;;
+(wait)
+_arguments "${_arguments_options[@]}" \
+'(-a --all)-g+[Wait for all tasks in a specific group]' \
+'(-a --all)--group=[Wait for all tasks in a specific group]' \
+'-a[Wait for all tasks across all groups and the default group]' \
+'--all[Wait for all tasks across all groups and the default group]' \
+'-q[Don'\''t show any log output while waiting]' \
+'--quiet[Don'\''t show any log output while waiting]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'*::task-ids -- This allows you to wait for specific tasks to finish:' \
+&& ret=0
+;;
+(clean)
+_arguments "${_arguments_options[@]}" \
+'-s[Only clean tasks that finished successfully]' \
+'--successful-only[Only clean tasks that finished successfully]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(reset)
+_arguments "${_arguments_options[@]}" \
+'-c[Send the SIGTERM signal to all children as well. Useful when working with shell scripts]' \
+'--children[Send the SIGTERM signal to all children as well. Useful when working with shell scripts]' \
+'-f[Don'\''t ask for any confirmation]' \
+'--force[Don'\''t ask for any confirmation]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(shutdown)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(parallel)
+_arguments "${_arguments_options[@]}" \
+'-g+[Set the amount for a specific group]' \
+'--group=[Set the amount for a specific group]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+':parallel-tasks -- The amount of allowed parallel tasks:' \
+&& ret=0
+;;
+(completions)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+':shell -- The target shell:(bash elvish fish power-shell zsh)' \
+':output-directory -- The output directory to which the file should be written:' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_pueue_commands] )) ||
+_pueue_commands() {
+    local commands; commands=(
+'add:Enqueue a task for execution' \
+'remove:Remove tasks from the list. Running or paused tasks need to be killed first' \
+'switch:Switches the queue position of two commands. Only works on queued and stashed commands' \
+'stash:Stashed tasks won'\''t be automatically started. You have to enqueue them or start them by hand' \
+'enqueue:Enqueue stashed tasks. They'\''ll be handled normally afterwards' \
+'start:Resume operation of specific tasks or groups of tasks.
+By default, this resumes the default group and all its tasks.
+Can also be used force-start specific tasks.' \
+'restart:Restart task(s). Identical tasks will be created and by default enqueued. By default, a new task will be created' \
+'pause:Either pause running tasks or specific groups of tasks.
+By default, pauses the default group and all its tasks.
+A paused queue (group) won'\''t start any new tasks.' \
+'kill:Kill specific running tasks or whole task groups. Kills all tasks of the default group when no ids are provided' \
+'send:Send something to a task. Useful for sending confirmations such as '\''y\\n'\''' \
+'edit:Edit the command or path of a stashed or queued task.
+The command is edited by default.' \
+'group:Use this to add or remove groups. By default, this will simply display all known groups' \
+'status:Display the current status of all tasks' \
+'log:Display the log output of finished tasks. Prints either all logs or only the logs of specified tasks' \
+'follow:Follow the output of a currently running task. This command works like tail -f' \
+'wait:Wait until tasks are finished. This can be quite useful for scripting. By default, this will wait for all tasks in the default group to finish. Note: This will also wait for all tasks that aren'\''t somehow '\''Done'\''. Includes: \[Paused, Stashed, Locked, Queued, ...\]' \
+'clean:Remove all finished tasks from the list' \
+'reset:Kill all tasks, clean up afterwards and reset EVERYTHING!' \
+'shutdown:Remotely shut down the daemon. Should only be used if the daemon isn'\''t started by a service manager' \
+'parallel:Set the amount of allowed parallel tasks. By default, adjusts the amount of the default group' \
+'completions:Generates shell completion files. This can be ignored during normal operations' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'pueue commands' commands "$@"
+}
+(( $+functions[_pueue__add_commands] )) ||
+_pueue__add_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue add commands' commands "$@"
+}
+(( $+functions[_pueue__clean_commands] )) ||
+_pueue__clean_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue clean commands' commands "$@"
+}
+(( $+functions[_pueue__completions_commands] )) ||
+_pueue__completions_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue completions commands' commands "$@"
+}
+(( $+functions[_pueue__edit_commands] )) ||
+_pueue__edit_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue edit commands' commands "$@"
+}
+(( $+functions[_pueue__enqueue_commands] )) ||
+_pueue__enqueue_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue enqueue commands' commands "$@"
+}
+(( $+functions[_pueue__follow_commands] )) ||
+_pueue__follow_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue follow commands' commands "$@"
+}
+(( $+functions[_pueue__group_commands] )) ||
+_pueue__group_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue group commands' commands "$@"
+}
+(( $+functions[_pueue__help_commands] )) ||
+_pueue__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue help commands' commands "$@"
+}
+(( $+functions[_pueue__kill_commands] )) ||
+_pueue__kill_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue kill commands' commands "$@"
+}
+(( $+functions[_pueue__log_commands] )) ||
+_pueue__log_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue log commands' commands "$@"
+}
+(( $+functions[_pueue__parallel_commands] )) ||
+_pueue__parallel_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue parallel commands' commands "$@"
+}
+(( $+functions[_pueue__pause_commands] )) ||
+_pueue__pause_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue pause commands' commands "$@"
+}
+(( $+functions[_pueue__remove_commands] )) ||
+_pueue__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue remove commands' commands "$@"
+}
+(( $+functions[_pueue__reset_commands] )) ||
+_pueue__reset_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue reset commands' commands "$@"
+}
+(( $+functions[_pueue__restart_commands] )) ||
+_pueue__restart_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue restart commands' commands "$@"
+}
+(( $+functions[_pueue__send_commands] )) ||
+_pueue__send_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue send commands' commands "$@"
+}
+(( $+functions[_pueue__shutdown_commands] )) ||
+_pueue__shutdown_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue shutdown commands' commands "$@"
+}
+(( $+functions[_pueue__start_commands] )) ||
+_pueue__start_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue start commands' commands "$@"
+}
+(( $+functions[_pueue__stash_commands] )) ||
+_pueue__stash_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue stash commands' commands "$@"
+}
+(( $+functions[_pueue__status_commands] )) ||
+_pueue__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue status commands' commands "$@"
+}
+(( $+functions[_pueue__switch_commands] )) ||
+_pueue__switch_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue switch commands' commands "$@"
+}
+(( $+functions[_pueue__wait_commands] )) ||
+_pueue__wait_commands() {
+    local commands; commands=()
+    _describe -t commands 'pueue wait commands' commands "$@"
+}
+
+_pueue "$@"

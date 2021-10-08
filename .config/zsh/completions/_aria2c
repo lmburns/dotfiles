@@ -1,0 +1,46 @@
+#compdef aria2c
+
+# zsh completions for 'aria2c'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--version}'[print the version number and exit.]'
+  {-h,--help}'[print usage and exit.]'
+  {-l,--log}'[the file name of the log file. If - is]'
+  {-d,--dir}'[the directory to store the downloaded file.]'
+  {-o,--out}'[the file name of the downloaded file. It is]'
+  {-s,--split}'[download a file using N connections. If more]'
+  '--max-connection-per-server[. See also the]'
+  '--min-split-size[.]'
+  '--file-allocation[specify file allocation method.]'
+  {-V,--check-integrity}'[check file integrity by validating piece]'
+  '--checksum[. If piece hashes are provided]'
+  {-c,--continue}'[continue downloading a partially downloaded]'
+  {-i,--input-file}'[downloads URIs found in FILE. You can specify]'
+  {-j,--max-concurrent-downloads}'[set maximum number of parallel downloads for]'
+  {-Z,--force-sequential}'[fetch URIs in the command-line sequentially]'
+  {-x,--max-connection-per-server}'[the maximum number of connections to one]'
+  {-k,--min-split-size}'[aria2 does not split less than 2*SIZE byte range.]'
+  '--ftp-user[set FTP user. This affects all URLs.]'
+  '--ftp-passwd[set FTP password. This affects all URLs.]'
+  '--http-user[set HTTP user. This affects all URLs.]'
+  '--http-passwd[set HTTP password. This affects all URLs.]'
+  '--load-cookies[load Cookies from FILE using the Firefox3 format]'
+  {-S,--show-files}'[print file listing of .torrent, .meta4 and]'
+  '--max-overall-upload-limit[set max overall upload speed in bytes/sec.]'
+  '--max-upload-limit[.]'
+  {-u,--max-upload-limit}'[set max upload speed per each torrent in]'
+  '--max-overall-upload-limit[.]'
+  {-T,--torrent-file}'[the path to the .torrent file.]'
+  '--listen-port[...        Set TCP port number for BitTorrent downloads.]'
+  '--enable-dht[enable IPv4 DHT functionality. It also enables]'
+  '--dht-listen-port[...    Set UDP listening port used by DHT(IPv4, IPv6)]'
+  '--enable-dht6[enable IPv6 DHT functionality.]'
+  '--dht-listen-addr6[specify address to bind socket for IPv6 DHT.]'
+  {-M,--metalink-file}'[the file path to the .meta4 and .metalink]'
+  {--max-connection-per-server,--min-split-size}'[.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

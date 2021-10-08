@@ -1,0 +1,28 @@
+#compdef tag
+
+# zsh completions for 'tag'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--version}'[display version]'
+  {-h,--help}'[display this help]'
+  {-A,--all}'[display invisible files while enumerating]'
+  {-e,--enter}'[enter and enumerate directories provided]'
+  {-R,--recursive}'[recursively process directories]'
+  {-n,--name}'[turn on filename display in output (default)]'
+  {-N,--no-name}'[turn off filename display in output (list, find, match)]'
+  {-t,--tags}'[turn on tags display in output (find, match)]'
+  {-T,--no-tags}'[turn off tags display in output (list)]'
+  {-g,--garrulous}'[display tags each on own line (list, find, match)]'
+  {-G,--no-garrulous}'[tags comma-separated after filename (default)]'
+  {-c,--color}'[display tags in color]'
+  {-p,--slash}'[terminate each directory name with a slash]'
+  {-0,--nul}'[terminate lines with NUL (\0) for use with xargs -0]'
+  '--home[find tagged files in user home directory]'
+  '--local[find tagged files in home + local filesystems]'
+  '--network[find tagged files in home + local + network filesystems]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

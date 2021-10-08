@@ -1,0 +1,34 @@
+#compdef watchexec
+
+# zsh completions for 'watchexec'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--changes-only[only print path change information. Overridden by --verbose]'
+  {-c,--clear}'[clear screen before executing command]'
+  {-h,--help}'[prints help information]'
+  '--no-default-ignore[skip auto-ignoring of commonly ignored globs]'
+  '--no-environment[do not set WATCHEXEC_*_PATH environment variables for the command]'
+  '--no-ignore[skip auto-loading of ignore files (.gitignore, .ignore, etc.) for filtering]'
+  '--no-meta[ignore metadata changes]'
+  {-n,--no-shell}'[do not wrap command in a shell. Deprecated: use --shell=none instead.]'
+  '--no-vcs-ignore[skip auto-loading of .gitignore files for filtering]'
+  {-p,--postpone}'[wait until first change to execute command]'
+  {-r,--restart}'[restart the process if its still running. Shorthand for --on-busy-]'
+  {-V,--version}'[prints version information]'
+  {-v,--verbose}'[print debugging messages to stderr]'
+  {-W,--watch-when-idle}'[deprecated alias for --on-busy-update=do-nothing, which will become the]'
+  {-d,--debounce}'[set the timeout between detected change and command execution, defaults to 150ms]'
+  {-e,--exts}'[comma-separated list of file extensions to watch (e.g. js,css,html)]'
+  {-f,--filter}'[...                Ignore all modifications except those matching the pattern]'
+  {-i,--ignore}'[...                Ignore modifications to paths matching the pattern]'
+  '--on-busy-update[select the behaviour to use when receiving events while the command is running. Current default]'
+  {-w,--watch}'[...                    Watch a specific file or directory]'
+  '--force-poll[force polling mode (interval in milliseconds)]'
+  '--shell[use a different shell, or `none`. E.g. --shell=bash]'
+  {-s,--signal}'[send signal to process upon changes, e.g. SIGHUP]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

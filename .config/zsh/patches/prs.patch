@@ -1,0 +1,611 @@
+diff --git i/Cargo.lock w/Cargo.lock
+index 7ad48ed..34d6012 100644
+--- i/Cargo.lock
++++ w/Cargo.lock
+@@ -231,9 +231,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "cc"
+-version = "1.0.69"
++version = "1.0.70"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e70cc2f62c6ce1868963827bd677764c62d07c3d9a3e1fb1177ee1a9ab199eb2"
++checksum = "d26a6ce4b6a484fa3edb70f7efa6fc430fd2b87285fe8b84304fd0936faa0dc0"
+ 
+ [[package]]
+ name = "cfg-expr"
+@@ -324,7 +324,7 @@ dependencies = [
+  "proc-macro-error",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -549,7 +549,7 @@ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+  "strsim 0.9.3",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -563,7 +563,7 @@ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+  "strsim 0.10.0",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -574,7 +574,7 @@ checksum = "d9b5a2f4ac4969822c62224815d069952656cadc7084fdca9751e6d959189b72"
+ dependencies = [
+  "darling_core 0.10.2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -585,7 +585,7 @@ checksum = "29b5acf0dea37a7f66f7b25d2c5e93fd46f8f6968b1a5d7a3e02e97768afc95a"
+ dependencies = [
+  "darling_core 0.12.4",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -606,7 +606,7 @@ checksum = "fcc3dd5e9e9c0b295d6e1e4d811fb6f157d5ffd784b8d202fc62eac8035a770b"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -619,7 +619,7 @@ dependencies = [
+  "derive_builder_core 0.9.0",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -640,7 +640,7 @@ dependencies = [
+  "darling 0.10.2",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -652,7 +652,7 @@ dependencies = [
+  "darling 0.12.4",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -662,7 +662,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "58a94ace95092c5acb1e97a7e846b310cfbd499652f72297da7493f618a98d73"
+ dependencies = [
+  "derive_builder_core 0.10.2",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -773,7 +773,7 @@ checksum = "946ee94e3dbf58fdd324f9ce245c7b238d46a66f00e86a020b71996349e46cce"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -807,7 +807,7 @@ checksum = "aa4da3c766cd7a0db8242e326e9e4e081edd567072893ed320008189715366a4"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+  "synstructure",
+ ]
+ 
+@@ -915,7 +915,7 @@ dependencies = [
+  "proc-macro-hack",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -962,9 +962,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "gdk"
+-version = "0.14.0"
++version = "0.14.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "679e22651cd15888e7acd01767950edca2ee9fcd6421fbf5b3c3b420d4e88bb0"
++checksum = "a453eae5ec10345b3a96ca1b547328bfc94edd40aa95b08f14bb4c35863db140"
+ dependencies = [
+  "bitflags 1.2.1",
+  "cairo-rs",
+@@ -1048,9 +1048,9 @@ checksum = "f0a01e0497841a3b2db4f8afa483cce65f7e96a3498bd6c541734792aeac8fe7"
+ 
+ [[package]]
+ name = "gio"
+-version = "0.14.3"
++version = "0.14.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "402a7057cd21d64bfa7ac027b344a7f50f677fb3308693df0e8c70fb55d29f0d"
++checksum = "81a4c12fcba7a6402ae843a0085ec16d3658a87901763b6a7f0a7c5d60e555a5"
+ dependencies = [
+  "bitflags 1.2.1",
+  "futures-channel",
+@@ -1084,9 +1084,9 @@ checksum = "a7f0f3132e2c1356595caf0f85961a7cf21cac3734d40e54fe83fcdb3dd2fcbc"
+ 
+ [[package]]
+ name = "glib"
+-version = "0.14.4"
++version = "0.14.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a8fb802e3798d75b415bea8f016eed88d50106ce82f1274e80f31d80cfd4b056"
++checksum = "d4a930b7208e6e0ab839eea5f65ac2b82109f729621430d47fe905e2e09d33f4"
+ dependencies = [
+  "bitflags 1.2.1",
+  "futures-channel",
+@@ -1113,7 +1113,7 @@ dependencies = [
+  "proc-macro-error",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -1227,7 +1227,7 @@ dependencies = [
+  "proc-macro-error",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -1400,9 +1400,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "minimal-lexical"
+-version = "0.1.2"
++version = "0.1.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6595bb28ed34f43c3fe088e48f6cfb2e033cab45f25a5384d5fdf564fbc8c4b2"
++checksum = "0c835948974f68e0bd58636fc6c5b1fbff7b297e3046f11b3b3c18bbac012c6d"
+ 
+ [[package]]
+ name = "miniz_oxide"
+@@ -1697,7 +1697,7 @@ dependencies = [
+  "proc-macro-error-attr",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+  "version_check",
+ ]
+ 
+@@ -1726,9 +1726,9 @@ checksum = "bc881b2c22681370c6a780e47af9840ef841837bc98118431d4e1868bd0c1086"
+ 
+ [[package]]
+ name = "proc-macro2"
+-version = "1.0.28"
++version = "1.0.29"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5c7ed8b8c7b886ea3ed7dde405212185f423ab44682667c8c6dd14aa1d9f6612"
++checksum = "b9f5105d4fdaab20335ca9565e106a5d9b82b6219b5ba735731124ac6711d23d"
+ dependencies = [
+  "unicode-xid 0.2.2",
+ ]
+@@ -1756,6 +1756,7 @@ dependencies = [
+  "prs-lib",
+  "rand",
+  "regex",
++ "shlex 1.1.0",
+  "skim",
+  "text_trees",
+  "thiserror",
+@@ -1818,7 +1819,7 @@ checksum = "b22a693222d716a9587786f37ac3f6b4faedb5b80c23914e7303ff5a1d8016e9"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2085,7 +2086,7 @@ checksum = "d7bc1a1ab1961464eae040d96713baa5a724a8152c1222492465b54322ec508b"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2107,7 +2108,7 @@ checksum = "98d0516900518c29efa217c298fa1f4e6c6ffc85ae29fd7f4ee48f176e1a9ed5"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2122,6 +2123,12 @@ version = "0.1.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "7fdf1b9db47230893d76faad238fd6097fd6d6a9245cd7a4d90dbd639536bbd2"
+ 
++[[package]]
++name = "shlex"
++version = "1.1.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
++
+ [[package]]
+ name = "skim"
+ version = "0.9.4"
+@@ -2143,7 +2150,7 @@ dependencies = [
+  "nix 0.19.1",
+  "rayon",
+  "regex",
+- "shlex",
++ "shlex 0.1.1",
+  "time 0.2.27",
+  "timer",
+  "tuikit",
+@@ -2239,7 +2246,7 @@ dependencies = [
+  "quote 1.0.9",
+  "serde",
+  "serde_derive",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2255,7 +2262,7 @@ dependencies = [
+  "serde_derive",
+  "serde_json",
+  "sha1",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2313,7 +2320,7 @@ dependencies = [
+  "heck",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2329,9 +2336,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "syn"
+-version = "1.0.75"
++version = "1.0.76"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b7f58f7e8eaa0009c5fec437aabf511bd9933e4b2d7407bd05273c01a8906ea7"
++checksum = "c6f107db402c2c2055242dbf4d2af0e69197202e9faacbef9571bbe47f5a1b84"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+@@ -2355,7 +2362,7 @@ checksum = "474aaa926faa1603c40b7885a9eaea29b444d1cb2850cb7c0e37bb1a4182f4fa"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+  "unicode-xid 0.2.2",
+ ]
+ 
+@@ -2451,7 +2458,7 @@ checksum = "fa3884228611f5cd3608e2d409bf7dce832e4eb3135e3f11addbd7e41bd68e71"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2508,7 +2515,7 @@ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+  "standback",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2674,7 +2681,7 @@ dependencies = [
+  "log",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+  "wasm-bindgen-shared",
+ ]
+ 
+@@ -2696,7 +2703,7 @@ checksum = "0195807922713af1e67dc66132c7328206ed9766af3858164fb583eedc25fbad"
+ dependencies = [
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+  "wasm-bindgen-backend",
+  "wasm-bindgen-shared",
+ ]
+@@ -2946,7 +2953,7 @@ dependencies = [
+  "proc-macro-crate 0.1.5",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+ 
+ [[package]]
+@@ -2977,5 +2984,5 @@ dependencies = [
+  "proc-macro-crate 1.0.0",
+  "proc-macro2",
+  "quote 1.0.9",
+- "syn 1.0.75",
++ "syn 1.0.76",
+ ]
+diff --git i/README.md w/README.md
+index bb4148e..01b7291 100644
+--- i/README.md
++++ w/README.md
+@@ -10,6 +10,10 @@
+ 
+ # prs
+ 
++# TODO:
++* `FZF_DEFAULT_OPTIONS`
++* `pass-vera`
++
+ > A secure, fast & convenient password manager CLI using GPG and git to sync.
+ 
+ `prs` is a secure, fast and convenient password manager for the terminal.
+@@ -18,7 +22,7 @@ It features [GPG][gpg] to securely store your secrets and integrates
+ features a built-in password generator, recipient management, history tracking,
+ rollbacks, housekeeping utilities, Tomb support and more.
+ 
+-[![prs usage demo][usage-demo-svg]][usage-demo-asciinema]  
++[![prs usage demo][usage-demo-svg]][usage-demo-asciinema]
+ _No demo visible here? View it on [asciinema][usage-demo-asciinema]._
+ 
+ `prs` is heavily inspired by [`pass`][pass] and uses the same file structure
+@@ -257,7 +261,7 @@ See the operating system/distribution specific instructions below:
+ 
+ #### Linux: Arch AUR packages
+ 
+-[» `prs`](https://aur.archlinux.org/packages/prs/) (compiles from source, latest release)  
++[» `prs`](https://aur.archlinux.org/packages/prs/) (compiles from source, latest release)
+ [» `prs-git`](https://aur.archlinux.org/packages/prs-git/) (compiles from source, latest `master` commit)
+ 
+ ```bash
+@@ -419,7 +423,7 @@ The protection against leaking secrets has its boundaries, notably:
+ - `prs copy` copies secret data to your clipboard, and clears it after 20
+   seconds
+ 
+-[![Security](./res/xkcd_538.png)][xkcd538]  
++[![Security](./res/xkcd_538.png)][xkcd538]
+ _Reference: [XKCD 538][xkcd538]_
+ 
+ Note: `prs` does not provide any warranty in any way, shape or form for damage
+diff --git i/cli/Cargo.toml w/cli/Cargo.toml
+index ed512d1..398a0c7 100644
+--- i/cli/Cargo.toml
++++ w/cli/Cargo.toml
+@@ -87,6 +87,7 @@ base64 = { version = "0.13", optional = true }
+ # See ./src/vendor/shellexpand.rs
+ # When removing, keep dirs-next, but only for Windows
+ dirs-next = "2.0"
++shlex = "1.1.0"
+ # shellexpand = { version = "*", git = "https://github.com/timvisee/shellexpand.git", branch = "windows-paths" }
+ 
+ # Clipboard support for non-X11/Wayland
+diff --git i/cli/src/action/add.rs w/cli/src/action/add.rs
+index ffdd7a5..12388e2 100644
+--- i/cli/src/action/add.rs
++++ w/cli/src/action/add.rs
+@@ -82,6 +82,7 @@ impl<'a> Add<'a> {
+         // Encrypt and write changed plaintext
+         // TODO: select proper recipients (use from current file?)
+         let recipients = store.recipients()?;
++
+         crate::crypto::context(&matcher_main)?
+             .encrypt_file(&recipients, plaintext, &path)
+             .map_err(Err::Write)?;
+diff --git i/cli/src/action/recipients/add.rs w/cli/src/action/recipients/add.rs
+index 54da4af..ce9e38f 100644
+--- i/cli/src/action/recipients/add.rs
++++ w/cli/src/action/recipients/add.rs
+@@ -62,6 +62,7 @@ impl<'a> Add<'a> {
+         );
+         tmp.remove_all(recipients.keys());
+         let key = select::select_key(tmp.keys(), None).ok_or(Err::NoneSelected)?;
++
+         recipients.add(key.clone());
+         recipients.save(&store)?;
+ 
+diff --git i/cli/src/cmd/handler.rs w/cli/src/cmd/handler.rs
+index 0725beb..e1466b4 100644
+--- i/cli/src/cmd/handler.rs
++++ w/cli/src/cmd/handler.rs
+@@ -1,7 +1,9 @@
+ use clap::{App, AppSettings, Arg, ArgMatches};
+ 
+-use super::matcher::{self, Matcher};
+-use super::subcmd;
++use super::{
++    matcher::{self, Matcher},
++    subcmd,
++};
+ 
+ /// CLI argument handler.
+ pub struct Handler {
+@@ -12,12 +14,18 @@ pub struct Handler {
+ impl<'a> Handler {
+     /// Build the application CLI definition.
+     pub fn build() -> App<'a> {
++        let clap_app_color = if std::env::var_os("NO_COLOR").is_none() {
++            AppSettings::ColoredHelp
++        } else {
++            AppSettings::ColorNever
++        };
+         // Build the CLI application definition
+         let app = App::new(crate_name!())
+             .version(crate_version!())
+             .author(crate_authors!())
+             .about(crate_description!())
+             .global_setting(AppSettings::GlobalVersion)
++            .global_setting(clap_app_color)
+             .global_setting(AppSettings::VersionlessSubcommands)
+             .arg(
+                 Arg::new("force")
+diff --git i/cli/src/util/select_fzf_bin.rs w/cli/src/util/select_fzf_bin.rs
+index 2e492ab..36874ac 100644
+--- i/cli/src/util/select_fzf_bin.rs
++++ w/cli/src/util/select_fzf_bin.rs
+@@ -1,6 +1,9 @@
+-use std::collections::HashMap;
+-use std::io::Write;
+-use std::process::{Command, Stdio};
++use std::{
++    collections::HashMap,
++    env,
++    io::Write,
++    process::{Command, Stdio},
++};
+ 
+ use prs_lib::{Key, Secret};
+ 
+@@ -43,14 +46,19 @@ fn select_item<'a, S: AsRef<str>>(prompt: &'a str, items: &'a [S]) -> Option<Str
+     items.sort_unstable();
+ 
+     // Spawn fzf
+-    let mut child = Command::new(BIN_NAME)
++    let mut command = Command::new(BIN_NAME);
++    command
+         .arg("--prompt")
+         .arg(format!("{}: ", prompt))
+         .stdin(Stdio::piped())
+         .stdout(Stdio::piped())
+-        .stderr(Stdio::inherit())
+-        .spawn()
+-        .expect("failed to spawn fzf");
++        .stderr(Stdio::inherit());
++
++    if let Some(fzf_opts) = env::var_os("FZF_DEFAULT_OPTS") {
++        command.env("FZF_DEFAULT_OPTS", fzf_opts);
++    }
++
++    let mut child = command.spawn().expect("failed to spawn fzf");
+ 
+     // Communicate list of items to fzf
+     let data = items.join("\n");
+diff --git i/cli/src/util/select_skim.rs w/cli/src/util/select_skim.rs
+index 978f46e..49c2a33 100644
+--- i/cli/src/util/select_skim.rs
++++ w/cli/src/util/select_skim.rs
+@@ -1,6 +1,4 @@
+-use std::borrow::Cow;
+-use std::path::PathBuf;
+-use std::sync::Arc;
++use std::{borrow::Cow, path::PathBuf, sync::Arc};
+ 
+ use prs_lib::{Key, Secret};
+ use skim::{
+@@ -9,12 +7,30 @@ use skim::{
+ };
+ 
+ /// Show an interactive selection view for the given list of `items`.
+-/// The selected item is returned.  If no item is selected, `None` is returned instead.
++/// The selected item is returned.  If no item is selected, `None` is returned
++/// instead.
+ fn skim_select(items: SkimItemReceiver, prompt: &str) -> Option<String> {
++    let mut skim_args = Vec::new();
++
++    skim_args.extend(
++        std::env::var("SKIM_DEFAULT_OPTIONS")
++            .ok()
++            .and_then(|val| shlex::split(&val))
++            .unwrap_or_default(),
++    );
++    // For the  --color option, try and not pickup --preview, which can contain
++    // '--color' (e.g., 'bat --color=always {}'). Could also check next item in
++    // vector if item only equals '--color'.
+     let prompt = format!("{}: ", prompt);
+     let options = SkimOptionsBuilder::default()
+         .prompt(Some(&prompt))
+         .height(Some("50%"))
++        .color(
++            skim_args
++                .iter()
++                .find(|arg| arg.contains("--color") && !arg.contains("{}"))
++                .map(|p| p.as_str()),
++        )
+         .multi(false)
+         .build()
+         .unwrap();
+diff --git i/cli/src/util/select_skim_bin.rs w/cli/src/util/select_skim_bin.rs
+index 3eec301..638802f 100644
+--- i/cli/src/util/select_skim_bin.rs
++++ w/cli/src/util/select_skim_bin.rs
+@@ -1,6 +1,7 @@
+ use std::collections::HashMap;
+ use std::io::Write;
+ use std::process::{Command, Stdio};
++use std::env;
+ 
+ use prs_lib::{Key, Secret};
+ 
+@@ -43,14 +44,21 @@ fn select_item<'a, S: AsRef<str>>(prompt: &'a str, items: &'a [S]) -> Option<Str
+     items.sort_unstable();
+ 
+     // Spawn skim
+-    let mut child = Command::new(BIN_NAME)
++    let mut command = Command::new(BIN_NAME);
++    command
+         .arg("--prompt")
+         .arg(format!("{}: ", prompt))
+         .arg("--height")
+         .arg("50%")
+         .stdin(Stdio::piped())
+         .stdout(Stdio::piped())
+-        .stderr(Stdio::inherit())
++        .stderr(Stdio::inherit());
++
++    if let Some(skim_opts) = env::var_os("SKIM_DEFAULT_OPTIONS") {
++        command.env("SKIM_DEFAULT_OPTIONS", skim_opts);
++    }
++
++    let mut child = command
+         .spawn()
+         .expect("failed to spawn skim");
+ 

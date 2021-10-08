@@ -1,0 +1,204 @@
+############################################################################
+#    Author: Lucas Burns                                                   #
+#     Email: burnsac@me.com                                                #
+#   Created: 2021-06-24 12:57                                              #
+############################################################################
+# Desc: vim bindkey
+# Modified from aloxaf/doftiles and marlonrichert/zsh-edit
+
+# key_info=(
+#   'Control'         '\C-'
+#   'ControlLeft'     '\e[1;5D \e[5D \e\e[D \eOd'
+#   'ControlRight'    '\e[1;5C \e[5C \e\e[C \eOc'
+#   'ControlPageUp'   '\e[5;5~'
+#   'ControlPageDown' '\e[6;5~'
+#   'Escape'       '\e'
+#   'Meta'         '\M-'
+#   'Backspace'    "^?"
+#   'Delete'       "^[[3~"
+# )
+# up ^[[A down ^[[B
+
+# TODO: add mode in array
+
+emulate -L zsh
+zmodload zsh/complist
+zmodload zsh/parameter
+zmodload -Fa zsh/zutil b:zparseopts
+zmodload -Fa zsh/terminfo p:terminfo
+zmodload -Fa zsh/zleparameter p:widgets
+
+setopt extendedglob nolistbeep noshortloops warncreateglobal
+
+local -a opts remove array mode
+
+zparseopts -D -A opts - U u c b r=remove A:=array M:=mode
+
+(( ${+opts[-b]} )) && typeset -gi DEBUG=1
+
+function escape-single-key() {
+  local -A name=(
+      up       kcuu1
+      down     kcud1
+      left     kcub1
+      right    kcuf1
+      home     khome
+      end      kend
+      delete   kdch1
+      insert   kich1
+      backtab  kcbt
+      pageup   kpp
+      pagedown knp
+      f1       kf1
+      f2       kf2
+      f3       kf3
+      f4       kf4
+      f5       kf5
+      f6       kf6
+      f7       kf7
+      f8       kf8
+      f9       kf9
+      f10      kf10
+      f11      kf11
+      f12      kf12
+    )
+
+  if (( $#1 == 1 )) {
+    ret=$1
+  } elif [[ ${(L)1} == "backspace" ]] {
+    ret="^?"
+  } elif [[ ${(L)1} == "space" ]] {
+    ret=" "
+  } elif (( $+name[${(L)1}] )) {
+    ret="$terminfo[$name[${(L)1}]]"
+  } elif [[ $1 != *[[:space:]]* ]] {
+    # allow 'jk' or 'c.' as a binding
+    ret=$1
+  } else {
+    print -Pu2 "%F{1}%BERROR: $1%b%F"
+  }
+}
+
+function escape-mod-key() {
+  local -a binding=( ${(ws:-:)@} )
+  local -A modifier spkeys
+
+  # M-x = lowercase;    M-S-x = uppercase
+  if [[ (( $#binding > 2)) && "${binding[@]}" = *M*~^*S* ]]; then
+    local mod=${(UM)binding:#(#i)M} key=${(U)binding[-1]}
+  else
+    local mod=${(U)binding[1]}      key=${(L)binding[2]}
+  fi
+
+  [[ $key == space ]] && key=" "
+
+  if [[ $key == "backspace" ]] {
+    modifier=("C" "^h" "M" "^[^?")
+    ret="${modifier[$mod]}"
+  } elif (( $#key == 1 )) {
+    modifier=(C "^" M "^[" ESC '\e')
+    ret="${modifier[$mod]}${key}"
+  } else {
+    spkeys=(up A   down B   right C   left D   end F   home H)
+    modifier=("C" "^[[1;5" "M" "^[[1;3")
+    ret="${modifier[$mod]}${spkeys[$key]}"
+  }
+}
+
+function ___unused() {
+  local -a args=( $@ $mode )
+  local -a control=( {$'\0'..$'\C-B'} {$'\C-D'..$'\C-_'} $'\C-?' )
+  local -a printable=( {' '..'~'} )
+  local -a termkeys=( kbs kich1 kdch1 khome kend kpp knp kcuu1 kcub1 kcud1 kcuf1 )
+  termkeys=( ${(vn)terminfo[(I)(${(~j:|:)termkeys})]} )
+  local -a fkeys=( ${(vn)terminfo[(I)kf<1-20>]} )
+  local -a val=()
+  local key
+  for key in $printable $control $'\e'$^printable $'\e'$^control \
+    $termkeys $'\e'$^termkeys $fkeys $'\e'$^fkeys; do
+      [[ $(builtin bindkey $args[@] - $key)$(builtin bindkey $args[@] -p - $key)
+            == *'undefined-key' ]] &&
+        val+=( ${${${${${(q+)key}//'\C-'/^}//'\\'/\\}#(|\$)[\']}%[\']} )
+  done
+  (( $#val )) &&
+    print -cr - ${(q-)val}
+}
+
+function ___duplicates() {
+  local -a bindings dup_bindings=() all_bindings=( ${(f)"$(bindkey ${@:-$mode})"} )
+  local w
+  for w in "${(@ko)widgets}"; do
+    bindings=( ${(M)all_bindings:#* $w}  )
+    (( $#bindings > 1 )) &&
+        dup_bindings+=( $w "\t${(j:\t:)bindings[@]% $w}" )
+  done
+  print -aC2 $dup_bindings[@]
+}
+
+function ___bind() {
+  local escaped ret i MATCH
+  local -a sequence=(${(s: :)1})
+  # local -a modes=( ${(f)"$(builtin bindkey -l)"} )
+
+  if [[ ${(M)sequence:#mode*} ]]; then
+    local qmode=${${(ws:=:)${(M)sequence:#mode*}}[-1]}
+    if [[ $qmode = ${(~j:|:)keymaps} ]]; then
+      mode=( -M $qmode )
+    elif [[ $qmode == "str" ]]; then
+      mode=( -s )
+    elif [[ $qmode = (#m)[@+-](#c1,2) ]]; then
+      # mode=( ${${(s::)qmode}[1]} )
+      # mode=( ${(@j::)${(M)${(s::)qmode}:#(-|@|+)}} )
+      mode=( $MATCH )
+      (( DEBUG )) && print -P -- "bind edit: %F{2}$mode%f"
+    else
+      print -Pu2 "%F{1}%BERROR:%f%F{7} $1%b%f"
+    fi
+    sequence=( ${sequence:#mode*} )
+  else
+    mode=()
+  fi
+
+  for i ($sequence) {
+    # allow mode=-@
+    if [[ $i == [^-]*-* ]] && (( $#i > 2 )) {
+      escape-mod-key $i
+    } else {
+      escape-single-key $i
+    }
+    escaped+=$ret
+  }
+
+  if (( ${+mode[(r)-s]} )); then
+    # allow: bindkey -s '^o' 'lc\n'
+    builtin bindkey $remove $mode $escaped "${2}\n"
+    (( DEBUG )) && print -P -- "%F{2}Mode:string%f -- bindkey $remove $mode $escaped "${2}$'\n'"
+"
+  elif (( ${(@s::)+mode[(r)(+|@|-)(#c1,2)]} )); then
+    (( DEBUG )) && print -P -- "%F{2}Mode:@-+:%f -- bindkey "$escaped" ".${mode[1]}${2}""
+    zle -N ".${mode[1]}${2}" _ex_cmd
+    builtin bindkey "$escaped" ".${mode[1]}${2}"
+  else
+    builtin bindkey $remove $mode $escaped $2
+    (( DEBUG )) && print -P -- "%F{2}Mode:norm/nonef -- bindkey $remove $mode $escaped $2
+"
+  fi
+}
+
+if [[ $array ]]; then
+  local k v
+  for k v in ${(Pkv)${array[2]}}; do
+    ___bind $k $v
+  done
+elif (( ${+opts[-u]} )); then
+  ___unused "$@"
+elif (( ${+opts[-U]} )); then
+  ___duplicates "$@"
+elif (( ${+opts[-c]} )); then
+  zle -N ".$@[-1]" _ex_cmd
+  builtin bindkey "$@[1,-2]" ".$@[-1]"
+else
+  ___bind $1 $2
+fi
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

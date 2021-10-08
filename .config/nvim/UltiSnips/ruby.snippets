@@ -1,0 +1,47 @@
+snippet sdir "script dir" b
+sdir = __dir__
+endsnippet
+
+snippet spath "script path" b
+spath = Pathname.new(__dir__)
+endsnippet
+
+snippet var "#{variable}"
+#{${VISUAL}}$0
+endsnippet
+
+snippet Var "#{variable} with quote"
+"#{${VISUAL}}"$0
+endsnippet
+
+snippet backtrace "log backtrace..." b
+$logger.error "#{e.class} (#{e.message}):" + e.backtrace.reduce(''){ |trace, line| trace + "\n\t[Backtrace] -- #{line}" }
+endsnippet
+
+snippet rubychina "source 'https://gems.ruby-china.org/'" b
+source 'https://gems.ruby-china.org/'
+
+endsnippet
+
+# m - strip whitespace from right
+snippet Enum "Include Enumerable" b,m
+include Enumerable
+
+def each(&block)
+	$1
+end
+endsnippet
+
+snippet with_filter "Description" b
+def with_filter(command)
+	io = IO.popen(command, 'r+')
+	begin
+		stdout, $stdout = $stdout, io
+		yield rescue nil
+	ensure
+		$stdout = stdout
+	end
+	io.close_write
+	io.readlines.map(&:chomp)
+end
+endsnippet

@@ -1,0 +1,12 @@
+# Desc: fzf ssh
+
+local -a hosts
+local choice
+
+hosts=( ${=${${${${(@M)${(f)"$(<$HOME/.ssh/config)"}:#Host *}#Host }:#*\**}:#*\?*}} )
+
+choice=$(builtin print -rl "$hosts[@]" | fzf +m)
+
+[[ -n $choice ]] && command ssh $choice
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

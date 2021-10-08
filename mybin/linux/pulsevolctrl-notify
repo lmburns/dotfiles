@@ -1,0 +1,16 @@
+#!/bin/sh
+# Changes the volume level of an audio track
+# Signals an update in polybar for the volume module
+
+volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)
+
+if [ "$1" = "output-vol" ]; then
+  pactl set-sink-mute "$2" false
+  pactl set-sink-volume "$2" "$3"
+  notify-send "Volume" "changed: $volume"
+else
+  pactl set-sink-mute "$2" toggle
+  notify-send "Volume" "muted: $volume"
+fi
+
+# polybar-msg hook volume 1

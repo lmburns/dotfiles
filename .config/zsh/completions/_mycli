@@ -1,0 +1,52 @@
+#compdef mycli
+
+# zsh completions for 'mycli'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--host}'[host address of the database.]'
+  {-P,--port}'[port number to use for connection. Honors]'
+  {-u,--user}'[user name to connect to the database.]'
+  {-S,--socket}'[the socket file to use for connection.]'
+  {-p,--password}'[password to connect to the database.]'
+  '--pass[password to connect to the database.]'
+  '--ssh-user[user name to connect to ssh server.]'
+  '--ssh-host[host name to connect to ssh server.]'
+  '--ssh-port[port to connect to ssh server.]'
+  '--ssh-password[password to connect to ssh server.]'
+  '--ssh-key-filename[private key filename (identify file) for the]'
+  '--ssh-config-path[path to ssh configuration.]'
+  '--ssh-config-host[host to connect to ssh server reading from ssh]'
+  '--ssl-ca[CA file in PEM format.]'
+  '--ssl-capath[CA directory.]'
+  '--ssl-cert[X509 cert in PEM format.]'
+  '--ssl-key[X509 key in PEM format.]'
+  '--ssl-cipher[SSL cipher to use.]'
+  '--ssl-verify-server-cert[verify servers "Common Name" in its cert]'
+  {-V,--version}'[output myclis version.]'
+  {-v,--verbose}'[verbose output.]'
+  {-D,--database}'[database to use.]'
+  {-d,--dsn}'[use DSN configured into the \[alias_dsn\]]'
+  '--list-dsn[list of DSN configured into the \[alias_dsn\]]'
+  '--list-ssh-config[list ssh configurations in the ssh config]'
+  {-R,--prompt}'[prompt format (Default: "\t \u@\h:\d> ").]'
+  {-l,--logfile}'[log every query and its results to a file.]'
+  '--defaults-group-suffix[read MySQL config groups with the specified]'
+  '--defaults-file[only read MySQL options from the given file.]'
+  '--myclirc[location of myclirc file.]'
+  '--auto-vertical-output[automatically switch to vertical output mode]'
+  {-t,--table}'[display batch output in table format.]'
+  '--csv[display batch output in CSV format.]'
+  {--warn,--no-warn}'[warn before running a destructive query.]'
+  '--local-infile[enable/disable LOAD DATA LOCAL INFILE.]'
+  {-g,--login-path}'[read this path from the login file.]'
+  {-e,--execute}'[execute command and quit.]'
+  '--init-command[SQL statement to execute after connecting.]'
+  '--charset[character set for MySQL session.]'
+  '--password-file[file or FIFO path containing the password to]'
+  '--help[show this message and exit.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

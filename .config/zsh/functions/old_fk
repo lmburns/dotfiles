@@ -1,0 +1,102 @@
+# Desc: fzf rualdi and dirstack combined
+
+setopt extendedglob noshortloops rcexpandparam
+zmodload -Fa zsh/parameter p:commands p:dirstack
+
+local conf
+local -a aliases
+
+# DARWIN_CONF_HOME is set to $HOME/Library/Application Support
+conf="${${(b)DARWIN_CONF_HOME}:-$XDG_CONFIG_HOME}/rualdi/rualdi.toml"
+aliases=( ${${(f)"$(dasel select -f "$conf" '.aliases')"}//\"} )
+
+# Selects only aliases, no paths
+# aliases=( ${(f)"$(dasel select -f "$conf" -m '.aliases.-')"} )
+
+# Modified from rualdi
+function __fk_cd() {
+  local cpwd colp
+  # pushd to prevent cd -1 from printing the dir as well
+  builtin pushd "$@" || return "$?"
+  cpwd=$(builtin pwd -L)
+  # (D) will replace expanded $HOME with ~
+  cpwd=${(D)cpwd}
+  colp=${(l:(COLUMNS-$#cpwd-2)/2::=:):-}
+  builtin print -Pr "%F{11}$colp%f %F{14}%B$cpwd%f%b %F{11}$colp%f"
+}
+
+function __fk_fzf() {
+  local list
+  ( (( $+commands[exa] )) || whence -va exa &>/dev/null ) &&
+    list='exa -lbhg --git' || list='ls -l'
+
+  # --height '40%' \
+  fzf --ansi +m \
+      --height 45% \
+      --preview="echo {} |sed 's#.*→  ##'| xargs $list --color=always" \
+      --preview-window="right:50%" \
+      "$@"
+}
+
+# Modified from wfxr/formarks
+function __fk_colorize() {
+  local field='\(\S\+\s*\)'
+  local esc=$(builtin print '\033')
+  local N="${esc}[0m"
+  local R="${esc}[31m"
+  local G="${esc}[32m"
+  local Y="${esc}[38;5;14m"
+  local B="${esc}[34m"
+  local pattern="s#^${field}${field}${field}#$Y\1$R\2$N$B\3$N#"
+  (( $+commands[gsed] )) && gsed "$pattern" || sed "$pattern"
+}
+
+function __fk_list() {
+  # TODO: Add support for column -t file names with spaces
+  aliases=( ${aliases// = / → } )
+  builtin print -rl -- "$aliases[@]" \
+    | __fk_colorize \
+    | column -t
+}
+
+function __fk_rad() {
+  if [[ $# -eq 1 && "$1" = '-' ]]; then
+    if [[ -n "$OLDPWD" ]]; then
+      __fk_cd "$OLDPWD"
+    else
+      builtin print -Pr "%F{3}rualdi: \$OLDPWD is not set"
+      return 1
+    fi
+  elif [[ $# -eq 1 && "$1" = -<-> ]]; then
+    [[ ! -o pushdminus ]] && __fk_cd "${1/-/+}" || __fk_cd "${1}"
+  elif [[ $# -le 2 && "$1" = (#i)(-d|--dir) ]]; then
+    # Basic dirstack printing [[[
+    local dir; shift
+    dir=$(builtin print -rl -- "$dirstack[@]" | __fk_fzf --query="${argv:-}")
+    [[ -d "$dir" ]] && __fk_cd "$dir"
+    # ]]]
+  else
+    local sel
+    # Wrapper for regular rad [[[
+    [[ -n "$argv" ]] && {
+      local -a alias_dirs
+      alias_dirs=( ${aliases[@]//(#m)*/${(@)${(@As: = :)${MATCH}}[1]}} )
+      # Note: :* checks whether argv is contained in alias_dirs
+      [[ -n "${argv:*alias_dirs}" ]] && {
+        __fk_cd "$(rualdi resolve -- "$argv")" && return
+      }
+    }
+    # ]]]
+
+    sel=${${(@s:→:)$(__fk_list \
+      | __fk_colorize \
+      | __fk_fzf --query="${argv:-}")}[1]}
+
+    [[ -n "$sel" ]] &&
+      __fk_cd "$(rualdi resolve -- "$sel")"
+  fi
+}
+
+__fk_rad "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

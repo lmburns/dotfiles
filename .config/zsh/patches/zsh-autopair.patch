@@ -1,0 +1,13 @@
+diff --git a/autopair.zsh b/autopair.zsh
+index 3295ada..eb431a9 100644
+--- a/autopair.zsh
++++ b/autopair.zsh
+@@ -211,8 +211,6 @@ autopair-init() {
+     done
+ 
+     bindkey "^?" autopair-delete
+-    bindkey "^h" autopair-delete
+     bindkey -M isearch "^?" backward-delete-char
+-    bindkey -M isearch "^h" backward-delete-char
+ }
+ [[ -n $AUTOPAIR_INHIBIT_INIT ]] || autopair-init

@@ -1,0 +1,14 @@
+# Desc: cd realpath
+
+function cdreal() {
+  local dir=${~1:A}
+  if [[ -d "${(b)~dir}" ]] {
+    builtin cd ${(b)~dir}
+  } else {
+    builtin cd ${(b)~dir:h}
+  }
+}
+
+cdreal "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

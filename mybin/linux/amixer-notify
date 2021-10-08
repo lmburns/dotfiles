@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Changes the volume level of an audio track
+# Signals an update in polybar for the volume module
+
+volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)
+
+case "${1}" in
+  toggle)
+    amixer set Master toggle
+    notify-send "Volume" "muted: $volume"
+    ;;
+  set)
+    amixer set Master "${2}"
+    notify-send "Volume" "changed: $volume"
+    ;;
+esac
+
+# polybar-msg hook volume 1

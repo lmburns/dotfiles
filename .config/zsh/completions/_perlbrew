@@ -1,0 +1,13 @@
+#compdef perlbrew
+
+# zsh completions for 'perlbrew'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-q,--quiet}'[be quiet on informative output message.]'
+  {-v,--verbose}'[tell me more about it.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

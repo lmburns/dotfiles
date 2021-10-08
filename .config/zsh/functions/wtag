@@ -1,0 +1,40 @@
+# Desc: use wutag to either edit a file or cd to dir
+# @depends: wutag, fzf, hck
+
+local sel cddir version
+
+setopt extendedglob
+
+version=${${(@s:.:)${(@s: :)$(wutag --version)[2]}}[2]}
+
+(( version != 4 )) && {
+  builtin print -Pr "%F{2}%Bwutag%f%b must be version %F{4}0.4.0%f or greater"
+  return 1
+}
+
+zmodload -Fa zsh/zutil b:zparseopts
+zparseopts -D -A opts -- c -cd
+
+sel="$(wutag --color=always -g list files -t \
+  | hck -d': ' -D $'\t' \
+  | column -t \
+  | fzf +m --delimiter / \
+           --with-nth 4.. \
+           --bind='F:execute(lf $(echo {} | hck -f1))'
+)"
+
+[[ -n "$sel" ]] && {
+  if (( $+opts[-c] + $+opts[--cd] )) {
+      cddir="${${(@s: :)sel}[1]}"
+      if [[ -d "$cddir" ]] {
+          builtin cd "$cddir"
+      } else {
+          builtin cd "$cddir:h"
+      }
+  } else {
+      $EDITOR "${${(@s: :)sel}[1]}"
+  }
+}
+
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

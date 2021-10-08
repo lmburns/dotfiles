@@ -1,0 +1,6 @@
+# vim:ft=zsh:
+
+# Desc: change directories with fzf
+
+local dir
+dir=$(fd ${1:-.} --prune -td | fzf +m) && cd "$dir"

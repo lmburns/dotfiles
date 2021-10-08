@@ -1,0 +1,16 @@
+# Desc: search directory for pdf and open in zathura
+
+open=zathura
+
+fd --no-ignore-vcs -e "pdf" \
+| fast-p \
+| fzf --read0 --reverse -e -d $'\t'  \
+    --preview-window nohidden,down:80% --preview '
+        v=$(echo {q} | gtr " " "|");
+        echo -e {1}"\n"{2} | ggrep -E "^|$v" -i --color=always;
+    ' \
+| gcut -z -f 1 -d $'\t' \
+| gtr -d '\n' \
+| gxargs -r --null $open > /dev/null 2> /dev/null
+
+# vim:ft=zsh:

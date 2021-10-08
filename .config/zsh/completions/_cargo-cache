@@ -1,0 +1,25 @@
+#compdef cargo-cache
+
+# zsh completions for 'cargo-cache'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--autoclean}'[removes crate source checkouts and git repo checkouts]'
+  {-e,--autoclean-expensive}'[as --autoclean, but also recompresses git repositories]'
+  {-n,--dry-run}'[dont remove anything, just pretend]'
+  {-f,--fsck}'[fsck git repositories]'
+  {-g,--gc}'[recompress git repositories (may take some time)]'
+  {-h,--help}'[prints help information]'
+  {-i,--info}'[print information cache directories, what they are for and what]'
+  {-l,--list-dirs}'[list all found directory paths]'
+  {-V,--version}'[prints version information]'
+  {-k,--keep-duplicate-crates}'[remove all but N versions of crate in the source archives directory]'
+  {-r,--remove-dir}'[1,dir2,dir3>]'
+  {-o,--remove-if-older-than}'[removes items older than specified date: YYYY.MM.DD or HH:MM:SS]'
+  {-y,--remove-if-younger-than}'[removes items younger than the specified date: YYYY.MM.DD or HH:MM:SS]'
+  {-t,--top-cache-items}'[list the top N items taking most space in the cache]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

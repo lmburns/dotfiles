@@ -1,0 +1,9 @@
+#!/bin/sh
+
+case ":${PATH}" in
+  *:"$HOME/.local/share/cargo/bin/":*)
+    ;;
+  *)
+    export PATH="$HOME/.local/share/cargo/bin:$PATH"
+    ;;
+esac

@@ -1,0 +1,23 @@
+# Desc: open script in editor (this one does functions)
+# 'wim' cannot do functions
+
+setopt extendedglob
+zmodload -Fa zsh/parameter p:commands p:functions
+
+# ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
+
+Z="${ZDOTDIR}/functions/${argv}"
+fullp=$commands[$argv]
+
+if { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
+  $EDITOR "$fullp"
+elif [[ -f "$Z" ]]; then
+  $EDITOR "$Z"
+# elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
+elif [[ -n $functions[$argv] ]]; then
+  "$EDITOR" ${$(whence -va "$argv")[-1]}
+else
+  echo "$argv ($(which $argv)) is not a text file"
+fi
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

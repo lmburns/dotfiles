@@ -1,0 +1,42 @@
+# Desc: print keyboard shortcuts to application - iteractive option
+
+local file
+
+# setting gkeys dir as a var = one option works and the other doesn't & vice versa
+
+batf() {
+  bat --wrap=auto --language=bash --file-name="${1}" "${XDG_DATA_HOME}/gkeys/${1}"
+}
+
+gkey() {
+  zparseopts -D -E -a opt 'f' '-fzf' 't' '-twf' 's' '-search' 'e' '-edit'
+  if [[ "${(M)opt[@]:#-(f|-fzf)}" == -(f|-fzf) ]]; then
+    if [[ "${(M)opt[@]:#-(s|-search)}" == -(s|-search) ]]; then
+      rg "${2:-^}" "${XDG_DATA_HOME}/gkeys/${1}" | fzf
+    else
+      file=$(
+        fzf --ansi -m \
+        --delimiter / \
+        --with-nth -1 \
+        --prompt="Keys> " < <(fd . "${XDG_DATA_HOME}/gkeys" )
+        )
+      [[ -n "$file" ]] && batf "${file:t}"
+    fi
+  elif [[ "${(M)opt[@]:#-(t|-twf)}" == -(t|-twf) ]]; then
+    file=$(
+      twf \
+        --height=0.8 \
+        --previewCmd='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200' \
+        --dir="${XDG_DATA_HOME}/gkeys"
+    )
+    [[ -n "$file" ]] && batf "${file:t}"
+  elif [[ "${(M)opt[@]:#-(e|-edit)}" == -(e|-edit) ]]; then
+    $EDITOR "${XDG_DATA_HOME}/gkeys/${1}"
+  else
+    batf "${1}"
+  fi
+}
+
+gkey "$@"
+
+# vim:ft=zsh:et:sts=2:sw=0

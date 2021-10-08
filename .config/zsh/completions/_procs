@@ -1,0 +1,33 @@
+#compdef procs
+
+# zsh completions for 'procs'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--and}'[AND  logic for multi-keyword]'
+  {-o,--or}'[OR   logic for multi-keyword]'
+  {-d,--nand}'[NAND logic for multi-keyword]'
+  {-r,--nor}'[NOR  logic for multi-keyword]'
+  {-l,--list}'[show list of kind]'
+  '--thread[show thread]'
+  {-t,--tree}'[tree view]'
+  {-w,--watch}'[watch mode with default interval (1s)]'
+  '--config[generate configuration sample file]'
+  '--no-header[suppress header]'
+  {-h,--help}'[prints help information]'
+  {-V,--version}'[prints version information]'
+  {-W,--watch-interval}'[watch mode with custom interval]'
+  {-i,--insert}'[...]'
+  '--only[specified column only]'
+  '--sorta[sort column by ascending]'
+  '--sortd[sort column by descending]'
+  {-c,--color}'[color mode \[possible values: auto, always, disable\]]'
+  '--theme[theme mode \[possible values: auto, dark, light\]]'
+  {-p,--pager}'[pager mode \[possible values: auto, always, disable\]]'
+  '--interval[interval to calculate throughput \[default: 100\]]'
+  '--completion[generate shell completion file \[possible values: zsh, bash, fish, powershell, elvish\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

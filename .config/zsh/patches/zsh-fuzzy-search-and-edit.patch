@@ -1,0 +1,29 @@
+diff --git a/plugin.zsh b/plugin.zsh
+index 329323b..a4ad588 100644
+--- a/plugin.zsh
++++ b/plugin.zsh
+@@ -1,21 +1,11 @@
+-if [[ "$OSTYPE" == "freebsd"* ]]; then
+-    grep_bin='/usr/local/bin/grep'
+-    if [[ ! -f $grep_bin ]]; then
+-        echo "Try install GNU grep: pkg install gnugrep"
+-        return
+-    fi
+-    pattern='s/^([^:]+:[^:]+):\s*(.*)/\1:  \2/'
+-else
+-    grep_bin='grep'
+-    pattern='s/^([^:]+:[^:]+):\s*(.*)/\x1b[35m\1\x1b[0m:  \2/'
+-fi
++grep_bin='rg'
++pattern='s/^([^:]+:[^:]+):\s*(.*)/\x1b[35m\1\x1b[0m:  \2/'
+ 
+ function :fuzzy-search-and-edit:get-files() {
+     local directory="$1"
+     local fifo="$2"
+     cd "$directory"
+-    command $grep_bin -r -nEHI '[[:alnum:]]' "." --exclude-dir=".git" \
+-        | cut -b3- \
++    command $grep_bin --line-number --no-heading --color=auto --smart-case '[[:alnum:]]' --ignore=".git" \
+         | command sed -ru $pattern > "$fifo"
+ }
+ 

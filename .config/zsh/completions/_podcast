@@ -1,0 +1,257 @@
+#compdef podcast
+
+autoload -U is-at-least
+
+_podcast() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-q[Output less stuff]' \
+'--quiet[Output less stuff]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_podcast_commands" \
+"*::: :->podcast" \
+&& ret=0
+    case $state in
+    (podcast)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:podcast-command-$line[1]:"
+        case $line[1] in
+            (download)
+_arguments "${_arguments_options[@]}" \
+'-l+[Downloads this many of the latest episodes]' \
+'--latest=[Downloads this many of the latest episodes]' \
+'-e[Download using episode name instead of index number]' \
+'--episode[Download using episode name instead of index number]' \
+'-a[Download all matching episodes]' \
+'--all[Download all matching episodes]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':PODCAST -- Regex for subscribed podcast:_files' \
+'::EPISODE -- Episode index:_files' \
+&& ret=0
+;;
+(ls)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::PODCAST -- Regex for subscribed podcast:_files' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::PODCAST -- Regex for subscribed podcast:_files' \
+&& ret=0
+;;
+(play)
+_arguments "${_arguments_options[@]}" \
+'-e[Play using episode name instead of index number]' \
+'--episode[Play using episode name instead of index number]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':PODCAST -- Regex for subscribed podcast:_files' \
+'::EPISODE -- Episode index:_files' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" \
+'-d[print debug information verbosely]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':PODCAST -- Regex for subscribed podcast:_files' \
+&& ret=0
+;;
+(subscribe)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':URL -- URL to RSS feed:_files' \
+&& ret=0
+;;
+(sub)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':URL -- URL to RSS feed:_files' \
+&& ret=0
+;;
+(refresh)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(update)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(rm)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::PODCAST -- Podcast to delete:_files' \
+&& ret=0
+;;
+(completion)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::SHELL -- Shell to print completion for:_files' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_podcast_commands] )) ||
+_podcast_commands() {
+    local commands; commands=(
+        "download:download episodes of podcast" \
+"ls:list episodes of podcast" \
+"list:list episodes of podcast" \
+"play:play an episode" \
+"search:searches for podcasts" \
+"subscribe:subscribes to a podcast RSS feed" \
+"sub:subscribes to a podcast RSS feed" \
+"refresh:refresh subscribed podcasts" \
+"update:check for updates" \
+"rm:unsubscribe from a podcast" \
+"completion:install shell completion" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'podcast commands' commands "$@"
+}
+(( $+functions[_podcast__completion_commands] )) ||
+_podcast__completion_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast completion commands' commands "$@"
+}
+(( $+functions[_podcast__download_commands] )) ||
+_podcast__download_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast download commands' commands "$@"
+}
+(( $+functions[_podcast__help_commands] )) ||
+_podcast__help_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast help commands' commands "$@"
+}
+(( $+functions[_podcast__list_commands] )) ||
+_podcast__list_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast list commands' commands "$@"
+}
+(( $+functions[_podcast__ls_commands] )) ||
+_podcast__ls_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast ls commands' commands "$@"
+}
+(( $+functions[_podcast__play_commands] )) ||
+_podcast__play_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast play commands' commands "$@"
+}
+(( $+functions[_podcast__refresh_commands] )) ||
+_podcast__refresh_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast refresh commands' commands "$@"
+}
+(( $+functions[_podcast__rm_commands] )) ||
+_podcast__rm_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast rm commands' commands "$@"
+}
+(( $+functions[_podcast__search_commands] )) ||
+_podcast__search_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast search commands' commands "$@"
+}
+(( $+functions[_podcast__sub_commands] )) ||
+_podcast__sub_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast sub commands' commands "$@"
+}
+(( $+functions[_podcast__subscribe_commands] )) ||
+_podcast__subscribe_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast subscribe commands' commands "$@"
+}
+(( $+functions[_podcast__update_commands] )) ||
+_podcast__update_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'podcast update commands' commands "$@"
+}
+
+_podcast "$@"

@@ -1,0 +1,9 @@
+# Desc: delta variable column width side by side
+
+if [[ -n "$COLUMNS" ]] && [[ "$COLUMNS" -gt 120 ]]; then
+  command delta --side-by-side --width "$COLUMNS" "${@}"
+else
+  command delta "${@:-/dev/stdin}"
+fi
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

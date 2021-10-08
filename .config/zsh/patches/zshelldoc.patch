@@ -1,0 +1,22 @@
+diff --git i/src/zsd-detect.main w/src/zsd-detect.main
+index 86ca578..11bec9d 100644
+--- i/src/zsd-detect.main
++++ w/src/zsd-detect.main
+@@ -335,7 +335,7 @@ for (( i=1; i<=size; ++ i )); do
+                 }
+ 
+                 # Comment reset
+-                if [[ -n $OPT_CIGNORE && $token = ${~OPT_CIGNORE} ]]; then
++                if [[ -n $OPT_CIGNORE && $token = ${~${(b)OPT_CIGNORE}} ]]; then
+                     cproposal=""
+                 else
+                     cproposal=$token$next_spaces
+@@ -343,7 +343,7 @@ for (( i=1; i<=size; ++ i )); do
+                 given_fun_name=""
+             else
+                 # Comment extension
+-                if [[ -z $OPT_CIGNORE || $token != ${~OPT_CIGNORE} ]]; then
++                if [[ -z $OPT_CIGNORE || $token != ${~${(b)OPT_CIGNORE}} ]]; then
+                     cproposal+=$token$next_spaces
+                 fi
+             fi

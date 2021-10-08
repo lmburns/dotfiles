@@ -1,0 +1,95 @@
+diff --git i/src/app.rs w/src/app.rs
+index 9434bf2..864666e 100644
+--- i/src/app.rs
++++ w/src/app.rs
+@@ -11,7 +11,7 @@ use crate::opt::{
+     SearchOpts, SetOpts, Shell, APP_NAME,
+ };
+ use crate::registry::{EntryData, TagRegistry};
+-use crate::util::{fmt_err, fmt_ok, fmt_path, fmt_tag, glob_ok};
++use crate::util::{fmt_err, fmt_ok, fmt_path, fmt_tag, glob_ok, macos_dirs};
+ use crate::DEFAULT_COLORS;
+ use wutag_core::color::parse_color;
+ use wutag_core::tag::{list_tags, DirEntryExt, Tag};
+@@ -63,8 +63,10 @@ impl App {
+             DEFAULT_COLORS.to_vec()
+         };
+ 
+-        let cache_dir = dirs::cache_dir().context("failed to determine cache directory")?;
+-        let state_file = cache_dir.join("wutag.registry");
++
++        let cache_dir = macos_dirs(dirs::cache_dir(), ".cache");
++        // let cache_dir = dirs::cache_dir().context("failed to determine cache directory")?;
++        let state_file = cache_dir.unwrap().join("wutag.registry");
+ 
+         let registry =
+             TagRegistry::load(&state_file).unwrap_or_else(|_| TagRegistry::new(&state_file));
+diff --git i/src/opt.rs w/src/opt.rs
+index 7e8ef82..a344525 100644
+--- i/src/opt.rs
++++ w/src/opt.rs
+@@ -48,7 +48,7 @@ pub enum ListObject {
+ #[derive(Clap)]
+ pub struct ListOpts {
+     #[clap(subcommand)]
+-    /// The object to list. Valid values are: `tags`, `files`.
++    /// The object to list. Valid values are: 'tags', 'files'.
+     pub object: ListObject,
+     #[clap(long, short)]
+     /// If provided output will be raw so that it can be easily piped to other commands
+@@ -83,7 +83,7 @@ pub struct SearchOpts {
+     /// If provided output will be raw so that it can be easily piped to other commands
+     pub raw: bool,
+     #[clap(long, short)]
+-    /// If set to `true` all entries containing any of provided tags will be returned
++    /// If set to 'true' all entries containing any of provided tags will be returned
+     pub any: bool,
+ }
+ 
+@@ -101,8 +101,8 @@ pub struct EditOpts {
+     pub tag: String,
+     #[clap(long, short)]
+     /// Set the color of the tag to the specified color. Accepted values are hex colors like
+-    /// `0x000000` or `#1F1F1F` or just plain `ff000a`. The colors are case insensitive meaning
+-    /// `1f1f1f` is equivalent to `1F1F1F`.
++    /// '0x000000' or '#1F1F1F' or just plain 'ff000a'. The colors are case insensitive meaning
++    /// '1f1f1f' is equivalent to '1F1F1F'.
+     pub color: String,
+ }
+ 
+@@ -147,7 +147,7 @@ pub enum Command {
+     Rm(RmOpts),
+     /// Clears all tags of the files that match the provided pattern.
+     Clear(ClearOpts),
+-    /// Searches for files that have all of the provided `tags`.
++    /// Searches for files that have all of the provided 'tags'.
+     Search(SearchOpts),
+     /// Copies tags from the specified file to files that match a pattern.
+     Cp(CpOpts),
+diff --git i/src/util.rs w/src/util.rs
+index cf2f7a1..4893a2c 100644
+--- i/src/util.rs
++++ w/src/util.rs
+@@ -1,7 +1,7 @@
+ use colored::{ColoredString, Colorize};
+ use globwalk::{DirEntry, GlobWalker, GlobWalkerBuilder};
+ use std::fmt::Display;
+-use std::path::Path;
++use std::path::{Path, PathBuf};
+ 
+ use crate::DEFAULT_MAX_DEPTH;
+ use anyhow::{Context, Result};
+@@ -55,3 +55,13 @@ where
+ 
+     Ok(())
+ }
++
++/// Helper function to get different directories for macOS specifically
++/// Example: `cache_dir()` returns `$HOME/Library/Caches`, when this will return `$HOME/.cache`
++pub fn macos_dirs(dir_func: Option<PathBuf>, joined: &str) -> Result<PathBuf> {
++    if std::env::consts::OS == "macos" {
++        Ok(PathBuf::from(env!("HOME")).join(joined))
++    } else {
++        Ok(dir_func.context(format!("Invalid {} directory", joined))?)
++    }
++}

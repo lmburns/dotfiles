@@ -1,0 +1,113 @@
+priority 100
+
+snippet main "fn main() ..." b
+fn main() {
+	$0
+}
+endsnippet
+
+snippet fn "fn foo() ..." b
+fn ${1:foo}($2)$3 {
+	$4
+}
+endsnippet
+
+snippet aeq "assert_eq!(...)" b
+assert_eq!(${1:expected}, ${2:actual});
+endsnippet
+
+snippet clippy "clippy ignore rule" b
+#[allow(clippy::$1)]
+endsnippet
+
+snippet rfmt "rustfmt skip" b
+#[rustfmt::skip]
+endsnippet
+
+snippet ui "unimplemented!"
+unimplemented!()
+endsnippet
+
+snippet ur "unimplemented!"
+unreachable!()
+endsnippet
+
+snippet res "Result<...>"
+Result<${VISUAL:1}$2>
+endsnippet
+
+snippet impl "impl ... { ... }" b
+impl $1 {
+	$2
+}
+endsnippet
+
+snippet mtests "mod tests..." b
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn ${1:it_works}() {
+		$2
+	}
+}
+endsnippet
+
+snippet test "#[test] fn ..." b
+#[test]
+fn ${1:it_works}() {
+	$2
+}
+endsnippet
+
+snippet fnp "fn name(?) -> ? {}"
+fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet pfn "pub fn name(?) -> ? {}"
+pub fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet afn "async fn name(?) -> ? {}"
+async fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet pafn "pub async fn name(?) -> ? {}"
+pub async fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet pri "print!(..)" b
+print!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet pln "println!(..)" b
+println!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet pn "println!(...)"
+println!(${1:"$2\{\}", $3});
+endsnippet
+
+snippet fmt "format!(..)"
+format!("$1"${2/..*/, /}$2);
+endsnippet
+
+snippet .it ".iter()" i
+.iter()$0
+endsnippet
+
+snippet impl "Struct/Trait implementation" b
+impl$4 ${1:Type/Trait}${2: for ${3:Type}}${4:<${5:T}>} {
+	${0}
+}
+endsnippet
+
+# vim:ft=snippets:

@@ -1,0 +1,7 @@
+# Desc: remove wrapper depending on if root
+
+# [[ $EUID -ne 0 ]] && trash-put "${@}" || command rm -I -v "${@}"
+# [[ $EUID -ne 0 ]] && dump -p "${@}" || command rm -I -v "${@}"
+[[ $EUID -ne 0 ]] && rip "${@}" || command rm -I -v "${@}"
+
+# vim:ft=zsh:et:sw=0:ts=2:sts=2:

@@ -1,0 +1,15 @@
+diff --git i/src/main.rs w/src/main.rs
+index a6c7d9e..f4170c5 100644
+--- i/src/main.rs
++++ w/src/main.rs
+@@ -2193,7 +2193,9 @@ fn handle_extract<'a>(
+                 command.arg("-qq");
+             }
+ 
+-            command.args(&["-O", "UTF-8", "-o"]);
++            // Maybe leave of -O UTF-8 or make it detect macOS vs Linux
++            // macOS has -U for UTF-8
++            command.args(&["-U", "-o"]);
+             command.arg(input_path);
+             command.arg("-d");
+             command.arg(output_path.as_ref());

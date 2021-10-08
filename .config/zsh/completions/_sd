@@ -1,0 +1,16 @@
+#compdef sd
+
+# zsh completions for 'sd'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-f,--flags}'[regex flags. May be combined (like `-f mc`).]'
+  {-h,--help}'[prints help information]'
+  {-s,--string-mode}'[treat expressions as non-regex strings]'
+  {-p,--preview}'[output result into stdout and do not modify files]'
+  {-V,--version}'[prints version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

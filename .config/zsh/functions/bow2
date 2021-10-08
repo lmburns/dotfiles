@@ -1,0 +1,12 @@
+# Desc: a copy of bow but as a zsh func
+# To be used with zle
+
+url=$(
+  buku --nostdin -p -f4 \
+    | fzf -m --reverse --preview "buku --nostdin -p {1}" --preview-window=wrap \
+    | cut -f2
+)
+
+[[ -n "$url" ]] && w3m "$url" || zle redisplay
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

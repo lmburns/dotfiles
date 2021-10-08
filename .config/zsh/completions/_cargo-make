@@ -1,0 +1,42 @@
+#compdef cargo-make makers
+
+local -a arguments tasks
+local state
+
+arguments=(
+  '--allow-private[allow invocation of private tasks]'
+  '--diff-steps[runs diff between custom flow and prebuilt flow (requires git)]'
+  '--disable-check-for-updates[disables the update check during startup]'
+  '--experimental[allows access unsupported experimental predefined tasks.]'
+  {-h,--help}'[prints help information]'
+  '--list-all-steps[lists all known steps]'
+  '--no-color[disables colorful output]'
+  '--no-on-error[disable on error flow even if defined in config sections]'
+  '--no-workspace[disable workspace support (tasks are triggered on workspace and not on members)]'
+  '--print-steps[only prints the steps of the build in the order they will be invoked but without]'
+  '--skip-init-end-tasks[if set, init and end tasks are skipped]'
+  '--time-summary[print task level time summary at end of flow]'
+  {-v,--verbose}'[sets the log level to verbose (shorthand for --loglevel verbose)]'
+  {-V,--version}'[prints version information]'
+  '--cwd[will set the current working directory. The search for the makefile will be]'
+  {-e,--env}'[...                       Set environment variables]'
+  '--env-file[set environment variables from provided file]'
+  {-l,--loglevel}'[LEVEL>               The log level \[default: info\]  \[possible values: verbose, info, error\]]'
+  '--makefile[the optional toml file containing the tasks definitions \[default:]'
+  '--output-format[FORMAT>      The print/list steps format (some operations do not support all formats)]'
+  '--output-file[the list steps output file name]'
+  {-p,--profile}'[the profile name (will be converted to lower case) \[default: development\]]'
+  '--skip-tasks[skip all tasks that match the provided regex (example: pre.*|post.*)]'
+  {-t,--task}'[the task name to execute (can omit the flag if the task name is the last]'
+)
+
+# '*:filename:_files'
+
+_arguments -s $arguments
+
+case $state in
+  *)
+    tasks=( ${(@f)$(makers --loglevel error --list-all-steps --output-format autocomplete --makefile "$CARGO_MAKE_HOME/Makefile.toml")} )
+    _describe -t tasks 'Tasks' tasks
+  ;;
+esac

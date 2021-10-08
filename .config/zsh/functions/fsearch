@@ -1,0 +1,31 @@
+# Desc: search fonts on system
+
+# fc-list : file family \
+# | sed -n -e 's#/Users/lucasburns/Library/Fonts##p' \
+# | rg '^/' | sort | sed 's|/||' \
+# | awk -F'.' '{print $1}' \
+# | fzf --query="${@:-}"
+
+local -a fonts
+
+() {
+  fonts=("${(@f)$(
+    fc-match -a \
+      | awk -F: '{print $2}' \
+      | sd -s '" "' ' - ' \
+      | sd '"' '' \
+      | sd "^\s" '' \
+      | fzf -m --query "${*:-}"
+    )}"
+  ) || return
+
+  [[ -n "${fonts[@]}" ]] && {
+    xsel -b <<< "${(F@)fonts}"
+    for f in "${(@)fonts}"; { print -P "%F{4}Font:%f %F{13}${f}%f"; }
+  }
+} "$@"
+
+# system_profiler SPFontsDataType | rg "$1"
+# atsutil fonts -list
+
+# vim:ft=zsh:

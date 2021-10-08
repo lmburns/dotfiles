@@ -1,0 +1,31 @@
+#compdef loop
+
+# zsh completions for 'loop'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-D,--error-duration}'[exit with timeout error code on duration]'
+  {-h,--help}'[prints help information]'
+  {-l,--only-last}'[only print the output of the last execution of the command]'
+  {-i,--stdin}'[read from standard input]'
+  '--summary[provide a summary]'
+  {-C,--until-changes}'[keep going until the output changes]'
+  {-f,--until-fail}'[keep going until the command exit status is non-zero]'
+  {-S,--until-same}'[keep going until the output changes]'
+  {-s,--until-success}'[keep going until the command exit status is zero]'
+  {-V,--version}'[prints version information]'
+  {-b,--count-by}'[amount to increment the counter by \[default: 1\]]'
+  {-e,--every}'[how often to iterate. ex., 5s, 1h1m1s1ms1us \[default: 1us\]]'
+  '--for[A comma-separated list of values, placed into 4ITEM. ex., red,green,blue]'
+  {-d,--for-duration}'[keep going until the duration has elapsed (example 1m30s)]'
+  {-n,--num}'[number of iterations to execute]'
+  {-o,--offset}'[amount to offset the initial counter by \[default: 0\]]'
+  {-c,--until-contains}'[keep going until the output contains this string]'
+  {-r,--until-error}'[keep going until the command exit status is the value given]'
+  {-m,--until-match}'[keep going until the output matches this regular expression]'
+  {-t,--until-time}'[keep going until a future time, ex. "2018-04-20 04:20:00" (Times in UTC.)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

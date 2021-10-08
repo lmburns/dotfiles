@@ -1,0 +1,9 @@
+# Desc: helper function for per-dir-hist
+
+emulate -L zsh
+
+[[ -v dir_history ]] || return
+
+dir_history=("${1%%$'\n'}" "${(u)dir_history[@]}" )
+
+# vim:ft=zsh:et

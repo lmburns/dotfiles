@@ -1,0 +1,128 @@
+#!/usr/bin/env zsh
+
+# set -C -f -u
+setopt noclobber noglob nounset
+
+IFS="${$(printf '%b_' '\n')%_}"
+
+# Meanings of exit codes:
+# code | meaning    | action of ranger
+# -----+------------+-------------------------------------------
+# 0    | success    | Display stdout as preview
+# 1    | no preview | Display no preview at all
+# 2    | plain text | Display the plain content of the file
+# 3    | fix width  | Don't reload when width changes
+# 4    | fix height | Don't reload when height changes
+
+# Arguments:
+local FILE_PATH="${1}"         # Full path of the highlighted file
+local WIDTH="${2}"
+local HEIGHT="${3}"
+local IMAGE_CACHE_PATH="${4}"  # Full path that should be used to cache image preview
+
+local FILE_EXTENSION="${FILE_PATH##*.}"
+local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
+
+# Settings:
+local HIGHLIGHT_SIZE_MAX=262143  # 256KiB
+local HIGHLIGHT_TABWIDTH=8
+local MAXLN=200
+
+# Functions:
+try() { output=$(eval '"$@"'); }
+
+# writes the output of the previously used "try" command
+dump() { /bin/echo -E "$output"; }
+
+# a common post-processing function used after most commands
+trim() { head -n "$MAXLN"; }
+
+
+handle_mime() {
+  local mimetype="${1}"
+  case "${mimetype}" in
+    (text/html)
+      w3m -dump "${FILE_PATH}" && { dump | trim | fmt -s -w $WIDTH; exit 4; } ;;
+    (text/troff)
+      man ./ "${FILE_PATH}" | col -b ;;
+    (text/csv)
+      cat -- "${FILE_PATH}" | tidy-viewer -n 30 ;;
+    (text/* | */xml)
+      # KimbieDark
+      bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}" ;;
+    (application/pgp-encrypted)
+      bat -Pf --theme KimbieDark --style auto "${FILE_PATH}" ;;
+    (application/zip)
+      atool --list -- "${FILE_PATH}" ;;
+    (image/*)
+      chafa --fill=block --symbols=block -c 256 -s 80x"${HEIGHT}" "${FILE_PATH}" || exit 1;;
+    (video/* | audio/*|application/octet-stream)
+       mediainfo "${FILE_PATH}" || exit 1;;
+    (*/pdf)
+      pdftotext -l 10 -nopgbrk -q "${FILE_PATH}" - && \
+        { dump | trim | fmt -s -w $WIDTH; exit 0; } || exit 1 ;;
+    (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+      docx2txt "${FILE_PATH}" || exit 1 ;;
+  esac
+}
+
+
+handle_other() {
+  case "${FILE_PATH}" in
+    (*.tar)   tar tf "${FILE_PATH}";;
+    (*.rar)   unrar l "${FILE_PATH}";;
+    (*.7z) 7z l "${FILE_PATH}";;
+    (*.[1-8]) man "${FILE_PATH}" | col -b ;;
+    (*.o)     nm "${FILE_PATH}" | less ;;
+    (*.iso)   iso-info --no-header -l "${FILE_PATH}";;
+    (*.doc)   catdoc "${FILE_PATH}" ;;
+    (*.docx)  docx2txt "${FILE_PATH}" - ;;
+    (*.csv)   bat --paging=always -f -l csv ;;
+    (*.json)  jq --color-output . "${FILE_PATH}";;
+    (*.asc)   bat -Pf --theme KimbieDark --style auto "${FILE_PATH}";;
+    (*.ipynb) jupview -t KimbieDark "${FILE_PATH}" ;;
+    (*.torrent) transmission-show "${FILE_PATH}";;
+    (*.tgz|*.tar.gz)   tar tzf "${FILE_PATH}";;
+    (*.tar.bz2|*.tbz2) tar tjf "${FILE_PATH}";;
+    (*.tar.txz|*.txz)  xz --list "${FILE_PATH}";;
+    (*.jar|*.war|*.ear|*.oxt)        unzip -l "${FILE_PATH}";;
+    (*.odt|*.ods|*.odp|*.sxw)        odt2txt "${FILE_PATH}";;
+    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c "${FILE_PATH}" ;;
+  esac
+}
+
+# (*.dmg)   hdiutil imageinfo "${FILE_PATH}" | head -n 200 ;;
+
+# *.md) mdv "${FILE_PATH}" ;;
+
+typeset -A CO
+CO=(
+  red    $'\e[38;5;1m'  bred   $'\e[01;31m' brred   $'\e[38;5;9m'
+  green  $'\e[38;5;2m'  bgreen $'\e[01;32m' brgreen $'\e[38;5;10m'
+  yell   $'\e[38;5;3m'  byell  $'\e[01;33m' bryell  $'\e[38;5;11m'
+  blue   $'\e[38;5;4m'  bblue  $'\e[01;34m' brblue  $'\e[38;5;12m'
+  magen  $'\e[38;5;5m'  bmagen $'\e[01;35m' brmagen $'\e[38;5;13m'
+  cyan   $'\e[38;5;6m'  bcyan  $'\e[01;36m' brcyan  $'\e[38;5;14m'
+  und    $'\e[4m'       bold   $'\e[1m'     bg      $'\e[3m'
+  tb     $' \t '        nl     $'\n'        res     $'\e[0m'
+)
+
+handle_fallback() {
+  print -rl "$CO[nl]$CO[brblue]$CO[bold]==========$CO[res] File Type Classification $CO[brblue]$CO[bold]==========$CO[res]" && {
+    mime=$(file --dereference --brief -- "${FILE_PATH}")
+    gstat -c "$CO[green]$CO[bold]${mime}$CO[res] $CO[nl]%F $CO[nl]$CO[bcyan]inode: %i$CO[res]" -- "${FILE_PATH}"
+  }
+    exit 1
+}
+
+local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}" )"
+handle_mime "${MIMETYPE}"
+handle_other
+handle_fallback
+
+exit 1
+
+### Attempt to use imgcat instead of cafa to view images:
+# image/*) /usr/local/bin/imgcat --width "$(identify -format '%w' "${FILE_PATH}")" --height "$(identify -format '%h' "${FILE_PATH}")" --iterm2 "${FILE_PATH}" || exit 1;;
+
+# fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm /usr/local/bin/imgcat --width %pw --height %ph --iterm2 %c:p %pd

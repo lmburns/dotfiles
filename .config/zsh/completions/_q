@@ -1,0 +1,43 @@
+#compdef q
+
+# zsh completions for 'q'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-v,--version}'[print version]'
+  {-V,--verbose}'[print debug info in case of problems]'
+  {-S,--save-db-to-disk}'[save database to an sqlite database file]'
+  '--save-db-to-disk-method[method to use to save db to disk. standard does not]'
+  {-H,--skip-header}'[skip header row. This has been changed from earlier]'
+  {-d,--delimiter}'[field delimiter. If none specified, then space is used]'
+  {-p,--pipe-delimited}'[same as -d |. Added for convenience and readability]'
+  {-t,--tab-delimited}'[same as -d <tab>. Just a shorthand for handling]'
+  {-e,--encoding}'[input file encoding. Defaults to UTF-8. set to none]'
+  {-z,--gzipped}'[data is gzipped. Useful for reading from stdin. For]'
+  {-A,--analyze-only}'[analyze sample input and provide information about]'
+  {-m,--mode}'[data parsing mode. fluffy, relaxed and strict. In]'
+  {-c,--column-count}'[specific column count when using relaxed or strict]'
+  {-k,--keep-leading-whitespace}'[keep leading whitespace in values. Default behavior]'
+  '--disable-double-double-quoting[disable support for double double-quoting for escaping]'
+  '--disable-escaped-double-quoting[disable support for escaped double-quoting for]'
+  '--as-text[dont detect column types - All columns will be]'
+  {-w,--input-quoting-mode}'[input quoting mode. Possible values are all, minimal]'
+  {-M,--max-column-length-limit}'[sets the maximum column length.]'
+  {-U,--with-universal-newlines}'[expect universal newlines in the data. Limitation: -U]'
+  {-D,--output-delimiter}'[field delimiter for output. If none specified, then]'
+  {-P,--pipe-delimited-output}'[same as -D |. Added for convenience and readability.]'
+  {-T,--tab-delimited-output}'[same as -D <tab>. Just a shorthand for outputting tab]'
+  {-O,--output-header}'[output header line. Output column-names are determined]'
+  {-b,--beautify}'[beautify output according to actual values. Might be]'
+  {-f,--formatting}'[output-level formatting, in the format X=fmt,Y=fmt]'
+  {-E,--output-encoding}'[output encoding. Defaults to none, leading to]'
+  {-W,--output-quoting-mode}'[output quoting mode. Possible values are all, minimal]'
+  {-L,--list-user-functions}'[list all user functions]'
+  {-q,--query-filename}'[read query from the provided filename instead of the]'
+  {-Q,--query-encoding}'[query text encoding. Experimental. Please send your]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

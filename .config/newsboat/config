@@ -1,0 +1,106 @@
+#show-read-feeds no
+auto-reload yes
+refresh-on-startup yes
+prepopulate-query-feeds yes
+history-limit 400
+text-width 88
+reload-threads 4
+mark-as-read-on-hover yes
+save-path ~/.local/share/newsboat/saved_articles/
+cleanup-on-quit yes
+
+notify-always yes
+notify-program newsb-notifier
+notify-format "Newsboat: %n unread articles in %f feeds %t"
+
+# bookmark-cmd "~/bin/nbookmark.sh"
+bookmark-cmd "~/mybin/srb"
+# bookmark-interactive yes
+# bookmark-autopilot no
+
+bind-key ; macro-prefix
+bind-key j down
+bind-key k up
+bind-key j next articlelist
+bind-key k prev articlelist
+bind-key J next-feed articlelist
+bind-key K prev-feed articlelist
+bind-key G end
+bind-key g home
+bind-key d pagedown
+bind-key u pageup
+bind-key l open
+bind-key h quit
+bind-key a toggle-article-read
+bind-key n next-unread
+bind-key N prev-unread
+bind-key D pb-download
+bind-key U show-urls
+bind-key i sort
+bind-key I rev-sort
+
+# external-url-viewer "urlscan -dc -r 'linkhandler {}'"
+# browser "$BROWSER %u &"
+# browser open -a LibreWolf
+# browser linkhandler
+browser urlportal
+# macro , open-in-browser
+macro t set browser "qndl" ; open-in-browser ; set browser linkhandler
+macro a set browser "youtube-dl --add-metadata -xic -f bestaudio/best" ; open-in-browser ;
+macro v set browser "nohup mpv" ; open-in-browser ;
+macro w set browser "w3m" ; open-in-browser ;
+macro C set browser "youtube-viewer --comments=%u" ; open-in-browser ;
+macro y set browser "echo %u | pbcopy" ; open-in-browser ; set browser linkhandler
+macro B set browser "newsboat_video_download" ; open-in-browser
+
+# FIX: use saved articles
+macro s set browser "tmux split-window && tmux send-keys 'lf ~/.local/share/newsboat/saved_articles && tmux kill-pane\n'" ; open-in-browser ; set browser "$URLPORTAL %u"
+
+# Open reddit
+macro r set browser "tmux split-window -p 80 && tmux send-keys 'rtv -l %u && tmux kill-pane\n'"; open-in-browser ; set browser "$URLPORTAL %u"
+
+# Open w3m
+macro o set browser "tmux split-window -p 80 && tmux send-keys 'w3m %u && tmux kill-pane\n'"; open-in-browser ; set browser "$URLPORTAL %u"
+
+# Open in GUI
+macro W set browser "$BROWSER"; open-in-browser ; set browser "$URLPORTAL %u"
+
+# Podboat:
+download-path "~/Downloads/podcasts/%n"
+player "mpv --audio-display=no"
+max-downloads 10
+
+bind-key x pb-delete
+bind-key b pb-toggle-download-all
+bind-key M pb-mark-as-finished
+
+##############################
+# color background default default
+# color listnormal red default
+# color listnormal_unread white default
+# color listfocus magenta white bold
+# color listfocus_unread magenta white bold
+# color info white black bold
+# color article white default bold
+##############################
+
+color background default default
+color listnormal default default
+color listnormal_unread default default
+color listfocus color16 cyan
+color listfocus_unread color16 cyan
+color info default black
+color article default default
+
+highlight all "---.*---" yellow
+highlight feedlist ".*(0/0))" black
+highlight article "(^Feed:.*|^Title:.*|^Author:.*)" cyan default bold
+highlight article "(^Link:.*|^Date:.*)" default default
+highlight article "https?://[^ ]+" green default
+highlight article "^(Title):.*$" blue default
+highlight article "\\[[0-9][0-9]*\\]" magenta default bold
+highlight article "\\[image\\ [0-9]+\\]" green default bold
+highlight article "\\[embedded flash: [0-9][0-9]*\\]" green default bold
+highlight article ":.*\\(link\\)$" cyan default
+highlight article ":.*\\(image\\)$" blue default
+highlight article ":.*\\(embedded flash\\)$" magenta default

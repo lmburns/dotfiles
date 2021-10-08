@@ -1,0 +1,14 @@
+# vim:ft=zsh:
+
+# Desc: get git repo url
+
+# git remote get-url origin
+
+ngu() {
+  confu="$(sed -n '/\[remote\s.*/{n;s/\t//g;s/url = //p}' .git/config)"
+  echo "${confu}" | xsel -b
+  # printf "%s" "$(tput setaf 1)${confu}$(tput sgr0)"
+  print $confu
+}
+
+ngu

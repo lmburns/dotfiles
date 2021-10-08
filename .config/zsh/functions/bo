@@ -1,0 +1,24 @@
+# Desc: use fzf to open bookmark with buku
+
+# -f 10; -f 40
+# buku -p -f4
+
+local url db sql
+
+db="$XDG_DATA_HOME/buku/bookmarks.db"
+sql="SELECT id,URL,metadata,tags FROM bookmarks"
+
+url=$(
+  sqlite3 -separator $'\t' "$db" "$sql" \
+    | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' \
+    | fzf -m \
+          --reverse \
+          --preview "buku -p {1}" \
+          --preview-window=wrap \
+          --query "${*:-}" \
+    | ${commands[hck]:-cut} -f2
+)
+
+[[ -n "$url" ]] && echo "$url" | xargs ${aliases[librewolf]}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

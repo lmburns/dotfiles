@@ -1,0 +1,12 @@
+# Desc: tell which completion a command is using
+# taken from psprint, creator of zinit
+
+whichcomp() {
+    for 1; do
+        ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP*$1*) )
+    done
+}
+
+whichcomp "$@"
+
+# vim:ft=zsh:

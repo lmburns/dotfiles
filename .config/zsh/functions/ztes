@@ -1,0 +1,88 @@
+# Desc: Searches zshall with special keyword ($1) matching
+# doesn't work consistently as function, does just fine as script
+
+# zp() { man -P "less -p'^       "$1" '" zshexpn; }
+# zs() { man -P "less -p'^       "$1" '" zshparam; }
+
+zmp() { man -P "less -p'^${@}'" zshall; }
+zmo() { man -P "less -p'^${@}'" zshmodules; }
+zb() { man -P "less -p'^       "$1" '" zshbuiltins; }
+zp() { man -P "less -p'^       ${1/#[ewspfrRiInbkK]/"${1}"} '" zshexpn; }
+zs() { man -P "less -p'^       ${1/#[AacCefFikLnoOPqQtuUvVwWXzpjslrSIBEMNR]/"${1}"} '" zshparam; }
+
+lopts=(test example pf pexpf)
+
+print "${lopts//(#m)[aeiou]/${(U)MATCH}}"
+
+
+# zparseopts -D -E -a opts \
+#   'test' 'cond' \
+#   'eg' 'example' \
+#   'pexpf' 'pexpflags' \
+#   'pexp' 'paramexp' \
+#   'hexp' 'histexp' \
+#   'hflag' 'histflags' \
+#   'array' 'arrparam' \
+#   'arsub' 'arrsubscript' \
+#   'arsubf' 'arrflag' \
+#   'complex' 'compcmds' \
+#   'glob' 'globflags' \
+#   'opts' 'options' \
+#   'sopts' '1opts' \
+#   'prompt' 'promptchars' \
+#   'redir' 'redirection' \
+#   'bind' 'bindkey' \
+#   'zparse' 'parse' \
+#   'b' 'built' \
+#   'p' 'param' \
+#   's' 'subscript' \
+#   'h' 'help'
+
+# case ${opts[1]} in
+#   -test|-cond) zmp "CONDITIONAL EXPRESSIONS$" ;;
+#   -eg|-exmple) zmp "   Examples$" ;;
+#   -pexpf|-pexpflags) zmp "   Parameter Expansion Flags$" ;;
+#   -pexp|-paramexp) zmp "PARAMETER EXPANSION$" ;;
+#   -hexp|-histexp) zmp "HISTORY EXPANSION$" ;;
+#   -hflag|-histflags) zmp "   Modifiers$" ;;
+#   -array|-arrparam) zmp "ARRAY PARAMETERS$" ;;
+#   -arsub|-arrsubscript|"array subscripts") zmp "   Array Subscripts$" ;;
+#   -arsubf|-arrflag|"arr flags"|"array flags") zmp "   Subscript Flags$" ;;
+#   -complex|-compcmds) zmp "COMPLEX COMMANDS$" ;;
+#   -glob|-globflags) zmp "   Globbing Flags$" ;;
+#   -opts|-options) zmp "DESCRIPTION OF OPTIONS$" ;;
+#   -sopts|-1opts) zmp "SINGLE LETTER OPTIONS$" ;;
+#   -prompt|-promptchars) zmp "SIMPLE PROMPT ESCAPES$" ;;
+#   -redir|-redirection) zmp "REDIRECTION$" ;;
+#   -bind|-bindkey) zmp "STANDARD WIDGETS$" ;;
+#   -zparse|-parse) zmm "       zparseopts$" ;;
+#   -b|-built) zb "${1}" ;;
+#   -p|-param) zp "${1}" ;;
+#   -s|-subscript) zs "${1}" ;;
+#   -h|-help)
+#     print -P "%F{2}test, cond -- [[ -e ]]%f"
+#     print -P "%F{4}eg, examples%f"
+#     print -P "%F{2}pexpf, pexpflags -- \"\$ {(f)foo}\"%f"
+#     print -P "%F{4}pexp, paramexp -- \"\$ {~foo}\"%f"
+#     print -P "%F{2}hexp, histexp -- $ {var:h3}%f"
+#     print -P "%F{4}hflag, histflags%f"
+#     print -P "%F{2}array, arrparam%f"
+#     print -P "%F{4}arsub, arrsubscript%f"
+#     print -P "%F{2}arsubf, arrflag -- $ {array[(i)pattern]}%f"
+#     print -P "%F{4}complex, compcmds%f"
+#     print -P "%F{2}glob, globflags -- (#X)%f"
+#     print -P "%F{4}opts, options -- AUTO_CD%f"
+#     print -P "%F{2}sopts, 1opts%f"
+#     print -P "%F{4}prompt, promptchars -- %%B%f"
+#     print -P "%F{2}redir, redirection%f"
+#     print -P "%F{4}bind bindkey -- vi-backward-kill%f"
+#     print -P "%F{2}zparse, parse%f"
+#     print -P "%F{4}b, built -- echoti%f"
+#     print -P "%F{2}p, param -- $ {var:h}, $ {(f)foo}%f"
+#     print -P "%F{4}s, subscript -- $ {foo[(re)bar]}%f" ;;
+#   *) man -P "less -p'^ *$@ '" zshall ;;
+# esac
+
+# unset -f zmp zmo zb zp zs
+
+# vim:ft=zsh:et

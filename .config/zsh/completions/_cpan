@@ -1,0 +1,5 @@
+#compdef cpan
+
+_arguments \
+         '*:file:_files' \
+

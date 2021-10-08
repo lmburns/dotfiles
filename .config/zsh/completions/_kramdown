@@ -1,0 +1,36 @@
+#compdef kramdown
+
+# zsh completions for 'kramdown'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-i,--input}'[specify the input format: kramdown (default), html, or markdown]'
+  {-o,--output}'[specify one or more output formats separated by commas: html (default)]'
+  {-x,--extension}'[load one or more extensions (without the kramdown- prefix) separated]'
+  '--no-config-file[do not read any configuration file. Default behavior is to check for a]'
+  '--config-file[specify the name of a configuration file with kramdown options in YAML]'
+  {-v,--version}'[show the version of kramdown]'
+  {-h,--help}'[show the help]'
+  '--auto-id-prefix[prefix used for automatically generated header IDs]'
+  '--entity-output[defines how entities are output]'
+  '--footnote-backlink[defines the text that should be used for the footnote backlinks]'
+  '--footnote-nr[the number of the first footnote]'
+  '--footnote-prefix[prefix used for footnote IDs]'
+  '--forbidden-inline-options[defines the options that may not be set using the {::options} extension]'
+  '--header-offset[sets the output offset for headers]'
+  '--latex-headers[defines the LaTeX commands for different header levels]'
+  '--line-width[defines the line width to be used when outputting a document]'
+  '--link-defs[pre-defines link definitions]'
+  '--math-engine[set the math engine]'
+  '--math-engine-opts[set the math engine options]'
+  '--smart-quotes[defines the HTML entity names or code points for smart quote output]'
+  '--syntax-highlighter[set the syntax highlighter]'
+  '--syntax-highlighter-opts[set the syntax highlighter options]'
+  '--template[the name of an ERB template file that should be used to wrap the output]'
+  '--toc-levels[defines the levels that are used for the table of contents]'
+  '--typographic-symbols[defines a mapping from typographical symbol to output characters]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,32 @@
+#compdef trash-put
+
+# modified to not show the same file again once it has been selected for removal
+# taken from zsh standard 'rm'
+
+declare -a args opts=( -A '-*' )
+args=(
+  '--version[show programs version number and exit]'
+  {-h,--help}'[show this help message and exit]'
+  {-d,--directory}'[ignored (for GNU rm compatibility)]'
+  {-f,--force}'[silently ignore nonexistent files]'
+  {-i,--interactive}'[ignored (for GNU rm compatibility)]'
+  {-r,-R,--recursive}'[ignored (for GNU rm compatibility)]'
+  '--trash-dir[use TRASHDIR as trash folder]'
+  {-v,--verbose}'[explain what is being done]'
+  '*:: :->file'
+)
+
+local curcontext=$curcontext state line ret=1
+declare -A opt_args
+
+_arguments -C -s -S $args && ret=0
+
+case $state in
+  (file)
+    line[CURRENT]=()
+    line=( ${line//(#m)[\[\]()\\*?#<>~\^\|]/\\$MATCH} )
+    _files -F line && ret=0
+    ;;
+esac
+
+return $ret

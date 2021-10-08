@@ -1,0 +1,15 @@
+# Desc: grep history
+
+hgrep() {
+  local cmd sel
+  zparseopts -D -a opt 'f' '-fzf'
+  cmd='fc -lnr 1 | rg "${@}"'
+  if [[ "${opt[1]}" == -(f|-fzf) ]] cmd="${cmd} | fzf"
+  sel="$(eval "$cmd")"
+  xsel -b <<< "$sel"
+  print -P "%F{2}${sel}%F"
+}
+
+hgrep "$@"
+
+# vim:ft=zsh:et:sts=2:sw=0

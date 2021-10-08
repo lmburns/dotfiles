@@ -1,0 +1,24 @@
+#compdef delta
+
+# zsh completions for 'delta'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--plus-style,--light,--dark}'[etc]'
+  '--minus-style[bold ul "#ffeeee"]'
+  '--minus-style[bold auto]'
+  '--file-style[0e7c0e"]'
+  '--file-style["]'
+  '--file-style[8]'
+  '--line-numbers-left-format[:  Change the contents of the left column]'
+  '--line-numbers-right-format[: Change the contents of the right column]'
+  '--line-numbers-left-style[:   Change the style applied to the left column]'
+  '--line-numbers-right-style[:  Change the style applied to the right column]'
+  '--line-numbers-minus-style[:  Change the style applied to line numbers in minus lines]'
+  '--line-numbers-zero-style[:   Change the style applied to line numbers in unchanged lines]'
+  '--line-numbers-plus-style[:   Change the style applied to line numbers in plus lines]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

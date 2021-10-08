@@ -1,0 +1,32 @@
+#compdef f2
+
+# zsh completions for 'f2'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-f,--find}'[search pattern. Treated as a regular expression by default unless --string-mode is also used. If omitted, it defaults to the entire file name (including the extension).]'
+  {-r,--replace}'[replacement string. If omitted, defaults to an empty string. Supports built-in and regex capture variables. Learn more about variable support here: https://github.com/ayoisaiah/f2/wiki/Built-in-variables]'
+  {-u,--undo}'[undo the last operation performed in the current working directory if possible. Learn more: https://github.com/ayoisaiah/f2/wiki/Undoing-a-renaming-operation]'
+  {-l,--replace-limit}'[limit the number of replacements to be made on the file name (replaces all matches if set to 0). Can be set to a negative integer to start replacing from the end of the file name.]'
+  {-s,--string-mode}'[opt into string literal mode. The presence of this flag causes the search pattern to be treated as a non-regex string.]'
+  {-E,--exclude}'[exclude files/directories that match the given search pattern. Treated as a regular expression. Multiple exclude patterns can be specified.]'
+  {-x,--exec}'[execute the batch renaming operation. This will commit the changes to your filesystem.]'
+  {-R,--recursive}'[recursively traverse all directories when searching for matches. Use the --max-depth flag to control the maximum allowed depth (no limit by default).]'
+  {-m,--max-depth}'[positive integer indicating the maximum depth for a recursive search (set to 0 for no limit).]'
+  '--sort[sort the matches according to the provided <sort>.]'
+  '--sortr[same as --sort but presents the matches in the reverse order.]'
+  {-i,--ignore-case}'[when this flag is provided, the given pattern will be searched case insensitively.]'
+  {-q,--quiet}'[activate silent mode which doesnt print out any information including errors]'
+  {-e,--ignore-ext}'[ignore the file extension when searching for matches.]'
+  {-d,--include-dir}'[include directories when searching for matches as they are exempted by default.]'
+  {-D,--only-dir}'[rename only directories, not files (implies --include-dir)]'
+  {-H,--hidden}'[include hidden directories and files in the matches (they are skipped by default). A hidden file or directory is one whose name starts with a period (all operating systems) or one whose hidden attribute is set to true (Windows only)]'
+  {-F,--fix-conflicts}'[automatically fix conflicts based on predefined rules. Learn more: https://github.com/ayoisaiah/f2/wiki/Validation-and-conflict-detection]'
+  '--allow-overwrites[allow the overwriting of existing files]'
+  {-h,--help}'[show help]'
+  {-v,--version}'[print the version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

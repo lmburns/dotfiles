@@ -1,0 +1,20 @@
+# vim:ft=zsh:
+
+# Desc: change directories with fzf
+
+function fcd-zle() {
+  local dir
+  dir=$(fd ${1:-.} --prune -td | fzf +m)
+  if [[ -d "$dir" ]]; then
+    cd "$dir"
+    local precmd
+    for precmd in $precmd_functions; do
+      $precmd
+    done
+    zle reset-prompt
+  else
+    zle redisplay # Just redisplay if no jump to do
+  fi
+}
+
+fcd-zle "$@"

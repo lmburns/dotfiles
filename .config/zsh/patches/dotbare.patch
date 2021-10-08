@@ -1,0 +1,27 @@
+diff --git a/dotbare b/dotbare
+index f573a83..42f4f62 100755
+--- a/dotbare
++++ b/dotbare
+@@ -12,7 +12,7 @@
+ #   option flags:
+ #     check sub commands for available option flags
+ 
+-mydir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
++mydir="$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")"
+ source "${mydir}"/helper/set_variable.sh
+ 
+ function usage() {
+diff --git a/pkg/completion/zsh/_dotbare b/pkg/completion/zsh/_dotbare
+index 9599754..b8b9281 100644
+--- a/pkg/completion/zsh/_dotbare
++++ b/pkg/completion/zsh/_dotbare
+@@ -127,6 +127,9 @@ _dotbare() {
+             '(- : *)'{-h,--help}'[show help information]' \
+             && ret=0
+           ;;
++        * )
++          _normal
++          ;;
+       esac
+       ;;
+   esac

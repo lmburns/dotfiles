@@ -1,0 +1,29 @@
+#compdef mbsync
+
+# zsh completions for 'mbsync'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--all}'[operate on all defined channels]'
+  {-l,--list}'[list mailboxes instead of syncing them]'
+  {-n,--new}'[propagate new messages]'
+  {-d,--delete}'[propagate message deletions]'
+  {-f,--flags}'[propagate message flag changes]'
+  {-N,--renew}'[propagate previously not propagated new messages]'
+  {-L,--pull}'[propagate from far to near side]'
+  {-H,--push}'[propagate from near to far side]'
+  {-C,--create}'[propagate creations of mailboxes]'
+  {-R,--remove}'[propagate deletions of mailboxes]'
+  {-X,--expunge}'[expunge	deleted messages]'
+  {-c,--config}'[read an alternate config file (default: ~/.mbsyncrc)]'
+  {-D,--debug}'[debugging modes (see manual)]'
+  {-V,--verbose}'[display what is happening]'
+  {-q,--quiet}'[dont display progress counters]'
+  {-v,--version}'[display version]'
+  {-h,--help}'[display this help message]'
+  {--create,--remove}'[and --expunge can be suffixed with -far/-near.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,9 @@
+# vim:ft=zsh:
+
+# Desc: cheatsheet of cheat and tldr
+
+ccheat() {
+  curl cheat.sh/${@:-cheat}
+}
+
+ccheat "$@"

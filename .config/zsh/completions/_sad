@@ -1,0 +1,22 @@
+#compdef sad
+
+# zsh completions for 'sad'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-k,--commit}'[no preview, write changes to file]'
+  {-e,--exact}'[string literal mode]'
+  {-h,--help}'[prints help information]'
+  {-0,--read0}'[use \0 as stdin delimiter]'
+  {-V,--version}'[prints version information]'
+  {-f,--flags}'[standard regex flags: ie. -f imx, full list: https://github.com/ms-jpq/sad]'
+  '--fzf[additional Fzf options, disable = never]'
+  '--internal-patch[*Internal use only*]'
+  '--internal-preview[*Internal use only*]'
+  {-p,--pager}'[colourizing program, disable = never, default = $GIT_PAGER]'
+  {-u,--unified}'[same as in GNU diff --unified={size}, affects hunk size]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

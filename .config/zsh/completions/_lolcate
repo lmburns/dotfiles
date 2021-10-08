@@ -1,0 +1,21 @@
+#compdef lolcate
+
+# zsh completions for 'lolcate'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--all[query / update all databases]'
+  '--create[create a database]'
+  {-h,--help}'[prints help information]'
+  {-i,--ignore-case}'[search the given patterns case-insensitively. Default is "smart-case", i.e. patterns are]'
+  '--info[display configuration informations and existing databases]'
+  '--update[update database]'
+  {-V,--version}'[prints version information]'
+  {-b,--basename}'[match only the base name against the specified PATTERN. Can be supplied multiple times]'
+  '--db[database to be used / created \[default: default\]]'
+  '--type[one or several file types to search, separated with commas]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

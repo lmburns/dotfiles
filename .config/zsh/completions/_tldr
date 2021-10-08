@@ -1,0 +1,45 @@
+#compdef tldr
+
+_applications() {
+    local -a commands
+    commands=(${(uonzf)"$(tldr --list 2>/dev/null)"//:/\\:})
+    _describe -t commands 'command' commands
+}
+
+_tealdeer() {
+    local I="-h --help -v --version"
+    integer ret=1
+    local -a args
+
+    args+=(
+        "($I -l --list)"{-l,--list}"[List all commands in the cache]"
+        "($I -f --render)"{-f,--render}"[Render a specific markdown file]:file:_files"
+        "($I -o --os)"{-o,--os}'[Override the operating system]:os:((
+            linux
+            osx
+            sunos
+            windows
+        ))'
+        "($I -L --language)"{-L,--language}"[Override the language settings]:lang"
+        "($I -u --update)"{-u,--update}"[Update the local cache]"
+        "($I -c --clear-cache)"{-c,--clear-cache}"[Clear the local cache]"
+        "($I -p --pager)"{-p,--pager}"[Use a pager to page output]"
+        "($I -m --markdown)"{-m,--markdown}"[Display the raw markdown instead of rendering it]"
+        "($I -q --quiet)"{-q,--quiet}"[Suppress informational messages]"
+        "($I)--show-paths[Show file and directory paths used by tealdeer]"
+        "($I)--seed-config[Create a basic config]"
+        "($I)--color[Controls when to use color]:when:((
+            always
+            auto
+            never
+        ))"
+        '(- *)'{-h,--help}'[Display help]'
+        '(- *)'{-v,--version}'[Show version information]'
+        '1: :_applications'
+    )
+
+    _arguments $args[@] && ret=0
+    return ret
+}
+
+_tealdeer

@@ -1,0 +1,27 @@
+#compdef socketfilterfw
+
+_arguments \
+         '*:file:_files' \
+		'-h[Display this help and exit.]' \
+		'-d[Turn on debugging.]' \
+		'-l[Do logging and run in daemon mode.]' \
+		'-k[Kill daemon.]' \
+		'--getglobalstate[Display if the firewall is enabled or not.]' \
+		'--setglobalstate[Turn the firewall on or off.]' \
+		'--getblockall[Show whether block all is enabled or not.]' \
+		'--setblockall[Enable or disable block all option.]' \
+		'--listapps[Display a list of paths of added applications.]' \
+		'--getappblocked[Show whether connections are blocked or not for the application at the indica…]' \
+		'--blockapp[Block the application at the indicated path.]' \
+		'--unblockapp[Unblock the application at the indicated path.]' \
+		'--add[Add the application at the indicated path to the firewall.]' \
+		'--remove[Remove the application at the indicated path from the firewall.]' \
+		'--getallowsigned[Show whether built-in and downloaded signed applications are to automatically…]' \
+		'--setallowsigned[Set whether built-in signed applications are to automatically receive incomin…]' \
+		'--setallowsignedapp[Set whether downloaded signed applications are to automatically receive incom…]' \
+		'--getstealthmode[Show whether stealth mode is on or not.]' \
+		'--setstealthmode[Set stealth mode on or off.]' \
+		'--getloggingmode[Show whether logging is on or not.]' \
+		'--setloggingmode[Set logging to on or off.]' \
+		'--getloggingopt[Show logging option.]' \
+		'--setloggingopt[Set logging option. El.]'

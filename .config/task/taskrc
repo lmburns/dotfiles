@@ -1,0 +1,287 @@
+# [Created by task 2.5.3 12/25/2020 21:33:08]
+
+# Here is an example of entries that use the default, override and blank values
+#   variable=foo   -- By specifying a value, this overrides the default
+#   variable=      -- By specifying no value, this means no default
+#   #variable=foo  -- By commenting out the line, or deleting it, this uses the default
+
+# Use the command 'task show' to see all defaults and overrides
+# Use the command 'tash _zshcommands' to see all available commands
+
+# Files
+data.location=~/.config/task/
+# hooks.location
+locking=on
+
+# Terminal
+curses=on
+confirmation=yes
+# next=2                                  # Number of tasks per project report
+bulk=2                                  # More than 2 tasks confirmation
+nag=
+
+# Header and footer are missing
+verbose=blank,footnote,label,new-id,affected,edit,special,project,sync,unwait
+
+# Date
+report.long.dateformat=a M-D-Y
+report.list.dateformat=a M-D H:M
+dateformat=M-D-Y
+weekstart=Sunday
+displayweeknumber=yes
+due=7
+
+# Other
+search.case.sensitive=no
+alias.burndown=burndown.daily
+alias.rm=delete
+alias.p=project
+alias.e=edit
+alias.d=done
+alias.a=add
+alias.m=modify
+alias.cal=calendar
+active.indicator=
+uda.priority.values=H,M,L,
+
+# Color controls.
+color=1                               # Use color
+color.uda.priority.H=green bold                       # Color of priority:H tasks
+color.uda.priority.M=yellow                 # Color of priority:M tasks
+color.uda.priority.L=magenta                  # Color of priority:L tasks
+color.uda.priority.none=white          # Color of priority:  tasks
+color.active=green              # Color of active tasks
+color.due=yellow                  # Color of due tasks
+color.due.today=cyan
+color.overdue=red                 # Color of overdue tasks
+color.tagged=white
+# color.tagged=yellow                    # Color of tagged tasks
+color.scheduled=yellow
+# color.completed
+# color.blocked
+# color.blocking
+# color.deleted
+color.recurring=underline magenta                # Color of recur.any: tasks
+
+color.project.important=bold magenta
+color.project.appt=bold cyan
+color.tag.important=bold magenta                  # Color of +bug tasks
+color.tag.bug=yellow                  # Color of +bug tasks
+#color.keyword.car=on_blue             # Color of description.contains:car tasks
+color.header=bold yellow               # Color of header messages
+color.footnote=on blue             # Color of footnote messages
+
+default.project=general                # Unless otherwise specified
+# default.priority=M                    # Unless otherwise specified
+default.command=list                   # Unless otherwise specified
+
+# Fields: id,uuid,project,priority,entry,start,due,recur,recur_ind,age,
+#          age_compact,active,tags,description,description_only
+# Description:   This report is ...
+# Sort:          due+,priority-,project+
+# Filter:        pro:x pri:H +bug limit:10
+
+# LIST:
+# id - ID
+# start.age - Active
+# entry.age - Age
+# depends.indicator - D
+# priority - P
+# project - Project
+# tags - Tags
+# recur.indicator - R
+# scheduled.countdown - Sch
+# due - Until
+# until.age - Until
+# description.count - Description
+# urgency - Urg
+
+# task long
+report.long.description=Lists all task, all data, matching the specified criteria
+report.long.columns=id,project,priority,entry,start,due,recur,entry.age,tags,description
+report.long.labels=  ,Project,Pri,Added,Started,Due,Recur,Age,Tags,Description
+report.long.sort=due+,priority-,project+
+report.long.filter=status:pending
+
+# depends.indicator, tags, recur.indicator, scheduled.countdown, until.age
+# task list
+report.list.columns=start.active,id,project,priority,due,description,entry.age
+report.list.labels= , ,Project,Pri,Due,Description,Age
+report.list.description=Lists all tasks matching the specified criteria
+# report.list.columns=id,project,priority,due,start.active,age,description
+# report.list.labels=ID,Project,Pri,Due,Active,Age,Description
+report.list.sort=start,description,due+,priority-,project+
+report.list.filter=status:pending
+
+# task ls
+report.ls.description=Minimal listing of all tasks matching the specified criteria
+report.ls.columns=id,project,priority,description
+report.ls.labels= ,Project,Pri,Description
+report.ls.sort=priority-,project+
+report.ls.filter=status:pending
+
+# task newest
+report.newest.description=Shows the newest tasks
+report.newest.columns=id,project,priority,due,start.active,entry.age,description
+report.newest.labels= ,Project,Pri,Due,Active,Age,Description
+report.newest.sort=id-
+report.newest.filter=status:pending limit:10
+
+# task oldest
+report.oldest.description=Shows the oldest tasks
+report.oldest.columns=id,project,priority,due,start.active,entry.age,description
+report.oldest.labels= ,Project,Pri,Due,Active,Age,Description
+report.oldest.sort=id+
+report.oldest.filter=status:pending limit:10
+
+# task overdue
+report.overdue.description=Lists overdue tasks matching the specified criteria
+report.overdue.columns=id,project,priority,due,start.active,entry.age,description
+report.overdue.labels= ,Project,Pri,Due,Active,Age,Description
+report.overdue.sort=due+,priority-,project+
+report.overdue.filter=status:pending due.before:today
+
+# task active
+report.active.description=Lists active tasks matching the specified criteria
+report.active.columns=id,project,priority,due,start.active,entry.age,description
+report.active.labels= ,Project,Pri,Due,Active,Age,Description
+report.active.sort=due+,priority-,project+
+report.active.filter=status:pending start.any:
+
+# task completed
+report.completed.description=Lists completed tasks matching the specified criteria
+report.completed.columns=end,project,priority,entry.age,description
+report.completed.labels=Complete,Project,Pri,Age,Description
+report.completed.sort=end+,priority-,project+
+report.completed.filter=status:completed
+
+# task recurring
+report.recurring.description=Lists recurring tasks matching the specified criteria
+report.recurring.columns=id,project,priority,due,recur,start.active,entry.age,description
+report.recurring.labels= ,Project,Pri,Due,Recur,Active,Age,Description
+report.recurring.sort=due+,priority-,project+
+report.recurring.filter=status:pending parent.any:
+
+# task waiting
+report.waiting.description=Lists all waiting tasks matching the specified criteria
+report.waiting.columns=id,project,priority,wait,entry.age,description
+report.waiting.labels= ,Project,Pri,Wait,Age,Description
+report.waiting.sort=wait+,priority-,project+
+report.waiting.filter=status:waiting
+
+# task all
+report.all.description=Lists all tasks matching the specified criteria
+report.all.columns=id,project,priority,due,start.active,entry.age,description
+report.all.labels= ,Project,Pri,Due,Active,Age,Description
+report.all.sort=due+,priority-,project+
+
+# task next
+report.next.description=Lists the most urgent tasks
+report.next.columns=id,project,priority,due,start.active,entry.age,description
+report.next.labels= ,Project,Pri,Due,Active,Age,Description
+report.next.sort=due+,priority-,project+
+# report.next.filter=status:pending
+
+# Other
+# report.scheduled.description=Scheduled tasks
+# report.scheduled.columns=id,start.age,entry.age,priority,project,tags,recur.indicator,scheduled.relative,due.relative,until.remaining,description.count,urgency
+# report.scheduled.labels=ID,Active,Age,P,Project,Tags,R,S,Due,Until,Description,Urg
+# report.scheduled.sort=scheduled
+# report.scheduled.filter=+SCHEDULED -COMPLETED -DELETED
+
+# report.list.columns=start.active,id,project,priority,due,description,entry.age
+# report.list.labels= , ,Project,Pri,Due,Description,Age
+
+# Hooks
+# Enable hooks for Kusarigama
+# https://github.com/yanick/Taskwarrior-Kusarigama#name
+# hooks=on
+# debug.hooks=0
+# kusarigama.plugins=GitCommit,Renew
+
+# Themes
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/light-16.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/light-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-16.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-red-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-green-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-blue-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-violets-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-yellow-green.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-gray-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-gray-blue-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/solarized-dark-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/solarized-light-256.theme
+#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/no-color.theme
+
+# taskd.ca=\/Users\/lucasburns\/.config\/task\/taskd\/ca.cert.pem
+# taskd.certificate=\/Users\/lucasburns\/.config\/task\/taskd\/Lucas.cert.pem
+# taskd.key=\/Users\/lucasburns\/.config\/task\/taskd\/Lucas.key.pem
+# taskd.credentials=GROUP\/Lucas\/8191c7c8-b62d-40bc-b49e-a51ea82d4925
+# taskd.server=taskd.lucasburns.xyz.:53589
+
+# TASKWARRIOR TUI
+uda.taskwarrior-tui.keyconfig.quit=q
+uda.taskwarrior-tui.keyconfig.refresh=r
+uda.taskwarrior-tui.keyconfig.go-to-bottom=G
+uda.taskwarrior-tui.keyconfig.go-to-top=g
+uda.taskwarrior-tui.keyconfig.down=j
+uda.taskwarrior-tui.keyconfig.up=k
+uda.taskwarrior-tui.keyconfig.page-down=J
+uda.taskwarrior-tui.keyconfig.page-up=K
+uda.taskwarrior-tui.keyconfig.delete=x
+uda.taskwarrior-tui.keyconfig.done=d
+uda.taskwarrior-tui.keyconfig.start-stop=s
+uda.taskwarrior-tui.keyconfig.undo=u
+uda.taskwarrior-tui.keyconfig.edit=e
+uda.taskwarrior-tui.keyconfig.taskn=n
+uda.taskwarrior-tui.keyconfig.modify=m
+uda.taskwarrior-tui.keyconfig.shell=!
+uda.taskwarrior-tui.keyconfig.log=l
+uda.taskwarrior-tui.keyconfig.add=a
+uda.taskwarrior-tui.keyconfig.annotate=A
+uda.taskwarrior-tui.keyconfig.filter=/
+uda.taskwarrior-tui.keyconfig.zoom=z
+uda.taskwarrior-tui.keyconfig.context-menu=c
+uda.taskwarrior-tui.keyconfig.next-tab=]
+uda.taskwarrior-tui.keyconfig.previous-tab=[
+uda.taskwarrior-tui.keyconfig.select=v
+uda.taskwarrior-tui.keyconfig.select-all=V
+
+uda.taskwarrior-tui.selection.indicator=•
+uda.taskwarrior-tui.selection.bold=yes
+uda.taskwarrior-tui.selection.italic=no
+uda.taskwarrior-tui.selection.dim=no
+uda.taskwarrior-tui.selection.blink=no
+uda.taskwarrior-tui.mark.indicator=✔
+uda.taskwarrior-tui.unmark.indicator=
+uda.taskwarrior-tui.mark-selection.indicator=⦿
+uda.taskwarrior-tui.unmark-selection.indicator=⦾
+uda.taskwarrior-tui.calendar.months-per-row=4
+uda.taskwarrior-tui.task-report.show-info=true
+uda.taskwarrior-tui.task-report.looping=true
+uda.taskwarrior-tui.task-report.jump-on-task-add=true
+uda.taskwarrior-tui.task-report.prompt-on-delete=true
+uda.taskwarrior-tui.task-report.prompt-on-done=false
+
+uda.taskwarrior-tui.shortcuts.1=~/mybin/runtaskn
+
+# uda.taskwarrior-tui.style.context.active=black on rgb444
+# uda.taskwarrior-tui.style.calendar.title=black on rgb444
+# uda.taskwarrior-tui.task-report.next.filter=$(task show report.next.filter)
+
+# uda.taskwarrior-tui.shortcuts.1=~/.config/taskwarrior-tui/shortcut-scripts/add-personal-tag.sh
+# uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/shortcut-scripts/sync.sh
+
+# TASKN
+uda.taskn_reminder_uuid.type=string
+uda.estimate.type=numeric
+uda.estimate.label=Estimate
+# uda.estimate.values=huge,large,medium,small,trivial
+
+news.version=2.6.0
+
+# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+context.work.read=project:Work or +urgent
+context.work.write=project:Work or +urgent

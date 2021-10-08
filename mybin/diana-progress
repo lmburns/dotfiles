@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Desc: wrapper for diana - aria2
+
+# printf '%s\n' "====BANDWIDTH===="
+diana stats
+printf '%s\n' "=====ACTIVE======"
+diana list
+printf '%s\n' "=====PAUSED======"
+diana paused
+printf '%s\n' "====COMPLETED===="
+diana stopped
+printf '%s\n' "=====ERRORS======"
+diana errors

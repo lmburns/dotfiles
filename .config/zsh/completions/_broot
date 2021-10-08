@@ -1,0 +1,45 @@
+#compdef broot
+
+# zsh completions for 'broot'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-d,--dates}'[show the last modified date of files and directories]'
+  {-D,--no-dates}'[dont show last modified date]'
+  {-f,--only-folders}'[only show folders]'
+  {-F,--no-only-folders}'[show folders and files alike]'
+  '--show-root-fs[show filesystem info on top]'
+  {-g,--show-git-info}'[show git statuses on files and stats on repo]'
+  {-G,--no-show-git-info}'[dont show git statuses on files]'
+  '--git-status[only show files having an interesting git status, including hidden ones]'
+  {-h,--hidden}'[show hidden files]'
+  {-H,--no-hidden}'[dont show hidden files]'
+  {-i,--show-gitignored}'[show files which should be ignored according to git]'
+  {-I,--no-show-gitignored}'[dont show gitignored files]'
+  {-p,--permissions}'[show permissions, with owner and group]'
+  {-P,--no-permissions}'[dont show permissions]'
+  {-s,--sizes}'[show the size of files and directories]'
+  {-S,--no-sizes}'[dont show sizes]'
+  '--sort-by-count[sort by count (only show one level of the tree)]'
+  '--sort-by-date[sort by date (only show one level of the tree)]'
+  '--sort-by-size[sort by size (only show one level of the tree)]'
+  {-w,--whale-spotting}'[sort by size, show ignored and hidden files]'
+  '--no-sort[dont sort]'
+  {-t,--trim-root}'[trim the root too and dont show a scrollbar]'
+  {-T,--no-trim-root}'[dont trim the root level, show a scrollbar]'
+  '--install[install or reinstall the br shell function]'
+  '--no-style[whether to remove all style and colors from exported tree]'
+  '--help[prints help information]'
+  {-V,--version}'[prints version information]'
+  '--outcmd[where to write the produced cmd (if any)]'
+  {-c,--cmd}'[semicolon separated commands to execute]'
+  '--conf[semicolon separated paths to specific config files]'
+  '--height[height (if you dont want to fill the screen or for file export)]'
+  {-o,--out}'[where to write the produced path (if any)]'
+  '--set-install-state[set the installation state (for use in install script) \[possible values:]'
+  '--print-shell-function[print to stdout the br function for a given shell]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

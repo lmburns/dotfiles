@@ -1,0 +1,15 @@
+#compdef antidot
+
+# zsh completions for 'antidot'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[help for antidot]'
+  {-r,--rules}'[rules file path (default "/Users/lucasburns/.local/share/antidot/rules.yaml")]'
+  {-v,--verbose}'[output verbosity]'
+  '--version[version for antidot]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

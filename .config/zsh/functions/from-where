@@ -1,0 +1,11 @@
+# Desc: tells from-where a zsh completion is coming from
+
+function from-where {
+    print -l -- $^fpath/$_comps[$1](N)
+    whence -v $_comps[$1]
+    #which $_comps[$1] 2>&1 | head
+}
+
+from-where "$@"
+
+# vim:ft=zsh:

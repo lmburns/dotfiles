@@ -1,0 +1,9 @@
+# Desc: use youtube-dl to get audio
+
+mp3() {
+  youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 0 -o '%(title)s.%(ext)s' $@
+}
+
+mp3 "$@"
+
+# vim:ft=zsh:et

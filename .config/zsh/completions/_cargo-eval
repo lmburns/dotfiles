@@ -1,0 +1,29 @@
+#compdef cargo-eval
+
+# zsh completions for 'cargo-eval'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--bench[compile and run benchmarks.  Requires a nightly toolchain.]'
+  '--build-only[build the script, but dont run it.]'
+  '--clear-cache[clears out the script cache.]'
+  '--count[invoke the loop closure with two arguments: line, and line number.]'
+  '--debug[build a debug executable, not an optimised one.]'
+  {-e,--expr}'[execute <script> as a literal expression and display the result.]'
+  '--force[force the script to be rebuilt.]'
+  '--gen-pkg-only[generate the Cargo package, but dont compile or run it.]'
+  {-h,--help}'[prints help information]'
+  {-l,--loop}'[execute <script> as a literal closure once for each line from stdin.]'
+  '--test[compile and run tests.]'
+  {-V,--version}'[prints version information]'
+  {-d,--dep}'[...]'
+  '--features[cargo features to pass when building and running.]'
+  '--pkg-path[specify where to place the generated Cargo package.]'
+  {-t,--template}'[specify a template to use for expression scripts.]'
+  {-u,--unstable-feature}'[...    Add a #!\[feature\] declaration to the crate.]'
+  '--use-shared-binary-cache[override whether or not the shared binary cache will be used for compilation. \[possible values: no, yes\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

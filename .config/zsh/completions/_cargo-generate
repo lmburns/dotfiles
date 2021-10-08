@@ -1,0 +1,26 @@
+#compdef cargo-generate
+
+# zsh completions for 'cargo-generate'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--bin[populates a template variable `crate_type` with value `"bin"`]'
+  {-f,--force}'[dont convert the project name to kebab-case before creating the directory. Note that cargo generate wont]'
+  {-h,--help}'[prints help information]'
+  '--lib[populates a template variable `crate_type` with value `"lib"`]'
+  '--list-favorites[list defined favorite templates from the config]'
+  {-s,--silent}'[if silent mode is set all variables will be extracted from the template_values_file. If a value is missing]'
+  {-V,--version}'[prints version information]'
+  {-v,--verbose}'[enables more verbose output]'
+  {-b,--branch}'[branch to use when installing from git]'
+  {-c,--config}'[use specific configuration file. Defaults to $CARGO_HOME/cargo-generate or $HOME/.cargo/cargo-generate]'
+  {-g,--git}'[git repository to clone template from. Can be a URL (like `https://github.com/rust-cli/cli-template`), a]'
+  {-n,--name}'[directory to create / project name; if the name isnt in kebab-case, it will be converted to kebab-case]'
+  {-i,--identity}'[use a different ssh identity]'
+  '--template-values-file[pass template values through a file Values should be in the format `key=value`, one per line]'
+  '--vcs[specify the VCS used to initialize the generated template \[default: git\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

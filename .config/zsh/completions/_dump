@@ -1,0 +1,30 @@
+#compdef dump
+
+# zsh completions for 'dump'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit.]'
+  {-p,--put}'[dump files to trash location.]'
+  {-c,--clean}'[clean up trash location.]'
+  {-u,--undo}'[undo removed files from trash location.]'
+  {-l,--log}'[display the trash log.]'
+  '--put[]'
+  {-i,--confirm}'[prompt confirmation before dumping each file.]'
+  {-s,--select}'[select a file to delete through fzf.]'
+  '--undo[]'
+  {-i,--confirm}'[prompt confirmation before dumping each file.]'
+  {-s,--select}'[select a file to undo through fzf.]'
+  {-l,--local}'[reset file to current location.]'
+  {-f,--force}'[force overwrite even if undo file already existed.]'
+  {-n,--num}'[specify number of files to undo.]'
+  '--clean[]'
+  {-i,--confirm}'[prompt confirmation before permanently remove file.]'
+  {-s,--select}'[select a file to permanently delete through fzf.]'
+  '--log[:]'
+  {-p,--pager}'[use less as a pager to display output.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

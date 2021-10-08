@@ -1,0 +1,128 @@
+diff --git i/after/syntax/zsh.vim w/after/syntax/zsh.vim
+index cf4f924..ae5abc3 100644
+--- i/after/syntax/zsh.vim
++++ w/after/syntax/zsh.vim
+@@ -10,13 +10,13 @@ endif
+ 
+ " Main Zinit command.
+ " Should be the only TOP rule for the whole syntax.
+-syntax match ZinitCommand     /\<zinit\>\s/me=e-1
++syntax match ZinitCommand     /\<\(zinit\|zt\)\>\s/me=e-1
+             \ skipwhite
+             \ nextgroup=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
+             \ contains=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
+ 
+ " TODO: add options for e.g. light
+-syntax match ZinitSubCommands /\s\<\%(ice\|compinit\|env-whitelist\|cdreplay\|cdclear\|update\)\>\s/ms=s+1,me=e-1
++syntax match ZinitSubCommands /\s\<\%(ice\|compinit\|env-whitelist\|cdreplay\|cdclear\|update\|[0-9][a-c]\)\>\s/ms=s+1,me=e-1
+             \ contained
+ 
+ syntax match ZinitPluginSubCommands /\s\<\%(light\|load\)\>\s/ms=s+1,me=e-1
+@@ -25,7 +25,7 @@ syntax match ZinitPluginSubCommands /\s\<\%(light\|load\)\>\s/ms=s+1,me=e-1
+ 
+ syntax match ZinitSnippetSubCommands /\s\<\%(snippet\)\>\s/ms=s+1,me=e-1
+             \ skipwhite
+-            \ nextgroup=ZinitSnippetShorthands1,ZinitSnippetShorthands2
++            \ nextgroup=ZinitSnippetShorthands1,ZinitSnippetShorthands3
+             \ contains=ZinitSnippetShorthands1,ZinitSnippetShorthands2
+ 
+ " "user/plugin"
+@@ -41,21 +41,21 @@ syntax match ZinitPlugin2 /\s[']\%([!-_]*\%(\/[!-_]\+\)\+\|[!-_]\+\)[']/ms=s+1,h
+             \ contains=ZinitTrailingWhiteSpace
+ 
+ " user/plugin
+-syntax match ZinitPlugin3 /\s\%([!-_]*\%(\/[!-_]\+\)\+\|[!-_]\+\)/ms=s+1,me=e+2 
++syntax match ZinitPlugin3 /\s\%([!-_]*\%(\/[!-_]\+\)\+\|[!-_]\+\)/ms=s+1,me=e+2
+             \ contained
+             \ nextgroup=ZinitTrailingWhiteSpace
+             \ contains=ZinitTrailingWhiteSpace
+ 
+ " OMZ:: or PZT::
+ " TODO: 'OMZ:: or 'PZT::
+-syntax match ZinitSnippetShorthands1 /\s\<\%(\%(OMZ\|PZT\)\>::\|\)/hs=s+1,he=e-2
++syntax match ZinitSnippetShorthands1 /\s\<\%(\%(OMZ\|OMZL\|OMZP\|PZT\)\>::\|\)/hs=s+1,he=e-2
+             \ contained
+             \ skipwhite
+             \ nextgroup=ZinitSnippetUrl1,ZinitSnippetUrl2
+             \ contains=ZinitSnippetUrl1,ZinitSnippetUrl2
+ 
+ " "OMZ:: or "PZT::
+-syntax match ZinitSnippetShorthands2 /\s["]\%(\%(OMZ\|PZT\)\>::\|\)/hs=s+2,he=e-2
++syntax match ZinitSnippetShorthands2 /\s["]\%(\%(OMZ\|OMZL\|OMZP\|PZT\)\>::\|\)/hs=s+2,he=e-2
+             \ contained
+             \ skipwhite
+             \ nextgroup=ZinitSnippetUrl3,ZinitSnippetUrl4
+@@ -67,7 +67,7 @@ syntax match ZinitSnippetUrl3 /\<\%(http:\/\/\|https:\/\/\|ftp:\/\/\|\$HOME\|\/\
+             \ contains=ZinitTrailingWhiteSpace
+ 
+ " TODO: Fix ZinitTrailingWhiteSpace not matching
+-syntax match ZinitSnippetUrl4 /\%(\%(OMZ\|PZT\)::\)[!-_]\+\%(\/[!-_]\+\)*\/\?["]/hs=s+5,he=e-1
++syntax match ZinitSnippetUrl4 /\%(\%(OMZ\|OMZL\|OMZP\|PZT\)::\)[!-_]\+\%(\/[!-_]\+\)*\/\?["]/hs=s+5,he=e-1
+             \ contained
+             \ nextgroup=ZinitTrailingWhiteSpace
+             \ contains=ZinitTrailingWhiteSpace
+@@ -80,7 +80,7 @@ syntax match ZinitSnippetUrl1 /\<\%(http:\/\/\|https:\/\/\|ftp:\/\/\|\$HOME\|\/\
+             \ contains=ZinitTrailingWhiteSpace
+ 
+ " TODO: Fix ZinitTrailingWhiteSpace not matching
+-syntax match ZinitSnippetUrl2 /\<\%(\%(OMZ\|PZT\)::\)[!-_]\+\%(\/[!-_]\+\)*\/\?/hs=s+5
++syntax match ZinitSnippetUrl2 /\<\%(\%(OMZ\|OMZL\|OMZP\|PZT\)::\)[!-_]\+\%(\/[!-_]\+\)*\/\?/hs=s+5
+             \ contained
+             \ nextgroup=ZinitTrailingWhiteSpace
+             \ contains=ZinitTrailingWhiteSpace
+@@ -90,22 +90,23 @@ syntax match ZinitTrailingWhiteSpace /[[:space:]]\+$/ contained
+ " TODO: differentiate the no-value ices
+ " TODO: use contained
+ syntax match ZinitIceSubCommand /\sice\s/ms=s+1,me=e-1 nextgroup=ZinitIceModifiers
+-syntax match ZinitIceModifiers  /\s\<\%(svn\|proto\|from\|teleid\|bindmap\|cloneopts\|id-as\|depth\|if\|wait\|load\)\>/ms=s+1
++syntax match ZinitIceModifiers  /\s\<\%(svn\|proto\|from\|teleid\|bindmap\|cloneopts\|id-as\|depth\|if\|wait\|subst\|load\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(unload\|blockf\|on-update-of\|subscribe\|pick\|bpick\|src\|as\|ver\|silent\)\>/ms=s+1
+-syntax match ZinitIceModifiers  /\s\<\%(lucid\|notify\|mv\|cp\|atinit\|atclone\|atload\|atpull\|nocd\|run-atpull\|has\)\>/ms=s+1
+-syntax match ZinitIceModifiers  /\s\<\%(cloneonly\|make\|service\|trackbinds\|multisrc\|compile\|nocompile\)\>/ms=s+1
++syntax match ZinitIceModifiers  /\s\<\%(lucid\|notify\|mv\|cp\|atinit\|atclone\|atload\|atdelete\|atpull\|nocd\|run-atpull\|has\)\>/ms=s+1
++syntax match ZinitIceModifiers  /\s\<\%(cloneonly\|make\|service\|trackbinds\|multisrc\|extract\|compile\|nocompile\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|reset-prompt\|wrap-track\|reset\|aliases\|sh\|bash\|ksh\|csh\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(\\!sh\|!sh\|\\!bash\|!bash\|\\!ksh\|!ksh\|\\!csh\|!csh\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(blockf\|silent\|lucid\|trackbinds\|cloneonly\|nocd\|run-atpull\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(\|sh\|\!sh\|bash\|\!bash\|ksh\|\!ksh\|csh\|\!csh\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|svn\|aliases\|trigger-load\)\>/ms=s+1
+ syntax match ZinitIceModifiers  /\s\<\%(light-mode\|is-snippet\|countdown\|ps-on-unload\|ps-on-update\)\>/ms=s+1
+-            
++
+ " Include also ices added by the existing annexes
+ syntax match ZinitIceModifiers  /\s\<\%(test\|zman\|submod\|dl\|patch\|fbin\|sbin\|fsrc\|ferc\|fmod\|gem\|node\|rustup\|cargo\)\>/ms=s+1
+-        
++syntax match ZinitIceModifiers /\s\<\%(lbin\|lman\|submods\|binary\|null\|eval\)\>/ms=s+1
++
+ " Additional Zsh and Zinit functions
+-syntax match ZshAndZinitFunctions     /\<\%(compdef\|compinit\|zpcdreplay\|zpcdclear\|zpcompinit\|zpcompdef\)\>/
++syntax match ZshAndZinitFunctions     /\<\%(compdef\|compinit\|zpcdreplay\|zpcdclear\|zpcompinit\|zpcompdef\|OMZ\|OMZL\|OMZP\|zicompinit\|zicdreplay\|zicompinit_fast\)\>/
+ 
+ " Link
+ highlight def link ZshAndZinitFunctions    Keyword
+diff --git i/syntax/perl.vim w/syntax/perl.vim
+index 42339a7..1231bc0 100644
+--- i/syntax/perl.vim
++++ w/syntax/perl.vim
+@@ -92,7 +92,7 @@ syn match perlStatementIOfunc		"\<\%(syscall\|dbmopen\|dbmclose\)\>"
+ syn match perlStatementFiledesc		"\<\%(binmode\|close\%(dir\)\=\|eof\|fileno\|getc\|lstat\|printf\=\|read\%(dir\|line\|pipe\)\|rewinddir\|say\|select\|stat\|tell\%(dir\)\=\|write\)\>" nextgroup=perlFiledescStatementNocomma skipwhite
+ syn match perlStatementFiledesc		"\<\%(fcntl\|flock\|ioctl\|open\%(dir\)\=\|read\|seek\%(dir\)\=\|sys\%(open\|read\|seek\|write\)\|truncate\)\>" nextgroup=perlFiledescStatementComma skipwhite
+ syn match perlStatementVector		"\<vec\>"
+-syn match perlStatementFiles		"\<\%(ch\%(dir\|mod\|own\|root\)\|glob\|link\|mkdir\|readlink\|rename\|rmdir\|symlink\|umask\|unlink\|utime\)\>"
++syn match perlStatementFiles		"\<\%(ch\%(dir\|mod\|own\|root\)\|glob\|link\|mkdir\|readlink\|rename\|rmdir\|symlink\|umask\|unlink\|utime\|dirname\|basename\|make_path\)\>"
+ syn match perlStatementFiles		"-[rwxoRWXOezsfdlpSbctugkTBMAC]\>"
+ syn match perlStatementFlow		"\<\%(caller\|die\|dump\|eval\|exit\|wantarray\|evalbytes\)\>"
+ syn match perlStatementInclude		"\<\%(require\|import\|unimport\)\>"
+diff --git i/syntax/sh.vim w/syntax/sh.vim
+index 7292ec5..c7a80cc 100644
+--- i/syntax/sh.vim
++++ w/syntax/sh.vim
+@@ -25,7 +25,7 @@ syn match Constant "\v/dev/\w+"
+             \ containedin=shFunctionOne,shIf,shCmdParenRegion,shCommandSub
+ 
+ " Common commands
+-let commands = [ 'arch', 'awk', 'b2sum', 'base32', 'base64', 'basename', 'basenc', 'bash', 'brew', 'cat', 'chcon', 'chgrp', 'chown', 'chroot', 'cksum', 'comm', 'cp', 'csplit', 'curl', 'cut', 'date', 'dd', 'defaults', 'df', 'dir', 'dircolors', 'dirname', 'ed', 'env', 'expand', 'factor', 'fmt', 'fold', 'git', 'grep', 'groups', 'head', 'hexdump', 'hostid', 'hostname', 'hugo', 'id', 'install', 'join', 'killall', 'link', 'ln', 'logname', 'md5sum', 'mkdir', 'mkfifo', 'mknod', 'mktemp', 'nice', 'nl', 'nohup', 'npm', 'nproc', 'numfmt', 'od', 'open', 'paste', 'pathchk', 'pr', 'printenv', 'printf', 'ptx', 'readlink', 'realpath', 'rg', 'runcon', 'scutil', 'sed', 'seq', 'sha1sum', 'sha2', 'shred', 'shuf', 'split', 'stat', 'stdbuf', 'stty', 'sudo', 'sum', 'sync', 'tac', 'tee', 'terminfo', 'timeout', 'tmux', 'top', 'touch', 'tput', 'tr', 'truncate', 'tsort', 'tty', 'uname', 'unexpand', 'uniq', 'unlink', 'uptime', 'users', 'vdir', 'vim', 'wc', 'who', 'whoami', 'yabai', 'yes' ]
++let commands = [ 'arch', 'awk', 'b2sum', 'base32', 'base64', 'basename', 'basenc', 'bash', 'brew', 'cat', 'chcon', 'chgrp', 'chown', 'chroot', 'cksum', 'comm', 'cp', 'csplit', 'curl', 'cut', 'date', 'dd', 'defaults', 'df', 'dir', 'dircolors', 'dirname', 'ed', 'env', 'expand', 'factor', 'fmt', 'fold', 'git', 'grep', 'groups', 'head', 'hexdump', 'hostid', 'hostname', 'hugo', 'id', 'install', 'join', 'killall', 'link', 'ln', 'logname', 'md5sum', 'mkdir', 'mkfifo', 'mknod', 'mktemp', 'nice', 'nl', 'nohup', 'npm', 'nproc', 'numfmt', 'od', 'open', 'paste', 'pathchk', 'pr', 'printenv', 'printf', 'ptx', 'readlink', 'realpath', 'rg', 'runcon', 'scutil', 'sed', 'seq', 'sha1sum', 'sha2', 'shred', 'shuf', 'split', 'stat', 'stdbuf', 'stty', 'sudo', 'sum', 'sync', 'tac', 'tee', 'terminfo', 'timeout', 'tmux', 'top', 'touch', 'tput', 'tr', 'truncate', 'tsort', 'tty', 'uname', 'unexpand', 'uniq', 'unlink', 'uptime', 'users', 'vdir', 'vim', 'wc', 'who', 'whoami', 'yabai', 'yes', 'perl' ]
+ 
+ for i in commands
+     execute 'syn match shStatement "\v(\w|-)@<!'

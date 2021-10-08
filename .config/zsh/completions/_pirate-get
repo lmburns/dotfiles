@@ -1,0 +1,35 @@
+#compdef pirate-get
+
+# zsh completions for 'pirate-get'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-b,--browse}'[display in Browse mode]'
+  {-c,--category}'[specify a category to search]'
+  {-s,--sort}'[specify a sort option]'
+  {-R,--recent}'[torrents uploaded in the last 48hours. *ignored in]'
+  {-l,--list-categories}'[list categories]'
+  {--list-sorts,--list}'[_sorts]'
+  {-p,--pages}'[the number of pages to fetch. (only used with]'
+  '--recent[)]'
+  {-L,--local}'[a csv file containing the Pirate Bay database]'
+  '-0[choose the top result]'
+  {-a,--download-all}'[download all results]'
+  {-t,--transmission}'[open magnets with transmission-remote]'
+  {-E,--transmission-endpoint,--port}'[transmission-remote RPC endpoint. default is]'
+  {-A,--transmission-auth,--auth}'[transmission-remote RPC authentication]'
+  {-C,--custom}'[open magnets with a custom command (%s will be]'
+  {-M,--save-magnets}'[save magnets links as files]'
+  {-T,--save-torrents}'[save torrent files]'
+  {-S,--save-directory}'[directory where to save downloaded files (if none is]'
+  '--disable-colors[disable colored output]'
+  '-m[\[MIRROR ...\], --mirror MIRROR \[MIRROR ...\]]'
+  {-z,--timeout}'[timeout in seconds for http requests]'
+  {-v,--version}'[print pirate-get version number]'
+  {-j,--json}'[print results in JSON format to stdout]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

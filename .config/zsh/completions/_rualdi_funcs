@@ -1,0 +1,18 @@
+#compdef __rualdi_rad __rualdi_radr __rualdi_radx __rualdi_radrx __rualdi_fzf
+
+local -a aliases envs
+local state ret
+
+aliases=( ${(@f)"$(rualdi completions alias)"} )
+envs=( ${(@f)"$(rualdi completions env)"} )
+
+case $state in
+  *)
+    _alternative \
+      'aliases:aliases:compadd -a - aliases' \
+      'envs:environments:compadd -a - envs' && \
+          ret=0
+  ;;
+esac
+
+return ret

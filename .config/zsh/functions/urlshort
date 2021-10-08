@@ -1,0 +1,7 @@
+# Desc: shorten url with tinyurl
+# Source: Black-Void-Zsh
+
+curl -s http://tinyurl.com/api-create.php?url\=$1
+echo ""
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -1,0 +1,13 @@
+# Desc: use fzf to edit bookmark with buku
+
+# -f 10; -f 40
+
+url=$(
+  buku -p -f4 \
+    | fzf -m --reverse --preview "buku -p {1}" --preview-window=wrap \
+    | cut -f1
+)
+
+[[ -n "$url" ]] && buku -w "$url"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -1,0 +1,9 @@
+# Desc: use fzf with mates contacts open mutt
+
+fmates() {
+  mutt "$(MATES_GREP='fzf -q' mates email-query)"
+}
+
+fmates "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

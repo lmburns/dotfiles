@@ -1,0 +1,13 @@
+#compdef git-extras
+
+# zsh completions for 'git-extras'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--version}'[]'
+  {-h,--help}'[]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

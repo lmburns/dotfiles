@@ -1,0 +1,15 @@
+# Doesn't work if you use GNU sed
+diff --git a/dump b/dump
+index e4caf03..2f98e87 100755
+--- a/dump
++++ b/dump
+@@ -24,9 +24,6 @@ DUMP_LOG="${DUMP_LOG:-${XDG_DATA_HOME:-$HOME/.local/share}/dump/log}"
+ [[ ! -f "${DUMP_LOG}" ]] && touch "${DUMP_LOG}"
+
+ SED_ARG=("-i")
+-if [[ "$OSTYPE" =~ "darwin" ]]; then
+-  SED_ARG=("-i" "")
+-fi
+
+ #######################################
+ # get user confirmation

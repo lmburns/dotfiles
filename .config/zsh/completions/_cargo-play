@@ -1,0 +1,26 @@
+#compdef cargo-play
+
+# zsh completions for 'cargo-play'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--check[check errors in your code (alias to `--mode check`)]'
+  {-c,--clean}'[rebuild the Cargo project without the cache from previous run]'
+  '--expand[expand macro in your code (alias to `--mode expand`, requires `cargo-expand`)]'
+  {-h,--help}'[prints help information]'
+  {-i,--infer}'[\[experimental\] Automatically infers crate dependency]'
+  {-q,--quiet}'[disable output from Cargo (equivlant to `cargo run --quiet`)]'
+  '--release[build program in release mode]'
+  '--stdin[use stdin as main.rs]'
+  '--test[run test code in your code (alias to `--mode test`)]'
+  {-V,--version}'[prints version information]'
+  {-v,--verbose}'[set Cargo verbose level]'
+  '--cargo-option[customize flags passing to Cargo]'
+  {-e,--edition}'[specify Rust edition \[default: 2018\]  \[possible values: 2015, 2018\]]'
+  {-m,--mode}'[specify subcommand to use when calling Cargo \[default: run\]]'
+  '--save[generate a Cargo project based on inputs]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

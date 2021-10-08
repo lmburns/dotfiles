@@ -1,0 +1,20 @@
+# Desc: use fzf to open bookmark with buku (search by tag first)
+
+# -f 10; -f 40
+# buku -p -f4
+
+local url db sql
+
+db="$XDG_DATA_HOME/buku/bookmarks.db"
+sql="SELECT URL,metadata,tags FROM bookmarks WHERE tags LIKE '%$@%';"
+
+url=$(
+  sqlite3 -separator $'\t' "$db" "$sql" \
+    | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' \
+    | fzf -m --reverse --preview "buku --nostdin -p {1}" --preview-window=wrap \
+    | ${commands[hck]:-cut} -f1
+)
+
+[[ -n "$url" ]] && echo "$url" | xargs ${aliases[librewolf]}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

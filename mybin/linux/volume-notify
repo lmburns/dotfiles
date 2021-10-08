@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Arbitrary but unique message id
+msgId="991049"
+
+# amixer set Master "$@" > /dev/null
+# volume="$(amixer get Master | tail -1 | awk '{print $5}' | sed 's/[^0-9]*//g')"
+# mute="$(amixer get Master | tail -1 | awk '{print $6}' | sed 's/[^a-z]*//g')"
+
+if [[ "$1" == "toggle" ]]; then
+    pactl set-sink-mute "alsa_output.pci-0000_00_1f.3.hdmi-stereo" toggle
+else
+    pactl set-sink-mute "alsa_output.pci-0000_00_1f.3.hdmi-stereo" false
+    pactl set-sink-volume "alsa_output.pci-0000_00_1f.3.hdmi-stereo" "$@"
+fi
+volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)
+mute=$(pulsedevices | rg --color=never mute | hck -d ': ' -f2)
+
+
+if [[ $volume == 0 || "$mute" == "yes" ]]; then
+    # Show the sound muted notification
+    dunstify -a "changeVolume" -u low -i audio-volume-muted -r "$msgId" "Volume muted"
+else
+    # Show the volume notification
+    dunstify -a "changeVolume" -u low -i audio-volume-high -r "$msgId" \
+    -h int:value:"$volume" "Volume: ${volume}%"
+fi
+
+# Play the volume changed sound
+canberra-gtk-play -i audio-volume-change -d "changeVolume"

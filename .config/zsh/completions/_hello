@@ -1,0 +1,133 @@
+#compdef hello
+
+setopt localoptions warncreateglobal typesetsilent extendedglob
+
+autoload -U is-at-least
+typeset -a _arg_opts
+
+if is-at-least 5.2; then
+    _arg_opts=(-s -S -C)
+else
+    _arg_opts=(-s -C)
+fi
+
+# local state
+integer ret=1
+local context curcontext="$curcontext" state line
+typeset -a arguments
+
+# _files -W ~
+
+arguments=(
+  '*--wutag[Also tag files with wutag]'
+  '*-w[Also tag files with wutag]'
+  '--font[Choose figlet font]:choose a figlet font:->figlet_fonts'
+  '-f[Choose figlet font]:choose a figlet font:->figlet_fonts'
+  {-q,--query}'[Start fzf with a query]: :->query'
+  {-h,--help}'[Display a help message]'
+  {-b,--boxes}'[Add a box aroud header with boxes]'
+  {-c,--lolcat}'[Color to header with lolcat]'
+  {-t,--toilet}'[Color and format header with toilet]'
+  {-p,--path}'[Open in a directory]:Paths:_files'
+  {-l,--local}'[Use tags in local directory]: :->local_tags'
+  {-z,--zoxide}'[Start zoxide to select directory to use tags]'
+  {-j,--jump}'[Start autojump to select directory to use tags]'
+  {-n,--nocolor}'[Do not use color when displaying tags]'
+  {-s,--sort}'[Sort tags ascending or descending]:Sorting:((d\:descending desc\:descending ++\:descending a\:ascending asc\:ascending ++\:ascending))'
+)
+
+_arguments "${_arg_opts[@]}" $arguments \
+    && ret=0
+
+# '*: :->tags'
+
+case $state in
+  query)
+    local -a tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    local -a gtags=(${${(@f)"$(tag --usage)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}})
+    _alternative \
+      'tags:== Local Tags ==:compadd -a - tags' \
+      'gtags:== Global Tags ==:compadd -a - gtags' && \
+          ret=0
+  ;;
+  local_tags)
+    local tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    _describe -t tags '== Local Tags ==' tags && \
+        ret=0
+  ;;
+  figlet_fonts)
+    local expl
+    _wanted figlet_fonts expl "== Font ==" compadd \
+        ${(@f)"$(_call_program figlet_fonts figlist)"} && \
+          ret=0
+  ;;
+  *)
+    typeset -a tags=( ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}} )
+    typeset -a gtags=(${${(@f)"$(tag --usage)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}})
+    _alternative \
+      'tags:== Local Tags ==:compadd -a - tags' \
+      'gtags:== Global Tags ==:compadd -a - gtags' && \
+          ret=0
+  ;;
+esac
+
+return $ret
+
+
+# case $state in
+#   args)
+#     curcontext="${curcontext%:*}-${words[2]}:"
+#
+#     local lastarg=${words[${#words}]}
+#     local recipe
+#
+#     local cmds; cmds=(
+#         ${(@f)$(_call_program figlet_fonts figlist)}
+#     )
+#     for ((i = 2; i < $#words; i++ )) do
+#       if [[ ${cmds[(I)${words[i]}]} -gt 0 ]]; then
+#           recipe=${words[i]}
+#           break
+#       fi
+#   done
+#
+#   if [[ $lastarg = */* ]]; then
+#       # Arguments contain slash would be recognised as a file
+#       _arguments -s -S $arguments '*:: :_files'
+#   elif [[ $lastarg = *=* ]]; then
+#       # Arguments contain equal would be recognised as a variable
+#       _message "value"
+#   elif [[ $recipe ]]; then
+#       # Show usage message
+#       _message "`ftag --help`"
+#       # Or complete with other commands
+#       #_arguments -s -S $arguments '*:: :_just_commands'
+#   else
+#       _arguments -s -S $arguments '*:: :_ftag_tags'
+#   fi
+#   ;;
+# esac
+#
+# return $ret
+#
+# (( $+functions[_ftag_tags] )) ||
+# _ftag_tags() {
+#     [[ $PREFIX = -* ]] && return 1
+#     integer ret=1
+#     local -a global_tags; global_tags=(
+#         ${${(@f)"$(tag --usage)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}}
+#     )
+#     local -a local_tags; local_tags=(
+#         ${(@u)${(@s:,:)${(@f)"$(tag -Nl)"}}}
+#     )
+#
+#     if compset -P '*='; then
+#         case "${${words[-1]%=*}#*=}" in
+#             *) _message 'value' && ret=0 ;;
+#         esac
+#     else
+#         _describe -t global_tags 'global tags' global_tags -qS "=" && ret=0
+#         _describe -t local_tags 'local tags' local_tags "$@"
+#     fi
+#
+# }

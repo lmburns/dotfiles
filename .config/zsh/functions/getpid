@@ -1,0 +1,16 @@
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:
+
+# Desc: get pid and pipe to pstree
+
+getpid() {
+  pid=$(px \
+    | sed 1d \
+    | awk 'BEGIN{OFS="\t"}{print $1, $2, $NF}' \
+    | fzf --height=70%
+  )
+
+  printf "%s\n\n" "$(tput setaf 6)$pid$(tput sgr0)"
+  pstree $(echo "$pid" | cut -f1)
+}
+
+getpid

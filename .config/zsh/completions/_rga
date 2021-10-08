@@ -1,0 +1,23 @@
+#compdef rga
+
+# zsh completions for 'rga'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--rga-accurate[use more accurate but slower matching by mime type]'
+  {-h,--help}'[prints help information]'
+  '--rga-list-adapters[list all known adapters]'
+  '--rga-no-cache[disable caching of results]'
+  '--rg-help[show help for ripgrep itself]'
+  '--rg-version[show version of ripgrep itself]'
+  {-V,--version}'[prints version information]'
+  '--rga-adapters[...]'
+  '--rga-cache-compression-level[\[default: 12\]]'
+  '--rga-cache-max-blob-len[max compressed size to cache]'
+  '--rga-max-archive-recursion[maximum nestedness of archives to recurse into \[default: 4\]]'
+  '-h[a concise overview, --help shows more detail and advanced options.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,20 @@
+#compdef airport
+
+# zsh completions for 'airport'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--channel}'[set arbitrary channel on the card]'
+  {-z,--disassociate}'[disassociate from any network]'
+  {-I,--getinfo}'[print current wireless status, e.g. signal info, BSSID, port type etc.]'
+  {-s,--scan}'[perform a wireless broadcast scan.]'
+  {-x,--xml}'[print info as XML]'
+  {-P,--psk}'[create PSK from specified pass phrase and SSID.]'
+  '--password[specify a WPA password]'
+  '--ssid[specify SSID when creating a PSK]'
+  {-h,--help}'[show this help]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

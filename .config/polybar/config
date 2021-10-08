@@ -1,0 +1,386 @@
+; key = ${file:/absolute/file/path:fallback value}
+
+[colors]
+background = ${xrdb:background}
+background-wm = ${xrdb:bg4}
+background-alt = ${xrdb:bg4}
+foreground = ${xrdb:foreground}
+foreground-alt = ${xrdb:color7}
+primary = ${xrdb:color4}
+alert = ${xrdb:color1}
+
+[settings]
+format-foreground =
+format-underline = ${colors.primary}
+format-background = ${colors.background-alt}
+format-padding = 1
+format-overline =
+format-margin = 0
+format-offset =
+screenchange-reload = true
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+[bar/bar]
+monitor = ${env:MONITOR:DP-1}
+monitor-fallback =
+monitor-strict = false
+monitor-exact = true
+override-redirect = false
+wm-restack = bspwm
+enable-ipc = true
+fixed-center = false
+bottom = false
+separator =
+
+width = 100%
+height = 32
+offset-x = 0
+offset-y = 0
+radius = 0.0
+
+underline-size = 3
+overline-size = 0
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+module-margin-left = 0
+module-margin-right = 1
+
+; font-0 = JetBrainsMonoMedium:pixelsize=10;
+font-0 = FiraMonoNerdFontMono:pixelsize=10;
+font-1 = HackNerdFont:pixelsize=10;
+font-2 = NotoColorEmoji:fontformat=truetype:scale=10:antialias=false;
+font-3 = IPAGothic:fontformat=truetype:pixelsize=10:antialias=false;
+
+modules-left = bspwm xwindow
+modules-center = mpd
+modules-right = taskwarrior services torrents pacman-packages cpu_custom cpu-temperature memory_custom pulseaudio weather time powermenu
+
+tray-position = right
+tray-padding = 1
+tray-background = ${colors.background-alt}
+tray-offset-x = 0
+tray-offset-y = 0
+tray-scale = 1.0
+
+cursor-click = pointer
+cursor-scroll = default
+
+[module/subs]
+type = custom/script
+exec = polysubs
+interval = 300
+click-left = $BROWSER https://studio.youtube.com &
+click-right = chromium https://studio.youtube.com &
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:30:...%
+
+format-underline = ${colors.background}
+format-background = ${colors.background}
+format-padding =
+
+; === BSPWM Module ===
+[module/bspwm]
+type = internal/bspwm
+
+enable-scroll = true
+label-focused = %name%
+label-focused-background = ${colors.background-wm}
+label-focused-underline = ${colors.primary}
+label-focused-padding = 1
+
+label-occupied = %name%
+label-occupied-padding = 1
+
+label-urgent = %name%!
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 1
+
+label-empty = %name%
+label-empty-foreground = ${colors.foreground-alt}
+label-empty-padding = 1
+
+format-underline = ${colors.background}
+format-background = ${colors.background}
+format-padding =
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+
+; Separator in between workspaces
+label-separator = |
+
+; === Pacman Module ===
+[module/pacman-packages]
+type = custom/ipc
+hook-0 = sudo pacman -Qu | wc -l
+format-prefix = "📦 "
+click-left = updatepackages
+initial = 1
+
+; === Systemd Module ===
+[module/services]
+type = custom/script
+exec = systemctl --type=service --state=running list-units --no-pager | grep running | wc -l
+interval = 10
+label =  %output%
+click-left = $XDG_CONFIG_HOME/polybar/scripts/services.sh
+
+; === Taskwarrior Module ===
+[module/taskwarrior]
+interval = 30
+type = custom/script
+exec = $XDG_CONFIG_HOME/polybar/scripts/taskwarrior.sh
+format = <label>
+format-foreground = #FFF
+format-prefix = " "
+click-left = task "$((`cat /tmp/tw_polybar_id`))" done
+cick-right = $TERMINAL -e taskwarrior-tui &
+
+; === Crypto Module ===
+[module/crypto]
+type = custom/script
+exec = echo 💰
+interval = 0
+click-left = $TERMINAL -e cointop &
+click-right = notifycrypto
+
+; === Torrents Module ===
+[module/torrents]
+type = custom/script
+exec = echo 📥
+click-left = $TERMINAL -e tremc &
+click-right = notifytorrents
+interval = 0
+
+; === Memory Module (Builtin) ===
+[module/memory]
+type = internal/memory
+interval = 5
+format = <label>
+label = RAM %gb_used%/%gb_free%
+click-left = $TERMINAL -e btm &
+
+; Only applies if <bar-used> is used
+bar-used-indicator =
+bar-used-width = 50
+bar-used-foreground-0 = #a3b95a
+bar-used-foreground-1 = #088649
+bar-used-foreground-2 = #f79a32
+bar-used-foreground-3 = #f14a68
+bar-used-fill = ▐
+bar-used-empty = ▐
+bar-used-empty-foreground = #444444
+
+; === Memory Module ===
+[module/memory_custom]
+type = custom/script
+exec = i3memory
+label = "%output%"
+click-left = $TERMINAL -e btm &
+interval = 10
+format-prefix = " "
+
+; === CPU Module (Builtin) ===
+[module/cpu]
+type = internal/cpu
+interval = 2
+format = <label> <ramp-coreload>
+label = 💻 %percentage%%
+click-left = $TERMINAL -e btm -b &
+
+; === CPU Module ===
+[module/cpu_custom]
+type = custom/script
+exec = polycpu
+label = "%output%"
+click-left = $TERMINAL -e btm -b &
+interval = 10
+format-prefix = "💻 "
+
+; === Temperature Module ===
+[module/cpu-temperature]
+type = custom/script
+exec = polytempamd
+label = "%output%"
+format-prefix="🔥 "
+interval = 10
+
+; === Weather Module ===
+[module/weather]
+type = custom/script
+exec = i3weather
+label = "%output%"
+click-left = $TERMINAL -e w3m wttr.in/65202 &
+interval = 1800
+
+; === Volume Module ===
+[module/volume]
+type = custom/ipc
+hook-0 = polypulsevolume
+click-left = $TERMINAL -e pulsemixer &
+click-right = pulsevolctrl "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
+scroll-up = pulsevolctrl "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" +2%
+scroll-down = pulsevolctrl "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" -2%
+initial = 1
+interval = 5
+
+# === Puleaudio Module ===
+[module/pulseaudio]
+type = internal/pulseaudio
+sink = alsa_output.pci-0000_00_1f.3.hdmi-stereo
+use-ui-max = true
+interval = 5
+format-volume = <ramp-volume> <label-volume>
+label-volume = %percentage%%
+label-muted = 🔇 muted
+label-muted-foreground = #666
+
+ramp-volume-0 = 🔈
+ramp-volume-1 = 🔉
+ramp-volume-2 = 🔊
+
+click-right = pavucontrol
+click-left = $TERMINAL -e pulsemixer &
+
+# === Volume Module Alternative ===
+[module/volume_alt]
+type = internal/volume
+
+; Soundcard to be used
+; Usually in the format hw:#
+master-soundcard = default
+speaker-soundcard = default
+headphone-soundcard = default
+
+; Name of the master mixer
+; Default: Master
+master-mixer = Master
+
+format-volume = <label-volume> <bar-volume>
+label-volume = 
+label-volume-foreground = ${root.foreground}
+
+format-muted-prefix = " "
+format-muted-foreground = ${colors.foreground-alt}
+label-muted = 
+
+bar-volume-width = 10
+bar-volume-foreground-0 = #55aa55
+bar-volume-foreground-1 = #55aa55
+bar-volume-foreground-2 = #55aa55
+bar-volume-foreground-3 = #55aa55
+bar-volume-foreground-4 = #55aa55
+bar-volume-foreground-5 = #f5a70a
+bar-volume-foreground-6 = #ff5555
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.foreground-alt}
+
+; === Timeline Module ===
+[module/time]
+type = custom/script
+exec = date '+%d/%m/%Y %r'
+format-prefix = " "
+click-left = thunderbird &
+label = "%output%"
+tail = false
+interval = 5
+
+; === MPD Module ===
+[module/mpd]
+type = internal/mpd
+format-underline = ${xrdb:color1}
+
+host = localhost
+port = 6600
+; Seconds to sleep between progressbar/song timer sync
+; Default: 1
+interval = 1
+
+;format-online = <icon-prev> <icon-seekb> <icon-stop> <toggle> <icon-seekf> <icon-next>  <icon-repeat> <icon-random>  <bar-progress> <label-time>  <label-song>
+format-online = <label-song> <icon-prev> <icon-stop> <toggle> <icon-next>
+;format-playing = ${self.format-online}
+;format-paused = ${self.format-online}
+;format-stopped = ${self.format-online}
+
+icon-prev = 
+icon-stop = 
+icon-play = 
+icon-pause = 
+icon-next = 
+
+label-song = %artist% - %title%
+
+label-song-maxlen = 75
+label-song-ellipsis = true
+
+; Available tokens:
+;   %elapsed%
+;   %total%
+; Default: %elapsed% / %total%
+label-time = %elapsed%
+
+; Only applies if <bar-progress> is used
+bar-progress-width = 5
+bar-progress-indicator = |
+bar-progress-fill = ─
+bar-progress-empty = ─
+
+; === Powermenu Module ===
+[module/powermenu]
+type = custom/menu
+
+format-spacing = 1
+
+;label-active = %token%
+;label-active-font = 3
+
+label-open = 
+;label-open-foreground = ${colors.secondary}
+label-open-foreground = ${xrdb:color17:}
+label-close = 
+label-close-foreground = ${colors.secondary}
+label-separator =|
+label-separator-foreground = ${colors.background}
+
+menu-0-0 = 
+menu-0-0-exec = menu-open-1
+menu-0-1 = 
+menu-0-1-exec = menu-open-2
+
+menu-1-0 = 
+menu-1-0-exec = menu-open-0
+menu-1-1 = 
+menu-1-1-exec = reboot
+
+menu-2-0 = 
+menu-2-0-exec = shutdown -h now
+menu-2-1 = 
+menu-2-1-exec = menu-open-0
+
+; === Wifi Module ===
+; [module/wifi]
+; type = custom/script
+; exec = i3wifi
+; label = "%output%"
+; format-prefix = "📡 "
+
+; === Backlight Module ===
+; [module/backlight]
+; type = custom/ipc
+; hook-0 = light -G | sed 's/\.[0-9]*//'
+; format-prefix = "💡 "
+; initial = 1
+
+; vim:ft=dosini

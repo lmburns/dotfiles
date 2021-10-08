@@ -1,0 +1,28 @@
+#compdef pacaptr
+
+# zsh completions for 'pacaptr'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-S,-S}'[package = install]'
+  {-Sc,-Sc}'[brew clean]'
+  {-Scc,-Scc}'[brew cleanup]'
+  {-Ss,-Ss}'[brew search]'
+  {-Si,-Si}'[brew info on remote packages]'
+  {-Sii,-Sii}'[brew uses (show dependencies of a formula)]'
+  {-Syu,-Syu}'[brew update and brew upgrade]'
+  {-Su,-Su}'[brew update]'
+  {-Sy,-Sy}'[refresh local package database]'
+  {-Sw,-Sw}'[retrieve packages but not upgrade]'
+  {-Ql,-Ql}'[brew list]'
+  {-Qi,-Qi}'[brew info on local packages]'
+  {-Qc,-Qc}'[brew logs]'
+  {-Qs,-Qs}'[search locally installed]'
+  {-Qu,-Qu}'[search brew update]'
+  {-R,-R}'[brew remove]'
+  {-U,-U}'[brew  update]'
+  {-Rss,-Rss}'[brew rmtree]'
+)
+
+_arguments -s $arguments
