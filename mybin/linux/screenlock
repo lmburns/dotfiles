@@ -1,0 +1,165 @@
+#!/usr/bin/env zsh
+
+local width=1920
+local height=1080
+
+local half_width=$(( width / 2 ))
+local half_height=$(( height / 2 ))
+
+local cachepath=${XDG_CACHE_HOME}/lockscreen
+local cropuser=${cachepath}/$USER-pic-crop.png
+
+function cropuser() {
+  userpic=$HOME/Pictures/wallpapers/0035.jpg
+  # -resize 170x170
+  convert $userpic \
+     -gravity Center \
+      \( -size 160x160 \
+        xc:Black \
+        -fill White \
+        -draw "circle 85 85 85 1" \
+        -alpha Copy \
+      \) -compose CopyOpacity -composite \
+      -trim $cropuser
+}
+
+function blurbg() {
+  # scrot /tmp/screenshot.png
+  maim -u "$cachepath/screenshot.png"
+
+  # -blur 0x27 \
+  convert "$cachepath/screenshot.png" \
+    -filter Gaussian \
+    -blur 0x5 \
+    "$cachepath/screenshot-blur.png"
+}
+
+function genbg() {
+  blurbg
+  # [[ ! -f $cropuser || "$1" = "draw" ]] &&
+    cropuser
+  composite \
+    -geometry "+$((half_width-85))+$((half_height-137))" \
+    $cropuser \
+    $cachepath/screenshot-blur.png \
+    $cachepath/screenshot-pic-blur.png
+}
+
+function lock() {
+  i3lock \
+    --nofork \
+    --color 00000000 \
+    --tiling \
+    --ignore-empty-password \
+    --show-failed-attempts \
+    --image $cachepath/screenshot-pic-blur.png \
+    --indicator \
+    --force-clock \
+    --pass-{media,screen,power,volume}-keys \
+    --insidever-color=2e3440A8 \
+    --insidewrong-color=2e3440A8 \
+    --inside-color=2e344000 \
+    --ringwrong-color=bf616a \
+    --ring-color=F79A32 \
+    --ringver-color=88c0d0 \
+    --line-uses-inside \
+    --keyhl-color=ea6962 \
+    --bshl-color=bf616a \
+    --separator-color=81a1c1 \
+    --verif-color=88c0d0 \
+    --wrong-color=bf616a \
+    --ind-pos="w/2:h/2-53" \
+    --time-str="%I:%M %p" \
+    --time-color=e5e9f0 \
+    --time-pos="w/2:h/2+58" \
+    --date-str="@$(uname -n)" \
+    --date-pos="w/2:h/2+110" \
+    --date-size=16 \
+    --date-color=dfbf8e \
+    --{time,date,verif,wrong}-font="FiraCode Nerd Font" \
+    --greeter-font="FiraCode Nerd Font:style=Bold" \
+    --greeter-text="$USER" \
+    --greeter-color=8fbcbb \
+    --greeter-pos="w/2:h/2+88" \
+    --radius 80 \
+    --ring-width 5 \
+    --greeter-size=20 \
+    --time-size=15 \
+    --{verif,wrong}-size=11 \
+    --modif-size=10 \
+    --modif-pos="w/2:h/2-15"
+    # --no-verify
+}
+
+() {
+  local ctl="$(playerctl status || true)"
+
+  genbg
+  if [[ "$ctl" = "Playing" ]]; then
+    playerctl pause
+  fi
+
+  dunstctl set-paused true
+
+#if pgrep -x "picom" >/dev/null; then
+# true
+#else
+# setsid -f picom --experimental-backends &
+#fi
+
+  if pgrep -x rofi; then
+    killall rofi
+  fi
+
+  lock || screenlock
+  if [[ "$ctl" == "Playing" ]]; then
+    playerctl play
+  fi
+
+  dunstctl set-paused false
+}
+
+
+########################################
+
+# i3lock \
+#   --ignore-empty-password \
+#   --show-failed-attempts \
+#   --clock \
+#   --radius 100 \
+#   --ring-width 8.5 \
+#   --inside-color="7e5053" \
+#   --ring-color="4c96a8" \
+#   --line-color="A89984" \
+#   --verif-color="676767" \
+#   --modif-color="676767" \
+#   --wrong-color="f14a68" \
+#   --keyhl-color="89b482" \
+#   --bshl-color="d3869b" \
+#   --time-str="%r" \
+#   --date-str="%A, %m %Y" \
+#   --verif-text="Verifying.." \
+#   --wrong-text="Wrong!" \
+#   --noinput-text="No Input" \
+#   --lock-text="Locking.." \
+#   --lockfailed-text="Lock Failed!" \
+#   --timeoutline-color="A89984" \
+#   --dateoutline-color="A89984" \
+#   --time-pos="955:243" \
+#   --date-pos="955:292" \
+#   --greeter-pos="955:869" \
+#   --bar-indicator \
+#   --bar-color="221a02" \
+#   --{time,date,layout,verif,wrong,greeter}-size=35 \
+#   --{time,date,layout,verif,wrong,greeter,modifier}outline-width=2 \
+#   --{time,date,layout,verif,wrong,greeter}-font="FiraMono Nerd Font Mono" \
+#   --pass-{media,screen,power,volume}-keys \
+#   --greeter-text="Hello Lucas" \
+#   -i /tmp/screenblur.png
+
+# Used for testing
+# --no-verify \
+
+# Doesn't work
+# --inside-wrongcolor="dc3958" \
+# --ring-wrongcolor="676767"

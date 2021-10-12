@@ -1,0 +1,10 @@
+---
+# https://rubystyle.guide/#underscore-unused-vars
+Layout/IndentationWidth:
+  Width: 4
+
+Style/AsciiComments:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 99

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+setxkbmap -layout us
+xset r rate 300 50
+
+mod="Hyper_L"
+
+xmodmap -e "clear lock"
+xmodmap -e "keysym Caps_Lock = Hyper_L"
+xmodmap -e "add lock = Caps_Lock"
+
+killall xcape 2>/dev/null ; xcape -e "$mod=Escape"

@@ -191,3 +191,26 @@ function t() {
     zle redisplay 2>/dev/null || true
 }
 # https://issue.life/questions/37597191
+
+# greenclip
+if (( $+commands[greenclip] )); then
+    function clipboard-fzf() {
+        CONTENT=$(greenclip print | grep -v '^\s*$' | nl -w2 -s' ' | fzf | sed -E 's/^ *[0-9]+ //')
+        BUFFER="$BUFFER$CONTENT"
+        CURSOR="$#BUFFER"
+        zle redisplay
+    }
+    zle     -N    clipboard-fzf
+
+    function greenclip-cfg() {
+      killall greenclip; $EDITOR ~/.config/greenclip.cfg &&
+        nohup greenclip daemon &>/dev/null &
+    }
+    function greenclip-reload() {
+      killall greenclip; nohup greenclip daemon &>/dev/null &
+    }
+    function greenclip-clear() {
+      killall greenclip; rm ~/.cache/greenclip.history &&
+        nohup greenclip daemon &>/dev/null &
+    }
+fi

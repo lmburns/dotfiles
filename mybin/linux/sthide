@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+
+# text img
+steghide embed -ef "$1" -cf "$2"
+
+steghide extract -sf "$2"

@@ -1,0 +1,3 @@
+xset dpms 0 0 0
+xset s 100 20
+xss-lock -l -n ~/.bin/hidden/notify-lock -- ~/.bin/lock &

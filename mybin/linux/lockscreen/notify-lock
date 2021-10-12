@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "Locking..." | osd_cat \
+    --font '-*-lucidatypewriter-bold-*-*-*-*-240-*-*-*-*-*-*' \
+    --outline 3 \
+    --color red \
+    --pos middle \
+    --align center \
+    --delay 60 &
+
+PID=$!
+
+trap "kill $PID" TERM INT EXIT
+
+wait

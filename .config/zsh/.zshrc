@@ -7,6 +7,14 @@
 # TODO: zsh notify
 # TODO: remap dir history
 
+export GOPATH="${XDG_DATA_HOME}/go"
+export GOROOT="${XDG_DATA_HOME}/go"
+export GOENV_ROOT="${XDG_DATA_HOME}/goenv"
+export GEM_PATH="${XDG_DATA_HOME}/ruby/gems"
+export GEM_HOME="${XDG_DATA_HOME}/ruby/gems"
+export GEM_SPEC_CACHE="${XDG_DATA_HOME}/ruby/specs"
+export RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
+
 # === general settings === [[[
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
@@ -72,7 +80,7 @@ if ! [[ $MYPROMPT = dolphin ]]; then
   zstyle ':chpwd:*' recent-dirs-default true
   zstyle ':completion:*' recent-dirs-insert both
   zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
-  dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|${TMPDIR:A}/*)}(N-/) )
+  dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
   [[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
     local dir
     for dir ($dirstack){
@@ -247,15 +255,15 @@ zt 0b light-mode for \
   lbin'!bin/*' \
     bigH/git-fuzzy \
     zdharma/zui \
-    zdharma/zbrowse
+    zdharma/zbrowse \
+  atload'
+  zstyle ":notify:*" expire-time 6
+  zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
+  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"
+  ' \
+    marzocchi/zsh-notify
 # TODO: Delete git fuzzy after done using it for testing
 #  ]]] === wait'0b' ===
-
-  # atload'
-  # zstyle ":notify:*" command-complete-timeout 3
-  # zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
-  # zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
-  #   marzocchi/zsh-notify \
 
 #  === wait'0c' - programs - sourced === [[[
 zt 0c light-mode binary for \
@@ -340,8 +348,6 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
   atclone'./rclone/rclone genautocomplete zsh _rclone' \
   atpull'%atclone' \
     rclone/rclone \
-  lbin'*/*/aria2c' \
-    aria2/aria2 \
   lman'*/**.1' atinit'export _ZO_DATA_DIR="${XDG_DATA_HOME}/zoxide"' \
     ajeetdsouza/zoxide
 #  ]]] === wait'0c' - programs + man ===
@@ -362,7 +368,7 @@ zt 0c light-mode null for \
     doron-cohen/antidot \
   lbin'xurls* -> xurls' from'gh-r' \
     @mvdan/xurls \
-  lbin'q -> dq' from'gh-r' \
+  lbin'q -> dq' from'gh-r' bpick'*linux*gz' \
     natesales/q \
   lbin'a*.pl -> arranger' \
   atclone'mkdir -p $XDG_CONFIG_HOME/arranger; cp *.conf $XDG_CONFIG_HOME/arranger' \
@@ -491,7 +497,8 @@ zt 0c light-mode null for \
     greymd/teip \
   lbin from'gh-r' \
     BurntSushi/xsv \
-  lbin from'gh-r' \
+  lbin atclone'cargo build --release' atpull'%atclone' \
+  atclone"command mv -f tar*/rel*/dua . && cargo clean" \
     Byron/dua-cli \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/lolcate . && cargo clean" \
@@ -729,7 +736,7 @@ autoload +X -Uz run-help
 zmodload -F zsh/parameter p:functions_source
 autoload -Uz $functions_source[run-help]-*~*.zwc
 
-typeset -g HELPDIR='/usr/local/share/zsh/help'
+# typeset -g HELPDIR='/usr/share/zsh/help'
 # ]]]
 
 
@@ -908,13 +915,13 @@ function upp() { cat $1 | up; }
 # crypto
 function ratesx() { curl rate.sx/$1; }
 # copy directory
-function pbcpd() { builtin pwd | tr -d "\r\n" | pbcopy; }
+function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
 # create file from clipboard
-function pbpf() { pbpaste > "$1"; }
-function pbcf() { pbcopy < "${1:-/dev/stdin}"; }
+function pbpf() { xsel -b > "$1"; }
+function pbcf() { xsel -b < "${1:-/dev/stdin}"; }
 # backup files
-function bak() { /usr/local/bin/gcp -r --force --suffix=.bak $1 $1.bak }
-function rbak() { /usr/local/bin/gcp -r --force $1.bak $1 }
+function bak() { /usr/bin/cp -r --force --suffix=.bak $1 $1 }
+function rbak() { /usr/bin/cp -r --force $1.bak $1 }
 # only renames
 function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
 function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
@@ -939,10 +946,10 @@ function rmsymr() { command rm -- **/*(-@D); }
 function rmspace() { f2 -f '\s' -r '_' -RF $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 # monitor core dumps
-function moncore() { fswatch --event-flags /cores/ | xargs -I{} terminal-notifier -message {} -title 'coredump'; }
+function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
+# reload zsh function without sourcing zshrc
 function freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
 function ee() { lax -f nvim "@${1}"; }
-function macfeh() { open -b "drabweb.macfeh" "$@"; }
 function time-zsh() { shell=${1-$SHELL}; for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done; }
 function profile-zsh() { ZSHRC_PROFILE=1 zsh -i -c zprof | bat; }
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
@@ -951,11 +958,10 @@ function ww() { (alias; declare -f) | /usr/bin/which --tty-only --read-alias --r
 function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
 function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 function png() { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
-function osxnotify() { osascript -e 'display notification "'"$*"'"'; }
-function askpass() { osascript -e 'do shell script "'"$*"'" with administrator privileges' }
 function td() { date -d "+${*}" "+%FT%R"; }
 function ofd() { open $PWD; }
 function double-accept() { deploy-code "BUFFER[-1]=''"; }
+function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 zle -N double-accept
 
 function xd() {
@@ -1010,6 +1016,38 @@ _zsh_autosuggest_strategy_custom_history () {
 }
 # ]]]
 
+# === paths (GNU) === [[[
+[[ -z ${path[(re)$HOME/.local/bin]} ]] && path=( "$HOME/.local/bin" "${path[@]}" )
+[[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
+
+# cdpath=( $HOME/{projects,}/github $XDG_CONFIG_HOME )
+
+# hash -d git=$HOME/projects/github
+# hash -d pro=$HOME/projects
+# hash -d opt=$HOME/opt
+hash -d ghq=$HOME/ghq
+
+manpath=(
+  $XDG_DATA_HOME/man
+  "${manpath[@]}"
+)
+
+path=(
+  $HOME/mybin
+  $HOME/mybin/linux
+  $HOME/bin
+  $HOME/.ghg/bin
+  $PYENV_ROOT/{shims,bin}
+  $GOENV_ROOT/bin(N-/)
+  $CARGO_HOME/bin(N-/)
+  $XDG_DATA_HOME/gem/bin(N-/)
+  $HOME/.poetry/bin(N-/)
+  $(ruby -e 'puts Gem.user_dir')/bin(N-/)
+  /usr/lib/goenv/libexec
+  "${path[@]}"
+)
+# ]]]
+
 #===== completions ===== [[[
   zt 0c light-mode as'completion' for \
     id-as'poetry_comp' atclone='poetry completions zsh > _poetry' \
@@ -1037,7 +1075,9 @@ zt 0c light-mode run-atpull for \
     zdharma/null \
   id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
     zdharma/null \
-  id-as'ruby_env' has'rbenv' nocd eval'rbenv init - --no-rehash' \
+  id-as'ruby_env' has'rbenv' nocd eval'rbenv init -' \
+    zdharma/null \
+  id-as'go_env' has'goenv' nocd eval'goenv init -' \
     zdharma/null \
   id-as'thefuck_alias' has'thefuck' nocd eval'thefuck --alias' \
     zdharma/null \
@@ -1047,12 +1087,14 @@ zt 0c light-mode run-atpull for \
   id-as'fw-init' has'fw' nocd eval'fw print-zsh-setup -f' \
     zdharma/null \
   id-as'keychain_init' has'keychain' nocd \
-    eval'keychain --agents ssh -q --inherit any --eval id_rsa git \
+    eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
       zdharma/null \
   id-as'Cleanup' nocd atinit'unset -f zt grman; _zsh_autosuggest_bind_widgets' \
     zdharma/null
 
+# Recommended that `GOROOT/GOPATH` is added after `goenv` init
+path=( $GOPATH/bin(N-/) "${path[@]}" )
 
 # eval "$(keychain --agents ssh -q --inherit any --eval id_rsa git burnsac)"
 # eval "$(keychain --agents gpg -q --eval 0xC011CBEF6628B679)"
@@ -1092,7 +1134,6 @@ typeset -gx CDHISTSIZE=20 CDHISTTILDE=TRUE CDHISTCOMMAND=cdh
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
 typeset -gx FZFGIT_DEFAULT_OPTS="--preview-window=':nohidden,right:65%:wrap'"
 typeset -gx NQDIR="$TMPDIR/nq"
-[[ $OSTYPE = darwin* ]] && typeset -gx BREW_PREFIX="$(/usr/local/bin/brew --prefix)"
 
 typeset -g KEYTIMEOUT=15
 
@@ -1216,84 +1257,7 @@ $FZF_DEFAULT_OPTS
 "
 # ]]]
 
-# === paths (GNU) === [[[
-[[ -z ${path[(re)$HOME/.local/bin]} ]] && path=( "$HOME/.local/bin" "${path[@]}" )
-[[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
-
-[[ $OSTYPE = darwin* ]] && {
-  # HOMEBREW_PREFIX is not reliable when sourced (brew shellenv)
-  path=(
-    ${BREW_PREFIX}/bin
-    ${BREW_PREFIX}/opt/{coreutils,gnu-sed,grep,gnu-tar}/libexec/gnubin
-    ${BREW_PREFIX}/opt/{gawk,findutils,ed}/libexec/gnubin
-    ${BREW_PREFIX}/opt/{gnu-getopt,file-formula,util-linux}/bin
-    ${BREW_PREFIX}/opt/{flex,libressl,unzip}/bin
-    ${BREW_PREFIX}/opt/openvpn/sbin
-    ${BREW_PREFIX}/opt/llvm/bin
-    ${BREW_PREFIX}/texlive/2021/bin
-    ${HOMEBREW_PREFIX}/mysql/bin(N-/)
-    "${path[@]}"
-  )
-
-  manpath=(
-    ${BREW_PREFIX}/opt/{grep,gawk,gnu-tar,gnu-getopt}/share/man
-    ${BREW_PREFIX}/opt/{gnu-sed,findutils,gnu-which,file-formula}/share/man
-    ${BREW_PREFIX}/opt/{gnu-getopt,task-spooler,util-linux}/share/man
-    "${manpath[@]}"
-  )
-
-  infopath=( ${BREW_PREFIX}/{share,}/info "${infopath[@]}" )
-}
-
-# cdpath=( $HOME/{projects,}/github $XDG_CONFIG_HOME )
-
-# hash -d git=$HOME/projects/github
-# hash -d pro=$HOME/projects
-# hash -d opt=$HOME/opt
-hash -d ghq=$HOME/ghq
-hash -d TMPDIR=${TMPDIR:A}
-
-path=(
-  $HOME/mybin
-  $HOME/mybin/linux
-  $HOME/bin
-  $HOME/.ghg/bin
-  $HOME/.rbenv/version/3.0.0/bin(N-/)
-  $PYENV_ROOT/{shims,bin}
-  $CARGO_HOME/bin(N-/)
-  $XDG_DATA_HOME/gem/bin(N-/)
-  $GOPATH/bin(N-/)
-  $(ruby -e 'puts Gem.user_dir')
-  $HOME/.poetry/bin(N-/)
-  "${path[@]}"
-)
-
-# llvm
-export LDFLAGS="-L/usr/local/opt/llvm/lib"
-export CPPFLAGS="-I/usr/local/opt/llvm/include"
-# flex
-export LDFLAGS="-L/usr/local/opt/flex/lib"
-export CPPFLAGS="-I/usr/local/opt/flex/include"
-# bison
-export PATH="/usr/local/opt/bison/bin:$PATH"
-export LDFLAGS="-L/usr/local/opt/bison/lib"
-# libressl
-export LDFLAGS="-L/usr/local/opt/libressl/lib"
-export CPPFLAGS="-I/usr/local/opt/libressl/include"
-export PKG_CONFIG_PATH="/usr/local/opt/libressl/lib/pkgconfig"
-# ]]]
-
 # == sourcing === [[[
-
-[[ $OSTYPE = darwin* ]] && {
-  zt 0b light-mode null id-as for \
-    atload'
-    ( [[ -S $XDG_DATA_HOME/pueue/pueue_lucasburns.socket ]] || \
-      pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml" ) && {
-      ( chronic pueue clean && pueue status | rg -Fq limelight ) || chronic pueue add limelight
-    }' \
-      zdharma/null
-  }
 
 zt 0b light-mode null id-as for \
   multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,git-token}.zsh" \
@@ -1319,7 +1283,7 @@ zt 0b light-mode null id-as for \
 
 # recache keychain if older than GPG cache time or first login
 # local first=${${${(M)${(%):-%l}:#*01}:+1}:-0}
-[[ -f "$ZINIT[PLUGINS_DIR]/keychain_init"/eval*~*.zwc(#qN.ms+45000) ]] && {
+[[ -f "$ZINIT[PLUGINS_DIR]/keychain_init"/eval*~*.zwc(#qN.ms+45000) ]] || [[ "$TTY" = /dev/tty1 ]] && {
   zinit recache keychain_init
   print -Pr "%F{13}===========================%f"
   print -Pr "%F{12}===> %BKeychain recached%b <===%f"
@@ -1328,12 +1292,8 @@ zt 0b light-mode null id-as for \
 }
 # ]]]
 
-[[ $OSTYPE = darwin* ]] && {
-  local fdir="${HOMEBREW_PREFIX}/share/zsh/site-functions"
-  [[ -z ${fpath[(re)$fdir]} && -d "$fdir" ]] && fpath=( "${fpath[@]}" "${fdir}" )
-}
-
-[[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] && path=( "$XDG_BIN_HOME" "${path[@]}")
+[[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] \
+    && path=( "$XDG_BIN_HOME" "${path[@]}")
 
 path=( "${ZPFX}/bin" "${path[@]}" )                # add back to be beginning
 path=( "${path[@]:#}" )                            # remove empties

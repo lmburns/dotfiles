@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+local to_run="$(\
+  dmenu_path \
+    | dmenu \
+      -fn 'FiraMono Nerd Font Mono-10')"
+        # -nb '#282828' \
+        # -nf '#D9AE80' \
+        # -sb '#4C96A8' \
+        # -sf '#A89984')"
+
+[[ -n "$to_run" ]] && $TERMINAL -e "$to_run" &

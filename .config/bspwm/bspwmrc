@@ -3,31 +3,21 @@
 bspc rule -r "*"
 
 pgrep -x sxhkd > /dev/null || sxhkd &
+pgrep -x pueued > /dev/null && pueue clean
+
 xsetroot -cursor_name left_ptr &
 
-# /home/lucas/mybin/remaps &
-# remaps &
-# sxhkd &
-
 remaps &
-thunar --daemon &
+# remaps-mode_shift &
+
+# thunar --daemon &
+# spacefm -d &
+pgrep -x pcmanfm >/dev/null || pcmanfm -d &
 launchpolybar &
 
-# pgrep -x nm-applet > /dev/null || nm-applet &
-# pgrep -x blueman-applet >/dev/null || blueman-applet &
-# pgrep -x udiskie >/dev/null || udiskie & # --tray
-# clipit &
-
-# xrdb ~/.Xresources &
-# pgrep -x picom >/dev/null || picom -b --experimental-backends &
-# pgrep -x hsetroot >/dev/null || hsetroot -cover ~/Pictures/wallpapers/0012.jpg &
-# pgrep -x flameshot >/dev/null || flameshot &
-# pgrep -x fcitx >/dev/null || fcitx -d &
-
-# bspc monitor -d I II III IV V VI VII VIII IX X
 bspc monitor -d I II III IV V
 
-# bspc config automatic_scheme alternate
+bspc config automatic_scheme alternate
 bspc config initial_polarity second_child
 
 bspc config split_ratio          0.50
@@ -46,7 +36,7 @@ bspc config borderless_monocle   true
 bspc config border_width          5
 bspc config normal_border_color   "#4c566a"
 bspc config active_border_color   "#1e1e1e"
-bspc config focused_border_color  "#EF1D55"
+bspc config focused_border_color  "#a98698"
 bspc config presel_feedback_color "#4C96A8"
 bspc config urgent_border_color   "#dd2727"
 
@@ -70,11 +60,22 @@ bspc config pointer_action3 resize_corner
 
 bspc rule -a Firefox desktop='^2'
 bspc rule -a Screenkey manage=off
-bspc rule -a mpv state=fullscreen
+# bspc rule -a Screenkey --unmanage
+# bspc rule -a mpv state=fullscreen
 bspc rule -a Zathura state=tiled
 bspc rule -a Sxiv state=floating follow=on
+bspc rule -a "feh" state=floating
 bspc rule -a "System Settings"  state=floating follow=on
+
+bspc rule -a Alacritty:cmatrixterm state=fullscreen
+bspc rule -a Alacritty:dropdown state=floating
 
 # bspc rule -a Gimp desktop='^8' state=floating follow=on
 # bspc rule -a mplayer2 state=floating
 # bspc rule -a Kupfer.py focus=on
+
+# dropdownname="dropdown"
+# bspc query -N -n .hidden >/dev/null || setsid $TERMINAL -n "$dropdownname" -e dropdown >/dev/null 2>&1 &
+# bspc rule -a St:$dropdownname hidden=on
+# bspc rule -a St:$dropdownname sticky=on
+# bspc rule -a St:$dropdownname state=floating

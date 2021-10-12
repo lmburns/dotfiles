@@ -4,14 +4,6 @@ tls	on
 tls_trust_file	/etc/ssl/cert.pem
 logfile /home/lucas/.config/msmtp/msmtp.log
 
-account chi@linuxmail.org
-host smtp.mail.com
-port 587
-from chi@linuxmail.org
-user chi@linuxmail.org
-passwordeval "pass mw-chi@linuxmail.org"
-
-account burnsac@me.com
 host smtp.mail.me.com
 port 587
 from burnsac@me.com
@@ -19,19 +11,33 @@ user burnsac@me.com
 passwordeval "pass burnsac@me.com"
 auth on
 tls on
-tls_trust_file	/etc/ssl/cert.pem
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
+# tls_starttls
 
 account lucas@lmburns.com
 host mail.lmburns.com
-port 587
+port 465
 from lucas@lmburns.com
 user lucas@lmburns.com
 passwordeval "pass lucas@lmburns.com"
 auth on
 tls on
-tls_trust_file	/etc/ssl/cert.pem
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
+tls_starttls off
+
+account lmb@lmburns.com
+host mail.lmburns.com
+port 465
+from lmb@lmburns.com
+user lmb@lmburns.com
+passwordeval "pass lmb@lmburns.com"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/lucas/.config/msmtp/msmtp.log
+tls_starttls off
 
 account burnsppl@gmail.com
 host smtp.gmail.com
@@ -41,16 +47,7 @@ user burnsppl@gmail.com
 passwordeval "pass burnsppl@gmail.com"
 auth on
 tls on
-tls_trust_file	/etc/ssl/cert.pem
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
+# tls_starttls
 
-account lmb@lmburns.com
-host mail.lmburns.com
-port 587
-from lmb@lmburns.com
-user lmb@lmburns.com
-passwordeval "pass lmb@lmburns.com"
-auth on
-tls on
-tls_trust_file	/etc/ssl/cert.pem
-logfile /home/lucas/.config/msmtp/msmtp.log

@@ -15,13 +15,15 @@
   },
   "diagnostic-languageserver.formatFiletypes": {
     "sh": "shfmt"
-  //   "zsh": "shfmt"
+    //   "zsh": "shfmt"
   },
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
   "list.indicator": "➤",
-  "coc.preferences.formatOnSaveFiletypes": ["go"],
+  "coc.preferences.formatOnSaveFiletypes": [
+    "go"
+  ],
   "coc.preferences.formatOnType": true,
   "signature.enable": true,
   "sh.enable": true,
@@ -58,7 +60,6 @@
   "git.topRemovedSign.hlGroup": "SignifySignDelete",
   // "git.addGBlameToVirtualText": true,
   // "git.virtualTextPrefix": "     commit: ",
-
   // coc-explorer
   "explorer.icon.enableNerdfont": true,
   "explorer.icon.source": "vim-devicons",
@@ -91,71 +92,84 @@
     "i": false,
     "gk": "expandablePrev",
     "gj": "expandableNext",
-
     "<space>": "toggleSelection",
     "<tab>": "actionMenu",
-
     "h": "collapse",
-    "l": ["expandable?", "expand", "open"],
-    "J": ["toggleSelection", "nodeNext"],
-    "K": ["toggleSelection", "nodePrev"],
-    "<2-LeftMouse>": [
+    "l": [
       "expandable?",
-      ["expanded?", "collapse", "expand"],
+      "expand",
       "open"
     ],
-    "o": ["expanded?", "collapse", "expand"],
-    "<cr>": ["expandable?", "cd", "open"],
+    "J": [
+      "toggleSelection",
+      "nodeNext"
+    ],
+    "K": [
+      "toggleSelection",
+      "nodePrev"
+    ],
+    "<2-LeftMouse>": [
+      "expandable?",
+      [
+        "expanded?",
+        "collapse",
+        "expand"
+      ],
+      "open"
+    ],
+    "o": [
+      "expanded?",
+      "collapse",
+      "expand"
+    ],
+    "<cr>": [
+      "expandable?",
+      "cd",
+      "open"
+    ],
     // "o": ["expandable?", ["expanded?", "collapse", "expand"], "open"],
     // "<cr>": "open",
     // "l": "indentNext",
     // "h": "indentPrev",
-    "H": ["gotoParent"],
+    "H": [
+      "gotoParent"
+    ],
     "s": "open:split",
     "S": "open:split:plain",
     "V": "open:vsplit",
     "t": "open:tab",
     "<bs>": "gotoParent",
     "gp": "preview:labeling",
-
     "yf": "copyFile",
     "yy": "copyFilename",
     "x": "cutFile",
     "p": "pasteFile",
     "dd": "delete",
-
     "mf": "addFile",
     "md": "addDirectory",
     "r": "rename",
-
     ".": "toggleHidden",
     "R": "refresh",
-
     "?": "help",
     "q": "quit",
     "<esc>": "esc",
     "!": "systemExecute",
     "gd": "listDrive",
     "<C-p>": "preview",
-
     "f": "search",
     "F": "searchRecursive",
-
     "gf": "gotoSource:file",
     "gb": "gotoSource:buffer",
-
     "[[": "sourcePrev",
     "]]": "sourceNext",
-
     "[d": "diagnosticPrev",
     "]d": "diagnosticNext",
-
     "[c": "gitPrev",
     "]c": "gitNext",
     "<<": "gitStage",
     ">>": "gitUnstage"
   },
-    "snippets.ultisnips.directories": [
+  "snippets.ultisnips.directories": [
     "UltiSnips",
     "gosnippets/UltiSnips"
   ],
@@ -193,9 +207,15 @@
   },
   "snippets.shortcut": "\uf672",
   "clangd.enabled": true,
-  "clangd.arguments": ["--clang-tidy", "--completion-style=detailed", "--fallback-style=google", "--header-insertion=iwyu", "--suggest-missing-includes"],
+  "clangd.arguments": [
+    "--clang-tidy",
+    "--completion-style=detailed",
+    "--fallback-style=google",
+    "--header-insertion=iwyu",
+    "--suggest-missing-includes"
+  ],
   "rust-analyzer.server.path": "rust-analyzer",
-  "rust-analyzer.updates.channel":"nightly",
+  "rust-analyzer.updates.channel": "nightly",
   "rust-analyzer.cargo.allFeatures": true,
   "rust-analyzer.checkOnSave.allFeatures": true,
   "rust-analyzer.procMacro.enable": true,
@@ -212,19 +232,26 @@
   "rust-analyzer.diagnostics.enable": true,
   "rust-analyzer.diagnostics.enableExperimental": true,
   "rust-analyzer.lens.enable": true,
-
   // "rust.show_warnings": false,
   // "rust.clippy_preference": "on",
   // "rust.rustfmt_path": "/Users/lucasburns/.local/share/cargo/bin/rustfmt",
-
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["go"]
+      "rootPatterns": [
+        "go.mod",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
+      "filetypes": [
+        "go"
+      ]
     }
   },
   "yank.highlight.duration": 100,
-  "clangd.path": "/Users/lucasburns/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
-  "solargraph.useBundler": true
+  "solargraph.diagnostics": true,
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true,
+  // "clangd.path": "/Users/lucasburns/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
 }

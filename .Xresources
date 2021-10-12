@@ -12,6 +12,7 @@ URxvt.keysym.C-0:resize-font:reset
 *.background:   #221a02
 *.bg3: #291804
 *.bg4: #5e452b
+*.bg5: #7E602C
 *.cursorColor:  #c2a383
 
 ! black
@@ -45,3 +46,44 @@ URxvt.keysym.C-0:resize-font:reset
 ! white
 *.color7:       #A89984
 *.color15:      #D9AE80
+
+! kimbie
+*.orange:         #F06431
+*.purple:         #733E8B
+*.dark-yellow:    #FE8019
+
+*.bright-blue:    #8AB1B0
+*.bright-cyan:    #4C96A8
+*.bright-green:   #A3B95A
+*.bright-magenta: #98676A
+*.bright-red:     #F14A68
+*.bright-yellow:  #FCAC51
+
+*.blue:           #719190
+*.cyan:           #418292
+*.green:          #889B4A
+*.magenta:        #7E5053
+*.red:            #DC3958
+*.yellow:         #F79A32
+
+! gruvbox
+*.gruvbox-black:          #665c54
+*.gruvbox-red:            #ea6962
+*.gruvbox-green:          #a9b665
+*.gruvbox-yellow:         #e78a4e
+*.gruvbox-blue:           #7daea3
+*.gruvbox-magenta:        #d3869b
+*.gruvbox-cyan:           #89b482
+*.gruvbox-white:          #dfbf8e
+
+*.gruvbox-bright-black:   #928374
+*.gruvbox-bright-red:     #ea6962
+*.gruvbox-bright-green:   #a9b665
+*.gruvbox-bright-yellow:  #e3a84e
+*.gruvbox-bright-blue:    #7daea3
+*.gruvbox-bright-magenta: #d3869b
+*.gruvbox-bright-cyan:    #89b482
+*.gruvbox-bright-white:   #dfbf8e
+
+*.gruvbox-bg:             #282828
+*.gruvbox-bg1:            #1d2021

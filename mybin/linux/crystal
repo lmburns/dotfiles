@@ -19,9 +19,9 @@ hide_nodes() {
 unhide_nodes() {
 	while read p; do
 
-		if [ ! "$(grep "$p" /tmp/swallowids | awk '{ print $2 }')" = "$p" ]; then
+		# if [ ! "$(grep "$p" /tmp/swallowids | awk '{ print $2 }')" = "$p" ]; then
 			bspc node "$p" -g hidden=off
-		fi
+		# fi
 	done < "$hidden_windows"
 	bspc node -t tiled
 

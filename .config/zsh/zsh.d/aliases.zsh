@@ -10,27 +10,28 @@ alias -g G='| rg '
 alias -g H='| head'
 alias -g T='| tail'
 
+alias ja="jaime"
 alias xp="xplr"
 alias xx="xcompress"
 alias ca='cargo'
 alias cat="bat"
 
+alias mimeopen="/usr/bin/vendor_perl/mimeopen"
 alias xmm="xmodmap"
 alias jo="journalctl"
 alias s="systemctl"
+alias bctl="bluetoothctl"
 
 alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 alias passverr="veracrypt --text --dismount ~/.password.vera"
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
-
 alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 
 (( ${+commands[stylua]} )) && alias stylua="stylua -c $XDG_CONFIG_HOME/stylua/stylua.toml"
 alias :q='exit'
 alias ng="noglob"
 
-alias ja="jaime"
 
 (( ${+commands[just]} )) && {
   alias jj='just'
@@ -130,6 +131,8 @@ alias pvim='nvim -u NONE'
 alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config'
 alias nx='$EDITOR $HOME/.xinitrc'
 
+alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
+alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
 alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
 alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
 alias nprof='$EDITOR $HOME/.profile'
@@ -166,6 +169,7 @@ alias njaime='$EDITOR $XDG_CONFIG_HOME/jaime/config.yml'
 } || {
   alias nyab='$EDITOR $XDG_CONFIG_HOME/bspwm/bspwmrc'
   alias nskhd='$EDITOR $XDG_CONFIG_HOME/sxhkd/sxhkdrc'
+  alias nskhdh='$EDITOR $XDG_CONFIG_HOME/sxhkd/mappings'
 }
 
 alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
@@ -224,45 +228,16 @@ alias oconn='openpyn us -t 10'
 alias spt='speedtest | rg "(Download:|Upload:)"'
 alias essh='eval $(ssh-add)'
 alias kc='keychain'
+alias kcl='keychain -l'
 alias kck='keychain -k all'
 
-# === fixes ===================================================================
-alias xattr='/usr/bin/xattr'
-alias id="/usr/bin/id"
-alias idh="man /usr/share/man/man1/id.1"
-
-# === mac specific =============================================================
-(( ${${(M)OSTYPE:#*darwin*}:+1} )) && {
-  alias lct='launchctl'
-  alias pbc='pbcopy'
-  alias pbp='pbpaste'
-  alias keuze="keuze -fs 12 -fn Monaco"
-  alias temp='osx-cpu-temp'
-  alias wifi='osx-wifi-cli'
-  alias nset='networksetup'
-  alias snset='sudo networksetup'
-  alias x1mute="osascript -e 'set volume output muted true'"
-  alias x1emptytrash="osascript -e 'tell application \"Finder\" to empty trash'"
-  alias x1lock="/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend"
-  alias loginscreen='sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText'
-  # alias battemp="bc <<< \"scale=3; $(ioreg -r -n AppleSmartBattery | grep Temperature | cut -c23-)/100*1.8+32\""
-  alias pbplain='pbpaste | textutil -convert txt -stdin -stdout -encoding 30 | pbcopy'
-  alias spot='sudo mdutil -a -i'
-  alias PlistBuddy='/usr/libexec/PlistBuddy'
-  alias slocate='/usr/bin/locate'
-  alias bundleident='mdls -name kMDItemCFBundleIdentifier -r'
-  alias uti='mdls -name kMDItemContentType -name kMDItemContentTypeTree -name kMDItemKind'
-  alias etch='sudo /Applications/balenaEtcher.app/Contents/MacOS/balenaEtcher'
-  alias -s {log,out}='open -a Console'
-  alias librewolf='/Applications/LibreWolf.app/Contents/MacOS/librewolf'
-  alias firefox='/Applications/Firefox.app/Contents/MacOS/firefox-bin'
-  alias x1email_screen="screencapture -C -M screen-`date +%d.%m.%Y-%H`.png"
-  alias x1email_screen10s="screencapture -T 10 -C -M screen-`date +%d.%m.%Y-%H`.png"
-  alias x1email_window="screencapture -W -M screen-`date +%d.%m.%Y-%H`.png"
-  alias x1email_snippet="screencapture -s -M screen-`date +%d.%m.%Y-%H`.png"
-}
-# alias maclogout="osascript -e 'tell application \"System Events\" to log out'"
-# bundlei() { osascript -e 'id of app "$1"' }
+# xclip -in -selection clipboard -rmlastnl
+# xclip -out -selection clipboard
+alias pbcopy="xsel --clipboard --input"
+alias pbpaste="xsel --clipboard --output"
+alias pbc='pbcopy'
+alias pbp='pbpaste'
+alias pbplain='pbpaste | textutil -convert txt -stdin -stdout -encoding 30 | pbcopy'
 
 # === wiki ======================================================================
 alias vw='$EDITOR $HOME/vimwiki/index.md'
@@ -280,6 +255,7 @@ alias gua='git remote | xargs -L1 git push --all'
 alias grmssh='ssh git@burnsac.xyz -- grm'
 alias h='git'
 alias g='hub'
+alias hubb='hub browse $(ghq list | fzf --prompt "hub> " --height 40% --reverse | cut -d "/" -f 2,3)'
 alias gtrr='git ls-tree -r master --name-only | as-tree'
 alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
@@ -340,6 +316,7 @@ alias mycli='LESS="-S $LESS" mycli'
 
 [[ $OSTYPE != darwin* ]] && {
   alias p="paru"
+  alias pn="paru --noconfirm"
 } || {
   (( ${+commands[pacaptr]} )) && {
     alias pacman='pacaptr'

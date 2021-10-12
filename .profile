@@ -1,5 +1,7 @@
-[[ -f $HOME/.config/zsh/.zshrc ]] && source $HOME/.config/zsh/.zshrc
+# if [[ "$(tty)" = "/dev/tty1" ]]; then
+#   pgrep bspwm || startx "$HOME/.xinitrc"
+# fi
 
-if [[ "$(tty)" = "/dev/tty1" ]]; then
-  pgrep bspwm || startx "$HOME/.xinitrc"
+if [ -z "${DISPLAY}" ] && [ "$(tty)" = /dev/tty1 ]; then
+  exec startx
 fi

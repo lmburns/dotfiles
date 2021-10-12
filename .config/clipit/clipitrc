@@ -25,3 +25,4 @@ menu_key=<Ctrl><Alt>P
 search_key=<Ctrl><Alt>F
 offline_key=<Ctrl><Alt>O
 offline_mode=false
+exclude_windows=

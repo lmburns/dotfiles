@@ -41,10 +41,8 @@ window:
   # Spread additional padding evenly around the terminal content.
   dynamic_padding: false
 
-  # Window title
   title: Alacritty
 
-  # Window class (Linux/BSD only):
   class:
     # Application instance name
     instance: Alacritty
@@ -78,23 +76,12 @@ font:
   # Italic font face
   #italic:
     # Font family
-    #
-    # If the italic family is not specified, it will fall back to the
-    # value specified for the normal font.
     #family: monospace
-
-    # The `style` can be specified to pick a specific face.
     #style: Italic
 
   # Bold italic font face
   #bold_italic:
-    # Font family
-    #
-    # If the bold italic family is not specified, it will fall back to the
-    # value specified for the normal font.
     #family: monospace
-
-    # The `style` can be specified to pick a specific face.
     #style: Bold Italic
 
   # Point size
@@ -121,14 +108,8 @@ schemes:
     primary:
       background: '#221a02'
       foreground: '#c2a383'
-
-      # Bright and dim foreground colors
-      #
-      # The dimmed foreground color is calculated automatically if it is not present.
-      # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
-      # is `false`, the normal foreground color will be used.
+      bright_foreground: '#f06431'
       #dim_foreground: '#9a9a9a'
-      #bright_foreground: '#ffffff'
 
     # Cursor colors
     #
@@ -149,6 +130,30 @@ schemes:
     selection:
       text: '#221a02'
       background: '#c2a383'
+
+    # search:
+    #   matches:
+    #     foreground:
+    #     background:
+    #   focused_match:
+    #     foreground:
+    #     background:
+    #   bar:
+    #     foreground:
+    #     background:
+
+    # line_indicator:
+    #     foreground:
+    #     background:
+
+
+    hints:
+      start:
+        foreground: '#201f1f'
+        background: '#f79a32'
+      end:
+        foreground: '#201f1f'
+        background: '#f79a32'
 
     # Normal colors
     normal:
@@ -287,23 +292,95 @@ live_config_reload: true
 working_directory: None
 
 # Send ESC (\x1b) before characters when alt is pressed.
-#alt_send_esc: true
+# alt_send_esc: true
 
+hints:
+  # Keys used for the hint labels.
+  alphabet: "jfkdls;ahgurieowpq"
+
+  # Each hint must have a `regex` and either an `action` or a `command` field.
+  # The fields `mouse`, `binding` and `post_processing` are optional.
+  #
+  # The fields `command`, `binding.key`, `binding.mods`, `binding.mode` and
+  # `mouse.mods` accept the same values as they do in the `key_bindings` section.
+  #
+  # The `mouse.enabled` field controls if the hint should be underlined while
+  # the mouse with all `mouse.mods` keys held or the vi mode cursor is above it.
+  #
+  # If the `post_processing` field is set to `true`, heuristics will be used to
+  # shorten the match if there are characters likely not to be part of the hint
+  # (e.g. a trailing `.`). This is most useful for URIs.
+  #
+  # Values for `action`:
+  #   - Copy
+  #       Copy the hint's text to the clipboard.
+  #   - Paste
+  #       Paste the hint's text to the terminal or search.
+  #   - Select
+  #       Select the hint's text.
+  #   - MoveViModeCursor
+  #       Move the vi mode cursor to the beginning of the hint.
+  # https://github.com/
+
+
+  enabled:
+    # - {
+    #   key: Y,
+    #   mods: Control|Shift,
+    #   action: Copy,
+    #   regex: "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+    # }
+  - regex: "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)\
+            [^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+
+    # action: Copy
+    command: xdg-open
+    post_processing: true
+    mouse:
+      enabled: true
+      mods: None
+    binding:
+      key: O
+      mods: Control|Shift
+
+  - regex: "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)\
+            [^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+    action: Copy
+    post_processing: true
+    mouse:
+      enabled: true
+      mods: None
+    binding:
+      key: Y
+      mods: Control|Shift
+
+  # aa:
+  # - regex: "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)\
+  #           [^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+  #
+  #   command: xdg-open
+  #   binding:
+  #     key: U
+  #     mods: Control|Shift
+
+
+
+# ========================== MOUSE ==========================
 mouse:
   # Click settings
-  #
-  # The `double_click` and `triple_click` settings control the time
-  # alacritty should wait for accepting multiple clicks as one double
-  # or triple click.
+  # wait for accepting multiple clicks
   double_click: { threshold: 300 }
   triple_click: { threshold: 300 }
-  #hide_when_typing: true
+  hide_when_typing: false
 
-  # url:
+  # Old??
+  # hints:
+  #   modifiers: Control
   #   launcher:
   #     program: xdg-open
   #     args: []
-  #
+
+
   #   # These are the modifiers that need to be held down for opening URLs when clicking
   #   # on them. The available modifiers are documented in the key binding section.
   #   modifiers: None
@@ -327,11 +404,16 @@ mouse:
 #
 # - `action` (see key bindings)
 #
-# And optionally:
+#   - ExpandSelection
+#       Expand the selection to the current mouse cursor location.
 #
-# - `mods` (see key bindings)
+# - { mouse: Right, action: ExpandSelection }
 mouse_bindings:
-  - { mouse: Middle, action: Copy }
+  - { mouse: Middle,                         action: Copy           }
+  - { mouse: Middle,  mode: ~Vi,             action: PasteSelection }
+  - { mouse: Right,   mode: ~Vi,             action: ClearSelection }
+  - { mouse: Middle,              mods: Alt, action: Copy           }
+  - { mouse: Right,   mode: Vi,   mods: Alt, action: Open           }
 
 # Key bindings
 #
@@ -371,6 +453,9 @@ mouse_bindings:
 #
 # - `action`: Execute a predefined action
 #
+#   - ToggleViMode
+#   - SearchForward-
+#   - SearchBackward
 #   - Copy
 #   - Paste
 #   - PasteSelection
@@ -392,6 +477,17 @@ mouse_bindings:
 #   - ClearLogNotice
 #   - ReceiveChar
 #   - None
+#
+# - Vi mode exclusive actions:
+#
+#   - Open
+#       Perform the action of the first matching hint under the vi mode cursor
+#       with `mouse.enabled` set to `true`.
+#   - ToggleNormalSelection
+#   - ToggleLineSelection
+#   - ToggleBlockSelection
+#   - ToggleSemanticSelection
+#       Toggle semantic selection based on `selection.semantic_escape_chars`.
 #
 # - `command`: Fork and execute a specified command plus arguments
 #
@@ -444,55 +540,57 @@ key_bindings:
   - { key: Plus,     mods: Control,       action: IncreaseFontSize }
   - { key: Minus,    mods: Control,       action: DecreaseFontSize }
   - { key: M,        mods: Control|Shift, action: Minimize }
+  - { key: Space,    mods: Control|Shift, action: ToggleViMode }
 
   # Vi Mode
   - { key: Space,  mods: Control,       mode: Vi, action: ScrollToBottom          }
   - { key: Space,  mods: Control,                 action: ToggleViMode            }
-  - { key: I,                           mode: Vi, action: ScrollToBottom          }
-  - { key: I,                           mode: Vi, action: ToggleViMode            }
-  - { key: C,      mods: Control,       mode: Vi, action: ScrollToBottom          }
-  - { key: C,      mods: Control,       mode: Vi, action: ToggleViMode            }
+  - { key: I,                           mode: Vi|~Search, action: ScrollToBottom          }
+  - { key: I,                           mode: Vi|~Search, action: ToggleViMode            }
+  - { key: C,      mods: Control,       mode: Vi|~Search, action: ScrollToBottom          }
+  - { key: C,      mods: Control,       mode: Vi|~Search, action: ToggleViMode            }
   - { key: Escape,                      mode: Vi, action: ClearSelection          }
-  - { key: Y,      mods: Control,       mode: Vi, action: ScrollLineUp            }
-  - { key: E,      mods: Control,       mode: Vi, action: ScrollLineDown          }
-  - { key: G,                           mode: Vi, action: ScrollToTop             }
-  - { key: G,      mods: Shift,         mode: Vi, action: ScrollToBottom          }
-  - { key: B,      mods: Control,       mode: Vi, action: ScrollPageUp            }
-  - { key: F,      mods: Control,       mode: Vi, action: ScrollPageDown          }
-  - { key: U,      mods: Control,       mode: Vi, action: ScrollHalfPageUp        }
-  - { key: D,      mods: Control,       mode: Vi, action: ScrollHalfPageDown      }
-  - { key: Y,                           mode: Vi, action: Copy                    }
-  - { key: Y,                           mode: Vi, action: ClearSelection          }
-  - { key: V,                           mode: Vi, action: ToggleNormalSelection   }
-  - { key: V,      mods: Shift,         mode: Vi, action: ToggleLineSelection     }
-  - { key: V,      mods: Control,       mode: Vi, action: ToggleBlockSelection    }
-  - { key: V,      mods: Alt,           mode: Vi, action: ToggleSemanticSelection }
-  - { key: Return,                      mode: Vi, action: Open                    }
-  - { key: K,                           mode: Vi, action: Up                      }
-  - { key: J,                           mode: Vi, action: Down                    }
-  - { key: H,                           mode: Vi, action: Left                    }
-  - { key: L,                           mode: Vi, action: Right                   }
-  - { key: Up,                          mode: Vi, action: Up                      }
-  - { key: Down,                        mode: Vi, action: Down                    }
-  - { key: Left,                        mode: Vi, action: Left                    }
-  - { key: Right,                       mode: Vi, action: Right                   }
-  - { key: Key0,                        mode: Vi, action: First                   }
-  - { key: Key4,            mode: Vi, action: Last                    }
-  - { key: Key6,   mods: Shift,         mode: Vi, action: FirstOccupied           }
-  - { key: H,      mods: Shift,         mode: Vi, action: High                    }
-  - { key: M,      mods: Shift,         mode: Vi, action: Middle                  }
-  - { key: L,      mods: Shift,         mode: Vi, action: Low                     }
-  - { key: B,                           mode: Vi, action: SemanticLeft            }
-  - { key: W,                           mode: Vi, action: SemanticRight           }
-  - { key: E,                           mode: Vi, action: SemanticRightEnd        }
-  - { key: B,      mods: Shift,         mode: Vi, action: WordLeft                }
-  - { key: W,      mods: Shift,         mode: Vi, action: WordRight               }
-  - { key: E,      mods: Shift,         mode: Vi, action: WordRightEnd            }
-  - { key: Key5,   mods: Shift,         mode: Vi, action: Bracket                 }
-  - { key: Slash,                       mode: Vi, action: SearchForward           }
-  - { key: Slash,  mods: Shift,         mode: Vi, action: SearchBackward          }
-  - { key: N,                           mode: Vi, action: SearchNext              }
-  - { key: N,      mods: Shift,         mode: Vi, action: SearchPrevious          }
+  - { key: Y,      mods: Control,       mode: Vi|~Search, action: ScrollLineUp            }
+  - { key: E,      mods: Control,       mode: Vi|~Search, action: ScrollLineDown          }
+  - { key: G,                           mode: Vi|~Search, action: ScrollToTop             }
+  - { key: G,      mods: Shift,         mode: Vi|~Search, action: ScrollToBottom          }
+  - { key: B,      mods: Control,       mode: Vi|~Search, action: ScrollPageUp            }
+  - { key: F,      mods: Control,       mode: Vi|~Search, action: ScrollPageDown          }
+  - { key: U,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageUp        }
+  - { key: D,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageDown      }
+  - { key: Y,                           mode: Vi|~Search, action: Copy                    }
+  - { key: Y,                           mode: Vi|~Search, action: ClearSelection          }
+  - { key: V,                           mode: Vi|~Search, action: ToggleNormalSelection   }
+  - { key: V,      mods: Shift,         mode: Vi|~Search, action: ToggleLineSelection     }
+  - { key: V,      mods: Control,       mode: Vi|~Search, action: ToggleBlockSelection    }
+  - { key: V,      mods: Alt,           mode: Vi|~Search, action: ToggleSemanticSelection }
+  - { key: Return,                      mode: Vi|~Search, action: Open                    }
+  - { key: K,                           mode: Vi|~Search, action: Up                      }
+  - { key: J,                           mode: Vi|~Search, action: Down                    }
+  - { key: H,                           mode: Vi|~Search, action: Left                    }
+  - { key: L,                           mode: Vi|~Search, action: Right                   }
+  - { key: Up,                          mode: Vi|~Search, action: Up                      }
+  - { key: Down,                        mode: Vi|~Search, action: Down                    }
+  - { key: Left,                        mode: Vi|~Search, action: Left                    }
+  - { key: Right,                       mode: Vi|~Search, action: Right                   }
+  - { key: Key0,                        mode: Vi|~Search, action: First                   }
+  - { key: Key4,                        mode: Vi|~Search, action: Last                    }
+  - { key: Key6,   mods: Shift,         mode: Vi|~Search, action: FirstOccupied           }
+  - { key: M,      mods: Shift,         mode: Vi|~Search, action: Middle                  }
+  - { key: B,                           mode: Vi|~Search, action: SemanticLeft            }
+  - { key: W,                           mode: Vi|~Search, action: SemanticRight           }
+  - { key: E,                           mode: Vi|~Search, action: SemanticRightEnd        }
+  - { key: B,      mods: Shift,         mode: Vi|~Search, action: WordLeft                }
+  - { key: W,      mods: Shift,         mode: Vi|~Search, action: WordRight               }
+  - { key: E,      mods: Shift,         mode: Vi|~Search, action: WordRightEnd            }
+  - { key: Key5,   mods: Shift,         mode: Vi|~Search, action: Bracket                 }
+  - { key: Slash,                       mode: Vi|~Search, action: SearchForward           }
+  - { key: Slash,  mods: Shift,         mode: Vi|~Search, action: SearchBackward          }
+  - { key: N,                           mode: Vi|~Search, action: SearchNext              }
+  - { key: N,      mods: Shift,         mode: Vi|~Search, action: SearchPrevious          }
+  - { key: Q,                           mode: Vi|~Search, action: ToggleViMode            }
+  - { key: H,      mods: Shift,         mode: Vi|~Search, action: First                   }
+  - { key: L,      mods: Shift,         mode: Vi|~Search, action: Last                    }
 
 debug:
   # Display the time it takes to redraw each frame.

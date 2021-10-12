@@ -33,6 +33,7 @@ export EDITOR='nvim'
 # export VISUAL="${EDITOR}"
 export GIT_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"
+export SYSTEMD_COLORS=1
 
 export LESS="-r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
 # export PAGER="${commands[less]:-$PAGER}"
@@ -55,9 +56,13 @@ export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"
 export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
-export GOPATH="${HOME}/go"
+export GOPATH="${XDG_DATA_HOME}/go"
+export GOROOT="${XDG_DATA_HOME}/go"
+export GOENV_ROOT="${XDG_DATA_HOME}/goenv"
+export GEM_PATH="${XDG_DATA_HOME}/ruby/gems"
 export GEM_HOME="${XDG_DATA_HOME}/ruby/gems"
 export GEM_SPEC_CACHE="${XDG_DATA_HOME}/ruby/specs"
+export RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
 export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
 export CONDARC="${XDG_CONFIG_HOME}/conda/condarc"
 export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
@@ -74,25 +79,6 @@ export RLWRAP_HOME="${XDG_DATA_HOME}/rlwrap"
 export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
 export LESSHISTFILE="-"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/password-store"
-
-[[ $OSTYPE = darwin* ]] && {
-  export HOMEBREW_NO_ANALYTICS=1
-  export HOMEBREW_BAT=1
-  export HOMEBREW_BAT_CONFIG_PATH="${XDG_CONFIG_HOME}/bat/config"
-  export HOMEBREW_COLOR=1
-  export HOMEBREW_NO_AUTO_UPDATE=1
-  # Aliased to Application\ Support (very annoying spaces)
-  export DARWIN_CONF_HOME="$HOME/Library/ApplicationSupport"
-  export OSFONTDIR="$HOME/Library/Fonts"
-  export BROWSER='/Applications/LibreWolf.app/Contents/MacOS/librewolf-bin'
-
-  export GPGME_INCLUDE="/usr/local/Cellar/gpgme/1.16.0/include"
-  export GPGME_LIB_DIR="/usr/local/Cellar/gpgme/1.16.0/lib"
-  export GPGME_CONFIG="/usr/local/Cellar/gpgme/1.16.0/bin/gpgme-config"
-  export LIBGPG_ERROR_INCLUDE="/usr/local/Cellar/libgpg-error/1.42/include"
-  export LIBGPG_ERROR_LIB_DIR="/usr/local/Cellar/libgpg-error/1.42/lib"
-  export LIBGPG_ERROR_CONFIG="/usr/local/Cellar/libgpg-error/1.42/bin/gpg-error-config"
-}
 
 export BAT_CONFIG_PATH="${XDG_CONFIG_HOME}/bat/config"
 export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"

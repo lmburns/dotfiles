@@ -1,5 +1,5 @@
 configuration {
-  modi: "window,run,ssh,drun,combi,keys,filebrowser";
+  modi: "window,run,ssh,drun,combi,keys,filebrowser,file-browser-extended";
   font: "FiraMono Nerd Font Mono 12";
   location: 0;
 /*	yoffset: 0;*/
@@ -43,7 +43,8 @@ configuration {
 /*	scroll-method: 0;*/
 /*	window-format: "{w}    {c}   {t}";*/
 /*	click-to-exit: true;*/
-  theme: "kimbie" ;
+  /* theme: "kimbie" ; */
+  theme: "gruvbox" ;
 /*	max-history-size: 25;*/
 /*	combi-hide-mode-prefix: false;*/
 /*	matching-negate-char: '-' /* unsupported */;*/

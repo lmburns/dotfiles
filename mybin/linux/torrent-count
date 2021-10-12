@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+torrents="$(transmission-remote -l | sed '/Sum/d')"
+
+print -n " "
+
+count=$(echo "$torrents" | wc -l)
+
+print -n $(( count - 1 ))

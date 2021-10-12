@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+alacritty -o window.startup_mode=Fullscreen --class cmatrixterm -e bash -c 'sleep 0.2; timeout 178 pipes.sh -t 1 -r 8000'

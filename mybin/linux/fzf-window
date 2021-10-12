@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+selector=$(bspc query -N -n)
+windows=( $(bspc query -N -n .window | grep -v "$selector") )
+
+index="$(\
+  for ((i=1; i<=$#windows; i++)); do
+    printf "%s %s\n" $i \
+      "$(xdotool getwindowname ${windows[i]})";
+  done | \
+    fzf \
+      --reverse \
+      --border=horizontal \
+      --no-info)" && {
+    if [[ "$index" = "" ]]; then
+        exit 0
+    else
+        bspc node -f "${windows[${index%% *}]}"
+    fi
+}
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=0:fdm=marker:fmr={{{,}}}:

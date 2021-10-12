@@ -1,17 +1,5 @@
 #!/bin/zsh
 
-# https://superuser.com/questions/96299/mapping-superhjkl-to-arrow-keys-under-x
-
-# if [ -d /etc/X11/xinit/xinitrc.d ]; then
-#   for f in /etc/X11/xinit/xinitrc.d/*; do
-#     [ -x "$f" ] && . "$f"
-#   done
-#   unset f
-# fi
-
-# setbg &     # set the background with the `setbg` script
-# xcompmgr &    # xcompmgr for transparency
-
 # Network manager
 nm-applet &
 
@@ -24,16 +12,38 @@ pasystray &
 # Auto mount USB
 udiskie --tray & #
 
-clipit &
-# clipmenud &
+# clipit &
+# greenclip daemon &
+copyq &
+
+xset s on
+xset s 900 180
+# xset dpms 0 0 0
+# xset s 1200
+
+# numlockx &
 
 # Auto lock screen
-xss-lock slock &
-xscreensaver &
-numlockx &
+# xscreensaver &
+# xss-lock slock &
+# xss-lock -- xscreensaver-command -lock &
+# xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- screenlock &
 
-# eval "$(ssh-agent)"
+export PRIMARY_DISPLAY="$(xrandr | awk '/ primary/{print $1}')"
 
+xidlehook \
+    --not-when-fullscreen \
+    --not-when-audio \
+    --timer 120 \
+        'xrandr --output "$PRIMARY_DISPLAY" --brightness .1' \
+        'xrandr --output "$PRIMARY_DISPLAY" --brightness 1' \
+    --timer 500 \
+        'screensaver' '' \
+    --timer 240 \
+        'xset dpms force off; \
+        if pgrep screenlock 2>/dev/null; then true; else screenlock; fi' '' &
+
+# flashfocus &
 mpd &
 transmission-daemon &
 transmission-rss -f &
@@ -42,9 +52,11 @@ transmission-rss -f &
 
 # Night mode
 redshift -l 38.95:-92.32 &
+# redshift-gtk &
 
 # Compositor
-picom -b --experimental-backends &
+# picom -b --experimental-backends &
+picom-rounded -b --experimental-backends &
 
 # Sync copy paste buffers
 autocutsel -fork &
@@ -52,12 +64,17 @@ autocutsel -selection CLIPBOARD -fork &
 
 # Wallpaper
 # nitrogen --restore
-hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]} &
+# hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]} &
+hsetroot -cover ~/Pictures/wallpapers/LakeSideDark.jpg &
+
+# Task daemon
+pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml" &
 
 # Screenshot
 flameshot &
 # Input handler
-fcitx -d &
+# fcitx -d &
+
 # Notifications
 dunst &
 # Hide mouse

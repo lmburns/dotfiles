@@ -387,9 +387,9 @@ autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
 set showtabline=2
 let g:lightline = {}
-let g:lightline.colorscheme = 'kimbox'
+" let g:lightline.colorscheme = 'kimbox'
 " let g:lightline.colorscheme = 'everforest'
-" let g:lightline.colorscheme = 'gruvbox_material'
+let g:lightline.colorscheme = 'gruvbox_material'
 " let g:lightline.colorscheme = 'miramare'
 " let g:lightline.colorscheme = 'nightowl'
 " let g:lightline.colorscheme = 'spaceduck'
@@ -903,13 +903,13 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-rls',
     \ 'coc-rust-analyzer',
     \ 'coc-toml',
+    \ 'coc-solargraph',
     \ ]
 
   " \ 'coc-lua',
     " \ 'coc-pyright',
 
   " FIX: Rust Analyzer does not provide hover or code completion
-" \ 'coc-solargraph', # can't get it to work
 " \ 'coc-toml',
 
   let g:coc_explorer_global_presets = {
@@ -1609,11 +1609,17 @@ command! -nargs=? -complete=dir AF
     \ 'left':    20})
 
   " clipboard manager -- unsure why a direct mapping doesn't work
-  inoremap <expr> <C-x><C-b> fzf#vim#complete({
+  inoremap <expr> <a-.> fzf#vim#complete({
     \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");"',
     \ 'options': '--no-border',
     \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
     \ 'window': 'call FloatingFZF()'})
+
+inoremap <expr> <a-;> fzf#complete({
+            \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
+            \ 'options': '--no-border',
+            \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+            \ 'window': 'call FloatingFZF()'})
 
   function! s:create_float(hl, opts)
     let buf = nvim_create_buf(v:false, v:true)
@@ -1804,10 +1810,10 @@ command! -nargs=? -complete=dir AF
 call plug#end()
 
 " ============== Theme Settings ============== {{{
-  let g:gruvbox_material_background = 'medium'
+  " let g:gruvbox_material_background = 'medium'
   let g:gruvbox_material_palette = 'mix'
   " let g:gruvbox_material_palette = 'material'
-  " let g:gruvbox_material_background = 'hard'
+  let g:gruvbox_material_background = 'hard'
   let g:gruvbox_material_enable_bold = 1
   let g:gruvbox_material_disable_italic_comment = 1
   let g:gruvbox_material_current_word = 'grey background'
@@ -1816,6 +1822,9 @@ call plug#end()
   let g:gruvbox_material_sign_column_background = 'none'
   let g:gruvbox_material_statusline_style = 'mix'
   let g:gruvbox_material_better_performance = 1
+  let g:gruvbox_material_diagnostic_text_highlight = 0
+  let g:gruvbox_material_diagnostic_line_highlight = 0
+  let g:gruvbox_material_diagnostic_virtual_text = 'colored'
 
   " let g:kimbox_background = 'deep'
   " let g:kimbox_background = 'medium' " brown
@@ -1880,7 +1889,7 @@ call plug#end()
   set termguicolors
 
   if exists('g:neovide')
-    set guifont=JetBrainsMono\ Nerd\ Font:h13
+    set guifont=FiraMono\ Nerd\ Font\ Mono:h13
     nnoremap <D-v> "+p
     inoremap <D-v> <c-r>+
   endif
@@ -1893,7 +1902,7 @@ call plug#end()
       \,sm:block-blinkwait175-blinkoff150-blinkon175
 
   syntax enable
-  colorscheme kimbox
+  " colorscheme kimbox
   " colorscheme everforest
   " colorscheme oceanic_material
   " colorscheme spaceduck
@@ -1901,7 +1910,7 @@ call plug#end()
   " colorscheme material
   " colorscheme miramare
   " colorscheme sonokai
-  " colorscheme gruvbox-material
+  colorscheme gruvbox-material
   " colorscheme night-owl
   " colorscheme jellybeans
   " colorscheme gruvbit
@@ -2660,5 +2669,22 @@ endif
 
 nnoremap <silent> <Leader>. :call system('tmux select-pane -t :.+')<cr>
 " }}} === tmux ===
+
+  " Fixes clearing of clipboard when using copyq
+if executable('xsel')
+    function! PreserveClipboard()
+        call system('xsel -ib', getreg('+'))
+    endfunction
+    function! PreserveClipboadAndSuspend()
+        call PreserveClipboard()
+        suspend
+    endfunction
+    augroup preserve_clipboard
+      au!
+      au VimLeave * call PreserveClipboard()
+    augroup END
+    nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+    vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+endif
 
 " vim: ft=vim:et:sw=0:ts=2:sts=2:tw=78:fdm=marker:fmr={{{,}}}:

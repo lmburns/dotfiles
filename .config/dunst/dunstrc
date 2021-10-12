@@ -166,7 +166,8 @@
     max_icon_size = 32
 
     # Paths to default icons.
-    icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    # icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    icon_path = /usr/share/icons/Gruvbox/32x32/devices/:/usr/share/Gruvbox/32x32/status/:/usr/share/Gruvbox/32x32/apps
 
     ### History ###
 
@@ -240,6 +241,17 @@
     mouse_middle_click = close_all
     mouse_right_click = close_current
 
+[log_notifs]
+    script = ~/mybin/linux/dunst_logger.sh
+
+[dunst_icon]
+    appname = dunst
+    new_icon = /usr/share/icons/Gruvbox/32x32/apps/cowbell.png
+
+[zsh]
+    appname = zsh
+    new_icon = /usr/share/icons/Gruvbox/32x32/apps/terminal.png
+
 # Experimental features that may or may not work correctly. Do not expect them
 # to have a consistent behaviour across releases.
 [experimental]
@@ -255,38 +267,35 @@
     # Shortcuts are specified as [modifier+][modifier+]...key
     # Available modifiers are "ctrl", "mod1" (the alt-key), "mod2",
     # "mod3" and "mod4" (windows-key).
-    # Xev might be helpful to find names for keys.
-
-    # Close notification.
     close = ctrl+space
-
-    # Close all notifications.
     close_all = ctrl+shift+space
-
-    # Redisplay last message(s).
-    # On the US keyboard layout "grave" is normally above TAB and left
-    # of "1". Make sure this key actually exists on your keyboard layout,
-    # e.g. check output of 'xmodmap -pke'
     history = ctrl+grave
-
     # Context menu.
     context = ctrl+shift+period
 
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#221a02"
-    foreground = "#c2a383"
+    # background = "#221a02"
+    # foreground = "#c2a383"
+
+    background = "#282828"
+    foreground = "#928374"
+
     timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
-    icon = /home/lucas/.config/dunst/normal.png
+    icon = /home/lucas/.config/dunst/GruvboxIcon.png
 
 [urgency_normal]
-    background = "#221a02"
-    foreground = "#c2a383"
+    # background = "#221a02"
+    # foreground = "#c2a383"
+
+    background = "#458588"
+    foreground = "#ebdbb2"
+
     timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
-    icon = /home/lucas/.config/dunst/normal.png
+    icon = /home/lucas/.config/dunst/GruvboxIcon.png
 
 [urgency_critical]
     background = "#f14a68"

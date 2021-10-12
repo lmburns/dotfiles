@@ -20,7 +20,6 @@ bind index,pager          i noop
 bind index,pager          g noop
 
 bind index,pager go sidebar-open
-source /home/lucas/.config/mutt/accounts/1-burnsac@me.com.muttrc
 source /home/lucas/.config/mutt/emails.muttrc
 # ]]]
 
@@ -392,3 +391,8 @@ set abort_noattach = ask-yes
 # ]]]
 
 set virtual_spoolfile
+source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc
+macro index,pager i1 '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to burnsac@me.com"
+macro index,pager i2 '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/lucas@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lucas@lmburns.com"
+macro index,pager i3 '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lmb@lmburns.com"
+macro index,pager i4 '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to burnsppl@gmail.com"

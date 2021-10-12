@@ -1,0 +1,13 @@
+#!/usr/bin/env zsh
+
+cat ~/.config/sxhkd/sxhkdrc \
+  | awk '/^[a-z]/ && last {print $0,"\t",last} {last=""} /^#/{last=$0}' \
+  | column -t -s $'\t' \
+  | rofi \
+    -dmenu -i \
+    -no-show-icons -p "" \
+    -columns 1 \
+    -width 1000 \
+    -theme ~/.config/rofi/themes/murz.rasi
+
+#fzf --reverse --border=horizontal --no-info --header=" " --prompt '? │ ' --pointer '― '

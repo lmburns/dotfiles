@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+alacritty \
+  -e \
+      lf $(command fd -Hi -td \
+                | fzf \
+                  --reverse \
+                  --border=horizontal \
+                  --no-info \
+                  --header=' ' \
+                  --prompt ' │ ' \
+                  --pointer '― ')
+
+# vim: ft=sh:et:sw=2:ts=2:sts=0:fdm=marker:fmr={{{,}}}:

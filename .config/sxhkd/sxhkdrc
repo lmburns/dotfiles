@@ -1,5 +1,6 @@
-# https://github.com/windelicato/dotfiles/blob/master/.config/sxhkd/sxhkdrc
+# xte "keyup h" "key Left"
 
+# Modify keys with hyper to mimic arrow keys
 mod3 + h
     xdotool keyup h key --clearmodifiers Left
 
@@ -32,11 +33,13 @@ ctrl + alt + super + r
 super + Return
     alacritty
 
+# Launch alacritty
 super + ctrl + Return
     alacritty
 
+# Launch tdrop
 super + alt + Return
-    tdrop -ma -w 1916 -y 0 st
+    tdrop -ma -w 1916 -y 0 alacritty
 
 # Closing/Killing Windows
 super + {_,shift + }q
@@ -50,6 +53,16 @@ alt + shift + x
 alt + ctrl + shift + x
     bspc node -k
 
+### Map or unmap windows (functional equivalent of "minimize")
+super + m
+    whid dmenu
+
+super + shift + m
+    whid hide
+
+super + ctrl + m
+    whid last
+
 # === MOVEMENT ===
  # Focus on window in direction
 alt + {h,j,k,l}
@@ -59,34 +72,60 @@ alt + {h,j,k,l}
 shift + alt + {h,j,k,l}
     bspc node -s {west,south,north,east}
 
-# Toggle fullscreen, floating, and tiled
-mod3 + {shift + space,space,f}
-   bspc node -t {tiled,floating,fullscreen}
-
 # Rotate tree
 mod3 + {_,shift +}r
     bspc node @/ --rotate {90,-90}
 #   bspc node @/ -C forward # backward
+# alt + {_,shift + } + r
+#     bspc node @/ --circulate {backward,forward}
 
 # Toggle monocle layout (maximise focused node).  If you use `-l
 # monocle` you lose the toggle functionality.
 mod3 + m
     bspc desktop -l next
 
-mod3 + {comma,period}
-    bspc desktop -C {backward,forward}
+## MONOCLE
+
+# Rotate between monocle windows
+# super + {comma,period}
+super + {j,k}
+    bspc node -f {next,prev}.local
+
+# Toggle between monocle windows
+super + comma
+    bspc node -f last.local
+
+# This command fixed above from not focusing?
+# bspc node -l below -f next.local
+
+# super + {h,j,k,l}
+#     m='.local'; \
+#     bspwm-monocle {west$m next$m,south$m prev$m,north$m next$m,east$m prev$m}
+
+# Alternate layers (doesn't switch focus)
+# super + shift + {h,j,k}
+#     bspc node -l {normal,below,above}
+
+# Alternate layers (doesn't switch focus)
+super + shift + j
+    bspc node -l below || bspc node -l above
+
+# ??
+# mod3 + {comma,period}
+#     bspc desktop -C {backward,forward}
+
+# Equalize window sizes
+ctrl + alt + 0
+    bspc node @/ -B
+# bspc node @/ -E
 
 # Dynamic gaps
 mod3 + shift + bracket{left,right}
     bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
+
+# Resize window in any direction
 ctrl + alt + {h,j,k,l}
     bspwm_resize {west,south,north,east} 20
-
-#   bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
-#   bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
-
-ctrl + alt + 0
-    bspc node @/ -B
 
 # set manual preselect split direction on current window
 # ctrl + alt + shift {h,j,k,l}
@@ -96,16 +135,79 @@ ctrl + alt + 0
 # ctrl + alt + shift + {_,shift + }space
 #     bspc {node -p cancel,desktop -c}
 
-# === Spectacle ===
+# set the node flags
+# super + ctrl + {m,x,y,z}
+#   bspc node -g {marked,locked,sticky,private}
 
-# mod3 + x ; n ; r
-#     bspc node -i
+# ===============
+# === DESKTOP ===
+# ===============
 
-# === Floating Windows ===
+# focus the node for the given path jump
+# super + {p,b, comma, period}
+#     bspc node -f @{parent,brother,first,second}
 
-# # Toggle floating on and off
-super + o
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+    bspc node -f {next,prev}.local.!hidden.window
+
+super + {_,shift + }p
+    bspc node -f {next,prev}
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+    bspc desktop -f {prev,next}.local
+# bspc desktop -f {prev.occupied,next.occupied}
+
+# focus the last node/desktop
+super + {grave,Tab}
+    bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+    bspc wm -h off; \
+    bspc node {older,newer} -f; \
+    bspc wm -h on
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '^{1-9,10}'
+
+# move desktops in another way
+alt + {Left,Right}
+    bspc desktop -f {prev,next}
+
+# super + h
+#   bspc window -p down
+#
+# # Split window vertically
+# super + v
+#   bspc window -p right
+
+# ==========================
+# === FULLSCREEN WINDOWS ===
+# ==========================
+
+# Rotates full screen
+mod3 + bracket{left,right}
+    bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
+
+# Toggle between fullscreen and tiled
+mod3 + f
+    bspc node -t tiled || bspc node -t fullscreen
+
+# ========================
+# === FLOATING WINDOWS ===
+# ========================
+
+# Toggle floating on and off
+mod3 + space
     bspc node focused.tiled -t floating || bspc node focused.floating -t tiled
+# bspc node -t tiled || bspc node -t floating
+
+# Toggle fullscreen, floating, and tiled
+# mod3 + {shift + space,space}
+#    bspc node -t {tiled,floating}
 
 # For floating windows one can use Alt + Right Mouse click to
 super + ctrl + {h,j,k,l}
@@ -117,7 +219,14 @@ super + ctrl + {h,j,k,l}
 #     bspc node -v {-20 0,0 20,0 -20,20 0}
 
 mod3 + e
-    bspc window -f {next.floating,next.tiled}
+    bspc node -f {next.floating,next.tiled}
+
+# =================
+# === Spectacle ===
+# =================
+
+# mod3 + x ; n ; r
+#     bspc node -i
 
 # ========================
 # === CONTINUOUS INPUT ===
@@ -128,11 +237,11 @@ mod3 + c : {h,j,k,l}
 
 # Mode for dynamic gaps.
 mod3 + c : bracket{left,right}
-	bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
+    bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
 
 # Move floating windows with the arrow keys
 mod3 + c : {Left,Down,Up,Right}
-	bspc node -v {-20 0,0 20,0 -20,20 0}
+    bspc node -v {-20 0,0 20,0 -20,20 0}
 
 # ================
 # === LAUNCHER ===
@@ -144,7 +253,7 @@ mod3 + d
 mod3 x ; {x,b}
      rofi -show {drun,window}
 
-mod3 + {b,m}
+mod3 + {b,p}
     {$BROWSER, pcmanfm}
 
 mod3 + {_,shift + }n
@@ -156,15 +265,39 @@ mod3 + {_,shift + }n
 
 # Speaker/output volume.  Requires `amixer` and dedicated keys.
 XF86Audio{Mute,LowerVolume,RaiseVolume}
-    volume-notify {toggle,-5%,+5%}
+    volume-notify '' {toggle,-5%,+5%}
+
+# Speaker/output volume.  Requires `amixer` and dedicated keys.
+shift + XF86Audio{Mute,LowerVolume,RaiseVolume}
+    volume-notify 'bluetooth' {toggle,-5%,+5%}
+
+# ??
+XF86Mail
+    $TERMINAL -e neomutt
 
 # amixer-notify "toggle"
 # amixer-notify "set" "{5%-,5%+}"
 # pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
 
-super + F9
-  thunderbird
+# sync email
+super + F8
+    mailsync
+
+# Mount a USB drive or Android device
+super + {F9,F10}
+    {dmenumount,dmenuumount}
+
+# Run a program in a new terminal
+alt + space
+    dmenu-run
+
+# Password manager dmenu script
+ctrl + alt + p
+    prs-dmenu
+
+# super + F9
+#   thunderbird
 
 Print
     flameshot full -p ~/Pictures/screenshot
@@ -175,12 +308,15 @@ Print + shift
 Print + super
     flameshot screen -p ~/Pictures/screenshot
 
+Print + ctrl
+    maimpick
+
 # Media Controls
 super + F1
     $TERMINAL -e ncmpcpp
 
-super + {F5,F6,F7,F8}
-    playerctl -p "mpd" {stop,previous,play-pause,next}
+# super + {F5,F6,F7,F8}
+#     playerctl -p "mpd" {stop,previous,play-pause,next}
 
 # Control the [last] currently active player.
 mod3 + XF86Audio{Play,Prev,Next}
@@ -208,21 +344,15 @@ XF86MonBrightness{Down,Up}
 # Preselect the direction or insert again to cancel the preselection.
 # This enters the manual tiling mode that splits the currently focused
 # window.
-# ctrl + alt + {h,j,k,l}
-#     bspc node --presel-dir '~{west,south,north,east}'
+alt + control + shift + {h,j,k,l}
+    bspc node --presel-dir {west,south,north,east}
 
-
-# Preselect the direction or insert again to cancel the preselection.
-# This enters the manual tiling mode that splits the currently focused
-# window.
-# mod4 + alt + {h,j,k,l}
-#   bspc node --presel-dir '~{west,south,north,east}'
-
+alt + control + shift + c
+    bspc node -p cancel
 
 # Preselect the ratio.  The default value is 0.5, defined in `bspwmrc`.
 # mod4 + alt + {1-9}
 #   bspc node -o 0.{1-9}
-
 
 # Set the node flags.  Locked is a node that cannot be closed with `bspc
 # node --close`.  Marked is a specific selector that allows operating on
@@ -231,3 +361,6 @@ XF86MonBrightness{Down,Up}
 # keep its dimensions and tiling position.
 # mod4 + x ; f ; {l,m,s,p}
 # bspc node -g {locked,marked,sticky,private}
+
+# super + {t,shift + t,s,f}
+#   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}

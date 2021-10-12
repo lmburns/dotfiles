@@ -12,7 +12,7 @@ daemon:
   default_parallel_tasks: 2
   pause_group_on_failure: false
   pause_all_on_failure: false
-  callback: "osascript -e 'display notification \"Finished with status {{ result }}\" with title \"Pueue task {{ id }}\" subtitle \"{{ command }}\"'"
+  callback: "notify-send '{{ command }}' 'Pueue status: {{ result }}\nPueue task: {{ id }}'"
   callback_log_lines: 10
   groups:
     default: 2

@@ -180,7 +180,7 @@ report.next.description=Lists the most urgent tasks
 report.next.columns=id,project,priority,due,start.active,entry.age,description
 report.next.labels= ,Project,Pri,Due,Active,Age,Description
 report.next.sort=due+,priority-,project+
-# report.next.filter=status:pending
+report.next.filter=status:pending
 
 # Other
 # report.scheduled.description=Scheduled tasks
