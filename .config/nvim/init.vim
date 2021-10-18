@@ -1464,6 +1464,7 @@ Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['markdown', 'python', 'rust', 'lua']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
+Plug 'ron-rs/ron.vim' | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
   " Plug 'nvim-treesitter/nvim-treesitter-textobjects'

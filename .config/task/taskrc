@@ -273,7 +273,7 @@ uda.taskwarrior-tui.background_process_period=60
 # uda.taskwarrior-tui.task-report.next.filter=$(task show report.next.filter)
 
 uda.taskwarrior-tui.shortcuts.1=~/.config/taskwarrior-tui/scripts/runtaskn
-uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/scripts/add-store.sh
+uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/scripts/add-tag.sh
 
 # uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/shortcut-scripts/sync.sh
 

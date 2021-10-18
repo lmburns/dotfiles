@@ -96,8 +96,8 @@ super + {j,k}
 super + {_,shift + }c
     bspc node -f {next,prev}.local.!hidden.window
 
-super + {_,shift + }p
-    bspc node -f {next,prev}
+# super + {_,shift + }p
+#     bspc node -f {next,prev}
 
 # Toggle between monocle windows
 super + comma
