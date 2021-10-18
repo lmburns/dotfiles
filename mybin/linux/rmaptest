@@ -1,8 +1,0 @@
-#!/bin/sh
-
-setxkbmap us
-setxkbmap -option caps:
-killall xcape 2>/dev/null ; xcape -e 'Hyper_L=Escape'
-
-# xmodmap -e "clear mod4"
-# xmodmap -e "add mod3 = Hyper_L"

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Desc: backup task folder
+
+FILE="/task-bkp-$(date +'%Y%m%d').tar.gz"
+DIR="$HOME/backup/task"
+TAR="$HOME/.config/task"
+
+mkdir -p "$DIR"
+tar czfP "$DIR/$FILE" "$TAR"

@@ -1,0 +1,22 @@
+#compdef dragon
+
+# zsh completions for 'dragon'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--and-exit,-x}'[exit after a single completed drop]'
+  {--target,-t}'[act as a target instead of source]'
+  {--keep,-k}'[with --target, keep files to drag out]'
+  {--print-path,-p}'[with --target, print file paths instead of URIs]'
+  {--all,-a}'[drag all files at once]'
+  {--icon-only,-i}'[only show icons in drag-and-drop windows]'
+  {--on-top,-T}'[make window always-on-top]'
+  {--stdin,-I}'[read input from stdin]'
+  {--verbose,-v}'[be verbose]'
+  '--help[show help]'
+  '--version[show version details]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

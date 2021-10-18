@@ -1,0 +1,26 @@
+[config]
+load_cargo_aliases = true
+
+[tasks.br]
+dependencies = ["build-release"]
+
+[tasks.p]
+command = 'cargo'
+args = ["play", "${@}"]
+
+[tasks.e]
+command = 'cargo'
+args = ['eval', "${@}"]
+
+[tasks.r]
+command = 'cargo'
+args = ['run', "${@}"]
+
+# Doesn't work
+[tasks.emain]
+script = "nvim ${CARGO_MAKE_WORKING_DIRECTORY}/src/main.rs"
+
+[tasks.debug]
+env = { "RUST_BACKTRACE" = 1 }
+command = 'cargo'
+args = ['run', "${@}"]

@@ -134,7 +134,7 @@ ForegroundVisited=127,140,141
 ColorScheme=GruvboxColors
 Name=GruvboxColors
 shadeSortColumn=true
-widgetStyle=Breeze
+widgetStyle=breeze
 
 [Icons]
 Theme=Tela-purple-dark

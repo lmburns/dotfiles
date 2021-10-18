@@ -1,0 +1,50 @@
+[scripts.ec]
+command = 'nvim /home/lucas/.config/pier/config.toml'
+description = 'edit configuration file'
+
+[scripts.testing]
+description =  "testing"
+command = '''
+notify-send 'testing' 'pier'
+'''
+
+[script.refresh-wifi]
+command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
+
+[scripts.enabled-services]
+command = "systemctl list-unit-files --state=enabled"
+
+[scripts.all-services]
+command = "systemctl list-unit-files --type=service"
+
+[scripts.dmesg-sudo]
+description =  "enable no sudo for dmesg"
+command = "sudo sysctl -w kernel.dmesg_restrict=0"
+
+[scripts.ex-upgrade]
+description =  "expac - upgrade & download size"
+command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+
+[scripts.ex-recent]
+description =  "expac - recently installed (20)"
+command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
+
+[scripts.ex-regex]
+description =  "expac - search regex"
+command = "expac -Ss '%-30n %-8v %d'"
+
+# TODO:
+[scripts.ex-sinstalled]
+description =  "expac - search installed (fzf)"
+command = "pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
+
+[scripts.ex-sall]
+description =  "expac - search all (fzf)"
+command = "pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse"
+
+[scripts.ex-mod-conf]
+description =  "expac - list modified files"
+alias = "ex-mod"
+command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+
+[default]

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Desc: backup packages from PACMAN, cargo, gem, go, npm, pip
+
+PACMAN_FILE="pacman_$(date +'%Y%m%d')"
+CARGO_FILE="cargo_$(date +'%Y%m%d')"
+GEM_FILE="gem_$(date +'%Y%m%d')"
+GO_FILE="go_$(date +'%Y%m%d')"
+NPM_FILE="npm_$(date +'%Y%m%d')"
+PIP_FILE="pip_$(date +'%Y%m%d')"
+PIPX_FILE="pipx_$(date +'%Y%m%d')"
+
+DIR="$HOME/backup/packages"
+
+[[ ! -d "$DIR" ]] && mkdir -p "$DIR"
+
+paru -Qeq > "${DIR}/${PACMAN_FILE}"
+ls "${CARGO_HOME}/bin" | rg "^(cargo|rust)" -v > "${DIR}/${CARGO_FILE}"
+gem list > "${DIR}/${GEM_FILE}"
+ls "${HOME}/go/$(goenv version | hck -f1)/bin" > "${DIR}/${GO_FILE}"
+npm list -g --depth=0 > "${DIR}/${NPM_FILE}"
+pip list > "${DIR}/${PIP_FILE}"
+pipx list > "${DIR}/${PIPX_FILE}"
+
+/bin/cp -f "${DIR}/${PACMAN_FILE}" "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
+/bin/cp -f "${DIR}/${CARGO_FILE}" "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
+/bin/cp -f "${DIR}/${GEM_FILE}" "${XDG_CONFIG_HOME}/packages/gem_pkgs"
+/bin/cp -f "${DIR}/${GO_FILE}" "${XDG_CONFIG_HOME}/packages/go_pkgs"
+/bin/cp -f "${DIR}/${NPM_FILE}" "${XDG_CONFIG_HOME}/packages/npm_pkgs"
+/bin/cp -f "${DIR}/${PIP_FILE}" "${XDG_CONFIG_HOME}/packages/pip_pkgs"
+/bin/cp -f "${DIR}/${PIPX_FILE}" "${XDG_CONFIG_HOME}/packages/pipx_pkgs"
+
+dotbare add "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/gem_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/go_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/npm_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/pip_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/pipx_pkgs"

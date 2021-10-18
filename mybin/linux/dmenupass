@@ -3,4 +3,4 @@
 # This script is the SUDO_ASKPASS variable, meaning that it will be used as a
 # password prompt if needed.
 
-dmenu -fn 'Hack Nerd Font-18' -P -p "$1" <&- && echo
+dmenu -fn 'Hack Nerd Font-18' -p "$1" <&-

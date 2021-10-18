@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Desc: get sudo password zenity
+
+zenity --password --title="sudo password prompt" --timeout=10

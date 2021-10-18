@@ -15,6 +15,7 @@ udiskie --tray & #
 # clipit &
 # greenclip daemon &
 copyq &
+ulauncher --hide-window &
 
 xset s on
 xset s 900 180
@@ -29,19 +30,23 @@ xset s 900 180
 # xss-lock -- xscreensaver-command -lock &
 # xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- screenlock &
 
-export PRIMARY_DISPLAY="$(xrandr | awk '/ primary/{print $1}')"
+# 'xrandr --output "DP-1" --brightness .1' \
+# 'xrandr --output "DP-1" --brightness 1' \
+
+# shifts back and forth
+    # --timer 120 \
+    #     'redshift -b 0.1:0.1' \
+    #     'redshift -b 1.0:1.0' \
 
 xidlehook \
     --not-when-fullscreen \
     --not-when-audio \
-    --timer 120 \
-        'xrandr --output "$PRIMARY_DISPLAY" --brightness .1' \
-        'xrandr --output "$PRIMARY_DISPLAY" --brightness 1' \
     --timer 500 \
         'screensaver' '' \
     --timer 240 \
         'xset dpms force off; \
-        if pgrep screenlock 2>/dev/null; then true; else screenlock; fi' '' &
+        if [ ! $(pidof i3lock) ]; then screenlock; fi' '' \
+    --socket "/tmp/xidlehook.sock" &
 
 # flashfocus &
 mpd &
@@ -59,8 +64,8 @@ redshift -l 38.95:-92.32 &
 picom-rounded -b --experimental-backends &
 
 # Sync copy paste buffers
-autocutsel -fork &
-autocutsel -selection CLIPBOARD -fork &
+# autocutsel -fork &
+# autocutsel -selection CLIPBOARD -fork &
 
 # Wallpaper
 # nitrogen --restore
@@ -77,10 +82,13 @@ flameshot &
 
 # Notifications
 dunst &
+
 # Hide mouse
 xbanish &
+
 # Keybindings
 sxhkd &
+
 xsetroot -cursor_name left_ptr &
 xrdb -merge ~/.Xresources &
 xmodmap ~/.Xmodmap &
@@ -100,13 +108,15 @@ xmodmap ~/.Xmodmap &
 #     exec startplasma-x11
 #     ;;
 #   bspwm)
-    exec bspwm
+#     exec bspwm
 #     ;;
 #   bswpm-plasma)
 #     export DESKTOP_SESSION=plasma
 #     exec KDEWM=/usr/bin/bspwm /usr/bin/startplasma-x11
 #     ;;
 #   xfce)
-    # exec startxfce4
+#     exec startxfce4
 #     ;;
 # esac
+
+exec bspwm

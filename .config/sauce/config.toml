@@ -1,0 +1,3 @@
+[settings]
+autoload-hook = true
+autoload = true

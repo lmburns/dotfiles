@@ -1,0 +1,19 @@
+{
+    "autoload": {
+        "Telink Wireless Receiver": "modifier",
+        "Telink Wireless Receiver 2": "new preset"
+    },
+    "macros": {
+        "keystroke_sleep_ms": 1
+    },
+    "gamepad": {
+        "joystick": {
+            "non_linearity": 4,
+            "pointer_speed": 300,
+            "left_purpose": "none",
+            "right_purpose": "none",
+            "x_scroll_speed": 300,
+            "y_scroll_speed": 300
+        }
+    }
+}

@@ -1,5 +1,7 @@
 # [Created by task 2.5.3 12/25/2020 21:33:08]
 
+# ff97f5e9-c0be-4ca7-8946-e2fcf5c077f0
+
 # Here is an example of entries that use the default, override and blank values
 #   variable=foo   -- By specifying a value, this overrides the default
 #   variable=      -- By specifying no value, this means no default
@@ -41,6 +43,7 @@ alias.d=done
 alias.a=add
 alias.m=modify
 alias.cal=calendar
+alias.open=execute zsh -lc 'taskopen "$1"'
 active.indicator=
 uda.priority.values=H,M,L,
 
@@ -215,12 +218,6 @@ report.next.filter=status:pending
 #include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/solarized-light-256.theme
 #include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/no-color.theme
 
-# taskd.ca=\/Users\/lucasburns\/.config\/task\/taskd\/ca.cert.pem
-# taskd.certificate=\/Users\/lucasburns\/.config\/task\/taskd\/Lucas.cert.pem
-# taskd.key=\/Users\/lucasburns\/.config\/task\/taskd\/Lucas.key.pem
-# taskd.credentials=GROUP\/Lucas\/8191c7c8-b62d-40bc-b49e-a51ea82d4925
-# taskd.server=taskd.lucasburns.xyz.:53589
-
 # TASKWARRIOR TUI
 uda.taskwarrior-tui.keyconfig.quit=q
 uda.taskwarrior-tui.keyconfig.refresh=r
@@ -265,13 +262,19 @@ uda.taskwarrior-tui.task-report.jump-on-task-add=true
 uda.taskwarrior-tui.task-report.prompt-on-delete=true
 uda.taskwarrior-tui.task-report.prompt-on-done=false
 
-uda.taskwarrior-tui.shortcuts.1=~/mybin/runtaskn
+uda.taskwarrior-tui.background_process=task sync
+uda.taskwarrior-tui.background_process_period=60
+
+# uda.taskwarrior-tui.style.report_completion_pane=yellow
+
 
 # uda.taskwarrior-tui.style.context.active=black on rgb444
 # uda.taskwarrior-tui.style.calendar.title=black on rgb444
 # uda.taskwarrior-tui.task-report.next.filter=$(task show report.next.filter)
 
-# uda.taskwarrior-tui.shortcuts.1=~/.config/taskwarrior-tui/shortcut-scripts/add-personal-tag.sh
+uda.taskwarrior-tui.shortcuts.1=~/.config/taskwarrior-tui/scripts/runtaskn
+uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/scripts/add-store.sh
+
 # uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/shortcut-scripts/sync.sh
 
 # TASKN
@@ -280,8 +283,11 @@ uda.estimate.type=numeric
 uda.estimate.label=Estimate
 # uda.estimate.values=huge,large,medium,small,trivial
 
-news.version=2.6.0
+taskd.certificate=\/home\/lucas\/.config\/task\/lucas.cert.pem
+taskd.key=\/home\/lucas\/.config\/task\/lucas.key.pem
+taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
+taskd.server=lmburns.com:53589
+taskd.credentials=Self\/Lucas\/b82378f9-c7b4-4e78-9fb7-89fad80c4182
+taskd.trust=strict
 
-# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
-context.work.read=project:Work or +urgent
-context.work.write=project:Work or +urgent
+# vim: ft=taskrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

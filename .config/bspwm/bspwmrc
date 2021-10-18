@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/usr/bin/env bash
 
 bspc rule -r "*"
 
@@ -13,6 +13,7 @@ remaps &
 # thunar --daemon &
 # spacefm -d &
 pgrep -x pcmanfm >/dev/null || pcmanfm -d &
+pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
 launchpolybar &
 
 bspc monitor -d I II III IV V
@@ -65,10 +66,20 @@ bspc rule -a Screenkey manage=off
 bspc rule -a Zathura state=tiled
 bspc rule -a Sxiv state=floating follow=on
 bspc rule -a "feh" state=floating
+bspc rule -a "Ulauncher" border=off follow=on
 bspc rule -a "System Settings"  state=floating follow=on
+bspc rule -a Pinentry state=floating center=on
 
 bspc rule -a Alacritty:cmatrixterm state=fullscreen
 bspc rule -a Alacritty:dropdown state=floating
+
+#bspc rule -a Plasma state=floating border=off layer=normal manage=off
+#bspc rule -a plasmashell state=floating border=off layer=normal manage=off
+#bspc rule -a plasma-desktop state=floating border=off layer=normal manage=off
+# bspc rule -a krunner layer=ABOVE state=floating border=off center=true
+bspc rule -a Plank state=floating layer=below manage=off border=off
+bspc rule -a lattedock layer=below manage=off border=off
+#bspc rule -a lattedock manage=off
 
 # bspc rule -a Gimp desktop='^8' state=floating follow=on
 # bspc rule -a mplayer2 state=floating

@@ -1,0 +1,7 @@
+directory: ~/Music
+library: ~/.config/beets/library.db
+
+plugins: lastgenre edit fetchart ftintitle
+
+lastgenre:
+  auto: yes

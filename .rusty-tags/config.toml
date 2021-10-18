@@ -1,0 +1,12 @@
+# the file name used for vi tags
+vi_tags = "rusty-tags.vi"
+
+# the file name used for emacs tags
+emacs_tags = "rusty-tags.emacs"
+
+# the name or path to the ctags executable, by default executables with names
+# are searched in the following order: "ctags", "exuberant-ctags", "exctags", "universal-ctags", "uctags"
+ctags_exe = "/usr/bin/ctags"
+
+# options given to the ctags executable
+ctags_options = "--fields=+niazS --extra=+q"

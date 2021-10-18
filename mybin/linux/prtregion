@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+case "$1" in
+-c | --clipboard)
+  notify-send \
+    -i /usr/share/icons/Gruvbox-Material-Dark/48x48/apps/screengrab.svg \
+    -u normal \
+    -t 3000 'Select a region to screenshot'
+  maim -s | xclip -selection clipboard -t image/png
+  notify-send \
+    -i /usr/share/icons/Gruvbox-Material-Dark/48x48/apps/screengrab.svg \
+    -a Screenshot \
+    -u normal \
+    -t 3000 'Screenshot of region taken and saved to clipboard'
+  ;;
+-d | --disk)
+  notify-send \
+    -i /usr/share/icons/Gruvbox-Material-Dark/48x48/apps/screengrab.svg \
+    -a Screenshot \
+    -u normal \
+    -t 3000 'Select a region to screenshot'
+  maim -s "$HOME/Pictures/screenshot/$(date '+%Y-%m-%d_%H-%M').png" \
+    | xclip -selection clipboard -t image/png
+  notify-send \
+    -i /usr/share/icons/Gruvbox-Material-Dark/48x48/apps/screengrab.svg \
+    -a Screenshot \
+    -u normal \
+    -t 3000 'Screenshot of region taken'
+  ;;
+esac
+
+# vim: ft=sh:et:sw=2:ts=2:sts=0:fdm=marker:fmr={{{,}}}:

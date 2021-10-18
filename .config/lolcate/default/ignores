@@ -1,0 +1,14 @@
+.git
+.zinit
+._zinit/*
+._backup
+._backup/*
+Containers/
+coc/
+vim-persisted-undo/
+.ipynb_checkpoints
+.pycache
+per-directory-history
+target/
+target/
+/target/

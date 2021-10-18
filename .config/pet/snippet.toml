@@ -1,0 +1,44 @@
+[[snippets]]
+  description = "cpu/memory"
+  command = "ps -A -o %cpu,%mem | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'"
+  output = ""
+
+[[snippets]]
+  description = "batt temp"
+  command = "bc <<< \\\"scale=3; $(ioreg -r -n AppleSmartBattery | grep Temperature | cut -c23-)/100*1.8+32\\\""
+  output = ""
+
+[[snippets]]
+  description = "run"
+  command = "HOARD_LOG=debug just r -c $PWD/config.toml -h $PWD/out backup"
+  output = ""
+
+[[snippets]]
+  description = "yaml"
+  command = "HOARD_LOG=warn just r -c $PWD/config.yml -h $PWD/out backup"
+  output = ""
+
+[[snippets]]
+  description = "json"
+  command = "HOARD_LOG=debug just r -c $PWD/config.json -h $PWD/out backup"
+  output = ""
+
+[[snippets]]
+  description = "rage_ssh"
+  command = "just r -R ~/.ssh/id_rsa.pub -eo test_out test_file"
+  output = ""
+
+[[snippets]]
+  description = "rage_recip"
+  command = "just r -R recipients.txt -eo test_out test_file"
+  output = ""
+
+[[snippets]]
+  description = "rage_decrypt"
+  command = "just r -i test.key -do test_decrypt test_out"
+  output = ""
+
+[[snippets]]
+  description = "directory"
+  command = "HOARD_LOG=trace just r -c $PWD/myconf.toml -h $PWD/out backup"
+  output = ""

@@ -1,9 +1,12 @@
+aliases /etc/aliases
+
 defaults
 auth	on
 tls	on
 tls_trust_file	/etc/ssl/cert.pem
 logfile /home/lucas/.config/msmtp/msmtp.log
 
+account burnsac@me.com
 host smtp.mail.me.com
 port 587
 from burnsac@me.com
@@ -50,4 +53,3 @@ tls on
 tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
 # tls_starttls
-

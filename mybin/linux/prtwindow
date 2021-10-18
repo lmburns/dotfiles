@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+# title=$(xtitle | \
+#   awk -F "-" '{gsub(/[[:punct:]]/, "") gsub(/\s/, "_"); print $1}')
+
+title=$(xdotool getactivewindow getwindowname \
+    | perl -lpe 's/(?![_])\p{P}|\s/_/g')
+
+notify-send \
+    -i /usr/share/icons/Gruvbox-Material-Dark/48x48/apps/screengrab.svg \
+    -a Screenshot \
+    -u normal \
+    -t 3000 'Screenshot will be taken in 2 seconds'
+
+location="$HOME/Pictures/screenshot/${title}_$(date '+%Y-%m-%d_%H-%M').png"
+
+sleep 2
+maim --hidecursor --window "$(xdotool getactivewindow)" "$location"
+notify-send -a Screenshot -i "$location" -u normal -t 3000 'Screenshot taken'

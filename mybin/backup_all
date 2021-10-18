@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+backup_bookmarks
+backup_calcurse
+backup_crontab
+backup_pkgs
+backup_task

@@ -1,0 +1,64 @@
+import plugins
+
+options.default_width = 20
+options.encoding = "utf-8"
+options.bulk_select_clear = True
+
+# options.clipboard_copy_cmd = 'xclip -selection primary'
+# options.min_memory_mb = 100
+options.cmdlog_histfile = '~/.visidata/history/%Y%m.vd'
+# options.disp_keycol_sep = '║' # ┃│┊┆ ┆┆
+# options.disp_column_sep = '|'
+
+options.clipboard_copy_cmd   = 'xclip -selection primary'
+# options.min_memory_mb        =  100
+options.cmdlog_histfile      = '~/.visidata/history/%Y%m.vd'
+options.disp_note_none       =  '⌀'                  #visible contents of a cell whose value is Nonedisp_truncator      …                      # indicator that the contents are only partially visible
+options.disp_oddspace        =  '·'                  # displayable character for odd whitespace
+options.disp_unprintable     =  '.'                  # substitute character for unprintables
+options.disp_column_sep      =  '|'                  # separator between columns
+options.disp_keycol_sep      =  '‖'                  # separator between key columns and rest of columns
+options.disp_status_fmt      =  '{sheet.name}|'      # status line prefix
+options.disp_lstatus_max     =  '0'                  # maximum length of left status line
+options.disp_status_sep      =  '|'                  # separator between statuses
+options.disp_edit_fill       =  '_'                  # edit field fill character
+options.disp_more_left       =  '<'                  # header note indicating more columns to the left
+options.disp_more_right      =  '>'                  # header note indicating more columns to the right
+options.disp_error_val       =  '!'                  # displayed contents for computation exception
+options.disp_ambig_width     =  '1'                  # width to use for unicode chars marked ambiguous
+options.color_default        =  '246 grey58'   # the default color
+options.color_default_hdr    =  '44 darkturquoise bold underline'     # color of the column headers
+options.color_current_row    =  '167 indianred'     # color of the cursor row
+# options.color_current_col    =  'red reverse'        # color of the cursor column
+options.color_current_col    =  '96 plum4'        # color of the cursor column
+options.color_current_hdr    =  'red bold reverse underline'         # color of the header for the cursor column
+options.color_column_sep     =  '133 mediumorchid3'    # color of column separators
+options.color_key_col        =  'blue'               # color of key columns
+options.color_hidden_col     =  '8'                  # color of hidden columns on metasheets
+options.color_selected_row   =  '215 yellow'         # color of selected rows
+options.color_keystrokes     =  'white'              # color of input keystrokes on status line
+options.color_status         =  '145 grey69 bold'    # status line color
+options.color_error          =  'red'                # error message color
+options.color_warning        =  'yellow'             # warning message color
+options.color_edit_cell      =  'normal'             # cell color to use when editing cell
+options.disp_pending         =  '{PENDING}'          # string to display in pending cells
+options.color_note_pending   =  'bold magenta'       # color of note in pending cells
+options.color_note_type      =  '226 yellow'         # cell note for numeric types in anytype columns
+options.disp_date_fmt        =  '%Y-%m-%d'           # default fmtstr to strftime for date values
+options.color_change_pending =  'reverse yellow'     # color for file attributes pending modification
+options.color_delete_pending =  'red'                # color for files pending delete
+options.disp_histogram       =  '*'                  # histogram element character
+options.disp_histolen        =  '50'                 # width of histogram column
+options.color_working        =  'green'              # color of system running smoothly
+options.disp_replay_play     =  '▶'                  # status indicator for active replay
+options.disp_replay_pause    =  '‖'                  # status indicator for paused replay
+options.color_status_replay  =  'green'              # color of replay status indicator
+options.disp_pixel_random    =  'False'              # randomly choose attr from set of pixels instead of most common
+options.color_graph_hidden   =  '238 blue'           # color of legend for hidden attribute
+options.color_graph_selected =  'bold'               # color of selected graph points
+options.color_graph_axis     =  'bold'               # color for graph axis labels
+# options.color_diff           =  'red'                # color of values different from --diff source
+# options.color_diff_add       =  'yellow'             # color of rows/columns added to --diff source   # displayable character for odd whitespace
+
+globalCommand('gm', 'mm, _ = curses.mousemask(-1); status("mouse "+("ON" if mm else "OFF"))', 'enable mouse events')
+globalCommand('zm', 'mm, _ = curses.mousemask(0); status("mouse "+("ON" if mm else "OFF"))', 'disable mouse events')

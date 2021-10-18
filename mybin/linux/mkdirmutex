@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+# A very simple, POSIX, dependency-free atomic lock using mkdir, with
+# protection against crashed processes causing deadlocks. A lot easier to
+# reason about and with fewer footguns than flock with FD inheritance and
+# unintuitive deadlocks.
+#
+# For the lock to be held, two conditions must be met:
+#
+# 1. lock_dir must exist;
+# 2. lock_meta_file must contain a running pid with the same starttime stored
+#    (to prevent against deadlock if a process crashes in a way which does not
+#    release the lock).
+#
+# If either of these conditions is not met (and lock_meta_file was parsed
+# successfully), a new process may get the lock. This consists of:
+#
+# 1. Moving the lock_dir away to a temporary name;
+# 2. Recursively deleting the temporary lock_dir;
+# 3. Doing mkdir(lock_dir) -- if this fails, we are racing and must fail;
+# 4. Writing our own pid and starttime into lock_meta_file.
+#
+# If lock_meta_file is not parsable, then we play it safe and fail closed, on
+# the basis that the process simply hasn't written the total data yet.
+
+IFS=" "
+
+name=lock_test
+lock_dir=/tmp/$name.lock
+lock_meta_file=$lock_dir/meta
+
+get_meta() {
+    local stat starttime partial_stat
+    local pid="${1?missing pid}"
+
+    [[ -d /proc/$pid ]] || return
+    read -r stat < "/proc/$pid/stat"
+
+    # comm may contain the field delimiter, so filter to after it.
+    read -ra partial_stat <<< "${stat##*) }"
+
+    # We're at field 3, and need to get field 22 (starttime).
+    printf '%s %s\n' "$pid" "${partial_stat[19]}"
+}
+
+cleanup_stale_lock() {
+    local pid starttime raw_meta
+
+    if ! [[ -d $lock_dir ]]; then
+        # Ostensibly already unlocked, will be validated by atomic mkdir later
+        return 0
+    fi
+
+    IFS= read -r raw_meta < "$lock_meta_file" || return
+    read -r pid starttime <<< "$raw_meta" || return
+
+    if ! [[ $pid ]] || ! [[ $starttime ]]; then
+        # Corrupted file or not written yet, fail closed
+        return 1
+    fi
+
+    if [[ "$(get_meta "$pid")" != "$raw_meta" ]]; then
+        # Stale lock file, this process is gone
+        unlock
+    fi
+}
+
+unlock() {
+    local tempdir
+
+    tempdir=$(mktemp -d -u) || return
+
+    mv -- "$lock_dir" "$tempdir" || return
+
+    # If this fails it's weird, but not catastrophic: we've already cleared the
+    # lock, just not the temp dir.
+    rm -rf -- "$tempdir"
+}
+
+lock() {
+    # We don't look at cleanup_stale_lock's exit, because `mkdir` is always the
+    # authoritative indicator of successful or unsuccessful locking. This is
+    # just best-effort.
+    cleanup_stale_lock
+
+    mkdir -- "$lock_dir" || return
+    get_meta "$$" > "$lock_meta_file" || return
+}
+
+example() {
+    set -x
+
+    lock || exit
+    trap unlock EXIT
+
+    # Actual workload.
+    sleep 10
+}
+
+example

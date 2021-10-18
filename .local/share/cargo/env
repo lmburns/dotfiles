@@ -1,9 +1,11 @@
 #!/bin/sh
-
-case ":${PATH}" in
-  *:"$HOME/.local/share/cargo/bin/":*)
-    ;;
-  *)
-    export PATH="$HOME/.local/share/cargo/bin:$PATH"
-    ;;
+# rustup shell setup
+# affix colons on either side of $PATH to simplify matching
+case ":${PATH}:" in
+    *:"/home/lucas/.local/share/cargo/bin":*)
+        ;;
+    *)
+        # Prepending path in case a system-installed rustc needs to be overridden
+        export PATH="/home/lucas/.local/share/cargo/bin:$PATH"
+        ;;
 esac

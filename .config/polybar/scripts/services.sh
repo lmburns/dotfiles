@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
-selected=$(systemctl list-unit-files --no-pager --type=service --no-legend | dmenu | awk '{print $1;}')
+selected=$(SYSTEMD_COLORS=0 \
+    systemctl \
+        list-unit-files \
+            --no-pager \
+            --type=service \
+            --no-legend \
+                | dmenu \
+                | awk '{print $1}'
+)
 
-selected=$(echo $selected | awk '{print $1;}')
+selected=$(echo $selected | awk '{print $1}')
 
 action=$(echo -e "start\nstop\nrestart" | dmenu)
 

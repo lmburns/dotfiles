@@ -28,8 +28,8 @@ set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
 
 # -- Previewer: lfimg
-# $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/preview"
-# $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/cleaner"
+# $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/others/preview"
+# $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/others/cleaner"
 
 # -- Previewer: stpv
 # set previewer stpv
@@ -80,7 +80,7 @@ cmd open ${{
       (image/x-xcf) nohup gimp $f >/dev/null 2>&1 ;;
       (image/svg+xml) display -- $f ;;
       (image/*) rotdir $f | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\)\(_large\)*$" | sxiv -ai 2>/dev/null | lf-select ;;
-      (audio/*) mpv --audio-display=no $f >/dev/null ;;
+      (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback  $f >/dev/null ;;
       (video/*) nohup mpv $f -quiet >/dev/null 2>&1 ;;
       (application/x-bittorrent) open -a Transmission.app ;;
       (application/zlib) open ;;
@@ -91,6 +91,8 @@ cmd open ${{
         esac
         ;;
     esac
+
+    # mpv --audio-display=no
 
     # *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>/dev/null & done;;
 }}
@@ -783,6 +785,11 @@ map Twl wutag-list
 # ]]]
 
 # == Git == [[[
+cmd dotbare_add $for x ($fx) { dotbare add "$x" }
+cmd git_add $for x ($fx) { git add "$x" }
+
+map gta :{{ git_add; unselect; }}
+
 map gtb :git_branch
 map gtp ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
 map gtz ${{clear; git status; echo "press ENTER"; read ENTER}}
@@ -797,8 +804,6 @@ map gFs ${{clear; fstat}}
 map gFa ${{clear; fadd}}
 map gFl ${{clear; flog}}
 map gFu ${{clear; funtrack}}
-
-cmd dotbare_add $for x ($fx) { dotbare add "$x" }
 
 map gfa :{{ dotbare_add; unselect; }}
 map gfai ${{clear; dotbare fadd -f}}

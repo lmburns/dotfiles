@@ -15,6 +15,10 @@ _prs() {
 
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -26,10 +30,6 @@ _prs() {
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
-'-V[Prints version information]' \
-'--version[Prints version information]' \
 ":: :_prs_commands" \
 "*::: :->prs-cli" \
 && ret=0
@@ -51,6 +51,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -62,8 +66,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ':NAME -- Secret name and path:' \
 && ret=0
 ;;
@@ -71,6 +73,10 @@ _arguments "${_arguments_options[@]}" \
 _arguments "${_arguments_options[@]}" \
 '-s+[Password store to use]' \
 '--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -82,8 +88,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ':GIT_URL -- Remote git URL to clone from:' \
 && ret=0
 ;;
@@ -95,6 +99,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -106,8 +114,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ':QUERY -- Secret query:' \
 ':DEST -- Secret destination path:' \
 && ret=0
@@ -122,6 +128,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -133,8 +143,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
@@ -161,6 +169,10 @@ _arguments "${_arguments_options[@]}" \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
 '-c[Copy secret to clipboard]' \
 '--copy[Copy secret to clipboard]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -172,8 +184,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::NAME -- Secret name and path:' \
 && ret=0
 ;;
@@ -181,6 +191,10 @@ _arguments "${_arguments_options[@]}" \
 _arguments "${_arguments_options[@]}" \
 '-s+[Password store to use]' \
 '--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -192,15 +206,43 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '*::COMMAND -- Git command to invoke:' \
+&& ret=0
+;;
+(grep)
+_arguments "${_arguments_options[@]}" \
+'-s+[Password store to use]' \
+'--store=[Password store to use]' \
+'-d[Allow commit and sync on dirty store repository]' \
+'--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-D[Do not commit and sync changes, keep store dirty]' \
+'--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'-f[Force the action, ignore warnings]' \
+'--force[Force the action, ignore warnings]' \
+'-I[Not interactive, do not prompt]' \
+'--no-interact[Not interactive, do not prompt]' \
+'-y[Assume yes for prompts]' \
+'--yes[Assume yes for prompts]' \
+'-q[Produce output suitable for logging and automation]' \
+'--quiet[Produce output suitable for logging and automation]' \
+'*-v[Enable verbose information and logging]' \
+'*--verbose[Enable verbose information and logging]' \
+'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
+':TERM -- Search term:' \
 && ret=0
 ;;
 (housekeeping)
 _arguments "${_arguments_options[@]}" \
 '-s+[Password store to use]' \
 '--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -212,8 +254,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ":: :_prs__housekeeping_commands" \
 "*::: :->housekeeping" \
 && ret=0
@@ -225,75 +265,36 @@ case $state in
         case $line[1] in
             (recrypt)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '()-a[Re-encrypt all secrets]' \
 '()--all[Re-encrypt all secrets]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
 (run)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
 (sync-keys)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '--no-import[Skip importing missing keys to keychain]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
         esac
@@ -308,6 +309,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -319,12 +324,14 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
 (internal)
 _arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -336,8 +343,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ":: :_prs__internal_commands" \
 "*::: :->internal" \
 && ret=0
@@ -353,21 +358,10 @@ _arguments "${_arguments_options[@]}" \
 '--output=[Shell completion files output directory]' \
 '-n+[Name of binary to generate completions for]' \
 '--name=[Name of binary to generate completions for]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '(-o --output)-s[Output completion files to stdout instead]' \
 '(-o --output)--stdout[Output completion files to stdout instead]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '*::SHELL -- Shell type to generate completions for:(all bash elvish fish powershell zsh)' \
 && ret=0
 ;;
@@ -375,20 +369,9 @@ _arguments "${_arguments_options[@]}" \
 _arguments "${_arguments_options[@]}" \
 '-t+[Timeout after which to clear clipboard]' \
 '--timeout=[Timeout after which to clear clipboard]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '--previous-base64-stdin[Read previous contents from stdin as base64 line]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
         esac
@@ -405,6 +388,10 @@ _arguments "${_arguments_options[@]}" \
 '--aliases[Show only alises]' \
 '(-a --aliases)-A[Show only non-alises]' \
 '(-a --aliases)--non-aliases[Show only non-alises]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -416,8 +403,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
@@ -429,6 +414,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -440,16 +429,113 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ':QUERY -- Secret query:' \
 ':DEST -- Secret destination path:' \
 && ret=0
+;;
+(otp)
+_arguments "${_arguments_options[@]}" \
+'-s+[Password store to use]' \
+'--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'-f[Force the action, ignore warnings]' \
+'--force[Force the action, ignore warnings]' \
+'-I[Not interactive, do not prompt]' \
+'--no-interact[Not interactive, do not prompt]' \
+'-y[Assume yes for prompts]' \
+'--yes[Assume yes for prompts]' \
+'-q[Produce output suitable for logging and automation]' \
+'--quiet[Produce output suitable for logging and automation]' \
+'*-v[Enable verbose information and logging]' \
+'*--verbose[Enable verbose information and logging]' \
+'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
+":: :_prs__otp_commands" \
+"*::: :->otp" \
+&& ret=0
+case $state in
+    (otp)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:prs-otp-command-$line[1]:"
+        case $line[1] in
+            (add)
+_arguments "${_arguments_options[@]}" \
+'-a+[Name of the account/file]' \
+'--account=[Name of the account/file]' \
+'-k+[Secret key of the OTP]' \
+'--key=[Secret key of the OTP]' \
+'(-k --key)-u+[URI format of OTP]' \
+'(-k --key)--uri=[URI format of OTP]' \
+'-A+[Algorithm to use to generate the OTP code]: :(SHA1 SHA256 SHA384 SHA512 SHA512_256)' \
+'--algorithm=[Algorithm to use to generate the OTP code]: :(SHA1 SHA256 SHA384 SHA512 SHA512_256)' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'(--hotp)-p[Specify period/interval that account resets]' \
+'(--hotp)--period[Specify period/interval that account resets]' \
+'(--hotp)--totp[Time based account (default)]' \
+'--hotp[Counter based account]' \
+'-d[Allow commit and sync on dirty store repository]' \
+'--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-D[Do not commit and sync changes, keep store dirty]' \
+'--no-sync[Do not commit and sync changes, keep store dirty]' \
+'::QUERY -- Secret query:' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'-d[Allow commit and sync on dirty store repository]' \
+'--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-D[Do not commit and sync changes, keep store dirty]' \
+'--no-sync[Do not commit and sync changes, keep store dirty]' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" \
+'-a+[Name of the account/file to remove]' \
+'--account=[Name of the account/file to remove]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'-d[Allow commit and sync on dirty store repository]' \
+'--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-D[Do not commit and sync changes, keep store dirty]' \
+'--no-sync[Do not commit and sync changes, keep store dirty]' \
+&& ret=0
+;;
+(view)
+_arguments "${_arguments_options[@]}" \
+'-a+[Name of the account/file]' \
+'--account=[Name of the account/file]' \
+'-l+[Length of the OTP code]' \
+'--length=[Length of the OTP code]' \
+'-t+[Timeout after which to clear output]' \
+'--timeout=[Timeout after which to clear output]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'-d[Allow commit and sync on dirty store repository]' \
+'--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-D[Do not commit and sync changes, keep store dirty]' \
+'--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-c[Copy otp to clipboard]' \
+'--copy[Copy otp to clipboard]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
 ;;
 (recipients)
 _arguments "${_arguments_options[@]}" \
 '-s+[Password store to use]' \
 '--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -461,8 +547,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ":: :_prs__recipients_commands" \
 "*::: :->recipients" \
 && ret=0
@@ -474,118 +558,53 @@ case $state in
         case $line[1] in
             (add)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '--secret[Add public key we have private key for]' \
 '--no-recrypt[Skip re-encrypting all secrets]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
 (export)
 _arguments "${_arguments_options[@]}" \
 '-o+[Write recipient key to file instead of stdout]' \
 '--output-file=[Write recipient key to file instead of stdout]' \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '-c[Copy recipient key to clipboard instead of stdout]' \
 '--copy[Copy recipient key to clipboard instead of stdout]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
 (generate)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '--no-add[Skip adding key pair to store]' \
 '(--no-add)--no-recrypt[Skip re-encrypting all secrets]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
 (list)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 && ret=0
 ;;
 (remove)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '--recrypt[Re-encrypting all secrets]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 && ret=0
 ;;
         esac
@@ -600,6 +619,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -611,8 +634,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
@@ -627,6 +648,10 @@ _arguments "${_arguments_options[@]}" \
 '--first[Show only the first line of the secret]' \
 '-c[Copy secret to clipboard]' \
 '--copy[Copy secret to clipboard]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -638,8 +663,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
@@ -649,6 +672,10 @@ _arguments "${_arguments_options[@]}" \
 '--store=[Password store to use]' \
 '-d[Allow commit and sync on dirty store repository]' \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -660,8 +687,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ":: :_prs__sync_commands" \
 "*::: :->sync" \
 && ret=0
@@ -673,44 +698,14 @@ case $state in
         case $line[1] in
             (init)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
-'-d[Allow commit and sync on dirty store repository]' \
-'--allow-dirty[Allow commit and sync on dirty store repository]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 && ret=0
 ;;
 (remote)
 _arguments "${_arguments_options[@]}" \
-'-s+[Password store to use]' \
-'--store=[Password store to use]' \
-'-d[Allow commit and sync on dirty store repository]' \
-'--allow-dirty[Allow commit and sync on dirty store repository]' \
-'-f[Force the action, ignore warnings]' \
-'--force[Force the action, ignore warnings]' \
-'-I[Not interactive, do not prompt]' \
-'--no-interact[Not interactive, do not prompt]' \
-'-y[Assume yes for prompts]' \
-'--yes[Assume yes for prompts]' \
-'-q[Produce output suitable for logging and automation]' \
-'--quiet[Produce output suitable for logging and automation]' \
-'*-v[Enable verbose information and logging]' \
-'*--verbose[Enable verbose information and logging]' \
-'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
 '::GIT_URL -- Remote git URL to set:' \
 && ret=0
 ;;
@@ -726,6 +721,10 @@ _arguments "${_arguments_options[@]}" \
 '--allow-dirty[Allow commit and sync on dirty store repository]' \
 '-D[Do not commit and sync changes, keep store dirty]' \
 '--no-sync[Do not commit and sync changes, keep store dirty]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -737,8 +736,6 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 ':QUERY -- Secret query:' \
 ':DEST -- Secret destination path:' \
 && ret=0
@@ -753,6 +750,10 @@ _arguments "${_arguments_options[@]}" \
 '(-a --all)--property=[Select a specific property]' \
 '-a[Copy whole secret, not just first line]' \
 '--all[Copy whole secret, not just first line]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
 '-f[Force the action, ignore warnings]' \
 '--force[Force the action, ignore warnings]' \
 '-I[Not interactive, do not prompt]' \
@@ -764,17 +765,96 @@ _arguments "${_arguments_options[@]}" \
 '*-v[Enable verbose information and logging]' \
 '*--verbose[Enable verbose information and logging]' \
 '--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
 '::QUERY -- Secret query:' \
 && ret=0
 ;;
+(tomb)
+_arguments "${_arguments_options[@]}" \
+'-s+[Password store to use]' \
+'--store=[Password store to use]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'-f[Force the action, ignore warnings]' \
+'--force[Force the action, ignore warnings]' \
+'-I[Not interactive, do not prompt]' \
+'--no-interact[Not interactive, do not prompt]' \
+'-y[Assume yes for prompts]' \
+'--yes[Assume yes for prompts]' \
+'-q[Produce output suitable for logging and automation]' \
+'--quiet[Produce output suitable for logging and automation]' \
+'*-v[Enable verbose information and logging]' \
+'*--verbose[Enable verbose information and logging]' \
+'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
+":: :_prs__tomb_commands" \
+"*::: :->tomb" \
+&& ret=0
+case $state in
+    (tomb)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:prs-tomb-command-$line[1]:"
+        case $line[1] in
+            (init)
+_arguments "${_arguments_options[@]}" \
+'-t+[Time after which to close the Tomb]' \
+'--timer=[Time after which to close the Tomb]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(open)
+_arguments "${_arguments_options[@]}" \
+'-t+[Time after which to close the Tomb]' \
+'--timer=[Time after which to close the Tomb]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+(close)
+_arguments "${_arguments_options[@]}" \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'--try[Try to close, don'\''t fail if already closed]' \
+&& ret=0
+;;
+(status)
+_arguments "${_arguments_options[@]}" \
+'--help[Print help information]' \
+'--version[Print version information]' \
+'--open[Open tomb is it is closed]' \
+&& ret=0
+;;
+(resize)
+_arguments "${_arguments_options[@]}" \
+'-S+[Resize tomb to megabytes]' \
+'--size=[Resize tomb to megabytes]' \
+'--help[Print help information]' \
+'--version[Print version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
 (help)
 _arguments "${_arguments_options[@]}" \
-'-h[Prints help information]' \
-'--help[Prints help information]' \
-'-V[Prints version information]' \
-'--version[Prints version information]' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'-f[Force the action, ignore warnings]' \
+'--force[Force the action, ignore warnings]' \
+'-I[Not interactive, do not prompt]' \
+'--no-interact[Not interactive, do not prompt]' \
+'-y[Assume yes for prompts]' \
+'--yes[Assume yes for prompts]' \
+'-q[Produce output suitable for logging and automation]' \
+'--quiet[Produce output suitable for logging and automation]' \
+'*-v[Enable verbose information and logging]' \
+'*--verbose[Enable verbose information and logging]' \
+'--gpg-tty[Instruct GPG to ask passphrase in TTY rather than pinentry]' \
 && ret=0
 ;;
         esac
@@ -785,244 +865,266 @@ esac
 (( $+functions[_prs_commands] )) ||
 _prs_commands() {
     local commands; commands=(
-        "add:Add a secret" \
-"clone:Clone existing password store" \
-"duplicate:Duplicate a secret" \
-"edit:Edit a secret" \
-"generate:Generate a secure secret" \
-"git:Invoke git command in password store" \
-"housekeeping:Housekeeping utilities" \
-"init:Initialize new password store" \
-"internal:Commands used by prs internally" \
-"list:List all secrets" \
-"move:Move a secret" \
-"recipients:Manage store recipients" \
-"remove:Remove a secret" \
-"show:Display a secret" \
-"sync:Sync password store" \
-"alias:Alias/symlink a secret" \
-"copy:Copy secret to clipboard" \
-"help:Prints this message or the help of the given subcommand(s)" \
+'add:Add a secret' \
+'clone:Clone existing password store' \
+'duplicate:Duplicate a secret' \
+'edit:Edit a secret' \
+'generate:Generate a secure secret' \
+'git:Invoke git command in password store' \
+'grep:Grep through the password store' \
+'housekeeping:Housekeeping utilities' \
+'init:Initialize new password store' \
+'internal:Commands used by prs internally' \
+'list:List all secrets' \
+'move:Move a secret' \
+'otp:add OTP codes' \
+'recipients:Manage store recipients' \
+'remove:Remove a secret' \
+'show:Display a secret' \
+'sync:Sync password store' \
+'alias:Alias/symlink a secret' \
+'copy:Copy secret to clipboard' \
+'tomb:Manage password store Tomb' \
+'help:Print this message or the help of the given subcommand(s)' \
     )
     _describe -t commands 'prs commands' commands "$@"
 }
 (( $+functions[_prs__add_commands] )) ||
 _prs__add_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs add commands' commands "$@"
+}
+(( $+functions[_prs__otp__add_commands] )) ||
+_prs__otp__add_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs otp add commands' commands "$@"
 }
 (( $+functions[_prs__recipients__add_commands] )) ||
 _prs__recipients__add_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs recipients add commands' commands "$@"
 }
 (( $+functions[_prs__alias_commands] )) ||
 _prs__alias_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs alias commands' commands "$@"
 }
 (( $+functions[_prs__internal__clip-revert_commands] )) ||
 _prs__internal__clip-revert_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs internal clip-revert commands' commands "$@"
 }
 (( $+functions[_prs__clone_commands] )) ||
 _prs__clone_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs clone commands' commands "$@"
+}
+(( $+functions[_prs__tomb__close_commands] )) ||
+_prs__tomb__close_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs tomb close commands' commands "$@"
 }
 (( $+functions[_prs__internal__completions_commands] )) ||
 _prs__internal__completions_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs internal completions commands' commands "$@"
 }
 (( $+functions[_prs__copy_commands] )) ||
 _prs__copy_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs copy commands' commands "$@"
 }
 (( $+functions[_prs__duplicate_commands] )) ||
 _prs__duplicate_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs duplicate commands' commands "$@"
 }
 (( $+functions[_prs__edit_commands] )) ||
 _prs__edit_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs edit commands' commands "$@"
 }
 (( $+functions[_prs__recipients__export_commands] )) ||
 _prs__recipients__export_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs recipients export commands' commands "$@"
 }
 (( $+functions[_prs__generate_commands] )) ||
 _prs__generate_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs generate commands' commands "$@"
 }
 (( $+functions[_prs__recipients__generate_commands] )) ||
 _prs__recipients__generate_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs recipients generate commands' commands "$@"
 }
 (( $+functions[_prs__git_commands] )) ||
 _prs__git_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs git commands' commands "$@"
+}
+(( $+functions[_prs__grep_commands] )) ||
+_prs__grep_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs grep commands' commands "$@"
 }
 (( $+functions[_prs__help_commands] )) ||
 _prs__help_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs help commands' commands "$@"
 }
 (( $+functions[_prs__housekeeping_commands] )) ||
 _prs__housekeeping_commands() {
     local commands; commands=(
-        "recrypt:Re-encrypt secrets" \
-"run:Run housekeeping tasks" \
-"sync-keys:Sync public keys in store, import missing keys" \
+'recrypt:Re-encrypt secrets' \
+'run:Run housekeeping tasks' \
+'sync-keys:Sync public keys in store, import missing keys' \
     )
     _describe -t commands 'prs housekeeping commands' commands "$@"
 }
 (( $+functions[_prs__init_commands] )) ||
 _prs__init_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs init commands' commands "$@"
 }
 (( $+functions[_prs__sync__init_commands] )) ||
 _prs__sync__init_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs sync init commands' commands "$@"
+}
+(( $+functions[_prs__tomb__init_commands] )) ||
+_prs__tomb__init_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs tomb init commands' commands "$@"
 }
 (( $+functions[_prs__internal_commands] )) ||
 _prs__internal_commands() {
     local commands; commands=(
-        "completions:Shell completions" \
-"clip-revert:Revert clipboard after timeout" \
+'completions:Shell completions' \
+'clip-revert:Revert clipboard after timeout' \
     )
     _describe -t commands 'prs internal commands' commands "$@"
 }
 (( $+functions[_prs__list_commands] )) ||
 _prs__list_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs list commands' commands "$@"
+}
+(( $+functions[_prs__otp__list_commands] )) ||
+_prs__otp__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs otp list commands' commands "$@"
 }
 (( $+functions[_prs__recipients__list_commands] )) ||
 _prs__recipients__list_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs recipients list commands' commands "$@"
 }
 (( $+functions[_prs__move_commands] )) ||
 _prs__move_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs move commands' commands "$@"
+}
+(( $+functions[_prs__tomb__open_commands] )) ||
+_prs__tomb__open_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs tomb open commands' commands "$@"
+}
+(( $+functions[_prs__otp_commands] )) ||
+_prs__otp_commands() {
+    local commands; commands=(
+'add:Add an otp code' \
+'list:List available otp codes' \
+'remove:remove otp account' \
+'view:view an otp account' \
+    )
+    _describe -t commands 'prs otp commands' commands "$@"
 }
 (( $+functions[_prs__recipients_commands] )) ||
 _prs__recipients_commands() {
     local commands; commands=(
-        "add:Add store recipient" \
-"export:Export recipient key" \
-"generate:Generate new key pair, add it to the store" \
-"list:List store recipients" \
-"remove:Remove store recipient" \
+'add:Add store recipient' \
+'export:Export recipient key' \
+'generate:Generate new key pair, add it to the store' \
+'list:List store recipients' \
+'remove:Remove store recipient' \
     )
     _describe -t commands 'prs recipients commands' commands "$@"
 }
 (( $+functions[_prs__housekeeping__recrypt_commands] )) ||
 _prs__housekeeping__recrypt_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs housekeeping recrypt commands' commands "$@"
 }
 (( $+functions[_prs__sync__remote_commands] )) ||
 _prs__sync__remote_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs sync remote commands' commands "$@"
+}
+(( $+functions[_prs__otp__remove_commands] )) ||
+_prs__otp__remove_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs otp remove commands' commands "$@"
 }
 (( $+functions[_prs__recipients__remove_commands] )) ||
 _prs__recipients__remove_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs recipients remove commands' commands "$@"
 }
 (( $+functions[_prs__remove_commands] )) ||
 _prs__remove_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs remove commands' commands "$@"
+}
+(( $+functions[_prs__tomb__resize_commands] )) ||
+_prs__tomb__resize_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs tomb resize commands' commands "$@"
 }
 (( $+functions[_prs__housekeeping__run_commands] )) ||
 _prs__housekeeping__run_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs housekeeping run commands' commands "$@"
 }
 (( $+functions[_prs__show_commands] )) ||
 _prs__show_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs show commands' commands "$@"
+}
+(( $+functions[_prs__tomb__status_commands] )) ||
+_prs__tomb__status_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs tomb status commands' commands "$@"
 }
 (( $+functions[_prs__sync_commands] )) ||
 _prs__sync_commands() {
     local commands; commands=(
-        "init:Initialize sync" \
-"remote:Get or set git remote URL for sync" \
+'init:Initialize sync' \
+'remote:Get or set git remote URL for sync' \
     )
     _describe -t commands 'prs sync commands' commands "$@"
 }
 (( $+functions[_prs__housekeeping__sync-keys_commands] )) ||
 _prs__housekeeping__sync-keys_commands() {
-    local commands; commands=(
-        
-    )
+    local commands; commands=()
     _describe -t commands 'prs housekeeping sync-keys commands' commands "$@"
+}
+(( $+functions[_prs__tomb_commands] )) ||
+_prs__tomb_commands() {
+    local commands; commands=(
+'init:Initialize tomb in-place for current password store' \
+'open:Open tomb' \
+'close:Close tomb' \
+'status:Query tomb status' \
+'resize:Resize tomb' \
+    )
+    _describe -t commands 'prs tomb commands' commands "$@"
+}
+(( $+functions[_prs__otp__view_commands] )) ||
+_prs__otp__view_commands() {
+    local commands; commands=()
+    _describe -t commands 'prs otp view commands' commands "$@"
 }
 
 _prs "$@"

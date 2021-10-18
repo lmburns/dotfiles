@@ -10,7 +10,8 @@ env:
   # each instance of Alacritty. If it is not present, alacritty will
   # check the local terminfo database and use `alacritty` if it is
   # available, otherwise `xterm-256color` is used.
-  TERM: xterm-256color
+  # TERM: xterm-256color
+  TERM: alacritty
 
 window:
   dynamic_title: true
@@ -58,7 +59,7 @@ window:
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
-  history: 10000
+  history: 15000
 
   # Number of lines the viewport will move for every line scrolled when
   # scrollback is enabled (history > 0).
@@ -67,22 +68,32 @@ scrolling:
 # Font configuration
 font:
   normal:
+    # FiraMono has odd shaped characters for the double
+    # lined p10k prompt when from the AUR, using Alacritty.
+
+    # ─╮
+
     family: FiraMono Nerd Font Mono
+    # family: FiraCode Nerd Font Mono
+    # family: Go Mono Nerd Font Mono
+    # family:  Hasklug Nerd Font Mono
+    # family:  Roboto Mono Nerd Font
+    # family:  Roboto Mono Nerd Font Mono
+    # family:  BitstreamVeraSansMono Nerd Font Mono
+    # family: JetBrainsMono Nerd Font Mono
+    # family: Hack Nerd Font Mono
     style: Medium
-  # bold:
-  #   family: FiraMono Nerd Font Mono
-  #   style: Bold
 
-  # Italic font face
-  #italic:
-    # Font family
-    #family: monospace
-    #style: Italic
+  bold:
+    family: FiraMono Nerd Font Mono
+    style: Bold
+  italic:
+    family: JetBrainsMono Nerd Font
+    style: Italic
 
-  # Bold italic font face
-  #bold_italic:
-    #family: monospace
-    #style: Bold Italic
+  bold_italic:
+    family: FiraMono Nerd Font Mono
+    style: Bold Italic
 
   # Point size
   size: 12
@@ -117,7 +128,8 @@ schemes:
     # the cursor color will be the inverse of the cell color.
     cursor:
       text: '#221a02'
-      cursor: '#c2a383'
+      cursor: '#f79a32'
+      # cursor: '#c2a383'
 
     vi_mode_cursor:
       text: CellBackground
@@ -129,7 +141,8 @@ schemes:
     # If only text is unset the cell text color will remain the same.
     selection:
       text: '#221a02'
-      background: '#c2a383'
+      background: '#889b4a'
+      # background: '#c2a383'
 
     # search:
     #   matches:
@@ -146,7 +159,6 @@ schemes:
     #     foreground:
     #     background:
 
-
     hints:
       start:
         foreground: '#201f1f'
@@ -155,18 +167,15 @@ schemes:
         foreground: '#201f1f'
         background: '#f79a32'
 
-    # Normal colors
     normal:
       black:   '#201f1f'
       red:     '#dc3958'
-      green:   '#088649'
+      green:   '#819c3b'
       yellow:  '#f79a32'
       blue:    '#733e8b'
       magenta: '#7e5053'
       cyan:    '#088649'
       white:   '#a89983'
-
-    # Bright colors
     bright:
       black:   '#676767'
       red:     '#f14a68'
@@ -176,8 +185,6 @@ schemes:
       magenta: '#fe8019'
       cyan:    '#4c96a8'
       white:   '#51412c'
-
-    # Dim colors
     dim:
       black:   '#676f78'
       red:     '#dc3958'
@@ -210,6 +217,98 @@ schemes:
       magenta: '#d3869b'
       cyan:    '#89b482'
       white:   '#dfbf8e'
+
+  gruvbox: &gruvbox
+    primary:
+      background: '#1c1b1a'
+      foreground: '#dfbf8e'
+      # foreground: '#ebdbb2'
+      bright_foreground: '#448488'
+      #dim_foreground: '#9a9a9a'
+
+    cursor:
+      text: '#1c1b1a'
+      cursor: '#dfbf8e'
+
+    vi_mode_cursor:
+      text: CellBackground
+      cursor: CellForeground
+
+    selection:
+      text: '#655b53'
+      background: '#dfbf8e'
+
+    hints:
+      start:
+        foreground: '#201f1f'
+        background: '#f79a32'
+      end:
+        foreground: '#201f1f'
+        background: '#f79a32'
+
+    normal:
+      black:   '#665c54'
+      red:     '#ea6962'
+      green:   '#989719'
+      yellow:  '#e78a4e'
+      blue:    '#689d69'
+      magenta: '#b16185'
+      cyan:    '#448488'
+      white:   '#dfbf8e'
+    bright:
+      black:   '#928374'
+      red:     '#ea6962'
+      green:   '#a9b665'
+      yellow:  '#e3a84e'
+      blue:    '#a43a57'
+      magenta: '#d3869b'
+      cyan:    '#89b482'
+      white:   '#dfbf8e'
+
+  mona_list: &mona_lisa
+    primary:
+      background: '#160b0e'
+      foreground: '#af8d6e'
+      bright_foreground: '#586081'
+
+    cursor:
+      text: '#160b0e'
+      cursor: '#d08040'
+
+    vi_mode_cursor:
+      text: CellBackground
+      cursor: CellForeground
+
+    selection:
+      text: '#160b0e'
+      background: '#a0936a'
+
+    hints:
+      start:
+        foreground: '#201f1f'
+        background: '#f79a32'
+      end:
+        foreground: '#201f1f'
+        background: '#f79a32'
+
+    normal:
+      black:   '#44230f'
+      red:     '#ad3a23'
+      green:   '#989719'
+      yellow:  '#cf8233'
+      blue:    '#646f6f'
+      magenta: '#ad2e36'
+      cyan:    '#689d69'
+      white:   '#bba45a'
+    bright:
+      black:   '#9a5534'
+      red:     '#ff5b3e'
+      green:   '#b8ba25'
+      yellow:  '#ffa678'
+      blue:    '#b16185'
+      magenta: '#d3869b'
+      cyan:    '#89b482'
+      white:   '#ffe8a7'
 
 colors: *kimbie
 
@@ -253,7 +352,7 @@ bell:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 0.92
+background_opacity: 0.90
 
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"

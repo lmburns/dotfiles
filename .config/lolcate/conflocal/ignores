@@ -1,0 +1,10 @@
+.DS_Store
+.ipynb_checkpoints
+.pycache
+._backup
+._zinit
+.git
+.zinit
+._backup
+coc/
+vim-persisted-undo/

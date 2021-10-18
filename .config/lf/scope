@@ -55,7 +55,7 @@ handle_mime() {
     (application/zip)
       atool --list -- "${FILE_PATH}" ;;
     (image/*)
-      chafa --fill=block --symbols=block -c 256 -s 80x"${HEIGHT}" "${FILE_PATH}" || exit 1;;
+      chafa --fill=block --symbols=block -s 80x"${HEIGHT}" "${FILE_PATH}" || exit 1;;
     (video/* | audio/*|application/octet-stream)
        mediainfo "${FILE_PATH}" || exit 1;;
     (*/pdf)

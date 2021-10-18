@@ -19,6 +19,6 @@ url=$(
     | ${commands[hck]:-cut} -f2
 )
 
-[[ -n "$url" ]] && echo "$url" | xargs ${aliases[librewolf]}
+[[ -n "$url" ]] && librewolf "$url"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

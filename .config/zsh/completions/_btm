@@ -1,0 +1,46 @@
+#compdef btm
+
+# zsh completions for 'btm'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--autohide[_time]'
+  {-b,--basic}'[hides graphs and uses a more basic look.  Design is largely]'
+  '--battery[shows the battery widget in default or basic mode. No effect on]'
+  {-S,--case}'[_sensitive]'
+  {-c,--celsius}'[sets the temperature type to Celsius.  This is the default]'
+  '--color[SCHEME>]'
+  {-C,--config}'[PATH>]'
+  {-u,--current}'[_usage]'
+  {-t,--default}'[_time_value <MS>]'
+  '--default[_widget_count <INT>]'
+  '--default[_widget_type <WIDGET TYPE>]'
+  '--disable[_advanced_kill]'
+  '--disable[_click]'
+  {-m,--dot}'[_marker]'
+  {-f,--fahrenheit}'[sets the temperature type to Fahrenheit.]'
+  {-g,--group}'[groups processes with the same name by default.]'
+  {-h,--help}'[prints help information.  Use --help for more info.]'
+  {-a,--hide}'[_avg_cpu]'
+  '--hide[_table_gap]'
+  '--hide[_time]'
+  {-k,--kelvin}'[sets the temperature type to Kelvin.]'
+  {-l,--left}'[_legend]'
+  '--mem[_as_value]'
+  '--network[_use_binary_prefix]'
+  '--network[_use_bytes]'
+  '--network[_use_log]'
+  '--process[_command]'
+  {-r,--rate}'[sets a refresh rate in milliseconds.  The minimum is 250ms]'
+  {-R,--regex}'[when searching for a process, enables regex by default.]'
+  '--show[_table_scroll_position]'
+  {-d,--time}'[_delta <MS>]'
+  {-T,--tree}'[defaults to showing the process widget in tree mode.]'
+  '--use[_old_network_legend]'
+  {-V,--version}'[prints version information.]'
+  {-W,--whole}'[_word]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

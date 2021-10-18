@@ -1,0 +1,28 @@
+venvs are in /home/lucas/.local/pipx/venvs
+apps are exposed on your $PATH at /home/lucas/.local/bin
+   package aria2p 0.10.4, Python 3.9.7
+    - aria2p (symlink missing or pointing to unexpected location)
+   package buku 4.6, Python 3.9.7
+    - buku
+    - bukuserver
+   package cdhist 2.6, Python 3.9.7
+    - cdhist
+   package fmdpy 0.2.3, Python 3.9.7
+    - fmdpy
+   package glances 3.2.3.1, Python 3.9.7
+    - glances
+   package jrnl 2.8.3, Python 3.9.7
+    - jrnl
+   package organize-tool 1.10.1, Python 3.9.7
+    - organize
+   package pipdeptree 2.1.0, Python 3.9.7
+    - pipdeptree
+   package pxpx 1.5.4, Python 3.9.7
+    - ptop
+    - px
+   package surfraw-tools 0.1.0, Python 3.9.7
+    - mkelvis
+   package youtube-dl 2021.6.6, Python 3.9.7
+    - youtube-dl
+   package ytmdl 2021.8.1, Python 3.9.7
+    - ytmdl

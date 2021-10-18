@@ -1,4 +1,4 @@
-jfunction execute-command() {
+function execute-command() {
   zmodload -Fa zsh/zleparameter p:widgets
   local selected=$(printf "%s\n" ${(k)widgets} \
     | ftb-tmux-popup --reverse --prompt="cmd> " --height=10 --border=none)

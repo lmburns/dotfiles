@@ -1,0 +1,105 @@
+[calendars]
+
+# [[all]]
+#   path = ~/.config/khal/calendars/all/*
+#   type = discover
+#   color = dark green
+#   priority = 20
+
+[[general]]
+path = "~/.config/khal/calendars/general/"
+color = "dark magenta"
+priority = 20
+# type = discover
+
+[[jobs]]
+path = "~/.config/khal/calendars/jobs/"
+color = "dark cyan"
+priority = 80
+# type = discover
+
+[[programming]]
+path = "~/.config/khal/calendars/programming/"
+color = "dark magenta"
+priority = 80
+# type = discover
+
+[[important]]
+path = "~/.config/khal/calendars/important/"
+color = "dark magenta"
+priority = 80
+
+[[appointment]]
+path = "~/.config/khal/calendars/appt/"
+color = "dark red"
+priority = 20
+
+[[work]]
+path = "~/.config/khal/calendars/work/"
+readonly = "True"
+color = "yellow"
+
+[locale]
+timeformat= "%H:%M"
+dateformat= "%d.%m."
+longdateformat= "%d.%m.%Y"
+datetimeformat = "%Y-%m-%dT%H:%M"
+longdatetimeformat = "%Y-%m-%dT%H:%M"
+# datetimeformat= %d.%m. %H:%M
+# longdatetimeformat= %d.%m.%Y %H:%M
+
+[default]
+default_calendar = "important"
+show_all_days = "True"
+timedelta = "7d"
+#   highlight_event_days = True
+#   print_new = True
+#
+# [highlight_days]
+#   color = red
+#   default_color = white
+#   method = fg
+
+[keybindings]
+delete = "d"
+down = "down,j"
+duplicate = "p"
+export = "e"
+external_edit = "E"
+left = "left,h,backspace"
+log = "L"
+mark = "v"
+new = 'n'
+other = "o"
+quit = "q,Q"
+right = "right,l,space"
+save = 'S'
+search = "/"
+today = "t"
+up = "up,k"
+view = "enter"
+
+# dateformat = '%x'
+# datetimeformat = '%c'
+# firstweekday = 0
+# longdateformat = '%x'
+# timeformat = '%X'
+# unicode_symbols = True
+# weeknumbers = off
+# default_timezone =
+
+[sqlite]
+path = '~/.local/share/khal/khal.db'
+
+[view]
+bold_for_light_color = "True"
+dynamic_days = "True"
+event_view_always_visible = "False"
+frame = "False"
+theme = 'darkagenda_day_format {bold}{name},{date-long}{reset}'
+agenda_event_format = '{calendar-color}{cancelled}{start-end-time-style} {title}{repeat-symbol}{description-separator}{description}{reset}'
+event_format = '{calendar-color}{cancelled}{start}-{end} {title}{repeat-symbol}{description-separator}{description}{reset}'
+event_view_weighting = 1
+
+
+# # vim: ft=toml:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

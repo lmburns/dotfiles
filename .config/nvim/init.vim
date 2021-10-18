@@ -11,7 +11,7 @@
 
   " UndoHistory: store undo history in a file. even after closing and reopening vim
   if has('persistent_undo')
-    let target_path = expand('~/.config/vim-persisted-undo/')
+    let target_path = expand('~/.vim/vim-persisted-undo/')
 
     if !isdirectory(target_path)
       call system('mkdir -p ' . target_path)
@@ -99,6 +99,8 @@ call plug#begin("~/.vim/plugged")
 
 " Not needed, here for manual pages
 Plug 'junegunn/vim-plug'
+
+Plug 'AndrewRadev/id3.vim'
 
 " ============= Icons ============= {{{
 Plug 'ryanoasis/vim-devicons'
@@ -387,9 +389,9 @@ autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
 set showtabline=2
 let g:lightline = {}
-" let g:lightline.colorscheme = 'kimbox'
+let g:lightline.colorscheme = 'kimbox'
+" let g:lightline.colorscheme = 'gruvbox_material'
 " let g:lightline.colorscheme = 'everforest'
-let g:lightline.colorscheme = 'gruvbox_material'
 " let g:lightline.colorscheme = 'miramare'
 " let g:lightline.colorscheme = 'nightowl'
 " let g:lightline.colorscheme = 'spaceduck'
@@ -621,25 +623,26 @@ Plug 'ludovicchabant/vim-gutentags'
   " autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
   " autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
 
+  let g:gutentags_project_root = ['.git']
+  let g:gutentags_cache_dir = expand('~/.cache/tags')
+
   " set tags=./.tags;,.tags
-  set tags=tags
   let $GTAGSLABEL = 'native-pygments'
   let $GTAGSCONF = '~/.gtags.conf'
 
-  let g:gutentags_modules = ['ctags']
-  let g:gutentags_project_root = ['.git']
-  let g:gutentags_ctags_tagfile = '.tags'
-  let g:gutentags_cache_dir = expand('~/.cache/tags')
-  let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
-  let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
-  let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-  " let g:gutentags_exclude_filetypes = ['rust']
-  " function! GutentagsDisable(path) abort
-  "   return fnamemodify(a:path, ':e') != 'rs'
-  " endfunction
-  "
-  " let g:gutentags_enabled_user_func = 'GutentagsDisable'
-
+  if &ft=="rust"
+    set tags=rusty-tags.vi,$RUST_SRC_PATH/rusty-tags.vi
+    let g:gutentags_modules = ['rusty-tags']
+    let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
+    let g:gutentags_ctags_tagfile = '.rusty-tags'
+  else
+    set tags=tags
+    let g:gutentags_modules = ['ctags']
+    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+    let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+    let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+    let g:gutentags_ctags_tagfile = '.tags'
+  endif
 
 Plug 'liuchengxu/vista.vim'
   let g:vista_sidebar_position = 'topleft vertical'
@@ -904,6 +907,7 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-rust-analyzer',
     \ 'coc-toml',
     \ 'coc-solargraph',
+    \ 'coc-prettier'
     \ ]
 
   " \ 'coc-lua',
@@ -1163,9 +1167,9 @@ augroup END
 
 " ============== vim-slime | python ============== {{{
 Plug 'jpalardy/vim-slime', { 'for': 'python' }
-Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins',  'for': 'python'}
+" Plug 'numirias/semshi', {'do': ':UpdateRemotePlugins'}
+" let g:semshi#error_sign = v:false
   let g:slime_target = "neovim"
-  let g:semshi#error_sign = v:false
   let g:syntastic_python_pylint_post_args="--max-line-length=120"
   if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
     let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
@@ -1840,8 +1844,9 @@ call plug#end()
   let g:oceanic_material_allow_italic = 1
   let g:oceanic_material_allow_underline = 1
 
+  let g:everforest_disable_italic_comment = 1
   let g:everforest_background = 'hard'
-  " let g:everforest_enable_italic = 1
+  let g:everforest_enable_italic = 0
   let g:everforest_sign_column_background = 'none'
   let g:everforest_better_performance = 1
 
@@ -1883,9 +1888,7 @@ call plug#end()
     au ColorScheme gruvbit call s:gruvbit_setup()
   augroup END
 
-  set t_Co=256
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  " set t_Co=256
   set termguicolors
 
   if exists('g:neovide')
@@ -1902,15 +1905,15 @@ call plug#end()
       \,sm:block-blinkwait175-blinkoff150-blinkon175
 
   syntax enable
-  " colorscheme kimbox
+  colorscheme kimbox
   " colorscheme everforest
+  " colorscheme gruvbox-material
+  " colorscheme sonokai
   " colorscheme oceanic_material
   " colorscheme spaceduck
   " colorscheme bogster
   " colorscheme material
   " colorscheme miramare
-  " colorscheme sonokai
-  colorscheme gruvbox-material
   " colorscheme night-owl
   " colorscheme jellybeans
   " colorscheme gruvbit

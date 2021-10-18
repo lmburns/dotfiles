@@ -1,0 +1,23 @@
+colors:
+  body: none
+  date: magenta
+  tags: cyan
+  title: red
+default_hour: 9
+default_minute: 0
+editor: nvim
+encrypt: true
+highlight: true
+indent_character: '|'
+journals:
+  default:
+    encrypt: true
+    journal: /home/lucas/.local/share/jrnl/journal.txt
+  wiki:
+    encrypt: false
+    journal: /home/lucas/.local/share/jrnl/wiki.txt
+linewrap: 79
+tagsymbols: '@'
+template: false
+timeformat: '%Y-%m-%d %H:%M'
+version: v2.8.1

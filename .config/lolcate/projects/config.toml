@@ -1,0 +1,19 @@
+description = "Projects folder (including git)"
+
+# Directories to index.
+dirs = [
+  "~/projects/",
+]
+
+skip = "Dirs"
+
+# Set to true if you want skip symbolic links
+ignore_symlinks = true
+
+# Set to true if you want to ignore hidden files and directories
+ignore_hidden = false
+
+# Set to true to read .gitignore files and ignore matching files
+gitignore = true
+
+# color = "#7EB2B1"

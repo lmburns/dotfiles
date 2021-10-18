@@ -1,0 +1,44 @@
+{
+    "com.github.ikorjefocur.ulauncher-commandrunner": {
+        "id": "com.github.ikorjefocur.ulauncher-commandrunner",
+        "url": "https://github.com/IkorJefocur/ulauncher-commandrunner",
+        "updated_at": "2021-10-12T00:41:17.989302",
+        "last_commit": "25c09c3e803296e66873d727a0c870290deb7ac7",
+        "last_commit_time": "2021-09-24T14:05:09"
+    },
+    "com.github.ahaasler.ulauncher-tmux": {
+        "id": "com.github.ahaasler.ulauncher-tmux",
+        "url": "https://github.com/ahaasler/ulauncher-tmux",
+        "updated_at": "2021-10-12T00:42:23.598164",
+        "last_commit": "dd631a2e5a1d8bf2ab21095b43afe068443f02b9",
+        "last_commit_time": "2021-06-05T16:42:59"
+    },
+    "com.github.brpaz.ulauncher-faker": {
+        "id": "com.github.brpaz.ulauncher-faker",
+        "url": "https://github.com/brpaz/ulauncher-faker",
+        "updated_at": "2021-10-12T00:44:05.564901",
+        "last_commit": "45b7d1e505104a3ad6b7d3f7474b8b1726957b8d",
+        "last_commit_time": "2021-06-13T13:30:34"
+    },
+    "com.github.devkleber.ulauncher-open-link": {
+        "id": "com.github.devkleber.ulauncher-open-link",
+        "url": "https://github.com/DevKleber/ulauncher-open-link",
+        "updated_at": "2021-10-12T00:53:21.872999",
+        "last_commit": "7c6eccd22a0708d82997833ff977c67f5c36abd1",
+        "last_commit_time": "2021-03-13T23:02:04"
+    },
+    "com.github.ygun.ulauncher-nm": {
+        "id": "com.github.ygun.ulauncher-nm",
+        "url": "https://github.com/ygun/ulauncher-nm",
+        "updated_at": "2021-10-12T14:14:37.304262",
+        "last_commit": "036a0b3b24fb325f7aa648872c916d04966e7101",
+        "last_commit_time": "2021-02-03T13:17:59"
+    },
+    "com.github.dflock.ulauncher-window-switcher": {
+        "id": "com.github.dflock.ulauncher-window-switcher",
+        "url": "https://github.com/dflock/ulauncher-window-switcher",
+        "updated_at": "2021-10-12T14:15:14.512743",
+        "last_commit": "d052a0fa34cdd9e5130ac6a4ce01f7911ff190f2",
+        "last_commit_time": "2021-03-13T16:01:28"
+    }
+}

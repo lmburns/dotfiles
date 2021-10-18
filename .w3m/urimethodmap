@@ -1,0 +1,7 @@
+magnet: file:/cgi-bin/magnet.cgi?%s
+torrent: file:/cgi-bin/magnet.cgi?%s
+google: file:/cgi-bin/surfraw.cgi?%s
+duckduckgo: file:/cgi-bin/surfraw.cgi?%s
+stack: file:/cgi-bin/surfraw.cgi?%s
+youtube: file:/cgi-bin/surfraw.cgi?%s
+urban: file:/cgi-bin/surfraw.cgi?%s

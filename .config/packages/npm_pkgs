@@ -1,0 +1,8 @@
+/usr/lib
+├── coinmon@0.0.28
+├── neovim@4.10.0
+├── node-gyp@8.2.0
+├── nopt@5.0.0
+├── npm@8.1.0
+└── semver@7.3.5
+

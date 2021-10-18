@@ -281,6 +281,6 @@
   root = ~/ghq
 
 [global]
-  ignore = .cargo,.zinit,.ipynb_checkpoints,Library,Applications,Downloads,Music,Movies,myMusic
-	basedir = /Users/lucasburns/projects/github
+  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
+	basedir = /home/lucas/projects/github
 # vim:ft=gitconfig:et

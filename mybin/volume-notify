@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env zsh
 
-# Arbitrary but unique message id
 msgId="991049"
 
 # amixer set Master "$@" > /dev/null
@@ -19,17 +18,20 @@ else
     pactl set-sink-mute "$sink" false
     pactl set-sink-volume "$sink" "$2"
 fi
-volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)
-mute=$(pulsedevices | rg --color=never mute | hck -d ': ' -f2)
 
+# volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)
+# mute=$(pulsedevices | rg --color=never mute | hck -d ': ' -f2)
 
-if [[ $volume == 0 || "$mute" == "yes" ]]; then
+volume=$(pamixer --sink "$sink" --get-volume-human)
+mute=$(pamixer --sink "$sink" --get-mute)
+
+if [[ $volume == 0 || "$mute" == "true" ]]; then
     # Show the sound muted notification
     dunstify -a "changeVolume" -u low -i audio-volume-muted -r "$msgId" "Volume muted"
 else
     # Show the volume notification
     dunstify -a "changeVolume" -u low -i audio-volume-high -r "$msgId" \
-    -h int:value:"$volume" "Volume: ${volume}%"
+    -h int:value:"$volume" "Volume: ${volume}"
 fi
 
 # Play the volume changed sound

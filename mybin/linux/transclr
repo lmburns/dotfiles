@@ -1,0 +1,4 @@
+#!/bin/sh
+# Clears out all completed torrents in transmission
+
+transmission-remote -l | awk '$2 == "100%"{ system("transmission-remote -t " $1 " --remove") }' && polybar-msg -p "$(pidof "polybar")" hook torrents 1 # && pkill -SIGRTMIN+2 i3blocks

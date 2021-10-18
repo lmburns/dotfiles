@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Desc: backup crontab
+
+FILE="crontab_$(date +'%Y%m%d')"
+DIR="$HOME/backup/crontab"
+
+mkdir -p "$DIR"
+crontab -l > "$DIR/$FILE"

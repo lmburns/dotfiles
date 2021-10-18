@@ -1,0 +1,3 @@
+pager = bat
+editor = nvim
+pages_directory = /home/lucas/.config/um/pages

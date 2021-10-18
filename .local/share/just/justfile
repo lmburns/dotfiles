@@ -1,0 +1,168 @@
+set shell := ["zsh", "-uc"]
+
+# default action with no parameters
+defaut:
+  @just --choose
+
+alias e := edit
+# edit this justfile
+edit:
+  @$EDITOR {{justfile()}}
+
+alias h := help
+# view example justfile
+help:
+  @$EDITOR $XDG_DATA_HOME/just/overall.just
+
+# get weather
+weather:
+  @wttr '65202?format=3'
+
+# get weather table
+weather_full:
+  @curl v2d.wttr.in/65202
+
+# git-batch opt
+batch-all:
+  @gitbatch -r 2 -d $HOME/opt
+
+# git-batch zinit
+batch-zinit:
+  @gitbatch -r 2 -d $ZINIT_HOME/plugins
+
+# git-batch ghq
+batch-ghq:
+  @gitbatch -r 3 -d $HOME/ghq
+
+# git-batch dotfiles
+batch-dot:
+  @gitbatch -r 3 -d $HOME/opt/dotfiles
+
+# start dns
+sdns:
+  sudo networksetup -setdnsservers "Wi-Fi" 127.0.0.1 ::1
+  sudo networksetup -setwebproxy "Wi-Fi" 127.0.0.1 8118
+  sudo networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 8118
+  ALL_PROXY=127.0.0.1:8118 curl -I http://p.p/
+
+# get dns
+gdns:
+  @sudo networksetup -getdnsservers "Wi-Fi"
+  @sudo networksetup -getwebproxy "Wi-Fi"
+  @sudo networksetup -getsecurewebproxy "Wi-Fi"
+
+# reverse dns (stop)
+rdns:
+  sudo networksetup -setdnsservers "Wi-Fi" Empty
+  sudo networksetup -setwebproxy "Wi-Fi" off
+  sudo networksetup -setsecurewebproxy "Wi-Fi" off
+
+# start privoxy
+privoxy +ACTION:
+  sudo brew services {{ACTION}} privoxy
+  @if [[ {{ACTION}} == 'start' ]]; then \
+    sudo networksetup -setwebproxy "Wi-Fi" 127.0.0.1 8118; \
+    sudo networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 8118; \
+    ALL_PROXY=127.0.0.1:8118 curl ads.foo.com/ -IL; \
+  elif [[ {{ACTION}} == 'stop' ]]; then \
+    sudo networksetup -setwebproxy "Wi-Fi" off; \
+    sudo networksetup -setsecurewebproxy "Wi-Fi" off; \
+  elif [[ {{ACTION}} == 'restart' ]]; then \
+    echo "Restarting privoxy ..."; \
+  else \
+    echo "${tput setaf 2}Error: wrong action {{ACTION}}"; \
+  fi
+  @echo ''
+  scutil --proxy | head
+
+# --log-level INFO \
+# --rc \
+
+# start tor
+start-tor:
+  @sudo networksetup -setsocksfirewallproxy Wi-Fi 127.0.0.1 9050 off
+  @sudo networksetup -setsocksfirewallproxystate Wi-Fi on
+  @curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/
+
+# stop tor
+stop-tor:
+  @sudo networksetup -setsocksfirewallproxystate Wi-Fi off
+
+# rclone mount
+rclone-mount:
+  $ZPFX/bin/rclone mount \
+    --transfers 8 \
+    --volname google-drive \
+    --dir-cache-time 96h \
+    --allow-other \
+    --buffer-size 32M \
+    --vfs-cache-mode writes \
+    --vfs-cache-max-size 8G \
+    --daemon \
+    -vv \
+    --log-file $LOCAL_OPT/local/rclone/logs/rclone.log \
+    --umask 002 \
+    google-drive:/ /Users/lucasburns/.mount/google-drive
+
+# rclone to drive
+rclg SRC DEST:
+  $ZPFX/bin/rclone copy \
+    --update \
+    --verbose \
+    --delete-after \
+    --exclude ".DS_Store" \
+    --exclude .git/ \
+    --copy-links \
+    --transfers 4 \
+    --checkers 8 \
+    --contimeout 60s \
+    --timeout 300s \
+    --retries 3 \
+    --low-level-retries 10 \
+    --stats 1s \
+    --progress \
+    {{SRC}} "google-drive:{{DEST}}/"
+
+# mount ssh filesystem
+ssh-mount DEST:
+  sshfs -o allow_other,default_permissions,IdentityFile=~/.ssh/burnsac root@lmburns.com:/ {{DEST}}
+
+# remove big dir with progress
+rm-bigdir DIR:
+  sudo -A rm -rv {{DIR}} | pv -l -s $(sudo du -a {{DIR}} | wc -l) > /dev/null
+
+# pu add -- sudo -A rsync -azurh --delete-after --info=name0 --progress=progress2 ~ /Volumes/SSD/macos-full
+
+# rsync general
+rsync SRC DEST:
+  rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
+     --exclude ".DS_Store" --exclude ".ipynb_checkpoints" \
+    {{SRC}} {{DEST}}
+
+# rsync home dir
+rsync-home:
+  sudo rsync -rzau --delete-after --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
+  ~ /run/media/lucas/Linux/manual
+
+# rsync projects directory
+rsync-proj:
+  pueue add 'xfsudo rsync -azurh --info=name0 ~/projects /Volumes/SSD/manual-bkp/'
+
+# rsync -Prugoptczl --info=progress2 --info=name0 --delete-after
+
+# rsync server
+rsync-server:
+  rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
+    --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
+    --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
+    --exclude "lost+found" root@lmburns.com:/ /Volumes/SSD/server-full
+
+# pull www folder server
+www-pull:
+  rsync -rugoptczl --info=progress2 --info=name0 --delete-after \
+    root@lmburns.com:/var/www $HOME/server
+
+# push www folder server
+www-push:
+  rsync -rugoptczl --info=progress2 --info=name0 --delete-after --exclude ".DS_Store" \
+    $HOME/server /Volumes/SSD'

@@ -8,7 +8,7 @@
 
 [flags]
 # Whether to hide the average cpu entry.
-#hide_avg_cpu = false
+hide_avg_cpu = false
 # Whether to use dot markers rather than braille.
 #dot_marker = false
 # The update rate of the application.
@@ -113,7 +113,7 @@
 # [[row.child.child]] represents a widget.
 #
 # All widgets must have the type value set to one of ["cpu", "mem", "proc", "net", "temp", "disk", "empty"].
-# All layout components have a ratio value - if this is not set, then it defaults to 1. 
+# All layout components have a ratio value - if this is not set, then it defaults to 1.
 # The default widget layout:
 #[[row]]
 #  ratio=30
@@ -137,7 +137,6 @@
 #  [[row.child]]
 #    type="proc"
 #    default=true
-
 
 # Filters - you can hide specific temperature sensors, network interfaces, and disks using filters.  This is admittedly
 # a bit hard to use as of now, and there is a planned in-app interface for managing this in the future:

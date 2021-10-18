@@ -3,7 +3,7 @@
 # get bookmark ids
 get_buku_ids() {
     buku -p -f 5 | fzf --tac --layout=reverse-list -m | \
-      cut -d $'\t' -f 1
+      hck -d $'\t' -f 1
     # awk -F= '{print $1}'
     # cut -d $'\t' -f 1
 }

@@ -7,14 +7,6 @@
 # TODO: zsh notify
 # TODO: remap dir history
 
-export GOPATH="${XDG_DATA_HOME}/go"
-export GOROOT="${XDG_DATA_HOME}/go"
-export GOENV_ROOT="${XDG_DATA_HOME}/goenv"
-export GEM_PATH="${XDG_DATA_HOME}/ruby/gems"
-export GEM_HOME="${XDG_DATA_HOME}/ruby/gems"
-export GEM_SPEC_CACHE="${XDG_DATA_HOME}/ruby/specs"
-export RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
-
 # === general settings === [[[
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
@@ -39,17 +31,21 @@ typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g HISTORY_IGNORE="(jrnl|youtube-dl|you-get)"
 typeset -g TIMEFMT=$'\n================\nCPU\t%P\nuser\t%*U\nsystem\t%*S\ntotal\t%*E'
 typeset -g PROMPT_EOL_MARK=''
+typeset -g MAILCHECK=0
 # typeset -g ZSH_DISABLE_COMPFIX=true
 
 setopt hist_ignore_space    append_history      hist_ignore_all_dups  no_hist_no_functions
 setopt share_history        inc_append_history  extended_history      cdable_vars
-setopt auto_menu            complete_in_word    always_to_end         no_mail_warning
+setopt auto_menu            complete_in_word    always_to_end         nohup
 setopt autocd               auto_pushd          pushd_ignore_dups     rc_quotes
 setopt pushdminus           pushd_silent        interactive_comments  hash_cmds
 setopt glob_dots            extended_glob       menu_complete         hash_list_all
 setopt no_flow_control      no_case_glob        notify                hist_fcntl_lock
 setopt long_list_jobs       no_beep             multios               numeric_glob_sort
-setopt prompt_subst
+setopt prompt_subst         no_mail_warning
+
+# don't error out when unset parameters are used?
+setopt unset
 
 typeset -gx ZINIT_HOME="${0:h}/zinit"
 typeset -gx GENCOMP_DIR="${0:h}/completions"
@@ -379,7 +375,9 @@ zt 0c light-mode null for \
     SoptikHa2/desed \
   lbin'f2' from'gh-r' bpick'*linux_amd64*z' \
     ayoisaiah/f2 \
-  lbin'!*/*/taskn' atclone'cargo build --release ' \
+  lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo build --release' \
+  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  atpull'%atclone' has'cargo' \
     crockeo/taskn \
   lbin"!**/nvim" from'gh-r' lman \
     neovim/neovim \
@@ -397,7 +395,7 @@ zt 0c light-mode null for \
     mozilla/sops \
   lbin'q-* -> q' from'gh-r' \
     harelba/q \
-  lbin lman make"YANKCMD=pbcopy PREFIX=$ZPFX install" \
+  lbin lman make"YANKCMD='xsel -b' PREFIX=$ZPFX install" \
     mptre/yank \
   lbin'uni* -> uni' from'gh-r' \
     arp242/uni \
@@ -419,14 +417,14 @@ zt 0c light-mode null for \
     sclevine/yj \
   lbin'ff* -> ffsend' from'gh-r' \
     timvisee/ffsend \
-  lbin'b**/r**/crex' atclone'./build.sh -r' \
+  lbin'b**/r**/crex' atclone'chmod +x build.sh; ./build.sh -r;' \
     octobanana/crex \
   lbin from'gh-r' \
     rami3l/pacaptr \
   lbin patch"${pchf}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
   atpull'%atclone' atdelete"PREFIX=$ZPFX make uninstall"  \
     zdharma/zshelldoc \
-  lbin from'gh-r' \
+  lbin from'gh-r' bpick'*linux_amd*gz' \
   atload"source $ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet \
   lbin from'gh-r' atload'alias of="onefetch"' \
@@ -477,13 +475,13 @@ zt 0c light-mode null for \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     pkolaczk/fclones \
   lbin atclone'cargo build --release' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  atclone"command mv -f tar*/rel*/tldr . && cargo clean" \
   atclone"mv -f zsh_* _tldr" \
     dbrgn/tealdeer \
   lbin'pueued-* -> pueued' lbin'pueue-* -> pueue' from'gh-r' \
   bpick'*ue-linux-x86_64' bpick'*ued-linux-x86_64' \
     Nukesor/pueue \
-  lbin from'gh-r' \
+  lbin from'gh-r' bpick'*lnx.zip' \
     @dalance/procs \
   lbin atclone"cargo install --path ." atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -512,8 +510,9 @@ zt 0c light-mode null for \
     WindSoilder/hors \
   lbin from'gh-r' \
     samtay/so \
-  lbin'* -> podcast' from'gh-r' \
-  atclone'podcast completion > _podcast' \
+  lbin atclone'cargo build --release' atpull'%atclone' \
+  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  atclone'./podcast completion > _podcast' \
     njaremko/podcast \
   lbin from'gh-r' \
     rcoh/angle-grinder \
@@ -538,7 +537,7 @@ zt 0c light-mode null for \
   eval'sauce --shell zsh shell init' \
     dancardin/sauce \
   lbin atclone'cargo build --release' atpull'%atclone' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  atclone"command mv -f tar*/rel*/petname . && cargo clean" \
     allenap/rust-petname \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -962,6 +961,9 @@ function td() { date -d "+${*}" "+%FT%R"; }
 function ofd() { open $PWD; }
 function double-accept() { deploy-code "BUFFER[-1]=''"; }
 function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
+
+function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
+
 zle -N double-accept
 
 function xd() {
@@ -1042,7 +1044,7 @@ path=(
   $CARGO_HOME/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $HOME/.poetry/bin(N-/)
-  $(ruby -e 'puts Gem.user_dir')/bin(N-/)
+  $GEM_HOME/bin(N-/)
   /usr/lib/goenv/libexec
   "${path[@]}"
 )
@@ -1070,6 +1072,9 @@ zt 0c light-mode run-atpull for \
   id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
     zdharma/null \
   id-as'pyenv_init' has'pyenv' nocd eval'${${:-pyenv}:c:A} init - zsh' \
+    zdharma/null \
+  id-as'pyenv_virtual_init' has'pyenv-virtualenv' nocd \
+  eval'${${:-pyenv}:c:A} virtualenv-init -' \
     zdharma/null \
   id-as'pipenv_comp' has'pipenv' nocd eval'pipenv --completion' \
     zdharma/null \
@@ -1120,7 +1125,7 @@ typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no lead space
 typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history completion)
 # typeset -gx WORDCHARS=' *?_-.~\'
-typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
+# typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"

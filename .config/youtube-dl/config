@@ -5,6 +5,7 @@
 # alias ytdl-720="ytdl -f 'bestvideo[height<1080]+bestaudio/best[height<1080]'"
 # alias ytdl-crs='ytdl-720 --ignore-config --add-metadata --console-title --external-downloader aria2c --sub-format=ass --sub-lang=enUS --write-sub -k --yes-playlist --socket-timeout=20 -R 20'
 
+--cookies "~/Downloads/Torrent/cookies.txt"
 --add-metadata
 --fixup detect_or_warn
 --all-subs

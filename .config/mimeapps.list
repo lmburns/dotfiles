@@ -1,25 +1,10 @@
-# [Default Applications]
-# x-scheme-handler/mailto=userapp-Thunderbird-GTHUA1.desktop
-# message/rfc822=userapp-Thunderbird-GTHUA1.desktop
-# x-scheme-handler/mid=userapp-Thunderbird-GTHUA1.desktop
-# x-scheme-handler/feed=userapp-Thunderbird-6WRUA1.desktop
-# application/rss+xml=userapp-Thunderbird-6WRUA1.desktop
-# application/x-extension-rss=userapp-Thunderbird-6WRUA1.desktop
-#
-# [Added Associations]
-# x-scheme-handler/mailto=userapp-Thunderbird-GTHUA1.desktop;
-# x-scheme-handler/mid=userapp-Thunderbird-GTHUA1.desktop;
-# x-scheme-handler/feed=userapp-Thunderbird-6WRUA1.desktop;
-# application/rss+xml=userapp-Thunderbird-6WRUA1.desktop;
-# application/x-extension-rss=userapp-Thunderbird-6WRUA1.desktop;
-
 [Default Applications]
-x-scheme-handler/http=browser.desktop
-x-scheme-handler/https=browser.desktop
+x-scheme-handler/http=xfce4-web-browser.desktop
+x-scheme-handler/https=xfce4-web-browser.desktop
 text/x-shellscript=text.desktop;
 x-scheme-handler/magnet=torrent.desktop;
 application/x-bittorrent=torrent.desktop;
-x-scheme-handler/mailto=mail.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop
 text/plain=text.desktop;
 application/postscript=pdf.desktop;
 application/pdf=pdf.desktop;
@@ -30,4 +15,12 @@ application/rss+xml=rss.desktop
 video/x-matroska=video.desktop
 x-scheme-handler/lbry=lbry.desktop
 inode/directory=file.desktop
-x-scheme-handler/http=librewolf.desktop
+message/rfc822=userapp-Thunderbird-UXR3A1.desktop
+x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop
+
+[Added Associations]
+x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/http=xfce4-web-browser.desktop;
+x-scheme-handler/https=xfce4-web-browser.desktop;
+

@@ -1,17 +1,18 @@
 # xte "keyup h" "key Left"
 
-# Modify keys with hyper to mimic arrow keys
-mod3 + h
-    xdotool keyup h key --clearmodifiers Left
+## Autokey does this much better
+# Modify keys with mod3 to mimic arrow keys
+# mod3 + h
+#     xdotool keyup h key --clearmodifiers Left
 
-mod3 + j
-    xdotool keyup j key --clearmodifiers Down
-
-mod3 + k
-    xdotool keyup k key --clearmodifiers Up
-
-mod3 + l
-    xdotool keyup l key --clearmodifiers Right
+# mod3 + j
+#     xdotool keyup j key --clearmodifiers Down
+#
+# mod3 + k
+#     xdotool keyup k key --clearmodifiers Up
+#
+# mod3 + l
+#     xdotool keyup l key --clearmodifiers Right
 
 # Quit bspwm
 super + shift + Escape
@@ -84,16 +85,23 @@ mod3 + {_,shift +}r
 mod3 + m
     bspc desktop -l next
 
-## MONOCLE
+## MONOCLE / WINDOW
 
 # Rotate between monocle windows
-# super + {comma,period}
 super + {j,k}
-    bspc node -f {next,prev}.local
+    bspc node -f {next,prev}.local.!hidden.window
+    # bspc node -f {next,prev}.local
+
+# focus the next/previous window in the current desktop
+super + {_,shift + }c
+    bspc node -f {next,prev}.local.!hidden.window
+
+super + {_,shift + }p
+    bspc node -f {next,prev}
 
 # Toggle between monocle windows
 super + comma
-    bspc node -f last.local
+    bspc node -f last.local.!hidden.window
 
 # This command fixed above from not focusing?
 # bspc node -l below -f next.local
@@ -147,13 +155,6 @@ ctrl + alt + {h,j,k,l}
 # super + {p,b, comma, period}
 #     bspc node -f @{parent,brother,first,second}
 
-# focus the next/previous window in the current desktop
-super + {_,shift + }c
-    bspc node -f {next,prev}.local.!hidden.window
-
-super + {_,shift + }p
-    bspc node -f {next,prev}
-
 # focus the next/previous desktop in the current monitor
 super + bracket{left,right}
     bspc desktop -f {prev,next}.local
@@ -193,6 +194,9 @@ mod3 + bracket{left,right}
     bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
 
 # Toggle between fullscreen and tiled
+super + f
+    bspc node -t tiled || bspc node -t fullscreen
+
 mod3 + f
     bspc node -t tiled || bspc node -t fullscreen
 
@@ -253,8 +257,8 @@ mod3 + d
 mod3 x ; {x,b}
      rofi -show {drun,window}
 
-mod3 + {b,p}
-    {$BROWSER, pcmanfm}
+mod3 + {b,p,period}
+    {$BROWSER, pcmanfm,thunderbird}
 
 mod3 + {_,shift + }n
     dunstctl {history-pop,close-all}
@@ -311,12 +315,24 @@ Print + super
 Print + ctrl
     maimpick
 
+ctrl + shift + 3
+    prtscr
+
+ctrl + shift + 4
+    prtregion --disk
+
+ctrl + shift + 5
+    prtwindow
+
 # Media Controls
 super + F1
     $TERMINAL -e ncmpcpp
 
 # super + {F5,F6,F7,F8}
 #     playerctl -p "mpd" {stop,previous,play-pause,next}
+
+super + {F4,F5,F6}
+    playerctl -p "mpd" {previous,play-pause,next}
 
 # Control the [last] currently active player.
 mod3 + XF86Audio{Play,Prev,Next}
@@ -333,6 +349,7 @@ mod3 + XF86Audio{Play,Prev,Next}
 #   scrot -m -z '%Y-%m-%d_%H:%M:%S_$wx$h.png' -e 'mv $f ~/Pictures' \
 #     && notify-send -i gnome-screenshot "Screen view screenshot" "Saved image to Pictures"
 
+# Not a laptop
 XF86MonBrightness{Down,Up}
     xbacklight {-dec 15,-inc 15}
 

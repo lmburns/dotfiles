@@ -10,6 +10,7 @@ alias -g G='| rg '
 alias -g H='| head'
 alias -g T='| tail'
 
+alias mail='/usr/bin/mail'
 alias ja="jaime"
 alias xp="xplr"
 alias xx="xcompress"
@@ -22,11 +23,26 @@ alias jo="journalctl"
 alias s="systemctl"
 alias bctl="bluetoothctl"
 
+alias feh='feh \
+           --scale-down \
+           --auto-zoom \
+           --borderless \
+           --image-bg black \
+           --draw-filename \
+           --draw-tinted \
+           --keep-zoom-vp \
+           --conversion-timeout 1'
+
 alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 alias passverr="veracrypt --text --dismount ~/.password.vera"
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
+
+(( ${+commands[xidlehook]} )) && {
+  alias xidlestop="xidlehook-client --socket /tmp/xidlehook.sock reset-idle"
+  alias xidlered="xidlehook-client --socket /tmp/xidlehook.sock control --action Disable --timer 0"
+}
 
 (( ${+commands[stylua]} )) && alias stylua="stylua -c $XDG_CONFIG_HOME/stylua/stylua.toml"
 alias :q='exit'
@@ -52,10 +68,11 @@ alias ng="noglob"
 
 (( ${+commands[hoard]} )) && {
   alias hd='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h $XDG_CONFIG_HOME/hoard/root'
-  alias hde='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h /Volumes/SSD/manual-bkp/hoard'
+  alias hdy='hoard -c $XDG_CONFIG_HOME/hoard/hoard.yml -h $XDG_CONFIG_HOME/hoard/root'
+  alias hde='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h /run/media/lucas/Linux/manual/hoard-bkp'
   alias nhd='$EDITOR $XDG_CONFIG_HOME/hoard/hoard.toml'
   alias hdocs='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h $XDG_CONFIG_HOME/hoard/docs'
-  alias hdocse='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h /Volumes/SSD/manual-bkp/hoard-docs'
+  alias hdocse='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h /run/media/lucas/Linux/manual/hoard-docs'
   alias nhdocs='$EDITOR $XDG_CONFIG_HOME/hoard/docs-config'
 }
 
@@ -245,6 +262,7 @@ alias vwd='$EDITOR $HOME/vimwiki/dotfiles/index.md'
 alias vws='$EDITOR $HOME/vimwiki/scripting/index.md'
 alias vwb='$EDITOR $HOME/vimwiki/blog/index.md'
 alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
+alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
 
 # === github ====================================================================
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'
@@ -337,6 +355,7 @@ alias nnncdu='nnn -T d -dH'
 alias dic='trans -d'
 alias checkrootkits="sudo rkhunter --update; sudo rkhunter --propupd; sudo rkhunter --check"
 alias checkvirus="clamscan --recursive=yes --infected $HOME/"
+alias updateantivirus="sudo freshclam"
 
 # === trash =====================================================================
 (( ${+commands[rip]} )) && alias rr="rip"
@@ -370,44 +389,15 @@ alias ume='um edit'
   alias rsyncsrv='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
     --delete-after --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
     --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /Volumes/SSD/server-full'
+    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/exfat/server-full'
 
   # rugoptczl --info=progress2 --info=name0
   alias wwwpull='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
     --delete-after root@lmburns.com:/var/www $HOME/server'
   alias wwwpush='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
-    --delete-after --exclude ".DS_Store" $HOME/server /Volumes/SSD'
+    --delete-after --exclude ".DS_Store" $HOME/server /run/media/lucas/SSD'
   alias sudorsync='sudo rsync -azurh --delete-after --include ".*" --exclude ".DS_Store" \
-    --exclude ".ipynb_checkpoints" --exclude "/Volumes/*" --exclude "/cores/*" / /Volumes/SSD/void'
-}
-
-# === homebrew =====================================================================
-(( ${${(M)OSTYPE:#*darwin*}:+1} )) && {
-alias dmenu='open -a dmenu-mac'
-alias br="brew"                     brana='brew analytics'      brcat='brew cat'
-alias brcle='brew cleanup'          brcom='brew command'        brcoms='brew commands'
-alias brcon='brew config'           brdep='brew deps'           brdes='brew desc'
-alias brdiy='brew diy'              brdoc='brew doctor'         brfet='brew fetch'
-alias brgis='brew gist-logs'        brhom='brew home'           brinf='brew info'
-alias brins='brew install'          brlea='brew leaves'         brlis='brew list'
-alias brln='brew ln'                brlog='brew log'            brmig='brew migrate'
-alias brmig='brew missing'          broca='brew --cache'        brcas='brew install --cask'
-alias broce='brew --cellar'         broen='brew --env'          bropr='brew --prefix'
-alias bropt='brew options'          brore='brew --repository'   brout='brew outdated'
-alias brove='brew --version'        brpin='brew pin'            brpos='brew postinstall'
-alias brpru='brew prune'            brrea='brew readall'        brrei='brew reinstall'
-alias brsea='brew search'           brsh='brew sh'              brsty='brew style'
-alias brswi='brew switch'           brtap='brew tap'            brtapi='brew tap-info'
-alias brtapp='brew tap-pin'         brtapu='brew tap-unpin'     bruin='brew uninstall'
-alias bruli='brew unlink'           brupa='brew unpack'         brupd='brew update'
-alias brupdr='brew update-reset'    brupg='brew upgrade'        brupi='brew unpin'
-alias bruse='brew uses'             bruta='brew untap'          brse='brew services'
-alias brseli='brew services list'   sbrse='sudo brew services'  brwh='brew which-formula'
-alias brdescs='brew desc --search'  brusei='brew uses --installed' brlin='brew link'
-alias brwhu='brew which-update'     brdept='brdep --tree --installed'
-
-alias sppr='sbrse stop dnsmasq && sbrse stop stubby && sbrse stop privoxy'
-alias stpr='sbrse start dnsmasq && sbrse start stubby && sbrse start privoxy'
+    --exclude ".ipynb_checkpoints" --exclude "/run/media/lucas/*" --exclude "/cores/*" / /run/media/lucas/SSD/server-full'
 }
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:
