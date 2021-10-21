@@ -506,7 +506,8 @@ zt 0c light-mode null for \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
   atload'export FW_CONFIG_DIR="$XDG_CONFIG_HOME/fw"' \
     brocode/fw \
-  lbin from'gh-r' \
+  lbin atclone'cargo build --release' atpull'%atclone' \
+  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     WindSoilder/hors \
   lbin from'gh-r' \
     samtay/so \

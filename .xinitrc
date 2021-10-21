@@ -56,7 +56,8 @@ transmission-rss -f &
 # xrdb ~/.Xresources &
 
 # Night mode
-redshift -l 38.95:-92.32 &
+redshift -c "$HOME/.config/redshift/redshift.conf" &
+# redshift -l 38.95:-92.32 &
 # redshift-gtk &
 
 # Compositor

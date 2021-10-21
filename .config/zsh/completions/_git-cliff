@@ -1,0 +1,61 @@
+#compdef git-cliff
+
+autoload -U is-at-least
+
+_git-cliff() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-c+[Sets the configuration file]' \
+'--config=[Sets the configuration file]' \
+'-w+[Sets the working directory]' \
+'--workdir=[Sets the working directory]' \
+'-r+[Sets the git repository]' \
+'--repository=[Sets the git repository]' \
+'--commit-path=[Sets the directory to parse commits from]' \
+'-p+[Prepends entries to the given changelog file]' \
+'--prepend=[Prepends entries to the given changelog file]' \
+'-o+[Writes output to the given file]' \
+'--output=[Writes output to the given file]' \
+'-t+[Sets the tag for the latest version]' \
+'--tag=[Sets the tag for the latest version]' \
+'-b+[Sets the template for the changelog body]' \
+'--body=[Sets the template for the changelog body]' \
+'-s+[Strips the given parts from the changelog]: :(header footer all)' \
+'--strip=[Strips the given parts from the changelog]: :(header footer all)' \
+'--sort=[Sets sorting of the commits inside sections]: :(oldest newest)' \
+'*-v[Increases the logging verbosity]' \
+'*--verbose[Increases the logging verbosity]' \
+'-i[Writes the default configuration file to cliff.toml]' \
+'--init[Writes the default configuration file to cliff.toml]' \
+'-l[Processes the commits starting from the latest tag]' \
+'--latest[Processes the commits starting from the latest tag]' \
+'-u[Processes the commits that do not belong to a tag]' \
+'--unreleased[Processes the commits that do not belong to a tag]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::range -- Sets the commit range to process:_files' \
+&& ret=0
+    
+}
+
+(( $+functions[_git-cliff_commands] )) ||
+_git-cliff_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'git-cliff commands' commands "$@"
+}
+
+_git-cliff "$@"

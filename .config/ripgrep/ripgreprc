@@ -9,14 +9,16 @@
 --max-depth=6
 
 # Files/folders to ignore
---glob=!**/galaxy/roles/*
 --glob=!**/node_modules/*
 --glob=!.cache/*
 --glob=!.git/*
 --glob=!.ipynb_checkpoints/*
 --glob=!Library/*
---glob=!Movies/*
+--glob=!target/*
+--glob=!cargo/registry/*
 --glob=!coverage/*
+--glob=!*.tags
+--glob=!rusty-tags.vi
 --glob=!dist/*
 --glob=!lib/bf_curriculum/*
 --glob=!log/*

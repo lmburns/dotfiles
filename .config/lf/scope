@@ -77,9 +77,9 @@ handle_other() {
     (*.iso)   iso-info --no-header -l "${FILE_PATH}";;
     (*.doc)   catdoc "${FILE_PATH}" ;;
     (*.docx)  docx2txt "${FILE_PATH}" - ;;
-    (*.csv)   bat --paging=always -f -l csv ;;
+    # (*.csv)   bat --paging=always -f -l csv ${FILE_PATH} ;;
     (*.json)  jq --color-output . "${FILE_PATH}";;
-    (*.asc)   bat -Pf --theme KimbieDark --style auto "${FILE_PATH}";;
+    (*.asc|*.log)   bat -Pf --theme KimbieDark --style auto "${FILE_PATH}";;
     (*.ipynb) jupview -t KimbieDark "${FILE_PATH}" ;;
     (*.torrent) transmission-show "${FILE_PATH}";;
     (*.tgz|*.tar.gz)   tar tzf "${FILE_PATH}";;

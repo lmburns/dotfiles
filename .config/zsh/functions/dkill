@@ -1,0 +1,18 @@
+# Desc: interactively kill process with dmenu
+
+dkill() {
+  px ${*:-} \
+    | sed 1d \
+    | choose -o "\t" 0 1 -1 \
+    | dmenu \
+        -i \
+        -l 20 \
+        -p "kill" \
+        -fn "FiraMono Nerd Font Mono-12" \
+    | awk '{print $1}' \
+    | xargs -I{} kill -TERM "{}"
+}
+
+dkill
+
+# vim:ft=zsh:

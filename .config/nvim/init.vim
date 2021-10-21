@@ -630,19 +630,19 @@ Plug 'ludovicchabant/vim-gutentags'
   let $GTAGSLABEL = 'native-pygments'
   let $GTAGSCONF = '~/.gtags.conf'
 
-  if &ft=="rust"
-    set tags=rusty-tags.vi,$RUST_SRC_PATH/rusty-tags.vi
-    let g:gutentags_modules = ['rusty-tags']
-    let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
-    let g:gutentags_ctags_tagfile = '.rusty-tags'
-  else
+  " if &ft=="rust"
+  "   set tags=rusty-tags.vi,$RUST_SRC_PATH/rusty-tags.vi
+  "   let g:gutentags_modules = ['rusty-tags']
+  "   let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
+  "   let g:gutentags_ctags_tagfile = '.rusty-tags'
+  " else
     set tags=tags
     let g:gutentags_modules = ['ctags']
     let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
     let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
     let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
     let g:gutentags_ctags_tagfile = '.tags'
-  endif
+  " endif
 
 Plug 'liuchengxu/vista.vim'
   let g:vista_sidebar_position = 'topleft vertical'
@@ -890,7 +890,7 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-css',
     \ 'coc-json',
     \ 'coc-yaml',
-    \ 'coc-python',
+    \ 'coc-pyright',
     \ 'coc-vimtex',
     \ 'coc-r-lsp',
     \ 'coc-vimlsp',

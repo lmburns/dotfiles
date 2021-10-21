@@ -94,7 +94,7 @@ colorscheme kimbox
 
 ## <a name="sxhkd"></a>sxhkd
 
-+ [skhdrc](.config/sxhkd/skhdrc)
++ [sxhkdrc](.config/sxhkd/sxhkdrc)
 + <kbd>Hyper</kbd> = <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Cmd</kbd> + <kbd>Shift</kbd>
 
 <details>

@@ -21,19 +21,17 @@
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
   "list.indicator": "➤",
-  "coc.preferences.formatOnSaveFiletypes": [
-    "go"
-  ],
+  "coc.preferences.formatOnSaveFiletypes": ["go"],
   "coc.preferences.formatOnType": true,
   "signature.enable": true,
   "sh.enable": true,
+  // "python.jediEnabled": true,
   "python.formatting.provider": "black",
-  "python.formatting.blackPath": "~/.local/share/pyenv/shims/black",
+  // "python.formatting.blackPath": "/home/lucas/.local/bin/black",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
   "python.linting.flake8Enabled": true,
-  "python.jediEnabled": true,
-  "python.pythonPath": "~/.local/share/pyenv/shims/python",
+  "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
   // "python.condaPath": "~/opt/anaconda3/bin/conda",
   "suggest.disableMenu": false,
   "suggest.snippetIndicator": "",
@@ -72,14 +70,8 @@
   "explorer.file.column.clip.cut": "",
   "explorer.file.column.indent.indentLine": true,
   "explorer.openAction.select.filter": {
-    "buftypes": [
-      "terminal"
-    ],
-    "filetypes": [
-      "vista_kind",
-      "qf",
-      "minimap"
-    ],
+    "buftypes": ["terminal"],
+    "filetypes": ["vista_kind", "qf", "minimap"],
     "floatingWindows": true,
     "sources": {
       "buffer": {
@@ -95,45 +87,21 @@
     "<space>": "toggleSelection",
     "<tab>": "actionMenu",
     "h": "collapse",
-    "l": [
-      "expandable?",
-      "expand",
-      "open"
-    ],
-    "J": [
-      "toggleSelection",
-      "nodeNext"
-    ],
-    "K": [
-      "toggleSelection",
-      "nodePrev"
-    ],
+    "l": ["expandable?", "expand", "open"],
+    "J": ["toggleSelection", "nodeNext"],
+    "K": ["toggleSelection", "nodePrev"],
     "<2-LeftMouse>": [
       "expandable?",
-      [
-        "expanded?",
-        "collapse",
-        "expand"
-      ],
+      ["expanded?", "collapse", "expand"],
       "open"
     ],
-    "o": [
-      "expanded?",
-      "collapse",
-      "expand"
-    ],
-    "<cr>": [
-      "expandable?",
-      "cd",
-      "open"
-    ],
+    "o": ["expanded?", "collapse", "expand"],
+    "<cr>": ["expandable?", "cd", "open"],
     // "o": ["expandable?", ["expanded?", "collapse", "expand"], "open"],
     // "<cr>": "open",
     // "l": "indentNext",
     // "h": "indentPrev",
-    "H": [
-      "gotoParent"
-    ],
+    "H": ["gotoParent"],
     "s": "open:split",
     "S": "open:split:plain",
     "V": "open:vsplit",
@@ -169,10 +137,7 @@
     "<<": "gitStage",
     ">>": "gitUnstage"
   },
-  "snippets.ultisnips.directories": [
-    "UltiSnips",
-    "gosnippets/UltiSnips"
-  ],
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
   "suggest.enablePreview": true,
   "suggest.removeDuplicateItems": true,
@@ -238,20 +203,13 @@
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "rootPatterns": [
-        "go.mod",
-        ".vim/",
-        ".git/",
-        ".hg/"
-      ],
-      "filetypes": [
-        "go"
-      ]
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"]
     }
   },
   "yank.highlight.duration": 100,
   "solargraph.diagnostics": true,
   "solargraph.autoformat": true,
-  "solargraph.formatting": true,
+  "solargraph.formatting": true
   // "clangd.path": "/Users/lucasburns/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
 }
