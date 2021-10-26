@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+if [[ "$1" == "start" ]] {
+  caffeine -a
+  echo "!!"
+} elif [[ "$1" == "stop" ]] {
+  caffeine -d
+  echo "--"
+} elif [[ "$1" == "kill" ]] {
+  caffeine kill
+  echo "--"
+} else {
+  echo "N/A"
+}

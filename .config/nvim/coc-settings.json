@@ -205,11 +205,26 @@
       "command": "gopls",
       "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
       "filetypes": ["go"]
-    }
+    },
+    // "ccls": {
+    //   "command": "ccls",
+    //   "filetypes": ["c", "cpp", "objc", "objcpp"],
+    //   "rootPatterns": [
+    //     ".ccls",
+    //     "compile_commands.json",
+    //     ".vim/",
+    //     ".git/",
+    //     ".hg/"
+    //   ],
+    //   "initializationOptions": {
+    //     "cache": {
+    //       "directory": "/tmp/ccls"
+    //     }
+    //   }
+    // }
   },
   "yank.highlight.duration": 100,
   "solargraph.diagnostics": true,
   "solargraph.autoformat": true,
   "solargraph.formatting": true
-  // "clangd.path": "/Users/lucasburns/.config/coc/extensions/coc-clangd-data/install/12.0.0/clangd_12.0.0/bin/clangd",
 }

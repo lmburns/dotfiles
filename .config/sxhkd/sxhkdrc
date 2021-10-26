@@ -14,6 +14,9 @@
 # mod3 + l
 #     xdotool keyup l key --clearmodifiers Right
 
+F11
+    remaps && notify-send "remaps" "remapped"
+
 # Quit bspwm
 super + shift + Escape
     prompt "Are you sure you would like to quit this Xsession" "bspc quit"

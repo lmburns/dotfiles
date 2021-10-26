@@ -1,0 +1,26 @@
+#compdef pactree
+
+# zsh completions for 'pactree'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--ascii}'[use ASCII characters for tree formatting]'
+  {-b,--dbpath}'[set an alternate database location]'
+  {-c,--color}'[colorize output]'
+  {-d,--depth}'[limit the depth of recursion]'
+  {-g,--graph}'[generate output for graphvizs dot]'
+  {-h,--help}'[display this help message]'
+  {-l,--linear}'[enable linear output]'
+  {-r,--reverse}'[list packages that depend on the named package]'
+  {-s,--sync}'[search sync databases instead of local]'
+  {-u,--unique}'[show dependencies with no duplicates (implies -l)]'
+  {-o,--optional}'[controls at which depth to stop printing optional deps]'
+  {-v,--version}'[display the version]'
+  '--config[set an alternate configuration file]'
+  '--debug[display debug messages]'
+  '--gpgdir[set an alternate home directory for GnuPG]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

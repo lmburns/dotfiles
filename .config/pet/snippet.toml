@@ -1,44 +1,59 @@
 [[snippets]]
-  description = "cpu/memory"
-  command = "ps -A -o %cpu,%mem | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'"
-  output = ""
+description = "cpu/memory"
+command = "ps -A -o %cpu,%mem | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'"
+output = ""
 
 [[snippets]]
-  description = "batt temp"
-  command = "bc <<< \\\"scale=3; $(ioreg -r -n AppleSmartBattery | grep Temperature | cut -c23-)/100*1.8+32\\\""
-  output = ""
+description = "batt temp"
+command = "bc <<< \\\"scale=3; $(ioreg -r -n AppleSmartBattery | grep Temperature | cut -c23-)/100*1.8+32\\\""
+output = ""
 
 [[snippets]]
-  description = "run"
-  command = "HOARD_LOG=debug just r -c $PWD/config.toml -h $PWD/out backup"
-  output = ""
+description = "refresh wifi"
+command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
+output = ""
 
 [[snippets]]
-  description = "yaml"
-  command = "HOARD_LOG=warn just r -c $PWD/config.yml -h $PWD/out backup"
-  output = ""
+description = "systemctl - enabled services"
+command = "systemctl list-unit-files --state=enabled"
+output = "echo 'hi'"
 
 [[snippets]]
-  description = "json"
-  command = "HOARD_LOG=debug just r -c $PWD/config.json -h $PWD/out backup"
-  output = ""
+description = "systemctl - all services"
+command = "systemctl list-unit-files --type=service"
+output = ""
 
 [[snippets]]
-  description = "rage_ssh"
-  command = "just r -R ~/.ssh/id_rsa.pub -eo test_out test_file"
-  output = ""
+description = "disable sudo for dmesg"
+command = "sudo sysctl -w kernel.dmesg_restrict=0"
+output = ""
 
 [[snippets]]
-  description = "rage_recip"
-  command = "just r -R recipients.txt -eo test_out test_file"
-  output = ""
+description = "expac - upgrade & download size"
+command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+output = ""
 
 [[snippets]]
-  description = "rage_decrypt"
-  command = "just r -i test.key -do test_decrypt test_out"
-  output = ""
+description = "expac - recently installed (20)"
+command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
+output = ""
 
 [[snippets]]
-  description = "directory"
-  command = "HOARD_LOG=trace just r -c $PWD/myconf.toml -h $PWD/out backup"
-  output = ""
+description = "expac - search regex"
+command = "expac -Ss '%-30n %-8v %d'"
+output = ""
+
+[[snippets]]
+description = "expac - list modified files"
+command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+output = ""
+
+[[snippets]]
+description = "pacman - search installed (fzf)"
+command = "pacman -Qq | fzf --preview 'paru --color=always -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | bat)' --preview-window=':nohidden'"
+output = ""
+
+[[snippets]]
+description = "pacman - search all (fzf)"
+command = "pacman -Slq | fzf --preview 'paru --color=always -Si {}' --layout=reverse --preview-window=':nohidden'"
+output = ""

@@ -7,9 +7,15 @@ msgId="991049"
 # mute="$(amixer get Master | tail -1 | awk '{print $6}' | sed 's/[^a-z]*//g')"
 
 if [[ "$1" == "bluetooth" ]]; then
-    sink="$(pamixer --list-sinks | rg airpods | hck -f2 | sed 's/"//g')"
+    sink="$(pamixer --list-sinks \
+        | rg airpods \
+        | hck -f2 \
+        | sed 's/"//g')"
 else
-    sink="$(pamixer --list-sinks | rg built-in | hck -f2 | sed 's/"//g')"
+    sink="$(pamixer --list-sinks \
+        | rg built-in \
+        | hck -f2 \
+        | sed 's/"//g')"
 fi
 
 if [[ "$2" == "toggle" ]]; then
@@ -27,11 +33,21 @@ mute=$(pamixer --sink "$sink" --get-mute)
 
 if [[ $volume == 0 || "$mute" == "true" ]]; then
     # Show the sound muted notification
-    dunstify -a "changeVolume" -u low -i audio-volume-muted -r "$msgId" "Volume muted"
+    dunstify \
+        -a "changeVolume" \
+        -u low \
+        -i /usr/share/icons/Gruvbox/32x32/status/stock_volume-0.png \
+        -r "$msgId" \
+        "Volume muted"
 else
     # Show the volume notification
-    dunstify -a "changeVolume" -u low -i audio-volume-high -r "$msgId" \
-    -h int:value:"$volume" "Volume: ${volume}"
+    dunstify \
+        -a "changeVolume" \
+        -u low \
+        -i /usr/share/icons/Gruvbox/32x32/status/audio-volume-high.png \
+        -r "$msgId" \
+        -h int:value:"$volume" \
+        "Volume: ${volume}"
 fi
 
 # Play the volume changed sound

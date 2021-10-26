@@ -10,12 +10,14 @@ alias -g G='| rg '
 alias -g H='| head'
 alias -g T='| tail'
 
+# alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
 alias mail='/usr/bin/mail'
 alias ja="jaime"
 alias xp="xplr"
 alias xx="xcompress"
 alias ca='cargo'
 alias cat="bat"
+alias thew="the-way"
 
 alias mimeopen="/usr/bin/vendor_perl/mimeopen"
 alias xmm="xmodmap"
@@ -242,7 +244,7 @@ alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|G
 
 alias pyn='openpyn'
 alias oconn='openpyn us -t 10'
-alias spt='speedtest | rg "(Download:|Upload:)"'
+alias speedt='speedtest | rg "(Download:|Upload:)"'
 alias essh='eval $(ssh-add)'
 alias kc='keychain'
 alias kcl='keychain -l'

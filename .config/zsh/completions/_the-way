@@ -1,0 +1,593 @@
+#compdef the-way
+
+autoload -U is-at-least
+
+_the-way() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_the-way_commands" \
+"*::: :->the-way" \
+&& ret=0
+    case $state in
+    (the-way)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:the-way-command-$line[1]:"
+        case $line[1] in
+            (new)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(cmd)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::code -- shell snippet code:_files' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*--languages=[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*-t+[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'*--tags=[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'--from=[Snippets from <date> ("last friday" works too!)]' \
+'--to=[Snippets before <date>]' \
+'-p+[Snippets matching pattern]' \
+'--pattern=[Snippets matching pattern]' \
+'--stdout[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sync)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*--languages=[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*-t+[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'*--tags=[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'--from=[Snippets from <date> ("last friday" works too!)]' \
+'--to=[Snippets before <date>]' \
+'-p+[Snippets matching pattern]' \
+'--pattern=[Snippets matching pattern]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(import)
+_arguments "${_arguments_options[@]}" \
+'-g+[URL to a Gist, if provided will import snippets from given Gist]' \
+'--gist-url=[URL to a Gist, if provided will import snippets from given Gist]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::file -- filename, reads from stdin if not given:_files' \
+&& ret=0
+;;
+(export)
+_arguments "${_arguments_options[@]}" \
+'*-l+[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*--languages=[Snippets written in <language> (multiple with '\''lang1 lang2'\'')]' \
+'*-t+[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'*--tags=[Snippets with <tag> (multiple with '\''tag1 tag2'\'')]' \
+'--from=[Snippets from <date> ("last friday" works too!)]' \
+'--to=[Snippets before <date>]' \
+'-p+[Snippets matching pattern]' \
+'--pattern=[Snippets matching pattern]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::file -- filename, writes to stdout if not given:_files' \
+&& ret=0
+;;
+(clear)
+_arguments "${_arguments_options[@]}" \
+'-f[Don'\''t ask for confirmation]' \
+'--force[Don'\''t ask for confirmation]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(complete)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':shell:(zsh bash fish powershell elvish)' \
+&& ret=0
+;;
+(themes)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_the-way__themes_commands" \
+"*::: :->themes" \
+&& ret=0
+case $state in
+    (themes)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:the-way-themes-command-$line[1]:"
+        case $line[1] in
+            (set)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::theme:_files' \
+&& ret=0
+;;
+(add)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':file:_files' \
+&& ret=0
+;;
+(language)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':file:_files' \
+&& ret=0
+;;
+(get)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(configure)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_the-way__config_commands" \
+"*::: :->config" \
+&& ret=0
+case $state in
+    (config)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:the-way-config-command-$line[1]:"
+        case $line[1] in
+            (default)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::file:_files' \
+&& ret=0
+;;
+(get)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(config)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_the-way__config_commands" \
+"*::: :->config" \
+&& ret=0
+case $state in
+    (config)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:the-way-config-command-$line[1]:"
+        case $line[1] in
+            (default)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::file:_files' \
+&& ret=0
+;;
+(get)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(edit)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to change:_files' \
+&& ret=0
+;;
+(delete)
+_arguments "${_arguments_options[@]}" \
+'-f[Don'\''t ask for confirmation]' \
+'--force[Don'\''t ask for confirmation]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to delete:_files' \
+&& ret=0
+;;
+(del)
+_arguments "${_arguments_options[@]}" \
+'-f[Don'\''t ask for confirmation]' \
+'--force[Don'\''t ask for confirmation]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to delete:_files' \
+&& ret=0
+;;
+(copy)
+_arguments "${_arguments_options[@]}" \
+'--stdout[Print to stdout instead of copying]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to copy:_files' \
+&& ret=0
+;;
+(cp)
+_arguments "${_arguments_options[@]}" \
+'--stdout[Print to stdout instead of copying]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to copy:_files' \
+&& ret=0
+;;
+(view)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':index -- Index of snippet to show:_files' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_the-way_commands] )) ||
+_the-way_commands() {
+    local commands; commands=(
+        "new:Add a new code snippet" \
+"cmd:Add a new shell snippet" \
+"search:Fuzzy search to find a snippet and copy, edit or delete it" \
+"sync:Sync snippets to a Gist" \
+"list:Lists (optionally filtered) snippets" \
+"import:Imports code snippets from JSON" \
+"export:Saves (optionally filtered) snippets to JSON" \
+"clear:Clears all data" \
+"complete:Generate shell completions" \
+"themes:Manage syntax highlighting themes" \
+"config:Manage the-way data locations" \
+"edit:Change snippet" \
+"del:Delete snippet" \
+"cp:Copy snippet to clipboard" \
+"view:View snippet" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'the-way commands' commands "$@"
+}
+(( $+functions[_the-way__themes__add_commands] )) ||
+_the-way__themes__add_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way themes add commands' commands "$@"
+}
+(( $+functions[_the-way__clear_commands] )) ||
+_the-way__clear_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way clear commands' commands "$@"
+}
+(( $+functions[_the-way__cmd_commands] )) ||
+_the-way__cmd_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way cmd commands' commands "$@"
+}
+(( $+functions[_the-way__complete_commands] )) ||
+_the-way__complete_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way complete commands' commands "$@"
+}
+(( $+functions[_the-way__config_commands] )) ||
+_the-way__config_commands() {
+    local commands; commands=(
+        "default:Prints / writes the default configuration options. Set the generated config file as default by setting the $THE_WAY_CONFIG environment variable" \
+"get:Prints location of currently set configuration file" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'the-way config commands' commands "$@"
+}
+(( $+functions[_configure_commands] )) ||
+_configure_commands() {
+    local commands; commands=(
+        "default:Prints / writes the default configuration options. Set the generated config file as default by setting the $THE_WAY_CONFIG environment variable" \
+"get:Prints location of currently set configuration file" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'configure commands' commands "$@"
+}
+(( $+functions[_copy_commands] )) ||
+_copy_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'copy commands' commands "$@"
+}
+(( $+functions[_the-way__copy_commands] )) ||
+_the-way__copy_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way copy commands' commands "$@"
+}
+(( $+functions[_the-way__cp_commands] )) ||
+_the-way__cp_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way cp commands' commands "$@"
+}
+(( $+functions[_the-way__config__default_commands] )) ||
+_the-way__config__default_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way config default commands' commands "$@"
+}
+(( $+functions[_the-way__del_commands] )) ||
+_the-way__del_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way del commands' commands "$@"
+}
+(( $+functions[_delete_commands] )) ||
+_delete_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'delete commands' commands "$@"
+}
+(( $+functions[_the-way__delete_commands] )) ||
+_the-way__delete_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way delete commands' commands "$@"
+}
+(( $+functions[_the-way__edit_commands] )) ||
+_the-way__edit_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way edit commands' commands "$@"
+}
+(( $+functions[_the-way__export_commands] )) ||
+_the-way__export_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way export commands' commands "$@"
+}
+(( $+functions[_the-way__config__get_commands] )) ||
+_the-way__config__get_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way config get commands' commands "$@"
+}
+(( $+functions[_the-way__themes__get_commands] )) ||
+_the-way__themes__get_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way themes get commands' commands "$@"
+}
+(( $+functions[_the-way__config__help_commands] )) ||
+_the-way__config__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way config help commands' commands "$@"
+}
+(( $+functions[_the-way__help_commands] )) ||
+_the-way__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way help commands' commands "$@"
+}
+(( $+functions[_the-way__themes__help_commands] )) ||
+_the-way__themes__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way themes help commands' commands "$@"
+}
+(( $+functions[_the-way__import_commands] )) ||
+_the-way__import_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way import commands' commands "$@"
+}
+(( $+functions[_the-way__themes__language_commands] )) ||
+_the-way__themes__language_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way themes language commands' commands "$@"
+}
+(( $+functions[_the-way__list_commands] )) ||
+_the-way__list_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way list commands' commands "$@"
+}
+(( $+functions[_the-way__new_commands] )) ||
+_the-way__new_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way new commands' commands "$@"
+}
+(( $+functions[_the-way__search_commands] )) ||
+_the-way__search_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way search commands' commands "$@"
+}
+(( $+functions[_the-way__themes__set_commands] )) ||
+_the-way__themes__set_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way themes set commands' commands "$@"
+}
+(( $+functions[_the-way__sync_commands] )) ||
+_the-way__sync_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way sync commands' commands "$@"
+}
+(( $+functions[_the-way__themes_commands] )) ||
+_the-way__themes_commands() {
+    local commands; commands=(
+        "set:Set your preferred syntax highlighting theme" \
+"add:Add a theme from a Sublime Text ".tmTheme" file" \
+"language:Add highlight support for a language using a ".sublime-syntax" file" \
+"get:Prints the current theme name" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'the-way themes commands' commands "$@"
+}
+(( $+functions[_the-way__view_commands] )) ||
+_the-way__view_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'the-way view commands' commands "$@"
+}
+
+_the-way "$@"

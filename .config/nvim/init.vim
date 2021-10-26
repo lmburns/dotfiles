@@ -2348,6 +2348,7 @@ call plug#end()
 
 " ============== vim-clang ============== {{{
 autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>
+autocmd FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %< && ./%< <CR>
 " }}} === vim-clang ===
 
 " ============== Default Terminal ============== {{{

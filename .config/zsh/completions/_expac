@@ -1,0 +1,25 @@
+#compdef expac
+
+# zsh completions for 'expac'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-Q,--query}'[search local DB (default)]'
+  {-S,--sync}'[search sync DBs]'
+  {-s,--search}'[search for matching regex]'
+  {-g,--group}'[return packages matching targets as groups]'
+  {-H,--humansize}'[format package sizes in SI units (default: bytes)]'
+  {-1,--readone}'[return only the first result of a sync search]'
+  {-d,--delim}'[separator used between packages (default: "\n")]'
+  {-l,--listdelim}'[separator used between list elements (default: "  ")]'
+  {-p,--file}'[query local files instead of the DB]'
+  {-t,--timefmt}'[date format passed to strftime (default: "%c")]'
+  '--config[read from <file> for alpm initialization (default: /etc/pacman.conf)]'
+  {-v,--verbose}'[be more verbose]'
+  {-V,--version}'[display version information and exit]'
+  {-h,--help}'[display this help and exit]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

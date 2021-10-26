@@ -17,19 +17,46 @@
     # will be ignored.
     follow = mouse
 
-    # The geometry of the window:
-    #   [{width}]x{height}[+/-{x}+/-{y}]
-    # The geometry of the message window.
-    # The height is measured in number of notifications everything else
-    # in pixels.  If the width is omitted but the height is given
-    # ("-geometry x2"), the message window expands over the whole screen
-    # (dmenu-like).  If width is 0, the window expands to the longest
-    # message displayed.  A positive x is measured from the left, a
-    # negative from the right side of the screen.  Y is measured from
-    # the top and down respectively.
-    # The width can be negative.  In this case the actual width is the
-    # screen width minus the width defined in within the geometry option.
-    geometry = "0x0-30+20"
+    ### Geometry ###
+
+    # dynamic width from 0 to 300
+    # width = (0, 300)
+    # constant width of 300
+    width = 300
+
+    # The maximum height of a single notification, excluding the frame.
+    height = 300
+
+    # Position the notification in the top right corner
+    origin = top-right
+
+    # Offset from the origin
+    offset = 10x50
+
+    # Scale factor. It is auto-detected if value is 0.
+    scale = 0
+
+    # Maximum number of notification (0 means no limit)
+    notification_limit = 0
+
+    ### Progress bar ###
+
+    # Turn on the progess bar. It appears when a progress hint is passed with
+    # for example dunstify -h int:value:12
+    progress_bar = true
+
+    # Set the progress bar height. This includes the frame, so make sure
+    # it's at least twice as big as the frame width.
+    progress_bar_height = 10
+
+    # Set the frame width of the progress bar
+    progress_bar_frame_width = 1
+
+    # Set the minimum width for the progress bar
+    progress_bar_min_width = 150
+
+    # Set the maximum width for the progress bar
+    progress_bar_max_width = 300
 
     # Show how many messages are currently hidden (because of geometry).
     indicate_hidden = yes
@@ -42,11 +69,6 @@
     # This option will only work if a compositing window manager is
     # present (e.g. xcompmgr, compiz, etc.).
     transparency = 2
-
-    # The height of the entire notification.  If the height is smaller
-    # than the font height and padding combined, it will be raised
-    # to the font height and padding.
-    notification_height = 0
 
     # Draw a line of "separator_height" pixel height between two
     # notifications.
@@ -195,20 +217,6 @@
     # Define the class of the windows spawned by dunst
     class = Dunst
 
-    # Print a notification on startup.
-    # This is mainly for error detection, since dbus (re-)starts dunst
-    # automatically after a crash.
-    startup_notification = false
-
-    # Manage dunst's desire for talking
-    # Can be one of the following values:
-    #  crit: Critical features. Dunst aborts
-    #  warn: Only non-fatal warnings
-    #  mesg: Important Messages
-    #  info: all unimportant stuff
-    # debug: all less than unimportant stuff
-    verbosity = mesg
-
     # Define the corner radius of the notification window
     # in pixel size. If the radius is 0, you have no rounded
     # corners.
@@ -262,17 +270,6 @@
     # where there are multiple screens with very different dpi values.
     per_monitor_dpi = false
 
-[shortcuts]
-
-    # Shortcuts are specified as [modifier+][modifier+]...key
-    # Available modifiers are "ctrl", "mod1" (the alt-key), "mod2",
-    # "mod3" and "mod4" (windows-key).
-    close = ctrl+space
-    close_all = ctrl+shift+space
-    history = ctrl+grave
-    # Context menu.
-    context = ctrl+shift+period
-
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
@@ -284,7 +281,7 @@
 
     timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
-    icon = /home/lucas/.config/dunst/GruvboxIcon.png
+    new_icon = /home/lucas/.config/dunst/GruvboxIcon.png
 
 [urgency_normal]
     # background = "#221a02"
@@ -295,7 +292,7 @@
 
     timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
-    icon = /home/lucas/.config/dunst/GruvboxIcon.png
+    new_icon = /home/lucas/.config/dunst/GruvboxIcon.png
 
 [urgency_critical]
     background = "#f14a68"
@@ -303,7 +300,7 @@
     frame_color = "#dc3958"
     timeout = 5
     # Icon for notifications with critical urgency, uncomment to enable
-    icon = /home/lucas/.config/dunst/critical.png
+    new_icon = /home/lucas/.config/dunst/critical.png
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.
@@ -421,4 +418,4 @@
 #    set_stack_tag = "volume"
 #
 
-# vim: ft=dosini:et:sw=4:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
+# vim: ft=cfg:et:sw=4:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

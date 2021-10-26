@@ -1,0 +1,26 @@
+#compdef betterlockscreen
+
+# zsh completions for 'betterlockscreen'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-u,--update}'[update lock screen image]'
+  {-l,--lock}'[lock screen with cached image]'
+  {-w,--wall}'[set wallpaper with cached image]'
+  '--display[set display to draw loginbox]'
+  '--span[scale image to span multiple displays]'
+  '--off[turn display off after N minutes]'
+  '--fx[EFFECT,EFFECT>]'
+  '--desc[set a description for the new lock screen image]'
+  '--show-layout[show current keyboard layout]'
+  '--wallpaper-cmd[to set your custom wallpaper setter]'
+  '--time-format[to set the time format used by i3lock-color]'
+  '--dim[dim image N percent (0-100)]'
+  '--blur[blur image N amount (0.0-1.0)]'
+  '--pixel[N>]'
+  '--color[solid color background with HEX]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -25,6 +25,8 @@ export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="$XDG_MBIN_HOME/linux/zenpass"
 # export SUDO_ASKPASS="xfsudo"
 
+export TEXLIVE="${HOME}/texlive"
+
 export TERMINAL="alacritty"
 export BROWSER="librewolf"
 export BROWSERCLI="w3m"
@@ -89,6 +91,8 @@ export PINENTRY_USER_DATA="USE_CURSES=1"
 export UMCONFIG_HOME="${XDG_CONFIG_HOME}/um"
 export PIER_CONFIG_PATH="${XDG_CONFIG_HOME}/pier/config.toml"
 export GRIPHOME="${XDG_CONFIG_HOME}/grip"
+
+export GOGODB_PATH="${XDG_DATA_HOME}/gogo/gogo.db"
 
 export NNN_PLUG='P:preview-tui;f:finder;o:fzopen;d:diffs;t:treeview;v:imgview;J:autojump;e:gpge;d:gpgd;m:mimelist;b:nbak;s:organize;B:_renamer;p:_bat $nnn*;y:-_sync*;L:-_git log;k:-_fuser -kiv $nnn*'
 export NNN_FCOLORS='c1e2272e006033f7c6d6abc4'

@@ -1,7 +1,25 @@
 directory: ~/Music
 library: ~/.config/beets/library.db
 
-plugins: lastgenre edit fetchart ftintitle
+plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info duplicates
+
+fetchart:
+  sources: filesystem coverart itunes amazon albumart lastfm google
+  google_key: 547595880751-vs3j8u74e961ejjo3ijdv9ic9m50vh0u.apps.googleusercontent.com
 
 lastgenre:
   auto: yes
+
+lyrics:
+  auto: yes
+
+export:
+  json:
+    formatting:
+      ensure_ascii: false
+      indent: 4
+      separators: [",", ": "]
+      sort_keys: true
+  csv:
+    formatting:
+      delimiter: ","

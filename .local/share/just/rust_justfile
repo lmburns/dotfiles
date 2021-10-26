@@ -7,12 +7,9 @@ set dotenv-load := true
 CI := if env_var_or_default("CI", "1") == "0" { "--color=never" } else { "--color=always" }
 # version := `rg --color=never --pcre2 -oIN '^version = "\K(\d+\.?)+' Cargo.toml`
 
-# Doesn't not export and read
+# Doesn't export and read
 rl := if env_var_or_default("rl", "0") == "1" { "RUST_LOG=debug" } else { "" }
-# export RUST_LOG := "debug"
-
-debug:
-  echo $TASKRC $TASKDATA
+export LXHKD_LOG := "trace"
 
 bt := '0'
 export RUST_BACKTRACE := bt

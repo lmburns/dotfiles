@@ -117,7 +117,7 @@ font-1 = FiraMonoNerdFontMono:pixelsize=10;
 font-2 = JetBrainsMonoMedium:pixelsize=10;
 
 modules-left = bspwm xwindow bsplayout bspmode
-modules-center = mpd
+modules-center = mpd mpv
 modules-right = dunst mail services torrents pacman-packages cpu_custom cpu-temperature memory_custom pulseaudio weather time powermenu
 
 ;; _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -231,4 +231,4 @@ compositing-border = over
 ; If set to true the bar can be transparent without a compositor.
 pseudo-transparency = false
 
-; vim:ft=dosini
+; vim: ft=dosini:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

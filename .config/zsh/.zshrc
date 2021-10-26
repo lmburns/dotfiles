@@ -632,8 +632,7 @@ zt 0c light-mode null for \
     cargo-generate/cargo-generate \
   lbin from'gh-r' \
     yozhgoor/cargo-temp \
-  lbin atclone'cargo build --release' \
-  atclone'command mv -f tar/*/rel*/evcxr . && cargo clean' atpull'%atclone' \
+  lbin'tar*/rel*/evcxr' atclone'cargo build --release' atpull'%atclone' \
     google/evcxr \
   lbin atclone'cargo build --release --all-features' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -959,7 +958,7 @@ function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh 
 function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 function png() { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 function td() { date -d "+${*}" "+%FT%R"; }
-function ofd() { open $PWD; }
+function ofd() { xdg-open $PWD; }
 function double-accept() { deploy-code "BUFFER[-1]=''"; }
 function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 
@@ -1037,6 +1036,7 @@ manpath=(
 
 path=(
   $HOME/mybin
+  $HOME/texlive/2021/bin/x86_64-linux
   $HOME/mybin/linux
   $HOME/bin
   $HOME/.ghg/bin
