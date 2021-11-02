@@ -75,7 +75,7 @@ cmd open ${{
         |application/vnd.openxmlformats-officedocument.*\
         |application/vnd.oasis.opendocument.text\
         |application/vnd.ms-excel\
-        |text/rtf) open -a LibreOffice.app ;;
+        |text/rtf) handlr open $fx ;;
       (text/*) $EDITOR $fx;;
       (image/x-xcf) nohup gimp $f >/dev/null 2>&1 ;;
       (image/svg+xml) display -- $f ;;
@@ -101,7 +101,7 @@ cmd open ${{
 # -- Trash: (rip)
 cmd trash ${{
   rip -- $fx
-  notify-send "🗑️  File(s) deleted""File(s) moved to trash" &&
+  notify-send "🗑️  File(s) deleted ""File(s) moved to trash" &&
     print -R "$fx deleted"
 }}
 
@@ -147,21 +147,21 @@ cmd copytopath ${{
 # -- Paste: view progress
 # FIX: IFS
 cmd ppaste &{{
-    set -- $(lf -remote load)
-    mode="$1"
-    shift
-    case "$mode" in
-        copy)
-            rsync -avX --ignore-existing --progress -- "$@" . |
-            stdbuf -i0 -o0 -e0 tr '\r' '\n' |
-            while IFS= read -r line; do
-                lf -remote "send $id echo $line"
-            done
-            ;;
-        move) mv -n -- "$@" .;;
-    esac
-    lf -remote "send load"
-    lf -remote "send clear"
+  set -- $(lf -remote load)
+  mode="$1"
+  shift
+  case "$mode" in
+      copy)
+          rsync -avX --ignore-existing --progress -- "$@" . |
+          stdbuf -i0 -o0 -e0 tr '\r' '\n' |
+          while IFS= read -r line; do
+              lf -remote "send $id echo $line"
+          done
+          ;;
+      move) mv -n -- "$@" .;;
+  esac
+  lf -remote "send load"
+  lf -remote "send clear"
 }}
 
 
@@ -171,9 +171,9 @@ cmd br_dir ${{
   f=$(mktemp)
   res="$(broot --only-folders)"
   rm -f "$f"
-  if [ -f "$res" ]; then
+  if [[ -f "$res" ]]; then
     cmd="select"
-  elif [ -d "$res" ]; then
+  elif [[ -d "$res" ]]; then
     cmd="cd"
   fi
   lf -remote "send $id $cmd \"$res\""
@@ -235,16 +235,11 @@ cmd link %{{
       exit 0
     fi
     case "$mode" in
-      copy) gln -sr -t . "$@";;
-      move) gln -t . "$@";;
+      copy) ln -sr -t . "$@";;
+      move) ln -t . "$@";;
     esac
     zf_rm "${XDG_DATA_HOME}/lf/files"
     lf -remote "send clear"
-}}
-
-# -- Preview: quicklook
-cmd ql_preview &{{
-  qlmanage -p "$fx" &> /dev/null;
 }}
 
 
@@ -398,7 +393,6 @@ cmd ndel-bookmark ${{
 }}
 
 
-
 # -- Jump: wfxr plugin
 cmd jumpi ${{
   field='\(\S\+\s*\)'
@@ -413,7 +407,7 @@ cmd jumpi ${{
   | gsed "${pattern}" \
   | fzf --ansi \
       --height '40%' \
-      --preview="echo {}|sed 's#.*->  ##'| xargs exa --color=always" \
+      --preview="echo {} | sed 's#.*->  ##' | xargs exa --color=always" \
       --preview-window="right:50%" \
   | sed 's#.*->  ##')
   [[ -d "$PTH" ]] && lf -remote "send $id cd \"$PTH\""
@@ -432,47 +426,6 @@ cmd tag-list !{{
   tag -l | bat -f -l bash
 }}
 
-# -- Tag: set tag(s)
-cmd tag-set ${{
-  clear
-  print -nPr "%F{2}"
-  print -f "%s" "$(figlet tag)"
-  print -Pr "%f"
-  printf "=%.0s" {1..17}
-  print
-  vared -cp "Set tag: " tag
-  for x in $fx; do
-    tag --set "$tag" "$x"
-  done
-}}
-
-# -- Tag: add tag(s)
-cmd tag-add ${{
-  clear
-  print -nPr "%F{2}"
-  print -f "%s" "$(figlet tag)"
-  print -Pr "%f"
-  printf "=%.0s" {1..17}
-  print
-  vared -cp "Add tag: " tag
-  for x in $fx; do
-    tag --add "$tag" "$x"
-  done
-}}
-
-# -- Tag: remove tag(s)
-cmd tag-remove ${{
-  clear
-  print -nPr "%F{2}"
-  print -f "%s" "$(figlet tag)"
-  print -Pr "%f"
-  printf "=%.0s" {1..17}
-  print
-  vared -cp "Remove tag: " tag
-  for x in $fx; do
-    tag --remove "$tag" "$x"
-  done
-}}
 
 # -- Tag: wutag set
 cmd wutag-set ${{
@@ -578,9 +531,9 @@ cmd newfold ${{
   mkdir -p -- "$fold" && mv -- $fx "$fold"
 }}
 
-cmd dragon %dragon-drag-and-drop -a -x $fx
-cmd dragon-stay %dragon-drag-and-drop -a $fx
-cmd dragon-individual %dragon-drag-and-drop $fx
+cmd dragon %dragon -a -x $fx
+cmd dragon-stay %dragon -a $fx
+cmd dragon-individual %dragon $fx
 cmd cpdragon %cpdragon
 cmd mvdragon %mvdragon
 cmd dlfile %dlfile
@@ -608,27 +561,28 @@ map ee $$EDITOR "$f"                            # open file in editor
 map ec edit_config                              # edit & source lfrc
 map es edit_scope                               # edit lfrc scope
 map ev $$EDITOR $XDG_CONFIG_HOME/nvim/init.vim  # open nvim config
-map ew $$EDITOR ~/vimwiki/index.md              # open vimwiki
+map ew $$EDITOR $HOME/vimwiki/index.md          # open vimwiki
 map ez $$EDITOR $ZDOTDIR/.zshrc                 # edit zshrc
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh      # edit zsh aliases
 map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh  # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh      # edit lf colors/icons
-map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit & source lfrc
+map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit tmux conf
 
 map v $LESS='-iWQMXR~' bat --paging=always --theme=KimbieDark "$f"
 map V push :!nvim<space>                     # enter filename for nvim
 map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings
 map Ow push :open-with<space>                # open w/ specified program
-map Op $open $PWD                            # open curr directory in finder
+map Op $handlr open $PWD                     # open curr directory in finder
+map o  $mimeopen $f
+map Oa $mimeopen --ask $f
 
-map Ql ql_preview                             # open in quicklook (macOS)
 map Qm !clear; mdcat -p $fx                   # preview in mdcat
 map Qg !clear; glow -p $fx                    # preview in glow
 map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
 map as !du -hsx * | sort -rh | bat --paging=always                          # directory info
-map ai !gstat $f || stat $f; echo ; du -sh $f ; echo ; file --mime -b -p $f # info
+map ai !stat $f; echo ; du -sh $f ; echo ; file --mime -b -p $f # info
 
 map <c-f> push :rg<space>                           # search with rg
 map <c-z> push :rgu<space>                          # search interactively with fzf
@@ -773,15 +727,11 @@ map toa $transmission-remote --add $fx # add torrent
 map toT %tide                          # transmisison TUI
 # ]]]
 
-# == Tagging (jdberry/tag) == [[[
-map Tl tag-list
-map Ts tag-set
-map Ta tag-add
-map Tr tag-remove
-map Tws wutag-set
-map Twa wutag-add
-map Twr wutag-remove
-map Twl wutag-list
+# == Tagging (wutag) == [[[
+map Ts wutag-set
+map Ta wutag-add
+map Tr wutag-remove
+map Tl wutag-list
 # ]]]
 
 # == Git == [[[
@@ -844,8 +794,5 @@ map gh cd ~
 # map gUs cd /usr/local/share
 
 # ]]]
-
-# map o &mimeopen $f
-# map O $mimeopen --ask $f
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -1,26 +1,24 @@
-[Default Applications]
-x-scheme-handler/http=xfce4-web-browser.desktop
-x-scheme-handler/https=xfce4-web-browser.desktop
-text/x-shellscript=text.desktop;
-x-scheme-handler/magnet=torrent.desktop;
-application/x-bittorrent=torrent.desktop;
-x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop
-text/plain=text.desktop;
-application/postscript=pdf.desktop;
-application/pdf=pdf.desktop;
-image/png=img.desktop;
-image/jpeg=img.desktop;
-image/gif=img.desktop;
-application/rss+xml=rss.desktop
-video/x-matroska=video.desktop
-x-scheme-handler/lbry=lbry.desktop
-inode/directory=file.desktop
-message/rfc822=userapp-Thunderbird-UXR3A1.desktop
-x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop
-
 [Added Associations]
-x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
-x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
 x-scheme-handler/http=xfce4-web-browser.desktop;
 x-scheme-handler/https=xfce4-web-browser.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
 
+[Default Applications]
+application/pdf=pdf.desktop;
+application/postscript=pdf.desktop;
+application/rss+xml=rss.desktop;
+application/rtf=libreoffice-writer.desktop;
+application/x-bittorrent=torrent.desktop;
+image/gif=img.desktop;
+image/jpeg=img.desktop;
+image/png=img.desktop;
+inode/directory=file.desktop;
+message/rfc822=userapp-Thunderbird-UXR3A1.desktop;
+text/plain=text.desktop;
+text/x-shellscript=text.desktop;
+x-scheme-handler/http=xfce4-web-browser.desktop;
+x-scheme-handler/https=xfce4-web-browser.desktop;
+x-scheme-handler/magnet=torrent.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;

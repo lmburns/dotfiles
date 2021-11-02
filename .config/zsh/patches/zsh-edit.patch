@@ -13,7 +13,7 @@ index 4817374..664430e 100644
 +  autoload -Uz $fdir/bind
 +  autoload -Uz $fdir/.edit.*~*.zwc(:t)
 +  autoload -Uz $fdir/_edit.*~*.zwc(:t)
- 
+
    .beginning-of-buffer() {
      CURSOR=0
 @@ -38,36 +43,40 @@ zsh-edit() {
@@ -24,7 +24,7 @@ index 4817374..664430e 100644
 +    bindkey -M vicmd "$emacs" "$widget"
      bindkey "${@:^^widget}"
    }
- 
+
 -  .edit.bind backward-subword         '^[b'   '^[^['{\[,O}D   '^['{'[1;',\[,O}{3,5}D
 -  .edit.bind backward-shell-word      '^[^B'  '^[^['{\[,O}A   '^['{'[1;',\[,O}{3,5}A
 -  .edit.bind forward-subword          '^[f'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
@@ -43,7 +43,9 @@ index 4817374..664430e 100644
 +  .edit.bind backward-subword         'b'   '^[^['{\[,O}D   '^['{'[1;',\[,O}{3,5}D
 +  .edit.bind backward-shell-word      'W'  '^[^['{\[,O}A   '^['{'[1;',\[,O}{3,5}A
 +  .edit.bind forward-subword          'e'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
-+  .edit.bind forward-shell-word       'w'  '^[^['{\[,O}B   '^['{'[1;',\[,O}{3,5}B
++  .edit.bind forward-shell-word       'w'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
++  # .edit.bind forward-shell-word     'w'  '^[^['{\[,O}B   '^['{'[1;',\[,O}{3,5}B
++  #
 +  # .edit.bind backward-kill-subword    '^[^?'  '^[^?'  '^H'  '^[[27;'{3,5}';8~'
 +  # .edit.bind backward-kill-shell-word '^W'    '^[^H'        '^[[27;'{6,7}';8~'
 +  # bindkey '^[[3~' delete-char
@@ -57,23 +59,21 @@ index 4817374..664430e 100644
 +  # .edit.bind kill-line                '^K'    '^['{'[1;',\[,O}2F  '^['{'[1;',\[,O}2C
 +  #
 +  # unfunction .edit.bind
- 
+
 -  unfunction .edit.bind
 +  # bindkey -M emacs  '^[e' redo  '^[Y' reverse-yank-pop
- 
+
 -  bindkey -M emacs  '^[e' redo  '^[Y' reverse-yank-pop
 +  bindkey -M vicmd 'gg' beginning-of-buffer
 +  bindkey -M vicmd 'G' end-of-buffer
 +  bindkey -M vicmd 'U' redo
- 
+
 -  bind    -M emacs      '^[-' 'pushd -1'      '^[=' 'pushd +0'
 +  bind    -M viins      '^[-' 'pushd -1'      '^[=' 'pushd +0'
    bindkey -M menuselect '^[-' menu-complete   '^[=' reverse-menu-complete
- 
+
    zle -N dirstack-minus .edit.dirstack
    zle -N dirstack-plus  .edit.dirstack
 -  bindkey -M emacs          '^[_' dirstack-minus  '^[+' dirstack-plus
 +  bindkey -M viins          '^[_' dirstack-minus  '^[+' dirstack-plus
    bindkey -M menuselect -s  '^[_' '^G^_^[_'       '^[+' '^G^_^[+'
- }
- 

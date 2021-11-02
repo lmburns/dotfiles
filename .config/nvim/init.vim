@@ -963,13 +963,13 @@ Plug 'antoinemadec/coc-fzf'
   xmap <Leader>fm <Plug>(coc-format-selected)
   nmap <Leader>fm <Plug>(coc-format-selected)
 
-  xmap <leader>w  <Plug>(coc-codeaction-selected)
-  nmap <leader>ww  <Plug>(coc-codeaction-selected)
+  xmap <Leader>w  <Plug>(coc-codeaction-selected)
+  nmap <Leader>ww  <Plug>(coc-codeaction-selected)
 
   " remap for do codeAction of current line
-  nmap <leader>wc  <Plug>(coc-codeaction)
+  nmap <Leader>wc  <Plug>(coc-codeaction)
   " fix autofix problem of current line
-  nmap <leader>qf  <Plug>(coc-fix-current)
+  nmap <Leader>qf  <Plug>(coc-fix-current)
 
   " create mappings for function text object
   xmap if <Plug>(coc-funcobj-i)
@@ -1094,6 +1094,10 @@ Plug 'antoinemadec/coc-fzf'
 " }}} === coc-nvim ===
 
 Plug 'vim-perl/vim-perl', { 'for': 'perl' }
+Plug 'sbdchd/neoformat'
+
+autocmd FileType java nmap ;ff :Neoformat! java prettier<CR>
+autocmd FileType perl nmap ;ff :Neoformat! perl<CR>
 
 " ============== nvim-r ============== {{{
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
@@ -1461,7 +1465,7 @@ Plug 'vimwiki/vimwiki'
 
 " ========= Syntax Highlighting ======== {{{
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['markdown', 'python', 'rust', 'lua']
+let g:polyglot_disabled = ['markdown', 'python', 'rust', 'lua', 'java']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'ron-rs/ron.vim' | let g:polyglot_disabled += ['ron']
@@ -1962,10 +1966,6 @@ call plug#end()
   nnoremap q: <Nop>
   nnoremap q/ <Nop>
   nnoremap q? <Nop>
-  " nnoremap <Up> <Nop>
-  " nnoremap <Down> <Nop>
-  " nnoremap <Left> <Nop>
-  " nnoremap <Right> <Nop>
 
   cnoreabbrev W! w!
   cnoreabbrev Q! q!
@@ -2390,8 +2390,9 @@ autocmd FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o 
 
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "c", "cpp", "go", "gomod", "lua", "rust",
-    "python",
+  ensure_installed = {
+    "c", "cpp", "go", "gomod", "lua", "rust",
+    "python", "java",
   }, -- "vim" "yaml" "toml" "ruby" "bash"
   ignore_install = { }, -- List of parsers to ignore installing
   highlight = {

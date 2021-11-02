@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+unrtf "$1" \
+  | sed '1,/<div class="asset-header">/d' \
+  | sed '/<div class="asset-footer">/,/<\/html>/d' \
+  | pandoc --wrap=none --from html --to markdown_strict \
+  > "${1:r}.md"

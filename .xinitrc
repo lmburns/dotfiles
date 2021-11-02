@@ -16,6 +16,7 @@ udiskie --tray & #
 # greenclip daemon &
 copyq &
 ulauncher --hide-window &
+# spotifyd &
 
 xset s on
 xset s 900 180

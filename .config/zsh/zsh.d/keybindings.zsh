@@ -8,6 +8,9 @@
 # zshexpn -- zsh -o SOURCE_TRACE -lic ''
 # sed -n l -- infocmp -L1 -- zle -L
 
+# typeset -gx WORDCHARS=' *?_-.~\'
+# typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
+
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
     function zle-line-init() {
         echoti smkx
@@ -60,9 +63,6 @@ RG_buff() {
 }
 
 zle -N RG_buff
-
-__ftag_local() { ftag -l ; }
-zle -N __ftag_local
 
 zle -N fcq
 zle -N pw
@@ -137,7 +137,6 @@ typeset -gA keybindings; keybindings=(
   'mode=@ M-,'    __zoxide_zi
   'mode=@ M-['   fstat
   'mode=@ M-]'   fadd
-  'mode=@ M-f'   __ftag_local
 )
 
 # 'mode=@ C-o'    lc                    # lf change dir

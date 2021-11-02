@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+
+# Desc: add url to newsboat, modded luke smiths
+
+setopt extendedglob
+
+if echo "$1" | grep -q "https*://\S\+\.[A-Za-z]\+\S*" ; then
+  url="$1"
+else
+  url="$(grep -Eom1 '<[^>]+(rel="self"|application/[a-z]+\+xml)[^>]+>' "$1" |
+    grep -o "https?://[^\" ]")"
+
+  echo "$url" | grep -q "https*://\S\+\.[A-Za-z]\+\S*" ||
+    notify-send "RSS" "That doesn't look like a full URL" && exit 1
+fi
+
+RSSFILE="${XDG_CONFIG_HOME:-$HOME/.config}/newsboat/urls"
+# ${(f)"${<RSSFILE}"}
+if awk '{print $1}' "$RSSFILE" | grep "^$url$" >/dev/null; then
+  notify-send "RSS" "You already have this RSS feed."
+else
+ if (( $# > 1 )); then
+  tags="${(@)${@:2}//(#m)*/\"$MATCH\"}"
+  echo "$url $tags" >> "$RSSFILE" && notify-send "RSS" "RSS feed added."
+  fi
+fi

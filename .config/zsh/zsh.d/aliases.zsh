@@ -11,8 +11,10 @@ alias -g H='| head'
 alias -g T='| tail'
 
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
+alias tm='tmsu'
 alias mail='/usr/bin/mail'
 alias ja="jaime"
+# alias xq="$PYENV_ROOT/shims/yq"
 alias xp="xplr"
 alias xx="xcompress"
 alias ca='cargo'
@@ -237,8 +239,6 @@ alias tsm='transmission-remote'
 alias tsmd='transmission-daemon'
 alias qbt='qbt torrent'
 
-alias getip='ipconfig getifaddr en0 &&  curl ipecho.net/plain; echo'
-alias dnsflush='sudo killall -HUP mDNSResponder;sudo killall mDNSResponderHelper;sudo dscacheutil -flushcache'
 alias n1sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
@@ -256,7 +256,6 @@ alias pbcopy="xsel --clipboard --input"
 alias pbpaste="xsel --clipboard --output"
 alias pbc='pbcopy'
 alias pbp='pbpaste'
-alias pbplain='pbpaste | textutil -convert txt -stdin -stdout -encoding 30 | pbcopy'
 
 # === wiki ======================================================================
 alias vw='$EDITOR $HOME/vimwiki/index.md'
@@ -265,6 +264,7 @@ alias vws='$EDITOR $HOME/vimwiki/scripting/index.md'
 alias vwb='$EDITOR $HOME/vimwiki/blog/index.md'
 alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
 alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
+alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
 
 # === github ====================================================================
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'

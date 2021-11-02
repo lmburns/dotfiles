@@ -1,50 +1,35 @@
-# ┌───────────────────────────────────────────────────────────────────────────┐
-# │ Mappings                                                                  │
-# └───────────────────────────────────────────────────────────────────────────┘
-map m
-map n
-map "'"
-map '"'
-map d
-map O
-map e
-map w
-map i
-map c
-map f
-map gh
-map .
-
 # == File Openers == [[[
 map ee $$EDITOR "$f"                            # open file in editor
 map ec edit_config                              # edit & source lfrc
 map es edit_scope                               # edit lfrc scope
 map ev $$EDITOR $XDG_CONFIG_HOME/nvim/init.vim  # open nvim config
-map ew $$EDITOR ~/vimwiki/index.md              # open vimwiki
+map ew $$EDITOR $HOME/vimwiki/index.md          # open vimwiki
 map ez $$EDITOR $ZDOTDIR/.zshrc                 # edit zshrc
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh      # edit zsh aliases
 map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh  # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh      # edit lf colors/icons
-map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit & source lfrc
-map bk $gcp --force --suffix=.bak "$f" "$f"     # backup file
-map r $rmcrap                                   # delete .DS_Store etc
+map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit tmux conf
+
 map v $LESS='-iWQMXR~' bat --paging=always --theme=KimbieDark "$f"
 map V push :!nvim<space>                     # enter filename for nvim
 map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings
 map Ow push :open-with<space>                # open w/ specified program
-map Op $open $PWD                            # open curr directory in finder
+map Op $handlr open $PWD                     # open curr directory in finder
+map o  &mimeopen $f
+map Oa $mimeopen --ask $f
 
-map Ql ql_preview                             # open in quicklook (macOS)
 map Qm !clear; mdcat -p $fx                   # preview in mdcat
 map Qg !clear; glow -p $fx                    # preview in glow
 map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
 map as !du -hsx * | sort -rh | bat --paging=always                          # directory info
-map ai !gstat $f || stat $f; echo ; du -sh $f ; echo ; file --mime -b -p $f # info
+map ai !stat $f; echo ; du -sh $f ; echo ; file --mime -b -p $f # info
 
 map <c-f> push :rg<space>                           # search with rg
 map <c-z> push :rgu<space>                          # search interactively with fzf
+
+map Tk !clear; tokei
 # ]]]
 
 # == Archive Mappings == [[[
@@ -56,15 +41,14 @@ map au unarchive
 # ]]]
 
 # == Trash Mappings == [[[
-map dd trash             # trash-put
-map Dd delete            # confirmation with whiptail
-map te %trash-empty      # empty trash
-map tl $trash-list | fzf # list in fzf
-map tm $frm              # fzf trash delete script
-map tr $ftr              # fzf trash restore script
+map dd trash                  # rip
+map tE %rip -d                # empty trash
+map tl $clear; rip -as  | fzf # list in fzf
+map tm $frip                  # fzf trash delete script
+map tr $fripu                 # fzf trash restore script
 
-map Dp $dump -p -s       # dump - interactive delete
-map Dr $dump -u -s       # dump - restore interactive
+# map Dp $dump -p -s       # dump - interactive delete
+# map Dr $dump -u -s       # dump - restore interactive
 # ]]]
 
 # == Dragon Mapping [CONFIGURE] == [[[
@@ -87,11 +71,16 @@ map Bv mmv                              # bulk rename only with selected
 map Bf push :f2<space>                  # use f2 to rename
 map ch chmod                            # change file permissions
 map cH chown                            # change file owner
+
+map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
+map rd $rmcrap                                  # delete .DS_Store etc
+map rs rmspace
 # ]]]
 
 # == File movement == [[[
 map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
+map fe fd_edit            # find files with fzf and edit
 map fa ajfzf              # use fzf with autojump
 # map <c-b> broot_jump    # use broot to jump to directory
 map nn fzf_z              # fzf zioxide
@@ -140,6 +129,8 @@ map U unselect
 map sf select-files                              # select all files
 map sd select-dirs                               # select all dirs
 map sx select-exec                               # select all executables
+map sg push :glob-select<space>                  # select files matching pattern
+map sG push :glob-unselect<space>                # unselect files matching pattern
 
 map sr :{{ set nopreview; set ratios 1:3; }}     # set display (preview)
 map sp :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
@@ -178,17 +169,19 @@ map toa $transmission-remote --add $fx # add torrent
 map toT %tide                          # transmisison TUI
 # ]]]
 
-# == Tagging (jdberry/tag) == [[[
-map Ts tag-set
-map Ta tag-add
-map Tr tag-remove
-map Tws wutag-set
-map Twa wutag-add
-map Twr wutag-remove
-map Twl wutag-list
+# == Tagging (wutag) == [[[
+map Ts wutag-set
+map Ta wutag-add
+map Tr wutag-remove
+map Tl wutag-list
 # ]]]
 
 # == Git == [[[
+cmd dotbare_add $for x ($fx) { dotbare add "$x" }
+cmd git_add $for x ($fx) { git add "$x" }
+
+map gta :{{ git_add; unselect; }}
+
 map gtb :git_branch
 map gtp ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
 map gtz ${{clear; git status; echo "press ENTER"; read ENTER}}
@@ -204,7 +197,8 @@ map gFa ${{clear; fadd}}
 map gFl ${{clear; flog}}
 map gFu ${{clear; funtrack}}
 
-map gfa ${{clear; dotbare fadd -f}}
+map gfa :{{ dotbare_add; unselect; }}
+map gfai ${{clear; dotbare fadd -f}}
 map gfs ${{clear; dotbare fstat}}
 map gfu ${{clear; dotbare funtrack}}
 map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
@@ -242,8 +236,3 @@ map gh cd ~
 # map gUs cd /usr/local/share
 
 # ]]]
-
-# map o &mimeopen $f
-# map O $mimeopen --ask $f
-
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

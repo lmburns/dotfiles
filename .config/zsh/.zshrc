@@ -67,23 +67,21 @@ fpath=( ${0:h}/{functions,completions} "${fpath[@]}")
 autoload -Uz $fpath[1]/*(:t)
 module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
 
-if ! [[ $MYPROMPT = dolphin ]]; then
-  # zstyle ':completion:*' recent-dirs-insert fallback
-  # zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
-  zmodload -F zsh/parameter p:dirstack
-  autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
-  add-zsh-hook chpwd chpwd_recent_dirs
-  zstyle ':chpwd:*' recent-dirs-default true
-  zstyle ':completion:*' recent-dirs-insert both
-  zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
-  dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
-  [[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
-    local dir
-    for dir ($dirstack){
-      [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
-    }
-  } 2>/dev/null
-fi
+# zstyle ':completion:*' recent-dirs-insert fallback
+# zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
+zmodload -F zsh/parameter p:dirstack
+autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':chpwd:*' recent-dirs-default true
+zstyle ':completion:*' recent-dirs-insert both
+zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
+dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
+[[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
+  local dir
+  for dir ($dirstack){
+    [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
+  }
+} 2>/dev/null
 alias c=cdr
 # ]]]
 
@@ -212,6 +210,9 @@ zt 0a light-mode for \
 
 # ]]] === wait'0a' block ===
 
+  # blockf nocompletions compile'functions/*~*.zwc' \
+  #   marlonrichert/zsh-edit \
+
 #  === wait'0b' - patched === [[[
 zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
@@ -220,8 +221,6 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
     michaelxmcbride/zsh-dircycle \
   trackbinds bindmap'^G -> ^N' \
     andrewferrier/fzf-z \
-  blockf nocompletions compile'functions/*~*.zwc' \
-    marlonrichert/zsh-edit \
   atload'add-zsh-hook chpwd @chwpd_dir-history-var;
   add-zsh-hook zshaddhistory @append_dir-history-var; @chwpd_dir-history-var now' \
     kadaan/per-directory-history \
@@ -757,6 +756,8 @@ zstyle+ \
     + ':updatelocal:argument-rest' \
           fzf-preview "git --git-dir=$UPDATELOCAL_GITDIR/\${word}/.git log --color \
                       --date=short --pretty=format:'%Cgreen%cd %h %Creset%s %Cred%d%Creset ||%b' ..FETCH_HEAD 2>/dev/null" \
+    + ':systemctl-*:*'           fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word' \
+    + ':systemctl-*:*'           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':figlet:option-f-1'       fzf-preview 'figlet -f $word Hello world' \
     + ':figlet:option-f-1'       fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':complete:ssh:*'          fzf-preview 'dig $desc' \
@@ -1113,6 +1114,7 @@ path=( $GOPATH/bin(N-/) "${path[@]}" )
 
 typeset -gx GPG_TTY=$TTY
 typeset -gx PDFVIEWER='zathura'                                                   # texdoc pdfviewer
+# ??
 typeset -gx XML_CATALOG_FILES="/usr/local/etc/xml/catalog"                        # xdg-utils|asciidoc
 typeset -gx FORGIT_LOG_FORMAT="%C(red)%C(bold)%h%C(reset) %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset"
 typeset -gx RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
@@ -1125,8 +1127,6 @@ typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no lead space
 typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history completion)
-# typeset -gx WORDCHARS=' *?_-.~\'
-# typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"
@@ -1303,6 +1303,7 @@ zt 0b light-mode null id-as for \
 
 path=( "${ZPFX}/bin" "${path[@]}" )                # add back to be beginning
 path=( "${path[@]:#}" )                            # remove empties
+path=( "${(u)path[@]}" )                           # remove duplicates; goenv adds twice?
 
 zflai-msg "[zshrc] File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 

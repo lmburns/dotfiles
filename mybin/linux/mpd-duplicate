@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+duplicates=$(mpc playlist -f '%position% %file%' | sort -k2 | uniq -f1 -d)
+while [ ! -z "$duplicates" ]; do
+	echo "$duplicates" | sed 's/ .*//' | mpc del
+	duplicates=$(mpc playlist -f '%position% %file%' | sort -k2 | uniq -f1 -d)
+done
