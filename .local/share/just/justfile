@@ -1,7 +1,7 @@
 set shell := ["zsh", "-uc"]
 
 # default action with no parameters
-defaut:
+default:
   @just --choose
 
 alias e := edit
@@ -13,6 +13,58 @@ alias h := help
 # view example justfile
 help:
   @$EDITOR $XDG_DATA_HOME/just/overall.just
+
+# get cpu / memory
+memory:
+  @ps -A -o %cpu,%mem \
+    | awk '{ cpu += $1; mem += $2} END {print "CPU: "  cpu,"MEM: "  mem}'
+
+# refresh wifi
+refresh-wifi:
+  @ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up
+
+# systemctl enabled
+systemctl-enabled:
+  @systemctl list-unit-files --state=enabled
+
+# systemctl all
+systemctl-all:
+  @systemctl list-unit-files --type=service
+
+# disable sudo for dmesg
+dmesg-sudo:
+  @sudo sysctl -w kernel.dmesg_restrict=0
+
+# expac upgrade/download
+expac-updown:
+  @expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh
+
+# expac recently installed
+expac-recent:
+  @expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac
+
+# expac search regex
+expac-regex:
+  @expac -Ss '%-30n %-8v %d'
+
+# expac modified
+expac-modified:
+  @expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh
+
+# pacman search installed
+pacman-installed:
+  @pacman -Qq \
+    | fzf \
+      --preview 'paru --color=always -Qil {}' \
+      --layout=reverse --bind 'enter:execute(pacman -Qil {} | bat)' \
+      --preview-window=':nohidden'
+
+# pacman search all
+pacman-all:
+  @pacman -Slq \
+    | fzf --preview 'paru --color=always -Si {}' \
+      --layout=reverse \
+      --preview-window=':nohidden'
 
 # get weather
 weather:
@@ -38,56 +90,6 @@ batch-ghq:
 batch-dot:
   @gitbatch -r 3 -d $HOME/opt/dotfiles
 
-# start dns
-sdns:
-  sudo networksetup -setdnsservers "Wi-Fi" 127.0.0.1 ::1
-  sudo networksetup -setwebproxy "Wi-Fi" 127.0.0.1 8118
-  sudo networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 8118
-  ALL_PROXY=127.0.0.1:8118 curl -I http://p.p/
-
-# get dns
-gdns:
-  @sudo networksetup -getdnsservers "Wi-Fi"
-  @sudo networksetup -getwebproxy "Wi-Fi"
-  @sudo networksetup -getsecurewebproxy "Wi-Fi"
-
-# reverse dns (stop)
-rdns:
-  sudo networksetup -setdnsservers "Wi-Fi" Empty
-  sudo networksetup -setwebproxy "Wi-Fi" off
-  sudo networksetup -setsecurewebproxy "Wi-Fi" off
-
-# start privoxy
-privoxy +ACTION:
-  sudo brew services {{ACTION}} privoxy
-  @if [[ {{ACTION}} == 'start' ]]; then \
-    sudo networksetup -setwebproxy "Wi-Fi" 127.0.0.1 8118; \
-    sudo networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 8118; \
-    ALL_PROXY=127.0.0.1:8118 curl ads.foo.com/ -IL; \
-  elif [[ {{ACTION}} == 'stop' ]]; then \
-    sudo networksetup -setwebproxy "Wi-Fi" off; \
-    sudo networksetup -setsecurewebproxy "Wi-Fi" off; \
-  elif [[ {{ACTION}} == 'restart' ]]; then \
-    echo "Restarting privoxy ..."; \
-  else \
-    echo "${tput setaf 2}Error: wrong action {{ACTION}}"; \
-  fi
-  @echo ''
-  scutil --proxy | head
-
-# --log-level INFO \
-# --rc \
-
-# start tor
-start-tor:
-  @sudo networksetup -setsocksfirewallproxy Wi-Fi 127.0.0.1 9050 off
-  @sudo networksetup -setsocksfirewallproxystate Wi-Fi on
-  @curl --socks5 localhost:9050 --socks5-hostname localhost:9050 -s https://check.torproject.org/
-
-# stop tor
-stop-tor:
-  @sudo networksetup -setsocksfirewallproxystate Wi-Fi off
-
 # rclone mount
 rclone-mount:
   $ZPFX/bin/rclone mount \
@@ -102,7 +104,7 @@ rclone-mount:
     -vv \
     --log-file $LOCAL_OPT/local/rclone/logs/rclone.log \
     --umask 002 \
-    google-drive:/ /Users/lucasburns/.mount/google-drive
+    google-drive:/ /home/lucas/.mount/google-drive
 
 # rclone to drive
 rclg SRC DEST:
@@ -146,7 +148,7 @@ rsync-home:
 
 # rsync projects directory
 rsync-proj:
-  pueue add 'xfsudo rsync -azurh --info=name0 ~/projects /Volumes/SSD/manual-bkp/'
+  pueue add 'xfsudo rsync -azurh --info=name0 ~/projects /run/media/lucas/exfat/manual-bkp'
 
 # rsync -Prugoptczl --info=progress2 --info=name0 --delete-after
 
@@ -155,7 +157,7 @@ rsync-server:
   rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
     --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
     --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /Volumes/SSD/server-full
+    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/exfat/server
 
 # pull www folder server
 www-pull:
@@ -165,4 +167,4 @@ www-pull:
 # push www folder server
 www-push:
   rsync -rugoptczl --info=progress2 --info=name0 --delete-after --exclude ".DS_Store" \
-    $HOME/server /Volumes/SSD'
+    $HOME/server /run/media/lucas/exfat/website'

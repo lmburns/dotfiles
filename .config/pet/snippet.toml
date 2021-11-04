@@ -4,11 +4,6 @@ command = "ps -A -o %cpu,%mem | awk '{ cpu += $1; mem += $2} END {print \"CPU: \
 output = ""
 
 [[snippets]]
-description = "batt temp"
-command = "bc <<< \\\"scale=3; $(ioreg -r -n AppleSmartBattery | grep Temperature | cut -c23-)/100*1.8+32\\\""
-output = ""
-
-[[snippets]]
 description = "refresh wifi"
 command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
 output = ""
