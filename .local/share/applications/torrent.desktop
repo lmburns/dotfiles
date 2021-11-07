@@ -1,4 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=Torrent
-Exec=/usr/bin/env transadd %U
+GenericName=Torrent TUI
+Comment=Torrent Terminal User Interface
+Exec=/usr/bin/env stig add %U
+Keywords=Torrent;TUI;
+Icon=torrents
+Categories=ConsoleOnly;P2P;
+MimeType=application/x-bittorrent
+Terminal=true

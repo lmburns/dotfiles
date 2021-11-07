@@ -1,0 +1,111 @@
+# Encoding=UTF-8
+
+[Desktop Entry]
+Name=Mozilla
+GenericName=Web Browser
+Comment=Sample
+
+# List of strings which can be used to describe entry
+Keywords=sample
+
+# Application, Link, Directory
+Type=Application
+
+# Icon to display. Full path or file name of icon of the current theme
+Icon=sample
+
+# Try to execute, and if not, it is unable to be used
+TryExec=/usr/bin/false
+Exec=/usr/bin/false
+
+# === Exec Codes ===
+# %f = single filname (program cannot handle multiple files)
+# %F = list of files (for apps that can open several files at once, each passed as seperate argument)
+# %u = single URL
+# %U = list of URLs
+# %i = icon key
+# %c = translated name to appropriate `Name` key
+# %k = location of desktop file
+
+# Working directory to run the program in (must be `Application` type)
+Path=/usr/bin
+
+# Whether the program runs in a terminal window
+Terminal=true
+
+# Identifiers for application actions
+# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#extra-actions
+Actions=action
+
+# List of interfaces this application implements
+# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#interfaces
+Implements=implements
+
+# If true, it's known that app will send a "remove" message when started with `DESKTOP_STARTUP_ID
+# If false, it is known that app does not work with startup notifications at all
+# https://www.freedesktop.org/wiki/Specifications/startup-notification-spec/
+StartupNotify=false
+
+# Known that application will map at least one window with given string as WM class
+StartupWMClass=startupWM
+
+# If entry is `Link` type, the URL to acces it
+URL=link
+
+MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
+
+# "This application exists, but don't display it in the menus"
+# Useful for associating an application with the MIME types so it gets launches from a file
+# manager without having menu entry for it. E.g., netscape -remote. `openURL` kind of stuff
+NoDisplay=false
+
+# Hidden should have been called Deleted
+# Means user deleted (at his level) something that was present (at an upper level, e.g. in the system dirs)
+# Strictly equivalent to the .desktop file not existing at all, as far as that user is concerned.
+# Can also be used to "uninstall" existing files (e.g. due to a renaming) -
+# By letting make install install a file with Hidden=true in it
+Hidden=false
+
+# OnlyShowIn=
+# NotShowIn=
+
+# === Registered Categories ===
+Categories=AudioVideo;Audio;Video;Development;Education;Game;Graphics;Network;Office;Settings;System;Utility;
+
+# === Additional Categories ===
+
+# Development
+Categories=Building;Debugger;IDE;GUIDesigner;Profiling;RevisionControl;Translation;
+
+# Office
+Categories=Calendar;ContactManagement;Database;Dictionary;Chart;Email;Finance;FlowChart;PDA;ProjectManagement;
+Categories=Presentation;Spreadsheet;WordProcessor;
+
+# Graphics
+Categories=2DGraphics;VectorGraphics;RasterGraphics;3DGraphics;Scanning;OCR;Photography;Publishing;Viewer;
+
+# Network
+Categories=Dialup;InstantMessaging;Chat;IRCClient;FileTransfer;HamRadio;News;P2P;RemoteAccess;Telephony;
+Categories=VideoConference;WebBrowser;WebDevelopment;
+
+# Audio/Video
+Categories=Midi;Mixer;Sequencer;Tuner;TV;AudioVideoEditing;Player;Recorder;DiscBurning;
+# Game -- DON'T CARE
+
+# Education / Science
+Categories=Art;Construction;Music;Languages;Science;ArtificialIntelligence;Astronomy;Biology;Chemistry;
+Categories=ComputerScience;DataVisualization;Economy;Electricity;Geography;Geology;Geoscience;History;
+Categories=ImageProcessing;Literature;Math;NumericalAnalysis;MedicalSoftware;Physics;Robotics;Sports;
+Categories=ParallelComputing;Engineering;
+
+# System
+Categories=Emulator;FileTools;FileManager;TerminalEmulator;Filesystem;Monitor;Security;Accessibility;
+
+# Utility
+Categories=TextTools;TelephonyTools;Archiving;Compression;Calculator;Clock;TextEditor;Documentation;
+
+# Other
+Categories=Amusement;Electronics;Core;ConsoleOnly;
+
+# Other Named
+Categories=KDE;GNOME;GTK;Qt;Motif;Java;

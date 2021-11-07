@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Alacritty
+GenericName=Alacritty (mine)
+Comment=Terminal Emulator
+Keywords=terminal
+Exec=alacritty
+Terminal=true
+Type=Application
+Icon=alacritty
+Categories=TerminalEmulator;

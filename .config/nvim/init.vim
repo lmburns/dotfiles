@@ -2146,6 +2146,9 @@ call plug#end()
 
     au BufReadPre *.odt silent set ro
     au BufEnter   *.odt silent  %!pandoc --columns=78 -f odt -t markdown "%"
+
+    autocmd BufReadPre *.rtf silent set ro
+    autocmd BufReadPost *.rtf silent %!unrtf --text
   augroup END
 
   " autocmd BufReadPost *.doc,*.docx,*.rtf,*.odp,*.odt silent %!pandoc "%" -tplain -o /dev/stdout

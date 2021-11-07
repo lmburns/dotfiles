@@ -655,8 +655,6 @@ zt 0c light-mode null for \
   lbin'*/*/gpg-tui' atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     orhun/gpg-tui \
-  lbin from'gh-r' \
-    charmbracelet/glow \
   lbin from'gh-r' ver'nightly' \
     ClementTsang/bottom \
   lbin from'gh-r' dl"$(grman)" lman \

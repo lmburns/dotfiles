@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Lf File-Manager
+# GenericName
+Comment=Terminal File Manager
+Keywords=text editor
+# Exec=/usr/bin/alacritty -e lf %u
+Exec=lf %u
+Terminal=true
+Icon=file-manager
+Categories=TextTools;TextEditor;Viewer;ConsoleOnly;
+# MimeType=

@@ -1,24 +1,26 @@
 [Added Associations]
-x-scheme-handler/http=xfce4-web-browser.desktop;
-x-scheme-handler/https=xfce4-web-browser.desktop;
+x-scheme-handler/http=librewolf.desktop;
+x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
 x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
 
 [Default Applications]
-application/pdf=pdf.desktop;
+text/plain=nvim.desktop;
+text/x-shellscript=nvim.desktop;
+application/json=nvim.desktop;
+application/pdf=zathura.desktop;
 application/postscript=pdf.desktop;
 application/rss+xml=rss.desktop;
 application/rtf=libreoffice-writer.desktop;
 application/x-bittorrent=torrent.desktop;
-image/gif=img.desktop;
-image/jpeg=img.desktop;
-image/png=img.desktop;
-inode/directory=file.desktop;
+image/gif=sxiv.desktop;
+image/jpeg=sxiv.desktop;
+image/png=sxiv.desktop;
+inode/directory=lf.desktop;
 message/rfc822=userapp-Thunderbird-UXR3A1.desktop;
-text/plain=text.desktop;
-text/x-shellscript=text.desktop;
-x-scheme-handler/http=xfce4-web-browser.desktop;
-x-scheme-handler/https=xfce4-web-browser.desktop;
+x-scheme-handler/http=librewolf.desktop;
+x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/magnet=torrent.desktop;
 x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
 x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/terminal=alacritty.desktop;

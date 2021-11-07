@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Zathura
+Comment=PDF Viewer
+Keywords=pdf
+Exec=/usr/bin/zathura %u
+Icon=zathura
+Categories=Viewer;Graphics;TextEditor;
