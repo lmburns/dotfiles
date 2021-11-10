@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Terminal=true
+Exec=gotop
+Icon=utilities-system-monitor
+Type=Application
+StartupNotify=false
+Name=gotop
+GenericName=System Monitor
+Categories=System;Monitor;ConsoleOnly;Utilities;
+Keywords=system;process;task

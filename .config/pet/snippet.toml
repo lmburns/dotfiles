@@ -1,6 +1,9 @@
 [[snippets]]
 description = "cpu/memory"
-command = "ps -A -o %cpu,%mem | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'"
+command = """
+  ps -A -o %cpu,%mem \
+    | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'
+"""
 output = ""
 
 [[snippets]]
@@ -11,7 +14,7 @@ output = ""
 [[snippets]]
 description = "systemctl - enabled services"
 command = "systemctl list-unit-files --state=enabled"
-output = "echo 'hi'"
+output = ""
 
 [[snippets]]
 description = "systemctl - all services"
@@ -45,10 +48,26 @@ output = ""
 
 [[snippets]]
 description = "pacman - search installed (fzf)"
-command = "pacman -Qq | fzf --preview 'paru --color=always -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | bat)' --preview-window=':nohidden'"
+command = """
+  pacman -Qq \
+    | fzf --preview 'paru --color=always -Qil {}' \
+          --layout=reverse \
+          --bind 'enter:execute(pacman -Qil {} | bat)' \
+          --preview-window=':nohidden'
+"""
 output = ""
 
 [[snippets]]
 description = "pacman - search all (fzf)"
-command = "pacman -Slq | fzf --preview 'paru --color=always -Si {}' --layout=reverse --preview-window=':nohidden'"
+command = """
+  pacman -Slq \
+    | fzf --preview 'paru --color=always -Si {}' \
+          --layout=reverse \
+          --preview-window=':nohidden'
+"""
+output = ""
+
+[[snippets]]
+description = "tomb create"
+command = "notify-send  'hi' '${@}'"
 output = ""

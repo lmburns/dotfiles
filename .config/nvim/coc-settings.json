@@ -199,7 +199,7 @@
   "rust-analyzer.lens.enable": true,
   // "rust.show_warnings": false,
   // "rust.clippy_preference": "on",
-  // "rust.rustfmt_path": "/Users/lucasburns/.local/share/cargo/bin/rustfmt",
+  // "rust.rustfmt_path": "/home/lucas/.local/share/cargo/bin/rustfmt",
   "languageserver": {
     "golang": {
       "command": "gopls",

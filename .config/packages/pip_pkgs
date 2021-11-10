@@ -20,11 +20,11 @@ beets                             1.5.0
 bidict                            0.21.3
 black                             21.9b0
 bleach                            4.1.0
+blinker                           1.4
 BookCut                           1.3.7
 CacheControl                      0.12.6
 cachetools                        4.2.4
 cachy                             0.3.0
-caffeine-ng                       3.5.1
 castero                           0.9.4
 certifi                           2021.10.8
 cffi                              1.15.0
@@ -115,12 +115,14 @@ MechanicalSoup                    0.12.0
 mechanize                         0.4.7
 mediafile                         0.8.1
 mistune                           0.8.4
+mock                              4.0.3
 msgpack                           1.0.2
 multidict                         5.2.0
 munkres                           1.1.4
 musicbrainzngs                    0.7.1
 mutagen                           1.45.1
 mypy-extensions                   0.4.3
+natsort                           8.0.0
 nb-pdf-template                   4.0.0
 nbclassic                         0.3.3
 nbclient                          0.5.4
@@ -145,12 +147,12 @@ pgi                               0.0.11.2
 pickleshare                       0.7.5
 Pillow                            8.3.2
 pip                               21.3.1
+pip-chill                         1.0.1
 pipe                              1.6.0
 pipx                              0.16.4
 pkginfo                           1.7.1
 platformdirs                      2.4.0
 pluggy                            1.0.0
-poetry                            1.1.11
 poetry-core                       1.0.7
 pre-commit                        2.15.0
 prometheus-client                 0.11.0
@@ -190,6 +192,7 @@ pytils                            0.3
 pytz                              2021.3
 pyvoc                             1.4.0
 pywal                             3.3.0
+pyxdg                             0.27
 PyYAML                            5.4.1
 pyzmq                             22.3.0
 qtconsole                         5.1.1
@@ -238,6 +241,7 @@ Unidecode                         1.3.2
 uritemplate                       4.1.1
 urllib3                           1.25.11
 urwid                             2.1.2
+urwidtrees                        1.0.3
 user-agent                        0.1.9
 userpath                          1.7.0
 vext                              0.7.6

@@ -1,0 +1,24 @@
+#compdef dunstify
+
+# zsh completions for 'dunstify'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--appname}'[name of your application]'
+  {-u,--urgency}'[the urgency of this notification]'
+  {-h,--hints}'[user specified hints]'
+  {-A,--action}'[actions the user can invoke]'
+  {-t,--timeout}'[the time until the notification expires]'
+  {-i,--icon}'[an Icon that should be displayed with the notification]'
+  {-I,--raw}'[_icon=RAW_ICON     Path to the icon to be sent as raw image data]'
+  {-c,--capabilities}'[print the server capabilities and exit]'
+  {-s,--serverinfo}'[print server information and exit]'
+  {-p,--printid}'[print id, which can be used to update/replace this notification]'
+  {-r,--replace}'[set id of this notification.]'
+  {-C,--close}'[close the notification with the specified ID]'
+  {-b,--block}'[block until notification is closed and print close reason]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

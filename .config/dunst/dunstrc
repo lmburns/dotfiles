@@ -287,7 +287,8 @@
     # background = "#221a02"
     # foreground = "#c2a383"
 
-    background = "#458588"
+    background = "#221a02"
+    # background = "#458588"
     foreground = "#ebdbb2"
 
     timeout = 5

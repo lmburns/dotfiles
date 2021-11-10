@@ -1,15 +1,12 @@
 [Added Associations]
 x-scheme-handler/http=librewolf.desktop;
 x-scheme-handler/https=librewolf.desktop;
-x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
-x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/mailto=mail.desktop;
+x-scheme-handler/mid=mail.desktop;
 
 [Default Applications]
-text/plain=nvim.desktop;
-text/x-shellscript=nvim.desktop;
 application/json=nvim.desktop;
 application/pdf=zathura.desktop;
-application/postscript=pdf.desktop;
 application/rss+xml=rss.desktop;
 application/rtf=libreoffice-writer.desktop;
 application/x-bittorrent=torrent.desktop;
@@ -17,10 +14,13 @@ image/gif=sxiv.desktop;
 image/jpeg=sxiv.desktop;
 image/png=sxiv.desktop;
 inode/directory=lf.desktop;
-message/rfc822=userapp-Thunderbird-UXR3A1.desktop;
+message/rfc822=mail.desktop;
+text/markdown=nvim.desktop;
+text/plain=nvim.desktop;
+text/x-shellscript=nvim.desktop;
 x-scheme-handler/http=librewolf.desktop;
 x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/magnet=torrent.desktop;
-x-scheme-handler/mailto=userapp-Thunderbird-UXR3A1.desktop;
-x-scheme-handler/mid=userapp-Thunderbird-UXR3A1.desktop;
+x-scheme-handler/mailto=mail.desktop;thunderbird.desktop;
+x-scheme-handler/mid=mail.desktop;
 x-scheme-handler/terminal=alacritty.desktop;

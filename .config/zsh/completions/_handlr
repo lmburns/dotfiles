@@ -21,6 +21,9 @@ _handlr_commands() {
       'unset:Unset the default handler for mime/extension'
       'launch:Launch the handler for specified extension/mime with optional arguments'
       'get:Get handler for this mime/extension'
+      'cat:Display a desktop file in the terminal'
+      'edit:Edit a desktop file in the default $EDITOR'
+      'status:View the status of a desktop file to see if it is in use'
       'add:Add a handler for given mime/extension Note that the first handler is the default'
   )
   _describe -t handlr-commands "command" subcommands
@@ -29,6 +32,9 @@ _handlr_commands() {
 _handlr_subcommand () {
   case "$words[1]" in
     (list)
+      ;;
+    (cat|edit|status)
+      _alternative ':desktop:_handlr_desktops'
       ;;
     (open)
       _alternative '1:filename/path:_files'

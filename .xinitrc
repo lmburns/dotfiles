@@ -15,9 +15,12 @@ udiskie --tray & #
 # clipit &
 # greenclip daemon &
 copyq &
+nohup greenclip daemon > /dev/null 2>&1 &
 ulauncher --hide-window &
 # spotifyd &
 
+# Reverse scrolling
+xinput set-prop 21 314 1
 xset s on
 xset s 900 180
 # xset dpms 0 0 0
@@ -94,6 +97,11 @@ sxhkd &
 xsetroot -cursor_name left_ptr &
 xrdb -merge ~/.Xresources &
 xmodmap ~/.Xmodmap &
+
+# To be able to use gnome-keyring
+f="/etc/X11/xinit/xinitrc.d/50-systemd-user.sh"; [[ -f "$f" ]] && source "$f"
+# systemctl --user import-environment DISPLAY XAUTHORITY
+# dbus-update-activation-environment  DISPLAY XAUTHORITY
 
 # thunar --daemon &
 

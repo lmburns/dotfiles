@@ -1,11 +1,5 @@
 [calendars]
 
-# [[all]]
-#   path = ~/.config/khal/calendars/all/*
-#   type = discover
-#   color = dark green
-#   priority = 20
-
 [[general]]
 path = "~/.config/khal/calendars/general/"
 color = "dark magenta"
@@ -40,9 +34,9 @@ readonly = "True"
 color = "yellow"
 
 [locale]
-timeformat= "%H:%M"
-dateformat= "%d.%m."
-longdateformat= "%d.%m.%Y"
+timeformat = "%H:%M"
+dateformat = "%d.%m."
+longdateformat = "%d.%m.%Y"
 datetimeformat = "%Y-%m-%dT%H:%M"
 longdatetimeformat = "%Y-%m-%dT%H:%M"
 # datetimeformat= %d.%m. %H:%M
@@ -53,7 +47,7 @@ default_calendar = "important"
 show_all_days = "True"
 timedelta = "7d"
 #   highlight_event_days = True
-#   print_new = True
+print_new = "event"
 #
 # [highlight_days]
 #   color = red
@@ -96,7 +90,7 @@ bold_for_light_color = "True"
 dynamic_days = "True"
 event_view_always_visible = "False"
 frame = "False"
-theme = 'darkagenda_day_format {bold}{name},{date-long}{reset}'
+# theme = '{bold}{name},{date-long}{reset}'
 agenda_event_format = '{calendar-color}{cancelled}{start-end-time-style} {title}{repeat-symbol}{description-separator}{description}{reset}'
 event_format = '{calendar-color}{cancelled}{start}-{end} {title}{repeat-symbol}{description-separator}{description}{reset}'
 event_view_weighting = 1

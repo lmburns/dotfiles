@@ -1,10 +1,35 @@
+############################################################################
+#   Created: 2021-06-10 14:18                                              #
+############################################################################
+
+fzf-clipboard() {
+  echo -n "$(greenclip print | fzf -e -i)" | xclip -selection clipboard
+}
+
+greenclip-cfg() {
+  killall greenclip
+  $EDITOR $XDG_CONFIG_HOME/greenclip.cfg && nohup greenclip daemon > /dev/null 2>&1 &
+}
+
+greenclip-rld() {
+  killall greenclip
+  nohup greenclip daemon > /dev/null 2>&1 &
+}
+
+greenclip-derez() {
+  killall greenclip
+  rm $XDG_CACHE_HOME/greenclip.history && nohup greenclip daemon > /dev/null 2>&1 &
+}
+
 tsm-clearcompleted() {
   local -a done
   done=( $(transmission-remote -l | rg '100%' | rg 'Done' | hck -f2) )
   for f (${done%\*}) { transmission-remote -t $f -r }
 }
 
-tsm-clearall() { for f ( $(transmission-remote -l | hck -f2) ) { transmission-remote -t $f -r }; }
+tsm-clearall() {
+  for f ( $(transmission-remote -l | hck -f2) ) { transmission-remote -t $f -r }
+}
 
 # display numbers of ip being blocked by the blocklist (credit: smw from irc #transmission)
 tsm-count() {
@@ -49,11 +74,6 @@ tsm() { transmission-remote --list ;}
 tsm-show() { transmission-show "$1" ;}                          # show .torrent file information
 
 tsm-ncurse() { tide;}
-
-############################################################################
-#   Created: 2021-06-10 14:18                                              #
-#   Title: Aria                                                            #
-############################################################################
 
 export PATH_ARIA_DAEMON_DOWNLOAD_DIR="$HOME/Downloads/Aria"
 

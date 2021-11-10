@@ -1,0 +1,96 @@
+Config(
+    address: "127.0.0.1:6600",
+    clear_query_on_play: false,
+    cycle: false,
+    jump_lines: 24,
+    seek_secs: 5.0,
+    search_fields: SearchFields(
+        file: false,
+        title: true,
+        artist: true,
+        album: true,
+    ),
+    ups: 1.0,
+    layout: Rows([
+        Fixed(1, Columns([
+            Ratio(12, Textbox(Styled([Fg(Indexed(3)), Bold], Text("Title")))),
+            Ratio(10, Textbox(Styled([Fg(Indexed(2)), Bold], Text("Artist")))),
+            Ratio(10, Textbox(Styled([Fg(Indexed(11)), Bold], Text("Album")))),
+            Ratio(1, Textbox(Styled([Fg(Indexed(12)), Bold], Text("Time")))),
+        ])),
+        Min(0, Queue([
+            Column(
+                item: Ratio(12, If(QueueCurrent,
+                    Styled([Fg(Indexed(2)), Bold], QueueTitle),
+                    QueueTitle,
+                )),
+                style: [Fg(Indexed(14))],
+                selected_style: [Fg(Indexed(9)), Bold],
+            ),
+            Column(
+                item: Ratio(10, If(QueueCurrent,
+                    Styled([Fg(Indexed(2)), Bold], QueueArtist),
+                    QueueArtist,
+                )),
+                style: [Fg(Indexed(4))],
+                selected_style: [Fg(Indexed(9)), Bold],
+            ),
+            Column(
+                item: Ratio(10, If(QueueCurrent,
+                    Styled([Fg(Indexed(2)), Bold], QueueAlbum),
+                    QueueAlbum,
+                )),
+                style: [Fg(Indexed(5))],
+                selected_style: [Fg(Indexed(9)), Bold],
+            ),
+            Column(
+                item: Ratio(1, If(QueueCurrent,
+                    Styled([Fg(Indexed(2)), Bold], QueueDuration),
+                    QueueDuration,
+                )),
+                style: [Fg(Indexed(6))],
+                selected_style: [Fg(Indexed(9)), Bold],
+            ),
+        ])),
+        Fixed(1, Columns([
+            Min(0, Textbox(Styled([Bold], If(Searching,
+                Parts([
+                    Styled([Fg(Indexed(5))], Text("Searching: ")),
+                    Styled([Fg(Indexed(5))], Query),
+                    Styled([Fg(Indexed(5))], Text("⎸")),
+                ]),
+                If(Not(Stopped), Parts([
+                    Styled([Fg(Indexed(2))], Parts([
+                        If(Playing, Text("[playing: "), Text("[paused:  ")),
+                        CurrentElapsed,
+                        Text("/"),
+                        CurrentDuration,
+                        Text("] "),
+                    ])),
+                    If(TitleExist,
+                        Parts([
+                            Styled([Fg(Indexed(168))], CurrentTitle),
+                            If(ArtistExist, Parts([
+                                Styled([Fg(Indexed(208))], Text(" ◆ ")),
+                                Styled([Fg(Indexed(6))], CurrentArtist),
+                                If(AlbumExist, Parts([
+                                    Styled([Fg(Indexed(208))], Text(" ◆ ")),
+                                    Styled([Fg(Indexed(168))], CurrentAlbum),
+                                ])),
+                            ])),
+                        ]),
+                        Styled([Fg(Indexed(1)), Italic], CurrentFile),
+                    ),
+                ])),
+            )))),
+            Fixed(7, TextboxR(Styled([Fg(Indexed(4)), NoBold], Parts([
+                Text("["),
+                If(Repeat, Text("@")),
+                If(Random, Text("#")),
+                If(Single, Text("^"), If(Oneshot, Text("!"))),
+                If(Consume, Text("*")),
+                Text("]"),
+            ])))),
+        ])),
+    ]),
+)

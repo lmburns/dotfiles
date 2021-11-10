@@ -896,7 +896,6 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-vimlsp',
     \ 'coc-sh',
     \ 'coc-sql',
-    \ 'coc-perl',
     \ 'coc-xml',
     \ 'coc-fzf-preview',
     \ 'coc-syntax',
@@ -907,7 +906,8 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-rust-analyzer',
     \ 'coc-toml',
     \ 'coc-solargraph',
-    \ 'coc-prettier'
+    \ 'coc-prettier',
+    \ 'coc-perl',
     \ ]
 
   " \ 'coc-lua',
@@ -1032,8 +1032,6 @@ Plug 'antoinemadec/coc-fzf'
   " use `:OR` for organize import of current buffer
   command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
-  nnoremap ;ff :Format<CR>
-
   let g:endwise_no_mappings = v:true
   " inoremap <expr> <Plug>CustomCocCR "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
   inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"
@@ -1087,7 +1085,7 @@ Plug 'antoinemadec/coc-fzf'
     autocmd!
     autocmd FileType markdown let b:coc_pairs_disabled = ['`', "'"]
     autocmd FileType vim,vifm let b:coc_pairs_disabled = ['"']
-    autocmd FileType * let b:coc_pairs_disabled = ['<']
+    autocmd FileType *        let b:coc_pairs_disabled = ['<']
   augroup end
   " Highlight the symbol and its references when holding the cursor.
   autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -1096,8 +1094,14 @@ Plug 'antoinemadec/coc-fzf'
 Plug 'vim-perl/vim-perl', { 'for': 'perl' }
 Plug 'sbdchd/neoformat'
 
-autocmd FileType java nmap ;ff :Neoformat! java prettier<CR>
-autocmd FileType perl nmap ;ff :Neoformat! perl<CR>
+ " Formatting options that are better than coc's :Format
+  nnoremap ;ff :Format<CR>
+  augroup formatting
+      autocmd!
+      autocmd FileType java nmap     ;ff :Neoformat! java prettier<CR>
+      autocmd FileType perl nmap     ;ff :Neoformat! perl<CR>
+      autocmd FileType sh   nmap     ;ff :Neoformat! sh<CR>
+  augroup end
 
 " ============== nvim-r ============== {{{
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}

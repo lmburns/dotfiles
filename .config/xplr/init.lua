@@ -332,7 +332,7 @@ gokey.c = {
   help = "go to config dir",
   messages = {
     { BashExecSilently = [[
-      echo 'ChangeDirectory: "/Users/lucasburns/.config"' >> "${XPLR_PIPE_MSG_IN:?}"
+      echo 'ChangeDirectory: "/home/lucas/.config"' >> "${XPLR_PIPE_MSG_IN:?}"
     ]] },
   },
 }

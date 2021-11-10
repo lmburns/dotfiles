@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=System;Printing;HardwareSettings;X-Red-Hat-Base;
+Exec=sh -c 'cupsenable && xdg-open http://localhost:631/printers'
+Icon=cups
+StartupNotify=false
+Terminal=false
+Type=Application
+Name=Manage Printing
+Comment=CUPS Web Interface

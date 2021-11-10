@@ -16,7 +16,7 @@ journals:
   wiki:
     encrypt: false
     journal: /home/lucas/.local/share/jrnl/wiki.txt
-linewrap: 79
+linewrap: 80
 tagsymbols: '@'
 template: false
 timeformat: '%Y-%m-%d %H:%M'

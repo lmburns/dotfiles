@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Do Not Disturb (toggle)
+Comment=Dunst
+Icon=process-stop
+Exec=notify-send "DUNST_COMMAND_TOGGLE"
+Categories=System;Utilities;

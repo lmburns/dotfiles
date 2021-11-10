@@ -1,0 +1,19 @@
+#compdef gitbatch
+
+# zsh completions for 'gitbatch'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--help[show context-sensitive help (also try]'
+  {--help-long,--help-man}'[).]'
+  '--version[show application version.]'
+  {-d,--directory}'[...  Directory(s) to roam for git repositories.]'
+  {-m,--mode}'[application start mode, more sensible with]'
+  {-r,--recursive-depth}'[find directories recursively.]'
+  {-l,--log-level}'["        Logging level; trace,debug,info,warn,error]'
+  {-q,--quick}'[runs without gui and fetches/pull remote]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

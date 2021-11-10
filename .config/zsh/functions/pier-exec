@@ -1,0 +1,23 @@
+# Desc: execute pier command colorfully
+
+setopt extendedglob
+
+local -A opts
+
+zmodload -Fa zsh/zutil b:zparseopts
+zparseopts -D -A opts -- t:=tag -tag:=tag
+
+# print -- ${opts[-t]:+-t ${opts[-t]}}
+
+sel="$(\
+  pier list -c $(( COLUMNS / 3 )) ${tag:-} \
+    | sed '1,3d;$d' \
+    | fzf \
+    | awk '{print $2}'
+)"
+
+[[ -n "$sel" ]] && {
+  pier "$sel"
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

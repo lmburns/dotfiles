@@ -19,7 +19,8 @@ alias xp="xplr"
 alias xx="xcompress"
 alias ca='cargo'
 alias cat="bat"
-alias thew="the-way"
+alias thw="the-way"
+alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 
 alias mimeopen="/usr/bin/vendor_perl/mimeopen"
 alias xmm="xmodmap"
@@ -68,6 +69,10 @@ alias ng="noglob"
 (( ${+commands[pet]} )) && {
   alias pe="pet exec"
   alias pee="pet edit"
+}
+
+(( ${+commands[pier]} )) && {
+  alias pi="pier-exec"
 }
 
 (( ${+commands[hoard]} )) && {
@@ -209,6 +214,7 @@ alias prd='cd $HOME/projects'
 alias unx='cd $HOME/Desktop/unix/mac'
 alias zfd='cd $ZDOTDIR/functions'
 alias zcs='cd $ZDOTDIR/csnippets'
+alias zcm='cd $ZDOTDIR/completions'
 alias zd='cd "$ZDOTDIR"'
 alias gitd='cd $HOME/projects/github'
 alias perld='cd $HOME/projects/perl'

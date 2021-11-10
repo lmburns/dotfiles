@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Toggle Mute
+Exec=pactl set-sink-mute @DEFAULT_SINK@ toggle
+Terminal=false
+Type=Application
+Icon=audio-volume-muted
+Comment=Toggle mute
+Categories=Utilities;

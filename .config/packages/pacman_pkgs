@@ -37,7 +37,6 @@ breeze
 breeze-gtk
 broot
 bspwm
-caffeine-ng
 calcurse
 cantor
 catimg
@@ -45,6 +44,7 @@ ccls
 cervisia
 chafa
 chkservice
+chmap
 clamav
 cli-visualizer
 clipit
@@ -62,6 +62,7 @@ ctags
 dash
 ddrescue
 deepin-wallpapers
+devour
 dialog
 dict-devils
 dict-foldoc
@@ -107,12 +108,14 @@ flex
 fontforge
 fselect-bin
 fswatch
+fx
 fzy
 gedit
 gifski
 gimp
 git
 git-crypt
+git-lfs
 glow-bin
 gnome-backgrounds
 gnome-contacts
@@ -122,6 +125,7 @@ gnome-tweaks
 go
 goenv
 google-java-format
+googler
 gopass
 gopls
 gotask-taskfile
@@ -136,7 +140,6 @@ gruvbox-material-gtk-theme-git
 gruvbox-material-icon-theme-git
 gst-plugin-gtk
 gwenview
-handlr-bin
 hawck-git
 hnwatch
 hsetroot
@@ -205,8 +208,6 @@ kgamma5
 kgeography
 kget
 kgpg
-khal
-khard
 khelpcenter
 khotkeys
 kig
@@ -460,6 +461,7 @@ signon-kwallet-extension
 skanlite
 slock
 songrec
+sops
 spacefm
 spectacle
 spotify-tui
@@ -483,12 +485,15 @@ sxhkd
 sxiv
 sysstat
 systemsettings
+sysz
 tagspaces-bin
 task
 task-spooler
 taskd
 tasksh
 tdrop-git
+teip
+telegram-cli-git
 telepathy-kde-accounts-kcm
 telepathy-kde-approver
 telepathy-kde-auth-handler
@@ -533,6 +538,7 @@ ulauncher
 umbrello
 unrtf
 unzip
+up
 urlscan
 urlview
 usbutils
@@ -550,6 +556,7 @@ vt-cli
 vulkan-intel
 w3m
 watchexec
+wavemon
 whois
 wine
 wl-clipboard

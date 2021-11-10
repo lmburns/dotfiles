@@ -1,50 +1,87 @@
 [scripts.ec]
-command = 'nvim /home/lucas/.config/pier/config.toml'
+command = "$EDITOR /home/lucas/.config/pier/config.toml"
 description = 'edit configuration file'
 
 [scripts.testing]
 description = "testing"
 command = '''
-notify-send 'testing' 'pier'
+notify-send 'testing' '$@'
 '''
 
+[scripts.tomb-create]
+description = "create a tomb"
+command = '''
+#!/usr/bin/env zsh
+
+name="${2:-secret}"
+
+tomb dig -s "${1:-100}" "${name}.tomb" -f
+print -P "%F{1}Created%f: %F{2}${name}.tomb%f"
+
+tomb forge "${name}.tomb.key" -gr E93ACCAAAEB024788C106EDEC011CBEF6628B679 -f
+print -P "%F{1}Created%f: %F{2}${name}.tomb.key%f"
+
+tomb lock "${name}.tomb" -k "${name}.tomb.key" -f
+print -P "%F{1}Locked%f: %F{2}${name}.tomb%f"
+
+tomb open "${name}.tomb" -k "${name}.tomb.key" -f
+print -P "%F{1}Opened%f: %F{2}${name}.tomb%f"
+'''
+tags = ["tomb", "encrypt"]
+
 [script.refresh-wifi]
+description = "refresh wifi"
 command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
 
 [scripts.enabled-services]
+description = "list enabled services"
 command = "systemctl list-unit-files --state=enabled"
+tags = ["systemctl"]
 
 [scripts.all-services]
+description = "list all services"
 command = "systemctl list-unit-files --type=service"
+tags = ["systemctl"]
 
 [scripts.dmesg-sudo]
 description = "enable no sudo for dmesg"
 command = "sudo sysctl -w kernel.dmesg_restrict=0"
+tags = [""]
 
 [scripts.ex-upgrade]
 description = "expac - upgrade & download size"
-command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+command = "expac -S -H M '%k\\t%n' $(pacman -Qqu) | sort -sh"
+tags = ["pman", "epxac"]
 
 [scripts.ex-recent]
 description = "expac - recently installed (20)"
-command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
+command = "expac --timefmt='%Y-%m-%d %T' '%l\\t%n' | sort | tail -n 20 | tac"
+tags = ["pman", "epxac"]
 
 [scripts.ex-regex]
 description = "expac - search regex"
 command = "expac -Ss '%-30n %-8v %d'"
+tags = ["pman", "epxac"]
 
 # TODO:
 [scripts.ex-sinstalled]
 description = "expac - search installed (fzf)"
-command = "pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'"
+command = """
+  pacman -Qq \
+    | fzf --preview 'pacman -Qil {}' --layout=reverse \
+          --bind 'enter:execute(pacman -Qil {} | less)'
+"""
+tags = ["pman"]
 
 [scripts.ex-sall]
 description = "expac - search all (fzf)"
 command = "pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse"
+tags = ["pman", "epxac"]
 
 [scripts.ex-mod-conf]
 description = "expac - list modified files"
 alias = "ex-mod"
-command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+command = "expac -S -H M '%k\\t%n' $(pacman -Qqu) | sort -sh"
+tags = ["pman", "expac"]
 
 [default]

@@ -10,7 +10,7 @@ save-path ~/.local/share/newsboat/saved_articles/
 cleanup-on-quit yes
 
 notify-always yes
-notify-program newsb-notifier
+notify-program notify-send
 notify-format "Newsboat: %n unread articles in %f feeds %t"
 
 # bookmark-cmd "~/bin/nbookmark.sh"

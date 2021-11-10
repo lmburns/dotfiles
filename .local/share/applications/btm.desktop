@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=bottom
+Exec=btm
+Icon=diskmonitor
+Keywords=system;process;task
+StartupNotify=false
+Terminal=true
+GenericName=System Monitor
+Categories=System;Monitor;ConsoleOnly;Utilities;

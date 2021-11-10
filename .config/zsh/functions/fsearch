@@ -1,7 +1,7 @@
 # Desc: search fonts on system
 
 # fc-list : file family \
-# | sed -n -e 's#/Users/lucasburns/Library/Fonts##p' \
+# | sed -n -e 's#/home/lucas/Library/Fonts##p' \
 # | rg '^/' | sort | sed 's|/||' \
 # | awk -F'.' '{print $1}' \
 # | fzf --query="${@:-}"

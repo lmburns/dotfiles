@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Log Out
+Exec=systemctl --user stop window-manager
+Icon=system-log-out
+Terminal=false
+Type=Application
+Categories=System;
+Version=1.0

@@ -1,5 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=Mail
-Terminal=true
+Name=Neomutt
+GenericName=Neomutt Mail
+Comment=Terminal Mail Interface
+Keywords=mail;tui;
 Exec=neomutt %u
+Terminal=true
+Icon=mutt
+Categories=Email;ConsoleOnly;
+# MimeType=

@@ -28,9 +28,11 @@ typeset -g HISTSIZE=10000000
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g SAVEHIST=8000000
 typeset -g HIST_STAMPS="yyyy-mm-dd"
-typeset -g HISTORY_IGNORE="(jrnl|youtube-dl|you-get)"
+typeset -g HISTORY_IGNORE="(youtube-dl|you-get)"
 typeset -g TIMEFMT=$'\n================\nCPU\t%P\nuser\t%*U\nsystem\t%*S\ntotal\t%*E'
 typeset -g PROMPT_EOL_MARK=''
+typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
+typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'
 typeset -g MAILCHECK=0
 # typeset -g ZSH_DISABLE_COMPFIX=true
 
@@ -100,7 +102,7 @@ cclean() { command mv -f "tar*/rel*/%PLUGIN%" && cargo clean; }
 
 [[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
   command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
-  command git clone https://github.com/zdharma/zinit "$ZINIT[BIN_DIR]"
+  command git clone https://github.com/lmburns/zinit "$ZINIT[BIN_DIR]"
 }
 
 source "$ZINIT[BIN_DIR]/zinit.zsh"
@@ -109,8 +111,8 @@ autoload -Uz _zinit
 
 # === annex, prompt === [[[
 zt light-mode for \
-  zinit-zsh/z-a-patch-dl \
-  zinit-zsh/z-a-submods \
+  lmburns/z-a-patch-dl \
+  lmburns/z-a-submods \
   NICHOLAS85/z-a-linkman \
   NICHOLAS85/z-a-linkbin \
   atinit'Z_A_USECOMP=1' \
@@ -227,7 +229,7 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- ${f}};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
-    zdharma/fast-syntax-highlighting \
+    zdharma-mirror/fast-syntax-highlighting \
   atload'vbindkey "Up" history-substring-search-up; vbindkey "Down" history-substring-search-down' \
     zsh-users/zsh-history-substring-search
 #  ]]] === wait'0b' - patched ===
@@ -430,11 +432,12 @@ zt 0c light-mode null for \
     o2sh/onefetch \
   id-as'bisqwit/regex-opt' lbin atclone'xh --download https://bisqwit.iki.fi/src/arch/regex-opt-1.2.4.tar.gz' \
   atclone'ziextract --move --auto regex-*.tar.gz' make'all' \
-    zdharma/null
+    zdharma-zmirror/null
 
 # yq isn't picking up completions
 
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
+# greymd/teip
 # == rust [[[
 zt 0c light-mode null for \
   lbin from'gh-r' \
@@ -490,8 +493,6 @@ zt 0c light-mode null for \
     theryangeary/choose \
   lbin'* -> hck' from'gh-r' \
     sstadick/hck \
-  lbin lman from'gh-r' \
-    greymd/teip \
   lbin from'gh-r' \
     BurntSushi/xsv \
   lbin atclone'cargo build --release' atpull'%atclone' \
@@ -1030,6 +1031,7 @@ hash -d ghq=$HOME/ghq
 
 manpath=(
   $XDG_DATA_HOME/man
+  $NPM_PACKAGES/share/man
   "${manpath[@]}"
 )
 
@@ -1045,6 +1047,7 @@ path=(
   $XDG_DATA_HOME/gem/bin(N-/)
   $HOME/.poetry/bin(N-/)
   $GEM_HOME/bin(N-/)
+  $NPM_PACKAGES/bin(N-/)
   /usr/lib/goenv/libexec
   "${path[@]}"
 )

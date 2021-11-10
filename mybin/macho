@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+export FZF_DEFAULT_OPTS="
+$FZF_DEFAULT_OPTS
+--layout=reverse
+--prompt='Manual: '
+--preview-window=':nohidden'
+--preview='echo {1} | sed -E \"s/^\((.+)\)/\1/\" | xargs -I{S} man -Pcat {S} {2} 2>/dev/null'"
+
+while getopts ":s:" opt; do
+  case $opt in
+    (s)  SECTION=$OPTARG; shift; shift;;
+    (\?) echo "Invalid option: -$OPTARG" >&2; exit 1;;
+    (:)  echo "Option -$OPTARG requires an argument" >&2; exit 1;;
+  esac
+done
+
+manual="$(apropos -s ${SECTION:-''} ${@:-.} \
+    | grep -vE '^.+ \(0\)' \
+    | awk '{print $2 "    " $1}' \
+    | sort \
+    | fzf  \
+    | sed -E 's/^\((.+)\)/\1/'
+)"
+
+[[ -n "$manual" ]] && {
+  env \
+    LESS_TERMCAP_md=$(tput bold; tput setaf 4) \
+    LESS_TERMCAP_me=$(tput sgr0) \
+    LESS_TERMCAP_mb=$(tput blink) \
+    LESS_TERMCAP_us=$(tput setaf 2) \
+    LESS_TERMCAP_ue=$(tput sgr0) \
+    LESS_TERMCAP_so=$(tput smso) \
+    LESS_TERMCAP_se=$(tput rmso) \
+    PAGER="${commands[less]:-$PAGER}" \
+    man "${(z)manual}"
+}

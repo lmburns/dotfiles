@@ -71,7 +71,7 @@ options:
       tag-search:
         description: Search by tags
         type: Command
-        command: echo {0} | hck -f1 | xargs open
+        command: echo {0} | hck -f1 | xargs handlr open
         widgets:
           - type: FromCommand
             command: |
@@ -218,14 +218,6 @@ options:
         widgets:
           - type: FromCommand
             command: px | sed 1d | awk 'BEGIN{OFS="\t"}{print $1, $2, $NF}'
-
-      mas:
-        description: Install macOS AppStore application
-        type: Command
-        command: echo "{0}" | hck -f1 | xargs mas install
-        widgets:
-          - type: FromCommand
-            command: mas search "$@" | column -ts $'\t'
 
       copyq:
         description: Copy to clipboard from copyq

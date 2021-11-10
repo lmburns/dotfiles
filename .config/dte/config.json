@@ -1,0 +1,8 @@
+{
+    "timestamp_unit": "seconds",
+    "clock": "24",
+    "datetime_output_format": "ISO8601",
+    "comparison_tolerance_seconds": 0.001,
+    "basedate_output_format": "%Y-%b",
+    "decimal_places": 2
+}

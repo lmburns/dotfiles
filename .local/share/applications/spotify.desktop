@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Spotify
+Exec=handlr launch x-scheme-handler/https -- --new-window --app=https://open.spotify.com
+Terminal=false
+Type=Application
+Icon=spotify
+Comment=Spotify
+Categories=AudioVideo;

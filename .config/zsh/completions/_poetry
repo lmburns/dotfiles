@@ -132,4 +132,4 @@ _poetry_e618f4319ad826d8_complete()
 }
 
 _poetry_e618f4319ad826d8_complete "$@"
-compdef _poetry_e618f4319ad826d8_complete /Users/lucasburns/.poetry/bin/poetry
+compdef _poetry_e618f4319ad826d8_complete /home/lucas/.poetry/bin/poetry

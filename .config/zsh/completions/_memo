@@ -99,4 +99,5 @@ _memo () {
             ;;
     esac
 }
-compdef _memo memo
+
+_memo "$@"

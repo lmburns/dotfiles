@@ -1,0 +1,17 @@
+# Desc: attach to tmux session or create new
+# Source: Black-Void-Zsh
+
+# [[ -z "$1" ]] && { echo "usage: tm <session>" >&2; return 1; }
+# tmux has -t $1 && tmux attach -t $1 || tmux new -s $1
+
+tm() {
+  [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
+  if [ $1 ]; then
+    tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
+  fi
+  session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
+}
+
+tm
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

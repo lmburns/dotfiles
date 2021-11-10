@@ -5,7 +5,7 @@
 emulate -L zsh
 
 ffig() (
-  cd -q /usr/local/Cellar/figlet/*/share/figlet/fonts
+  cd -q /usr/share/figlet/fonts
   command ls *.flf | sort | fzf --no-multi --reverse --preview "figlet -f {} Hello World!"
 )
 
