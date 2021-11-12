@@ -14,6 +14,23 @@ alias h := help
 help:
   @$EDITOR $XDG_DATA_HOME/just/overall.just
 
+# create a tomb
+tomb:
+  #!/usr/bin/env zsh
+  name="${2:-secret}"
+
+  tomb dig -s "${1:-100}" "${name}.tomb" -f
+  print -P "%F{1}Created%f: %F{2}${name}.tomb%f"
+
+  tomb forge "${name}.tomb.key" -gr E93ACCAAAEB024788C106EDEC011CBEF6628B679 -f
+  print -P "%F{1}Created%f: %F{2}${name}.tomb.key%f"
+
+  tomb lock "${name}.tomb" -k "${name}.tomb.key" -f
+  print -P "%F{1}Locked%f: %F{2}${name}.tomb%f"
+
+  tomb open "${name}.tomb" -k "${name}.tomb.key" -f
+  print -P "%F{1}Opened%f: %F{2}${name}.tomb%f"
+
 # get cpu / memory
 memory:
   @ps -A -o %cpu,%mem \
@@ -44,8 +61,8 @@ expac-recent:
   @expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac
 
 # expac search regex
-expac-regex:
-  @expac -Ss '%-30n %-8v %d'
+expac-regex ARGS:
+  @expac -Ss '%-30n %-8v %d' {{ARGS}}
 
 # expac modified
 expac-modified:
@@ -134,6 +151,10 @@ rm-bigdir DIR:
   sudo -A rm -rv {{DIR}} | pv -l -s $(sudo du -a {{DIR}} | wc -l) > /dev/null
 
 # pu add -- sudo -A rsync -azurh --delete-after --info=name0 --progress=progress2 ~ /Volumes/SSD/macos-full
+
+# rsync/ssh from macbook
+rsync-mac SRC DEST=invocation_directory():
+  rsync -uvrP --exclude 'target/' macbook:{{SRC}} {{DEST}}
 
 # rsync general
 rsync SRC DEST:

@@ -45,6 +45,7 @@ export LESS="-r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
 export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
+export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
 

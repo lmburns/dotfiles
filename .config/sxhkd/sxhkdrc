@@ -25,8 +25,13 @@ super + shift + Escape
 super + shift + x
     killandnotify "sxhkd" "Config reloaded" && sxhkd &
 
+# Restart polybar
 super + shift + p
     reloadpolybar
+
+# Restart polybar
+super + shift + d
+    pkill -USR1 dunst && dunst &
 
 # Restart bspwm
 ctrl + alt + super + r

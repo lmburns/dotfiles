@@ -5,7 +5,8 @@
 ngu() {
   confu="$(\
     sed -n '/\[remote\s.*/{n;s/\t//g;s/url = //p}' \
-    $(git rev-parse --show-toplevel)/.git/config
+    $(git rev-parse --show-toplevel)/.git/config \
+    | head -n1
   )"
 
   echo "${confu}" | xsel -b

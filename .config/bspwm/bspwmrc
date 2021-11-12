@@ -2,8 +2,9 @@
 
 bspc rule -r "*"
 
-pgrep -x sxhkd > /dev/null || sxhkd &
-pgrep -x pueued > /dev/null && pueue clean
+pgrep -x sxhkd     >/dev/null || sxhkd &
+pgrep -x pueued    >/dev/null && pueue clean
+pgrep -x rss-watch >/dev/null || run-rss-watch
 
 xsetroot -cursor_name left_ptr &
 

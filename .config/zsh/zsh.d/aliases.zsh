@@ -22,7 +22,8 @@ alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 
-alias mimeopen="/usr/bin/vendor_perl/mimeopen"
+alias open="handlr open"
+# alias mimeopen="/home/lucas/mybin/perl/mimeopen"
 alias xmm="xmodmap"
 alias jo="journalctl"
 alias s="systemctl"
@@ -188,6 +189,7 @@ alias nmuch='$EDITOR $XDG_DATA_HOME/mail/.notmuch/hooks/post-new'
 alias nsnip='$EDITOR $XDG_CONFIG_HOME/nvim/UltiSnips/all.snippets'
 alias nticker='$EDITOR $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias njaime='$EDITOR $XDG_CONFIG_HOME/jaime/config.yml'
+alias nssh='$EDITOR $HOME/.ssh/config'
 
 [[ $OSTYPE = darwin* ]] && {
   alias nyab='$EDITOR $XDG_CONFIG_HOME/yabai/yabairc'

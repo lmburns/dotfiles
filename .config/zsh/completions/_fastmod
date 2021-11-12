@@ -1,0 +1,23 @@
+#compdef fastmod
+
+# zsh completions for 'fastmod'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--accept-all[automatically accept all changes (use with caution).]'
+  {-F,--fixed-strings}'[treat REGEX as a literal string. Avoids the need to escape regex metacharacters (compare to ripgreps option]'
+  {-h,--help}'[prints help information]'
+  '--hidden[search hidden files.]'
+  {-i,--ignore-case}'[perform case-insensitive search.]'
+  {-m,--multiline}'[have regex work over multiple lines (i.e., have dot match newlines).]'
+  '--print-changed-files[print the paths of changed files. (Recommended to be combined with --accept-all.)]'
+  {-V,--version}'[prints version information]'
+  {-d,--dir}'[...]'
+  {-e,--extensions}'[...]'
+  {-g,--glob}'[...]'
+  '--iglob[...]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

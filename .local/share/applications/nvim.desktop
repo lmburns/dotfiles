@@ -3,6 +3,7 @@ Name=Neovim
 GenericName=Text Editor
 Comment=Edit text files
 TryExec=nvim
+# Exec=alacritty -e nvim %u
 Exec=nvim %u
 Terminal=true
 Type=Application

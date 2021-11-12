@@ -638,9 +638,10 @@ Plug 'ludovicchabant/vim-gutentags'
   " else
     set tags=tags
     let g:gutentags_modules = ['ctags']
-    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
     let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
     let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
     let g:gutentags_ctags_tagfile = '.tags'
   " endif
 
@@ -1012,7 +1013,7 @@ Plug 'antoinemadec/coc-fzf'
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1093,6 +1094,18 @@ Plug 'antoinemadec/coc-fzf'
 
 Plug 'vim-perl/vim-perl', { 'for': 'perl' }
 Plug 'sbdchd/neoformat'
+
+" let g:neoformat_perl_perltidy = {
+"       \ 'exe': 'perltidy',
+"       \ 'args': ['-c', '-e'],
+"       \ 'replace': 0,
+"       \ 'stdin': 0,
+"       \ 'env': [""],
+"       \ 'valid_exit_codes': [0],
+"       \ 'no_append': 1,
+"       \ }
+"
+" let g:neoformat_enabled_perl = ['perl']
 
  " Formatting options that are better than coc's :Format
   nnoremap ;ff :Format<CR>
@@ -2342,8 +2355,8 @@ call plug#end()
   command! RUN :call s:execute_buffer()
   augroup ExecuteBuffer
       au!
-      au FileType sh,bash,zsh,python,ruby nnoremap <Leader>ru :RUN<cr>
-      au FileType sh,bash,zsh,python,ruby nnoremap <Leader>lru
+      au FileType sh,bash,zsh,python,ruby,perl nnoremap <Leader>ru :RUN<cr>
+      au FileType sh,bash,zsh,python,ruby,perl nnoremap <Leader>lru
         \ :FloatermNew --autoclose=0 ./%<cr>
   augroup END
   " }}} ExecuteBuffer

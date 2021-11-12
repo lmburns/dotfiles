@@ -1,0 +1,23 @@
+#compdef rage
+
+# zsh completions for 'rage'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print this help message and exit.]'
+  {-V,--version}'[print version info and exit.]'
+  {-e,--encrypt}'[encrypt the input (the default).]'
+  {-d,--decrypt}'[decrypt the input.]'
+  {-p,--passphrase}'[encrypt with a passphrase instead of recipients.]'
+  '--max-work-factor[maximum work factor to allow for passphrase decryption.]'
+  {-a,--armor}'[encrypt to a PEM encoded format.]'
+  {-r,--recipient}'[encrypt to the specified RECIPIENT. May be repeated.]'
+  {-R,--recipients-file}'[encrypt to the recipients listed at PATH. May be repeated.]'
+  {-i,--identity}'[use the identity file at IDENTITY. May be repeated.]'
+  '-j[use the plugin NAME in its default mode as an identity.]'
+  {-o,--output}'[write the result to the file at path OUTPUT.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

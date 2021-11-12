@@ -13,9 +13,11 @@ journals:
   default:
     encrypt: true
     journal: /home/lucas/.local/share/jrnl/journal.txt
+    display_format: pretty
   wiki:
     encrypt: false
     journal: /home/lucas/.local/share/jrnl/wiki.txt
+    display_format: json
 linewrap: 80
 tagsymbols: '@'
 template: false

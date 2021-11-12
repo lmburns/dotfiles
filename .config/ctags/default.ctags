@@ -1,0 +1,29 @@
+--c-kinds=+px
+--c++-kinds=+px
+--fields=+niazS
+--extras=+q
+
+--langmap=perl:.pod.pl.pm.t
+--regex-perl=/with[ \t]+([^;]+)[ \t]*?;/\1/w,role,roles/
+--regex-perl=/extends[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
+--regex-perl=/^[ \t]*?use[ \t]+base[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
+--regex-perl=/^[ \t]*?use[ \t]+parent[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
+--regex-perl=/^[ \t]*?use[ \t]+Mojo::Base[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
+--regex-perl=/^[ \t]*?use[ \t]+([^;]+)[ \t]*?;/\1/u,use,uses/
+--regex-perl=/^[ \t]*?require[ \t]+((\w|\:)+)/\1/r,require,requires/
+--regex-perl=/^[ \t]*?has[ \t]+['"]?(\w+)['"]?/\1/a,property,properties/
+--regex-perl=/^[ \t]*?\*(\w+)[ \t]*?=/\1/b,alias,aliases/
+--regex-perl=/->helper\([ \t]?['"]?(\w+)['"]?/\1/h,helper,helpers/
+--regex-perl=/^[ \t]*?our[ \t]*?[\$@%](\w+)/\1/o,our,ours/
+--regex-perl=/^\s*package\s+(.+)\s*;/\1/p,package/
+--regex-perl=/^[ \t]*?my[ \t]*?(\$\w+)[ \t]*?=[ \t]*?sub/\1/z,psubroutine,psubroutines/
+# --regex-perl=/^\=head1[ \t]+(.+)/\1/d,pod,POD/
+# --regex-perl=/^\=head2[ \t]+(.+)/-- \1/d,pod,POD/
+# --regex-perl=/^\=head[3][ \t]+(.+)/--- \1/d,pod,POD/
+# --regex-perl=/^\=head[4][ \t]+(.+)/---- \1/d,pod,POD/
+
+# --regex-perl=/^\s*has\s+["]?([0-9a-zA-Z_]+)/\1/a,attribute/
+# --regex-perl=/^\s*extends\s+(["])(.+)\1/\2/e,extends/
+# --regex-perl=/^\s*with\s+(["])(.+)\1/\2/r,role/
+
+# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

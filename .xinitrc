@@ -20,7 +20,9 @@ ulauncher --hide-window &
 # spotifyd &
 
 # Reverse scrolling
-xinput set-prop 21 314 1
+# xinput set-prop 21 314 1
+# gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
+
 xset s on
 xset s 900 180
 # xset dpms 0 0 0

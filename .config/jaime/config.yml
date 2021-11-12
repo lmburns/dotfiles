@@ -6,17 +6,17 @@ options:
     widgets:
       - type: FromCommand
         command: shelf get bookmarks
-    command: echo "{0}" | awk -F '\t' '{print $2}' | xargs open
+    command: echo "{0}" | awk -F '\t' '{print $2}' | xargs handlr open
 
   crates:
     type: Command
-    command: open "https://crates.io/search?q={0}"
+    command: handlr open "https://crates.io/search?q={0}"
     widgets:
       - type: FreeText
 
   duck:
     type: Command
-    command: open "https://duckduckgo.com/?q={0}"
+    command: handlr open "https://duckduckgo.com/?q={0}"
     widgets:
       - type: FreeText
 
@@ -50,7 +50,7 @@ options:
           done
       open:
         type: Command
-        command: open "https://github.com/{0}"
+        command: handlr open "https://github.com/{0}"
         widgets:
           - type: FromCommand
             command: |

@@ -1,0 +1,449 @@
+#compdef stig
+
+_stig_trklist_sort() {
+  typeset -a trksort; trksort=(
+    "domain:Sort trackers by domain from announce URL"
+    "dom:Sort trackers by domain from announce URL"
+    "downloads:Sort trackers by number of known finished downloads"
+    "dns:Sort trackers by number of known finished downloads"
+    "error:Sort trackers by error message"
+    "err:Sort trackers by error message"
+    "last-announce:Sort trackers by last time the torrent was announced"
+    "lan:Sort trackers by last time the torrent was announced"
+    "last-scrape:Sort trackers by last time the torrent was scraped"
+    "lsc:Sort trackers by last time the torrent was scraped"
+    "leeches:Sort trackers by number of known downloading peers"
+    "lcs:Sort trackers by number of known downloading peers"
+    "next-announce:Sort trackers by next time the torrent will be announced"
+    "nan:Sort trackers by next time the torrent will be announced"
+    "next-scrape:Sort trackers by next time the torrent will be scraped"
+    "ncs:Sort trackers by next time the torrent will be scraped"
+    "seeds:Sort trackers by number of known seeding peers"
+    "sds:Sort trackers by number of known seeding peers"
+    "status:Sort trackers by tracker status"
+    "st:Sort trackers by tracker status"
+    "tier:Sort trackers by tier number"
+    "torrent:Sort trackers by torrent name"
+  )
+  _describe -t trk-list-sort "tracker list sorting" trksort
+}
+
+_stig_trklist_cols() {
+  typeset -a trklist; trklist=(
+    domain downloads error error-announce error-scrape
+    last-announce last-scrape leeches next-announce
+    next-scrape seeds status tier torrent url-announce url-scrape
+  )
+  _describe -t trk-list "tracker list columns" trklist
+}
+
+_stig_list_sort() {
+  typeset -a peerlist; peersort=(
+    "%downloaded:Sort torrents by downloading or verifying progress"
+    "%dn:Sort torrents by downloading or verifying progress"
+    "activity:Sort torrents by time of latest upload/download activity"
+    "tact:Sort torrents by time of latest upload/download activity"
+    "added:Sort torrents by time of addition"
+    "tadd:Sort torrents by time of addition"
+    "completed:Sort torrents by time of completion"
+    "tcmp:Sort torrents by time of completion"
+    "created:Sort torrents by creation time"
+    "tcrt:Sort torrents by creation time"
+    "downloaded:Sort torrents by number of downloaded bytes"
+    "dn:Sort torrents by number of downloaded bytes"
+    "error:Sort torrents by error message"
+    "err:Sort torrents by error message"
+    "eta:Sort torrents by estimated time to finish downloading"
+    "id:Sort torrents by ID"
+    "limit-rate:Sort torrents by combined download and upload rate limit"
+    "lr:Sort torrents by combined download and upload rate limit"
+    "limit-rate-down:Sort torrents by download rate limit"
+    "lrdn:Sort torrents by download rate limit"
+    "limit-rate-up:Sort torrents by upload rate limit"
+    "lrup:Sort torrents by upload rate limit"
+    "name:Sort torrents by name"
+    "n:Sort torrents by name"
+    "path:Sort torrents by download path"
+    "dir:Sort torrents by download path"
+    "peers:Sort torrents by connected peers"
+    "prs:Sort torrents by connected peers"
+    "rate:Sort torrents by combined download and upload rate"
+    "r:Sort torrents by combined download and upload rate"
+    "rate-down:Sort torrents by download rate"
+    "rdn:Sort torrents by download rate"
+    "rate-up:Sort torrents by upload rate"
+    "rup:Sort torrents by upload rate"
+    "ratio:Sort torrents by upload/download ratio"
+    "rto:Sort torrents by upload/download ratio"
+    "seeds:Sort torrents by highest number of seeds reported by any tracker"
+    "sds:Sort torrents by highest number of seeds reported by any tracker"
+    "size:Sort torrents by number of bytes of all wanted files"
+    "sz:Sort torrents by number of bytes of all wanted files"
+    "started:Sort torrents by start time"
+    "tsta:Sort torrents by start time"
+    "status:Sort torrents by current status (idle, uploading, verifying, etc.)"
+    "st:Sort torrents by current status (idle, uploading, verifying, etc.)"
+    "tracker:Sort torrents by domain of first tracker"
+    "trk:Sort torrents by domain of first tracker"
+    "uploaded:Sort torrents by number of uploaded bytes"
+    "up:Sort torrents by number of uploaded bytes"
+  )
+  _describe -t peer-list-sort "peer list sorting" peersort
+}
+
+_stig_list_cols() {
+  typeset -a listcols; listcols=(
+    "'%downloaded'" "'%available'" activity added available completed created
+    downloaded error eta id limit-rate-down limit-rate-up marked name
+    path peers rate-down rate-up ratio seeds size started status tracker uploaded
+  )
+  _describe -t ls-cols "list columns" listcols
+}
+
+_stig_peerlist_sort() {
+  typeset -a peersort; peersort=(
+    "'%downloaded'" "'%dn'" client cl eta host port
+    rate r rate-down rdn rate-set re rate-up rup torrent
+  )
+  _describe -t peer-list-sort "peer list sorting" peersort
+}
+
+_stig_peerlist_cols() {
+  typeset -a peerlist; peerlist=(
+    "'%downloaded'" client eta host port rate-down rate-est rate-up torrent
+  )
+  _describe -t peer-list "peer list columns" peerlist
+}
+
+_stig_log_cmds() {
+  typeset -a log_cmds
+  log_cmds=(
+    'clear:Remove all previously logged messages in the TUI'
+    'scroll:Scroll the log messages up or down in the TUI'
+    'info:Join all PARAMETERs and display them as a normal message'
+    'error:Join all PARAMETERs and display them as an error message'
+  )
+  _describe -t log-cmds "log commands" log_cmds
+}
+
+_stig_topics() {
+  typeset -a topics
+  topics=(
+    'commandsmanual:Describes how to call and chain commands'
+    'cmdsman:Describes how to call and chain commands'
+    'commands:Lists commands'
+    'cmds:Lists commands'
+    'filtersmanual:Describes how to define and combine filters'
+    'filtersman:Describes how to define and combine filters'
+    'filters:Lists filters for torrents, files, etc'
+    'settingsmanual:Describes how to change settings'
+    'configman:Describes how to change settings'
+    'cfgman:Describes how to change settings'
+    'settings:Lists configuration settings'
+    'config:Lists configuration settings'
+    'cfg:Lists configuration settings'
+    'keybindings:Lists TUI keybindings'
+    'keymap:Lists TUI keybindings'
+    'keys:Lists TUI keybindings'
+  )
+  _describe -t topics "help topics" topics
+  _stig_commands
+}
+
+_stig_commands() {
+  typeset -a subcommands
+  subcommands=(
+    'dump:Generate commands that reproduce current settings, keybindings and tabs'
+
+    'ratelimit:Limit transfer rates per torrent or globally'
+    'rate:Limit transfer rates per torrent or globally'
+    'rl:Limit transfer rates per torrent or globally'
+
+    'rc:Run commands in rc file'
+    'source:Run commands in rc file'
+
+    'reset:Reset settings to their default values'
+    'set:Change or list settings'
+
+    'filelist:List files of torrent(s)'
+    'fls:List files of torrent(s)'
+    'lsf:List files of torrent(s)'
+
+    'priority:Change download priority of files'
+    'prio:Change download priority of files'
+
+    'help:List or explain commands and settings'
+    'man:List or explain commands and settings'
+
+    'log:Clear, add or scroll through log messages'
+    'version:Show stig version'
+
+    'peerlist:List connected peers of torrent(s)'
+    'pls:List connected peers of torrent(s)'
+    'lsp:List connected peers of torrent(s)'
+
+    'add:Download torrents'
+    'download:Download torrents'
+    'get:Download torrents'
+
+    'details:Display detailed torrent information'
+    'info:Display detailed torrent information'
+
+    'list:List torrents'
+    'ls:List torrents'
+
+    'magnet:Display torrent(s) magnet URI'
+    'uri:Display torrent(s) magnet URI'
+
+    'move:Change torrents location'
+    'mv:Change torrents location'
+
+    'remove:Remove torrents'
+    'rm:Remove torrents'
+    'delete:Remove torrents'
+
+    'rename:Rename a torrent or one of its files or directories'
+    'rn:Rename a torrent or one of its files or directories'
+
+    'start:Start downloading torrents'
+
+    'stop:Stop downloading torrents'
+    'pause:Stop downloading torrents'
+
+    'verify:Verify downloaded torrent data'
+    'check:Verify downloaded torrent data'
+
+    'announce:Announce torrents to their trackers now if possible'
+    'an:Announce torrents to their trackers now if possible'
+
+    'tracker:Add/Remove trackers to/from torrents'
+    'trk:Add/Remove trackers to/from torrents'
+
+    'trackerlist:List tracker(s) of torrent(s)'
+    'trkls:List tracker(s) of torrent(s)'
+    'lstrk:List tracker(s) of torrent(s)'
+  )
+  _describe -t stig-commands "command" subcommands
+}
+
+# TUI
+#
+# bind                Bind keys to commands or other keys
+# find                Find text in the content of the focused tab
+# interactive         Complete partial command with user input from a dialog
+# limit               Limit contents of the focused tab by applying more filters
+# mark                Select torrents or files for an action
+# quit                Terminate the TUI
+# setcommand, setcmd  Open the command line and insert a command
+# sort                Sort lists of torrents/peers/trackers/etc
+# tab                 Open, close and focus tabs
+# tui                 Show or hide parts of the text user interface
+# unbind              Unbind keys so pressing them has no effect
+# unmark              Deselect torrents or files for an action
+
+_stig () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    # --debug MODULES      Log debug messages from comma-separated list of MODULES (e.g. "client,commands.tui")
+    # --debug-file FILE    Log debug messages to FILE
+    # --profile-file FILE  Write cProfile statistics to FILE
+    _arguments "${_arguments_options[@]}" \
+        {-v,--version}'[Display version number and exit]' \
+        {-t,--tui}'[Enforce the TUI]' \
+        {-T,--notui,--no-tui}'[Inhibit the TUI]' \
+        {-C,--norcfile,--no-rc-file}'[Do not run commands from any rc file]' \
+        '-c+[Run commands from FILE upon startup]:CONFIG:_files' \
+        '--rcfile=[Run commands from FILE upon startup]:CONFIG:_files' \
+        '--rc-file[Run commands from FILE upon startup]:CONFIG:_files' \
+        '-h+[Display help about TOPIC]:TOPIC:_stig_topics' \
+        '--help=[Display help about TOPIC]:TOPIC:_stig_topics' \
+        ":: :_stig_commands" \
+        "*::: :->stig" \
+        && ret=0
+
+  case $state in
+    (stig)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      case $line[1] in
+        (help|man)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ":: :_stig_topics" \
+            && ret=0
+        ;;
+        (dump)
+          _arguments "${_arguments_options[@]}" \
+              {-h,--help}'[Display help about the subcommand]' \
+              {-v,--version}'[Overwrite FILE if it exists]' \
+              '*::Configuration:_files' \
+              && ret=0
+        ;;
+        (ratelimit|rate|rl)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-q,--quiet}'[Do not show new bandwidth rate(s)]' \
+            ':Any combination of "up", "down" or "dn" separated by a comma:(up down dn)' \
+            ':Maximum allowed transfer rate (see "help srv.limit.rate.up" for the syntax):' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (rc|source)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Path to RC file:_files' \
+            && ret=0
+        ;;
+        (reset)
+          _arguments "${_arguments_options[@]}" \
+            ':Name of setting to reset:' \
+            && ret=0
+        ;;
+        (filelist|fls|lsf)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-c,--columns}'[Comma-separated list of column names (see COLUMNS section)]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            ':File filter expression (see FILE FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (priority|prio)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':File priority:(low normal high o l n h 0 - = +):' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            ':File filter expression (see FILE FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (log)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ":: :_stig_log_cmds" \
+            && ret=0
+
+          [[ "$line[2]" = "scroll" ]] && {
+            typeset -a scroll; scroll=(
+              up down "page up", "page down", top bottom
+            )
+            _describe -t scroll-cmds "scroll options" scroll
+          }
+        ;;
+        (version)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+
+        (peerlist|pls|lsp)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_peerlist_sort' \
+            '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_peerlist_sort' \
+            '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_peerlist_cols' \
+            '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_peerlist_cols' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            ':Peer filter expression (see PEER FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (add|download|get)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-s,--stopped}'[Do not start downloading the added torrent(s)]' \
+            '-p+[Custom download directory for added torrent(s) relative to "srv.path.complete"]:_files' \
+            '--path=[Custom download directory for added torrent(s) relative to "srv.path.complete"]:_files' \
+            && ret=0
+        ;;
+        (details|info)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (list|ls)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
+            '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
+            '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
+            '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
+            && ret=0
+        ;;
+        (magnet|uri)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (move|mv)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*::Move the specified torrent(s) to this directory:_files' \
+            && ret=0
+        ;;
+        (remove|rm|delete)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-d,--delete-files}'[Delete any downloaded files]' \
+            {-f,--force}'[Remove all matching torrents instead of asking confirmation]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (rename|rn)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-u,--unique}'[Rename torrent so it is unique if name matches another]' \
+            '*::New name of the torrent, file or directory specified by TORRENT:_files' \
+            && ret=0
+        ;;
+        (start)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-f,--force}'[Ignore download queue]' \
+            {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (stop|pause)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (verify|check)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (announce|an)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (tracker|trk)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*::Announce URL to add to or remove from matching torrents:_url' \
+            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            && ret=0
+        ;;
+        (trackerlist|trkls|lstrk)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_trklist_sort' \
+            '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_trklist_sort' \
+            '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_trklist_cols' \
+            '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_trklist_cols' \
+            && ret=0
+        ;;
+        esac
+  esac
+}
+
+_stig "$@"

@@ -1,0 +1,17 @@
+vardef SYSCALL = '\b[a-z0-9_]+(?=\()'
+vardef CONST = '\b[A-Z_]+\b'
+vardef PATH ='(?<=\d)<(/[^/]+)+>'
+
+keyword = $SYSCALL
+variable = $CONST
+file = $PATH
+type = '\.\.\.'
+
+string delim "\"" "\"" escape "\\"
+#symbol = "=|+|,|(|)|\|"
+include "/usr/share/source-highlight/symbols.lang"
+
+
+#cbracket = "\(|\)"
+
+comment delim "/*" "*/" multiline

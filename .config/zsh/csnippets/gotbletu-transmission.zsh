@@ -2,24 +2,24 @@
 #   Created: 2021-06-10 14:18                                              #
 ############################################################################
 
-fzf-clipboard() {
-  echo -n "$(greenclip print | fzf -e -i)" | xclip -selection clipboard
-}
+# fzf-clipboard() {
+#   echo -n "$(greenclip print | fzf -e -i)" | xclip -selection clipboard
+# }
 
-greenclip-cfg() {
-  killall greenclip
-  $EDITOR $XDG_CONFIG_HOME/greenclip.cfg && nohup greenclip daemon > /dev/null 2>&1 &
-}
-
-greenclip-rld() {
-  killall greenclip
-  nohup greenclip daemon > /dev/null 2>&1 &
-}
-
-greenclip-derez() {
-  killall greenclip
-  rm $XDG_CACHE_HOME/greenclip.history && nohup greenclip daemon > /dev/null 2>&1 &
-}
+# greenclip-cfg() {
+#   killall greenclip
+#   $EDITOR $XDG_CONFIG_HOME/greenclip.cfg && nohup greenclip daemon > /dev/null 2>&1 &
+# }
+#
+# greenclip-rld() {
+#   killall greenclip
+#   nohup greenclip daemon > /dev/null 2>&1 &
+# }
+#
+# greenclip-derez() {
+#   killall greenclip
+#   rm $XDG_CACHE_HOME/greenclip.history && nohup greenclip daemon > /dev/null 2>&1 &
+# }
 
 tsm-clearcompleted() {
   local -a done

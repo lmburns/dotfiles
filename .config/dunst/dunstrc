@@ -78,6 +78,9 @@
     # Padding between text and separator.
     padding = 8
 
+    # Padding between text and icon.
+    text_icon_padding = 0
+
     # Horizontal padding.
     horizontal_padding = 8
 
@@ -148,7 +151,8 @@
     #   %n  progress value if set without any extra characters
     #   %%  Literal %
     # Markup is allowed
-    format = "<b>%s</b>\n%b"
+    # format = "<b>%s</b>\n%b"
+    format = "<b>%a</b>\n%s\n%b"
 
     # Alignment of message text.
     # Possible values are "left", "center" and "right".
@@ -188,7 +192,7 @@
     max_icon_size = 32
 
     # Paths to default icons.
-    # icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    # max_icon_size = 128
     icon_path = /usr/share/icons/Gruvbox/32x32/devices/:/usr/share/Gruvbox/32x32/status/:/usr/share/Gruvbox/32x32/apps
 
     ### History ###
@@ -206,7 +210,8 @@
     dmenu = /usr/bin/dmenu -p dunst:
 
     # Browser for opening urls in context menu.
-    browser = /usr/bin/librewolf
+    # browser = /usr/bin/librewolf
+    browser = /home/lucas/bin/handlr open
 
     # Always run rule-defined scripts, even if the notification is suppressed
     always_run_script = true
@@ -223,6 +228,12 @@
     # The radius will be automatically lowered if it exceeds half of the
     # notification height to avoid clipping text and/or icons.
     corner_radius = 5
+
+    # Ignore the dbus closeNotification message.
+    # Useful to enforce the timeout set by dunst configuration. Without this
+    # parameter, an application may close the notification sent before the
+    # user defined timeout.
+    ignore_dbusclose = false
 
     ### Legacy
 
@@ -248,6 +259,9 @@
     mouse_left_click = do_action
     mouse_middle_click = close_all
     mouse_right_click = close_current
+
+    # Set this to true to use X11 output on Wayland.
+    force_xwayland = false
 
 [log_notifs]
     script = ~/mybin/linux/dunst_logger.sh
@@ -276,8 +290,10 @@
     # background = "#221a02"
     # foreground = "#c2a383"
 
-    background = "#282828"
-    foreground = "#928374"
+    # background = "#282828"
+    # foreground = "#928374"
+    background = "#458588"
+    foreground = "#ebdbb2"
 
     timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
@@ -288,7 +304,6 @@
     # foreground = "#c2a383"
 
     background = "#221a02"
-    # background = "#458588"
     foreground = "#ebdbb2"
 
     timeout = 5
@@ -326,8 +341,15 @@
 #    new_icon
 #    set_stack_tag
 #    set_transient
+#    set_category
 #    timeout
 #    urgency
+#    skip_display
+#    history_ignore
+#    action_name
+#    word_wrap
+#    ellipsize
+#    alignment
 #
 # Shell-like globbing will get expanded.
 #

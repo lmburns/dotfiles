@@ -1092,8 +1092,6 @@ zt 0c light-mode run-atpull for \
   id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     zdharma/null \
-  id-as'fw-init' has'fw' nocd eval'fw print-zsh-setup -f' \
-    zdharma/null \
   id-as'keychain_init' has'keychain' nocd \
     eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
