@@ -1,5 +1,311 @@
 #compdef stig
 
+_stig_torrents() {
+  typeset -a torrents; torrents=(
+    ${(@f)"$(stig ls --columns=name)"}
+  )
+  _describe -t torrents "torrents" torrents
+}
+
+#
+## SETTINGS
+#
+
+_stig_settings() {
+  typeset -a settings; settings=(
+    "columns.files:Default columns in file lists"
+    "columns.peers:Default columns in peer lists"
+    "columns.settings:Default columns in setting lists"
+    "columns.torrents:Default columns in torrent lists"
+    "columns.trackers:Default columns in tracker lists"
+    "connect.host:Hostname or IP of Transmission RPC interface"
+    "connect.password:Password to use for authentication with Transmission RPC interface"
+    "connect.path:Path of Transmission RPC interface"
+    "connect.port:Port of Transmission RPC interface"
+    "connect.proxy:SOCKS5, SOCKS4 or HTTP proxy URL to tunnel RPC communication through"
+    "connect.timeout:Number of seconds before connecting to Transmission RPC interface fails"
+    "connect.tls:Whether to connect via HTTPS to the Transmission RPC interface"
+    "connect.url:URL of the Transmission RPC interface"
+    "connect.user:Username to use for authentication with Transmission RPC interface"
+    "remove.max-hits:Maximum number of torrents to remove without extra confirmation; negative numbers mean 'unlimited'"
+    "reverse-dns:Whether to lookup peers' host names"
+    "sort.peers:List of sort orders in peer lists"
+    "sort.settings:List of sort orders in setting lists"
+    "sort.torrents:List of sort orders in torrent lists"
+    "sort.trackers:List of sort orders in tracker lists"
+    "tui.cli.history-dir:Directory where histories of user input are stored"
+    "tui.cli.history-size:Maximum number of lines to keep in history files"
+    "tui.free-space.low:Minimum amount of free space before highlighting the display"
+    "tui.log.autohide:If the log is hidden, show it for this many seconds for new log entries before hiding it again"
+    "tui.log.height:Maximum height of the log section"
+    "tui.marked.off:Character displayed in 'marked' column for unmarked list items (see 'mark' command)"
+    "tui.marked.on:Character displayed in 'marked' column for marked list items (see 'mark' command)"
+    "tui.poll:Interval in seconds between TUI updates"
+    "tui.theme:Path to theme file"
+    "unit.bandwidth:Unit for bandwidth rates ('bit' or 'byte')"
+    "unit.size:Unit for file sizes ('bit' or 'byte')"
+    "unitprefix.bandwidth:Unit prefix for bandwidth rates ('metric' or 'binary')"
+    "unitprefix.size:Unit prefix for file sizes ('metric' or 'binary')"
+  )
+  _describe -t settings "settings" settings
+
+  typeset -a remote; remote=(
+    "srv.autostart:Whether added torrents are started automatically"
+    "srv.dht:Whether to use DHT to discover peers for public torrents"
+    "srv.encryption:Protocol encryption policy; 'required', 'preferred' or 'tolerated'"
+    "srv.files.part:Whether '.part' is appended to incomplete files"
+    "srv.limit.peers.global:Maximum number of connections for all torrents combined"
+    "srv.limit.peers.torrent:Maximum number of connections per torrent"
+    "srv.limit.rate.alt.down:Alternative global download rate limit"
+    "srv.limit.rate.alt.up:Alternative global upload rate limit"
+    "srv.limit.rate.down:Global download rate limit"
+    "srv.limit.rate.up:Global upload rate limit"
+    "srv.lpd:Whether to use LPD to discover peers for public torrents"
+    "srv.path.complete:Where to put downloaded files"
+    "srv.path.incomplete:Where to put partially downloaded files"
+    "srv.pex:Whether to use PEX to discover peers for public torrents"
+    "srv.port:Port used to communicate with peers"
+    "srv.port.forwarding:Whether to autoconfigure port-forwarding via UPnP/NAT-PMP"
+    "srv.port.random:Whether to pick a random port when the daemon starts"
+    "srv.utp:Whether to use µTP to mitigate latency issues"
+  )
+  _describe -t remote "remote settings" remote
+}
+
+#
+## FILTERS
+#
+
+_stig_filter_operators() {
+  typeset -a operators; operators=(
+    "\!:Not"
+    "=:Equal"
+    "!=:Not equal"
+    ">:Greater than"
+    ">=:Greater than or equal"
+    "<:Less than"
+    "<=:Less than or equal"
+    "~:Contains literal string VALUE"
+    "=~:Matches Perl style regex"
+    "K:Kilobyte"
+    "Ki:Kilobyte"
+    "M:Megabyte"
+    "Mi:Megabyte"
+    "G:Gigabyte"
+    "Gi:Gigabyte"
+    "T:Teraabyte"
+    "Ti:Teraabyte"
+  )
+  _describe -t operators "operators" operators
+}
+
+_stig_torrent_filters() {
+  # DEFAULT FILTER: name
+  typeset -a boolean; boolean=(
+    "active:Torrents connected to peers or being verified"
+    "act:Torrents connected to peers or being verified"
+    "all:All torrents"
+    "\*:All torrents"
+    "complete:Torrents with all wanted files downloaded"
+    "cmp:Torrents with all wanted files downloaded"
+    "downloading:Torrents using download bandwidth"
+    "dng:Torrents using download bandwidth"
+    "idle:Unstopped torrents that dont do anything"
+    "isolated:Torrents that cannot discover new peers in any way"
+    "isl:Torrents that cannot discover new peers in any way"
+    "leeching:Unstopped torrents downloading or waiting for seeds"
+    "lcg:Unstopped torrents downloading or waiting for seeds"
+    "private:Torrents connectable through trackers only (no DHT/PEX)"
+    "prv:Torrents connectable through trackers only (no DHT/PEX)"
+    "seeding:Unstopped torrents with all wanted files downloaded"
+    "sdg:Unstopped torrents with all wanted files downloaded"
+    "stopped:Torrents that are not allowed to up- or download"
+    "stp:Torrents that are not allowed to up- or download"
+    "paused:Torrents that are not allowed to up- or download"
+    "uploading:Torrents using upload bandwidth"
+    "upg:Torrents using upload bandwidth"
+    "verifying:Torrents being verified or queued for verification"
+    "vfg:Torrents being verified or queued for verification"
+  )
+  _describe -t boolean-torrent "torrent boolean filters" boolean
+
+  typeset -a comparative; comparative=(
+    "%downloaded:Match VALUE against percentage of downloaded bytes"
+    "%dn:Match VALUE against percentage of downloaded bytes"
+    "activity:Match VALUE against time torrent was active"
+    "tact:Match VALUE against time torrent was active"
+    "added:Match VALUE against time torrent was added"
+    "tadd:Match VALUE against time torrent was added"
+    "comment:Match VALUE against comment"
+    "cmnt:Match VALUE against comment"
+    "completed:Match VALUE against time all wanted files where/will be downloaded"
+    "tcmp:Match VALUE against time all wanted files where/will be downloaded"
+    "created:Match VALUE against torrent creation time"
+    "tcrt:Match VALUE against torrent creation time"
+    "downloaded:Match VALUE against number of downloaded bytes"
+    "dn:Match VALUE against number of downloaded bytes"
+    "error:Match VALUE against error message"
+    "err:Match VALUE against error message"
+    "eta:Match VALUE against estimated time to finish downloading"
+    "hash:Match VALUE against torrent SHA1 hash"
+    "id:Match VALUE against torrent ID"
+    "limit-rate-down:Match VALUE against download rate limit"
+    "lrdn:Match VALUE against download rate limit"
+    "limit-rate-up:Match VALUE against upload rate limit"
+    "lrup:Match VALUE against upload rate limit"
+    "name:Match VALUE against name (default)"
+    "n:Match VALUE against name (default)"
+    "path:Match VALUE against absolute path to download directory"
+    "peers:Match VALUE against number of connected peers"
+    "prs:Match VALUE against number of connected peers"
+    "rate-down:Match VALUE against download rate"
+    "rdn:Match VALUE against download rate"
+    "rate-up:Match VALUE against upload rate"
+    "rup:Match VALUE against upload rate"
+    "ratio:Match VALUE against uploaded/downloaded ratio"
+    "rto:Match VALUE against uploaded/downloaded ratio"
+    "seeds:Match VALUE against largest number of seeds reported by any tracker"
+    "sds:Match VALUE against largest number of seeds reported by any tracker"
+    "size:Match VALUE against combined size of all wanted files"
+    "sz:Match VALUE against combined size of all wanted files"
+    "started:Match VALUE against last time torrent was started"
+    "tsta:Match VALUE against last time torrent was started"
+    "tracker:Match VALUE against domain of the announce URL of trackers"
+    "trk:Match VALUE against domain of the announce URL of trackers"
+    "uploaded:Match VALUE against number of uploaded bytes"
+    "up:Match VALUE against number of uploaded bytes"
+  )
+  _describe -t comparative-torrent "torrent comparative filters" comparative
+  _stig_filter_operators
+}
+
+_stig_file_filters() {
+  # DEFAULT FILTER: name
+  typeset -a boolean; boolean=(
+    "all:All files"
+    "\*:All files"
+    "complete:Fully downloaded files"
+    "cmp:Fully downloaded files"
+    "wanted:Wanted files"
+  )
+  _describe -t boolean-file "file boolean filters" boolean
+
+  typeset -a comparative; comparative=(
+    "%downloaded:Match VALUE against percentage of downloaded bytes"
+    "%dn:Match VALUE against percentage of downloaded bytes"
+    "downloaded:Match VALUE against downloaded bytes"
+    "dn:Match VALUE against downloaded bytes"
+    "name:Match VALUE against file name (default)"
+    "n:Match VALUE against file name (default)"
+    "path:Match VALUE against file path"
+    "dir:Match VALUE against file path"
+    "priority:Match VALUE against download priority (off, low, normal, high)"
+    "prio:Match VALUE against download priority (off, low, normal, high)"
+    "size:Match VALUE against file size"
+    "sz:Match VALUE against file size"
+  )
+  _describe -t comparative-file "file comparative filters" comparative
+  _stig_filter_operators
+}
+
+# TODO: where to use?
+_stig_peer_filters() {
+  # DEFAULT FILTER: host
+  typeset -a boolean; boolean=(
+    "all:All peers"
+    "\*:All peers"
+    "downloading:Peers we are downloading from"
+    "dng:Peers we are downloading from"
+    "seeding:Peers that have downloaded all data"
+    "sdg:Peers that have downloaded all data"
+    "uploading:Peers we are uploading to"
+    "upg:Peers we are uploading to"
+  )
+  _describe -t boolean-peer "peer boolean filters" boolean
+
+  typeset -a comparative; comparative=(
+    "%downloaded:Match VALUE against percentage of bytes peer has downloaded"
+    "%dn:Match VALUE against percentage of bytes peer has downloaded"
+    "client:Match VALUE against peer client"
+    "cl:Match VALUE against peer client"
+    "downloaded:Match VALUE against number of bytes peer has downloaded"
+    "dn:Match VALUE against number of bytes peer has downloaded"
+    "host:Match VALUE against peer host name or IP address (default)"
+    "port:Match VALUE against peer port"
+  )
+  _describe -t comparative-peer "peer comparative filters" comparative
+  _stig_filter_operators
+}
+
+_stig_tracker_filters() {
+  # DEFAULT FILTER: domain
+  typeset -a boolean; boolean=(
+    "alive:Trackers we are trying to connect to"
+    "all:All trackers"
+    "*:All trackers"
+  )
+  _describe -t boolean-tracker "tracker boolean filters" boolean
+
+  typeset -a comparative; comparative=(
+    "domain:Match VALUE against domain of announce URL (default)"
+    "dom:Match VALUE against domain of announce URL (default)"
+    "tracker:Match VALUE against domain of announce URL (default)"
+    "downloads:Match VALUE against number of known downloads"
+    "dns:Match VALUE against number of known downloads"
+    "error:Match VALUE against error message from tracker"
+    "err:Match VALUE against error message from tracker"
+    "last-announce:Match VALUE against time of last announce"
+    "lan:Match VALUE against time of last announce"
+    "last-scrape:Match VALUE against time of last scrape"
+    "lsc:Match VALUE against time of last scrape"
+    "leeches:Match VALUE against number of known downloads"
+    "lcs:Match VALUE against number of known downloads"
+    "next-announce:Match VALUE against time of next announce"
+    "nan:Match VALUE against time of next announce"
+    "next-scrape:Match VALUE against time of next scrape"
+    "nsc:Match VALUE against time of next scrape"
+    "seeds:Match VALUE against number of known seeding peers"
+    "sds:Match VALUE against number of known seeding peers"
+    "status:Match VALUE against tracker status (stopped, idle, queued, announcing, scraping)"
+    "st:Match VALUE against tracker status (stopped, idle, queued, announcing, scraping)"
+    "tier:Match VALUE against tracker tier"
+    "url-announce:Match VALUE against announce URL"
+    "an:Match VALUE against announce URL"
+    "sc:Match VALUE against scrape URL"
+  )
+  _describe -t comparative-tracker "tracker comparative filters" comparative
+  _stig_filter_operators
+}
+
+# TODO: where to use?
+_stig_setting_filters() {
+  # DEFAULT FILTER: name
+  typeset -a boolean; boolean=(
+    "all:All settings"
+    "*:All settings"
+    "changed:Settings with customized values"
+    "ch:Settings with customized values"
+  )
+  _describe -t boolean-settings "setting boolean filters" boolean
+
+  typeset -a comparative; comparative=(
+    "default:Match VALUE against default value"
+    "def:Match VALUE against default value"
+    "description:Match VALUE against description"
+    "desc:Match VALUE against description"
+    "name:Match VALUE against setting name (default)"
+    "n:Match VALUE against setting name (default)"
+    "value:Match VALUE against current value"
+    "v:Match VALUE against current value"
+  )
+  _describe -t comparative-settings "setting comparative filters" comparative
+  _stig_filter_operators
+}
+
+#
+## COLUMNS
+#
+
 _stig_trklist_sort() {
   typeset -a trksort; trksort=(
     "domain:Sort trackers by domain from announce URL"
@@ -93,7 +399,7 @@ _stig_list_sort() {
 
 _stig_list_cols() {
   typeset -a listcols; listcols=(
-    "'%downloaded'" "'%available'" activity added available completed created
+    "%downloaded" "%available" activity added available completed created
     downloaded error eta id limit-rate-down limit-rate-up marked name
     path peers rate-down rate-up ratio seeds size started status tracker uploaded
   )
@@ -102,7 +408,7 @@ _stig_list_cols() {
 
 _stig_peerlist_sort() {
   typeset -a peersort; peersort=(
-    "'%downloaded'" "'%dn'" client cl eta host port
+    \%downloaded \%dn client cl eta host port
     rate r rate-down rdn rate-set re rate-up rup torrent
   )
   _describe -t peer-list-sort "peer list sorting" peersort
@@ -110,9 +416,33 @@ _stig_peerlist_sort() {
 
 _stig_peerlist_cols() {
   typeset -a peerlist; peerlist=(
-    "'%downloaded'" client eta host port rate-down rate-est rate-up torrent
+    \%downloaded client eta host port rate-down rate-est rate-up torrent
   )
   _describe -t peer-list "peer list columns" peerlist
+}
+
+#
+## COMMANDS
+#
+_stig_tracker_cmds() {
+  typeset -a tracker_cmds
+  tracker_cmds=(
+    'add:Add a tracker'
+    'remove:Remove a tracker'
+    'rm:Remove a tracker'
+  )
+  _describe -t tracker-cmds "tracker commands" tracker_cmds
+}
+
+_stig_log_cmds() {
+  typeset -a log_cmds
+  log_cmds=(
+    'clear:Remove all previously logged messages in the TUI'
+    'scroll:Scroll the log messages up or down in the TUI'
+    'info:Join all PARAMETERs and display them as a normal message'
+    'error:Join all PARAMETERs and display them as an error message'
+  )
+  _describe -t log-cmds "log commands" log_cmds
 }
 
 _stig_log_cmds() {
@@ -149,6 +479,21 @@ _stig_topics() {
   _describe -t topics "help topics" topics
   _stig_commands
 }
+
+# TUI
+#
+# bind                Bind keys to commands or other keys
+# find                Find text in the content of the focused tab
+# interactive         Complete partial command with user input from a dialog
+# limit               Limit contents of the focused tab by applying more filters
+# mark                Select torrents or files for an action
+# quit                Terminate the TUI
+# setcommand, setcmd  Open the command line and insert a command
+# sort                Sort lists of torrents/peers/trackers/etc
+# tab                 Open, close and focus tabs
+# tui                 Show or hide parts of the text user interface
+# unbind              Unbind keys so pressing them has no effect
+# unmark              Deselect torrents or files for an action
 
 _stig_commands() {
   typeset -a subcommands
@@ -226,21 +571,6 @@ _stig_commands() {
   _describe -t stig-commands "command" subcommands
 }
 
-# TUI
-#
-# bind                Bind keys to commands or other keys
-# find                Find text in the content of the focused tab
-# interactive         Complete partial command with user input from a dialog
-# limit               Limit contents of the focused tab by applying more filters
-# mark                Select torrents or files for an action
-# quit                Terminate the TUI
-# setcommand, setcmd  Open the command line and insert a command
-# sort                Sort lists of torrents/peers/trackers/etc
-# tab                 Open, close and focus tabs
-# tui                 Show or hide parts of the text user interface
-# unbind              Unbind keys so pressing them has no effect
-# unmark              Deselect torrents or files for an action
-
 _stig () {
     local curcontext="$curcontext" state line context
     typeset -A opt_args
@@ -289,7 +619,7 @@ _stig () {
             {-q,--quiet}'[Do not show new bandwidth rate(s)]' \
             ':Any combination of "up", "down" or "dn" separated by a comma:(up down dn)' \
             ':Maximum allowed transfer rate (see "help srv.limit.rate.up" for the syntax):' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (rc|source)
@@ -300,23 +630,28 @@ _stig () {
         ;;
         (reset)
           _arguments "${_arguments_options[@]}" \
-            ':Name of setting to reset:' \
+            '*::Name of setting to reset:_stig_settings' \
+            && ret=0
+        ;;
+        (set)
+          _arguments "${_arguments_options[@]}" \
+            '*::Name of setting to set:_stig_settings' \
             && ret=0
         ;;
         (filelist|fls|lsf)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-c,--columns}'[Comma-separated list of column names (see COLUMNS section)]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
-            ':File filter expression (see FILE FILTERS section in "help filters"):' \
+            '1::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
+            '::File filter expression (see FILE FILTERS section in "help filters"):_stig_file_filters' \
             && ret=0
         ;;
         (priority|prio)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            ':File priority:(low normal high o l n h 0 - = +):' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
-            ':File filter expression (see FILE FILTERS section in "help filters"):' \
+            '1::File priority:(low normal high o l n h 0 - = +)' \
+            '2::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
+            '*::File filter expression (see FILE FILTERS section in "help filters"):_stig_file_filters' \
             && ret=0
         ;;
         (log)
@@ -345,8 +680,8 @@ _stig () {
             '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_peerlist_sort' \
             '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_peerlist_cols' \
             '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_peerlist_cols' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
-            ':Peer filter expression (see PEER FILTERS section in "help filters"):' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
+            '::Peer filter expression (see PEER FILTERS section in "help filters"):_stig_peer_filters' \
             && ret=0
         ;;
         (add|download|get)
@@ -355,12 +690,14 @@ _stig () {
             {-s,--stopped}'[Do not start downloading the added torrent(s)]' \
             '-p+[Custom download directory for added torrent(s) relative to "srv.path.complete"]:_files' \
             '--path=[Custom download directory for added torrent(s) relative to "srv.path.complete"]:_files' \
+            '*::File to add:_files' \
             && ret=0
         ;;
         (details|info)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '::Torrent names:_stig_torrents' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (list|ls)
@@ -370,18 +707,20 @@ _stig () {
             '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
             '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
             '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
+            '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (magnet|uri)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (move|mv)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            '*::Move the specified torrent(s) to this directory:_files' \
+            '::Torrent names:_stig_torrents' \
+            '::Move the specified torrent(s) to this directory:_files' \
             && ret=0
         ;;
         (remove|rm|delete)
@@ -389,14 +728,16 @@ _stig () {
             {-h,--help}'[Display help about the subcommand]' \
             {-d,--delete-files}'[Delete any downloaded files]' \
             {-f,--force}'[Remove all matching torrents instead of asking confirmation]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '::Torrent names:_stig_torrents' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (rename|rn)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-u,--unique}'[Rename torrent so it is unique if name matches another]' \
-            '*::New name of the torrent, file or directory specified by TORRENT:_files' \
+            '::Torrent names:_stig_torrents' \
+            '::New name of the torrent, file or directory specified by TORRENT:_files' \
             && ret=0
         ;;
         (start)
@@ -404,33 +745,37 @@ _stig () {
             {-h,--help}'[Display help about the subcommand]' \
             {-f,--force}'[Ignore download queue]' \
             {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '::Torrent names:_stig_torrents' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (stop|pause)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '::Torrent names:_stig_torrents' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (verify|check)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '::Torrent names:_stig_torrents' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (announce|an)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (tracker|trk)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            '*::Announce URL to add to or remove from matching torrents:_url' \
-            ':Torrent filter expression (see TORRENT FILTERS section in "help filters"):' \
+            '1::Tracker command:_stig_tracker_cmds' \
+            '::Announce URL to add to or remove from matching torrents:_url' \
+            '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (trackerlist|trkls|lstrk)
@@ -440,6 +785,8 @@ _stig () {
             '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_trklist_sort' \
             '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_trklist_cols' \
             '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_trklist_cols' \
+            '1::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
+            '*::Tracker filter expression (see TRACKER FILTERS section in "help filters"):_stig_tracker_filters' \
             && ret=0
         ;;
         esac
