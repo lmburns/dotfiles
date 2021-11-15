@@ -68,7 +68,7 @@ alias ng="noglob"
 }
 
 (( ${+commands[pet]} )) && {
-  alias pe="pet exec"
+  alias pe="pet exec --color"
   alias pee="pet edit"
 }
 
@@ -273,6 +273,7 @@ alias vwb='$EDITOR $HOME/vimwiki/blog/index.md'
 alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
 alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
 alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
+alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
 
 # === github ====================================================================
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'

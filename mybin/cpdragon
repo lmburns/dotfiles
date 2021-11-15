@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-files=$(dragon -t -x)
+typeset -a files
+files=( ${(@f)"$(dragon -t -x)"} )
 
-for file in $files
-do
-  path=${file#file://}
-  name=$(basename "$path")
-  cp "$path" "$(pwd)/$name"
-done
+for file in "${files[@]}" {
+  path="${file#file://}"
+  name="${path:t}"
+  command cp "$path" "${PWD}/${name}"
+}

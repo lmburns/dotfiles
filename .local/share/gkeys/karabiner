@@ -1,0 +1,23 @@
+Key: Action
+
+j: down
+k: up
+h: left
+l: right
+0: beginning of line
+4: end of line (close enough to $)
+gg: beginning of document
+G: end of document
+b: move backwards a word
+w: move forward a word
+u: highlight all words to the left
+i: highlight one word to the left
+o: highlight one word the right
+p: highlight all words to the right
+yy: copy
+J: ⌥ Option + ⌃ Control + ←
+K: ⌥ Option + ⌃ Control + →
+
+Other mappings: Action
+Cmd + qq: quit app
+Cmd + ww: close window of app

@@ -1,5 +1,11 @@
 #compdef stig
 
+autoload -U is-at-least
+
+# FIX:
+# :message:action = mandatory
+# ::message:action = optional
+
 _stig_torrents() {
   typeset -a torrents; torrents=(
     ${(@f)"$(stig ls --columns=name)"}
@@ -78,6 +84,7 @@ _stig_settings() {
 
 _stig_filter_operators() {
   typeset -a operators; operators=(
+    "\&:And"
     "\!:Not"
     "=:Equal"
     "!=:Not equal"
@@ -343,6 +350,13 @@ _stig_trklist_cols() {
   _describe -t trk-list "tracker list columns" trklist
 }
 
+_stig_filelist_cols() {
+  typeset -a filelist; filelist=(
+    '%downloaded' downloaded marked name priority size
+  )
+  _describe -t file-list "file list columns" filelist
+}
+
 _stig_list_sort() {
   typeset -a peerlist; peersort=(
     "%downloaded:Sort torrents by downloading or verifying progress"
@@ -480,20 +494,24 @@ _stig_topics() {
   _stig_commands
 }
 
-# TUI
-#
-# bind                Bind keys to commands or other keys
-# find                Find text in the content of the focused tab
-# interactive         Complete partial command with user input from a dialog
-# limit               Limit contents of the focused tab by applying more filters
-# mark                Select torrents or files for an action
-# quit                Terminate the TUI
-# setcommand, setcmd  Open the command line and insert a command
-# sort                Sort lists of torrents/peers/trackers/etc
-# tab                 Open, close and focus tabs
-# tui                 Show or hide parts of the text user interface
-# unbind              Unbind keys so pressing them has no effect
-# unmark              Deselect torrents or files for an action
+_stig_tui_cmds() {
+  typeset -a tui_cmds
+  tui_cmds=(
+    "bind:Bind keys to commands or other keys"
+    "find:Find text in the content of the focused tab"
+    "interactive:Complete partial command with user input from a dialog"
+    "limit:Limit contents of the focused tab by applying more filters"
+    "mark:Select torrents or files for an action"
+    "quit:Terminate the TUI"
+    "setcommand:setcmd  Open the command line and insert a command"
+    "sort:Sort lists of torrents/peers/trackers/etc"
+    "tab:Open, close and focus tabs"
+    "tui:Show or hide parts of the text user interface"
+    "unbind:Unbind keys so pressing them has no effect"
+    "unmark:Deselect torrents or files for an action"
+  )
+  _describe -t tui-cmds "tui commands" tui_cmds
+}
 
 _stig_commands() {
   typeset -a subcommands
@@ -569,6 +587,7 @@ _stig_commands() {
     'lstrk:List tracker(s) of torrent(s)'
   )
   _describe -t stig-commands "command" subcommands
+  _stig_tui_cmds
 }
 
 _stig () {
@@ -576,6 +595,12 @@ _stig () {
     typeset -A opt_args
     typeset -a _arguments_options
     local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
 
     # --debug MODULES      Log debug messages from comma-separated list of MODULES (e.g. "client,commands.tui")
     # --debug-file FILE    Log debug messages to FILE
@@ -585,10 +610,10 @@ _stig () {
         {-t,--tui}'[Enforce the TUI]' \
         {-T,--notui,--no-tui}'[Inhibit the TUI]' \
         {-C,--norcfile,--no-rc-file}'[Do not run commands from any rc file]' \
-        '-c+[Run commands from FILE upon startup]:CONFIG:_files' \
+        '-c[Run commands from FILE upon startup]:CONFIG:_files' \
         '--rcfile=[Run commands from FILE upon startup]:CONFIG:_files' \
         '--rc-file[Run commands from FILE upon startup]:CONFIG:_files' \
-        '-h+[Display help about TOPIC]:TOPIC:_stig_topics' \
+        '-h[Display help about TOPIC]:TOPIC:_stig_topics' \
         '--help=[Display help about TOPIC]:TOPIC:_stig_topics' \
         ":: :_stig_commands" \
         "*::: :->stig" \
@@ -638,11 +663,14 @@ _stig () {
             '*::Name of setting to set:_stig_settings' \
             && ret=0
         ;;
+        # TODO: fix the -c not registering because of above
         (filelist|fls|lsf)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            {-c,--columns}'[Comma-separated list of column names (see COLUMNS section)]' \
+            '-c[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_filelist_cols' \
+            '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_filelist_cols' \
             '1::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
+            '::Torrent names:_stig_torrents' \
             '::File filter expression (see FILE FILTERS section in "help filters"):_stig_file_filters' \
             && ret=0
         ;;
@@ -787,6 +815,85 @@ _stig () {
             '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_trklist_cols' \
             '1::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             '*::Tracker filter expression (see TRACKER FILTERS section in "help filters"):_stig_tracker_filters' \
+            && ret=0
+        ;;
+        # TUI
+        (tab)
+        # TODO: could add case to repeat when running _stig_commands
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-b,--background}'[Do not focus new tab]' \
+            {-C,--close-all}'[Close all tabs]' \
+            '-c[Close focused or specified tab (see TAB IDENTIFIERS SECTION)]:' \
+            '--close=[Close focused or specified tab (see TAB IDENTIFIERS SECTION)]:' \
+            '-f[Focus specified tab (see TAB IDENTIFIERS SECTION)]:' \
+            '--focus=[Focus specified tab (see TAB IDENTIFIERS SECTION)]:' \
+            '-m[Move focused tab left, right or to absolute position]:' \
+            '--move=[Move focused tab left, right or to absolute position]:' \
+            '-t[Manually set tab title instead of generating one]:' \
+            '--title=[Manually set tab title instead of generating one]:' \
+            '::Command to run in TUI:_stig_commands' \
+            && ret=0
+        ;;
+        (bind)
+          # KEY
+          # ACTION
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-c+[Where KEY is grabbed (see CONTEXTS section)]:' \
+            '--context=[Where KEY is grabbed (see CONTEXTS section)]:' \
+            '-d+[Explanation of what ACTION does]:' \
+            '--description=[Explanation of what ACTION does]:' \
+            && ret=0
+        ;;
+        (find)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (interactive)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (limit)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (mark)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (quit)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (setcommand)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (sort)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (tui)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (unbind)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (unmark)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         esac

@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+import subprocess
+import time
+import feedparser
+
+last_updated_time = None
+while True:
+    d = feedparser.parse(rss_url)
+    updated_time = d.feed.updated
+    if updated_time == last_updated_time:
+        pass
+    else:
+        last_updated_time = updated_time
+        for entry in d.entries:
+            _id = entry.id
+            if _id in dup_ids:
+                print('Entry already exists')
+            else:
+                dup_ids.append(_id)
+                base_cmd = 'display notification "{0}" with title "{1}"'.format(_notification, rss_title)
+                cmd = apple_cmd.format(base_cmd)
+                subprocess.Popen([cmd], shell=True)
+            time.sleep(5)
+time.sleep(5)
+
+f = feedparser.parse('https://github.com/wfxr/dotfiles/commits/master.atom')
+
+# f['feed']['title']
+# f['feed']['link']
+# f.feed.subtitle
+# f['entries'][0]['title']
+# f.entries[0]['link']
+# f.version
+# f.headers
+#  f.feed.updated
+
+f['entries'][0]['title']

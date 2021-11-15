@@ -1,0 +1,54 @@
+Hyper = Ctrl + Alt + Cmd + Shift
+
+Keys: Action
+Ctrl + Alt + Cmd + r: Restart yabai
+Hyper + Backspace: Close window
+L-Ctrl + Alt + g: Toggle gaps
+
+Swapping
+--------
+Hyper + =: Swap south
+Hyper + -: Swap north
+Hyper + [: Swap west
+Hyper + ]: Swap east
+Shift + Alt h: Swap west
+Shift + Alt j: Swap south
+Shift + Alt k: Swap north
+Shift + Alt l: Swap east
+
+Focusing
+--------
+Alt + h: Focus west
+Alt + j: Focus south
+Alt + k: Focus north
+Alt + l: Focus east
+Hyper + a: Focus recent
+
+Resizing
+-------
+L-Ctrl + Alt + h: Resize -20 left
+L-Ctrl + Alt + h: Resize -20 right
+L-Ctrl + Alt + j: Resize 20 bottom
+L-Ctrl + Alt + j: Resize 20 top
+L-Ctrl + Alt + k: Resize -20 right
+L-Ctrl + Alt + k: Resize -20 right
+L-Ctrl + Alt + l: Resize 20 right
+L-Ctrl + Alt + l: Resize 20 right
+L-Ctrl + Alt + 0: Equalize
+Floating:
+Shift + Alt + Space: Toggle float
+Shift + Alt + c: Float & Center
+Hyper + e: Resize floating window
+Hyper + 1: Float & keep same position
+
+Moving Window
+-------------
+Hyper + f: Fullscreen
+Hyper + r: Rotate 90 degrees
+Shift + Alt + x: Mirror x-axis
+Shift + Alt + y: Mirror y-axis
+Stacks:
+Hyper + s: Toggle stack
+Hyper + m: Go to next window (in or out of stack)
+Hyper + n: Go to prev window (in or out of stack)
+Hyper + Space: Toggle focus on stack

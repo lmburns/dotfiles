@@ -1,0 +1,166 @@
+# === File Openers ===
+map ee $$EDITOR "$f"                            # open file in editor
+map ec edit_config                              # edit & source lfrc
+map ev $nvim ~/.config/nvim/init.vim            # open nvim config
+map ew $nvim ~/vimwiki/index.md                 # open vimwiki
+map es edit_scope                               # edit lfrc scope
+map ez $nvim $ZDOTDIR/.zshrc                    # edit zshrc
+map ea $nvim $ZDOTDIR/zsh-aliases               # edit zsh aliases
+map b $gcp --force --suffix=.bak "$f" "$f"      # backup file
+map r $rmcrap                                   # delete .DS_Store etc
+map v $LESS='-iWQMXR~' bat --paging=always --theme=KimbieDark "$f"
+map V push :!nvim<space>
+map ? $lf -doc | bat -f                         # open lfrc docs
+map gH $bat -f ~/.config/lf/mappings            # open these mappings
+map O push :open-with<space>                    # open w/ specified program
+
+map as !du -hsx * | sort -rh | bat --paging=always  # directory info
+map ai !gstat $f || stat $f; echo ; du -sh $f ; echo ; file -I -b -p $f
+
+map sf select-files
+map sd select-dirs
+map sr :{{ set nopreview; set ratios 1:3; }}
+map sp :{{ set preview;   set ratios 1:2:3; }}
+map sP :{{ set preview;   set ratios 1:2; }}
+map sR :{{ set reverse!; }}
+
+# === Archive Mappings ===
+map az zip
+map at tar
+map ag targz
+map ab targz
+map au unarchive
+
+# === Trash Mappings ===
+map dd trash
+map D delete                            # confirmation with whiptail
+map te %trash-empty
+map tl %trash-list
+map tr %ftr                            # fzf trash restore script
+
+# Dragon Mapping [CONFIGURE]
+# map dr dragon
+# map ds dragon-stay
+# map di dragon-individual
+# map dm mvdragon
+# map dc cpdragon
+# map dl dlfile
+
+# === Renaming ===
+map A rename                            # at the very end
+map cn push A<c-u>                      # new rename
+map I push A<c-a>                       # at the beginning
+map i push A<a-b><a-b><a-f>             # before extention
+map aa push A<a-b>                      # after extention
+map Bb bulkrename                       # bulk rename all in directory
+map Bm massren                          # bulk rename with massren
+map ch chmod                            # change file permissions
+
+# === File movement ===
+map fo push :fzf<space>   # fzf search and open
+map fd push :fd<space>    # use fd to find file
+map fa ajfzf              # use fzf with autojump
+# map <c-b> broot_jump      # use broot to jump to directory
+map n fzf_z               # fzf zioxide
+map zi zoxide_i           # zoxide interactive
+map zz push :z<space>     # very similar to autojump
+map <c-j> push :aj<space> # auto jump
+# map w $lf -remote "send $id select $(fzf)"
+map w fzf_cd
+
+
+# === General ===
+map . set hidden!
+map p paste                     # regular
+map Pl :{{ link; unselect; }}   # paste a symlink
+map Pp ppaste                   # paste and preview progress
+map x cut
+map y copy
+map Yp yank-path                # yank file path
+map <enter> shell-wait
+map mf push :mkfile<space>
+map md push :mkdir<space>
+map ms $mksc                    # make script
+map Ql ql_preview               # open in quicklook (macOS)
+
+map gg top -- []
+map G bottom -- []
+map J half-down
+map K half-up
+map R reload
+map C clear
+map U unselect
+
+map <c-x>x $$f                              # execute file
+map <c-x>X !$f                              # execute file and $PAGER output
+map <c-x>l $$f | bat --paging=always -f     # execute file and bat output
+map <c-x>w push :wim<space>                 # open script source code
+map <c-v> $jupview -P "$f"                  # view ipynb file
+map <c-x>p $cat $fx | up                    # cat file to up (unix piper)
+map <c-s> shell                             # enter shell command
+map <c-u> usage
+map <c-f> push :rg<space>                   # search with rg
+
+map Yj copytojump       # copy to directory with autojump
+map Mj movetojump       # move to directory with autojump
+
+map Mt push :rsyncto<space>                     # move things to the server
+map Mf push :rsyncfrom<space>                   # move things from the server
+
+map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f"   # attempt to preview all imgs
+
+# === gpg ===
+map te pgp_encrypt_recipient
+map tp pgp_encrypt_pass
+map td pgp_decrypt
+map ts. pgp_sign
+map tsc pgp_sign_clear
+map tsd pgp_sign_detach
+
+# === git ===
+map gtb :git_branch
+map gtp ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
+map gtz ${{clear; git status; echo "press ENTER"; read ENTER}}
+map gtp ${{clear; git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit}}
+map gttr ${{clear; git ls-tree -r master --name-only | bat}}
+map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
+map gttu ${{clear; git ls-files --other | bat}}
+map gtd ${{clear; f::diff}}
+map gtc ${{clear; f::clean}}
+map gts ${{clear; fstat}}
+map gta ${{clear; fadd}}
+map gtl ${{clear; flog}}
+map gtu ${{clear; funtrack}}
+
+map gfa ${{clear; dotbare fadd -f}}
+map gfs ${{clear; dotbare fstat}}
+map gfu ${{clear; dotbare funtrack}}
+map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
+map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
+map gftu ${{clear; dotbare ls-files --other | bat}}
+
+# === Movement ===
+map gd cd ~/Documents
+map gD cd ~/Downloads
+map gP cd ~/Pictures
+map ge cd ~/Desktop
+map gW cd ~/vimwiki
+map gG cd ~/projects/github
+map gp cd ~/projects
+map go cd ~/opt
+
+map gc cd ~/.config
+map gv cd ~/.config/nvim
+map glf cd ~/.config/lf
+
+map gC cd ~/.local/share
+map glo cd ~/.local
+
+map gE cd /etc
+map gU. cd /usr/local
+map gUs cd /usr/local/share
+
+map gh cd ~
+
+# map o &mimeopen $f
+# map O $mimeopen --ask $f

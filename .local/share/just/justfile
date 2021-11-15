@@ -14,6 +14,14 @@ alias h := help
 help:
   @$EDITOR $XDG_DATA_HOME/just/overall.just
 
+# rage encrypt ssh
+rage-e ENC OUT:
+  rage -R ~/.ssh/burnsac.pub -o {{invocation_directory()}}/{{OUT}} {{invocation_directory()}}/{{ENC}}
+
+# rage decrypt ssh
+rage-d DEC OUT:
+  rage -d -i ~/.ssh/burnsac -o {{invocation_directory()}}/{{OUT}} {{invocation_directory()}}/{{DEC}}
+
 # create a tomb
 tomb:
   #!/usr/bin/env zsh

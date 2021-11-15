@@ -4,7 +4,15 @@ GenericName=Alacritty (mine)
 Comment=Terminal Emulator
 Keywords=terminal
 Exec=alacritty
-Terminal=true
+TryExec=alacritty
+# Terminal=true
+Terminal=false
 Type=Application
 Icon=alacritty
-Categories=TerminalEmulator;
+StartupWMClass=Alacritty
+Actions=New;
+Categories=System;TerminalEmulator;
+
+[Desktop Action New]
+Name=New Terminal
+Exec=alacritty

@@ -259,6 +259,9 @@ mod3 + c : {Left,Down,Up,Right}
 # === LAUNCHER ===
 # ================
 
+ctrl + alt + o
+    handlr open "$(xsel -b)"
+
 mod3 + d
     rofi -show drun
 

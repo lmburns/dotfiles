@@ -41,4 +41,21 @@ current_shell = true
 #   - Memory
 #   - Battery
 # Example:
-#   show = ["Battery", "Memory", ...]
+show = [
+  "Host",
+  "Machine",
+  "Kernel",
+  "Distribution",
+  "OperatingSystem",
+  "DesktopEnvironment",
+  "WindowManager",
+  "Resolution",
+  "Packages",
+  "LocalIP",
+  "Terminal",
+  "Shell",
+  "Uptime",
+  "Processor",
+  "ProcessorLoad",
+  "Memory"
+]

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# pamixer --list-sinks
+
+# Lists out the pulse devices and volume data
+pactl list sinks | grep 'Name\|Mute\|Volume:'

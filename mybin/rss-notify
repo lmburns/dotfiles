@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+
+# Desc: parse rss feeds and get notified
+
+import subprocess
+import sys
+import feedparser
+import os
+from datetime import datetime as dt
+from sspipe import p, px
+import re
+import argparse
+import time
+
+# pip install python-decouple
+# from decouple import config
+# create .env // config('USER')
+
+script = sys.argv[0]
+
+
+def print_usage():
+    print(f' >> {sys.stderr}, "Usage: python {script} <rss url>"')
+    sys.exit(1)
+
+
+def config():
+    feed_dir = os.getenv("RSS_FEED_DIR") or os.path.join(
+        os.environ["HOME"], ".local", "share", "pyrss"
+    )
+
+    if not os.path.isdir(feed_dir):
+        os.mkdir(feed_dir)
+    return feed_dir
+
+
+def fmt_time(time):
+    return dt.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
+
+
+#  if not len(argv) == 1:
+#      print_usage()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="parse RSS feed to notifications for macOS"
+    )
+    parser.add_argument("-f", "--feed", required=True, type=str, help="rss url")
+    parser.add_argument(
+        "-d", "--delay", required=False, type=int, help="delay notification (seconds)"
+    )
+    parser.add_argument(
+        "-t", "--title", required=False, type=str, help="title of notification"
+    )
+    parser.add_argument(
+        "-F",
+        "--force",
+        required=False,
+        action="store_true",
+        help="receive notification regardless if new",
+    )
+    parser.add_argument(
+        "-c", "--confdir", required=False, type=str, help="configuration directory"
+    )
+    args = parser.parse_args()
+
+    if args.confdir:
+        feed_dir = getattr(args, "confdir")
+    else:
+        feed_dir = config()
+    f = feedparser.parse(args.feed)
+    feed_file = os.path.join(feed_dir, f["etag"].replace('"', ""))
+    updated_time = f.feed.updated
+
+    # write url to file if it's new
+    if not os.path.isfile(feed_file) or os.stat(feed_file).st_size == 0:
+        print(f.href, file=open(feed_file, "w"))
+        #  with open(feed_file, 'w') as ff:
+        #      ff.write(f.href)
+
+    # get last line of file
+    with open(feed_file, "r") as ff:
+        old_update_time = ff.readlines()[-1].replace("\n", "")
+
+    if updated_time == old_update_time:
+        if args.force:
+            pass
+        else:
+            sys.exit(1)
+
+    # write new updated time if it's different than current
+    print(f.feed.updated, file=open(feed_file, "a"))
+    osascript = "osascript -e '{0}'"
+    new_entries = []
+    for feed in f["entries"]:
+        if fmt_time(feed.updated) < fmt_time(updated_time):
+            oldd = fmt_time(feed.updated)
+            #  new_entries[oldd.strftime("%m-%d - %I:%M %p")] = feed.title
+            # dict(list(new_entries.items())[0:2])
+            new_entries.append(tuple((oldd.strftime("%m-%d-%I:%M %p"), feed.title)))
+
+    if len(new_entries) > 2:
+        new_entries = new_entries[0:2]
+
+    _osatitle = ""
+    for n in new_entries[:-1]:
+        #  print(f'{n[0]} - {n[1]:>len(n[1])}')
+        #  print(f'{n[0]} - {n[1]:*^25s}')
+        _osatitle += f"{n[0]} - {n[1]}\n"
+
+    if args.title:
+        _ftitle = args.title
+    else:
+        _ftitle = os.path.dirname(f["href"]) | p(re.sub, "https?://", "", px)
+    osa_sub = f'display notification "{_osatitle}" with title "{_ftitle}"'
+    cmd = osascript.format(osa_sub)
+    # makes more sense with multiple feeds
+    if args.delay:
+        time.sleep(getattr(args, "delay"))
+    subprocess.Popen([cmd], shell=True)
+
+
+if __name__ == "__main__":
+    #  main(sys.argv.pop())
+    main()

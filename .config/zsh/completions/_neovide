@@ -1,0 +1,26 @@
+#compdef neovide
+
+# zsh completions for 'neovide'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--frameless[removes the window frame. NOTE: Window might not be resizable after this setting is enabled.]'
+  {-h,--help}'[prints help information]'
+  '--log[log to a file]'
+  '--maximized[maximize the window]'
+  '--multigrid[enable Multigrid]'
+  '--nofork[do not detach process from terminal]'
+  '--noidle[render every frame. Takes more power and cpu time but possibly fixes animation issues]'
+  '--srgb[use standard color space to initialize the window. Swapping this variable sometimes fixes issues]'
+  {-V,--version}'[prints version information]'
+  '-v[increase verbosity level (repeatable up to 4 times; implies --nofork)]'
+  '--wsl[run in WSL]'
+  '--geometry[specify the Geometry of the window]'
+  '--remote-tcp[connect to Remote TCP]'
+  '--wayland-app-id[]'
+  '--x11-wm-class[11_wm_class>]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

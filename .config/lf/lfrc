@@ -576,8 +576,9 @@ map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings
 map Ow push :open-with<space>                # open w/ specified program
 map Op $handlr open $PWD                     # open curr directory in finder
-map o  $mimeopen $f
+map o  $clear; handlr ask --skim $f
 map Oa $mimeopen --ask $f
+# map Oa $mimeopen $f
 
 map Qm !clear; mdcat -p $fx                   # preview in mdcat
 map Qg !clear; glow -p $fx                    # preview in glow

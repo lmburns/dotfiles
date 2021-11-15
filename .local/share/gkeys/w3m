@@ -1,0 +1,30 @@
+## W3M
+
+# == EXTERNAL PROGRAMS ==
+# yank to clipboard
+keymap  yx      EXTERN_LINK   '(printf %s "$0" | pbcopy)'
+keymap  YX      EXTERN        '(printf %s | pbcopy)'
+# yank url to tmux clipboard
+keymap  yy      EXTERN_LINK   'tmux set-buffer'
+keymap  YY      EXTERN        'tmux set-buffer'
+
+# open in GUI
+keymap  xw      EXTERN_LINK   '$BROWSER'
+keymap  XW      EXTERN        '$BROWSER'
+
+# download
+keymap  xd      EXTERN_LINK   'diana add'
+keymap  XD      EXTERN_LINK   'diana --pause add'
+keymap  xD      SHELL         'diana-mui'
+
+# add torrent
+keymap  xt      EXTERN_LINK   'transmission-remote --add'
+
+# save bookmark
+keymap  xa      COMMAND       "SHELL ~/.w3m/cgi-bin/save_bookmark_surfraw.cgi"
+
+# fzf buku
+keymap  xu      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_buku.cgi..."
+
+# == INTERNAL ==
+keymap  xe  EDIT_SCREEN

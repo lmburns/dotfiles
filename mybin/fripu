@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+# Desc: fzf rip undo
+
+local -a undo
+undo=( $(rip -sap | fzf) )
+
+[[ -n $undo ]] && {
+  for f ("$undo[@]") { rip -u "$f" }
+} || builtin print -Pr "%F{2}Nothing undone%f"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

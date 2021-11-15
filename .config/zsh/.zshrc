@@ -466,8 +466,7 @@ zt 0c light-mode null for \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
   atpull'%atclone' \
     lmburns/hoard \
-  lbin'* -> ruplacer' from'gh-r' \
-  atinit'alias rup="ruplacer"' \
+  lbin'*/ruplacer' from'gh-r' atinit'alias rup="ruplacer"' \
     dmerejkowsky/ruplacer \
   lbin'*/rgr' from'gh-r' lman \
     acheronfail/repgrep \

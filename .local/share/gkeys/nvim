@@ -1,0 +1,84 @@
+Mapping: Action: Mode
+---------------------
+F1: run file as ./: n
+F2: turn on/off wrapping: n
+F3: turn on/off relative line numbers: n
+F4: compile markdown using pandoc:
+F9: get syntax name / attributes of hover: n
+F10: spellcheck:
+gkk: move to previous blank line: n
+gjj: move to next blank line: n
+H: move to first character on line: nv
+L: move to last character on line: nv
+ctrl + s: save file: nvi
+S: replace all: n
+Leader + Q: replace single quotes with double: n
+⇥ Tab: indent: nvi
+⇧ Shift + ⇥ Tab: de-indent: nvi
+d: delete line not to clipboard: nv
+Y: yank line without newline: n
+x: cut not to clipboard: n
+E: delete line, keeping cursor on line: n
+gV: reselect text that has just been pasted: n
+vv: select first char to last char on line: n
+Leader + sa: add space after character: n
+q: / Q:: quit: n
+Q: play macro recording: nv
+qq / q: start / stop macro: n
+Leader + nt: create new tab using FZF: n
+Leader + to: leave open only current tab: n
+Leader + tc: close current tab: n
+Leaader + tn: next tab: n
+Leader + tp: previous tab: n
+ctrl + j: move down window: ni
+ctrl + k: move up window: ni
+ctrl + h: move left window: n
+ctrl + l: move right window: n
+j / k: move through wrapped lines: n
+J / K: move text through other text	v
+Leader + sc: run shellcheck: n
+Leader + vw: navigate to vimwiki index: n
+Leader + ee: coc explorer: n
+Leader + nn: nerdtree toggle: n
+ctrl + k: fuzzy complete word: i
+ctrl + f: fuzzy complete line: i
+Leader + f: fuzzy :Files: n
+Leader + gf: fuzzy :GFiles: n
+Leader + L: fuzzy :Locate: n
+ctrl + f: fuzzy using rg (ripgrep): n
+Leader + a: fuzzy :Buffers: n
+Leader + A: fuzzy :Windows: n
+Leader + ;: fuzzy :BLines (buffer's lines): n
+Leader + hc: fuzzy :History: (command history): n
+Leader + hf: fuzzy :History (file history): n
+Leader + mm: fuzzy :Maps (view mappings): n
+f: easymotion - forward char: n
+s: easymotion - vim-sneak: n
+Leader + G: Goyo - on & off: n
+jk / kj: ESC: iv
+Leader + ut: view undotree: n
+Leader + ma: open vim magit (git diffs): n
+) / (: next / prev gitgutter hunk: n
+gm: :LivedownToggle (preview html): n
+Leader + br: open bracey (view live html): n
+Leader + r: reload bracey window: n
+Leader + st: open startify: n
+ctrl + t: open native terminal: ni
+Leader + lf: open lf file manager in floatterm: n
+Leader + rf: open ipython split view neoterm: n
+Leader + rf: clear neoterm screen: n
+Leader + rt: toggle neoterm on and off: n
+Leader + ro: reset neoterm size: n
+Leader + I: jump between markdown headers: n
+Leader + nv: edit $MYVIMRC: n
+Leader + mcs: open mkdx cheatsheet: n
+
+Function: Action
+----------------
+SQ: SyntaxQuery - get syntax attributes of hover
+IndentSize: set file specific indents
+Format: format current buffer
+Fold: fold current buffer
+OR: organize imports current buffer
+Conf: fuzzy find ~/.config
+Dots: dotbare (dotfile manager) edit files

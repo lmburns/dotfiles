@@ -25,12 +25,20 @@ _handlr_commands() {
       'edit:Edit a desktop file in the default $EDITOR'
       'status:View the status of a desktop file to see if it is in use'
       'add:Add a handler for given mime/extension Note that the first handler is the default'
+      'ask:Display a prompt for suggestions on which application to use'
   )
   _describe -t handlr-commands "command" subcommands
 }
 
 _handlr_subcommand () {
   case "$words[1]" in
+    (ask)
+      _arguments -s -S -c \
+        {-p,--plain}'[Plain text to the TUI as a selector]' \
+        {-s,--skim}'[Use skim as a selector]' \
+        {-c,--config}'[Use the selector specified in the config file]' \
+        '::PATH:_files'
+      ;;
     (list)
       ;;
     (cat|edit|status)

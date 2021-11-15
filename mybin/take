@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+# Desc: create directory and cd into it
+
+mkdir -p $@ && cd ${@:$#}

@@ -77,8 +77,8 @@ options:
             command: |
               db="$XDG_DATA_HOME/buku/bookmarks.db"
               sql="SELECT URL,metadata,tags FROM bookmarks WHERE tags LIKE '%$@%';"
-              sqlite3 -separator $'\t' "$db" "$sql" \
-                  | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
+              sqlite3 -separator '   ' "$db" "$sql" \
+                  | perl -F'\x20\x20\x20' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
       w3m:
         description: Open result in w3m
         type: Command
@@ -87,9 +87,9 @@ options:
           - type: FromCommand
             command: |
               db="$XDG_DATA_HOME/buku/bookmarks.db"
-              sql="SELECT id,URL,metadata,tags FROM bookmarks"
-              sqlite3 -separator $'\t' "$db" "$sql" \
-                  | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
+              sql="SELECT id,URL,metadata,tags FROM bookmarks;"
+              sqlite3 -separator '   ' "$db" "$sql" \
+                  | perl -F'\x20\x20\x20' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F'
             preview: buku --nostdin -p {1}
 
   tmux:

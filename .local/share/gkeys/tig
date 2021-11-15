@@ -1,0 +1,151 @@
+h scroll-left
+j move-down
+k move-up
+l scroll-right
+
+g  none
+gg move-first-line
+gj next
+gk previous
+gp parent
+gP back
+gn view-next
+
+G move-last-line
+
+<C-f> move-page-down
+<C-b> move-page-up
+
+v  none
+vm view-main
+vd view-diff
+vl view-log
+vt view-tree
+vx view-blob
+vb view-blame
+vr view-refs
+vs view-status
+vu view-stage
+vy view-stash
+vg view-grep
+vp view-pager
+vh view-help
+
+o  none
+oo :toggle sort-order
+os :toggle sort-field
+on :toggle line-number
+od :toggle date
+oa :toggle author
+og :toggle line-graphics
+of :toggle file-name
+op :toggle ignore-space
+oi :toggle id
+ot :toggle commit-title-overflow
+oF :toggle file-filter
+or :toggle commit-title-refs
+
+@  none
+@j :/^@@
+@k :?^@@
+@- :toggle diff-context -1
+@+ :toggle diff-context +1
+
+ u  none
+bind stage   u  none
+uu status-update
+ur status-revert
+um status-merge
+ul stage-update-line
+us stage-split-chunk
+
+c  none
+cc !git commit
+ca !?@git commit --amend --no-edit
+
+y none
+yy !@csh -c "echo -n %(commit) | pbcopy"
+
+Q quit
+
+[ none
+] none
+[m move-prev-merge
+]m move-next-merge
+[q find-prev
+]q find-next
+
+I !git commit
+<Ctrl-f> !git fetch --prune
+L !git log %(file)
+P !git pull --rebase origin %(branch)
+# R !git revert %(commit)
+<Ctrl-r> !git reset --soft %(commit)
++ !git commit --amend
+> !git push %(remote) %(branch)
+<Ctrl-x> !git branch -D %(branch)
+<Ctrl-b> !git push %(remote) --delete %(branch)
+<Ctrl-j> !git checkout %(branch)
+ <Ctrl-h> !@git reset --hard %(remote)/%(branch)
+
+# === Main ===
+g none
+gf !git fetch
+gr !git revert %(commit)
+
+! !git revert %(commit)
+A @git commit --amend --reuse-message=HEAD
+C !?git checkout %(commit)
+H !?git reset --hard %(commit)
+R !git rebase -i --autosquash %(commit)^
+P !git cherry-pick %(commit)
+F @git commit --fixup %(commit)
+# E !<sh -c "vim -c 'Gedit %(commit)' $(ls | head -1)"
+V !<sh -c "nvim $(git show %(commit) --pretty=format: --name-only | xargs)"
+Y !@csh -c "echo -n %(commit) | pbcopy"
+
+# === Diff ===
+<Up> move-up
+<Down> move-down
+
+# Edit all files of commit
+A !git add %(file)              # Add current file
+C !git commit -av               # Add and commit
+P !git add -p %(file)           # Partially add current file
+F !@sh -c "git show %(commit) --pretty=format: --name-only | xargs | xsel -ib"
+E !<sh -c "nvim -c 'Gedit %(commit)' $(ls | head -1)"
+V !<sh -c "nvim $(git show %(commit) --pretty=format: --name-only | xargs)"
+
+[ none
+] none
+[c :toggle diff-context -5
+]c :toggle diff-context +5
+
+# === Tree ===
+bind tree V !nvim %(file)
+
+# === Branch ===
+N !@git branch %(prompt)
+C !@git co %(branch)
+R !@git rebase
+D !@git branch -D %(branch)
+
+# === Refs ===
+C !git checkout %(ref)
+D !@git branch -D %(branch)
+! ?@git branch -D %(branch)
+
+d none
+dd !@git branch -D %(branch)
+
+g none
+gc !@git checkout %(ref)
+
+# === Status ===
+R !@git reset HEAD %(file)
+A !@git commit --amend
+N !@git add -N %(file)
+
+# === Stage ===
+bind stage 1 stage-update-line # Stage a single line
+bind stage C !@git commit # Commit staging changes

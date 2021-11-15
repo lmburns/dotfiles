@@ -1,3 +1,11 @@
+[colors]
+    # frame = "#3b4252"
+    background = "#221a02"
+    foreground = "#ebdbb2"
+    # foreground = "#c2a383"
+    # background = "#282828"
+    # foreground = "#928374"
+
 [global]
     ### Display ###
 
@@ -151,8 +159,8 @@
     #   %n  progress value if set without any extra characters
     #   %%  Literal %
     # Markup is allowed
-    # format = "<b>%s</b>\n%b"
-    format = "<b>%a</b>\n%s\n%b"
+    format = "<b>%s</b>\n%b"
+    # format = "<b>%a</b>\n%s\n%b"
 
     # Alignment of message text.
     # Possible values are "left", "center" and "right".
@@ -193,7 +201,7 @@
 
     # Paths to default icons.
     # max_icon_size = 128
-    icon_path = /usr/share/icons/Gruvbox/32x32/devices/:/usr/share/Gruvbox/32x32/status/:/usr/share/Gruvbox/32x32/apps
+    icon_path = /usr/share/icons/Gruvbox-Material-Dark/32x32/devices/:/usr/share/icons/Gruvbox-Material-Dark/32x32/status/:/usr/share/icons/Gruvbox-Material-Dark/32x32/apps
 
     ### History ###
 
@@ -270,6 +278,22 @@
     appname = dunst
     new_icon = /usr/share/icons/Gruvbox/32x32/apps/cowbell.png
 
+[notify_send_icon]
+    appname = notify-send
+    new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
+
+[dunstify]
+    appname = dunstify
+    new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
+
+[rss]
+    appname = rss-notify
+    new_icon = /usr/share/icons/Gruvbox-Material-Dark/32x32/apps/feedindicator.svg
+
+[mutt]
+    appname = mutt-wizard
+    new_icon = /home/lucas/.config/dunst/icons/email.png
+
 [zsh]
     appname = zsh
     new_icon = /usr/share/icons/Gruvbox/32x32/apps/terminal.png
@@ -285,38 +309,29 @@
     per_monitor_dpi = false
 
 [urgency_low]
-    # IMPORTANT: colors have to be defined in quotation marks.
-    # Otherwise the "#" and following would be interpreted as a comment.
-    # background = "#221a02"
-    # foreground = "#c2a383"
-
-    # background = "#282828"
-    # foreground = "#928374"
     background = "#458588"
     foreground = "#ebdbb2"
 
     timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
-    new_icon = /home/lucas/.config/dunst/GruvboxIcon.png
+    # new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
 
 [urgency_normal]
-    # background = "#221a02"
-    # foreground = "#c2a383"
-
-    background = "#221a02"
-    foreground = "#ebdbb2"
+    background = colors.background
+    foreground = colors.foreground
 
     timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
-    new_icon = /home/lucas/.config/dunst/GruvboxIcon.png
+    # new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
 
 [urgency_critical]
-    background = "#f14a68"
+    # background = "#f14a68"
+    background = colors.background
     foreground = "#c2a383"
     frame_color = "#dc3958"
     timeout = 5
     # Icon for notifications with critical urgency, uncomment to enable
-    new_icon = /home/lucas/.config/dunst/critical.png
+    new_icon = /home/lucas/.config/dunst/icons/critical.png
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.

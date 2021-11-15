@@ -1,0 +1,21 @@
+#compdef gkey
+
+_gkey_keys() {
+  declare -a types
+  types=(${${(f@)"$(command ls "${XDG_DATA_HOME}/gkeys/")"}})
+  _describe -t types "types" types
+}
+
+
+_gkey () {
+  local curcontext="$curcontext" state line
+  typeset -A opt_args
+
+  _arguments -C -s \
+    {-e,--edit}'[Edit key file]:KEY:_gkey_keys' \
+    {-f,--fzf}'[Open fzf prompt]' \
+    {-t,--twf}'[Open twf prompt]' \
+    {-s,--search}'[Search for keyfile]'
+}
+
+_gkey "$@"

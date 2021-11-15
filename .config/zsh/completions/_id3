@@ -1,0 +1,32 @@
+#compdef id3
+
+# zsh completions for 'id3'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--verbose}'[give verbose output]'
+  {-d,--delete}'[clear existing tag]'
+  {-t,--title}'[set tag fields]'
+  {-a,--artist}'[set artist]'
+  {-l,--album}'[(ith matched * wildcard  = %1-%9,%0]'
+  {-n,--track}'[path/file name/counters    = %p %f %x %X]'
+  {-y,--year}'[value of tag field in file = %t %a %l %n %y %g %c)]'
+  {-g,--genre}'[set genre]'
+  {-c,--comment}'[set coment]'
+  {-D,--duplicate}'[copy tags read from filename]'
+  {-f,--rename}'[rename files according to template]'
+  {-q,--query}'[print formatted string on standard output]'
+  {-m,--match}'[match variables in filespec]'
+  {-R,--recursive}'[search recursively]'
+  {-M,--keep-time}'[preserve modification time of files]'
+  {-V,--version}'[print version info]'
+  {-s,--size}'[set tag size]'
+  {-E,--if-exists}'[only write if tag already exists]'
+  {-u,--update}'[update all standard fields]'
+  {-r,--remove}'[remove TYPE frames]'
+  {-w,--frame}'[<data> write a TYPE frame]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,20 @@
+export CDHISTSIZE=${CDHISTSIZE:=50}
+export CDHISTTILDE=${CDHISTTILDE:=TRUE}
+alias ${CDHISTCOMMAND:-cd}=cdh
+
+function cdh() {
+  _d="$(cdhist "$@")"
+
+  if [ $? -eq 1 ]; then
+    return 0
+  fi
+
+  if 'cd' "$_d"; then
+    cdhist -u
+  fi
+
+    return $?
+}
+
+
+# vim:ft=zsh:et

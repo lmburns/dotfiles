@@ -241,7 +241,7 @@
   # Grab a pull request
   pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
   # Open repository in the browser
-  open = "!open $(git remote get-url origin)"
+  open = "!handlr open $(git remote get-url origin)"
 
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet

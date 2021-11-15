@@ -1,3 +1,25 @@
+# [[snippets]]
+# description = ""
+# command = ""
+# tag = [""]
+# output = ""
+
+##########
+## RUST ##
+##########
+[[snippets]]
+description = "run cp"
+command = "cargo run -- cp app.rs opt.rs"
+tag = ["rust"]
+output = ""
+
+[[snippets]]
+description = "run clear"
+command = "cargo run -- clear opt.rs"
+tag = ["rust"]
+output = ""
+
+
 [[snippets]]
 description = "cpu/memory"
 command = """
@@ -5,46 +27,55 @@ command = """
     | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'
 """
 output = ""
+tag = ["system"]
 
 [[snippets]]
 description = "refresh wifi"
 command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
 output = ""
+tag = ["system"]
 
 [[snippets]]
 description = "systemctl - enabled services"
 command = "systemctl list-unit-files --state=enabled"
 output = ""
+tag = ["system"]
 
 [[snippets]]
 description = "systemctl - all services"
 command = "systemctl list-unit-files --type=service"
 output = ""
+tag = ["system"]
 
 [[snippets]]
 description = "disable sudo for dmesg"
 command = "sudo sysctl -w kernel.dmesg_restrict=0"
 output = ""
+tag = ["system"]
 
 [[snippets]]
 description = "expac - upgrade & download size"
 command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
 output = ""
+tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "expac - recently installed (20)"
 command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
 output = ""
+tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "expac - search regex"
 command = "expac -Ss '%-30n %-8v %d'"
 output = ""
+tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "expac - list modified files"
 command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
 output = ""
+tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "pacman - search installed (fzf)"
@@ -56,6 +87,7 @@ command = """
           --preview-window=':nohidden'
 """
 output = ""
+tag = ["pacman"]
 
 [[snippets]]
 description = "pacman - search all (fzf)"
@@ -66,8 +98,10 @@ command = """
           --preview-window=':nohidden'
 """
 output = ""
+tag = ["pacman"]
 
 [[snippets]]
 description = "tomb create"
 command = "notify-send  'hi' '${@}'"
 output = ""
+tag = ["encryption"]

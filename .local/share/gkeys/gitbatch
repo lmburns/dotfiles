@@ -1,0 +1,41 @@
+Repositories Panel Bindings
+  q: Quit
+  f: Fetch mode
+  p: Pull mode
+  m: Merge mode
+  c: Checkout mode
+  tab: Focus to repository
+  ↑ or k: Up
+  ↓ or j: Down
+  ctrl + c: Force application to quit
+  esc/q: Close windows if a pop-up window opened
+  h: Help/Controls
+  s: Show repository status
+  enter: Start queue
+  space: Add to queue
+  ctrl + space: Add all to queue
+  ctrl + b: Batch checkout target branch selection
+  backspace: Remove all from queue
+  n: Sort repositories by Name
+  r: Sort repositories by Modification date
+
+Commits Panel KeyBindings
+  ↑ or k: Up
+  ↓ or j: Down
+  d: Show commit diff
+  s Show commit short stat
+
+Remotes/branches/stashes Panel KeyBindings
+  ↑ or k: Up
+  ↓ or j: Down
+  space: select
+
+Status Panel KeyBindings
+  d: Show file diff
+  s Show overall stat
+  t: Stash changes
+  p: Pop changes
+  space: Add/reset files to index
+  ctrl +a: Add all files to index
+  ctrl r: Reset all items
+  c: Commit changes

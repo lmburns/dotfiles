@@ -1,0 +1,154 @@
+## OVERALL KEYBINDINGS
+| Keys                    | Action                      |
+|-------------------------|-----------------------------|
+| Super + Shift + Escape  | Restart bspwm               |
+| Super + Shift + x       | Restart sxhkd               |
+| Super + Shift + p       | Restart polybar             |
+| Super + Return          | Launch alacritty            |
+| Super + Ctrl + Return   | Launch tdrop                |
+| Hyper + d               | Launch rofi -show drun      |
+| Hyper + x (release) - x | Launch rofi -show drun      |
+| Hyper + x (release) - b | Launch rofi -show window    |
+| Hyper + b               | Launch $BROWSER             |
+| Hyper + p               | Launch pcmanfm              |
+| Hyper + .               | Launch thunderbird          |
+| Hyper + n               | dunsctl history-pop         |
+| Hyper + N               | dunsctl close-all           |
+| Alt + Space             | dmenu app launcher          |
+| Ctrl + Alt + p          | prs password launcher       |
+| Super + Shift + q       | Kill window                 |
+| Super + Shift + c       | Close window                |
+| Alt + Ctrl + Shift + x  | Kill window                 |
+| Alt + Shift + x         | Close window                |
+| Super + m               | rofi view minimized         |
+| Super + Shift + m       | Hide (minimize) window      |
+| Super + Ctrl + m        | Focus last minimized window |
+
+## ADDITIONAL - EXTENDING FUNCTION KEYS
+
+| Keys                         | Action                              |
+|------------------------------|-------------------------------------|
+| Ctrl + Alt + o               | Open link in clipboard              |
+| XF86AudioMute                | Toggle pulseaudio mute              |
+| XF86AudioLowerVolume         | Decrease pulseaudio -5%             |
+| XF86AudioRaiseVolume         | Increase pulseaudio +5%             |
+| Shift + XF86AudioMute        | Bluetooth - Toggle pulseaudio mute  |
+| Shift + XF86AudioLowerVolume | Bluetooth - Decrease pulseaudio -5% |
+| Shift + XF86AudioRaiseVolume | Bluetooth - Increase pulseaudio +5% |
+| Hyper + XF86AudioPlay        | playerctl play-pause                |
+| Hyper + XF86AudioPrev        | playerctl previous                  |
+| Hyper + XF86AudioNext        | playerctl next                      |
+| Print                        | flameshot full screen               |
+| Shift + Print                | flameshot gui                       |
+| Super + Print                | flameshot screen pick               |
+| Ctrl + Shift + 3             | Alternative full screen-capture     |
+| Ctrl + Shift + 4             | Alternative region screen-capture   |
+| Ctrl + Shift + 5             | Alternative window screen-capture   |
+| Super + F1                   | ncmpcpp                             |
+| Super + F4                   | playerctl previous                  |
+| Super + F5                   | playerctl play-pause                |
+| Super + F6                   | playerctl next                      |
+| Super + F8                   | mailsync                            |
+| Super + F9                   | dmenumount                          |
+| Super + F10                  | dmenuumount                         |
+| XF86Mail                     | Launch neomutt                      |
+| XF86MonBrightnessDown        | xbacklight decrease 15              |
+| XF86MonBrightnessUp          | xbacklight increase 15              |
+
+
+## SWAPPING WINDOWS
+| Swapping      |            |
+|---------------|------------|
+| Shift + Alt h | Swap west  |
+| Shift + Alt j | Swap south |
+| Shift + Alt k | Swap north |
+| Shift + Alt l | Swap east  |
+
+## FOCUSING WINDOWS
+| Focusing               |                     |
+|------------------------|---------------------|
+| Alt + h                | Focus west          |
+| Alt + j                | Focus south         |
+| Alt + k                | Focus north         |
+| Alt + l                | Focus east          |
+| Super + ,              | Focus last (cyclic) |
+| Super + c              | Focus last          |
+| Super + C              | Focus next          |
+| Super + c              | Focus last          |
+| Super + j              | Focus next          |
+| Super + k              | Focus last          |
+| Super + o              | Focus older         |
+| Super + i              | Focus newer         |
+| Alt + Ctrl + Shift + h | Pre-select west     |
+| Alt + Ctrl + Shift + j | Pre-select south    |
+| Alt + Ctrl + Shift + k | Pre-select north    |
+| Alt + Ctrl + Shift + l | Pre-select east     |
+| Alt + Ctrl + Shift + c | Pre-select cancel   |
+
+## RESIZING WINDOWS
+| Resizing         |               |
+|------------------|---------------|
+| L-Ctrl + Alt + h | Resize left   |
+| L-Ctrl + Alt + j | Resize bottom |
+| L-Ctrl + Alt + k | Resize top    |
+| L-Ctrl + Alt + l | Resize right  |
+| L-Ctrl + Alt + 0 | Equalize      |
+
+## FLOATING WINDOWS
+| Floating                |                            |
+|-------------------------|----------------------------|
+| Hyper + Space           | Toggle float               |
+| Super + Ctrl + h        | Resize west                |
+| Super + Ctrl + j        | Resize south               |
+| Super + Ctrl + k        | Resize north               |
+| Super + Ctrl + l        | Resize east                |
+| Hyper + e               | Cycle next floating window |
+| Hyper + c (release) - h | Move floating west         |
+| Hyper + c (release) - j | Move floating south        |
+| Hyper + c (release) - k | Move floating north        |
+| Hyper + c (release) - l | Move floating east         |
+
+## MOVING WINDOWS
+| Moving Window |                     |
+|---------------|---------------------|
+| Hyper + f     | Fullscreen layout   |
+| Hyper + [     | Fullscreen next     |
+| Hyper + ]     | Fullscreen previous |
+| Hyper + m     | Monocle layout      |
+| Hyper + r     | Rotate 90 degrees   |
+
+## WINDOW STACKS
+| Stacks            |                                        |
+|-------------------|----------------------------------------|
+| Hyper + m         | Monocle layout                         |
+| Super + j         | Go to next window (in or out of stack) |
+| Super + k         | Go to prev window (in or out of stack) |
+| Super + Shift + j | View layer underneath (no focus)       |
+
+## DESKTOP
+| Desktop               |                        |
+|-----------------------|------------------------|
+| Alt + Left            | Desktop previous       |
+| Alt + Right           | Desktop next           |
+| Super + [             | Desktop previous       |
+| Super + ]             | Desktop next           |
+| Super + grave         | Node last              |
+| Super + tab           | Desktop last           |
+| Super + [0-9]         | Desktop focus          |
+| Super + Shift + [0-9] | Send window to desktop |
+
+## CONTINUOUS INPUT
+| Continuous                  |                      |
+|-----------------------------|----------------------|
+| Hyper + c (release) - h     | Resize window west   |
+| Hyper + c (release) - j     | Resize window south  |
+| Hyper + c (release) - k     | Resize window north  |
+| Hyper + c (release) - l     | Resize window east   |
+| Hyper + c (release) - [     | Dynamic gaps shrink  |
+| Hyper + c (release) - ]     | Dynamic gaps enlarge |
+| Hyper + c (release) - Left  | Move floating west   |
+| Hyper + c (release) - Up    | Move floating north  |
+| Hyper + c (release) - Down  | Move floating south  |
+| Hyper + c (release) - Right | Move floating east   |
+
+[comment]: <> vim: ft=markdown:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

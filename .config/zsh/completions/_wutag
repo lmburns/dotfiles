@@ -265,7 +265,7 @@ _wutag__list_commands() {
 _wutag_tags() {
     [[ $PREFIX = -* ]] && return 1
     integer ret=1
-    local -a tags; wtags=(
+    local -a wtags; wtags=(
         ${(@f)$(_call_program commands wutag -g list -r tags -c)}
     )
 

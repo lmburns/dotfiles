@@ -32,7 +32,7 @@ p () {
     if [ "$(uname)" = "Darwin" ]; then
         open=open
     else
-        open="gio open"
+        open="handlr open"
     fi
 
     # escale filenames

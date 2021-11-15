@@ -5,7 +5,7 @@ local file
 # setting gkeys dir as a var = one option works and the other doesn't & vice versa
 
 batf() {
-  bat --wrap=auto --language=bash --file-name="${1}" "${XDG_DATA_HOME}/gkeys/${1}"
+  bat --paging=always --wrap=auto --language=bash --file-name="${1}" "${XDG_DATA_HOME}/gkeys/${1}"
 }
 
 gkey() {
@@ -18,6 +18,10 @@ gkey() {
         fzf --ansi -m \
         --delimiter / \
         --with-nth -1 \
+        --preview-window=:nohidden \
+        --preview='([[ -f {} ]] && (bat --style=numbers --color=always -l bash {})) \
+            || ([[ -d {} ]] && (tree -C {} | less)) \
+            || echo {} 2> /dev/null | head -200' \
         --prompt="Keys> " < <(fd . "${XDG_DATA_HOME}/gkeys" )
         )
       [[ -n "$file" ]] && batf "${file:t}"
@@ -26,12 +30,16 @@ gkey() {
     file=$(
       twf \
         --height=0.8 \
-        --previewCmd='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200' \
+        --previewCmd='([[ -f {} ]] && (bat --style=numbers --color=always -l bash {})) \
+            || ([[ -d {} ]] && (tree -C {} | less)) \
+            || echo {} 2> /dev/null | head -200' \
         --dir="${XDG_DATA_HOME}/gkeys"
     )
     [[ -n "$file" ]] && batf "${file:t}"
   elif [[ "${(M)opt[@]:#-(e|-edit)}" == -(e|-edit) ]]; then
-    $EDITOR "${XDG_DATA_HOME}/gkeys/${1}"
+    [[ -z "${1}" ]] && {
+      print -P "%F{1}None selected%f"
+    } || $EDITOR "${XDG_DATA_HOME}/gkeys/${1}"
   else
     batf "${1}"
   fi

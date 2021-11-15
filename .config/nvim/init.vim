@@ -228,6 +228,9 @@ Plug 'lervag/vimtex'
 "}}} === vimtex ===
 
 " ============== lightline-buffer ============== {{{
+Plug 'tyru/open-browser.vim'
+  nmap <buffer> <silent> <cr> <Plug>(openbrowser-open)
+
 " Plug 'sainnhe/tmuxline.vim', {'on': ['Tmuxline', 'TmuxlineSnapshot']}
 Plug 'mengelbrecht/lightline-bufferline'
   " jump mapping
@@ -1913,13 +1916,21 @@ call plug#end()
   " set t_Co=256
   set termguicolors
 
+  set guioptions-=m
+  set guioptions-=r
+  set guioptions-=L
+  set guitablabel=%M\ %t
   if exists('g:neovide')
-    set guifont=FiraMono\ Nerd\ Font\ Mono:h13
+    set guifont=FiraMono\ Nerd\ Font\ Mono:h12
     nnoremap <D-v> "+p
     inoremap <D-v> <c-r>+
   endif
+  let g:neovide_transparency=0.9
+  let g:neovide_cursor_vfx_particle_lifetime=2.0
+  let g:neovide_cursor_vfx_particle_density=12.0
   let g:neovide_cursor_vfx_mode = 'torpedo'
-  " let g:neovide_fullscreen = v:true
+  " let g:neovide_cursor_vfx_mode = "pixiedust"
+
   " set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
   " set guicursor=a:blinkon100
   set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
@@ -2270,7 +2281,8 @@ call plug#end()
           echo 'GoGithub: No repository found.'
       else
           let s:url = 'https://github.com/' . s:repo
-          call netrw#BrowseX(s:url, 0)
+          " call netrw#BrowseX(s:url, 0)
+          call openbrowser#open(s:url)
       end
   endfunction
 

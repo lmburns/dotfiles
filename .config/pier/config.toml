@@ -1,15 +1,76 @@
+[scripts.all-services]
+command = 'systemctl list-unit-files --type=service'
+description = 'list all services'
+tags = ['systemctl']
+
+[scripts.dmesg-sudo]
+command = 'sudo sysctl -w kernel.dmesg_restrict=0'
+description = 'enable no sudo for dmesg'
+tags = ['']
+
 [scripts.ec]
-command = "$EDITOR /home/lucas/.config/pier/config.toml"
+command = '$EDITOR /home/lucas/.config/pier/config.toml'
 description = 'edit configuration file'
 
+[scripts.enabled-services]
+command = 'systemctl list-unit-files --state=enabled'
+description = 'list enabled services'
+tags = ['systemctl']
+
+[scripts.ex-mod-conf]
+command = '''expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh'''
+description = 'expac - list modified files'
+tags = [
+    'pman',
+    'expac',
+]
+
+[scripts.ex-recent]
+command = '''expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac'''
+description = 'expac - recently installed (20)'
+tags = [
+    'pman',
+    'epxac',
+]
+
+[scripts.ex-regex]
+command = "expac -Ss '%-30n %-8v %d'"
+description = 'expac - search regex'
+tags = [
+    'pman',
+    'epxac',
+]
+
+[scripts.ex-sall]
+command = '''pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse'''
+description = 'expac - search all (fzf)'
+tags = [
+    'pman',
+    'epxac',
+]
+
+[scripts.ex-sinstalled]
+command = '''
+  pacman -Qq | fzf --preview 'pacman -Qil {}' --layout=reverse --bind 'enter:execute(pacman -Qil {} | less)'
+'''
+description = 'expac - search installed (fzf)'
+tags = ['pman']
+
+[scripts.ex-upgrade]
+command = '''expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh'''
+description = 'expac - upgrade & download size'
+tags = [
+    'pman',
+    'epxac',
+]
+
 [scripts.testing]
-description = "testing"
 command = '''
 notify-send 'testing' '$@'
 '''
+description = 'testing'
 
 [scripts.tomb-create]
-description = "create a tomb"
 command = '''
 #!/usr/bin/env zsh
 
@@ -27,61 +88,10 @@ print -P "%F{1}Locked%f: %F{2}${name}.tomb%f"
 tomb open "${name}.tomb" -k "${name}.tomb.key" -f
 print -P "%F{1}Opened%f: %F{2}${name}.tomb%f"
 '''
-tags = ["tomb", "encrypt"]
-
-[script.refresh-wifi]
-description = "refresh wifi"
-command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
-
-[scripts.enabled-services]
-description = "list enabled services"
-command = "systemctl list-unit-files --state=enabled"
-tags = ["systemctl"]
-
-[scripts.all-services]
-description = "list all services"
-command = "systemctl list-unit-files --type=service"
-tags = ["systemctl"]
-
-[scripts.dmesg-sudo]
-description = "enable no sudo for dmesg"
-command = "sudo sysctl -w kernel.dmesg_restrict=0"
-tags = [""]
-
-[scripts.ex-upgrade]
-description = "expac - upgrade & download size"
-command = "expac -S -H M '%k\\t%n' $(pacman -Qqu) | sort -sh"
-tags = ["pman", "epxac"]
-
-[scripts.ex-recent]
-description = "expac - recently installed (20)"
-command = "expac --timefmt='%Y-%m-%d %T' '%l\\t%n' | sort | tail -n 20 | tac"
-tags = ["pman", "epxac"]
-
-[scripts.ex-regex]
-description = "expac - search regex"
-command = "expac -Ss '%-30n %-8v %d'"
-tags = ["pman", "epxac"]
-
-# TODO:
-[scripts.ex-sinstalled]
-description = "expac - search installed (fzf)"
-command = """
-  pacman -Qq \
-    | fzf --preview 'pacman -Qil {}' --layout=reverse \
-          --bind 'enter:execute(pacman -Qil {} | less)'
-"""
-tags = ["pman"]
-
-[scripts.ex-sall]
-description = "expac - search all (fzf)"
-command = "pacman -Slq | fzf --preview 'pacman -Si {}' --layout=reverse"
-tags = ["pman", "epxac"]
-
-[scripts.ex-mod-conf]
-description = "expac - list modified files"
-alias = "ex-mod"
-command = "expac -S -H M '%k\\t%n' $(pacman -Qqu) | sort -sh"
-tags = ["pman", "expac"]
+description = 'create a tomb'
+tags = [
+    'tomb',
+    'encrypt',
+]
 
 [default]

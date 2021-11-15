@@ -1,0 +1,174 @@
+keymap	S	SAVE_SCREEN
+keymap	M-C-j	SAVE_LINK
+keymap	M-C-m	SAVE_LINK
+keymap	xe	EDIT_SCREEN
+keymap  C-d  NEXT_HALF_PAGE
+keymap  J    NEXT_HALF_PAGE
+keymap  C-u  PREV_HALF_PAGE
+keymap  K    PREV_HALF_PAGE
+keymap  C-f     NEXT_PAGE
+keymap	SPC     NEXT_PAGE
+keymap  C-b     PREV_PAGE
+keymap  C-l     MOVE_RIGHT
+keymap  l       MOVE_RIGHT
+keymap  RIGHT   MOVE_RIGHT
+keymap  h       MOVE_LEFT
+keymap  LEFT    MOVE_LEFT
+keymap  C-h     MOVE_LEFT
+keymap  DOWN    MOVE_DOWN1
+keymap  j       MOVE_DOWN1
+keymap  k       MOVE_UP1
+keymap  UP      MOVE_UP1
+keymap  C-e     DOWN
+keymap  C-y     UP
+keymap  0       LINE_BEGIN
+keymap  $       LINE_END
+keymap  zh      CENTER_H
+keymap  zz      CENTER_V
+keymap  gg      GOTO_LINE
+keymap  gg      BEGIN
+keymap  G       END
+keymap  w       NEXT_WORD
+keymap  b       PREV_WORD
+keymap	f	LINK_BEGIN
+  # 44:<NOT        Move to the last hyperlink (LINK_END)
+  # 45:ASSIGNED>
+keymap  TAB     NEXT_LINK
+keymap  C-n     NEXT_LINK
+keymap  M-[Z    PREV_LINK
+keymap  C-p     PREV_LINK
+keymap  gf      MOVE_LIST_MENU
+  # 50:<NOT        Move right to the next hyperlink (NEXT_RIGHT)
+  # 51:ASSIGNED>
+  # 52:<NOT        Move left to the next hyperlink (NEXT_LEFT)
+  # 53:ASSIGNED>
+  # 54:<NOT        Move downward to the next hyperlink (NEXT_DOWN)
+  # 55:ASSIGNED>
+  # 56:<NOT        Move upward to the next hyperlink (NEXT_UP)
+  # 57:ASSIGNED>
+  # 58:<NOT        Move right or downward to the next hyperlink (NEXT_RIGHT_DOWN)
+  # 59:ASSIGNED>
+  # 60:<NOT        Move left or upward to the next hyperlink (NEXT_LEFT_UP)
+  # 61:ASSIGNED>
+keymap  U     UNDO
+  # 63:<NOT        Cancel the last undo (REDO)
+  # 64:ASSIGNED>
+keymap	C-j     GOTO_LINK
+keymap  F       TAB_LINK
+  # 70:<NOT       Save hyperlink target (SAVE_LINK)
+  # 71:ASSIGNED>
+keymap	i       VIEW_IMAGE
+keymap  ESC-C-j SUBMIT
+keymap  pk      PEEK
+keymap  pl      PEEK_LINK
+keymap  pi      PEEK_IMG
+keymap  gi      INFO
+keymap  C-g     LINE_INFO
+keymap	";"     MARK_URL
+keymap	,       MARK_WORD
+  # 86:<NOT       Turn Message-ID-like strings into hyperlinks (MARK_MID)
+  # 87:ASSIGNED>
+  # 88:<NOT       Toggle rendering HTML frames (FRAME)
+  # 89:ASSIGNED>
+keymap  ]       EXTERN
+keymap  e       EXTERN_LINK ~/mybin/urlportal
+keymap  gl      LIST
+keymap  gF      LIST_MENU
+keymap  ge      LINK_MENU
+keymap  ga      ACCESSKEY
+keymap  o     GOTO
+keymap  ^o    GOTO_RELATIVE
+keymap  O     TAB_GOTO
+keymap  gc    TAB_GOTO https://encrypted.google.com
+keymap  ^O    TAB_GOTO_RELATIVE
+keymap  :e    LOAD
+keymap  @    READ_SHELL
+keymap  #    PIPE_SHELL
+keymap  |    PIPE_BUF
+keymap  L       NEXT
+keymap  H       PREV
+keymap  gh      SELECT_MENU
+keymap  gv    VIEW
+keymap  :w  SAVE
+keymap  C-r RELOAD
+keymap  r   RELOAD
+keymap  gt    NEXT_TAB
+keymap  gT    PREV_TAB
+keymap  gj    TAB_MENU
+keymap  C-wL  TAB_RIGHT
+keymap  C-wH  TAB_LEFT
+keymap  n     SEARCH_NEXT
+keymap  N     SEARCH_PREV
+keymap  /     ISEARCH
+keymap  ?     ISEARCH_BACK
+keymap  gM      MAIN_MENU
+keymap  :H      HELP
+keymap	:O      OPTIONS
+keymap	:V      VERSION
+keymap  gH      HISTORY
+keymap  :h      HISTORY
+keymap  gd      DOWNLOAD_LIST
+keymap	m	MOUSE_TOGGLE
+keymap	W	WRAP_TOGGLE
+keymap  ::      COMMAND
+keymap	!     EXEC_SHELL
+keymap  :q    QUIT
+keymap  ZZ    QUIT
+keymap  ZQ    EXIT
+keymap	Q     EXIT
+keymap  :b       SHELL "$EDITOR ~/.config/surfraw/bookmarks"
+keymap  :c       SHELL "$EDITOR ~/.w3m/config"
+keymap  :k       SHELL "$EDITOR ~/.w3m/keymap"
+keymap  :m       SHELL "$EDITOR ~/.w3m/mailcap"
+keymap  :u       SHELL "$EDITOR ~/.w3m/urimethodmap"
+keymap  :t       SHELL "$EDITOR ~/.w3m/RestoreTab.txt"
+keymap  yx      EXTERN_LINK   '(printf %s "$0" | pbcopy)'
+keymap  YX      EXTERN        '(printf %s | pbcopy)'
+keymap  yy      EXTERN_LINK   'tmux set-buffer'
+keymap  YY      EXTERN        'tmux set-buffer'
+keymap  xw      EXTERN_LINK   '$BROWSER'
+keymap  XW      EXTERN        '$BROWSER'
+keymap  xn      EXTERN_LINK   '$BROWSER_PRIVATE'
+keymap  XN      EXTERN        '$BROWSER_PRIVATE'
+keymap  yd      EXTERN_LINK   'youtube-dl -o "~/Downloads/%(title)s.%(ext)s"'
+keymap  xd      EXTERN_LINK   'diana add'
+keymap  XD      EXTERN_LINK   'diana --pause add'
+keymap  xD      SHELL         'diana-mui'
+keymap  xm      EXTERN_LINK   'ts mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
+keymap  XM      EXTERN        'ts mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
+keymap  xf      EXTERN_LINK   'feh -. -x -B black -g 900x600-15+60 %s &'
+keymap  xF      EXTERN_LINK   'mpv --loop --quiet --ontop --no-border --force-window --autofit=900x600 --geometry=-15+60'
+keymap  xt      EXTERN_LINK   'transmission-remote --add'
+keymap  XT      EXTERN        ~/.sripts/shellscripts/torrentportal
+keymap  xv      SHELL         'nvim $W3M_CURRENT_FORM'
+keymap  px       GOTO          /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard.cgi
+keymap  PX       TAB_GOTO      /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard.cgi
+keymap  pp       GOTO          /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_tmux_clipboard.cgi
+keymap  PP       TAB_GOTO      /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_tmux_clipboard.cgi
+keymap  u       TAB_GOTO      /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/restore_tab.cgi
+keymap  C-T     TAB_GOTO      /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/restore_tab.cgi
+keymap  d       COMMAND       "EXTERN 'echo %s >> ~/.w3m/RestoreTab.txt' ; CLOSE_TAB"
+keymap  xb      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_bookmarks.cgi ; GOTO ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard_primary.cg [... omitted end of long line]
+keymap  XB      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_bookmarks.cgi ; TAB_GOTO /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_ [... omitted end of long line]
+keymap  xa      COMMAND       "SHELL ~/.w3m/cgi-bin/save_bookmark_surfraw.cgi"
+keymap  xu      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_buku.cgi ; GOTO /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard [... omitted end of long line]
+keymap  xs      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw.cgi ; GOTO /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipbo [... omitted end of long line]
+keymap  XS      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw.cgi ; TAB_GOTO /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_cl [... omitted end of long line]
+keymap  xx      COMMAND       "TAB_GOTO /Users/lucasburns/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_tmux_clipboard.cgi"
+keymap  XU      COMMAND       "SHELL ~/.w3m/cgi-bin/user_agent_switcher.cgi"
+keymap  xo      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_settings_toggle_tmux.cgi"
+keymap  XO      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_settings_toggle.cgi"
+keymap  XX      COMMAND       "SHELL ~/.w3m/cgi-bin/queue2ariadaemon.cgi"
+keymap  \\\c    COMMAND       "SET_OPTION color=toggle ; RESHAPE"
+keymap  \\\t    COMMAND       "SET_OPTION display_borders=toggle ; RESHAPE"
+keymap  \\\i    COMMAND       "SET_OPTION display_image=toggle ; RELOAD"
+keymap  \\\e    COMMAND       "SET_OPTION user_agent='' ; RELOAD"
+keymap  \\\a    COMMAND       "SET_OPTION user_agent='Opera/9.80 (S60; SymbOS; Opera Mobi/SYB-1107071606; U; en) Presto/2.8.149 Version/11.10' ; RELOA [... omitted end of long line]
+keymap  C-t     COMMAND       "TAB_GOTO https://duckduckgo.com/lite/; NEXT_LINK; GOTO_LINK"
+keymap  t       COMMAND       "TAB_GOTO https://duckduckgo.com/lite/; NEXT_LINK; GOTO_LINK"
+keymap  sg      COMMAND       "TAB_GOTO https://google.com; GOTO_LINE 6; NEXT_LINK; GOTO_LINK"
+keymap  s1      COMMAND       "TAB_GOTO https://1337x.to; GOTO_LINE 6; NEXT_LINK; GOTO_LINK"
+keymap  sx      COMMAND       "TAB_GOTO https://stackexchange.com; GOTO_LINE 7; NEXT_LINK; GOTO_LINK"
+keymap  \\\?    COMMAND       "HELP; SEARCH User-Defined; CENTER_V"
+keymap  \\\x    COMMAND       "LIST; SEARCH \.torrent$; EXTERN_LINK ~/.scripts/privatescripts/addtorrent-thinkcentre"
+keymap  \\\m    COMMAND       "LIST; SEARCH magnet:\?; EXTERN_LINK ~/.scripts/privatescripts/addtorrent-thinkcentre"

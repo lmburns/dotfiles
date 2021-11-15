@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+# Desc: backup buku boomarks
+
+FILE="/bookmarks_$(date +'%Y%m%d').html"
+DIR="$HOME/backup/bookmarks"
+
+[[ ! -d "$DIR" ]] && mkdir -p "$DIR"
+
+buku -e "${DIR}/${FILE}"

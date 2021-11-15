@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Desc: check crypocurrency prices
+
+ShortName="BTC\nXMR\nETH"
+
+[[ ! -d $HOME/.cache/crypto ]] && mkdir $HOME/.cache/crypto
+
+echo "$ShortName" | while read coin; do
+  price=$(curl -s rate.sx/1$coin)
+  [[ $coin = "BTC" ]] && icon=🦁
+  [[ $coin = "XMR" ]] && icon=📖
+  [[ $coin = "ETH" ]] && icon=⚛️
+  echo "$icon $coin: $price" >$HOME/.cache/crypto/$coin
+done
+
+date +"%D %I:%M:%S %p" >$HOME/.cache/crypto/time

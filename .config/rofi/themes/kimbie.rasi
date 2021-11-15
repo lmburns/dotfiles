@@ -24,3 +24,4 @@
 }
 
 @import "modus-themes-common.rasi"
+/* vim: ft=css:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

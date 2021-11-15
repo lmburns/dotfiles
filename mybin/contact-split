@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Desc: split vcard contact
+
+# Bash script to separate a single vCard containing multiple contacts
+# into multiple vCard files each with its own contact.
+#
+# Usage:
+#
+#     ./contact-split.sh < INPUT_FILE.vcf
+#
+# where INPUT_FILE.vcf is, of course, the monolithic vCard  file.
+#
+
+main() {
+    local card_lines
+    local card_guid
+    declare -a card_lines
+
+    while read line; do
+        # Append each line to the end of this array.
+        card_lines=("${card_lines[@]}" "$line")
+
+        # Get the contact's GUID, this becomes the file name.
+        if [[ "$line" =~ ^X-ABUID: ]]; then
+            card_guid=$(echo -n "$line" | cut -d ':' -f 2)
+        fi
+
+        # This is the end of the card, so output it.
+        if [[ "$line" =~ ^END:VCARD ]]; then
+            printf "%s\n" "${card_lines[@]}" >"$(echo -n "$card_guid" | tr 'A-Z' 'a-z' | tr -d '\r').vcf"
+            unset -v card_lines
+        fi
+    done <"$1"
+}
+
+main "$1"

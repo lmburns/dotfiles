@@ -1,0 +1,151 @@
+# -- Keybindings ---------------------------------------------------------------
+pref - r = source tmux
+pref - e = edit config
+pref - m = mouse on
+pref - M = mouse off
+pref - E = switch between synchronize
+pref - - = split horizontally
+pref - | = split vertically
+pref - HJKL = resize
+pref - . = rename session
+
+pref - & = kill window
+pref - W = swap window
+pref - { = swap window
+pref - } = swap window
+pref - shift + -> = swap window
+pref - shift + <- = swap window
+pref - shift + up = choose tree
+
+pref - C-hjkl = navigate panes
+pref - c-x = send pane to background
+pref - x = kill pane
+pref - P = swap pane
+pref - [ = swap pane
+pref - ] = swap pane
+pref - v = throw pane into current pane
+pref - h = throw pane into current pane
+pref - q = swap pane with selected pane
+pref - Q = swap pane with selected pane
+pref - W = interactively move pane to other window
+pref - P = interactively move pane to other window
+pref - alt-shift-p = swap current pane prompt
+pref - alt-p = move current pane prompt
+
+alt-shift-a = select pane and zoom
+alt-shift-s = select pane
+alt-shift-q = select prev window
+alt-shift-w = select next window
+
+pref - X = kill all sessions
+pref - ) = switch sessions
+pref - ( = switch sessions
+pref - c-p = choose tree
+pref - alt-w = swap current window prompt
+
+pref - W = choose swap window
+pref - P = choose swap pane
+pref - c-p = choose move pane
+
+pref - G = hide/show statusbar
+
+pref - c-t = clock mode
+pref - alt-c = open buffer in vim
+pref - alt-o = screencapture
+
+=== Copy Mode ===
+esc = copy mode
+p = paste buffer
++ = delete buffer
+o = surfraw google
+U = youtube-viewer
+O = w3m
+
+=== Choose Mode ===
+
+== External Programs ==
+pref - I = install plugin
+pref - U = update plugin
+
+pref - c-f = tmux-fzf
+pref - alt-t = task spooler
+pref - s = bmux
+pref - Enter = sr (split)
+pref - Y = youtube-viewer
+pref b = open browser Buku (split)
+
+pref - t = tmux-fzf-words
+pref - T = tmux-fzf-words all
+pref - 0 = tmux-fzf-panes
+
+alt-v = ytfzf
+alt-s = surfraw
+alt-m = neomutt
+alt-r = newsboat
+c-\ = open browser Buku
+
+Default
+c-d = close pane
+c-o = swap pane
+x = close pane
+d = detach window
+c = new window
+w = list windows
+
+# =================================================================
+# =================================================================
+
+C-o         Rotate the panes in the current window forwards.
+C-z         Suspend the tmux client.
+!           Break the current pane out of the window.
+"           Split the current pane into two, top and bottom.
+#           List all paste buffers.
+$           Rename the current session.
+%           Split the current pane into two, left and right.
+&           Kill the current window.
+'           Prompt for a window index to select.
+(           Switch the attached client to the previous session.
+)           Switch the attached client to the next session.
+,           Rename the current window.
+-           Delete the most recently copied buffer of text.
+.           Prompt for an index to move the current window.
+0 to 9      Select windows 0 to 9.
+:           Enter the tmux command prompt.
+;           Move to the previously active pane.
+=           Choose which buffer to paste interactively from a list.
+?           List all key bindings.
+D           Choose a client to detach.
+L           Switch the attached client back to the last session.
+[           Enter copy mode to copy text or view the history.
+]           Paste the most recently copied buffer of text.
+c           Create a new window.
+d           Detach the current client.
+f           Prompt to search for text in open windows.
+i           Display some information about the current window.
+l           Move to the previously selected window.
+m           Mark the current pane (see select-pane -m).
+M           Clear the marked pane.
+n           Change to the next window.
+o           Select the next pane in the current window.
+p           Change to the previous window.
+q           Briefly display pane indexes.
+r           Force redraw of the attached client.
+s           Select a new session for the attached client interactively.
+t           Show the time.
+w           Choose the current window interactively.
+x           Kill the current pane.
+z           Toggle zoom state of the current pane.
+{           Swap the current pane with the previous pane.
+}           Swap the current pane with the next pane.
+~           Show previous messages from tmux, if any.
+Page Up     Enter copy mode and scroll one page up.
+Space       Arrange the current window in the next preset layout.
+M-n         Move to the next window with a bell or activity marker.
+M-o         Rotate the panes in the current window backwards.
+M-p         Move to the previous window with a bell or activity marker.
+C-Up, C-Down
+C-Left, C-Right Resize the current pane in steps of one cell.
+M-Up, M-Down
+M-Left, M-Right Resize the current pane in steps of five cells.
+
+# vim: ft=sh:et:sw=0:ts=2:sts=2:

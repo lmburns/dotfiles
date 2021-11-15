@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Desc: add torrent to transmission
+
+transmission-daemon && terminal-notifier -message "Starting transmission daemon..."
+
+transmission-remote -a "$@" && tput bel; terminal-notifier -message "🔽 Torrent added." && (nohup mn  "Torrent added" > /dev/null &)
