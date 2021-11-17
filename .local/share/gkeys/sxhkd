@@ -16,6 +16,7 @@
 | Hyper + N               | dunsctl close-all           |
 | Alt + Space             | dmenu app launcher          |
 | Ctrl + Alt + p          | prs password launcher       |
+| Super + Delete          | xidlehook lock screen       |
 | Super + Shift + q       | Kill window                 |
 | Super + Shift + c       | Close window                |
 | Alt + Ctrl + Shift + x  | Kill window                 |

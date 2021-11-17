@@ -1,0 +1,453 @@
+#compdef passrs
+# TODO: file/dir/key completions
+
+autoload -U is-at-least
+
+_passrs() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+        '-h[Prints help information]' \
+        '--help[Prints help information]' \
+        '-V[Prints version information]' \
+        '--version[Prints version information]' \
+        ":: :_passrs_commands" \
+        "*::: :->passrs" \
+        && ret=0
+    case $state in
+        (passrs)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:passrs-command-$line[1]:"
+        case $line[1] in
+            (init)
+            _arguments "${_arguments_options[@]}" \
+                '-p+[The specified gpg-id(s) is assigned to the specified subfolder]' \
+                '--path=[The specified gpg-id(s) is assigned to the specified subfolder]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                '::gpg-ids -- The gpg-id(s) to encrypt the store with. If no keys are specified, PASSWORD_STORE_KEY will be used:_files' \
+                && ret=0
+            ;;
+            (ls)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                '::subfolder -- The subfolder to list:_files' \
+                && ret=0
+            ;;
+            (find)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to match:_files' \
+                && ret=0
+            ;;
+            (show)
+            _arguments "${_arguments_options[@]}" \
+                '-c+[Optionally, put the secret on the clipboard. If a line number is specified, that line (1-based) will be copied. Otherwise, the first line of the file will be copied. If put on the clipboard, the secret will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified. NOTE: This flag must be the final argument]' \
+                '--clip=[Optionally, put the secret on the clipboard. If a line number is specified, that line (1-based) will be copied. Otherwise, the first line of the file will be copied. If put on the clipboard, the secret will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified. NOTE: This flag must be the final argument]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to show:_files' \
+                && ret=0
+            ;;
+            (grep)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':search-string -- The string to grep for:_files' \
+                && ret=0
+            ;;
+            (insert)
+            _arguments "${_arguments_options[@]}" \
+                '(-m --multiline)-e[Echo the secret back to the console during entry]' \
+                '(-m --multiline)--echo[Echo the secret back to the console during entry]' \
+                '-f[Overwriting existing secret forcefully]' \
+                '--force[Overwriting existing secret forcefully]' \
+                '(-e --echo)-m[Enable multiline mode]' \
+                '(-e --echo)--multiline[Enable multiline mode]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to insert into:_files' \
+                && ret=0
+            ;;
+            (edit)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to edit:_files' \
+                && ret=0
+            ;;
+            (generate)
+            _arguments "${_arguments_options[@]}" \
+                '-c[Optionally, put the secret on the clipboard. If put on the clipboard, the secret will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified]' \
+                '--clip[Optionally, put the secret on the clipboard. If put on the clipboard, the secret will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified]' \
+                '(-i --in-place)-f[Overwriting existing secret forcefully]' \
+                '(-i --in-place)--force[Overwriting existing secret forcefully]' \
+                '(-f --force)-i[Remove only the first line of an existing file with a new secret]' \
+                '(-f --force)--in-place[Remove only the first line of an existing file with a new secret]' \
+                '-n[Disable special symbols]' \
+                '--no-symbols[Disable special symbols]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to generate for:_files' \
+                '::length -- The length of the secret, which defaults to 24 if not specified:_files' \
+                && ret=0
+            ;;
+            (rm)
+            _arguments "${_arguments_options[@]}" \
+                '-f[Delete forcefully]' \
+                '--force[Delete forcefully]' \
+                '-r[Delete recursively]' \
+                '--recursive[Delete recursively]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':secret-name -- The secret to remove:_files' \
+                && ret=0
+            ;;
+            (mv)
+            _arguments "${_arguments_options[@]}" \
+                '-f[Move forcefully]' \
+                '--force[Move forcefully]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':old-path -- The path to move from:_files' \
+                ':new-path -- The path to move to:_files' \
+                && ret=0
+            ;;
+            (cp)
+            _arguments "${_arguments_options[@]}" \
+                '-f[Copy forcefully]' \
+                '--force[Copy forcefully]' \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ':old-path -- The path to copy from:_files' \
+                ':new-path -- The path to copy to:_files' \
+                && ret=0
+            ;;
+            (git)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                '::git-command-args -- Arguments to be passed to the git binary:_files' \
+                && ret=0
+            ;;
+            (otp)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                ":: :_passrs__otp_commands" \
+                "*::: :->otp" \
+                && ret=0
+            case $state in
+                (otp)
+                words=($line[1] "${words[@]}")
+                (( CURRENT += 1 ))
+                curcontext="${curcontext%:*:*}:passrs-otp-command-$line[1]:"
+                case $line[1] in
+                    (code)
+                    _arguments "${_arguments_options[@]}" \
+                        '-c[Optionally, put the generated code on the clipboard. If put on the clipboard, the code will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified]' \
+                        '--clip[Optionally, put the generated code on the clipboard. If put on the clipboard, the code will be cleared in PASSWORD_STORE_CLIP_TIME in seconds, or 45 seconds if unspecified]' \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        ':secret-name -- The secret to generate the code from:_files' \
+                        && ret=0
+                    ;;
+                    (insert)
+                    _arguments "${_arguments_options[@]}" \
+                        '--algorithm=[One of SHA1, SHA256, or SHA512]' \
+                        '--period=[How often the OTP refreshes]' \
+                        '--digits=[The length of the generated OTP code]' \
+                        '-e[Echo the secret back to the console during entry]' \
+                        '--echo[Echo the secret back to the console during entry]' \
+                        '-f[Overwriting existing secret forcefully]' \
+                        '--force[Overwriting existing secret forcefully]' \
+                        '-g[Generate an OTP code from the newly-inserted secret]' \
+                        '--generate[Generate an OTP code from the newly-inserted secret]' \
+                        '-s[Create an OTP URI from the provided secret. Assumes SHA1 algorithm, 30-second period, and 6 digits]' \
+                        '--from-secret[Create an OTP URI from the provided secret. Assumes SHA1 algorithm, 30-second period, and 6 digits]' \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        ':secret-name -- The secret to insert into:_files' \
+                        && ret=0
+                    ;;
+                    (append)
+                    _arguments "${_arguments_options[@]}" \
+                        '--algorithm=[One of SHA1, SHA256, or SHA512]' \
+                        '--period=[How often the OTP refreshes]' \
+                        '--digits=[The length of the OTP code]' \
+                        '-e[Echo the secret back to the console during entry]' \
+                        '--echo[Echo the secret back to the console during entry]' \
+                        '-s[Create an OTP URI from the provided secret. Assumes SHA1 algorithm, 30-second period, and 6 digits]' \
+                        '--from-secret[Create an OTP URI from the provided secret. Assumes SHA1 algorithm, 30-second period, and 6 digits]' \
+                        '-g[Generate an OTP code from the newly-appended secret]' \
+                        '--generate[Generate an OTP code from the newly-appended secret]' \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        ':secret-name -- The secret to append to:_files' \
+                        && ret=0
+                    ;;
+                    (uri)
+                    _arguments "${_arguments_options[@]}" \
+                        '(-q --qrcode)-c[Copy the URI to the clipboard]' \
+                        '(-q --qrcode)--clip[Copy the URI to the clipboard]' \
+                        '(-c --clip)-q[Generate a QR code to stdout]' \
+                        '(-c --clip)--qrcode[Generate a QR code to stdout]' \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        ':secret-name -- The secret that contains a URI to print:_files' \
+                        && ret=0
+                    ;;
+                    (validate)
+                    _arguments "${_arguments_options[@]}" \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        ':uri -- The URI to test:_files' \
+                        && ret=0
+                    ;;
+                    (help)
+                    _arguments "${_arguments_options[@]}" \
+                        '-h[Prints help information]' \
+                        '--help[Prints help information]' \
+                        '-V[Prints version information]' \
+                        '--version[Prints version information]' \
+                        && ret=0
+                    ;;
+                esac
+                ;;
+            esac
+            ;;
+            (help)
+            _arguments "${_arguments_options[@]}" \
+                '-h[Prints help information]' \
+                '--help[Prints help information]' \
+                '-V[Prints version information]' \
+                '--version[Prints version information]' \
+                && ret=0
+            ;;
+        esac
+        ;;
+    esac
+}
+
+(( $+functions[_passrs_commands] )) ||
+_passrs_commands() {
+    local commands; commands=(
+        "init:Initialize a new store or substore" \
+            "ls:List all secrets" \
+            "find:List secrets that match secret-name" \
+            "show:Show existing secret" \
+            "grep:Search for string in secrets" \
+            "insert:Insert a new secret" \
+            "edit:Insert a new secret or edit an existing one using $EDITOR" \
+            "generate:Generate a new secret" \
+            "rm:Remove existing secret or directory" \
+            "mv:Move old-path to new-path" \
+            "cp:Copy old-path to new-path" \
+            "git:Execute a git command inside the password store" \
+            "otp:Manage OTP tokens" \
+            "help:Prints this message or the help of the given subcommand(s)" \
+            )
+    _describe -t commands 'passrs commands' commands "$@"
+}
+(( $+functions[_passrs__otp__append_commands] )) ||
+_passrs__otp__append_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp append commands' commands "$@"
+}
+(( $+functions[_passrs__otp__code_commands] )) ||
+_passrs__otp__code_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp code commands' commands "$@"
+}
+(( $+functions[_passrs__cp_commands] )) ||
+_passrs__cp_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs cp commands' commands "$@"
+}
+(( $+functions[_passrs__edit_commands] )) ||
+_passrs__edit_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs edit commands' commands "$@"
+}
+(( $+functions[_passrs__find_commands] )) ||
+_passrs__find_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs find commands' commands "$@"
+}
+(( $+functions[_passrs__generate_commands] )) ||
+_passrs__generate_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs generate commands' commands "$@"
+}
+(( $+functions[_passrs__git_commands] )) ||
+_passrs__git_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs git commands' commands "$@"
+}
+(( $+functions[_passrs__grep_commands] )) ||
+_passrs__grep_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs grep commands' commands "$@"
+}
+(( $+functions[_passrs__help_commands] )) ||
+_passrs__help_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs help commands' commands "$@"
+}
+(( $+functions[_passrs__otp__help_commands] )) ||
+_passrs__otp__help_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp help commands' commands "$@"
+}
+(( $+functions[_passrs__init_commands] )) ||
+_passrs__init_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs init commands' commands "$@"
+}
+(( $+functions[_passrs__insert_commands] )) ||
+_passrs__insert_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs insert commands' commands "$@"
+}
+(( $+functions[_passrs__otp__insert_commands] )) ||
+_passrs__otp__insert_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp insert commands' commands "$@"
+}
+(( $+functions[_passrs__ls_commands] )) ||
+_passrs__ls_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs ls commands' commands "$@"
+}
+(( $+functions[_passrs__mv_commands] )) ||
+_passrs__mv_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs mv commands' commands "$@"
+}
+(( $+functions[_passrs__otp_commands] )) ||
+_passrs__otp_commands() {
+    local commands; commands=(
+        "code:Generate and print an TOTP code from the secret key in pass-name" \
+            "insert:Insert OTP secret to pass-name" \
+            "append:Append an OTP secret to pass-name" \
+            "uri:Print the key URI stored in pass-name" \
+            "validate:Test a URI string for validity according to the Key Uri Format" \
+            "help:Prints this message or the help of the given subcommand(s)" \
+            )
+    _describe -t commands 'passrs otp commands' commands "$@"
+}
+(( $+functions[_passrs__rm_commands] )) ||
+_passrs__rm_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs rm commands' commands "$@"
+}
+(( $+functions[_passrs__show_commands] )) ||
+_passrs__show_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs show commands' commands "$@"
+}
+(( $+functions[_passrs__unclip_commands] )) ||
+_passrs__unclip_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs unclip commands' commands "$@"
+}
+(( $+functions[_passrs__otp__uri_commands] )) ||
+_passrs__otp__uri_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp uri commands' commands "$@"
+}
+(( $+functions[_passrs__otp__validate_commands] )) ||
+_passrs__otp__validate_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'passrs otp validate commands' commands "$@"
+}
+
+_passrs "$@"

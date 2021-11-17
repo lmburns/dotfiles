@@ -1,21 +1,15 @@
 #!/bin/sh
 
-# Sets caps lock to a hyper key when held down
-# Sets caps lock to escape when pressed alone
-# Sets caps lock to caps lock when pressed with shift
-
 # https://superuser.com/questions/1610715/how-can-i-use-caps-as-a-function-key-to-activate-arbitrary-combinations-on-oth
 # https://unix.stackexchange.com/questions/414926/bind-capshjkl-to-arrow-keys-caps-to-esc
 
-# .xserverrc
-# exec /usr/bin/X -ardelay 300 -arinterval 50 -nolisten tcp "$@"
-
-xset r rate 300 50
 setxkbmap -layout us
-setxkbmap -option shift:both_capslock
+xset r rate 300 50
 
-# xmodmap -e "keysym Shift_R = Shift_R Caps_Lock Shift_R"
-# xmodmap -e "keysym Shift_L = Shift_L Caps_Lock Shift_L"
+# Method 1
+# Sets caps lock to a hyper key when held down
+# Sets caps lock to escape when pressed alone
+# Sets caps lock to caps lock when pressed with shift
 
 # setxkbmap -option caps:escape
 mod="Hyper_L"
@@ -36,8 +30,7 @@ xmodmap -e "keycode 66 = $mod Caps_Lock"
 # If not clearing mod4
 # xmodmap -e "remove mod4 = $mod"
 
-# xmodmap -e "add mod3 = Caps_Lock"
-xmodmap -e "add mod3 = Hyper_L"
+xmodmap -e "add mod3 = Caps_Lock"
 xmodmap -e "add control = Control_L Control_R"
 xmodmap -e "add mod4 = Super_L Super_R"
 
@@ -47,7 +40,9 @@ xmodmap -e "keycode any = Escape"
 # xcape -e "$mod=Escape"
 killall xcape 2>/dev/null ; xcape -e "$mod=Escape"
 
-# setxkbmap -option caps:hyper
+# Turn off the caps lock if on since there is no longer a key for it.
+# xset -q | grep "Caps Lock:\s*on" && xdotool key Caps_Lock
+
 
 # ================
 # xmodmap -e "keycode 66 = Mode_switch"

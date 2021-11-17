@@ -1,0 +1,62 @@
+#!/bin/sh
+
+setxkbmap -layout us
+xset r rate 300 50
+
+# Method 1
+# Sets caps lock to a hyper key when held down
+# Sets caps lock to escape when pressed alone
+# Sets caps lock to mode switch when pressed with left shift
+# Sets caps lock + right shift = actual caps lock
+
+# setxkbmap -option caps:escape
+mod="Hyper_L"
+
+xmodmap -e "clear lock"
+xmodmap -e "clear control"
+xmodmap -e "clear mod3"
+xmodmap -e "clear mod4"
+
+# xmodmap -e "keycode 66 = $mod Caps_Lock"
+
+# If not clearing mod4
+# xmodmap -e "remove mod4 = $mod"
+
+xmodmap -e "keycode 66 = $mod Mode_switch"
+xmodmap -e "add mod3 = $mod"
+xmodmap -e "add control = Control_L Control_R"
+xmodmap -e "add mod4 = Super_L Super_R"
+
+# xmodmap -e "keycode any = Escape"
+
+xmodmap -e "keysym Shift_R = Shift_R NoSymbol Caps_Lock"
+xmodmap -e "keysym h = h H Left"
+xmodmap -e "keysym l = l L Right"
+xmodmap -e "keysym k = k K Up"
+xmodmap -e "keysym j = j J Down"
+
+xmodmap -e "keysym u = u U Prior"
+xmodmap -e "keysym i = i I Home"
+xmodmap -e "keysym o = o O End"
+xmodmap -e "keysym p = p P Next"
+#
+# # xcape -e "ISO_Level3_Shift=Escape"
+# # xcape -e "$mod=Escape"
+killall xcape 2>/dev/null ; xcape -e "$mod=Escape"
+
+# Turn off the caps lock if on since there is no longer a key for it.
+# xset -q | grep "Caps Lock:\s*on" && xdotool key Caps_Lock
+
+
+# ================
+# xmodmap -e "keysym h = h H Left"
+# xmodmap -e "keysym l = l L Right"
+# xmodmap -e "keysym k = k K Up"
+# xmodmap -e "keysym j = j J Down"
+#
+# xmodmap -e "keysym u = u U Prior"
+# xmodmap -e "keysym i = i I Home"
+# xmodmap -e "keysym o = o O End"
+# xmodmap -e "keysym p = p P Next"
+
+# killall xcape 2>/dev/null ; xcape -e "Mode_switch=Escape"

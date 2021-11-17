@@ -17,6 +17,10 @@
 F11
     remaps && notify-send "remaps" "remapped"
 
+# Lock screen
+super + Delete
+    xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
+
 # Quit bspwm
 super + shift + Escape
     prompt "Are you sure you would like to quit this Xsession" "bspc quit"

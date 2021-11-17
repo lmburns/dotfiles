@@ -1,8 +1,14 @@
 ---
-# base_color: "#FF5813"
-# border_color: "#A06469"
-format: "yaml"
+#############################
+# Global Command Line Options
+#############################
+# Max depth for glob/regex pattern to traverse when matching files
 max_depth: 10
+# File path color
+# base_color: "#FF5813"
+# Border color when using -tfb
+border_color: "#A06469"
+# Random selection of colors to use as tags
 colors:
   - "#FF5813"
   - "#A06469"
@@ -13,9 +19,91 @@ colors:
   - "#EF1D55"
   - "#83a598"
   - "#d3869b"
-
+# Global directories/files to ignore
 ignores:
   - "target/"
-#   - "wutag_core/"
+  - "wutag_core/"
+# Format that is displayed when using view subcommand
+format: yaml
 
-...
+############################
+# Keybindings within the TUI
+############################
+# keys:
+#   quit: { Char: q }
+#   up: { Char: k }
+#   down: { Char: j }
+#   go_to_top: { Char: g }
+#   go_to_bottom: { Char: G }
+#   page_up: { Char: K }
+#   page_down: { Char: J }
+#   select: { Char: v }
+#   select_all: { Char: V }
+#   refresh: { Char: r }
+#   help: { Char: "?" }
+#   add: { Char: a }
+#   clear: { Char: D }
+#   remove: { Char: x }
+#   edit: { Char: e }
+#   search: { Char: / }
+#   copy: { Char: y }
+#   preview: { Char: P }
+
+# Options for keys include (copy is used to show structure of every example):
+  # copy: { Char: x } -- Any single character
+  # copy: { Alt: x }  -- Alt + any single character
+  # copy: { Ctrl: x } -- Ctrl + any single character
+  # copy: { F: 1 }    -- Function key + any digit
+  # copy: Backspace
+  # copy: CtrlBackspace
+  # copy: AltBackspace
+  # copy: Left
+  # copy: Right
+  # copy: Up
+  # copy: Down
+  # copy: Home
+  # copy: End
+  # copy: PageUp
+  # copy: PageDown
+  # copy: Tab
+  # copy: BackTab
+  # copy: Insert
+  # copy: Delete
+  # copy: CtrlDelete
+  # copy: AltDelete
+  # copy: Esc
+  # copy: Null
+
+##############
+# TUI settings
+##############
+tui:
+  colored_ui: true
+  completion_color: dark
+  looping: true
+  mark_indicator: "✔"
+  paths_bold: true
+  paths_color: "blue"
+  selection_blink: false
+  selection_bold: true
+  selection_dim: false
+  selection_indicator: "•"
+  selection_italic: false
+  # Command that lists files on startup
+  startup_cmd: "--global list files --with-tags"
+  # Refresh rate of the TUI
+  tick_rate: 250
+  unmark_indicator: " "
+
+#####################
+# Encryption settings
+#####################
+# Settings to encrypt the tag database
+encryption:
+  # Public GPG key to encrypt the database with
+  # public_key: E93ACCAAAEB024788C106EDEC011CBEF6628B679
+  public_key: burnsac@me.com
+  # Whether or not to actually encrypt the database
+  to_encrypt: true
+  # Use a TTY instead of a pinentry program when asking for a password
+  tty: false

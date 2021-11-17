@@ -80,7 +80,7 @@ zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
 dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
 [[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
   local dir
-  for dir ($dirstack){
+  for dir ($dirstack) {
     [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
   }
 } 2>/dev/null
@@ -88,7 +88,6 @@ alias c=cdr
 # ]]]
 
 # === zinit === [[[
-# zt(){ zinit lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 zt(){ zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 grman() {
   local graw="https://raw.githubusercontent.com"; local -A opts
@@ -100,14 +99,16 @@ grman() {
 # FIX:
 cclean() { command mv -f "tar*/rel*/%PLUGIN%" && cargo clean; }
 
-[[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
-  command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
-  command git clone https://github.com/lmburns/zinit "$ZINIT[BIN_DIR]"
+{
+  [[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
+    command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
+    command git clone https://github.com/lmburns/zinit "$ZINIT[BIN_DIR]"
+  }
+} always {
+  builtin source "$ZINIT[BIN_DIR]/zinit.zsh"
+  autoload -Uz _zinit
+  (( ${+_comps} )) && _comps[zinit]=_zinit
 }
-
-source "$ZINIT[BIN_DIR]/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
 
 # === annex, prompt === [[[
 zt light-mode for \
@@ -174,10 +175,6 @@ zt 0a light-mode for \
     Aloxaf/gencomp \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist
-
-  # trigger-load'!ftag' blockf compile'f*/ftag~*.zwc' \
-  #   lmburns/ftag
-
 # ]]] === trigger-load block ===
 
 # OMZP::sudo/sudo.plugin.zsh
@@ -249,8 +246,6 @@ zt 0b light-mode for \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
-  lbin'!bin/*' \
-    bigH/git-fuzzy \
     zdharma/zui \
     zdharma/zbrowse \
   atload'
@@ -259,7 +254,6 @@ zt 0b light-mode for \
   zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"
   ' \
     marzocchi/zsh-notify
-# TODO: Delete git fuzzy after done using it for testing
 #  ]]] === wait'0b' ===
 
 #  === wait'0c' - programs - sourced === [[[
@@ -503,7 +497,7 @@ zt 0c light-mode null for \
     lmburns/lolcate-rs \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-  atload'export FW_CONFIG_DIR="$XDG_CONFIG_HOME/fw"' \
+  atload'export FW_CONFIG_DIR="$XDG_CONFIG_HOME/fw"; alias wo="workon"' \
     brocode/fw \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -604,9 +598,6 @@ zt 0c light-mode null for \
     razrfalcon/cargo-bloat \
   lbin from'gh-r' \
     est31/cargo-udeps \
-  lbin atclone'cargo build --release --features=fix' atpull'%atclone' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-    rustsec/rustsec \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     andrewradev/cargo-local \
@@ -636,12 +627,12 @@ zt 0c light-mode null for \
   lbin atclone'cargo build --release --all-features' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     Canop/bacon \
-  lbin'tar*/rel*/rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
+  lbin'rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
   atclone'command rsync -vua --delete-after rusty-man/ .' \
   atclone'cargo build --release && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-  atinit'alias rman="rusty-man" rmand="open https://git.sr.ht/~ireas/rusty-man"' \
-    zdharma/null \
+  atclone"command mv -f rusty*/tar*/rel*/rusty-man . && cargo clean" \
+  atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
+    zdharma-zmirror/null \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     sminez/roc

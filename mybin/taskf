@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Desc: taskwarrior fzf
 # Forked From: gitlab.com/doronbehar/taskwarrior-fzf
@@ -26,7 +26,7 @@ basename="$(basename $0)"
 
 if [ "${_TASKFZF_SHOW}" = "keys" ]; then
   echo KEY $'\t'Action
-  echo === $'\t'======
+  echo '===' $'\t''======'
   echo D$'\t\t'"Mark tasks as Done"
   echo X$'\t\t'"Delete tasks"
   echo U$'\t\t'"Undo last action"
@@ -50,7 +50,7 @@ fi
 # set a file path that it's content will mark how to execute the next command
 # in the main loop
 current_filter=${XDG_RUNTIME_DIR:-${XDG_CACHE_DIR:-${TMP-/tmp}}}/taskfzf-current-filter
-if ! touch $current_filter; then
+if ! touch "$current_filter"; then
   echo "${basename}: Can't create a marker file needed for internal state management." >&2
   echo "${basename}: It's default location according to your environment is $current_filter" >&2
   echo "${basename}: Please update either of the following environment variables so the file will be creatable." >&2

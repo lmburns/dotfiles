@@ -9,4 +9,4 @@ emacs_tags = "rusty-tags.emacs"
 ctags_exe = "/usr/bin/ctags"
 
 # options given to the ctags executable
-ctags_options = "--fields=+niazS --extra=+q"
+ctags_options = "--fields=+niazS --extra=+q --c-kinds=+px --c++-kinds=+px"

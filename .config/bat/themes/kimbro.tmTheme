@@ -272,18 +272,18 @@
                     <string>bold</string>
                 </dict>
             </dict>
-            <dict>
-                <key>name</key>
-                <string>TEST</string>
-                <key>scope</key>
-                <string>meta.function-call</string>
-                <key>settings</key>
-                <dict>
-                    <!-- #819C3B -->
-                    <key>foreground</key>
-                    <string>#FFFFFF</string>
-                </dict>
-            </dict>
+            <!-- <dict> -->
+            <!--     <key>name</key> -->
+            <!--     <string>Arguments to options in bash</string> -->
+            <!--     <key>scope</key> -->
+            <!--     <string>meta.function-call</string> -->
+            <!--     <key>settings</key> -->
+            <!--     <dict> -->
+            <!--         [> #819C3B <] -->
+            <!--         <key>foreground</key> -->
+            <!--         <string>#aaaaaa</string> -->
+            <!--     </dict> -->
+            <!-- </dict> -->
             <dict>
                 <key>name</key>
                 <string>Derive hashtag</string>

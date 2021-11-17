@@ -117,9 +117,10 @@ colorscheme kimbox
 | <kbd>Hyper</kbd> + <kbd>N</kbd>                                    | `dunsctl close-all`          |
 | <kbd>Alt</kbd> + <kbd>Space</kbd>                                  | `dmenu` app launcher         |
 | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>p</kbd>                    | `prs` password launcher      |
+| <kbd>Super</kbd> + <kbd>Delete</kbd>                               | Lock screen with `xidlehook` |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>q</kbd>                 | Kill window                  |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>c</kbd>                 | Close window                 |
 | <kbd>Alt</kbd> + <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd> | Kill window                  |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>c</kbd>                 | Close window                 |
 | <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd>                   | Close window                 |
 | <kbd>Super</kbd> + <kbd>m</kbd>                                    | `rofi` view minimized        |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>m</kbd>                 | Hide (minimize) window       |
