@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Desc: ?? create bspwm monocle
+
 bspc node -f "$1" && exit 0
 bspc query -T -d | jq -er '.layout == "tiled"' > /dev/null && exit 1
 bspc node -f "$2"

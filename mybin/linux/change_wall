@@ -1,3 +1,5 @@
 #!/usr/bin/env zsh
 
+# Decc: Set wallpaper to random file
+
 hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]}

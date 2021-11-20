@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Desc: Colorize output of strace
+
 cd "$(dirname "$0")" || exit
 
 string_length=$(($(tput cols) - 95))

@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+# Desc: Run a terminal command with dmenu
+
 local to_run="$(\
   dmenu_path \
     | dmenu \

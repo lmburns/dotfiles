@@ -1,13 +1,15 @@
 #!/usr/bin/env sh
 
+# Desc: Choose what kind of screenshot to take
+
 # This is bound to Shift+PrintScreen by default, requires maim. It lets you
 # choose the kind of screenshot to take, including copying the image or even
 # highlighting an area to copy. scrotcucks on suicidewatch right now.
 
 screen_dir="$HOME/Pictures/screenshot"
 
-case "$(printf "a selected area\\ncurrent window\\nfull screen\\na selected area (copy)\\ncurrent window (copy)\\nfull screen (copy)" \
-    | dmenu -l 6 -i -p "Screenshot which area?")" in
+case "$(printf "a selected area\\ncurrent window\\nfull screen\\na selected area (copy)\\ncurrent window (copy)\\nfull screen (copy)" |
+    dmenu -l 6 -i -p "Screenshot which area?")" in
 "a selected area")
     maim -s $screen_dir/pic-selected-"$(date '+%y%m%d-%H%M-%S').png"
     ;;

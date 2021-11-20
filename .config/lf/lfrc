@@ -69,27 +69,43 @@ map <esc> quit
 # -- Open: any file
 cmd open ${{
     case $(file --mime-type -b $f) in
-      (application/pdf|application/vnd*|application/epub*) nohup zathura $fx >/dev/null 2>&1 ;;
+      (application/pdf|application/vnd*|application/epub*) setsid -f zathura $fx >/dev/null 2>&1 ;;
       (application/csv) vd $fx ;;
       (application/msword\
         |application/vnd.openxmlformats-officedocument.*\
         |application/vnd.oasis.opendocument.text\
         |application/vnd.ms-excel\
         |text/rtf) handlr open $fx ;;
-      (text/*) $EDITOR $fx;;
-      (image/x-xcf) nohup gimp $f >/dev/null 2>&1 ;;
+      (text/*|application/pgp-encrypted) $EDITOR $fx;;
+      (image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
       (image/svg+xml) display -- $f ;;
       (image/*) rotdir $f \
         | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\)\(_large\)*$" \
-        | sxiv -ai 2>/dev/null | lf-select ;;
+        | setsid -f sxiv -aio 2>/dev/null | lf-select ;;
       (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback  $f >/dev/null ;;
-      (video/*) nohup mpv $f -quiet >/dev/null 2>&1 ;;
+      (video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
       (application/x-bittorrent) open -a Transmission.app ;;
       (application/zlib) open ;;
       (*)
         case ${f:e} in
           (dmg) (( $+commands[hdiutil] )) && hdiutil attach "$fx" ;;
-          (*) $EDITOR $fx ;;
+          (bz|bz2|tbz|tbz2|gz|tgz|xz|txz|zip|rar|iso)
+            mntdir="${f}-archivemount"
+            [[ ! -d "$mntdir" ]] && {
+              mkdir "$mntdir"
+              archivemount "$f" "$mntdir"
+              echo "$mntdir" >> "/tmp/__lf_archivemount_$id"
+            }
+            lf -remote "send $id cd \"$mntdir\""
+            lf -remote "send $id reload"
+          ;;
+          (*)
+            handlr open $fx
+            # $EDITOR $fx
+            # for f in $fx; do
+            #   $OPENER $f > /dev/null 2> /dev/null &
+            # done;;
+          ;;
         esac
         ;;
     esac
@@ -153,14 +169,14 @@ cmd ppaste &{{
   mode="$1"
   shift
   case "$mode" in
-      copy)
+      (copy)
           rsync -avX --ignore-existing --progress -- "$@" . |
           stdbuf -i0 -o0 -e0 tr '\r' '\n' |
           while IFS= read -r line; do
               lf -remote "send $id echo $line"
           done
           ;;
-      move) mv -n -- "$@" .;;
+      (move) mv -n -- "$@" .;;
   esac
   lf -remote "send load"
   lf -remote "send clear"
@@ -202,18 +218,22 @@ cmd fzf_z ${{
 # zoxide query -l | fzf
 
 
-# -- Archive: unarchive
-cmd unarchive ${{
-  case "$f" in
-    *.zip) unzip "$f" ;;
-    *.tar.gz) tar -xzvf "$f" ;;
-    *.tar.bz2) tar -xjvf "$f" ;;
-    *.tar.x) tar -xJvf "$f" ;;
-    *.tar) tar -xvf "$f" ;;
-    *) echo "Unsupported format" ;;
-  esac
+# -- Unmount: unmount archivemount
+cmd unmount ${{
+  fusermount -u "$f"
+  rmdir "$f"
+  lf -remote "send $id reload"
 }}
 
+# -- Archive: unarchive
+cmd unarchive ${{ xcompress x "$f" }}
+
+# -- Archive: archive
+cmd archive ${{
+  clear; vared -cp "Archive out: " archive
+  # quotes around "$fx" don't work here
+  xcompress a -o "$archive" -- $fx
+}}
 
 # -- Git: branch
 cmd git_branch ${{
@@ -422,13 +442,6 @@ cmd cd-followlink &{{
 }}
 
 # === TAGS === [[[
-# --Tag: list
-cmd tag-list !{{
-  clear
-  tag -l | bat -f -l bash
-}}
-
-
 # -- Tag: wutag set
 cmd wutag-set ${{
   clear
@@ -440,8 +453,7 @@ cmd wutag-set ${{
   vared -cp "Set tag: " tag
   for x in $fx; do
     fname="${x:t}"; fdir="${x:h}"
-    wutag -d "${fdir}/" clear $fname
-    wutag -d "${fdir}/" set $fname $tag
+    wutag -d "${fdir}/" set -c $fname $tag
   done
 }}
 
@@ -453,7 +465,7 @@ cmd wutag-add ${{
   print -Pr "%f"
   printf "=%.0s" {1..22}
   print
-  vared -cp "Set tag: " tag
+  vared -cp "Add tag: " tag
   for x in $fx; do
     fname="${x:t}"; fdir="${x:h}"
     wutag -d "${fdir}/" set $fname $tag
@@ -468,7 +480,7 @@ cmd wutag-remove ${{
   print -Pr "%f"
   printf "=%.0s" {1..22}
   print
-  vared -cp "Set tag: " tag
+  vared -cp "Remove tag: " tag
   for x in $fx; do
     fname="${x:t}"; fdir="${x:h}"
     wutag -d "${fdir}/" rm $fname
@@ -477,7 +489,7 @@ cmd wutag-remove ${{
 
 cmd wutag-list !{{
   clear
-  noglob wutag list files -tf | bat -f -l bash
+  noglob wutag --color=always list files -tf | bat -f
 }}
 # ]]] === TAGS ===
 
@@ -495,12 +507,6 @@ cmd fd_edit ${{
   )
   [[ -n "$sel" ]] && ${EDITOR:-vim} "${sel[@]}"
 }}
-
-# -- Archive: archive
-cmd zip %zip -r "$f" "$f"
-cmd tar %tar cvf "$f.tar" "$f"
-cmd targz %tar cvzf "$f.tar.gz" "$f"
-cmd tarbz2 %tar cjvf "$f.tar.bz2" "$f"
 
 # -- Miscellaneous:
 cmd rsyncto ${{ rsync -uvrP $fx root@burnsac.xyz:"$1" }}
@@ -594,11 +600,9 @@ map Tk !clear; tokei
 # ]]]
 
 # == Archive Mappings == [[[
-map az zip
-map at tar
-map ag targz
-map ab targz
-map au unarchive
+map aU unarchive
+map aA archive
+map au unmount
 # ]]]
 
 # == Trash Mappings == [[[
@@ -744,7 +748,8 @@ cmd git_add $for x ($fx) { git add "$x" }
 map gta :{{ git_add; unselect; }}
 
 map gtb :git_branch
-map gtp ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
+map gtp ${{clear; git pull || true; echo "press ENTER"; read ENTER}}
+map gtP ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
 map gtz ${{clear; git status; echo "press ENTER"; read ENTER}}
 map gtl ${{clear; git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit}}
 map gttr ${{clear; git ls-tree -r master --name-only | bat}}

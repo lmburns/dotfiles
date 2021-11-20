@@ -7,8 +7,8 @@ local context curcontext="$curcontext" state state_descr line
 typeset -A opt_args
 
 local db
-
 autoload -U regexp-replace
+setopt extendedglob
 
 _tmsu() {
     local cmd db ret=1
@@ -43,8 +43,15 @@ _tmsu() {
     case $state in
         (args)
             cmd="$words[1]"
-            if (( $+functions[_tmsu_cmd_${cmd}] ))
-            then
+            [[ "$cmd" = (rm|del(ete|)) ]] && cmd="delete"
+            [[ "$cmd" = (copy|cp) ]]      && cmd="copy"
+            [[ "$cmd" = (files|query) ]]  && cmd="files"
+            [[ "$cmd" = (stats|info) ]]   && cmd="info"
+            [[ "$cmd" = (rename|mv) ]]    && cmd="rename"
+            [[ "$cmd" = (fix|repair) ]]   && cmd="repair"
+            [[ "$cmd" = (u(n|)mount) ]]   && cmd="unmount"
+
+            if (( $+functions[_tmsu_cmd_${cmd}] )); then
                 _tmsu_cmd_$cmd
             fi
         ;;
@@ -55,13 +62,82 @@ _tmsu_commands() {
     typeset -a command_list
     local line
 
-    _call_program tmsu tmsu help --list | \
-    while read -A line
-    do
-        command_list+=($line[1])
-    done
+    command_list=(
+        'config:List or view database settings'
+
+        # 'copy:Creates new tag NEW applied to same set of files as TAG'
+        'cp:Creates new tag NEW applied to same set of files as TAG'
+
+        # 'del:Permanently deletes the TAGs specified'
+        # 'delete:Permanently deletes the TAGs specified'
+        'rm:Permanently deletes the TAGs specified'
+
+        'dupes:Identifies all files in the database that are exact duplicates of FILE'
+
+        # 'query:Lists the files in the database that match the QUERY specified'
+        'files:Lists the files in the database that match the QUERY specified'
+
+        'help:Shows help summary or, where SUBCOMMAND is specified'
+
+        'imply:Creates a tag implication such that any file tagged TAG will be implicitly tagged IMPL'
+
+        # 'stats:Shows the database information'
+        'info:Shows the database information'
+
+        'init:Initializes a new local database'
+
+        'merge:Merges TAGs into tag DEST resulting in a single tag of name DEST'
+
+        'mount:Lists the currently mounted file-systems, otherwise mounts a virtual file-system'
+
+        # 'rename:Renames a tag or value from OLD to NEW'
+        'mv:Renames a tag or value from OLD to NEW'
+
+        # 'fix:Fixes broken paths and stale fingerprints in the database caused by file modifications and moves'
+        'repair:Fixes broken paths and stale fingerprints in the database caused by file modifications and moves'
+
+        'status:Shows the status of PATHs'
+
+        'tag:Tags the file FILE with the TAGs and VALUEs specified'
+
+        'tags:Lists the tags applied to FILEs, otherwise all tags in the database are listed'
+
+        # 'umount:Unmounts the virtual file-system at MOUNTPOINT'
+        'unmount:Unmounts the virtual file-system at MOUNTPOINT'
+
+        'untag:Disassociates FILE with the TAGs specified'
+
+        'untagged:Identify untagged files in the filesystem'
+
+        'values:Lists the values for TAGs. If no TAG is specified then all tags are listed'
+    )
+
+    # _call_program tmsu tmsu help --list | \
+    # while read -A line
+    # do
+    #     command_list+=($line[1])
+    # done
 
     _describe -t commands 'command' command_list "$@"
+}
+
+# mountpoints
+_tmsu_mount_points() {
+    typeset -a mounts
+
+    mounts=(
+        ${${(@f)"$(tmsu mount)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[3]}}
+    )
+    _describe -t mountpoints 'mountpoints' mounts
+}
+
+
+# tagged files
+_tmsu_files() {
+    typeset -a tagged_files
+
+    tagged_files=( ${(@f)"$(tmsu $db files)"} )
+    _describe -t files 'files' tagged_files
 }
 
 # the set of tag names
@@ -131,15 +207,13 @@ _tmsu_tag_values() {
 _tmsu_tags_with_values() {
 
     # add quote to end of IPREFIX if missing.
-    if [[ $IPREFIX =~ '--.*' || IPREFIX =~ '.*\"' ]]
-    then
-        IPREFIX="${IPREFIX}\""
+    if [[ $IPREFIX =~ '--.*' || IPREFIX =~ '.*\"' ]]; then
+      IPREFIX="${IPREFIX}\""
     fi
 
-    if [[ ${PREFIX} == '' ]] # if prefix is empty
-    then
-        _tmsu_tags
-        return
+    if [[ ${PREFIX} == '' ]]; then # if prefix is empty
+      _tmsu_tags
+      return
     fi
 
     # if following a space
@@ -282,18 +356,17 @@ _tmsu_query() {
 
 # set of files
 _tmsu_setting_names() {
-    if [[ -prefix *^= ]]
-    then
-        typeset -a setting_names
-        local name
+  if [[ -prefix *^= ]]; then
+    typeset -a setting_names
+    local name
 
-        _call_program tmsu tmsu $db config | cut -d = -f 1 | while read -A name
-        do
-            setting_names+=$name
+    _call_program tmsu tmsu $db config | cut -d = -f 1 | \
+        while read -A name; do
+          setting_names+=$name
         done
 
-        _describe -t names 'names' setting_names
-    fi
+    _describe -t names 'names' setting_names
+  fi
 }
 
 # commands
@@ -401,34 +474,36 @@ _tmsu_cmd_rename() {
 }
 
 _tmsu_cmd_repair() {
-    _arguments -s -w ''{--path=,-p}'[limit repair to files under a path]':path:_files \
-                     ''{--remove,-R}'[remove missing files from the database]' \
-                     ''{--unmodified,-u}'[recalculate fingerprints for unmodified files]' \
-                     ''{--pretend,-P}'[do not make any changes]' \
-                     ''{--manual,-m}'[manually relocate files]' \
-                     ''--rationalize'[remove explicit taggings where an implicit tagging exists]' \
-                     '*:file:_files' \
+    _arguments -s -w \
+        ''{--path=,-p}'[limit repair to files under a path]':path:_files \
+        ''{--remove,-R}'[remove missing files from the database]' \
+        ''{--unmodified,-u}'[recalculate fingerprints for unmodified files]' \
+        ''{--pretend,-P}'[do not make any changes]' \
+        ''{--manual,-m}'[manually relocate files]' \
+        ''--rationalize'[remove explicit taggings where an implicit tagging exists]' \
+        '*:file:_files' \
     && ret=0
 }
 
 _tmsu_cmd_status() {
     _arguments -s -w ''{--directory,-d}'[do not examine directory contents (non-recursive)]' \
                      ''{--no-dereference,-P}'[never follow symbolic links]' \
-	                 '*:file:_files' \
-	&& ret=0
+                   '*:file:_files' \
+  && ret=0
 }
 
 _tmsu_cmd_tag() {
-	_arguments -s -w ''{--tags=,-t}'[apply set of tags to multiple files]:tags:_tmsu_tags_with_values' \
-	                 ''{--recursive,-r}'[apply tags recursively to contents of directories]' \
-	                 ''{--explicit,-e}'[explicitly apply tags even if they are already implied]' \
-	                 ''{--from=,-f}'[copy tags from the specified file]:source:_files' \
-	                 ''{--where=,-w}'[apply tags to files meeting the query]:query:_tmsu_query' \
-	                 ''{--create+,-c}'[create a tag without tagging any files]:source:_files' \
-	                 ''{--force,-F}'[apply tags to non-existant or non-permissioned paths]' \
-                     ''{--no-dereference,-P}'[never follow symlinks (tag link itself)]' \
-	                 '*:: :->items' \
-	&& ret=0
+  _arguments -s -w \
+      ''{--tags=,-t}'[apply set of tags to multiple files]:tags:_tmsu_tags_with_values' \
+      ''{--recursive,-r}'[apply tags recursively to contents of directories]' \
+      ''{--explicit,-e}'[explicitly apply tags even if they are already implied]' \
+      ''{--from=,-f}'[copy tags from the specified file]:source:_files' \
+      ''{--where=,-w}'[apply tags to files meeting the query]:query:_tmsu_query' \
+      ''{--create+,-c}'[create a tag without tagging any files]:source:_files' \
+      ''{--force,-F}'[apply tags to non-existant or non-permissioned paths]' \
+      ''{--no-dereference,-P}'[never follow symlinks (tag link itself)]' \
+      '*:: :->items' \
+  && ret=0
 
     case $state in
         (items)
@@ -450,67 +525,70 @@ _tmsu_cmd_tag() {
 }
 
 _tmsu_cmd_tags() {
-	_arguments -s -w ''{--count,-c}'[lists the number of tags rather than their names]' \
-	                 '-1[list one tag per line]' \
-	                 ''{--explicit,-e}'[do not show implied tags]' \
-                     ''{--no-dereference,-P}'[never follow symlinks (show tags for link itself)]' \
-                     ''{--value,-u}'[show tags utilising value]' \
-	                 '*:: :->items' \
-	&& ret=0
+  _arguments -s -w \
+      ''{--count,-c}'[lists the number of tags rather than their names]' \
+      '-1[list one tag per line]' \
+      ''{--explicit,-e}'[do not show implied tags]' \
+      ''{--no-dereference,-P}'[never follow symlinks (show tags for link itself)]' \
+      ''{--value,-u}'[show tags utilising value]' \
+      '*:: :->items' \
+  && ret=0
 
-	case $state in
-        (items)
-            if (( ${+opt_args[--value]} ))
-            then
-                _wanted values expl 'values' _tmsu_values
-            else
-                _wanted files expl 'files' _files
-            fi
+  case $state in
+    (items)
+        if (( ${+opt_args[--value]} ))
+        then
+            _wanted values expl 'values' _tmsu_values
+        else
+            _wanted files expl 'files' _files
+        fi
     esac
 }
 
 _tmsu_cmd_unmount() {
-    _arguments -s -w ''{--all,-a}'[unmount all]' \
-                     ':mountpoint:_files' \
+    _arguments -s -w \
+        ''{--all,-a}'[unmount all]' \
+        ':mountpoint:_tmsu_mount_points' \
     && ret=0
 }
 
 _tmsu_cmd_untag() {
-	_arguments -s -w ''{--all,-a}'[remove all tags]' \
-	                 ''{--tags=,-t}'[remove set of tags from multiple files]:tags:_tmsu_tags_with_values' \
-	                 ''{--recursive,-r}'[remove tags recursively from contents of directories]' \
-                     ''{--no-dereference,-P}'[never follow symlinks (untag link itself)]' \
-	                 '*:: :->items' \
-	&& ret=0
+  _arguments -s -w \
+      ''{--all,-a}'[remove all tags]' \
+      ''{--tags=,-t}'[remove set of tags from multiple files]:tags:_tmsu_tags_with_values' \
+      ''{--recursive,-r}'[remove tags recursively from contents of directories]' \
+      ''{--no-dereference,-P}'[never follow symlinks (untag link itself)]' \
+      '*:: :->items' \
+  && ret=0
 
-	case $state in
-		(items)
-			if (( ${+opt_args[--tags]} || ${+opt_args[-t]} || ${+opt_args[--all]} || ${+opt_args[-a]} ))
-			then
-                _wanted files expl 'files' _files
-			else
-				if (( CURRENT == 1 ))
-				then
-					_wanted files expl 'files' _files
-				else
-					_wanted tags expl 'tags' _tmsu_tags_with_values
-				fi
-			fi
-	esac
+  case $state in
+    (items)
+      if (( ${+opt_args[--tags]} || ${+opt_args[-t]} || ${+opt_args[--all]} || ${+opt_args[-a]} )); then
+        _wanted files expl 'files' _tmsu_files
+      else
+        if (( CURRENT == 1 )); then
+          _wanted files expl 'files' _tmsu_files
+        else
+          _wanted tags expl 'tags' _tmsu_tags_with_values
+        fi
+      fi
+  esac
 }
 
 _tmsu_cmd_untagged() {
-    _arguments -s -w ''{--directory,-d}'[do not examine directory contents (non-recursive)]' \
-                     ''{--count,-c}'[lists the number of files rather than their names]' \
-                     ''{--no-dereference,-P}'[never follow symlinks (list untagged links)]' \
-                     '*:file:_files' \
+    _arguments -s -w \
+        ''{--directory,-d}'[do not examine directory contents (non-recursive)]' \
+         ''{--count,-c}'[lists the number of files rather than their names]' \
+         ''{--no-dereference,-P}'[never follow symlinks (list untagged links)]' \
+         '*:file:_files' \
     && ret=0
 }
 
 _tmsu_cmd_values() {
-    _arguments -s -w ''{--count,-c}'[lists the number of values rather than their names]' \
-                     '-1[lists on value per line]' \
-                     '*:tag:_tmsu_tags' \
+    _arguments -s -w \
+        ''{--count,-c}'[lists the number of values rather than their names]' \
+        '-1[lists on value per line]' \
+        '*:tag:_tmsu_tags' \
     && ret=0
 }
 
@@ -519,9 +597,10 @@ _tmsu_cmd_version() {
 }
 
 _tmsu_cmd_vfs() {
-    _arguments -s -w ''{--options,-o}'[mount options (passed to fusermount)]' \
-                     '1:file:_files' \
-                     '2:mountpoint:_dirs' \
+    _arguments -s -w \
+        ''{--options,-o}'[mount options (passed to fusermount)]' \
+        '1:file:_files' \
+        '2:mountpoint:_dirs' \
     && ret=0
 }
 

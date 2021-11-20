@@ -1,0 +1,46 @@
+#!/usr/bin/env zsh
+
+# Desc: Log dunst messages to json
+
+# Exported is needed for jq
+typeset -gx app inner_json
+typeset -a info
+local timestamp epoch file json
+
+(( $+commands[jq] ))  || { print -Pr "%F{1}%Bjq%f%b needs to be installed to manipulate json objects"; exit 1; }
+(( $+commands[rjo] )) || { print -Pr "%F{1}%Brjo%f%b needs to be installed to construct json objects"; exit 1; }
+(( $+commands[sponge] )) || {
+  print -Pr "%F{1}%Bsponge%f%b needs to be installed to read and write from same file"; exit 1;
+}
+
+# Delete trailing newlines
+# info=( ${${(s: :)${(Q)@}}%%[$'\n']} )
+info=( "${(@)${(@)@}%%[$'\n']}" )
+timestamp=$(date +"%m/%d/%Y %I:%M%p")
+epoch=$(date +"%s")
+file="${TMPDIR:-/tmp}/dunstlog"
+app="$info[1]"
+
+# testf="${PWD}/output"
+
+json="$(command rjo \
+  "$app"="$(\
+    rjo \
+      $epoch="$(\
+        rjo \
+          summary=$info[2] \
+          body=$info[3] \
+          icon=$info[4] \
+          urgency=$info[5] \
+          timestamp=$timestamp \
+      )" \
+  )"
+)"
+
+[[ ! -f "$file" ]] && print -r -- "$json" > "$file"
+
+inner_json="$(jq -r --compact-output '.[env.app]' <<< $json)"
+
+command jq ".[env.app] += $inner_json" $file | sponge "$file"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

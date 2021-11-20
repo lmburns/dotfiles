@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+if [[ "$1" == on ]] {
+  caffeinate --socket /tmp/xidlehook.sock &
+  notify-send \
+    -a Caffeinate \
+    -i /usr/share/icons/Gruvbox-Material-Dark/32x32/apps/caffeine.svg \
+    -u normal \
+    -t 3000 "Caffeine Enabled"
+} elif [[ "$1" == off ]] {
+  pkill -USR1 caffeinate
+  notify-send \
+    -a Caffeinate \
+    -i /usr/share/icons/Gruvbox-Material-Dark/32x32/apps/caffeine.svg \
+    -u normal \
+    -t 3000 "Caffeine Disabled"
+}

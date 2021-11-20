@@ -1,15 +1,15 @@
 set shell := ["zsh", "-euyc"]
+set export
 # F
 
-set dotenv-load := true
-
-# Doesn't work??, Get this to be a just variable
 CI := if env_var_or_default("CI", "1") == "0" { "--color=never" } else { "--color=always" }
-# version := `rg --color=never --pcre2 -oIN '^version = "\K(\d+\.?)+' Cargo.toml`
+version := `rg --color=never --pcre2 -oIN '^version = "\K(\d+\.?)+' Cargo.toml`
 
-# Doesn't export and read
-rl := if env_var_or_default("rl", "0") == "1" { "RUST_LOG=debug" } else { "" }
-export LXHKD_LOG := "trace"
+# rf := if env_var_or_default("rfd", "0") == "1" { join(env_var_or_default("RUSTFLAGS", ""), " -A dead_code") } else { env_var_or_default("RUSTFLAGS", "") }
+# export RUSTFLAGS := rf
+
+rl := ''
+export RUST_LOG := rl
 
 bt := '0'
 export RUST_BACKTRACE := bt
@@ -24,12 +24,9 @@ alias e := edit
 edit:
   @$EDITOR {{justfile()}}
 
-# Can use noglob or sh -c
-# sh -c 'RUST_LOG=debug cargo run {{CI}} -- {{ARGS}}'
-
 alias r := run
 run *ARGS:
-  {{rl}} noglob cargo run {{CI}} -- {{ARGS}}
+  noglob cargo run {{CI}} -- {{ARGS}}
 
 fmt:
   cargo fmt -- --check --files-with-diff {{CI}}
@@ -52,8 +49,12 @@ alias br := build-release
 build-release:
   cargo build --release --all-features {{CI}}
 
-test *ARGS:
-  cargo test {{CI}} -- {{ARGS}}
+test:
+  cargo test {{CI}}
+
+testn:
+  cargo test {{CI}} -- --nocapture
+
 
 ###################################################################################
 ###################################################################################
@@ -79,14 +80,17 @@ view-man: man
 #   just replace {{version}} {{NEW}} {{GO}}
 #   just man
 
+@get-version:
+  print -P "%F{12}%b{{version}}%f%b"
+
 replace FROM TO:
   -fd -tf -e rs -e toml | sad '{{FROM}}' '{{TO}}'
-#
-# @update-version NEW:
-#   -just replace {{version}} {{NEW}}
-#
-# @get-version:
-#   echo "{{version}}"
+
+@update-version NEW:
+  -just replace {{version}} {{NEW}}
+
+@update-version-1:
+  -just replace {{version}} "$(perl -F'\.' -lane 'print join ".", @F[0..$#F-1], $F[-1] + 1' <<< $version)"
 
 @lint:
   print -Pr "%F{2}%BChecking for FIXME/TODO...%b%f"
@@ -103,11 +107,24 @@ replace FROM TO:
 ###################################################################################
 ###################################################################################
 
+# detect if there's changes
 no-changes:
   git diff --no-ext-diff --quiet --exit-code
 
+# delete merged branches
 d-merged:
   git branch --merged | egrep -v "(^\*|master|dev) | xargs git branch -d"
+
+# generate changelog
+cliff:
+  git cliff --unreleased --strip all
+
+# create and sign/verify tag
+sign-tag TAG:
+  git cliff --tag {{TAG}} > CHANGELOG.md
+  git add -A && git commit -m "chore(release): prepare for {{TAG}}"
+  git tag -sa {{TAG}} -m "Release {{TAG}}"
+  git tag -v {{TAG}}
 
 ###################################################################################
 ###################################################################################

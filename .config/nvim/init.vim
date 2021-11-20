@@ -1732,7 +1732,7 @@ inoremap <expr> <a-;> fzf#complete({
   nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
 
   " nmap <silent> <Leader>mk :Marks<CR>
-  nmap <silent> <Leader>mk  :CocCommand fzf-preview.Marks<CR>
+  nmap <silent> <m-/>  :CocCommand fzf-preview.Marks<CR>
   nmap <Leader>mlm :marks<CR>
   nmap <Leader>mfd :delm! | delm A-Z0-9<CR>
   nmap <Leader>mld :delmarks a-z<CR>

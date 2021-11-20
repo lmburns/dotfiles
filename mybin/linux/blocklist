@@ -2,10 +2,8 @@
 # by: Rhomboid
 # http://www.reddit.com/r/commandline/comments/18yp5b/bash_script_to_update_multiple_blocklists/c8j6v5a
 
-# Edit by: gotbletu
-# tutorial video: https://www.youtube.com/watch?v=TyDX50_dC0M
-# Transmission does not allow multiple blocklist by default or is not simple.
-# This script merges multiple blocklist into one file.
+# Desc: Merge multiple blocklist into one file
+
 # Be sure to restart your bt client/daemon to use the new iplist.
 # Make sure to enable the blocklist to true and keep the blocklist-url empty in your config file.
 

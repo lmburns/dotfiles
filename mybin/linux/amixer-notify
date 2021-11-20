@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Changes the volume level of an audio track
+# Desc: Changes the volume level of an audio track
 # Signals an update in polybar for the volume module
 
 volume=$(pulsedevices | rg --color=never -o '\d+%' | head -n1)

@@ -272,7 +272,7 @@
     force_xwayland = false
 
 [log_notifs]
-    script = ~/mybin/linux/dunst_logger.sh
+    script = ~/mybin/linux/dunstlogger
 
 [dunst_icon]
     appname = dunst

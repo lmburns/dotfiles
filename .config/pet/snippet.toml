@@ -19,7 +19,19 @@ command = "cargo run -- clear opt.rs"
 tag = ["rust"]
 output = ""
 
+#########
+## GIT ##
+#########
+# Replace commit reference: git tag -fa <tagname>
+[[snippets]]
+description = "git remove tag"
+command = "git push origin :refs/tags/"
+output = ""
+tag = ["git"]
 
+
+#########
+#########
 [[snippets]]
 description = "cpu/memory"
 command = """

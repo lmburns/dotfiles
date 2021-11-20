@@ -420,4 +420,29 @@ ex=:\
 
 export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
 
+# lc() { local __="$(mktemp)" && lf -last-dir-path="$__" "$@";
+# d="${"$(<$__)"}" && chronic rm -f "$__" && [ -d "$d" ] && cd "$d"; }'
+
+# Removes mounted file systems
+lc() {
+  local tmp="$(mktemp)"
+  local fid="$(mktemp)"
+  lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
+  local id="${"$(<$fid)"}"
+  local archivemount_dir="/tmp/__lf_archivemount_${id}"
+  if [[ -f "$archivemount_dir" ]] {
+    while read -r line; do
+      notify-send "Unmounted" "${line:h:t}/${line:t}"
+      fusermount -u "$line"
+      command rmdir "$line"
+    done <<< "$archivemount_dir"
+   command rm -f "$archivemount_dir"
+  }
+  if [[ -f "$tmp" ]] {
+    local dir="${"$(<$tmp)"}"
+    command chronic rm -f "$tmp"
+    [[ -d "$dir" && "$dir" != "$PWD" ]] && builtin cd "$dir"
+  }
+}
+
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

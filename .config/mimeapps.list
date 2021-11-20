@@ -16,6 +16,7 @@ image/jpeg=sxiv.desktop;
 image/png=sxiv.desktop;
 inode/directory=lf.desktop;
 message/rfc822=mail.desktop;
+text/x-log=nvim.desktop;
 text/markdown=nvim.desktop;
 text/plain=nvim.desktop;neovide.desktop;
 text/x-shellscript=nvim.desktop;

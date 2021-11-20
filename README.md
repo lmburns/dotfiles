@@ -100,31 +100,34 @@ colorscheme kimbox
 <details>
 <summary><b>Overall keybindings</b></summary>
 
-| Keys                                                               | Action                       |
-|--------------------------------------------------------------------|------------------------------|
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Escape</kbd>            | Restart `bspwm`              |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd>                 | Restart `sxhkd`              |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd>                 | Restart `polybar`            |
-| <kbd>Super</kbd> + <kbd>Return</kbd>                               | Launch `alacritty`           |
-| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>Return</kbd>             | Launch `tdrop`               |
-| <kbd>Hyper</kbd> + <kbd>d</kbd>                                    | Launch `rofi -show drun`     |
-| <kbd>Hyper</kbd> + <kbd>x</kbd> (release) - <kbd>x</kbd>           | Launch `rofi -show drun`     |
-| <kbd>Hyper</kbd> + <kbd>x</kbd> (release) - <kbd>b</kbd>           | Launch `rofi -show window`   |
-| <kbd>Hyper</kbd> + <kbd>b</kbd>                                    | Launch `$BROWSER`            |
-| <kbd>Hyper</kbd> + <kbd>p</kbd>                                    | Launch `pcmanfm`             |
-| <kbd>Hyper</kbd> + <kbd>.</kbd>                                    | Launch `thunderbird`         |
-| <kbd>Hyper</kbd> + <kbd>n</kbd>                                    | `dunsctl history-pop`        |
-| <kbd>Hyper</kbd> + <kbd>N</kbd>                                    | `dunsctl close-all`          |
-| <kbd>Alt</kbd> + <kbd>Space</kbd>                                  | `dmenu` app launcher         |
-| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>p</kbd>                    | `prs` password launcher      |
-| <kbd>Super</kbd> + <kbd>Delete</kbd>                               | Lock screen with `xidlehook` |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>q</kbd>                 | Kill window                  |
-| <kbd>Alt</kbd> + <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd> | Kill window                  |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>c</kbd>                 | Close window                 |
-| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd>                   | Close window                 |
-| <kbd>Super</kbd> + <kbd>m</kbd>                                    | `rofi` view minimized        |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>m</kbd>                 | Hide (minimize) window       |
-| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>m</kbd>                  | Focus last minimized window  |
+| Keys                                                               | Action                         |
+|--------------------------------------------------------------------|--------------------------------|
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Escape</kbd>            | Restart `bspwm`                |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd>                 | Restart `sxhkd`                |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>p</kbd>                 | Restart `polybar`              |
+| <kbd>Super</kbd> + <kbd>Return</kbd>                               | Launch `alacritty`             |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>Return</kbd>             | Launch `tdrop`                 |
+| <kbd>Hyper</kbd> + <kbd>d</kbd>                                    | Launch `rofi -show drun`       |
+| <kbd>Hyper</kbd> + <kbd>x</kbd> (release) - <kbd>x</kbd>           | Launch `rofi -show drun`       |
+| <kbd>Hyper</kbd> + <kbd>x</kbd> (release) - <kbd>b</kbd>           | Launch `rofi -show window`     |
+| <kbd>Hyper</kbd> + <kbd>b</kbd>                                    | Launch `$BROWSER`              |
+| <kbd>Hyper</kbd> + <kbd>p</kbd>                                    | Launch `pcmanfm`               |
+| <kbd>Hyper</kbd> + <kbd>.</kbd>                                    | Launch `thunderbird`           |
+| <kbd>Hyper</kbd> + <kbd>n</kbd>                                    | `dunsctl history-pop`          |
+| <kbd>Hyper</kbd> + <kbd>N</kbd>                                    | `dunsctl close-all`            |
+| <kbd>Alt</kbd> + <kbd>Space</kbd>                                  | `dmenu` app launcher           |
+| <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>p</kbd>                    | `prs` password launcher        |
+| <kbd>Super</kbd> + <kbd>Delete</kbd>                               | Lock screen with `xidlehook`   |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>q</kbd>                 | Kill window                    |
+| <kbd>Alt</kbd> + <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd> | Kill window                    |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>c</kbd>                 | Close window                   |
+| <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>x</kbd>                   | Close window                   |
+| <kbd>Super</kbd> + <kbd>m</kbd>                                    | `rofi` view minimized          |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>m</kbd>                 | Hide (minimize) window         |
+| <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>m</kbd>                  | Focus last minimized window    |
+| <kbd>F11</kbd>                                                     | Remap keys                     |
+| <kbd>F10</kbd>                                                     | `caffeinate` (`xidlehook`) on  |
+| <kbd>Shift</kbd> + <kbd>F10</kbd>                                  | `caffeinate` (`xidlehook`) off |
 
 </details>
 
@@ -441,13 +444,8 @@ These are keybindings where after the '(release)', the previous keys no longer n
 ```sh
  $ pflist                                                 【  ~/.conf/zs/functions】─╯
 ======================================================================================
-.btitle                    buku - change title
-.btm                       buku - remove tags
-.btp                       buku -- add tags
-@append_dir-history-var    helper function for per-dir-hist
-@chwpd_dir-history-var     helper function for per-dir-hist
-_ex_cmd                    Helper for vbindkey (taken from marlonrichert)
 acc_print                  fancify text
+@append_dir-history-var    helper function for per-dir-hist
 autoenv-files              NICHOLAS85: find all autoenv zsh files and edit
 bcp                        delete (one or multiple) selected application(s)
 be                         use fzf to edit bookmark with buku
@@ -456,7 +454,11 @@ bo                         use fzf to open bookmark with buku
 bot                        use fzf to open bookmark with buku (search by tag first)
 bow2                       a copy of bow but as a zsh func
 bracketed-paste-win-path
+.btitle                    buku - change title
+.btm                       buku - remove tags
+.btp                       buku -- add tags
 bup                        update (one or multiple) selected application(s)
+capzsh
 ccheat                     cheatsheet of cheat and tldr
 cdown                      countdown timer
 cdownq                     countdown timer; no display
@@ -465,18 +467,21 @@ cdreal                     cd realpath
 cf                         Create lazily loaded Functions
 cfile                      copy contents of file to clipboard
 chpwd_ls                   func ran on every cd
+@chwpd_dir-history-var     helper function for per-dir-hist
 codeline                   get specific lang lines colorized
 delta                      delta variable column width side by side
 deploy-code
+dkill                      interactively kill process with dmenu
 docka                      select a docker container to start and attach to
 dockrm                     select a docker container to remove
 dockrmi                    select a docker image or images to remove
 docks                      select a running docker container to stop
 exchange                   swap files
+_ex_cmd                    Helper for vbindkey (taken from marlonrichert)
 fbd                        cd to selected parent directory
 fcd                        change directories with fzf
 fcd-zle                    change directories with fzf
-fcq                        use copyq to copy clipboard with fzf
+fcq                        use copyq to view clipboard history
 fcs                        get git commit sha
 fed                        open the selected file with the default editor
 fenv                       search environment vars with fzf
@@ -507,13 +512,12 @@ g1zip                      Creates basename pwd-date archive
 getpid                     get pid and pipe to pstree
 gkey                       print keyboard shortcuts to application - iteractive option
 gman                       wrapper for gman to colorize
-gnubin_off                 removes gnubins from $PATH
-gnubin_on                  adds gnubins to PATH
 gsha                       show sha of branch
 hgrep                      grep history
 hist_stat                  zsh history stats
 id_process                 get num of process by id
 iso2dmg                    Converts file  (iso) to .dmg
+jrnlimport                 import file to jrnl
 listening                  listen on port entered
 listports                  list open ports
 lowercasecurdir            lowercase every file in current dir
@@ -529,15 +533,16 @@ palette::colortest         print full palette with blocks
 pblist                     lists mybin funcs with their embedded descriptions
 perldoc                    wrapper to colorize perldoc man pages
 pflist                     lists ZDOTDIR/functions/* with their embedded descriptions
+pier-exec                  execute pier command colorfully
 printc                     escape code for colors
 prompt_my_per_dir_status   helper function for per-dir-hist
 psfind                     queries mdfind by kMDItemDisplayName
 rm                         remove wrapper depending on if root
 rmhist                     remove a line from history
 run-multi                  run tasks in parallel
-sudo                       sudo wrapper to allow aliases
+sudo_                      sudo wrapper to allow aliases
 tab                        open new terminal tab in current dir
-tm                         attach to tmux session or create new
+tmm                        attach to tmux session or create new
 um                         wrapper to colorize um man pages
 urlshort                   shorten url with tinyurl
 vbindkey                   vim bindkey
@@ -545,6 +550,7 @@ vii                        open file interactively with twf
 whichcomp                  tell which completion a command is using
 whim                       edit script from path
 wtag                       use wutag to either edit a file or cd to dir
+xevk                       easy key reader
 zdr                        fzf-extras cd to parent directory
 zicompinit_fast            faster & more efficient compinit
 zman                       Searches zshall with special keyword () matching

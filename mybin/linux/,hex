@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
 
+# Desc: View number in hex bin and dec
+
 input = ARGV.first
 raise "Usage: #{$0} <number>" unless input
 
 # Check if binary
 if input[/^0b[01]+$/] then
 	bases = [2]
-# Check if hex
 elsif input[/[a-fA-F]/] || input[/^0?x/] then
 	bases = [16]
 # Check if not binary

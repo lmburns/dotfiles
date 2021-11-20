@@ -29,18 +29,18 @@ format: yaml
 ############################
 # Keybindings within the TUI
 ############################
-# keys:
-#   quit: { Char: q }
-#   up: { Char: k }
+keys:
+  quit: { Char: q }
+  # up: { Char: k }
 #   down: { Char: j }
 #   go_to_top: { Char: g }
 #   go_to_bottom: { Char: G }
-#   page_up: { Char: K }
-#   page_down: { Char: J }
-#   select: { Char: v }
-#   select_all: { Char: V }
-#   refresh: { Char: r }
+  page_up: { Ctrl: u }
+  page_down: { Ctrl: d }
+  select: { Char: v }
+  select_all: { Char: V }
 #   help: { Char: "?" }
+  refresh: { Char: r }
 #   add: { Char: a }
 #   clear: { Char: D }
 #   remove: { Char: x }
@@ -79,21 +79,25 @@ format: yaml
 ##############
 tui:
   colored_ui: true
-  completion_color: dark
-  looping: true
-  mark_indicator: "✔"
   paths_bold: true
-  paths_color: "blue"
+  #   paths_color: "blue"
+  tags_bold: true
+#   completion_color: dark
+#   looping: true
+  selection_tags: false
   selection_blink: false
   selection_bold: true
   selection_dim: false
-  selection_indicator: "•"
-  selection_italic: false
-  # Command that lists files on startup
-  startup_cmd: "--global list files --with-tags"
-  # Refresh rate of the TUI
-  tick_rate: 250
+  selection_italic: true
   unmark_indicator: " "
+  mark_indicator: "✔"
+  selection_indicator: "•"
+  header_alignment: Center
+
+#   # Command that lists files on startup
+#   startup_cmd: "--global list files --with-tags"
+#   # Refresh rate of the TUI
+#   tick_rate: 250
 
 #####################
 # Encryption settings

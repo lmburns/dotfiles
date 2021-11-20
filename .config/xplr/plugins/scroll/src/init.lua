@@ -10,7 +10,7 @@ local function setup()
         echo FocusNextByRelativeIndex: $N >> ${XPLR_PIPE_MSG_IN:?}
         ]===]
       }
-    },
+    }
   }
 
   xplr.config.modes.builtin.default.key_bindings.on_key["{"] = {
@@ -22,8 +22,8 @@ local function setup()
         echo FocusPreviousByRelativeIndex: $N >> ${XPLR_PIPE_MSG_IN:?}
         ]===]
       }
-    },
+    }
   }
 end
 
-return { setup = setup }
+return {setup = setup}

@@ -24,8 +24,8 @@ alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 
 alias open="handlr open"
 # alias mimeopen="/home/lucas/mybin/perl/mimeopen"
+alias jor="journalctl"
 alias xmm="xmodmap"
-alias jo="journalctl"
 alias s="systemctl"
 alias bctl="bluetoothctl"
 
@@ -44,6 +44,15 @@ alias passverr="veracrypt --text --dismount ~/.password.vera"
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
+alias :q='exit'
+alias ng="noglob"
+
+(( ${+commands[surfraw]} )) && {
+  alias srb='surfraw -browser=$BROWSERCLI'
+  # alias srg='surfraw -browser=$BROWSER'
+  alias srg='sr -g'
+  alias srgg='surfraw -browser=$BROWSER google'
+}
 
 (( ${+commands[xidlehook]} )) && {
   alias xidlestop="xidlehook-client --socket /tmp/xidlehook.sock reset-idle"
@@ -51,9 +60,6 @@ alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 }
 
 (( ${+commands[stylua]} )) && alias stylua="stylua -c $XDG_CONFIG_HOME/stylua/stylua.toml"
-alias :q='exit'
-alias ng="noglob"
-
 
 (( ${+commands[just]} )) && {
   alias jj='just'
@@ -68,7 +74,9 @@ alias ng="noglob"
 }
 
 (( ${+commands[pet]} )) && {
-  alias pe="pet exec --color"
+  # Doesn't run
+  # alias pe="pet exec --color"
+  alias pe="pet exec"
   alias pee="pet edit"
 }
 

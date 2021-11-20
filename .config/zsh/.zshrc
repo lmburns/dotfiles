@@ -280,7 +280,7 @@ zt 0c light-mode binary for \
   lbin atclone"mkdir -p $XDG_CONFIG_HOME/ytfzf; cp **/conf.sh $XDG_CONFIG_HOME/ytfzf" \
     pystardust/ytfzf \
   lbin from'gl' atclone'./prebuild; ./configure --prefix="$ZPFX"; make' \
-  make"install"  atpull'%atclone' atload'alias srg="sr google"' \
+  make"install"  atpull'%atclone' \
     surfraw/Surfraw \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
   make"install"  atpull'%atclone' lman \
@@ -541,10 +541,6 @@ zt 0c light-mode null for \
   atclone"./rualdi completions shell zsh > _rualdi" \
   atload'alias ru="rualdi"' eval'rualdi init zsh --cmd k' \
     lmburns/rualdi \
-  lbin atclone'cargo build --release' atpull'%atclone'  \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-  atclone'./wutag print-completions --shell zsh > _wutag' \
-    lmburns/wutag \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
   atload'alias orgr="organize-rt"' \
@@ -575,6 +571,11 @@ zt 0c light-mode null for \
   eval'emplace init zsh | head -n 20' atload"alias em='emplace'" \
   atload'export EMPLACE_CONFIG="$XDG_CONFIG_HOME/emplace/emplace.toml"' \
     lmburns/emplace
+
+  # lbin atclone'cargo build --release' atpull'%atclone'  \
+  # atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  # atclone'./wutag print-completions --shell zsh > _wutag' \
+  #   lmburns/wutag \
 
 # === rust extensions === [[[
 zt 0c light-mode null for \
@@ -649,8 +650,6 @@ zt 0c light-mode null for \
   lbin from'gh-r' ver'nightly' \
     ClementTsang/bottom \
   lbin from'gh-r' dl"$(grman)" lman \
-  atload'lc() { local __="$(mktemp)" && lf -last-dir-path="$__" "$@";
-  d="${"$(<$__)"}" && chronic rm -f "$__" && [ -d "$d" ] && cd "$d"; }' \
     gokcehan/lf \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
@@ -1128,7 +1127,7 @@ typeset -gx CDHISTSIZE=20 CDHISTTILDE=TRUE CDHISTCOMMAND=cdh
 # alias c=jd
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
 typeset -gx FZFGIT_DEFAULT_OPTS="--preview-window=':nohidden,right:65%:wrap'"
-typeset -gx NQDIR="$TMPDIR/nq"
+typeset -gx NQDIR="/tmp/nq" FNQ_DIR="$HOME/tmp/fnq"
 
 typeset -g KEYTIMEOUT=15
 

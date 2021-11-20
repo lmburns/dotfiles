@@ -1,4 +1,4 @@
-#compdef ts
+#compdef tsp
 
 # zsh completions for 'ts'
 # automatically generated with http://github.com/RobSis/zsh-completion-generator

@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+# Desc: date helper if -h is passed
+
 format=$(
     cat <<-EOF
   %%   a literal %

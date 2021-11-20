@@ -8,5 +8,5 @@
 ## {1-9}, {a-z} = ranges
 
 ## echo hi
-# hyper + 9
+# mouse2
 dunstify hi dxhd

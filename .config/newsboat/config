@@ -13,8 +13,8 @@ notify-always yes
 notify-program notify-send
 notify-format "Newsboat: %n unread articles in %f feeds %t"
 
-# bookmark-cmd "~/bin/nbookmark.sh"
 bookmark-cmd "~/mybin/srb"
+# bookmark-cmd "~/.config/newsboat/dangerzone/bookmark.sh"
 # bookmark-interactive yes
 # bookmark-autopilot no
 
@@ -46,11 +46,11 @@ bind-key I rev-sort
 browser urlportal
 # macro , open-in-browser
 macro t set browser "qndl" ; open-in-browser ; set browser linkhandler
-macro a set browser "youtube-dl --add-metadata -xic -f bestaudio/best" ; open-in-browser ;
-macro v set browser "nohup mpv" ; open-in-browser ;
+macro a set browser "tsp youtube-dl --add-metadata -xic -f bestaudio/best" ; open-in-browser ; set browser linkhandler
+macro v set browser "setsid -f mpv" ; open-in-browser ; set browser linkhandler
 macro w set browser "w3m" ; open-in-browser ;
 macro C set browser "youtube-viewer --comments=%u" ; open-in-browser ;
-macro y set browser "echo %u | pbcopy" ; open-in-browser ; set browser linkhandler
+macro c set browser "echo %u | xsel -b" ; open-in-browser ; set browser linkhandler
 macro B set browser "newsboat_video_download" ; open-in-browser
 
 # FIX: use saved articles

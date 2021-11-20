@@ -14,6 +14,10 @@ alias h := help
 help:
   @$EDITOR $XDG_DATA_HOME/just/overall.just
 
+# append vim filetype modeline
+append-vim-type EXT FT:
+  fd -tf -e {{EXT}} -x sed -i -e '$a/* vim: ft={{FT}}:et:sw=2:ts=2:sts=-1:fdm=marker:fmr='{{'{{{,}}}'}}':' {}
+
 # rage encrypt ssh
 rage-e ENC OUT:
   rage -R ~/.ssh/burnsac.pub -o {{invocation_directory()}}/{{OUT}} {{invocation_directory()}}/{{ENC}}
