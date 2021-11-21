@@ -1,5 +1,5 @@
 # Desc: countdown timer; no display
 
-countdown "${*}" && terminal-notifier -title "Timer finished" -message "${*} is up"
+countdown "${*}" && notify-send -a Countdown "Timer finished" "${*} is up"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

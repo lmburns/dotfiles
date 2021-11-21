@@ -209,6 +209,7 @@ alias nssh='$EDITOR $HOME/.ssh/config'
 }
 
 alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
+alias srce='source $HOME/.zshenv'
 
 # === mail ======================================================================
 (( ${+commands[mw]} )) && {
@@ -309,7 +310,6 @@ alias nbconvert='jupyter nbconvert --to python'
 
 # === other =====================================================================
 alias gpg-tui='gpg-tui --style colored -c 98676A'
-alias tno='terminal-notifier'
 
 alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@burnsac.xyz:/var/www/lmburns'
 
@@ -321,8 +321,10 @@ alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
-alias taske='task edit'
+alias mbsync='mbsync -c "${XDG_CONFIG_HOME}/isync/mbsyncrc"'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
+alias taske='task edit'
+alias ume='um edit'
 
 (( ${+commands[tldr]} )) && alias tldru='tldr --update'
 (( ${+commands[assh]} )) && alias hssh="assh wrapper ssh"
@@ -331,7 +333,7 @@ alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
   alias pu='pueue'
   alias pud='pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml"'
 }
-alias .ts='TS_SOCKET=/tmp/ts1 ts'
+alias .ts='TS_SOCKET=/tmp/ts1 tsp'
 alias .nq='NQDIR=/tmp/nq1 nq'
 alias .fq='NQDIR=/tmp/nq1 fq'
 
@@ -391,11 +393,9 @@ alias vi="$EDITOR"
 alias svi="sudo $EDITOR"
 alias sv="sudo $EDITOR"
 alias vimdiff='nvim -d'
-alias jrnl=' jrnl'
-alias jrnlw=' jrnl wiki'
+alias jrnlw='jrnl wiki'
 alias nb='BROWSER=w3m nb'
-
-alias ume='um edit'
+# alias jrnl='jrnl'
 
 # === rsync =====================================================================
 (( $+commands[rsync] )) && {

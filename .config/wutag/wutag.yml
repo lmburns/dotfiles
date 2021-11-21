@@ -41,7 +41,7 @@ keys:
   select_all: { Char: V }
 #   help: { Char: "?" }
   refresh: { Char: r }
-#   add: { Char: a }
+  # add: { Char: a }
 #   clear: { Char: D }
 #   remove: { Char: x }
 #   edit: { Char: e }
@@ -78,6 +78,7 @@ keys:
 # TUI settings
 ##############
 tui:
+  flashy: true
   colored_ui: true
   paths_bold: true
   #   paths_color: "blue"

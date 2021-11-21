@@ -7,8 +7,6 @@
 skip_global_compinit=1
 # setopt no_global_rcs
 
-# [[ -x '/usr/libexec/path_helper' ]] && source <(/usr/libexec/path_helper -s)
-
 export DO_NOT_TRACK=1
 export LANGUAGE="en_US.UTF-8"
 export LANG="${LANGUAGE}"
@@ -17,6 +15,13 @@ export TMPDIR="/tmp"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
+# export XDG_MUSIC_DIR="$HOME/Music"
+# export XDG_DESKTOP_DIR="$HOME/Desktop"
+# export XDG_DOCUMENTS_DIR="$HOME/Documents"
+# export XDG_DOWNLOAD_DIR="$HOME/Downloads"
+# export XDG_PICTURES_DIR="$HOME/Pictures"
+# export XDG_PUBLICSHARE_DIR="$HOME/Public"
+
 export XDG_BIN_HOME="$HOME/bin"
 export XDG_MBIN_HOME="$HOME/mybin"
 export BACKUP_DIR="$HOME/backup"
@@ -96,12 +101,13 @@ export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/password-store"
 
 export BAT_CONFIG_PATH="${XDG_CONFIG_HOME}/bat/config"
+export PIER_CONFIG_PATH="${XDG_CONFIG_HOME}/pier/config.toml"
 export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
 export GPG_AGENT_INFO="${GNUPGHOME}/S.gpg-agent"
 export PINENTRY_USER_DATA="USE_CURSES=1"
 export UMCONFIG_HOME="${XDG_CONFIG_HOME}/um"
-export PIER_CONFIG_PATH="${XDG_CONFIG_HOME}/pier/config.toml"
 export GRIPHOME="${XDG_CONFIG_HOME}/grip"
+export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
 
 export GOGODB_PATH="${XDG_DATA_HOME}/gogo/gogo.db"
 
@@ -114,6 +120,8 @@ export NNN_FIFO='/tmp/nnn.fifo'
 export URLPORTAL="$XDG_MBIN_HOME/urlportal"
 export MATES_DIR="${XDG_DATA_HOME}/mates"
 export JAIME_CACHE_DIR="${XDG_CONFIG_HOME}/jaime"
+export BARTIB_FILE="${XDG_CONFIG_HOME}/bartib/tasklog"
+export RPASTE_CONFIG="${XDG_CONFIG_HOME}/rpaste/config.toml"
 
 # [ "$(tty)" = "/dev/tty1" ] && ! pidof -s Xorg >/dev/null 2>&1 && exec startx "$XINITRC"
 

@@ -226,7 +226,7 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- ${f}};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
-    zdharma-mirror/fast-syntax-highlighting \
+    zdharma-continuum/fast-syntax-highlighting \
   atload'vbindkey "Up" history-substring-search-up; vbindkey "Down" history-substring-search-down' \
     zsh-users/zsh-history-substring-search
 #  ]]] === wait'0b' - patched ===
@@ -524,7 +524,7 @@ zt 0c light-mode null for \
     miserlou/loop \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-  atclone"./rip completions --shel zsh > _rip" \
+  atclone"./rip completions --shell zsh > _rip" \
     lmburns/rip \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -1081,10 +1081,6 @@ zt 0c light-mode run-atpull for \
   id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     zdharma/null \
-  id-as'keychain_init' has'keychain' nocd \
-    eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
-    && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
-      zdharma/null \
   id-as'Cleanup' nocd atinit'unset -f zt grman; _zsh_autosuggest_bind_widgets' \
     zdharma/null
 
@@ -1266,8 +1262,6 @@ zt 0b light-mode null id-as for \
   fast-theme XDG:mod-default.ini &>/dev/null' \
     zdharma/null \
   atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
-    zdharma/null \
-  nocd null atload'source "${XDG_DATA_HOME}/cargo/env"' \
     zdharma/null
 
 # nocd atinit"TS_SOCKET=/tmp/ts1 ts -C && ts -l | rg -Fq 'limelight' || TS_SOCKET=/tmp/ts1 ts limelight >/dev/null" \

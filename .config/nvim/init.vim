@@ -771,9 +771,11 @@ Plug 'voldikss/fzf-floaterm'
       \ 'width': 0.9,
       \ 'cmd': 'dust'},
         \}
+  let g:floaterm_shell = 'zsh'
   let g:floaterm_wintype = 'float'
   let g:floaterm_height=0.8
   let g:floaterm_width=0.8
+  " Stackoverflow helper
   nmap <Leader>so : FloatermNew --autoclose=0 so<space>
 
   let g:lf_map_keys = 0
@@ -1489,7 +1491,7 @@ Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['markdown', 'python', 'rust', 'lua', 'java']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
-Plug 'ron-rs/ron.vim' | let g:polyglot_disabled += ['ron']
+Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
   " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
@@ -1516,6 +1518,7 @@ Plug 'nvim-telescope/telescope.nvim'
   " nnoremap <space>; <cmd>Telescope command_history<cr>
   " nnoremap <space>/ <cmd>Telescope search_history<cr>
   nnoremap ;b <cmd>Telescope builtin<CR>
+  nnoremap ;k <cmd>Telescope keymaps<CR>
 
   nnoremap ;fd <cmd>Telescope fd<CR>
 
@@ -2426,8 +2429,7 @@ autocmd FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o 
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {
-    "c", "cpp", "go", "gomod", "lua", "rust",
-    "python", "java",
+    "c", "cpp", "go", "gomod", "lua", "rust", "python", "java",
   }, -- "vim" "yaml" "toml" "ruby" "bash"
   ignore_install = { }, -- List of parsers to ignore installing
   highlight = {
@@ -2443,44 +2445,47 @@ EOF
 lua <<EOF
 require("which-key").setup {
   plugins = {
-    marks = true, -- shows a list of your marks on ' and `
-    registers = false, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-    -- the presets plugin, adds help for a bunch of default keybindings in Neovim
-    -- No actual key bindings are created
-    presets = {
-      operators = false, -- adds help for operators like d, y, ... and registers them for motion / text object completion
-      motions = false, -- adds help for motions
-      text_objects = false, -- help for text objects triggered after entering an operator
-      windows = false, -- default bindings on <c-w>
-      nav = false, -- misc bindings to work with windows
-      z = false, -- bindings for folds, spelling and others prefixed with z
-      g = false -- bindings for prefixed with g
+    marks = true,          -- shows a list of your marks on ' and `
+    registers = false,     -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+    presets = {            -- adds help for a bunch of default keybindings
+      operators = true,    -- adds help for operators like d, y, ... and registers them for motion / text object completion
+      motions = false,     -- adds help for motions
+      text_objects = true, -- help for text objects triggered after entering an operator
+      windows = false,     -- default bindings on <c-w>
+      nav = true,          -- misc bindings to work with windows
+      z = true,            -- bindings for folds, spelling and others prefixed with z
+      g = true             -- bindings for prefixed with g
     }
   },
-  -- add operators that will trigger motion and text object completion
-  -- to enable all native operators, set the preset / operators plugin above
-  operators = {gc = "Comments"},
+  operators = {            -- add operators that will trigger motion and text object completion
+    gc = "Comments"
+  },
   icons = {
-    breadcrumb = "»", -- symbol used in the command line area that shows your active key combo
-    separator = "➜", -- symbol used between a key and it's label
-    group = "+" -- symbol prepended to a group
+    breadcrumb = "»", -- symbol used in the command line area that shows active key combo
+    separator = "➜",  -- symbol used between a key and it's label
+    group = "+"       -- symbol prepended to a group
+  },
+  popup_mappings = {
+    scroll_down = '<c-d>', -- binding to scroll down inside the popup
+    scroll_up = '<c-u>'    -- binding to scroll up inside the popup
   },
   window = {
-    border = "none", -- none, single, double, shadow
-    position = "bottom", -- bottom, top
-    margin = {1, 0, 1, 0}, -- extra window margin [top, right, bottom, left]
-    padding = {2, 2, 2, 2} -- extra window padding [top, right, bottom, left]
+    border = "none",          -- none, single, double, shadow
+    position = "bottom",      -- bottom, top
+    margin = { 1, 0, 1, 0 },  -- extra window margin [top, right, bottom, left]
+    padding = { 2, 2, 2, 2 }, -- extra window padding [top, right, bottom, left]
+    winblend = 0
   },
   layout = {
-    height = {min = 4, max = 25}, -- min and max height of the columns
-    width = {min = 20, max = 50}, -- min and max width of the columns
-    spacing = 3 -- spacing between columns
+    height = { min = 4, max = 25 }, -- min and max height of the columns
+    width = { min = 20, max = 50 }, -- min and max width of the columns
+    spacing = 3,                    -- spacing between columns
+    align = "left"                  -- align columns left, center or right
   },
-  hidden = {"lua", "^ "}, -- hide mapping boilerplate
-  --   hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
-  show_help = true, -- show help message on the command line when the popup is visible
-  -- triggers = "auto", -- automatically setup triggers
-  triggers = {"auto"} -- or specifiy a list manually
+  -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
+  hidden = { "lua", "^ " }, -- hide mapping boilerplate
+  show_help = true,         -- show help message on the command line when the popup is visible
+  triggers = { "auto" }     -- or specifiy a list manually
 }
 EOF
 " }}} === WhichKey ===

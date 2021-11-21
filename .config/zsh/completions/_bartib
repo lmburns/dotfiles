@@ -1,0 +1,147 @@
+#compdef bartib
+
+autoload -U is-at-least
+
+_bartib() {
+  typeset -A opt_args
+  typeset -a _arguments_options
+  local ret=1
+
+  if is-at-least 5.2; then
+    _arguments_options=(-s -S -C)
+  else
+    _arguments_options=(-s -C)
+  fi
+
+  local context curcontext="$curcontext" state line
+  _arguments "${_arguments_options[@]}" \
+    '-h[Print help information]' \
+    '--help[Print help information]' \
+    '-V[Print version information]' \
+    '--version[Print version information]' \
+    '-f[File to write to]:_files' \
+    '--file[File to write to]:_files' \
+    ":: :_bartib_commands" \
+    "*::: :->bartib" \
+    && ret=0
+
+  case $state in
+    (bartib)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:bartib-command-$line[1]:"
+      case $line[1] in
+        (cancel|check|current|projects)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (continue)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-d+[Description of task to add]:Description:' \
+            '--description[Description of task to add]:Description:' \
+            '-p+[Project to continue]:Project:_bartib_projects' \
+            '--project[Project to continue]:Project:_bartib_projects' \
+            '--time[Time for changing activity HH:MM]:HH\:MM:' \
+            '*::NUMBER of activity to continue:' \
+              && ret=0
+        ;;
+        (edit)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-e[Editor to use]:EDITOR:' \
+              && ret=0
+        ;;
+        (help)
+          _arguments "${_arguments_options[@]}" \
+            '*::Subcommand:_bartib_commands' \
+          && ret=0
+        ;;
+        (last)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-n[Number of lines to display]:NUMBER:' \
+              && ret=0
+        ;;
+        (list)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--no_grouping[Do not group activities by date]:' \
+            '--today[Show activities of today]:' \
+            '--yesteday[Show activities of yesterday]:' \
+            '-d+[Show activities of certain date]:Date:' \
+            '--date[Show activities of certain date]:Date:' \
+            '--from[Show activities from date]:From:' \
+            '--to[Show activities to date]:To:' \
+            '-n[Number to show]:Number:' \
+            '--number[Number to show]:Number:' \
+            '-p+[Project to continue]:Project:_bartib_projects' \
+            '--project[Project to continue]:Project:_bartib_projects' \
+              && ret=0
+        ;;
+        (report)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--today[Show activities of today]:' \
+            '--yesteday[Show activities of yesterday]:' \
+            '-d+[Show activities of certain date]:Date:' \
+            '--date[Show activities of certain date]:Date:' \
+            '--from[Show activities from date]:From:' \
+            '--to[Show activities to date]:To:' \
+            '-p+[Project to continue]:Project:_bartib_projects' \
+            '--project[Project to continue]:Project:_bartib_projects' \
+              && ret=0
+        ;;
+        (start)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-d+[Description of task to add]:Description:' \
+            '--description[Description of task to add]:Description:' \
+            '--time[Time for changing activity HH:MM]:HH\:MM:' \
+            '-p+[Project to continue]:Project:_bartib_projects' \
+            '--project[Project to continue]:Project:_bartib_projects' \
+              && ret=0
+        ;;
+        (stop)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--time[Time for changing activity HH:MM]:HH\:MM:' \
+              && ret=0
+        ;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_bartib_commands] )) ||
+_bartib_commands() {
+    local commands; commands=(
+    "cancel:cancels all currently running activities"
+    "check:checks file and reports parsing errors"
+    "continue:continues a previous activity"
+    "current:lists all currently running activities"
+    "edit:opens the activity log in an editor"
+    "help:Prints this message or the help of the given subcommand(s)"
+    "last:displays the descriptions and projects of recent activities"
+    "list:list recent activities"
+    "projects:list all projects"
+    "report:reports duration of tracked activities"
+    "start:starts a new activity"
+    "stop:stops all currently running activities"
+    )
+    _describe -t commands 'bartib commands' commands "$@"
+}
+
+(( $+functions[_bartib_projects] )) ||
+_bartib_projects() {
+    [[ $PREFIX = -* ]] && return 1
+    integer ret=1
+    local -a projects; projects=(
+        ${${(@f)$(_call_program commands bartib projects)}//\"}
+    )
+
+    _describe -t projects 'projects' projects && ret=0
+    return ret
+}
+_bartib "$@"

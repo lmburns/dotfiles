@@ -1,0 +1,13 @@
+# Desc: Display tags and files with tmsu
+
+if [[ -z "${@}" ]] {
+  tmsu files \
+    | xargs tmsu --color=always tags \
+    | column -s ':' -t
+} else {
+  tmsu files "${@}" \
+    | xargs tmsu --color=always tags \
+    | column -s ':' -t
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

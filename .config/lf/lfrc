@@ -118,26 +118,37 @@ cmd open ${{
 
 # -- Trash: (rip)
 cmd trash ${{
+  builtin setopt extendedglob
+  local MATCH
+  local -a arr short
+  # Turn into an array
+  arr=( "${(f)fx}" )
+  # Since brackets are only able to be used once in lf, get tail here
+  short=( ${arr:t2})
   rip -- $fx
-  notify-send "🗑️  File(s) deleted ""File(s) moved to trash" &&
-    print -R "$fx deleted"
+  dunstify -a lf " Deleted File(s)" "${(F)short}" && {
+     print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
+       | hck -d ':' -D $'\t'
+  }
 }}
 
 # -- Move: zoxide
 # dest="$(print -rl -- ${(Oa)${${(@f)"$(autojump -s)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}}[0,-6]} | fzf --prompt ' Jump Move> ' --no-height)"
 cmd movetojump ${{
+  local dest x
   clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Move to> ' --no-height +m" zoxide query -i)
   for x ($fx) { mv -iv $x $dest } && {
-    notify-send "🚚 File(s) copied." "${fx:t} moved to $dest"
+    dunstify -a lf "🚚 File(s) copied" "${fx:t} => $dest"
   }
 }}
 
 # -- Move: path
 cmd movetopath ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Move to: " dest
   for x ($fx) { mv -iv $x $~dest } && {
-    notify-send "🚚 File(s) moved." "${fx:t} moved to $dest."
+    dunstify -a lf "🚚 File(s) moved" "${fx:t} => $dest"
   }
   # mv -iv -- $fx "${~dest}"
 }}
@@ -148,16 +159,17 @@ cmd copytojump ${{
   clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Copy to> ' --no-height +m" zoxide query -i)
   for x ($fx) { cp -pivr $x $dest } && {
-    notify-send "🚚 File(s) copied." "${fx:t} copied to $dest."
+    dunstify -a lf "🚚 File(s) copied" "${fx:t} => $dest"
   }
   # cp -pivr -- $fx "$dest"
 }}
 
 # -- Copy: path
 cmd copytopath ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Copy to: " dest
   for x ($fx) { cp -pivr $x $~dest } && {
-    notify-send "🚚 File(s) copied." "${fx:t} copied to $dest."
+    dunstify -a lf "🚚 File(s) copied." "${fx:t} => $dest"
   }
 }}
 
@@ -220,7 +232,7 @@ cmd fzf_z ${{
 
 # -- Unmount: unmount archivemount
 cmd unmount ${{
-  fusermount -u "$f"
+  fusermount -u "$f" && dunstify -a lf " Unmounted" "${f:t3}"
   rmdir "$f"
   lf -remote "send $id reload"
 }}
@@ -230,6 +242,7 @@ cmd unarchive ${{ xcompress x "$f" }}
 
 # -- Archive: archive
 cmd archive ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Archive out: " archive
   # quotes around "$fx" don't work here
   xcompress a -o "$archive" -- $fx
@@ -257,8 +270,14 @@ cmd link %{{
       exit 0
     fi
     case "$mode" in
-      copy) ln -sr -t . "$@";;
-      move) ln -t . "$@";;
+      copy)
+        ln -sr -t . "$@"
+        dunstify -a lf "Created Symlink" "${@:t3} => $PWD"
+      ;;
+      move)
+        ln -t . "$@"
+        dunstify -a lf "Created Hardlink" "${@:t3} => $PWD"
+      ;;
     esac
     zf_rm "${XDG_DATA_HOME}/lf/files"
     lf -remote "send clear"
@@ -274,6 +293,7 @@ cmd video_preview ${{
 
 # -- Permissions: change
 cmd chmod ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Change permissions: " perm
   chmod -- $perm $fx
   lf -remote 'send reload'
@@ -282,6 +302,7 @@ cmd chmod ${{
 
 # -- Ownership: change
 cmd chown ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Ownership: " owner
   chown -- $owner $fx
   lf -remote 'send reload'
@@ -290,6 +311,7 @@ cmd chown ${{
 
 # -- GPG: encrypt recipient
 cmd gpg_encrypt_recipient %{{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Recipient: " recipient
   case "$recipient" in
     "") printf "Cancelled.";;
@@ -444,6 +466,7 @@ cmd cd-followlink &{{
 # === TAGS === [[[
 # -- Tag: wutag set
 cmd wutag-set ${{
+  zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
   print -f "%s" "$(figlet wutag)"
@@ -459,6 +482,7 @@ cmd wutag-set ${{
 
 # -- Tag: wutag add
 cmd wutag-add ${{
+  zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
   print -f "%s" "$(figlet wutag)"
@@ -474,6 +498,7 @@ cmd wutag-add ${{
 
 # -- Tag: wutag remove
 cmd wutag-remove ${{
+  zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
   print -f "%s" "$(figlet wutag)"
@@ -527,7 +552,7 @@ cmd mmv $mmv $fx
 cmd f2 !f2 -f "$1"
 cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
-cmd yank-path $printf '%s' "$fx" | pbcopy && notify-send "lf" "$fx copied"
+cmd yank-path $printf '%s' "$fx" | pbcopy && dunstify -a lf "File Path" "$fx copied to clipboard"
 cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 
@@ -535,6 +560,7 @@ cmd take %mkdir -p "${@}" && lf -remote "send $id cd \"$@\""
 cmd mkdir %[[ -n "${1}" ]] && mkdir -p "${@}" || echo "Argument needed"
 cmd mkfile %[[ -n "${1}" ]] && touch "${@}" || echo "Argument needed"
 cmd newfold ${{
+  zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Folder: " fold
   mkdir -p -- "$fold" && mv -- $fx "$fold"
 }}
@@ -582,7 +608,7 @@ map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings
 map Ow push :open-with<space>                # open w/ specified program
 map Op $handlr open $PWD                     # open curr directory in finder
-map o  $clear; handlr ask --skim $f
+map o  $clear; handlr ask --config $f
 map Oa $mimeopen --ask $f
 # map Oa $mimeopen $f
 

@@ -1,0 +1,7 @@
+# Desc: tmsu list tag and count
+
+for tag (${(@f)"$(tmsu tags)"}) {
+  echo ${tag}: $(tmsu files ${tag} -c)
+} | sort -t: -k 2 -n -r | column
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

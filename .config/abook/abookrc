@@ -1,0 +1,51 @@
+# Declare a few custom fields
+field pager = Pager
+field address_lines = Address, list
+field birthday = Birthday, date
+
+# Define how fields should be displayed in tabs
+view CONTACT = name, email
+view ADDRESS = address_lines, city, state, zip, country
+view PHONE = phone, workphone, pager, mobile, fax
+view OTHER = url, birthday
+
+# Preserve any unknown field while loading an abook database
+set preserve_fields=all
+
+# Automatically save database on exit
+set autosave=true
+
+# Format of entries lines in list
+set index_format=" {name:22} {email:40} {phone:12|workphone|mobile}"
+
+# Show all email addresses in list
+set show_all_emails=true
+
+# Command used to start mutt
+set mutt_command=mutt
+
+# Return all email addresses to a mutt query
+set mutt_return_all_emails=true
+
+# Command used to print
+set print_command=lpr
+
+# Command used to start the web browser
+set www_command=lynx
+
+# Address style [eu|us|uk]
+set address_style=us
+
+# Use ASCII characters only
+set use_ascii_only=false
+
+# Prevent double entry
+set add_email_prevent_duplicates=false
+
+# Field to be used with "sort by field" command
+set sort_field=nick
+
+# Show cursor in main display
+set show_cursor=false
+
+# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

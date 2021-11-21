@@ -1,0 +1,41 @@
+# Desc: lists mybin linux funcs with their embedded descriptions
+
+setopt localoptions extendedglob
+
+local -a lines desc files shtype
+
+integer pass longest=0 longest2=0 longest3=0
+local p file header="# Desc: " shtypeM='#!/'
+
+for (( pass = 1; pass <= 2; ++ pass )); do
+  files=( $HOME/mybin/linux/*(N) )
+  if (( pass == 2 )); then
+    if (( ${#files[@]} )); then
+      print -Pr -- "%F{5}${(l:longest+longest2+longest3::=:):-}%f"
+    fi
+  fi
+  for file in "${files[@]}"; do
+    [[ -d "$file" ]] && continue
+    lines=( ${(f)"$(<$file)"} )
+    desc=( "${(M)lines[@]:#${header}*}" )
+    shtype=( "${(M)lines[@]:#${shtypeM}*}" )
+    desc[1]="${desc[1]#$header}"
+    shtype[1]="${${(S)${shtype[1]#${shtype}*bin}:t}#env }"
+    # ${${${shtype[1]#${shtype}*bin}:t}//env /}
+    file="${file:t}"
+    [[ "$file" = (LICENSE|README.md) ]] && continue
+    if (( pass == 1 )); then
+      (( longest < ${#file} + 3 )) && longest=$(( ${#file} + 3 ))
+      (( longest2 < ${#shtype[1]} + 4 )) && longest2=$(( ${#shtype[1]} + 4 ))
+      (( longest3 < ${#desc[1]} )) && longest3=$(( ${#desc[1]} ))
+    else
+      # don't put paths in description
+      print -Pr -- "%F{4}${file}%f${(l:longest-${#file}:: :):- }%F{2}${shtype[1]}${(l:longest2-$(( ${#shtype} + ${#shtype[1]} )):: :):- }%F{13}${desc[1]}%f"
+    fi
+  done
+  if (( pass == 2 )); then
+    print -Pr -- "%F{5}${(l:longest+longest2+longest3::=:):-}%f"
+  fi
+done
+
+# vim:ft=zsh:et

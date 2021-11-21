@@ -121,14 +121,14 @@ report.ls.description=Minimal listing of all tasks matching the specified criter
 report.ls.columns=id,project,priority,description
 report.ls.labels= ,Project,Pri,Description
 report.ls.sort=priority-,project+
-report.ls.filter=status:pending
+report.ls.filter=status:pending project.isnt:store
 
 # task newest
 report.newest.description=Shows the newest tasks
 report.newest.columns=id,project,priority,due,start.active,entry.age,description
 report.newest.labels= ,Project,Pri,Due,Active,Age,Description
 report.newest.sort=id-
-report.newest.filter=status:pending limit:10
+report.newest.filter=status:pending limit:10 project.isnt:store
 
 # task oldest
 report.oldest.description=Shows the oldest tasks
@@ -156,7 +156,7 @@ report.completed.description=Lists completed tasks matching the specified criter
 report.completed.columns=end,project,priority,entry.age,description
 report.completed.labels=Complete,Project,Pri,Age,Description
 report.completed.sort=end+,priority-,project+
-report.completed.filter=status:completed
+report.completed.filter=status:completed project.isnt:store
 
 # task recurring
 report.recurring.description=Lists recurring tasks matching the specified criteria
@@ -201,22 +201,6 @@ report.next.filter=status:pending
 # hooks=on
 # debug.hooks=0
 # kusarigama.plugins=GitCommit,Renew
-
-# Themes
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/light-16.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/light-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-16.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-red-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-green-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-blue-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-violets-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-yellow-green.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-gray-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/dark-gray-blue-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/solarized-dark-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/solarized-light-256.theme
-#include /usr/local/Cellar/task/2.5.3/share/doc/task/rc/no-color.theme
 
 # TASKWARRIOR TUI
 uda.taskwarrior-tui.keyconfig.quit=q

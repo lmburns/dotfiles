@@ -2,6 +2,23 @@
 
 # Desc: Log dunst messages to json
 
+# DUNST_APP_NAME
+# DUNST_SUMMARY
+# DUNST_BODY
+# DUNST_ICON_PATH,
+# DUNST_URGENCY
+# DUNST_ID
+# DUNST_PROGRESS
+# DUNST_CATEGORY
+# DUNST_STACK_TAG
+# DUNST_URLS
+# DUNST_TIMEOUT,
+# DUNST_TIMESTAMP
+# DUNST_DESKTOP_ENTRY
+# DUNST_STACK_TAG
+################
+# appname, summary, body, icon_path, urgency
+
 # Exported is needed for jq
 typeset -gx app inner_json
 typeset -a info

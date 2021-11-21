@@ -43,7 +43,7 @@ zle -N delete-surround surround
 zle -N add-surround surround
 zle -N change-surround surround
 
-per-dir-fzf() {
+function per-dir-fzf() {
   if [[ $_per_directory_history_is_global ]]; then
     per-directory-history-toggle-history; fzf-history-widget
   else
@@ -54,15 +54,17 @@ per-dir-fzf() {
 zle -N per-dir-fzf       # fzf history
 
 # Results aren't shown immediately
-RG_buff() {
+function RG_buff() {
   zmodload -Fa zsh/parameter p:functions
   eval "() {
     $functions[RG]
   }" "$BUFFER"
   zle reset-prompt
 }
-
 zle -N RG_buff
+
+function copyx() { echo -E $BUFFER | tr -d '\n' | xsel -ib };
+zle -N copyx
 
 zle -N fcq
 zle -N pw
@@ -86,57 +88,59 @@ fi
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 typeset -gA keybindings; keybindings=(
-  'Home'          beginning-of-line
-  'End'           end-of-line
-  'Delete'        delete-char
-  'F1'            dotbare-fstat
-  'F2'            db-faddf
-  'F3'            _wbmux
-  'Esc-e'         wfxr::fzf-file-edit-widget
-  'Esc-i'         fe
-  'Esc-d'         expand-aliases
-  'M-r'           per-dir-fzf
-  'M-p'           pw                    # fzf pueue
-  'M-q'           push-line-or-edit     # zsh-edit
-  'M-u'           __unicode_translate   # translate unicode
-  'M-x'           cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-b'           clipboard-fzf         # greenclip
-  'C-a'           autosuggest-execute
-  'C-y'           yank
-  'C-z'           fancy-ctrl-z
-  'C-x r'         fz-history-widget
-  'C-x t'         pick_torrent          # fzf torrent
-  'C-x C-b'       fcq                   # copyq fzf
-  'C-x C-e'       edit-command-line-as-zsh
-  'C-x C-f'       fz-find
-  'C-x C-u'       RG_buff
-  'C-x C-x'       execute-command
-  'mode=vicmd u'  undo
-  # 'mode=vicmd R' replace-pattern
-  'mode=vicmd R'  replace-regex
-  'mode=vicmd U'  redo
-  'mode=vicmd E'  backward-kill-line
-  'mode=vicmd L'  end-of-line
-  'mode=vicmd H'  beginning-of-line
-  'mode=vicmd ?'  which-command
-  'mode=vicmd ge' edit-command-line-as-zsh
-  'mode=vicmd c.' vi-change-whole-line
-  'mode=vicmd ds' delete-surround
-  'mode=vicmd cs' change-surround
-  'mode=vicmd K'  run-help
-  'mode=viins jk' vi-cmd-mode
-  'mode=viins kj' vi-cmd-mode
-  'mode=visual S' add-surround
-  'mode=str M-t'  t                     # tmux wfxr
-  'mode=str C-o'  lc                    # lf change dir
-  'mode=str C-_'  lf
-  'mode=@ C-b'    bow2                  # surfraw open w3m
-  'mode=+ M-.'    kf                    # a formarks like thing in rust
-  'mode=@ M-/'    frd                   # cd interactively recent dir
-  'mode=@ M-;'    fcd                   # cd interactively
-  'mode=@ M-,'    __zoxide_zi
-  'mode=@ M-['   fstat
-  'mode=@ M-]'   fadd
+  'Home'            beginning-of-line
+  'End'             end-of-line
+  'Delete'          delete-char
+  'F1'              dotbare-fstat
+  'F2'              db-faddf
+  'F3'              _wbmux
+  'Esc-e'           wfxr::fzf-file-edit-widget
+  'Esc-i'           fe
+  'Esc-d'           expand-aliases
+  'M-r'             per-dir-fzf
+  'M-p'             pw                    # fzf pueue
+  'M-q'             push-line-or-edit     # zsh-edit
+  'M-u'             __unicode_translate   # translate unicode
+  'M-x'             cd-fzf-ghqlist-widget # cd ghq fzf
+  'M-b'             clipboard-fzf         # greenclip
+  'C-a'             autosuggest-execute
+  'C-y'             yank
+  'C-z'             fancy-ctrl-z
+  'C-x r'           fz-history-widget
+  'C-x t'           pick_torrent          # fzf torrent
+  'C-x C-b'         fcq                   # copyq fzf
+  'C-x C-e'         edit-command-line-as-zsh
+  'C-x C-f'         fz-find
+  'C-x C-u'         RG_buff
+  'C-x C-x'         execute-command
+  'mode=vicmd u'    undo
+  #                 'mode=vicmd R' replace-pattern
+  'mode=vicmd R'    replace-regex
+  'mode=vicmd U'    redo
+  'mode=vicmd E'    backward-kill-line
+  'mode=vicmd L'    end-of-line
+  'mode=vicmd H'    beginning-of-line
+  'mode=vicmd ?'    which-command
+  'mode=vicmd yy'   copyx
+  'mode=vicmd ge'   edit-command-line-as-zsh
+  'mode=vicmd c.'   vi-change-whole-line
+  'mode=vicmd ds'   delete-surround
+  'mode=vicmd cs'   change-surround
+  'mode=vicmd K'    run-help
+  'mode=viins jk'   vi-cmd-mode
+  'mode=viins kj'   vi-cmd-mode
+  'mode=visual S'   add-surround
+  'mode=str M-t'    t                     # tmux wfxr
+  'mode=str C-o'    lc                    # lf change dir
+  'mode=str C-u'    lf
+  'mode=str C-_'    lf
+  'mode=@ C-b'      bow2                  # surfraw open w3m
+  'mode=+ M-.'      kf                    # a formarks like thing in rust
+  'mode=@ M-/'      frd                   # cd interactively recent dir
+  'mode=@ M-;'      fcd                   # cd interactively
+  'mode=@ M-,'      __zoxide_zi
+  'mode=@ M-['      fstat
+  'mode=@ M-]'      fadd
 )
 
 # 'mode=@ C-o'    lc                    # lf change dir

@@ -1,6 +1,7 @@
 # Desc: search JRNL headlines
 
-title=$(jrnl --short | fzf --tac --no-sort) &&
-    jrnl -on "$(echo $title | cut -c 1-16)" $1
+title=$(jrnl --short | fzf --tac --no-sort)
+
+jrnl -on "$(echo $title | cut -c 1-16)" $1
 
 # vim:ft=zsh:et

@@ -1,0 +1,5 @@
+local seals_pasta = "What the **** did you just say about me you little *****? I'll have you know I graduated top of my class from…"
+shift + alt + key "p" => write(seals_pasta)
+
+
+-- vim: ft=lua:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

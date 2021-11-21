@@ -1,6 +1,6 @@
 #BROWSER='xdg-open $FILE &>/dev/null'
 EDITOR='nvim'
-FILE_CMD='xdg-open'
+FILE_CMD='handlr open'
 TASKBIN='task'
 
 # If you sync tasks NOTES_FOLDER should be a location that syncs and is available to
@@ -9,7 +9,7 @@ TASKBIN='task'
 NOTES_FOLDER="$XDG_DATA_HOME/tasknotes/"
 
 # Preferred extension for tasknotes
-NOTES_EXT=".txt"
+NOTES_EXT=".md"
 
 # Path to notes file. UUID will be replaced with the actual uuid of
 # the task. If NOTES_CMD
