@@ -464,6 +464,38 @@ cmd cd-followlink &{{
 }}
 
 # === TAGS === [[[
+# -- Tag: tmsu set
+cmd tmsu-set ${{
+  zmodload -Fa zsh/zle b:vared
+  clear
+  print -nPr "%F{2}"
+  print -f "%s" "$(figlet tmsu)"
+  print -Pr "%f"
+  printf "=%.0s" {1..22}
+  print
+  vared -cp "Set tag: " tag
+  tmsu tag --tags="$tag" $fx
+}}
+
+# -- Tag: tmsu list specific file
+cmd tmsu-remove ${{
+  zmodload -Fa zsh/zle b:vared
+  clear
+  print -nPr "%F{2}"
+  print -f "%s" "$(figlet tmsu)"
+  print -Pr "%f"
+  printf "=%.0s" {1..22}
+  print
+  vared -cp "Remove tag: " tag
+  tmsu untag --tags="$tag" $fx
+}}
+
+# -- Tag: tmsu remove
+cmd tmsu-list !{{
+  clear
+  tmsu tags "$fx" | bat -l bash --paging=always
+}}
+
 # -- Tag: wutag set
 cmd wutag-set ${{
   zmodload -Fa zsh/zle b:vared
@@ -757,10 +789,15 @@ map tT $gpg-tui # gpg-tui
 
 # == Torrent == [[[
 map toa $transmission-remote --add $fx # add torrent
-map toT %tide                          # transmisison TUI
+map toT $tide                          # transmisison TUI
+map tos $stig                          # transmisison TUI
 # ]]]
 
-# == Tagging (wutag) == [[[
+# == Tagging == [[[
+map Tms tmsu-set
+map Tmr tmsu-remove
+map Tml tmsu-list
+
 map Ts wutag-set
 map Ta wutag-add
 map Tr wutag-remove
@@ -773,6 +810,13 @@ cmd git_add $for x ($fx) { git add "$x" }
 
 map gta :{{ git_add; unselect; }}
 
+map gtr ${{
+  ngu | xsel -ib
+  rip -- *
+  gh c $(xsel -b)
+  command rsync -vua --delete-after ${PWD:t}/ .
+}}
+map gtc ${{clear; gclp}}
 map gtb :git_branch
 map gtp ${{clear; git pull || true; echo "press ENTER"; read ENTER}}
 map gtP ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
@@ -806,13 +850,13 @@ map bo $bow       # buku bookmarks
 # ]]]
 
 # == Directory Movement == [[[
-map gd cd ~/Documents
-map gW cd ~/vimwiki
-map gG cd ~/projects/github
-map gp cd ~/projects
-map go cd ~/opt
-map gc cd ~/.config
-map gh cd ~
+# map gd cd ~/Documents
+# map gW cd ~/vimwiki
+# map gG cd ~/projects/github
+# map gp cd ~/projects
+# map go cd ~/opt
+# map gc cd ~/.config
+# map gh cd ~
 
 # map ge cd ~/Desktop
 # map gD cd ~/Downloads

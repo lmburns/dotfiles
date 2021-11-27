@@ -1,0 +1,28 @@
+#compdef hck
+
+# zsh completions for 'hck'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--crlf[support CRLF newlines]'
+  {-L,--delim-is-literal}'[treat the delimiter as a string literal. This can significantly improve performance, especially for single]'
+  {-h,--help}'[prints help information]'
+  {-r,--header-is-regex}'[treat the header_fields as regexs instead of string literals]'
+  '--no-mmap[disallow the possibility of using mmap]'
+  {-Z,--try-compress}'[try to gzip compress the output]'
+  {-z,--try-decompress}'[try to find the correct decompression method based on the file extensions]'
+  {-V,--version}'[prints version information]'
+  {-l,--compression-level}'[compression level \[default: 6\]]'
+  {-t,--compression-threads}'[threads to use for compression, 0 will result in `hck` staying single threaded \[default: 4\]]'
+  {-d,--delimiter}'[delimiter to use on input files, this is a substring literal by default. To treat it as a literal add the]'
+  {-e,--exclude}'[fields to exclude from the output, ex: 3,9-11,15-. Exclude fields are 1 based and inclusive. Exclude fields]'
+  {-E,--exclude-header}'[...]'
+  {-f,--fields}'[fields to keep in the output, ex: 1,2-,-5,2-5. Fields are 1-based and inclusive]'
+  {-F,--header-field}'[...]'
+  {-o,--output}'[output file to write to, defaults to stdout]'
+  {-D,--output-delimiter}'[delimiter string to use on outputs \[default: 	\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

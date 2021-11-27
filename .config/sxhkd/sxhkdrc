@@ -47,6 +47,10 @@ ctrl + alt + super + r
     notify-send "bpswm" "Configuration reloaded" && bspc wm -r
 # bspc wm -r
 
+# Get help for keybindings
+super + shift + h
+    sxhkd_help &
+
 # Launch terminal
 super + Return
     alacritty

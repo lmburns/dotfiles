@@ -31,23 +31,25 @@ format: yaml
 ############################
 keys:
   quit: { Char: q }
-  # up: { Char: k }
-#   down: { Char: j }
-#   go_to_top: { Char: g }
-#   go_to_bottom: { Char: G }
-  page_up: { Ctrl: u }
-  page_down: { Ctrl: d }
+  up: { Char: k }
+  down: { Char: j }
+  go_to_top: { Char: g }
+  go_to_bottom: { Char: G }
+  page_up: { Char: K }
+  page_down: { Char: J }
   select: { Char: v }
   select_all: { Char: V }
-#   help: { Char: "?" }
+  help: { Char: "?" }
   refresh: { Char: r }
-  # add: { Char: a }
-#   clear: { Char: D }
-#   remove: { Char: x }
-#   edit: { Char: e }
-#   search: { Char: / }
-#   copy: { Char: y }
-#   preview: { Char: P }
+  add: { Char: a }
+  clear: { Char: D }
+  remove: { Char: x }
+  edit: { Char: e }
+  search: { Char: / }
+  copy: { Char: y }
+  preview: { Char: P }
+  preview_down: { Ctrl: d }
+  preview_up: { Ctrl: u }
 
 # Options for keys include (copy is used to show structure of every example):
   # copy: { Char: x } -- Any single character
@@ -79,8 +81,16 @@ keys:
 ##############
 tui:
   flashy: true
+  preview_scroll_lines: 2
+  preview_height: 70
+  history: true
+  # history_filepath: ${HOME}/projects/github/wutag/command.output
   colored_ui: true
   paths_bold: true
+  default_alias: true
+  alias_hash:
+    ZDOTDIR: $ZDOTDIR
+    MY_BIN: ${HOME}/mybin
   #   paths_color: "blue"
   tags_bold: true
 #   completion_color: dark
@@ -109,6 +119,6 @@ encryption:
   # public_key: E93ACCAAAEB024788C106EDEC011CBEF6628B679
   public_key: burnsac@me.com
   # Whether or not to actually encrypt the database
-  to_encrypt: true
+  to_encrypt: false
   # Use a TTY instead of a pinentry program when asking for a password
   tty: false

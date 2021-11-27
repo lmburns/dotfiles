@@ -155,6 +155,21 @@ _tmsu_tags() {
     _describe -t tags 'tags' tag_list
 }
 
+# # tags for specific file, used for untag
+# _tmsu_file_tags() {
+#     typeset -a tag_list_file
+#     local tag
+#
+#     _call_program tmsu tmsu $db tags | \
+#     while read tag
+#     do
+#         local escapedTag=$tag:gs/:/\\:/:gs/=/\\\\=/
+#         tag_list+=("$escapedTag")
+#     done
+#
+#     _describe -t tags 'tags' tag_list
+# }
+
 # the set of values
 _tmsu_values() {
     typeset -a value_list

@@ -5,7 +5,6 @@
 ############################################################################
 
 # TODO: zsh notify
-# TODO: remap dir history
 
 # === general settings === [[[
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
@@ -112,16 +111,16 @@ cclean() { command mv -f "tar*/rel*/%PLUGIN%" && cargo clean; }
 
 # === annex, prompt === [[[
 zt light-mode for \
-  lmburns/z-a-patch-dl \
-  lmburns/z-a-submods \
+  zdharma-continuum/zinit-annex-patch-dl \
+  zdharma-continuum/zinit-annex-submods \
   NICHOLAS85/z-a-linkman \
   NICHOLAS85/z-a-linkbin \
   atinit'Z_A_USECOMP=1' \
   NICHOLAS85/z-a-eval
 
-# zinit-zsh/z-a-rust
-# zinit-zsh/z-a-as-monitor
-# zinit-zsh/z-a-readurl
+# zdharma-continuum/zinit-annex-rust
+# zdharma-continuum/zinit-annex-as-monitor
+# zdharma-continuum/zinit-annex-readurl
 
 (){
   [[ -f "${thmf}/${1}-pre.zsh" || -f "${thmf}/${1}-post.zsh" ]] && {
@@ -131,7 +130,7 @@ zt light-mode for \
       atinit"[[ -f ${thmf}/${1}-pre.zsh ]] && source ${thmf}/${1}-pre.zsh" \
       atload"[[ -f ${thmf}/${1}-post.zsh ]] && source ${thmf}/${1}-post.zsh" \
       atload'alias ntheme="$EDITOR ${thmf}/${MYPROMPT}-post.zsh"' \
-        zdharma/null
+        zdharma-continuum/null
   } || {
     [[ -f "${thmf}/${1}.toml" ]] && {
       export STARSHIP_CONFIG="${thmf}/${MYPROMPT}.toml"
@@ -146,7 +145,7 @@ zt light-mode for \
   } || print -P "%F{4}Theme ${1} not found%f"
 } "${MYPROMPT=p10k}"
 
-[[ $MYPROMPT != dolphin ]] && add-zsh-hook chpwd chpwd_ls
+add-zsh-hook chpwd chpwd_ls
 # ]]] === annex, prompt ===
 
 # === trigger-load block ===[[[
@@ -201,7 +200,7 @@ zt 0a light-mode for \
     anatolykopyl/doas-zsh-plugin \
   pick'timewarrior.plugin.zsh' \
     svenXY/timewarrior \
-    zdharma/zflai \
+    zdharma-continuum/zflai \
   pick'async.zsh' \
     mafredri/zsh-async \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' blockf \
@@ -242,12 +241,12 @@ zt 0b light-mode for \
   atload'
   zstyle ":history-search-multi-word" highlight-color "fg=cyan,bold";
   zstyle ":history-search-multi-word" page-size "16"' \
-    zdharma/history-search-multi-word \
+    zdharma-continuum/history-search-multi-word \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
-    zdharma/zui \
-    zdharma/zbrowse \
+    zdharma-continuum/zui \
+    zdharma-continuum/zbrowse \
   atload'
   zstyle ":notify:*" expire-time 6
   zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
@@ -410,15 +409,13 @@ zt 0c light-mode null for \
     TomWright/dasel \
   lbin'yj* -> yj' from'gh-r' \
     sclevine/yj \
-  lbin'ff* -> ffsend' from'gh-r' \
-    timvisee/ffsend \
   lbin'b**/r**/crex' atclone'chmod +x build.sh; ./build.sh -r;' \
     octobanana/crex \
   lbin from'gh-r' \
-    rami3l/pacaptr \
+    muesli/duf \
   lbin patch"${pchf}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
   atpull'%atclone' atdelete"PREFIX=$ZPFX make uninstall"  \
-    zdharma/zshelldoc \
+    zdharma-continuum/zshelldoc \
   lbin from'gh-r' bpick'*linux_amd*gz' \
   atload"source $ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet \
@@ -434,8 +431,10 @@ zt 0c light-mode null for \
 # greymd/teip
 # == rust [[[
 zt 0c light-mode null for \
+  lbin'ff* -> ffsend' from'gh-r' \
+    timvisee/ffsend \
   lbin from'gh-r' \
-    muesli/duf \
+    rami3l/pacaptr \
   lbin from'gh-r' \
     pemistahl/grex \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo build --release' \
@@ -564,13 +563,13 @@ zt 0c light-mode null for \
   lbin from'gh-r' \
     evansmurithi/cloak \
   lbin from'gh-r' \
-    lotabout/rargs \
-  lbin atclone'cargo build --release' atpull'%atclone' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-  atclone"emplace init zsh | tail -n +20 > _emplace" \
-  eval'emplace init zsh | head -n 20' atload"alias em='emplace'" \
-  atload'export EMPLACE_CONFIG="$XDG_CONFIG_HOME/emplace/emplace.toml"' \
-    lmburns/emplace
+    lotabout/rargs
+  # lbin atclone'cargo build --release' atpull'%atclone' \
+  # atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+  # atclone"emplace init zsh | tail -n +20 > _emplace" \
+  # eval'emplace init zsh | head -n 20' atload"alias em='emplace'" \
+  # atload'export EMPLACE_CONFIG="$XDG_CONFIG_HOME/emplace/emplace.toml"' \
+  #   lmburns/emplace
 
   # lbin atclone'cargo build --release' atpull'%atclone'  \
   # atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
@@ -713,6 +712,7 @@ stty susp '^Z'
 stty stop undef
 stty discard undef <$TTY >$TTY
 zmodload zsh/zprof  # ztodo
+zmodload zsh/attr   # extended attributes
 # autoload -Uz sticky-note
 autoload -Uz zmv zcalc zargs zed relative
 alias fned="zed -f"
@@ -1038,6 +1038,7 @@ path=(
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/lib/goenv/libexec
+  $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
   "${path[@]}"
 )
 # ]]]
@@ -1046,43 +1047,47 @@ path=(
   zt 0c light-mode as'completion' for \
     id-as'poetry_comp' atclone='poetry completions zsh > _poetry' \
     atpull'%atclone' has'poetry' \
-      zdharma/null \
+      zdharma-continuum/null \
     id-as'rust_comp' atclone'rustup completions zsh > _rustup' \
     atclone'rustup completions zsh cargo > _cargo' \
     atpull='%atclone' has'rustup' \
-      zdharma/null \
+      zdharma-continuum/null \
     id-as'pueue_comp' atclone'pueue completions zsh "${GENCOMP_DIR}"' \
     atpull'%atclone' has'pueue' \
-      zdharma/null
+      zdharma-continuum/null
 # ]]] ===== completions =====
 
 #===== variables ===== [[[
 zt 0c light-mode run-atpull for \
   id-as'pipx_comp' has'pipx' nocd nocompile eval"register-python-argcomplete pipx" \
   atload'zicdreplay -q' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'pyenv_init' has'pyenv' nocd eval'${${:-pyenv}:c:A} init - zsh' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'pyenv_virtual_init' has'pyenv-virtualenv' nocd \
   eval'${${:-pyenv}:c:A} virtualenv-init -' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'pipenv_comp' has'pipenv' nocd eval'pipenv --completion' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'ruby_env' has'rbenv' nocd eval'rbenv init -' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'go_env' has'goenv' nocd eval'goenv init -' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'thefuck_alias' has'thefuck' nocd eval'thefuck --alias' \
-    zdharma/null \
+    zdharma-continuum/null \
   id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
-    zdharma/null \
+    zdharma-continuum/null \
+  id-as'keychain_init' has'keychain' nocd \
+    eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
+    && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
+      zdharma-continuum/null \
   id-as'Cleanup' nocd atinit'unset -f zt grman; _zsh_autosuggest_bind_widgets' \
-    zdharma/null
+    zdharma-continuum/null
 
 # Recommended that `GOROOT/GOPATH` is added after `goenv` init
 path=( $GOPATH/bin(N-/) "${path[@]}" )
@@ -1251,18 +1256,18 @@ $FZF_DEFAULT_OPTS
 
 zt 0b light-mode null id-as for \
   multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,git-token}.zsh" \
-    zdharma/null \
+    zdharma-continuum/null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";
   export PERLBREW_HOME="${XDG_DATA_HOME}/perl5/perlbrew-h";
   export PERL_CPANM_HOME="${XDG_DATA_HOME}/perl5/cpanm"' \
   atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -f "$x" ] && source "$x"' \
-    zdharma/null \
+    zdharma-continuum/null \
   atload'export FAST_WORK_DIR=XDG;
   fast-theme XDG:mod-default.ini &>/dev/null' \
-    zdharma/null \
+    zdharma-continuum/null \
   atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
-    zdharma/null
+    zdharma-continuum/null
 
 # nocd atinit"TS_SOCKET=/tmp/ts1 ts -C && ts -l | rg -Fq 'limelight' || TS_SOCKET=/tmp/ts1 ts limelight >/dev/null" \
 # nocd atinit"TS_SOCKET=/tmp/ts1 ts -C && ts -l | rg -Fq 'limelight' || chronic ts limelight"

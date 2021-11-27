@@ -1,0 +1,413 @@
+# Desc: zed2
+#
+# Use ^X^W to save (or ZZ in vicmd mode), ^C to abort.
+# Option -f: edit shell functions.  (Also if called as fned or fned2.)
+
+emulate -LR zsh
+setopt extendedglob typesetsilent warncreateglobal noshortloops \
+    noksharrays
+
+:zed-restore-widgets() {
+  zle -A up-line-or-history-orig up-line-or-history
+  zle -A down-line-or-history-orig down-line-or-history
+}
+
+trap ":zed-restore-widgets; return 1;" INT TERM QUIT
+
+local MATCH MBEGIN MEND REPLY
+local -a match mbegin mend reply
+
+local var opts zed_file_name buffer
+# We do not want timeout while we are editing a file
+integer TMOUT=0 okargs=1 fun bind \
+  llsize start_offset=0 first_boundary second_boundary
+local -a expand lines_lengths pre_screen_buffer post_screen_buffer
+
+local nl=$'\n' tab=$'\t'
+
+zparseopts -D -A opts f b x:
+fun=$+opts[-f]
+bind=$+opts[-b]
+if [[ $opts[-x] == <-> ]]; then
+  expand=(-x $opts[-x])
+elif (( $+opts[-x] )); then
+  print -r "Integer expected after -x: $opts[-x]" >&2
+  return 1
+fi
+
+[[ $0 = fned(|2) ]] && fun=1
+(( bind )) && okargs=0
+
+if (( $# != okargs )); then
+  echo 'Usage:
+zed filename
+zed -f [ -x N ] function
+zed -b' >&2
+  return 1
+fi
+
+local curcontext=zed:::
+
+# Matching used in zstyle -m: hide result from caller.
+# Variables not used directly here.
+local -a match mbegin mend
+zstyle -m ":completion:zed:*" insert-tab '*' ||
+  zstyle ":completion:zed:*" insert-tab yes
+
+zmodload zsh/terminfo 2>/dev/null
+
+:zed2_pg_up()
+{
+  integer count=$(( LINES / 2 - 1 ))
+  while (( count -- )) {
+    :zed-up-line-or-history
+  }
+}
+
+:zed2_pg_down()
+{
+  integer count=$(( LINES / 2 - 1 ))
+  while (( count -- )) {
+    :zed-down-line-or-history
+  }
+}
+
+zle -N :zed2_pg_up
+zle -N :zed2_pg_down
+
+sh_fsck() {
+#  print -r "FSCK! $1 $2" >> /tmp/reply
+}
+
+functions -s -M fsck 1 1 sh_fsck
+sleep 1
+
+.zed-get-current-line() {
+  integer curline idx
+  : ${lines_lengths[@]/(#m)(#s)*(#e)/$(( \
+    (++idx, (MATCH > CURSOR + ${#pre_screen_buffer}) && !curline) ? (curline=idx, fsck($curline, $MATCH, $CURSOR)) : (fsck(X$curline, X$MATCH, X$CURSOR), 1) \
+  ))}
+  REPLY="$curline"
+}
+
+:zed-up-line-or-history() {
+  .zed-get-current-line
+  print -rl "if (( $REPLY <= first_boundary:$first_boundary )); then" >> /tmp/reply
+  if (( REPLY <= first_boundary )); then
+    print -rl "// start_offset=start_offset-1 //" >> /tmp/reply
+    (( start_offset > 0 )) && {
+      start_offset=start_offset-1
+      .zed-set-up-buffer "$LINES" -1
+    }
+  else
+    zle .up-line-or-history
+  fi
+}
+
+:zed-down-line-or-history() {
+  .zed-get-current-line
+  print -rl "if (( $REPLY >= second_boundary:$second_boundary && \
+$second_boundary < llsize:$llsize )); then" >> /tmp/reply
+  if (( REPLY >= second_boundary && second_boundary < llsize )); then
+    print -rl "// start_offset+=1 //" >> /tmp/reply
+    start_offset+=1
+    .zed-set-up-buffer "$LINES" 1
+  else
+    (( REPLY < llsize )) && zle .down-line-or-history
+  fi
+}
+
+zle -N up-line-or-history-orig "${widgets[up-line-or-history]#user:}"
+zle -N up-line-or-history :zed-up-line-or-history
+zle -N down-line-or-history-orig "${widgets[down-line-or-history]#user:}"
+zle -N down-line-or-history :zed-down-line-or-history
+
+.zed-dump-lines() {
+  integer _start=0 _end
+  for _end ( ${lines_lengths[@]} ) {
+    print -r ">> [$_start+1,$_end] : ${buffer[_start+1,_end]}" >> /tmp/reply
+    _start=_end
+  }
+}
+
++zed-compute-scrlines-sh() {
+  local line line_te line_prev
+  integer first=1 count len len_te te_added
+  1="${(Q)1}"
+  len=${#1}
+  : "${1//(#m)$tab/$(( (${${${(M)1[MBEGIN]:#$tab}:+1}:-0} == 0) ? (firtab=0) : 0,
+          firtab ? (count += 7) : (count += 3) ))}"
+  len_te=len+count
+  count=0
+  line=""
+  line_prev="${1[1,COLUMNS]}"
+  while (( len_te > COLUMNS )) {
+    te_added=0
+    while (( 1 )) {
+      line="${${line_prev/$tab/        }[1,COLUMNS]}"
+      if [[ $line = $line_prev ]]; then
+        print "@break with te_added:$te_added : ${(q)line}" >> /tmp/reply
+        1="${1[COLUMNS+1-te_added,len]}"
+        line_prev="${1[1,COLUMNS]}"
+        break
+      elif [[ $line_prev = $tab* ]]; then
+        te_added+=7
+      else
+        te_added+=3
+      fi
+      print "@* [[len_te:$len_te,len:$len]] :${(q)line}:${(q)line_prev}:" >> /tmp/reply
+      line_prev="$line"
+    }
+    count+=1
+    print "@[[++count:$count,len_te:$len_te,len:$len,te_added:$te_added]]" >> /tmp/reply
+    # We divide the line on COLUMNS-th character with the
+    # number of tab expanded, added spaces subtracted
+    print "@(++count:$count,first:$first, $len_te > $COLUMNS/:COLS) : Len[len_te:$len_te,len:$len] of line:$line !! " >> /tmp/reply
+    len_te=len_te-COLUMNS
+    len=len-(COLUMNS-te_added)
+  }
+  (( len_te > 0 )) && count+=1
+  print "@Len[$len] of: ${line:-1:$1}, @[++]count[$count]" >> /tmp/reply
+  return $count
+}
+
+functions -Ms zed_compute_scrlines 1 1 +zed-compute-scrlines-sh
+
+# 1 - buffer
+# 2 - output variable name
+.zed-compute-scrlines() {
+  integer sum
+  local -a lines
+  lines=( "${(@f)1}" )
+  : "${lines[@]/(#m)*/$(( sum+=zed_compute_scrlines(${(q)MATCH}) ))}"
+  : ${(P)${2:-REPLY}::=$sum}
+}
+
+.zed-count-full-lines() {
+  local -a lines
+  integer count
+  local line
+  lines=( "${(@f)1}" )
+  for line in ${lines[@]}; do
+    line="${line//$tab/        }"
+    (( ${#line} % COLUMNS == 0 )) && count+=1
+  done
+  print -r -- "The full-lines count: $count" >> /tmp/reply
+  : ${(P)${2:-REPLY}::=$count}
+}
+
+.zed-set-up-buffer() {
+  print -rl "FFSCK! $start_offset / $REPLY" >> /tmp/reply
+  integer lines="$1" buflines scrlines
+  integer direct
+  (( $2 > 0 )) && direct=1 # down
+  (( $2 < 0 )) && direct=-1 # up
+  buflines="${#${(@f)BUFFER}}"-1
+  .zed-compute-scrlines "${BUFFER%$nl*}" scrlines
+  print -rl "@Total scrlines:$scrlines (lines: $lines)" >> /tmp/reply
+  (( lines > llsize )) && lines=llsize
+  (( scrlines > lines )) && scrlines=lines
+  (( buflines > lines )) && buflines=lines
+  # +1 - because it's an offset, -1 - because we want 1 change before value
+  print -rl "scrlines:$scrlines, buflines:$buflines, buffer[lines_lengths[$start_offset-$direct]+1,lines_lengths[$start_offset+$scrlines-1-direct]]=\${(F)lines1[1,$buflines-1]} $buffer[lines_lengths[start_offset-direct]+1,lines_lengths[start_offset+scrlines-1-direct]]=${BUFFER[lines_lengths[start_offset-direct]+1-lines_lengths[start_offset-direct],lines_lengths[start_offset+scrlines-1-direct]-lines_lengths[start_offset-direct]]}" "sof: $start_offset" "@@\$buffer@@" >> /tmp/reply
+  buffer[lines_lengths[start_offset-direct]+1,lines_lengths[start_offset+scrlines-1-direct]]="${BUFFER[lines_lengths[start_offset-direct]+1-lines_lengths[start_offset-direct],lines_lengths[start_offset+scrlines-1-direct]-lines_lengths[start_offset-direct]]}"
+
+  local sline="${nl}[][] Test Status Bar [$REPLY][]"
+  print -rl -- "@POST@\$post_screen_buffer@POST@" >> /tmp/reply
+  integer component scrlines2 fulllines
+  while (( 1 )) {
+    # +1 - because we want to span across a whole
+    #      line, skipping the previous newline
+    BUFFER="${buffer[lines_lengths[start_offset]+1,lines_lengths[start_offset+(lines>(llsize-start_offset)?(llsize-start_offset):lines)+component]]}"
+    # Recompute scrlines for the new start_offset
+    .zed-compute-scrlines "$BUFFER" scrlines2
+    .zed-count-full-lines "$BUFFER" fulllines
+    (( fulllines+scrlines2 >= lines )) && component=component-1 || break
+    print -rl "%% scrlines2: $scrlines2, fulllines: $fulllines" >> /tmp/reply
+  }
+  component=$(( (lines>(llsize-start_offset)?(llsize-start_offset):lines)+component ))
+  print "^^ %%" scrlines2:$scrlines2 / fulllines:$fulllines / $#lines_lengths / $lines / $component "^^" >> /tmp/reply
+
+  print -rl >> /tmp/reply
+  print -r "##${buffer[lines_lengths[start_offset+scrlines2]+1,lines_lengths[start_offset+scrlines2]+2]}##" >> /tmp/reply
+  print -r "##${BUFFER[lines_lengths[start_offset+scrlines2]+1-lines_lengths[start_offset],lines_lengths[start_offset+scrlines2]+2-lines_lengths[start_offset]]}##" >> /tmp/reply
+  print -r "##$BUFFER##" >> /tmp/reply
+  BUFFER="${BUFFER%$nl}"
+  BUFFER[lines_lengths[start_offset+component]+1-lines_lengths[start_offset]]="$sline"
+
+  first_boundary=start_offset+1
+  second_boundary=$(( start_offset+component ))
+
+  pre_screen_buffer="${buffer[1,lines_lengths[start_offset]]}"
+  post_screen_buffer="${buffer[lines_lengths[start_offset+component]+1,-1]}"
+
+  print -r "second_boundary: $second_boundary=$start_offset+$scrlines" >> /tmp/reply
+}
+
+.zed-compute-llen() {
+  integer first=1 firtab=1
+  1="${(Q)1}"
+  len=${#1}
+  : "${1//(#m)$tab/$(( (${${${(M)1[MBEGIN]:#$tab}:+1}:-0} == 0) ? (firtab=0) : 0,
+          firtab ? (count += 7) : (count += 3) ))}"
+  len_te=len+count
+  line=""
+  line_prev="${1[1,COLUMNS]}"
+  while (( len_te > COLUMNS )) {
+    te_added=0
+    while (( 1 )) {
+      line="${${line_prev/$tab/        }[1,COLUMNS]}"
+      if [[ $line = $line_prev ]]; then
+        print "break with te_added:$te_added : ${(q)line}" >> /tmp/reply
+        1="${1[COLUMNS+1-te_added,len]}"
+        line_prev="${1[1,COLUMNS]}"
+        break
+      elif [[ $line_prev = $tab* ]]; then
+        te_added+=7
+      else
+        te_added+=3
+      fi
+      print "* [[len_te:$len_te,len:$len]] :${(q)line}:${(q)line_prev}:" >> /tmp/reply
+      line_prev="$line"
+    }
+    print "[[len_te:$len_te,len:$len,te_added:$te_added]]" >> /tmp/reply
+    # We divide the line on COLUMNS-th character with the
+    # number of tab expanded, added spaces subtracted
+    sum+=COLUMNS-te_added
+    print "(first:$first, $len_te > $COLUMNS/:COLS) : Len[len_te:$len_te,len:$len] of line:$line !! ${buffer[sum-2,sum-1]},${buffer[sum]},${buffer[sum+1,sum+2]}" >> /tmp/reply
+    lines_lengths[++idx]=( $sum )
+    len_te=len_te-COLUMNS
+    len=len-(COLUMNS-te_added)
+  }
+  print "Len[$len] of: ${line:-1:$1} \$\$ :${buffer[sum+len+1-2,sum+len+1-1]},${buffer[sum+len+1]},${buffer[sum+len+1+1,sum+len+1+2]}:" >> /tmp/reply
+  sum+=len+1
+  lines_lengths[++idx]=( $sum )
+  return 0
+}
+
+functions -Ms zed_compute_llen 1 1 .zed-compute-llen
+
+.zed-compute-llengths() {
+  lines=( "${(f@)buffer}" )
+  lines_lengths=()
+  integer idx sum count len len_te te_added
+  local line line_prev
+  : "${lines[@]//(#m)*/$((
+    zed_compute_llen(${(q)MATCH})
+  ))}"
+  .zed-dump-lines
+  llsize=idx
+}
+
+:zed-prhook() {
+local -a lines
+lines=( "${(f@)BUFFER}" )
+if (( ${#lines} > LINES )); then
+  print "FSCK! Called-! \${#lines} > LINES" >> /tmp/reply
+fi
+_zsh_highlight
+}
+zle -N :zed-prhook
+
+autoload -Uz add-zle-hook-widget
+#add-zle-hook-widget zle-line-pre-redraw what-cursor-position
+add-zle-hook-widget zle-line-pre-redraw :zed-prhook
+
+if (( bind )) || ! bindkey -M zed >&/dev/null; then
+  # Make the zed keymap a copy of the current main.
+  bindkey -N zed main
+  # Save the current main.  In zle widgets called from
+  # zed we may want to set this temporally.
+  bindkey -A main zed-normal-keymap
+
+  # Define a widget to use at startup, undo shouldn't clear initial buffer
+  :zed2_init() {
+    local -a lines
+    integer sum
+
+    buffer="$BUFFER"
+    print -rl "x|$BUFFER|y" >> /tmp/reply
+    .zed-compute-llengths
+    .zed-set-up-buffer "$LINES" 0
+    .zed-get-current-line
+
+    CURSOR=0
+    UNDO_LIMIT_NO=$UNDO_CHANGE_NO
+
+    # trap "zle .send-break; return 2" INT
+  }
+  zle -N :zed2_init
+
+  # Assign some default keys.
+  # Depending on your stty's, you may be able to use ^J as accept-line, else:
+
+  # The following isn't useful if we are copying viins, but that's
+  # a nicety.
+  bindkey -M zed '^x^w' accept-line
+  bindkey -M zed '^M' self-insert-unmeta
+
+  [[ ${+terminfo} = 1 ]] && {
+    [[ -n "$terminfo[kpp]" ]] && bindkey -M zed "$terminfo[kpp]" :zed2_pg_up
+    [[ -n "$terminfo[knp]" ]] && bindkey -M zed "$terminfo[knp]" :zed2_pg_down
+    [[ -n "$terminfo[khome]" ]] && bindkey -M zed "$terminfo[khome]" beginning-of-line
+    [[ -n "$terminfo[kend]" ]] && bindkey -M zed "$terminfo[kend]" end-of-line
+
+    # Fallback to well known code as terminfo might be wrong (often) sometimes
+    bindkey -M zed "^[[H" beginning-of-line
+    bindkey -M zed "^[[F" end-of-line
+  }
+
+  # Make zed-set-file-name available.
+  # Assume it's in fpath; there's no error at this point if it isn't
+  autoload -Uz zed-set-file-name
+  zle -N zed-set-file-name
+fi
+if (( bind )) || ! bindkey -M zed-vicmd >&/dev/null; then
+  bindkey -N zed-vicmd vicmd
+
+  bindkey -M zed-vicmd "ZZ" accept-line
+  [[ ${+terminfo} = 1 ]] && {
+    [[ -n "$terminfo[kpp]" ]] && bindkey -M zed-vicmd "$terminfo[kpp]" :zed2_pg_up
+    [[ -n "$terminfo[knp]" ]] && bindkey -M zed-vicmd "$terminfo[knp]" :zed2_pg_down
+    [[ -n "$terminfo[khome]" ]] && bindkey -M zed-vicmd "$terminfo[khome]" vi-beginning-of-line
+    [[ -n "$terminfo[kend]" ]] && bindkey -M zed-vicmd "$terminfo[kend]" vi-end-of-line
+
+    # Fallback to well known code as terminfo might be wrong (often) sometimes
+    bindkey -M zed-vicmd "^[[H" vi-beginning-of-line
+    bindkey -M zed-vicmd "^[[F" vi-end-of-line
+  }
+fi
+
+(( bind )) && return 0
+
+# don't mangle !'s
+setopt localoptions nobanghist
+
+if ((fun)) then
+  var="$(functions $expand -- $1)"
+  # If function is undefined but autoloadable, load it
+  if [[ $var = *\#\ undefined* ]] then
+    var="$(autoload +X $1; functions -- $1)"
+  elif [[ -z $var ]] then
+    var="${(q-)1}"$' () {\n}'
+  fi
+  vared -M zed -m zed-vicmd -i :zed2_init var && eval function "$buffer"
+else
+  zed_file_name=$1
+  [[ -f $1 ]] && var="$(<$1)"
+  while vared -M zed -m zed-vicmd -i :zed2_init var
+  do
+    {
+      print -r -- "$buffer" >| $zed_file_name
+    } always {
+      (( TRY_BLOCK_ERROR = 0 ))
+    } && break
+    echo -n -e '\a'
+  done
+fi
+
+:zed-restore-widgets
+
+return 0
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

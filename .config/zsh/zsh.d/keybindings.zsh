@@ -83,7 +83,7 @@ if [[ $TMUX ]]; then
   zle -N t
   vbindkey 'M-t' t                       # alt-t
   zle -N wfxr::tmux-select-window
-  vbindkey 'M-S-w' wfxr::tmux-select-window # alt-w
+  vbindkey 'M-w' wfxr::tmux-select-window # alt-w
 fi
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
@@ -109,6 +109,7 @@ typeset -gA keybindings; keybindings=(
   'C-x r'           fz-history-widget
   'C-x t'           pick_torrent          # fzf torrent
   'C-x C-b'         fcq                   # copyq fzf
+  'C-x C-g'         clipboard-fzf         # greenclip fzf
   'C-x C-e'         edit-command-line-as-zsh
   'C-x C-f'         fz-find
   'C-x C-u'         RG_buff
@@ -133,7 +134,6 @@ typeset -gA keybindings; keybindings=(
   'mode=str M-t'    t                     # tmux wfxr
   'mode=str C-o'    lc                    # lf change dir
   'mode=str C-u'    lf
-  'mode=str C-_'    lf
   'mode=@ C-b'      bow2                  # surfraw open w3m
   'mode=+ M-.'      kf                    # a formarks like thing in rust
   'mode=@ M-/'      frd                   # cd interactively recent dir
@@ -143,7 +143,6 @@ typeset -gA keybindings; keybindings=(
   'mode=@ M-]'      fadd
 )
 
-# 'mode=@ C-o'    lc                    # lf change dir
 # 'mod=vicmd ZZ'  accept-line
 # 'mode=vicmd M-a' yank-pop
 # 'mode=vicmd M-s' reverse-yank-pop

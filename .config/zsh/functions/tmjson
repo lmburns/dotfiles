@@ -1,0 +1,22 @@
+# Desc: Convert tmsu tags and files to json
+
+local to_add idx json
+
+idx=0
+
+for f (${(@f)"$(tmsu files)"}) {
+  # For some reason tmsu tags $f by itself produces tags
+  # If used with another command, it also produces file paths
+  to_add="{\"$f\":\""$(tmsu tags $f | hck -d':' -f2)"\"}"
+
+  if (( $idx == 0 )) {
+    json="$to_add"
+  }
+
+  json=$(jq ". += $to_add" <<< $json)
+  idx=$(( idx + 1 ))
+}
+
+print $json
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

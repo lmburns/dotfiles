@@ -21,10 +21,10 @@ function ansi_strip() { sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" "$@"; }
 
 
 # Perl rename
-function backup-t()  { ~/bin/rename -n 's/^(.*)$/$1.bak/g' $@ }
-function backup()    { ~/bin/rename    's/^(.*)$/$1.bak/g' $@ }
-function restore-t() { ~/bin/rename -n 's/^(.*).bak$/$1/g' $@ }
-function restore()   { ~/bin/rename    's/^(.*).bak$/$1/g' $@ }
+function backup-t()  { /usr/bin/rename -n 's/^(.*)$/$1.bak/g' $@ }
+function backup()    { /usr/bin/rename    's/^(.*)$/$1.bak/g' $@ }
+function restore-t() { /usr/bin/rename -n 's/^(.*).bak$/$1/g' $@ }
+function restore()   { /usr/bin/rename    's/^(.*).bak$/$1/g' $@ }
 
 # function bak()  { renamer '$=.bak' "$@"; }
 # function rbak() { renamer '.bak$=' "$@"; }
@@ -32,13 +32,13 @@ function restore()   { ~/bin/rename    's/^(.*).bak$/$1/g' $@ }
 function vcurl() {
     local TMPFILE="$(mktemp -t --suffix=.json)"
     trap "\\rm -f '$TMPFILE'" EXIT INT TERM HUP
-    vim "$TMPFILE" >/dev/tty
-    curl "$@" < "$TMPFILE"
+    nvim "$TMPFILE" >/dev/tty
+    curl ${(@f)"$(<$TMPFILE)"}
 }
 
 function kcurl() {
     local BUFFER="/tmp/curl-body-buffer.json"
-    touch "$BUFFER" && vim "$BUFFER" >/dev/tty
+    touch "$BUFFER" && nvim "$BUFFER" >/dev/tty
     curl "$@" < "$BUFFER"
 }
 
@@ -48,7 +48,7 @@ function grepo() {
     local url
     url=$(git remote get-url origin) || return $?
     [[ "$url" =~ '^git@' ]] && url=$(echo "$url" | sed -e 's#:#/#' -e 's#git@#https://#')
-    command open "$url"
+    command handlr open "$url"
 }
 
 # Dump zsh hash
@@ -66,16 +66,19 @@ function dump_map() {
 ##################################################################################
 
 function __unicode_translate() {
-    local CODE=$BUFFER[-4,-1]
-    [[ ! ${(U)CODE} =~ [0-9A-F]{4} ]] && return
-    CHAR=`echo -e "\\u$CODE"`
-    BUFFER=$BUFFER[1,-5]$CHAR
-    CURSOR=$#BUFFER
-    zle redisplay
+  builtin setopt extendedglob
+  local CODE=$BUFFER[-4,-1]
+  [[ ! ${(U)CODE} = [0-9A-F](#c4) ]] && return
+  CHAR=`echo -e "\\u$CODE"`
+  BUFFER=$BUFFER[1,-5]$CHAR
+  CURSOR=$#BUFFER
+  zle redisplay
 }
 
 function unicode-map() {
-    ruby -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' | fzf -m
+    ruby \
+      -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' \
+    | fzf -m
 }
 
 ##################################################################################
@@ -200,10 +203,10 @@ if (( $+commands[greenclip] )); then
         CURSOR="$#BUFFER"
         zle redisplay
     }
-    zle     -N    clipboard-fzf
+    zle -N clipboard-fzf
 
     function greenclip-cfg() {
-      killall greenclip; $EDITOR ~/.config/greenclip.cfg &&
+      killall greenclip; $EDITOR ~/.config/greenclip.toml &&
         nohup greenclip daemon &>/dev/null &
     }
     function greenclip-reload() {

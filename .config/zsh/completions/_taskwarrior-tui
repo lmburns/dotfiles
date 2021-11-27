@@ -1,0 +1,35 @@
+#compdef taskwarrior-tui
+
+autoload -U is-at-least
+
+_taskwarrior-tui() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-c+[Sets a custom config file]:FILE: ' \
+'--config=[Sets a custom config file]:FILE: ' \
+'-r+[Sets default report]:STRING: ' \
+'--report=[Sets default report]:STRING: ' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+&& ret=0
+}
+
+(( $+functions[_taskwarrior-tui_commands] )) ||
+_taskwarrior-tui_commands() {
+    local commands; commands=()
+    _describe -t commands 'taskwarrior-tui commands' commands "$@"
+}
+
+_taskwarrior-tui "$@"

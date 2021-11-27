@@ -286,6 +286,10 @@
     appname = dunstify
     new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
 
+[lf]
+    appname = lf
+    new_icon = /usr/share/icons/Gruvbox-Material-Dark/32x32/apps/system-file-manager.svg
+
 [rss]
     appname = rss-notify
     new_icon = /usr/share/icons/Gruvbox-Material-Dark/32x32/apps/feedindicator.svg

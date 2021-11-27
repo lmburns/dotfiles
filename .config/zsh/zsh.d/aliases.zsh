@@ -51,6 +51,7 @@ alias ng="noglob"
   alias srb='surfraw -browser=$BROWSERCLI'
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
+  alias srh='srg github'
   alias srgg='surfraw -browser=$BROWSER google'
 }
 
@@ -247,7 +248,7 @@ alias nvimd='cd /usr/local/share/nvim/runtime'
 alias b='buku --suggest --colors gMclo'
 alias dl='aria2c -x 4 --dir="${HOME}/Downloads/Aria"'
 alias dlpaste='aria2c "$(pbpaste)"'
-alias toilet='toilet -d /usr/local/figlet/2.2.5/share/figlet/fonts'
+# alias toilet='toilet -d /usr/local/figlet/2.2.5/share/figlet/fonts'
 alias downl='xh --download'
 alias googler='googler --colors bjdxxy'
 

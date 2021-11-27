@@ -1,0 +1,14 @@
+#compdef workon nworkon
+
+local arguments
+
+arguments=( '*:projects:_fw_projects' )
+
+_arguments -s $arguments
+
+(( $+functions[_fw_projects] )) || {
+  function _fw_projects() {
+    typeset -a projects; projects=( ${(@f)"$(fw -q ls)"} )
+    _describe -t projects 'projects' projects "$@"
+  }
+}

@@ -579,3 +579,5 @@ def_key "t"
 #def_key "q"
 #  quit
 #
+
+# vim: ft=conf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

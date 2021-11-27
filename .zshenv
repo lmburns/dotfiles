@@ -21,6 +21,8 @@ export XDG_CACHE_HOME="$HOME/.cache"
 # export XDG_DOWNLOAD_DIR="$HOME/Downloads"
 # export XDG_PICTURES_DIR="$HOME/Pictures"
 # export XDG_PUBLICSHARE_DIR="$HOME/Public"
+# export XDG_VIDEOS_DIR="$HOME/Videos"
+# export XDG_TEMPLATES_DIR="$HOME/Templates"
 
 export XDG_BIN_HOME="$HOME/bin"
 export XDG_MBIN_HOME="$HOME/mybin"

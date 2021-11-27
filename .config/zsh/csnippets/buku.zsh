@@ -10,8 +10,7 @@ get_buku_ids() {
 
 # buku open
 fb() {
-    # save newline separated string into an array
-    ids=( $(get_buku_ids) )
+    local -a ids; ids=( $(get_buku_ids) )
 
     echo buku --open ${ids[@]}
 
@@ -22,11 +21,9 @@ fb() {
 
 # buku update
 fbu() {
-    # save newline separated string into an array
-    ids=( $(get_buku_ids) )
+    local -a ids; ids=( $(get_buku_ids) )
 
     echo buku --update ${ids[@]} $@
-
     [[ -z $ids ]] && return 0 # return if has no bookmark selected
 
     buku --update ${ids[@]} $@
@@ -34,11 +31,9 @@ fbu() {
 
 # buku write
 fbw() {
-    # save newline separated string into an array
-    ids=( $(get_buku_ids) )
+    local -a ids; ids=( $(get_buku_ids) )
     # print -l $ids
 
-    # update websites
     for i in ${ids[@]}; do
         echo buku --write $i
         buku --write $i
