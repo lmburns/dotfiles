@@ -1,0 +1,104 @@
+#!/bin/sh
+
+# Desc: generic git post-receive hook
+# change the config options below and call this script in your post-receive
+# hook or symlink it.
+#
+# NOTE, things to do manually (once) before running this script:
+# - modify the categories in the for loop with your own.
+#
+# usage: $0 [name]
+#
+# if name is not set the basename of the current directory is used,
+# this is the directory of the repo when called from the post-receive script.
+
+export LC_CTYPE="en_US.UTF-8"
+
+name="$1"
+if test "${name}" = ""; then
+    name="$(basename "$(pwd)")"
+fi
+
+# paths must be absolute
+reposdir="/var/www/git"
+dir="${reposdir}/${name}"
+destdir="/var/www/git.burns"
+cachefile=".stagit-build-cache"
+defaultdir="/root/stagit-alt/stagit-md"
+
+ln -s "$defaultdir/style.css" "$destdir/style.css" 2> /dev/null
+ln -s "$defaultdir/logo.png" "$destdir/logo.png" 2> /dev/null
+ln -s "$defaultdir/favicon.png" "$destdir/favicon.png" 2> /dev/null
+
+
+if ! test -d "${dir}"; then
+    echo "${dir} does not exist" >&2
+    exit 1
+fi
+cd "${dir}" || exit 1
+
+[ -f "${dir}/git-daemon-export-ok" ] || exit 0
+
+# detect git push -f
+force=0
+while read -r old new ref; do
+    test "${old}" = "0000000000000000000000000000000000000000" && continue
+    test "${new}" = "0000000000000000000000000000000000000000" && continue
+
+    hasrevs="$(git rev-list "${old}" "^${new}" | sed 1q)"
+    if test -n "${hasrevs}"; then
+        force="1"
+        break
+    fi
+done
+
+readonly green='\e[0;32m' yellow='\e[0;33m' magenta='\e[0;35m'
+readonly Bred='\e[1;31m' Bgreen='\e[1;32m' Byellow='\e[1;33m'
+readonly Bmagenta='\e[1;35m' Bold='\e[1m' reset='\e[0m'
+
+# strip .git suffix
+r="$(basename "${name}")"
+d="$(basename "${name}" ".git")"
+printf "[%b%s%b] %b" "${magenta}" "${d}" "${reset}" "${green}stagit HTML pages... ${reset}"
+
+# remove folder if forced update
+[ "${force}" = "1" ] && printf "forced update... " && rm -rf "${destdir}/${d}"
+
+mkdir -p "${destdir}/${d}"
+cd "${destdir}/${d}" || exit 1
+
+# make pages
+stagit -c "${cachefile}" "${reposdir}/${r}"
+[ -f "about.html" ] \
+    && ln -sf "about.html" "index.html" \
+    || ln -sf "log.html" "index.html"
+ln -sfT "${dir}" ".git"
+
+# generate index arguments
+args=""
+for cat in "Projects" "Forks"; do
+    args="$args -c $cat"
+    for dir in "$reposdir/"*.git/; do
+        dir="${dir%/}"
+        [ ! -f "$dir/git-daemon-export-ok" ] && continue
+        if [ -f "$dir/category" ]; then
+            [ "$(cat "$dir/category")" = "$cat" ] && args="$args $dir"
+        else
+            stagit_uncat="1"
+        fi
+    done
+done
+
+if [ -n "$stagit_uncat" ]; then
+    args="$args -c Other"
+    for dir in "$reposdir/"*.git/; do
+        dir="${dir%/}"
+        [ -f "$dir/git-daemon-export-ok" ] && [ ! -f "$dir/category" ] && \
+            args="$args $dir"
+    done
+fi
+
+# make index
+echo "$args" | xargs stagit-index > "${destdir}/index.html"
+
+echo "done"

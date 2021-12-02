@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Desc: fzf man pages macOS - view in zathura
+################################################################
+
+# removed 'makewhatis: /Library/TeX/texbin/man: Not a directory'
+# that was at the top of my fzf
+
+# removed line numbers from ripgrep if you have them on
+
+manual=$(apropos . 2>/dev/null | \
+    cut -d '-' -f 1 | \
+    awk -F ', ' '{for(i=1;i<=NF;++i)if($i!="")printf("%s\n",$i)}' | \
+    rg -v '[:!@#\$%&\*\.]' | \
+    fzf --preview-window=right \
+        --preview 'echo {1} | sed -e "s/([^()]*)//g" | xargs -I{S} man -Pcat {S} {2} 2>/dev/null' | \
+    sed -E 's/^[0-9]+://g' | \
+    sed -E 's/\((.+)\)//')
+
+[ -z $manual ] && exit 0
+
+gman -Tpdf $manual 2>/dev/null | zathura - >/dev/null 2>&1

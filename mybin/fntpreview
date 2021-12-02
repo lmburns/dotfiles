@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Desc: preview font as an image in the terminal
+
+PREVIEW_TEXT="ABCDEFGHIJKLM\n"\
+"NOPQRSTUVWXYZ\n"\
+"abcdefghijklm\n"\
+"nopqrstuvwxyz\n"\
+"1234567890\n"\
+"!@$\%(){}[]"
+
+convert -size "532x365" xc:"#000000" \
+        -gravity center \
+        -pointsize 38 \
+        -font "$1" \
+        -fill "#ffffff" \
+        -annotate +0+0 "$PREVIEW_TEXT" \
+        -flatten "$2"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# AUTHOR: gotbletu (@gmail|twitter|youtube|github|lbry)
+# DEMO: https://www.youtube.com/watch?v=wv8D8wT20ZY
+#       https://www.youtube.com/watch?v=WiP1OM7Kf10
+
+helpmsg() {
+  printf "%s\n" "Desc: task-spooler queue for terminal file manager"
+  printf "\n"
+}
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  helpmsg
+  var=$(ts -h)
+  printf "%s\n" "${var/ts/${0##*/}}"
+  exit 0
+else
+  TS_SOCKET=/tmp/fm ts "$@"
+fi

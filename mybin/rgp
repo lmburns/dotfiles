@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Desc: interactively search for files (preview on size)
+
+# --preview="[[ ! -z {} ]] && rg --pretty --context 5 {q} {}" \
+# --preview 'bat --color=always {1} --highlight-line {2}' \
+
+RG_PREFIX="rg --files-with-matches"
+INITIAL_QUERY="${*:-}"
+read -ra selected < <(
+FZF_DEFAULT_COMMAND="$RG_PREFIX $(printf %q "$INITIAL_QUERY")" \
+  fzf --ansi \
+      --sort \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --preview="[[ ! -z {} ]] && rg --pretty --context 5 {q} {}" \
+      --phony -q "$INITIAL_QUERY" \
+      --bind "change:reload:$RG_PREFIX {q}" \
+      --preview-window="nohidden,70%:wrap"
+)
+
+[ -n "${selected[0]}" ] && ${EDITOR} "${selected[0]}" "+${selected[1]}"

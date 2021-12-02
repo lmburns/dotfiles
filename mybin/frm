@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# Desc: fuzzy remove files - trash-put
+
+typeset -r RED=$(tput setaf 1) GREEN=$(tput setaf 2) YELLOW=$(tput setaf 3)
+typeset -r BLUE=$(tput setaf 4) MAGENTA=$(tput setaf 5) CYAN=$(tput setaf 6)
+typeset -r BOLD=$(tput bold) RESET=$(tput sgr0)
+
+typeset -a files
+files=()
+while IFS= read -r f; do
+  files+=( "${f}" )
+done < <(fd . --exact-depth=1 -0 | sort -z | xargs -0 -I{} basename {})
+
+typeset -a f_remove
+f_remove=()
+while IFS= read -r f; do
+  f_remove+=( "${f}" )
+done < <(
+  IFS=$'\n'
+  echo "${files[*]}" \
+    | perl -lane 'print $F[-1]' \
+    | fzf --ansi --exit-0 --multi
+)
+
+if [[ "${#f_remove[@]}" -ne 0 ]]; then
+  for f in "${f_remove[@]}"; do
+    trash-put "$f"
+    printf "  %b.%b	%-5b%s%b\n" "${BOLD}${CYAN}" "${RESET}" "${GREEN}Removing${RESET} ${RED}" "$f" "${RESET}" >&2
+  done
+else
+  printf "  %b.%b	%-5b" "${BOLD}${RED}" "${RESET}" "${YELLOW}No files selected${RESET}" >&2
+fi
+
+###################################
+# shopt -s nullglob
+# typeset -a fs
+# fs=(*)
+
+# files="$(for f in "${fs[@]}"; do echo "$f"; done | fzf)"
+
+# if [[ "${#files[@]}" -ne 0 ]]; then
+#   for f in "${files[@]}"; do
+#     trash-put "$f"
+#     printf "  %b.%b	%-5b%s%b\n" "${BOLD}${CYAN}" "${RESET}" "${GREEN}Removing${RESET} ${RED}" "$f" "${RESET}"
+#   done
+# else
+#   printf "  %b.%b	%-5b" "${BOLD}${RED}" "${RESET}" "${YELLOW}No files selected${RESET}"
+# fi
+
+# shopt -u nullglob

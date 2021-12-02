@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+# Desc: copy xattributes
+
+if [[ $# -ne 2 ]]; then
+    print >&2 "usage: copy_xattrs SOURCE_FILE TARGET_FILE"
+    exit 1
+fi
+
+set -e
+
+IFS=$'\n' attr_names=($(xattr "$1"))
+for attr in $attr_names; do
+    value=$(xattr -p -x "$attr" "$1" | tr -d " \n")
+    xattr -w -x "$attr" "$value" "$2"
+done

@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+
+PROGRAM="${0##*/}"
+TMPDIR_TEMPLATE="$PROGRAM.XXXXXXXXXXXXX"
+TMPFILE_TEMPLATE="XXXXXX"
+
+# note: printf is used instead of echo to avoid backslash
+# processing and to properly handle values that begin with a '-'.
+
+log() { printf '%s\n' "$*"; }
+error() { log "ERROR: $*" >&2; }
+fatal() { error "$@"; exit 1; }
+
+# appends a command to a trap
+#
+# - 1st arg:  code to add
+# - remaining args:  names of traps to modify
+#
+trap_add() {
+    trap_add_cmd=$1; shift || fatal "${FUNCNAME} usage error"
+    for trap_add_name in "$@"; do
+        trap -- "$(
+            # helper fn to get existing trap command from output
+            # of trap -p
+            extract_trap_cmd() { printf '%s\n' "$3"; }
+            # print the new trap command
+            printf '%s\n' "${trap_add_cmd}"
+            # print existing trap command with newline
+            eval "extract_trap_cmd $(trap -p "${trap_add_name}")"
+        )" "${trap_add_name}" \
+            || fatal "unable to add to trap ${trap_add_name}"
+    done
+}
+
+# set the trace attribute for the above function.  this is
+# required to modify DEBUG or RETURN traps because functions don't
+# inherit them unless the trace attribute is set
+declare -f -t trap_add
+
+_maketmpdir() {
+    local tmpdirpath=${2:-${TMPDIR:-/tmp}}
+    eval $1="$(mktemp -d "${tmpdirpath}/${TMPDIR_TEMPLATE}")"
+    TRAP_NAME="rm_tmpdir${RANDOM}"
+    eval "${TRAP_NAME}() { rm -rf "${!1}"; }"
+    trap_add "${TRAP_NAME}" EXIT
+}
+
+maketmpdir() {
+    local tmpdir=${1:-LOCAL_TMPDIR}
+    if [[ -n "${!tmpdir}" && -d "${!tmpdir}" ]]
+    then
+        return
+    fi
+    _maketmpdir "${tmpdir}"
+}
+
+if [[ $(uname) == Darwin ]]; then
+    _makesecuretmpdir() {
+        _maketmpdir "$1"
+        DARWIN_RAMDISK_DEV="$(hdid -drivekey system-image=yes -nomount 'ram://32768' | cut -d ' ' -f 1)" # 32768 sectors = 16 mb
+        [[ -z "${DARWIN_RAMDISK_DEV}" ]] && { echo "Error: could not create ramdisk." 1>&2; exit 1; }
+        newfs_hfs -M 700 "${DARWIN_RAMDISK_DEV}" &>/dev/null || { echo "Error: could not create filesystem on ramdisk." 1>&2 ; exit 1; }
+        mount -t hfs -o noatime -o nobrowse "${DARWIN_RAMDISK_DEV}" "${!1}" || { echo "Error: could not mount filesystem on ramdisk." 1>&2 ; exit 1; }
+        TRAP_NAME="unmount_tmpdir${RANDOM}"
+        eval "${TRAP_NAME}() { [[ -n "${!1}" && -d "${!1}" && -n "${DARWIN_RAMDISK_DEV}" ]] || return; umount "${!1}"; diskutil quiet eject "${DARWIN_RAMDISK_DEV}"; }"
+        trap_add "${TRAP_NAME}" EXIT
+    }
+else
+    _makesecuretmpdir() {
+    	if [[ -d /dev/shm && -w /dev/shm && -x /dev/shm ]]; then
+    	    _maketmpdir "$1" /dev/shm
+    	else
+            _maketmpdir "$1"
+    	fi
+    }
+fi
+
+makesecuretmpdir() {
+    local tmpdir=${1:-LOCAL_SECURE_TMPDIR}
+    if [[ -n "${!tmpdir}" && -d "${!tmpdir}" ]]
+    then
+        return
+    fi
+    _makesecuretmpdir "${tmpdir}"
+}
+
+_gettmpfilename() {
+    eval $1="$(mktemp -u "${!2}/${TMPFILE_TEMPLATE}")"
+}
+
+gettmpfilename() {
+    maketmpdir
+    _gettmpfilename "${1:-LOCAL_TMPFILE}" LOCAL_TMPDIR
+}
+
+getsecuretmpfilename() {
+    makesecuretmpdir
+    _gettmpfilename "${1:-LOCAL_SECURE_TMPFILE}" LOCAL_SECURE_TMPDIR
+}

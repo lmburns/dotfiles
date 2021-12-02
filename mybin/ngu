@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+ngu() {
+  # confu="$(\
+  #   sed -n '/\[remote\s.*/{n;s/\t//g;s/url = //p}' \
+  #   $(git rev-parse --show-toplevel)/.git/config \
+  #   | head -n1
+  # )"
+  confu="$(git remote get-url origin)"
+
+  echo "${confu}" | xsel -b
+  print -P "%F{14}%b$confu%f%b"
+}
+
+ngu

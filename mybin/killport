@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Desc: kills all processes running on the specified port
+
+killport() {
+  lsof -i tcp:"$1" | awk '(NR!=1) && ($1!="Google") && ($1!="firefox") {print $2}' | xargs kill
+}
+
+killport "$@"

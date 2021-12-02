@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Desc: use isitup.org to see whether or not a website is down
+
+curl-tor "https://isitup.org/$1.json" -s | jq
+
+
+# vi:ft=sh

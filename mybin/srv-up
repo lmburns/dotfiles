@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Desc: backup server
+
+/usr/local/bin/rclone copy --update --verbose --exclude ".DS_Store" --transfers 30 --checkers 8 --contimeout 60s --timeout 300s --retries 3 --low-level-retries 10 --stats 1s --progress "/Volumes/SSD/server/" "google-drive:Backups/server/"

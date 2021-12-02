@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Desc: make a local archive of an entire website
+
+wget \
+  --mirror \
+  --page-requisites \
+  --adjust-extension \
+  --no-check-certificate \
+  -e robots=off \
+  "$@"

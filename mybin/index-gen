@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Desc: generate template for my website when creating new repo
+
+REPO=${1}
+TITLE=${2}
+
+index_gen() {
+		cat <<EOF
+<!DOCTYPE html>
+<html>
+<head>
+<title>$TITLE</title>
+<link rel="icon" type="image/png" href="favicon.png" />
+ <link rel="stylesheet" type="text/css" href="../styles/style.css" />
+</head>
+<body>
+	<h3>$TITLE</h3>
+	<p>To get access to the repo use: <br />
+	<code>git clone <a href="https://git.burnsac.xyz/$REPO.git/">https://git.burnsac.xyz/$REPO.git</a></code> </p>
+</body>
+</html>
+EOF
+}
+
+index_gen

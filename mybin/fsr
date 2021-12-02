@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Desc: fzf surfraw bookmarks
+
+fsr() {
+  surfraw "$(cat ~/.config/surfraw/bookmarks \
+    | sed '/^$/d' \
+    | sort -n \
+    | fzf -e
+  )"
+}
+
+fsr

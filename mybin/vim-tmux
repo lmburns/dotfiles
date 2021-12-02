@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Desc: fzf tmux fifo
+
+fifo=/tmp/vim-tmux-exit
+mkfifo -m o+w $fifo
+
+trap "rm -f $fifo" EXIT SIGINT SIGTERM
+[ $# -eq 0 ] && args="" || args="$(printf '%q ' "$@")"
+tmux split-window "vim $args; echo $? > $fifo"
+exit "$(cat $fifo)"

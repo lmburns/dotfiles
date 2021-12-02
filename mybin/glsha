@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Desc: copy a git commits shasum
+# shellcheck disable 2120
+
+forgit::inside_work_tree() { git rev-parse --is-inside-work-tree >/dev/null; }
+
+# git commit viewer
+glsha() {
+    forgit::inside_work_tree || return 1
+    local cmd opts graph files sha
+    files=$(sed -nE 's/.* -- (.*)/\1/p' <<< "$*")
+    cmd="echo {} |grep -Eo '[a-f0-9]+' |head -1 |xargs -I% git show --color=always % -- $files"
+    opts="
+        $FORGIT_FZF_DEFAULT_OPTS
+        +s +m --tiebreak=index
+        --bind=\"ctrl-y:execute-silent(echo {} |grep -Eo '[a-f0-9]+' | head -1 | tr -d '\n' | pbcopy)\"
+    "
+    graph=--graph
+    sha="$(eval "git log $graph --color=always --format='%C(auto)%h%d %s %C(black)%C(bold)%cr%Creset' $* $forgit_emojify" |
+        FZF_DEFAULT_OPTS="$opts" fzf --preview="$cmd" \
+        | perl -lane 'print $F[1]'
+      )"
+    echo "$sha" && pbcopy <<< "$sha"
+}
+
+glsha

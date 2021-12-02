@@ -1,0 +1,132 @@
+#!/bin/bash
+
+# Desc: preview jupyter notebooks in terminal
+
+set -eu
+
+die() {
+    echo "$@"
+    exit 1
+}
+
+jupview_usage() {
+    cat <<-_EOF
+    $(jupview_short_usage)
+        Provides a way to view Jupyter Notebooks in the terminal.
+        This is able to be used as a previewer with terminal file managers
+        like lf, ranger, and nnn by default with no parameters given.
+
+        The .ipynb file is converted to HTML and then is viewed with w3m.
+        Bat is used for colorizing the ouput.
+
+        Requirements:
+            jupyter nbconvert
+            w3m
+            bat
+
+        Options:
+            -P, --pager             view .ipynb file with a pager instead of stdout
+            -I, --no-input          clear input cells of .ipynb file
+            -p, --no-prompt         clear input / output prompt markers (In[1]:)
+            -O, --clear-output      clear output cells of .ipynb file
+            -t, --theme             change syntax highlighting theme (gruvbox default)
+_EOF
+    exit 0
+}
+
+jupview_short_usage() {
+    echo "Usage: jupview [--help,-h]" \
+        "[--pager,-P]" \
+        "[--no-input,-I]" \
+        "[--no-prompt,-p]" \
+        "[--clear-output,-O]" \
+        "[--theme,-t]"
+}
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1 || exit 1
+}
+
+
+jupview_cmd() {
+    local opts page=0
+    local no_input=0
+    local no_prompt=0
+    local clear_output=0
+    local bat_theme=""
+    local bat=0
+    local w3m=0
+    opts="$($GETOPT -o PIpOt: -l pager,no-input,no-prompt,clear-output,theme: -- "$@")"
+    local err=$?
+
+    eval set -- "$opts"
+
+    while true; do case "$1" in
+        -P|--pager) page=1; shift  ;;
+        -I|--no-input) no_input=1; shift  ;;
+        -p|--no-prompt) no_prompt=1; shift ;;
+        -O|--clear_output) clear_output=1; shift ;;
+        -t|--theme) bat_theme="$2"; shift 2 ;;
+        --) shift; break ;;
+    esac done
+
+    if command_exists bat; then
+        bat=1
+    elif command_exists w3m; then
+        w3m=1
+    fi
+
+    [[ $err -ne 0 ]] && die "$(jupview_short_usage)"
+
+    if [[ $bat = 1 ]]; then
+        command_exists bat || die "bat is not in your \$PATH"
+    elif [[ $w3m = 1 ]]; then
+        command_exists w3m || die "w3m is not in your \$PATH"
+    fi
+
+    local nb_cmd="jupyter nbconvert --stdout --to html"
+    local w3m_cmd="w3m -dump -T text/html"
+    local bat_cmd="bat -Pf --theme gruvbox --style auto --language python"
+
+    if [[ $no_input = 1 ]] && [[ $no_prompt = 1 ]]; then
+        nb_cmd="${nb_cmd} --no-input --no-prompt"
+    elif [[ $no_input = 1 ]] && [[ $no_prompt = 0 ]]; then
+        nb_cmd="${nb_cmd} --no-input"
+    elif [[ $no_input = 0 ]] && [[ $no_prompt = 1 ]]; then
+        nb_cmd="${nb_cmd} --no-prompt"
+    else
+        nb_cmd="${nb_cmd}"
+    fi
+
+
+    if [[ -n "$bat_theme" ]] && [[ $page = 1 ]]; then
+        bat_cmd="bat -f --theme ${bat_theme} --style auto --language python"
+    elif [[ -n "$bat_theme" ]] && [[ $page = 0 ]]; then
+        bat_cmd="bat -Pf --theme ${bat_theme} --style auto --language python"
+    elif [[ -z $bat_theme ]] && [[ $page = 1 ]]; then
+        bat_cmd="bat -f --theme gruvbox --style auto --language python"
+    else
+        bat_cmd=${bat_cmd}
+    fi
+
+    if [ ! -f "$1" ]; then
+        echo "$(basename "$@"): $1: No such file"
+        exit 2
+    fi
+
+    if [[ $clear_output = 1 ]]; then
+        base=$(basename $1)
+        temp="/tmp/$base"
+        jupyter nbconvert --clear-output --to notebook --output="/tmp/${base}" "$1" >/dev/null 2>&1
+        $nb_cmd $temp 2>/dev/null | $w3m_cmd | $bat_cmd && rm -rf $temp
+    else
+        $nb_cmd $1 2>/dev/null | $w3m_cmd | $bat_cmd
+    fi
+}
+
+
+if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    jupview_usage
+fi
+
+jupview_cmd "$@"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Desc: search directory for pdfs, open with zathura
+
+fd -a -e "pdf" | fzf |  xargs -I{} zathura {} >/dev/null

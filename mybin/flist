@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# Desc: fzf view of script directory with descriptions
+
+RG_PREFIX="rg --no-line-number --no-heading --color=always "
+INITIAL_QUERY="${*:-}"
+
+# shows description in small box at bottom
+read -ra selected < <(
+  fd . "$HOME/mybin" -tx |
+    fzf --ansi \
+        --delimiter / \
+        --with-nth -1 \
+        --preview="rg --no-line-number '^# Desc:' {}" \
+        --preview-window=down,2,wrap,nohidden,border
+)
+
+RG_DESC="rg --color=always --no-heading --no-line-number '^# desc' $HOME/mybin"
+
+# shows description along side file and can search descriptions
+# read -ra selected < <(
+#   FZF_DEFAULT_COMMAND="$RG_DESC" \
+#     fzf --ansi \
+#         --disabled --query "$INITIAL_QUERY" \
+#         --bind "change:reload:sleep 0.1; $RG_DESC | $RG_PREFIX {q} || true" \
+#         --color "hl:-1:underline,hl+:-1:underline:reverse" \
+#         --delimiter : \
+# )
+
+[ -n "${selected[0]}" ] && ${EDITOR} "${selected[0]/:#/}"

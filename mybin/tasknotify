@@ -1,0 +1,125 @@
+#!/usr/bin/env zsh
+
+# For cron: */30 * * * * DISPLAY=:0.0 /home/User/configs/TaskNotify.sh
+# Desc: send notifications from taskwarrior
+
+# setopt xtrace
+
+builtin setopt extendedglob
+
+# +DUETODAY, +WEEK
+typeset -A TASKS
+
+TASKS[all]="$(
+  task status:pending export rc.json.array=off \
+    | jq -r '[.project, .description] | @tsv'
+)"
+# due.any
+TASKS[due_all]="$(
+  task +DUE export rc.json.array=off \
+    | jq -r '[.project, .description] | @tsv'
+)"
+
+TASKS[due_today]="$(
+  task +TODAY export rc.json.array=off \
+    | jq -r '[.project, .description] | @tsv'
+)"
+
+TASKS[due_upcoming]="$(
+  task +DUE -DUETODAY export rc.json.array=off \
+    | jq -r '[.project, .description] | @tsv'
+)"
+
+TASKS[overdue]="$(
+  task +OVERDUE export rc.json.array=off \
+    | jq -r '[.project, .description] | @tsv'
+)"
+
+local -A opts
+zparseopts -D -A opts \
+  p -print n -notify o -overdue a -all e -email d -due \
+  t -today h -help
+
+local -A overall
+function _get_overall() {
+  integer n_task
+  for t ( ${(ok)TASKS} ) {
+    n_task="$(wc -l <<<"${(v)TASKS[$t]}")"
+    overall[$t]="$(printf "%15s | %-3d" "$t" "$n_task")"
+  }
+}
+
+function print_task() {
+  if [[ "$1" == "all" ]]; then
+    _get_overall
+    for x in "${overall[@]}"; do
+      print -P "%F{5}${x}%f"
+    done
+  else
+    for x in "${TASKS[$1]}"; do
+      print -P "%F{5}${x}%f"
+    done
+  fi
+}
+
+function osxnotify() {
+  osascript -e 'display notification "'"${@:2}"'" with title "'"${1}"'"'
+}
+
+function notify_task() {
+  local overd
+  _get_overall
+  overd="${overall[$1]##[[:space:]]#}"
+  overd="${overd##$1 | #}"
+  if (( ${+commands[terminal-notifirer]} )) {
+    terminal-notifier -title "${(C)1} Task" -message "$overd"
+  } else {
+    osxnotify "${(C)1}" "$overd"
+  }
+}
+
+# TODO: add option for tasks or number of tasks
+# TODO: add option for phone number specifically
+
+function email() {
+  local file
+  file="${TMPDIR:-/tmp}/task_hook"
+  echo "${TASKS[$1]}" > $file
+  mutt -s "TASK" "$2" <$file
+}
+
+function usage() {
+  print -P -- "%F{2}Taskwarrior hook to display/email/text tasks%f"
+  print -P -- "%F{3}Usage: tasknotify {-n|-e|-p} {-a|o|-d} [email|phone number]%f"
+  print -- "-h / --help            - this message"
+  print -- "-n / --notify          - use terminal-notifier (if available)"
+  print -- "-e / --email           - send email - email followed after commands"
+  print -- "-p / --print           - print tasks to stdout"
+  print -- "-a / --all             - all tasks"
+  print -- "-o / --overdue         - overdue tasks"
+  print -- "-t / --today           - due today tasks"
+  print -- "-d / --due             - all tasks with due date"
+}
+
+mobile="@mms.att.net"
+
+(( ${+opts[-h]} + ${+opts[--help]} )) && { usage }
+
+if (( ${+opts[-n]} + ${+opts[--notify]} )) {
+  (( ${+opts[-a]} + ${+opts[--all]} )) && { notify_task "all" }
+  (( ${+opts[-o]} + ${+opts[--overdue]} )) && { notify_task "overdue" }
+  (( ${+opts[-d]} + ${+opts[--due]} )) && { notify_task "due_all" }
+  (( ${+opts[-t]} + ${+opts[--today]} )) && { notify_task "due_today" }
+} elif (( ${+opts[-e]} + ${+opts[--email]} )) {
+  (( ${+opts[-a]} + ${+opts[--all]} )) && { email "all" }
+  (( ${+opts[-o]} + ${+opts[--overdue]} )) && { email "overdue" "$1" }
+  (( ${+opts[-d]} + ${+opts[--due]} )) && { email "due_all" }
+  (( ${+opts[-t]} + ${+opts[--today]} )) && { email "due_today" }
+} elif (( ${+opts[-p]} + ${+opts[--print]} )) {
+  (( ${+opts[-a]} + ${+opts[--all]} )) && { print_task "all" "$1" }
+  (( ${+opts[-o]} + ${+opts[--overdue]} )) && { print_task "overdue" "$1" }
+  (( ${+opts[-d]} + ${+opts[--due]} )) && { print_task "due_all" }
+  (( ${+opts[-t]} + ${+opts[--today]} )) && { print_task "due_today" }
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

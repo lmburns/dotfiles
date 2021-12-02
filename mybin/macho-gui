@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+# ??
+
+# Desc: man page gui
+
+# SRC: https://hiphish.github.io/blog/2020/05/31/macho-man-command-on-steroids/
+
+# manual=$(gman -k . 2>/dev/null | \
+#     cut -d '-' -f 1 | \
+#     awk -F ', ' '{for(i=1;i<=NF;++i)if($i!="")printf("%s\n",$i)}' | \
+#     rg -v '[:!@#\$%&\*\.]' | \
+#     fzf --preview-window=right,nohidden \
+#         --preview 'echo {1} | sed -e "s/([^()]*)//g" | xargs -I{S} man -Pcat {S} {2} 2>/dev/null' | \
+#     sed -E 's/^[0-9]+://g' | \
+#     sed -E 's/\((.+)\)//')
+#
+# [ -z $manual ] && exit 0
+# man $manual
+
+#############################
+
+function macho {
+    if ! command fzf --version &>/dev/null; then
+        echo "error: cannot find fzf" >&2
+        exit 1
+    fi
+
+    local -x -i SECTION
+    local -x USEGUI
+    local GUICMD
+    USEGUI=false
+    while getopts "s:x" opt; do
+        case "${opt}" in
+            s)
+                SECTION="${OPTARG}"
+                shift 2
+            ;;
+            x)
+                USEGUI=true
+                shift
+                if command rofi -V &>/dev/null; then
+                    GUICMD="rofi -dmenu -i -p \"Manual\""
+                elif command dmenu -v &>/dev/null; then
+                    GUICMD="dmenu -i -p \"Manual: \""
+                else
+                    echo "error: cannot find rofi or dmenu" >&2
+                    exit 2
+                fi
+            ;;
+            *)
+                echo "usage: macho [-s SECTION] [-x]"
+                echo "    -s SECTION  which SECTION of the man page to use"
+                echo "    -x          use the GUI (dmenu, rofi) instead of fzf"
+                exit 1
+            ;;
+        esac
+    done
+
+    local -x FZF_DEFAULT_OPTS
+    FZF_DEFAULT_OPTS='
+        --height=30%
+        --layout=reverse
+        --prompt="Manual: "
+        --preview="echo {1} | tr -d \"()\" |
+            xargs -I{S} man -Pcat {S} {2} 2>/dev/null"'
+
+    local apropos
+    apropos=$(
+        apropos -s "${SECTION}" "${@:-.}" |
+        awk '$2 !~ /\(0\)/ {printf("%-5s%s\n",$2,$1)}' |
+        sort -k 2 |
+        if [[ "${USEGUI}" == "true" ]]; then
+            eval "${GUICMD}"
+        else
+            fzf
+        fi |
+        tr -d '()'
+    )
+
+    local section
+    local manual
+    section="${apropos%% *}"
+    manual="${apropos##* }"
+    if [[ -n "${apropos}" ]]; then
+        if [[ "${USEGUI}" == "true" ]]; then
+            man -T"${MAN_FORMAT:-pdf}" "${section}" "${manual}" |
+            ${READER:-zathura -}
+        else
+            man "${section}" "${manual}"
+        fi
+    fi
+}

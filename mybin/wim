@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# Desc: open script in editor
+
+setopt extendedglob
+
+# ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
+
+Z="${ZDOTDIR}/functions/${argv}"
+fullp=$(which "$argv")
+
+if { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
+  $EDITOR "$fullp"
+elif [[ -f "$Z" ]]; then
+  $EDITOR "$Z"
+elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
+  "$EDITOR" ${$(whence -va "$argv")[-1]}
+else
+  echo "$argv ($(which $argv)) is not a text file"
+fi

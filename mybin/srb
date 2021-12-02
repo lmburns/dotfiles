@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Desc: surfraw bookmarks - add
+
+url="$1"
+title="$2"
+description="$3"
+echo -e "${description}\t${url}\t:: newsboat ${title}" >> "${XDG_CONFIG_HOME}/surfraw/bookmarks"

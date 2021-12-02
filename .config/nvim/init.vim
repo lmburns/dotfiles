@@ -1492,6 +1492,7 @@ Plug 'vimwiki/vimwiki'
 Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
+Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -2056,6 +2057,9 @@ call plug#end()
   nnoremap <Leader>sr :%s/\<<C-r><C-w>\>/
   " Replace quotes on the line
   nnoremap <Leader>Q :s/'/"/g<CR>:nohlsearch<CR>
+  " Title case enitre line
+  nnoremap <Leader>sc :s/\v<(\w)(\S*)/\u\1\L\2/g<CR>:nohlsearch<CR>
+  " s/\v<(.)(\w*)/\u\1\L\2/g
 
   " use tab and shift tab to indent and de-indent code
   nnoremap <Tab>   >>
@@ -2147,7 +2151,7 @@ call plug#end()
   " :%s/<1b>\[[0-9;]*m//g                       " replace ANSI color codes
 
   " shellcheck
-  nnoremap <Leader>sc :!shellcheck -x %<CR>
+  nnoremap <Leader>sC :!shellcheck -x %<CR>
   nnoremap <F1> :!./%<CR>
 
   " open corresponding .pdf/.html or preview

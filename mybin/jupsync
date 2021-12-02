@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Desc: sync jupyter notebook and python file
+
+jupytext --sync "${1}"

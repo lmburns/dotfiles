@@ -1,0 +1,26 @@
+#!/usr/bin/env zsh
+
+# Desc: declare array of keybindings (@workon)
+
+setopt extendedglob
+
+local -a modes
+modes=(viins vicmd visual viopp)
+
+{ local mode; for mode in "${modes[@]}"; do
+    local -a tmp; tmp=( ${(f)"$(bindkey -M $mode)"} )
+    local -a binding mapping
+    binding=( ${tmp[@]/(#m)*/${${(s: :)MATCH}[1]}} )
+    mapping=( ${tmp[@]/(#m)*/${${(s: :)MATCH}[2]}} )
+
+    typeset -gxA bind_${mode}
+    typeset -gA bbb
+    local i; for ((i=1; i<=$#mapping; i++)); do
+    print ${binding[$i]}
+    bind_${mode}[${(qz)${mapping[$i]}}]=${(qq)${(z)${binding[$i]}//\"/}} || continue
+    done
+  done
+} always {
+    export bind_${mode}
+    print "bind_${mode} exported"
+}

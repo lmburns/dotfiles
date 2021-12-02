@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Desc: interactively search files with rg (with reload) no preview
+
+RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
+INITIAL_QUERY="${*:-}"
+IFS=: read -ra selected < <(
+  FZF_DEFAULT_COMMAND="$RG_PREFIX $(printf %q "$INITIAL_QUERY")" \
+  fzf --ansi \
+      --disabled --query "$INITIAL_QUERY" \
+      --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+      --color "hl:-1:underline,hl+:-1:underline:reverse" \
+      --delimiter : \
+)
+[ -n "${selected[0]}" ] && ${EDITOR} "${selected[0]}" "+${selected[1]}"

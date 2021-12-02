@@ -109,7 +109,7 @@ export GPG_AGENT_INFO="${GNUPGHOME}/S.gpg-agent"
 export PINENTRY_USER_DATA="USE_CURSES=1"
 export UMCONFIG_HOME="${XDG_CONFIG_HOME}/um"
 export GRIPHOME="${XDG_CONFIG_HOME}/grip"
-export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
+# export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
 
 export GOGODB_PATH="${XDG_DATA_HOME}/gogo/gogo.db"
 

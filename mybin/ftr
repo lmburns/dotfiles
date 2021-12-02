@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+# Desc: fzf trash-restore
+
+zparseopts -D -E -a opt 'l' '-local'
+
+if [[ "${(M)opt[@]:#-(l|-local)}" == -(l|-local) ]]; then
+  file="$(trash-list \
+    | rg --color=never "$(pwd)" \
+    | fzf --delimiter / --with-nth 1,-1 \
+    | awk '{print $3}' \
+  )"
+else
+  file="$(trash-list \
+    | fzf --delimiter / --with-nth 1,-1 \
+    | awk '{print $3}' \
+  )"
+fi
+
+[ -n "$file" ] && yes 0 | trash-restore "$file" || exit 1
+terminal-notifier -title "Trash CLI" -message "File restored"

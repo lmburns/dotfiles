@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+# Desc: generate a script in script directory
+# set bin_dir (doesn't have to exist yet)
+
+MAGENTA="$(tput setaf 5)"
+CYAN="$(tput setaf 6)"
+GREEN="$(tput setaf 2)"
+BLUE="$(tput setaf 4)"
+YELLOW="$(tput setaf 3)"
+RESET="$(tput sgr0)"
+
+# ===========================
+# # dialog
+# ANS=$(\
+#   dialog --title "Create a Script" \
+#         --clear \
+#         --cancel-label "Exit" \
+#         --inputbox 'Enter FILE name: ' 8 40 \
+#   3>&1 1>&2 2>&3 3>&- \
+# )
+
+# zenity pop up
+# ANS=$(\
+#   zenity --title="Create a Script" \
+#   --cancel-label "Exit" \
+#   --entry \
+#   --text "Enter file name: "
+# )
+
+# plain printf prompt
+# printf "%b\n> " "${MAGENTA}Enter a title: ${RESET}" ; read -r ANS
+# printf "%b\n> " "${MAGENTA}Type:${RESET}\n(1) /bin/sh\n(2) /usr/bin/env bash\n(3) /usr/bin/env zsh\n(4) zsh function
+# ${BLUE}Enter index [default: ${GREEN}1${BLUE}]${RESET}"
+# read -r type
+
+# ===========================
+
+BIN_DIR="${HOME}/mybin"
+ZSH_FUNC_DIR="${ZDOTDIR}/functions"
+
+chf() {
+  [ "$1" = "zsh" ] && chmod +x $ZSH_FILE && $EDITOR +5 "$ZSH_FILE"
+  [ "$1" = "sh" ] && chmod +x $FILE && $EDITOR +5 "$FILE"
+}
+
+if [ -d "$BIN_DIR" ]; then
+  # ANS="$(
+  #   fzf --ansi +m \
+  #       --sort \
+  #       --print-query \
+  #       --print0 \
+  #       --exit-0 \
+  #       --delimiter / \
+  #       --with-nth=-1 \
+  #       --preview 'bat --color=always {}' \
+  #       --preview-window 'nohidden,right,60%,border-left,+{2}+3/3,~3' \
+  #       --prompt="Name:>" < <(fd . $BIN_DIR $ZSH_FUNC_DIR -tx) \
+  #   | awk 'BEGIN{FS="/"}{print $NF}' \
+  #   | tr -d '\000'
+  # )"
+  printf "%b\n> " "${MAGENTA}Enter a title: ${RESET}" ; read -r ANS
+  [ -z $ANS ] && exit 1 # detect a ctrl+c
+  ANS=${ANS// /_}
+  ANS=${ANS,,}
+  FILE="${BIN_DIR}/${ANS}"
+  ZSH_FILE="${ZSH_FUNC_DIR}/${ANS}"
+  if [ -e "$FILE" ]; then
+    $EDITOR "$FILE"
+  elif [ -e "$ZSH_FILE" ]; then
+    $EDITOR "$ZSH_FILE"
+  else
+    printf "%b\n> " "${MAGENTA}Enter a description: ${RESET}" ; read -r dscrpt
+
+    type="$(
+    printf "%b\n " "(1) /bin/sh\n(2) /usr/bin/env bash\n(3) /usr/bin/env zsh\n(4) zsh function\n(5) /usr/bin/env perl" \
+        | fzf --prompt="Type:>" +m \
+        | awk '{print $1}' \
+        | sed 's/[()]//g'
+    )"
+
+  case $type in
+     1|shell) printf "#!/bin/sh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     2|bash) printf "#!/usr/bin/env bash\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     3|zsh) printf "#!/usr/bin/env zsh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     4|func) printf "# vim:ft=zsh:\n\n# Desc: ${dscrpt}\n\n\n" >> "$ZSH_FILE"; chf "zsh" ;;
+     5|perl) printf "!#/usr/bin/env perl\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     *) printf "%b\n" "${YELLOW}Script type defaults to ${GREEN}shell${RESET}"
+       printf "#!/bin/sh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+  esac
+  fi
+fi
+
+# ln -siv "${BIN_DIR}/${ANS}" /usr/local/mybin

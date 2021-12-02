@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+# Desc: copy files with dragon
+
 typeset -a files
 files=( ${(@f)"$(dragon -t -x)"} )
 

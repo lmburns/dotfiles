@@ -576,7 +576,7 @@ cmd fzf_cd ${{
 cmd aj %lf -remote "send $id cd '$(autojump $1)'"
 cmd ajfzf $lf -remote "send $id cd '$(autojump -s | tac | awk 'NR>7{print $2}' | fzf)'"
 cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height)
-cmd fd !clear; fd -Hi "$1"
+cmd fd !clear; fd -Hi "$@"
 cmd rg !clear; rg "$1"
 cmd rgu !clear; rgu "$1"
 cmd massren $massren

@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Desc: peak at git dir
+
+REPO="$1"
+[ -z "$REPO" ] && exit 1
+
+DIR=$(mktemp -d)
+git clone --depth 1 "$REPO" "$DIR"
+"$EDITOR" "$DIR"
+rm -rf "$DIR"
