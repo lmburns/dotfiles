@@ -50,6 +50,7 @@ alias br := build-release
 build-release:
   cargo build --release --all-features {{CI}}
 
+alias t := test
 test:
   cargo test {{CI}}
 

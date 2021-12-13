@@ -653,11 +653,12 @@ zt 0c light-mode null for \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
     sayanarijit/xplr \
-  lbin from'gh-r' atload'alias tt="taskwarrior-tui"' \
-    kdheepak/taskwarrior-tui \
   lbin from'gh-r' atload'alias ld="lazydocker"' \
     jesseduffield/lazydocker
 # ]]] === tui specifi block ===
+
+# lbin from'gh-r' atload'alias tt="taskwarrior-tui"' \
+#   kdheepak/taskwarrior-tui \
 
 # === git specific block === [[[
 zt 0c light-mode null for \
@@ -887,6 +888,7 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 function cdc() { builtin cd ${$(cargo locate-project | jq -r '.root'):h}; }
 function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.rs; }
 function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
+function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 # find functions that follow this pattern: func()
 function ffunc() { eval "() { $functions[RG] } ${@}\\\\\("; }
 # rsync from local pc to server

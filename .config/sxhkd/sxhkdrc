@@ -272,6 +272,7 @@ mod3 + c : {Left,Down,Up,Right}
 # === LAUNCHER ===
 # ================
 
+# Open URL in clipboard
 ctrl + alt + o
     handlr open "$(xsel -b)"
 

@@ -10,6 +10,8 @@ alias -g G='| rg '
 alias -g H='| head'
 alias -g T='| tail'
 
+alias %= \$=
+
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
 alias tm='tmsu'
 alias mail='/usr/bin/mail'
@@ -21,6 +23,7 @@ alias ca='cargo'
 alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
+alias tt="taskwarrior-tui"
 
 alias open="handlr open"
 # alias mimeopen="/home/lucas/mybin/perl/mimeopen"

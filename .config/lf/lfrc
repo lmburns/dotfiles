@@ -115,6 +115,19 @@ cmd open ${{
     # *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>/dev/null & done;;
 }}
 
+cmd see ${{
+  builtin setopt extendedglob
+  local MATCH
+  local -a arr short
+  rip -- $fx
+  dunstify -a lf " Deleted File(s)" "${${(@f)fx}:t2""}" && {
+     print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
+       | hck -d ':' -D $'\t'
+  }
+}}
+
+map Tz see
+
 
 # -- Trash: (rip)
 cmd trash ${{
@@ -818,9 +831,9 @@ map gtr ${{
 }}
 map gtc ${{clear; gclp}}
 map gtb :git_branch
-map gtp ${{clear; git pull || true; echo "press ENTER"; read ENTER}}
-map gtP ${{clear; git pull --rebase || true; echo "press ENTER"; read ENTER}}
-map gtz ${{clear; git status; echo "press ENTER"; read ENTER}}
+map gtp !{{clear; git pull }}
+map gtP !{{clear; git pull --rebase }}
+map gtz !{{clear; git status }}
 map gtl ${{clear; git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit}}
 map gttr ${{clear; git ls-tree -r master --name-only | bat}}
 map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}

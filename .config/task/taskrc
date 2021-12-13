@@ -114,7 +114,7 @@ report.list.description=Lists all tasks matching the specified criteria
 # report.list.columns=id,project,priority,due,start.active,age,description
 # report.list.labels=ID,Project,Pri,Due,Active,Age,Description
 report.list.sort=start,description,due+,priority-,project+
-report.list.filter=status:pending
+report.list.filter=status:pending project.isnt:store
 
 # task ls
 report.ls.description=Minimal listing of all tasks matching the specified criteria
@@ -246,8 +246,16 @@ uda.taskwarrior-tui.task-report.jump-on-task-add=true
 uda.taskwarrior-tui.task-report.prompt-on-delete=true
 uda.taskwarrior-tui.task-report.prompt-on-done=false
 
+uda.taskwarrior-tui.tick-rate=250
+uda.taskwarrior-tui.task-report.next.filter=status:pending
+uda.taskwarrior-tui.task-report.pre-fill-task-meta-data=false
+uda.taskwarrior-tui.task-report.task-detail-prefetch=10
+uda.taskwarrior-tui.quick-tag.name=next
+
 uda.taskwarrior-tui.background_process=task sync
 uda.taskwarrior-tui.background_process_period=60
+
+# uda.taskwarrior-tui.style.color.project=red
 
 # uda.taskwarrior-tui.style.report_completion_pane=yellow
 
@@ -273,5 +281,7 @@ taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
 taskd.server=lmburns.com:53589
 taskd.credentials=Self\/Lucas\/b82378f9-c7b4-4e78-9fb7-89fad80c4182
 taskd.trust=strict
+
+context.work=project:Work or +urgent
 
 # vim: ft=taskrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

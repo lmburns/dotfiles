@@ -1,0 +1,230 @@
+%YAML 1.2
+---
+name: JQ
+file_extensions:
+  - jq
+scope: source.jq
+
+variables:
+  identifier_start: '[[:alpha:]_]'
+  identifier: '\b{{identifier_start}}[[:alnum:]_]*\b'
+
+contexts:
+  prototype:
+    - include: comments
+    - include: enter
+
+  ## Main context
+  main:
+    - include: definitions
+    - include: keywords
+    - include: literals
+    - include: strings
+
+  ## Blocks
+  enter:
+    - match: '\('
+      push: in_para
+    - match: '\['
+      push: in_bracket
+    - match: '\{'
+      push: in_brace
+
+  exit_para:
+    - match: '\)'
+      pop: true
+    - match: '(\}|\])'
+      captures:
+        1: invalid.illegal.end_block.jq
+      pop: true
+
+  exit_bracket:
+    - match: '\]'
+      pop: true
+    - match: '(\}|\))'
+      captures:
+        1: invalid.illegal.end_block.jq
+      pop: true
+
+  exit_brace:
+    - match: '\}'
+      pop: true
+    - match: '(\)|\])'
+      captures:
+        1: invalid.illegal.end_block.jq
+      pop: true
+
+  in_para:
+    # For some reason prototype doesnt seem to always work ?
+    - include: comments
+    - include: enter
+    - include: exit_para
+    - include: literals
+    - include: keywords
+    - include: definitions
+    - meta_scope: meta.block.in_para.jq
+
+  in_bracket:
+    - include: comments
+    - include: enter
+    - include: exit_bracket
+    - include: literals
+    - include: keywords
+    - meta_scope: meta.block.in_bracket.jq
+
+  in_brace:
+    - include: comments
+    - include: enter
+    - include: exit_brace
+    - meta_scope: meta.block.in_brace.jq
+    - match: '(?="{{identifier}}"\s*:)'
+      push:
+        - include: strings
+        - match: ':'
+          scope: punctuation.separator.mapping.key-value.jq
+          set:
+            - meta_scope: meta.block.in_brace.value.jq
+            - include: comments
+            - include: enter
+            - include: literals
+            - include: keywords
+            - match: '(?=\})'
+              pop: true
+            - match: ','
+              scope: punctuation.separator.sequence.jq
+              pop: true
+    - match: '({{identifier}})\s*(:)'
+      captures:
+        1: entity.name.other.key.jq
+        2: punctuation.separator.mapping.key-value.jq
+      push:
+        - meta_content_scope: meta.block.in_brace.value.jq
+        - include: comments
+        - include: enter
+        - include: literals
+        - include: keywords
+        - match: '(?=\})'
+          pop: true
+        - match: ','
+          scope: punctuation.separator.sequence.jq
+          pop: true
+    - include: strings
+    - match: ':'
+      scope: punctuation.separator.mapping.key-value.jq
+      push:
+        - meta_content_scope: meta.block.in_brace.value.jq
+        - include: comments
+        - include: enter
+        - include: literals
+        - include: keywords
+        - match: '(?=\})'
+          pop: true
+        - match: ','
+          scope: punctuation.separator.sequence.jq
+          pop: true
+    - match: '{{identifier}}'
+      scope: entity.name.other.key.jq
+
+  definitions:
+    - match: '(?=\bdef\b\s*{{identifier}})'
+      push:
+        - meta_content_scope: meta.function.jq
+        - match: \bdef\b
+          scope: keyword.other.function_def.jq
+        - match: '{{identifier}}'
+          scope: entity.name.function.jq
+        - match: '(?=[:[^\s\(]])'
+          pop: true
+        - match: '\(\s*'
+          scope: meta.function.parameters.begin.jq
+          set:
+            - meta_content_scope: meta.function.parameters.list.jq
+            - match: '\s*(\))\s*(:)'
+              captures:
+                1: meta.function.parameters.end.jq
+                2: punctuation.separator.function_def.jq
+              pop: true
+            - match: '\s*;\s*'
+            - match: '\$?{{identifier}}'
+              scope: variable.parameter.jq
+            - match: '(\S)'
+              scope: invalid.illegal.jq
+              pop: true
+
+    - match: '(?=\b(include|import)\b\s*\"[^\";]+\"\s*;)'
+      push:
+        - meta_content_scope: meta.import.statement.jq
+        - include: strings
+        - match: \b(include|import)\b
+          scope: keyword.control.import.jq
+        - match: ';'
+          pop: true
+
+  keywords:
+    # TODO better imports
+    - match: \bimport\b
+      scope: keyword.control.import.jq
+    - match: \@(text|json|html|uri|tsv|csv|sh|base64d?)\b
+      scope: constant.language.format.jq
+    - match: \b(if|then|else|elif|end)\b
+      scope: keyword.control.conditional.jq
+    - match: \b(as|foreach|reduce|and|or|while|until)\b
+      scope: keyword.control.flow.jq
+    - match: \b(and|or)\b
+      scope: keyword.operator.logical.jq
+    - match: '\b(acos|acosh|add|all|any|arrays|ascii_downcase|ascii_upcase|asin|asinh|atan|atan2|atanh|booleans|bsearch|builtins|capture|cbrt|ceil|combinations|contains|copysign|cos|cosh|debug|del|delpaths|drem|empty|endswith|env|erf|erfc|error|exp|exp10|exp2|explode|expm1|fabs|fdim|finites|first|flatten|floor|fma|fmax|fmin|fmod|format|frexp|from_entries|fromdate|fromdateiso8601|fromjson|fromstream|gamma|get_jq_origin|get_prog_origin|get_search_list|getpath|gmtime|group_by|gsub|halt|halt_error|has|hypot|implode|in|index|indices|infinite|input|input_filename|input_line_number|inputs|inside|isempty|isfinite|isinfinite|isnan|isnormal|iterables|j0|j1|jn|join|keys|keys_unsorted|last|ldexp|leaf_paths|length|lgamma|lgamma_r|limit|localtime|log|log10|log1p|log2|logb|ltrimstr|map|map_values|match|max|max_by|min|min_by|mktime|modf|modulemeta|nan|nearbyint|nextafter|nexttoward|normals|not|now|nth|nulls|numbers|objects|path|paths|pow|pow10|range|recurse|recurse_down|remainder|repeat|reverse|rindex|rint|round|rtrimstr|scalars|scalars_or_empty|scalb|scalbln|scan|select|setpath|significand|sin|sinh|sort|sort_by|split|splits|sqrt|startswith|stderr|strflocaltime|strftime|strings|strptime|sub|tan|tanh|test|tgamma|to_entries|todate|todateiso8601|tojson|tonumber|tostream|tostring|transpose|trunc|truncate_stream|type|unique|unique_by|utf8bytelength|values|walk|with_entries|y0|y1|yn)\b'
+      scope: support.function.builtin.jq
+    - match: '\${{identifier}}'
+      scope: variable.language.jq
+
+  literals:
+    - include: strings
+    - match: \b(true|false|null)\b
+      scope: constant.language.jq
+    - match: '\b((0(x|X)\h*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b'
+      scope: constant.numeric.jq
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin.jq
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.jq
+    - match: '\\\('
+      scope: constant.character.escape.begin_interp.jq
+      push:
+        - clear_scopes: true
+        - match: '\('
+          push:
+            - meta_scope: meta.block.parenthesis.jq
+            - match: \)
+              pop: true
+
+        - match: \)
+          scope: constant.character.escape.end_interp.jq
+          pop: true
+    - match: '(\\)'
+      captures:
+        1: constant.character.escape.jq
+      push:
+        - meta_scope: meta.escape.sequence.jq
+        - match: "(.)"
+          captures:
+            1: constant.character.escape.escaped.jq
+          pop: true
+
+    - match: '"'
+      scope: punctuation.definition.string.end.jq
+      pop: true
+
+  comments:
+    - match: '#'
+      scope: punctuation.definition.comment.jq
+      push:
+        - meta_scope: comment.line.jq
+        - match: $\n?
+          pop: true

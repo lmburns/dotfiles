@@ -22,7 +22,11 @@
 
 xset r rate 300 50
 setxkbmap -layout us
-setxkbmap -option shift:both_capslock
+setxkbmap -option shift:both_capslock # Both shifts become caps lock
+# Switch super and alt (some keyboards have them switched)
+setxkbmap -option altwin:swap_alt_win
+# PrintScreen to F13
+# setxkbmap -option apple:alupckeys
 
 # setxkbmap -option caps:escape
 mod="Hyper_L"

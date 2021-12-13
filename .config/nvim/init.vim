@@ -4,6 +4,7 @@
 "      Home: https://github.com/lmburns                                    
 "============================================================================
 
+  scriptencoding utf-8
   set ttyfast
   set nocompatible
   let mapleader = ' '
@@ -626,6 +627,9 @@ Plug 'ludovicchabant/vim-gutentags'
   " autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
   " autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
 
+  autocmd BufRead *.c :setlocal tags=./tags;/
+  autocmd BufWritePost *.c :silent! exec "!ctags_gen" . expand('%:p:t') . "&" | redraw!
+
   let g:gutentags_project_root = ['.git']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
 
@@ -641,11 +645,46 @@ Plug 'ludovicchabant/vim-gutentags'
   " else
     set tags=tags
     let g:gutentags_modules = ['ctags']
+    let g:gutentags_cache_dir = expand('~/.cache/tags')
     let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
     let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
     let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-
     let g:gutentags_ctags_tagfile = '.tags'
+    let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
+    " let g:gutentags_define_advanced_commands = 1
+    let g:gutentags_ctags_exclude = [
+      \  '*.git', '*.svn', '*.hg',
+      \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components',
+      \  '*-lock.json',  '*.lock',
+      \  '*.min.*',
+      \  '*.bak',
+      \  '*.zip',
+      \  '*.pyc',
+      \  '*.class',
+      \  '*.sln',
+      \  '*.csproj', '*.csproj.user',
+      \  '*.tmp',
+      \  '*.cache',
+      \  '*.vscode',
+      \  '*.pdb',
+      \  '*.exe', '*.dll', '*.bin',
+      \  '*.mp3', '*.ogg', '*.flac',
+      \  '*.swp', '*.swo',
+      \  '.DS_Store', '*.plist',
+      \  '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png', '*.svg',
+      \  '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+      \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
+      \]
+
+  function! s:SetupCTags()
+    let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']
+  endfunction
+
+  augroup gutentags
+    autocmd!
+    " autocmd! User vim-gutentags call gutentags#setup_gutentags()
+    autocmd! FileType c,cpp call <SID>SetupCTags()
+  augroup END
   " endif
 
 Plug 'liuchengxu/vista.vim'
@@ -874,7 +913,7 @@ Plug 'antoinemadec/coc-fzf'
   command! -nargs=0 CocMarket :CocList marketplace
   command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
-  nnoremap <silent> <Leader>y  :<C-u>CocList yank<CR>
+  nnoremap <silent> <A-'>  :<C-u>CocList yank<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
   nnoremap <A-s> :CocFzfList symbols<CR>
   nnoremap <A-c> :CocFzfList commands<CR>
@@ -929,10 +968,11 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-solargraph',
     \ 'coc-prettier',
     \ 'coc-perl',
+    \ 'coc-calc',
     \ 'coc-lua'
     \ ]
 
-    " \ 'coc-pyright',
+    " \ 'coc-nginx',
 
   " FIX: Rust Analyzer does not provide hover or code completion
 " \ 'coc-toml',
@@ -1101,6 +1141,7 @@ Plug 'antoinemadec/coc-fzf'
 
 Plug 'vim-perl/vim-perl', { 'for': 'perl' }
 Plug 'sbdchd/neoformat'
+" Plug 'mhartington/formatter.nvim'
 
 " let g:neoformat_perl_perltidy = {
 "       \ 'exe': 'perltidy',
@@ -1249,9 +1290,9 @@ augroup rust_env
     \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
     \ nnoremap <Leader>K : set winblend=0 \| FloatermNew --autoclose=0 rusty-man --viewer tui<space>|
     \ nnoremap <Leader>k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-r><C-w> --viewer tui<CR>|
-    \ nnoremap ;k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-R>0<CR>|
     \ nnoremap <buffer> ;ff           :RustFmt<cr>
 augroup END
+" \ nnoremap ;k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-R>0<CR>|
 " }}} === vim-rust ===
 
 " ============== vim-go ============== {{{
@@ -1490,14 +1531,14 @@ Plug 'vimwiki/vimwiki'
 
 " ========= Syntax Highlighting ======== {{{
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java']
+let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'
-  " Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 "}}} === Syntax Highlighting ===
 
 " ============= telescope ============= {{{
@@ -1790,6 +1831,7 @@ inoremap <expr> <a-;> fzf#complete({
   " Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
 
   " Plug 'numToStr/Comment.nvim'
+  " Plug 'sindrets/diffview.nvim'
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
   Plug 'lewis6991/gitsigns.nvim'
@@ -1797,7 +1839,7 @@ inoremap <expr> <a-;> fzf#complete({
   Plug 'fannheyward/telescope-coc.nvim'
   Plug 'folke/todo-comments.nvim'
   Plug 'Pocco81/HighStr.nvim'
-  Plug 'folke/which-key.nvim'
+  " Plug 'folke/which-key.nvim'
 
   Plug 'jamessan/vim-gnupg'
 
@@ -2445,7 +2487,7 @@ lua require('plugins/tree-sitter')
 " }}} === TreeSitter ===
 
 " ================== WhichKey ================== {{{
-lua require('plugins/which-key')
+" lua require('plugins/which-key')
 " }}} === WhichKey ===
 
 " ================== GitSigns ================== {{{

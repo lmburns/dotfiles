@@ -2,20 +2,28 @@
 
 bspc rule -r "*"
 
+# Hotkey daemon
 pgrep -x sxhkd     >/dev/null || sxhkd &
+# Task manager/scheduler
 pgrep -x pueued    >/dev/null && pueue clean
+# Get rss feeds in the background
 pgrep -x rss-watch >/dev/null || run-rss-watch
+# Control the mouse with your keyboard
+pgrep -x keynav    >/dev/null && keynav &
 
-xsetroot -cursor_name left_ptr &
+# File manager
+# pgrep -x thunar >/dev/null || thunar --daemon &
+# pgrep -x spacefm >/dev/null || spacefm -d &
+pgrep -x pcmanfm >/dev/null || pcmanfm -d &
+# Extra hotkey daemon for what sxhkd can't do
+pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
+launchpolybar &
 
 remaps &
 # remaps-mode_shift &
 
-# thunar --daemon &
-# spacefm -d &
-pgrep -x pcmanfm >/dev/null || pcmanfm -d &
-pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
-launchpolybar &
+# Set the cursor
+xsetroot -cursor_name left_ptr &
 
 bspc monitor -d I II III IV V
 

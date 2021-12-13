@@ -172,6 +172,7 @@
   },
   "snippets.shortcut": "\uf672",
   "clangd.enabled": true,
+  // AlwaysBreakAfterDefinitionReturnType
   "clangd.arguments": [
     "--clang-tidy",
     "--completion-style=detailed",
