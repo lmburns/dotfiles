@@ -115,19 +115,6 @@ cmd open ${{
     # *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>/dev/null & done;;
 }}
 
-cmd see ${{
-  builtin setopt extendedglob
-  local MATCH
-  local -a arr short
-  rip -- $fx
-  dunstify -a lf " Deleted File(s)" "${${(@f)fx}:t2""}" && {
-     print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
-       | hck -d ':' -D $'\t'
-  }
-}}
-
-map Tz see
-
 
 # -- Trash: (rip)
 cmd trash ${{

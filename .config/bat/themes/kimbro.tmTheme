@@ -49,7 +49,7 @@
                     <string>#D9AE80</string>
                     <!-- Line selection highlight -->
                     <key>lineHighlight</key>
-                    <string>#a89984</string>
+                    <string>#697c8a</string>
                     <key>findHighlight</key>
                     <string>#EF1D55</string>
                     <key>inactiveSelection</key>

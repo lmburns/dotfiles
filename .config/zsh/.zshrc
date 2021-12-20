@@ -624,9 +624,6 @@ zt 0c light-mode null for \
     yozhgoor/cargo-temp \
   lbin'tar*/rel*/evcxr' atclone'cargo build --release' atpull'%atclone' \
     google/evcxr \
-  lbin atclone'cargo build --release --all-features' atpull'%atclone' \
-  atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
-    Canop/bacon \
   lbin'rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
   atclone'command rsync -vua --delete-after rusty-man/ .' \
   atclone'cargo build --release && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \
@@ -636,6 +633,11 @@ zt 0c light-mode null for \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
     sminez/roc
+
+# lbin atclone'cargo build --release --all-features' atpull'%atclone' \
+# atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
+#   Canop/bacon \
+
 # ]]] == rust extensions
 # ]]] == rust
 

@@ -627,15 +627,15 @@ Plug 'ludovicchabant/vim-gutentags'
   " autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
   " autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
 
-  autocmd BufRead *.c :setlocal tags=./tags;/
-  autocmd BufWritePost *.c :silent! exec "!ctags_gen" . expand('%:p:t') . "&" | redraw!
+  " autocmd BufRead *.c :setlocal tags=./tags;/
+  " autocmd BufWritePost *.c :silent! exec "!ctags_gen" . expand('%:p:t') . "&" | redraw!
 
   let g:gutentags_project_root = ['.git']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
 
   " set tags=./.tags;,.tags
-  let $GTAGSLABEL = 'native-pygments'
-  let $GTAGSCONF = '~/.gtags.conf'
+  " let $GTAGSLABEL = 'native-pygments'
+  " let $GTAGSCONF = '~/.gtags.conf'
 
   " if &ft=="rust"
   "   set tags=rusty-tags.vi,$RUST_SRC_PATH/rusty-tags.vi
@@ -644,6 +644,7 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
     set tags=tags
+    set tags+=~/.config/nvim/cpp_src/tags
     let g:gutentags_modules = ['ctags']
     let g:gutentags_cache_dir = expand('~/.cache/tags')
     let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
@@ -680,10 +681,15 @@ Plug 'ludovicchabant/vim-gutentags'
     let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']
   endfunction
 
+  function! s:SetupCPPTags()
+    let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
+  endfunction
+
   augroup gutentags
     autocmd!
     " autocmd! User vim-gutentags call gutentags#setup_gutentags()
-    autocmd! FileType c,cpp call <SID>SetupCTags()
+    autocmd! FileType c call <SID>SetupCTags()
+    autocmd! FileType cpp call <SID>SetupCPPTags()
   augroup END
   " endif
 
@@ -968,8 +974,8 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-solargraph',
     \ 'coc-prettier',
     \ 'coc-perl',
-    \ 'coc-calc',
-    \ 'coc-lua'
+    \ 'coc-lua',
+    \ 'coc-tsserver'
     \ ]
 
     " \ 'coc-nginx',
