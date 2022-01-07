@@ -1,0 +1,43 @@
+#compdef ytmdl
+
+# zsh completions for 'ytmdl'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-q,--quiet}'[dont ask the user to select songs if more than one]'
+  '--proxy[use the specified HTTP/HTTPS/SOCKS proxy. To enable]'
+  '--url[youtube song link.]'
+  '--list[TO LIST   Download list of songs. The list should have one song]'
+  '--nolocal[dont search locally for the song before downloading.]'
+  '--format[the format in which the song should be downloaded.]'
+  {--trim,-t}'[trim out the audio from the song. Use underlying]'
+  '--version[show the program version number and exit]'
+  '--keep-chapter-name[keep the title extracted from the chapter in order to]'
+  '--download-archive[skip downloading songs that are present in the passed]'
+  '--ignore-chapters[ignore chapters if available in the video and treat it]'
+  '--song[the song to search in Metadata. Particularly useful]'
+  '--choice[the choice that the user wants to go for. Usefull to]'
+  '--artist[the name of the songs artist. Pass it with a song]'
+  '--album[the name of the songs album. Pass it with a song]'
+  '--disable-metaadd[disable addition of passed artist and album keyword to]'
+  '--skip-meta[skip setting the metadata and just copy the converted]'
+  {-m,--manual-meta}'[manually enter song details.]'
+  '--itunes-id[direct lookup from itunes. If passed, metadata will be]'
+  '--spotify-id[direct lookup for Spotify tracks using the ID. If]'
+  '--disable-sort[disable sorting of the metadata before asking for]'
+  '--ask-meta-name[ask the user to enter a seperate name for searching]'
+  '--on-meta-error[what to do if adding the metadata fails for some]'
+  '--pl-start[playlist video to start at (default is 1)]'
+  '--pl-end[playlist video to end at (default is last)]'
+  '--pl-items[playlist video items to download. Specify indices of]'
+  '--ignore-errors[ignore if downloading any video fails in a playlist.]'
+  '--title-as-name[use the title of the video as the name of the song to]'
+  '--level[the level of the logger that will be used while]'
+  '--disable-file[disable logging to files]'
+  '--list-level[list all the available logger levels.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

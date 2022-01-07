@@ -15,7 +15,7 @@
   # mergeoptions = --no-edit
 
 [credential "https://github.com"]
-	helper = !gh auth git-credential
+  helper = !gh auth git-credential
 
 [help]
   autocorrect = 1

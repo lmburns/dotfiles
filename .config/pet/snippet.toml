@@ -113,7 +113,13 @@ output = ""
 tag = ["pacman"]
 
 [[snippets]]
-description = "tomb create"
-command = "notify-send  'hi' '${@}'"
+description = "lsof - user"
+command = "lsof -u lucas"
 output = ""
-tag = ["encryption"]
+tag = ["lsof"]
+
+[[snippets]]
+description = "lsof - user; exclude '^'"
+command = "lsof -u lucas"
+output = ""
+tag = ["lsof"]

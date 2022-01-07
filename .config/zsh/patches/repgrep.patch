@@ -1,0 +1,1223 @@
+diff --git i/Cargo.lock w/Cargo.lock
+index 711adee..db93d24 100644
+--- i/Cargo.lock
++++ w/Cargo.lock
+@@ -4,24 +4,24 @@ version = 3
+
+ [[package]]
+ name = "addr2line"
+-version = "0.14.1"
++version = "0.17.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "a55f82cfe485775d02112886f4169bde0c5894d75e79ead7eafe7e40a25e45f7"
++checksum = "b9ecd88a8c8378ca913a680cd98f0f13ac67383d35993f86c90a70e3f137816b"
+ dependencies = [
+  "gimli",
+ ]
+
+ [[package]]
+ name = "adler"
+-version = "0.2.3"
++version = "1.0.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ee2a4ec343196209d6594e19543ae87a39f96d5534d7174822a3ad825dd6ed7e"
++checksum = "f26201604c87b1e01bd3d98f8d5d9a8fcbb815e8cedb41ffccbeb4bf593a35fe"
+
+ [[package]]
+ name = "aho-corasick"
+-version = "0.7.15"
++version = "0.7.18"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
++checksum = "1e37cfd5e7657ada45f742d6e99ca5788580b5c529dc78faf11ece6dc702656f"
+ dependencies = [
+  "memchr",
+ ]
+@@ -37,9 +37,9 @@ dependencies = [
+
+ [[package]]
+ name = "anyhow"
+-version = "1.0.37"
++version = "1.0.52"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ee67c11feeac938fae061b232e38e0b6d94f97a9df10e6271319325ac4c56a86"
++checksum = "84450d0b4a8bd1ba4144ce8ce718fbc5d071358b1e5384bace6536b3d1f2d5b3"
+
+ [[package]]
+ name = "atty"
+@@ -60,12 +60,13 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
+
+ [[package]]
+ name = "backtrace"
+-version = "0.3.55"
++version = "0.3.63"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ef5140344c85b01f9bbb4d4b7288a8aa4b3287ccef913a14bcc78a1063623598"
++checksum = "321629d8ba6513061f26707241fa9bc89524ff1cd7a915a97ef0c62c666ce1b6"
+ dependencies = [
+  "addr2line",
+- "cfg-if 1.0.0",
++ "cc",
++ "cfg-if",
+  "libc",
+  "miniz_oxide",
+  "object",
+@@ -80,9 +81,9 @@ checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
+
+ [[package]]
+ name = "bitflags"
+-version = "1.2.1"
++version = "1.3.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cf1de2fe8c75bc145a2f577add951f8134889b4795d47466a54a5c846d691693"
++checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
+
+ [[package]]
+ name = "cassowary"
+@@ -91,10 +92,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "df8670b8c7b9dae1793364eafadf7239c40d669904660c5960d74cfd80b46a53"
+
+ [[package]]
+-name = "cfg-if"
+-version = "0.1.10"
++name = "cc"
++version = "1.0.72"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
++checksum = "22a9137b95ea06864e018375b72adfb7db6e6f68cfc8df5a04d00288050485ee"
+
+ [[package]]
+ name = "cfg-if"
+@@ -123,9 +124,9 @@ dependencies = [
+
+ [[package]]
+ name = "clap"
+-version = "3.0.0"
++version = "3.0.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d17bf219fcd37199b9a29e00ba65dfb8cd5b2688b7297ec14ff829c40ac50ca9"
++checksum = "f6f34b09b9ee8c7c7b400fe2f8df39cafc9538b03d6ba7f4ae13e4cb90bfbb7d"
+ dependencies = [
+  "atty",
+  "bitflags",
+@@ -140,18 +141,18 @@ dependencies = [
+
+ [[package]]
+ name = "clap_complete"
+-version = "3.0.0"
++version = "3.0.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "60d123fbea4c5d9799cffd44051e2125c880efd23b3b7c529baf3ea5508c8736"
++checksum = "a394f7ec0715b42a4e52b294984c27c9a61f77c8d82f7774c5198350be143f19"
+ dependencies = [
+  "clap",
+ ]
+
+ [[package]]
+ name = "clap_derive"
+-version = "3.0.0"
++version = "3.0.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e1b9752c030a14235a0bd5ef3ad60a1dcac8468c30921327fc8af36b20c790b9"
++checksum = "41a0645a430ec9136d2d701e54a95d557de12649a9dd7109ced3187e648ac824"
+ dependencies = [
+  "heck",
+  "proc-macro-error",
+@@ -162,31 +163,31 @@ dependencies = [
+
+ [[package]]
+ name = "console"
+-version = "0.14.0"
++version = "0.15.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7cc80946b3480f421c2f17ed1cb841753a371c7c5104f51d507e13f532c856aa"
++checksum = "a28b32d32ca44b70c3e4acd7db1babf555fa026e385fb95f18028f88848b3c31"
+ dependencies = [
+  "encode_unicode",
+- "lazy_static",
+  "libc",
++ "once_cell",
+  "terminal_size",
+  "winapi",
+ ]
+
+ [[package]]
+ name = "const_format"
+-version = "0.2.11"
++version = "0.2.22"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d0998bb2339a89730a82650d94458509281454c72d2fb2521ece92626c005ee3"
++checksum = "22bc6cd49b0ec407b680c3e380182b6ac63b73991cb7602de350352fc309b614"
+ dependencies = [
+  "const_format_proc_macros",
+ ]
+
+ [[package]]
+ name = "const_format_proc_macros"
+-version = "0.2.8"
++version = "0.2.22"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8df496e1bbc93814d728a8036ff054cd95830afe9cf2275c9326688c02eff936"
++checksum = "ef196d5d972878a48da7decb7686eded338b4858fbabeed513d63a7c98b2b82d"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+@@ -245,9 +246,9 @@ dependencies = [
+
+ [[package]]
+ name = "ctor"
+-version = "0.1.17"
++version = "0.1.21"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "373c88d9506e2e9230f6107701b7d8425f4cb3f6df108ec3042a26e936666da5"
++checksum = "ccc0a48a9b826acdf4028595adc9db92caea352f7af011a3034acd172a52a0aa"
+ dependencies = [
+  "quote",
+  "syn",
+@@ -259,12 +260,6 @@ version = "2.0.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
+
+-[[package]]
+-name = "dtoa"
+-version = "0.4.7"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "88d7ed2934d741c6b37e33e3832298e8850b53fd2d2bea03873375596c7cea4e"
+-
+ [[package]]
+ name = "either"
+ version = "1.6.1"
+@@ -357,22 +352,28 @@ dependencies = [
+  "yansi",
+ ]
+
++[[package]]
++name = "fs_extra"
++version = "1.2.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "2022715d62ab30faffd124d40b76f4134a550a87792276512b18d63272333394"
++
+ [[package]]
+ name = "getrandom"
+-version = "0.1.16"
++version = "0.2.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8fc3cb4d91f53b50155bdcfd23f6a4c39ae1969c2ae85982b135750cccaf5fce"
++checksum = "7fcd999463524c52659517fe2cea98493cfe485d10565e7b0fb07dbba7ad2753"
+ dependencies = [
+- "cfg-if 1.0.0",
++ "cfg-if",
+  "libc",
+- "wasi 0.9.0+wasi-snapshot-preview1",
++ "wasi",
+ ]
+
+ [[package]]
+ name = "gimli"
+-version = "0.23.0"
++version = "0.26.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f6503fe142514ca4799d4c26297c4248239fe8838d827db6bd6065c6ed29a6ce"
++checksum = "78cc372d058dcf6d5ecd98510e7fbc9e5aec4d21de70f65fea8fecebcd881bd4"
+
+ [[package]]
+ name = "glob"
+@@ -382,39 +383,36 @@ checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
+
+ [[package]]
+ name = "hashbrown"
+-version = "0.9.1"
++version = "0.11.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "d7afe4a420e3fe79967a00898cc1f4db7c8a49a9333a29f8a4bd76a253d5cd04"
++checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
+
+ [[package]]
+ name = "heck"
+-version = "0.3.2"
++version = "0.4.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "87cbf45460356b7deeb5e3415b5563308c0a9b057c85e12b06ad551f98d0a6ac"
+-dependencies = [
+- "unicode-segmentation",
+-]
++checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
+
+ [[package]]
+ name = "hermit-abi"
+-version = "0.1.17"
++version = "0.1.19"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5aca5565f760fb5b220e499d72710ed156fdb74e631659e99377d9ebfbd13ae8"
++checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
+ dependencies = [
+  "libc",
+ ]
+
+ [[package]]
+ name = "hex"
+-version = "0.4.2"
++version = "0.4.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "644f9158b2f133fd50f5fb3242878846d9eb792e445c893805ff0e3824006e35"
++checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+ [[package]]
+ name = "indexmap"
+-version = "1.6.1"
++version = "1.7.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4fb1fa934250de4de8aef298d81c729a7d33d8c239daa3a7575e6b92bfc7313b"
++checksum = "bc633605454125dec4b66843673f01c7df2b89479b32e0ed634e43a91cff62a5"
+ dependencies = [
+  "autocfg",
+  "hashbrown",
+@@ -422,34 +420,34 @@ dependencies = [
+
+ [[package]]
+ name = "insta"
+-version = "1.5.2"
++version = "1.10.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "bca6f2bcc5e2ce13f3652ecd05a643b986d035add3f0c38fbabd78f723b5f7e9"
++checksum = "b3cb858fc306825b542b1311d5fd536e4483680528f303a17a1d6803b0f6ce17"
+ dependencies = [
+  "backtrace",
+  "console",
+- "difference",
+  "lazy_static",
+  "serde",
+  "serde_json",
+  "serde_yaml",
++ "similar",
+  "uuid",
+ ]
+
+ [[package]]
+ name = "instant"
+-version = "0.1.9"
++version = "0.1.12"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "61124eeebbd69b8190558df225adf7e4caafce0d743919e5d6b19652314ec5ec"
++checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
+ dependencies = [
+- "cfg-if 1.0.0",
++ "cfg-if",
+ ]
+
+ [[package]]
+ name = "itoa"
+-version = "0.4.7"
++version = "1.0.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "dd25036021b0de88a0aff6b850051563c6516d0bf53f8638938edbb9de732736"
++checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
+
+ [[package]]
+ name = "lazy_static"
+@@ -459,32 +457,32 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+ [[package]]
+ name = "libc"
+-version = "0.2.82"
++version = "0.2.112"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "89203f3fba0a3795506acaad8ebce3c80c0af93f994d5a1d7a0b1eeb23271929"
++checksum = "1b03d17f364a3a042d5e5d46b053bbbf82c92c9430c592dd4c064dc6ee997125"
+
+ [[package]]
+ name = "linked-hash-map"
+-version = "0.5.3"
++version = "0.5.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8dd5a6d5999d9907cda8ed67bbd137d3af8085216c2ac62de5be860bd41f304a"
++checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
+
+ [[package]]
+ name = "lock_api"
+-version = "0.4.2"
++version = "0.4.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "dd96ffd135b2fd7b973ac026d28085defbe8983df057ced3eb4f2130b0831312"
++checksum = "712a4d093c9976e24e7dbca41db895dabcbac38eb5f4045393d17a95bdfb1109"
+ dependencies = [
+  "scopeguard",
+ ]
+
+ [[package]]
+ name = "log"
+-version = "0.4.11"
++version = "0.4.14"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4fabed175da42fed1fa0746b0ea71f412aa9d35e76e95e59b192c64b9dc2bf8b"
++checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
+ dependencies = [
+- "cfg-if 0.1.10",
++ "cfg-if",
+ ]
+
+ [[package]]
+@@ -495,9 +493,9 @@ checksum = "308cc39be01b73d0d18f82a0e7b2a3df85245f84af96fdddc5d202d27e47b86a"
+
+ [[package]]
+ name = "miniz_oxide"
+-version = "0.4.3"
++version = "0.4.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "0f2d26ec3309788e423cfbf68ad1800f061638098d76a83681af979dc4eda19d"
++checksum = "a92518e98c078586bc6c934028adcca4c92a53d6a958196de835170a01d84e4b"
+ dependencies = [
+  "adler",
+  "autocfg",
+@@ -505,9 +503,9 @@ dependencies = [
+
+ [[package]]
+ name = "mio"
+-version = "0.7.7"
++version = "0.7.14"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "e50ae3f04d169fcc9bde0b547d1c205219b7157e07ded9c5aff03e0637cb3ed7"
++checksum = "8067b404fe97c70829f082dec8bcf4f71225d7eaea1d8645349cb76fa06205cc"
+ dependencies = [
+  "libc",
+  "log",
+@@ -518,11 +516,10 @@ dependencies = [
+
+ [[package]]
+ name = "miow"
+-version = "0.3.6"
++version = "0.3.7"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "5a33c1b55807fbed163481b5ba66db4b2fa6cde694a5027be10fb724206c5897"
++checksum = "b9f1c5b025cda876f66ef43a113f91ebc9f4ccef34843000e0adf6ebbab84e21"
+ dependencies = [
+- "socket2",
+  "winapi",
+ ]
+
+@@ -556,9 +553,18 @@ dependencies = [
+
+ [[package]]
+ name = "object"
+-version = "0.22.0"
++version = "0.27.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8d3b63360ec3cb337817c2dbd47ab4a0f170d285d8e5a2064600f3def1402397"
++checksum = "67ac1d3f9a1d3616fd9a60c8d74296f22406a238b6a72f5cc1e6f314df4ffbf9"
++dependencies = [
++ "memchr",
++]
++
++[[package]]
++name = "once_cell"
++version = "1.9.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "da32515d9f6e6e489d7bc9d84c71b060db7247dc035bbe44eac88cf87486d8d5"
+
+ [[package]]
+ name = "os_str_bytes"
+@@ -580,9 +586,9 @@ dependencies = [
+
+ [[package]]
+ name = "parking_lot"
+-version = "0.11.1"
++version = "0.11.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6d7744ac029df22dca6284efe4e898991d28e3085c706c972bcd7da4a27a15eb"
++checksum = "7d17b78036a60663b797adeaee46f5c9dfebb86948d1255007a1d6be0271ff99"
+ dependencies = [
+  "instant",
+  "lock_api",
+@@ -591,11 +597,11 @@ dependencies = [
+
+ [[package]]
+ name = "parking_lot_core"
+-version = "0.8.2"
++version = "0.8.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9ccb628cad4f84851442432c60ad8e1f607e29752d0bf072cbd0baf28aa34272"
++checksum = "d76e8e1493bcac0d2766c42737f34458f1c8c50c0d23bcb24ea953affb273216"
+ dependencies = [
+- "cfg-if 1.0.0",
++ "cfg-if",
+  "instant",
+  "libc",
+  "redox_syscall",
+@@ -605,9 +611,9 @@ dependencies = [
+
+ [[package]]
+ name = "ppv-lite86"
+-version = "0.2.10"
++version = "0.2.16"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ac74c624d6b2d21f425f752262f42188365d7b8ff1aff74c82e45136510a4857"
++checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
+
+ [[package]]
+ name = "pretty_assertions"
+@@ -665,11 +671,10 @@ dependencies = [
+
+ [[package]]
+ name = "rand"
+-version = "0.7.3"
++version = "0.8.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
++checksum = "2e7573632e6454cf6b99d7aac4ccca54be06da05aca2ef7423d22d27d4d4bcd8"
+ dependencies = [
+- "getrandom",
+  "libc",
+  "rand_chacha",
+  "rand_core",
+@@ -678,9 +683,9 @@ dependencies = [
+
+ [[package]]
+ name = "rand_chacha"
+-version = "0.2.2"
++version = "0.3.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f4c8ed856279c9737206bf725bf36935d8666ead7aa69b52be55af369d193402"
++checksum = "e6c10a63a0fa32252be49d21e7709d4d4baf8d231c2dbce1eaa8141b9b127d88"
+ dependencies = [
+  "ppv-lite86",
+  "rand_core",
+@@ -688,45 +693,47 @@ dependencies = [
+
+ [[package]]
+ name = "rand_core"
+-version = "0.5.1"
++version = "0.6.3"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
++checksum = "d34f1408f55294453790c48b2f1ebbb1c5b4b7563eb1f418bcfcfdbb06ebb4e7"
+ dependencies = [
+  "getrandom",
+ ]
+
+ [[package]]
+ name = "rand_hc"
+-version = "0.2.0"
++version = "0.3.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ca3129af7b92a17112d59ad498c6f81eaf463253766b90396d39ea7a39d6613c"
++checksum = "d51e9f596de227fda2ea6c84607f5558e196eeaf43c986b724ba4fb8fdf497e7"
+ dependencies = [
+  "rand_core",
+ ]
+
+ [[package]]
+ name = "redox_syscall"
+-version = "0.1.57"
++version = "0.2.10"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "41cc0f7e4d5d4544e8861606a285bb08d3e70712ccc7d2b84d7c0ccfaf4b05ce"
++checksum = "8383f39639269cde97d255a32bdb68c047337295414940c68bdd30c2e13203ff"
++dependencies = [
++ "bitflags",
++]
+
+ [[package]]
+ name = "regex"
+-version = "1.4.2"
++version = "1.5.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "38cf2c13ed4745de91a5eb834e11c00bcc3709e773173b2ce4c56c9fbde04b9c"
++checksum = "d07a8629359eb56f1e2fb1652bb04212c072a87ba68546a04065d525673ac461"
+ dependencies = [
+  "aho-corasick",
+  "memchr",
+  "regex-syntax",
+- "thread_local",
+ ]
+
+ [[package]]
+ name = "regex-syntax"
+-version = "0.6.21"
++version = "0.6.25"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "3b181ba2dcf07aaccad5448e8ead58db5b742cf85dfe035e2227f137a539a189"
++checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
+
+ [[package]]
+ name = "remove_dir_all"
+@@ -751,6 +758,7 @@ dependencies = [
+  "either",
+  "encoding",
+  "flexi_logger",
++ "fs_extra",
+  "hex",
+  "insta",
+  "log",
+@@ -766,21 +774,21 @@ dependencies = [
+
+ [[package]]
+ name = "rustc-demangle"
+-version = "0.1.18"
++version = "0.1.21"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6e3bad0ee36814ca07d7968269dd4b7ec89ec2da10c4bb613928d3077083c232"
++checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
+
+ [[package]]
+ name = "ryu"
+-version = "1.0.5"
++version = "1.0.9"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
++checksum = "73b4b750c782965c211b42f022f59af1fbceabdd026623714f104152f1ec149f"
+
+ [[package]]
+ name = "safe-transmute"
+-version = "0.11.0"
++version = "0.11.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "50b8b2cd387f744f69469aaed197954ba4c0ecdb31e02edf99b023e0df11178a"
++checksum = "98a01dab6acf992653be49205bdd549f32f17cb2803e8eacf1560bf97259aae8"
+
+ [[package]]
+ name = "scopeguard"
+@@ -790,18 +798,18 @@ checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+ [[package]]
+ name = "serde"
+-version = "1.0.118"
++version = "1.0.133"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "06c64263859d87aa2eb554587e2d23183398d617427327cf2b3d0ed8c69e4800"
++checksum = "97565067517b60e2d1ea8b268e59ce036de907ac523ad83a0475da04e818989a"
+ dependencies = [
+  "serde_derive",
+ ]
+
+ [[package]]
+ name = "serde_derive"
+-version = "1.0.118"
++version = "1.0.133"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "c84d3526699cd55261af4b941e4e725444df67aa4f9e6a3564f18030d12672df"
++checksum = "ed201699328568d8d08208fdd080e3ff594e6c422e438b6705905da01005d537"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+@@ -810,9 +818,9 @@ dependencies = [
+
+ [[package]]
+ name = "serde_json"
+-version = "1.0.61"
++version = "1.0.74"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4fceb2595057b6891a4ee808f70054bd2d12f0e97f1cbb78689b59f676df325a"
++checksum = "ee2bb9cd061c5865d345bb02ca49fcef1391741b672b54a0bf7b679badec3142"
+ dependencies = [
+  "itoa",
+  "ryu",
+@@ -821,12 +829,12 @@ dependencies = [
+
+ [[package]]
+ name = "serde_yaml"
+-version = "0.8.15"
++version = "0.8.23"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "971be8f6e4d4a47163b405a3df70d14359186f9ab0f3a3ec37df144ca1ce089f"
++checksum = "a4a521f2940385c165a24ee286aa8599633d162077a54bdcae2a6fd5a7bfa7a0"
+ dependencies = [
+- "dtoa",
+- "linked-hash-map",
++ "indexmap",
++ "ryu",
+  "serde",
+  "yaml-rust",
+ ]
+@@ -844,29 +852,24 @@ dependencies = [
+
+ [[package]]
+ name = "signal-hook-registry"
+-version = "1.3.0"
++version = "1.4.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "16f1d0fef1604ba8f7a073c7e701f213e056707210e9020af4528e0101ce11a6"
++checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
+ dependencies = [
+  "libc",
+ ]
+
++[[package]]
++name = "similar"
++version = "2.1.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "2e24979f63a11545f5f2c60141afe249d4f19f84581ea2138065e400941d83d3"
++
+ [[package]]
+ name = "smallvec"
+-version = "1.6.0"
++version = "1.7.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1a55ca5f3b68e41c979bf8c46a6f1da892ca4db8f94023ce0bd32407573b1ac0"
+-
+-[[package]]
+-name = "socket2"
+-version = "0.3.19"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "122e570113d28d773067fab24266b66753f6ea915758651696b6e35e49f88d6e"
+-dependencies = [
+- "cfg-if 1.0.0",
+- "libc",
+- "winapi",
+-]
++checksum = "1ecab6c735a6bb4139c0caafd0cc3635748bbb3acf4550e8138122099251f309"
+
+ [[package]]
+ name = "strsim"
+@@ -876,9 +879,9 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
+
+ [[package]]
+ name = "syn"
+-version = "1.0.84"
++version = "1.0.85"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "ecb2e6da8ee5eb9a61068762a32fa9619cc591ceb055b3687f4cd4051ec2e06b"
++checksum = "a684ac3dcd8913827e18cd09a68384ee66c1de24157e3c556c9ab16d85695fb7"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+@@ -887,11 +890,11 @@ dependencies = [
+
+ [[package]]
+ name = "tempfile"
+-version = "3.1.0"
++version = "3.2.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "7a6e24d9338a0a5be79593e2fa15a648add6138caa803e2d5bc782c371732ca9"
++checksum = "dac1c663cfc93810f88aed9b8941d48cabf856a1b111c29a40439018d870eb22"
+ dependencies = [
+- "cfg-if 0.1.10",
++ "cfg-if",
+  "libc",
+  "rand",
+  "redox_syscall",
+@@ -910,9 +913,9 @@ dependencies = [
+
+ [[package]]
+ name = "terminal_size"
+-version = "0.1.15"
++version = "0.1.17"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4bd2d183bd3fac5f5fe38ddbeb4dc9aec4a39a9d7d59e7491d900302da01cbe1"
++checksum = "633c1a546cee861a1a6d0dc69ebeca693bf4296661ba7852b9d21d159e0506df"
+ dependencies = [
+  "libc",
+  "winapi",
+@@ -926,41 +929,31 @@ checksum = "0066c8d12af8b5acd21e00547c3797fde4e8677254a7ee429176ccebbe93dd80"
+
+ [[package]]
+ name = "thiserror"
+-version = "1.0.23"
++version = "1.0.30"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "76cc616c6abf8c8928e2fdcc0dbfab37175edd8fb49a4641066ad1364fdab146"
++checksum = "854babe52e4df1653706b98fcfc05843010039b406875930a70e4d9644e5c417"
+ dependencies = [
+  "thiserror-impl",
+ ]
+
+ [[package]]
+ name = "thiserror-impl"
+-version = "1.0.23"
++version = "1.0.30"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9be73a2caec27583d0046ef3796c3794f868a5bc813db689eed00c7631275cd1"
++checksum = "aa32fd3f627f367fe16f893e2597ae3c05020f8bba2666a4e6ea73d377e5714b"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+  "syn",
+ ]
+
+-[[package]]
+-name = "thread_local"
+-version = "1.1.0"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "bb9bc092d0d51e76b2b19d9d85534ffc9ec2db959a2523cdae0697e2972cd447"
+-dependencies = [
+- "lazy_static",
+-]
+-
+ [[package]]
+ name = "time"
+-version = "0.1.44"
++version = "0.1.43"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "6db9e6914ab8b1ae1c260a4ae7a49b6c5611b40328a735b21862567685e73255"
++checksum = "ca8a50ef2360fbd1eeb0ecd46795a87a19024eb4b53c5dc916ca1fd95fe62438"
+ dependencies = [
+  "libc",
+- "wasi 0.10.0+wasi-snapshot-preview1",
+  "winapi",
+ ]
+
+@@ -979,45 +972,39 @@ dependencies = [
+
+ [[package]]
+ name = "unicode-segmentation"
+-version = "1.7.1"
++version = "1.8.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "bb0d2e7be6ae3a5fa87eed5fb451aff96f2573d2694942e40543ae0bbe19c796"
++checksum = "8895849a949e7845e06bd6dc1aa51731a103c42707010a5b591c0038fb73385b"
+
+ [[package]]
+ name = "unicode-width"
+-version = "0.1.8"
++version = "0.1.9"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9337591893a19b88d8d87f2cec1e73fad5cdfd10e5a6f349f498ad6ea2ffb1e3"
++checksum = "3ed742d4ea2bd1176e236172c8429aaf54486e7ac098db29ffe6529e0ce50973"
+
+ [[package]]
+ name = "unicode-xid"
+-version = "0.2.1"
++version = "0.2.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
++checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
+
+ [[package]]
+ name = "uuid"
+-version = "0.8.1"
++version = "0.8.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "9fde2f6a4bea1d6e007c4ad38c6839fa71cbb63b6dbf5b595aa38dc9b1093c11"
++checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+
+ [[package]]
+ name = "version_check"
+-version = "0.9.2"
++version = "0.9.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "b5a972e5669d67ba988ce3dc826706fb0a8b01471c088cb0b6110b805cc36aed"
++checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
+
+ [[package]]
+ name = "wasi"
+-version = "0.9.0+wasi-snapshot-preview1"
++version = "0.10.2+wasi-snapshot-preview1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
+-
+-[[package]]
+-name = "wasi"
+-version = "0.10.0+wasi-snapshot-preview1"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
++checksum = "fd6fbd9a79829dd1ad0cc20627bf1ed606756a7f77edff7b66b7064f9cb327c6"
+
+ [[package]]
+ name = "winapi"
+diff --git i/Cargo.toml w/Cargo.toml
+index 6ea6044..b3bbc44 100644
+--- i/Cargo.toml
++++ w/Cargo.toml
+@@ -9,7 +9,7 @@ categories = ["command-line-utilities", "text-processing"]
+ authors = ["acheronfail <acheronfail@gmail.com>"]
+ license = "Unlicense OR MIT OR Apache-2.0"
+ edition = "2018"
+-build = "build.rs"
++# build = "build.rs"
+
+ [badges]
+ is-it-maintained-issue-resolution = { repository = "acheronfail/repgrep" }
+@@ -29,6 +29,7 @@ crossterm = "0.19.0"
+ either = "1.6.1"
+ encoding = "0.2.33"
+ flexi_logger = "0.16.3"
++fs_extra = "1.2.0"
+ log = "0.4.11"
+ safe-transmute = "0.11.0"
+ serde = { version = "1.0.118", features = ["derive"] }
+diff --git i/build.rs w/build.rs
+deleted file mode 100644
+index f7ee3be..0000000
+--- i/build.rs
++++ /dev/null
+@@ -1,75 +0,0 @@
+-use clap::IntoApp;
+-use clap_complete::{generate_to, shells};
+-use std::env;
+-use std::fs;
+-use std::io;
+-use std::path::Path;
+-use std::process::Command;
+-
+-#[allow(dead_code)]
+-#[path = "src/cli/args.rs"]
+-mod cli;
+-
+-fn generate_manpage<P: AsRef<Path>>(outdir: P) -> io::Result<()> {
+-    // If asciidoctor isn't installed, don't do anything.
+-    // This is for platforms where it's unsupported.
+-    if let Err(err) = Command::new("asciidoctor").output() {
+-        eprintln!("Could not run 'asciidoctor' binary, skipping man page generation.");
+-        eprintln!("Error from running 'asciidoctor': {}", err);
+-        return Ok(());
+-    }
+-
+-    let outdir = outdir.as_ref();
+-    let cwd = env::current_dir()?;
+-    let template_path = cwd.join("doc").join("rgr.1.template");
+-
+-    let result = Command::new("asciidoctor")
+-        .arg("--doctype")
+-        .arg("manpage")
+-        .arg("--backend")
+-        .arg("manpage")
+-        .arg("--destination-dir")
+-        .arg(&outdir)
+-        .arg(&template_path)
+-        .spawn()?
+-        .wait()?;
+-
+-    if !result.success() {
+-        let msg = format!("'asciidoctor' failed with exit code {:?}", result.code());
+-        return Err(io::Error::new(io::ErrorKind::Other, msg));
+-    }
+-    Ok(())
+-}
+-
+-fn main() {
+-    // https://doc.rust-lang.org/cargo/reference/build-scripts.html#outputs-of-the-build-script
+-    let outdir = env::var_os("OUT_DIR").expect("failed to find OUT_DIR");
+-    fs::create_dir_all(&outdir).expect("failed to create dirs for OUT_DIR");
+-
+-    // Create a stamp file. (This is used by CI to help find the OUT_DIR.)
+-    fs::write(Path::new(&outdir).join("repgrep-stamp"), "").unwrap();
+-
+-    // Generate completions.
+-    let mut app = cli::Args::into_app();
+-    macro_rules! gen {
+-        ($shell:expr) => {{
+-            let path = generate_to(
+-                $shell,
+-                &mut app,  // We need to specify what generator to use
+-                "rgr",     // We need to specify the bin name manually
+-                &outdir,   // We need to specify where to write to
+-            )
+-            .expect("failed to generate completion");
+-
+-            println!("cargo:warning=completion file generated: {:?}", path);
+-        }};
+-    }
+-
+-    gen!(shells::Bash);
+-    gen!(shells::Elvish);
+-    gen!(shells::Fish);
+-    gen!(shells::PowerShell);
+-    gen!(shells::Zsh);
+-    // Generate manpage.
+-    generate_manpage(&outdir).unwrap();
+-}
+diff --git i/src/encoding.rs w/src/encoding.rs
+index 9d6d9b7..3e8e28c 100644
+--- i/src/encoding.rs
++++ w/src/encoding.rs
+@@ -1,6 +1,5 @@
+ use chardet::charset2encoding;
+-use encoding::label::encoding_from_whatwg_label;
+-use encoding::EncodingRef;
++use encoding::{label::encoding_from_whatwg_label, EncodingRef};
+
+ use crate::rg::RgEncoding;
+
+@@ -73,9 +72,9 @@ pub enum Bom {
+ }
+
+ impl Bom {
+-    const BOM_UTF8: [u8; 3] = [0xEF, 0xBB, 0xBF];
+     const BOM_UTF16BE: [u8; 2] = [0xFE, 0xFF];
+     const BOM_UTF16LE: [u8; 2] = [0xFF, 0xFE];
++    const BOM_UTF8: [u8; 3] = [0xEF, 0xBB, 0xBF];
+
+     pub fn from_slice(slice: &[u8]) -> Option<Self> {
+         if slice.len() < 2 {
+@@ -179,7 +178,6 @@ mod tests {
+         assert_eq!(Bom::Utf16le.encoder().name(), "utf-16le");
+     }
+
+-    //
+     // get_encoder
+     //
+
+diff --git i/src/replace.rs w/src/replace.rs
+index 49667d0..e3717bb 100644
+--- i/src/replace.rs
++++ w/src/replace.rs
+@@ -1,15 +1,21 @@
+-use std::fs::OpenOptions;
+-use std::io::{Read, Write};
++use std::{
++    fs::OpenOptions,
++    io::{Read, Write},
++};
+
+ use anyhow::{anyhow, Result};
+ use encoding::{DecoderTrap, EncoderTrap};
+ use tempfile::NamedTempFile;
+
+-use crate::encoding::{get_encoder, Bom};
+-use crate::model::ReplacementCriteria;
+-use crate::rg::de::{ArbitraryData, SubMatch};
+-use crate::rg::RgEncoding;
+-use crate::ui::line::Item;
++use crate::{
++    encoding::{get_encoder, Bom},
++    model::ReplacementCriteria,
++    rg::{
++        de::{ArbitraryData, SubMatch},
++        RgEncoding,
++    },
++    ui::line::Item,
++};
+
+ fn perform_replacements_in_file(
+     criteria: &ReplacementCriteria,
+@@ -19,7 +25,8 @@ fn perform_replacements_in_file(
+     log::debug!("File: {} (item count: {})", path_data, items.len());
+     let path_buf = path_data.to_path_buf()?;
+
+-    // Check the file for a BOM, detect its encoding and then decode it into a string.
++    // Check the file for a BOM, detect its encoding and then decode it into a
++    // string.
+     let (bom, encoder, mut file_as_str) = {
+         let mut file_contents = vec![];
+         OpenOptions::new()
+@@ -36,14 +43,14 @@ fn perform_replacements_in_file(
+         match bom {
+             // NOTE: we don't strip a UTF8 BOM, because ripgrep doesn't either
+             // See: https://github.com/BurntSushi/ripgrep/issues/1638
+-            None | Some(Bom::Utf8) => {}
++            None | Some(Bom::Utf8) => {},
+             Some(_) => {
+                 file_contents = file_contents
+                     .iter()
+                     .skip(bom.unwrap().len())
+                     .copied()
+                     .collect();
+-            }
++            },
+         }
+
+         log::trace!("Decoding file");
+@@ -54,14 +61,14 @@ fn perform_replacements_in_file(
+         (bom, encoder, decoded)
+     };
+
+-    // Sort the items so they're in order - ripgrep should give them to us in order anyway but we sort them here to
+-    // future-proof against any changes.
+-    // NOTE: we're sorting by the offset here with the assumption that no two Match items within one file will have
+-    // the same offset.
++    // Sort the items so they're in order - ripgrep should give them to us in order
++    // anyway but we sort them here to future-proof against any changes.
++    // NOTE: we're sorting by the offset here with the assumption that no two Match
++    // items within one file will have the same offset.
+     items.sort_unstable_by_key(|i| i.offset());
+
+-    // Iterate over the items in _reverse_ order -> this is so offsets can stay the same even though we're making
+-    // changes to the string.
++    // Iterate over the items in _reverse_ order -> this is so offsets can stay the
++    // same even though we're making changes to the string.
+     let mut did_skip_replacement = false;
+     for (i, item) in items.iter().rev().enumerate() {
+         let offset = item.offset().unwrap();
+@@ -109,14 +116,15 @@ fn perform_replacements_in_file(
+         .map_err(|e| anyhow!("Failed to encode replaced string: {}", e))?;
+
+     // Create a temporary file.
+-    let mut temp_file = NamedTempFile::new()?;
++    let mut temp_file =
++        NamedTempFile::new().map_err(|e| anyhow!("failed to create temporary file: {}", e))?;
+     let temp_file_path = temp_file.path().display().to_string();
+     log::debug!("Creating temporary file: {}", temp_file_path);
+
+     // Write a BOM if one existed beforehand.
+     if let Some(bom) = bom {
+-        // NOTE: we don't strip a UTF8 BOM, because ripgrep doesn't either therefore no need to re-write one
+-        // See: https://github.com/BurntSushi/ripgrep/issues/1638
++        // NOTE: we don't strip a UTF8 BOM, because ripgrep doesn't either therefore no
++        // need to re-write one See: https://github.com/BurntSushi/ripgrep/issues/1638
+         if !matches!(bom, Bom::Utf8) {
+             let bom_bytes = bom.bytes();
+             log::debug!("Writing BOM: {:?}", bom_bytes);
+@@ -130,7 +138,11 @@ fn perform_replacements_in_file(
+
+     // Overwrite the original file with the patched temp file.
+     log::debug!("Moving {} to {}", temp_file_path, path_buf.display());
+-    temp_file.into_temp_path().persist(&path_buf)?;
++
++    let t = temp_file.into_temp_path();
++    let mut opts = fs_extra::file::CopyOptions::new();
++    opts.overwrite = true;
++    fs_extra::file::move_file(t, path_buf, &opts)?;
+
+     Ok(did_skip_replacement)
+ }
+@@ -146,17 +158,16 @@ pub fn perform_replacements(criteria: ReplacementCriteria) -> Result<()> {
+     let mut did_skip_replacement = false;
+     for meta in criteria.as_map() {
+         match perform_replacements_in_file(&criteria, &rg_encoding, meta) {
+-            Ok(did_skip) => {
++            Ok(did_skip) =>
+                 if did_skip {
+                     did_skip_replacement = true
+-                }
+-            }
++                },
+             Err(e) => {
+                 did_skip_replacement = true;
+                 log::warn!("Failed to make all replacements: {}", e);
+                 eprintln!("Failed to make all replacements: {}", e);
+                 continue;
+-            }
++            },
+         }
+     }
+
+@@ -170,18 +181,21 @@ pub fn perform_replacements(criteria: ReplacementCriteria) -> Result<()> {
+
+ #[cfg(test)]
+ mod tests {
+-    use std::fs::{self, OpenOptions};
+-    use std::io::{Read, Write};
+-    use std::path::PathBuf;
++    use std::{
++        fs::{self, OpenOptions},
++        io::{Read, Write},
++        path::PathBuf,
++    };
+
+     use pretty_assertions::assert_eq;
+     use tempfile::NamedTempFile;
+
+-    use crate::model::*;
+-    use crate::replace::perform_replacements;
+-    use crate::rg::de::test_utilities::RgMessageBuilder;
+-    use crate::rg::de::{Duration, RgMessageKind, Stats, SubMatch};
+-    use crate::ui::line::*;
++    use crate::{
++        model::*,
++        replace::perform_replacements,
++        rg::de::{test_utilities::RgMessageBuilder, Duration, RgMessageKind, Stats, SubMatch},
++        ui::line::*,
++    };
+
+     macro_rules! temp_item {
+         ($offset:expr, $lines:expr, $submatches:expr) => {{
+@@ -200,13 +214,14 @@ mod tests {
+         }};
+     }
+
+-    // NOTE: due to permission issues on Windows platforms, we need to first "keep" the temporary files otherwise
+-    // we cannot atomically replace them. See https://github.com/Stebalien/tempfile/issues/131
++    // NOTE: due to permission issues on Windows platforms, we need to first "keep"
++    // the temporary files otherwise we cannot atomically replace them. See https://github.com/Stebalien/tempfile/issues/131
+     macro_rules! temp_file {
+         (bytes, $content:expr) => {{
+             let mut file = NamedTempFile::new().unwrap();
+             file.write_all($content).unwrap();
+-            // NOTE: we *must* drop the file here, otherwise Windows will fail with permissions errors
++            // NOTE: we *must* drop the file here, otherwise Windows will fail with
++            // permissions errors
+             let (_, p) = file.keep().unwrap();
+             p
+         }};
+@@ -287,15 +302,11 @@ mod tests {
+
+     #[test]
+     fn it_performs_multiple_replacements_one_file() {
+-        let (item, p) = temp_item!(
+-            0,
+-            "foo bar baz",
+-            vec![
+-                SubMatch::new_text("foo", 0..3),
+-                SubMatch::new_text("bar", 4..7),
+-                SubMatch::new_text("baz", 8..11),
+-            ]
+-        );
++        let (item, p) = temp_item!(0, "foo bar baz", vec![
++            SubMatch::new_text("foo", 0..3),
++            SubMatch::new_text("bar", 4..7),
++            SubMatch::new_text("baz", 8..11),
++        ]);
+
+         perform_replacements(ReplacementCriteria::new("NEW_VALUE", vec![item])).unwrap();
+         assert_eq!(
+@@ -383,9 +394,7 @@ mod tests {
+     #[test]
+     #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+     fn it_performs_replacements_files_with_non_utf8_paths_unix() {
+-        use std::ffi::OsStr;
+-        use std::os::unix::ffi::OsStrExt;
+-        use std::path::PathBuf;
++        use std::{ffi::OsStr, os::unix::ffi::OsStrExt, path::PathBuf};
+         use tempfile::tempdir;
+
+         // Here, the values 0x66 and 0x6f correspond to 'f' and 'o'
+@@ -416,7 +425,7 @@ mod tests {
+     // Encodings
+
+     macro_rules! simple_test {
+-        ($name:ident, $src:expr, $dst:expr, ($needle:expr, $replace:expr), $submatches:expr) => {
++        ($name:ident, $src:expr, $dst:expr,($needle:expr, $replace:expr), $submatches:expr) => {
+             #[test]
+             fn $name() {
+                 let src_bytes = hex::decode($src).unwrap();
+@@ -456,8 +465,10 @@ mod tests {
+     }
+
+     // The following are generated with:
+-    //   printf "<BOM>%s" $(printf "foo bar baz\n...\nbaz foo bar\n...\nbar baz foo" | iconv -f UTF8 -t <ENCODING> | xxd -p -c 128)
+-    // printf "efbbbf%s" $(printf "RUST bar baz\n...\nbaz RUST bar\n...\nbar baz RUST" | iconv -f UTF8 -t UTF8 | xxd -p -c 128)
++    //   printf "<BOM>%s" $(printf "foo bar baz\n...\nbaz foo bar\n...\nbar baz foo"
++    // | iconv -f UTF8 -t <ENCODING> | xxd -p -c 128) printf "efbbbf%s" $(printf
++    // "RUST bar baz\n...\nbaz RUST bar\n...\nbar baz RUST" | iconv -f UTF8 -t UTF8
++    // | xxd -p -c 128)
+
+     const UTF8_FOO: &str =
+         "666f6f206261722062617a0a2e2e2e0a62617a20666f6f206261720a2e2e2e0a6261722062617a20666f6f";
+@@ -466,7 +477,8 @@ mod tests {
+     const UTF16LE_FOO: &str = "fffe66006f006f0020006200610072002000620061007a000a002e002e002e000a00620061007a00200066006f006f0020006200610072000a002e002e002e000a006200610072002000620061007a00200066006f006f00";
+
+     // The following are generated with:
+-    //   printf "<BOM>%s" $(printf "RUST bar baz\n...\nbaz RUST bar\n...\nbar baz RUST" | iconv -f UTF8 -t <ENCODING> | xxd -p -c 128)
++    //   printf "<BOM>%s" $(printf "RUST bar baz\n...\nbaz RUST bar\n...\nbar baz
++    // RUST" | iconv -f UTF8 -t <ENCODING> | xxd -p -c 128)
+
+     const UTF8_RUST: &str = "52555354206261722062617a0a2e2e2e0a62617a2052555354206261720a2e2e2e0a6261722062617a2052555354";
+     const UTF8BOM_RUST: &str = "efbbbf52555354206261722062617a0a2e2e2e0a62617a2052555354206261720a2e2e2e0a6261722062617a2052555354";
+@@ -474,7 +486,8 @@ mod tests {
+     const UTF16LE_RUST: &str = "fffe520055005300540020006200610072002000620061007a000a002e002e002e000a00620061007a002000520055005300540020006200610072000a002e002e002e000a006200610072002000620061007a0020005200550053005400";
+
+     // The following are generated with:
+-    //   printf "<BOM>%s" $(printf "A bar baz\n...\nbaz A bar\n...\nbar baz A" | iconv -f UTF8 -t <ENCODING> | xxd -p -c 128)
++    //   printf "<BOM>%s" $(printf "A bar baz\n...\nbaz A bar\n...\nbar baz A" |
++    // iconv -f UTF8 -t <ENCODING> | xxd -p -c 128)
+
+     const UTF8_A: &str =
+         "41206261722062617a0a2e2e2e0a62617a2041206261720a2e2e2e0a6261722062617a2041";
+@@ -515,13 +528,11 @@ mod tests {
+         &[(0, 0..3), (16, 4..7), (32, 8..11)]
+     );
+
+-    simple_test!(
+-        multiline_shorter_utf8,
+-        UTF8_FOO,
+-        UTF8_A,
+-        ("foo", "A"),
+-        &[(0, 0..3), (16, 4..7), (32, 8..11)]
+-    );
++    simple_test!(multiline_shorter_utf8, UTF8_FOO, UTF8_A, ("foo", "A"), &[
++        (0, 0..3),
++        (16, 4..7),
++        (32, 8..11)
++    ]);
+
+     simple_test!(
+         multiline_shorter_utf8_bom,

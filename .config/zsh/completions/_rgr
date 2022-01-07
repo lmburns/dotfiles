@@ -1,0 +1,78 @@
+#compdef rgr
+
+autoload -U is-at-least
+
+_rgr() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'*-e+[Used to provide multiple patterns]:PATTERNS: ' \
+'*--regexp=[Used to provide multiple patterns]:PATTERNS: ' \
+'-A+[How many lines of context should be shown after each match]:AFTER_CONTEXT: ' \
+'--after-context=[How many lines of context should be shown after each match]:AFTER_CONTEXT: ' \
+'-B+[How many lines of context should be shown before each match]:BEFORE_CONTEXT: ' \
+'--before-context=[How many lines of context should be shown before each match]:BEFORE_CONTEXT: ' \
+'-C+[How many lines of context should be shown before and after each match]:CONTEXT: ' \
+'--context=[How many lines of context should be shown before and after each match]:CONTEXT: ' \
+'-E+[Provide the encoding to use when searching files]:ENCODING: ' \
+'--encoding=[Provide the encoding to use when searching files]:ENCODING: ' \
+'--sort=[Sort the results (ascending)]:SORT: ' \
+'--sortr=[Sort the results (descending)]:SORTR: ' \
+'-j+[How many threads to use]:THREADS: ' \
+'--threads=[How many threads to use]:THREADS: ' \
+'*-t+[Search only a specific type of file]:TYPE: ' \
+'*--type=[Search only a specific type of file]:TYPE: ' \
+'*-T+[Inverse of --type]:TYPE_NOT: ' \
+'*--type-not=[Inverse of --type]:TYPE_NOT: ' \
+'*-g+[A list of globs to match files]:GLOB: ' \
+'*--glob=[A list of globs to match files]:GLOB: ' \
+'*--iglob=[A list of case insensitive globs to match files]:IGLOB: ' \
+'--ignore-file=[Use the given ignore file when searching]:IGNORE_FILE: ' \
+'-h[Print help information]' \
+'--help[Print help information]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'--crlf[Treat CRLF ('\''\\r\\n'\'') as a line terminator]' \
+'-L[Follow symlinks]' \
+'--follow[Follow symlinks]' \
+'-i[Ignore case when searching]' \
+'--ignore-case[Ignore case when searching]' \
+'-v[Invert the matches on each line]' \
+'--invert-match[Invert the matches on each line]' \
+'--passthru[Print both matching and non-matching lines]' \
+'-S[Use smart case matching]' \
+'--smart-case[Use smart case matching]' \
+'-s[Use case sensitive matching]' \
+'--case-sensitive[Use case sensitive matching]' \
+'--trim[Trim leading/trailing whitespace]' \
+'*-u[Set the "unrestricted" searching options for ripgrep. Note that this is currently limited to only two occurrences `-uu` since binary searching is not supported in repgrep]' \
+'*--unrestricted[Set the "unrestricted" searching options for ripgrep. Note that this is currently limited to only two occurrences `-uu` since binary searching is not supported in repgrep]' \
+'-U[Allow matches to span multiple lines]' \
+'--multiline[Allow matches to span multiple lines]' \
+'--multiline-dotall[Allow the "." character to span across lines with multiline searches]' \
+'-w[When matching, use a word boundary search]' \
+'--word-regexp[When matching, use a word boundary search]' \
+'--hidden[Search hidden files]' \
+'--ignore-file-case-insensitive[When given an --ignore-file, read its rules case insensitively]' \
+'--one-file-system[Don'\''t traverse filesystems for each path specified]' \
+'::PATTERN -- The pattern to search. Required unless patterns are passed via -e/--regexp:' \
+'*::PATH -- The paths in which to search:' \
+&& ret=0
+}
+
+(( $+functions[_rgr_commands] )) ||
+_rgr_commands() {
+    local commands; commands=()
+    _describe -t commands 'rgr commands' commands "$@"
+}
+
+_rgr "$@"

@@ -12,6 +12,9 @@ pasystray &
 # Auto mount USB
 udiskie --tray & #
 
+# Kill process if it hangs
+bustd &
+
 # clipit &
 # greenclip daemon &
 copyq &

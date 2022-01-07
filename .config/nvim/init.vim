@@ -685,11 +685,16 @@ Plug 'ludovicchabant/vim-gutentags'
     let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
   endfunction
 
+  function! s:SetupRubyTags()
+    let g:gutentags_ctags_extra_args += map(split($GEM_PATH, ':'), 'v:val."/gems/*/tags"')
+  endfunction
+
   augroup gutentags
     autocmd!
     " autocmd! User vim-gutentags call gutentags#setup_gutentags()
     autocmd! FileType c call <SID>SetupCTags()
     autocmd! FileType cpp call <SID>SetupCPPTags()
+    autocmd! FileType ruby call <SID>SetupRubyTags()
   augroup END
   " endif
 
@@ -868,7 +873,7 @@ Plug 'tpope/vim-fugitive'
 " ============== vimagit ============== {{{
 " Plug 'jreybert/vimagit'
   " nnoremap  <Leader>ma :MagitO<Cr>
-  Plug 'TimUntersberger/neogit'
+  " Plug 'TimUntersberger/neogit'
 " }}} === vimagit ===
 " }}} === git ===
 
@@ -925,10 +930,12 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <A-c> :CocFzfList commands<CR>
 
   " nnoremap <C-x><C-r> :CocCommand fzf-preview.CocReferences<CR>
-  nnoremap <C-x><C-d> :CocCommand fzf-preview.CocTypeDefinitions<CR>
+  nnoremap <C-x><C-d> :CocCommand fzf-preview.CocTypeDefinition<CR>
   nnoremap <C-x><C-]> :CocCommand fzf-preview.CocImplementations<CR>
   nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
 
+  " remap for do codeAction of current line
+  nmap <Leader>wc  <Plug>(coc-codeaction)
   xmap <Leader>w  <Plug>(coc-codeaction-selected)
   nmap <Leader>ww  <Plug>(coc-codeaction-selected)
 
@@ -1030,8 +1037,6 @@ Plug 'antoinemadec/coc-fzf'
   xmap <Leader>fm <Plug>(coc-format-selected)
   nmap <Leader>fm <Plug>(coc-format-selected)
 
-  " remap for do codeAction of current line
-  nmap <Leader>wc  <Plug>(coc-codeaction)
   " fix autofix problem of current line
   nmap <Leader>qf  <Plug>(coc-fix-current)
 
@@ -1262,7 +1267,7 @@ Plug 'jpalardy/vim-slime', { 'for': 'python' }
       \ xnoremap <silent> ✠ :TREPLSendSelection<CR><Esc><Esc>
       \ nnoremap <Leader>rF :T ptpython<CR>|
       \ nnoremap <Leader>rf :T ipython --no-autoindent --colors=Linux --matplotlib<CR>|
-      \ nmap <buffer> <leader>r<CR> :VT python %<CR>|
+      \ nmap <buffer> <Leader>r<CR> :VT python %<CR>|
       \ nnoremap ,rp :SlimeSend1 <C-r><C-w><CR>|
       \ nnoremap ,rP :SlimeSend1 print(<C-r><C-w>)<CR>|
       \ nnoremap ,rs :SlimeSend1 print(len(<C-r><C-w>), type(<C-r><C-w>))<CR>|
@@ -2484,7 +2489,7 @@ autocmd FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o 
 
 " ==================== Neogit ==================== {{{
 lua <<EOF
-require('neogit').setup {}
+-- require('neogit').setup {}
 EOF
 " }}} === Neogit ===
 

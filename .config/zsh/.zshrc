@@ -461,7 +461,8 @@ zt 0c light-mode null for \
     lmburns/hoard \
   lbin'*/ruplacer' from'gh-r' atinit'alias rup="ruplacer"' \
     dmerejkowsky/ruplacer \
-  lbin'*/rgr' from'gh-r' lman \
+  lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo build --release' \
+  atclone"command mv -f tar*/rel*/rgr . && cargo clean" lman \
     acheronfail/repgrep \
   lbin'* -> renamer' from'gh-r' \
     adriangoransson/renamer \
@@ -552,10 +553,10 @@ zt 0c light-mode null for \
   atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
   atload"alias par='parallel'" \
     lmburns/parallel \
-  lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo build --release --features=backend-gpgme' \
+  lbin atclone'cargo build --release --features=backend-gpgme' \
   atpull'%atclone' atclone"command mv -f tar*/rel*/%PLUGIN% . && cargo clean" \
   atclone'./prs internal completions zsh' \
-    timvisee/prs \
+    lmburns/prs \
   lbin atclone'cargo build --release' atpull'%atclone' \
   atclone"command mv -f tar*/rel*/tidy-viewer . && cargo clean" \
   atload"alias tv='tidy-viewer'" \

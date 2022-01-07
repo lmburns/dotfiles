@@ -1,0 +1,217 @@
+#compdef fclones
+
+autoload -U is-at-least
+
+_fclones() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-q[Suppresses progress reporting]' \
+'--quiet[Suppresses progress reporting]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_fclones_commands" \
+"*::: :->fclones" \
+&& ret=0
+    case $state in
+    (fclones)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:fclones-command-$line[1]:"
+        case $line[1] in
+            (group)
+_arguments "${_arguments_options[@]}" \
+'-o+[Writes the report to a file instead of the standard output]' \
+'--output=[Writes the report to a file instead of the standard output]' \
+'-f+[Sets output file format]: :(default fdupes csv json)' \
+'--format=[Sets output file format]: :(default fdupes csv json)' \
+'-d+[Limits recursion depth]' \
+'--depth=[Limits recursion depth]' \
+'--transform=[Before matching, transforms each file by the specified program. The value of this parameter should contain a command: the path to the program and optionally a list of space-separated arguments]' \
+'(--rf-under)-n+[Searches for over-replicated files with replication factor above the specified value. Specifying neither `--rf-over` nor `--rf-under` is equivalent to `--rf-over 1` which would report duplicate files]' \
+'(--rf-under)--rf-over=[Searches for over-replicated files with replication factor above the specified value. Specifying neither `--rf-over` nor `--rf-under` is equivalent to `--rf-over 1` which would report duplicate files]' \
+'(-n --rf-over)--rf-under=[Searches for under-replicated files with replication factor below the specified value. Specifying `--rf-under 2` will report unique files]' \
+'-s+[Minimum file size in bytes. Units like KB, KiB, MB, MiB, GB, GiB are supported. Inclusive]' \
+'--min=[Minimum file size in bytes. Units like KB, KiB, MB, MiB, GB, GiB are supported. Inclusive]' \
+'--max=[Maximum file size in bytes. Units like KB, KiB, MB, MiB, GB, GiB are supported. Inclusive]' \
+'*--name=[Includes only file names matched fully by any of the given patterns]' \
+'*--path=[Includes only paths matched fully by any of the given patterns]' \
+'*--exclude=[Excludes paths matched fully by any of the given patterns]' \
+'*-t+[Sets the sizes of thread-pools]' \
+'*--threads=[Sets the sizes of thread-pools]' \
+'--stdin[Reads the list of input paths from the standard input instead of the arguments. This flag is mostly useful together with Unix `find` utility]' \
+'-A[Skips hidden files]' \
+'--skip-hidden[Skips hidden files]' \
+'-L[Follows symbolic links]' \
+'--follow-links[Follows symbolic links]' \
+'-H[Treats files reachable from multiple paths through hard links as duplicates]' \
+'--hard-links[Treats files reachable from multiple paths through hard links as duplicates]' \
+'(-L --follow-links)-I[Don'\''t count matching files found within the same directory argument as duplicates]' \
+'(-L --follow-links)--isolate[Don'\''t count matching files found within the same directory argument as duplicates]' \
+'--in-place[Set this flag if the command given to --transform transforms the file in-place, i.e. it modifies the original input file instead of writing to the standard output or to a new file. This flag tells fclones to read output from the original file after the transform command exited]' \
+'--no-copy[Doesn'\''t copy the file to a temporary location before transforming, when `$IN` parameter is specified in the `--transform` command. If this flag is present, `$IN` will point to the original file. Caution: this option may speed up processing, but it may cause loss of data because it lets the transform command to work directly on the original file]' \
+'(-n --rf-over --rf-under)--unique[Instead of searching for duplicates, searches for unique files]' \
+'-i[Makes pattern matching case-insensitive]' \
+'--caseless[Makes pattern matching case-insensitive]' \
+'-g[Expects patterns as Perl compatible regular expressions instead of Unix globs]' \
+'--regex[Expects patterns as Perl compatible regular expressions instead of Unix globs]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+':paths -- A list of input paths:_files' \
+&& ret=0
+;;
+(link)
+_arguments "${_arguments_options[@]}" \
+'-o+[Writes the `dry_run` report to a file instead of the standard output]' \
+'--output=[Writes the `dry_run` report to a file instead of the standard output]' \
+'-m+[Deduplicates only the files that were modified before the given time]' \
+'--modified-before=[Deduplicates only the files that were modified before the given time]' \
+'-n+[Keeps at least n replicas untouched]' \
+'--rf-over=[Keeps at least n replicas untouched]' \
+'*--name=[Restricts the set of files that can be removed or replaced by links to files with the name matching any given patterns]' \
+'*--path=[Restricts the set of files that can be removed or replaced by links to files with the path matching any given patterns]' \
+'*--priority=[Sets the priority for files to be removed or replaced by links]: :(newest oldest most-recently-modified least-recently-modified most-recently-accessed least-recently-accessed most-nested least-nested)' \
+'*--keep-name=[Keeps files with names matching any given patterns untouched]' \
+'*--keep-path=[Keeps files with paths matching any given patterns untouched]' \
+'--dry-run[Doesn'\''t perform any changes on the file-system, but writes a log of file operations to the standard output]' \
+'-s[Creates soft links]' \
+'--soft[Creates soft links]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+&& ret=0
+;;
+(dedupe)
+_arguments "${_arguments_options[@]}" \
+'-o+[Writes the `dry_run` report to a file instead of the standard output]' \
+'--output=[Writes the `dry_run` report to a file instead of the standard output]' \
+'-m+[Deduplicates only the files that were modified before the given time]' \
+'--modified-before=[Deduplicates only the files that were modified before the given time]' \
+'-n+[Keeps at least n replicas untouched]' \
+'--rf-over=[Keeps at least n replicas untouched]' \
+'*--name=[Restricts the set of files that can be removed or replaced by links to files with the name matching any given patterns]' \
+'*--path=[Restricts the set of files that can be removed or replaced by links to files with the path matching any given patterns]' \
+'*--priority=[Sets the priority for files to be removed or replaced by links]: :(newest oldest most-recently-modified least-recently-modified most-recently-accessed least-recently-accessed most-nested least-nested)' \
+'*--keep-name=[Keeps files with names matching any given patterns untouched]' \
+'*--keep-path=[Keeps files with paths matching any given patterns untouched]' \
+'--dry-run[Doesn'\''t perform any changes on the file-system, but writes a log of file operations to the standard output]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+&& ret=0
+;;
+(remove)
+_arguments "${_arguments_options[@]}" \
+'-o+[Writes the `dry_run` report to a file instead of the standard output]' \
+'--output=[Writes the `dry_run` report to a file instead of the standard output]' \
+'-m+[Deduplicates only the files that were modified before the given time]' \
+'--modified-before=[Deduplicates only the files that were modified before the given time]' \
+'-n+[Keeps at least n replicas untouched]' \
+'--rf-over=[Keeps at least n replicas untouched]' \
+'*--name=[Restricts the set of files that can be removed or replaced by links to files with the name matching any given patterns]' \
+'*--path=[Restricts the set of files that can be removed or replaced by links to files with the path matching any given patterns]' \
+'*--priority=[Sets the priority for files to be removed or replaced by links]: :(newest oldest most-recently-modified least-recently-modified most-recently-accessed least-recently-accessed most-nested least-nested)' \
+'*--keep-name=[Keeps files with names matching any given patterns untouched]' \
+'*--keep-path=[Keeps files with paths matching any given patterns untouched]' \
+'--dry-run[Doesn'\''t perform any changes on the file-system, but writes a log of file operations to the standard output]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+&& ret=0
+;;
+(move)
+_arguments "${_arguments_options[@]}" \
+'-o+[Writes the `dry_run` report to a file instead of the standard output]' \
+'--output=[Writes the `dry_run` report to a file instead of the standard output]' \
+'-m+[Deduplicates only the files that were modified before the given time]' \
+'--modified-before=[Deduplicates only the files that were modified before the given time]' \
+'-n+[Keeps at least n replicas untouched]' \
+'--rf-over=[Keeps at least n replicas untouched]' \
+'*--name=[Restricts the set of files that can be removed or replaced by links to files with the name matching any given patterns]' \
+'*--path=[Restricts the set of files that can be removed or replaced by links to files with the path matching any given patterns]' \
+'*--priority=[Sets the priority for files to be removed or replaced by links]: :(newest oldest most-recently-modified least-recently-modified most-recently-accessed least-recently-accessed most-nested least-nested)' \
+'*--keep-name=[Keeps files with names matching any given patterns untouched]' \
+'*--keep-path=[Keeps files with paths matching any given patterns untouched]' \
+'--dry-run[Doesn'\''t perform any changes on the file-system, but writes a log of file operations to the standard output]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+':target -- Target directory where the redundant files should be moved to:_files' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_fclones_commands] )) ||
+_fclones_commands() {
+    local commands; commands=(
+        "group:Produces a list of groups of identical files" \
+"link:Replaces redundant files with links" \
+"dedupe:Deduplicates file data using native filesystem deduplication capabilities" \
+"remove:Removes redundant files" \
+"move:Moves redundant files to the given directory" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'fclones commands' commands "$@"
+}
+(( $+functions[_fclones__dedupe_commands] )) ||
+_fclones__dedupe_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones dedupe commands' commands "$@"
+}
+(( $+functions[_fclones__group_commands] )) ||
+_fclones__group_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones group commands' commands "$@"
+}
+(( $+functions[_fclones__help_commands] )) ||
+_fclones__help_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones help commands' commands "$@"
+}
+(( $+functions[_fclones__link_commands] )) ||
+_fclones__link_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones link commands' commands "$@"
+}
+(( $+functions[_fclones__move_commands] )) ||
+_fclones__move_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones move commands' commands "$@"
+}
+(( $+functions[_fclones__remove_commands] )) ||
+_fclones__remove_commands() {
+    local commands; commands=(
+
+    )
+    _describe -t commands 'fclones remove commands' commands "$@"
+}
+
+_fclones "$@"

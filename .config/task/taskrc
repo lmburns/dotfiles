@@ -114,7 +114,7 @@ report.list.description=Lists all tasks matching the specified criteria
 # report.list.columns=id,project,priority,due,start.active,age,description
 # report.list.labels=ID,Project,Pri,Due,Active,Age,Description
 report.list.sort=start,description,due+,priority-,project+
-report.list.filter=status:pending project.isnt:store
+report.list.filter=status:pending
 
 # task ls
 report.ls.description=Minimal listing of all tasks matching the specified criteria
@@ -128,7 +128,7 @@ report.newest.description=Shows the newest tasks
 report.newest.columns=id,project,priority,due,start.active,entry.age,description
 report.newest.labels= ,Project,Pri,Due,Active,Age,Description
 report.newest.sort=id-
-report.newest.filter=status:pending limit:10 project.isnt:store
+report.newest.filter=status:pending limit:10
 
 # task oldest
 report.oldest.description=Shows the oldest tasks

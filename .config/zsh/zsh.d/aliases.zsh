@@ -24,6 +24,7 @@ alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 alias tt="taskwarrior-tui"
+alias strace="/usr/local/bin/strace"
 
 alias open="handlr open"
 # alias mimeopen="/home/lucas/mybin/perl/mimeopen"
@@ -291,6 +292,8 @@ alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
 # === github ====================================================================
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'
 alias xav='/usr/bin/git --git-dir=$XDG_DATA_HOME/dottest --work-tree=$HOME'
+
+alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
 
 alias cdg='cd "$(git rev-parse --show-toplevel)"'
 alias gua='git remote | xargs -L1 git push --all'
