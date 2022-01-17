@@ -652,6 +652,11 @@ Plug 'ludovicchabant/vim-gutentags'
     let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
     let g:gutentags_ctags_tagfile = '.tags'
     let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
+    let g:gutentags_generate_on_new = 1
+    let g:gutentags_generate_on_missing = 1
+    let g:gutentags_generate_on_write = 1
+    let g:gutentags_generate_on_empty_buffer = 0
+    let g:gutentags_file_list_command = 'rg --files'
     " let g:gutentags_define_advanced_commands = 1
     let g:gutentags_ctags_exclude = [
       \  '*.git', '*.svn', '*.hg',
@@ -686,7 +691,12 @@ Plug 'ludovicchabant/vim-gutentags'
   endfunction
 
   function! s:SetupRubyTags()
-    let g:gutentags_ctags_extra_args += map(split($GEM_PATH, ':'), 'v:val."/gems/*/tags"')
+    " let g:gutentags_ctags_extra_args += map(split($GEM_PATH, ':'), 'v:val."/gems/*/tags"')
+    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/rbenv/versions/3.0.0/lib/ruby/3.0.0']
+  endfunction
+
+  function! s:SetupPerlTags()
+    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4']
   endfunction
 
   augroup gutentags
@@ -695,6 +705,7 @@ Plug 'ludovicchabant/vim-gutentags'
     autocmd! FileType c call <SID>SetupCTags()
     autocmd! FileType cpp call <SID>SetupCPPTags()
     autocmd! FileType ruby call <SID>SetupRubyTags()
+    autocmd! FileType perl call <SID>SetupPerlTags()
   augroup END
   " endif
 
@@ -1542,7 +1553,7 @@ Plug 'vimwiki/vimwiki'
 
 " ========= Syntax Highlighting ======== {{{
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua']
+let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua', 'ruby']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']

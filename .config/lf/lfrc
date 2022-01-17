@@ -85,7 +85,7 @@ cmd open ${{
       (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback  $f >/dev/null ;;
       (video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
       (application/x-bittorrent) open -a Transmission.app ;;
-      (application/zlib) open ;;
+      (application/zlib) handlr open ;;
       (*)
         case ${f:e} in
           (dmg) (( $+commands[hdiutil] )) && hdiutil attach "$fx" ;;
@@ -124,7 +124,7 @@ cmd trash ${{
   # Turn into an array
   arr=( "${(f)fx}" )
   # Since brackets are only able to be used once in lf, get tail here
-  short=( ${arr:t2})
+  short=( ${arr:t2} )
   rip -- $fx
   dunstify -a lf " Deleted File(s)" "${(F)short}" && {
      print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
@@ -584,7 +584,7 @@ cmd mmv $mmv $fx
 cmd f2 !f2 -f "$1"
 cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
-cmd yank-path $printf '%s' "$fx" | pbcopy && dunstify -a lf "File Path" "$fx copied to clipboard"
+cmd yank-path $printf '%s' "$fx" | xsel -b && dunstify -a lf "File Path" "$fx copied to clipboard"
 cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 
@@ -634,7 +634,7 @@ map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh  # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh      # edit lf colors/icons
 map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit tmux conf
 
-map v $LESS='-iWQMXR~' bat --paging=always --theme=KimbieDark "$f"
+map v $LESS='-iWQMXR~' bat --paging=always --theme=kimbro "$f"
 map V push :!nvim<space>                     # enter filename for nvim
 map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings

@@ -935,6 +935,8 @@ function allcmds() { print -l ${commands[@]} | awk -F'/' '{print $NF}' | fzf; }
 # remove broken symlinks
 function rmsym() { command rm -- *(-@D); }
 function rmsymr() { command rm -- **/*(-@D); }
+# remove ansi from file
+function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;  }
 # add -x to apply changes -- f2 -f ' '
 function rmspace() { f2 -f '\s' -r '_' -RF $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }

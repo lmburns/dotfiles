@@ -12,13 +12,23 @@ function wfxr::rm-broken-links() {
     echo -n "Remove? [y/N]: "
     read -q && rm -- ${links[@]}
 }
+
+# function rm::broken() {
+#   local ls; local -a links
+#   (( $+commands[exa] )) && ls=exa || ls=ls
+#   links=( ${(@f)"$(fd -tl)"})
+#   [[ -z $links ]] && return
+#   $ls -l --color=always ${links[@]}
+#   echo -n "Remove? [y/N]: "
+#   read -q && rm -- ${links[@]}
+# }
+
 function rm-broken-links-all() { wfxr::rm-broken-links               }
 function rm-broken-links()     { wfxr::rm-broken-links '-maxdepth 1' }
 
 function lsdelete() { lsof -n | rg -i --color=always deleted }
 
 function ansi_strip() { sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" "$@"; }
-
 
 # Perl rename
 function backup-t()  { /usr/bin/rename -n 's/^(.*)$/$1.bak/g' $@ }

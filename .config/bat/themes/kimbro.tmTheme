@@ -52,6 +52,8 @@
                     <string>#697c8a</string>
                     <key>findHighlight</key>
                     <string>#EF1D55</string>
+                    <!-- <key>findHighlightForeground</key> -->
+                    <!-- <string>#528bff</string> -->
                     <key>inactiveSelection</key>
                     <string>#EF1D55</string>
                     <key>gutter</key>
@@ -61,8 +63,15 @@
                     <string>#a89984</string>
                     <key>guide</key>
                     <string>#2a2a2a</string>
+                    <!-- Unsure -->
                     <key>activeGuide</key>
                     <string>#a57a4c</string>
+                    <key>stackGuide</key>
+                    <string>#464c55</string>
+                    <key>tagsOptions</key>
+                    <string>underline</string>
+                    <key>tagsForeground</key>
+                    <string>#A06469</string>
                 </dict>
             </dict>
             <dict>

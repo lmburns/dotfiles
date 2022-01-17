@@ -69,8 +69,8 @@ bspc rule -a Screenkey manage=off
 # bspc rule -a mpv state=fullscreen
 bspc rule -a Zathura state=tiled
 bspc rule -a Sxiv state=floating follow=on
-bspc rule -a "feh" state=floating
-bspc rule -a "Ulauncher" border=off follow=on
+bspc rule -a feh state=floating
+bspc rule -a Ulauncher border=off follow=on state=floating
 bspc rule -a "System Settings"  state=floating follow=on
 bspc rule -a Pinentry state=floating center=on
 
