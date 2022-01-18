@@ -929,7 +929,9 @@ Plug 'yggdroot/indentline'
 
 " ============ coc-nvim ============ {{{
 " Plug 'tjdevries/coc-zsh'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'commit': 'ad3a11638ff78c1', 'do': 'yarn install --frozen-lockfile'}
+" Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'antoinemadec/coc-fzf'
   " prettier command for coc
   command! -nargs=0 CocMarket :CocList marketplace

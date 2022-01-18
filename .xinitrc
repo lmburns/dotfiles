@@ -10,7 +10,7 @@ blueman-applet &
 pasystray &
 
 # Auto mount USB
-udiskie --tray & #
+udiskie --tray &
 
 # Kill process if it hangs
 bustd &

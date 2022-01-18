@@ -5,7 +5,6 @@ plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info duplicates
 
 fetchart:
   sources: filesystem coverart itunes amazon albumart lastfm google
-  google_key: 547595880751-vs3j8u74e961ejjo3ijdv9ic9m50vh0u.apps.googleusercontent.com
 
 lastgenre:
   auto: yes
