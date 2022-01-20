@@ -2,7 +2,7 @@ require('nvim-treesitter.configs').setup {
   ensure_installed = {
     "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby"
   },
-  -- "vim" "yaml" "toml" "ruby" "bash"
+  -- "vim" "yaml" "toml" "ruby" "bash" "perl"
   sync_install = false,
   ignore_install = {}, -- List of parsers to ignore installing
   highlight = {

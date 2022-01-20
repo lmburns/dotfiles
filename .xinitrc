@@ -13,7 +13,7 @@ pasystray &
 udiskie --tray &
 
 # Kill process if it hangs
-bustd &
+# bustd &
 
 # clipit &
 # greenclip daemon &
@@ -60,7 +60,7 @@ xidlehook \
 # flashfocus &
 mpd &
 transmission-daemon &
-transmission-rss -f &
+# transmission-rss -f &
 
 # xrdb ~/.Xresources &
 

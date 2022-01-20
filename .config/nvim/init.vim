@@ -692,7 +692,7 @@ Plug 'ludovicchabant/vim-gutentags'
 
   function! s:SetupRubyTags()
     " let g:gutentags_ctags_extra_args += map(split($GEM_PATH, ':'), 'v:val."/gems/*/tags"')
-    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/rbenv/versions/3.0.0/lib/ruby/3.0.0']
+    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/rbenv/versions/3.1.0/lib/ruby/3.1.0']
   endfunction
 
   function! s:SetupPerlTags()

@@ -1,0 +1,312 @@
+#compdef fselect
+
+local context curcontext="$curcontext" state state_descr line
+typeset -A opt_args
+
+setopt extendedglob
+
+_fselect() {
+  integer ret=1
+
+    # "*::: :->stig" \
+
+  _arguments -C \
+    {--help,-h}'[show help and exit]' \
+    "*:: :_fselect_output_formats" \
+    && ret=0
+}
+
+_fselect_columns_fields() {
+  typeset -a col_funcs; col_funcs=(
+    'name:name with extension'
+    'ext:extension of the file'
+    'extension:extension of the file'
+    'path:path of the file'
+    'abspath:absolute path of the file'
+    'directory:directory of the file'
+    'dirname:directory of the file'
+    'dir:directory of the file'
+    'absdir:absolute directory of the file'
+    'size:size of the file in bytes'
+    'fsize:size of the file with unit'
+    'hsize:size of the file with unit'
+    'uid:UID of the owner'
+    'gid:GID of the owner group'
+    'accessed:last time file was accessed'
+    'created:last time file was created'
+    'modified:last time file was modified'
+    'is_dir:bool - file is direcotry'
+    'is_file:bool - file is file'
+    'is_symlink:bool - file is symlink'
+    'is_pipe:bool - file is fifo'
+    'is_fifo:bool - file is fifo'
+    'is_char:bool - file is character device'
+    'is_character:bool - file is character device'
+    'is_block:bool - file is block device'
+    'is_socket:bool - file is a socket'
+    'is_hidden:bool - file is hidden'
+    'has_xattrs:bool - does file have extended attributes'
+    'device:code of device file is on'
+    'inode:inode of the file'
+    'blocks:number of block files occupies'
+    'hardlinks:number of hardlinks of file'
+    'mode:file permissions'
+    'user:name and owner of file'
+    'user_read:bool - file can be read by owner'
+    'user_write:bool - file can be written to by owner'
+    'user_exec:bool - file can be executed by owner'
+    'user_all:bool - file can be fully accessed by owner'
+    'group:name of the owners group for this file'
+    'group_read:bool - file can be read by group'
+    'group_write:bool - file can be written to by group'
+    'group_exec:bool - file can be executed by group'
+    'group_all:bool - file can be fully accessed by group'
+    'other_read:bool - file can be read by others'
+    'other_write:bool - file can be written to by others'
+    'other_exec:bool - file can be executed by others'
+    'other_all:bool - file can be fully accessed by others'
+    'suid:bool - file permissions have SUID bit set'
+    'sgid:bool - file permissions have SGID bit set'
+    'width:number of pixels along width of photo or MP4'
+    'height:number of pixels along height of photo or MP4'
+    'mime:mime of file'
+    'binary:bool - file has binary contents'
+    'is_text:bool - file has text contents'
+    'line_count:number of lines in the file'
+    'exif_datetime:date and time of taken photo'
+    'exif_altitutde:GPS altitude of photo'
+    'exif_alt:GPS altitude of photo'
+    'exif_latitude:GPS latitude of photo'
+    'exif_lat:GPS latitude of photo'
+    'exif_longitude:GPS longitude of photo'
+    'exif_lng:GPS longitude of photo'
+    'exif_lon:GPS longitude of photo'
+    'exif_make:name of camera manufacturer of photo'
+    'exif_model:name of camera model of photo'
+    'exif_software:name of software of photo'
+    'exif_version:version of EXIF metadata on photo'
+    'mp3_title:title of audio file'
+    'title:title of audio file'
+    'mp3_album:album of audio file'
+    'album:album of audio file'
+    'mp3_artist:artist of audio file'
+    'artist:artist of audio file'
+    'mp3_genre:genre of audio file'
+    'genre:genre of audio file'
+    'mp3_year:year of audio file'
+    'mp3_freq:sampling rate of audio file'
+    'freq:sampling rate of audio file'
+    'mp3_bitrate:bitrate of audio file'
+    'bitrate:bitrate rate of audio file'
+    'duration:duration of audio file'
+    'is_shebang:bool - if file contains shebang'
+    'is_empty:bool - if file is empty'
+    'is_archive:bool - if file is archive type'
+    'is_audio:bool - if file is audio type'
+    'is_book:bool - if file is book type'
+    'is_doc:bool - if file is doc type'
+    'is_image:bool - if file is image type'
+    'is_source:bool - if file is source type'
+    'is_video:bool - if file is video type'
+    'sha1:SHA-1 digest of file'
+    'sha256:SHA-256 digest of file'
+    'sha512:SHA-512 digest of file'
+    'sha3:SHA-3 digest of file'
+  )
+
+  _describe -t column-funcs "column and fields" col_funcs
+}
+
+
+_fselect_aggregate_functions() {
+  typeset -a agg_funcs; agg_funcs=(
+    'avg:average of all values'
+    'count:number of all values'
+    'max:maximum value'
+    'min:minimum value'
+    'sum:sum of all values'
+    'stddev_pop:population standard deviation, sqroot of variance'
+    'std:population standard deviation, sqroot of variance'
+    'stddev_samp:sample STD of sqroot of sample variance'
+    'var_pop:population variance'
+    'variance:population variance'
+    'var_samp:sample variance'
+  )
+
+  _fselect_columns_fields
+  _describe -t agg-funcs "aggregate functions" agg_funcs
+}
+
+_fselect_date_functions() {
+  typeset -a date_funcs; date_funcs=(
+    'current_date:current date'
+    'curdate:current date'
+    'day:extract day of the month'
+    'month:extract month of the month'
+    'year:extract year of the month'
+    'dow:returnd ay of the week (Sunday = 1, Monday = 2...)'
+    'dayofweek:returnd ay of the week (Sunday = 1, Monday = 2...)'
+  )
+
+  _fselect_aggregate_functions
+  _describe -t date-funcs "date functions" date_funcs
+}
+
+_fselect_user_functions() {
+  typeset -a user_funcs; user_funcs=(
+    'current_uid:current real UID'
+    'current_user:current real UIDs name'
+    'current_gid:current primary GID'
+    'current_group:current primary GIDs name'
+  )
+
+  _fselect_date_functions
+  _describe -t user-funcs "user functions" user_funcs
+}
+
+_fselect_xattr_functions() {
+  typeset -a xattr_funcs; xattr_funcs=(
+    'has_xattr:check if xattr exists (has_xattr(user.test))'
+    'xattr:get value of xattr (xattr(user.test))'
+  )
+
+  _fselect_user_functions
+  _describe -t xattr-funcs "xattr functions" xattr_funcs
+}
+
+_fselect_string_functions() {
+  typeset -a string_funcs; string_funcs=(
+    'length:length of the string value'
+    'len:length of the string value'
+    'lower:convert value to lowercase'
+    'lowercase:convert value to lowercase'
+    'lcase:convert value to lowercase'
+    'upper:convert value to upper'
+    'uppercase:convert value to uppercase'
+    'ucase:convert value to uppercase'
+    'to_base64:encode value in base64'
+    'base64:encode value in base64'
+    'from_base64:decode value in base64'
+    'substring:str, pos, len -- substr(name, 1, 8)'
+    'substr:str, pos, len -- substr(name, 1, 8)'
+    'replace:replace all occurences -- replace(name, metal, mEtaL)'
+    'trim:beginning and end whitespace is trimmed'
+    'ltrim:beginning whitespace is trimmed'
+    'rtrim:end whitespace is trimmed'
+  )
+
+  _fselect_xattr_functions
+  _describe -t string-funcs "string functions" string_funcs
+}
+
+_fselect_other_functions() {
+  typeset -a other_funcs; other_funcs=(
+    'bin:convert integer value to binary representation'
+    'hex:convert integer value to hexadecimal representation'
+    'oct:convert integer value to octal representation'
+    'power:raise value to power -- pow(2, 3)'
+    'pow:raise value to power -- pow(2, 3)'
+    'contains:true if file contains string, else false'
+    'coalesce:first nonempty expr value -- coalesce(sha256, '---')'
+    'concat:concatenated string -- concat("name is ", name, " size is ", size)'
+    'concat_ws:concatenated string with delim -- concat_ws("x", width, height)'
+    'random:random integer -- select ... order by rand()'
+    'rand:random integer -- select ... order by rand()'
+    'format_size:formatted size of a file -- select .. format_size(size, "%.0")'
+  )
+
+  _fselect_string_functions
+  _describe -t other-funcs "other functions" other_funcs
+}
+
+_fselect_root_functions() {
+  typeset -a root_funcs; root_funcs=(
+    'mindepth:minimum search depth; depth 1 means skip one dir and go further'
+    'maxdepth:maximum search depth; depth 1 means current dir only'
+    'depth:alias to maxdepth'
+    'symlinks:follows symlinks; default is to not'
+    'archives:only zips are supported'
+    'gitignore:respects .gitignore files'
+    'git:alias to gitignore'
+    'hgignore:respects .hgignore files'
+    'hg:alias to hgignore'
+    'dockerignore:respects .dockerignore files'
+    'dock:alias to dockerignore'
+    'nogitignore:disable .gitignore'
+    'nogit:alias to nogitignore'
+    'nohgignore:disable .hgignore'
+    'nohg:alias to nohgignore'
+    'nodockerignore:disable dockerignore'
+    'nodock:alias to nodockerignore'
+    'dfs:depth first search mode'
+    'bfs:breadth-first search mode'
+    'regexp:use regular expressions to search'
+    'rx:use regular expressions to search'
+  )
+
+  _fselect_other_functions
+  _describe -t root-funcs "search root functions" root_funcs
+}
+
+_fselect_operators() {
+  typeset -a operators; operators=(
+    '=:equals to'
+    '==:equals to'
+    'eq:equals to'
+    '!=:not equals to'
+    '<>:not equals to'
+    'ne:not equals to'
+    '==:equals to and type equals'
+    'eeq:equals to and type equals'
+    '!==:not equals to and not type equals'
+    'ene:not equals to and not type equals'
+    '>:greater than'
+    'gt:greater than'
+    '>=:greater than or equal to'
+    'gte:greater than or equal to'
+    'ge:greater than or equal to'
+    '<:less than'
+    'lt:less than'
+    '<=:less than or equal to'
+    'lte:less than or equal to'
+    'le:less than or equal to'
+    '=~:regular expression'
+    '~=:regular expression'
+    'regexp:regular expression'
+    'rx:regular expression'
+    'like:similar to SQL'
+    'notlike:similar to SQL'
+
+    '+:addition'
+    '-:subtraction'
+    '*:multiplication'
+    '/:division'
+    '%:modulus'
+  )
+
+  _fselect_root_functions
+  _describe -t operators "operators" operators
+}
+
+_fselect_output_formats() {
+  typeset -a output; output=(
+    'tabs:column separated with tabs'
+    'lines:each column goes on separate line'
+    'list:columns separated by NULL symbol'
+    'csv:comma separated columns'
+    'json:javascript json output'
+    'html:html document table'
+  )
+
+  _fselect_operators
+  _describe -t output-formats "output formats" output
+}
+
+_fselect_japanese_functions() {
+  typeset -a jap_funcs; jap_funcs=()
+  # _describe -t string-funcs "string functions" string_funcs
+}
+
+_fselect "$@"
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

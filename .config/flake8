@@ -1,0 +1,21 @@
+[flake8]
+max-line-length = 120
+ignore =
+# E305: 2 lines after function definition
+  E305,
+# E302: expected 2 blank lines, found 1
+  E302,
+# E306: expected 1 blank line before nested definition
+  E306,
+# H301: one import per line
+  H301,
+# H306: imports not in alphabetical order (time, os)
+  H306,
+# H401: docstring should not start with a space
+  H401,
+# H403: multi line docstrings should end on a new line
+  H403,
+# H404: multi line docstring should start without a leading new line
+  H404,
+# H405: multi line docstring summary not separated with an empty line
+  H405

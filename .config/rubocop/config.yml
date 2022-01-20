@@ -281,7 +281,7 @@ Layout/HashAlignment:
   # table - left alignment of keys, hash rockets, and values
   #   'a'  => 2
   #   'bb' => 3
-  EnforcedHashRocketStyle: key
+  EnforcedHashRocketStyle: table
   SupportedHashRocketStyles:
     - key
     - separator
@@ -630,14 +630,14 @@ Layout/SpaceAroundBlockParameters:
     - space
     - no_space
 
-# POSSIBLE CHANGE
+# CHANGED
 Layout/SpaceAroundEqualsInParameterDefault:
   Description: >-
     Checks that the equals signs in parameter default assignments
     have or don't have surrounding space depending on
     configuration.
   StyleGuide: "#spaces-around-equals"
-  Enabled: true
+  Enabled: false
   EnforcedStyle: space
   SupportedStyles:
     - space
@@ -1401,11 +1401,12 @@ Lint/ShadowedException:
     before a lower level exception.
   Enabled: true
 
+# CHANGED
 Lint/ShadowingOuterLocalVariable:
   Description: >-
     Do not use the same name as outer local variable
     for block arguments or block local variables.
-  Enabled: true
+  Enabled: false
 
 Lint/StructNewOverride:
   Description: "Disallow overriding the `Struct` built-in methods via `Struct.new`."
@@ -2078,10 +2079,11 @@ Style/BisectedAttrAccessor:
     for the same method can be combined into single `attr_accessor`.
   Enabled: true
 
+# CHANGED
 Style/BlockComments:
   Description: "Do not use block comments."
   StyleGuide: "#no-block-comments"
-  Enabled: true
+  Enabled: false
 
 Style/BlockDelimiters:
   Description: >-
@@ -2277,10 +2279,11 @@ Style/ClassMethodsDefinitions:
     - def_self
     - self_class
 
+# CHANGED
 Style/ClassVars:
   Description: "Avoid the use of class variables."
   StyleGuide: "#no-class-vars"
-  Enabled: true
+  Enabled: false
 
 Style/CollectionCompact:
   Description: "Use `{Array,Hash}#{compact,compact!}` instead of custom logic to reject nils."
@@ -2660,11 +2663,12 @@ Style/GlobalStdStream:
   Enabled: true
   SafeAutoCorrect: false
 
+# CHANGED
 Style/GlobalVars:
   Description: "Do not introduce global variables."
   StyleGuide: "#instance-vars"
   Reference: "https://www.zenspider.com/ruby/quickref.html"
-  Enabled: true
+  Enabled: false
   # Built-in global variables are allowed by default.
   AllowedVariables: []
 
@@ -3315,10 +3319,11 @@ Style/PercentQLiterals:
     - lower_case_q # Use `%q` when possible, `%Q` when necessary
     - upper_case_q # Always use `%Q`
 
+# CHANGED
 Style/PerlBackrefs:
   Description: "Avoid Perl-style regex back references."
   StyleGuide: "#no-perl-regexp-last-matchers"
-  Enabled: true
+  Enabled: false
 
 Style/PreferredHashMethods:
   Description: "Checks use of `has_key?` and `has_value?` Hash methods."
@@ -3865,12 +3870,13 @@ Style/TrivialAccessors:
     - to_s
     - to_sym
 
+# CHANGED
 Style/UnlessElse:
   Description: >-
     Do not use unless with else. Rewrite these with the positive
     case first.
   StyleGuide: "#no-else-with-unless"
-  Enabled: true
+  Enabled: false
 
 Style/UnlessLogicalOperators:
   Description: >-
