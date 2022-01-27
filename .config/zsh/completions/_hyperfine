@@ -1,0 +1,114 @@
+#compdef hyperfine
+
+autoload -U is-at-least
+
+_hyperfine() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-w+[Perform NUM warmup runs before the actual benchmark. This can be used to fill (disk) caches for I/O-heavy programs.]' \
+'--warmup=[Perform NUM warmup runs before the actual benchmark. This can be used to fill (disk) caches for I/O-heavy programs.]' \
+'-m+[Perform at least NUM runs for each command (default: 10).]' \
+'--min-runs=[Perform at least NUM runs for each command (default: 10).]' \
+'-M+[Perform at most NUM runs for each command. By default, there is no limit.]' \
+'--max-runs=[Perform at most NUM runs for each command. By default, there is no limit.]' \
+'(-M --max-runs -m --min-runs)-r+[Perform exactly NUM runs for each command. If this option is not specified, hyperfine automatically determines the number of runs.]' \
+'(-M --max-runs -m --min-runs)--runs=[Perform exactly NUM runs for each command. If this option is not specified, hyperfine automatically determines the number of runs.]' \
+'*-p+[Execute CMD before each timing run. This is useful for clearing disk caches, for example.
+The --prepare option can be specified once for all commands or multiple times, once for each command. In the latter case, each preparation command will be run prior to the corresponding benchmark command.]' \
+'*--prepare=[Execute CMD before each timing run. This is useful for clearing disk caches, for example.
+The --prepare option can be specified once for all commands or multiple times, once for each command. In the latter case, each preparation command will be run prior to the corresponding benchmark command.]' \
+'-c+[Execute CMD after the completion of all benchmarking runs for each individual command to be benchmarked. This is useful if the commands to be benchmarked produce artifacts that need to be cleaned up.]' \
+'--cleanup=[Execute CMD after the completion of all benchmarking runs for each individual command to be benchmarked. This is useful if the commands to be benchmarked produce artifacts that need to be cleaned up.]' \
+'-P+[Perform benchmark runs for each value in the range MIN..MAX. Replaces the string '\''{VAR}'\'' in each command by the current parameter value.
+
+  Example:  hyperfine -P threads 1 8 '\''make -j {threads}'\''
+
+This performs benchmarks for '\''make -j 1'\'', '\''make -j 2'\'', …, '\''make -j 8'\''.
+
+To have the value increase following different patterns, use shell arithmetics.
+
+  Example: hyperfine -P size 0 3 '\''sleep $((2**{size}))'\''
+
+This performs benchmarks with power of 2 increases: '\''sleep 1'\'', '\''sleep 2'\'', '\''sleep 4'\'', …
+The exact syntax may vary depending on your shell and OS.]' \
+'--parameter-scan=[Perform benchmark runs for each value in the range MIN..MAX. Replaces the string '\''{VAR}'\'' in each command by the current parameter value.
+
+  Example:  hyperfine -P threads 1 8 '\''make -j {threads}'\''
+
+This performs benchmarks for '\''make -j 1'\'', '\''make -j 2'\'', …, '\''make -j 8'\''.
+
+To have the value increase following different patterns, use shell arithmetics.
+
+  Example: hyperfine -P size 0 3 '\''sleep $((2**{size}))'\''
+
+This performs benchmarks with power of 2 increases: '\''sleep 1'\'', '\''sleep 2'\'', '\''sleep 4'\'', …
+The exact syntax may vary depending on your shell and OS.]' \
+'-D+[This argument requires --parameter-scan to be specified as well. Traverse the range MIN..MAX in steps of DELTA.
+
+  Example:  hyperfine -P delay 0.3 0.7 -D 0.2 '\''sleep {delay}'\''
+
+This performs benchmarks for '\''sleep 0.3'\'', '\''sleep 0.5'\'' and '\''sleep 0.7'\''.]' \
+'--parameter-step-size=[This argument requires --parameter-scan to be specified as well. Traverse the range MIN..MAX in steps of DELTA.
+
+  Example:  hyperfine -P delay 0.3 0.7 -D 0.2 '\''sleep {delay}'\''
+
+This performs benchmarks for '\''sleep 0.3'\'', '\''sleep 0.5'\'' and '\''sleep 0.7'\''.]' \
+'(-P --parameter-scan -D --parameter-step-size)*-L+[Perform benchmark runs for each value in the comma-separated list VALUES. Replaces the string '\''{VAR}'\'' in each command by the current parameter value.
+
+Example:  hyperfine -L compiler gcc,clang '\''{compiler} -O2 main.cpp'\''
+
+This performs benchmarks for '\''gcc -O2 main.cpp'\'' and '\''clang -O2 main.cpp'\''.
+
+The option can be specified multiple times to run benchmarks for all possible parameter combinations.
+]' \
+'(-P --parameter-scan -D --parameter-step-size)*--parameter-list=[Perform benchmark runs for each value in the comma-separated list VALUES. Replaces the string '\''{VAR}'\'' in each command by the current parameter value.
+
+Example:  hyperfine -L compiler gcc,clang '\''{compiler} -O2 main.cpp'\''
+
+This performs benchmarks for '\''gcc -O2 main.cpp'\'' and '\''clang -O2 main.cpp'\''.
+
+The option can be specified multiple times to run benchmarks for all possible parameter combinations.
+]' \
+'-s+[Set output style type (default: auto). Set this to '\''basic'\'' to disable output coloring and interactive elements. Set it to '\''full'\'' to enable all effects even if no interactive terminal was detected. Set this to '\''nocolor'\'' to keep the interactive output without any colors. Set this to '\''color'\'' to keep the colors without any interactive output. Set this to '\''none'\'' to disable all the output of the tool.]: :(auto basic full nocolor color none)' \
+'--style=[Set output style type (default: auto). Set this to '\''basic'\'' to disable output coloring and interactive elements. Set it to '\''full'\'' to enable all effects even if no interactive terminal was detected. Set this to '\''nocolor'\'' to keep the interactive output without any colors. Set this to '\''color'\'' to keep the colors without any interactive output. Set this to '\''none'\'' to disable all the output of the tool.]: :(auto basic full nocolor color none)' \
+'-S+[Set the shell to use for executing benchmarked commands.]' \
+'--shell=[Set the shell to use for executing benchmarked commands.]' \
+'-u+[Set the time unit to be used. Possible values: millisecond, second.]: :(millisecond second)' \
+'--time-unit=[Set the time unit to be used. Possible values: millisecond, second.]: :(millisecond second)' \
+'--export-asciidoc=[Export the timing summary statistics as an AsciiDoc table to the given FILE.]' \
+'--export-csv=[Export the timing summary statistics as CSV to the given FILE. If you need the timing results for each individual run, use the JSON export format.]' \
+'--export-json=[Export the timing summary statistics and timings of individual runs as JSON to the given FILE.]' \
+'--export-markdown=[Export the timing summary statistics as a Markdown table to the given FILE.]' \
+'*-n+[Give a meaningful name to a command]' \
+'*--command-name=[Give a meaningful name to a command]' \
+'-i[Ignore non-zero exit codes of the benchmarked programs.]' \
+'--ignore-failure[Ignore non-zero exit codes of the benchmarked programs.]' \
+'(-s --style)--show-output[Print the stdout and stderr of the benchmark instead of suppressing it. This will increase the time it takes for benchmarks to run, so it should only be used for debugging purposes or when trying to benchmark output speed.]' \
+'-h[Print this help message.]' \
+'--help[Print this help message.]' \
+'-V[Show version information.]' \
+'--version[Show version information.]' \
+':command -- Command to benchmark:_files' \
+&& ret=0
+    
+}
+
+(( $+functions[_hyperfine_commands] )) ||
+_hyperfine_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'hyperfine commands' commands "$@"
+}
+
+_hyperfine "$@"

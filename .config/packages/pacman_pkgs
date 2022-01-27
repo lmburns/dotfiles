@@ -18,6 +18,7 @@ ascii-design
 asciidoctor
 asciiquarium
 asoundconf
+asp
 aspell-en
 astyle
 audiocd-kio
@@ -30,6 +31,7 @@ base
 bat
 bc
 betterlockscreen
+bfg
 bind
 birdtray
 bison
@@ -62,6 +64,7 @@ cmus
 code
 code-minimap
 cointop
+colloid-gtk-theme-git
 conky
 copyq
 cppcheck
@@ -88,8 +91,6 @@ disfetch
 dive
 dnsmasq
 docker
-dolphin
-dolphin-plugins
 dosfstools
 downgrade
 drkonqi
@@ -121,7 +122,6 @@ flashfocus
 flex
 fontforge
 fq
-fselect-bin
 fswatch
 fx
 fzy
@@ -139,6 +139,7 @@ gnome-font-viewer
 gnome-keyring
 gnome-tweaks
 go
+goaccess
 goenv
 google-java-format
 googler
@@ -252,7 +253,6 @@ kmplot
 knotes
 kolourpaint
 kompare
-konqueror
 konsole
 kontact
 kontrast
@@ -274,6 +274,7 @@ ktimer
 ktorrent
 ktuberling
 kturtle
+kvantum
 kwallet-pam
 kwalletmanager
 kwave
@@ -355,6 +356,7 @@ museeks-bin
 mutt
 mycli
 naabu
+nautilus
 nb
 ncmpcpp
 ncspot
@@ -370,6 +372,7 @@ newsboat
 nitrogen
 nmap
 nnn
+nordic-theme-git
 notmuch
 npm
 numlockx
@@ -388,9 +391,11 @@ os-prober
 osquery
 oxygen
 pacgraph
+palenight-gtk-theme
 paman
 pamixer
 pandoc
+papirus-icon-theme
 parley
 parole
 partitionmanager
@@ -406,6 +411,7 @@ perl-image-exiftool
 perl-json
 perl-tidy
 perlbrew
+phinger-cursors
 pier-git
 pim-data-exporter
 pim-sieve-editor
@@ -453,6 +459,7 @@ python-xattr
 qeh-git
 qemu
 qemu-arch-extra
+qt5-styleplugins
 qterminal
 r
 radare2
@@ -549,10 +556,12 @@ telepathy-kde-filetransfer-handler
 telepathy-kde-integration-module
 telepathy-kde-send-file
 telepathy-kde-text-ui
+telescope
 termite
 texlive-bin
 texlive-core
 texlive-installer
+threadwatcher
 thunar-archive-plugin
 thunar-media-tags-plugin
 thunar-volman
@@ -579,6 +588,7 @@ ttf-liberation
 udiskie
 ulauncher
 umbrello
+unrar
 unrtf
 unzip
 up
@@ -595,6 +605,7 @@ vim
 virt-manager
 viu
 vivid
+vlc-bittorrent
 vnstat
 vt-cli
 vulkan-intel
@@ -613,6 +624,7 @@ xcape
 xclickroot-git
 xclip
 xcolor
+xdg-desktop-portal-gtk
 xdg-desktop-portal-kde
 xdo
 xdotool
@@ -711,6 +723,7 @@ xorg-xwininfo
 xorg-xwud
 xscreensaver
 xsel
+xsettingsd
 xss-lock
 xtitle
 xwinfo-git

@@ -1,0 +1,562 @@
+#compdef xdotool
+
+autoload -U is-at-least
+
+_xdotool_keys() {
+  typeset -a keys; keys=(
+    'esc:Escape'
+    'F1:Function 1'
+    'F2:Function 2'
+    'F3:Function 3'
+    'F4:Function 4'
+    'F5:Function 5'
+    'F6:Function 6'
+    'F7:Function 7'
+    'F8:Function 8'
+    'F9:Function 9'
+    'F10:Function 10'
+    'F11:Function 11'
+    'F12:Function 12'
+    'tab:Tab'
+    'Caps_Lock:Caps Lock'
+    'Shift_L:Left shift'
+    'Shift_R:Right shift'
+    'Ctrl_L:Left Ctrl'
+    'Ctrl_R:Right Ctrl'
+    'Alt_L:Left Alt'
+    'Alt_R:Right Alt'
+    'Super_L:Left Super'
+    'Super_R:Right Super'
+    'space:Space bar'
+    'Left:Left arrow'
+    'Right:Right arrow'
+    'Up:Up arrow'
+    'Down:Down arrow'
+    'Scroll_Lock:Scroll lock'
+    'Delete:Delete'
+    'Enter:Enter'
+    'Return:Return'
+    'BackSpace:Backspace'
+    'Pause:Pause'
+    'Break:Break'
+    'Insert:Insert'
+    'Home:Home'
+    'Page_Up:Page Up'
+    'Page_Down:Page Down'
+    'End:End'
+    'Num_Lock:Num_Lock'
+    'KP_0:Keypad 0'
+    'KP_1:Keypad 1'
+    'KP_2:Keypad 2'
+    'KP_3:Keypad 3'
+    'KP_4:Keypad 4'
+    'KP_5:Keypad 5'
+    'KP_6:Keypad 6'
+    'KP_7:Keypad 7'
+    'KP_8:Keypad 8'
+    'KP_9:Keypad 9'
+    'KP_9:Keypad 9'
+    '0:Number 0'
+    '1:Number 1'
+    '2:Number 2'
+    '3:Number 3'
+    '4:Number 4'
+    '5:Number 5'
+    '6:Number 6'
+    '7:Number 7'
+    '8:Number 8'
+    '9:Number 9'
+    '9:Number 9'
+    '~:Tilde'
+    '`:Alt grave'
+    '!:Exclamation mark'
+    '@:At sign'
+    '#:Pound sign'
+    '$:Dollar sign'
+    '%:Percent sign'
+    '^:Accent'
+    '&:Ampersand'
+    '*:Star'
+    '(:Opening parenthesis'
+    '):Closing parenthesis'
+    '[:Opening bracket'
+    ']:Closing bracket'
+    '{:Opening brace'
+    '}:Closing brace'
+    '<:Less than'
+    '>:Greater than'
+    '-:Hyphen'
+    '_:Underscore'
+    '=:Equals'
+    '+:Plus'
+    '":Double quote'
+    "':Single quote"
+    '\::Colon'
+    ';:Semi-colon'
+    ',:Comma'
+    '.:Period'
+    '/:Forward slash'
+    '?:Question mark'
+    '\\:Backslash'
+    '|:Pipe'
+    'a:Letter a'
+    'b:Letter b'
+    'c:Letter c'
+    'd:Letter d'
+    'e:Letter e'
+    'f:Letter f'
+    'g:Letter g'
+    'h:Letter h'
+    'i:Letter i'
+    'j:Letter j'
+    'k:Letter k'
+    'l:Letter l'
+    'm:Letter m'
+    'n:Letter n'
+    'o:Letter o'
+    'p:Letter p'
+    'q:Letter q'
+    'r:Letter r'
+    's:Letter s'
+    't:Letter t'
+    'u:Letter u'
+    'v:Letter v'
+    'w:Letter w'
+    'x:Letter x'
+    'y:Letter y'
+    'z:Letter z'
+    'A:Uppercase A'
+    'B:Uppercase B'
+    'C:Uppercase C'
+    'D:Uppercase D'
+    'E:Uppercase E'
+    'F:Uppercase F'
+    'G:Uppercase G'
+    'H:Uppercase H'
+    'I:Uppercase I'
+    'J:Uppercase J'
+    'K:Uppercase K'
+    'L:Uppercase L'
+    'M:Uppercase M'
+    'N:Uppercase N'
+    'O:Uppercase O'
+    'P:Uppercase P'
+    'Q:Uppercase Q'
+    'R:Uppercase R'
+    'S:Uppercase S'
+    'T:Uppercase T'
+    'U:Uppercase U'
+    'V:Uppercase V'
+    'W:Uppercase W'
+    'X:Uppercase X'
+    'Y:Uppercase Y'
+    'Z:Uppercase Z'
+  )
+  _describe -t keys "keys" keys
+}
+
+_xdotool_mouse_buttons() {
+  typeset -a mouse_buttons
+  mouse_buttons=(
+    'left:left edge'
+    'top:top edge'
+    'right:right edge'
+    'bottom:bottom edge'
+    'top-left:top-left corner'
+    'top-right:top-right corner'
+    'bottom-left:bottom-left corner'
+    'bottom-right:bottom-right corner'
+  )
+  _describe -t mouse-buttons "mouse buttons" mouse_buttons
+}
+
+_xdotool_window_property() {
+  typeset -a props
+  props=(
+    'MODAL:Makes the window into a modal'
+    'STICKY:Makes the window appear on all workspaces'
+    'MAXIMIZED_VERT:Sizes the window maximized vertically'
+    'MAXIMIZED_HORZ:Sizes the window maximized horizontally'
+    'ABOVE:Show window above all others (always on top)'
+    'BELOW:Show window below all others'
+    'SKIP_TASKBAR:Hides the window from the taskbar'
+    'SKIP_PAGER:Hides the window from the window pager'
+    'FULLSCREEN:Makes window fullscreen'
+    'HIDDEN:Unmaps the window'
+    'SHADED:Rolls the window up'
+    'DEMANDS_ATTENTION:Marks window urgent or needing attention'
+
+
+  )
+  _describe -t window-props "window properties" props
+}
+
+_xdotool_behave_screen_edge() {
+  typeset -a screen_edge
+  screen_edge=(
+    '1:left'
+    '2:middle'
+    '3:right'
+    '4:wheel up'
+    '5:wheel down'
+  )
+  _describe -t screen-edge "screen edge" screen_edge
+}
+
+
+_xdotool_behave_cmds() {
+  typeset -a behave_cmds
+  behave_cmds=(
+    'mouse-enter:Fires when the mouse enters a window'
+    'mouse-leave:Fires when the mouse leaves a window. This is the opposite of "mouse-enter"'
+    'mouse-click:Fires when the mouse is clicked. Specifically, when the mouse button is released'
+    'focus:Fires when the window gets input focus'
+    'blur:Fires when the window loses focus'
+  )
+  _describe -t behave-cmds "behave commands" behave_cmds
+}
+
+_xdotool_commands() {
+  typeset -a subcommands
+  subcommands=(
+    'getactivewindow:Output current active window (better than getwindowfocus)'
+    'getwindowfocus:Prints the window id of the currently focused window (saves to window stack)'
+    'getwindowname:Output the name of a given window, also known as the title (%1 is the default)'
+    'getwindowclassname:Prints the class name for the window'
+    'getwindowpid:Output the PID owning a given window (%1 is the default)'
+    'getwindowgeometry:Output the geometry (location and position) of a window (x,y,height,width,screen num)'
+    'getdisplaygeometry:'
+    'search:Search for windows with titles, names, or classes with a regular expression pattern'
+    'selectwindow:Get the window id (for a client) by clicking on it. Useful for scripts'
+    'help:Display help information and exit'
+    'version:Show version information and exit'
+    'behave:Bind an action to an event on a window. Allows running additional xdotool commands'
+    'behave_screen_edge:Bind an action to events when the mouse hits the screen edge or corner'
+    'click:Send a click, that is, a mousedown followed by mouseup for the given button with a delay'
+    'getmouselocation:Outputs the x, y, screen, and window id of the mouse cursor'
+    'key:Send keystrokes'
+    'keydown:Same as key, except only keydown (press) events are sent'
+    'keyup:Same as key, except only keyup (release) events are sent'
+    'mousedown:Same as click, except only a mouse down is sent'
+    'mousemove:Move the mouse to the specific X and Y coordinates on the screen'
+    'mousemove_relative:Movee the mouse x,y pixels relative to the current position of the mouse cursor'
+    'mouseup:Same as click, except only a mouse up is sent'
+    'set_window:Set properties about a window (%1 is the default)'
+    'type:Something to type'
+    'windowactivate:Activate the window even if it is on another desktop'
+    'windowfocus:Focus a window (%1 is the default)'
+    'windowkill:Kill a window. This action will destroy the window & kill client controlling it (%1 is default)'
+    'windowclose:Close a window. Will destroy window, but not kill client closing it (%1 is default)'
+    'windowquit:Close a window gracefully (%1 is the default)'
+    'windowmap:Map a window, making it visible on screen (%1 is the default)'
+    'windowminimize:Minimize a window (called iconify) (%1 is default)'
+    'windowmove:Move the window to the given position (%1 is the default)'
+    'windowraise:Raise the window to the top of the stack (%1 is default)'
+    'windowreparent:Reparent a window. Moves source_window to be a child of destination_window (%1 is default)'
+    'windowsize:Set the window size of the given window (%1 is the default)'
+    'windowstate:Change a property on a window'
+    'windowunmap:Unmap a window, making it no longer appear on your screen. (%1 is the default)'
+    'set_num_desktops:Changes the number of desktops or workspaces'
+    'get_num_desktops:Output the current number of desktops'
+    'set_desktop:Change the current view to the specified desktop'
+    'get_desktop:Output the current desktop in view'
+    'set_desktop_for_window:Move a window to a different desktop (%1 is the default)'
+    'get_desktop_for_window:Output desktop containing given window. Move a window to a different desktop'
+    "get_desktop_viewport:Report current viewport's position"
+    'set_desktop_viewport:Move the viewport to the given position. Not all requests will be obeyed'
+    'exec:Execute a program. Often useful when use with behave_screen_edge to lock screen'
+    'sleep:Sleep for a specified period. Fractions of seconds (like 1.3, or 0.4) are valid'
+  )
+  _describe -t xdotool-commands "command" subcommands
+  _xdotool_tui_cmds
+}
+
+_xdotool () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    _arguments "${_arguments_options[@]}" \
+        {-v,--version}'[Display version number and exit]' \
+        {-h,--help}'[Display help and exit]' \
+        ":: :_xdotool_commands" \
+        "*::: :->xdotool" \
+        && ret=0
+
+  case $state in
+    (xdotool)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:xdotool-command-$line[1]:"
+      case $line[1] in
+        (help)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (key|keyup|keydown)
+          _arguments "${_arguments_options[@]}" \
+              {-h,--help}'[Display help about the subcommand]' \
+              '*--window[send keystrokes to a specific window]:WINDOW:' \
+              '--clearmodifiers[clear active keyboard modifiers during keystrokes]' \
+              '*--delay[Use DELAY milliseconds between keystrokes]:DELAY:' \
+              '*--repeat[How many times to repeat the key sequence]:TIMES:' \
+              '*--repeat-delay[DELAY milliseconds between repetitions]:DELAY:' \
+              '*::_xdotool_keys' \
+              && ret=0
+        ;;
+        (type)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*--window[specify a window to send keys to]:WINDOW_ID:' \
+            '*--delay[delay between keystrokes]:MILLISECONDS:' \
+            '--clearmodifiers[reset active modifiers (alt, etc) while typing]' \
+            '*--args[how many arguments to expect in the exec command]:NUM:' \
+            '*--terminator[specifies a terminator that marks end of exec command]:DELAY:' \
+            '*--file[contents of file to be typed]:PATH:_files' \
+            ':Something to type:' \
+            && ret=0
+        ;;
+        (mousemove)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--clearmodifiers[reset active modifiers (alt, etc) while typing]' \
+            '--polar[Use polar coordinates (makes x and y angles)]' \
+            '*--screen[which screen to move on, default is current screen]:SCREEN:' \
+            '*--window[specify a window to move relative to]:WINDOW_ID:' \
+            '*-w[specify a window to move relative to]:WINDOW_ID:' \
+            '--sync[only exit once the mouse has moved]' \
+            ':X-coordinate:' \
+            ':Y-coordinate:' \
+            && ret=0
+        ;;
+        (mousemove_relative)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--clearmodifiers[reset active modifiers (alt, etc) while typing]' \
+            '--polar[Use polar coordinates (makes x and y angles)]' \
+            '--sync[only exit once the mouse has moved]' \
+            '1::X-coordinate:' \
+            '2::Y-coordinate:' \
+            && ret=0
+        ;;
+        (click)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--clearmodifiers[reset active modifiers (alt, etc) while typing]' \
+            '*--window[specify a window to send click to to]:WINDOW_ID:' \
+            '*--delay[delay in milliseconds between clicks]:MILLISECONDS:' \
+            '*--repeat[number of times to click. Default is 1]:REPEATS:' \
+            ':Mouse button:_xdotool_mouse_buttons' \
+            && ret=0
+        ;;
+        (mousedown|mouseup)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--clearmodifiers[reset active modifiers (alt, etc) while typing]' \
+            '*--window[specify a window to send click to to]:WINDOW_ID:' \
+            ':Mouse button:_xdotool_mouse_buttons' \
+            && ret=0
+        ;;
+        (getmouselocation|getwindowgeometry)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--shell[output shell variables for use with eval]' \
+            '*--prefix[use prefix for shell variables names (max 16 chars)]:STR:' \
+            && ret=0
+        ;;
+        (behave_screen_edge)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*--delay[delay before activating. During this time, your mouse must stay in area]:MILLISECONDS:' \
+            '*--quiesce[quiet time period after activating that no new activation will occur]:MILLISECONDS:' \
+            ':Action:_xdotool_behave_screen_edge' \
+            && ret=0
+        ;;
+        (search)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--class[check regexp_pattern against the window class]' \
+            '--classname[check regexp_pattern against the window classname]' \
+            '--role[check regexp_pattern against the window role]' \
+            '*--maxdepth[set search depth to N. Default is infinite. (-1 is infinite)]:NUM:' \
+            '--onlyvisible[matches only windows currently visible]' \
+            '*--pid[only show windows belonging to specific process]:PID:' \
+            '*--screen[only search a specific screen. Default is all screens]:PID:' \
+            '*--desktop[only search a specific desktop number]:NUM:' \
+            '--limit[break search after N results]:NUM:' \
+            '--name[check regexp_pattern against the window name]' \
+            '--title[DEPRECATED: check regexp_pattern against the window name]' \
+            '--shell[print results as shell array WINDOWS=( ... )]' \
+            '*--prefix[use prefix (max 16 chars) for array name STRWINDOWS]:STR:' \
+            '--all[Require all conditions match a window. Default is --any]' \
+            '--any[Windows matching any condition will be reported]' \
+            '--sync[Wait until a search result is found]' \
+            '*::PATTERN:' \
+            && ret=0
+        ;;
+        (selectwindow)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*::Command:_xdotool_commands' \
+            && ret=0
+        ;;
+        # '*--delay[]:DELAY:' \
+        (behave)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Behave event:_xdotool_behave_cmds' \
+            ':Command:_xdotool_commands' \
+            && ret=0
+        ;;
+        (getwindowpid|getwindowname|windowraise|windowclose|windowquit|windowkill|getwindowclassname)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (getactivewindow|get_num_desktops|get_desktop)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            && ret=0
+        ;;
+        (getwindowfocus)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '-f[Report the window with focus even if we dont think it is a top-level window]' \
+            && ret=0
+        ;;
+        (windowsize)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--usehints[Use window sizing hints (like font size in terminals)]' \
+            '--sync[only exit once the window has resized]' \
+            '1::Width:' \
+            '2::Height:' \
+            && ret=0
+        ;;
+        (windowmove)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--relative[make movements relative to the current window position]' \
+            '--sync[only exit once the window has moved]' \
+            ':Window Number:' \
+            ':X-Coordinate:' \
+            ':Y-Coordinate:' \
+            && ret=0
+        ;;
+        (windowfocus)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--sync[only exit once the window has focused]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowmap)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--sync[only exit once the window has mapped (is visible)]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowunmap)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--sync[only exit once the window has unmapped (is hidden)]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowminimize)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--sync[only exit once the window has minimized]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowreparent)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '::Window source:' \
+            '::Window destination:' \
+            && ret=0
+        ;;
+        (set_window)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*--name[set the window name (aka title)]:NAME:' \
+            '*--icon-name[set the window name while minimized/iconified]:NAME:' \
+            '*--role[set the windows role string]:ROLE:'
+            '*--class[set the windows class]:CLASS:'
+            '*--classname[set the windows classname]:CLASSNAME:'
+            '*--overrideredirect[set override_redirect (1 means not manage)]:OVERRIDE:'
+            '*--urgency[set the windows urgency hint. (1 set flag, 0 remove)]:URGENT:'
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowactivate)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--sync[only exit once the window has active (visible + active)]' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (windowstate)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*--add[add property]:PROP:_xdotool_window_property' \
+            '*--remove[remove property]:PROP:_xdotool_window_property' \
+            '*--toggle[toggle a property]:PROP:_xdotool_window_property' \
+            '*::Window Number:' \
+            && ret=0
+        ;;
+        (set_num_desktops)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '*::Number of desktops:' \
+            && ret=0
+        ;;
+        (get_desktop_viewport)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--shell[output shell variables for use with eval]' \
+            && ret=0
+        ;;
+        (set_desktop_viewport)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':X-coordinate:' \
+            ':Y-coordinate:' \
+            && ret=0
+        ;;
+        (set_desktop)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            '--relative[Use relative movements instead of absolute]' \
+            ':Desktop number:' \
+            && ret=0
+        ;;
+        (set_desktop_for_window)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Window:' \
+            ':Desktop number:' \
+            && ret=0
+        ;;
+        (get_desktop_for_window)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            ':Window:' \
+            && ret=0
+        ;;
+        esac
+  esac
+}
+
+_xdotool "$@"

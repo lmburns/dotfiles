@@ -82,10 +82,10 @@ DecorationHover=61,174,233
 ForegroundActive=252,252,252
 ForegroundInactive=161,169,177
 ForegroundLink=253,188,75
-ForegroundNegative=218,68,83
-ForegroundNeutral=246,116,0
+ForegroundNegative=176,55,69
+ForegroundNeutral=198,92,0
 ForegroundNormal=252,252,252
-ForegroundPositive=39,174,96
+ForegroundPositive=23,104,57
 ForegroundVisited=155,89,182
 
 [Colors:Tooltip]
@@ -140,7 +140,7 @@ Name[ca]=Brisa fosca
 Name[ca@valencia]=Brisa fosca
 Name[cs]=Breeze Tmavé
 Name[da]=Breeze Dark
-Name[de]=Breeze-Dunkel
+Name[de]=Breeze Dunkel
 Name[el]=Breeze σκούρο
 Name[en_GB]=Breeze Dark
 Name[es]=Brisa oscuro
@@ -178,7 +178,7 @@ Name[tg]=Насими торик
 Name[tr]=Koyu Esinti
 Name[uk]=Темна Breeze
 Name[x-test]=xxBreeze Darkxx
-Name[zh_CN]=Breeze 微风暗色
+Name[zh_CN]=Breeze 微风深色
 Name[zh_TW]=Breeze Dark
 shadeSortColumn=true
 

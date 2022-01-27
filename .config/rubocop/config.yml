@@ -2332,10 +2332,11 @@ Style/CombinableLoops:
   Enabled: true
   Safe: false
 
+# CHANGED
 Style/CommandLiteral:
   Description: "Use `` or %x around command literals."
   StyleGuide: "#percent-x"
-  Enabled: true
+  Enabled: false
   EnforcedStyle: backticks
   # backticks: Always use backticks.
   # percent_x: Always use `%x`.
@@ -3279,13 +3280,14 @@ Style/OrAssignment:
   StyleGuide: "#double-pipe-for-uninit"
   Enabled: true
 
+# CHANGED
 Style/ParallelAssignment:
   Description: >-
     Check for simple usages of parallel assignment.
     It will only warn when the number of variables
     matches on both sides of the assignment.
   StyleGuide: "#parallel-assignment"
-  Enabled: true
+  Enabled: false
 
 Style/ParenthesesAroundCondition:
   Description: >-
@@ -3310,6 +3312,7 @@ Style/PercentLiteralDelimiters:
     "%r": "{}"
     "%w": "[]"
     "%W": "[]"
+    "%x": "//"
 
 Style/PercentQLiterals:
   Description: "Checks if uses of %Q/%q match the configured preference."

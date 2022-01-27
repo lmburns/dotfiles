@@ -621,7 +621,7 @@ zt 0c light-mode null for \
     mre/cargo-inspect \
   lbin from'gh-r' \
     cargo-generate/cargo-generate \
-  lbin from'gh-r' \
+  lbin'* -> cargo-temp' from'gh-r' \
     yozhgoor/cargo-temp \
   lbin'tar*/rel*/evcxr' atclone'cargo build --release' atpull'%atclone' \
     google/evcxr \

@@ -1,9 +1,10 @@
 [Added Associations]
 inode/directory=lf.desktop;
-x-scheme-handler/http=librewolf.desktop;
-x-scheme-handler/https=librewolf.desktop;
+x-scheme-handler/http=brave-browser.desktop;
+x-scheme-handler/https=brave-browser.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
+application/x-yaml=nvim.desktop;
 
 [Default Applications]
 application/json=nvim.desktop;
@@ -11,21 +12,21 @@ application/pdf=zathura.desktop;
 application/rss+xml=rss.desktop;
 application/rtf=libreoffice-writer.desktop;
 application/x-bittorrent=torrent.desktop;
-application/x-gnome-saved-search=nautilus.desktop;
+application/x-gnome-saved-search=pcmanfm.desktop;
 application/x-perl=nvim.desktop;
 application/x-zerosize=nvim.desktop;
 image/gif=sxiv.desktop;
 image/jpeg=sxiv.desktop;
 image/png=sxiv.desktop;
-inode/directory=lf.desktop;
 message/rfc822=mail.desktop;
 text/markdown=nvim.desktop;
 text/plain=nvim.desktop;
 text/x-log=nvim.desktop;
 text/x-shellscript=nvim.desktop;
-x-scheme-handler/http=librewolf.desktop;
-x-scheme-handler/https=librewolf.desktop;
+x-scheme-handler/http=brave-browser.desktop;
+x-scheme-handler/https=brave-browser.desktop;
 x-scheme-handler/magnet=torrent.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
 x-scheme-handler/terminal=alacritty.desktop;
+inode/directory=lf.desktop;

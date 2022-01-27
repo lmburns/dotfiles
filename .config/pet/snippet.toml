@@ -123,3 +123,9 @@ description = "lsof - user; exclude '^'"
 command = "lsof -u lucas"
 output = ""
 tag = ["lsof"]
+
+[[snippets]]
+description = "set natural scrolling"
+command = "xinput set-prop 23 315 1"
+output = ""
+tag = ["xinput"]

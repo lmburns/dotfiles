@@ -12,6 +12,8 @@ pasystray &
 # Auto mount USB
 udiskie --tray &
 
+# xsettingsd
+
 # Kill process if it hangs
 # bustd &
 

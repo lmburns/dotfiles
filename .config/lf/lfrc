@@ -380,6 +380,31 @@ cmd select-exec ${{
   done
 }}
 
+cmd on-cd &{{
+  emulate -L zsh
+  zmodload -F zsh/parameter p:dirstack
+  autoload -Uz chpwd_recent_dirs add-zsh-hook
+
+  source /usr/share/git/completion/git-prompt.sh
+  GIT_PS1_SHOWDIRTYSTATE=auto
+  GIT_PS1_SHOWSTASHSTATE=auto
+  GIT_PS1_SHOWUNTRACKEDFILES=auto
+  GIT_PS1_SHOWUPSTREAM=auto
+  GIT_PS1_COMPRESSSPARSESTATE=auto
+  git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
+  fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
+
+  [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
+
+  # add-zsh-hook chpwd chpwd_recent_dirs
+  # add-zsh-hook chpwd @chwpd_dir-history-var
+  # add-zsh-hook zshaddhistory @append_dir-history-var
+  # @chwpd_dir-history-var now
+  # dir_history=("${x%%$'\n'}" "${(u)dir_history[@]}" )
+
+  lf -remote "send $id set promptfmt \"$fmt\""
+}}
+
 # # -- Select: all files
 # cmd select-files ${{
 #   { echo "$fs"; fd . -L -d1 -tf; } |
@@ -696,7 +721,6 @@ map ch chmod                            # change file permissions
 map cH chown                            # change file owner
 
 map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
-map rd $rmcrap                                  # delete .DS_Store etc
 map rs rmspace
 # ]]]
 
@@ -845,7 +869,7 @@ map gftu ${{clear; dotbare ls-files --other | bat}}
 # == TUI's == [[[
 map gTt $tig show # tig
 map gTu $gitui    # git
-map gTl $lazygit  # git
+map gL $lazygit  # git
 map bo $bow       # buku bookmarks
 # ]]]
 

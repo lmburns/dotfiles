@@ -287,3 +287,5 @@
   ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
 	basedir = /home/lucas/projects/github
 # vim:ft=gitconfig:et
+[credential]
+	helper = cache

@@ -1,0 +1,56 @@
+#compdef parallel
+
+local arguments
+
+arguments=(
+  '--delay[Delays starting the next job for N amount of seconds]'
+  '--dry-run[Prints jobs that will be run to STDOUT without running them]'
+  '--eta[Prints ETA to complete based on average runtime of running processes]'
+  {-j,--jobs}'[Defines the number of tasks to process in parallel]'
+  '--joblog[Logs job statistics to a designated file as they are completed]'
+  '--joblog-8601[Writes the start time in the ISO 8601 format: "YYYY-MM-DD hh:mm:ss"]'
+  '--memfree[Defines minimum amount of memory available before starting the next job]'
+  {-n,--max-args}'[Groups up to a certain number of arguments together in the same cli]'
+  '--num-cpu-cores[A convenience command that will print the number of CPU cores in the system]'
+  {-p,--pipe}'[Instead of args to child processes, apply to the STDIN of each child process]'
+  {-q,--quote}'[Escapes the arg supplied so that spaces, quotes, and slashes are retained]'
+  {-s,--silent,--quiet}'[Disables printing the standard output of running processes]'
+  '--shebang[Grants ability to utilize the parallel command as an interpreter via shebang title]'
+  '--shellquote[Prints commands that will be executed, with the commands quoted]'
+  '--tmpdir[Defines the directory to use for temporary files]'
+  '--timeout[If a command runs for longer than a specified number of secs, it will be killed]'
+  {-v,--verbose}'[Print information about running processes]'
+  '--version[Print version information]'
+  ':: :_suggest_colons'
+  '*:filename:_files'
+)
+
+_suggest_colons() {
+    local commands; commands=(
+    '\:\:\::Denotes that the input arguments that follow are input arguments. Added to new list'
+    '\:\:\:+:Denotes that the input arguments that follow are input arguments. Added to current list'
+    '\:\:\:\::Denotes that the input arguments that follow are files with inputs. Added to new list'
+    '\:\:\:\:+:Denotes that the input arguments that follow are files with inputs. Added to current list'
+
+    '{}:Will supply the input argument untouched'
+    '{.}:Removes the extension from the input'
+    '{^abc...}:Removes a custom suffix from the input'
+    '{/}:Displays the base name (file name) of the input'
+    '{//}:Displays the directory name of the input'
+    '{/.}:Displays the base name with the extension removed'
+    '{/^abc...}:Displays the base name with a custom suffix removed'
+    '{#}:Displays the current job ID as a number counting from 1'
+    '{##}:Displays the total number of jobs to be processed'
+    '{%}:Displays the threads ID number'
+    '{N}:Where N is a number, display the associated job number'
+    '{N.}:Removes the extension from the Nth job'
+    '{N/}:Displays the base name (file name) of the Nth job'
+    '{N^abc...}:Removes a custom suffix from the Nth job'
+    '{N//}:Displays the directory name of the Nth job'
+    '{N/.}:Displays the base name of the Nth job with the extension removed'
+    '{N/^abc...}:Displays the base name of the Nth job with a custom suffix removed'
+    )
+    _describe -t commands 'colons' commands "$@"
+}
+
+_arguments -s -S -C $arguments

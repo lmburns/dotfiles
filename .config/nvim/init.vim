@@ -1190,6 +1190,8 @@ Plug 'sbdchd/neoformat'
   augroup end
 
 " ============== nvim-r ============== {{{
+" FIX: This buffer is cleared
+" autocmd BufEnter,BufNew r execute "silent! CocDisable"
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
   " Run ;RStop // :RKill to quit
   let R_auto_start = 1                                   " Autostart R when opening .R
@@ -1892,6 +1894,7 @@ inoremap <expr> <a-;> fzf#complete({
   Plug 'sainnhe/gruvbox-material'
   Plug 'sainnhe/edge'
   Plug 'sainnhe/everforest'
+  Plug 'b4skyx/serenade'
   Plug 'joshdick/onedark.vim'
   Plug 'pineapplegiant/spaceduck', { 'branch': 'main' }
   Plug 'ghifarit53/daycula-vim' , {'branch' : 'main'}
@@ -2002,10 +2005,12 @@ call plug#end()
     nnoremap <D-v> "+p
     inoremap <D-v> <c-r>+
   endif
+
   let g:neovide_transparency=0.9
   let g:neovide_cursor_vfx_particle_lifetime=2.0
   let g:neovide_cursor_vfx_particle_density=12.0
   let g:neovide_cursor_vfx_mode = 'torpedo'
+  let g:neovide_remember_window_size = v:true
   " let g:neovide_cursor_vfx_mode = "pixiedust"
 
   " set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
@@ -2016,6 +2021,7 @@ call plug#end()
 
   syntax enable
   colorscheme kimbox
+  " colorscheme serenade
   " colorscheme everforest
   " colorscheme gruvbox-material
   " colorscheme sonokai
@@ -2552,9 +2558,10 @@ vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
 " }}} === highlight line ===
 
 " ============== background transparent / colors ============== {{{
-  highlight DiffAdd      ctermfg=65 ctermbg=NONE guifg=#5F875F guibg=NONE
-  highlight DiffChange   ctermfg=60 ctermbg=NONE guifg=#5F5F87 guibg=NONE
-  highlight DiffDelete   ctermfg=9  ctermbg=NONE guifg=#cc6666 guibg=NONE
+  highlight DiffAdd      ctermfg=white ctermbg=NONE guifg=#5F875F guibg=NONE
+  highlight DiffChange   ctermfg=white ctermbg=NONE guifg=#5F5F87 guibg=NONE
+  highlight DiffDelete   ctermfg=white ctermbg=NONE guifg=#cc6666 guibg=NONE
+  highlight DiffText     cterm=bold ctermfg=white ctermbg=DarkRed
 
   exec 'hi! SignifySignAdd    ctermfg=Green  guifg=#50FA7B ' . (has('termguicolors')? 'guibg=none':'ctermbg=') . synIDattr(hlID('SignColumn'),'bg')
   exec 'hi! SignifySignDelete ctermfg=Red    guifg=#FF5555 ' . (has('termguicolors')? 'guibg=none':'ctermbg=') . synIDattr(hlID('SignColumn'),'bg')

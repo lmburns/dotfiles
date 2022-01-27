@@ -1,4 +1,5 @@
 .ipynb_checkpoints
+.vscode/
 .pycache
 ._backup
 ._zinit

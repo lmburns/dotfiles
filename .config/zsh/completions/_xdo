@@ -1,0 +1,51 @@
+#compdef xdo
+
+local arguments
+
+arguments=(
+  '-r[Distinct ID]'
+  '-c[Same class]'
+  '-C[Distinct class]'
+  '-d[Same desktop]'
+  '-D[Distinct desktop]'
+  '-m[Wait for existence of a matching window]'
+  '-s[Handle a symbolic desktop numbers]'
+  '*-n[The window has the given instance name]:INSTANCE_NAME:'
+  '*-N[The window has the given class name]:CLASS_NAME:'
+  '*-a[The window has the given wm name]:WM_NAME:'
+  '*-t[The target window for below and above actions]:WID:'
+  '*-p[The window has the given PID]:PID:'
+  '*-k[Use the given code for the key_{press,release}, button_{press,release}]:CODE:'
+  '*-x[+/- Window x coordinate for move and pointer_motion action]:PIXELS:'
+  '*-y[+/- Window x coordinate for move and pointer_motion action]:PIXELS:'
+  '*-w[+/- Window width for resize action]:PIXELS:'
+  '*-h[+/- Window height for resize action]:PIXELS:'
+  '-v[Print version information]'
+  '*:subcommand:_xdo_subcommands'
+)
+
+_xdo_subcommands() {
+    local commands; commands=(
+    'close:Close the window'
+    'kill:Kill the client'
+    'hide:Unmap the window'
+    'show:Map the window'
+    'raise:Raise the window'
+    'lower:Lower the window'
+    'below:Put the window below the target see (-t)'
+    'above:Put the window above the target see (-t)'
+    'move:Move the window'
+    'resize:Resize the window'
+    'activate:Activate the window'
+    "id:Print the window's ID"
+    "pid:Print the window's PID"
+    "key_press:Simulate a key press event"
+    "key_release:Simulate a key release event"
+    "button_press:Simulate a button press event"
+    "button_release:Simulate a button release event"
+    "pointer_motion:Simulate a pointer motion event"
+    )
+    _describe -t commands 'subcommands' commands "$@"
+}
+
+_arguments -s -S -C $arguments

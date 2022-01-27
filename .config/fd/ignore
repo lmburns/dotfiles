@@ -1,3 +1,11 @@
 .git/
 /target/
 target/
+.vscode/
+.zinit
+._zinit/
+._backup/
+coc/
+vim-persisted-undo/
+.ipynb_checkpoints
+.pycache

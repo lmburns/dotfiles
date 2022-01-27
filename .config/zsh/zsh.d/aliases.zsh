@@ -13,6 +13,7 @@ alias -g T='| tail'
 alias %= \$=
 
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
+alias nd='neovide'
 alias tm='tmsu'
 alias mail='/usr/bin/mail'
 alias ja="jaime"
@@ -80,8 +81,8 @@ alias ng="noglob"
 
 (( ${+commands[pet]} )) && {
   # Doesn't run
-  # alias pe="pet exec --color"
   alias pe="pet exec"
+  alias pec="pe --color"
   alias pee="pet edit"
 }
 
@@ -147,7 +148,7 @@ alias chmx='chmod -x'
 alias lns='ln -siv'
 alias kall='killall'
 alias kid='kill -KILL'
-alias yt='youtube-dl --add-metadata -i'
+alias yt='yt-dlp --add-metadata -i'
 alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
 alias prg="rg --pcre2"
 alias frg="rg -F"

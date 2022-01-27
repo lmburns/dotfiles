@@ -37,12 +37,14 @@ export TEXLIVE="${HOME}/texlive"
 
 export TERMINAL="alacritty"
 export BROWSER="librewolf"
+# export BROWSER="brave"
 export BROWSERCLI="w3m"
 export SR_BROWSER="$BROWSERCLI"
 export RTV_BROWSER="$BROWSERCLI"
 export EDITOR='nvim'
 # export VISUAL="${EDITOR}"
 export GIT_EDITOR="${EDITOR}"
+export RTV_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"
 export SYSTEMD_COLORS=1
 
@@ -56,6 +58,12 @@ export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
+
+export GTK_USE_PORTAL=1
+export GTK_THEME_VARIANT=dark
+export QT_QPA_PLATFORMTHEME=qt5ct
+# export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_STYLE_OVERRIDE=kvantum
 
 export XINITRC="${HOME}/.xinitrc"
 export VIMRC="${XDG_CONFIG_HOME}/nvim/init.vim"
@@ -84,12 +92,13 @@ export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export PIPX_BIN_DIR="${XDG_DATA_HOME:h}/bin"
 export IPYTHONDIR="${XDG_CACHE_HOME}/ipython"
 # export PTPYTHON_CONFIG_HOME="${XDG_CONFIG_HOME}/ptpython/config.py"
-# export R_USER="${XDG_CONFIG_HOME}/r/R"
 export R_ENVIRON_USER="${XDG_CONFIG_HOME}/r/Renviron"
 export R_MAKE_VARS_USER="${XDG_CONFIG_HOME}/r/Makevars"
 export R_HISTFILE="${XDG_CONFIG_HOME}/r/Rhistory.Rhistory"
 export R_PROFILE_USER="${XDG_CONFIG_HOME}/r/Rprofile"
-export R_LIBS_USER="${XDG_CONFIG_HOME}/r"
+export R_LIBS_USER="${XDG_CONFIG_HOME}/r/library"
+export R_HOME_USER="${XDG_CONFIG_HOME}/r"
+export R_BROWSER="$BROWSER"
 export RLWRAP_HOME="${XDG_DATA_HOME}/rlwrap"
 export STACK_ROOT="${XDG_DATA_HOME}/stack"
 export OPAMROOT="${XDG_DATA_HOME}/opam"
