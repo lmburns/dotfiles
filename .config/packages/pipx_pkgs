@@ -21,6 +21,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - greg
    package grip 4.5.2, installed using Python 3.9.5
     - grip
+   package jrnl 2.8.3, installed using Python 3.10.0
+    - jrnl
    package khal 0.10.4, installed using Python 3.9.5
     - ikhal
     - khal
@@ -28,6 +30,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - khard
    package litecli 1.7.0, installed using Python 3.9.5
     - litecli
+   package mplug 0.2.1, installed using Python 3.9.5
+    - mplug
    package organize-tool 1.10.1, installed using Python 3.9.5
     - organize
    package pdm 1.12.6, installed using Python 3.9.5

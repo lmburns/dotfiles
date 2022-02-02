@@ -173,7 +173,6 @@
   },
   "snippets.shortcut": "\uf672",
   "clangd.enabled": true,
-  // AlwaysBreakAfterDefinitionReturnType
   "clangd.arguments": [
     "--clang-tidy",
     "--completion-style=detailed",
@@ -226,6 +225,11 @@
           "directory": "/tmp/ccls"
         }
       }
+    },
+    "R": {
+      "command": "/usr/bin/R",
+      "args": ["--slave", "-e", "languageserver::run()"],
+      "filetypes": ["r"]
     }
   },
   "yank.highlight.duration": 100,

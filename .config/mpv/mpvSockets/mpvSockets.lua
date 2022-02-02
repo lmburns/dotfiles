@@ -27,10 +27,12 @@ function join_paths(...)
 end
 
 ppid = utils.getpid(
-os.execute("mkdir " .. join_paths(tempDir, "mpvSockets") .. " 2>/dev/null")
-mp.set_property("options/input-ipc-server", join_paths(tempDir, "mpvSockets", ppid))
+    os.execute("mkdir " .. join_paths(tempDir, "mpvSockets") .. " 2>/dev/null")
+    mp.set_property("options/input-ipc-server", join_paths(tempDir, "mpvSockets", ppid))
 
-function shutdown_handler()
-        os.remove(join_paths(tempDir, "mpvSockets", ppid))
-end
-mp.register_event("shutdown", shutdown_handler))
+    function shutdown_handler()
+            os.remove(join_paths(tempDir, "mpvSockets", ppid))
+    end
+
+    mp.register_event("shutdown", shutdown_handler)
+)

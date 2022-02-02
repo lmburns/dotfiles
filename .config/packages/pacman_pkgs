@@ -56,6 +56,7 @@ chafa
 chkservice
 chmap
 clamav
+clamtk
 cli-visualizer
 clipit
 clipman
@@ -358,17 +359,19 @@ mycli
 naabu
 nautilus
 nb
+ncdu
 ncmpcpp
 ncspot
 neofetch
 neomutt
 neovide-git
-neovim
+neovim-git
 nerd-fonts-complete
 netctl
 network-manager-applet
 networkmanager
 newsboat
+nim
 nitrogen
 nmap
 nnn
@@ -527,7 +530,6 @@ subversion
 sudo
 svgpart
 sweeper
-swift-bin
 sxhkd
 sxiv
 sysstat

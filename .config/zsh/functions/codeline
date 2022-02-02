@@ -1,6 +1,6 @@
 # Desc: get specific lang lines colorized
 
-# Depreciated now that tokei is compiled with color
+# Deprecated now that tokei is compiled with color
 
 codelines() {
   # tokei -t="$1" --output json | jq ".${(U)1}.code"

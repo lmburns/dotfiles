@@ -28,6 +28,8 @@ ulauncher --hide-window &
 # xinput set-prop 21 314 1
 # gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
 
+xrandr --dpi 96
+
 xset s on
 xset s 900 180
 # xset dpms 0 0 0

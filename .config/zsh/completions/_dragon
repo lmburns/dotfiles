@@ -14,6 +14,7 @@ arguments=(
   {--on-top,-T}'[make window always-on-top]'
   {--stdin,-I}'[read input from stdin]'
   {--verbose,-v}'[be verbose]'
+  {--thumb-size,-s}'[set thumbnail size]'
   '--help[show help]'
   '--version[show version details]'
   '*:filename:_files'

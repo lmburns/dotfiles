@@ -394,6 +394,7 @@ autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 set showtabline=2
 let g:lightline = {}
 let g:lightline.colorscheme = 'kimbox'
+" let g:lightline.colorscheme = 'overcast'
 " let g:lightline.colorscheme = 'gruvbox_material'
 " let g:lightline.colorscheme = 'everforest'
 " let g:lightline.colorscheme = 'miramare'
@@ -701,8 +702,7 @@ Plug 'ludovicchabant/vim-gutentags'
 
   augroup gutentags
     autocmd!
-    " autocmd! User vim-gutentags call gutentags#setup_gutentags()
-    autocmd! FileType c call <SID>SetupCTags()
+    autocmd! User vim-gutentags call gutentags#setup_gutentags()
     autocmd! FileType cpp call <SID>SetupCPPTags()
     autocmd! FileType ruby call <SID>SetupRubyTags()
     autocmd! FileType perl call <SID>SetupPerlTags()
@@ -930,6 +930,7 @@ Plug 'yggdroot/indentline'
 " ============ coc-nvim ============ {{{
 " Plug 'tjdevries/coc-zsh'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'vim-perl/vim-perl', { 'for': 'perl' }
 Plug 'neoclide/coc.nvim', {'commit': 'ad3a11638ff78c1', 'do': 'yarn install --frozen-lockfile'}
 " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'antoinemadec/coc-fzf'
@@ -978,7 +979,6 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-yaml',
     \ 'coc-pyright',
     \ 'coc-vimtex',
-    \ 'coc-r-lsp',
     \ 'coc-vimlsp',
     \ 'coc-sh',
     \ 'coc-sql',
@@ -993,6 +993,7 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-toml',
     \ 'coc-solargraph',
     \ 'coc-prettier',
+    \ 'coc-r-lsp',
     \ 'coc-perl',
     \ 'coc-lua',
     \ 'coc-tsserver'
@@ -1084,7 +1085,7 @@ Plug 'antoinemadec/coc-fzf'
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1163,31 +1164,28 @@ Plug 'antoinemadec/coc-fzf'
   autocmd CursorHold * silent call CocActionAsync('highlight')
 " }}} === coc-nvim ===
 
-Plug 'vim-perl/vim-perl', { 'for': 'perl' }
-Plug 'sbdchd/neoformat'
+" ============ formatting ============ {{{
+" Plug 'karb94/neoscroll.nvim'
 " Plug 'mhartington/formatter.nvim'
 
-" let g:neoformat_perl_perltidy = {
-"       \ 'exe': 'perltidy',
-"       \ 'args': ['-c', '-e'],
-"       \ 'replace': 0,
-"       \ 'stdin': 0,
-"       \ 'env': [""],
-"       \ 'valid_exit_codes': [0],
-"       \ 'no_append': 1,
-"       \ }
-"
-" let g:neoformat_enabled_perl = ['perl']
+Plug 'sbdchd/neoformat'
+let g:neoformat_basic_format_retab = 1
+let g:neoformat_basic_format_trim = 1
+
+" lua require('neoscroll').setup()
 
  " Formatting options that are better than coc's :Format
   nnoremap ;ff :Format<CR>
   augroup formatting
       autocmd!
-      autocmd FileType lua nmap      ;ff :Neoformat! lua luaformat<CR>
-      autocmd FileType java nmap     ;ff :Neoformat! java prettier<CR>
-      autocmd FileType perl nmap     ;ff :Neoformat! perl<CR>
-      autocmd FileType sh   nmap     ;ff :Neoformat! sh<CR>
+      autocmd FileType lua  nmap       ;ff :Neoformat! lua luaformat<CR>
+      autocmd FileType java nmap       ;ff :Neoformat! java prettier<CR>
+      autocmd FileType perl nmap       ;ff :Neoformat! perl<CR>
+      autocmd FileType sh   nmap       ;ff :Neoformat! sh<CR>
+      autocmd FileType python     nmap ;ff :Neoformat! python black<CR>
+      autocmd FileType md,vimwiki,zsh nmap ;ff :Neoformat!<CR>
   augroup end
+" }}} === formatting ===
 
 " ============== nvim-r ============== {{{
 " FIX: This buffer is cleared
@@ -1889,6 +1887,7 @@ inoremap <expr> <a-;> fzf#complete({
   Plug 'ajmwagar/vim-deus'
   Plug 'habamax/vim-gruvbit'
   Plug 'lmburns/kimbox'
+  Plug 'lmburns/overcast'
   Plug 'nanotech/jellybeans.vim'
   Plug 'cocopon/iceberg.vim'
   Plug 'sainnhe/gruvbox-material'
@@ -1940,6 +1939,7 @@ call plug#end()
   " let g:kimbox_background = 'darker' " dark dark purple
   " let g:kimbox_background = 'ocean' " dark purple
   let g:kimbox_allow_bold = 1
+  let g:overcast_allow_bold = 1
 
   let g:oceanic_material_background = "ocean"
   " let g:oceanic_material_background = "deep"
@@ -2001,16 +2001,18 @@ call plug#end()
   set guioptions-=L
   set guitablabel=%M\ %t
   if exists('g:neovide')
-    set guifont=FiraMono\ Nerd\ Font\ Mono:h12
+    set guifont=FiraMono\ Nerd\ Font\ Mono:style=Medium:h12
     nnoremap <D-v> "+p
     inoremap <D-v> <c-r>+
   endif
 
+  " let g:neovide_cursor_animation_length = 0.15
+  " let g:neovide_remember_window_size = v:true
+  let g:neovide_input_use_logo = v:true
   let g:neovide_transparency=0.9
   let g:neovide_cursor_vfx_particle_lifetime=2.0
   let g:neovide_cursor_vfx_particle_density=12.0
   let g:neovide_cursor_vfx_mode = 'torpedo'
-  let g:neovide_remember_window_size = v:true
   " let g:neovide_cursor_vfx_mode = "pixiedust"
 
   " set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
@@ -2021,6 +2023,7 @@ call plug#end()
 
   syntax enable
   colorscheme kimbox
+  " colorscheme overcast
   " colorscheme serenade
   " colorscheme everforest
   " colorscheme gruvbox-material
@@ -2453,8 +2456,8 @@ call plug#end()
   command! RUN :call s:execute_buffer()
   augroup ExecuteBuffer
       au!
-      au FileType sh,bash,zsh,python,ruby,perl nnoremap <Leader>ru :RUN<cr>
-      au FileType sh,bash,zsh,python,ruby,perl nnoremap <Leader>lru
+      au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>r<CR> :RUN<cr>
+      au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>lru
         \ :FloatermNew --autoclose=0 ./%<cr>
   augroup END
   " }}} ExecuteBuffer

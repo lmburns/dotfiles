@@ -10,6 +10,7 @@ NPM_FILE="npm_$(date +'%Y%m%d')"
 PIP_FILE="pip_$(date +'%Y%m%d')"
 PIPX_FILE="pipx_$(date +'%Y%m%d')"
 CPAN_FILE="cpan_$(date +'%Y%m%d')"
+CRAN_FILE="cran_$(date +'%Y%m%d')"
 
 DIR="$HOME/backup/packages"
 
@@ -17,12 +18,27 @@ DIR="$HOME/backup/packages"
 
 paru -Qeq > "${DIR}/${PACMAN_FILE}"
 ls "${CARGO_HOME}/bin" | rg "^(cargo|rust)" -v > "${DIR}/${CARGO_FILE}"
-gem list > "${DIR}/${GEM_FILE}"
+
+# gem list > "${DIR}/${GEM_FILE}"
+ruby -rrubygems -e \
+  "puts(Gem::Specification.sort_by { |g| [g.name.downcase, g.version] }.group_by(&:name).map do |name, specs|
+    [name, specs.map { |spec| spec.version.to_s }.join(',')].join(' ')
+  end)" \
+  > "${DIR}/${GEM_FILE}"
+
 ls "${HOME}/go/$(goenv version | hck -f1)/bin" > "${DIR}/${GO_FILE}"
 npm list -g --depth=0 > "${DIR}/${NPM_FILE}"
-pip list > "${DIR}/${PIP_FILE}"
+pip-chill > "${DIR}/${PIP_FILE}"
 pipx list > "${DIR}/${PIPX_FILE}"
-cpan -l > "${DIR}/${CPAN_FILE}"
+
+# cpan -l > "${DIR}/${CPAN_FILE}"
+perl -MExtUtils::Installed -e '$i=ExtUtils::Installed->new(); @mod=$i->modules(); print join "\n", @mod' \
+  > "${DIR}/${CPAN_FILE}"
+
+R --quiet -e 'ip=as.data.frame(installed.packages()[,c(1,3:4)]); ip=ip[is.na(ip$Priority),1:2,drop=FALSE]; ip' \
+  | tail -n +2 \
+  | sd '^\$.*\n' '' \
+  > "${DIR}/${CRAN_FILE}"
 
 /bin/cp -f "${DIR}/${PACMAN_FILE}" "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
 /bin/cp -f "${DIR}/${CARGO_FILE}" "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
@@ -32,6 +48,7 @@ cpan -l > "${DIR}/${CPAN_FILE}"
 /bin/cp -f "${DIR}/${PIP_FILE}" "${XDG_CONFIG_HOME}/packages/pip_pkgs"
 /bin/cp -f "${DIR}/${PIPX_FILE}" "${XDG_CONFIG_HOME}/packages/pipx_pkgs"
 /bin/cp -f "${DIR}/${CPAN_FILE}" "${XDG_CONFIG_HOME}/packages/cpan_pkgs"
+/bin/cp -f "${DIR}/${CRAN_FILE}" "${XDG_CONFIG_HOME}/packages/cran_pkgs"
 
 dotbare add "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
 dotbare add "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
@@ -41,3 +58,4 @@ dotbare add "${XDG_CONFIG_HOME}/packages/npm_pkgs"
 dotbare add "${XDG_CONFIG_HOME}/packages/pip_pkgs"
 dotbare add "${XDG_CONFIG_HOME}/packages/pipx_pkgs"
 dotbare add "${XDG_CONFIG_HOME}/packages/cpan_pkgs"
+dotbare add "${XDG_CONFIG_HOME}/packages/cran_pkgs"

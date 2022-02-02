@@ -3669,11 +3669,12 @@ Style/StringHashKeys:
   Enabled: false
   Safe: false
 
+# CHANGED
 Style/StringLiterals:
   Description: "Checks if uses of quotes match the configured preference."
   StyleGuide: "#consistent-string-literals"
   Enabled: true
-  EnforcedStyle: single_quotes
+  EnforcedStyle: double_quotes
   SupportedStyles:
     - single_quotes
     - double_quotes
@@ -3681,12 +3682,13 @@ Style/StringLiterals:
   # use the same type of quotes on each line.
   ConsistentQuotesInMultiline: false
 
+# CHANGED
 Style/StringLiteralsInInterpolation:
   Description: >-
     Checks if uses of quotes inside expressions in interpolated
     strings match the configured preference.
   Enabled: true
-  EnforcedStyle: single_quotes
+  EnforcedStyle: double_quotes
   SupportedStyles:
     - single_quotes
     - double_quotes

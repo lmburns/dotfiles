@@ -113,6 +113,12 @@ output = ""
 tag = ["pacman"]
 
 [[snippets]]
+description = "pacman - installed regex"
+command = "paru -Ssq "
+output = ""
+tag = ["pacman"]
+
+[[snippets]]
 description = "lsof - user"
 command = "lsof -u lucas"
 output = ""

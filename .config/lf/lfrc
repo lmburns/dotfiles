@@ -355,7 +355,6 @@ cmd edit_scope :{{
 }}
 
 
-
 # -- Select: all files
 cmd select-files ${{
   typeset -a files; files=( $(fd . -L -d1 -tf) )
@@ -673,8 +672,8 @@ map Qm !clear; mdcat -p $fx                   # preview in mdcat
 map Qg !clear; glow -p $fx                    # preview in glow
 map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
-map as !du -hsx * | sort -rh | bat --paging=always                          # directory info
-map ai !stat $f; echo ; du -sh $f ; echo ; file --mime -b -p $f # info
+map as !du -hsx * | sort -rh | bat --paging=always               # directory info
+map ai !clear; file-info $f  # info
 
 map <c-f> push :rg<space>                           # search with rg
 map <c-z> push :rgu<space>                          # search interactively with fzf
@@ -727,6 +726,7 @@ map rs rmspace
 # == File movement == [[[
 map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
+map fr push :fd<space>--changed-within<space> # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit
 map fa ajfzf              # use fzf with autojump
 # map <c-b> broot_jump    # use broot to jump to directory
@@ -739,6 +739,7 @@ map zi zoxide_i           # zoxide interactive
 map zz push :z<space>     # very similar to autojump
 map <c-j> push :aj<space> # auto jump
 map w fzf_cd              # fzf cd
+map Ma $neomutt -a "$fx"  # mail a file
 # ]]]
 
 # == General == [[[

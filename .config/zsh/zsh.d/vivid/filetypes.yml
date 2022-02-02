@@ -173,6 +173,8 @@ programming:
       other:
         - CODEOWNERS
         - .ignore
+        - .npmignore
+        - .cvsignore
         - .fdignore
         - .rgignore
 
@@ -210,6 +212,8 @@ programming:
         - setup.py
       ruby:
         - .gemspec
+        - Rakefile
+        - Gemfile
 
     code-style:
       python:
@@ -223,6 +227,8 @@ programming:
         - .pro
       kdevelop:
         - .kdevelop
+      other:
+        - .editorconfig
 
     documentation:
       doxygen:
@@ -271,6 +277,7 @@ media:
     - .mkv
     - .mov
     - .mp4
+    - .webm
     - .mpeg
     - .mpg
     - .rm
@@ -408,6 +415,7 @@ unimportant:
     - .CFUserTextEncoding
     - .DS_Store
     - .localized
+    - .icloud
 
   torrent:
     - .torrent

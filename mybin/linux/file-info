@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+ansi --red ${(l:COLUMNS::=:):-}
+
+print -l -- "$(ansi --bold --blue '  stat: ')$(stat $1)"
+print -l -- "$(ansi --bold --blue 'diskus: ')$(diskus $1)"
+print -l -- "$(ansi --bold --blue '  mime: ')$(file --mime -b -p $1)"
+print -l -- "$(ansi --bold --blue 'lsattr: ')$(lsattr $1)"
+print -l -- "$(ansi --bold --blue ' xattr: ')$(xattr -l $1)"
+
+ansi --red ${(l:COLUMNS::=:):-}

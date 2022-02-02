@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+# Desc: Get repositories that are starred by a given user
+
+local user pages stars
+
+user=${1:-lmburns}
+
+stars=$(\
+    curl -sI "https://api.github.com/users/$user/starred?per_page=1" \
+    | egrep '^link' \
+    | egrep -o 'page=[0-9]+' \
+    |tail -1 \
+    |cut -c6-
+)
+pages=$(( 658 / 100 + 1 ))
+
+print -- "You have $stars starred repositories"
+
+for p ($(seq 2)) {
+  curl -sH "Accept: application/vnd.github.v3.star+json" \
+      "https://api.github.com/users/$user/starred?per_page=100&page=$p" \
+    | jq -r '.[]'
+}

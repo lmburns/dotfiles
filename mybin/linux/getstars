@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+# Desc: Print all starred repos of a user
+
+require "octokit"
+require "colorize"
+require "terminal-table"
+
+# require "git"
+# require "parallel"
+
+# Parallel.each(Octokit.starred("lmburns"), in_process: 4) { |s| puts(s[:html_url], s[:name]) }
+
+# Implement an extra method to numbers
+class Object
+  def number?
+    to_f.to_s == to_s || to_i.to_s == to_s
+  end
+end
+
+client = Octokit::Client.new(access_token: ENV["GITHUB_REQAPI"])
+user = client.user
+user.login
+
+Octokit.per_page = ARGV[0].number? ? ARGV[0] : 10
+Octokit.auto_paginate = [true, false].include?(ARGV[1]) || true
+
+table = Terminal::Table.new(headings: %w[Owner Name].map { |o| o.green.bold }) do |t|
+  Octokit.starred("lmburns").each do |s|
+    t.add_row [s[:owner][:login].red.bold, s[:name].blue]
+  end
+end
+
+table.align_column(0, :right)
+table.style = { border_x: "=" }
+
+puts table

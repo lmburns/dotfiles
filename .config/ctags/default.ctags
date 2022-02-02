@@ -3,6 +3,7 @@
 --fields=+niazS
 --extras=+q
 
+# === Perl ===
 --langmap=perl:.pod.pl.pm.t
 --regex-perl=/with[ \t]+([^;]+)[ \t]*?;/\1/w,role,roles/
 --regex-perl=/extends[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
@@ -25,5 +26,33 @@
 # --regex-perl=/^\s*has\s+["]?([0-9a-zA-Z_]+)/\1/a,attribute/
 # --regex-perl=/^\s*extends\s+(["])(.+)\1/\2/e,extends/
 # --regex-perl=/^\s*with\s+(["])(.+)\1/\2/r,role/
+
+# === Typescript ===
+# --langmap=typescript:.ts
+# --regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*abstract class[ \t]+([a-zA-Z0-9_]+)/\2/a,abstract classes/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*module[ \t]+([a-zA-Z0-9_]+)/\2/n,modules/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*type[ \t]+([a-zA-Z0-9_]+)/\2/t,types/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*namespace[ \t]+([a-zA-Z0-9_]+)/\2/n,modules/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*function[ \t]+([a-zA-Z0-9_]+)/\2/f,functions/
+# --regex-typescript=/^[ \t]*export[ \t]+(var|const|let)[ \t]+([a-zA-Z0-9_]+)/\1/v,variables/
+# --regex-typescript=/^[ \t]*var[ \t]+([a-zA-Z0-9_]+)[ \t]*=[ \t]*function[ \t]*\(\)/\1/l,varlambdas/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*(public|private)[ \t]+(static|readonly)?[ \t]*([a-zA-Z0-9_]+)/\4/m,members/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*interface[ \t]+([a-zA-Z0-9_]+)/\2/i,interfaces/
+# --regex-typescript=/^[ \t]*(export)?[ \t]*enum[ \t]+([a-zA-Z0-9_]+)/\2/e,enums/
+
+# === Rust ===
+#   * This is commented out because Rust seems to be the best language to use
+#   * with ctags in finding source files and such
+# --langmap=Rust:.rs
+# --regex-Rust=/^[ \t]*(#\[[^\]]\][ \t]*)*(pub[ \t]+)?(extern[ \t]+)?("[^"]+"[ \t]+)?(unsafe[ \t]+)?fn[ \t]+([a-zA-Z0-9_]+)/\6/f,functions,function definitions/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?type[ \t]+([a-zA-Z0-9_]+)/\2/T,types,type definitions/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?enum[ \t]+([a-zA-Z0-9_]+)/\2/g,enum,enumeration names/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?struct[ \t]+([a-zA-Z0-9_]+)/\2/s,structure names/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?mod[ \t]+([a-zA-Z0-9_]+)/\2/m,modules,module names/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?(static|const)[ \t]+([a-zA-Z0-9_]+)/\3/c,consts,static constants/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?trait[ \t]+([a-zA-Z0-9_]+)/\2/t,traits,traits/
+# --regex-Rust=/^[ \t]*(pub[ \t]+)?impl([ \t\n]*<[^>]*>)?[ \t]+(([a-zA-Z0-9_:]+)[ \t]*(<[^>]*>)?[ \t]+(for)[ \t]+)?([a-zA-Z0-9_]+)/\4 \6 \7/i,impls,trait implementations/
+# --regex-Rust=/^[ \t]*macro_rules![ \t]+([a-zA-Z0-9_]+)/\1/d,macros,macro definitions/
 
 # vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
