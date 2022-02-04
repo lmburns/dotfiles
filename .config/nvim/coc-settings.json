@@ -172,6 +172,7 @@
     "default": "\uf29c"
   },
   "snippets.shortcut": "\uf672",
+  "coc.preferences.semanticTokensHighlights": false,
   "clangd.enabled": true,
   "clangd.arguments": [
     "--clang-tidy",

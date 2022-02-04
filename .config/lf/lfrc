@@ -84,8 +84,8 @@ cmd open ${{
         | setsid -f sxiv -aio 2>/dev/null | lf-select ;;
       (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback  $f >/dev/null ;;
       (video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
-      (application/x-bittorrent) open -a Transmission.app ;;
-      (application/zlib) handlr open ;;
+      (application/x-bittorrent) handlr open $fx ;;
+      (application/zlib) handlr open $fx ;;
       (*)
         case ${f:e} in
           (dmg) (( $+commands[hdiutil] )) && hdiutil attach "$fx" ;;

@@ -110,7 +110,7 @@ CO=(
 handle_fallback() {
   print -rl "$CO[nl]$CO[brblue]$CO[bold]==========$CO[res] File Type Classification $CO[brblue]$CO[bold]==========$CO[res]" && {
     mime=$(file --dereference --brief -- "${FILE_PATH}")
-    gstat -c "$CO[green]$CO[bold]${mime}$CO[res] $CO[nl]%F $CO[nl]$CO[bcyan]inode: %i$CO[res]" -- "${FILE_PATH}"
+    stat -c "$CO[green]$CO[bold]${mime}$CO[res] $CO[nl]%F $CO[nl]$CO[bcyan]inode: %i$CO[res]" -- "${FILE_PATH}"
   }
     exit 1
 }

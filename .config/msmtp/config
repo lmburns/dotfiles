@@ -52,4 +52,16 @@ auth on
 tls on
 tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
+
 # tls_starttls
+account email@lmburns.com
+host mail.lmburns.com
+port 465
+from email@lmburns.com
+user email@lmburns.com
+passwordeval "pass email@lmburns.com"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/lucas/.config/msmtp/msmtp.log
+tls_starttls off

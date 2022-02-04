@@ -1,0 +1,30 @@
+# Style: Gruvbox
+
+[colors]
+foreground = "#dfbf8e"
+background = "#282828"
+cursor_bg = "#448488"
+cursor_border = "#448488"
+cursor_fg = "#dfbf8e"
+selection_bg = "#9a9a9a"
+selection_fg = "#ebdbb2"
+ansi = [
+  "#665c54",
+  "#ea6962",
+  "#a9b665",
+  "#e78a4e",
+  "#7daea3",
+  "#d3869b",
+  "#89b482",
+  "#dfbf8e",
+]
+brights = [
+  "#928374",
+  "#ea6962",
+  "#a9b665",
+  "#e3a84e",
+  "#7daea3",
+  "#d3869b",
+  "#89b482",
+  "#dfbf8e",
+]

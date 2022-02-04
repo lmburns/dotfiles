@@ -164,14 +164,17 @@ zt 0a light-mode for \
     Bhupesh-V/ugit \
   trigger-load'!ga;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
     wfxr/forgit \
+  trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
+    marlonrichert/zsh-hist
+
+zt 0a light-mode for \
   trigger-load'!gcomp' blockf \
   atclone'command rm -rf lib/*;git ls-files -z lib/ |xargs -0 git update-index --skip-worktree' \
   submods'RobSis/zsh-completion-generator -> lib/zsh-completion-generator;
   nevesnunes/sh-manpage-completions -> lib/sh-manpage-completions' \
   atload'gcomp(){gencomp "${@}" && zinit creinstall -q "${GENCOMP_DIR}" 1>/dev/null}' \
-    Aloxaf/gencomp \
-  trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
-    marlonrichert/zsh-hist
+    Aloxaf/gencomp
+
 # ]]] === trigger-load block ===
 
 # OMZP::sudo/sudo.plugin.zsh
@@ -280,7 +283,7 @@ zt 0c light-mode binary for \
   make"install"  atpull'%atclone' \
     surfraw/Surfraw \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
-  make"install"  atpull'%atclone' lman \
+  make"install" atpull'%atclone' lman \
     kfish/xsel \
   lbin atclone'./configure --prefix="$ZPFX"; make' \
   make"install" atpull'%atclone' lman \

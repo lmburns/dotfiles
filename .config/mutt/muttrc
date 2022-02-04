@@ -400,4 +400,4 @@ macro index,pager i3 \
 macro index,pager i4 \
   '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to burnsppl@gmail.com"
 macro index,pager i5 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/localhost<enter><change-folder>!<enter>;<check-stats>' 'switch to localhost'
+  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/email@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to email@lmburns.com"

@@ -9,6 +9,7 @@
 alias -g G='| rg '
 alias -g H='| head'
 alias -g T='| tail'
+alias -g B='| bat'
 
 alias %= \$=
 
@@ -27,6 +28,7 @@ alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 alias tt="taskwarrior-tui"
 alias strace="/usr/local/bin/strace"
 
+alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias open="handlr open"
 # alias mimeopen="/home/lucas/mybin/perl/mimeopen"
 alias jor="journalctl"

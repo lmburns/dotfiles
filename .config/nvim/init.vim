@@ -786,7 +786,7 @@ Plug 'ptzz/lf.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'voldikss/fzf-floaterm'
 Plug 'kdheepak/lazygit.nvim'
-  nnoremap <silent> <Leader>gg :LazyGit<CR>
+  nnoremap <silent> <Leader>lg :LazyGit<CR>
   nnoremap <Leader>fll :Floaterms<CR>
   nnoremap <Leader>flt :FloatermToggle<CR>
   let g:fzf_floaterm_newentries = {
@@ -2071,7 +2071,7 @@ call plug#end()
   augroup spell
     " add markdown
     autocmd!
-    autocmd FileType text,gitcommit,markdown setlocal spell
+    autocmd FileType text,gitcommit,markdown,mail setlocal spell
     autocmd BufRead,BufNewFile neomutt-void* setlocal spell
   augroup END
 " }}} === Spell Check ===
@@ -2149,6 +2149,7 @@ call plug#end()
   " make deleting line not go to clipbard
   nnoremap d "_d
   vnoremap d "_d
+  nnoremap D "_D
   " yank line without newline character
   nnoremap Y y$
   " make cut not go to clipboard
@@ -2159,7 +2160,7 @@ call plug#end()
   noremap gV `[v`]
   " select characters of line (no new line)
   nnoremap vv ^vg_
-  " make visual yanks pace the cursor back where started
+  " make visual yanks place the cursor back where started
   vnoremap y ygv<Esc>
   " insert a space after current character
   " nnoremap <Leader>sa a<Space><ESC>h
@@ -2463,13 +2464,29 @@ call plug#end()
   " }}} ExecuteBuffer
 
   " filetype specific indents
+  autocmd FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc %< && node %:r.js <CR>
   autocmd FileType markdown,json,javascript call <SID>IndentSize(4)
   autocmd BufRead,BufNewFile *.htm,*.html call <SID>IndentSize(2)
 "}}} === Other Functions ===
 
 " ============== vim-clang ============== {{{
 autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>
-autocmd FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %< && ./%< <CR>
+
+augroup cpp_env
+  autocmd!
+  autocmd FileType cpp
+    \ nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %< && ./%< <CR>|
+    \ nnoremap <buffer> <Leader>kk :Fcman<CR>
+augroup END
+
+function! s:FullCppMan()
+    let old_isk = &iskeyword
+    setl iskeyword+=:
+    let str = expand("<cword>")
+    let &l:iskeyword = old_isk
+    execute 'Man ' . str
+endfunction
+command! Fcman :call s:FullCppMan()
 " }}} === vim-clang ===
 
 " ============== Default Terminal ============== {{{

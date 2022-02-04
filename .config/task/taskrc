@@ -11,7 +11,7 @@
 # Use the command 'tash _zshcommands' to see all available commands
 
 # Files
-data.location=~/.config/task/
+data.location=$XDG_CONFIG_HOME/task/
 # hooks.location
 locking=on
 
@@ -104,7 +104,7 @@ report.long.description=Lists all task, all data, matching the specified criteri
 report.long.columns=id,project,priority,entry,start,due,recur,entry.age,tags,description
 report.long.labels=  ,Project,Pri,Added,Started,Due,Recur,Age,Tags,Description
 report.long.sort=due+,priority-,project+
-report.long.filter=status:pending
+report.long.filter=status:pending -WAITING
 
 # depends.indicator, tags, recur.indicator, scheduled.countdown, until.age
 # task list
@@ -114,42 +114,42 @@ report.list.description=Lists all tasks matching the specified criteria
 # report.list.columns=id,project,priority,due,start.active,age,description
 # report.list.labels=ID,Project,Pri,Due,Active,Age,Description
 report.list.sort=start,description,due+,priority-,project+
-report.list.filter=status:pending
+report.list.filter=status:pending -WAITING
 
 # task ls
 report.ls.description=Minimal listing of all tasks matching the specified criteria
 report.ls.columns=id,project,priority,description
 report.ls.labels= ,Project,Pri,Description
 report.ls.sort=priority-,project+
-report.ls.filter=status:pending project.isnt:store
+report.ls.filter=status:pending -WAITING project.isnt:store
 
 # task newest
 report.newest.description=Shows the newest tasks
 report.newest.columns=id,project,priority,due,start.active,entry.age,description
 report.newest.labels= ,Project,Pri,Due,Active,Age,Description
 report.newest.sort=id-
-report.newest.filter=status:pending limit:10
+report.newest.filter=status:pending -WAITING limit:10
 
 # task oldest
 report.oldest.description=Shows the oldest tasks
 report.oldest.columns=id,project,priority,due,start.active,entry.age,description
 report.oldest.labels= ,Project,Pri,Due,Active,Age,Description
 report.oldest.sort=id+
-report.oldest.filter=status:pending limit:10
+report.oldest.filter=status:pending -WAITING limit:10
 
 # task overdue
 report.overdue.description=Lists overdue tasks matching the specified criteria
 report.overdue.columns=id,project,priority,due,start.active,entry.age,description
 report.overdue.labels= ,Project,Pri,Due,Active,Age,Description
 report.overdue.sort=due+,priority-,project+
-report.overdue.filter=status:pending due.before:today
+report.overdue.filter=status:pending -WAITING due.before:today
 
 # task active
 report.active.description=Lists active tasks matching the specified criteria
 report.active.columns=id,project,priority,due,start.active,entry.age,description
 report.active.labels= ,Project,Pri,Due,Active,Age,Description
 report.active.sort=due+,priority-,project+
-report.active.filter=status:pending start.any:
+report.active.filter=status:pending -WAITING start.any:
 
 # task completed
 report.completed.description=Lists completed tasks matching the specified criteria
@@ -163,7 +163,7 @@ report.recurring.description=Lists recurring tasks matching the specified criter
 report.recurring.columns=id,project,priority,due,recur,start.active,entry.age,description
 report.recurring.labels= ,Project,Pri,Due,Recur,Active,Age,Description
 report.recurring.sort=due+,priority-,project+
-report.recurring.filter=status:pending parent.any:
+report.recurring.filter=status:pending -WAITING parent.any:
 
 # task waiting
 report.waiting.description=Lists all waiting tasks matching the specified criteria
@@ -183,7 +183,7 @@ report.next.description=Lists the most urgent tasks
 report.next.columns=id,project,priority,due,start.active,entry.age,description
 report.next.labels= ,Project,Pri,Due,Active,Age,Description
 report.next.sort=due+,priority-,project+
-report.next.filter=status:pending project.isnt:store
+report.next.filter=status:pending -WAITING project.isnt:store
 
 # Other
 # report.scheduled.description=Scheduled tasks
@@ -247,7 +247,7 @@ uda.taskwarrior-tui.task-report.prompt-on-delete=true
 uda.taskwarrior-tui.task-report.prompt-on-done=false
 
 uda.taskwarrior-tui.tick-rate=250
-uda.taskwarrior-tui.task-report.next.filter=status:pending
+uda.taskwarrior-tui.task-report.next.filter=status:pending -WAITING
 uda.taskwarrior-tui.task-report.pre-fill-task-meta-data=false
 uda.taskwarrior-tui.task-report.task-detail-prefetch=10
 uda.taskwarrior-tui.quick-tag.name=next
@@ -285,3 +285,4 @@ taskd.trust=strict
 context.work=project:Work or +urgent
 
 # vim: ft=taskrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+news.version=2.6.0

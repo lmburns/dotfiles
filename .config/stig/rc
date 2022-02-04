@@ -1,0 +1,14 @@
+# set connect.host example.org
+# set connect.port 123
+
+# Update every 10 seconds
+set tui.poll 10
+
+# Default columns in torrent lists
+set columns.torrents name ratio rate-up rate-down
+
+# Open a few tabs on startup
+tab ls active --sort !%downloaded,path,!rate
+tab ls paused --sort !%downloaded --columns name,%downloaded,ratio,size
+tab ls isolated --sort tracker --columns name,path
+# tab ls complete --sort complete
