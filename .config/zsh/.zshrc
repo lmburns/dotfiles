@@ -1045,7 +1045,7 @@ path=(
   $HOME/.poetry/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
-  /usr/lib/goenv/libexec
+  /usr/lib/{goenv/libexec,w3m}
   $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
   "${path[@]}"
 )

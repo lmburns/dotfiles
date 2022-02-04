@@ -786,10 +786,12 @@ map sP :{{ set preview;   set ratios 1:2; }}     # set display (no preview)
 map sR :{{ set reverse!; }}                      # reverse file order
 map sN :{{ set sortby natural; set info size; }} # revert back to normal
 
-map <c-u> usage                                  # get help
+map <c-u> usage                                  # get disk information
+map <c-s> $dua i
 # ]]]
 
 # == Shell == [[[
+# map <c-s> shell                                     # enter shell command
 map <enter> shell-wait                              # enter shell cmd
 map <c-x>x $$f                                      # execute file
 map <c-x>X !$f                                      # execute file and $PAGER output
@@ -799,7 +801,6 @@ map <c-x>g !go run $fx                              # execute go file
 map <c-x>w push :wim<space>                         # open script source code
 map <c-v> $jupview -P "$f"                          # view ipynb file
 map <c-x>p $cat $fx | up                            # cat file to up (unix piper)
-map <c-s> shell                                     # enter shell command
 # ]]]
 
 # == GPG == [[[

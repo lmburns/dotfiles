@@ -2464,7 +2464,8 @@ call plug#end()
   " }}} ExecuteBuffer
 
   " filetype specific indents
-  autocmd FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc %< && node %:r.js <CR>
+  autocmd FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc % && node %:r.js <CR>
+  autocmd FileType javascript nnoremap <Leader>r<CR> :FloatermNew node % <CR>
   autocmd FileType markdown,json,javascript call <SID>IndentSize(4)
   autocmd BufRead,BufNewFile *.htm,*.html call <SID>IndentSize(2)
 "}}} === Other Functions ===
@@ -2475,7 +2476,7 @@ autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %<
 augroup cpp_env
   autocmd!
   autocmd FileType cpp
-    \ nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %< && ./%< <CR>|
+    \ nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>|
     \ nnoremap <buffer> <Leader>kk :Fcman<CR>
 augroup END
 

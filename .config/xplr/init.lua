@@ -1,4 +1,4 @@
-version = "0.16.4"
+version = "0.17.2"
 
 -- == HELP == {{{
 -- BashExec: {command: bash, args: ["-c", "${command}"], silent: false}
@@ -47,19 +47,19 @@ require("completion").setup()
 -- }
 
 -- require("nnn_preview").setup {
-  --   plugin_path = os.getenv("HOME") .. "/.config/nnn/plugins/preview-tui",
-  --   fifo_path = "/tmp/xplr.fifo",
-  --   mode = "action",
-  --   key = "p"
-  -- }
-  --
-  -- -- require("fzf").setup{
-    -- --   mode = "default",
-    -- --   key = "F",
-    -- --   args = "--preview 'pistol {}'"
-    -- -- }
-    --
-    -- require("zoxide").setup {mode = "default", key = "n"}
+--   plugin_path = os.getenv("HOME") .. "/.config/nnn/plugins/preview-tui",
+--   fifo_path = "/tmp/xplr.fifo",
+--   mode = "action",
+--   key = "p"
+-- }
+--
+-- -- require("fzf").setup{
+-- --   mode = "default",
+-- --   key = "F",
+-- --   args = "--preview 'pistol {}'"
+-- -- }
+--
+-- require("zoxide").setup {mode = "default", key = "n"}
 
 local xplr = xplr
 
@@ -77,57 +77,37 @@ xplr.config.general.enable_recover_mode = false
 xplr.config.modes.builtin.go_to.key_bindings.on_key.p = {
   help = "go to path",
   messages = {
-    "PopMode",
-    { SwitchModeCustom = "go_to_path" },
-    { SetInputBuffer = "" },
-  },
+    "PopMode", { SwitchModeCustom = "go_to_path" }, { SetInputBuffer = "" }
+  }
 }
 
 xplr.config.modes.custom.go_to_path = {
   name = "go to path",
   key_bindings = {
     on_key = {
-      enter = {
-        messages = {
-          "FocusPathFromInput",
-          "PopMode",
-        },
-      },
-      esc = {
-        help = "cancel",
-        messages = { "PopMode" },
-      },
+      enter = { messages = { "FocusPathFromInput", "PopMode" } },
+      esc = { help = "cancel", messages = { "PopMode" } },
       tab = {
         help = "complete",
-        messages = {
-          { CallLuaSilently = "custom.completion.complete_path" },
-        },
+        messages = { { CallLuaSilently = "custom.completion.complete_path" } }
       },
-      ["ctrl-c"] = {
-        help = "terminate",
-        messages = { "Terminate" },
-      },
+      ["ctrl-c"] = { help = "terminate", messages = { "Terminate" } },
       backspace = {
         help = "remove last character",
-        messages = { "RemoveInputBufferLastCharacter" },
+        messages = { "RemoveInputBufferLastCharacter" }
       },
       ["ctrl-u"] = {
         help = "remove line",
-        messages = { { SetInputBuffer = "" } },
+        messages = { { SetInputBuffer = "" } }
       },
       ["ctrl-w"] = {
         help = "remove last word",
-        messages = { "RemoveInputBufferLastWord" },
-      },
+        messages = { "RemoveInputBufferLastWord" }
+      }
     },
-    default = {
-      messages = {
-        "BufferInputFromKey",
-      },
-    },
-  },
+    default = { messages = { "BufferInputFromKey" } }
+  }
 }
-
 
 --
 -- -- == functions == {{{
@@ -175,7 +155,7 @@ xplr.config.modes.custom.go_to_path = {
 -- ##########################################################################
 
 -- KEYS: default mode {{{
-key = xplr.config.modes.builtin.default.key_bindings.on_key
+local key = xplr.config.modes.builtin.default.key_bindings.on_key
 
 key.e = xplr.config.modes.builtin.action.key_bindings.on_key.e -- open editor
 key.o = xplr.config.modes.builtin.go_to.key_bindings.on_key.x -- open gui
@@ -198,7 +178,7 @@ key.c = xplr.config.modes.builtin.action.key_bindings.on_key.c -- create mode
 key['!'] = {
   help = "shell",
   messages = {
-    {Call = {command = "zsh", args = {"-i", "-l"}}}, "ExplorePwdAsync",
+    { Call = { command = "zsh", args = { "-i", "-l" } } }, "ExplorePwdAsync",
     "PopMode"
   }
 }
@@ -210,13 +190,15 @@ key['!'] = {
 -- Usage: dua i
 key.D = {
   help = "disk usage",
-  messages = {{BashExec = [[dua i]]}, "ClearScreen"}
+  messages = { { BashExec = [[dua i]] }, "ClearScreen" }
 }
 
 -- Usage: dust
 key.S = {
   help = "folder sizes",
-  messages = {{BashExec = [[dust && read -p "[enter to continue]"]]}, "PopMode"}
+  messages = {
+    { BashExec = [[dust && read -p "[enter to continue]"]] }, "PopMode"
+  }
 }
 
 -- Preview: fzf
@@ -237,42 +219,42 @@ key["ctrl-f"] = {
     }
   }
 }
---
--- -- History: fuzzy
--- key["ctrl-h"] = {
---   help = "fzf history",
---   messages = {
---     {
---       BashExec = [===[
---       PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | sort -u | fzf --no-sort)
---       if [ "$PTH" ]; then
---         echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
---       fi
---     ]===]
---     }
---   }
--- }
---
--- -- Rename: batch rename
--- key.R = {
---   help = "batch rename",
---   messages = {
---     {
---       BashExec = [[
---       SELECTION=$(cat "${XPLR_PIPE_SELECTION_OUT:?}")
---       NODES=${SELECTION:-$(cat "${XPLR_PIPE_DIRECTORY_NODES_OUT:?}")}
---       if [ "$NODES" ]; then
---         echo -e "$NODES" | pipe-renamer
---         echo ExplorePwdAsync >> "${XPLR_PIPE_MSG_IN:?}"
---       fi
---     ]]
---     }
---   }
--- }
---
--- -- Copy: binding
--- key.y = {help = "copy", messages = {"PopMode", {SwitchModeCustom = "copy"}}}
---
+
+-- History: fuzzy
+key["ctrl-h"] = {
+  help = "fzf history",
+  messages = {
+    {
+      BashExec = [===[
+      PTH=$(cat "${XPLR_PIPE_HISTORY_OUT:?}" | sort -u | fzf --no-sort)
+      if [ -e "$PTH" ]; then
+        echo ChangeDirectory: "'"${PTH:?}"'" >> "${XPLR_PIPE_MSG_IN:?}"
+      fi
+    ]===]
+    }
+  }
+}
+
+-- Rename: batch rename
+key.R = {
+  help = "batch rename",
+  messages = {
+    {
+      BashExec = [[
+      SELECTION=$(cat "${XPLR_PIPE_SELECTION_OUT:?}")
+      NODES=${SELECTION:-$(cat "${XPLR_PIPE_DIRECTORY_NODES_OUT:?}")}
+      if [ "$NODES" ]; then
+        echo -e "$NODES" | pipe-renamer
+        echo ExplorePwdAsync >> "${XPLR_PIPE_MSG_IN:?}"
+      fi
+    ]]
+    }
+  }
+}
+
+-- Copy: binding
+key.y = {help = "copy", messages = {"PopMode", {SwitchModeCustom = "copy"}}}
+
 -- -- Paste: binding
 -- key.p = {
 --   help = "paste",

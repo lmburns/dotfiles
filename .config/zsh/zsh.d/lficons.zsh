@@ -409,15 +409,6 @@ ex=:\
 # *.nix=:\
 # "
 
-# 1= bold
-# 31= red
-# 32= green
-# 33= yellow
-# 34=blue
-# 35= magenta
-# 36= cyan
-# 91= bright red
-
 export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
 
 # lc() { local __="$(mktemp)" && lf -last-dir-path="$__" "$@";
@@ -427,7 +418,8 @@ export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDI
 lc() {
   local tmp="$(mktemp)"
   local fid="$(mktemp)"
-  lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
+  trap "rip $tmp $fid" EXIT
+  command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
   local id="${"$(<$fid)"}"
   local archivemount_dir="/tmp/__lf_archivemount_${id}"
   if [[ -f "$archivemount_dir" ]] {
@@ -435,12 +427,11 @@ lc() {
       notify-send "Unmounted" "${line:h:t}/${line:t}"
       fusermount -u "$line"
       command rmdir "$line"
-    done <<< "$archivemount_dir"
+    done <<< ${"$(<$archivemount_dir)"}
    command rm -f "$archivemount_dir"
   }
   if [[ -f "$tmp" ]] {
     local dir="${"$(<$tmp)"}"
-    command chronic rm -f "$tmp"
     [[ -d "$dir" && "$dir" != "$PWD" ]] && builtin cd "$dir"
   }
 }
