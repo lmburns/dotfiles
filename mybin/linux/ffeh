@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+feh \
+   --scale-down \
+   --auto-zoom \
+   --borderless \
+   --image-bg black \
+   --draw-filename \
+   --draw-tinted \
+   --keep-zoom-vp \
+   --conversion-timeout 1 "$@"

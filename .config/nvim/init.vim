@@ -95,7 +95,6 @@
   " autocmd CmdlineLeave /,\? :set nohlsearch
 " }}} === General Settings ===
 
-
 call plug#begin("~/.vim/plugged")
 
 " Not needed, here for manual pages
@@ -1559,6 +1558,7 @@ let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua', 'ruby']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
+Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-treesitter/playground'

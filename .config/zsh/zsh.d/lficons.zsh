@@ -418,7 +418,7 @@ export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDI
 lc() {
   local tmp="$(mktemp)"
   local fid="$(mktemp)"
-  trap "rip $tmp $fid" EXIT
+  trap "command rm -rf $tmp $fid" EXIT
   command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
   local id="${"$(<$fid)"}"
   local archivemount_dir="/tmp/__lf_archivemount_${id}"

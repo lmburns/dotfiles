@@ -1,0 +1,81 @@
+#compdef signal-cli
+
+autoload -U is-at-least
+
+_signal-cli_commands() {
+  typeset -a subcommands
+  subcommands=(
+  "addDevice:Link another device to this device (only works if is master device)"
+  "block:Block given contacts/groups (no messages will be received)"
+  "daemon:Run daemon mode & provide experimental dbus or JSON-RPC interface"
+  "getUserStatus:Check if phone number/s have been registered"
+  "joinGroup:Join a group via an invitation link."
+  "jsonRpc:Take commands from stdin as line-delimited JSON RPC while receiving messages"
+  "link:Link to existing device, instead of registering a new number"
+  "listAccounts:Show a list of registered accounts"
+  "listContacts:Show a list of known contacts with names"
+  "listDevices:Show a list of linked devices"
+  "listGroups:List group info including names, ids, active status, blocked status and members"
+  "listIdentities:List all known identity keys & trust status, fingerprint & safety number"
+  "listStickerPacks:Show a list of known sticker packs."
+  "quitGroup:Send quit group message to all group members & remove self from member list"
+  "receive:Query the server for new messages"
+  "register:Register phone number with SMS or voice verification"
+  "remoteDelete:Remotely delete a previously sent message"
+  "removeContact:Remove the details of a given contact"
+  "removeDevice:Remove a linked device"
+  "removePin:Remove the registration lock pin"
+  "send:Send a message to another user or group"
+  "sendContacts:Send synchronization msg with local contacts list to all linked devices"
+  "sendReaction:Send reaction to previously received or sent message"
+  "sendReceipt:Send a read or viewed receipt to a previously received message"
+  "sendSyncRequest:Send synchronization request message to master device"
+  "sendTyping:Send typing message to trigger typing indicator for recipient"
+  "setPin:Set registration lock pin, to prevent others from registering this number"
+  "submitRateLimitChallenge:Submit a captcha challenge to lift the rate  limit"
+  "trust:Set the trust level of a given number"
+  "unblock:Unblock the given contacts or groups (messages will be received again)"
+  "unregister:Unregister the current device from the signal server"
+  "updateAccount:Update the account attributes on the signal server"
+  "updateConfiguration:Update signal configs & sync them to linked devices"
+  "updateContact:Update the details of a given contact"
+  "updateGroup:Create or update a group"
+  "updateProfile:Set a name, about & avatar image for the user profile"
+  "uploadStickerPack:Upload a new sticker pack, consisting of a manifest file & the stickers images"
+  "verify:Verify the number using the code received via SMS or voice"
+  )
+  _describe -t signal-cli-commands "command" subcommands
+}
+
+_signal-cli () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    _arguments "${_arguments_options[@]}" \
+        {-v,--version}'[Display version number and exit]' \
+        {-h,--help}'[Display help and exit]' \
+        '--verbose+[Raise log level include lib signal logs]' \
+        '--log-file=[Write log output to the given file]:LOG_FILE:_files' \
+        {-c,--config}'[Set path where to store config]:CONFIG:_files' \
+        {-a,--account}'[Specify account number]:ACCOUNT:' \
+        '(-a --account)-u[Specify the username of the account]' \
+        '(-a --account)--username[Specify the username of the account]' \
+        '--dbus[Make request via user dbus. (default: false)]:' \
+        '--dbus-system[Make request via system dbus. (default: false)]:' \
+        '-o+[Choose to output in plain text or JSON]:type:(plain-text json)' \
+        '--output=[Choose to output in plain text or JSON]:type:(plain-text json)' \
+        '--service-environment=[Choose the server environment to use. default: live]:kind:(live staging sandbox)' \
+        '--trust-new-identities=[Choose when to trust new identities. default: on-first-use]:kind:(always on-first-use never)' \
+        ":: :_signal-cli_commands" \
+        && ret=0
+}
+
+_signal-cli "$@"

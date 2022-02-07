@@ -1,10 +1,6 @@
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Basics / General                                                          │
 # └───────────────────────────────────────────────────────────────────────────┘
-# set shell bash        # interpreter for shell commands
-# set shellopts '-eu'   # exit on error
-# set ifs "\n"          # internal field separator / split $fs, $fx
-
 set shell zsh
 # set shellopts '-eu:--shwordsplit'
 set shellopts '-euy'
@@ -16,13 +12,15 @@ set icons on          # show icons next to files
 set period 1          # interval to check for directory updates
 set hidden on         # show hidden files by default
 set incsearch o       # jump to first match after each keystroke in search
+set incfilter o       # apply filter after each keystroke
+set smartcase         # if capital letter then case sensitive
 set dircounts on      # show number of items in directory instead of sie
 set info "size"       # list directory information on the right
 set sortby "natural"  # don't sort files in any special way
 set preview on        # preview file on the right pane
 set drawbox on        # draw a border around all panes
 set ratios '1:2:3'    # ratio of pane widths
-set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
+set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 
 # -- Previewer: custom
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
@@ -47,6 +45,41 @@ $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
 # %  shell-pipe      shell command running with the ui
 # !  shell-wait      shell command waiting for key press
 # &  shell-async     shell command running asynchronously
+
+# FIX: adjust column width
+&{{
+  w=$(tput cols)
+  if [[ $w -le 60 ]]; then
+    lf -remote "send $id set ratios 1:2"
+  else [[ $w -le 160 ]]; then
+    lf -remote "send $id set ratios 1:2:3"
+  fi
+}}
+
+cmd on-cd &{{
+  emulate -L zsh
+  zmodload -F zsh/parameter p:dirstack
+  autoload -Uz chpwd_recent_dirs add-zsh-hook
+
+  source /usr/share/git/completion/git-prompt.sh
+  GIT_PS1_SHOWDIRTYSTATE=auto
+  GIT_PS1_SHOWSTASHSTATE=auto
+  GIT_PS1_SHOWUNTRACKEDFILES=auto
+  GIT_PS1_SHOWUPSTREAM=auto
+  GIT_PS1_COMPRESSSPARSESTATE=auto
+  git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
+  fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
+
+  [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
+
+  # add-zsh-hook chpwd chpwd_recent_dirs
+  # add-zsh-hook chpwd @chwpd_dir-history-var
+  # add-zsh-hook zshaddhistory @append_dir-history-var
+  # @chwpd_dir-history-var now
+  # dir_history=("${x%%$'\n'}" "${(u)dir_history[@]}" )
+
+  lf -remote "send $id set promptfmt \"$fmt\""
+}}
 
 # TMUX: quit with :q
 cmd q ${{
@@ -379,31 +412,6 @@ cmd select-exec ${{
   done
 }}
 
-cmd on-cd &{{
-  emulate -L zsh
-  zmodload -F zsh/parameter p:dirstack
-  autoload -Uz chpwd_recent_dirs add-zsh-hook
-
-  source /usr/share/git/completion/git-prompt.sh
-  GIT_PS1_SHOWDIRTYSTATE=auto
-  GIT_PS1_SHOWSTASHSTATE=auto
-  GIT_PS1_SHOWUNTRACKEDFILES=auto
-  GIT_PS1_SHOWUPSTREAM=auto
-  GIT_PS1_COMPRESSSPARSESTATE=auto
-  git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
-  fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
-
-  [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
-
-  # add-zsh-hook chpwd chpwd_recent_dirs
-  # add-zsh-hook chpwd @chwpd_dir-history-var
-  # add-zsh-hook zshaddhistory @append_dir-history-var
-  # @chwpd_dir-history-var now
-  # dir_history=("${x%%$'\n'}" "${(u)dir_history[@]}" )
-
-  lf -remote "send $id set promptfmt \"$fmt\""
-}}
-
 # # -- Select: all files
 # cmd select-files ${{
 #   { echo "$fs"; fd . -L -d1 -tf; } |
@@ -727,7 +735,7 @@ map rs rmspace
 map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
 map fr push :fd<space>--changed-within<space> # use fd to find recent file
-map fe fd_edit            # find files with fzf and edit
+map fe fd_edit            # find files with fzf and edit (with preview)
 map fa ajfzf              # use fzf with autojump
 # map <c-b> broot_jump    # use broot to jump to directory
 map nn fzf_z              # fzf zioxide
@@ -777,8 +785,10 @@ map U unselect
 map sf select-files                              # select all files
 map sd select-dirs                               # select all dirs
 map sx select-exec                               # select all executables
+map sF $for f ($(print -ln -- *(ND) | fzf)) { lf -remote "send $id toggle $f" } # select  files fzf
 map sg push :glob-select<space>                  # select files matching pattern
 map sG push :glob-unselect<space>                # unselect files matching pattern
+map ss set globsearch!                           # change search type
 
 map sr :{{ set nopreview; set ratios 1:3; }}     # set display (preview)
 map sp :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
@@ -898,5 +908,3 @@ map bo $bow       # buku bookmarks
 # map gUs cd /usr/local/share
 
 # ]]]
-
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

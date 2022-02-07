@@ -102,6 +102,11 @@ markup:
     - .rst
     - .xml
 
+  sublime:
+    - .sublime-syntax
+    - .sublime-colorscheme
+    - .tmTheme
+
 programming:
   source:
     actionscript: [.as]
@@ -157,6 +162,9 @@ programming:
     tcl: [.tcl]
     typescript: [.ts, .tsx]
     viml: [.vim]
+
+    database: [.sqlite, .sqlite3, .db]
+    jq: [.jq]
 
   tooling:
     vcs:
@@ -234,6 +242,12 @@ programming:
       doxygen:
         - Doxyfile
         - .dox
+
+      man-page:
+        - '.1'
+        - '.2'
+        - '.3'
+        - '.5'
 
     continuous-integration:
       - appveyor.yml
@@ -410,6 +424,10 @@ unimportant:
       - .bc
     zsh:
       - .zwc
+
+  go:
+    - go.mod
+    - go.sum
 
   macos:
     - .CFUserTextEncoding

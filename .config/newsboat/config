@@ -11,7 +11,11 @@ cleanup-on-quit yes
 
 notify-always yes
 notify-program notify-send
-notify-format "Newsboat: %n unread articles in %f feeds %t"
+notify-format      "Newsboat: %n unread articles in %f feeds %t"
+
+feedlist-format    " %n %4i %13u %t -- %T"
+articlelist-format "%4i %f %D  %?T?|%-17T|  ?%t"
+datetime-format    "%b %d %Y" # date example: Mar 01 2017
 
 bookmark-cmd "~/mybin/srb"
 # bookmark-cmd "~/.config/newsboat/dangerzone/bookmark.sh"
@@ -46,12 +50,14 @@ bind-key I rev-sort
 browser urlportal
 # macro , open-in-browser
 macro t set browser "qndl" ; open-in-browser ; set browser linkhandler
-macro a set browser "tsp youtube-dl --add-metadata -xic -f bestaudio/best" ; open-in-browser ; set browser linkhandler
-macro v set browser "setsid -f mpv" ; open-in-browser ; set browser linkhandler
-macro w set browser "w3m" ; open-in-browser ;
+macro a set browser "tsp yt-dlp --add-metadata -xic -f bestaudio/best" ; open-in-browser ; set browser "$URLPORTAL %u"
+macro v set browser "setsid -f mpv %u" ; open-in-browser ; set browser "$URLPORTAL %u"
+macro V set browser "sxiv" ; open-in-browser ; set browser "$URLPORTAL %u"
+macro w set browser "/usr/bin/w3m" ; open-in-browser ;
 macro C set browser "youtube-viewer --comments=%u" ; open-in-browser ;
-macro c set browser "echo %u | xsel -b" ; open-in-browser ; set browser linkhandler
+macro c set browser "echo %u | xsel -b" ; open-in-browser ; set browser "$URLPORTAL %u"
 macro B set browser "newsboat_video_download" ; open-in-browser
+macro d set browser "dmenuhandler" ; open-in-browser ; set browser linkhandler
 
 # FIX: use saved articles
 macro s set browser "tmux split-window && tmux send-keys 'lf ~/.local/share/newsboat/saved_articles && tmux kill-pane\n'" ; open-in-browser ; set browser "$URLPORTAL %u"
@@ -59,8 +65,8 @@ macro s set browser "tmux split-window && tmux send-keys 'lf ~/.local/share/news
 # Open reddit
 macro r set browser "tmux split-window -p 80 && tmux send-keys 'rtv -l %u && tmux kill-pane\n'"; open-in-browser ; set browser "$URLPORTAL %u"
 
-# Open w3m
-macro o set browser "tmux split-window -p 80 && tmux send-keys 'w3m %u && tmux kill-pane\n'"; open-in-browser ; set browser "$URLPORTAL %u"
+# Open /usr/bin/w3m
+macro o set browser "tmux split-window -p 80 && tmux send-keys '/usr/bin/w3m %u && tmux kill-pane\n'"; open-in-browser ; set browser "$URLPORTAL %u"
 
 # Open in GUI
 macro W set browser "$BROWSER"; open-in-browser ; set browser "$URLPORTAL %u"
@@ -68,6 +74,7 @@ macro W set browser "$BROWSER"; open-in-browser ; set browser "$URLPORTAL %u"
 # Podboat:
 download-path "~/Downloads/podcasts/%n"
 player "mpv --audio-display=no"
+# player "handlr open"
 max-downloads 10
 
 bind-key x pb-delete

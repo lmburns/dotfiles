@@ -1,0 +1,304 @@
+#!/usr/bin/env bash
+
+# credit: https://github.com/Julian-Heng/dotfiles
+# shellcheck disable=SC2048,SC2086
+
+trim_string() {
+    str="$1"
+    str="${str#"${str%%[![:space:]]*}"}"
+    str="${str%"${str##*[![:space:]]}"}"
+    printf "%s" "${str}"
+}
+
+trim() {
+    [[ "$*" ]] && {
+        set -f
+        set -- $*
+        printf "%s" "$*"
+        set +f
+    }
+}
+
+err() {
+    printf >&2 "\\e[31m%s\\e[0m%s\\n" "Error" ": $*"
+}
+
+get_vimrc() {
+    [[ "${vimrc_file}" ]] &&
+        return 0
+
+    count="0"
+
+    while [[ ! "${vimrc_file}" ]] && ((++count < ${#vim_location[@]})); do
+        [[ -f "${vim_location[${count}]}" ]] &&
+            vimrc_file="${vim_location[${count}]}"
+    done
+}
+
+get_plugin_manager() {
+    [[ ! "${vimrc_file}" ]] &&
+        return 1
+
+    mapfile -t vimrc_contents <"${vimrc_file}"
+    [[ "${plugin_managers[*]}" ]] &&
+        return 0
+
+    count="0"
+
+    while ((++count < ${#vimrc_contents[@]})); do
+        line="${vimrc_contents[${count}]}"
+        [[ ! "${line}" =~ ^\" ]] &&
+            case "${vimrc_contents[${count}]}" in
+            *"pathogen#infect"*) plugin_managers+=("pathogen") ;;
+            *"plug#begin"*) plugin_managers+=("plug") ;;
+            *"vundle#begin"*) plugin_managers+=("vundle") ;;
+            *"neobundle#begin"*) plugin_managers+=("neobundle") ;;
+            esac
+    done
+}
+
+get_plugins() {
+    [[ ! "${plugin_managers[*]}" ||
+        ! "${vimrc_contents[*]}" ||
+        ! "${vimrc_file}" ]] &&
+        return 1
+
+    for i in "${plugin_managers[@]}"; do
+        case "${i,,}" in
+        "pathogen")
+            count="-1"
+
+            while [[ ! "${pathogen_dir}" ]] &&
+                ((++count < ${#vimrc_contents[@]})); do
+                line="${vimrc_contents[${count}]}"
+                [[ "${line}" =~ ^runtime && "${line}" =~ pathogen ]] && {
+                    pathogen_dir="${line//runtime /}"
+                    pathogen_dir="${vimrc_file%/*}/${pathogen_dir%%/*}"
+                }
+            done
+
+            if [[ -d "${pathogen_dir}" ]]; then
+                for plugin_path in "${pathogen_dir}"/*; do
+                    plugin_name="${plugin_path##${pathogen_dir}/}"
+                    plugin_name="${plugin_name/.vim/}"
+                    plugin_author="$(get_repo_author "${plugin_path}")"
+                    [[ "${plugin_name}" ]] && {
+                        temp="${plugin_name}"
+                        temp+=",${plugin_author:-Unknown}"
+                        temp+=",Pathogen"
+                        plugins+=("${temp}")
+                    }
+                done
+            else
+                err "Pathogen directory \"${pathogen_dir}\" does not exist"
+            fi
+            ;;
+
+        "plug")
+            count="-1"
+            unset start
+            unset end
+
+            while [[ ! "${start}" || ! "${end}" ]] &&
+                ((++count < ${#vimrc_contents[@]})); do
+                line="${vimrc_contents[${count}]}"
+                [[ ! "${line}" =~ ^\" ]] &&
+                    case "${line}" in
+                    *"plug#begin"*) start="${count}" ;;
+                    *"plug#end"*) end="${count}" ;;
+                    esac
+            done
+
+            diff="$((end - start))"
+            for line in "${vimrc_contents[@]:${start}:${diff}}"; do
+                [[ "${line}" =~ ^Plug ]] &&
+                    if [[ "${line}" == *"|"* ]]; then
+                        IFS=$'\n' read -d "" -ra multi_plug \
+                            <<<"${line//"|"/$'\n'}"
+                        for plug in "${multi_plug[@]}"; do
+                            temp="$(process_plug "${plug}")"
+                            temp+=",Vim-Plug"
+                            plugins+=("${temp}")
+                        done
+                    else
+                        temp="$(process_plug "${line}")"
+                        temp+=",Vim-Plug"
+                        plugins+=("${temp}")
+                    fi
+            done
+            ;;
+
+        "vundle")
+            count="-1"
+            unset start
+            unset end
+
+            while [[ ! "${start}" || ! "${end}" ]] &&
+                ((++count < ${#vimrc_contents[@]})); do
+                line="${vimrc_contents[${count}]}"
+                [[ ! "${line}" =~ ^\" ]] &&
+                    case "${line}" in
+                    *"vundle#begin"*) start="${count}" ;;
+                    *"vundle#end"*) end="${count}" ;;
+                    esac
+            done
+
+            diff="$((end - start))"
+            for line in "${vimrc_contents[@]:${start}:${diff}}"; do
+                [[ "${line}" =~ ^Plugin ]] && {
+                    temp="$(process_plug "${line}")"
+                    temp+=",Vundle"
+                    plugins+=("${temp}")
+                }
+            done
+            ;;
+
+        "neobundle")
+            count="-1"
+            unset start
+            unset end
+
+            while [[ ! "${start}" || ! "${end}" ]] &&
+                ((++count < ${#vimrc_contents[@]})); do
+                line="${vimrc_contents[${count}]}"
+                [[ ! "${line}" =~ ^\" ]] &&
+                    case "${line}" in
+                    *"neobundle#begin"*) start="${count}" ;;
+                    *"neobundle#end"*) end="${count}" ;;
+                    esac
+            done
+
+            diff="$((end - start))"
+            for line in "${vimrc_contents[@]:${start}:${diff}}"; do
+                [[ "${line}" =~ ^NeoBundle ]] &&
+                    plugins+=("$(process_plug "${line}"),NeoBundle")
+            done
+            ;;
+        esac
+    done
+}
+
+get_repo_author() {
+    { [[ -d "$1/.git" ]] || git -C "$1" rev-parse --git-dir >/dev/null 2>&1; } && {
+        mapfile -t first_commit < <(git -C "$1" rev-list --max-parents=0 HEAD)
+        author="$(git -C "$1" --no-pager log --format=format:%an "${first_commit[0]}")"
+        printf "%s" "${author}"
+    }
+}
+
+process_plug() {
+    plugin="$1"
+    plugin="${plugin#* }"
+    plugin="${plugin/"Plug "/}"
+    plugin="${plugin%%,*}"
+    plugin="${plugin//\'/}"
+    plugin="${plugin/"https://github.com/"/}"
+    plugin="${plugin/".git"/}"
+    plugin_name="$(trim_string "${plugin##*/}")"
+    plugin_author="$(trim_string "${plugin%%/*}")"
+
+    if [[ "${plugin_author}" =~ ^\~ ]]; then
+        plugin_name="${plugin}"
+        plugin_author="Unmanaged"
+    elif [[ "${plugin_author}" =~ (git|file): ]]; then
+        plugin_author="Unmanaged"
+    fi
+
+    [[ "${plugin_name}" ]] &&
+        printf "%s" "${plugin_name},${plugin_author:-Unknown}"
+}
+
+print_plugins() {
+    [[ ! "${plugins[*]}" ]] &&
+        return 1
+
+    plugins=("Plugin Name,Author,Manager" "${plugins[@]}")
+
+    for i in "${plugins[@]}"; do
+        IFS=$'\n' read -d "" -r name author manager <<<"${i//,/$'\n'}"
+
+        ((name_padding = ${#name} >= ${name_padding:=0} ? ${#name} : name_padding))
+        ((manager_padding = ${#manager} >= ${manager_padding:=0} ? ${#manager} : manager_padding))
+        ((author_padding = ${#author} >= ${author_padding:=0} ? ${#author} : author_padding))
+
+        name_arr+=("${name}")
+        manager_arr+=("${manager}")
+        author_arr+=("${author}")
+    done
+
+    for ((i = 0; i < ${#plugins[@]}; i++)); do
+        printf -v "col_1" "%-${name_padding}s %s" "${name_arr[$i]}" "|"
+        printf -v "col_2" "%-${manager_padding}s %s" "${manager_arr[$i]}" "|"
+        printf -v "col_3" "%-${author_padding}s" "${author_arr[$i]}"
+        out[$i]="${col_1} ${col_2} ${col_3}"
+    done
+
+    max_line="${#out[0]}"
+
+    eval printf -v line "%0.s=" "{1..${max_line}}"
+    printf "%s\\n" "${line}" "${out[0]}" "${line}"
+    printf "%s\\n" "${out[@]:1}"
+}
+
+show_usage() {
+    printf "%s\\n" "
+Usage: ${0##*/} -o option --option \"value\"
+
+    Options:
+
+    [-u|--vimrc \"/path/to/vimrc\"]       Use a user specified vimrc
+    [-p|--plugin-manager \"name\"]        Show plugins used by a plugin manager
+    [-h|--help]                         Show this message
+
+    Supported managers:
+        - pathogen
+        - plug
+        - vundle
+        - neobundle
+"
+    printf "%s\\n" "    Checking these locations for vimrc file:"
+    for file in "${vim_location[@]}"; do
+        printf "%s\\n" "        - ${file}"
+    done
+    printf "\\n"
+}
+
+get_args() {
+    while (($# > 0)); do
+        case "$1" in
+        "-u" | "--vimrc")
+            vimrc_file="$2"
+            shift
+            ;;
+        "-p" | "--plugin-manager")
+            plugin_managers+=("$2")
+            shift
+            ;;
+        "-h" | "--help")
+            show_usage
+            exit 0
+            ;;
+        esac
+        shift
+    done
+
+    [[ "${vimrc_file}" && ! -f "${vimrc_file}" ]] && {
+        err "Selected vimrc file \"${vimrc_file}\" is not valid"
+        exit 1
+    }
+}
+
+main() {
+    vim_location=(
+        "${HOME}/.vimrc"
+        "${HOME}/.vim/vimrc"
+    )
+
+    get_args "$@"
+    get_vimrc
+    get_plugin_manager
+    get_plugins
+    print_plugins
+}
+
+main "$@"

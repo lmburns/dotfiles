@@ -33,15 +33,15 @@ typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'
 typeset -g MAILCHECK=0
 # typeset -g ZSH_DISABLE_COMPFIX=true
 
+setopt autocd               auto_pushd          pushd_ignore_dups     rc_quotes
 setopt hist_ignore_space    append_history      hist_ignore_all_dups  no_hist_no_functions
 setopt share_history        inc_append_history  extended_history      cdable_vars
 setopt auto_menu            complete_in_word    always_to_end         nohup
-setopt autocd               auto_pushd          pushd_ignore_dups     rc_quotes
 setopt pushdminus           pushd_silent        interactive_comments  hash_cmds
 setopt glob_dots            extended_glob       menu_complete         hash_list_all
 setopt no_flow_control      no_case_glob        notify                hist_fcntl_lock
 setopt long_list_jobs       no_beep             multios               numeric_glob_sort
-setopt prompt_subst         no_mail_warning
+setopt prompt_subst         no_mail_warning     glob_complete
 
 # don't error out when unset parameters are used?
 setopt unset
@@ -718,7 +718,7 @@ stty stop undef
 stty discard undef <$TTY >$TTY
 zmodload zsh/zprof  # ztodo
 zmodload zsh/attr   # extended attributes
-# autoload -Uz sticky-note
+# autoload -Uz sticky-note regexp-replace
 autoload -Uz zmv zcalc zargs zed relative
 alias fned="zed -f"
 alias zmv='noglob zmv -v' zcp='noglob zmv -Cv' zln='noglob zmv -Lv' zmvn='noglob zmv -W'
@@ -789,7 +789,7 @@ zstyle '*' single-ignored show # ??
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _complete _match _list _prefix _ignored _correct _approximate _oldlist \
+      + ''                completer _complete _match _list _prefix _extensions _ignored _correct _approximate _oldlist \
       + ''                group-name '' \
       + ''                use-cache on \
       + ''                verbose yes \
@@ -797,7 +797,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                squeeze-slashes true \
       + ''                accept-exact '*(N)' \
       + ''                ignore-parents parent pwd \
-      + ''                matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*' \
+      + ''                matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|[._-,]=* r:|=*' 'l:|=* r:|=*' 'r:|?=** m:{a-z\-}={A-Z\_}' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ''                muttrc "$XDG_CONFIG_HOME/mutt/muttrc" \
       + ':manuals'        separate-sections true \
@@ -868,13 +868,11 @@ zstyle ':completion:*:hosts' hosts $hosts
 
 # === one line functions === [[[
 function linkrust() {
-  ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
-  ln -v $HOME/projects/rust/rustfmt.toml $PWD/rustfmt.toml
+  command ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
+  command ln -v $HOME/projects/rust/rustfmt.toml $PWD/rustfmt.toml
   command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }
-# lsof open fd
-zmodload -F zsh/system p:sysparams
-function lsfd() { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+
 function cargo-bin() {
   root=${$(cargo locate-project | jq -r '.root'):h} bin=${root:t}
   binpath=${root}/target/release/${bin}
@@ -887,12 +885,18 @@ function cargo-bin() {
 
 function cargo-home() { cargo show "${@}" --json | jq -r .crate.homepage; }
 # function cargo-take() { cargo new "$@" && builtin cd "$@"; }
-# wrapper for rusty-man for tui
-function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
 function cdc() { builtin cd ${$(cargo locate-project | jq -r '.root'):h}; }
 function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.rs; }
 function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
 function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
+# wrapper for rusty-man for tui
+function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
+
+# lsof open fd
+zmodload -F zsh/system p:sysparams
+function lsfd() { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+function lswifi() { nmcli device wifi; }
+function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 # find functions that follow this pattern: func()
 function ffunc() { eval "() { $functions[RG] } ${@}\\\\\("; }
 # rsync from local pc to server
@@ -957,7 +961,6 @@ function png() { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh 
 function td() { date -d "+${*}" "+%FT%R"; }
 function ofd() { xdg-open $PWD; }
 function double-accept() { deploy-code "BUFFER[-1]=''"; }
-function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 
@@ -1111,8 +1114,6 @@ path=( $GOPATH/bin(N-/) "${path[@]}" )
 
 typeset -gx GPG_TTY=$TTY
 typeset -gx PDFVIEWER='zathura'                                                   # texdoc pdfviewer
-# ??
-typeset -gx XML_CATALOG_FILES="/usr/local/etc/xml/catalog"                        # xdg-utils|asciidoc
 typeset -gx FORGIT_LOG_FORMAT="%C(red)%C(bold)%h%C(reset) %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset"
 typeset -gx RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
 #

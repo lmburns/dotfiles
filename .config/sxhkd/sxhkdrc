@@ -282,8 +282,8 @@ mod3 + d
 mod3 x ; {x,b}
      rofi -show {drun,window}
 
-mod3 + {b,p,period}
-    {$BROWSER, pcmanfm,thunderbird}
+mod3 + {b,v,p,period,s}
+    {$BROWSER,brave, pcmanfm,thunderbird,signal-desktop}
 
 mod3 + {_,shift + }n
     dunstctl {history-pop,close-all}

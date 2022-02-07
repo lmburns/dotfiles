@@ -55,10 +55,11 @@ alias :q='exit'
 alias ng="noglob"
 
 (( ${+commands[surfraw]} )) && {
-  alias srb='surfraw -browser=$BROWSERCLI'
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
   alias srh='srg github'
+  alias srb='surfraw -browser=$BROWSERCLI'
+  alias srr='surfraw -browser=brave'
   alias srgg='surfraw -browser=$BROWSER google'
 }
 
