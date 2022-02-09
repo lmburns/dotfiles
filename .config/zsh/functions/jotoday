@@ -1,0 +1,5 @@
+# Desc: Show journalctl logs from a given date
+
+SYSTEMD_COLORS=0 journalctl -e --since=$(date -d "+${*:-today}" "+%Y-%m-%d") | lnav
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

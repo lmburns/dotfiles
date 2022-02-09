@@ -636,6 +636,34 @@ cmd cpdragon %cpdragon
 cmd mvdragon %mvdragon
 cmd dlfile %dlfile
 
+# ========================== ZLE ==========================
+
+# Change directories
+cmd zle-cd %print -l -- "builtin cd "$PWD" && zle reset-prompt" >&$ZLE_FIFO
+
+# Insert relative path into the CLI buffer
+cmd zle-insert-relative %{{
+    for f ($fx) {
+      print -l -- "LBUFFER+=${LBUFFER:+ }${(q)$(realpath "$f" --relative-to=$PWD)}" >&$ZLE_FIFO
+    }
+}}
+
+# Insert absolute path into the CLI buffer
+cmd zle-insert-absolute %{{
+    for f ($fx) {
+      print -l -- "LBUFFER+=${LBUFFER:+ }${f}" >&$ZLE_FIFO
+    }
+}}
+
+# Initialize the ZLE FIFO
+cmd zle-init :{{
+    map , zle-cd
+    map ap zle-insert-relative
+    map aP zle-insert-absolute
+}}
+
+&[[ -n "$ZLE_FIFO" ]] && lf -remote "send $id zle-init"
+
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Mappings                                                                  │
 # └───────────────────────────────────────────────────────────────────────────┘

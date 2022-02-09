@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# Desc: fzf tmux fifo with neovim
+
+emulate -L zsh
+local fifo args
+
+fifo=/tmp/nvim-tmux-exit
+mkfifo -m o+w $fifo || return 1
+
+trap "command rm -f $fifo" EXIT SIGINT SIGTERM
+
+[[ $# -eq 0 ]] && args="" || args="${(z)@}"
+
+tmux split-window -bf zsh -c "exec {NVIM_FIFO}>$fifo; export NVIM_FIFO; exec nvim $args" || return 1
+
+# Is this needed?
+# echo $NVIM_FIFO
+exec {fd}<$fifo
+# exec {NVIM_FIFO}<&-

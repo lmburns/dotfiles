@@ -5,6 +5,7 @@
 setopt extendedglob local_options
 autoload -Uz compinit
 local zcompf="${ZINIT[ZCOMPDUMP_PATH]:-${ZDOTDIR:-$HOME}/.zcompdump}"
+zmodload -Fa zsh/parameter p:functions
 
 # use a separate file to determine when to regenerate, as compinit doesn't always need to modify the compdump
 local zcompf_a="${zcompf}.augur"
@@ -22,5 +23,12 @@ if [[ -s "$zcompf" && (! -s "${zcompf}.zwc" || "$zcompf" -nt "${zcompf}.zwc") ]]
     [[ -e "$zcompf.zwc" ]] && mv -f "$zcompf.zwc" "$zcompf.zwc.old"
     # compile it mapped, so multiple shells can share it (total mem reduction)
     # run in background
-    { zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }&!
+
+    if (( $+functions[zsh-defer] )) {
+        print -l 'defer'
+        zsh-defer -a -c '{ zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }'
+    } else {
+        print -l 'other'
+        { zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }&!
+    }
 fi

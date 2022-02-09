@@ -1,0 +1,17 @@
+# Desc: Temporarily look at an aur package
+
+# Credit: wfxr on github
+
+function aurview() {
+    [ -d "/tmp/$1" ] || git clone "ssh://aur@aur.archlinux.org/$1" "/tmp/$1"
+
+    echo "PKGBUILD:"
+    cat "/tmp/$1/PKGBUILD"
+
+    printf "\nFiles in aur repo:\n"
+    ls -a "/tmp/$1"
+}
+
+aurview "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

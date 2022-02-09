@@ -1,4 +1,5 @@
 afew==3.0.1
+ansicolor==0.3.2
 ansiwrap==0.8.4
 aria2p==0.11.1
 asciimatics==1.13.0
@@ -16,6 +17,7 @@ cachy==0.3.0
 caffeine-ng==3.5.1
 castero==0.9.4
 cleo==0.8.1
+cppman==0.5.3
 cpsm==1.1.1
 faker==9.3.1
 flake8==4.0.1
@@ -67,6 +69,7 @@ tomlkit==0.8.0
 tox==3.24.5
 typing-extensions==4.0.1
 tzlocal==4.1
+urwid-readline==0.13
 urwidtrees==1.0.3
 vext.gi==0.7.4
 visidata==2.8

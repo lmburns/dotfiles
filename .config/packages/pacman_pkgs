@@ -74,6 +74,7 @@ ctags
 daemonize
 dash
 ddrescue
+debtap
 deepin-wallpapers
 devour
 dialog
@@ -126,6 +127,7 @@ fq
 fswatch
 fx
 fzy
+gdrive-search
 gedit
 gifsicle
 gifski
@@ -157,6 +159,9 @@ gruvbox-icon-theme
 gruvbox-material-gtk-theme-git
 gruvbox-material-icon-theme-git
 gst-plugin-gtk
+gst-plugins-ugly
+gstreamer-vaapi
+guilded
 gwenview
 hawck-git
 hnwatch
@@ -172,6 +177,7 @@ i3status
 id3
 id3tool
 id3v2
+iftop
 imgcat
 interception-dual-function-keys
 iotop
@@ -258,6 +264,7 @@ konsole
 kontact
 kontrast
 konversation
+kooha
 kopete
 korganizer
 kpat
@@ -289,6 +296,7 @@ latte-dock
 layer-shell-qt
 lf
 lib32-vulkan-intel
+libadwaita
 libkscreen
 libksysguard
 libnss-resolver
@@ -299,6 +307,7 @@ libvips
 libxkbcommon-doc
 linux
 linux-firmware
+lnav
 logkeys-git
 lokalize
 lowdown
@@ -308,6 +317,7 @@ lua
 lua-format-git
 lua-language-server
 luarocks
+luau
 lutris
 lxappearance
 lximage-qt
@@ -335,6 +345,7 @@ marble
 markdownpart
 mate-backgrounds
 mates-git
+maturin
 mbox-importer
 mdcat
 mediainfo
@@ -470,6 +481,7 @@ ranger
 rbenv
 rclone
 rclone-browser
+rdrview-git
 redshift
 redshiftgui-bin
 ripgrep
@@ -481,6 +493,7 @@ rofi
 rofi-file-browser-extended-git
 rofi-greenclip
 rsync
+rtags
 ruby
 ruby-build
 ruby-docs
@@ -504,6 +517,7 @@ sharutils
 shellcaster
 shotgun
 siggo
+signal-desktop
 signon-kwallet-extension
 skanlite
 slock
@@ -614,6 +628,7 @@ vulkan-intel
 w3m
 watchexec
 wavemon
+wezterm
 whois
 wine
 wl-clipboard

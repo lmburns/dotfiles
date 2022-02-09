@@ -11,7 +11,7 @@ IFS=: read -ra selected < <(
       --bind "change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
       --color "hl:-1:underline,hl+:-1:underline:reverse" \
       --delimiter : \
-      --preview 'bat --color=always {1} --highlight-line {2}' \
+      --preview 'bat --color=always --highlight-line {2} -- {1}' \
       --preview-window 'nohidden,up,60%,border-bottom,+{2}+3/3,~3' \
       --height=100
 )

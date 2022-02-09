@@ -185,7 +185,7 @@ keyb() {
   # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
 
-_zlf() {
+function _zlf() {
     emulate -L zsh
     local d=$(mktemp -d) || return 1
     {
@@ -195,12 +195,12 @@ _zlf() {
         exec {fd}<$d/fifo
         zle -Fw $fd _zlf_handler
     } always {
-        rm -rf $d
+        command rm -rf $d
     }
 }
 zle -N _zlf
 
-_zlf_handler() {
+function _zlf_handler() {
     emulate -L zsh
     local line
     if ! read -r line <&$1; then
@@ -212,5 +212,7 @@ _zlf_handler() {
     zle -R
 }
 zle -N _zlf_handler
+
+vbindkey 'C-x C-o' _zlf
 
 # vbindkey 'C-a' _zlf

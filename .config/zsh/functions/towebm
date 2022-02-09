@@ -1,0 +1,12 @@
+# Desc: convert an mp4 to a webm
+
+ffmpeg \
+  -i $1 \
+  -c:v libvpx-vp9 \
+  -crf 30 \
+  -b:v 0 \
+  -b:a 128k \
+  -c:a libopus \
+  output.webm \
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

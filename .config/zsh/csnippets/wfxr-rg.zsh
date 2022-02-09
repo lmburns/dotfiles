@@ -25,7 +25,7 @@ function Sk() {
 function RG() {
   local RG_PREFIX INITIAL_QUERY
   local -a selected
-  RG_PREFIX="rg --column --hidden --line-number --no-heading --color=always --smart-case "
+  RG_PREFIX="rg --column --hidden --line-number --no-heading --color=always --smart-case -- "
   INITIAL_QUERY="${*:-}"
   selected=("$(
     FZF_DEFAULT_COMMAND="$RG_PREFIX '$INITIAL_QUERY' || true" \

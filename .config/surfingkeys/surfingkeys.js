@@ -21,15 +21,21 @@ const {
 } = api;
 
 settings.tabsMRUOrder = false;
+
+// "border: solid 3px #552a48; color:#efe1eb; background: none; background-color: #552a48;"
 api.Hints.style(
-  "border: solid 0px #C38A22;padding: 1px;background: #b16286",
+  "padding: 1px; color:#ddc7a1; background: none; background-color: #b16286"
+);
+
+api.Hints.style(
+  "div{color:#ddc7a1; background: none; background-color: #7daea3;} div.begin{color:#ea6962;}",
   "text"
 );
 
 // Emoji
 api.iunmap(":");
-// Baidi search
-api.iunmap("ob");
+// Baidu search
+api.unmap("ob");
 
 // Left move tab
 api.map("h", "E");
@@ -41,6 +47,11 @@ api.map("H", "S");
 // Forward history
 api.map("L", "D");
 
+// Up
+api.map("K", "u");
+// Down
+api.map("J", "d");
+
 // Close tab
 api.map("D", "x");
 
@@ -48,31 +59,28 @@ api.mapkey("d", "#3Close current tab", function () {
   api.RUNTIME("closeTab");
 });
 
-// DOESNT WORK
 api.mapkey("u", "#3Restore closed tab", function () {
   api.RUNTIME("openLast");
 });
 
-// DOESNT WORK
 // Scroll Page Down/Up
-api.mapkey("<Ctrl-d>", "#9Forward half page", function () {
-  api.Normal.feedkeys("3j");
-});
-// DOESNT WORK
-api.mapkey("<Ctrl-u>", "#9Back half page", function () {
-  api.Normal.feedkeys("3k");
-});
+// api.mapkey("<Ctrl-d>", "#9Forward half page", function () {
+//   api.Normal.feedkeys("3j");
+// });
+// api.mapkey("<Ctrl-u>", "#9Back half page", function () {
+//   api.Normal.feedkeys("3k");
+// });
 
 // Next/Prev Page
 api.map("]", "]]");
 api.map("[", "[[");
 
-api.mapkey(
-  "K",
-  "#1Click on the previous link on current page",
-  api.previousPage
-);
-api.mapkey("J", "#1Click on the next link on current page", api.nextPage);
+// api.mapkey(
+//   "K",
+//   "#1Click on the previous link on current page",
+//   api.previousPage
+// );
+// api.mapkey("J", "#1Click on the next link on current page", api.nextPage);
 
 // Move Tab Left/Right
 api.map(">", ">>");
@@ -155,13 +163,13 @@ settings.theme = `
     color: #7daea3;
 }
 .sk_theme tbody {
-    color: #a9b665;
+    color: #8bba7f;
 }
 .sk_theme input {
-    color: #d9dce0;
+    color: #ddc7a1;
 }
 .sk_theme .url {
-    color: #98971a;
+    color: #a9b665;
 }
 .sk_theme .annotation {
     color: #b16286;
@@ -174,7 +182,7 @@ settings.theme = `
     background: #282828;
 }
 .sk_theme #sk_omnibarSearchResult ul>li.focused {
-    background: #d3869b;
+    background: #ebdbb2;
 }
 `;
 

@@ -1561,6 +1561,7 @@ Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'RRethy/nvim-treesitter-endwise'
 Plug 'nvim-treesitter/playground'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 "}}} === Syntax Highlighting ===

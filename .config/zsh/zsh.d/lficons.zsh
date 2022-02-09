@@ -436,4 +436,15 @@ lc() {
   }
 }
 
+function xd() {
+  pth="$(xplr)"
+  if [[ "$pth" != "$PWD" ]]; then
+    if [[ -d "$pth" ]]; then
+      cd "$pth"
+    elif [[ -f "$pth" ]]; then
+      cd "$(dirname "$pth")"
+    fi
+  fi
+}
+
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

@@ -48,5 +48,6 @@ require('nvim-treesitter.configs').setup {
         ["il"] = "@loop.inner"
       }
     }
-  }
+  },
+  endwise = { enable = true }
 }

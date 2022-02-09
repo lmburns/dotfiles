@@ -113,10 +113,6 @@ alias usudo='sudo -E -s '
 alias _='sudo'
 # alias s='sudo'
 alias __='doas'
-alias cp='/bin/cp -ivp'
-alias pl='print -rl --'
-alias pp='print -Pr --'
-alias mv='mv -iv'
 # alias mkd='mkdir -pv'
 
 (( ${+commands[exa]} )) && {
@@ -146,9 +142,13 @@ alias mv='mv -iv'
   alias fdrr='fd --changed-within=1m'
 }
 
+alias pl='print -rl --'
+alias pp='print -Pr --'
 alias chx='chmod ug+x'
 alias chmx='chmod -x'
-alias lns='ln -siv'
+alias cp='command cp -ivp'
+alias mv='command mv -iv'
+alias lns='command ln -siv'
 alias kall='killall'
 alias kid='kill -KILL'
 alias yt='yt-dlp --add-metadata -i'
@@ -159,8 +159,8 @@ alias irg="rg --no-ignore"
 alias diff='diff --color=auto'
 alias sha='shasum -a 256'
 alias wh="whence -f"
-alias wa="whence -va"
-alias wm="whence -m"
+alias wa="whence -va" # where
+alias wm="whence -vm"
 
 alias pvim='nvim -u NONE'
 

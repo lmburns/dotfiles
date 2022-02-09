@@ -1,0 +1,25 @@
+# Desc: Display tags and files with tmsu in current dir
+
+setopt extendedglob
+
+local -a files tags sel
+
+sel=( ${(@f)"$(fd -d1 -x tmsu --color=always tags {})"})
+
+files=( ${(@)${sel[@]//(#m)*/${${(As.:.)MATCH}[1]}}} )
+tags=( ${(@)${sel[@]//(#m)*/${${${(As.:.)MATCH}[2]}:-NONE}}} )
+
+# tags=( ${(@)${sel[@]//(#m)*/${${${(As.:.)MATCH}[2]#${${(As.:.)MATCH}[2]%%[! $'\t']*}}%/}}} )
+
+integer i longest=0
+local t
+local -a packs unpacked
+for (( i=1; i<=$#tags; i++ )) {
+  if [[ $tags[$i] != NONE ]] {
+    packs+=( "%F{13}%B${files[$i]}%f%b: ${tags[$i]}" )
+  }
+}
+
+print -Pln "${(@%)packs}" | column -t -s ':'
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
