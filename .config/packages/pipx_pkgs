@@ -36,7 +36,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - mplug
    package organize-tool 1.10.1, installed using Python 3.10.0
     - organize
-   package pdm 1.12.6, installed using Python 3.10.0
+   package pdm 1.12.8, installed using Python 3.10.0
     - pdm
    package pipdeptree 2.2.1, installed using Python 3.10.0
     - pipdeptree

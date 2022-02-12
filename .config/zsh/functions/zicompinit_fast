@@ -25,10 +25,8 @@ if [[ -s "$zcompf" && (! -s "${zcompf}.zwc" || "$zcompf" -nt "${zcompf}.zwc") ]]
     # run in background
 
     if (( $+functions[zsh-defer] )) {
-        print -l 'defer'
-        zsh-defer -a -c '{ zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }'
+        zsh-defer -a -c "{ zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }"
     } else {
-        print -l 'other'
         { zcompile -M "$zcompf" && command rm -f "$zcompf.zwc.old" }&!
     }
 fi

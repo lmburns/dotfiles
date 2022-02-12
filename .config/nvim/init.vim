@@ -1717,11 +1717,11 @@ command! -nargs=? -complete=dir AF
     \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
     \ 'window': 'call FloatingFZF()'})
 
-inoremap <expr> <a-;> fzf#complete({
-            \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
-            \ 'options': '--no-border',
-            \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
-            \ 'window': 'call FloatingFZF()'})
+  inoremap <expr> <a-;> fzf#complete({
+      \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
+      \ 'options': '--no-border',
+      \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+      \ 'window': 'call FloatingFZF()'})
 
   function! s:create_float(hl, opts)
     let buf = nvim_create_buf(v:false, v:true)

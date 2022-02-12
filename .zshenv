@@ -121,6 +121,7 @@ export GRIPHOME="${XDG_CONFIG_HOME}/grip"
 # export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
 
 export GOGODB_PATH="${XDG_DATA_HOME}/gogo/gogo.db"
+export BKT_TMPDIR="${XDG_DATA_HOME}/bkt/cache"
 
 export NNN_PLUG='P:preview-tui;f:finder;o:fzopen;d:diffs;t:treeview;v:imgview;J:autojump;e:gpge;d:gpgd;m:mimelist;b:nbak;s:organize;B:_renamer;p:_bat $nnn*;y:-_sync*;L:-_git log;k:-_fuser -kiv $nnn*'
 export NNN_FCOLORS='c1e2272e006033f7c6d6abc4'

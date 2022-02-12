@@ -17,8 +17,8 @@ prev_img m
 scroll_down  j
 scroll_up    k
 
-scroll_right h
-scroll_left  l
+scroll_right l
+scroll_left  h
 
 # orient_3    .
 # orient_1    ,

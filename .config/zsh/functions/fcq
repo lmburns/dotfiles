@@ -11,10 +11,6 @@ fcq() {
       | perl -pe 's/\d+\s?//g && chomp if eof' \
       | xsel -b
   # )
-
-  # printf "%s" "$(tput setaf 5)$sel$(tput sgr0)"
-  # echo "$sel" | tr -d '[[:digit:][:blank:]]' | xsel -b
-  # echo "$sel" | sd '^\d+(\s*|\t)' '' | xsel -b
 }
 
 fcq

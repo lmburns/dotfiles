@@ -66,13 +66,15 @@ color.scheduled=yellow
 # color.deleted
 color.recurring=underline magenta                # Color of recur.any: tasks
 
-color.project.important=bold magenta
-color.project.appt=bold cyan
-color.tag.important=bold magenta                  # Color of +bug tasks
-color.tag.bug=yellow                  # Color of +bug tasks
-#color.keyword.car=on_blue             # Color of description.contains:car tasks
-color.header=bold yellow               # Color of header messages
-color.footnote=on blue             # Color of footnote messages
+color.project.important=bold magenta #  Color of important project tasks
+color.project.appt=bold cyan         #  Color of appt project tasks
+color.project.rust=yellow            #  Color of appt project tasks
+color.tag.github=green               #  Color of +github tasks
+color.tag.important=bold magenta     #  Color of +bug tasks
+color.tag.bug=yellow                 #  Color of +bug tasks
+#color.keyword.car=on_blue           #  Color of description.contains:car tasks
+color.header=bold yellow             #  Color of header messages
+color.footnote=on blue               #  Color of footnote messages
 
 default.project=general                # Unless otherwise specified
 # default.priority=M                    # Unless otherwise specified

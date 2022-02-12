@@ -102,7 +102,7 @@ typeset -gA keybindings; keybindings=(
   'M-q'             push-line-or-edit     # zsh-edit
   'M-u'             __unicode_translate   # translate unicode
   'M-x'             cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-b'             clipboard-fzf         # greenclip
+  'M-b'             fcq-zle               # copyq zle
   'C-a'             autosuggest-execute
   'C-y'             yank
   'C-z'             fancy-ctrl-z
@@ -176,7 +176,7 @@ vbindkey -A keybindings
 # done
 
 # View keybindings
-keyb() {
+function lskb() {
   local -A keyb=(); for k v in ${(kv)keybindings}; do
     k="%F{1}%B$k%f%b" v="%F{3}$v%f" keyb[${(%)k}]=${(%)v}
   done

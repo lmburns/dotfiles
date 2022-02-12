@@ -227,3 +227,22 @@ if (( $+commands[greenclip] )); then
         nohup greenclip daemon &>/dev/null &
     }
 fi
+
+if (( $+commands[copyq] )); then
+    function fcq-zle() {
+        CONTENT=$(\
+            copyq eval -- \
+              "tab('&clipboard'); for(i=size(); i>0; --i) print(str(read(i-1)) + '\n');" \
+              | rg -v '^\s*$' \
+              | nl -w2 -s" " \
+              | tac \
+              | fzf --layout=reverse --multi --prompt='Copyq> ' --tiebreak=index \
+              | perl -pe 's/\d+\s?//g && chomp if eof' \
+              | xsel -b
+        )
+        BUFFER="$BUFFER$CONTENT"
+        CURSOR="$#BUFFER"
+        zle redisplay
+    }
+    zle -N fcq-zle
+fi

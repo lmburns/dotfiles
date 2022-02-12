@@ -36,15 +36,12 @@ alias xmm="xmodmap"
 alias s="systemctl"
 alias bctl="bluetoothctl"
 
-alias feh='feh \
+alias fehh='feh \
            --scale-down \
            --auto-zoom \
            --borderless \
            --image-bg black \
-           --draw-filename \
-           --draw-tinted \
-           --keep-zoom-vp \
-           --conversion-timeout 1'
+           --draw-filename'
 
 alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 alias passverr="veracrypt --text --dismount ~/.password.vera"
@@ -58,9 +55,9 @@ alias ng="noglob"
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
   alias srh='srg github'
-  alias srb='surfraw -browser=$BROWSERCLI'
-  alias srr='surfraw -browser=brave'
-  alias srgg='surfraw -browser=$BROWSER google'
+  alias srb='BROWSER=$BROWSERCLI srg'
+  alias srr='BROWSER=brave srg'
+  alias srgg='BROWSER=$BROWSER surfraw -g google'
 }
 
 (( ${+commands[xidlehook]} )) && {
@@ -182,6 +179,8 @@ alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
 alias nprof='$EDITOR $HOME/.profile'
 alias nzsh='$EDITOR $ZDOTDIR/.zshrc'
 alias azsh='$EDITOR $ZDOTDIR/zsh.d/aliases.zsh'
+alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lficons.zsh'
+alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
 alias ndir='$EDITOR $ZDOTDIR/gruv.dircolors'
 alias ezsh='$EDITOR $HOME/.zshenv'

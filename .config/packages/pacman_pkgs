@@ -164,6 +164,7 @@ gstreamer-vaapi
 guilded
 gwenview
 hawck-git
+hck
 hnwatch
 hollywood
 hsetroot
@@ -193,7 +194,6 @@ jre-openjdk
 juk
 k3b
 kactivitymanagerd
-kaddressbook
 kalarm
 kalgebra
 kalzium
@@ -219,7 +219,6 @@ kdegraphics-mobipocket
 kdegraphics-thumbnailers
 kdenetwork-filesharing
 kdenlive
-kdepim-addons
 kdeplasma-addons
 kdesdk-kioslaves
 kdesdk-thumbnailers
@@ -257,7 +256,6 @@ kmonad-bin
 kmousetool
 kmouth
 kmplot
-knotes
 kolourpaint
 kompare
 konsole
@@ -266,7 +264,6 @@ kontrast
 konversation
 kooha
 kopete
-korganizer
 kpat
 krdc
 krfb
@@ -310,6 +307,7 @@ linux-firmware
 lnav
 logkeys-git
 lokalize
+loop
 lowdown
 lsof
 ltrace
@@ -584,6 +582,7 @@ thunar-volman
 thunderbird
 thunderbird-extension-enigmail
 ticker
+time
 timeshift
 timew
 timg

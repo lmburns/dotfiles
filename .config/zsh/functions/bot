@@ -15,6 +15,6 @@ url=$(
     | ${commands[hck]:-cut} -f1
 )
 
-[[ -n "$url" ]] && librewolf "$url"
+[[ -n "$url" ]] && $BROWSER "$url"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -3,7 +3,7 @@
 local curcontext="$curcontext" expl state line args ret=1
 
 _arguments -C -A \
-  '-browser=[set browser]:browser:_command_names' \
+  '-browser[set browser]:browser:_command_names' \
   '-elvi[list web sites that can be searched]' \
   '-escape-url-args=[apply url escaping to arguments]:bool:(yes no)' \
   '(-g -graphical)'{-g,-graphical}'[get some windowed sin]' \

@@ -15,12 +15,12 @@ udiskie --tray &
 # xsettingsd
 
 # Kill process if it hangs
-# bustd &
+bustd &
 
 # clipit &
 # greenclip daemon &
 copyq &
-nohup greenclip daemon > /dev/null 2>&1 &
+setsid -f greenclip daemon > /dev/null 2>&1 &!
 ulauncher --hide-window &
 # spotifyd &
 
