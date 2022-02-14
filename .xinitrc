@@ -15,7 +15,7 @@ udiskie --tray &
 # xsettingsd
 
 # Kill process if it hangs
-bustd &
+# bustd &
 
 # clipit &
 # greenclip daemon &

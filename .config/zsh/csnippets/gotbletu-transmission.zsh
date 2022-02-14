@@ -109,11 +109,13 @@ aria2c-webui() {
     echo "connect via http://localhost:$PORT or http://ip_address_of_server:$PORT"
 }
 
-pick_torrent() LBUFFER="transmission-remote -t ${$({
-    for torrent in ${(f)"$(transmission-remote -l)"}; do
-        torrent_name=$torrent[73,-1]
-        [[ $torrent_name != (Name|) ]] && echo ${${${(s. .)torrent}[1]}%\*} $torrent_name
-    done
-} | fzf)%% *} -"
+pick_torrent() {
+    LBUFFER="transmission-remote -t ${$({
+      for torrent in ${(f)"$(transmission-remote -l)"}; do
+          torrent_name=$torrent[73,-1]
+          [[ $torrent_name != (Name|) ]] && echo ${${${(s. .)torrent}[1]}%\*} $torrent_name
+      done
+  } | fzf)%% *} -"
+}
 
 zle -N pick_torrent
