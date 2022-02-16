@@ -1,0 +1,29 @@
+typeset -gA key; key=(
+  F1        $'\eOP'
+  F2        $'\eOQ'
+  F3        $'\eOR'
+  F4        $'\eOS'
+  F5        $'\e[15~'
+  F6        $'\e[17~'
+  F7        $'\e[18~'
+  F8        $'\e[19~'
+  F9        $'\e[20~'
+  F10       $'\e[21~'
+  F11       $'\e[23~'
+  F12       $'\e[24~'
+  Backspace $'^?'
+  Insert    $'\e[1~'
+  Home      $'\e[1~'
+  PageUp    $'\e[5~'
+  Delete    $'\e[3~'
+  End       $'\e[4~'
+  PageDown  $'\e[6~'
+  Up        $'\e[A'
+  Left      $'\e[D'
+  Down      $'\e[B'
+  Right     $'\e[C'
+  Menu      $'\e[1~'
+)
+
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -138,4 +138,3 @@ export RPASTE_CONFIG="${XDG_CONFIG_HOME}/rpaste/config.toml"
 # [ "$(tty)" = "/dev/tty1" ] && ! pidof -s Xorg >/dev/null 2>&1 && exec startx "$XINITRC"
 
 # vim:ft=zsh:et:sw=0:ts=2:sts=2:
-. "/home/lucas/.local/share/cargo/env"

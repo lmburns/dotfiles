@@ -2,7 +2,6 @@
 #   pgrep bspwm || startx "$HOME/.xinitrc"
 # fi
 
-if [ -z "${DISPLAY}" ] && [ "$(tty)" = /dev/tty1 ]; then
-  exec startx
-fi
-. "/home/lucas/.local/share/cargo/env"
+# if [ -z "${DISPLAY}" ] && [ "$(tty)" = /dev/tty1 ]; then
+#   exec startx
+# fi

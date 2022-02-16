@@ -1,0 +1,25 @@
+#compdef crex
+
+# zsh completions for 'crex'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print the help output]'
+  {-v,--version}'[print the program version]'
+  {-c,--color}'[print out results in color]'
+  {-j,--json}'[print out results in json]'
+  {-i,--icase}'[character matching should be performed without regard to case]'
+  {-o,--optimize}'[instructs the regular expression engine to make matching faster, with the potential cost of making construction slower]'
+  {-e,--ecmascript}'[use the modified ECMAScript regular expression grammar]'
+  {-b,--basic}'[use the basic POSIX regular expression grammar]'
+  {-x,--extended}'[use the extended POSIX regular expression grammar]'
+  {-a,--awk}'[use the regular expression grammar used by the awk utility in POSIX]'
+  {-g,--grep}'[use the regular expression grammar used by the grep utility in POSIX]'
+  {-E,--egrep}'[use the regular expression grammar used by the grep utility, with the -E option, in POSIX]'
+  {-s,--string}'[the string to search]'
+  {-r,--regex}'[the regular expression to use]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,36 @@
+#compdef scli
+
+# zsh completions for 'scli'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-c,--config-file}'[path to the config file. Arguments on the command line]'
+  {-u,--username}'[phone number starting with "+" followed by country]'
+  {-N,--notification-command}'[command to run when a new message arrives. %m is]'
+  {-o,--open-command}'[file/URL opener command. %u is replaced with the path.]'
+  {-e,--editor-command}'[external text editor command. If not set, scli checks]'
+  {-G,--clipboard-get-command}'[command used by `:attachClip` to get a list of files]'
+  {-P,--clipboard-put-command}'[command to put text on clipboard. %s will be replaced]'
+  {-s,--save-history}'[enable conversations history. History is saved in]'
+  '--log-file[path to the log file. If not explicitly specified]'
+  {-n,--enable-notifications}'[enable desktop notifications. (Also see]'
+  '--notification-command[)]'
+  '--notification-no-bell[do not send a "bell" code to the terminal on]'
+  {-f,--use-formatting}'[show _italic_, *bold*, ~strikethrough~ formatting in]'
+  '--color[colorize messages. See README for options.]'
+  {-w,--wrap-at}'[wrap messages text at a given number of columns /]'
+  '--one-sided[left-align both sent and received messages]'
+  '--show-names[show contacts names next to messages, even in one-to-]'
+  '--partition-contacts[separate groups and individual contacts in the]'
+  '--contacts-autohide[autohide the contacts pane when it loses focus.]'
+  '--contacts-sort-alpha[sort contacts alphabetically. (default: sort by the]'
+  '--daemon-command[command for starting signal-cli daemon. The `%u` in]'
+  '--no-daemon[do not start signal-cli daemon. Only useful for]'
+  '--debug[verbose log output.]'
+  '--version[show programs version number and exit]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,52 @@
+#compdef xh
+
+# zsh completions for 'xh'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-j,--json}'[(default) Serialize data items from the command line as a JSON object]'
+  {-f,--form}'[serialize data items from the command line as form fields]'
+  {-m,--multipart}'[like --form, but force a multipart/form-data request even without files]'
+  '--pretty[controls output processing \[possible values: all, colors, format, none\]]'
+  {-s,--style}'[output coloring style \[possible values: auto, solarized, monokai\]]'
+  '--response-charset[override the response encoding for terminal display purposes]'
+  '--response-mime[override the response mime type for coloring and formatting for the terminal]'
+  {-p,--print}'[string specifying what the output should contain]'
+  {-h,--headers}'[print only the response headers, shortcut for --print=h]'
+  {-b,--body}'[print only the response body, Shortcut for --print=b]'
+  {-v,--verbose}'[print the whole request as well as the response]'
+  '--all[show any intermediary requests/responses while following redirects with --follow]'
+  {-P,--history-print}'[the same as --print but applies only to intermediary requests/responses]'
+  {-q,--quiet}'[do not print to stdout or stderr]'
+  {-S,--stream}'[always stream the response body]'
+  {-o,--output}'[save output to FILE instead of stdout]'
+  {-d,--download}'[download the body to a file instead of printing it]'
+  {-c,--continue}'[resume an interrupted download. Requires --download and --output]'
+  '--session[create, or reuse and update a session]'
+  '--session-read-only[create or read a session without updating it form the request/response exchange]'
+  {-A,--auth-type}'[specify the auth mechanism \[possible values: basic, bearer, digest\]]'
+  {-a,--auth}'[| TOKEN>     Authenticate as USER with PASS or with TOKEN]'
+  '--ignore-netrc[do not use credentials from .netrc]'
+  '--offline[construct HTTP requests without sending them anywhere]'
+  '--check-status[(default) Exit with an error status code if the server replies with an error]'
+  {-F,--follow}'[do follow redirects]'
+  '--max-redirects[number of redirects to follow, only respected if `follow` is set]'
+  '--timeout[connection timeout of the request]'
+  '--proxy[...        Use a proxy for a protocol. For example: `--proxy https:http://proxy.host:8080`]'
+  '--verify[if "no", skip SSL verification. If a file path, use it as a CA bundle]'
+  '--cert[use a client side certificate for SSL]'
+  '--cert-key[A private key file to use with --cert]'
+  '--ssl[force a particular TLS version \[possible values: auto, ssl2.3, tls1, tls1.1, tls1.2]'
+  '--native-tls[use the system TLS library instead of rustls (if enabled at compile time)]'
+  '--https[make HTTPS requests if not specified in the URL]'
+  '--http-version[HTTP version to use \[possible values: 1, 1.0, 1.1, 2\]]'
+  {-I,--ignore-stdin}'[do not attempt to read stdin]'
+  '--curl[print a translation to a `curl` command]'
+  '--curl-long[use the long versions of curls flags]'
+  '--help[prints help information]'
+  {-V,--version}'[prints version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

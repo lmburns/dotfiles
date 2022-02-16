@@ -1,0 +1,32 @@
+#compdef grex
+
+# zsh completions for 'grex'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-d,--digits}'[converts any Unicode decimal digit to \d.]'
+  {-D,--non-digits}'[converts any character which is not a Unicode decimal digit to \D.]'
+  {-s,--spaces}'[converts any Unicode whitespace character to \s.]'
+  {-S,--non-spaces}'[converts any character which is not a Unicode whitespace character to \S]'
+  {-w,--words}'[converts any Unicode word character to \w.]'
+  {-W,--non-words}'[converts any character which is not a Unicode word character to \W.]'
+  {-r,--repetitions}'[detects repeated non-overlapping substrings and]'
+  {-e,--escape}'[replaces all non-ASCII characters with unicode escape sequences]'
+  '--with-surrogates[converts astral code points to surrogate pairs if --escape is set]'
+  {-i,--ignore-case}'[performs case-insensitive matching, letters match both upper and lower case]'
+  {-g,--capture-groups}'[replaces non-capturing groups by capturing ones]'
+  {-x,--verbose}'[produces a nicer looking regular expression in verbose mode]'
+  '--no-start-anchor[removes the caret anchor ^ from the resulting regular expression.]'
+  '--no-end-anchor[removes the dollar sign anchor $ from the resulting regular expression.]'
+  '--no-anchors[removes the caret and dollar sign anchors from the resulting regular expression.]'
+  {-c,--colorize}'[provides syntax highlighting for the resulting regular expression]'
+  {-h,--help}'[prints help information]'
+  {-v,--version}'[prints version information]'
+  {-f,--file}'[reads test cases on separate lines from a file.]'
+  '--min-repetitions[specifies the minimum quantity of substring repetitions]'
+  '--min-substring-length[specifies the minimum length a repeated substring must have]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

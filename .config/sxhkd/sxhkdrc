@@ -19,8 +19,8 @@ F11
     remaps && notify-send "remaps" "remapped"
 
 # Toggle caffeinate on/off
-{_,shift +}F10
-    caffeine-toggle {on,off}
+# {_,shift +}F10
+#     caffeine-toggle {on,off}
 
 # Lock screen
 super + Delete

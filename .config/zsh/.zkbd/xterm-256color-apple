@@ -1,0 +1,19 @@
+#!/bin/zsh
+# This is picked up automatically by /etc/zshrc
+typeset -gA key=(
+    Control-Space $'\0'
+    Tab           $'\t'
+    Return        $'\r'
+    Escape        $'\e'
+    Up            $'\e[A'
+    Down          $'\e[B'
+    Right         $'\e[C'
+    Left          $'\e[D'
+    End           $'\e[F'
+    Home          $'\e[H'
+    Shift-Tab     $'\e[Z'
+    Delete        $'\e[3~'
+    PageUp        $'\e[5~'
+    PageDown      $'\e[6~'
+    Backspace     $'\C-?'
+)

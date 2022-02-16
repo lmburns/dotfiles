@@ -9,6 +9,7 @@
 0="${${(M)0:#/*}:-$PWD/$0}"
 
 umask 022
+# umask u=rwx,g=rx,o=rx
 
 typeset -gaxU path fpath manpath infopath cdpath
 typeset -fuz zkbd
@@ -27,21 +28,44 @@ typeset -g SAVEHIST=8000000
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get)"
 typeset -g TIMEFMT=$'\n================\nCPU\t%P\nuser\t%*U\nsystem\t%*S\ntotal\t%*E'
-typeset -g PROMPT_EOL_MARK=''
+# typeset -g PROMPT_EOL_MARK=''
+typeset -g PROMPT_EOL_MARK='%F{14}%S%#%f%s'
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'
 typeset -g MAILCHECK=0
+typeset -g FCEDIT="$EDITOR"         # history editor
 # typeset -g ZSH_DISABLE_COMPFIX=true
 
-setopt autocd               auto_pushd          pushd_ignore_dups     rc_quotes
-setopt hist_ignore_space    append_history      hist_ignore_all_dups  no_hist_no_functions
-setopt share_history        inc_append_history  extended_history      cdable_vars
-setopt auto_menu            complete_in_word    always_to_end         nohup
-setopt pushdminus           pushd_silent        interactive_comments  hash_cmds
-setopt glob_dots            extended_glob       menu_complete         hash_list_all
-setopt no_flow_control      no_case_glob        notify                hist_fcntl_lock
-setopt long_list_jobs       no_beep             multios               numeric_glob_sort
-setopt prompt_subst         no_mail_warning     glob_complete
+zle_highlight=(
+  # region:fg="#a89983",bg="#4c96a8"
+  region:standout
+  special:standout
+  suffix:bold
+  isearch:underline
+  paste:standout
+)
+
+() {
+  # zmodload -Fa zsh/param/private b:private
+  # private i; i=${(@j::):-%\({1..36}"e,$( echoti cuf 2 ),)"}
+  # typeset -g PS4=$'%(?,,\t\t-> %F{9}%?%f\n)'
+  # PS4+=$'%2<< %{\e[2m%}%e%22<<             %F{10}%N%<<%f %3<<  %I%<<%b %(1_,%F{11}%_%f ,)'
+
+  typeset -g PS2="%F{1}%B>%f%b "
+  typeset -g RPS2="%F{14}%i:%_%f"
+}
+
+setopt auto_pushd        pushd_ignore_dups  pushd_minus          pushd_silent
+setopt glob_dots         extended_glob      no_case_glob         glob_complete    numeric_glob_sort
+setopt hist_ignore_space append_history     hist_ignore_all_dups no_hist_no_functions
+setopt share_history     inc_append_history extended_history     hist_fcntl_lock
+setopt nohup             notify             no_flow_control      multios
+setopt auto_cd           rc_quotes          cdable_vars          menu_complete
+setopt long_list_jobs    no_beep            prompt_subst         no_mail_warning
+setopt auto_menu         complete_in_word   always_to_end        interactive_comments
+setopt hash_cmds         hash_list_all
+
+# setopt brace_ccl auto_param_slash transient_prompt
 
 # don't error out when unset parameters are used?
 setopt unset
@@ -64,7 +88,7 @@ typeset -gA ZINIT=(
 
 fpath=( ${0:h}/{functions,completions} "${fpath[@]}")
 autoload -Uz $fpath[1]/*(:t)
-module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
+# module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
 
 # zstyle ':completion:*' recent-dirs-insert fallback
 # zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
@@ -117,8 +141,7 @@ mv_clean() { print -lr -- "command mv -f tar*/rel*/${1:-%PLUGIN%} . && cargo cle
 zt light-mode for romkatv/zsh-defer
 # Unsure if all of this defer here does anything with turbo
 function defer() {
-  { [[ -v functions[zsh-defer] ]] && zsh-defer -a "$@"; } ||
-  print -nu2;
+  { [[ -v functions[zsh-defer] ]] && zsh-defer -a "$@"; } || return 0;
 }
 
 # === annex, prompt === [[[
@@ -127,7 +150,7 @@ zt light-mode for \
   zdharma-continuum/zinit-annex-submods \
   NICHOLAS85/z-a-linkman \
   NICHOLAS85/z-a-linkbin \
-  atinit'Z_A_USECOMP=1' \
+    atinit'Z_A_USECOMP=1' \
   NICHOLAS85/z-a-eval
 
 # zdharma-continuum/zinit-annex-rust
@@ -294,19 +317,19 @@ zt 0c light-mode binary for \
     jszczerbinsky/ptSh \
   lbin atclone"mkdir -p $XDG_CONFIG_HOME/ytfzf; cp **/conf.sh $XDG_CONFIG_HOME/ytfzf" \
     pystardust/ytfzf \
-  lbin from'gl' atclone'./prebuild; ./configure --prefix="$ZPFX"; make' \
+  wait"$(has surfraw)" lbin from'gl' atclone'./prebuild; ./configure --prefix="$ZPFX"; make' \
   make"install"  atpull'%atclone' \
     surfraw/Surfraw \
-  lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
+  wait"$(has xsel)" lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
   make"install" atpull'%atclone' lman \
     kfish/xsel \
-  lbin atclone'./configure --prefix="$ZPFX"; make' \
+  wait"$(has w3m)" lbin atclone'./configure --prefix="$ZPFX"; make' \
   make"install" atpull'%atclone' lman \
     tats/w3m \
   lbin atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
   make'install' atpull'%atclone' lman \
     KoffeinFlummi/htop-vim \
-  lbin atclone'./autogen.sh && ./configure --prefix=$ZPFX' \
+  wait"$(has tmux)" lbin atclone'./autogen.sh && ./configure --prefix=$ZPFX' \
   make"install PREFIX=$ZPFX" atpull'%atclone' lman \
     tmux/tmux \
   atclone'local d="$XDG_CONFIG_HOME/tmux/plugins";
@@ -522,7 +545,7 @@ zt 0c light-mode null for \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' \
     magiclen/xcompress \
-  lbin atclone'cargo br' atpull'%atclone' \
+  has'!loop' lbin atclone'cargo br' atpull'%atclone' \
   atclone"$(mv_clean)" \
     miserlou/loop \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
@@ -686,9 +709,10 @@ zt light-mode is-snippet for \
 
 # === powerlevel10k === [[[
 [[ $MYPROMPT == p10k ]] && {
-  if [[ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
-  fi
+  () {
+    local f; f="${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
+    [[ -r "$f" ]] && builtin source "$f"
+  }
 }
 # ]]]
 
@@ -703,11 +727,22 @@ zmodload -mF zsh/files b:zf_\* # zf_ln zf_rm etc
 # autoload -Uz sticky-note regexp-replace
 autoload -Uz zmv zcalc zargs zed relative
 alias fned="zed -f"
-alias zmv='noglob zmv -v' zcp='noglob zmv -Cv' zln='noglob zmv -Lv' zmvn='noglob zmv -W'
+alias zmv='noglob zmv -v' zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
+alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 alias run-help > /dev/null && unalias run-help
 autoload +X -Uz run-help
 zmodload -F zsh/parameter p:functions_source
 autoload -Uz $functions_source[run-help]-*~*.zwc
+
+# unalias which-command 2> /dev/null
+# zle -C  which-command list-choices which-command
+# function which-command() {
+#   zle -I
+#   command whatis      -- $words[@] 2> /dev/null
+#   builtin whence -aSv -- $words[@] 2> /dev/null
+#   compstate[insert]=
+#   compstate[list]=
+# }
 
 # LS_COLORS defined before zstyle
 typeset -gx LS_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
@@ -773,6 +808,7 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
 # zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
 
 zstyle '*' single-ignored show # don't insert single value
+zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
 
 # zstyle ':completion:*:default' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=38;5;216'
 # zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==35=35}:${(s.:.)LS_COLORS}")';
@@ -783,13 +819,14 @@ zstyle '*' single-ignored show # don't insert single value
 _my-cache-policy() { [[ ! -f $1 && -n "$1"(Nm+14) ]]; }
 zstyle ':completion:complete:*' cache-policy _my-cache-policy
 
-zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
+
+# zstyle ':completion::approximate*:*' prefix-needed false
 
 # + ''                show-completer = debugging
 # + ''                accept-exact '*(N)' \
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                group-name '' \
-      + ''                completer _complete _match _list _prefix _extensions _ignored _correct _approximate _oldlist \
+      + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                use-cache true \
       + ''                cache-path "${ZDOTDIR}/.zcompcache" \
       + ''                verbose true \
@@ -818,6 +855,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':exa'            sort false \
       + ':sudo:*'         command-path /usr/{local/{sbin,bin},(s|)bin} /sbin /bin \
       + ':sudo::'         environ PATH="$PATH" \
+      + ':expand:*'       tag-order all-expansions \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)' \
       + ':(rm|rip|kill|diff(|sitter)|git-dsf):*' ignore-line other \
       + ':(rm|rip|git-dsf):*'                    file-patterns '*:all-files' \
@@ -950,19 +988,15 @@ zt 0c light-mode as'completion' for \
 # ]]] ===== completions =====
 
 #===== variables ===== [[[
-eval_block() {
-  zt 0c light-mode run-atpull for \
-    id-as'pipx_comp' has'pipx' nocd nocompile eval"register-python-argcomplete pipx" \
+  zt 0c light-mode run-atpull nocompile'!' for \
+    id-as'pipx_comp' has'pipx' nocd eval"register-python-argcomplete pipx" \
     atload'zicdreplay -q' \
       zdharma-continuum/null \
     id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
       zdharma-continuum/null \
-    id-as'pyenv_init' has'pyenv' nocd eval'${${:-pyenv}:c:A} init - zsh' \
+    id-as'pyenv_init' has'pyenv' nocd eval'pyenv init - zsh' \
       zdharma-continuum/null \
-    id-as'pyenv_virtual_init' has'pyenv-virtualenv' nocd \
-    eval'${${:-pyenv}:c:A} virtualenv-init -' \
-      zdharma-continuum/null \
-    id-as'pipenv_comp' has'pipenv' nocd eval'pipenv --completion' \
+    id-as'pipenv_comp' has'pipenv' nocd eval'_PIPENV_COMPLETE=zsh_source pipenv' \
       zdharma-continuum/null \
     id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
       zdharma-continuum/null \
@@ -975,17 +1009,15 @@ eval_block() {
     id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
     atload'alias o=__zoxide_z z=__zoxide_zi' \
       zdharma-continuum/null \
+    id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
+      zdharma-continuum/null \
     id-as'keychain_init' has'keychain' nocd \
     eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
       && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
         zdharma-continuum/null
-}
-
-# Does this even do anything with zinit-turbo?
-defer -c eval_block
 
 zt 0c light-mode for \
-  id-as'Cleanup' nocd atinit'unset -f zt grman mv_clean has eval_block;
+  id-as'Cleanup' nocd atinit'unset -f zt grman mv_clean has;
   _zsh_autosuggest_bind_widgets' \
     zdharma-continuum/null
 

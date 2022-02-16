@@ -2,19 +2,21 @@
 # taken from znap
 # args: <func name> ... <init code>
 
-cf() {
+# cf() {
   emulate -L zsh
-  setopt extendedglob globstarshort nullglob rcexpandparam NO_shortloops warncreateglobal
+  zmodload -Fa zsh/param/private b:private
+  setopt extendedglob globstarshort nullglob rcexpandparam no_shortloops warncreateglobal
 
-  local body=$@[-1]
+  private body=$@[-1]
+
   shift -p 1
   eval "$* () {
     unfunction $*
     $body
     \${(%):-%N} "\$@"
   }"
-}
-
-cf "$@"
+# }
+#
+# cf "$@"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

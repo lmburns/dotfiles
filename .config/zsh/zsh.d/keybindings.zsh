@@ -11,6 +11,7 @@
 # typeset -gx WORDCHARS=' *?_-.~\'
 # typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
 
+# This keeps prompt from moving to the right with p10k
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
     function zle-line-init() {
         echoti smkx
@@ -214,5 +215,3 @@ function _zlf_handler() {
 zle -N _zlf_handler
 
 vbindkey 'C-x C-o' _zlf
-
-# vbindkey 'C-a' _zlf

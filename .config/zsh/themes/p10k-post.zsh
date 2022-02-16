@@ -67,7 +67,7 @@
     # swap                  # used swap
     # todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     taskwarrior             # taskwarrior task count (https://taskwarrior.org/)
-    xplr                  # xplr shell (https://github.com/sayanarijit/xplr)
+    # xplr                  # xplr shell (https://github.com/sayanarijit/xplr)
     vim_shell
     # time                  # current time
     # =========================[ Line #2 ]=========================

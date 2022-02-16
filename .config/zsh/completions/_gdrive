@@ -1,0 +1,247 @@
+#compdef gdrive
+
+autoload -U is-at-least
+
+_gdrive_commands() {
+  typeset -a subcommands
+  subcommands=(
+    'list:List files'
+    'download:Download file or directory'
+    'download:Download all files and directories matching query'
+    'upload:Upload file or directory'
+    'update:Update file, this creates a new revision of the file'
+    'info:Show file info'
+    'mkdir:Create directory'
+    'share:Share file or directory'
+    'delete:Delete file or directory'
+    'sync:List all syncable directories on drive'
+    'changes:List file changes'
+    'revision:List file revisions'
+    'import:Upload and convert file to a google document'
+    'export:Export a google document'
+    'about:Google drive metadata, quota usage'
+    'version:Print application version'
+    'help:Print help'
+  )
+  _describe -t gdrive-commands "command" subcommands
+  _gdrive_tui_cmds
+}
+
+# share list:List files permissions
+# share revoke:Revoke permission
+# sync list:List all syncable directories on drive
+# sync content:List content of syncable directory
+# sync download:Sync drive directory to local directory
+# sync upload:Sync local directory to drive
+# revision list:List file revisions
+# revision download:Download revision
+# revision delete:Delete file revision
+# about import                                   Show supported import formats
+# about export                                   Show supported export formats
+
+_gdrive () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    _arguments "${_arguments_options[@]}" \
+        ":: :_gdrive_commands" \
+        "*::: :->gdrive" \
+        && ret=0
+
+  case $state in
+    (gdrive)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:gdrive-command-$line[1]:"
+      case $line[1] in
+        (help)
+          _arguments "${_arguments_options[@]}" \
+            ":: :_gdrive_commands" \
+            && ret=0
+        ;;
+        (list)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-m,--max}'[Max files to list, default: 30]' \
+              {-q,--query}'[Default query: "trashed = false and "me" in owners"]' \
+              '--order=[Sort order]' \
+              '--name-width=[Width of name column, default: 40, minimum: 9, use 0 for full width]' \
+              '--absolute[Show absolute path to file (will only show path from first parent)]' \
+              '--no-header[Dont print the header]' \
+              '--bytes[Size in bytes]' \
+              '*::Configuration:_files' \
+              && ret=0
+        ;;
+        (download)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-f,--force}'[Overwrite existing file]' \
+              {-s,--skip}'[Skip existing files]' \
+              {-r,--recursive}'[Download directory recursively, documents will be skipped]' \
+              '--path=[Download path]' \
+              '--delete[Delete remote file when download is successful]' \
+              '--no-progress[Hide progress]' \
+              '--stdout[Write file content to stdout]' \
+              '--timeout=[Set timeout in seconds, use 0 for no timeout. Reached when no data is transferred]' \
+            && ret=0
+        ;;
+        (upload)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--name=[Filename]:Filename:_files' \
+              {-r,--recursive}'[Upload directory recursively]' \
+              {-p,--parent}'[Parent id, used to upload file to a specific directory, use multiple times]' \
+              '--description=[File description]' \
+              '--no-progress[Hide progress]' \
+              '--mime=[Force mime type]' \
+              '--share[Share file]' \
+              '--delete[Delete local file when upload is successful]' \
+              '--timeout=[Set timeout in seconds, use 0 for no timeout. Reached when no data is transferred]' \
+              '--chunksize=[Set chunk size in bytes, default: 8388608]' \
+            && ret=0
+        ;;
+        (update)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--name=[Filename]:Filename:_files' \
+              {-p,--parent}'[Parent id, used to upload file to a specific directory, use multiple times]' \
+              '--description=[File description]' \
+              '--no-progress[Hide progress]' \
+              '--mime=[Force mime type]' \
+              '--timeout=[Set timeout in seconds, use 0 for no timeout. Reached when no data is transferred]' \
+              '--chunksize=[Set chunk size in bytes, default: 8388608]' \
+            && ret=0
+        ;;
+        (info)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--bytes[Show size in bytes]' \
+            && ret=0
+        ;;
+        (mkdir)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-p,--parent}'[Parent id, used to upload file to a specific directory, use multiple times]' \
+              '--description=[File description]' \
+            && ret=0
+        ;;
+        (share)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-p,--parent}'[Parent id, used to upload file to a specific directory, use multiple times]' \
+              '--description=[File description]:Description:' \
+              '--role=[Share role: owner/writer/commenter/reader, default: reader]:Role:' \
+              '--type=[Share type: user/group/domain/anyone, default: anyone]:Type:' \
+              '--email=[Email address of the user/group to share the file with (requires "user" or "group" as type)]:Email:_email_addresses' \
+              '--domain=[The name of Google Apps domain. Requires "domain" as type]:Domain:' \
+              '--discoverable[Make file discoverable by search engines]' \
+              '--revoke[Delete all sharing permissions (owner roles will be skipped)]' \
+            && ret=0
+        ;;
+        (delete)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-r,--recursive}'[Download directory recursively, documents will be skipped]' \
+            && ret=0
+        ;;
+        (sync)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--no-header[Dont print the header]' \
+            && ret=0
+        ;;
+        (changes)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--no-header[Dont print the header]' \
+              {-m,--max}'[Max changes to list, default: 100]' \
+              '--since=[Page token to start listing changes from]:Page Token:' \
+              '--now[Get latest page token]' \
+              '--name-width=[Width of name column, default: 40, minimum: 9, use 0 for full width]:Name Width:' \
+            && ret=0
+        ;;
+        (revision)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--no-header[Dont print the header]' \
+              '--bytes[Size in bytes]' \
+              '--name-width=[Width of name column, default: 40, minimum: 9, use 0 for full width]:Name Width:' \
+            && ret=0
+        ;;
+        (import)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              {-p,--parent}'[Parent id, used to upload file to a specific directory, use multiple times]' \
+              '--no-progress[Hide progress]' \
+              '--mime=[Mime type of imported file]:Mime:' \
+            && ret=0
+        ;;
+        (export)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--mime=[Mime type of exported file]:Mime:' \
+              {-f,--force}'[Overwrite existing file]' \
+              '--print-mimes[Print available mime types for given file]' \
+            && ret=0
+        ;;
+        (about)
+          _arguments "${_arguments_options[@]}" \
+              {-c,--config}"[Application path, default: $HOME/.gdrive]:Configuration:_files" \
+              '--refresh-token=[Oauth refresh token used to get access token]:Refresh Token:' \
+              '--access-token=[Oauth access token (short-lived requests)]:Access Token:' \
+              '--service-account=[Oauth service account filename (server comm w/o interaction)]:Service Account:' \
+              '--bytes[Size in bytes]' \
+            && ret=0
+        ;;
+        esac
+  esac
+}
+
+_gdrive "$@"

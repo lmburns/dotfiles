@@ -4,6 +4,8 @@
 setopt extendedglob
 zmodload -Fa zsh/parameter p:commands p:functions
 
+local Z fullp
+
 # ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
 
 Z="${ZDOTDIR}/functions/${argv}"

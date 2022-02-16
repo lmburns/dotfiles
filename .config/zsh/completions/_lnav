@@ -1,0 +1,29 @@
+#compdef lnav
+
+# zsh completions for 'lnav'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-h[print this message, then exit.]'
+  '-H[display the internal help text.]'
+  '-I[an additional configuration directory.]'
+  '-i[install the given format files and exit.  Pass extra]'
+  '-u[update formats installed from git repositories.]'
+  '-C[check configuration and then exit.]'
+  '-d[write debug messages to the given file.]'
+  '-V[print version information.]'
+  '-a[load all of the most recent log file types.]'
+  '-r[recursively load files from the given directory hierarchies.]'
+  '-R[load older rotated log files as well.]'
+  '-t[prepend timestamps to the lines of data being read in]'
+  '-w[write the contents of the standard input to this file.]'
+  '-c[execute a command after the files have been loaded.]'
+  '-f[execute the commands in the given file.]'
+  '-n[run without the curses UI. (headless mode)]'
+  '-N[do not open the default syslog file if no files are given.]'
+  '-q[do not print the log messages after executing all]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

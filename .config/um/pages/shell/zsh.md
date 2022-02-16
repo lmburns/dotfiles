@@ -44,7 +44,7 @@ https://zsh.fyi/expansion
 | `(#e)`     | Match only at end of test string             |
 | `(#qexpr)` | `expr` is a set of glob qualifiers (below) |
 
-### GLOB QUALIFIERS - PARENTEHSIS AFTER FILE NAME PATTERN
+### GLOB QUALIFIERS - PARENTHESIS AFTER FILE NAME PATTERN
 
 |--------|-------------------------------------------|
 | `/`    | Directory                                 |
@@ -81,7 +81,7 @@ https://zsh.fyi/expansion
 : executable files
 
 `(.x)`
-: exeutable by owner
+: executable by owner
 
 `(@)`
 : symlinks
