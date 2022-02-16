@@ -40,6 +40,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - pdm
    package pipdeptree 2.2.1, installed using Python 3.10.0
     - pipdeptree
+   package pipenv 2022.1.8, installed using Python 3.10.0
+    - pipenv
+    - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
     - pire
    package poetry 1.1.12, installed using Python 3.10.0

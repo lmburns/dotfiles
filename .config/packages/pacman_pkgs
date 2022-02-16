@@ -69,7 +69,9 @@ colloid-gtk-theme-git
 conky
 copyq
 cppcheck
+cpulimit
 crabz
+croc
 ctags
 daemonize
 dash
@@ -307,8 +309,8 @@ linux-firmware
 lnav
 logkeys-git
 lokalize
-loop
 lowdown
+lsix-git
 lsof
 ltrace
 lua
@@ -603,6 +605,7 @@ ttf-liberation
 udiskie
 ulauncher
 umbrello
+ungoogled-chromium
 unrar
 unrtf
 unzip
@@ -741,6 +744,7 @@ xscreensaver
 xsel
 xsettingsd
 xss-lock
+xterm
 xtitle
 xwinfo-git
 yad

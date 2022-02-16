@@ -2,6 +2,7 @@ asmfmt
 dlv
 errcheck
 fillstruct
+gdrive
 godef
 goimports
 golangci-lint

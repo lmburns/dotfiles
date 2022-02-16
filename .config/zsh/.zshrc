@@ -114,7 +114,7 @@ zt(){ zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 # Shorten url with `dl` annex
 grman() {
   local graw="https://raw.githubusercontent.com"; local -A opts
-  zparseopts -D -E -A opts -- r: e: ; @zinit-substitute
+  zparseopts -D -E -A opts -- r: e:
   print -r "${graw}/%USER%/%PLUGIN%/master/${@:1}${opts[-r]:-%PLUGIN%}.${opts[-e]:-1}";
 }
 
@@ -436,7 +436,7 @@ zt 0c light-mode null for \
     Bugswriter/tuxi \
   lbin from'gh-r' \
     orf/gping \
-  lman \
+  lbin'jq-* -> jq' from'gh-r' dl"$(grman -e '1.prebuilt')" lman \
   atclone'mv jq.1* jq.1' \
     stedolan/jq \
    lbin from'gh-r' mv'yq_* -> yq' atclone'./yq shell-completion zsh > _yq' \
@@ -477,7 +477,7 @@ zt 0c light-mode null for \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" \
     XAMPPRocky/tokei \
-  \
+  lbin atclone'cargo br' atclone"$(mv_clean)" \
   atpull'%atclone' has'cargo' \
     atanunq/viu \
   lbin from'gh-r' \
@@ -501,9 +501,9 @@ zt 0c light-mode null for \
     acheronfail/repgrep \
   lbin'* -> renamer' from'gh-r' \
     adriangoransson/renamer \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     pkolaczk/fclones \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean tldr)" \
   atclone"mv -f zsh_* _tldr" \
     dbrgn/tealdeer \
   lbin'pueued-* -> pueued' lbin'pueue-* -> pueue' from'gh-r' \
@@ -514,13 +514,13 @@ zt 0c light-mode null for \
   lbin atclone"cargo br" atpull'%atclone' \
   atclone"$(mv_clean)" \
     imsnif/bandwhich \
-  \
+  lbin atclone"cargo br" atpull'%atclone' atclone"$(mv_clean)" \
     theryangeary/choose \
   lbin'* -> hck' from'gh-r' \
     sstadick/hck \
   lbin from'gh-r' \
     BurntSushi/xsv \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean dua)" \
     Byron/dua-cli \
   lbin atclone'cargo br' atpull'%atclone' \
   atclone"$(mv_clean lolcate)" atload'alias le=lolcate' \
@@ -528,7 +528,7 @@ zt 0c light-mode null for \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   atload'export FW_CONFIG_DIR="$XDG_CONFIG_HOME/fw"; alias wo="workon"' \
     brocode/fw \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     WindSoilder/hors \
   lbin from'gh-r' \
     samtay/so \
@@ -542,7 +542,7 @@ zt 0c light-mode null for \
     hlmtre/homemaker \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     rdmitr/inventorize \
-  lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
+  has'%PLUGIN%' lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' \
     magiclen/xcompress \
   has'!loop' lbin atclone'cargo br' atpull'%atclone' \
@@ -596,20 +596,21 @@ zt 0c light-mode null for \
 # === rust extensions === [[[
 zt 0c light-mode null for \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     fornwall/rust-script \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     reitermarkus/cargo-eval \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     fanzeyi/cargo-play \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     matthiaskrgr/cargo-cache \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     iamsauravsharma/cargo-trim \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     razrfalcon/cargo-bloat \
   lbin from'gh-r' \
     est31/cargo-udeps \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     andrewradev/cargo-local \
   lbin'tar*/rel*/cargo-{rm,add,upgrade}' \
   atclone'cargo br' atpull'%atclone' \
@@ -620,11 +621,11 @@ zt 0c light-mode null for \
   atload'alias ncmake="$EDITOR $CARGO_MAKE_HOME/Makefile.toml"' \
   atload'alias cm="makers --makefile $CARGO_MAKE_HOME/Makefile.toml"' \
     sagiegurari/cargo-make \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     celeo/cargo-nav \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     g-k/cargo-show \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     mre/cargo-inspect \
   lbin from'gh-r' \
     cargo-generate/cargo-generate \
@@ -638,7 +639,7 @@ zt 0c light-mode null for \
   atclone"command mv -f rusty*/tar*/rel*/rusty-man . && cargo clean" \
   atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
     zdharma-zmirror/null \
-  \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     sminez/roc
 
 # lbin atclone'cargo br --all-features' atpull'%atclone' \
@@ -652,11 +653,11 @@ zt 0c light-mode null for \
 zt 0c light-mode null for \
   lbin from'gh-r' \
     wagoodman/dive \
-  \
+  lbin'*/*/gpg-tui' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     orhun/gpg-tui \
   lbin from'gh-r' ver'nightly' \
     ClementTsang/bottom \
-  lman \
+  lbin from'gh-r' dl"$(grman)" lman \
     gokcehan/lf \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \

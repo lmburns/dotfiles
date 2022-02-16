@@ -72,6 +72,7 @@ tzlocal==4.1
 urwid-readline==0.13
 urwidtrees==1.0.3
 vext.gi==0.7.4
+virtualenv-clone==0.5.7
 visidata==2.8
 xattr==0.9.9
 xkeysnail==0.4.0
