@@ -1177,12 +1177,13 @@ let g:neoformat_basic_format_trim = 1
   nnoremap ;ff :Format<CR>
   augroup formatting
       autocmd!
-      autocmd FileType lua  nmap       ;ff :Neoformat! lua luaformat<CR>
-      autocmd FileType java nmap       ;ff :Neoformat! java prettier<CR>
-      autocmd FileType perl nmap       ;ff :Neoformat! perl<CR>
-      autocmd FileType sh   nmap       ;ff :Neoformat! sh<CR>
+      autocmd FileType lua        nmap ;ff :Neoformat! lua    luaformat<CR>
+      autocmd FileType java       nmap ;ff :Neoformat! java   prettier<CR>
+      autocmd FileType perl       nmap ;ff :Neoformat! perl<CR>
+      autocmd FileType sh         nmap ;ff :Neoformat! sh<CR>
       autocmd FileType python     nmap ;ff :Neoformat! python black<CR>
-      autocmd FileType md,vimwiki,zsh nmap ;ff :Neoformat!<CR>
+      autocmd FileType md,vimwiki nmap ;ff :Neoformat!<CR>
+      autocmd FileType zsh        nmap ;ff :Neoformat  expand<CR>
   augroup end
 " }}} === formatting ===
 

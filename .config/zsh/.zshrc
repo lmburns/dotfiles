@@ -89,23 +89,6 @@ typeset -gA ZINIT=(
 fpath=( ${0:h}/{functions,completions} "${fpath[@]}")
 autoload -Uz $fpath[1]/*(:t)
 # module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
-
-# zstyle ':completion:*' recent-dirs-insert fallback
-# zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
-zmodload -F zsh/parameter p:dirstack
-autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
-add-zsh-hook chpwd chpwd_recent_dirs
-zstyle ':chpwd:*' recent-dirs-default true
-zstyle ':completion:*' recent-dirs-insert both
-zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
-dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
-[[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
-  local dir
-  for dir ($dirstack) {
-    [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
-  }
-} 2>/dev/null
-alias c=cdr
 # ]]]
 
 # === zinit === [[[
@@ -466,6 +449,11 @@ zt 0c light-mode null for \
 
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 # greymd/teip
+
+zt 0c light-mode null has'!loop' for \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+    miserlou/loop
+
 # == rust [[[
 zt 0c light-mode null for \
   lbin'ff* -> ffsend' from'gh-r' \
@@ -545,9 +533,6 @@ zt 0c light-mode null for \
   has'%PLUGIN%' lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' \
     magiclen/xcompress \
-  has'!loop' lbin atclone'cargo br' atpull'%atclone' \
-  atclone"$(mv_clean)" \
-    miserlou/loop \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   atclone"./rip completions --shell zsh > _rip" \
     lmburns/rip \
@@ -755,6 +740,23 @@ typeset -gx JQ_COLORS="1;30:0;39:1;36:1;39:0;35:1;32:1;32:1"
 
 
 # === completion === [[[
+
+# zstyle ':completion:*' recent-dirs-insert fallback
+# zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
+zmodload -F zsh/parameter p:dirstack
+autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
+add-zsh-hook chpwd chpwd_recent_dirs
+zstyle ':chpwd:*' recent-dirs-default true
+zstyle ':completion:*' recent-dirs-insert both
+zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
+dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
+[[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
+  local dir
+  for dir ($dirstack) {
+    [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
+  }
+} 2>/dev/null
+alias c=cdr
 
 # $desc, $word, $group, $realpath
 autoload -Uz zstyle+
@@ -1185,7 +1187,7 @@ zt 0b light-mode null id-as for \
   atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -f "$x" ] && source "$x"' \
     zdharma-continuum/null \
   atload'export FAST_WORK_DIR=XDG;
-  fast-theme XDG:mod-default.ini &>/dev/null' \
+  fast-theme XDG:kimbox.ini &>/dev/null' \
     zdharma-continuum/null \
   atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
     zdharma-continuum/null

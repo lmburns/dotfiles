@@ -67,8 +67,8 @@ syn keyword zshException        always
 
 syn keyword zshKeyword          function nextgroup=zshKSHFunction skipwhite
 
-syn match   zshKSHFunction      contained '\w\S\+'
-syn match   zshFunction         '^\s*\k\+\ze\s*()'
+syn match   zshKSHFunction      contained '\(\w\S\|[:.-]\)\+'
+syn match   zshFunction         '^\s*\(\k\|[:.-]\)\+\ze\s*()'
 
 syn match   zshOperator         '||\|&&\|;\|&!\='
 
