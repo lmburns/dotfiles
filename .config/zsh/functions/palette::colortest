@@ -1,6 +1,6 @@
 # Desc: print full palette with blocks
 
-function colortest::palette() {
+function palette::colortest() {
     # The text for the color test, At least 3 characters
     T=${1:-'•••'}; [ ${#T} -lt 3 ] && T=$(cut -c 1-3 <<< "$T$T$T"); TLEN=${#T};
     RP=$(((TLEN - 3) / 2  + 3)); R=$(head -c $RP </dev/zero | tr '\0', ' ') # right padding

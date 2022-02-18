@@ -108,6 +108,10 @@ has() {
 }
 # Print command to be executed by zinit
 mv_clean() { print -lr -- "command mv -f tar*/rel*/${1:-%PLUGIN%} . && cargo clean"; }
+# Show the url <owner/repo>
+id_as() {
+  print -rl -- ${${(S)${(M)${(@f)"$(cargo show $1)"}:#(#b)repository: (*)}/repository: https:\/\/*\//}//(#m)*/<$MATCH>}
+}
 # ]]] ========================== zinit-functions ==========================
 
 {
@@ -131,10 +135,13 @@ function defer() {
 zt light-mode for \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-submods \
+  zdharma-continuum/zinit-annex-rust \
+  zdharma-continuum/zinit-annex-bin-gem-node \
   NICHOLAS85/z-a-linkman \
   NICHOLAS85/z-a-linkbin \
     atinit'Z_A_USECOMP=1' \
-  NICHOLAS85/z-a-eval
+  NICHOLAS85/z-a-eval \
+  lmburns/z-a-check
 
 # zdharma-continuum/zinit-annex-rust
 # zdharma-continuum/zinit-annex-as-monitor
@@ -226,7 +233,10 @@ zt 0a light-mode for \
   pick'async.zsh' \
     mafredri/zsh-async \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' blockf \
-    psprint/zsh-navigation-tools
+    psprint/zsh-navigation-tools \
+  patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
+  atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
+    mattmc3/zman
 
 # ]]] === wait'0a' block ===
 
@@ -450,28 +460,51 @@ zt 0c light-mode null for \
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 # greymd/teip
 
-zt 0c light-mode null has'!loop' for \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    miserlou/loop
+# === Testing [[[
+# zt 0c light-mode null has'%PLUGIN%' for \
+#   param'PLUGIN -> loop' lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+#     miserlou/loop
+
+zt 0c light-mode for \
+  pip'jrnl' id-as'jrnl' \
+    zdharma-zmirror/null \
+  gem'!kramdown' id-as'kramdown' null \
+    zdharma-zmirror/null
+
+zt 0c light-mode binary for \
+  cargo'!viu' id-as"$(id_as viu)" \
+    zdharma-continuum/null
+# === Testing ]]]
 
 # == rust [[[
-zt 0c light-mode null for \
+# Cargo plugin
+
+# lbin atclone'cargo br' atclone"$(mv_clean)" \
+# atpull'%atclone' has'cargo' \
+#   atanunq/viu \
+
+# zt 0c light-mode null check'%PLUGIN%' for \
+#   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+#   miserlou/loop
+
+zt 0c light-mode null check'!%PLUGIN%' for \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+    miserlou/loop \
   lbin'ff* -> ffsend' from'gh-r' \
     timvisee/ffsend \
-  lbin from'gh-r' \
+  has'!pacaptr' lbin from'gh-r' \
     rami3l/pacaptr \
   lbin from'gh-r' \
     pemistahl/grex \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" \
     XAMPPRocky/tokei \
-  lbin atclone'cargo br' atclone"$(mv_clean)" \
-  atpull'%atclone' has'cargo' \
-    atanunq/viu \
   lbin from'gh-r' \
     ms-jpq/sad \
   lbin from'gh-r' \
     ducaale/xh \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+    pkolaczk/fclones \
   lbin from'gh-r' \
     itchyny/mmv \
   lbin from'gh-r' eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
@@ -489,8 +522,6 @@ zt 0c light-mode null for \
     acheronfail/repgrep \
   lbin'* -> renamer' from'gh-r' \
     adriangoransson/renamer \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    pkolaczk/fclones \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean tldr)" \
   atclone"mv -f zsh_* _tldr" \
     dbrgn/tealdeer \
@@ -566,6 +597,7 @@ zt 0c light-mode null for \
     evansmurithi/cloak \
   lbin from'gh-r' \
     lotabout/rargs
+
   # lbin atclone'cargo br' atpull'%atclone' \
   # atclone"$(mv_clean)" \
   # atclone"emplace init zsh | tail -n +20 > _emplace" \
@@ -579,24 +611,23 @@ zt 0c light-mode null for \
   #   lmburns/wutag \
 
 # === rust extensions === [[[
-zt 0c light-mode null for \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+zt 0c light-mode null lbin check'!%PLUGIN%' \
+      atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" for \
     fornwall/rust-script \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     reitermarkus/cargo-eval \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     fanzeyi/cargo-play \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     matthiaskrgr/cargo-cache \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     iamsauravsharma/cargo-trim \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     razrfalcon/cargo-bloat \
+    andrewradev/cargo-local \
+    celeo/cargo-nav \
+    g-k/cargo-show \
+    mre/cargo-inspect \
+    sminez/roc
+
+zt 0c light-mode null for \
   lbin from'gh-r' \
     est31/cargo-udeps \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    andrewradev/cargo-local \
   lbin'tar*/rel*/cargo-{rm,add,upgrade}' \
   atclone'cargo br' atpull'%atclone' \
     killercup/cargo-edit \
@@ -606,12 +637,6 @@ zt 0c light-mode null for \
   atload'alias ncmake="$EDITOR $CARGO_MAKE_HOME/Makefile.toml"' \
   atload'alias cm="makers --makefile $CARGO_MAKE_HOME/Makefile.toml"' \
     sagiegurari/cargo-make \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    celeo/cargo-nav \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    g-k/cargo-show \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    mre/cargo-inspect \
   lbin from'gh-r' \
     cargo-generate/cargo-generate \
   lbin'* -> cargo-temp' from'gh-r' \
@@ -623,9 +648,7 @@ zt 0c light-mode null for \
   atclone'cargo br && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \
   atclone"command mv -f rusty*/tar*/rel*/rusty-man . && cargo clean" \
   atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
-    zdharma-zmirror/null \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-    sminez/roc
+    zdharma-zmirror/null
 
 # lbin atclone'cargo br --all-features' atpull'%atclone' \
 # atclone"$(mv_clean)" \
@@ -636,7 +659,7 @@ zt 0c light-mode null for \
 
 # === tui specific block === [[[
 zt 0c light-mode null for \
-  lbin from'gh-r' \
+  check'!has' lbin from'gh-r' bpick'*linux*.tar.gz' \
     wagoodman/dive \
   lbin'*/*/gpg-tui' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     orhun/gpg-tui \
@@ -741,15 +764,21 @@ typeset -gx JQ_COLORS="1;30:0;39:1;36:1;39:0;35:1;32:1;32:1"
 
 # === completion === [[[
 
+# :completion:function:completer:command:argument:tag
+
 # zstyle ':completion:*' recent-dirs-insert fallback
 # zstyle ':chpwd:*' recent-dirs-file "${TMPDIR}/chpwd-recent-dirs"
+
 zmodload -F zsh/parameter p:dirstack
 autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
 add-zsh-hook chpwd chpwd_recent_dirs
+add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr # cd ~[1]
 zstyle ':chpwd:*' recent-dirs-default true
-zstyle ':completion:*' recent-dirs-insert both
 zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
-dirstack=( ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/) )
+zstyle ':completion:*' recent-dirs-insert both
+typeset -ga dirstack; dirstack=(
+  ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
+)
 [[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
   local dir
   for dir ($dirstack) {
@@ -810,11 +839,26 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
 
 # zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
 
-zstyle '*' single-ignored show # don't insert single value
-zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
+# ========================================================================
 
-# zstyle ':completion:*:default' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=38;5;216'
+zstyle '*' single-ignored show # don't insert single value
+
+zstyle+ ':completion'        ''          ''                                                         \
+      + ':complete:*'        list-colors ${(s.:.)LS_COLORS}                                         \
+      + ':*:options:*'       list-colors '=(#b)(--[^ ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25' \
+      + ':*:commands:*'      list-colors '=*=32'                                                    \
+      + ':*:cpan-module'     list-colors '=(#b)(*)=1;30=37;46'                                      \
+      + ':*:remote-pip'      list-colors '=(#b)(*)=1;30=37;46'                                      \
+      + ':*:remote-gem'      list-colors '=(#b)(*)=1;30=37;46'                                      \
+      + ':*:remote-crate'    list-colors '=(#b)(*)=1;30=1;36;44'                                    \
+      + ':*:processes'       list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'                 \
+      + ':*:processes-names' list-colors '=(#b)(*)=1;30=1;37;43'
+
+# zstyle ':completion:*:options:*'   list-colors '=(#b)(--[^ ]|-[^- ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25'
+# zstyle ':completion:*:options:*' list-colors '=(#b)(*)/(*)==1;35=1;33'
+# zstyle ':completion:*:options:*'  list-colors '=^(| *)=34'
 # zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==35=35}:${(s.:.)LS_COLORS}")';
+# zstyle ':completion:*:default:*' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=0;38;2;254;128;25'
 
 # zstyle ':completion:*' completer _complete _expand _match _oldlist _list _ignored _correct _approximate
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
@@ -822,17 +866,22 @@ zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
 _my-cache-policy() { [[ ! -f $1 && -n "$1"(Nm+14) ]]; }
 zstyle ':completion:complete:*' cache-policy _my-cache-policy
 
-
 # zstyle ':completion::approximate*:*' prefix-needed false
 
+# ========================================================================
 # + ''                show-completer = debugging
 # + ''                accept-exact '*(N)' \
+# + ''                use-compctl false \
+# + ':correct:*'      insert-unambiguous true \
 zstyle+ ':completion:*'   list-separator '→' \
+      + ''                file-sort access \
+      + ''                list-dirs-first true \
       + ''                group-name '' \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                use-cache true \
       + ''                cache-path "${ZDOTDIR}/.zcompcache" \
       + ''                verbose true \
+      + ''                extra-verbose true \
       + ''                rehash true \
       + ''                squeeze-slashes true \
       + ''                ignore-parents parent pwd \
@@ -843,39 +892,83 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':matches'        group true \
       + ':functions'      ignored-patterns '(_*|pre(cmd|exec))' \
       + ':approximate:*'  max-errors 1 numeric \
+      + ':options'        description true \
       + ':match:*'        original only \
+      + ':descriptions'   format '[%d]' \
       + ':messages'       format ' %F{purple} -- %d --%f' \
       + ':warnings'       format ' %F{1}-- no matches found --%f' \
-      + ':corrections'    format '%F{5}!- %d (errors: %e) -!%f' \
       + ':default'        list-prompt '%S%M matches%s' \
-      + ':descriptions'   format '[%d]' \
-      + ':options'        description true \
+      + ':corrections'    format '%F{5}!- %d (errors: %e) -!%f' \
       + ':-tilde-:*'      group-order named-directories path-directories users expand \
-      + ':cd:*'           tag-order local-directories directory-stack path-directories \
-      + ':cd:*'           group-order local-directories path-directories \
       + ':git-checkout:*' sort false \
-      + ':exa'            file-sort modification \
-      + ':exa'            sort false \
+      + ':exa'            file-sort all-files directories \
       + ':sudo:*'         command-path /usr/{local/{sbin,bin},(s|)bin} /sbin /bin \
+                                       $CARGO_HOME/bin $ZINIT[BIN_DIR] \
       + ':sudo::'         environ PATH="$PATH" \
       + ':expand:*'       tag-order all-expansions \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)' \
-      + ':(rm|rip|kill|diff(|sitter)|git-dsf):*' ignore-line other \
-      + ':(rm|rip|git-dsf):*'                    file-patterns '*:all-files' \
-      + ':*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01' \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
+      + ':*:-command-:*:*'                       group-order functions commands builtins \
       + ':*:-subscript-:*'                       tag-order indexes parameters \
-      + ':*:-redirect-,2>,*:*'                   file-patterns '*.log'
+      + ':*:-redirect-,2>,*:*'                   file-patterns '*.log' \
+      + ':(rm|rip|git-dsf):*'                    file-patterns '*:all-files' \
+      + ':(rm|rip|kill|diff(|sitter)|git-dsf|git-{add,rm}|bat|nvim):*' ignore-line other
 
-zstyle ':completion::complete:*'                  gain-privileges 1     # enabling autocompletion of privileged envs
-zstyle ':completion::*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} # env vars
-zstyle ':completion::(^approximate*):*:functions' ignored-patterns '_*' # ignore for cmds not in path
-zstyle -e ':completion:*:approximate:*'           max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
-# zstyle -e ':completion:*'                         special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)' # only if prefix is ../
+zstyle+ ':completion:' '' '' \
+      + ':complete:*'                  gain-privileges 1 \
+      + ':*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
+      + ':(^approximate*):*:functions' ignored-patterns '_*'
+
+# ========================================================================
+
+# Ignore all completions starting with '_' in command position
+zstyle+ ':completion:*' '' '' \
+      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
+      + ':*:functions-non-comp' ignored-patterns '_*'
+
+# FIX: Good, but annoying showing with vim and such
+# Separates --long and -s hort flags
+zstyle+ ':completion:*' tag-order \
+                            'options:-long:long\ options
+                             options:-short:short\ options
+                             options:-single-letter:single\ letter\ options' \
+      + ':options-long'          ignored-patterns '[-+](|-|[^-]*)' \
+      + ':options-short'         ignored-patterns '--*' '[-+]?' \
+      + ':options-single-letter' ignored-patterns '???*'
+
+# FIX:
+zstyle ':completion:*:exa:*:' group-order options-short options-long options-single-letter files all-files
+zstyle ':completion:*:nvim:argument-rest:' group-order files directories
+zstyle ':completion:*:nvim:argument-rest:' tag-order files directories
+zstyle ':completion:*:nvim:options:' group-order options-short options-long options-single-letter
+zstyle ':completion:*:nvim:options:' tag-order files directories
+
+# WORKON: cd
+# + ':cd:*'           group-order local-directories path-directories \
+# + ':cd:*'           tag-order local-directories directory-stack path-directories \
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
+
+zstyle+ ':completion:*:complete:cd:*' tag-order \
+                                      'named-directories:-mine:extra\ directories
+                                       named-directories:-normal:named\ directories *' \
+      + ':named-directories-mine' fake-always mydir1 mydir2 \
+      + ':named-directories-mine' ignored-patterns '*'
 
 # DOESNT WORK:
-zstyle ':completion:*:*:cdh:*'     group-order local-directories recent-dirs path-directories
-zstyle ':completion:*:*:cdh:*'     tag-order local-directories recent-dirs path-directories
+zstyle ':completion:*:complete:cdh:*:*' group-order local-directories recent-dirs path-directories
+zstyle ':completion:*:complete:cdh:*:*' tag-order local-directories recent-dirs path-directories
+
+# ========================================================================
+
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
+# zstyle -e ':completion:*'             special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)' # only if prefix is ../
+
+# zstyle ':completion:*:*:-command-:*:*' group-order builtins functions commands
+
+# zstyle ':completion:*:scp:*' tag-order files users 'hosts:-host hosts:-domain:domain hosts:-ipaddr"IP\ Address *'
+# zstyle ':completion:*:scp:*' group-order files all-files users hosts-domain hosts-host hosts-ipaddr
+# zstyle ':completion:*:ssh:*' tag-order users 'hosts:-host hosts:-domain:domain hosts:-ipaddr"IP\ Address *'
+# zstyle ':completion:*:ssh:*' group-order hosts-domain hosts-host users hosts-ipaddr
 
 zstyle ':completion:*:(scp|rsync):*'      group-order users files all-files hosts-domain hosts-host hosts-ipaddr
 zstyle ':completion:*:ssh:*'              group-order users hosts-domain hosts-host users hosts-ipaddr
@@ -894,11 +987,17 @@ zstyle -e ':completion:*:hosts' hosts 'reply=(
       ${=${${${${(@M)${(f)"$(cat ~/.ssh/config 2> /dev/null)"}:#Host *}#Host }:#*\**}:#*\?*}}
     )'
 
+
 # zstyle -e ':completion:*:(ssh|scp|sftp|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 
 local -a _ssh_hosts _etc_hosts hosts
-[[ -r $HOME/.ssh/known_hosts ]] && _ssh_hosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[\|]*}%%\ *}%%,*} ) || _ssh_hosts=()
-[[ -r /etc/hosts ]] && : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}} || _etc_hosts=()
+[[ -r $HOME/.ssh/known_hosts ]] && \
+    _ssh_hosts=( ${${${${(f)"$(<$HOME/.ssh/known_hosts)"}:#[\|]*}%%\ *}%%,*} ) || \
+    _ssh_hosts=()
+
+[[ -r /etc/hosts ]] && \
+    : ${(A)_etc_hosts:=${(s: :)${(ps:\t:)${${(f)~~"$(</etc/hosts)"}%%\#*}##[:blank:]#[^[:blank:]]#}}} || \
+    _etc_hosts=()
 
 hosts=( $(hostname) "$_ssh_hosts[@]" "$_etc_hosts[@]" localhost )
 zstyle ':completion:*:hosts' hosts $hosts
@@ -1020,7 +1119,7 @@ zt 0c light-mode as'completion' for \
         zdharma-continuum/null
 
 zt 0c light-mode for \
-  id-as'Cleanup' nocd atinit'unset -f zt grman mv_clean has;
+  id-as'Cleanup' nocd atinit'unset -f zt grman mv_clean has id_as;
   _zsh_autosuggest_bind_widgets' \
     zdharma-continuum/null
 
@@ -1178,7 +1277,7 @@ $FZF_DEFAULT_OPTS
 # == sourcing === [[[
 
 zt 0b light-mode null id-as for \
-  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,git-token}.zsh" \
+  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,git-token,completions}.zsh" \
     zdharma-continuum/null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";

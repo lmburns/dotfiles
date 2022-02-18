@@ -141,6 +141,8 @@ alias __='doas'
 
 alias pl='print -rl --'
 alias pp='print -Pr --'
+alias plm='pl $match[@]'
+alias plM='pl $MATCH'
 alias chx='chmod ug+x'
 alias chmx='chmod -x'
 alias cp='command cp -ivp'
@@ -234,6 +236,7 @@ alias nmls="nm search --output=tags '*'"
 # ===locations ==================================================================
 alias prd='cd $HOME/projects'
 alias unx='cd $HOME/Desktop/unix/mac'
+alias zshd='cd $ZDOTDIR/zsh.d'
 alias zfd='cd $ZDOTDIR/functions'
 alias zcs='cd $ZDOTDIR/csnippets'
 alias zcm='cd $ZDOTDIR/completions'

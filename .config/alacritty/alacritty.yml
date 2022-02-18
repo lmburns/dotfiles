@@ -190,12 +190,13 @@ schemes:
         foreground: '#201f1f'
         background: '#f79a32'
 
+    # blue:    '#733e8b'
     normal:
       black:   '#201f1f'
       red:     '#dc3958'
       green:   '#819c3b'
       yellow:  '#f79a32'
-      blue:    '#733e8b'
+      blue:    '#924f79'
       magenta: '#7e5053'
       cyan:    '#088649'
       white:   '#a89983'

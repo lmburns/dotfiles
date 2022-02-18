@@ -61,8 +61,8 @@ function pbpf() { xsel -b > "$1"; }
 function pbcf() { xsel -b < "${1:-/dev/stdin}"; }
 
 # backup files
-function bak() { /usr/bin/cp -r --force --suffix=.bak $1 $1 }
-function rbak() { /usr/bin/cp -r --force $1.bak $1 }
+function bak() { command cp -r --force --suffix=.bak $1 $1 }
+function rbak() { command cp -r --force $1.bak $1 }
 
 # only renames
 function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
@@ -106,7 +106,15 @@ function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Cor
 # reload zsh function without sourcing zshrc
 function freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
 
-function time-zsh() { shell=${1-$SHELL}; for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done; }
+function time-zsh() {
+  local shell
+  shell=${1-$SHELL}
+  for i ( $(seq 1 10) ) {
+    /usr/bin/time $shell -i -c 'print; exit'
+  }
+}
+
+function hyperfine-zsh() { hyperfine "$SHELL -c 'exit'"; }
 function profile-zsh() { ZSHRC_PROFILE=1 zsh -i -c zprof | bat; }
 
 function ww() { (alias; declare -f) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
@@ -133,4 +141,40 @@ function zinit-palette() {
     local i=$ZINIT[$k]
     print "$reset_color${(r:14:: :):-$k:} $i###########"
   done
+}
+
+# Why both?
+typeset -gA zdn_wrap_top=(
+  p         ~/projects
+  c         ~/.config
+  :default: /:second1
+)
+
+typeset -gA zdn_top=(
+  p         ~/projects
+  c         ~/.config
+  :default: /:second1
+)
+
+typeset -gA second1=(
+    g  github/:third
+    p  perl
+    py python
+    r  ruby
+)
+
+typeset -gA third=(
+  w wutag
+  l lxhkd
+  z zinit
+)
+
+# cdr is used instead
+zstyle ':zdn:zdn_wrap:' mapping zdn_wrap_top
+autoload -Uz add-zsh-hook zsh_directory_name_generic zdn_wrap
+add-zsh-hook -U zsh_directory_name zdn_wrap
+
+function zdn_wrap() {
+  autoload -Uz zsh_directory_name_generic
+  zsh_directory_name_generic "$@"
 }

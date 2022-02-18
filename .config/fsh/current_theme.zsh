@@ -6,7 +6,7 @@ typeset -g FAST_THEME_NAME="kimbox"
 : ${FAST_HIGHLIGHT_STYLES[kimboxalias]:=fg=#4c96a8}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsuffix-alias]:=fg=#7EB2B1}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbuiltin]:=fg=#dc3958}
-: ${FAST_HIGHLIGHT_STYLES[kimboxfunction]:=fg=#7EB2B1}
+: ${FAST_HIGHLIGHT_STYLES[kimboxfunction]:=fg=#924f79}
 : ${FAST_HIGHLIGHT_STYLES[kimboxcommand]:=fg=#819c3b}
 : ${FAST_HIGHLIGHT_STYLES[kimboxprecommand]:=fg=#A06469,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxcommandseparator]:=fg=#FF5813}
@@ -14,7 +14,7 @@ typeset -g FAST_THEME_NAME="kimbox"
 : ${FAST_HIGHLIGHT_STYLES[kimboxpath]:=fg=magenta}
 : ${FAST_HIGHLIGHT_STYLES[kimboxpath_pathseparator]:=}
 : ${FAST_HIGHLIGHT_STYLES[kimboxglobbing]:=fg=blue,bold}
-: ${FAST_HIGHLIGHT_STYLES[kimboxglobbing-ext]:=fg=51}
+: ${FAST_HIGHLIGHT_STYLES[kimboxglobbing-ext]:=fg=#924f79}
 : ${FAST_HIGHLIGHT_STYLES[kimboxhistory-expansion]:=fg=#a43a57,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsingle-hyphen-option]:=fg=#088649}
 : ${FAST_HIGHLIGHT_STYLES[kimboxdouble-hyphen-option]:=fg=#088649}
@@ -37,7 +37,7 @@ typeset -g FAST_THEME_NAME="kimbox"
 : ${FAST_HIGHLIGHT_STYLES[kimboxfor-loop-operator]:=fg=#7fbbb3}
 : ${FAST_HIGHLIGHT_STYLES[kimboxfor-loop-separator]:=fg=#dc3958,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxexec-descriptor]:=fg=#fe8019,bold}
-: ${FAST_HIGHLIGHT_STYLES[kimboxhere-string-tri]:=fg=#733e8b}
+: ${FAST_HIGHLIGHT_STYLES[kimboxhere-string-tri]:=fg=#924f79}
 : ${FAST_HIGHLIGHT_STYLES[kimboxhere-string-text]:=fg=#f79a32}
 : ${FAST_HIGHLIGHT_STYLES[kimboxhere-string-var]:=fg=#689d69}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsecondary]:=mod-backup}
@@ -49,7 +49,7 @@ typeset -g FAST_THEME_NAME="kimbox"
 : ${FAST_HIGHLIGHT_STYLES[kimboxsubtle-separator]:=fg=green}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsubtle-bg]:=fg=9}
 : ${FAST_HIGHLIGHT_STYLES[kimboxpath-to-dir]:=fg=magenta,underline}
-: ${FAST_HIGHLIGHT_STYLES[kimboxpaired-bracket]:=fg=#dc3958}
+: ${FAST_HIGHLIGHT_STYLES[kimboxpaired-bracket]:=bg=#dc3958}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-1]:=fg=#a3b95a,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-2]:=fg=#FF9500,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-3]:=fg=#7EB2B1,bold}

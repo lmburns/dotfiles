@@ -36,8 +36,8 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 
 autoload -Uz replace-string
-# zle -N replace-pattern replace-string
-zle -N replace-regex replace-string
+zle -N replace-pattern replace-string
+# zle -N replace-regex replace-string
 
 autoload -Uz surround
 zle -N delete-surround surround
@@ -79,6 +79,7 @@ zle -N expand-aliases
 # zle -N bow2
 
 zle -N __unicode_translate # translate unicode to symbol
+zle -N _complete_debug_generic _complete_help_generic
 
 if [[ $TMUX ]]; then
   zle -N t
@@ -115,9 +116,11 @@ typeset -gA keybindings; keybindings=(
   'C-x C-f'         fz-find
   'C-x C-u'         RG_buff
   'C-x C-x'         execute-command
+  # 'C-x C-m'         _complete_debug_generic
+  # 'C-x C-t'         _complete_tag
   'mode=vicmd u'    undo
   #                 'mode=vicmd R' replace-pattern
-  'mode=vicmd R'    replace-regex
+  'mode=vicmd R'    replace-pattern
   'mode=vicmd U'    redo
   'mode=vicmd E'    backward-kill-line
   'mode=vicmd L'    end-of-line

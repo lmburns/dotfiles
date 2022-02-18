@@ -1,0 +1,29 @@
+diff --git i/functions/zman w/functions/zman
+index d523a85..ebef357 100644
+--- i/functions/zman
++++ w/functions/zman
+@@ -1,3 +1,6 @@
++emulate -L zsh
++setopt extendedglob
++
+ # zman - lookup Zsh documentation
+ if ! command -v fzf >/dev/null; then
+   echo "fzf command not found" >&2
+@@ -23,7 +26,16 @@ if [[ -z "$zman_lookup" ]] || [[ ${(t)zman_lookup} != "association" ]]; then
+ fi
+ 
+ query="$@"
+-local selection=$(printf "%s\n" "${(ko)zman_lookup[@]}" | fzf --layout=reverse-list --query=$query)
++# ${(pj: \\ \n:)${${(@f)${(@f)${FZF_COLORS/fg:-1,/fg:#458588,}}//(#b)(*)=(*)/$match[1]=\'$match[2]\'}}[1]} \
++local selection=$(\
++  printf "%s\n" "${(ko)zman_lookup[@]}" | \
++    fzf \
++      --color='fg:#458588' \
++      --layout=reverse-list \
++      --query=$query
++  )
+ if [[ $? -eq 0 ]] && [[ -n "$selection" ]]; then
+   $ZMAN_BROWSER $ZMAN_URL/${zman_lookup[$selection]}
+ fi
++
++# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
