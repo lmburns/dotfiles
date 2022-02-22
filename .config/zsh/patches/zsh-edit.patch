@@ -1,35 +1,145 @@
+diff --git i/functions/.edit.dirstack w/functions/.edit.dirstack
+index e910f98..168f6db 100644
+--- i/functions/.edit.dirstack
++++ w/functions/.edit.dirstack
+@@ -2,7 +2,7 @@
+ zmodload zsh/complist
+ zle -C _dirstack menu-select _edit._dirstack
+ 
+-.edit.dirstack() {
++@edit.dirstack() {
+   setopt localoptions $_edit_opts
+ 
+   LBUFFER="${LBUFFER%%\~([-+](<->|)|)}~"
+@@ -32,4 +32,4 @@ zle -C _dirstack menu-select _edit._dirstack
+   esac
+ }
+ 
+-.edit.dirstack "$@"
++@edit.dirstack "$@"
+diff --git i/functions/.edit.visual-yank w/functions/.edit.visual-yank
+index 0d9f455..faa4c3f 100644
+--- i/functions/.edit.visual-yank
++++ w/functions/.edit.visual-yank
+@@ -1,7 +1,7 @@
+ #!/bin/zsh
+ zle -C _show_clipboard list-choices _edit._show_clipboard
+ 
+-.edit.visual-yank.filter-duplicates() {
++@edit.visual-yank.filter-duplicates() {
+   emulate -L zsh; setopt $_edit_opts
+ 
+   local -aU kills=( $CUTBUFFER $killring[@] )
+@@ -25,14 +25,14 @@ zle -C _show_clipboard list-choices _edit._show_clipboard
+   typeset -g ZLS_COLORS="=${(zj: :)${(b)BUFFER[YANK_START+1,YANK_END]}//=/\=}=07"
+ }
+ 
+-.edit.visual-yank.restore-killring-size() {
++@edit.visual-yank.restore-killring-size() {
+   emulate -L zsh; setopt $_edit_opts
+ 
+   (( len > $#killring[@] )) &&
+       killring+=( "${(s:.:@)${(r:$((len - $#killring[@] - 1))::.:):-}}" )
+ }
+ 
+-.edit.visual-yank() {
++@edit.visual-yank() {
+   case $WIDGET in
+     ( *-before )
+       zle -f yankbefore
+@@ -44,11 +44,11 @@ zle -C _show_clipboard list-choices _edit._show_clipboard
+ 
+   local -i len=$#killring[@]
+   {
+-    .edit.visual-yank.filter-duplicates "$@"
++    @edit.visual-yank.filter-duplicates "$@"
+     zle _show_clipboard
+   } always {
+-    .edit.visual-yank.restore-killring-size "$@"
++    @edit.visual-yank.restore-killring-size "$@"
+   }
+ }
+ 
+-.edit.visual-yank "$@"
++@edit.visual-yank "$@"
+diff --git i/functions/bind w/functions/bind
+index 3384063..0f907f0 100644
+--- i/functions/bind
++++ w/functions/bind
+@@ -1,4 +1,5 @@
+ #!/bin/zsh
++
+ emulate -L zsh
+ zmodload zsh/complist
+ zmodload zsh/parameter
+@@ -127,7 +128,7 @@ else
+   local -i i=
+   for (( i = 2; i <= $#; i += 2 )); do
+     argv[i]=.$argv[i]
+-    zle -N "$argv[i]" .edit.execute-cmd
++    zle -N "$argv[i]" @edit.execute-cmd
+   done
+   bindkey $mopt[@] "$@"
+ fi
 diff --git i/zsh-edit.plugin.zsh w/zsh-edit.plugin.zsh
-index 4817374..664430e 100644
+index 54b94f2..48a8b32 100644
 --- i/zsh-edit.plugin.zsh
 +++ w/zsh-edit.plugin.zsh
-@@ -10,7 +10,12 @@ zsh-edit() {
+@@ -9,8 +9,11 @@ zsh-edit() {
+ 
    local dir=${${(%):-%x}:P:h}
    local fdir=$dir/functions
-   typeset -gU FPATH fpath=( $dir $fpath )
+-  typeset -gU FPATH fpath=( $dir $fpath )
 -  autoload -Uz $fdir/bind $fdir/[._]edit.*~*.zwc(DN)
-+  # autoload -Uz $fdir/bind
-+  # autoload -Uz $fdir/_*~*.zwc(:t)
++  # typeset -gU FPATH fpath=( $dir $fpath )
++  fpath=( $dir $fdir $fpath )
 +
 +  autoload -Uz $fdir/bind
-+  autoload -Uz $fdir/.edit.*~*.zwc(:t)
-+  autoload -Uz $fdir/_edit.*~*.zwc(:t)
-
++  autoload -Uz $fdir/[@_]edit.*~*.zwc(DN:t)
+ 
    .beginning-of-buffer() {
      CURSOR=0
-@@ -38,36 +43,40 @@ zsh-edit() {
-   .edit.bind() {
-     local widget=$1 emacs=$2
-     shift 2
--    bindkey -M emacs "$emacs" "$widget"
-+    bindkey -M vicmd "$emacs" "$widget"
-     bindkey "${@:^^widget}"
+@@ -18,64 +21,64 @@ zsh-edit() {
+   .end-of-buffer() {
+     CURSOR=$#BUFFER
    }
-
+-  zle -N {,.}beginning-of-buffer
+-  zle -N {,.}end-of-buffer
+-  zle -N dirstack-minus .edit.dirstack
+-  zle -N dirstack-plus  .edit.dirstack
+-
+-  local widget
+-  for widget in yank yank-pop reverse-yank-pop vi-put-before vi-put-after; do
+-    zle -N $widget .edit.visual-yank
+-  done
+-  for widget in {{back,for}ward,{backward-,}kill}-{sub,shell-}word; do
+-    zle -N "$widget" .edit.subword
+-  done
+-  for widget in {insert-{last,first},copy-{prev,next}}-word; do
+-    zle -N "$widget" .edit.insert-word
+-  done
+-
+-  [[ -v ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS ]] ||
+-    typeset -gHa ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=()
+-  ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(
+-      backward-subword backward-shell-word forward-subword forward-shell-word
+-  )
+-
+-  .edit.bind() {
+-    local widget=$1 emacs=$2
+-    shift 2
+-    bindkey -M emacs "$emacs" "$widget"
+-    bindkey "${@:^^widget}"
+-    widget=.$widget
+-    bindkey -M menuselect "${@:^^widget}"
+-  }
+-
 -  .edit.bind backward-subword         '^[b'   '^[^['{\[,O}D   '^['{'[1;',\[,O}{3,5}D
 -  .edit.bind backward-shell-word      '^[^B'  '^[^['{\[,O}A   '^['{'[1;',\[,O}{3,5}A
 -  .edit.bind forward-subword          '^[f'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
 -  .edit.bind forward-shell-word       '^[^F'  '^[^['{\[,O}B   '^['{'[1;',\[,O}{3,5}B
--  .edit.bind backward-kill-subword    '^[^?'  '^[^?'  '^H'  '^[[27;'{3,5}';8~'
+-  bindkey '^?'    backward-delete-char
+-  .edit.bind backward-kill-subword    '^H'    '^H'  '^[^?'  '^[[27;'{3,5}';8~'
 -  .edit.bind backward-kill-shell-word '^W'    '^[^H'        '^[[27;'{6,7}';8~'
 -  bindkey '^[[3~' delete-char
 -  .edit.bind kill-subword             '^[d'   '^[(' '^[^[[3~'   '^[[3;'{3,5}\~
@@ -40,40 +150,75 @@ index 4817374..664430e 100644
 -  .edit.bind end-of-buffer            '^[>'   '^['{'[1;',\[,O}5F  '^[[6~'
 -  .edit.bind backward-kill-line       '^U'    '^['{'[1;',\[,O}2H  '^['{'[1;',\[,O}2D
 -  .edit.bind kill-line                '^K'    '^['{'[1;',\[,O}2F  '^['{'[1;',\[,O}2C
-+  .edit.bind backward-subword         'b'   '^[^['{\[,O}D   '^['{'[1;',\[,O}{3,5}D
-+  .edit.bind backward-shell-word      'W'  '^[^['{\[,O}A   '^['{'[1;',\[,O}{3,5}A
-+  .edit.bind forward-subword          'e'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
-+  .edit.bind forward-shell-word       'w'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
-+  # .edit.bind forward-shell-word     'w'  '^[^['{\[,O}B   '^['{'[1;',\[,O}{3,5}B
-+  #
-+  # .edit.bind backward-kill-subword    '^[^?'  '^[^?'  '^H'  '^[[27;'{3,5}';8~'
-+  # .edit.bind backward-kill-shell-word '^W'    '^[^H'        '^[[27;'{6,7}';8~'
-+  # bindkey '^[[3~' delete-char
-+  # .edit.bind kill-subword             '^[d'   '^[(' '^[^[[3~'   '^[[3;'{3,5}\~
-+  # .edit.bind kill-shell-word          '^[^D'        '^[^[[3;5~' '^[[3;'{6,7}\~
-+  # .edit.bind beginning-of-line        '^A'    '^['{\[,O}H
-+  # .edit.bind end-of-line              '^E'    '^['{\[,O}F
-+  # .edit.bind beginning-of-buffer      '^[<'   '^['{'[1;',\[,O}5H  '^[[5~'
-+  # .edit.bind end-of-buffer            '^[>'   '^['{'[1;',\[,O}5F  '^[[6~'
-+  # .edit.bind backward-kill-line       '^U'    '^['{'[1;',\[,O}2H  '^['{'[1;',\[,O}2D
-+  # .edit.bind kill-line                '^K'    '^['{'[1;',\[,O}2F  '^['{'[1;',\[,O}2C
-+  #
-+  # unfunction .edit.bind
-
+-
 -  unfunction .edit.bind
-+  # bindkey -M emacs  '^[e' redo  '^[Y' reverse-yank-pop
-
--  bindkey -M emacs  '^[e' redo  '^[Y' reverse-yank-pop
-+  bindkey -M vicmd 'gg' beginning-of-buffer
-+  bindkey -M vicmd 'G' end-of-buffer
-+  bindkey -M vicmd 'U' redo
-
+-
+-  bindkey -M emacs  '^[/' redo  '^[Y' reverse-yank-pop
+-  bindkey -M emacs  '^[.' insert-last-word  '^[,' insert-first-word \
+-                    '^[^_' copy-prev-word   '^[_' copy-next-word
+-  bind    -M emacs      '^[:' 'cd ..'
 -  bind    -M emacs      '^[-' 'pushd -1'      '^[=' 'pushd +0'
-+  bind    -M viins      '^[-' 'pushd -1'      '^[=' 'pushd +0'
-   bindkey -M menuselect '^[-' menu-complete   '^[=' reverse-menu-complete
-
-   zle -N dirstack-minus .edit.dirstack
-   zle -N dirstack-plus  .edit.dirstack
--  bindkey -M emacs          '^[_' dirstack-minus  '^[+' dirstack-plus
-+  bindkey -M viins          '^[_' dirstack-minus  '^[+' dirstack-plus
-   bindkey -M menuselect -s  '^[_' '^G^_^[_'       '^[+' '^G^_^[+'
+-  bindkey -M menuselect '^[-' menu-complete   '^[=' reverse-menu-complete
+-  bindkey -M emacs          '^[`' dirstack-minus  '^[~' dirstack-plus
+-  bindkey -M menuselect -s  '^[`' '^G^_^[_'       '^[~' '^G^_^[+'
++#   zle -N {,.}beginning-of-buffer
++#   zle -N {,.}end-of-buffer
++#   zle -N dirstack-minus .edit.dirstack
++#   zle -N dirstack-plus  .edit.dirstack
++#
++#   local widget
++#   for widget in yank yank-pop reverse-yank-pop vi-put-before vi-put-after; do
++#     zle -N $widget .edit.visual-yank
++#   done
++#   for widget in {{back,for}ward,{backward-,}kill}-{sub,shell-}word; do
++#     zle -N "$widget" .edit.subword
++#   done
++#   for widget in {insert-{last,first},copy-{prev,next}}-word; do
++#     zle -N "$widget" .edit.insert-word
++#   done
++#
++#   [[ -v ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS ]] ||
++#     typeset -gHa ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=()
++#   ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS+=(
++#       backward-subword backward-shell-word forward-subword forward-shell-word
++#   )
++#
++#   .edit.bind() {
++#     local widget=$1 emacs=$2
++#     shift 2
++#     bindkey -M emacs "$emacs" "$widget"
++#     bindkey "${@:^^widget}"
++#     widget=.$widget
++#     bindkey -M menuselect "${@:^^widget}"
++#   }
++#
++#   .edit.bind backward-subword         '^[b'   '^[^['{\[,O}D   '^['{'[1;',\[,O}{3,5}D
++#   .edit.bind backward-shell-word      '^[^B'  '^[^['{\[,O}A   '^['{'[1;',\[,O}{3,5}A
++#   .edit.bind forward-subword          '^[f'   '^[^['{\[,O}C   '^['{'[1;',\[,O}{3,5}C
++#   .edit.bind forward-shell-word       '^[^F'  '^[^['{\[,O}B   '^['{'[1;',\[,O}{3,5}B
++#   bindkey '^?'    backward-delete-char
++#   .edit.bind backward-kill-subword    '^H'    '^H'  '^[^?'  '^[[27;'{3,5}';8~'
++#   .edit.bind backward-kill-shell-word '^W'    '^[^H'        '^[[27;'{6,7}';8~'
++#   bindkey '^[[3~' delete-char
++#   .edit.bind kill-subword             '^[d'   '^[(' '^[^[[3~'   '^[[3;'{3,5}\~
++#   .edit.bind kill-shell-word          '^[^D'        '^[^[[3;5~' '^[[3;'{6,7}\~
++#   .edit.bind beginning-of-line        '^A'    '^['{\[,O}H
++#   .edit.bind end-of-line              '^E'    '^['{\[,O}F
++#   .edit.bind beginning-of-buffer      '^[<'   '^['{'[1;',\[,O}5H  '^[[5~'
++#   .edit.bind end-of-buffer            '^[>'   '^['{'[1;',\[,O}5F  '^[[6~'
++#   .edit.bind backward-kill-line       '^U'    '^['{'[1;',\[,O}2H  '^['{'[1;',\[,O}2D
++#   .edit.bind kill-line                '^K'    '^['{'[1;',\[,O}2F  '^['{'[1;',\[,O}2C
++#
++#   unfunction .edit.bind
++#
++#   bindkey -M emacs  '^[/' redo  '^[Y' reverse-yank-pop
++#   bindkey -M emacs  '^[.' insert-last-word  '^[,' insert-first-word \
++#                     '^[^_' copy-prev-word   '^[_' copy-next-word
++#   bind    -M emacs      '^[:' 'cd ..'
++#   bind    -M emacs      '^[-' 'pushd -1'      '^[=' 'pushd +0'
++#   bindkey -M menuselect '^[-' menu-complete   '^[=' reverse-menu-complete
++#   bindkey -M emacs          '^[`' dirstack-minus  '^[~' dirstack-plus
++#   bindkey -M menuselect -s  '^[`' '^G^_^[_'       '^[~' '^G^_^[+'
+ }
+ 
+ {

@@ -6,10 +6,13 @@
 
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
-alias -g G='| rg '
-alias -g H='| head'
-alias -g T='| tail'
-alias -g B='| bat'
+alias -g G='| rg '      H='| head '      T='| tail '
+alias -g B='| bat '     S='| sort '      U='| uniq '
+alias -g WC='| cw'
+alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
+alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
+alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time
+alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 
 alias %= \$=
 
@@ -133,6 +136,7 @@ alias __='doas'
 
 (( ${+commands[fd]} )) && {
   alias fd='fd -Hi'
+  alias fdg='fd --glob'
   alias fdc='fd --color=always'
   alias fdr='fd --changed-within=20m -d1'
   alias fdrd='fd --changed-within=30m'
@@ -143,6 +147,9 @@ alias pl='print -rl --'
 alias pp='print -Pr --'
 alias plm='pl $match[@]'
 alias plM='pl $MATCH'
+alias plr='pl $reply[@]'
+alias plR='pl $REPLY'
+
 alias chx='chmod ug+x'
 alias chmx='chmod -x'
 alias cp='command cp -ivp'
@@ -184,6 +191,7 @@ alias nzsh='$EDITOR $ZDOTDIR/.zshrc'
 alias azsh='$EDITOR $ZDOTDIR/zsh.d/aliases.zsh'
 alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lficons.zsh'
 alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
+alias czsh='$EDITOR $ZDOTDIR/zsh.d/completions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
 alias ndir='$EDITOR $ZDOTDIR/gruv.dircolors'
 alias ezsh='$EDITOR $HOME/.zshenv'
@@ -223,6 +231,7 @@ alias nssh='$EDITOR $HOME/.ssh/config'
 
 alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
 alias srce='source $HOME/.zshenv'
+alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
 
 # === mail ======================================================================
 (( ${+commands[mw]} )) && {

@@ -11,6 +11,7 @@ function Rg() {
 
 function Sk() {
   sk --ansi \
+     --prompt '❱ ' \
      --interactive \
      --delimiter : \
      --bind 'ctrl-e:execute($EDITOR "$(echo {} | hck -d: -f1)" >/dev/tty </dev/tty)' \

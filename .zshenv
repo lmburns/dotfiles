@@ -30,10 +30,13 @@ export BACKUP_DIR="$HOME/backup"
 # export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 export LOCAL_OPT="$HOME/opt"
-export SUDO_ASKPASS="$XDG_MBIN_HOME/linux/zenpass"
 # export SUDO_ASKPASS="xfsudo"
+export SUDO_ASKPASS="$XDG_MBIN_HOME/linux/zenpass"
+# export SUDO_PROMPT="%u entered passwd to become %U: "
 
-export TEXLIVE="${HOME}/texlive"
+export BC_ENV_ARGS="-q"
+
+export TEXLIVE="$HOME/texlive"
 
 export TERMINAL="alacritty"
 export BROWSER="librewolf"

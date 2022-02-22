@@ -1,0 +1,13 @@
+; Contents of ~/.config/zflai/sqlite.def
+[access]
+engine = sqlite3
+file = sqlite_main.db3
+path = %XDG_CACHE_HOME%/zflai/
+
+[hooks]
+on_open = !.tables
+on_open_sh = print -nr -- "$1" >! ~/.cache/zflai/sqlite.nfo
+on_close = #select * from mytable;
+on_close_sh = print -rl -- "$(date -R)" "$1" >>! %XDG_CACHE_HOME%/zflai/sqlite.tables
+
+; vim:ft=dosini

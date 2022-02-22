@@ -60,7 +60,12 @@
     # anaconda                # conda environment (https://conda.io/)
     pyenv                   # python environment (https://github.com/pyenv/pyenv)
     goenv                   # go environment (https://github.com/syndbg/goenv)
-    # rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+    rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+    perlbrew
+    # ${rust_version//(#b)(*)-(*)/$match[1]-${(C)${${match[2]}:0:1}}}
+    rust_version            # rustc version (https://www.rust-lang.org)
+    go_version
+    goenv
     # load                  # CPU load
     disk_usage            # disk usage
     # ram                   # free RAM
@@ -72,9 +77,9 @@
     # time                  # current time
     # =========================[ Line #2 ]=========================
     newline                 # \n
-    command_execution_time
+    # command_execution_time
     status
-    time
+    # time
     dir
     timewarrior             # timewarrior tracking status (https://timewarrior.net/)
     # ip                    # ip address and bandwidth usage for a specified network interface
@@ -333,7 +338,9 @@
 
   # add bookmark icon for list of 'rualdi' bookmarks
   ### NEW METHOD ###
-  bmark_dirs=(${(@f)"$(dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases.[*]')"})
+  [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
+    bmark_dirs=(${(@f)"$(dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases.[*]')"})
+  } || bmark_dirs=()
 
   typeset -g POWERLEVEL9K_DIR_CLASSES=(
     '/etc/*|/usr/local/etc/*'          ETC            ''
@@ -1122,6 +1129,20 @@
   # Custom icon.
   # typeset -g POWERLEVEL9K_PLENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
+  # TODO: Change url
+  ###########[ perlbrew: perl version from plenv (https://github.com/gugod/App-perlbrew) ]############
+  # Perl color.
+  typeset -g POWERLEVEL9K_PERLBREW_FOREGROUND=6
+  # Hide perl version if it doesn't come from one of these sources.
+  typeset -g POWERLEVEL9K_PERLBREW_SOURCES=(shell local global)
+  # If set to false, hide perl version if it's the same as global:
+  # $(plenv version-name) == $(plenv global).
+  typeset -g POWERLEVEL9K_PERLBREW_PROMPT_ALWAYS_SHOW=false
+  # If set to false, hide perl version if it's equal to "system".
+  typeset -g POWERLEVEL9K_PERLBREW_SHOW_SYSTEM=true
+  # Custom icon.
+  # typeset -g POWERLEVEL9K_PERLBREW_VISUAL_IDENTIFIER_EXPANSION='⭐'
+
   ############[ phpenv: php version from phpenv (https://github.com/phpenv/phpenv) ]############
   # PHP color.
   typeset -g POWERLEVEL9K_PHPENV_FOREGROUND=5
@@ -1500,7 +1521,8 @@
   #   typeset -g my_wifi_fg=(4 4 4 4 4)                                # <-- change these values
   #   typeset -g my_wifi_icon=('WiFi' 'WiFi' 'WiFi' 'WiFi' 'WiFi')     # <-- change these values
   #
-  #   typeset -g POWERLEVEL9K_WIFI_CONTENT_EXPANSION='%F{${my_wifi_fg[P9K_WIFI_BARS+1]}}$P9K_WIFI_LAST_TX_RATE Mbps'
+    # typeset -g POWERLEVEL9K_WIFI_CONTENT_EXPANSION='%F{${my_wifi_fg[P9K_WIFI_BARS+1]}}$P9K_WIFI_LAST_TX_RATE Mbps'
+    typeset -g POWERLEVEL9K_WIFI_CONTENT_EXPANSION='$P9K_WIFI_LAST_TX_RATE'
   #   typeset -g POWERLEVEL9K_WIFI_VISUAL_IDENTIFIER_EXPANSION='%F{${my_wifi_fg[P9K_WIFI_BARS+1]}}${my_wifi_icon[P9K_WIFI_BARS+1]}'
   #
   # The following parameters are accessible within the expansions:
@@ -1573,12 +1595,22 @@
     # # Show empty line if it's the first prompt in the TTY.
     # [[ $P9K_TTY == old ]] && p10k display 'empty_line'=show
     # Show the first prompt line.
-    p10k display '1|*/left_frame'=show '2/right/(time|dir|status|command_execution_time)'=hide
+    p10k display \
+      '1|*/left_frame'=show \
+      '2/right/(dir|status|command_execution_time)'=hide
   }
 
   function p10k-on-post-prompt() {
     # Hide the empty line and the first prompt line.
-    p10k display '1|*/left_frame'=hide '2/right/(dir|status|command_execution_time)'=show
+  #   p10k display \
+  #     '1|*/left_frame'=hide \
+  #     '2/right/(dir|status|command_execution_time)'=show \
+  #     '2/right/wifi'=hide
+
+    p10k display \
+      '2/right/(status|command_execution_time)'=show
+      # '2/right/wifi'=hide
+
   }
 
   # Instant prompt mode.

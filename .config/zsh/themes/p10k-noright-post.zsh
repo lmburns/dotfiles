@@ -32,7 +32,7 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
-    # os_icon               # os identifier
+     os_icon               # os identifier
     my_home
     dir                     # current directory
     vcs                     # git status
@@ -52,10 +52,11 @@
     command_execution_time  # duration of the last command
     background_jobs         # presence of background jobs
     virtualenv              # python virtual environment (https://docs.python.org/3/library/venv.html)
-    anaconda                # conda environment (https://conda.io/)
+    # anaconda                # conda environment (https://conda.io/)
     pyenv                   # python environment (https://github.com/pyenv/pyenv)
     goenv                   # go environment (https://github.com/syndbg/goenv)
-    # rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+    rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
+    rust_version            # rustc version (https://www.rust-lang.org)
     # load                  # CPU load
     # disk_usage            # disk usage
     # ram                   # free RAM

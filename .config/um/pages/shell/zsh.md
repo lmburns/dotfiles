@@ -303,27 +303,46 @@ Most modifiers work on variables (e.g `${var:h}`) or in globqualifiers (e.g. `*(
 ### PARAMETER (VARIABLE) EXPANSION
 Basic forms: str will also be expanded; most forms work onwords of array separately:
 
-|-----------------|------------------------------------------------|
-| `${var}`        | Substitute contents of `var`, no splitting     |
-| `${+var}`       | 1 if var is set, else 0                        |
-| `${var:-str}`   | `$var` if non­null, else str                   |
-| `${var-str}`    | `$var` if set (even if null) else str          |
-| `${var:=str}`   | `$var` if non­null, else str and set var to it |
-| `${var::=str}`  | Same but always use `str`                      |
-| `${var:?str}`   | `$var` if non­null else error, abort           |
-| `${var:+str}`   | str if `$var` is non­null                      |
-| `${var#pat}`    | min match of pat removed from head             |
-| `${var##pat}`   | max match of pat removed from head             |
-| `${var%pat}`    | min match of pat removed from tail             |
-| `${var%%pat}`   | max match of pat removed from tail             |
-| `${var:#pat}`   | `$var` unless pat matches, then empty          |
-| `${var/p/r}`    | One occurrence of p replaced by `r`            |
-| `${var//p/r}`   | All occurrences of `p` replaced by `r`         |
-| `${#var}`       | Length of var in words (array) or bytes        |
-| `${^var}`       | Expand elements like brace expansion           |
-| `${=var}`       | Split words of result like lesser shells       |
-| `${~var}`       | Allow globbing, file expansion on result       |
-| `${${var%p}#q}` | Apply `%p` then `#q` to `$var`                 |
+|------------------------|-------------------------------------------------|
+| `${var}`               | substitute contents of `$var`, no splitting     |
+| `${+var}`              | 1 if `$var` is set, else 0                      |
+|------------------------|-------------------------------------------------|
+| `${var-str}`           | `$var` if set (even if null) else str           |
+| `${var:-str}`          | `$var` if non­null, else str                    |
+|------------------------|-------------------------------------------------|
+| `${var+str}`           | str if `$var` is set, else nothing              |
+| `${var:+str}`          | str if `$var` is set/non-null, else nothing     |
+|------------------------|-------------------------------------------------|
+| `${var=str}`           | `$var` unset, set to `str`                      |
+| `${var:=str}`          | `$var` unset/null, set to `str`                 |
+| `${var::=str}`         | Same but always use `str`                       |
+|------------------------|-------------------------------------------------|
+| `${var?str}`           | `$var` if set else error, abort                 |
+| `${var:?str}`          | `$var` if set/non­null else error, abort        |
+|------------------------|-------------------------------------------------|
+| `${var#pat}`           | min match of `pat` removed from head            |
+| `${var##pat}`          | max match of `pat` removed from head            |
+|------------------------|-------------------------------------------------|
+| `${var%pat}`           | min match of `pat` removed from tail            |
+| `${var%%pat}`          | max match of `pat` removed from tail            |
+|------------------------|-------------------------------------------------|
+| `${var:#pat}`          | `$var` unless pat matches, then empty           |
+| `${var:<PIPE>arrname}` | elements in `arrname` are removed from `$var`   |
+| `${var:*arrname}`      | elements in `arrname` are reserved if in `$var` |
+| `${var:^arrname}`      | zips together arrays twice as long as shortest  |
+| `${var:^^arrname}`     | zips together arrays twice as long as longest   |
+| `${var:offset}`        | similar to `$name[start]`                       |
+| `${var:offset:length}` | similar to `$name[start,end]`                   |
+|------------------------|-------------------------------------------------|
+| `${var/p/r}`           | One occurrence of `p` replaced by `r`           |
+| `${var//p/r}`          | All occurrences of `p` replaced by `r`          |
+| `${var:/p/r}`          | Replace only if `p` matches all of `r`          |
+|------------------------|-------------------------------------------------|
+| `${#var}`              | Length of var in words (array) or bytes         |
+| `${^var}`              | Expand elements like brace expansion            |
+| `${=var}`              | Split words of result like lesser shells        |
+| `${~var}`              | Allow globbing, file expansion on result        |
+| `${${var%p}#q}`        | Apply `%p` then `#q` to `$var`                  |
 
 ## ==============================================================
 

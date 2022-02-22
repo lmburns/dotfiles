@@ -1,0 +1,18 @@
+#compdef vbindkey
+
+_vbindkey_mode() {
+    typeset -ga _vbmode
+    _vbmode=( $keymaps '+' '-' '@' 'str' )
+    _describe -t modes "modes" _vbmode
+}
+
+local expl
+_arguments -s -S \
+    '-b[show debugging messages]' \
+    '(-n)-M[specify keymap to select]: :_vbindkey_mode' \
+    '(-u -U -c -r -M)-A[specify an array to map]: : _wanted arrays expl array _arrays' \
+    '(-U -c -r)-u[list unused keybindings]: : _wanted keymaps expl keymap compadd -a keymaps' \
+    '(-u -c -r)-U[list duplicate keybindings]: : _wanted keymaps expl keymap compadd -a keymaps' \
+    '(-u -U -r)-c[bind a key to a command]: : _wanted keymaps expl keymap compadd -a keymaps' \
+    '(-u -U -c)-r[remove a keybinding]: : _wanted keymaps expl keymap compadd -a keymaps' \
+    '*::command-string:'

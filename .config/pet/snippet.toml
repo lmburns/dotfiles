@@ -85,17 +85,17 @@ tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "expac - list modified files"
-command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+command = "expac -S -H M '%k\t%n' $(paru -Qqu) | sort -sh"
 output = ""
 tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "pacman - search installed (fzf)"
 command = """
-  pacman -Qq \
+  paru -Qq \
     | fzf --preview 'paru --color=always -Qil {}' \
           --layout=reverse \
-          --bind 'enter:execute(pacman -Qil {} | bat)' \
+          --bind 'enter:execute(paru -Qil {} | bat)' \
           --preview-window=':nohidden'
 """
 output = ""
@@ -104,7 +104,7 @@ tag = ["pacman"]
 [[snippets]]
 description = "pacman - search all (fzf)"
 command = """
-  pacman -Slq \
+  paru -Slq \
     | fzf --preview 'paru --color=always -Si {}' \
           --layout=reverse \
           --preview-window=':nohidden'

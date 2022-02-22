@@ -47,8 +47,8 @@ zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
       + ':users'                        list-colors '=(#b)(*)=1;30=1;37;42'   \
       + ':hosts'                        list-colors '=(#b)(*)=1;30=1;37;43'   \
       + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
-      + ':corrections'                  list-colors '=(#b)(*)=1;30=1;37;4;43' \
-      + ':original'                     list-colors '=(#b)(*)=1;30=34;42;4'   \
+      + ':corrections'                  list-colors '=(#b)(*)=0;38;2;160;100;105' \
+      + ':original'                     list-colors '=(#b)(*)=0;38;2;76;150;168'   \
       + ':*:commits'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
       + ':heads'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
       + ':commit-tags'                  list-colors '=(#b)(*)=1;30=1;34;41;4' \
@@ -105,5 +105,13 @@ zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
 # zstyle ':completion:*:*:*:*:options' \
 #   list-colors \
 #   '=(#b)([-<)(>]##)[ ]#([a-zA-Z0-9_.,:?@#-]##)[ ]#([<)(>]#)[ ]#([a-zA-Z0-9+?.,()@3-]#)*=1;32=1;31=34=1;31=34'
+
+
+# ========================== MATCHER ==========================
+# zstyle ':completion:*:match:*' original only
+# zstyle ':completion::prefix-1:*' completer _complete
+# zstyle ':completion:predict:*' completer _complete
+# zstyle ':completion:incremental:*' completer _complete _correct
+# zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

@@ -1,0 +1,7 @@
+# Desc: show description of p10k parts
+
+local -A reply
+p10k display -a '*'
+builtin print -f '%-32s = %q\n' ${(@kv)reply} | sort
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

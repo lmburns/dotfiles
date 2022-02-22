@@ -1,20 +1,37 @@
 #compdef lolcate
 
-# zsh completions for 'lolcate'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
+__lolcate_dbs() {
+  setopt localoptions extendedglob
+  # This fucks up syntax parsing in neovim
+  typeset -a lolcate_dbs; lolcate_dbs=(
+    ${(@f)"$(print -rl -- $XDG_CONFIG_HOME/lolcate/*(/FN:t))"}
+  )
+  _describe -t databases "dbs" lolcate_dbs
+}
+
+__lolcate_types() {
+  typeset -a lolcate_types; lolcate_types=(
+    ${(@f)"$(dasel select -f $XDG_CONFIG_HOME/lolcate/config.toml -m '.types.-')"}
+  )
+  _describe -t file_types "file types" lolcate_types
+}
+
 local arguments
 
 arguments=(
   '--all[query / update all databases]'
   '--create[create a database]'
   {-h,--help}'[prints help information]'
-  {-i,--ignore-case}'[search the given patterns case-insensitively. Default is "smart-case", i.e. patterns are]'
+  {-i,--ignore-case}'[search the given patterns case-insensitively. Default is "smart-case", i.e. patterns are searched case-]'
   '--info[display configuration informations and existing databases]'
-  '--update[update database]'
+  {-u,--update}'[update database]'
   {-V,--version}'[prints version information]'
-  {-b,--basename}'[match only the base name against the specified PATTERN. Can be supplied multiple times]'
-  '--db[database to be used / created \[default: default\]]'
-  '--type[one or several file types to search, separated with commas]'
+  {-a,--ansi}'+[true Color to colorize output]:hex color:'
+  {-b,--basename}'[match only the basename against the specified PATTERN. Can be supplied multiple times, e.g. -b PATTERN1 -b]'
+  {-c,--color}'[when to colorize output during search \[possible values: always, auto, never\]]'
+  '--db=[database to be used / created (default: default)]:database:__lolcate_dbs'
+  {-m,--mime}'+[filter based on file type (possible values: f, file, d, dir)]:file type:(f file d dir)'
+  {-t,--type}'=[one or several file types to search, separated with commas]:type:__lolcate_types'
   '*:filename:_files'
 )
 

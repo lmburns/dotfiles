@@ -1,0 +1,124 @@
+# Desc: Searches zshall with special keyword ($1) matching
+
+setopt extendedglob
+
+# man() {
+#   env \
+#     LESS_TERMCAP_md=$(tput setaf 9) \
+#     LESS_TERMCAP_me=$(tput sgr0) \
+#     LESS_TERMCAP_mb=$(tput blink) \
+#     LESS_TERMCAP_us=$(tput setaf 10) \
+#     LESS_TERMCAP_ue=$(tput sgr0) \
+#     LESS_TERMCAP_so=$(tput smso) \
+#     LESS_TERMCAP_se=$(tput rmso) \
+#     PAGER="${commands[less]:-$PAGER}" \
+#     man "$@"
+# }
+
+function man() {
+  env \
+    LESS_TERMCAP_md=$(tput bold; tput setaf 4) \
+    LESS_TERMCAP_me=$(tput sgr0) \
+    LESS_TERMCAP_mb=$(tput blink) \
+    LESS_TERMCAP_us=$(tput setaf 2) \
+    LESS_TERMCAP_ue=$(tput sgr0) \
+    LESS_TERMCAP_so=$(tput smso) \
+    LESS_TERMCAP_se=$(tput rmso) \
+    PAGER="${commands[less]:-$PAGER}" \
+    man "$@"
+}
+
+# zp() { man -P "less -p'^       "$1" '" zshexpn; }
+# zs() { man -P "less -p'^       "$1" '" zshparam; }
+zmc() { man -P "less -p'^${@}'" zshcompsys; }
+zmp() { man -P "less -p'^${@}'" zshall; }
+zmo() { man -P "less -p'^${@}'" zshmodules; }
+zlm() { man -P "less -p'^${@}'" zshzle; }
+zd() { man -P "less -p'^THE ZSH/$1 MODULE$'" zshmodules; }
+zb() { man -P "less -p'^       "$1" '" zshbuiltins; }
+zo() { man -P "less -p'^       "$1"'" zshoptions; }
+zp() { man -P "less -p'^       ${1/#[ewspfrRiInbkK]/"${1}"} '" zshexpn; }
+zs() { man -P "less -p'^       ${1/#[AacCefFikLnoOPqQtuUvVwWXzpjslrSIBEMNR]/"${1}"} '" zshparam; }
+
+usage() {
+  print -Pr -- "%F{2}-t, --test -- [[ -e ]]%f"
+  print -Pr -- "%F{4}-e, --example%f"
+  print -Pr -- "%F{2}--pf, --pexpf -- \"\$ {(f)foo}\"%f"
+  print -Pr -- "%F{4}--pexp, --paramexp -- \"\$ {~foo}\"%f"
+  print -Pr -- "%F{2}--he, --histexp -- $ {var:h3}%f"
+  print -Pr -- "%F{4}--hf, histflags%f"
+  print -Pr -- "%F{2}-a, --arrparam%f"
+  print -Pr -- "%F{4}--ars, --arrsubscript%f"
+  print -Pr -- "%F{2}--arsf, --arrflag -- $ {array[(i)pattern]}%f"
+  print -Pr -- "%F{4}-c, --complex%f"
+  print -Pr -- "%F{2}-g, --glob -- (#X)%f"
+  print -Pr -- "%F{4}-o, --opts -- AUTO_CD%f"
+  print -Pr -- "%F{2}--sopts, --1opts%f"
+  print -Pr -- "%F{4}--prompt, --promptchars -- %%B%f"
+  print -Pr -- "%F{2}-r, --redir%f"
+  print -Pr -- "%F{4}--wid --widget -- vi-backward-kill%f"
+  print -Pr -- "%F{2}-z, --zparse%f"
+  print -Pr -- "%F{4}--ru, --rules%f"
+  print -Pr -- "%F{2}--vared, --bindkey%f"
+  print -Pr -- "%F{4}-u, --used%f -- Parameters set by shell"
+  print -Pr -- "%F{2}-b, --built -- echoti%f"
+  print -Pr -- "%F{4}-p, --param -- $ {var:h}, $ {(f)foo}%f"
+  print -Pr -- "%F{2}-s, --subscript -- $ {foo[(re)bar]}%f"
+  print -Pr -- "%F{4}-m, --module -- ZSH/ZUTIL%f"
+}
+
+lopts=(test example pf pexpf pexp paramexp he histexp hf histflags arrparam arrsubscript help)
+lopts+=(arsf arrflag complex glob shopts sopts 1opts prompt promptchars redir wid widget zparse)
+lopts+=(ars ru rules bindkey vared opts used zst zstyle cf ctrlfunc)
+
+zparseopts -D -E -a opts ${(s::):-teacgrzhu} \
+  ${lopts//(#m)*/\-${MATCH}} \
+  ${${(@)${(s::):-bpsmo}//(#m)*/${MATCH}\:\=opts}}
+
+  # b:=opts p:=opts s:=opts
+  # ${(j.:=opts .)${(s::):-bps}}:=opts
+  # "${${(@)${(s::):-bps}//(#m)*/${MATCH}\:\=opts}}"
+
+  # 'b' 'built' \
+  # 'p' 'param' \
+  # 's' 'subscript' \
+  # 'm' 'module' \
+  # 'h' 'help'
+
+[[ -z "${opts[1]}" && -z "${1}" ]] && { usage; exit 1 }
+
+builtin set -- ${@:#--}
+
+case ${opts[1]} in
+  -t|--test) zmp "CONDITIONAL EXPRESSIONS$" ;;
+  -e|--exmple) zmp "   Examples$" ;;
+  --pf|--pexpf) zmp "   Parameter Expansion Flags$" ;;
+  --pexp|--paramexp) zmp "PARAMETER EXPANSION$" ;;
+  --he|--histexp) zmp "HISTORY EXPANSION$" ;;
+  --hf|--histflags) zmp "   Modifiers$" ;;
+  -a|--arrparam) zmp "ARRAY PARAMETERS$" ;;
+  --ars|--arrsubscript|"array subscripts") zmp "   Array Subscripts$" ;;
+  --arsf|-a-rrflag|"arr flags"|"array flags") zmp "   Subscript Flags$" ;;
+  -c|--complex) zmp "COMPLEX COMMANDS$" ;;
+  -g|--glob) zmp "   Globbing Flags$" ;;
+  --opts) zmp "DESCRIPTION OF OPTIONS$" ;;
+  --sopts|--1opts) zmp "SINGLE LETTER OPTIONS$" ;;
+  --prompt|--promptchars) zmp "SIMPLE PROMPT ESCAPES$" ;;
+  -r|--redir) zmp "REDIRECTION$" ;;
+  --wid|--widgets) zmp "STANDARD WIDGETS$" ;;
+  --bindkey|--vared) zlm "ZLE BUILTINS$" ;;
+  -z|--zparse) zmo "       zparseopts$" ;;
+  --ru|--rules) zmp "   Rules$" ;;
+  -u|--used) zmp "PARAMETERS USED BY THE SHELL$" ;;
+  --zst|--zstyle) zmo "THE ZSH/ZUTIL MODULE$" ;;
+  --cf|--ctrlfunc) zmc "CONTROL FUNCTIONS$" ;;
+  -m) zd "${(U)opts[2]}" ;;
+  -b) zb "${(qq)opts[2]}" ;;
+  -o) zo "${opts[2]}" ;;
+  -p) zp "${opts[2]}" ;;
+  -s) zs "${opts[2]}" ;;
+  -h|--help) usage ;;
+  *) man -P "less -p'^ *$@ '" zshall ;;
+esac
+
+# vim:ft=zsh:et

@@ -3,7 +3,7 @@
 if $_per_directory_history_is_global; then
     return
 else
-    p10k segment -i ''
+    p10k segment -i '%F{7}%f'
 fi
 
 # vim:ft=zsh:et

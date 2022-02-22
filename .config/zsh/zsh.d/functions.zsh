@@ -143,38 +143,53 @@ function zinit-palette() {
   done
 }
 
+# ============================== Compdef =============================
+# ====================================================================
+compdef _command_names wim
+compdef _functions fim
+
+
+# ======================== Dynamic Directory =========================
+# ====================================================================
 # Why both?
-typeset -gA zdn_wrap_top=(
-  p         ~/projects
-  c         ~/.config
-  :default: /:second1
-)
+# typeset -gA zdn_wrap_top=(
+#   p         ~/projects
+#   c         ~/.config/:second2
+#   :default: /:second1
+# )
+#
+# typeset -gA zdn_top=(
+#   p         ~/projects
+#   c         ~/.config/:second2
+#   :default: /:second1
+# )
+#
+# typeset -gA second1=(
+#     g  github/:third
+#     p  perl
+#     py python
+#     r  ruby
+# )
+#
+# typeset -gA second2=(
+#     zd  zsh/zsh.d
+#     zi  zsh/zinit
+#     zc  zsh/csnippets
+#     zf  zsh/functions
+# )
+#
+# typeset -gA third=(
+#   w wutag
+#   l lxhkd
+#   z zinit
+# )
+#
+# # cdr is used instead
+# zstyle ':zdn:zdn_wrap:' mapping zdn_wrap_top
+# autoload -Uz add-zsh-hook zsh_directory_name_generic zdn_wrap
+# add-zsh-hook -U zsh_directory_name zdn_wrap
 
-typeset -gA zdn_top=(
-  p         ~/projects
-  c         ~/.config
-  :default: /:second1
-)
-
-typeset -gA second1=(
-    g  github/:third
-    p  perl
-    py python
-    r  ruby
-)
-
-typeset -gA third=(
-  w wutag
-  l lxhkd
-  z zinit
-)
-
-# cdr is used instead
-zstyle ':zdn:zdn_wrap:' mapping zdn_wrap_top
-autoload -Uz add-zsh-hook zsh_directory_name_generic zdn_wrap
-add-zsh-hook -U zsh_directory_name zdn_wrap
-
-function zdn_wrap() {
-  autoload -Uz zsh_directory_name_generic
-  zsh_directory_name_generic "$@"
-}
+# function zdn_wrap() {
+#   autoload -Uz zsh_directory_name_generic
+#   zsh_directory_name_generic "$@"
+# }

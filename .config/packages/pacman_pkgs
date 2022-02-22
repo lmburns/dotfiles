@@ -22,6 +22,7 @@ asp
 aspell-en
 astyle
 audiocd-kio
+aurpublish
 autoconf
 autocutsel
 automake
@@ -376,7 +377,6 @@ ncspot
 neofetch
 neomutt
 neovide-git
-neovim-git
 nerd-fonts-complete
 netctl
 network-manager-applet

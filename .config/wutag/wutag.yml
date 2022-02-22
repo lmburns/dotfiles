@@ -2,6 +2,8 @@
 #############################
 # Global Command Line Options
 #############################
+# Location where tags are stored
+registry: "$XDG_DATA_HOME/wutag/wutag.XXX"
 # Max depth for glob/regex pattern to traverse when matching files
 max_depth: 10
 # File path color

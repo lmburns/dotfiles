@@ -25,7 +25,7 @@ function print_success() {
   builtin print -Pr -- "Finished %F{6}${(l:6:: :)pkg}%f in $SECONDS"
 }
 
-print -Pr -- "%F{14}${(l:COLUMNS::=:):-}%f"
+builtin print -Pr -- "%F{14}${(l:COLUMNS::=:):-}%f"
 
 typeset -F 3 SECONDS=0
 command paru -Qeq > "${dest}/${pacman_file}" && print_success "pacman"
@@ -69,7 +69,7 @@ command R --quiet \
     > "${dest}/${cran_file}" \
     && print_success "cran"
 
-print -Pr -- "%F{14}${(l:COLUMNS::=:):-}%f"
+builtin print -Pr -- "%F{14}${(l:COLUMNS::=:):-}%f"
 
 command cp -f "${dest}/${pacman_file}" "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
 command cp -f "${dest}/${cargo_file}" "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
