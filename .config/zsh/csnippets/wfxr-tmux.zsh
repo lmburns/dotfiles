@@ -180,7 +180,7 @@ function wfxr::tmux-select-window() {
         zle redisplay 2>/dev/null || true
 }
 # Tmux attach or create target session
-function t() {
+function tmt() {
     if [[ $# -eq 0 ]]; then
         if [[ $TMUX ]]; then
             wfxr::tmux-switch
@@ -237,7 +237,7 @@ if (( $+commands[copyq] )); then
               | nl -w2 -s" " \
               | tac \
               | fzf --layout=reverse --multi --prompt='Copyq> ' --tiebreak=index \
-              | perl -pe 's/\d+\s?//g && chomp if eof' \
+              | perl -pe 's/^\s*\d+\s?//g && chomp if eof' \
               | xsel -b
         )
         BUFFER="$BUFFER$CONTENT"

@@ -1,12 +1,16 @@
 # Desc: cd realpath
 
 function cdreal() {
-  local dir=${~1:A}
-  if [[ -d "${(b)~dir}" ]] {
-    builtin cd ${(b)~dir}
-  } else {
-    builtin cd ${(b)~dir:h}
-  }
+  # local dir=${~1:A}
+  # if [[ -d "${(b)~dir}" ]] {
+  #   builtin cd ${(b)~dir}
+  # } else {
+  #   builtin cd ${(b)~dir:h}
+  # }
+
+  emulate -L zsh
+  setopt chase_links
+  builtin cd "$1"
 }
 
 cdreal "$@"

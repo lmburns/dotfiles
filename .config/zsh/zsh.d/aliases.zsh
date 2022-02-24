@@ -28,7 +28,6 @@ alias ca='cargo'
 alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
-alias tt="taskwarrior-tui"
 alias strace="/usr/local/bin/strace"
 
 alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
@@ -348,8 +347,12 @@ alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
 # alias mbsync='mbsync -c $MBSYNCRC'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
-alias taske='task edit'
 alias ume='um edit'
+
+alias tt="taskwarrior-tui"
+alias t="task"
+alias te='t edit'
+alias taske='t edit'
 
 (( ${+commands[tldr]} )) && alias tldru='tldr --update'
 (( ${+commands[assh]} )) && alias hssh="assh wrapper ssh"

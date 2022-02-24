@@ -34,20 +34,37 @@ builtin bindkey -M vicmd -r 'R'
 
 # autoload -Uz incarg
 
+# autoload -Uz insert-unicode-char
+# zle -N insert-unicode-char
+
 autoload -Uz edit-command-line
 zle -N edit-command-line
-
-autoload -Uz replace-string
-autoload -Uz replace-string-again
-zle -N replace-regex replace-string
-zle -N replace-pattern replace-string
-zle -N replace-string-again
-zstyle ':zle:replace-pattern' edit-previous false
 
 autoload -Uz surround
 zle -N delete-surround surround
 zle -N add-surround surround
 zle -N change-surround surround
+
+# =========================== zle Functions ==========================
+# ====================================================================
+
+# ========================== Unused ==========================
+
+# Add command to history without executing it
+function commit-to-history() {
+  print -s ${(z)BUFFER}
+  zle send-break
+}
+zle -N commit-to-history
+
+# Only slash should be considered as a word separator:
+function slash-backward-kill-word() {
+  local WORDCHARS="${WORDCHARS:s@/@}"
+  zle backward-kill-word
+}
+zle -N slash-backward-kill-word
+
+# =========================== Used ===========================
 
 # Expand everything under cursor
 function expand-all() {
@@ -110,10 +127,8 @@ zle -N __unicode_translate # translate unicode to symbol
 # 'C-x C-m'         _complete_debug_generic
 # 'C-x C-t'         _complete_tag
 
-# =============================== ZAW ===============================
+# =============================== zaw ===============================
 # ====================================================================
-# TODO: Maybe use something like this?
-
 autoload -U read-from-minibuffer
 
 function save-alias() {
@@ -166,14 +181,34 @@ function callback-edit-file() {
     zle accept-line
 }
 
+# Add command to history without executing it
+function commit-to-history() {
+    print -s ${(z)BUFFER}
+    zle send-break
+}
+zle -N commit-to-history
+
+# Only slash should be considered as a word separator:
+function slash-backward-kill-word() {
+    local WORDCHARS="${WORDCHARS:s@/@}"
+    zle backward-kill-word
+}
+zle -N slash-backward-kill-word
+
 # ============================= BINDINGS =============================
 # ====================================================================
 if [[ $TMUX ]]; then
-  zle -N t
-  vbindkey 'M-t' t                       # alt-t
+  zle -N tmt
+  vbindkey 'M-t' tmt                       # alt-t
   zle -N wfxr::tmux-select-window
   vbindkey 'M-w' wfxr::tmux-select-window # alt-w
 fi
+
+# if [[ -n "$terminfo[kcbt]" ]]; then
+#     bindkey "$terminfo[kcbt]" reverse-menu-complete
+# elif [[ -n "$terminfo[cbt]" ]]; then # required for GNU screen
+#     bindkey "$terminfo[cbt]"  reverse-menu-complete
+# fi
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 typeset -gA keybindings; keybindings=(
@@ -184,24 +219,25 @@ typeset -gA keybindings; keybindings=(
   'F1'             dotbare-fstat
   'F2'             db-faddf
   'F3'             _wbmux
+  ';z'             zbrowse
   'Esc-e'          wfxr::fzf-file-edit-widget
   'Esc-i'          fe
   'Esc-d'          expand-aliases
+  'Esc-f'          list-keys             # list keybindings in mode
   'M-r'            per-dir-fzf
   'M-p'            pw                    # fzf pueue
   # 'M-q'             push-line-or-edit     # zsh-edit
   'M-u'            __unicode_translate   # translate unicode
   'M-x'            cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-f'            list-keys             # list keybindings in mode
   'M-1'            toggle-right-prompt
   'C-a'            autosuggest-execute
   'C-y'            yank
   'C-z'            fancy-ctrl-z
   'C-x r'          fz-history-widget
   'C-x t'          pick_torrent          # fzf torrent
-  'M-b'            fcq-zle               # copyq zle
+  'M-b'            clipboard-fzf         # greenclip fzf
   'C-x C-b'        fcq                   # copyq fzf
-  'C-x C-g'        clipboard-fzf         # greenclip fzf
+  'C-x C-g'        fcq-zle               # copyq zle
   'C-x C-e'        edit-command-line-as-zsh
   'C-x C-f'        fz-find
   'C-x C-u'        RG_buff # RG with $BUFFER
@@ -216,7 +252,9 @@ typeset -gA keybindings; keybindings=(
   'mode=vicmd H'   vi-beginning-of-line
   'mode=vicmd ?'   which-command
   'mode=vicmd yy'  copyx
+  'mode=vicmd ;v'  clipboard-fzf         # greenclip fzf
   'mode=vicmd ;e'  edit-command-line-as-zsh
+  'mode=vicmd ;x'  vi-backward-kill-word
   'mode=vicmd c.'  vi-change-whole-line
   'mode=vicmd ds'  delete-surround
   'mode=vicmd cs'  change-surround
@@ -242,12 +280,22 @@ typeset -gA keybindings; keybindings=(
 # ========================== Testing ==========================
 # 'mode=vicmd Q'    save-alias
   'mode=vicmd Q'    src-locate
+  'mode=vicmd ;d'   dirstack-plus
 )
 
 vbindkey -A keybindings
 
 # Surround text under cursor with quotes
 builtin bindkey -M vicmd -s ' o' 'viwS"'
+builtin bindkey -s "^[\'" 'ncd\n'
+
+builtin bindkey -s '\e1' "!:0 \t"        # last command
+# bindkey -s '\e2' "!:0-1 \t"      # last command + 1st argument
+# bindkey -s '\e3' "!:0-2 \t"      # last command + 1st-2nd argument
+# bindkey -s '\e4' "!:0-3 \t"      # last command + 1st-3rd argument
+# bindkey -s '\e5' "!:0-4 \t"      # last command + 1st-4th argument
+# bindkey -s '\e`' "!:0- \t"       # all but the last argument
+# bindkey -s '\e9' "!:0 !:2* \t"   # all but the 1st argument (aka 2nd word)
 
 # 'mod=vicmd ZZ'  accept-line
 # 'mode=vicmd M-a' yank-pop
@@ -270,24 +318,25 @@ builtin bindkey -M vicmd -s ' o' 'viwS"'
 # bindkey '^Xh' _complete_help
 # bindkey '^Xt' _complete_tag
 
-# # ci", ci', ci`, di", etc
-# autoload -U select-quoted
-# zle -N select-quoted
-# for m in visual viopp; do
-#   for c in {a,i}{\',\",\`}; do
-#     bindkey -M $m $c select-quoted
-#   done
-# done
-#
-# # ci{, ci(, ci<, di{, etc
-# autoload -U select-bracketed
-# zle -N select-bracketed
-# for m in visual viopp; do
-#   for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do
-#     bindkey -M $m $c select-bracketed
-#   done
-# done
+local m c
+# ci", ci', ci`, di", etc
+autoload -U select-quoted; zle -N select-quoted
+foreach m (visual viopp) {
+  foreach c ({a,i}{\',\",\`}) {
+    bindkey -M $m $c select-quoted
+  }
+}
 
+# ci{, ci(, ci<, di{, etc
+autoload -U select-bracketed; zle -N select-bracketed
+foreach m (visual viopp) {
+  foreach c ({a,i}${(s..)^:-'()[]{}<>bB'}) {
+    bindkey -M $m $c select-bracketed
+  }
+}
+
+# ============================ Other Func ============================
+# ====================================================================
 # View keybindings
 function lskb() {
   local -A keyb=(); for k v in ${(kv)keybindings}; do
@@ -298,6 +347,8 @@ function lskb() {
   # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
 
+# ================================ LF ================================
+# ====================================================================
 function _zlf() {
     emulate -L zsh
     local d=$(mktemp -d) || return 1
@@ -328,18 +379,25 @@ zle -N _zlf_handler
 
 vbindkey 'C-x C-o' _zlf
 
-
-# The 'undo' doesn't undo like read-minibuffer does
-# =============================== TODO ===============================
+# ========================== Custom builtin ==========================
 # ====================================================================
-function read-ss() {
+# autoload -Uz replace-string
+# autoload -Uz replace-string-again
+# zle -N replace-regex replace-string
+# zle -N replace-pattern replace-string
+# zle -N replace-string-again
+# zstyle ':zle:replace-pattern' edit-previous false
+
+zstyle ':zle:@replace-pattern' edit-previous false
+function @replace-string() {
   emulate -L zsh
   setopt extendedglob
 
-  autoload -Uz read-from-minibuffer replace-string-again
+  autoload -Uz read-from-minibuffer @replace-string-again
 
   local p1  p2
-  integer savelim=$UNDO_LIMIT_NO changeno=$UNDO_CHANGE_NO
+  integer savelim=$UNDO_LIMIT_NO   changeno=$UNDO_CHANGE_NO
+  local   start="$BUFFER"          cursor="$CURSOR"
 
   {
 
@@ -347,12 +405,10 @@ function read-ss() {
     p1="[$_replace_string_src -> $_replace_string_rep]"$'\n'
   fi
 
-  p1+="Replace: "
-  p2="   with: "
+  p1+="Replace: "; p2="   with: "
 
   # Saving curwidget is necessary to avoid the widget name being overwritten.
   local REPLY previous curwidget=$WIDGET
-  notify-send "WIDGET: $WIDGET"
 
   if (( ${+NUMERIC} )); then
     (( $NUMERIC > 0 )) && previous=1
@@ -371,15 +427,19 @@ function read-ss() {
 
   } always {
     zle undo $changeno
+
+    # Builtin does not do this
     UNDO_LIMIT_NO=savelim
+    BUFFER="$start"
+    CURSOR="$cursor"
   }
 
-  replace-ss $curwidget
+  @replace-string-again $curwidget
 }
 
-zle -N replace-pattern read-ss
+zle -N replace-pattern @replace-string
 
-function replace-ss() {
+function @replace-string-again() {
   local MATCH MBEGIN MEND curwidget=${1:-$WIDGET}
   local -a match mbegin mend
 
@@ -428,4 +488,4 @@ function replace-ss() {
       RBUFFER=${RBUFFER//$_replace_string_src/$_replace_string_rep}
   fi
 }
-zle -N replace-ss
+zle -N @replace-string-again

@@ -51,13 +51,13 @@ export RTV_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"
 export SYSTEMD_COLORS=1
 
-export LESS="-r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+export LESS="--mouse --wheel-lines=3 -r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
 # export PAGER="${commands[less]:-$PAGER}"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
-export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
-export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
+export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbie'" \
+export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbie'" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"

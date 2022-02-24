@@ -29,13 +29,15 @@ typeset -g SAVEHIST=8000000
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get)"
 typeset -g TIMEFMT=$'\n================\nCPU\t%P\nuser\t%*U\nsystem\t%*S\ntotal\t%*E'
-# typeset -g PROMPT_EOL_MARK=''
 typeset -g PROMPT_EOL_MARK='%F{14}%S%#%f%s'
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'
-typeset -g MAILCHECK=0
-typeset -g KEYTIMEOUT=15
-typeset -g FCEDIT="$EDITOR"         # history editor
+typeset -g MAILCHECK=0    # Don't check for mail
+typeset -g KEYTIMEOUT=15  # Key action time
+typeset -g FCEDIT=$EDITOR # History editor
+# typeset -g REPORTTIME=5   # Report the time of command if longer than 5sec
+
+# typeset -g PROMPT_EOL_MARK=''
 # typeset -g ZSH_DISABLE_COMPFIX=true
 
 # Various highlights for CLI
@@ -70,7 +72,7 @@ setopt hash_cmds         hash_list_all
 
 # setopt brace_ccl auto_param_slash transient_prompt
 
-# don't error out when unset parameters are used?
+# don't error out when unset parameters are used
 setopt unset
 
 typeset -gx ZINIT_HOME="${0:h}/zinit"
@@ -777,9 +779,11 @@ autoload -Uz chpwd_recent_dirs add-zsh-hook cdr
 add-zsh-hook chpwd chpwd_recent_dirs
 add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr # cd ~[1]
 
-zstyle ':chpwd:*' recent-dirs-default true
-zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
-zstyle ':completion:*' recent-dirs-insert both
+zstyle ':chpwd:*'      recent-dirs-default true
+zstyle ':chpwd:*'      recent-dirs-file    "${ZDOTDIR}/chpwd-recent-dirs"
+zstyle ':chpwd:*'      recent-dirs-max     20
+zstyle ':chpwd:*'      recent-dirs-prune   'pattern:/tmp(|/*)'
+zstyle ':completion:*' recent-dirs-insert  both
 
 typeset -ga dirstack; dirstack=(
   ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
@@ -832,11 +836,12 @@ zstyle '*' single-ignored show # don't insert single value
 # + ''                use-compctl false \
 # + ':correct:*'      insert-unambiguous true \
 # + ''                list-dirs-first true \ # Shows directories first in sep group
+# + ':messages'       format ' %F{4} -- %f' \
 
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                list-grouped true \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
-      + ''                file-sort modification \
+      + ''                file-sort access \
       + ''                group-name '' \
       + ''                use-cache true \
       + ''                cache-path "${ZDOTDIR}/.zcompcache" \
@@ -850,13 +855,11 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ':default'        list-colors ${(s.:.)LS_COLORS} \
       + ':matches'        group true \
-      + ':functions'      ignored-patterns '((_*|-*)|pre(cmd|exec))' \
-      + ':parameters'     ignored-patterns '_(p9k|_p9k|POWERLEVEL9K|((#i)zsh_autosuggest))' \
+      + ':functions'      ignored-patterns '(_*|pre(cmd|exec))' \
       + ':approximate:*'  max-errors 1 numeric \
       + ':match:*'        original only \
       + ':options'        description true \
       + ':descriptions'   format '[%d]' \
-      + ':messages'       format ' %F{purple} -- %d --%f' \
       + ':warnings'       format ' %F{1}-- no matches found --%f' \
       + ':corrections'    format '%F{5}!- %d (errors: %e) -!%f' \
       + ':default'        list-prompt '%S%M matches%s' \
@@ -868,7 +871,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':expand:*'       tag-order all-expansions \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
       + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
-      + ':*:-command-:*:*'                       group-order functions commands builtins \
+      + ':*:-command-:*:*'                       group-order path-directories functions commands builtins \
       + ':*:-subscript-:*'                       tag-order indexes parameters \
       + ':*:-subscript-:*'                       group-order indexes parameters \
       + ':*:-redirect-,2>,*:*'                   file-patterns '*.log'
@@ -896,10 +899,9 @@ zstyle ':completion:complete:*:nvim:*' file-sort access
 
 # Shows ls -la when completing files
 # zstyle ':completion:*' file-list list=20 insert=10
+# zstyle ':completion:*' file-patterns '%p:globbed-files' '*(-/):directories' '*:all-files'
 
-zstyle ':completion:*' file-patterns '%p:globbed-files' '*(-/):directories' '*:all-files'
 zstyle ':completion:*:*:-command-:*:*' group-order builtins functions commands
-
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
 # zstyle -e ':completion:*'             special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)' # only if prefix is ../
 # ========================================================================
@@ -937,6 +939,9 @@ zstyle+ ':completion:*' '' '' \
 # DOESNT WORK:
 zstyle ':completion:*:complete:cdh:*:*' group-order local-directories recent-dirs path-directories
 zstyle ':completion:*:complete:cdh:*:*' tag-order local-directories recent-dirs path-directories
+
+zstyle ':completion:*:cd:*' tag-order local-directories path-directories
+zstyle ':completion:*:cd:*' group-order local-directories path-directories
 
 # === fzf-tab === [[[
 typeset -ga FZF_TAB_GROUP_COLORS=(

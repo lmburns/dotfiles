@@ -2380,7 +2380,7 @@ call plug#end()
 
   augroup gogithub
       au!
-      au FileType *vim,*zsh,*bash,*tmux nnoremap <buffer> <silent> <cr> :call <sid>go_github()<cr>
+      au FileType *vim,*bash,*tmux nnoremap <buffer> <silent> <cr> :call <sid>go_github()<cr>
   augroup END
   " }}}
 

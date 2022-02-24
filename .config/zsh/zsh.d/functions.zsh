@@ -1,3 +1,4 @@
+# Hardlink relevant files to a Rust project
 function linkrust() {
   command ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
   command ln -v $HOME/projects/rust/rustfmt.toml $PWD/rustfmt.toml
@@ -27,7 +28,7 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 
 # lsof open fd
 zmodload -F zsh/system p:sysparams
-function lsfd() { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+function lsfd()   { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
 function lswifi() { nmcli device wifi; }
 function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 
@@ -60,9 +61,15 @@ function pbpf() { xsel -b > "$1"; }
 # copy file to clipboard
 function pbcf() { xsel -b < "${1:-/dev/stdin}"; }
 
-# backup files
-function bak() { command cp -r --force --suffix=.bak $1 $1 }
+# Backup files
+function bak()  { command cp -r --force --suffix=.bak $1 $1 }
 function rbak() { command cp -r --force $1.bak $1 }
+
+# Backup a file
+function bk() {
+  emulate -L zsh
+  cp -b $1 $1_`date --iso-8601=m`
+}
 
 # only renames
 function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
@@ -84,7 +91,8 @@ function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
 function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
 
 # sha of a directory
-function sha256dir() { fd . -tf -x sha256sum {} | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
+function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
+function b3sumdir()  { print -rl -- ${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} | b3sum; }
 
 function allcmds() { print -l ${commands[@]} | awk -F'/' '{print $NF}' | fzf; }
 
@@ -102,20 +110,6 @@ function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 
 # monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
-
-# reload zsh function without sourcing zshrc
-function freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
-
-function time-zsh() {
-  local shell
-  shell=${1-$SHELL}
-  for i ( $(seq 1 10) ) {
-    /usr/bin/time $shell -i -c 'print; exit'
-  }
-}
-
-function hyperfine-zsh() { hyperfine "$SHELL -c 'exit'"; }
-function profile-zsh() { ZSHRC_PROFILE=1 zsh -i -c zprof | bat; }
 
 function ww() { (alias; declare -f) | /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@; }
 
@@ -143,8 +137,66 @@ function zinit-palette() {
   done
 }
 
+# Create temporary directory and cd to it
+function cdt() {
+  local t
+  t=$(mktemp -d)
+  echo "$t"
+  builtin cd -q "$t"
+}
+
+# Profile zsh: Method 1
+function time-zsh() {
+  for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit' }
+}
+# Profile zsh: Method 2 (hyperfine)
+function hyperfine-zsh() {
+  hyperfine "$SHELL -c 'exit'";
+}
+#  Profile zsh: Method 2 (zprof)
+function profile-zsh() {
+  ZSHRC_PROFILE=1 zsh -i -c zprof | bat
+}
+# Profile zsh: Method 3 (any cmd)
+function profile() {
+  ZSH_PROFILE_RC=1 $SHELL "$@"
+}
+
+# reload zsh function without sourcing zshrc
+function freload() {
+  while (( $# )); do; unfunction $1; autoload -U $1; shift; done
+}
+
+# Edit an alias via zle
+function edalias() {
+  [[ -z "$1" ]] && {
+    echo "Usage: edalias <alias_to_edit>" ; return 1
+  } || vared aliases'[$1]' ;
+}
+
+# Edit a function via zle
+function edfunc() {
+  [[ -z "$1" ]] && {
+    echo "Usage: edfunc <function_to_edit>" ; return 1
+  } || zed -f "$1" ;
+}
+
+# List files which have been accessed within the last n days
+# emulate -R zsh -c 'print -l -- *(a-${1:-1})'
+function accessed() { ls -- */*(a-${1:-1}); }
+function changed()  { ls -- */*(c-${1:-1}); }
+function modified() { fd --changed-within ${1:-1day} -d${2:-1}; }
+
+# List files which have been accessed within the last n days recursively
+# The above is recursive, but this lists differently
+function accessedr() { ll -R -- *(a-${1:-1}); }
+function changedr()  { ll -R -- *(c-${1:-1}); }
+function modifiedr() { ll -R -- *(m-${1:-1}); }
+
 # ============================== Compdef =============================
 # ====================================================================
+compdef _aliases edalias
+compdef _functions edfunc
 compdef _command_names wim
 compdef _functions fim
 
