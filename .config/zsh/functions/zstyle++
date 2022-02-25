@@ -1,3 +1,4 @@
+# TODO:
 # This makes defining styles a bit simpler by using a single `+' as a
 # special token that allows one to append a context name to the
 # previously used context name. Like this:

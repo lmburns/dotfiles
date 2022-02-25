@@ -23,21 +23,8 @@ function wfxr::rm-broken-links() {
 #   read -q && rm -- ${links[@]}
 # }
 
-function rm-broken-links-all() { wfxr::rm-broken-links               }
-function rm-broken-links()     { wfxr::rm-broken-links '-maxdepth 1' }
-
-function lsdelete() { lsof -n | rg -i --color=always deleted }
-
-function ansi_strip() { sed "s,\x1B\[[0-9;]*[a-zA-Z],,g" "$@"; }
-
-# Perl rename
-function backup-t()  { /usr/bin/rename -n 's/^(.*)$/$1.bak/g' $@ }
-function backup()    { /usr/bin/rename    's/^(.*)$/$1.bak/g' $@ }
-function restore-t() { /usr/bin/rename -n 's/^(.*).bak$/$1/g' $@ }
-function restore()   { /usr/bin/rename    's/^(.*).bak$/$1/g' $@ }
-
-# function bak()  { renamer '$=.bak' "$@"; }
-# function rbak() { renamer '.bak$=' "$@"; }
+function rm::broken-links-all() { wfxr::rm-broken-links               }
+function rm::broken-links()     { wfxr::rm-broken-links '-maxdepth 1' }
 
 function vcurl() {
     local TMPFILE="$(mktemp -t --suffix=.json)"
@@ -63,12 +50,12 @@ function grepo() {
 
 # Dump zsh hash
 function dump_map() {
-    local cmd="
-        for k in \"\${(@k)$1}\"; do
-            echo $2 \"\$k => \$$1[\$k]\"
-        done
+    eval "[[ \${(t)arr} = association ]]" || return 1
+    eval "\
+        for k ( \"\${(@k)$1}\" ) {
+            print -Pr \"%F{2}\$k%f %F{1}%B=>%f%b %F{3}\$$1[\$k]%f\"
+        }
     "
-    eval "$cmd"
 }
 
 ##################################################################################
@@ -106,7 +93,7 @@ export FZF_ALT_E_OPTS
 
 # ALT-E - Edit selected file
 function wfxr::fzf-file-edit-widget() {
-    setopt localoptions pipefail 2> /dev/null
+    setopt localoptions pipefail
     local files
     files=$(eval "$FZF_ALT_E_COMMAND" |
         FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS $FZF_ALT_E_OPTS" fzf -m |

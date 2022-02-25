@@ -17,7 +17,7 @@ zparseopts -D -A opts -- b M:
 arr=(
 ${(@f)${${(@f)"$(builtin bindkey -M ${opts[-M]:-viins})"}//\
 (#b)(\"*\") (*)/$fg_bold[red]$match[1]$reset_color---\
-$fg_bold[cyan]$match[2]$reset_color}}
+$fg_bold[yellow]$match[2]$reset_color}}
 )
 
 for k v (${(@s:---:)arr}) {

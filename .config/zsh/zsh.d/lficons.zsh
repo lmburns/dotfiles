@@ -416,9 +416,10 @@ export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDI
 # d="${"$(<$__)"}" && chronic rm -f "$__" && [ -d "$d" ] && cd "$d"; }'
 
 # Removes mounted file systems
-lc() {
-  local tmp="$(mktemp)"
-  local fid="$(mktemp)"
+function lc() {
+  emulate -L zsh
+  local tmp==()
+  local fid==()
   trap "command rm -rf $tmp $fid" EXIT
   command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
   local id="${"$(<$fid)"}"

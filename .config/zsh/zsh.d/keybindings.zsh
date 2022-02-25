@@ -110,7 +110,9 @@ function copyx() {
 zle -N copyx
 
 # Toggle p10k right side widgets
-function toggle-right-prompt() { p10k display '*/right'=hide,show; }
+function toggle-right-prompt() {
+  p10k display '*/right'=hide,show
+}
 zle -N toggle-right-prompt
 
 zle -N fcq
@@ -159,31 +161,9 @@ function src-locate() {
 }
 zle -N src-locate
 
-function callback-execute() {
-    BUFFER="${(j:; :)@}"
-    zle accept-line
-}
-
-function callback-replace-buffer() {
-    LBUFFER="${(j:; :)@}"
-    RBUFFER=""
-}
-
-function callback-append-to-buffer() {
-    LBUFFER="${BUFFER}${(j:; :)@}"
-}
-zle -N zaw-append-to-buffer
-
-function callback-edit-file() {
-    local -a args
-    args=("${(@q)@}")
-    BUFFER="${EDITOR} ${args}"
-    zle accept-line
-}
-
 # Add command to history without executing it
 function commit-to-history() {
-    print -s ${(z)BUFFER}
+    print -rs ${(z)BUFFER}
     zle send-break
 }
 zle -N commit-to-history
@@ -213,6 +193,7 @@ fi
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 typeset -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
+# 'M-q'             push-line-or-edit     # zsh-edit
   'Home'           beginning-of-line
   'End'            end-of-line
   'Delete'         delete-char
@@ -225,23 +206,22 @@ typeset -gA keybindings; keybindings=(
   'Esc-d'          expand-aliases
   'Esc-f'          list-keys             # list keybindings in mode
   'M-r'            per-dir-fzf
+  'M-o'            clipboard-fzf            # greenclip fzf
   'M-p'            pw                    # fzf pueue
-  # 'M-q'             push-line-or-edit     # zsh-edit
-  'M-u'            __unicode_translate   # translate unicode
+  'M-u'            __unicode_translate   # translate 0000 to unicode
   'M-x'            cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-1'            toggle-right-prompt
+  'M-S-P'          toggle-right-prompt
   'C-a'            autosuggest-execute
   'C-y'            yank
   'C-z'            fancy-ctrl-z
   'C-x r'          fz-history-widget
-  'C-x t'          pick_torrent          # fzf torrent
-  'M-b'            clipboard-fzf         # greenclip fzf
-  'C-x C-b'        fcq                   # copyq fzf
-  'C-x C-g'        fcq-zle               # copyq zle
-  'C-x C-e'        edit-command-line-as-zsh
+  'C-x t'          pick_torrent             # fzf torrent
+  'C-x C-b'        fcq                      # copyq fzf
+  'C-x C-g'        fcq-zle                  # copyq zle
+  'C-x C-e'        edit-command-line-as-zsh # Edit command in editor
   'C-x C-f'        fz-find
-  'C-x C-u'        RG_buff # RG with $BUFFER
-  'C-x C-x'        execute-command
+  'C-x C-u'        RG_buff                  # RG with $BUFFER
+  'C-x C-x'        execute-command          # Execute ZLE command
   'mode=vicmd u'   undo
   'mode=vicmd R'   replace-pattern
   'mode=vicmd U'   redo
@@ -259,20 +239,20 @@ typeset -gA keybindings; keybindings=(
   'mode=vicmd ds'  delete-surround
   'mode=vicmd cs'  change-surround
   'mode=vicmd K'   run-help
-  'mode=vicmd M-f' list-keys             # list keybindings in mode
-  'mode=vicmd \$'  expand-all
-  'mode=vicmd \-'  zvm_switch_keyword
-  'mode=vicmd \+'  zvm_switch_keyword
+  'mode=vicmd M-f' list-keys          # list keybindings in mode
+  'mode=vicmd \$'  expand-all         # expand alias etc under keyboard
+  'mode=vicmd \-'  zvm_switch_keyword # decrement item under keyboard
+  'mode=vicmd \+'  zvm_switch_keyword # inccrement item under keyboard
   'mode=viins jk'  vi-cmd-mode
   'mode=viins kj'  vi-cmd-mode
   'mode=visual S'  add-surround
-  'mode=str M-t'   t                     # tmux wfxr
-  'mode=str C-o'   lc                    # lf change dir
-  'mode=str C-u'   lf
-  'mode=@ C-b'     bow2                  # surfraw open w3m
-  'mode=+ M-.'     kf                    # a formarks like thing in rust
-  'mode=@ M-/'     frd                   # cd interactively recent dir
-  'mode=@ M-;'     fcd                   # cd interactively
+  'mode=str M-t'   t                  # tmux wfxr
+  'mode=str C-o'   lc                 # lf change dir
+  'mode=str C-u'   lf                 # regular lf
+  'mode=@ C-b'     bow2               # surfraw open w3m
+  'mode=+ M-.'     kf                 # a formarks like thing in rust
+  'mode=@ M-/'     frd                # cd interactively recent dir
+  'mode=@ M-;'     fcd                # cd interactively
   # 'mode=@ M-;'     skim-cd-widget
   'mode=@ M-,'     __zoxide_zi
   'mode=@ M-['     fstat
@@ -303,20 +283,20 @@ builtin bindkey -s '\e1' "!:0 \t"        # last command
 # 'M-c'     _call_navi
 # 'M-n'     _navi_next_pos
 
-# bindkey '^[!' expand-history
-# bindkey '^[$' spell-word
-# bindkey '^["' exchange-point-and-mark
-# bindkey '^[,' _history-complete-newer
-# bindkey '^[-' neg-argument
-# bindkey '^Xa' _expand_alias
-# bindkey '^Xe' _expand_word
-# bindkey '^Xc' _correct_word
-# bindkey '^Xd' _list_expansions
-# bindkey '^Xg' list-expand
-# bindkey '^Xm' _most_recent_file
-# bindkey '^Xn' _next_tags
-# bindkey '^Xh' _complete_help
-# bindkey '^Xt' _complete_tag
+# expand-history
+# _expand_alias
+# _expand_word
+# spell-word
+# exchange-point-and-mark
+# _history-complete-newer
+# neg-argument
+# _correct_word
+# _list_expansions
+# list-expand
+# _most_recent_file
+# _next_tags
+# _complete_help
+# _complete_tag
 
 local m c
 # ci", ci', ci`, di", etc
@@ -335,8 +315,65 @@ foreach m (visual viopp) {
   }
 }
 
-# ============================ Other Func ============================
+# ================================ LF ================================
 # ====================================================================
+function _zlf() {
+  emulate -L zsh
+  local d=$(mktemp -d) || return 1
+  {
+    mkfifo -m 600 $d/fifo || return 1
+    tmux split -bf zsh -c "exec {ZLE_FIFO}>$d/fifo; export ZLE_FIFO; exec lf" || return 1
+    local fd
+    exec {fd}<$d/fifo
+    zle -Fw $fd _zlf_handler
+  } always {
+    command rm -rf $d
+  }
+}
+zle -N _zlf
+
+function _zlf_handler() {
+  emulate -L zsh
+  local line
+  if ! read -r line <&$1; then
+    zle -F $1
+    exec {1}<&-
+    return 1
+  fi
+  eval $line
+  zle -R
+}
+zle -N _zlf_handler
+
+vbindkey 'C-x C-o' _zlf
+
+# ============================== Extra ===============================
+# ====================================================================
+
+# ============================= Callbacks =============================
+function callback-execute() {
+    BUFFER="${(j:; :)@}"
+    zle accept-line
+}
+
+function callback-replace-buffer() {
+    LBUFFER="${(j:; :)@}"
+    RBUFFER=""
+}
+
+function callback-append-to-buffer() {
+    LBUFFER="${BUFFER}${(j:; :)@}"
+}
+zle -N zaw-append-to-buffer
+
+function callback-edit-file() {
+    local -a args
+    args=("${(@q)@}")
+    BUFFER="${EDITOR} ${args}"
+    zle accept-line
+}
+
+# ============================ Other Func ============================
 # View keybindings
 function lskb() {
   local -A keyb=(); for k v in ${(kv)keybindings}; do
@@ -346,146 +383,3 @@ function lskb() {
   # print -rC 2 -- ${(nkv)keyb}
   # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
-
-# ================================ LF ================================
-# ====================================================================
-function _zlf() {
-    emulate -L zsh
-    local d=$(mktemp -d) || return 1
-    {
-        mkfifo -m 600 $d/fifo || return 1
-        tmux split -bf zsh -c "exec {ZLE_FIFO}>$d/fifo; export ZLE_FIFO; exec lf" || return 1
-        local fd
-        exec {fd}<$d/fifo
-        zle -Fw $fd _zlf_handler
-    } always {
-        command rm -rf $d
-    }
-}
-zle -N _zlf
-
-function _zlf_handler() {
-    emulate -L zsh
-    local line
-    if ! read -r line <&$1; then
-        zle -F $1
-        exec {1}<&-
-        return 1
-    fi
-    eval $line
-    zle -R
-}
-zle -N _zlf_handler
-
-vbindkey 'C-x C-o' _zlf
-
-# ========================== Custom builtin ==========================
-# ====================================================================
-# autoload -Uz replace-string
-# autoload -Uz replace-string-again
-# zle -N replace-regex replace-string
-# zle -N replace-pattern replace-string
-# zle -N replace-string-again
-# zstyle ':zle:replace-pattern' edit-previous false
-
-zstyle ':zle:@replace-pattern' edit-previous false
-function @replace-string() {
-  emulate -L zsh
-  setopt extendedglob
-
-  autoload -Uz read-from-minibuffer @replace-string-again
-
-  local p1  p2
-  integer savelim=$UNDO_LIMIT_NO   changeno=$UNDO_CHANGE_NO
-  local   start="$BUFFER"          cursor="$CURSOR"
-
-  {
-
-  if [[ -n $_replace_string_src ]]; then
-    p1="[$_replace_string_src -> $_replace_string_rep]"$'\n'
-  fi
-
-  p1+="Replace: "; p2="   with: "
-
-  # Saving curwidget is necessary to avoid the widget name being overwritten.
-  local REPLY previous curwidget=$WIDGET
-
-  if (( ${+NUMERIC} )); then
-    (( $NUMERIC > 0 )) && previous=1
-  else
-    zstyle -t ":zle:$WIDGET" edit-previous && previous=1
-  fi
-
-  read-from-minibuffer $p1 ${previous:+$_replace_string_src} || return 1
-  if [[ -n $REPLY ]]; then
-    typeset -g _replace_string_src=$REPLY
-
-    read-from-minibuffer "$p1$_replace_string_src$p2" \
-      ${previous:+$_replace_string_rep} || return 1
-    typeset -g _replace_string_rep=$REPLY
-  fi
-
-  } always {
-    zle undo $changeno
-
-    # Builtin does not do this
-    UNDO_LIMIT_NO=savelim
-    BUFFER="$start"
-    CURSOR="$cursor"
-  }
-
-  @replace-string-again $curwidget
-}
-
-zle -N replace-pattern @replace-string
-
-function @replace-string-again() {
-  local MATCH MBEGIN MEND curwidget=${1:-$WIDGET}
-  local -a match mbegin mend
-
-  if [[ -z $_replace_string_src ]]; then
-    zle -M "No string to replace."
-    return 1
-  fi
-
-  if [[ $curwidget = *(pattern|regex)* ]]; then
-      local rep2
-      # The following horror is so that an & preceded by an even
-      # number of backslashes is active, without stripping backslashes,
-      # while preceded by an odd number of backslashes is inactive,
-      # with one backslash being stripped.  A similar logic applies
-      # to \digit.
-      local rep=$_replace_string_rep
-      while [[ $rep = (#b)([^\\]#)(\\\\)#(\\|)(\&|\\<->|\\\{<->\})(*) ]]; do
-    if [[ -n $match[3] ]]; then
-        # Expression is quoted, strip quotes
-        rep2="${match[1]}${match[2]}${match[4]}"
-    else
-        rep2+="${match[1]}${match[2]}"
-        if [[ $match[4] = \& ]]; then
-      rep2+='${MATCH}'
-        elif [[ $match[4] = \\\{* ]]; then
-      rep2+='${match['${match[4][3,-2]}']}'
-        else
-      rep2+='${match['${match[4][2,-1]}']}'
-        fi
-    fi
-    rep=${match[5]}
-      done
-      rep2+=$rep
-      if [[ $curwidget = *regex* ]]; then
-        autoload -Uz regexp-replace
-        integer ret=1
-        regexp-replace LBUFFER $_replace_string_src $rep2 && ret=0
-        regexp-replace RBUFFER $_replace_string_src $rep2 && ret=0
-        return ret
-      else
-        LBUFFER=${LBUFFER//(#bm)$~_replace_string_src/${(e)rep2}}
-        RBUFFER=${RBUFFER//(#bm)$~_replace_string_src/${(e)rep2}}
-      fi
-  else
-      LBUFFER=${LBUFFER//$_replace_string_src/$_replace_string_rep}
-      RBUFFER=${RBUFFER//$_replace_string_src/$_replace_string_rep}
-  fi
-}
-zle -N @replace-string-again

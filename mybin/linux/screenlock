@@ -10,7 +10,8 @@ local cachepath=${XDG_CACHE_HOME}/lockscreen
 local cropuser=${cachepath}/$USER-pic-crop.png
 
 function cropuser() {
-  userpic=$HOME/Pictures/wallpapers/0035.jpg
+  local userpic
+  userpic=$HOME/Pictures/wallpapers/astronaut.jpg
   # -resize 170x170
   convert $userpic \
      -gravity Center \
@@ -37,7 +38,7 @@ function blurbg() {
 function genbg() {
   blurbg
   # [[ ! -f $cropuser || "$1" = "draw" ]] &&
-    cropuser
+  cropuser
   composite \
     -geometry "+$((half_width-85))+$((half_height-137))" \
     $cropuser \
@@ -112,11 +113,14 @@ function lock() {
   fi
 
   lock || screenlock
+
+  # Returning
   if [[ "$ctl" == "Playing" ]]; then
     playerctl play
   fi
 
   dunstctl set-paused false
+  remaps && notify-send "remaps" "remapped"
 }
 
 

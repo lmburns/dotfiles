@@ -1,4 +1,6 @@
-#!/bin/zsh
+# Desc: Dumps all functions/vars/commands etc
+
+# source: smikeblog
 
 zmodload zsh/zpty || { echo 'error: missing module zsh/zpty' >&2; exit 1 }
 
@@ -135,3 +137,5 @@ while zpty -r z; do :; done | while IFS= read -r line; do
 done
 
 return 2
+
+# vim: ft=zsh:et:sw=4:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

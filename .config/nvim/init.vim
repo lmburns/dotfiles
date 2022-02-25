@@ -1569,6 +1569,9 @@ Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 
 " ============= telescope ============= {{{
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'dhruvmanila/telescope-bookmarks.nvim'
+Plug 'tami5/sqlite.lua'
+
   map <A-f> :Telescope find_files<CR>
   map <A-g> :Telescope git_files<CR>
   map <A-b> :Telescope buffers theme=get_dropdown<CR>
@@ -1768,9 +1771,9 @@ command! -nargs=? -complete=dir AF
   nmap <Leader>rg :RG<CR>
   nmap <C-f> :Rg<CR>
 
-  nmap <silent> <Leader>bu  :Buffers<CR>
+  nmap <silent> <Leader>bu  :Telescope buffers<CR>
+  " nmap <silent> <Leader>bu  :Buffers<CR>
   nmap <silent> <Leader>a  :CocCommand fzf-preview.AllBuffers<CR>
-  " nmap <silent> <Leader>a  :CocCommand fzf-preview.Buffers<CR>
 
   nmap <silent> <Leader>C  :CocCommand fzf-preview.Changes<CR>
 

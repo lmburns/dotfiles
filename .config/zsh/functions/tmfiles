@@ -21,7 +21,7 @@ integer i longest=0
 local t
 local -a packs unpacked
 for (( i=1; i<=$#tags; i++ )) {
-  packs+=( "%F{14}%B${files[$i]}%f%b: ${tags[$i]}" )
+  packs+=( "$(lscolors ${files[$i]}): ${tags[$i]}" )
 }
 
 print -Pln "${(@%)packs}" | column -t -s ':'

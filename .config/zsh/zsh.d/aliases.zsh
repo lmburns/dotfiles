@@ -48,10 +48,8 @@ alias fehh='feh \
 alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 alias passverr="veracrypt --text --dismount ~/.password.vera"
 
-alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 alias :q='exit'
-alias ng="noglob"
 
 (( ${+commands[surfraw]} )) && {
   # alias srg='surfraw -browser=$BROWSER'
@@ -122,10 +120,36 @@ alias __='doas'
   alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions'
   alias ls='exa -Fhb --git --icons'
   alias lse='exa -Flhb --git --sort=extension --icons'
-  alias lsm='exa -Flhb --git --sort=modified --icons'
+
+  alias lsm='exa -Flhb --git --sort=modified --modified --icons'
+  # 10 oldest files
+  alias lsm10O='lsm *(D.Om[1,10])'
+  # 10 newest files
+  alias lsm10N='lsm *(D.om[1,10])'
+
   alias lsz='exa -Flhb --git --sort=size --icons'
+  # 10 biggest files
+  alias lsbig='lsz *(.OL[1,10])'
+  # 10 smallest files
+  alias lssmall='lsz *(.oL[1,10])'
+
   alias lss='exa -Flhb --git --group-directories-first --icons'
+
   alias lsd='exa -D --icons --git'
+  # 10 newest directories
+  alias lsd10N='ll -d --sort=modified -- *(/om[1,10])'
+  # Empty directories
+  alias lsde='ll -d -- *(/^F)'
+
+  # Dotfiles
+  alias ls.='ll -- .*(.)'
+  # Setgid/setuid/sticky flag
+  alias lssticky='ll -- *(s,S,t)'
+  # Executables
+  alias lsx='ll -- *(*)'
+  # Symlinks
+  alias lssym='ll -d -- *(@N)'
+
   alias tree='exa --icons --git -TL'
   alias lm='tree 1 -@'
   alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
@@ -148,10 +172,15 @@ alias plm='pl $match[@]'
 alias plM='pl $MATCH'
 alias plr='pl $reply[@]'
 alias plR='pl $REPLY'
+alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
+
+alias zstats='zstat -sF "%b %e %H:%M:%S"'
+alias ng="noglob"
 
 alias chx='chmod ug+x'
 alias chmx='chmod -x'
 alias cp='command cp -ivp'
+alias cpxattr='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
 alias kall='killall'
@@ -168,6 +197,9 @@ alias wa="whence -va" # where
 alias wm="whence -vm"
 
 alias pvim='nvim -u NONE'
+alias vi="$EDITOR"
+alias svi="sudo $EDITOR"
+alias vimdiff='nvim -d'
 
 # alias f='pushd'
 # alias b='popd'
@@ -241,7 +273,7 @@ alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
 alias nm="notmuch"
 alias nmls="nm search --output=tags '*'"
 
-# ===locations ==================================================================
+# === locations ==================================================================
 alias prd='cd $HOME/projects'
 alias unx='cd $HOME/Desktop/unix/mac'
 alias zshd='cd $ZDOTDIR/zsh.d'
@@ -278,9 +310,6 @@ alias tsm='transmission-remote'
 alias tsmd='transmission-daemon'
 alias qbt='qbt torrent'
 
-alias n1sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
-alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
-
 alias pyn='openpyn'
 alias oconn='openpyn us -t 10'
 alias speedt='speedtest | rg "(Download:|Upload:)"'
@@ -289,12 +318,9 @@ alias kc='keychain'
 alias kcl='keychain -l'
 alias kck='keychain -k all'
 
-# xclip -in -selection clipboard -rmlastnl
-# xclip -out -selection clipboard
-alias pbcopy="xsel --clipboard --input"
-alias pbpaste="xsel --clipboard --output"
-alias pbc='pbcopy'
-alias pbp='pbpaste'
+alias checkrootkits="sudo rkhunter --update; sudo rkhunter --propupd; sudo rkhunter --check"
+alias checkvirus="clamscan --recursive=yes --infected $HOME/"
+alias updateantivirus="sudo freshclam"
 
 # === wiki ======================================================================
 alias vw='$EDITOR $HOME/vimwiki/index.md'
@@ -307,24 +333,23 @@ alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
 alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
 
 # === github ====================================================================
+alias h='git'
+alias g='hub'
+
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'
 alias xav='/usr/bin/git --git-dir=$XDG_DATA_HOME/dottest --work-tree=$HOME'
 
-alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
-
-alias cdg='cd "$(git rev-parse --show-toplevel)"'
 alias gua='git remote | xargs -L1 git push --all'
-alias grmssh='ssh git@burnsac.xyz -- grm'
-alias h='git'
-alias g='hub'
+alias grmssh='ssh git@lmburns.com -- grm'
 alias hubb='hub browse $(ghq list | fzf --prompt "hub> " --height 40% --reverse | cut -d "/" -f 2,3)'
 alias gtrr='git ls-tree -r master --name-only | as-tree'
 alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
 
 alias magit='nvim -c MagitOnly'
+alias cdg='cd "$(git rev-parse --show-toplevel)"'
 alias ngc='$EDITOR $(git rev-parse --show-toplevel)/.git/config'
-alias nbconvert='jupyter nbconvert --to python'
+alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
 
 (( ${+commands[gitbatch]} )) && {
   alias gball='gitbatch -r 2 -d "$HOME/opt"'
@@ -332,21 +357,19 @@ alias nbconvert='jupyter nbconvert --to python'
   alias gbzin='gitbatch -r 2 -d "$ZINIT_HOME/plugins"'
 }
 
-# === other =====================================================================
-alias gpg-tui='gpg-tui --style colored -c 98676A'
-
+# === Fixes =====================================================================
 alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@burnsac.xyz:/var/www/lmburns'
 
-alias nerdfont='source $XDG_DATA_HOME/fonts/i_all.sh'
-
-alias mpd='mpd ~/.config/mpd/mpd.conf'
+alias gpg-tui='gpg-tui --style colored -c 98676A'
+alias mpd='mpd $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias hangups='hangups -c $XDG_CONFIG_HOME/hangups/hangups.conf'
 alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
-# alias mbsync='mbsync -c $MBSYNCRC'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
+# alias mbsync='mbsync -c $MBSYNCRC'
+
 alias ume='um edit'
 
 alias tt="taskwarrior-tui"
@@ -354,57 +377,60 @@ alias t="task"
 alias te='t edit'
 alias taske='t edit'
 
+# xclip -in -selection clipboard -rmlastnl
+# xclip -out -selection clipboard
+alias pbcopy="xsel --clipboard --input"
+alias pbpaste="xsel --clipboard --output"
+alias pbc='pbcopy'
+alias pbp='pbpaste'
+
+alias jrnlw='jrnl wiki'
+alias nb='BROWSER=w3m nb'
+# alias jrnl='jrnl'
+
 (( ${+commands[tldr]} )) && alias tldru='tldr --update'
 (( ${+commands[assh]} )) && alias hssh="assh wrapper ssh"
 
+# === Command Managers ==========================================================
 (( ${+commands[pueue]} )) && {
   alias pu='pueue'
   alias pud='pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml"'
 }
+
 alias .ts='TS_SOCKET=/tmp/ts1 tsp'
 alias .nq='NQDIR=/tmp/nq1 nq'
 alias .fq='NQDIR=/tmp/nq1 fq'
+alias .fnq='FNQDIR=/tmp/fnq1 fnq'
 
 # alias sr='sr -browser=w3m'
 # alias srg='sr -browser="$BROWSER"'
 
-alias img='/usr/local/bin/imgcat'
 alias getmime='file --dereference --brief --mime-type'
 alias cleanzsh='sudo rm -rf /private/var/log/asl/*.asl'
 
 alias zath='zathura'
 alias n='man'
-# alias n='gman'
 
 alias tn='tmux new-session -s'
 alias tl='tmux list-sessions'
 
 alias mycli='LESS="-S $LESS" mycli'
+alias litecli='LESS="-S $LESS" litecli'
 
-[[ $OSTYPE != darwin* ]] && {
+(( ${+commands[pacaptr]} )) && {
+  alias tlm='p --using tlmgr'
+  alias pipp='p --using pip'
+}
+
+(( ${+commands[paru]} )) && {
   alias p="paru"
   alias pn="paru --noconfirm"
-} || {
-  (( ${+commands[pacaptr]} )) && {
-    alias pacman='pacaptr'
-    alias p='pacaptr'
-    alias co='p --using conda'
-    alias tlm='p --using tlmgr'
-    alias pipp='p --using pip'
-  }
 }
 
 alias pat='bat --style=header'
 alias duso='du -hsx * | sort -rh | bat --paging=always'
 
-alias nnn='nnn -Caxe'
-alias lsn='nnn -deH'
-alias nnncdu='nnn -T d -dH'
-
 alias dic='trans -d'
-alias checkrootkits="sudo rkhunter --update; sudo rkhunter --propupd; sudo rkhunter --check"
-alias checkvirus="clamscan --recursive=yes --infected $HOME/"
-alias updateantivirus="sudo freshclam"
 
 # === trash =====================================================================
 (( ${+commands[rip]} )) && alias rr="rip"
@@ -416,14 +442,6 @@ alias updateantivirus="sudo freshclam"
   alias trr='trash-restore'
   alias trm='trash-rm'
 }
-
-alias vi="$EDITOR"
-alias svi="sudo $EDITOR"
-alias sv="sudo $EDITOR"
-alias vimdiff='nvim -d'
-alias jrnlw='jrnl wiki'
-alias nb='BROWSER=w3m nb'
-# alias jrnl='jrnl'
 
 # === rsync =====================================================================
 (( $+commands[rsync] )) && {

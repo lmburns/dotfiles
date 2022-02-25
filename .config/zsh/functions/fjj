@@ -1,5 +1,7 @@
 # Desc: autojump fzf
 
+(( $+commands[autojump] )) || return 1
+
 if [[ "$#" -ne 0 ]]; then
     cd $(autojump $@)
     return
