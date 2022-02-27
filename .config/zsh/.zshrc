@@ -830,7 +830,7 @@ hash -d pro=$HOME/projects
 hash -d ghq=$HOME/ghq
 
 # cdpath=( $HOME/{projects/github,.config} )
-cdpath=( $XDG_CONFIG_HOME )
+# cdpath=( $XDG_CONFIG_HOME )
 
 manpath=(
   $XDG_DATA_HOME/man

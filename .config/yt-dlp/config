@@ -1,0 +1,17 @@
+--cookies "~/Downloads/Torrent/cookies.txt"
+# --netrc
+--add-metadata
+--fixup detect_or_warn
+--all-subs
+--embed-subs
+# Avoid '&' and spaces
+--restrict-filenames
+# --output "~/Videos/YouTube/%(extractor)s/%(uploader)s/%(id)s-%(title)s.%(ext)s"
+--embed-thumbnail # not yet supported for many formats
+--console-title
+--prefer-free-formats
+# speed things up a bit
+# --external-downloader aria2c
+--audio-quality 0
+--xattrs
+# --merge-output-format mkv

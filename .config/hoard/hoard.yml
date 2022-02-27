@@ -1,0 +1,795 @@
+---
+global_config:
+  ignores:
+    - ".git/"
+    - "target/"
+    - ".vscode/"
+envs:
+  abook: { exe_exists: [abook] }
+  afew: { exe_exists: [afew] }
+  alacritty: { exe_exists: [alacritty] }
+  amfora: { exe_exists: [amfora] }
+  aria2p: { exe_exists: [aria2p] }
+  arranger: { exe_exists: [arranger] }
+  atuin: { exe_exists: [atuin] }
+  autokey: { exe_exists: [autokey-gtk] }
+  bat: { exe_exists: [bat] }
+  beet: { exe_exists: [beet] }
+  broot: { exe_exists: [broot] }
+  bspwm: { exe_exists: [bspc] }
+  btm: { exe_exists: [btm] }
+  buku: { exe_exists: [buku] }
+  calcurse: { exe_exists: [calcurse] }
+  cargo: { exe_exists: [cargo] }
+  castero: { exe_exists: [castero] }
+  clang-format: { exe_exists: [clang-format] }
+  cloak: { exe_exists: [cloak] }
+  cmus: { exe_exists: [cmus] }
+  cointop: { exe_exists: [cointop] }
+  conky: { exe_exists: [conky] }
+  copyq: { exe_exists: [copyq] }
+  ctags: { exe_exists: [ctags] }
+  dive: { exe_exists: [dive] }
+  dnsmasq: { exe_exists: [dnsmasq] }
+  dte: { exe_exists: [dte] }
+  dxhd: { exe_exists: [dxhd] }
+  dunst: { exe_exists: [dunst] }
+  emplace: { exe_exists: [emplace] }
+  f2: { exe_exists: [f2] }
+  fcitx: { exe_exists: [fcitx] }
+  feh: { exe_exists: [feh] }
+  feroxbuster: { exe_exists: [feroxbuster] }
+  flameshot: { exe_exists: [flameshot] }
+  flashfocus: { exe_exists: [flashfocus] }
+  fselect: { exe_exists: [fselect] }
+  fw: { exe_exists: [fw] }
+  gh: { exe_exists: [gh] }
+  git: { exe_exists: [git] }
+  git-cliff: { exe_exists: [git-cliff] }
+  gitui: { exe_exists: [gitui] }
+  gpg: { exe_exists: [gpg] }
+  gopass: { exe_exists: [gopass] }
+  hoard: { exe_exists: [hoard] }
+  jaime: { exe_exists: [jaime] }
+  jgmenu: { exe_exists: [jgmenu] }
+  jrnl: { exe_exists: [jrnl] }
+  just: { exe_exists: [just] }
+  khal: { exe_exists: [khal] }
+  khard: { exe_exists: [khard] }
+  kitty: { exe_exists: [kitty] }
+  kmonad: { exe_exists: [kmonad] }
+  lazydocker: { exe_exists: [lazydocker] }
+  lazygit: { exe_exists: [lazygit] }
+  litecli: { exe_exists: [litecli] }
+  lf: { exe_exists: [lf] }
+  lolcate: { exe_exists: [lolcate] }
+  lua-format: { exe_exists: [lua-format] }
+  lxhkd: { exe_exists: [lxhkd] }
+  macchina: { exe_exists: [macchina] }
+  makers: { exe_exists: [makers] }
+  mbsync: { exe_exists: [mbsync] }
+  meli: { exe_exists: [meli] }
+  memo: { exe_exists: [memo] }
+  menyoki: { exe_exists: [menyoki] }
+  mmtc: { exe_exists: [mmtc] }
+  mozilla: { exe_exists: [librewolf] }
+  mpd: { exe_exists: [mpd] }
+  mpv: { exe_exists: [mpv] }
+  msmtp: { exe_exists: [msmtp] }
+  mutt: { exe_exists: [mutt] }
+  mycli: { exe_exists: [mycli] }
+  mysql: { exe_exists: [mysql] }
+  naabu: { exe_exists: [naabu] }
+  neofetch: { exe_exists: [neofetch] }
+  neomutt: { exe_exists: [neomutt] }
+  neovim: { exe_exists: [nvim] }
+  newsboat: { exe_exists: [newsboat] }
+  notmuch: { exe_exists: [notmuch] }
+  paru: { exe_exists: [paru] }
+  pcmanfm: { exe_exists: [pcmanfm] }
+  pet: { exe_exists: [pet] }
+  perltidy: { exe_exists: [perltidy] }
+  picom: { exe_exists: [picom] }
+  pier: { exe_exists: [pier] }
+  polybar: { exe_exists: [polybar] }
+  prettier: { exe_exists: [prettier] }
+  procs: { exe_exists: [procs] }
+  prs: { exe_exists: [prs] }
+  ptpython: { exe_exists: [ptpython] }
+  pueue: { exe_exists: [pueue] }
+  rclone-browser: { exe_exists: [rclone-browser] }
+  rclone: { exe_exists: [rclone] }
+  redshift: { exe_exists: [redshift] }
+  rg: { exe_exists: [rg] }
+  rpaste: { exe_exists: [rpaste] }
+  rofi: { exe_exists: [rofi] }
+  rtv: { exe_exists: [rtv] }
+  rualdi: { exe_exists: [rualdi] }
+  rubocop: { exe_exists: [rubocop] }
+  sauce: { exe_exists: [sauce] }
+  sc-im: { exe_exists: [sc-im] }
+  shellcaster: { exe_exists: [shellcaster] }
+  siggo: { exe_exists: [siggo] }
+  spotifyd: { exe_exists: [spotifyd] }
+  spt: { exe_exists: [spt] }
+  stig: { exe_exists: [stig] }
+  stylua: { exe_exists: [stylua] }
+  surfraw: { exe_exists: [surfraw] }
+  sxhkd: { exe_exists: [sxhkd] }
+  sxiv: { exe_exists: [sxiv] }
+  systemd: { exe_exists: [systemctl] }
+  task: { exe_exists: [task] }
+  taskn: { exe_exists: [taskn] }
+  the-way: { exe_exists: [the-way] }
+  ticker: { exe_exists: [ticker] }
+  tig: { exe_exists: [tig] }
+  timew: { exe_exists: [timew] }
+  tmsu: { exe_exists: [tmsu] }
+  tmux: { exe_exists: [tmux] }
+  transmission: { exe_exists: [transmission-cli] }
+  ulauncher: { exe_exists: [ulauncher] }
+  um: { exe_exists: [um] }
+  vim: { exe_exists: [vim] }
+  visidata: { exe_exists: [vd] }
+  w3m: { exe_exists: [w3m] }
+  wezterm: { exe_exists: [wezterm] }
+  wget: { exe_exists: [wget] }
+  wutag: { exe_exists: [wutag] }
+  X: { exe_exists: [X] }
+  xkeysnail: { exe_exists: [xkeysnail] }
+  xplr: { exe_exists: [xplr] }
+  xsettingsd: { exe_exists: [xsettingsd] }
+  zoxide: { exe_exists: [zoxide] }
+  zsh: { exe_exists: [zsh] }
+
+  unix:
+    os:
+      - linux
+      - freebsd
+      - macos
+hoards:
+  abook:
+    addressbook:
+      unix|abook: "${XDG_DATA_HOME}/abook/addressbook"
+    abookrc:
+      unix|abook: "${XDG_CONFIG_HOME}/abook/abookrc"
+  afew:
+    unix|afew: "${XDG_CONFIG_HOME}/afew/config"
+  alacritty:
+    unix|alacritty: "${XDG_CONFIG_HOME}/alacritty/alacritty.yml"
+  amfora:
+    conf:
+      unix|amfora: "${XDG_CONFIG_HOME}/amfora/config.toml"
+    bookmarks:
+      unix|amfora: "${XDG_DATA_HOME}/amfora/bookmarks.toml"
+  arch:
+    unix: "${XDG_CONFIG_HOME}/arch"
+  aria:
+    aria2p:
+      unix|aria2p: "${XDG_CONFIG_HOME}/aria2p/config.toml"
+    aria2:
+      unix|aria2p: "${XDG_CONFIG_HOME}/aria2/aria2.conf"
+  arranger:
+    unix|arranger: "${XDG_CONFIG_HOME}/arranger/arranger.conf"
+  atuin:
+    unix|atuin: "${XDG_CONFIG_HOME}/atuin/"
+  batp:
+    conf:
+      unix|bat: "${XDG_CONFIG_HOME}/bat/config"
+    themes:
+      unix|bat: "${XDG_CONFIG_HOME}/bat/themes"
+    syntax:
+      unix|bat: "${XDG_CONFIG_HOME}/bat/syntaxes"
+  beet:
+    library:
+      unix|beet: "${XDG_CONFIG_HOME}/beets/library.db"
+    conf:
+      unix|beet: "${XDG_CONFIG_HOME}/beets/config.yaml"
+  bmux:
+    unix: "${XDG_CONFIG_HOME}/bmux"
+  broot:
+    myconf:
+      unix|broot: "${XDG_CONFIG_HOME}/broot/conf.hjson"
+    egconf:
+      unix|broot: "${XDG_CONFIG_HOME}/broot/eg.toml"
+  btm:
+    unix|btm: "${XDG_CONFIG_HOME}/bottom/bottom.toml"
+  bspwm:
+    unix|bspwm: "${XDG_CONFIG_HOME}/bspwm/bspwmrc"
+  buku:
+    database:
+      unix|buku: "${XDG_DATA_HOME}/buku/bookmarks.db"
+    exported:
+      unix|buku: "${BACKUP_DIR}/bookmarks/buku-bookmarks.html"
+  calcurse:
+    conf:
+      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/conf"
+    keys:
+      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/keys"
+    hooks:
+      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/hooks"
+    caldev:
+      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/caldav"
+    todohooks:
+      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/todohooks"
+  cargo:
+    config:
+      regex: true
+      pattern: ".*.toml|^[^.]nv"
+      max_depth: 1
+    unix|cargo: "${XDG_DATA_HOME}/cargo/"
+  castero:
+    unix|castero: "${XDG_CONFIG_HOME}/castero/castero.conf"
+  cloak:
+    unix|cloak: "${HOME}/.cloak"
+  cmus:
+    unix|cmus: "${XDG_CONFIG_HOME}/cmus/rc"
+  cointop:
+    unix|cointop: "${XDG_CONFIG_HOME}/cointop/config.toml"
+  conky:
+    unix|conky: "${XDG_CONFIG_HOME}/conky/conky.conf"
+  copyq:
+    conf:
+      unix|copyq: "${XDG_CONFIG_HOME}/copyq/copyq.conf"
+    themes:
+      unix|copyq: "${XDG_CONFIG_HOME}/copyq/themes"
+    scripts:
+      unix|copyq: "${XDG_CONFIG_HOME}/copyq/scripts"
+  ctags:
+    unix|ctags: "${XDG_CONFIG_HOME}/ctags/default.ctags"
+  dive:
+    unix|dive: "${XDG_CONFIG_HOME}/dive/dive.yaml"
+  dnsmasq:
+    ads:
+      unix|dnsmasq: "${XDG_CONFIG_HOME}/dnsmasq/ads.conf"
+    conf:
+      unix|dnsmasq: "${XDG_CONFIG_HOME}/dnsmasq/stubby.conf"
+  dte:
+    unix|dte: "${XDG_CONFIG_HOME}/dte/config.json"
+  dunst:
+    conf:
+      unix|dunst: "${XDG_CONFIG_HOME}/dunst/dunstrc"
+    icons:
+      unix|dunst: "${XDG_CONFIG_HOME}/dunst/icons"
+  emplace:
+    unix|emplace: "${XDG_CONFIG_HOME}/emplace/emplace.toml"
+  # epy:
+  #   unix: "${XDG_CONFIG_HOME}/epy/config.json"
+  # faint:
+  #   unix: "${XDG_CONFIG_HOME}/faint/faintrc"
+  f2:
+    unix|f2: "${XDG_DATA_HOME}/f2/backups/"
+  fastsyntaxhighlighting:
+    kimbie:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/kimbox.ini"
+    kimbie_og:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/kimbox-og.ini"
+    current_theme:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/current_theme.zsh"
+    secondary_theme:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/secondary_theme.zsh"
+    theme-backup:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/mod-backup.ini"
+    others:
+      unix|zsh: "${XDG_CONFIG_HOME}/fsh/default"
+  fcitx:
+    unix|fcitx: "${XDG_CONFIG_HOME}/fcitx/config"
+  feh:
+    unix|feh: "${XDG_CONFIG_HOME}/feh/keys"
+  feroxbuster:
+    unix|feroxbuster: "${XDG_CONFIG_HOME}/feroxbuster/ferox-config.toml"
+  flake8:
+    unix: "${XDG_CONFIG_HOME}/flake8"
+  flameshot:
+    unix|flameshot: "${XDG_CONFIG_HOME}/flameshot/flameshot.ini"
+  flashfocus:
+    unix|flashfocus: "${XDG_CONFIG_HOME}/flashfocus/flashfocus.yml"
+  fontconfig:
+    conf:
+      unix: "${XDG_CONFIG_HOME}/fontconfig/fonts.conf"
+    extra:
+      unix: "${XDG_CONFIG_HOME}/fontconfig/fonts.conf"
+  formatters:
+    perltidy:
+      unix|perltidy: "${XDG_CONFIG_HOME}/perltidy/perltidyrc"
+    clang:
+      unix|clang-format: "${XDG_CONFIG_HOME}/clang-format/.clang-format"
+    lua:
+      luaformatter:
+        unix|lua-format: "${XDG_CONFIG_HOME}/luaformatter/config.yaml"
+      stylua:
+        unix|stylua: "${XDG_CONFIG_HOME}/stylua/stylua.toml"
+    rubocop:
+      unix|rubocop: "${XDG_CONFIG_HOME}/rubocop/config.yml"
+    rust:
+      unix: "${XDG_CONFIG_HOME}/rustfmt"
+  fselect:
+    unix|fselect: "${XDG_CONFIG_HOME}/fselect/config.toml"
+  fw:
+    unix|fw: "${XDG_CONFIG_HOME}/fw"
+  gitp:
+    conf:
+      unix|git: "${XDG_CONFIG_HOME}/git/config"
+    message:
+      unix|git: "${XDG_CONFIG_HOME}/git/gitmessage"
+    globalignore:
+      unix|git: "${XDG_CONFIG_HOME}/git/gitignore_global"
+    git-cliff:
+      unix|git-cliff: "${XDG_CONFIG_HOME}/git-cliff/cliff.toml"
+  gh:
+    hosts:
+      unix|gh: "${XDG_CONFIG_HOME}/gh/hosts.yml"
+    conf:
+      unix|gh: "${XDG_CONFIG_HOME}/gh/config.yml"
+  gitui:
+    conf:
+      unix: "${XDG_CONFIG_HOME}/gitui/key_config.ron"
+    theme:
+      unix: "${XDG_CONFIG_HOME}/gitui/theme.ron"
+  gkey:
+    unix: "${XDG_DATA_HOME}/gkeys"
+  gpg:
+    conf:
+      unix|gpg: "${XDG_CONFIG_HOME}/gnupg/gpg.conf"
+    agentconf:
+      unix|gpg: "${XDG_CONFIG_HOME}/gnupg/gpg-agent.conf"
+  gtk:
+    two:
+      unix: "${HOME}/.gtkrc-2.0"
+    three:
+      unix: "${XDG_CONFIG_HOME}/gtk-3.0/"
+    four:
+      unix: "${XDG_CONFIG_HOME}/gtk-4.0/"
+  gopass:
+    unix|gopass: "${XDG_CONFIG_HOME}/gopass/config.yml"
+  grip:
+    unix: "${XDG_CONFIG_HOME}/grip/settings.py"
+  hoard:
+    yaml:
+      unix|hoard: "${XDG_CONFIG_HOME}/hoard/hoard.yml"
+    toml:
+      unix|hoard: "${XDG_CONFIG_HOME}/hoard/hoard.toml"
+    docs:
+      unix|hoard: "${XDG_CONFIG_HOME}/hoard/docs-config"
+  jaime:
+    unix: "${XDG_CONFIG_HOME}/jaime/config.yml"
+  jgmenu:
+    unix: "${XDG_CONFIG_HOME}/jgmenu/"
+  jrnl:
+    conf:
+      unix|jrnl: "${XDG_CONFIG_HOME}/jrnl/jrnl.yaml"
+    data:
+      unix|jrnl: "${XDG_DATA_HOME}/jrnl"
+  just:
+    justfile:
+      unix: "${XDG_DATA_HOME}/just/justfile"
+    overall:
+      unix: "${XDG_DATA_HOME}/just/overall.just"
+  khal:
+    conf:
+      unix|khal: "${XDG_CONFIG_HOME}/khal/config"
+    calendar:
+      unix|khal: "${XDG_CONFIG_HOME}/khal/calendars"
+  khard:
+    conf:
+      unix|khard: "${XDG_CONFIG_HOME}/khard/khard.conf"
+    address:
+      unix|khard: "${XDG_DATA_HOME}/mates2"
+  key-mapper:
+    unix: "${XDG_CONFIG_HOME}/key-mapper/"
+  kitty:
+    conf:
+      unix: "${XDG_CONFIG_HOME}/kitty/kitty.conf"
+    theme:
+      unix: "${XDG_CONFIG_HOME}/kitty/colors/kimbox.conf"
+  kmonad:
+    unix|kmonad: "${XDG_CONFIG_HOME}/kmonad/"
+  # latex:
+  #   awesomecv:
+  #     unix: "${HOME}/Documents/cv/Awesome-CV/examples"
+  #   cv:
+  #     unix: "${HOME}/Documents/cv/templates"
+  lazydocker:
+    unix|lazydocker: "${XDG_CONFIG_HOME}/lazydocker/config.yml"
+  lazygit:
+    conf:
+      unix|lazygit: "${XDG_CONFIG_HOME}/lazygit/config.yml"
+    state:
+      unix|lazygit: "${XDG_CONFIG_HOME}/lazygit/state.yml"
+  litecli:
+    unix|litecli: "${XDG_CONFIG_HOME}/litecli/config"
+  lf:
+    conf:
+      unix|lf: "${XDG_CONFIG_HOME}/lf/lfrc"
+    scope:
+      unix|lf: "${XDG_CONFIG_HOME}/lf/scope"
+    mappings:
+      unix|lf: "${XDG_CONFIG_HOME}/lf/mappings"
+    icons:
+      unix|lf: "${ZDOTDIR}/zsh.d/lficons.zsh"
+  lolcate:
+    conf:
+      unix|lolcate: "${XDG_CONFIG_HOME}/lolcate"
+    database:
+      unix|lolcate: "${XDG_DATA_HOME}/lolcate"
+  macchina:
+    unix|macchina: "${XDG_CONFIG_HOME}/macchina/macchina.toml"
+  makers:
+    conf:
+      unix|makers: "${XDG_CONFIG_HOME}/cargo-make/config.toml"
+    makefile:
+      unix|makers: "${XDG_CONFIG_HOME}/cargo-make/Makefile.toml"
+  meli:
+    unix|meli: "${XDG_CONFIG_HOME}/meli"
+  memo:
+    unix|memo: "${XDG_CONFIG_HOME}/memo"
+  menyoki:
+    unix|menyoki: "${XDG_CONFIG_HOME}/menyoki/menyoki.conf"
+  mmtc:
+    unix|mmtc: "${XDG_CONFIG_HOME}/mmtc/config.ron"
+  mozilla:
+    chrome:
+      unix|mozilla: "${HOME}/.librewolf/chrome/userChrome.css"
+    content:
+      unix|mozilla: "${HOME}/.librewolf/chrome/userContent.css"
+  mpd:
+    unix|mpd: "${XDG_CONFIG_HOME}/mpd/mpd.conf"
+  mpv:
+    scripts:
+      unix|mpv: "${XDG_CONFIG_HOME}/mpv/scripts"
+    scripts_opts:
+      unix|mpv: "${XDG_CONFIG_HOME}/mpv/script-opts"
+    sockets:
+      unix|mpv: "${XDG_CONFIG_HOME}/mpv/mpvSockets"
+  mutt:
+    neomuttrc:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/muttrc"
+    burnsac:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/burnsac@me.com.muttrc"
+    burnsppl:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/burnsppl@gmail.com.muttrc"
+    lucas:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/lucas@lmburns.com.muttrc"
+    lmburns:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/lmb@lmburns.com.muttrc"
+    msmtp:
+      unix|msmtp: "${XDG_CONFIG_HOME}/msmtp/config"
+    mbsyncrc:
+      unix|mbsync: "${HOME}/.mbsyncrc"
+    # mail_dir:
+    #   unix: "${XDG_DATA_HOME}/mail"
+    muttrc:
+      unix|mutt: "${HOME}/.muttrc"
+  notmuch:
+    notmuch-config:
+      unix|notmuch: "${XDG_CONFIG_HOME}/notmuch/notmuch-config"
+    hooks:
+      unix|notmuch: "${XDG_DATA_HOME}/mail/.notmuch/hooks"
+  mycli:
+    unix|mycli: "${HOME}/.myclirc"
+  mysql:
+    unix|mysql: "${HOME}/.my.cnf"
+  naabu:
+    unix|naabu: "${XDG_CONFIG_HOME}/naabu"
+  ncmpcpp:
+    conf:
+      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config"
+    bindings:
+      unix: "${XDG_CONFIG_HOME}/ncmpcpp/bindings"
+    conf_cover:
+      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config-cover"
+    conf_minimal:
+      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config-minimal"
+  newsboat:
+    conf:
+      unix|newsboat: "${XDG_CONFIG_HOME}/newsboat/config"
+    urls:
+      unix|newsboat: "${XDG_CONFIG_HOME}/newsboat/urls"
+  neofetch:
+    unix|neofetch: "${XDG_CONFIG_HOME}/neofetch/config.conf"
+  nvim:
+    init:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/init.vim"
+    coc:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/coc-settings.json"
+    snippets:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/UltiSnips"
+    indentline:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/indentline.vim"
+    ftplugin:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/ftplugin"
+    autoload:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/autoload"
+    after:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/after"
+    lua:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/lua"
+    spell:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/spell"
+    syntax:
+      unix|neovim: "${HOME}/backup/vim"
+  # pacaptr:
+  #   unix: "${XDG_CONFIG_HOME}/pacaptr/pacaptr.toml"
+  packages:
+    unix: "${XDG_CONFIG_HOME}/packages"
+  pass:
+    tomb:
+      unix|prs: "${XDG_DATA_HOME}/password-store.tomb"
+    key:
+      unix|prs: "${XDG_DATA_HOME}/password-store.tomb.key"
+  paru:
+    unix|paru: "${XDG_CONFIG_HOME}/paru/paru.conf"
+  pcmanfm:
+    unix|pcmanfm: "${XDG_CONFIG_HOME}/pcmanfm/default/pcmanfm.conf"
+  pet:
+    conf:
+      unix|pet: "${XDG_CONFIG_HOME}/pet/config.toml"
+    snippets:
+      unix|pet: "${XDG_CONFIG_HOME}/pet/snippet.toml"
+    functions:
+      unix|pet: "${ZDOTDIR}/zinit/polaris/share/pet/pet_atload.zsh"
+  picom:
+    unix|picom: "${XDG_CONFIG_HOME}/picom/picom.conf"
+  pier:
+    unix|pier: "${XDG_CONFIG_HOME}/pier/config.toml"
+  polybar:
+    conf:
+      unix|polybar: "${XDG_CONFIG_HOME}/polybar/config"
+    scripts:
+      unix|polybar: "${XDG_CONFIG_HOME}/polybar/scripts"
+    colors:
+      unix|polybar: "${XDG_CONFIG_HOME}/polybar/colors.ini"
+    custom_modules:
+      unix|polybar: "${XDG_CONFIG_HOME}/polybar/custom.ini"
+    internal_modules:
+      unix|polybar: "${XDG_CONFIG_HOME}/polybar/internal.ini"
+  ptpython:
+    unix: "${XDG_CONFIG_HOME}/ptpython/config.py"
+  prettier:
+    config:
+      exclude: ["node_modules"]
+    unix|prettier: "${XDG_CONFIG_HOME}/prettier/"
+  procs:
+    unix: "${XDG_CONFIG_HOME}/procs/config.toml"
+  pueue:
+    conf:
+      unix|pueue: "${XDG_CONFIG_HOME}/pueue/pueue.yml"
+    aliases:
+      unix|pueue: "${XDG_CONFIG_HOME}/pueue/pueue_aliases.yml"
+  # rlang:
+  #   profile:
+  #     unix: "${XDG_CONFIG_HOME}/r/Rprofile"
+  #   makevars:
+  #     unix: "${XDG_CONFIG_HOME}/r/Makevars"
+  # ranger:
+  #   conf:
+  #     unix: "${XDG_CONFIG_HOME}/ranger/rc.conf"
+  #   scope:
+  #     unix: "${XDG_CONFIG_HOME}/ranger/scope.sh"
+  rclone:
+    cli:
+      unix|rclone: "${XDG_CONFIG_HOME}/rclone/rclone.conf"
+    gui:
+      unix|rclone-browser: "${XDG_CONFIG_HOME}/rclone-browser/rclone-browser.conf"
+  redshit:
+    redshift.conf:
+      unix|redshift: "${XDG_CONFIG_HOME}/redshift/redshift.conf"
+    redshiftgrc:
+      unix|redshift: "${HOME}/.redshiftgrc"
+  ripgrep:
+    unix|rg: "${XDG_CONFIG_HOME}/ripgrep/ripgreprc"
+  rofi:
+    unix|rofi: "${XDG_CONFIG_HOME}/rofi/"
+  rtv:
+    unix|rtv: "${XDG_CONFIG_HOME}/rtv/rtv.cfg"
+  rualdi:
+    unix|rualdi: "${XDG_DATA_HOME}/rualdi/rualdi.toml"
+  rusty-paste:
+    cli:
+      unix|rpaste: "${HOME}/.rustypaste.toml"
+  sauce:
+    unix|sauce: "${XDG_DATA_HOME}/sauce"
+  sc_im:
+    unix|sc-im: "${XDG_CONFIG_HOME}/sc-im/scimrc"
+  shellcaster:
+    unix|shellcaster: "${XDG_CONFIG_HOME}/shellcaster/config.toml"
+  siggo:
+    unix|siggo: "${XDG_CONFIG_HOME}/siggo/config.yml"
+  spotifyd:
+    unix|spotifyd: "${XDG_CONFIG_HOME}/spotifyd/spotifyd.conf"
+  spotify-tui:
+    conf:
+      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/config.yml"
+    client:
+      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/client.yml"
+    token:
+      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/.spotify_token_cache.json"
+  stig:
+    unix|stig: "${XDG_CONFIG_HOME}/stig"
+  sxhkd:
+    unix|sxhkd: "${XDG_CONFIG_HOME}/sxhkd/"
+  ssh:
+    conf:
+      unix: "${HOME}/.ssh/config"
+    known_hosts:
+      unix: "${HOME}/.ssh/known_hosts"
+    git:
+      unix: "${HOME}/.ssh/git"
+    git-pub:
+      unix: "${HOME}/.ssh/git.pub"
+    burnsac:
+      unix: "${HOME}/.ssh/burnsac"
+    burnsac-pub:
+      unix: "${HOME}/.ssh/burnsac.pub"
+    gitlab:
+      unix: "${HOME}/.ssh/gitlab-new"
+    gitlab-pub:
+      unix: "${HOME}/.ssh/gitlab-new.pub"
+  surfraw:
+    conf:
+      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/conf"
+    bookmarks:
+      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/bookmarks"
+    elvi:
+      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/elvi"
+  surfingkeys:
+    unix: "${XDG_CONFIG_HOME}/surfingkeys/surfingkeys.js"
+  sxiv:
+    unix|sxiv: "${XDG_CONFIG_HOME}/sxiv/exec/key-handler"
+  systemd:
+    config:
+      follow_links: true
+    unix|systemd: "${XDG_CONFIG_HOME}/systemd/"
+  task:
+    conf:
+      unix|task: "${XDG_CONFIG_HOME}/task/taskrc"
+    hooks:
+      unix|task: "${XDG_CONFIG_HOME}/task/hooks"
+    completed:
+      unix|task: "${XDG_CONFIG_HOME}/task/completed.data"
+    undo:
+      unix|task: "${XDG_CONFIG_HOME}/task/undo.data"
+    pending:
+      unix|task: "${XDG_CONFIG_HOME}/task/pending.data"
+    backlog:
+      unix|task: "${XDG_CONFIG_HOME}/task/backlog.data"
+    taskn:
+      unix|taskn: "${HOME}/.taskn/"
+  the-way:
+    config:
+      unix|the-way: "${XDG_CONFIG_HOME}/the-way/the-way.toml"
+    db:
+      unix|the-way: "${XDG_DATA_HOME}/the-way/the_way_db"
+  ticker:
+    unix|ticker: "${XDG_CONFIG_HOME}/ticker/ticker.yaml"
+  tig:
+    unix|tig: "${XDG_CONFIG_HOME}/tig/tigrc"
+  timew:
+    unix|timew: "${XDG_DATA_HOME}/timewarrior"
+  tmsu:
+    unix|tmsu: "${HOME}/.tmsu/db"
+  tmux:
+    unix|tmux: "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  transmission:
+    unix|transmission: "${XDG_CONFIG_HOME}/transmission-daemon/settings.json"
+  ulauncher:
+    settings:
+      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/settings.json"
+    extensions:
+      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/extensions.json"
+    shortcuts:
+      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/shortcuts.json"
+  um:
+    pages:
+      unix|um: "${XDG_CONFIG_HOME}/um/pages"
+    conf:
+      unix|um: "${XDG_CONFIG_HOME}/um/umconfig"
+  vifm:
+    conf:
+      unix: "${XDG_CONFIG_HOME}/vifm/vifmrc"
+    info:
+      unix: "${XDG_CONFIG_HOME}/vifm/vifminfo.json"
+  vim:
+    init:
+      unix|vim: "${HOME}/.vim/.vimrc"
+  vimwiki:
+    directory:
+      unix: "${HOME}/vimwiki"
+  visidata:
+    unix|visidata: "${HOME}/.visidatarc"
+  w3m:
+    conf:
+      unix|w3m: "${HOME}/.w3m/config"
+    keymap:
+      unix|w3m: "${HOME}/.w3m/keymap"
+    mailcap:
+      unix|w3m: "${HOME}/.w3m/mailcap"
+    urimethodmap:
+      unix|w3m: "${HOME}/.w3m/urimethodmap"
+    cgi-bin:
+      unix|w3m: "${HOME}/.w3m/cgi-bin"
+    root-cgi-bin:
+      unix|w3m: "${HOME}/.w3m/root-cgi-bin"
+  wezterm:
+    colors:
+      unix|wezterm: "${XDG_CONFIG_HOME}/wezterm/colors"
+    wezterm.lua:
+      unix|wezterm: "${XDG_CONFIG_HOME}/wezterm/wezterm.lua"
+  wget:
+    unix|wget: "${XDG_CONFIG_HOME}/wget/wgetrc"
+  wutag:
+    unix|wutag: "${XDG_CONFIG_HOME}/wutag/wutag.yml"
+  x11:
+    config:
+      exclude: ["*.cache"]
+    dir:
+      unix|X: "${XDG_CONFIG_HOME}/x11"
+    xsettings:
+      unix|X: "${XDG_CONFIG_HOME}/xsettingsd/xsettingsd.conf"
+    xinitrc:
+      unix|X: "${HOME}/.xinitrc"
+    xbindkeys:
+      unix|X: "${HOME}/.xbindkeysrc"
+    xmodmap:
+      unix|X: "${HOME}/.Xmodmap"
+    xresources:
+      unix|X: "${HOME}/.Xresources"
+    xscreensaver:
+      unix|X: "${HOME}/.xscreensaver"
+    pam_environment:
+      unix|X: "${HOME}/.pam_environment"
+    desktop_files:
+      unix|X: "${XDG_DATA_HOME}/applications/"
+  xkeysnail:
+    unix|xkeysnail: "${XDG_CONFIG_HOME}/xkeysnail/"
+  xplr:
+    plugins:
+      unix|xplr: "${XDG_CONFIG_HOME}/xplr/plugins"
+    conf:
+      unix|xplr: "${XDG_CONFIG_HOME}/xplr/init.lua"
+    theme:
+      unix|xplr: "${XDG_CONFIG_HOME}/xplr/extra/theme.yml"
+  xsettingsd:
+    unix|xsettingsd: "${HOME}/.xsettingsd"
+  youtube_dl:
+    unix: "${XDG_CONFIG_HOME}/youtube-dl/config"
+  youtube_viewer:
+    unix: "${XDG_CONFIG_HOME}/youtube-viewer/youtube-viewer.conf"
+  ytfzf:
+    unix: "${XDG_CONFIG_HOME}/ytfzf/conf.sh"
+  ytmdl:
+    unix: "${XDG_CONFIG_HOME}/ytmdl/config"
+  zathura:
+    unix: "${XDG_CONFIG_HOME}/zathura"
+  zoxide:
+    unix|zoxide: "${XDG_DATA_HOME}/zoxide/db.zo"
+  zsh:
+    functions:
+      zsh|unix: "${ZDOTDIR}/functions"
+    patches:
+      zsh|unix: "${ZDOTDIR}/patches"
+    themes:
+      zsh|unix: "${ZDOTDIR}/themes"
+    git_token:
+      zsh|unix: "${ZDOTDIR}/zsh.d/git-token.zsh"
+    bindings:
+      zsh|unix: "${ZDOTDIR}/zsh.d/keybindings.zsh"
+    aliases:
+      zsh|unix: "${ZDOTDIR}/zsh.d/aliases.zsh"
+    env:
+      zsh|unix: "${HOME}/.zshenv"
+    csnippets:
+      zsh|unix: "${ZDOTDIR}/csnippets"
+    completions:
+      zsh|unix: "${ZDOTDIR}/completions"
+    history:
+      zsh|unix: "${XDG_CACHE_HOME}/zsh/zsh_history"
+    vim:
+      zsh|unix: "${ZDOTDIR}/vim"
+  keymap:
+    autokey:
+      unix|autokey: "${XDG_CONFIG_HOME}/autokey"
+    dxhd:
+      unix|dxhd: "${XDG_CONFIG_HOME}/dxhd/dxhd.sh"
+    lxhkd:
+      unix|lxhkd: "${XDG_CONFIG_HOME}/lxhkd"

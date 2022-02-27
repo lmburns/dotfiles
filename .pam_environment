@@ -1,2 +1,1 @@
-XDG_TEST  DEFAULT=@{HOME}/.xdg/state
 SSH_AUTH_SOCK @{XDG_RUNTIME_DIR}/ssh-agent.socket

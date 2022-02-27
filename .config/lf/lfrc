@@ -388,6 +388,20 @@ cmd edit_scope :{{
 }}
 
 
+# -- Diff: between two files
+cmd diff_files !{{
+  local -a files; files=( ${(@f)fx} )
+  (( $#files > 2 )) && {
+    notify-send "too many files"
+    return
+  }
+
+  clear; delta $files[1] $files[2]
+}}
+
+map D diff_files
+
+
 # -- Select: all files
 cmd select-files ${{
   typeset -a files; files=( $(fd . -L -d1 -tf) )

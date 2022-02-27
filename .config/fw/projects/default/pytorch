@@ -1,0 +1,20 @@
+# -*- mode: Conf; -*-
+git = 'git@github.com:lmburns/pytorch.git'
+tags = [
+    'machine-learning',
+    'python',
+]
+
+# Example:
+# git = 'git@github.com:brocode/fw.git'
+# after_clone = 'echo BROCODE!!'
+# after_workon = 'echo workon fw'
+# override_path = '/some/fancy/path/to/fw'
+# bare = false
+# tags = [
+#     'brocode',
+#     'rust',
+# ]
+# [[additional_remotes]]
+# name = 'upstream'
+# git = 'git@...'

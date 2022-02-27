@@ -147,7 +147,7 @@ zstyle+ ':completion:*' '' '' \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
       + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
       + ':xcompress:*'    file-patterns   '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
-      + ':(rm|rip|kill|diff(|sitter)|git-dsf|git-{add,rm}|bat|nvim):*' ignore-line other
+      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|git-{add,rm}|bat|nvim):*' ignore-line other
 
 # Doesn't work
 zstyle ':completion:complete:*:nvim:*' file-sort access
