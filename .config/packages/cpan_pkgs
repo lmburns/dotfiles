@@ -1,3 +1,4 @@
+Algorithm::Diff
 AnyEvent
 AnyEvent::AIO
 App::Rakubrew
@@ -11,6 +12,7 @@ Class::Data::Inheritable
 Class::Inspector
 Class::Load
 Class::Load::XS
+Class::Method::Modifiers
 Class::Refresh
 Class::Tiny
 Class::Unload
@@ -85,6 +87,7 @@ Module::Locate
 Module::Pluggable
 Module::Runtime
 Module::Runtime::Conflicts
+Moo
 Moose
 Mozilla::CA
 Net::HTTP
@@ -98,6 +101,7 @@ Package::DeprecationManager
 Package::Stash
 Package::Stash::XS
 PadWalker
+Parallel::ForkManager
 Params::Util
 Path::Tiny
 Perl
@@ -107,12 +111,15 @@ Perl::Tidy
 Pod::Parser
 Pod::Spell
 Readonly
+Regexp::Common
+Role::Tiny
 String::Format
 Sub::Exporter
 Sub::Exporter::Progressive
 Sub::Identify
 Sub::Install
 Sub::Name
+Sub::Quote
 Sub::Uplevel
 Task::Weaken
 Term::Animation
@@ -133,6 +140,7 @@ Test::Requires
 Test::RequiresInternet
 Test::Strict
 Test::SubCalls
+Test::Warn
 Test::Warnings
 Test::utf8
 Text::Glob

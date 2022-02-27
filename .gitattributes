@@ -1,1 +1,1 @@
-**/zsh.d/testing2.zsh filter=git-crypt diff=git-crypt
+/.config/zsh/zsh.d/private3/** filter=git-crypt diff=git-crypt

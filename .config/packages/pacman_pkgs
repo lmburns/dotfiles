@@ -21,6 +21,7 @@ asoundconf
 asp
 aspell-en
 astyle
+at
 audiocd-kio
 aurpublish
 autoconf
@@ -39,6 +40,7 @@ bison
 bitwise
 bluedevil
 blueman
+bluez
 bluez-utils
 boxes
 brave-bin
@@ -61,6 +63,7 @@ clamtk
 cli-visualizer
 clipit
 clipman
+cloc
 cmatrix
 cmus
 code
@@ -96,6 +99,7 @@ disfetch
 dive
 dnsmasq
 docker
+dolphin
 dosfstools
 downgrade
 drkonqi
@@ -151,6 +155,7 @@ google-java-format
 googler
 gopass
 gopls
+gotags
 gotask-taskfile
 gotop-bin
 gparted
@@ -164,6 +169,7 @@ gruvbox-material-icon-theme-git
 gst-plugin-gtk
 gst-plugins-ugly
 gstreamer-vaapi
+gtk-engine-murrine
 guilded
 gwenview
 hawck-git
@@ -419,6 +425,7 @@ pasystray
 patch
 pavucontrol
 pavucontrol-qt
+pax
 pcmanfm
 pcmanfm-qt
 perl-image-exiftool
@@ -426,6 +433,7 @@ perl-json
 perl-tidy
 perlbrew
 phinger-cursors
+pidswallow
 pier-git
 pim-data-exporter
 pim-sieve-editor
@@ -549,6 +557,7 @@ sxiv
 sysstat
 systemsettings
 sysz
+t-rec
 tabby-bin
 tagspaces-bin
 tai-bin
