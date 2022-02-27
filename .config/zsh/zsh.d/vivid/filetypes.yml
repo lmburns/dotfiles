@@ -356,6 +356,7 @@ archives:
     - .bz
     - .bz2
     - .gz
+    - .lzma
     - .jar
     - .pkg
     - .rar

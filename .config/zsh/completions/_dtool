@@ -1,0 +1,1132 @@
+#compdef dtool
+
+autoload -U is-at-least
+
+_dtool() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_dtool_commands" \
+"*::: :->dtool" \
+&& ret=0
+    case $state in
+    (dtool)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:dtool-command-$line[1]:"
+        case $line[1] in
+            (h2s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(s2h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(h2b)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(b2h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(h2a)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(a2h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(ts2d)
+_arguments "${_arguments_options[@]}" \
+'-z+[Time zone
+8: CN
+0: UK
+etc]' \
+'--timezone=[Time zone
+8: CN
+0: UK
+etc]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(d2ts)
+_arguments "${_arguments_options[@]}" \
+'-z+[Time zone
+8: CN
+0: UK
+etc]' \
+'--timezone=[Time zone
+8: CN
+0: UK
+etc]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(ns)
+_arguments "${_arguments_options[@]}" \
+'-d[Output decimal result]' \
+'--decimal[Output decimal result]' \
+'-b[Output binary result]' \
+'--binary[Output binary result]' \
+'-o[Output octal result]' \
+'--octal[Output octal result]' \
+'-x[Output hexadecimal result]' \
+'--hexadecimal[Output hexadecimal result]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(h2b58)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(h2b58c)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(b582h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(b58c2h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(h2b64)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(b642h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(ue)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(ud)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(ne)
+_arguments "${_arguments_options[@]}" \
+'-t+[Number type
+u8
+u16
+u32
+u64
+u128
+c: Compact]' \
+'--type=[Number type
+u8
+u16
+u32
+u64
+u128
+c: Compact]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(nd)
+_arguments "${_arguments_options[@]}" \
+'-t+[Number type: u8, u16, u32, u64, u128, c(Compact)]' \
+'--type=[Number type: u8, u16, u32, u64, u128, c(Compact)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(hash)
+_arguments "${_arguments_options[@]}" \
+'-a+[Hash algorithm
+md5: MD5
+sha1: SHA-1
+sha2_224: SHA-2 224
+sha2_256: SHA-2 256
+sha2_384: SHA-2 384
+sha2_512: SHA-2 512
+sha2_512_224: SHA-2 512 truncate 224
+sha2_512_256: SHA-2 512 truncate 256
+sha3_224: SHA-3 224
+sha3_256: SHA-3 256
+sha3_384: SHA-3 384
+sha3_512: SHA-3 512
+sha3_k_224: SHA-3 keccak 224
+sha3_k_256: SHA-3 keccak 256
+sha3_k_384: SHA-3 keccak 384
+sha3_k_512: SHA-3 keccak 512
+ripemd_160: RIPEMD-160
+crc_32: CRC32
+blake2b_160: Blake2b 160
+blake2b_256: Blake2b 256
+blake2b_384: Blake2b 384
+blake2b_512: Blake2b 512
+sm3: Chinese National Standard SM3
+twox: TwoX]' \
+'--algo=[Hash algorithm
+md5: MD5
+sha1: SHA-1
+sha2_224: SHA-2 224
+sha2_256: SHA-2 256
+sha2_384: SHA-2 384
+sha2_512: SHA-2 512
+sha2_512_224: SHA-2 512 truncate 224
+sha2_512_256: SHA-2 512 truncate 256
+sha3_224: SHA-3 224
+sha3_256: SHA-3 256
+sha3_384: SHA-3 384
+sha3_512: SHA-3 512
+sha3_k_224: SHA-3 keccak 224
+sha3_k_256: SHA-3 keccak 256
+sha3_k_384: SHA-3 keccak 384
+sha3_k_512: SHA-3 keccak 512
+ripemd_160: RIPEMD-160
+crc_32: CRC32
+blake2b_160: Blake2b 160
+blake2b_256: Blake2b 256
+blake2b_384: Blake2b 384
+blake2b_512: Blake2b 512
+sm3: Chinese National Standard SM3
+twox: TwoX]' \
+'-k+[Key for Blake2b]' \
+'--key=[Key for Blake2b]' \
+'-s+[Seed for twox]' \
+'--seed=[Seed for twox]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(s2u)
+_arguments "${_arguments_options[@]}" \
+'-f+[Format
+<default>: \\u7c
+html: &#x7c;
+html_d: &#124;
+rust: \\u{7c}]' \
+'--format=[Format
+<default>: \\u7c
+html: &#x7c;
+html_d: &#124;
+rust: \\u{7c}]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(u2s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(he)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(hd)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(re)
+_arguments "${_arguments_options[@]}" \
+'-p+[Regex pattern]' \
+'--pattern=[Regex pattern]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(pbkdf2)
+_arguments "${_arguments_options[@]}" \
+'-i+[Iterations]' \
+'--iterations=[Iterations]' \
+'-a+[Algorithm
+sha1: SHA-1
+sha2_256: SHA-2 256
+sha2_384: SHA-2 384
+sha2_512: SHA-2 512]' \
+'--algorithm=[Algorithm
+sha1: SHA-1
+sha2_256: SHA-2 256
+sha2_384: SHA-2 384
+sha2_512: SHA-2 512]' \
+'-s+[Salt (Hex)]' \
+'--salt=[Salt (Hex)]' \
+'-l+[Key length: must be a multiple of 8]' \
+'--key-length=[Key length: must be a multiple of 8]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Secret (Hex):_files' \
+&& ret=0
+;;
+(case)
+_arguments "${_arguments_options[@]}" \
+'-t+[Case type
+upper: GOOD TOOL
+lower: good tool
+title: Good Tool
+camel: goodTool
+pascal: GoodTool
+snake: good_tool
+shouty_snake: GOOD_TOOL
+kebab: good-tool
+sarcasm: gOoD tOoL]' \
+'--type=[Case type
+upper: GOOD TOOL
+lower: good tool
+title: Good Tool
+camel: goodTool
+pascal: GoodTool
+snake: good_tool
+shouty_snake: GOOD_TOOL
+kebab: good-tool
+sarcasm: gOoD tOoL]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT:_files' \
+&& ret=0
+;;
+(aes_enc)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mode
+ecb: ECB
+cbc: CBC
+ctr: CTR
+]: :(ecb cbc ctr)' \
+'--mode=[Mode
+ecb: ECB
+cbc: CBC
+ctr: CTR
+]: :(ecb cbc ctr)' \
+'-k+[Key (Hex)]' \
+'--key=[Key (Hex)]' \
+'-i+[IV (Hex)]' \
+'--iv=[IV (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Plain (Hex):_files' \
+&& ret=0
+;;
+(aes_dec)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mode
+ecb: ECB
+cbc: CBC
+ctr: CTR
+]: :(ecb cbc ctr)' \
+'--mode=[Mode
+ecb: ECB
+cbc: CBC
+ctr: CTR
+]: :(ecb cbc ctr)' \
+'-k+[Key (Hex)]' \
+'--key=[Key (Hex)]' \
+'-i+[IV (Hex)]' \
+'--iv=[IV (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Cipher (Hex):_files' \
+&& ret=0
+;;
+(ec_gk)
+_arguments "${_arguments_options[@]}" \
+'-c+[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'--curve=[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'-C[Compress]' \
+'--compress[Compress]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(ec_sign)
+_arguments "${_arguments_options[@]}" \
+'-c+[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'--curve=[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'-s+[Secret key (Private key, Hex)]' \
+'--secret-key=[Secret key (Private key, Hex)]' \
+'-f+[Signature form
+der: ASN1 DER
+fixed: Fixed
+]: :(der fixed)' \
+'--sig-form=[Signature form
+der: ASN1 DER
+fixed: Fixed
+]: :(der fixed)' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(ec_verify)
+_arguments "${_arguments_options[@]}" \
+'-c+[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'--curve=[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'-p+[Public key (Hex)]' \
+'--public-key=[Public key (Hex)]' \
+'-S+[Signature (Hex)]' \
+'--sig=[Signature (Hex)]' \
+'-f+[Signature form
+der: ASN1 DER
+fixed: Fixed
+]: :(der fixed)' \
+'--sig-form=[Signature form
+der: ASN1 DER
+fixed: Fixed
+]: :(der fixed)' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(ec_pk)
+_arguments "${_arguments_options[@]}" \
+'-c+[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'--curve=[Curve
+secp256k1: Secp256k1
+p256: NIST P-256
+p384: NIST P-384
+sm2: Chinese National Standard SM2
+]: :(secp256k1 p256 p384 sm2)' \
+'-s+[Secret key (Private key, Hex)]' \
+'--secret-key=[Secret key (Private key, Hex)]' \
+'-C[Compress]' \
+'--compress[Compress]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sm4_enc)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mode
+ctr: CTR
+]: :(ctr)' \
+'--mode=[Mode
+ctr: CTR
+]: :(ctr)' \
+'-k+[Key (Hex)]' \
+'--key=[Key (Hex)]' \
+'-i+[IV (Hex)]' \
+'--iv=[IV (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Plain (Hex):_files' \
+&& ret=0
+;;
+(sm4_dec)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mode
+ctr: CTR
+]: :(ctr)' \
+'--mode=[Mode
+ctr: CTR
+]: :(ctr)' \
+'-k+[Key (Hex)]' \
+'--key=[Key (Hex)]' \
+'-i+[IV (Hex)]' \
+'--iv=[IV (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Cipher (Hex):_files' \
+&& ret=0
+;;
+(ed_gk)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(ed_sign)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mini secret key (Mini private key, Hex)]' \
+'--mini-secret-key=[Mini secret key (Mini private key, Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(ed_verify)
+_arguments "${_arguments_options[@]}" \
+'-p+[Public key (Hex)]' \
+'--public-key=[Public key (Hex)]' \
+'-S+[Signature (Hex)]' \
+'--sig=[Signature (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(ed_pk)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mini secret key (Mini private key, Hex)]' \
+'--mini-secret-key=[Mini secret key (Mini private key, Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sr_gk)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sr_sign)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mini secret key (Mini private key, Hex)]' \
+'--mini-secret-key=[Mini secret key (Mini private key, Hex)]' \
+'-s+[Secret key (Private key, Hex)]' \
+'--secret-key=[Secret key (Private key, Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(sr_verify)
+_arguments "${_arguments_options[@]}" \
+'-p+[Public key (Hex)]' \
+'--public-key=[Public key (Hex)]' \
+'-S+[Signature (Hex)]' \
+'--sig=[Signature (Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::INPUT -- Message (Hex):_files' \
+&& ret=0
+;;
+(sr_sk)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mini secret key (Mini private key, Hex)]' \
+'--mini-secret-key=[Mini secret key (Mini private key, Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sr_pk)
+_arguments "${_arguments_options[@]}" \
+'-m+[Mini secret key (Mini private key, Hex)]' \
+'--mini-secret-key=[Mini secret key (Mini private key, Hex)]' \
+'-s+[Secret key (Private key, Hex)]' \
+'--secret-key=[Secret key (Private key, Hex)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(usage)
+_arguments "${_arguments_options[@]}" \
+'-f+[Output format
+<default>: term table format
+markdown: markdown format
+plain: term plain format]' \
+'--format=[Output format
+<default>: term table format
+markdown: markdown format
+plain: term plain format]' \
+'-s+[]' \
+'--search=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(completion)
+_arguments "${_arguments_options[@]}" \
+'-s+[Shell]: :(zsh bash fish powershell elvish)' \
+'--shell=[Shell]: :(zsh bash fish powershell elvish)' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_dtool_commands] )) ||
+_dtool_commands() {
+    local commands; commands=(
+        "h2s:Convert hex to UTF-8 string" \
+"s2h:Convert UTF-8 string to hex" \
+"h2b:Convert hex to binary" \
+"b2h:Convert binary to hex" \
+"h2a:Convert hex to byte array" \
+"a2h:Convert byte array to hex" \
+"ts2d:Convert timestamp to date" \
+"d2ts:Convert date to timestamp" \
+"ns:Number system" \
+"h2b58:Convert hex to base58" \
+"h2b58c:Convert hex to base58 check" \
+"b582h:Convert base58 to hex" \
+"b58c2h:Convert base58 check to hex" \
+"h2b64:Convert hex to base64" \
+"b642h:Convert base64 to hex" \
+"ue:URL encode" \
+"ud:URL decode" \
+"ne:Number encode" \
+"nd:Number decode" \
+"hash:Hex to hash" \
+"s2u:UTF-8 string to unicode" \
+"u2s:Unicode to UTF-8 string" \
+"he:HTML entity encode" \
+"hd:HTML entity decode" \
+"re:Regex match" \
+"pbkdf2:Pbkdf2" \
+"case:Case conversion" \
+"aes_enc:AES encrypt" \
+"aes_dec:AES decrypt" \
+"ec_gk:Elliptic-curve generate key pair (Secret key, Public key)" \
+"ec_sign:Elliptic-curve sign" \
+"ec_verify:Elliptic-curve verify" \
+"ec_pk:Elliptic-curve calculate public key" \
+"sm4_enc:SM4 encrypt" \
+"sm4_dec:SM4 decrypt" \
+"ed_gk:EdDSA generate key pair (Mini secret key, Public key)" \
+"ed_sign:EdDSA sign" \
+"ed_verify:EdDSA verify" \
+"ed_pk:EdDSA calculate public key" \
+"sr_gk:sr25519 generate key pair (Mini secret key, Public key)" \
+"sr_sign:sr25519 sign" \
+"sr_verify:sr25519 verify" \
+"sr_sk:sr25519 calculate secret key from mini secret key" \
+"sr_pk:sr25519 calculate public key" \
+"usage:Show usage" \
+"completion:Generate completion" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'dtool commands' commands "$@"
+}
+(( $+functions[_dtool__a2h_commands] )) ||
+_dtool__a2h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool a2h commands' commands "$@"
+}
+(( $+functions[_dtool__aes_dec_commands] )) ||
+_dtool__aes_dec_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool aes_dec commands' commands "$@"
+}
+(( $+functions[_dtool__aes_enc_commands] )) ||
+_dtool__aes_enc_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool aes_enc commands' commands "$@"
+}
+(( $+functions[_dtool__b2h_commands] )) ||
+_dtool__b2h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool b2h commands' commands "$@"
+}
+(( $+functions[_dtool__b582h_commands] )) ||
+_dtool__b582h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool b582h commands' commands "$@"
+}
+(( $+functions[_dtool__b58c2h_commands] )) ||
+_dtool__b58c2h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool b58c2h commands' commands "$@"
+}
+(( $+functions[_dtool__b642h_commands] )) ||
+_dtool__b642h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool b642h commands' commands "$@"
+}
+(( $+functions[_dtool__case_commands] )) ||
+_dtool__case_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool case commands' commands "$@"
+}
+(( $+functions[_dtool__completion_commands] )) ||
+_dtool__completion_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool completion commands' commands "$@"
+}
+(( $+functions[_dtool__d2ts_commands] )) ||
+_dtool__d2ts_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool d2ts commands' commands "$@"
+}
+(( $+functions[_dtool__ec_gk_commands] )) ||
+_dtool__ec_gk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ec_gk commands' commands "$@"
+}
+(( $+functions[_dtool__ec_pk_commands] )) ||
+_dtool__ec_pk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ec_pk commands' commands "$@"
+}
+(( $+functions[_dtool__ec_sign_commands] )) ||
+_dtool__ec_sign_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ec_sign commands' commands "$@"
+}
+(( $+functions[_dtool__ec_verify_commands] )) ||
+_dtool__ec_verify_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ec_verify commands' commands "$@"
+}
+(( $+functions[_dtool__ed_gk_commands] )) ||
+_dtool__ed_gk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ed_gk commands' commands "$@"
+}
+(( $+functions[_dtool__ed_pk_commands] )) ||
+_dtool__ed_pk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ed_pk commands' commands "$@"
+}
+(( $+functions[_dtool__ed_sign_commands] )) ||
+_dtool__ed_sign_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ed_sign commands' commands "$@"
+}
+(( $+functions[_dtool__ed_verify_commands] )) ||
+_dtool__ed_verify_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ed_verify commands' commands "$@"
+}
+(( $+functions[_dtool__h2a_commands] )) ||
+_dtool__h2a_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2a commands' commands "$@"
+}
+(( $+functions[_dtool__h2b_commands] )) ||
+_dtool__h2b_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2b commands' commands "$@"
+}
+(( $+functions[_dtool__h2b58_commands] )) ||
+_dtool__h2b58_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2b58 commands' commands "$@"
+}
+(( $+functions[_dtool__h2b58c_commands] )) ||
+_dtool__h2b58c_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2b58c commands' commands "$@"
+}
+(( $+functions[_dtool__h2b64_commands] )) ||
+_dtool__h2b64_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2b64 commands' commands "$@"
+}
+(( $+functions[_dtool__h2s_commands] )) ||
+_dtool__h2s_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool h2s commands' commands "$@"
+}
+(( $+functions[_dtool__hash_commands] )) ||
+_dtool__hash_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool hash commands' commands "$@"
+}
+(( $+functions[_dtool__hd_commands] )) ||
+_dtool__hd_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool hd commands' commands "$@"
+}
+(( $+functions[_dtool__he_commands] )) ||
+_dtool__he_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool he commands' commands "$@"
+}
+(( $+functions[_dtool__help_commands] )) ||
+_dtool__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool help commands' commands "$@"
+}
+(( $+functions[_dtool__nd_commands] )) ||
+_dtool__nd_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool nd commands' commands "$@"
+}
+(( $+functions[_dtool__ne_commands] )) ||
+_dtool__ne_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ne commands' commands "$@"
+}
+(( $+functions[_dtool__ns_commands] )) ||
+_dtool__ns_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ns commands' commands "$@"
+}
+(( $+functions[_dtool__pbkdf2_commands] )) ||
+_dtool__pbkdf2_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool pbkdf2 commands' commands "$@"
+}
+(( $+functions[_dtool__re_commands] )) ||
+_dtool__re_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool re commands' commands "$@"
+}
+(( $+functions[_dtool__s2h_commands] )) ||
+_dtool__s2h_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool s2h commands' commands "$@"
+}
+(( $+functions[_dtool__s2u_commands] )) ||
+_dtool__s2u_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool s2u commands' commands "$@"
+}
+(( $+functions[_dtool__sm4_dec_commands] )) ||
+_dtool__sm4_dec_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sm4_dec commands' commands "$@"
+}
+(( $+functions[_dtool__sm4_enc_commands] )) ||
+_dtool__sm4_enc_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sm4_enc commands' commands "$@"
+}
+(( $+functions[_dtool__sr_gk_commands] )) ||
+_dtool__sr_gk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sr_gk commands' commands "$@"
+}
+(( $+functions[_dtool__sr_pk_commands] )) ||
+_dtool__sr_pk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sr_pk commands' commands "$@"
+}
+(( $+functions[_dtool__sr_sign_commands] )) ||
+_dtool__sr_sign_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sr_sign commands' commands "$@"
+}
+(( $+functions[_dtool__sr_sk_commands] )) ||
+_dtool__sr_sk_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sr_sk commands' commands "$@"
+}
+(( $+functions[_dtool__sr_verify_commands] )) ||
+_dtool__sr_verify_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool sr_verify commands' commands "$@"
+}
+(( $+functions[_dtool__ts2d_commands] )) ||
+_dtool__ts2d_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ts2d commands' commands "$@"
+}
+(( $+functions[_dtool__u2s_commands] )) ||
+_dtool__u2s_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool u2s commands' commands "$@"
+}
+(( $+functions[_dtool__ud_commands] )) ||
+_dtool__ud_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ud commands' commands "$@"
+}
+(( $+functions[_dtool__ue_commands] )) ||
+_dtool__ue_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool ue commands' commands "$@"
+}
+(( $+functions[_dtool__usage_commands] )) ||
+_dtool__usage_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'dtool usage commands' commands "$@"
+}
+
+_dtool "$@"

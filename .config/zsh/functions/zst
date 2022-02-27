@@ -19,28 +19,44 @@
 # -U option to the autoload builtin). The completion system normally
 # loads its functions with without alias expansion.
 
+# case "$1" in
+# -*) zstyle "$@";;
+#
+# *)  setopt localoptions noksharrays
+#     integer i
+#     local context="$1"
+#     print "context: $context"
+#     1=''
+#     for ((i=2; $#; ++i)); do
+#       if [[ $i -gt $# || "$argv[i]" == '+' ]]; then
+#         zstyle "$context${(@)argv[1,i-1]}"
+#         print "FIRST: zstyle "$context${(@)argv[1,i-1]}"\n"
+#         shift "i > $# ? $# : i"  # Stupid shift error on i > $#
+#         i=1
+#       elif [[ $i -gt $# || "$argv[i]" == "++" ]]; then
+#         print "SECOND: zstyle "$context${(@)argv[i-3]}${(@)argv[1,i-1]}"\n"
+#         shift "i > $# ? $# : i"  # Stupid shift error on i > $#
+#         i=1
+#       fi
+#     done
+#     print $argv[@]
+#     ;;
+# esac
+
 case "$1" in
 -*) zstyle "$@";;
 
 *)  setopt localoptions noksharrays
     integer i
     local context="$1"
-    print "context: $context"
     1=''
     for ((i=2; $#; ++i)); do
       if [[ $i -gt $# || "$argv[i]" == '+' ]]; then
         zstyle "$context${(@)argv[1,i-1]}"
-        print "FIRST: zstyle "$context${(@)argv[1,i-1]}"\n"
         shift "i > $# ? $# : i"  # Stupid shift error on i > $#
-        i=1
-      elif [[ $i -gt $# || "$argv[i]" == "++" ]]; then
-        print "SECOND: zstyle "$context${(@)argv[i-3]}${(@)argv[1,i-1]}"\n"
-        shift "i > $# ? $# : i"  # Stupid shift error on i > $#
-        i=1
+  	i=1
       fi
-    done
-    print $argv[@]
-    ;;
+    done;;
 esac
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

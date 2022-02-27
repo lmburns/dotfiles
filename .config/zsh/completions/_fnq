@@ -1,0 +1,19 @@
+#compdef fnq
+
+# zsh completions for 'fnq'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--clean}'[removes queue file after process complete]'
+  {-q,--quiet}'[no print out of queue file to stdout]'
+  {-t,--tap}'[determines if queue files process is complete. If no]'
+  {-b,--block}'[will block if queue files process is not complete. If no]'
+  {-w,--watch}'[similar to --block but will print to stdout contents of the]'
+  {-l,--last}'[prints out last queue file]'
+  {-v,--version}'[prints version information]'
+  {-h,--help}'[prints help information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

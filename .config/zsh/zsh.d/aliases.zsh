@@ -8,7 +8,7 @@
 
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '
-alias -g WC='| cw'
+alias -g CW='| cw'      R='| tac '
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
 alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
 alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time
@@ -32,11 +32,11 @@ alias strace="/usr/local/bin/strace"
 
 alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias open="handlr open"
-# alias mimeopen="/home/lucas/mybin/perl/mimeopen"
 alias jor="journalctl"
 alias xmm="xmodmap"
 alias s="systemctl"
 alias bctl="bluetoothctl"
+alias plast="last -20"
 
 alias fehh='feh \
            --scale-down \
@@ -168,6 +168,7 @@ alias __='doas'
 
 alias pl='print -rl --'
 alias pp='print -Pr --'
+alias pz='print -Pl --'
 alias plm='pl $match[@]'
 alias plM='pl $MATCH'
 alias plr='pl $reply[@]'

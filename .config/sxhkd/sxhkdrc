@@ -1,6 +1,8 @@
+# ======================= Key Movement =======================
 # xte "keyup h" "key Left"
 
 ## Autokey does this much better
+
 # Modify keys with mod3 to mimic arrow keys
 # mod3 + h
 #     xdotool keyup h key --clearmodifiers Left
@@ -18,14 +20,11 @@
 F11
     remaps && notify-send "remaps" "remapped"
 
-# Toggle caffeinate on/off
-# {_,shift +}F10
-#     caffeine-toggle {on,off}
+# Get help for keybindings
+super + shift + h
+    sxhkd_help &
 
-# Lock screen
-super + Delete
-    xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
-
+# ========================= Restart =========================
 # Quit bspwm
 super + shift + Escape
     prompt "Are you sure you would like to quit this Xsession" "bspc quit"
@@ -38,31 +37,25 @@ super + shift + x
 super + shift + p
     reloadpolybar
 
-# Restart polybar
+# Restart dunst
 super + shift + d
-    pkill -USR1 dunst && dunst &
+    killall dunst && dunst &
 
 # Restart bspwm
 ctrl + alt + super + r
     notify-send "bpswm" "Configuration reloaded" && bspc wm -r
 # bspc wm -r
 
-# Get help for keybindings
-super + shift + h
-    sxhkd_help &
+# ========================== Screen ==========================
+# Toggle caffeinate on/off
+F10
+    togglecaffeine
 
-# Launch terminal
-super + Return
-    alacritty
+# Lock screen
+super + Delete
+    xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
 
-# Launch alacritty
-super + ctrl + Return
-    alacritty
-
-# Launch tdrop
-super + alt + Return
-    tdrop -ma -w 1916 -y 0 alacritty
-
+# ========================== Window ==========================
 # Closing/Killing Windows
 super + {_,shift + }q
     bspc node -{c,k}
@@ -79,6 +72,7 @@ alt + ctrl + shift + x
 super + m
     whid dmenu
 
+# Minimize window
 super + shift + m
     whid hide
 
@@ -268,25 +262,49 @@ mod3 + c : bracket{left,right}
 mod3 + c : {Left,Down,Up,Right}
     bspc node -v {-20 0,0 20,0 -20,20 0}
 
-# ================
-# === LAUNCHER ===
-# ================
+# ========================== Launch ==========================
+# Launch terminal
+super + Return
+    alacritty
+
+# Launch alacritty
+super + ctrl + Return
+    alacritty
+
+# Launch tdrop
+super + alt + Return
+    tdrop -ma -w 1916 -y 0 alacritty
 
 # Open URL in clipboard
 ctrl + alt + o
     handlr open "$(xsel -b)"
 
+# Launch rofi application
 mod3 + d
     rofi -show drun
 
+# Launch rofi
 mod3 x ; {x,b}
      rofi -show {drun,window}
 
+# Launch applications
 mod3 + {b,v,p,period,s}
-    {$BROWSER,brave, pcmanfm,thunderbird,signal-desktop}
+    {$BROWSER,brave,pcmanfm,thunderbird,signal-desktop}
 
-mod3 + {_,shift + }n
-    dunstctl {history-pop,close-all}
+# Run a program in a new terminal
+alt + space
+    dmenu-run
+
+# Password manager dmenu script
+ctrl + alt + p
+    prs-dmenu
+
+# super + F9
+#   thunderbird
+
+# Media Controls
+super + F1
+    $TERMINAL -e ncmpcpp
 
 # =================
 # === ADDITIONS ===
@@ -309,7 +327,7 @@ XF86Mail
 # pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
 
-# sync email
+# Sync email
 super + F8
     mailsync
 
@@ -317,20 +335,10 @@ super + F8
 super + {F9,F10}
     {dmenumount,dmenuumount}
 
-# Run a program in a new terminal
-alt + space
-    dmenu-run
-
-# Password manager dmenu script
-ctrl + alt + p
-    prs-dmenu
-
-# super + F9
-#   thunderbird
-
 Print
     flameshot full -p ~/Pictures/screenshot
 
+# Gui screenshot
 Print + shift
     flameshot gui
 
@@ -349,10 +357,6 @@ ctrl + shift + 4
 ctrl + shift + 5
     prtwindow
 
-# Media Controls
-super + F1
-    $TERMINAL -e ncmpcpp
-
 # super + {F5,F6,F7,F8}
 #     playerctl -p "mpd" {stop,previous,play-pause,next}
 
@@ -362,6 +366,10 @@ super + {F4,F5,F6}
 # Control the [last] currently active player.
 mod3 + XF86Audio{Play,Prev,Next}
     playerctl {play-pause,previous,next}
+
+# Hide/show dunst
+mod3 + {_,shift + }n
+    dunstctl {history-pop,close-all}
 
 # ==============
 # === ADDONS ===

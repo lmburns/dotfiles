@@ -1,0 +1,2 @@
+/home/lucas/.config/zsh/zsh.d/git-token.zsh filter=git-crypt diff=git-crypt
+/home/lucas/.config/zsh/zsh.d/testing.zsh filter=git-crypt diff=git-crypt

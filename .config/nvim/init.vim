@@ -1573,9 +1573,10 @@ Plug 'dhruvmanila/telescope-bookmarks.nvim'
 Plug 'tami5/sqlite.lua'
 
   map <A-f> :Telescope find_files<CR>
-  map <A-g> :Telescope git_files<CR>
+  map ;g :Telescope git_files<CR>
   map <A-b> :Telescope buffers theme=get_dropdown<CR>
   map ;c :Telescope commands<CR>
+  map ;B :Telescope bookmarks<CR>
   map <A-r> :Telescope live_grep theme=get_ivy<CR>
 
   nmap <A-.> :Telescope oldfiles<CR>
@@ -1602,7 +1603,7 @@ Plug 'wfxr/minimap.vim'
   nnoremap <Leader>mi :MinimapToggle<CR>
   let g:minimap_width = 10
   let g:minimap_auto_start = 0
-  let g:minimap_auto_start_win_enter = 0
+  let g:minimap_auto_start_win_enter = 1
   let g:minimap_highlight_range = 1
   let g:minimap_block_filetypes =
     \ ['fugitive', 'nerdtree', 'help', 'coc-explorer', 'vista']
@@ -1777,7 +1778,7 @@ command! -nargs=? -complete=dir AF
 
   nmap <silent> <Leader>C  :CocCommand fzf-preview.Changes<CR>
 
-    nmap <silent> <Leader>A  :Windows<CR>
+  nmap <silent> <Leader>A  :Windows<CR>
 
   " nmap <silent> <Leader>;  :BLines<CR>
   nmap <silent> <Leader>;  :CocCommand fzf-preview.Lines<CR>

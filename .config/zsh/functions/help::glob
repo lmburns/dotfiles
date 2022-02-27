@@ -1,0 +1,64 @@
+# Desc: show a help message about globbing
+
+help::glob() {
+    print -Pr -- "
+%F{14}%B# Globbing Flags%F%b
+    %F{3}(#i)%f      case-insensitive
+    %F{3}(#I)%f      case-sensitive
+    %F{3}(#l)%f      lowercase the match
+    %F{3}(#b)%f      activate backreferences
+    %F{3}(#B)%f      deactivate backreferences
+    %F{3}(#m)%f      activate MATCH
+    %F{3}(#M)%f      deactivate MATCH
+    %F{3}(#cN,M)%f      number of matches
+    %F{3}(#aNUM)%f      approximate matches (num errors)
+    %F{3}(#q)%f      ignored by matching code
+    %F{3}(#s)%f      start of string
+    %F{3}(#e)%f      end of string
+    %F{3}(#u)%f      respect locale
+    %F{3}(#U)%f      all characters are 1 byte
+
+  %F{1}print%f *((#s)|/)test((#e)|/)*  %F{8}%B# Matches 'test' in T/../.., ../T/.., ../../T%f%b
+  %F{1}print%f ${arr//(#m)[aeiou]/${(U)MATCH}}  %F{8}%B# vEldt jynx grImps wAqf zhO bUck%f%b
+
+%F{14}%B# Globbing Qualifiers%F%b
+    %F{3}/%f      directories
+    %F{3}F%f      non-empty directories
+    %F{3}.%f      plain files
+    %F{3}D%f      hidden files
+    %F{3}@%f      symbolic links
+    %F{3}=%f      sockets
+    %F{3}p%f      named pipes (FIFOs)
+    %F{3}*%f      executable plain files (0100)
+    %F{3}%%%f      device files (character or block special)
+    %F{3}%%b%f     block special files
+    %F{3}%%c%f     character special files
+    %F{3}r%f      owner-readable files (0400)
+    %F{3}w%f      owner-writable files (0200)
+    %F{3}x%f      owner-executable files (0100)
+    %F{3}A%f      group-readable files (0040)
+    %F{3}I%f      group-writable files (0020)
+    %F{3}E%f      group-executable files (0010)
+    %F{3}R%f      world-readable files (0004)
+    %F{3}W%f      world-writable files (0002)
+    %F{3}X%f      world-executable files (0001)
+    %F{3}s%f      setuid files (04000)
+    %F{3}S%f      setgid files (02000)
+    %F{3}t%f      files with the sticky bit (01000)
+
+  %F{1}print%f *(m-1)          %F{8}%B# Files modified up to a day ago%f%b
+  %F{1}print%f *(a1)           %F{8}%B# Files accessed a day ago%f%b
+  %F{1}print%f *(@)            %F{8}%B# Just symlinks%f%b
+  %F{1}print%f *(Lk+50)        %F{8}%B# Files bigger than 50 kilobytes%f%b
+  %F{1}print%f *(Lk-50)        %F{8}%B# Files smaller than 50 kilobytes%f%b
+  %F{1}print%f **/*.c          %F{8}%B# All *.c files recursively starting in \$PWD%f%b
+  %F{1}print%f **/*.c~file.c   %F{8}%B# Same as above, but excluding 'file.c'%f%b
+  %F{1}print%f (foo|bar).*     %F{8}%B# Files starting with 'foo' or 'bar'%f%b
+  %F{1}print%f *~*.*           %F{8}%B# All Files that do not contain a dot%f%b
+  %F{1}chmod%f 644 *(.^x)      %F{8}%B# make all plain non-executable files publically readable%f%b
+  %F{1}print%f -l *(.c|.h)     %F{8}%B# Lists *.c and *.h%f%b
+  %F{1}print%f **/*(g:users:)  %F{8}%B# Recursively match all files that are owned by group 'users'%f%b
+  %F{1}echo%f /proc/*/cwd(:h:t:s/self//) %F{8}%B# Analogous to >ps ax | awk '{print $1}'<%f%b"
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -1,11 +1,3 @@
-[colors]
-    # frame = "#3b4252"
-    background = "#221a02"
-    foreground = "#ebdbb2"
-    # foreground = "#c2a383"
-    # background = "#282828"
-    # foreground = "#928374"
-
 [global]
     ### Display ###
 
@@ -321,8 +313,8 @@
     # new_icon = /home/lucas/.config/dunst/icons/GruvboxIcon.png
 
 [urgency_normal]
-    background = colors.background
-    foreground = colors.foreground
+    background = "#221a02"
+    foreground = "#ebdbb2"
 
     timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
@@ -330,7 +322,7 @@
 
 [urgency_critical]
     # background = "#f14a68"
-    background = colors.background
+    background = "#221a02"
     foreground = "#c2a383"
     frame_color = "#dc3958"
     timeout = 5

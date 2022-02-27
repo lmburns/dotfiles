@@ -25,6 +25,9 @@ setxkbmap -layout us
 setxkbmap -option shift:both_capslock # Both shifts become caps lock
 # Switch super and alt (some keyboards have them switched)
 setxkbmap -option altwin:swap_alt_win
+
+# setxkbmap -option caps:hyper
+
 # PrintScreen to F13
 # setxkbmap -option apple:alupckeys
 

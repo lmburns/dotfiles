@@ -1,0 +1,41 @@
+#compdef xcompress
+
+# zsh completions for 'xcompress'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-q,--quiet}'[makes programs not print anything on the screen.]'
+  {-s,--single-thread}'[uses only one thread.]'
+  {-h,--help}'[prints help information]'
+  {-V,--version}'[prints version information]'
+  {-p,--password}'[sets password for your archive file. (Only supports 7Z, ZIP and RAR.) Set an empty string to read a password from stdin.]'
+  '--7z-path[7Z_PATH>                Specifies the path of your 7z executable binary file. \[default: 7z\]]'
+  '--bunzip2-path[2_PATH>      Specifies the path of your bunzip2 executable binary file. \[default: bunzip2\]]'
+  '--bzip2-path[2_PATH>          Specifies the path of your bzip2 executable binary file. \[default: bzip2\]]'
+  '--compress-path[specifies the path of your compress executable binary file. \[default: compress\]]'
+  '--gunzip-path[specifies the path of your gunzip executable binary file. \[default: gunzip\]]'
+  '--gzip-path[specifies the path of your gzip executable binary file. \[default: gzip\]]'
+  '--lbzip2-path[2_PATH>        Specifies the path of your lbzip2 executable binary file. \[default: lbzip2\]]'
+  '--lunzip-path[specifies the path of your lunzip executable binary file. \[default: lunzip\]]'
+  '--lzip-path[specifies the path of your lzip executable binary file. \[default: lzip\]]'
+  '--lzma-path[specifies the path of your lzma executable binary file. \[default: lzma\]]'
+  '--pbzip2-path[2_PATH>        Specifies the path of your pbzip2 executable binary file. \[default: pbzip2\]]'
+  '--pigz-path[specifies the path of your pigz executable binary file. \[default: pigz\]]'
+  '--plzip-path[specifies the path of your plzip executable binary file. \[default: plzip\]]'
+  '--pxz-path[specifies the path of your pxz executable binary file. \[default: pxz\]]'
+  '--pzstd-path[specifies the path of your pzstd executable binary file. \[default: pzstd\]]'
+  '--rar-path[specifies the path of your rar executable binary file. \[default: rar\]]'
+  '--tar-path[specifies the path of your tar executable binary file. \[default: tar\]]'
+  '--unlzma-path[specifies the path of your unlzma executable binary file. \[default: unlzma\]]'
+  '--unrar-path[specifies the path of your unrar executable binary file. \[default: unrar\]]'
+  '--unxz-path[specifies the path of your unxz executable binary file. \[default: unxz\]]'
+  '--unzip-path[specifies the path of your unzip executable binary file. \[default: unzip\]]'
+  '--unzstd-path[specifies the path of your unzstd executable binary file. \[default: unzstd\]]'
+  '--xz-path[specifies the path of your xz executable binary file. \[default: xz\]]'
+  '--zip-path[specifies the path of your zip executable binary file. \[default: zip\]]'
+  '--zstd-path[specifies the path of your zstd executable binary file. \[default: zstd\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

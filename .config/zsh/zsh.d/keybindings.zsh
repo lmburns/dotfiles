@@ -52,7 +52,7 @@ zle -N change-surround surround
 
 # Add command to history without executing it
 function commit-to-history() {
-  print -s ${(z)BUFFER}
+  print -rs ${(z)BUFFER}
   zle send-break
 }
 zle -N commit-to-history
@@ -68,6 +68,7 @@ zle -N slash-backward-kill-word
 
 # Expand everything under cursor
 function expand-all() {
+  # zle -N expand-aliases
   zle _expand_alias
   zle expand-word
 }
@@ -84,11 +85,8 @@ zle -N list-keys
 
 # Show per-directory-history with fzf
 function per-dir-fzf() {
-  if [[ $_per_directory_history_is_global ]]; then
-    per-directory-history-toggle-history; fzf-history-widget
-  else
-    fzf-history-widget
-  fi
+  per-directory-history-toggle-history
+  skim-history-widget
 }
 zle -N per-dir-fzf       # fzf history
 
@@ -122,7 +120,6 @@ zle -N fe
 # zle -N fcd-zle
 # zle -N bow2
 
-zle -N expand-aliases
 zle -N __unicode_translate # translate unicode to symbol
 
 # zle -N _complete_debug_generic _complete_help_generic
@@ -161,20 +158,6 @@ function src-locate() {
 }
 zle -N src-locate
 
-# Add command to history without executing it
-function commit-to-history() {
-    print -rs ${(z)BUFFER}
-    zle send-break
-}
-zle -N commit-to-history
-
-# Only slash should be considered as a word separator:
-function slash-backward-kill-word() {
-    local WORDCHARS="${WORDCHARS:s@/@}"
-    zle backward-kill-word
-}
-zle -N slash-backward-kill-word
-
 # ============================= BINDINGS =============================
 # ====================================================================
 if [[ $TMUX ]]; then
@@ -194,69 +177,73 @@ fi
 typeset -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
 # 'M-q'             push-line-or-edit     # zsh-edit
-  'Home'           beginning-of-line
-  'End'            end-of-line
-  'Delete'         delete-char
-  'F1'             dotbare-fstat
-  'F2'             db-faddf
-  'F3'             _wbmux
-  ';z'             zbrowse
-  'Esc-e'          wfxr::fzf-file-edit-widget
-  'Esc-i'          fe
-  'Esc-d'          expand-aliases
-  'Esc-f'          list-keys             # list keybindings in mode
-  'M-r'            per-dir-fzf
-  'M-o'            clipboard-fzf            # greenclip fzf
-  'M-p'            pw                    # fzf pueue
-  'M-u'            __unicode_translate   # translate 0000 to unicode
-  'M-x'            cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-S-P'          toggle-right-prompt
-  'C-a'            autosuggest-execute
-  'C-y'            yank
-  'C-z'            fancy-ctrl-z
-  'C-x r'          fz-history-widget
-  'C-x t'          pick_torrent             # fzf torrent
-  'C-x C-b'        fcq                      # copyq fzf
-  'C-x C-g'        fcq-zle                  # copyq zle
-  'C-x C-e'        edit-command-line-as-zsh # Edit command in editor
-  'C-x C-f'        fz-find
-  'C-x C-u'        RG_buff                  # RG with $BUFFER
-  'C-x C-x'        execute-command          # Execute ZLE command
-  'mode=vicmd u'   undo
-  'mode=vicmd R'   replace-pattern
-  'mode=vicmd U'   redo
-  'mode=vicmd E'   backward-kill-line
+  'Home'                  beginning-of-line
+  'End'                   end-of-line
+  'Delete'                delete-char
+  'F1'                    dotbare-fstat
+  'F2'                    db-faddf
+  'F3'                    _wbmux
+  ';z'                    zbrowse
+  'Esc-e'                 wfxr::fzf-file-edit-widget
+  'Esc-i'                 fe
+  'Esc-f'                 list-keys             # list keybindings in mode
+  'M-r'                   per-dir-fzf
+  'M-o'                   clipboard-fzf            # greenclip fzf
+  'M-p'                   pw                    # fzf pueue
+  'M-u'                   __unicode_translate   # translate 0000 to unicode
+  'M-x'                   cd-fzf-ghqlist-widget # cd ghq fzf
+  'M-S-P'                 toggle-right-prompt
+  'C-a'                   autosuggest-execute
+  'C-y'                   yank
+  'C-z'                   fancy-ctrl-z
+  'C-x r'                 fz-history-widget
+  'C-x t'                 pick_torrent             # fzf torrent
+  'C-x C-b'               fcq                      # copyq fzf
+  'C-x C-g'               fcq-zle                  # copyq zle
+  'C-x C-e'               edit-command-line-as-zsh # Edit command in editor
+  'C-x C-f'               fz-find
+  'C-x C-u'               RG_buff                  # RG with $BUFFER
+  'C-x C-x'               execute-command          # Execute ZLE command
+  'mode=vicmd u'          undo
+  'mode=vicmd R'          replace-pattern
+  'mode=vicmd U'          redo
+  'mode=vicmd E'          backward-kill-line
   # 'mode=vicmd L'    end-of-line # Move to end of line, even on another line
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
-  'mode=vicmd L'   vi-end-of-line
-  'mode=vicmd H'   vi-beginning-of-line
-  'mode=vicmd ?'   which-command
-  'mode=vicmd yy'  copyx
-  'mode=vicmd ;v'  clipboard-fzf         # greenclip fzf
-  'mode=vicmd ;e'  edit-command-line-as-zsh
-  'mode=vicmd ;x'  vi-backward-kill-word
-  'mode=vicmd c.'  vi-change-whole-line
-  'mode=vicmd ds'  delete-surround
-  'mode=vicmd cs'  change-surround
-  'mode=vicmd K'   run-help
-  'mode=vicmd M-f' list-keys          # list keybindings in mode
-  'mode=vicmd \$'  expand-all         # expand alias etc under keyboard
-  'mode=vicmd \-'  zvm_switch_keyword # decrement item under keyboard
-  'mode=vicmd \+'  zvm_switch_keyword # inccrement item under keyboard
-  'mode=viins jk'  vi-cmd-mode
-  'mode=viins kj'  vi-cmd-mode
-  'mode=visual S'  add-surround
-  'mode=str M-t'   t                  # tmux wfxr
-  'mode=str C-o'   lc                 # lf change dir
-  'mode=str C-u'   lf                 # regular lf
-  'mode=@ C-b'     bow2               # surfraw open w3m
-  'mode=+ M-.'     kf                 # a formarks like thing in rust
-  'mode=@ M-/'     frd                # cd interactively recent dir
-  'mode=@ M-;'     fcd                # cd interactively
-  # 'mode=@ M-;'     skim-cd-widget
-  'mode=@ M-,'     __zoxide_zi
-  'mode=@ M-['     fstat
-  'mode=@ M-]'     fadd
+  'mode=vicmd L'          vi-end-of-line
+  'mode=vicmd H'          vi-beginning-of-line
+  'mode=vicmd ?'          which-command
+  'mode=vicmd yy'         copyx
+  'mode=vicmd ;v'         clipboard-fzf         # greenclip fzf
+  'mode=vicmd ;e'         edit-command-line-as-zsh
+  'mode=vicmd ;o'         noptions             # edit zsh options
+  'mode=vicmd ;x'         vi-backward-kill-word
+  'mode=vicmd c.'         vi-change-whole-line
+  'mode=vicmd ds'         delete-surround
+  'mode=vicmd cs'         change-surround
+  'mode=vicmd K'          run-help
+  'mode=vicmd M-f'        list-keys          # list keybindings in mode
+  'mode=vicmd \$'         expand-all         # expand alias etc under keyboard
+  'mode=vicmd \-'         zvm_switch_keyword # decrement item under keyboard
+  'mode=vicmd \+'         zvm_switch_keyword # inccrement item under keyboard
+  'mode=viins jk'         vi-cmd-mode
+  'mode=viins kj'         vi-cmd-mode
+  'mode=visual S'         add-surround
+  'mode=str M-t'          t                  # tmux wfxr
+  'mode=str C-o'          lc                 # lf change dir
+  'mode=str C-u'          lf                 # regular lf
+  'mode=@ C-b'            bow2               # surfraw open w3m
+  'mode=+ M-.'            kf                 # a formarks like thing in rust
+  'mode=@ M-/'            frd                # cd interactively recent dir
+  'mode=@ M-;'            fcd                # cd interactively
+  # 'mode=@ M-;'          skim-cd-widget
+  'mode=@ M-,'            __zoxide_zi
+  'mode=@ M-['            fstat
+  'mode=@ M-]'            fadd
+  'mode=menuselect Space' .accept-line
+  'mode=menuselect C-r'   history-incremental-search-backward
+  'mode=menuselect C-f'   history-incremental-search-forward
+
 # ========================== Testing ==========================
 # 'mode=vicmd Q'    save-alias
   'mode=vicmd Q'    src-locate

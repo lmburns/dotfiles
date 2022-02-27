@@ -2,29 +2,22 @@
 
 # probably a much much better way to do this
 
-# zmodload -ap zsh/mapfile mapfile
-# arr=("${(@)mapfile[uids]}")
-
 id_process() {
-  local process_n_id
-  process_n_id="$(ps -ef | q -H "SELECT UID, COUNT(*) cnt FROM - GROUP BY UID ORDER BY cnt DESC LIMIT 3")"
+  ps -ef | q -H "SELECT UID, COUNT(*) cnt FROM - GROUP BY UID ORDER BY cnt DESC" --beautify
 
-  local -a uids pids
-  local -A usernames final
-  uids=("${(@f)$(awk '{print $1}' <<<"$process_n_id")}")
-  pids=("${(@f)$(awk '{print $2}' <<<"$process_n_id")}")
+  # local process_n_id
+  # process_n_id="$(ps -ef | q -H "SELECT UID, COUNT(*) cnt FROM - GROUP BY UID ORDER BY cnt")"
 
-  for id ( ${(@)uids} ) { usernames[$id]="$(/usr/bin/id -un "$id")" }
-  for (( i=0; i<=${#usernames}; i++ )) { final[${usernames[(e)${uids[$i]}]}]="${pids[$i]}" }
-
-  # print -rC2 -- "${(@kv)final}"
-  # printf "%s\t" "$(tput setaf 4)${(@k)final}\n"
-  # printf "%s\t" "$(tput setaf 5)${(@v)final}"
-  # printf '%s\t%s\n' "$(tput setaf 4)${(@kv)final}"
-
-  for k ( "${(@k)final}" ) {
-    printf "%s\t%s\n" "$(tput setaf 4)$k" "$(tput setaf 2)${final[$k]}"
-  }
+  # local -a uids pids
+  # local -A usernames final
+  # uids=("${(@f)$(awk '{print $1}' <<<"$process_n_id")}")
+  # pids=("${(@f)$(awk '{print $2}' <<<"$process_n_id")}")
+  #
+  # for id ( ${(@)uids} ) { usernames[$id]="$(/usr/bin/id -un "$id")" }
+  # for (( i=0; i<=${#usernames}; i++ )) { final[${usernames[(e)${uids[$i]}]}]="${pids[$i]}" }
+  #
+  # print -raC 2 -- ${(@kv)final}
+  # print -Prl -- ${${(@k)final}//(#b)(*)/%F{1}$match[1] %F{2}$ass[$match[1]]}
 }
 
 id_process

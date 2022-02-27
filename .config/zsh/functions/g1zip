@@ -1,8 +1,14 @@
 # Desc: Creates basename pwd-date archive
 
-local f=${PWD:h:t}-$(date +%Y%m%d)
-command rm -vf "$f".zip
-command git archive --output "$f".zip --prefix "$f/" master
-command du "$f".zip
+local f=${PWD:t}-$(date +%Y%m%d)
+[[ -f "$f".zip ]] && command rm -vf "$f".zip
+command git archive --output "$f".zip --prefix "$f/" HEAD
+command du -sh "$f".zip
+
+print
+
+[[ -f "$f".bkp ]] && command rm -vf "$f".bkp
+command git bundle create "$f".bkp --all
+command du -sh "$f".bkp
 
 # vim:ft=zsh:et

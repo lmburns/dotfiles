@@ -74,7 +74,7 @@ vim:${1:filetype=$2:}${3:foldmethod=${4:marker}:}${5:${7:tabstop=${6:4}:}${9:shi
 endsnippet
 
 snippet vims "Vim  Filetype"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr={{{,}}}:'`
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
 endsnippet
 
 snippet H "A header box" b

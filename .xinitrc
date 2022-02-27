@@ -10,7 +10,8 @@ blueman-applet &
 pasystray &
 
 # Auto mount USB
-udiskie --tray &
+udiskie --tray -n --file-manager="$TERMINAL" &
+# udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &
 
 # xsettingsd
 
@@ -22,6 +23,7 @@ udiskie --tray &
 copyq &
 setsid -f greenclip daemon > /dev/null 2>&1 &!
 ulauncher --hide-window &
+
 # spotifyd &
 
 # Reverse scrolling
@@ -57,8 +59,7 @@ xidlehook \
     --timer 500 \
         'screensaver' '' \
     --timer 240 \
-        'xset dpms force off; \
-        if [ ! $(pidof i3lock) ]; then screenlock; fi' '' \
+        'xset dpms force off; pidof i3lock || screenlock' '' \
     --socket "/tmp/xidlehook.sock" &
 
 # flashfocus &
@@ -76,6 +77,13 @@ redshift -c "$HOME/.config/redshift/redshift.conf" &
 # Compositor
 # picom -b --experimental-backends &
 picom-rounded -b --experimental-backends &
+
+# use x11 compositor (transparent windows, blur background, ...) if not inside a VM
+# if ! grep -q "^flags.* hypervisor" /proc/cpuinfo ; then
+#     if ! pgrep picom; then
+#         picom -b --experimental-backends --vsync || picom -b --experimental-backends
+#     fi
+# fi
 
 # Sync copy paste buffers
 # autocutsel -fork &

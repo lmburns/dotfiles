@@ -8,13 +8,13 @@ integer pass longest=0 longest2=0 longest3=0
 local p file header="# Desc: " shtypeM='#!/'
 
 for (( pass = 1; pass <= 2; ++ pass )); do
-  files=( $HOME/mybin/*(N) )
+  files=( $HOME/mybin/*(N) $HOME/mybin/linux/*(N) )
   if (( pass == 2 )); then
     if (( ${#files[@]} )); then
       print -Pr -- "%F{5}${(l:longest+longest2+longest3::=:):-}%f"
     fi
   fi
-  for file in "${files[@]}"; do
+  for file in "${(o)files[@]}"; do
     [[ -d "$file" ]] && continue
     lines=( ${(f)"$(<$file)"} )
     desc=( "${(M)lines[@]:#${header}*}" )

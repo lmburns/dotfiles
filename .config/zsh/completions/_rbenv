@@ -1,0 +1,196 @@
+#compdef rbenv
+
+_rbenv_commands() {
+  typeset -a rbenv_cmds; rbenv_cmds=(
+    ${(@f)"$(rbenv commands)"}
+  )
+  _describe -t rbenv_cmds "commands" rbenv_cmds
+}
+
+_rbenv() {
+    typeset -a _arguments_options
+    local ret=1
+
+    _arguments_options=(-s -C)
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+        "1: :_rbenv_commands" \
+        "*: :->rbenv" \
+        && ret=0
+
+  case $state in
+    (rbenv)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:rbenv-command-$line[1]:"
+
+      case $line[1] in
+        (completions)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              "*:: :_rbenv_commands" \
+            && ret=0
+        ;;
+        (bundler)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (commands)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--sh[Display help about the subcommand]' \
+              '--no-sh[Display help about the subcommand]' \
+              && ret=0
+        (ctags)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (exec)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (global)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (global)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (help)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--usage[Display usage information]' \
+              '--version[Display version information]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (hooks)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (init)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--no-rehash[Don''t rehash]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (install)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--list[List installation items]' \
+              '--list-all[List all installation items]' \
+              '--force[Force installation]' \
+              '--skip-existing[Skip installation if existing]' \
+              '--keep[Unsure]' \
+              '--patch[Apply patch]' \
+              '--verbose[Show more info]' \
+              '--version[Display version information]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (local)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--unset[Unset local install]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (prefix)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '*: :compadd -a cmds' \
+              && ret=0
+        ;;
+        (rehash)
+          # eval "$(rbenv sh-rehash)"
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              && ret=0
+        ;;
+        (root)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              && ret=0
+        ;;
+        (shell)
+          # eval "$(rbenv sh-shell)"
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--unset[Unset shell]' \
+              && ret=0
+        ;;
+        (root)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              && ret=0
+        ;;
+        (shims)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--short[Display basename of shim]' \
+              && ret=0
+        ;;
+        (uninstall)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--force[Force uninstallation]' \
+              && ret=0
+        ;;
+        (vars|version(|-(file(|-(read|write))))|name|origin)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              && ret=0
+        ;;
+        (versions)
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--bare[Display bare version]' \
+              '--skip-aliases[Don''t show aliases]' \
+              && ret=0
+        ;;
+        (whence)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              '--path[Show path]' \
+              && ret=0
+        ;;
+        (which)
+          typeset -a cmds; cmds=( ${${(@f):-"$(rbenv completions $line[1])"}//--*/} )
+          _arguments "${_arguments_options[@]}" \
+              '--help[Display help about the subcommand]' \
+              && ret=0
+        ;;
+        esac
+  esac
+}
+
+_rbenv "$@"

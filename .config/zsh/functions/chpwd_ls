@@ -1,8 +1,9 @@
 # Desc: func ran on every cd
 
 emulate -L zsh
-if [[ "$OLDPWD" != "$PWD" ]]; then
+
+[[ "$OLDPWD" != "$PWD" ]] && {
     exa -Fh --git --icons --group-directories-first
-fi
+}
 
 # vim:ft=zsh:

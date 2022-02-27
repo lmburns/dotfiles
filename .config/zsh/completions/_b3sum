@@ -1,0 +1,23 @@
+#compdef b3sum
+
+# zsh completions for 'b3sum'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--check}'[reads BLAKE3 sums from the \[FILE\]s and checks them]'
+  '--derive-key[uses the key derivation mode, with the given]'
+  {-h,--help}'[print help information]'
+  '--keyed[uses the keyed mode. The secret key is read from standard]'
+  {-l,--length}'[the number of output bytes, prior to hex]'
+  '--no-mmap[disables memory mapping. Currently this also disables]'
+  '--no-names[omits filenames in the output]'
+  '--num-threads[the maximum number of threads to use. By]'
+  '--quiet[skips printing OK for each successfully verified file.]'
+  '--raw[writes raw output bytes to stdout, rather than hex.]'
+  '--no-names[implied. In this case, only a single]'
+  {-V,--version}'[print version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,9 @@
+#compdef whim
+
+local expl
+_arguments -s -S -C \
+    '-s[specify a script to edit]: : _wanted commands expl command _command_names' \
+    '-a[specify an alias to edit]: : _wanted aliases expl alias _aliases' \
+    '-f[specify a function to edit]: : _wanted functions expl function _functions' \
+    '(-s -a)-e[specify a function to edit in editor]: : _wanted functions expl function _functions' \
+    '*:commands:_command_names'

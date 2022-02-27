@@ -1,0 +1,27 @@
+#compdef dasel
+
+# zsh completions for 'dasel'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--color[alias of --colour.]'
+  '--colour[print colourised output.]'
+  {-c,--compact}'[compact the output by removing all pretty-printing where possible.]'
+  '--escape-html[escape HTML tags when writing output.]'
+  {-f,--file}'[the file to query.]'
+  '--format[formatting template to use when writing results.]'
+  {-h,--help}'[help for select]'
+  '--length[output the length of the selected value.]'
+  '--merge-input-documents[merge multiple input documents into an array.]'
+  {-m,--multiple}'[select multiple results.]'
+  {-n,--null}'[output null instead of value not found errors.]'
+  {-p,--parser}'[shorthand for -r FORMAT -w FORMAT.]'
+  '--plain[alias of -w plain]'
+  {-r,--read}'[the parser to use when reading.]'
+  {-s,--selector}'[the selector to use when querying the data structure.]'
+  {-w,--write}'[the parser to use when writing.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

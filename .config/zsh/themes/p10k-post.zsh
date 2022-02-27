@@ -1129,17 +1129,15 @@
   # Custom icon.
   # typeset -g POWERLEVEL9K_PLENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 
-  # TODO: Change url
-  ###########[ perlbrew: perl version from plenv (https://github.com/gugod/App-perlbrew) ]############
-  # Perl color.
-  typeset -g POWERLEVEL9K_PERLBREW_FOREGROUND=6
-  # Hide perl version if it doesn't come from one of these sources.
-  typeset -g POWERLEVEL9K_PERLBREW_SOURCES=(shell local global)
-  # If set to false, hide perl version if it's the same as global:
-  # $(plenv version-name) == $(plenv global).
-  typeset -g POWERLEVEL9K_PERLBREW_PROMPT_ALWAYS_SHOW=false
-  # If set to false, hide perl version if it's equal to "system".
-  typeset -g POWERLEVEL9K_PERLBREW_SHOW_SYSTEM=true
+  ###########[ perlbrew: perl version from perlbrew (https://github.com/gugod/App-perlbrew) ]############
+  # Perlbrew color.
+  typeset -g POWERLEVEL9K_PERLBREW_FOREGROUND=67
+  # Show perlbrew version only when in a perl project subdirectory.
+  typeset -g POWERLEVEL9K_PERLBREW_PROJECT_ONLY=true
+  # Don't show perl- at the front.
+  typeset -g POWERLEVEL9K_PERLBREW_SHOW_PREFIX=false
+  # Decide what should show perlbrew
+  # typeset -g POWERLEVEL9K_PERLBREW_SHOW_ON_UPGLOB='cpanfile|(MY|)META.(yml|json)|.perltidyrc|(Makefile|Build).PL|*.(pl|pm|t|pod)'
   # Custom icon.
   # typeset -g POWERLEVEL9K_PERLBREW_VISUAL_IDENTIFIER_EXPANSION='⭐'
 

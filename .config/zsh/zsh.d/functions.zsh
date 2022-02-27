@@ -1,4 +1,207 @@
-# ============================== Rust ==============================
+# ============================ Zsh Specific ==========================
+# ====================================================================
+
+# `which` tool which has all information from `whence`
+function ww() {
+  (alias; declare -f) |
+    /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
+}
+
+# ??
+function double-accept() { deploy-code "BUFFER[-1]=''"; }
+zle -N double-accept
+
+# List all commands
+function allcmds() {
+  print -l ${commands[@]} | awk -F'/' '{print $NF}' | sk --preview-window=hidden;
+}
+
+# Display colors used with zinit
+function zinit-palette() {
+  for k ( "${(@kon)ZINIT[(I)col-*]}" ); do
+    local i=$ZINIT[$k]
+    print "$reset_color${(r:14:: :):-$k:} $i###########"
+  done
+}
+
+# Create temporary directory and cd to it
+function cdt() {
+  local t=$(mktemp -d)
+  # trap "[[ $PWD != $t ]] && rm $t" EXIT
+  setopt localtraps
+  echo "$t"
+  builtin cd -q "$t"
+}
+
+function zsh-minimal() {
+  cd "$(mktemp -d)"
+  ZDOTDIR=$PWD HOME=$PWD zsh -df
+}
+
+# reload zsh function without sourcing zshrc
+function freload() {
+  while (( $# )); do; unfunction $1; autoload -U $1; shift; done
+}
+
+# Edit an alias via zle (whim -a)
+function ealias() {
+  [[ -z "$1" ]] && {
+    print -Pr "Usage: %F{1}ealias%f <alias_to_edit>" ; return 1
+  } || vared aliases'[$1]' ;
+}
+
+# Edit a function via zle (whim -f)
+function efunc() {
+  [[ -z "$1" ]] && {
+    print -Pr "Usage: %F{1}efunc%f <function_to_edit>" ; return 1
+  } || zed -f "$1" ;
+}
+
+# Find functions that follow this pattern: func()
+function ffunc() {
+  eval "() { $functions[RG] } ${@}\\\\\(";
+}
+
+# List loaded ZLE modules
+function lszle() {
+  print -rl -- \
+    ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
+    bat
+}
+
+# List zstyle modules
+function lszstyle() {
+  print -Plr -- \
+    ${${(@)${(@f):-"$(zstyle -L ':*')"}/*list-colors*/}//(#b)(zstyle) (*) (*) (*)/\
+%F{1}$match[1]%f %F{3}$match[2]%f %F{14}%B$match[3]%b%f %F{2}$match[4]} | \
+  bat
+}
+
+# Desc: tells from-where a zsh completion is coming from
+function from-where {
+  print -l -- $^fpath/$_comps[$1](N)
+  whence -v $_comps[$1]
+  #which $_comps[$1] 2>&1 | head
+}
+
+# Desc: tell which completion a command is using
+function whichcomp() {
+  for 1; do
+      ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP*$1*) )
+  done
+}
+
+# Desc: print path of zsh function
+function whichfunc() {
+  (( $+functions[$1] )) || print::error "$1 is not a function"
+  for 1; do
+    (
+      print -PraC 2 -- \
+        ${${(j: :):-$(print -r ${^fpath}/$1(#qNP*$1*))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
+    )
+  done
+}
+
+# ================================ Wifi ==============================
+# ====================================================================
+# lsof open fd
+zmodload -F zsh/system p:sysparams
+# Get your IP address
+function myip()      { curl https://api.myip.com; }
+# List available Wifi networks
+function lswifi()    { nmcli device wifi; }
+# Get wifi information
+function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
+
+# =============================== Listing ============================
+# ====================================================================
+# List information about current zsh process
+function mem()      { sudo px $$; }
+# List file descriptors
+function lsfd()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+# List deleted items?
+function lsdelete() { lsof -n | rg -i --color=always deleted }
+# List users on the computer
+function lsusers()  { cat /etc/passwd | hck -d':' -f1; }
+
+# List functions
+function lsfuncs {
+  emulate -L zsh -o extendedglob
+  zmodload -Fa zsh/parameter p:functions
+
+  [[ $1 = -a ]] && {
+    print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
+  } || {
+    print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
+  } | bat
+}
+
+# ============================= Profiling ============================
+# ====================================================================
+# Profile zsh: Method 1
+function time-zsh() { for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit' }; }
+# Profile zsh: Method 2 (hyperfine)
+function hyperfine-zsh() { hyperfine "$SHELL -ic 'exit'"; }
+#  Profile zsh: Method 2 (zprof)
+function profile-zsh() { ZSHRC_PROFILE=1 zsh -i -c zprof | bat; }
+# Profile zsh: Method 3 (any cmd)
+function profile() { ZSH_PROFILE_RC=1 $SHELL "$@"; }
+
+# ============================= List Ext =============================
+# ====================================================================
+# List files which have been accessed within the last n days
+# emulate -R zsh -c 'print -l -- *(a-${1:-1})'
+function accessed() { ls -- */*(a-${1:-1}); }
+function changed()  { ls -- */*(c-${1:-1}); }
+function modified() { fd --changed-within ${1:-1day} -d${2:-1}; }
+
+# List files which have been accessed within the last n days recursively
+# The above is recursive, but this lists differently
+function accessedr() { ll -R -- *(a-${1:-1}); }
+function changedr()  { ll -R -- *(c-${1:-1}); }
+function modifiedr() { ll -R -- *(m-${1:-1}); }
+
+# ============================== Backup ==============================
+# ====================================================================
+# function bak()  { renamer '$=.bak' "$@"; }
+# function rbak() { renamer '.bak$=' "$@"; }
+
+# Perl rename
+function backup-t()  { rename -n 's/^(.*)$/$1.bak/g' $@ }
+function backup()    { rename    's/^(.*)$/$1.bak/g' $@ }
+function restore-t() { rename -n 's/^(.*).bak$/$1/g' $@ }
+function restore()   { rename    's/^(.*).bak$/$1/g' $@ }
+
+# Backup files
+function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
+function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
+
+# Backup a file
+function bk() {
+  emulate -L zsh
+  cp -iv --preserve=all -b $1 ${1:r}_$(date --iso-8601=m).${1:e}
+}
+
+# Only renames using f2
+function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
+function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
+function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
+function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
+
+# ============================= File Mod =============================
+# ====================================================================
+# Remove broken symlinks
+function rmsym() { command rm -- *(-@D); }
+# Remove broken symlinks recursively
+function rmsymr() { command rm -- **/*(-@D); }
+# Remove ansi from file
+function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;  }
+# Remove space from file name
+function rmspace() { f2 -f '\s' -r '_' -RF $@ }
+function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
+
+# ================================ Rust ==============================
+# ====================================================================
 # Hardlink relevant files to a Rust project
 function linkrust() {
   command ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
@@ -24,216 +227,91 @@ function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.r
 function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
 function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 
-# wrapper for rusty-man for tui
+# Wrapper for rusty-man for tui
 function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
 
-# ============================== WiFi ==============================
-# lsof open fd
-zmodload -F zsh/system p:sysparams
-function lsdelete()  { lsof -n | rg -i --color=always deleted }
-function myip()      { curl https://api.myip.com; }
-function lsfd()      { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
-function lswifi()    { nmcli device wifi; }
-function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
+# ============================== Other ===============================
+# ====================================================================
 
-# find functions that follow this pattern: func()
-function ffunc() { eval "() { $functions[RG] } ${@}\\\\\("; }
-
-# List functions
-function lsfuncs {
-  emulate -L zsh -o extendedglob
-  zmodload -Fa zsh/parameter p:functions
-
-  [[ $1 = -a ]] && {
-    print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
-  } || {
-    print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
-  } | bat
-}
-
-# rsync from local pc to server
-function rst() { rsync -uvrP $1 root@lmburns.com:$2 ; }
-function rsf() { rsync -uvrP root@lmburns.com:$1 $2 ; }
-
-# create py file to sync with ipynb
-function jupyt() { jupytext --set-formats ipynb,py $1; }
-
-# use up pipe with any file
-function upp() { cat $1 | up; }
-
-# crypto
-function ratesx() { curl rate.sx/$1; }
-
+# ============================== Files ===============================
 # Shred and delete file
 function sshred() { shred -v -n 1 -z -u  $1;  }
 
 # Move items out of a directory
-function mvout-clean() { command rsync -vua --delete-after $1/ . ; }
-function mvout() { command rsync -vua $1/ . ; }
+function mvout-clean() { command rsync -vua --delete-after ${1:?Invalid directory} . ; }
+function mvout() { command rsync -vua ${1:?Invalid directory} . ; }
 
-# copy directory
+# Copy directory
 function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
-# create file from clipboard
+# Create file from clipboard
 function pbpf() { xsel -b > "$1"; }
-# copy file to clipboard
+# Copy file to clipboard
 function pbcf() { xsel -b < "${1:-/dev/stdin}"; }
 
-# ========================== Backup ==========================
-# function bak()  { renamer '$=.bak' "$@"; }
-# function rbak() { renamer '.bak$=' "$@"; }
+# === Moving Files ===
+# Rsync from local pc to server
+function rst() { rsync -uvrP $1 root@lmburns.com:$2 ; }
+function rsf() { rsync -uvrP root@lmburns.com:$1 $2 ; }
+function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 
-# Perl rename
-function backup-t()  { rename -n 's/^(.*)$/$1.bak/g' $@ }
-function backup()    { rename    's/^(.*)$/$1.bak/g' $@ }
-function restore-t() { rename -n 's/^(.*).bak$/$1/g' $@ }
-function restore()   { rename    's/^(.*).bak$/$1/g' $@ }
-
-# Backup files
-function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
-function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
-
-# Backup a file
-function bk() {
-  emulate -L zsh
-  cp -iv --preserve=all -b $1 ${1:r}_$(date --iso-8601=m).${1:e}
-}
-
-# only renames
-function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
-function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
-function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
-function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
-
-# link unlink file from mybin to $PATH
+# Link unlink file from mybin to $PATH
 function lnbin() { ln -siv $HOME/mybin/$1 $XDG_BIN_HOME; }
 function unlbin() { rm -v /$XDG_BIN_HOME/$1; }
-
-# Latex documentation serch (as best I can)
-function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
-
-# cd into directory
-# function take() { mkdir -p $@ && cd ${@:$#} }
-
-# html to markdown
-function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
-
-function allcmds() { print -l ${commands[@]} | awk -F'/' '{print $NF}' | fzf; }
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
 function b3sumdir()  { print -rl -- ${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} | b3sum; }
 
-# Remove broken symlinks
-function rmsym() { command rm -- *(-@D); }
-# Remove broken symlinks recursively
-function rmsymr() { command rm -- **/*(-@D); }
-# Remove ansi from file
-function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;  }
-# Remove space from file name
-function rmspace() { f2 -f '\s' -r '_' -RF $@ }
-function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
+# ============================== Tools  ==============================
+# Create py file to sync with ipynb
+function jupyt() { jupytext --set-formats ipynb,py $1; }
 
-# monitor core dumps
+# Use `up` pipe with any file
+function upp() { cat $1 | up; }
+
+# Crypto information
+function ratesx() { curl rate.sx/$1; }
+
+# Latex documentation serch (as best I can)
+function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
+
+# HTML to Markdown
+function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
+
+# Monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
 
-function ww() {
-  (alias; declare -f) |
-    /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
-}
-
+# === File Format ===
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
 function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
 
+# === Image ===
 function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
 function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
-function png() { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
+function png()  { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 
-# date format for taskwarrior
+# Date format for taskwarrior
 function td() { date -d "+${*}" "+%FT%R" ; }
+# Edit file recursively
 function ee() { lax -f nvim "@${1}" ; }
+# Open $PWD in file browser
 function ofd() { handlr open $PWD ; }
-
-function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
-
-function double-accept() { deploy-code "BUFFER[-1]=''"; }
-zle -N double-accept
-
-function zinit-palette() {
-  for k ( "${(@kon)ZINIT[(I)col-*]}" ); do
-    local i=$ZINIT[$k]
-    print "$reset_color${(r:14:: :):-$k:} $i###########"
-  done
-}
-
-# Create temporary directory and cd to it
-function cdt() {
-  local t
-  t=$(mktemp -d)
-  echo "$t"
-  builtin cd -q "$t"
-}
-
-# Profile zsh: Method 1
-function time-zsh() {
-  for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit' }
-}
-# Profile zsh: Method 2 (hyperfine)
-function hyperfine-zsh() {
-  hyperfine "$SHELL -c 'exit'";
-}
-#  Profile zsh: Method 2 (zprof)
-function profile-zsh() {
-  ZSHRC_PROFILE=1 zsh -i -c zprof | bat
-}
-# Profile zsh: Method 3 (any cmd)
-function profile() {
-  ZSH_PROFILE_RC=1 $SHELL "$@"
-}
-
-# reload zsh function without sourcing zshrc
-function freload() {
-  while (( $# )); do; unfunction $1; autoload -U $1; shift; done
-}
-
-# Edit an alias via zle (whim -a)
-function ealias() {
-  [[ -z "$1" ]] && {
-    print -Pr "Usage: %F{1}ealias%f <alias_to_edit>" ; return 1
-  } || vared aliases'[$1]' ;
-}
-
-# Edit a function via zle (whim -f)
-function efunc() {
-  [[ -z "$1" ]] && {
-    print -Pr "Usage: %F{1}efunc%f <function_to_edit>" ; return 1
-  } || zed -f "$1" ;
-}
-
-# List files which have been accessed within the last n days
-# emulate -R zsh -c 'print -l -- *(a-${1:-1})'
-function accessed() { ls -- */*(a-${1:-1}); }
-function changed()  { ls -- */*(c-${1:-1}); }
-function modified() { fd --changed-within ${1:-1day} -d${2:-1}; }
-
-# List files which have been accessed within the last n days recursively
-# The above is recursive, but this lists differently
-function accessedr() { ll -R -- *(a-${1:-1}); }
-function changedr()  { ll -R -- *(c-${1:-1}); }
-function modifiedr() { ll -R -- *(m-${1:-1}); }
 
 # ============================== Helper ==============================
 # ====================================================================
-function print::warning() { print -Pr -- "%F{3}[WARNING]%f: $*"; }
-function print::error()   { print -Pr -- "%F{1}%B[ERROR]%f%b: $*"; }
-function print::debug()   { print -Pr -- "%F{4}[DEBUG]%f: $*"; }
-function print::info()    { print -Pr -- "%F{5}[INFO]%f: $*"; }
-function print::notice()  { print -Pr -- "%F{13}[NOTICE]%f: $*"; }
-function print::success() { print -Pr -- "%F{2}%B[SUCCESS]%f%b: $*"; }
+function print::warning() { print -Pru2 -- "%F{3}[WARNING]%f: $*"; }
+function print::error()   { print -Pru2 -- "%F{1}%B[ERROR]%f%b: $*"; }
+function print::debug()   { print -Pru2 -- "%F{4}[DEBUG]%f: $*"; }
+function print::info()    { print -Pru2 -- "%F{5}[INFO]%f: $*"; }
+function print::notice()  { print -Pru2 -- "%F{13}[NOTICE]%f: $*"; }
+function print::success() { print -Pru2 -- "%F{2}%B[SUCCESS]%f%b: $*"; }
 
 # ============================== Compdef =============================
 # ====================================================================
 compdef _aliases       ealias
 compdef _functions     efunc
+compdef _command_names from-where
+compdef _command_names whichcomp
 compdef _command_names wim
 compdef _functions     fim
 compdef _functions     freload

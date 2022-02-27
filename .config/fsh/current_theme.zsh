@@ -53,7 +53,7 @@ typeset -g FAST_THEME_NAME="kimbox"
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-1]:=fg=#a3b95a,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-2]:=fg=#FF9500,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxbracket-level-3]:=fg=#7EB2B1,bold}
-: ${FAST_HIGHLIGHT_STYLES[kimboxglobal-alias]:=fg=#dc3958,bold}
+: ${FAST_HIGHLIGHT_STYLES[kimboxglobal-alias]:=fg=#fe8019,bold}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsubcommand]:=fg=#f79a32}
 : ${FAST_HIGHLIGHT_STYLES[kimboxsingle-sq-bracket]:=fg=#819c3b}
 : ${FAST_HIGHLIGHT_STYLES[kimboxdouble-sq-bracket]:=fg=#FF5813}

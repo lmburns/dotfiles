@@ -148,25 +148,24 @@ zle -N incitem
 
 # Switch number keyword
 function zvm_switch_number {
-  local word=$1
-  local increase=${2:-true}
+  setopt extendedglob
+  local -a match mbegin mend
+  local word=$1 increase=${2:-true}
   local result= bpos= epos=
 
-  ## Hexadecimal
+  ## === Hexadecimal ===
   if [[ $word =~ [^0-9]?(0[xX][0-9a-fA-F]*) ]]; then
-    local number=${match[1]}
+    number=${match[1]}
     local prefix=${number:0:2}
-    bpos=$((mbegin-1)) epos=$mend
+    bpos=$(( mbegin - 1 )) epos=$mend
 
     local lower=true
-    if [[ $number =~ [A-Z][0-9]*$ ]]; then
-      lower=false
-    fi
+    [[ $number =~ [A-Z][0-9]*$ ]] && lower=false
 
     # Fix the number truncated after 15 digits issue
     if (( $#number > 17 )); then
-      local d=$(($#number - 15))
-      local h=${number:0:$d}
+      integer d=$(($#number - 15))
+      integer h=${number:0:$d}
       number="0x${number:$d}"
     fi
 
@@ -174,7 +173,7 @@ function zvm_switch_number {
 
     if $increase; then
       if (( $number == 0x${(l:15::f:)} )); then
-        h=$(([##16]$h+1))
+        integer h=$(( [##16] h + 1 ))
         h=${h: -1}
         number=${(l:15::0:)}
       else
@@ -210,7 +209,7 @@ function zvm_switch_number {
 
     result="${prefix}${result}"
 
-  ## Binary
+  ## === Binary ===
   elif [[ $word =~ [^0-9]?(0[bB][01]*) ]]; then
 
     local number=${match[1]}

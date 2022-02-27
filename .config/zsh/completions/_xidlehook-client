@@ -1,0 +1,92 @@
+#compdef xidlehook-client
+
+autoload -U is-at-least
+
+_xidlehook-client_commands() {
+  typeset -a subcommands
+  subcommands=(
+    add:"Create a new timer"
+    control:"A control operation"
+    help:"Prints this message or the help of the given subcommand(s)"
+    query:"Query the list of timers"
+    reset-idle:"Pretend user moved mouse, reset the idle timer and start triggering timers"
+    stop-timers:"Disable xidlehook until the user becomes active again"
+  )
+
+  _describe -t xidlehook-client-commands "command" subcommands
+}
+
+_xidlehook-client () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    _arguments "${_arguments_options[@]}" \
+        {-v,--version}'[Display version number and exit]' \
+        {-h,--help}'[Display help and exit]' \
+        '--socket=[Listen to a unix socket at this address for events. Each event is one line of JSON data]:Socket:_files' \
+        ":: :_xidlehook-client_commands" \
+        "*::: :->xidlehook-client" \
+        && ret=0
+
+  case $state in
+    (xidlehook-client)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:xidlehook-client-command-$line[1]:"
+      case $line[1] in
+        (help)
+          _arguments "${_arguments_options[@]}" \
+            ":: :_xidlehook-client_commands" \
+            && ret=0
+        ;;
+        (add)
+          _arguments "${_arguments_options[@]}" \
+              {-h,--help}'[Display help about the subcommand]' \
+              {-v,--version}'[Display version and exit]' \
+              '--abortion=[Shell command to run on abortion (user no longer idle before timer activated)]:Abortion:' \
+              '--activation=[Shell command to run on activation, (not passed to "sh -c")]:Activation:' \
+              '--deactivation=[Shell command to run when next timer is activated instead (deactivation = next timer''s activation)]:Deactivation:' \
+              '--index=[Where to insert this timer. Beginning = 0; End skip this]:Index:' \
+              '--time=[The desired idle time, in seconds, which the timer will go off after]:Time:' \
+              && ret=0
+        ;;
+        (control)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-v,--version}'[Display version and exit]' \
+            '--action=[Which action to cause on the selected timers]:Action:(enable disable trigger delete)' \
+            '--timer=[The timers which this operation should apply to. Leave empty for all timers]:Timer:' \
+            && ret=0
+        ;;
+        (query)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-v,--version}'[Display version and exit]' \
+            '--timer=[The timers which this operation should apply to. Leave empty for all timers]:Timer:' \
+            && ret=0
+        ;;
+        (reset-idle)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-v,--version}'[Display version and exit]' \
+            && ret=0
+        ;;
+        (stop-timers)
+          _arguments "${_arguments_options[@]}" \
+            {-h,--help}'[Display help about the subcommand]' \
+            {-v,--version}'[Display version and exit]' \
+            && ret=0
+        ;;
+        esac
+  esac
+}
+
+_xidlehook-client "$@"

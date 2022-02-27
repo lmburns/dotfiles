@@ -1,0 +1,10 @@
+# Desc: Backup current directory
+
+local f=${PWD:t}-$(date +%Y%m%d)
+local file="$f".tar.gz
+
+[[ -f "$file" ]] && command rm -vf "$file"
+
+xcompress a -o "${1:-./}${file}" *~*target
+
+# vim:ft=zsh:et

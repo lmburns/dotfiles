@@ -1,0 +1,12 @@
+#compdef ww
+
+_ww() {
+    local ret=1
+    _arguments_options=(-s -S -C)
+
+    _arguments "${_arguments_options[@]}" \
+    "*:: :_command_names" \
+    && ret=0
+}
+
+_ww "$@"

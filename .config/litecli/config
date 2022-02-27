@@ -63,7 +63,7 @@ wider_completion_menu = False
 # \r - The current time, standard 12-hour time (1-12)
 # \s - Seconds of the current time
 prompt = '\d> '
-prompt_continuation = '-> '
+prompt_continuation = '→ '
 
 # Skip intro info on startup and outro info on exit
 less_chatty = False
