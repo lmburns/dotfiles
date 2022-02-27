@@ -1,9 +1,1 @@
-/home/lucas/.config/arch/private filter=git-crypt diff=git-crypt
-/home/lucas/.config/atuin/history.db filter=git-crypt diff=git-crypt
-/home/lucas/.config/beets/library.db filter=git-crypt diff=git-crypt
-/home/lucas/.config/newsboat/urls filter=git-crypt diff=git-crypt
-/home/lucas/.config/rclone/rclone.conf filter=git-crypt diff=git-crypt
-/home/lucas/.config/redshift/redshift.conf filter=git-crypt diff=git-crypt
-/home/lucas/.config/zsh/zsh.d/git-token.zsh filter=git-crypt diff=git-crypt
-
-testing.zsh filter=git-crypt diff=git-crypt
+**/zsh.d/testing2.zsh filter=git-crypt diff=git-crypt
