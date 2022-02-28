@@ -1,1 +1,7 @@
-/.config/zsh/zsh.d/private3/** filter=git-crypt diff=git-crypt
+/.config/arch/private/** filter=git-crypt diff=git-crypt
+/.config/atuin/history.db filter=git-crypt diff=git-crypt
+/.config/beets/library.db filter=git-crypt diff=git-crypt
+/.config/newsboat/urls filter=git-crypt diff=git-crypt
+/.config/rclone/rclone.conf filter=git-crypt diff=git-crypt
+/.config/redshift/redshift.conf filter=git-crypt diff=git-crypt
+/.config/zsh/zsh.d/git-token.zsh filter=git-crypt diff=git-crypt
