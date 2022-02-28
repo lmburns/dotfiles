@@ -193,6 +193,8 @@
   l = log -p
   lc = log ORIG_HEAD.. --stat --no-merges
   lo = log --oneline --decorate --stat --graph
+  lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
   lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
   lgo = log --pretty='format:%h %G? %aN  %s'

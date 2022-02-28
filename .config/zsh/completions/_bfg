@@ -1,0 +1,25 @@
+#compdef bfg
+
+# zsh completions for 'bfg'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-b,--strip-blobs-bigger-than}'[strip blobs bigger than X (eg 128K, 1M, etc)]'
+  {-B,--strip-biggest-blobs}'[strip the top NUM biggest blobs]'
+  {-bi,--strip-blobs-with-ids}'[strip blobs with the specified Git object ids]'
+  {-D,--delete-files}'[delete files with the specified names (eg *.class, *.{txt,log} - matches on file name, not path within repo)]'
+  '--delete-folders[delete folders with the specified names (eg .svn, *-tmp - matches on folder name, not path within repo)]'
+  '--convert-to-git-lfs[extract files with the specified names (eg *.zip or *.mp4) into Git LFS]'
+  {-rt,--replace-text}'[filter content of files, replacing matched text. Match expressions should be listed in the file, one expression per line - by default, each expression is treated as a literal, but regex: & glob: prefixes are supported, with ==> to specify a replacement string other than the default of ***REMOVED***.]'
+  {-fi,--filter-content-including}'[do file-content filtering on files that match the specified expression (eg *.{txt,properties})]'
+  {-fe,--filter-content-excluding}'[dont do file-content filtering on files that match the specified expression (eg *.{xml,pdf})]'
+  {-fs,--filter-content-size-threshold}'[only do file-content filtering on files smaller than <size> (default is 1048576 bytes)]'
+  {-p,--protect-blobs-from}'[protect blobs that appear in the most recent versions of the specified refs (default is HEAD)]'
+  '--no-blob-protection[allow the BFG to modify even your *latest* commit. Not recommended: you should have already ensured your latest commit is clean.]'
+  '--private[treat this repo-rewrite as removing private data (for example: omit old commit ids from commit messages)]'
+  '--massive-non-file-objects-sized-up-to[increase memory usage to handle over-size Commits, Tags, and Trees that are up to X in size (eg 10M)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

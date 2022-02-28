@@ -257,7 +257,7 @@ zt 0a light-mode for \
     felipec/git-completion \
   pick'you-should-use.plugin.zsh' \
     MichaelAquilina/zsh-you-should-use \
-  lbin'!' patch"${pchf}/%PLUGIN%.patch" reset \
+  lbin'!' patch"${pchf}/%PLUGIN%.patch" reset nocompletions \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' \
     kazhala/dotbare \

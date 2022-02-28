@@ -1,5 +1,4 @@
 /.config/arch/private/** filter=git-crypt diff=git-crypt
-/.config/atuin/history.db filter=git-crypt diff=git-crypt
 /.config/beets/library.db filter=git-crypt diff=git-crypt
 /.config/newsboat/urls filter=git-crypt diff=git-crypt
 /.config/rclone/rclone.conf filter=git-crypt diff=git-crypt
