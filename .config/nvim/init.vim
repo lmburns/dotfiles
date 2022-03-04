@@ -100,7 +100,19 @@ call plug#begin("~/.vim/plugged")
 " Not needed, here for manual pages
 Plug 'junegunn/vim-plug'
 
+" View id3 files
 Plug 'AndrewRadev/id3.vim'
+" View info files
+Plug 'alx741/vinfo'
+Plug 'HiPhish/info.vim'
+
+if &buftype =~? 'info'
+    nmap <buffer> gu <Plug>(InfoUp)
+    nmap <buffer> gn <Plug>(InfoNext)
+    nmap <buffer> gp <Plug>(InfoPrev)
+    nmap <buffer> gm <Plug>(InfoMenu)
+    nmap <buffer> gf <Plug>(InfoFollow)
+endif
 
 " ============= Icons ============= {{{
 Plug 'ryanoasis/vim-devicons'
@@ -1084,7 +1096,7 @@ Plug 'antoinemadec/coc-fzf'
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).

@@ -6,9 +6,6 @@ nm-applet &
 # Bluetooth manager
 blueman-applet &
 
-# Pulseaudio applet
-pasystray &
-
 # Auto mount USB
 udiskie --tray -n --file-manager="$TERMINAL" &
 # udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &

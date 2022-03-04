@@ -31,7 +31,7 @@ super + shift + Escape
 
 # Restart hotkey damon
 super + shift + x
-    killandnotify "sxhkd" "Config reloaded" && sxhkd &
+    killandnotify sxhkd "Config reloaded" && sxhkd &
 
 # Restart polybar
 super + shift + p
@@ -87,6 +87,9 @@ alt + {h,j,k,l}
 # Swap window in direction
 shift + alt + {h,j,k,l}
     bspc node -s {west,south,north,east}
+
+# super + {_,shift + }{h,j,k,l}
+#     bspc node -{f,s} {west,south,north,east}
 
 # Rotate tree
 mod3 + {_,shift +}r
@@ -147,8 +150,20 @@ mod3 + shift + bracket{left,right}
     bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
 
 # Resize window in any direction
+# When floating, moves sides in
 ctrl + alt + {h,j,k,l}
     bspwm_resize {west,south,north,east} 20
+
+# Resize windows
+# When floating, moves sides out
+super + ctrl + alt + {h,j,k,l}
+  n=10; \
+  { d1=left;   d2=right;  dx=-$n; dy=0;   \
+  , d1=bottom; d2=top;    dx=0;   dy=$n;  \
+  , d1=top;    d2=bottom; dx=0;   dy=-$n; \
+  , d1=right;  d2=left;   dx=$n;  dy=0;   \
+  } \
+  bspc node --resize $d1 $dx $dy || bspc node --resize $d2 $dx $dy
 
 # set manual preselect split direction on current window
 # ctrl + alt + shift {h,j,k,l}
@@ -289,7 +304,7 @@ mod3 x ; {x,b}
 
 # Launch applications
 mod3 + {b,v,p,period,s}
-    {$BROWSER,brave,pcmanfm,thunderbird,signal-desktop}
+    {$BROWSER &>/dev/null,brave,pcmanfm,thunderbird,signal-desktop}
 
 # Run a program in a new terminal
 alt + space

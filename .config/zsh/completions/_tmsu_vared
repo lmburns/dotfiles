@@ -1,0 +1,15 @@
+#compdef -P '-value-,tmsu_tag,*'
+
+typeset -a tag_list
+local tag expl
+
+_call_program tmsu tmsu tags | \
+while read tag
+do
+    local escapedTag=$tag:gs/:/\\:/:gs/=/\\\\=/
+    tag_list+=("$escapedTag")
+done
+
+_wanted tags expl tags compadd -a tag_list
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

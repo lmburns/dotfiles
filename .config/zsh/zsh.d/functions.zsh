@@ -8,12 +8,12 @@ function ww() {
 }
 
 # ??
-function double-accept() { deploy-code "BUFFER[-1]=''"; }
-zle -N double-accept
+# function double-accept() { deploy-code "BUFFER[-1]=''"; }
+# zle -N double-accept
 
 # List all commands
 function allcmds() {
-  print -l ${commands[@]} | awk -F'/' '{print $NF}' | sk --preview-window=hidden;
+  print -l ${(k)commands[@]} | sk --preview-window=hidden;
 }
 
 # Display colors used with zinit
@@ -64,8 +64,9 @@ function ffunc() {
 
 # List loaded ZLE modules
 function lszle() {
-  print -rl -- \
-    ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
+  # print -rl -- \
+  #   ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
+  print -rl -- ${${(@f):-"$(zle -la)"}//*(autosuggest|orig-s)*/} | \
     bat
 }
 
@@ -102,6 +103,26 @@ function whichfunc() {
   done
 }
 
+# Disown a process
+function run_diso {
+  sh -c "${(z)@}" &>/dev/null &
+  disown
+}
+
+# Nohup a process
+function background() {
+  nohup "${(z)@}" >/dev/null 2>&1 &
+}
+
+# Reinstall completions
+function creinstall() {
+  ___creinstall() {
+    emulate zsh -ic "zinit creinstall -q $GENCOMP_DIR 1>/dev/null" &!
+  }
+
+  (( $+functions[defer] )) && { defer -c '___creinstall && src' }
+}
+
 # ================================ Wifi ==============================
 # ====================================================================
 # lsof open fd
@@ -129,11 +150,17 @@ function lsfuncs {
   emulate -L zsh -o extendedglob
   zmodload -Fa zsh/parameter p:functions
 
-  [[ $1 = -a ]] && {
-    print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
-  } || {
-    print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
-  } | bat
+  (
+    [[ $1 = -a ]] && {
+      print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
+    } || {
+      print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
+    }
+  ) | bat
+}
+
+function lsfont() {
+  fc-list -f '%{family}\n' | awk '!x[$0]++'
 }
 
 # ============================= Profiling ============================
@@ -143,9 +170,9 @@ function time-zsh() { for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit'
 # Profile zsh: Method 2 (hyperfine)
 function hyperfine-zsh() { hyperfine "$SHELL -ic 'exit'"; }
 #  Profile zsh: Method 2 (zprof)
-function profile-zsh() { ZSHRC_PROFILE=1 zsh -i -c zprof | bat; }
+function profile-zsh() { $SHELL -i -c zprof | bat; }
 # Profile zsh: Method 3 (any cmd)
-function profile() { ZSH_PROFILE_RC=1 $SHELL "$@"; }
+function profile() { $SHELL "$@"; }
 
 # ============================= List Ext =============================
 # ====================================================================
@@ -260,7 +287,9 @@ function unlbin() { rm -v /$XDG_BIN_HOME/$1; }
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
-function b3sumdir()  { print -rl -- ${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} | b3sum; }
+function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
+
+function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
 
 # ============================== Tools  ==============================
 # Create py file to sync with ipynb
@@ -297,6 +326,28 @@ function ee() { lax -f nvim "@${1}" ; }
 # Open $PWD in file browser
 function ofd() { handlr open $PWD ; }
 
+# Convert hexadecimal to base 10
+function h2d() { print $(( $1 )); }
+# Convert base 10 to hexadecimal
+function d2h() { printf 0x%X\\n $1; }
+
+# ================================ X11 ===============================
+# ====================================================================
+
+# List X11 windows
+function lswindows() {
+  # Has a lot more info
+  typeset -ga xlist
+  xlist=("${(@)${(M@)${(@f)$(xwininfo -root -tree)}:#[ 	]#0x[0-9a-f]# \"*}##[ 	]#}")
+
+  typeset -gA xlistmap
+  for val ($xlist[@]) {
+    xlistmap[${val%% *}]=${${(@)val#*\"}%%\"*}
+  }
+
+  print -raC 2 ${(kv)xlistmap}
+}
+
 # ============================== Helper ==============================
 # ====================================================================
 function print::warning() { print -Pru2 -- "%F{3}[WARNING]%f: $*"; }
@@ -305,16 +356,6 @@ function print::debug()   { print -Pru2 -- "%F{4}[DEBUG]%f: $*"; }
 function print::info()    { print -Pru2 -- "%F{5}[INFO]%f: $*"; }
 function print::notice()  { print -Pru2 -- "%F{13}[NOTICE]%f: $*"; }
 function print::success() { print -Pru2 -- "%F{2}%B[SUCCESS]%f%b: $*"; }
-
-# ============================== Compdef =============================
-# ====================================================================
-compdef _aliases       ealias
-compdef _functions     efunc
-compdef _command_names from-where
-compdef _command_names whichcomp
-compdef _command_names wim
-compdef _functions     fim
-compdef _functions     freload
 
 # ======================== Dynamic Directory =========================
 # ====================================================================

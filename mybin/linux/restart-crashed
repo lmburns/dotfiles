@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+
+# Desc: When programs crash from an overloaded CPU
+
+# Basically the same as .xinitrc
+
+function setsid_notify() {
+    setsid -f ${(z)@} &>/dev/null
+}
+
+# bustd &
+(
+    pidof nm-applet || setsid_notify nm-applet
+    pgrep -x blueman-applet || setsid_notify blueman-applet
+    pidof pasystray || setsid_notify pasystray
+    pgrep -x udiskie || setsid_notify udiskie --tray -n --file-manager="$TERMINAL"
+    pidof copyq || setsid_notify copyq
+    pidof greenclip || setsid_notify greenclip daemon 2>&1
+    pgrep -x ulauncher || setsid_notify ulauncher --hide-window
+    pidof xidlehook || {
+      xidlehook \
+          --not-when-fullscreen \
+          --not-when-audio \
+          --timer 500 \
+              'screensaver' '' \
+          --timer 240 \
+              'xset dpms force off; pidof i3lock || screenlock' '' \
+          --socket "/tmp/xidlehook.sock" &!
+    }
+
+    pidof flameshot || setsid_notify flameshot &
+    pidof dunst || setsid_notify dunst
+    pkill -USR1 sxhkd && setsid_notify sxhkd
+    pidof redshift || redshift -c "$HOME/.config/redshift/redshift.conf" &!
+    pgrep -x autokey-gtk || setsid_notify autokey-gtk
+    pgrep -x pcmanfm || setsid_notify pcmanfm -d
+) 1>/dev/null

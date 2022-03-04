@@ -196,6 +196,7 @@ alias sha='shasum -a 256'
 alias wh="whence -f"
 alias wa="whence -va" # where
 alias wm="whence -vm"
+alias info='info --vi-keys'
 
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
@@ -339,6 +340,8 @@ alias g='hub'
 
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'
 alias xav='/usr/bin/git --git-dir=$XDG_DATA_HOME/dottest --work-tree=$HOME'
+
+alias resetgit='mgit reset --hard HEAD && mgit clean -fd && mgit pull'
 
 alias gua='git remote | xargs -L1 git push --all'
 alias grmssh='ssh git@lmburns.com -- grm'

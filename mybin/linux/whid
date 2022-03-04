@@ -1,54 +1,70 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Desc: Hide/unhide windows
 
+zmodload -Fa zsh/parameter p:commands
+
+() {
+  for f ($@) {
+    (( $+commands[$f] )) || print -Pr "%F{1}Error%f: $f is not installed"
+  }
+} wattr lsw xdo{,tool}
+
+local file width height bar_width left_shift top_shift
+
 file="/tmp/.minimized"
 touch $file
-# By https://github.com/tatou-tatou
 width=$(wattr w $(lsw -r))
 height=$(wattr h $(lsw -r))
-bar_width=$(($width / 2))
-left_shift=$((($width - $bar_width) / 2))
-top_shift=$(($height / 3))
+bar_width=$(( width / 2 ))
+left_shift=$(( ( width - bar_width ) / 2 ))
+top_shift=$(( height / 3 ))
 
 case $1 in
-hide)
+  (hide)
+    local lines focusedID focusedName focusedDesktop
     lines=$(wc -l <$file)
 
-    if [[ $lines -ge 10 ]]; then
-        notify-send "Ten windows are already hidden" "You should consider closing some before hiding even more." -i warning
+    if (( $lines >= 10 )); then
+      notify-send \
+          "Ten windows are already hidden" \
+          "You should consider closing some before hiding even more" \
+          -i warning
     else
-        focusedID=$(xdo id)
-        if [[ "$focusedID" ]]; then
-            focusedName=$(xdotool getwindowname $focusedID)
-            focusedDesktop=$(xdotool get_desktop)
+      focusedID=$(xdo id)
+      if [[ -n $focusedID ]]; then
+        focusedName=$(xdotool getwindowname $focusedID)
+        focusedDesktop=$(xdotool get_desktop)
 
-            echo "$focusedID $focusedDesktop $focusedName" >>$file &&
-                xdo hide $focusedID &&
-                notify-send "A window has been hidden (${lines})" "$focusedName" -i warning
+        print -r -- "$focusedID $focusedDesktop $focusedName" >> $file && \
+          xdo hide $focusedID && \
+          notify-send \
+              "A window has been hidden (${lines})" \
+              "$focusedName" \
+              -i warning
         fi
     fi
-    ;;
-dmenu)
-    miniList=$(cat $file)
+  ;;
+  (dmenu)
+    local miniList lines linesDisplayed yPos dmenu_cmd lineNumber
+    miniList=$(<$file)
 
     # Dmenu cannot draw more than 30 lines
     lines=$(wc -l <$file)
-    if [[ $lines -gt 30 ]]; then
-        linesDisplayed=30
+    if (( $lines > 30 )); then
+      linesDisplayed=30
     else
-        linesDisplayed=$lines
+      linesDisplayed=$lines
     fi
 
-    # If the list is empty
-    if [ -z "$miniList" ]; then
-        miniList="  Nothing is hidden!"
-        linesDisplayed=1
+    if [[ -z "$miniList" ]]; then
+      miniList="  Nothing is hidden!"
+      linesDisplayed=1
     fi
 
     # Calculate where to draw the dmenu popup.
     # Comment that line if you use vanilla dmenu.
-    yPos=$((410 - $linesDisplayed * 10))
+    yPos=$(( 410 - linesDisplayed * 10))
 
     # If you use rofi
     dmenu_cmd="rofi -lines $linesDisplayed -dmenu -p Hidden:"
@@ -64,19 +80,21 @@ dmenu)
         cut -d " " -f 3- |
         nl -w 3 -n rn |
         sed -r 's/^([ 0-9]+)[ \t]*(.*)$/\1 - \2/' |
-        $dmenu_cmd |
+        ${(z)dmenu_cmd} |
         cut -d '-' -f -1)
 
     # If you exited dmenu without selecting anything or if the list was empty
     [[ -z "$lineNumber" ]] || [[ "$miniList" = " Nothing is hidden!" ]] && exit
 
+    local selectedID selectedDesktop
     # Show the selected hidden window
     selectedID=$(sed -n "$lineNumber p" $file | cut -d ' ' -f 1)
     selectedDesktop=$(sed -n "$lineNumber p" $file | cut -d ' ' -f 2)
     xdotool set_desktop $selectedDesktop
     xdo show $selectedID && sed -i "${lineNumber}d" $file
     ;;
-last)
+  (last)
+    local liens selectedId selectedDesktop
     lines=$(wc -l <$file)
     selectedID=$(tail -n 1 $file | cut -d ' ' -f 1)
     selectedDesktop=$(sed -n "$lines p" $file | cut -d ' ' -f 2)
@@ -84,3 +102,5 @@ last)
     xdo show $selectedID && sed -i "${lines}d" $file
     ;;
 esac
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

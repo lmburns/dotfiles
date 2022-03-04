@@ -177,12 +177,12 @@ fi
 typeset -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
 # 'M-q'             push-line-or-edit     # zsh-edit
+# 'F1'                    dotbare-fstat
+# 'F2'                    db-faddf
+# 'F3'                    _wbmux
   'Home'                  beginning-of-line
   'End'                   end-of-line
   'Delete'                delete-char
-  'F1'                    dotbare-fstat
-  'F2'                    db-faddf
-  'F3'                    _wbmux
   ';z'                    zbrowse
   'Esc-e'                 wfxr::fzf-file-edit-widget
   'Esc-i'                 fe
@@ -212,11 +212,11 @@ typeset -gA keybindings; keybindings=(
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
   'mode=vicmd H'          vi-beginning-of-line
+  'mode=vicmd Q'          src-locate # search for something placing results in $candidates[@]
   'mode=vicmd ?'          which-command
   'mode=vicmd yy'         copyx
   'mode=vicmd ;v'         clipboard-fzf         # greenclip fzf
   'mode=vicmd ;e'         edit-command-line-as-zsh
-  'mode=vicmd ;o'         noptions             # edit zsh options
   'mode=vicmd ;x'         vi-backward-kill-word
   'mode=vicmd c.'         vi-change-whole-line
   'mode=vicmd ds'         delete-surround
@@ -225,12 +225,15 @@ typeset -gA keybindings; keybindings=(
   'mode=vicmd M-f'        list-keys          # list keybindings in mode
   'mode=vicmd \$'         expand-all         # expand alias etc under keyboard
   'mode=vicmd \-'         zvm_switch_keyword # decrement item under keyboard
-  'mode=vicmd \+'         zvm_switch_keyword # inccrement item under keyboard
+  'mode=vicmd \+'         zvm_switch_keyword # increment item under keyboard
+  'mode=vicmd ,.'         get-line           # get line from buffer-stack
+  'mode=vicmd ..'         push-line          # push line to buffer-stack
   'mode=viins jk'         vi-cmd-mode
   'mode=viins kj'         vi-cmd-mode
   'mode=visual S'         add-surround
-  'mode=str M-t'          t                  # tmux wfxr
+  'mode=str M-t'          tmt                # tmux wfxr
   'mode=str C-o'          lc                 # lf change dir
+  'mode=str ;o'           noptions           # edit zsh options
   'mode=str C-u'          lf                 # regular lf
   'mode=@ C-b'            bow2               # surfraw open w3m
   'mode=+ M-.'            kf                 # a formarks like thing in rust
@@ -240,13 +243,13 @@ typeset -gA keybindings; keybindings=(
   'mode=@ M-,'            __zoxide_zi
   'mode=@ M-['            fstat
   'mode=@ M-]'            fadd
+
   'mode=menuselect Space' .accept-line
   'mode=menuselect C-r'   history-incremental-search-backward
   'mode=menuselect C-f'   history-incremental-search-forward
 
 # ========================== Testing ==========================
 # 'mode=vicmd Q'    save-alias
-  'mode=vicmd Q'    src-locate
   'mode=vicmd ;d'   dirstack-plus
 )
 
@@ -370,3 +373,121 @@ function lskb() {
   # print -rC 2 -- ${(nkv)keyb}
   # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
+
+# ============================== Taken ===============================
+# ======================== From Valodim/github =======================
+
+# applies $1 exnorm string to BUFFER
+function ex-norm-run() {
+
+    # this is a widget!
+    zle || return
+
+    # this might be possible using only stdin/stdout like this
+    # $(ex +ponyswag +%p - <<< $BUFFER)
+    # but we play it safe using a temp file here.
+
+    # use anonymous scope for a tempfile
+    () {
+
+        local -a posparams
+        (( CURSOR > 0 )) && posparams=( +'set ww+=l ve=onemore' +"normal! gg${CURSOR}l" +'set ww-=l ve=' )
+
+        # call ex in silent mode, move $CURSOR chars to the right with proper
+        # wrapping, run the specified command in normal mode, prepend position
+        # of the new cursor, write and exit.
+        ex -s $posparams \
+            +"normal! $1" \
+            +"let @a=col('.')" \
+            +'normal! ggi ' \
+            +'normal! "aP' \
+            +wq "$2"
+
+        result="$(<$2)"
+        # new buffer
+        BUFFER=${result#* }
+        # and new cursor position
+        CURSOR=$(( ${(M)result#* } -1 ))
+
+    } "$1" =(<<<"$BUFFER")
+
+}
+
+# ZSH_HIST_DIR from localhist, or just use $ZSH or just use $HOME
+typeset -H ZSH_EXN_HIST=${ZSH_HIST_DIR:-${ZSH:-$HOME}}/.zsh_exnhist
+ex-norm () {
+
+    # push exnorm history on stack, but only for the scope of this function
+    fc -p -a $ZSH_EXN_HIST
+    HISTNO=$HISTCMD
+
+    # anonymous scope for recursive-edit foo
+    () {
+
+        local pos=$[ $#PREDISPLAY + $#LBUFFER ]
+        # regular buffer is uninteresting for now.
+        # show a space if RBUFFER is empty, otherwise there will be nothing to underline
+        local pretext="$PREDISPLAY$LBUFFER${RBUFFER:- }$POSTDISPLAY
+"
+        local +h LBUFFER=""
+        local +h RBUFFER=""
+        local +h PREDISPLAY="${pretext}:normal! "
+        local +h POSTDISPLAY=
+
+        # underline the cursor position position, and highlight some stuff
+        local +h -a region_highlight
+        region_highlight=( "P$pos $[pos+1] underline" "P${#pretext} ${#PREDISPLAY} bold")
+
+        # prevent zsh_syntax_highlighting from screwing up our region_highlight
+        # not sure if this works with vanilla zsh_syntax_highlight...
+        local ZSH_HIGHLIGHT_MAXLENGTH=0
+
+        # let the user edit
+        zle recursive-edit -K exnorm
+
+        # everything ok? put BUFFER in REPLY then (and return accordingly)
+        (( $? )) || REPLY=$BUFFER
+
+    }
+
+    # positive status and REPLY set?
+    if (( $? == 0 )) && [[ -n $REPLY ]]; then
+        # append to exnorm history
+        print -sr -- ${REPLY%%$'\n'}
+        # if we have a non-empty $REPLY, process with ex
+        ex-norm-run $REPLY
+    fi
+
+}
+zle -N ex-norm
+
+# runs last exnorm command, or n'th last if there is a NUMERIC argument
+ex-norm-repeat () {
+    fc -p -a $ZSH_EXN_HIST
+
+    # bail out if there is no such command in history
+    [[ -n $history[$[HISTCMD-${NUMERIC:-1}]] ]] || return 1
+
+    # run the ex command
+    ex-norm-run $history[$[HISTCMD-${NUMERIC:-1}]]
+}
+zle -N ex-norm-repeat
+
+# set up exnorm keymap
+bindkey -N exnorm main
+
+# might be nice to have some of the ^X as literals so they are passed to ex.
+# not sure about this though, and there is always ^V...
+# () {
+#     setopt localoptions braceccl
+#     # delete all prefix bindings
+#     for x in {A-Z}; bindkey -M exnorm -r -p "^$x"
+#     # delete all regular bindings
+#     bindkey -M exnorm -R '^A-^L' self-insert
+#     bindkey -M exnorm -R '^N-^Z' self-insert
+# }
+
+# these bindings may not be for everyone. I like them like this. jk is similar
+# to jj for normal mode, q and @ are similar to the macro commands in vim.
+bindkey -M vicmd q ex-norm
+bindkey -M vicmd @ ex-norm-repeat

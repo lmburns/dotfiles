@@ -9,7 +9,9 @@ pgrep -x pueued    >/dev/null && pueue clean
 # Get rss feeds in the background
 pgrep -x rss-watch >/dev/null || run-rss-watch
 # Control the mouse with your keyboard
-pgrep -x keynav    >/dev/null && keynav &
+pgrep -x keynav    >/dev/null || keynav &
+# Pulseaudio applet
+pgrep -x pasystray >/dev/null || pasystray &
 
 # File manager
 # pgrep -x thunar >/dev/null || thunar --daemon &

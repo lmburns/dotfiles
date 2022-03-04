@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+
+try:
+    import psutil
+except:
+    print("N/A")
+
+
+class bcolors:
+    OKGREEN = "#[fg=#98c379, bg=default]"
+    WARNING = "#[fg=#e5c07b, bg=default]"
+    FAIL = "#[fg=#e06c75, bg=default]"
+
+
+mem_usage = psutil.virtual_memory()[2]
+
+if mem_usage >= 80:
+    print(bcolors.FAIL + "﬙ %s" % mem_usage + "%")
+elif mem_usage >= 60:
+    print(bcolors.WARNING + "﬙ %s" % mem_usage + "%")
+elif mem_usage >= 40:
+    print(bcolors.WARNING + "﬙ %s" % mem_usage + "%")
+elif mem_usage >= 20:
+    print(bcolors.OKGREEN + "﬙ %s" % mem_usage + "%")
+else:
+    print(bcolors.OKGREEN + "﬙ %s" % mem_usage + "%")

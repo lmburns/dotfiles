@@ -2,7 +2,6 @@
 # │ Basics / General                                                          │
 # └───────────────────────────────────────────────────────────────────────────┘
 set shell zsh
-# set shellopts '-eu:--shwordsplit'
 set shellopts '-euy'
 set ifs "\n"
 set filesep "\n"  # default already
@@ -17,6 +16,7 @@ set smartcase         # if capital letter then case sensitive
 set dircounts on      # show number of items in directory instead of sie
 set info "size"       # list directory information on the right
 set sortby "natural"  # don't sort files in any special way
+# set globsearch        # search with globs
 set preview on        # preview file on the right pane
 set drawbox on        # draw a border around all panes
 set ratios '1:2:3'    # ratio of pane widths
@@ -73,6 +73,8 @@ cmd on-cd &{{
   [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
 
   # add-zsh-hook chpwd chpwd_recent_dirs
+  # zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
+
   # add-zsh-hook chpwd @chwpd_dir-history-var
   # add-zsh-hook zshaddhistory @append_dir-history-var
   # @chwpd_dir-history-var now
@@ -101,7 +103,7 @@ map <esc> quit
 # └───────────────────────────────────────────────────────────────────────────┘
 # -- Open: any file
 cmd open ${{
-    case $(file --mime-type -b $f) in
+    case $(file --mime-type -b -L $f) in
       (application/pdf|application/vnd*|application/epub*) setsid -f zathura $fx >/dev/null 2>&1 ;;
       (application/csv) vd $fx ;;
       (application/msword\
@@ -166,7 +168,6 @@ cmd trash ${{
 }}
 
 # -- Move: zoxide
-# dest="$(print -rl -- ${(Oa)${${(@f)"$(autojump -s)"}//(#m)*/${${(s: :)${MATCH}//[[:space:]]##/ }[2]}}[0,-6]} | fzf --prompt ' Jump Move> ' --no-height)"
 cmd movetojump ${{
   local dest x
   clear
@@ -187,7 +188,7 @@ cmd movetopath ${{
 }}
 
 
-# -- Copy: autojump
+# -- Copy: zoxide
 cmd copytojump ${{
   clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Copy to> ' --no-height +m" zoxide query -i)
@@ -519,8 +520,8 @@ cmd tmsu-set ${{
   print -Pr "%f"
   printf "=%.0s" {1..22}
   print
-  vared -cp "Set tag: " tag
-  tmsu tag --tags="$tag" $fx
+  vared -cp "Set tag: " tmsu_tag
+  tmsu tag --tags="$tmsu_tag" $fx
 }}
 
 # -- Tag: tmsu list specific file
@@ -532,8 +533,8 @@ cmd tmsu-remove ${{
   print -Pr "%f"
   printf "=%.0s" {1..22}
   print
-  vared -cp "Remove tag: " tag
-  tmsu untag --tags="$tag" $fx
+  vared -cp "Remove tag: " tmsu_tag
+  tmsu untag --tags="$tmsu_tag" $fx
 }}
 
 # -- Tag: tmsu remove
@@ -619,8 +620,6 @@ cmd fzf_cd ${{
   lf -remote "send $id cd '$(fd . --exact-depth=1 -td -HiL | fzf --no-height --pointer="cd")'"
 }}
 
-cmd aj %lf -remote "send $id cd '$(autojump $1)'"
-cmd ajfzf $lf -remote "send $id cd '$(autojump -s | tac | awk 'NR>7{print $2}' | fzf)'"
 cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height)
 cmd fd !clear; fd -Hi "$@"
 cmd rg !clear; rg "$1"
@@ -652,8 +651,12 @@ cmd dlfile %dlfile
 
 # ========================== ZLE ==========================
 
+map H $lf -remote "send $id cd $OLDPWD"
+
 # Change directories
-cmd zle-cd %print -l -- "builtin cd "$PWD" && zle reset-prompt" >&$ZLE_FIFO
+cmd zle-cd %{{
+  print -l -- "_p9k_precmd; builtin cd "$PWD"; zle reset-prompt; zle -R" >&$ZLE_FIFO
+}}
 
 # Insert relative path into the CLI buffer
 cmd zle-insert-relative %{{
@@ -681,8 +684,8 @@ cmd zle-init :{{
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Mappings                                                                  │
 # └───────────────────────────────────────────────────────────────────────────┘
+# map n
 map m
-map n
 map "'"
 map '"'
 map d
@@ -778,16 +781,13 @@ map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
 map fr push :fd<space>--changed-within<space> # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit (with preview)
-map fa ajfzf              # use fzf with autojump
 # map <c-b> broot_jump    # use broot to jump to directory
-map nn fzf_z              # fzf zioxide
-map nb jumpi              # wfxr plugin
+map cc fzf_z              # fzf zioxide
+map ci jumpi              # wfxr plugin
 map cJ njump              # lf specifc - jump bookmark
 map cB nbookmark          # lf specifc - add bookmark
 map cD ndel-bookmark      # lf specifc - del bookmark
 map zi zoxide_i           # zoxide interactive
-map zz push :z<space>     # very similar to autojump
-map <c-j> push :aj<space> # auto jump
 map w fzf_cd              # fzf cd
 map Ma $neomutt -a "$fx"  # mail a file
 # ]]]
@@ -796,15 +796,18 @@ map Ma $neomutt -a "$fx"  # mail a file
 map . set hidden!
 map L cd-followlink           # follow symlink on cd
 
+# Doesn't work
+# map H :cd ${OLDPWD:h}
+
 map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
 map Pp ppaste "copy"          # paste and preview progress
 map y copy                    # general copy
 map Ya yank-path              # yank file path
-map Yj copytojump             # copy to directory with autojump
+map Yj copytojump             # copy to directory with zoxide
 map Yp copytopath             # copy to directory with path entered
-map Mj movetojump             # move to directory with autojump
+map Mj movetojump             # move to directory with zoxide
 map Mp movetopath             # move to directory with path
 
 map Mt push :rsyncto<space>   # move things to the server
@@ -851,7 +854,6 @@ map <c-x>l $$f | bat --paging=always -f             # execute file and bat outpu
 map <c-x>G !go build $fx && ./$(basename ${fx%.go}) # execute go file
 map <c-x>g !go run $fx                              # execute go file
 map <c-x>w push :wim<space>                         # open script source code
-map <c-v> $jupview -P "$f"                          # view ipynb file
 map <c-x>p $cat $fx | up                            # cat file to up (unix piper)
 # ]]]
 
@@ -892,7 +894,8 @@ map gtr ${{
   ngu | xsel -ib
   rip -- *
   gh c $(xsel -b)
-  command rsync -vua --delete-after ${PWD:t}/ .
+  t=$PWD:t
+  command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
 map gtc ${{clear; gclp}}
 map gtb :git_branch
@@ -923,30 +926,14 @@ map gftu ${{clear; dotbare ls-files --other | bat}}
 # == TUI's == [[[
 map gTt $tig show # tig
 map gTu $gitui    # git
-map gL $lazygit  # git
+map gL $lazygit   # git
 map bo $bow       # buku bookmarks
 # ]]]
 
-# == Directory Movement == [[[
-# map gd cd ~/Documents
-# map gW cd ~/vimwiki
-# map gG cd ~/projects/github
-# map gp cd ~/projects
-# map go cd ~/opt
-# map gc cd ~/.config
-# map gh cd ~
-
-# map ge cd ~/Desktop
-# map gD cd ~/Downloads
-# map gP cd ~/Pictures
-# map gv cd ~/.config/nvim
-# map glf cd ~/.config/lf
-#
-# map gC cd ~/.local/share
-# map glo cd ~/.local
-#
-# map gE cd /etc
-# map gU. cd /usr/local
-# map gUs cd /usr/local/share
+# Doesn't work in tmux?
+map <m-1> down
+map <m-2> down
+map <c-m-up> up
+map <c-m-down> down
 
 # ]]]

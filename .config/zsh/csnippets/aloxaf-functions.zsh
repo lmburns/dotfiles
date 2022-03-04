@@ -21,8 +21,6 @@ ORDER BY places.dir != '${PWD//'/''}',
     commands.argv LIKE '${BUFFER//'/''}%' DESC,
     Count(*) DESC
 "
-    # 保证搜索的是全部历史
-    # NOTE: 此处依赖 fzf-tab
     local selected=$(fc -rl 1 | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
     if [[ "$selected" != "" ]] {
         zle vi-fetch-history -n $selected

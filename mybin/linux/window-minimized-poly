@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+local -a minimized
+local file
+file='/tmp/.minimized'
+
+[[ -f $file ]] || return
+minimized=( ${(@f)"$(<$file)"} )
+
+print -n " $#minimized"

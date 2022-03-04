@@ -1,0 +1,56 @@
+#compdef hist
+
+if [[ -z $_HIST__OPTS || -z $_HIST__ARGS ]]; then
+  autoload -Uz hist
+  hist -fq l &> /dev/null
+fi
+
+local -a options=()
+print -v options -f '%s[%s]' - "${(kv@)_HIST__OPTS}"
+local -a actions=()
+print -v actions -f "%s\:'%s'" - "${(kv@)_HIST__ARGS}"
+local -a arguments=( ${(i)options} ":action:(( ${(j: :)${(i)actions[@]}} ))" )
+case $words[CURRENT-1] in
+  (    c* ) arguments+=( ':delta: ' ) ;;
+  ( [ru]* ) arguments+=() ;;
+  (     * ) arguments+=( ":index, offset or pattern:->selection" ) ;;
+esac
+
+local state
+_arguments -s -A '' "$arguments[@]"
+
+[[ $state != 'selection' ]] &&
+  return 1
+
+local -a keys=() events=() displays=() matches=()
+local -i end=15
+case $words[CURRENT] in
+  ( | - )
+    words[CURRENT]=-1
+    ;&
+  ( -<1-> )
+    local -i start=$(( HISTNO + words[CURRENT] ))
+    keys=( {$start..$(( start - end ))} )
+    print -v events -f "%$#HISTNO.${#HISTNO}s  %s" "${(kv@)history[(I)(${(~j:|:)keys})]}"
+    local -a offsets=( {$words[CURRENT]..$(( words[CURRENT] - end ))} )
+    local -i len=$(( $#HISTNO + 1 ))
+    print -v displays -f "%$len.${len}s  %s" "${(@)offsets:^events}"
+    ;;
+  ( <1-> )
+    keys=( {$words[CURRENT]..$(( words[CURRENT] + end ))} )
+    print -v events -f "%$#HISTNO.${#HISTNO}s  %s" "${(kv@)history[(I)(${(~j:|:)keys})]}"
+    displays=( "${(Oa@)events[@]}" )
+    ;;
+  ( * )
+    return
+    ;;
+esac
+local -i MBEGIN MEND
+local MATCH
+displays=(
+  "${(@)displays[@]:/(#m)*/${(r:COLUMNS-1:)MATCH//(#m)($'\n'|[^[:print:]])##/${(q+)MATCH}}}"
+)
+matches=( "${(@)${displays[@]##[[:space:]]#}[@]%%[[:space:]]##*}" )
+local expl _comp_no_ignore=1
+_description events expl 'index, offset or pattern'
+compadd "$expl[@]" -S '' -QU -ld displays -a matches

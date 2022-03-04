@@ -2,15 +2,43 @@
 # OTHER
 ##################################################################################
 
+function num() {
+  (( $# == 0 )) && {
+    tr '[:lower:]' '[:upper:]' | numfmt --from iec
+  } || numfmt --from iec "${(U)@}"
+}
+
+function fnum() {
+  (( $# == 0 )) && {
+    numfmt --to iec
+  } || numfmt --to iec "${@}"
+}
+
+function fzf-dmenu() {
+  local selected="$(\
+    command ls /usr/share/applications \
+      | sed 's/\(.*\)\.desktop/\1/g' \
+      | fzf -e
+  ).desktop"
+  (( ! $? )) && {
+    nohup $(\
+      grep '^Exec' "/usr/share/applications/$selected" \
+        | tail -1 \
+        | sed 's/^Exec=//' \
+        | sed 's/%.//'
+    ) >/dev/null 2>&1 &
+  }
+}
+
 # remove broken symbolics
 function wfxr::rm-broken-links() {
-    local ls links
-    (( $+commands[exa] )) && ls=exa || ls=ls
-    IFS=$'\n' links=(`eval "find $1 -xtype l"`)
-    [[ -z $links ]] && return
-    $ls -l --color=always ${links[@]}
-    echo -n "Remove? [y/N]: "
-    read -q && rm -- ${links[@]}
+  local ls; local -a links
+  (( $+commands[exa] )) && ls=exa || ls=ls
+  links=( ${(@f)"$(find ${(z)1} -xtype l)"} )
+  [[ -z $links ]] && return
+  $ls -l --color=always ${links[@]}
+  echo -n "Remove? [y/N]: "
+  read -q && rm -- ${links[@]}
 }
 
 # function rm::broken() {
@@ -27,35 +55,39 @@ function rm::broken-links-all() { wfxr::rm-broken-links               }
 function rm::broken-links()     { wfxr::rm-broken-links '-maxdepth 1' }
 
 function vcurl() {
-    local TMPFILE="$(mktemp -t --suffix=.json)"
-    trap "\\rm -f '$TMPFILE'" EXIT INT TERM HUP
-    nvim "$TMPFILE" >/dev/tty
-    curl ${(@f)"$(<$TMPFILE)"}
+  local TMPFILE="$(mktemp -t --suffix=.json)"
+  trap "\\rm -f '$TMPFILE'" EXIT INT TERM HUP
+  nvim "$TMPFILE" >/dev/tty
+  curl ${(@f)"$(<$TMPFILE)"}
 }
 
 function kcurl() {
-    local BUFFER="/tmp/curl-body-buffer.json"
-    touch "$BUFFER" && nvim "$BUFFER" >/dev/tty
-    curl "$@" < "$BUFFER"
+  local BUFFER="/tmp/curl-body-buffer.json"
+  touch "$BUFFER" && nvim "$BUFFER" >/dev/tty
+  curl "$@" < "$BUFFER"
 }
 
 # Open git repo in browser
 function grepo() {
-    [[ "$#" -ne 0 ]] && return $(handlr open "https://github.com/${(j:/:)@}")
-    local url
-    url=$(git remote get-url origin) || return $?
-    [[ "$url" =~ '^git@' ]] && url=$(echo "$url" | sed -e 's#:#/#' -e 's#git@#https://#')
-    command handlr open "$url"
+  [[ "$#" -ne 0 ]] && return $(handlr open "https://github.com/${(j:/:)@}")
+  local url
+  url=$(git remote get-url origin) || return $?
+  [[ "$url" =~ '^git@' ]] && url=$(echo "$url" | sed -e 's#:#/#' -e 's#git@#https://#')
+  command handlr open "$url"
 }
 
 # Dump zsh hash
 function dump_map() {
-    eval "[[ \${(t)arr} = association ]]" || return 1
-    eval "\
-        for k ( \"\${(@k)$1}\" ) {
-            print -Pr \"%F{2}\$k%f %F{1}%B=>%f%b %F{3}\$$1[\$k]%f\"
-        }
-    "
+  eval "[[ \${(t)$1} = association ]]" || {
+    print::error "$1 is not a hash"
+    return 1
+  }
+
+  eval "\
+    for k ( \"\${(@k)$1}\" ) {
+      print -Pr \"%F{2}\$k%f %F{1}%B=>%f%b %F{3}\$$1[\$k]%f\"
+    }
+  "
 }
 
 ##################################################################################
@@ -73,9 +105,9 @@ function __unicode_translate() {
 }
 
 function unicode-map() {
-    ruby \
-      -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' \
-    | fzf -m
+  ruby \
+    -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' \
+  | fzf -m
 }
 
 ##################################################################################
@@ -93,18 +125,18 @@ export FZF_ALT_E_OPTS
 
 # ALT-E - Edit selected file
 function wfxr::fzf-file-edit-widget() {
-    setopt localoptions pipefail
-    local files
-    files=$(eval "$FZF_ALT_E_COMMAND" |
-        FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS $FZF_ALT_E_OPTS" fzf -m |
-        sed 's/^\s\+.\s//')
-    local ret=$?
+  setopt localoptions pipefail
+  local files
+  files=$(eval "$FZF_ALT_E_COMMAND" |
+    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS $FZF_ALT_E_OPTS" fzf -m |
+      sed 's/^\s\+.\s//')
+  local ret=$?
 
-    [[ $ret -eq 0 ]] && echo $files | xargs sh -c "$EDITOR \$@ </dev/tty" $EDITOR
+  [[ $ret -eq 0 ]] && echo $files | xargs sh -c "$EDITOR \$@ </dev/tty" $EDITOR
 
-    zle redisplay
-    typeset -f zle-line-init >/dev/null && zle zle-line-init
-    return $ret
+  zle redisplay
+  typeset -f zle-line-init >/dev/null && zle zle-line-init
+  return $ret
 }
 zle     -N    wfxr::fzf-file-edit-widget
 # bindkey '\ee' wfxr::fzf-file-edit-widget
@@ -143,6 +175,7 @@ function wfxr::tmux-switch() {
                               --preview-window=right:60%) &&
         tmux switch-client -t $(awk '{print $2}' <<<"$choice") 2>/dev/null
 }
+
 # Tmux attach session
 function wfxr::tmux-attach() {
     [[ $TMUX ]] && return 1 # Already in tmux session

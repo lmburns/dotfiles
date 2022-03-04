@@ -1,5 +1,4 @@
-# desc: nvim like fzf function (similar to bash rgf)
-
+# Version 1: Use ripgrep to find files
 function Rg() {
   rg --column --line-number --no-heading --color=always --smart-case "$1" |
     fzf --ansi \
@@ -9,6 +8,7 @@ function Rg() {
       --preview-window 'default:right:60%:~1:+{2}+3/2:border-left'
 }
 
+# Version 1: Use skim to find files
 function Sk() {
   sk --ansi \
      --prompt '❱ ' \
@@ -23,6 +23,8 @@ function Sk() {
 
 # --skip-to-pattern '[^/]*:'
 
+# Version 2: Use ripgrep to find files (much better)
+# Has ability to parse glob and use pcre regex
 function RG() {
   emulate -L zsh
   setopt extendedglob
@@ -56,6 +58,7 @@ function RG() {
 
 # --preview-window 'nohidden,up,60%,border-bottom,+{2}+3/3,~3'
 
+# Find todo comments
 function TODOS() {
   local RG_PREFIX
   local -a selected

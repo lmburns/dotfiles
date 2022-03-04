@@ -9,7 +9,6 @@
 0="${${(M)0:#/*}:-$PWD/$0}"
 
 umask 022
-# umask u=rwx,g=rx,o=rx
 # limit coredumpsize 0
 
 typeset -gaxU path fpath manpath infopath cdpath
@@ -19,6 +18,14 @@ typeset -ga mylogs
 typeset -F4 SECONDS=0
 function zflai-msg()    { mylogs+=( "$1" ); }
 function zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
+
+# Write zprof to $mylogs
+function zflai-zprof() {
+  local -a arr; arr=( ${(@f)"$(zprof)"} )
+  for idx ({3..7}) {
+    zflai-msg "[zprof]: ${arr[$idx]##*)[[:space:]]##}"
+  }
+}
 
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
@@ -37,9 +44,8 @@ typeset -g MAILCHECK=0    # Don't check for mail
 typeset -g KEYTIMEOUT=15  # Key action time
 typeset -g FCEDIT=$EDITOR # History editor
 
-# typeset -g REPORTTIME=5   # Report the time of command if longer than 5sec
 # typeset -g PROMPT_EOL_MARK=''
-# typeset -g ZSH_DISABLE_COMPFIX=true
+# typeset -g REPORTTIME=5   # Report the time of command if longer than 5sec
 # fignore=( zwc ) # File suffixes to ignore for completion
 
 # Various highlights for CLI
@@ -63,19 +69,53 @@ typeset -ga zle_highlight=(
   typeset -g RPS2="%F{14}%i:%_%f"
 }
 
-# setopt brace_ccl auto_param_slash transient_prompt
-setopt auto_pushd        pushd_ignore_dups  pushd_minus          pushd_silent
-setopt glob_dots         extended_glob      no_case_glob         glob_complete    numeric_glob_sort
-setopt hist_ignore_space append_history     hist_ignore_all_dups no_hist_no_functions hist_reduce_blanks
-setopt share_history     inc_append_history extended_history     hist_fcntl_lock
-setopt nohup             notify             no_flow_control      multios
-setopt auto_cd           rc_quotes          cdable_vars          menu_complete
-setopt long_list_jobs    no_beep            prompt_subst         no_mail_warning
-setopt auto_menu         complete_in_word   always_to_end        interactive_comments
-setopt hash_cmds         hash_list_all      nonomatch
+# setopt brace_ccl # expand in braces, which would not otherwise, into a sorted list
+# setopt list_types # show type of file with indicator at end
 
-# don't error out when unset parameters are used
-setopt unset
+setopt hist_ignore_space    # don't add if starts with space
+setopt hist_reduce_blanks   # remove superfluous blanks from each command
+setopt hist_allow_clobber   # add '|' to output redirections in history
+setopt hist_ignore_all_dups # replace duplicate commands in history file
+setopt hist_fcntl_lock      # use fcntl to lock hist file
+setopt extended_history     # add beginning time, and duration to history
+setopt append_history       # all zsh sessions append to history, not replace
+setopt share_history        # imports commands and appends, can't be used with inc_append_history
+setopt no_hist_no_functions # don't remove function defs from history
+# setopt inc_append_history # append to history file immediately, not when shell exits
+
+# cd settings
+setopt auto_cd   auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
+setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
+
+setopt prompt_subst # allow substitution in prompt (p10k?)
+
+setopt numeric_glob_sort # sort globs numerically
+setopt no_case_glob      # case insensitive globbing
+setopt extended_glob     # extension of glob patterns
+setopt glob_complete     # generate glob matches as completions
+setopt glob_dots         # do not require leading '.' for dotfiles
+# setopt glob_star_short   # ** = **/*; *** = ***/*
+
+setopt complete_in_word # cursor stays in same spot with completion
+setopt always_to_end    # cursor moves to end of word if completion is executed
+setopt auto_menu        # automatically use menu completion (fzf-tab?)
+
+setopt hash_cmds     # save location of command preventing path search
+setopt hash_list_all # when a completion is attempted, hash it first
+
+setopt rc_quotes            # allow '' inside '' to indicate a single '
+setopt interactive_comments # allow comments in history
+setopt c_bases              # 0xFF instead of 16#FF
+setopt unset                # don't error out when unset parameters are used
+setopt long_list_jobs       # list jobs in long format by default
+setopt notify               # report status of jobs immediately
+setopt multios              # perform multiple implicit tees and cats with redirection
+
+setopt no_flow_control # don't output flow control chars (^S/^Q)
+setopt no_hup          # don't set HUP to jobs when shell exits
+setopt no_nomatch      # don't print an error if pattern doesn't match
+setopt no_beep         # don't beep on error
+setopt no_mail_warning # don't print mail warning
 
 typeset -gx ZINIT_HOME="${0:h}/zinit"
 typeset -gx GENCOMP_DIR="${0:h}/completions"
@@ -116,7 +156,7 @@ typeset -ga dirstack; dirstack=(
 } 2>/dev/null
 alias c=cdr
 
-fpath=( ${0:h}/{functions,completions} "${fpath[@]}")
+fpath=( ${0:h}/{functions,completions} "${fpath[@]}" )
 autoload -Uz $fpath[1]/*(:t)
 # module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
 # ]]]
@@ -134,7 +174,7 @@ mv_clean() { print -lr -- "command mv -f tar*/rel*/${1:-%PLUGIN%} . && cargo cle
 grman() {
   local graw="https://raw.githubusercontent.com"; local -A opts
   zparseopts -D -E -A opts -- r: e:
-  print -r "${graw}/%USER%/%PLUGIN%/master/${@:1}${opts[-r]:-%PLUGIN%}.${opts[-e]:-1}";
+  print -r "${graw}/%USER%/%PLUGIN%/master/${@:1}${opts[-r]:-%PLUGIN%}${opts[-e]:-.1}";
 }
 
 # Show the url <owner/repo>
@@ -274,6 +314,7 @@ zt 0a light-mode for \
     psprint/zsh-navigation-tools \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
+  atinit'alias zmand="info zsh "' \
     mattmc3/zman
 
 # ]]] === wait'0a' block ===
@@ -317,11 +358,10 @@ zt 0b light-mode for \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
-  atload'
+  wait'[[ -n $DISPLAY ]]' atload'
   zstyle ":notify:*" expire-time 6
   zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
   zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"
-  zstyle ":notify:*" error-icon /usr/share/icons/Gruvbox-Material-Dark/24x24/emblems/emblem-syncthing-error.svg
   ' \
     marzocchi/zsh-notify
 #  ]]] === wait'0b' ===
@@ -417,6 +457,9 @@ zt 0c light-mode null for \
     lotabout/skim \
   multisrc'shell/{completion,key-bindings}.zsh' id-as'skim_comp' pick'/dev/null' \
     lotabout/skim \
+  id-as'sk-tmux' lbin \
+  atclone"xh --download https://raw.githubusercontent.com/lotabout/skim/master/bin/sk-tmux -o sk-tmux" \
+    zdharma-continuum/null \
   lbin from'gh-r' dl"$(grman man/man1/)" lman \
     junegunn/fzf \
   multisrc'shell/{completion,key-bindings}.zsh' id-as'fzf_comp' pick'/dev/null' \
@@ -735,7 +778,7 @@ zt 0c light-mode null for \
 
 #  === snippet block === [[[
 zt light-mode is-snippet for \
-  atload'zle -N RG; bindkey "^P" RG' \
+  atload'zle -N RG' \
     $ZDOTDIR/csnippets/*.zsh
 #  ]]] === snippet block ===
 # ]]] == zinit closing ===
@@ -1078,5 +1121,6 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 function zflai-print()  { print -rl -- ${(%)mylogs//(#b)(\[*\]): (*)/%F{1}$match[1]%f: $match[2]}; }
 
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
+zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh fdm=marker fmr=[[[,]]]:

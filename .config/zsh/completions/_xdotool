@@ -2,6 +2,21 @@
 
 autoload -U is-at-least
 
+_xdotool_classnames() {
+  local -a xlist compl
+  xlist=("${(@)${(M@)${(@f)$(xwininfo -root -tree)}:#[ 	]#0x[0-9a-f]# \"*}##[ 	]#}")
+  xlist=( ${(@)xlist%% *} )
+
+  zmodload -Fa zsh/parameter p:functions
+  (( $+functions[mapl] )) || return
+
+  compl=(
+    ${(@u)${(@s:, :)${(@)${(@)${(@f)"$(mapl 'xprop -id $1 WM_CLASS' $xlist)"}##WM_CLASS* (= |found.)}%%, \"\"}//\"/}}
+  )
+
+  _describe -t class-names "class names" compl
+}
+
 _xdotool_keys() {
   typeset -a keys; keys=(
     'esc:Escape'
@@ -383,7 +398,7 @@ _xdotool () {
         (search)
           _arguments "${_arguments_options[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            '--class[check regexp_pattern against the window class]' \
+            '--class[check regexp_pattern against the window class]:Class:_xdotool_classnames' \
             '--classname[check regexp_pattern against the window classname]' \
             '--role[check regexp_pattern against the window role]' \
             '*--maxdepth[set search depth to N. Default is infinite. (-1 is infinite)]:NUM:' \

@@ -60,12 +60,11 @@
     # anaconda                # conda environment (https://conda.io/)
     pyenv                   # python environment (https://github.com/pyenv/pyenv)
     goenv                   # go environment (https://github.com/syndbg/goenv)
+    go_version
     rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
     perlbrew
     # ${rust_version//(#b)(*)-(*)/$match[1]-${(C)${${match[2]}:0:1}}}
     rust_version            # rustc version (https://www.rust-lang.org)
-    go_version
-    goenv
     # load                  # CPU load
     disk_usage            # disk usage
     # ram                   # free RAM
@@ -1073,6 +1072,8 @@
   typeset -g POWERLEVEL9K_RBENV_SHOW_SYSTEM=true
   # Custom icon.
   # typeset -g POWERLEVEL9K_RBENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
+  # Doesn't work
+  typeset -g POWERLEVEL9K_RBENV_SHOW_ON_UPGLOB='(Gem|Rake)file|*(.rb|gemspec)'
 
   #######################[ rvm: ruby version from rvm (https://rvm.io) ]########################
   # Rvm color.

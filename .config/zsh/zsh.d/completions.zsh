@@ -94,7 +94,6 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                group-name '' \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                file-sort access \
-      + ''                sort false \
       + ''                use-cache true \
       + ''                cache-path "${ZDOTDIR}/.zcompcache" \
       + ''                verbose true \
@@ -147,6 +146,8 @@ zstyle+ ':completion:*' '' '' \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
       + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
       + ':xcompress:*'    file-patterns   '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
+      + ''                sort true                                                     \
+      + ':(rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bad|nvim):*'      sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|git-{add,rm}|bat|nvim):*' ignore-line other
 
 # Doesn't work
@@ -171,6 +172,32 @@ zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX
 # ]]] === established ===
 
 defer -c defer_completion
+
+# ========================================================================
+
+# === zui === [[[
+zstyle+  ':plugin:zui' \
+           colorpair        white/default \
+      + '' border           yes                 \
+      + '' border_cp        14/default          \
+      + '' bold             no                  \
+      + '' status_colorpair white/default       \
+      + '' status_border    yes                 \
+      + '' status_border_cp 4/default           \
+      + '' status_bold      no                  \
+      + '' mark             blue bold lineund \
+      + '' mark2            yellow bold \
+      + '' status_size      4 \
+      + '' status_pointer   yes \
+      + '' top_anchors      yes
+
+zstyle+ ':plugin:zui' log_append above \
+      + ''            log_time_format "[%H:%M] " \
+      + ''            log_index yes \
+      + ''            log_size 32 \
+      + ''            log_colors "white cyan yellow green cyan red magenta yellow blue"
+# ]]] === zui ===
+
 # ========================================================================
 
 # === fzf-tab === [[[
@@ -357,6 +384,14 @@ zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
 #   list-colors \
 #   '=(#b)([-<)(>]##)[ ]#([a-zA-Z0-9_.,:?@#-]##)[ ]#([<)(>]#)[ ]#([a-zA-Z0-9+?.,()@3-]#)*=1;32=1;31=34=1;31=34'
 
+# Highlight typed part of command
+# zstyle -e ':completion:*:-command-:*:commands' \
+#   list-colors \
+#   'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
+
+zstyle ':completion:*:command-descriptions' \
+  command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
+
 # ]]] === ls-colors ===
 
 # ========================================================================
@@ -405,5 +440,16 @@ zstyle ':completion:*:cd:*' group-order local-directories path-directories
 # zstyle ':completion:incremental:*' completer _complete _correct
 # zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 # ]]] === testing ground ===
+
+# ============================== Compdef =============================
+# ====================================================================
+compdef _aliases       ealias
+compdef _functions     efunc
+compdef _command_names from-where
+compdef _command_names whichcomp
+compdef _command_names wim
+compdef _functions     fim
+compdef _functions     freload
+compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

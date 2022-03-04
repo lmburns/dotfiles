@@ -1,41 +1,41 @@
 # Desc: BUKU bookmark manager
 
-# get bookmark ids
+# Get bookmark ids
 get_buku_ids() {
-    buku -p -f 5 | fzf --tac --layout=reverse-list -m | \
-      hck -d $'\t' -f 1
-    # awk -F= '{print $1}'
-    # cut -d $'\t' -f 1
+  buku -p -f 5 \
+    | fzf --tac --layout=reverse-list -m \
+    | hck -d $'\t' -f 1
+  # awk -F= '{print $1}'
+  # cut -d $'\t' -f 1
 }
 
 # buku open
 fb() {
-    local -a ids; ids=( $(get_buku_ids) )
+  local -a ids; ids=( $(get_buku_ids) )
+  print -Pr -- "%F{1}buku%f %F{2}--open%f ${ids[@]}"
 
-    echo buku --open ${ids[@]}
+  [[ -z $ids ]] && return 1
 
-    [[ -z $ids ]] && return 1 # return error if has no bookmark selected
-
-    buku --open ${ids[@]}
+  command buku --open ${ids[@]}
 }
 
 # buku update
 fbu() {
-    local -a ids; ids=( $(get_buku_ids) )
+  local -a ids; ids=( $(get_buku_ids) )
+  print -Pr -- "%F{1}buku%f %F{2}--update%f ${ids[@]} $@"
 
-    echo buku --update ${ids[@]} $@
-    [[ -z $ids ]] && return 0 # return if has no bookmark selected
+  [[ -z $ids ]] && return 0
 
-    buku --update ${ids[@]} $@
+  command buku --update ${ids[@]} $@
 }
 
 # buku write
 fbw() {
-    local -a ids; ids=( $(get_buku_ids) )
-    # print -l $ids
+  local -a ids; ids=( $(get_buku_ids) )
 
-    for i in ${ids[@]}; do
-        echo buku --write $i
-        buku --write $i
-    done
+  foreach i (${ids[@]}) {
+    echo buku --write $i
+    print -Pr -- "%F{1}buku%f %F{2}--write%f $i"
+    command buku --write $i
+  }
 }

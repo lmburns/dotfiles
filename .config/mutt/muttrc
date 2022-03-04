@@ -106,7 +106,7 @@ set norecall                   # No ask to recall drafts
 set abort_nosubject            # No subject = abort
 set tilde                      # Pad blank lines at end of pager
 set pager_stop                 # Don't move to next message at end
-set pager_index_lines=5        # num lines of ini index when in pager
+set pager_index_lines = 5      # num lines of ini index when in pager
 set sleep_time = 0             # Pause 0 seconds for informational messages
 set nomarkers                  # Disables the `+` displayed at line wraps
 set nomark_old                 # Unread mail stay unread until read
@@ -121,6 +121,9 @@ set mail_check=60              # to avoid lags using IMAP with some email provid
 set timeout=10
 # set autoedit                   # go to the editor right away when composing
 set copy=yes                   # always save a copy of outgoing messages
+
+set abort_key = "<Esc>" # cancel prompt
+set editor = "nvim"     # editor used by neomutt
 
 # == Mail composition ==
 set edit_headers               # include headers in composition
@@ -167,51 +170,53 @@ auto_view application/pgp-encrypted
 alternative_order text/plain text/enriched text/html
 
 # General rebindings
-bind index                \Cf noop
-bind editor               <space> noop
-bind editor               <Tab> complete-query   # Completion
-bind editor               ^T complete            # Completion
-bind attach               <return> view-mailcap
-bind attach               l view-mailcap
-bind index                j next-entry
-bind index                k previous-entry
-bind index                G last-entry
-bind index                g noop
-bind index                gg first-entry
-bind pager,attach         h exit
-bind pager                j next-line
-bind pager                k previous-line
-bind browser,pager        \Ce next-line
-bind browser,pager        \Cy previous-line
-bind index                \Ce next-line
-bind index                \Cy previous-line
-bind pager                l view-attachments
+bind  index               \Cf      noop
+bind  editor              <space>  noop
+bind  editor              <Tab>    complete-query                     # Completion
+bind  editor              ^T       complete                           # Completion
+bind  attach              <return> view-mailcap
+bind  attach              l        view-mailcap
+bind  index               j        next-entry
+bind  index               k        previous-entry
+bind  index               G        last-entry
+bind  index               g        noop
+bind  index               gg       first-entry
+bind  pager,attach        h        exit
+bind  pager               j        next-line
+bind  pager               k        previous-line
+bind  browser             \Ce      next-line
+bind  browser             \Cy      previous-line
+bind  index               \Ce      next-line
+bind  index               \Cy      previous-line
+bind  pager               l        view-attachments
 # bind index              D delete-message
-bind pager,index          d   noop
-bind index                dd delete-message
-bind index                U undelete-message
-bind index                L limit
-bind index                h noop
-bind index                l display-message
-bind index,query          <space> tag-entry
+bind  pager,index         d        noop
+bind  index               dd       delete-message
+bind  index               U        undelete-message
+bind  index               L        limit
+bind  index               h        noop
+bind  index               l        display-message
+bind  index,query         <space>  tag-entry
 #bind browser             h goto-parent
-macro browser             h '<change-dir><kill-line>..<enter>' "Go to parent folder"
-bind index,pager          H view-raw-message
-bind browser              l select-entry
-bind pager,browser        gg top-page
-bind pager,browser        G bottom-page
-bind index,pager,browser  \Cd half-down
-bind index,pager,browser  \Cu half-up
-bind pager,index          dT delete-thread
-bind pager,index          dt delete-subthread
-bind pager,index          gt next-thread
-bind pager,index          gT previous-thread
-bind index,pager          S sync-mailbox
-bind index,pager          R group-reply
-bind index                \031 previous-undeleted # Mouse wheel
-bind index                \005 next-undeleted     # Mouse wheel
-bind pager                \031 previous-line      # Mouse wheel
-bind pager                \005 next-line          # Mouse wheel
+macro browser             h        '<change-dir><kill-line>..<enter>' "Go to parent folder"
+bind  index,pager         H        view-raw-message
+bind  browser             l        select-entry
+bind  browser             gg       top-page
+bind  browser             G        bottom-page
+bind  pager               gg       top
+bind  pager               G        bottom
+bind  index,pager,browser \Cd      half-down
+bind  index,pager,browser \Cu      half-up
+bind  pager,index         dT       delete-thread
+bind  pager,index         dt       delete-subthread
+bind  pager,index         gt       next-thread
+bind  pager,index         gT       previous-thread
+bind  index,pager         S        sync-mailbox
+bind  index,pager         R        group-reply
+bind  index               \031     previous-undeleted                 # Mouse wheel
+bind  index               \005     next-undeleted                     # Mouse wheel
+bind  pager               \031     previous-line                      # Mouse wheel
+bind  pager               \005     next-line                          # Mouse wheel
 
 # Toggle all messages for deletion
 macro index 0d "T.<enter><tag-prefix>D<sync-mailbox>"
@@ -233,10 +238,10 @@ macro index \ef "<enter-command>unset wait_key<enter><shell-escape>printf 'Enter
 
 # simulate the old url menu
 macro index,pager,attach,compose \cb "\
-<enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
-<pipe-message> urlscan<Enter>\
-<enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
-"call urlview to extract URLs out of a message"
+  <enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
+  <pipe-message> urlscan<Enter>\
+  <enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
+  "call urlview to extract URLs out of a message"
 
 macro index A "<limit>all\n" "show all messages (undo limit)"
 
@@ -263,6 +268,13 @@ bind index,pager O sidebar-open
 bind index,pager \Cp sidebar-prev-new
 bind index,pager \Cn sidebar-next-new
 bind index,pager B sidebar-toggle-visible
+
+#bind index,pager , next-unread-mailbox
+bind index,pager . sidebar-toggle-visible
+# move to next sidebar folder, no matter if sidebar is visible or not
+macro index,pager , \
+  "<enter-command>set my_old_visible=\$sidebar_visible sidebar_visible<enter><sidebar-next><sidebar-open><enter-command>set sidebar_visible=\$my_old_visible<enter>" \
+  "move to next sidebar folder"
 
 # Default index colors:
 color index yellow default '.*'
@@ -355,13 +367,6 @@ macro index,pager E "s=receipts<enter>" "save to receipts"
 # macro index,pager I "c!<enter><limit>~(! ~D)<enter>G" "inbox"
 # macro index,pager S "<change-folder-readonly>~/temp/sent_materialized<enter>G" "sent mail"
 
-#bind index,pager , next-unread-mailbox
-bind index,pager . sidebar-toggle-visible
-# move to next sidebar folder, no matter if sidebar is visible or not
-macro index,pager , \
-  "<enter-command>set my_old_visible=\$sidebar_visible sidebar_visible<enter><sidebar-next><sidebar-open><enter-command>set sidebar_visible=\$my_old_visible<enter>" \
-  "move to next sidebar folder"
-
 # == Postponed mail ==
 
 # save postponed mail in the inbox
@@ -392,12 +397,22 @@ set abort_noattach = ask-yes
 set virtual_spoolfile
 source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc
 macro index,pager i1 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to burnsac@me.com"
+  '<sync-mailbox><enter-command>\
+    source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
+    "switch to burnsac@me.com"
 macro index,pager i2 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/lucas@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lucas@lmburns.com"
+  '<sync-mailbox><enter-command>\
+    source /home/lucas/.config/mutt/accounts/lucas@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
+    "switch to lucas@lmburns.com"
 macro index,pager i3 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lmb@lmburns.com"
+  '<sync-mailbox><enter-command>\
+    source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
+    "switch to lmb@lmburns.com"
 macro index,pager i4 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to burnsppl@gmail.com"
+  '<sync-mailbox><enter-command>\
+    source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
+    "switch to burnsppl@gmail.com"
 macro index,pager i5 \
-  '<sync-mailbox><enter-command>source /home/lucas/.config/mutt/accounts/email@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to email@lmburns.com"
+  '<sync-mailbox><enter-command>\
+    source /home/lucas/.config/mutt/accounts/email@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
+    "switch to email@lmburns.com"

@@ -113,36 +113,6 @@ function @replace-string-again() {
 }
 zle -N @replace-string-again
 
-# Default autoloadable function
-function incitem() {
-  setopt extendedglob
-
-  local rrest lrest num
-
-  rrest=${RBUFFER##[0-9]#}
-  if [[ $RBUFFER = [0-9]* ]]; then
-    if [[ -z $rrest ]]; then
-      num=$RBUFFER
-    else
-      num=${RBUFFER[1,-$#rrest-1]}
-    fi
-  fi
-
-  lrest=${LBUFFER%%[0-9]#}
-  if [[ $LBUFFER = *[0-9] ]]; then
-    if [[ -z $lrest ]]; then
-      num="$LBUFFER$num"
-    else
-      num="${LBUFFER[$#lrest+1,-1]}$num"
-    fi
-  fi
-
-  [[ -n $num ]] && (( num += ${NUMERIC:-${incarg:-1}} ))
-
-  BUFFER="$lrest$num$rrest"
-}
-zle -N incitem
-
 # =============================== ZVM ================================
 # ====================================================================
 
