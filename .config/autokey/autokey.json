@@ -12,10 +12,10 @@
         "interfaceType": "XRecord",
         "undoUsingBackspace": true,
         "windowDefaultSize": [
-            638,
-            499
+            1145,
+            1018
         ],
-        "hPanePosition": 160,
+        "hPanePosition": 287,
         "columnWidths": [
             150,
             50,
@@ -43,6 +43,7 @@
         "modifiers": [
             "<alt>",
             "<ctrl>",
+            "<meta>",
             "<super>"
         ],
         "hotKey": "k"

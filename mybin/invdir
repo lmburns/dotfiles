@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+
+# Desc: inventorize a directory by checking hashes
+
+local invdir="$XDG_CACHE_HOME/inventorize"
+local combdir=${invdir}${PWD:h}
+
+[[ ! -d $combdir ]] && command mkdir -p $combdir
+
+[[ $1 = "build" ]] && {
+  inventorize \
+    --inventory $combdir/${PWD:t}.json \
+    build --hash-algorithm sha1
+}
+
+[[ $1 = "update" ]] && {
+  inventorize \
+    --inventory $combdir/${PWD:t}.json \
+    update --remove-missing
+}
+
+[[ $1 = "verify" ]] && {
+  inventorize \
+    --inventory $combdir/${PWD:t}.json \
+    verify
+}
+
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

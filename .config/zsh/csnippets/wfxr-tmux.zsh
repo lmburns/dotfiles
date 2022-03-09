@@ -2,6 +2,7 @@
 # OTHER
 ##################################################################################
 
+#
 function num() {
   (( $# == 0 )) && {
     tr '[:lower:]' '[:upper:]' | numfmt --from iec
@@ -74,6 +75,12 @@ function grepo() {
   url=$(git remote get-url origin) || return $?
   [[ "$url" =~ '^git@' ]] && url=$(echo "$url" | sed -e 's#:#/#' -e 's#git@#https://#')
   command handlr open "$url"
+}
+
+# Shorten a github URL
+function git.io() {
+  emulate -L zsh
+  curl -i -s https://git.io -F "url=$1" | grep "Location" | cut -f 2 -d " "
 }
 
 # Dump zsh hash

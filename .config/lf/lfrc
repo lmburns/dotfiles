@@ -18,7 +18,7 @@ set info "size"       # list directory information on the right
 set sortby "natural"  # don't sort files in any special way
 # set globsearch        # search with globs
 set preview on        # preview file on the right pane
-set drawbox on        # draw a border around all panes
+# set drawbox on        # draw a border around all panes
 set ratios '1:2:3'    # ratio of pane widths
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 

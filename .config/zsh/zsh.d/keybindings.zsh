@@ -130,6 +130,7 @@ zle -N __unicode_translate # translate unicode to symbol
 # ====================================================================
 autoload -U read-from-minibuffer
 
+# ??
 function save-alias() {
   local REPLY FILE
   read-from-minibuffer "alias as: "
@@ -151,9 +152,8 @@ function src-locate() {
   start="$BUFFER"
   read-from-minibuffer "locate: "
   buf=$(lolcate ${(Q@)${(z)REPLY}})
-  [[ $? != 0 ]] && return 1
+  (( $? )) && return 1
   : ${(A)candidates::=${(f)buf}}
-  # LBUFFER="${BUFFER}${(j:; :)@}"
   BUFFER="$start"
 }
 zle -N src-locate
@@ -166,12 +166,6 @@ if [[ $TMUX ]]; then
   zle -N wfxr::tmux-select-window
   vbindkey 'M-w' wfxr::tmux-select-window # alt-w
 fi
-
-# if [[ -n "$terminfo[kcbt]" ]]; then
-#     bindkey "$terminfo[kcbt]" reverse-menu-complete
-# elif [[ -n "$terminfo[cbt]" ]]; then # required for GNU screen
-#     bindkey "$terminfo[cbt]"  reverse-menu-complete
-# fi
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 typeset -gA keybindings; keybindings=(
@@ -222,7 +216,7 @@ typeset -gA keybindings; keybindings=(
   'mode=vicmd ds'         delete-surround
   'mode=vicmd cs'         change-surround
   'mode=vicmd K'          run-help
-  'mode=vicmd M-f'        list-keys          # list keybindings in mode
+  'mode=vicmd Esc-f'      list-keys          # list keybindings in mode
   'mode=vicmd \$'         expand-all         # expand alias etc under keyboard
   'mode=vicmd \-'         zvm_switch_keyword # decrement item under keyboard
   'mode=vicmd \+'         zvm_switch_keyword # increment item under keyboard
@@ -231,16 +225,15 @@ typeset -gA keybindings; keybindings=(
   'mode=viins jk'         vi-cmd-mode
   'mode=viins kj'         vi-cmd-mode
   'mode=visual S'         add-surround
-  'mode=str M-t'          tmt                # tmux wfxr
   'mode=str C-o'          lc                 # lf change dir
-  'mode=str ;o'           noptions           # edit zsh options
   'mode=str C-u'          lf                 # regular lf
+  'mode=str ;o'           noptions           # edit zsh options
   'mode=@ C-b'            bow2               # surfraw open w3m
   'mode=+ M-.'            kf                 # a formarks like thing in rust
-  'mode=@ M-/'            frd                # cd interactively recent dir
-  'mode=@ M-;'            fcd                # cd interactively
+  'mode=+ M-/'            frd                # cd interactively recent dir
+  'mode=+ M-;'            fcd                # cd interactively
   # 'mode=@ M-;'          skim-cd-widget
-  'mode=@ M-,'            __zoxide_zi
+  'mode=+ M-,'            __zoxide_zi
   'mode=@ M-['            fstat
   'mode=@ M-]'            fadd
 

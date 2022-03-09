@@ -300,17 +300,6 @@
   #   typeset -g POWERLEVEL9K_DIR_WORK_SHORTENED_FOREGROUND=4
   #   typeset -g POWERLEVEL9K_DIR_WORK_ANCHOR_FOREGROUND=4
 
-  # custom home directory
-  POWERLEVEL9K_DIR_DISABLED_DIR_PATTERN='~'
-  POWERLEVEL9K_MY_HOME_BACKGROUND=$POWERLEVEL9K_DIR_BACKGROUND
-  POWERLEVEL9K_MY_HOME_FOREGROUND=$POWERLEVEL9K_DIR_FOREGROUND
-
-  function prompt_my_home() {
-  if [[ $PWD == ~ ]]; then
-    p10k segment -r -i HOME_ICON
-  fi
-  }
-
   #
   #   # Styling for WORK_NOT_WRITABLE.
   #   typeset -g POWERLEVEL9K_DIR_WORK_NOT_WRITABLE_VISUAL_IDENTIFIER_EXPANSION='⭐'
@@ -329,6 +318,17 @@
   # back to POWERLEVEL9K_DIR_FOREGROUND.
   #
 
+  ### Custom home directory
+  POWERLEVEL9K_DIR_DISABLED_DIR_PATTERN='~'
+  POWERLEVEL9K_MY_HOME_BACKGROUND=$POWERLEVEL9K_DIR_BACKGROUND
+  POWERLEVEL9K_MY_HOME_FOREGROUND=$POWERLEVEL9K_DIR_FOREGROUND
+
+  function prompt_my_home() {
+    if [[ $PWD == ~ ]]; then
+      p10k segment -r -i HOME_ICON
+    fi
+  }
+
   # add bookmark icon for list of 'formarks' bookmarks
   ### OLD METHOD ###
   # : ${PATHMARKS_FILE:=$ZINIT_HOME/polaris/share/fzf-marks/marks}
@@ -337,9 +337,9 @@
 
   # add bookmark icon for list of 'rualdi' bookmarks
   ### NEW METHOD ###
-  [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
-    bmark_dirs=(${(@f)"$(dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases.[*]')"})
-  } || bmark_dirs=()
+  [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && \
+    bmark_dirs=(${(@f)"$(dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases.[*]')"}) || \
+    bmark_dirs=()
 
   typeset -g POWERLEVEL9K_DIR_CLASSES=(
     '/etc/*|/usr/local/etc/*'          ETC            ''

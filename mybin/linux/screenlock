@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+setopt extendedglob
+
 local width=1920
 local height=1080
 
@@ -10,8 +12,10 @@ local cachepath=${XDG_CACHE_HOME}/lockscreen
 local cropuser=${cachepath}/$USER-pic-crop.png
 
 function cropuser() {
+  local -a images
   local userpic
-  userpic=$HOME/Pictures/wallpapers/astronaut.jpg
+  images=( ${(@f):-$(command ls -1 $HOME/Pictures/wallpapers/*/**.(jpg|png)(#q.-N))} )
+  userpic=$images[$(( RANDOM % $#images ))]
   # -resize 170x170
   convert $userpic \
      -gravity Center \
@@ -88,12 +92,12 @@ function lock() {
     --time-size=15 \
     --{verif,wrong}-size=11 \
     --modif-size=10 \
-    --modif-pos="w/2:h/2-15"
-    # --no-verify
+    --modif-pos="w/2:h/2-15" \
+    --no-verify
 }
 
 () {
-  local ctl="$(playerctl status || true)"
+  local ctl="$(playerctl status 2>&1)"
 
   genbg
   if [[ "$ctl" = "Playing" ]]; then
@@ -102,15 +106,9 @@ function lock() {
 
   dunstctl set-paused true
 
-#if pgrep -x "picom" >/dev/null; then
-# true
-#else
-# setsid -f picom --experimental-backends &
-#fi
+  # pgreg -x picom || setsid -f picom --experimental-backends &
 
-  if pgrep -x rofi; then
-    killall rofi
-  fi
+  pgrep -x rofi && killall rofi
 
   lock || screenlock
 

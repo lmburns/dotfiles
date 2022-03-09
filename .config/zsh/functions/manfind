@@ -1,5 +1,0 @@
-# Desc: find location of manpage
-
-f=$(fd . $MANPATH/man${1:-1} -t f -x echo {/.} | fzf) && man $f
-
-# vim:ft=zsh:et

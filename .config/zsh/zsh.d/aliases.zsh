@@ -115,10 +115,10 @@ alias __='doas'
 (( ${+commands[exa]} )) && {
   # --ignore-glob=".DS_Store|__*
   alias l='exa -FHb --git --icons'
-  alias l.='exa -FHb --git --icons -d .*'
   alias lp='exa -1F'
   alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions'
   alias ls='exa -Fhb --git --icons'
+  alias lsd='ls -d'
   alias lse='exa -Flhb --git --sort=extension --icons'
 
   alias lsm='exa -Flhb --git --sort=modified --modified --icons'
@@ -135,14 +135,12 @@ alias __='doas'
 
   alias lss='exa -Flhb --git --group-directories-first --icons'
 
-  alias lsd='exa -D --icons --git'
+  alias lsD='exa -D --icons --git'
   # 10 newest directories
   alias lsd10N='ll -d --sort=modified -- *(/om[1,10])'
   # Empty directories
   alias lsde='ll -d -- *(/^F)'
 
-  # Dotfiles
-  alias ls.='ll -- .*(.)'
   # Setgid/setuid/sticky flag
   alias lssticky='ll -- *(s,S,t)'
   # Executables
@@ -155,6 +153,10 @@ alias __='doas'
   alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   alias lsb='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='exa -l  --no-user --no-permissions --no-time -@'
+
+  # Dotfiles
+  alias l.='exa -FHb --git --icons -d .*(.)'
+  alias ls.='ll -d -- .*(.)'
 }
 
 (( ${+commands[fd]} )) && {

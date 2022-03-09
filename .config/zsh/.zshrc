@@ -259,8 +259,6 @@ zt 0a light-mode for \
     OMZ::plugins/extract \
   trigger-load'!bd' pick'bd.zsh' \
     tarrasch/zsh-bd \
-  trigger-load'!man' \
-    ael-code/zsh-colored-man-pages \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
     NICHOLAS85/updatelocal \
@@ -416,7 +414,9 @@ zt 0c light-mode binary for \
   lbin atload'alias palette::full="ansi --color-codes" palette::codes="ansi --color-table"' \
     fidian/ansi \
   lbin atclone"./build.zsh" mv"*.*completion -> _zunit" atpull"%atclone" \
-    molovo/zunit
+    molovo/zunit \
+  lbin mv"*.*completion -> _revolver" \
+    molovo/revolver
 
 #  ]]] === wait'0c' - programs - sourced ===
 

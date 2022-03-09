@@ -18,14 +18,4 @@ typeset -ga dir_history
 
 dir_history=("${(v)history[@]}")
 
-# emulate -L zsh
-#
-# [[ -z "$funcstack[2]" ]] || return
-#
-# if [[ -r "$_per_directory_history_path" ]]; then
-#   fc -a -p "$_per_directory_history_path"
-# fi
-#
-# dir_history=("${history[@]}")
-
-# vim:ft=zsh:et
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

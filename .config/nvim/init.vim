@@ -1589,7 +1589,7 @@ Plug 'tami5/sqlite.lua'
   map <A-b> :Telescope buffers theme=get_dropdown<CR>
   map ;c :Telescope commands<CR>
   map ;B :Telescope bookmarks<CR>
-  map <A-r> :Telescope live_grep theme=get_ivy<CR>
+  map ;r :Telescope live_grep theme=get_ivy<CR>
 
   nmap <A-.> :Telescope oldfiles<CR>
 

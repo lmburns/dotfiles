@@ -133,6 +133,8 @@ function myip()      { curl https://api.myip.com; }
 function lswifi()    { nmcli device wifi; }
 # Get wifi information
 function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
+# Nmap info
+function lsnmap() { nmap --iflist; }
 
 # =============================== Listing ============================
 # ====================================================================
@@ -356,6 +358,31 @@ function print::debug()   { print -Pru2 -- "%F{4}[DEBUG]%f: $*"; }
 function print::info()    { print -Pru2 -- "%F{5}[INFO]%f: $*"; }
 function print::notice()  { print -Pru2 -- "%F{13}[NOTICE]%f: $*"; }
 function print::success() { print -Pru2 -- "%F{2}%B[SUCCESS]%f%b: $*"; }
+
+function zsh::log() {
+  setopt localoptions nopromptsubst
+  zmodload -Fa zsh/parameter p:functrace
+
+  local logtype=$1
+  local logname=${3:-${${functrace[1]#_}%:*}}
+
+  case $logtype in
+    (normal) print -Pn "%U%F{white}$logname%f%u: $2" ;;
+    (debug) print -Pn "%U%F{4}$logname%f%u ";   print::debug   "$2" ;;
+    (info)  print -Pn "%U%F{5}$logname%f%u ";   print::info    "$2" ;;
+    (warn)  print -Pn "%S%F{3}$logname%f%s ";   print::warning "$2" ;;
+    (error) print -Pn "%S%F{red}$logname%f%s "; print::error   "$2" ;;
+  esac >&2
+}
+
+# Dump all kinds of info
+function log::dump() {
+  zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
+  print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
+  print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
+  print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
+  print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
+}
 
 # ======================== Dynamic Directory =========================
 # ====================================================================
