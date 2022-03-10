@@ -83,6 +83,8 @@ ddrescue
 debtap
 deepin-wallpapers
 devour
+dfc
+dfrs
 dialog
 dict-devils
 dict-foldoc
@@ -313,6 +315,7 @@ libvips
 libxkbcommon-doc
 linux
 linux-firmware
+lldb
 lnav
 logkeys-git
 lokalize
@@ -361,7 +364,6 @@ menyoki
 milou
 minify
 minuet
-mlocate
 moreutils
 mousepad
 mp3info
@@ -399,6 +401,7 @@ numlockx
 nushell
 obconf-qt
 ocamlbuild
+octopi
 odt2txt
 okular
 openbox
@@ -435,6 +438,7 @@ perlbrew
 phinger-cursors
 pidswallow
 pier-git
+pigz
 pim-data-exporter
 pim-sieve-editor
 pipes-rs-git
@@ -459,6 +463,7 @@ plasma-workspace-wallpapers
 plasma5-applets-redshift-control-git
 playerctl
 pleaser
+plocate
 pmenu
 pngquant
 polkit-kde-agent
@@ -483,6 +488,7 @@ qemu
 qemu-arch-extra
 qt5-styleplugins
 qterminal
+qtscrcpy
 r
 radare2
 ranger
@@ -492,6 +498,7 @@ rclone-browser
 rdrview-git
 redshift
 redshiftgui-bin
+reptyr
 ripgrep
 ristretto
 rkhunter
@@ -536,6 +543,7 @@ spectacle
 spotify-tui
 spotifyd
 sqlite-tcl
+st
 stacer
 stardict
 stash-bin
@@ -599,6 +607,7 @@ timew
 timg
 timidity++
 tllocalmgr-git
+tmate
 tmsu-bin
 tmux
 toilet
@@ -652,6 +661,7 @@ xcape
 xclickroot-git
 xclip
 xcolor
+xcwd-git
 xdg-desktop-portal-gtk
 xdg-desktop-portal-kde
 xdo
@@ -707,6 +717,7 @@ xorg-fonts-75dpi
 xorg-fonts-encodings
 xorg-iceauth
 xorg-mkfontscale
+xorg-oclock
 xorg-server
 xorg-server-common
 xorg-server-devel
@@ -722,10 +733,12 @@ xorg-xauth
 xorg-xbacklight
 xorg-xclock
 xorg-xcmsdb
+xorg-xconsole
 xorg-xcursorgen
 xorg-xdpyinfo
 xorg-xdriinfo
 xorg-xev
+xorg-xeyes
 xorg-xgamma
 xorg-xhost
 xorg-xinit
@@ -734,8 +747,10 @@ xorg-xkbcomp
 xorg-xkbevd
 xorg-xkbutils
 xorg-xkill
+xorg-xload
 xorg-xlsatoms
 xorg-xlsclients
+xorg-xlsfonts
 xorg-xmodmap
 xorg-xpr
 xorg-xprop
@@ -744,11 +759,14 @@ xorg-xrdb
 xorg-xrefresh
 xorg-xset
 xorg-xsetroot
+xorg-xsm
 xorg-xvinfo
 xorg-xwayland
 xorg-xwd
 xorg-xwininfo
 xorg-xwud
+xrestop
+xscope
 xscreensaver
 xsel
 xsettingsd
@@ -765,3 +783,4 @@ zig
 zip
 zoxide
 zsh
+zsh-doc

@@ -382,11 +382,14 @@ selection:
 # Allow terminal applications to change Alacritty's window title.
 
 cursor:
-  style: Block
-  blinking: On
-  blink_interval: 750
-  unfocused_hollow: true
-  vi_mode_style: Block
+  style:
+    # Vim style zsh doesn't change back and forth
+    shape: Block
+    blinking: On
+    blink_interval: 750
+    unfocused_hollow: true
+    vi_mode_style: Block
+    thickness: 0.15
 
 # Live config reload (changes require restart)
 live_config_reload: true
@@ -414,6 +417,9 @@ working_directory: None
 # Send ESC (\x1b) before characters when alt is pressed.
 # alt_send_esc: true
 
+# Offer IPC using `alacritty msg` (unix only)
+ipc_socket: true
+
 hints:
   # Keys used for the hint labels.
   alphabet: "jfkdls;ahgurieowpq"
@@ -440,8 +446,6 @@ hints:
   #       Select the hint's text.
   #   - MoveViModeCursor
   #       Move the vi mode cursor to the beginning of the hint.
-  # https://github.com/
-
 
   enabled:
     # - {
@@ -842,19 +846,19 @@ mouse_bindings:
 # If the same trigger is assigned to multiple actions, all of them are executed
 # at once.
 key_bindings:
-  - { key: P,        mods: Control,        action: Paste            }
-  - { key: Insert,   mods: Shift,          action: Paste            }
-  - { key: Slash,    mods: Control,        chars: "gc"              }
-  - { key: Y,        mods: Control,        action: Copy             }
-  - { key: Key0,     mods: Control,        action: ResetFontSize    }
-  - { key: Equals,   mods: Control,        action: IncreaseFontSize }
-  - { key: Plus,     mods: Control,        action: IncreaseFontSize }
-  - { key: Minus,    mods: Control,        action: DecreaseFontSize }
-  - { key: M,        mods: Control|Shift,  action: Minimize }
-  - { key: Period,   mods: Control|Option, action: CreateNewWindow }
-  - { key: Comma,    mods: Control|Option, action: SpawnNewInstance }
-  - { key: Space,    mods: Control|Shift,  action: ToggleViMode }
-  - { key: B,        mods: Control|Option, command: { program: "alacritty", args: ["-e", "btm"] } }
+  # - { key: Y,         mods: Control,              action:  Copy             }
+  - { key: P,         mods: Control,              action:  Paste            }
+  - { key: Insert,    mods: Shift,                action:  Paste            }
+  - { key: Key0,      mods: Control,              action:  ResetFontSize    }
+  - { key: Equals,    mods: Control,              action:  IncreaseFontSize }
+  - { key: Plus,      mods: Control,              action:  IncreaseFontSize }
+  - { key: Minus,     mods: Control,              action:  DecreaseFontSize }
+  - { key: M,         mods: Control|Shift,        action:  Minimize         }
+  - { key: Semicolon, mods: Control|Option|Super, action:  ClearLogNotice}
+  - { key: Period,    mods: Control|Option|Super, action:  CreateNewWindow  }
+  - { key: Comma,     mods: Control|Option|Super, action:  SpawnNewInstance }
+  - { key: Space,     mods: Control|Shift,        action:  ToggleViMode     }
+  - { key: B,         mods: Control|Option,       command: { program: "alacritty", args: ["-e", "btm"] } }
 
   # Vi Mode
   - { key: Space,  mods: Control,       mode: Vi, action: ScrollToBottom          }

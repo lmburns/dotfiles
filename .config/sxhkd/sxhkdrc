@@ -307,8 +307,8 @@ mod3 + {b,v,p,period,s}
     {$BROWSER &>/dev/null,brave,pcmanfm,thunderbird,signal-desktop}
 
 # Run a program in a new terminal
-alt + space
-    dmenu-run
+# alt + space
+#     dmenu-run
 
 # Password manager dmenu script
 ctrl + alt + p

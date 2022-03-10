@@ -37,6 +37,7 @@ alias xmm="xmodmap"
 alias s="systemctl"
 alias bctl="bluetoothctl"
 alias plast="last -20"
+alias mux="tmuxinator"
 
 alias fehh='feh \
            --scale-down \

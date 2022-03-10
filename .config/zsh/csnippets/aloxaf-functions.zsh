@@ -9,22 +9,23 @@ zle -N execute-command
 
 
 function fz-history-widget() {
-    local query="
+  # ??
+  local query="
 SELECT commands.argv
 FROM   history
-    LEFT JOIN commands
-        ON history.command_id = commands.rowid
-    LEFT JOIN places
-        ON history.place_id = places.rowid
+  LEFT JOIN commands
+    ON history.command_id = commands.rowid
+  LEFT JOIN places
+    ON history.place_id = places.rowid
 GROUP BY commands.argv
 ORDER BY places.dir != '${PWD//'/''}',
     commands.argv LIKE '${BUFFER//'/''}%' DESC,
     Count(*) DESC
 "
-    local selected=$(fc -rl 1 | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
-    if [[ "$selected" != "" ]] {
-        zle vi-fetch-history -n $selected
-    }
+  local selected=$(fc -rl 1 | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
+  if [[ "$selected" != "" ]] {
+    zle vi-fetch-history -n $selected
+  }
 }
 zle -N fz-history-widget
 

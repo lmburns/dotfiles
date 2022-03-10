@@ -8,9 +8,10 @@ skip_global_compinit=1
 # setopt no_global_rcs
 
 export DO_NOT_TRACK=1
+export HINT_TELEMETRY="off"
 export LANGUAGE="en_US.UTF-8"
-export LANG="${LANGUAGE}"
-export LC_ALL="${LANGUAGE}"
+export LANG="$LANGUAGE"
+export LC_ALL="$LANGUAGE"
 export TMPDIR="/tmp"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -30,8 +31,7 @@ export BACKUP_DIR="$HOME/backup"
 # export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
 export LOCAL_OPT="$HOME/opt"
-# export SUDO_ASKPASS="xfsudo"
-export SUDO_ASKPASS="$XDG_MBIN_HOME/linux/zenpass"
+export SUDO_ASKPASS="${XDG_MBIN_HOME}/linux/zenpass" # xfsudo
 # export SUDO_PROMPT="%u entered passwd to become %U: "
 
 export BC_ENV_ARGS="-q"
@@ -51,7 +51,23 @@ export RTV_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"
 export SYSTEMD_COLORS=1
 
-export LESS="--mouse --wheel-lines=3 -r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+# -z-4
+# -i -n -w -g -M -X -F -R -f
+# export LESS="--mouse --wheel-lines=3 -r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+export LESS="\
+  --ignore-case \
+  --line-numbers \
+  --hilite-unread \
+  --hilite-search \
+  --LONG-PROMPT \
+  --no-init \
+  --quit-if-one-screen \
+  --RAW-CONTROL-CHARS \
+  --mouse \
+  --wheel-lines=3 \
+  --force \
+  --prompt ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+
 # export PAGER="${commands[less]:-$PAGER}"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
@@ -79,6 +95,7 @@ export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"
 export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
+export LUAROCKS_CONFIG="${XDG_CONFIG_HOME}/luarocks/config.lua"
 export GOPATH="${XDG_DATA_HOME}/go"
 export GOROOT="${XDG_DATA_HOME}/go"
 export GOENV_ROOT="${XDG_DATA_HOME}/goenv"
@@ -93,6 +110,7 @@ export NPM_PACKAGES="${XDG_DATA_HOME}/npm-packages"
 export CONDARC="${XDG_CONFIG_HOME}/conda/condarc"
 export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export PIPX_BIN_DIR="${XDG_DATA_HOME:h}/bin"
+export PIPX_HOME="${XDG_DATA_HOME:h}/pipx"
 export IPYTHONDIR="${XDG_CACHE_HOME}/ipython"
 # export PTPYTHON_CONFIG_HOME="${XDG_CONFIG_HOME}/ptpython/config.py"
 export R_ENVIRON_USER="${XDG_CONFIG_HOME}/r/Renviron"
@@ -110,9 +128,10 @@ export MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
 export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
 export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 # export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
-export LESSHISTFILE=-
+export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/password-store"
+export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 
 export BAT_CONFIG_PATH="${XDG_CONFIG_HOME}/bat/config"
 export PIER_CONFIG_PATH="${XDG_CONFIG_HOME}/pier/config.toml"

@@ -91,7 +91,7 @@ zstyle '*' single-ignored show # don't insert single value
 
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                list-grouped true \
-      + ''                group-name '' \
+      + ':(^systemctl):*' group-name '' \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                file-sort access \
       + ''                use-cache true \

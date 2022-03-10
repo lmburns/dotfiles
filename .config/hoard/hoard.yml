@@ -126,6 +126,7 @@ envs:
   timew: { exe_exists: [timew] }
   tmsu: { exe_exists: [tmsu] }
   tmux: { exe_exists: [tmux] }
+  tmuxinator: { exe_exists: [tmuxinator] }
   transmission: { exe_exists: [transmission-cli] }
   ulauncher: { exe_exists: [ulauncher] }
   um: { exe_exists: [um] }
@@ -294,11 +295,10 @@ hoards:
       unix|perltidy: "${XDG_CONFIG_HOME}/perltidy/perltidyrc"
     clang:
       unix|clang-format: "${XDG_CONFIG_HOME}/clang-format/.clang-format"
-    lua:
-      luaformatter:
-        unix|lua-format: "${XDG_CONFIG_HOME}/luaformatter/config.yaml"
-      stylua:
-        unix|stylua: "${XDG_CONFIG_HOME}/stylua/stylua.toml"
+    luaformatter:
+      unix|lua-format: "${XDG_CONFIG_HOME}/luaformatter/config.yaml"
+    stylua:
+      unix|stylua: "${XDG_CONFIG_HOME}/stylua/stylua.toml"
     rubocop:
       unix|rubocop: "${XDG_CONFIG_HOME}/rubocop/config.yml"
     rust:
@@ -670,6 +670,8 @@ hoards:
     unix|tmsu: "${HOME}/.tmsu/db"
   tmux:
     unix|tmux: "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  tmuxinator:
+    unix|tmuxinator: "${XDG_CONFIG_HOME}/tmuxinator"
   transmission:
     unix|transmission: "${XDG_CONFIG_HOME}/transmission-daemon/settings.json"
   ulauncher:
@@ -784,8 +786,8 @@ hoards:
       zsh|unix: "${ZDOTDIR}/completions"
     history:
       zsh|unix: "${XDG_CACHE_HOME}/zsh/zsh_history"
-    vim:
-      zsh|unix: "${ZDOTDIR}/vim"
+    histdb:
+      zsh|unix: "${ZDOTDIR}/.zsh-history.db"
   keymap:
     autokey:
       unix|autokey: "${XDG_CONFIG_HOME}/autokey"

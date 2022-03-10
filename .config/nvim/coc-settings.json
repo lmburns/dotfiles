@@ -231,6 +231,10 @@
       "command": "/usr/bin/R",
       "args": ["--slave", "-e", "languageserver::run()"],
       "filetypes": ["r"]
+    },
+    "zls": {
+      "command": "/usr/bin/zls",
+      "filetypes": ["zig"]
     }
   },
   "yank.highlight.duration": 100,

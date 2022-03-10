@@ -18,7 +18,7 @@ set info "size"       # list directory information on the right
 set sortby "natural"  # don't sort files in any special way
 # set globsearch        # search with globs
 set preview on        # preview file on the right pane
-# set drawbox on        # draw a border around all panes
+set drawbox on        # draw a border around all panes
 set ratios '1:2:3'    # ratio of pane widths
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 
@@ -46,13 +46,14 @@ $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
 # !  shell-wait      shell command waiting for key press
 # &  shell-async     shell command running asynchronously
 
-# FIX: adjust column width
-&{{
+${{
   w=$(tput cols)
-  if [[ $w -le 60 ]]; then
+  if [[ $w -le 80 ]]; then
     lf -remote "send $id set ratios 1:2"
-  else [[ $w -le 160 ]]; then
+  elif [[ $w -le 160 ]]; then
     lf -remote "send $id set ratios 1:2:3"
+  else
+    lf -remote "send $id set ratios 1:2:3:5"
   fi
 }}
 
@@ -629,7 +630,8 @@ cmd mmv $mmv $fx
 cmd f2 !f2 -f "$1"
 cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
-cmd yank-path $printf '%s' "$fx" | xsel -b && dunstify -a lf "File Path" "$fx copied to clipboard"
+cmd yank-path $print -r "$fx" | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
+cmd yank-name $print -r "${fx:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
 cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 
@@ -805,6 +807,7 @@ map Pl :{{ link; unselect; }} # paste a symlink
 map Pp ppaste "copy"          # paste and preview progress
 map y copy                    # general copy
 map Ya yank-path              # yank file path
+map Yn yank-name              # yank name of file path
 map Yj copytojump             # copy to directory with zoxide
 map Yp copytopath             # copy to directory with path entered
 map Mj movetojump             # move to directory with zoxide

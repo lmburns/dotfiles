@@ -1,6 +1,6 @@
 # Desc: Creates basename pwd-date archive
 
-local f=${PWD:t}-$(date +%Y%m%d)
+local f=${PWD:t}-$(date '+%Y-%m-%d_%H-%M-%S')
 [[ -f "$f".zip ]] && command rm -vf "$f".zip
 command git archive --output "$f".zip --prefix "$f/" HEAD
 command du -sh "$f".zip

@@ -1,5 +1,6 @@
 asmfmt
 dlv
+drive-gen
 errcheck
 fillstruct
 gdrive

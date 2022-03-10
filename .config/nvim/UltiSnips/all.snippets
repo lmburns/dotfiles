@@ -3,6 +3,10 @@ MIT (c) ${1:`git config user.name`}
 ${2}
 endsnippet
 
+snippet c)
+Copyright `&enc[:2] == "utf" ? "©" : "(c)"` `strftime("%Y")` ${1:`git config user.name`}. All Rights Reserved.
+endsnippet
+
 global !p
 from vimsnippets import get_comment_format
 from subprocess import check_output
@@ -103,7 +107,6 @@ snip += d
 `
 $0
 endsnippet
-
 
 snippet boxx "A nice box with the current comment symbol" b
 `!p

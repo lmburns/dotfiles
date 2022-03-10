@@ -57,12 +57,14 @@ pynput==1.7.6
 pyqt5==5.15.6
 pyvoc==1.4.0
 pywal==3.3.0
+recommonmark==0.7.1
 regex==2022.1.18
 requests-toolbelt==0.9.1
 requests-unixsocket==0.3.0
 rtv==1.27.0
 scapy==2.4.5
 shellingham==1.4.0
+sphinx-automodapi==0.14.1
 sspipe==0.1.16
 taskw-gcal-sync==0.7.0
 tomlkit==0.8.0

@@ -110,10 +110,13 @@ Perl::LanguageServer
 Perl::Tidy
 Pod::Parser
 Pod::Spell
+Proc::Find
+Proc::ProcessTable
 Readonly
 Regexp::Common
 Role::Tiny
 String::Format
+String::ShellQuote
 Sub::Exporter
 Sub::Exporter::Progressive
 Sub::Identify
@@ -123,6 +126,7 @@ Sub::Quote
 Sub::Uplevel
 Task::Weaken
 Term::Animation
+Term::ReadKey
 Term::ReadLine::Gnu
 Term::ShellUI
 Test::CleanNamespaces

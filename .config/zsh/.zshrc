@@ -145,13 +145,18 @@ zstyle+ ':chpwd:*' recent-dirs-default true \
 
 zstyle ':completion:*' recent-dirs-insert  both
 
-typeset -ga dirstack; dirstack=(
-  ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
-)
-[[ ${PWD} = ${HOME} || ${PWD} = "." ]] && (){
+# Can be called across sessions to update the dirstack without sourcing
+function set-dirstack() {
+  [[ -v dirstack ]] || typeset -ga dirstack
+  dirstack=(
+    ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
+  )
+}
+set-dirstack
+[[ $PWD = $HOME || $PWD = "." ]] && (){
   local dir
   for dir ($dirstack) {
-    [[ -d "${dir}" ]] && { cd -q "${dir}"; break }
+    [[ -d "$dir" ]] && { cd -q "$dir"; break }
   }
 } 2>/dev/null
 alias c=cdr
@@ -313,7 +318,11 @@ zt 0a light-mode for \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
   atinit'alias zmand="info zsh "' \
-    mattmc3/zman
+    mattmc3/zman \
+  pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
+  src"histdb-interactive.zsh" atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
+  atinit'bindkey "\Ce" _histdb-isearch' \
+    larkery/zsh-histdb
 
 # ]]] === wait'0a' block ===
 
@@ -584,7 +593,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
   lbin from'gh-r' \
     itchyny/mmv \
   lbin from'gh-r' eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
-  atload'alias clean-atuin="kill -9 $(lsof -c atuin -t)"' \
+  atclone"./atuin gen-completions --shell zsh --out-dir $GENCOMP_DIR" atpull'%atclone' \
     ellie/atuin \
   lbin'* -> sd' from'gh-r' \
     chmln/sd \
@@ -695,7 +704,7 @@ zt 0c light-mode null lbin \
     sminez/roc
 
 zt 0c light-mode null for \
-  lbin from'gh-r' \
+  has'!cargo-deps' lbin from'gh-r' \
     est31/cargo-udeps \
   lbin'tar*/rel*/cargo-{rm,add,upgrade}' \
   atclone'cargo br' atpull'%atclone' \
@@ -860,6 +869,32 @@ _zsh_autosuggest_strategy_custom_history() {
   [[ "${history[(r)$pattern]}" != "$prefix" ]] && \
     typeset -g suggestion="${history[(r)$pattern]}"
 }
+
+
+# return the latest used command in the current directory
+_zsh_autosuggest_strategy_histdb_top() {
+    (( $+functions[_histdb_query] )) || return
+    local query="
+SELECT commands.argv
+FROM history
+  LEFT JOIN commands
+     ON history.command_id = commands.rowid
+  LEFT JOIN places
+    ON history.place_id = places.rowid
+WHERE commands.argv LIKE '${1//'/''}%'
+ORDER BY places.dir != '${PWD//'/''}',
+  history.start_time DESC
+LIMIT 1
+"
+#   places.dir LIKE '$(sql_escape $PWD)%'
+#   AND commands.argv LIKE '$(sql_escape $1)%'
+# GROUP BY  commands.argv
+# ORDER BY  count(*) desc
+
+    typeset -g suggestion=$(_histdb_query "$query")
+}
+
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history histdb_top custom_history completion)
 # ]]]
 
 # === paths (GNU) === [[[
@@ -968,15 +1003,12 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"
 typeset -ga chwpd_dir_history_funcs=( "_dircycle_update_cycled" ".zinit-cd" )
 typeset -g PER_DIRECTORY_HISTORY_BASE="${ZPFX}/share/per-directory-history"
 typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"
-typeset -g DUMP_DIR="${ZPFX}/share/dump/trash"
-typeset -g DUMP_LOG="${ZPFX}/share/dump/log"
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
 typeset -gx FZFGIT_DEFAULT_OPTS="--preview-window=':nohidden,right:65%:wrap'"
 typeset -gx CDHISTSIZE=20 CDHISTTILDE=TRUE CDHISTCOMMAND=cdh
@@ -1021,46 +1053,73 @@ $FZF_COLORS
 --reverse --height 80% --ansi --info=inline --multi --border
 --preview-window=':hidden,right:60%'
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind='?:toggle-preview'
---bind='ctrl-a:select-all,ctrl-r:toggle-all'
+--bind='?:toggle-preview,alt-w:toggle-preview-wrap'
+--bind='alt-a:select-all,ctrl-r:toggle-all'
 --bind='ctrl-b:execute(bat --paging=always -f {+})'
---bind='ctrl-y:execute-silent(echo {+} | pbcopy)'
+--bind=\"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | xsel --trim -b)+abort\"
 --bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---bind='ctrl-v:execute(code {+})'
 --bind='ctrl-s:toggle-sort'
 --bind='alt-p:preview-up,alt-n:preview-down'
 --bind='ctrl-k:preview-up,ctrl-j:preview-down'
 --bind='ctrl-u:half-page-up,ctrl-d:half-page-down'
 --bind=change:top
 "
-SKIM_DEFAULT_OPTIONS=${(F)${(M)${(@f)FZF_DEFAULT_OPTS}/(#m)*info*/${${(@s. .)MATCH}:#--info*}}:#--(bind=change:top|pointer*|marker*|color*)}
+SKIM_DEFAULT_OPTIONS="
+--prompt '❱ '
+--cmd-prompt 'c❱ '
+--cycle
+--reverse --height 80% --ansi --inline-info --multi --border
+--preview-window=':hidden,right:60%'
+--preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
+--bind='?:toggle-preview,alt-w:toggle-preview-wrap'
+--bind='alt-a:select-all,ctrl-r:toggle-all'
+--bind='ctrl-b:execute(bat --paging=always -f {+})'
+--bind=\"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | xsel --trim -b)+abort\"
+--bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
+--bind='ctrl-s:toggle-sort'
+--bind='alt-p:preview-up,alt-n:preview-down'
+--bind='ctrl-k:preview-up,ctrl-j:preview-down'
+--bind='ctrl-u:half-page-up,ctrl-d:half-page-down'
+"
+# SKIM_DEFAULT_OPTIONS=${(F)${(M)${(@f)FZF_DEFAULT_OPTS}/(#m)*info*/${${(@s. .)MATCH}:#--info*}}:#--(bind=change:top|pointer*|marker*|color*)}
+# SKIM_DEFAULT_OPTIONS+=$'\n'"--cmd-prompt=➤"
+# SKIM_DEFAULT_OPTIONS+=$'\n'"--bind='ctrl-p:preview-up,ctrl-n:preview-down'"
 SKIM_DEFAULT_OPTIONS+=$'\n'"--color=${(j:,:)SKIM_COLORS}"
-SKIM_DEFAULT_OPTIONS+=$'\n'"--cmd-prompt=➤"
-SKIM_DEFAULT_OPTIONS+=$'\n'"--bind='ctrl-p:preview-up,ctrl-n:preview-down'"
 export SKIM_DEFAULT_OPTIONS
 
 export FZF_ALT_E_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_E_OPTS="
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
+--bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
 --preview-window default:right:60%
 "
-export FZF_CTRL_R_OPTS="
---preview 'echo {}'
---preview-window 'down:2:wrap'
---bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
---header 'Press CTRL-Y to copy command into clipboard'
+export FZF_CTRL_R_OPTS="\
+--preview='echo {}'
+--preview-window='down:2:wrap'
+--bind='ctrl-y:execute-silent(echo -n {2..} | xclip -r -selection c)+abort'
+--header='Press CTRL-Y to copy command into clipboard'
+--exact
+--expect=ctrl-x
+"
+export SKIM_CTRL_R_OPTS="\
+--preview='echo {}'
+--preview-window=':hidden,down:2:wrap'
+--bind='ctrl-y:execute-silent(echo -n {2..} | xclip -r -selection c)+abort'
+--header='Press CTRL-Y to copy command into clipboard'
 --exact
 --expect=ctrl-x
 "
 export SKIM_DEFAULT_COMMAND='fd --no-ignore --hidden --follow --exclude ".git"'
-# export FZF_DEFAULT_COMMAND='fd --no-ignore --hidden --follow --exclude ".git"'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
+export FZF_COMPLETION_TRIGGER='~~'
+(( $+commands[fd] )) && {
+    _fzf_compgen_path() { fd --hidden --follow --exclude ".git" . "$1" }
+    _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
+}
+
 export FZF_ALT_C_COMMAND="cat $HOME/.cd_history"
-# export FZF_ALT_C_COMMAND="print -rl $dirstack"
-# export FZF_ALT_C_COMMAND="fd -t d ."
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:execute(echo {2} | xargs -o nvim)'"
 export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview \"(exa -T {2} | less) 2>/dev/null | head -200\""
 
@@ -1095,9 +1154,9 @@ zt 0b light-mode null id-as for \
     zdharma-continuum/null \
   atload'export FAST_WORK_DIR=XDG;
   fast-theme XDG:kimbox.ini &>/dev/null' \
-    zdharma-continuum/null \
-  atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
     zdharma-continuum/null
+  # atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
+    # zdharma-continuum/null
 
 # recache keychain if older than GPG cache time or first login
 # local first=${${${(M)${(%):-%l}:#*01}:+1}:-0}
@@ -1109,6 +1168,8 @@ zt 0b light-mode null id-as for \
   zle && zle reset-prompt
 }
 # ]]]
+
+export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 
 [[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] \
     && path=( "$XDG_BIN_HOME" "${path[@]}")

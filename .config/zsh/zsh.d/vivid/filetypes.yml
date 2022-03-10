@@ -162,6 +162,7 @@ programming:
     tcl: [.tcl]
     typescript: [.ts, .tsx]
     viml: [.vim]
+    zig: [.zig]
 
     database: [.sqlite, .sqlite3, .db]
     jq: [.jq]

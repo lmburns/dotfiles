@@ -1,0 +1,113 @@
+# cannot use /usr/bin/env because it does not support parameters (as -f)
+snippet #! "#!/usr/bin/awk -f" b
+#!/usr/bin/awk -f
+endsnippet
+
+snippet inc "@include (gawk extension)" b
+@include "${1}"${0}
+endsnippet
+
+snippet loa "@load (gawk extension)" b
+@load "${1}"${0}
+snippet beg BEGIN { ... }
+BEGIN {
+	${0}
+}
+endsnippet
+
+snippet begf "BEGINFILE { ... }" b
+BEGINFILE {
+	${0}
+}
+endsnippet
+
+snippet end "END { ... }" b
+END {
+	${0}
+}
+endsnippet
+
+snippet endf "ENDFILE { ... }" b
+ENDFILE {
+	${0}
+}
+endsnippet
+
+snippet pri "print" b
+print ${1:"${2}"}${0}
+endsnippet
+
+snippet printf "printf" b
+printf("${1:%s}\n", ${2})${0}
+endsnippet
+
+snippet ign "IGNORECASE" b
+IGNORECASE = ${1:1}
+endsnippet
+
+snippet if "if {...}" b
+if (${1}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet ife "if ... else ..." b
+if (${1}) {
+	${2:${VISUAL}}
+} else {
+	${0}
+}
+endsnippet
+
+snippet eif "else if ..." b
+else if (${1}) {
+	${0}
+}
+endsnippet
+
+snippet el "else {...}" b
+else {
+	${0}
+}
+endsnippet
+
+snippet wh "while" b
+while (${1}) {
+	${2}
+}
+endsnippet
+
+snippet do "do {...} while" b
+do {
+	${0}
+} while (${1})
+endsnippet
+
+snippet for "for loop" b
+for (${2:i} = 0; i < ${1:n}; ${3:++i}) {
+	${0}
+}
+endsnippet
+
+snippet fore "for each" b
+for (${1:i} in ${2:array}) {
+	${0}
+}
+endsnippet
+
+snippet sw "switch" b
+switch (${1}) {
+case ${2}:
+	${3}
+	break
+default:
+	${0}
+	break
+}
+endsnippet
+
+snippet case "case" b
+case ${1}:
+	${0}
+break
+endsnippet

@@ -942,7 +942,7 @@ Plug 'yggdroot/indentline'
 " Plug 'tjdevries/coc-zsh'
 " Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'vim-perl/vim-perl', { 'for': 'perl' }
-Plug 'neoclide/coc.nvim', {'commit': 'ad3a11638ff78c1', 'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
 " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'antoinemadec/coc-fzf'
   " prettier command for coc
@@ -959,13 +959,14 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <C-x><C-]> :CocCommand fzf-preview.CocImplementations<CR>
   nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
 
+  " TODO: Use more!
   " remap for do codeAction of current line
   nmap <Leader>wc  <Plug>(coc-codeaction)
   xmap <Leader>w  <Plug>(coc-codeaction-selected)
   nmap <Leader>ww  <Plug>(coc-codeaction-selected)
 
   nnoremap <C-x><C-r> :Telescope coc references<CR>
-  " nnoremap <C-x><C-d> :Telescope coc definitions<CR>
+  nnoremap <C-[> :Telescope coc definitions<CR>
   " nnoremap <C-x><C-]> :Telescope coc implementations<CR>
   " nnoremap <C-x><C-h> :Telescope coc diagnostics<CR>
 
@@ -1007,7 +1008,8 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-r-lsp',
     \ 'coc-perl',
     \ 'coc-lua',
-    \ 'coc-tsserver'
+    \ 'coc-tsserver',
+    \ 'coc-zig'
     \ ]
 
     " \ 'coc-nginx',
@@ -1096,7 +1098,7 @@ Plug 'antoinemadec/coc-fzf'
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,zig nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1136,17 +1138,6 @@ Plug 'antoinemadec/coc-fzf'
     "   execute 'set winblend=0 | FloatermNew --autoclose=0 rusty-man --viewer tui' . " " . expand('<cword>')
 
   nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-  " inoremap <silent><expr> <TAB>
-  "     \ pumvisible() ? "\<C-n>" :
-  "     \ <SID>check_back_space() ? "\<TAB>" :
-  "     \ coc#refresh()
-  " inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-  " function! s:check_back_space() abort
-  "   let col = col('.') - 1
-  "   return !col || getline('.')[col - 1]  =~# '\s'
-  " endfunction
 
   " Make <CR> auto-select the first completion item
   " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
@@ -1567,7 +1558,7 @@ Plug 'vimwiki/vimwiki'
 
 " ========= Syntax Highlighting ======== {{{
 Plug 'sheerun/vim-polyglot'
-let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua', 'ruby']
+let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua', 'ruby', 'zig']
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
