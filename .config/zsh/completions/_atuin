@@ -1,0 +1,2611 @@
+#compdef atuin
+
+autoload -U is-at-least
+
+_atuin() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin_commands" \
+"*::: :->atuin" \
+&& ret=0
+    case $state in
+    (atuin)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-command-$line[1]:"
+        case $line[1] in
+            (h)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(hi)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(his)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(hist)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(histo)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(histor)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(history)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__history_commands" \
+"*::: :->history" \
+&& ret=0
+case $state in
+    (history)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-history-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::command:_files' \
+&& ret=0
+;;
+(e)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(en)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(end)
+_arguments "${_arguments_options[@]}" \
+'-e+[]' \
+'--exit=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':id:_files' \
+&& ret=0
+;;
+(l)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(li)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(lis)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(list)
+_arguments "${_arguments_options[@]}" \
+'-c[]' \
+'--cwd[]' \
+'-s[]' \
+'--session[]' \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(la)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(las)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(last)
+_arguments "${_arguments_options[@]}" \
+'-h[]' \
+'--human[]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(import)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__import_commands" \
+"*::: :->import" \
+&& ret=0
+case $state in
+    (import)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-import-command-$line[1]:"
+        case $line[1] in
+            (a)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(au)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(aut)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(auto)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(z)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(zs)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(zsh)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(b)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(ba)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(bas)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(bash)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(r)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(re)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(res)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(resh)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(f)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(fi)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(fis)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(fish)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(server)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__server_commands" \
+"*::: :->server" \
+&& ret=0
+case $state in
+    (server)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-server-command-$line[1]:"
+        case $line[1] in
+            (s)
+_arguments "${_arguments_options[@]}" \
+'-h+[specify the host address to bind]' \
+'--host=[specify the host address to bind]' \
+'-p+[specify the port to bind]' \
+'--port=[specify the port to bind]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(st)
+_arguments "${_arguments_options[@]}" \
+'-h+[specify the host address to bind]' \
+'--host=[specify the host address to bind]' \
+'-p+[specify the port to bind]' \
+'--port=[specify the port to bind]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(sta)
+_arguments "${_arguments_options[@]}" \
+'-h+[specify the host address to bind]' \
+'--host=[specify the host address to bind]' \
+'-p+[specify the port to bind]' \
+'--port=[specify the port to bind]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(star)
+_arguments "${_arguments_options[@]}" \
+'-h+[specify the host address to bind]' \
+'--host=[specify the host address to bind]' \
+'-p+[specify the port to bind]' \
+'--port=[specify the port to bind]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(start)
+_arguments "${_arguments_options[@]}" \
+'-h+[specify the host address to bind]' \
+'--host=[specify the host address to bind]' \
+'-p+[specify the port to bind]' \
+'--port=[specify the port to bind]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(stats)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__stats_commands" \
+"*::: :->stats" \
+&& ret=0
+case $state in
+    (stats)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-stats-command-$line[1]:"
+        case $line[1] in
+            (d)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(da)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(all)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(d)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(da)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(day)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::words:_files' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(init)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_atuin__init_commands" \
+"*::: :->init" \
+&& ret=0
+case $state in
+    (init)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:atuin-init-command-$line[1]:"
+        case $line[1] in
+            (zsh)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(bash)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(fish)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+(uuid)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" \
+'-c+[filter search result by directory]' \
+'--cwd=[filter search result by directory]' \
+'--exclude-cwd=[exclude directory from results]' \
+'-e+[filter search result by exit code]' \
+'--exit=[filter search result by exit code]' \
+'--exclude-exit=[exclude results with this exit code]' \
+'-b+[only include results added before this date]' \
+'--before=[only include results added before this date]' \
+'--after=[only include results after this date]' \
+'-i[open interactive search UI]' \
+'--interactive[open interactive search UI]' \
+'-h[use human-readable formatting for time]' \
+'--human[use human-readable formatting for time]' \
+'--cmd-only[Show only the text of the command]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::query:_files' \
+&& ret=0
+;;
+(sync)
+_arguments "${_arguments_options[@]}" \
+'-f[force re-download everything]' \
+'--force[force re-download everything]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(login)
+_arguments "${_arguments_options[@]}" \
+'-u+[]' \
+'--username=[]' \
+'-p+[]' \
+'--password=[]' \
+'-k+[the encryption key for your account]' \
+'--key=[the encryption key for your account]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(logout)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(register)
+_arguments "${_arguments_options[@]}" \
+'-u+[]' \
+'--username=[]' \
+'-e+[]' \
+'--email=[]' \
+'-p+[]' \
+'--password=[]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(key)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(gen-completions)
+_arguments "${_arguments_options[@]}" \
+'-s+[set the shell for generating completions]' \
+'--shell=[set the shell for generating completions]' \
+'-o+[set the output directory]' \
+'--out-dir=[set the output directory]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_atuin_commands] )) ||
+_atuin_commands() {
+    local commands; commands=(
+        "history:manipulate shell history" \
+"import:import shell history from file" \
+"server:start an atuin server" \
+"stats:calculate statistics for your history" \
+"init:output shell setup" \
+"uuid:generates a UUID" \
+"search:interactive history search" \
+"sync:sync with the configured server" \
+"login:login to the configured server" \
+"logout:log out" \
+"register:register with the configured server" \
+"key:print the encryption key for transfer to another machine" \
+"gen-completions:generate shell completions" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin commands' commands "$@"
+}
+(( $+functions[_atuin__a_commands] )) ||
+_atuin__a_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin a commands' commands "$@"
+}
+(( $+functions[_atuin__import__a_commands] )) ||
+_atuin__import__a_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import a commands' commands "$@"
+}
+(( $+functions[_atuin__stats__all_commands] )) ||
+_atuin__stats__all_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin stats all commands' commands "$@"
+}
+(( $+functions[_atuin__au_commands] )) ||
+_atuin__au_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin au commands' commands "$@"
+}
+(( $+functions[_atuin__import__au_commands] )) ||
+_atuin__import__au_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import au commands' commands "$@"
+}
+(( $+functions[_atuin__aut_commands] )) ||
+_atuin__aut_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin aut commands' commands "$@"
+}
+(( $+functions[_atuin__import__aut_commands] )) ||
+_atuin__import__aut_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import aut commands' commands "$@"
+}
+(( $+functions[_atuin__import__auto_commands] )) ||
+_atuin__import__auto_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import auto commands' commands "$@"
+}
+(( $+functions[_atuin__b_commands] )) ||
+_atuin__b_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin b commands' commands "$@"
+}
+(( $+functions[_atuin__import__b_commands] )) ||
+_atuin__import__b_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import b commands' commands "$@"
+}
+(( $+functions[_atuin__ba_commands] )) ||
+_atuin__ba_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin ba commands' commands "$@"
+}
+(( $+functions[_atuin__import__ba_commands] )) ||
+_atuin__import__ba_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import ba commands' commands "$@"
+}
+(( $+functions[_atuin__bas_commands] )) ||
+_atuin__bas_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin bas commands' commands "$@"
+}
+(( $+functions[_atuin__import__bas_commands] )) ||
+_atuin__import__bas_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import bas commands' commands "$@"
+}
+(( $+functions[_atuin__import__bash_commands] )) ||
+_atuin__import__bash_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import bash commands' commands "$@"
+}
+(( $+functions[_atuin__init__bash_commands] )) ||
+_atuin__init__bash_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin init bash commands' commands "$@"
+}
+(( $+functions[_atuin__d_commands] )) ||
+_atuin__d_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin d commands' commands "$@"
+}
+(( $+functions[_atuin__stats__d_commands] )) ||
+_atuin__stats__d_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin stats d commands' commands "$@"
+}
+(( $+functions[_atuin__da_commands] )) ||
+_atuin__da_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin da commands' commands "$@"
+}
+(( $+functions[_atuin__stats__da_commands] )) ||
+_atuin__stats__da_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin stats da commands' commands "$@"
+}
+(( $+functions[_atuin__stats__day_commands] )) ||
+_atuin__stats__day_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin stats day commands' commands "$@"
+}
+(( $+functions[_atuin__e_commands] )) ||
+_atuin__e_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin e commands' commands "$@"
+}
+(( $+functions[_atuin__history__e_commands] )) ||
+_atuin__history__e_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history e commands' commands "$@"
+}
+(( $+functions[_atuin__en_commands] )) ||
+_atuin__en_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin en commands' commands "$@"
+}
+(( $+functions[_atuin__history__en_commands] )) ||
+_atuin__history__en_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history en commands' commands "$@"
+}
+(( $+functions[_atuin__history__end_commands] )) ||
+_atuin__history__end_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history end commands' commands "$@"
+}
+(( $+functions[_atuin__f_commands] )) ||
+_atuin__f_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin f commands' commands "$@"
+}
+(( $+functions[_atuin__import__f_commands] )) ||
+_atuin__import__f_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import f commands' commands "$@"
+}
+(( $+functions[_atuin__fi_commands] )) ||
+_atuin__fi_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin fi commands' commands "$@"
+}
+(( $+functions[_atuin__import__fi_commands] )) ||
+_atuin__import__fi_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import fi commands' commands "$@"
+}
+(( $+functions[_atuin__fis_commands] )) ||
+_atuin__fis_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin fis commands' commands "$@"
+}
+(( $+functions[_atuin__import__fis_commands] )) ||
+_atuin__import__fis_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import fis commands' commands "$@"
+}
+(( $+functions[_atuin__import__fish_commands] )) ||
+_atuin__import__fish_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import fish commands' commands "$@"
+}
+(( $+functions[_atuin__init__fish_commands] )) ||
+_atuin__init__fish_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin init fish commands' commands "$@"
+}
+(( $+functions[_atuin__gen-completions_commands] )) ||
+_atuin__gen-completions_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin gen-completions commands' commands "$@"
+}
+(( $+functions[_h_commands] )) ||
+_h_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'h commands' commands "$@"
+}
+(( $+functions[_atuin__help_commands] )) ||
+_atuin__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin help commands' commands "$@"
+}
+(( $+functions[_atuin__history__help_commands] )) ||
+_atuin__history__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history help commands' commands "$@"
+}
+(( $+functions[_atuin__import__help_commands] )) ||
+_atuin__import__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import help commands' commands "$@"
+}
+(( $+functions[_atuin__init__help_commands] )) ||
+_atuin__init__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin init help commands' commands "$@"
+}
+(( $+functions[_atuin__server__help_commands] )) ||
+_atuin__server__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server help commands' commands "$@"
+}
+(( $+functions[_atuin__stats__help_commands] )) ||
+_atuin__stats__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin stats help commands' commands "$@"
+}
+(( $+functions[_hi_commands] )) ||
+_hi_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'hi commands' commands "$@"
+}
+(( $+functions[_his_commands] )) ||
+_his_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'his commands' commands "$@"
+}
+(( $+functions[_hist_commands] )) ||
+_hist_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'hist commands' commands "$@"
+}
+(( $+functions[_histo_commands] )) ||
+_histo_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'histo commands' commands "$@"
+}
+(( $+functions[_histor_commands] )) ||
+_histor_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'histor commands' commands "$@"
+}
+(( $+functions[_atuin__history_commands] )) ||
+_atuin__history_commands() {
+    local commands; commands=(
+        "start:begins a new command in the history" \
+"end:finishes a new command in the history (adds time, exit code)" \
+"list:list all items in history" \
+"last:get the last command ran" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin history commands' commands "$@"
+}
+(( $+functions[_atuin__import_commands] )) ||
+_atuin__import_commands() {
+    local commands; commands=(
+        "auto:import history for the current shell" \
+"zsh:import history from the zsh history file" \
+"bash:import history from the bash history file" \
+"resh:import history from the resh history file" \
+"fish:import history from the fish history file" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin import commands' commands "$@"
+}
+(( $+functions[_atuin__init_commands] )) ||
+_atuin__init_commands() {
+    local commands; commands=(
+        "zsh:zsh setup" \
+"bash:bash setup" \
+"fish:fish setup" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin init commands' commands "$@"
+}
+(( $+functions[_atuin__key_commands] )) ||
+_atuin__key_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin key commands' commands "$@"
+}
+(( $+functions[_atuin__history__l_commands] )) ||
+_atuin__history__l_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history l commands' commands "$@"
+}
+(( $+functions[_atuin__l_commands] )) ||
+_atuin__l_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin l commands' commands "$@"
+}
+(( $+functions[_atuin__history__la_commands] )) ||
+_atuin__history__la_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history la commands' commands "$@"
+}
+(( $+functions[_atuin__la_commands] )) ||
+_atuin__la_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin la commands' commands "$@"
+}
+(( $+functions[_atuin__history__las_commands] )) ||
+_atuin__history__las_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history las commands' commands "$@"
+}
+(( $+functions[_atuin__las_commands] )) ||
+_atuin__las_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin las commands' commands "$@"
+}
+(( $+functions[_atuin__history__last_commands] )) ||
+_atuin__history__last_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history last commands' commands "$@"
+}
+(( $+functions[_atuin__history__li_commands] )) ||
+_atuin__history__li_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history li commands' commands "$@"
+}
+(( $+functions[_atuin__li_commands] )) ||
+_atuin__li_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin li commands' commands "$@"
+}
+(( $+functions[_atuin__history__lis_commands] )) ||
+_atuin__history__lis_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history lis commands' commands "$@"
+}
+(( $+functions[_atuin__lis_commands] )) ||
+_atuin__lis_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin lis commands' commands "$@"
+}
+(( $+functions[_atuin__history__list_commands] )) ||
+_atuin__history__list_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history list commands' commands "$@"
+}
+(( $+functions[_atuin__login_commands] )) ||
+_atuin__login_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin login commands' commands "$@"
+}
+(( $+functions[_atuin__logout_commands] )) ||
+_atuin__logout_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin logout commands' commands "$@"
+}
+(( $+functions[_atuin__import__r_commands] )) ||
+_atuin__import__r_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import r commands' commands "$@"
+}
+(( $+functions[_atuin__r_commands] )) ||
+_atuin__r_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin r commands' commands "$@"
+}
+(( $+functions[_atuin__import__re_commands] )) ||
+_atuin__import__re_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import re commands' commands "$@"
+}
+(( $+functions[_atuin__re_commands] )) ||
+_atuin__re_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin re commands' commands "$@"
+}
+(( $+functions[_atuin__register_commands] )) ||
+_atuin__register_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin register commands' commands "$@"
+}
+(( $+functions[_atuin__import__res_commands] )) ||
+_atuin__import__res_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import res commands' commands "$@"
+}
+(( $+functions[_atuin__res_commands] )) ||
+_atuin__res_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin res commands' commands "$@"
+}
+(( $+functions[_atuin__import__resh_commands] )) ||
+_atuin__import__resh_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import resh commands' commands "$@"
+}
+(( $+functions[_atuin__history__s_commands] )) ||
+_atuin__history__s_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history s commands' commands "$@"
+}
+(( $+functions[_atuin__s_commands] )) ||
+_atuin__s_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin s commands' commands "$@"
+}
+(( $+functions[_atuin__server__s_commands] )) ||
+_atuin__server__s_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server s commands' commands "$@"
+}
+(( $+functions[_atuin__search_commands] )) ||
+_atuin__search_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin search commands' commands "$@"
+}
+(( $+functions[_atuin__server_commands] )) ||
+_atuin__server_commands() {
+    local commands; commands=(
+        "start:starts the server" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin server commands' commands "$@"
+}
+(( $+functions[_atuin__history__st_commands] )) ||
+_atuin__history__st_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history st commands' commands "$@"
+}
+(( $+functions[_atuin__server__st_commands] )) ||
+_atuin__server__st_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server st commands' commands "$@"
+}
+(( $+functions[_atuin__st_commands] )) ||
+_atuin__st_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin st commands' commands "$@"
+}
+(( $+functions[_atuin__history__sta_commands] )) ||
+_atuin__history__sta_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history sta commands' commands "$@"
+}
+(( $+functions[_atuin__server__sta_commands] )) ||
+_atuin__server__sta_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server sta commands' commands "$@"
+}
+(( $+functions[_atuin__sta_commands] )) ||
+_atuin__sta_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin sta commands' commands "$@"
+}
+(( $+functions[_atuin__history__star_commands] )) ||
+_atuin__history__star_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history star commands' commands "$@"
+}
+(( $+functions[_atuin__server__star_commands] )) ||
+_atuin__server__star_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server star commands' commands "$@"
+}
+(( $+functions[_atuin__star_commands] )) ||
+_atuin__star_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin star commands' commands "$@"
+}
+(( $+functions[_atuin__history__start_commands] )) ||
+_atuin__history__start_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin history start commands' commands "$@"
+}
+(( $+functions[_atuin__server__start_commands] )) ||
+_atuin__server__start_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin server start commands' commands "$@"
+}
+(( $+functions[_atuin__stats_commands] )) ||
+_atuin__stats_commands() {
+    local commands; commands=(
+        "all:compute statistics for all of time" \
+"day:compute statistics for a single day" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'atuin stats commands' commands "$@"
+}
+(( $+functions[_atuin__sync_commands] )) ||
+_atuin__sync_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin sync commands' commands "$@"
+}
+(( $+functions[_atuin__uuid_commands] )) ||
+_atuin__uuid_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin uuid commands' commands "$@"
+}
+(( $+functions[_atuin__import__z_commands] )) ||
+_atuin__import__z_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import z commands' commands "$@"
+}
+(( $+functions[_atuin__z_commands] )) ||
+_atuin__z_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin z commands' commands "$@"
+}
+(( $+functions[_atuin__import__zs_commands] )) ||
+_atuin__import__zs_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import zs commands' commands "$@"
+}
+(( $+functions[_atuin__zs_commands] )) ||
+_atuin__zs_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin zs commands' commands "$@"
+}
+(( $+functions[_atuin__import__zsh_commands] )) ||
+_atuin__import__zsh_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin import zsh commands' commands "$@"
+}
+(( $+functions[_atuin__init__zsh_commands] )) ||
+_atuin__init__zsh_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'atuin init zsh commands' commands "$@"
+}
+
+_atuin "$@"

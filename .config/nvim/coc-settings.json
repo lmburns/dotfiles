@@ -138,8 +138,10 @@
     "<<": "gitStage",
     ">>": "gitUnstage"
   },
+  // "coc.preferences.semanticTokensHighlights": false,
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "coc.preferences.snippetHighlight": false,
   "suggest.enablePreview": true,
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
@@ -172,7 +174,6 @@
     "default": "\uf29c"
   },
   "snippets.shortcut": "\uf672",
-  "coc.preferences.semanticTokensHighlights": false,
   "clangd.enabled": true,
   "clangd.arguments": [
     "--clang-tidy",
@@ -235,10 +236,15 @@
     "zls": {
       "command": "/usr/bin/zls",
       "filetypes": ["zig"]
+    },
+    "serve-d": {
+      "command": "/usr/bin/serve-d",
+      "filetypes": ["d"]
     }
   },
   "yank.highlight.duration": 100,
   "solargraph.diagnostics": true,
   "solargraph.autoformat": true,
-  "solargraph.formatting": true
+  "solargraph.formatting": true,
+  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d"
 }

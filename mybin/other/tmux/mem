@@ -7,10 +7,9 @@ except:
 
 
 class bcolors:
-    OKGREEN = "#[fg=#98c379, bg=default]"
-    WARNING = "#[fg=#e5c07b, bg=default]"
-    FAIL = "#[fg=#e06c75, bg=default]"
-
+    OKGREEN = "#[fg=#a3b95a, bg=default]"
+    WARNING = "#[fg=#f79a32, bg=default]"
+    FAIL = "#[fg=#dc3958, bg=default]"
 
 mem_usage = psutil.virtual_memory()[2]
 

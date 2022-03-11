@@ -1,0 +1,26 @@
+#compdef rustscan
+
+# zsh completions for 'rustscan'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--accessible[accessible mode. Turns off features which negatively affect screen readers]'
+  {-g,--greppable}'[greppable mode. Only output the ports. No Nmap. Useful for grep or outputting to a file]'
+  {-h,--help}'[prints help information]'
+  {-n,--no-config}'[whether to ignore the configuration file or not]'
+  '--top[use the top 1000 ports]'
+  {-V,--version}'[prints version information]'
+  {-a,--addresses}'[...    A list of comma separated CIDRs, IPs, or hosts to be scanned]'
+  {-b,--batch-size}'[the batch size for port scanning, it increases or slows the speed of scanning.]'
+  {-p,--ports}'[...            A list of comma separed ports to be scanned. Example: 80,443,8080]'
+  {-r,--range}'[A range of ports with format start-end. Example: 1-1000]'
+  '--scan-order[the order of scanning to be performed. The "serial" option will scan ports in]'
+  '--scripts[level of scripting required for the run \[default: default\]  \[possible values:]'
+  {-t,--timeout}'[the timeout in milliseconds before a port is assumed to be closed \[default: 1500\]]'
+  '--tries[the number of tries before a port is assumed to be closed. If set to 0, rustscan]'
+  {-u,--ulimit}'[automatically ups the ULIMIT with the value you provided]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

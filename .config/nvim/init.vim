@@ -952,7 +952,8 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <silent> <A-'>  :<C-u>CocList yank<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
   nnoremap <A-s> :CocFzfList symbols<CR>
-  nnoremap <A-c> :CocFzfList commands<CR>
+  " nnoremap <A-c> :CocFzfList commands<CR>
+  nnoremap <A-c> :Telescope coc commands<CR>
 
   " nnoremap <C-x><C-r> :CocCommand fzf-preview.CocReferences<CR>
   nnoremap <C-x><C-d> :CocCommand fzf-preview.CocTypeDefinition<CR>
@@ -1009,13 +1010,14 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-perl',
     \ 'coc-lua',
     \ 'coc-tsserver',
-    \ 'coc-zig'
+    \ 'coc-zig',
+    \ 'coc-dlang'
     \ ]
 
     " \ 'coc-nginx',
+    " \ 'coc-toml',
 
   " FIX: Rust Analyzer does not provide hover or code completion
-" \ 'coc-toml',
 
   let g:coc_explorer_global_presets = {
       \ 'config': {
@@ -1073,8 +1075,8 @@ Plug 'antoinemadec/coc-fzf'
   omap if <Plug>(coc-funcobj-i)
   omap af <Plug>(coc-funcobj-a)
 
-  nmap {g <Plug>(coc-git-prevchunk)
-  nmap }g <Plug>(coc-git-nextchunk)
+  " nmap {g <Plug>(coc-git-prevchunk)
+  " nmap }g <Plug>(coc-git-nextchunk)
   " navigate conflicts of current buffer
   nmap [c <Plug>(coc-git-prevconflict)
   nmap ]c <Plug>(coc-git-nextconflict)
@@ -1096,9 +1098,20 @@ Plug 'antoinemadec/coc-fzf'
   "       \ coc#jumpable() ? "\<C-R>=coc#rpc#request('snippetPrev', [])\<cr>" :
   "       \ "\<Up>"
 
+  inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c,zig nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,zig,d nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1148,7 +1161,7 @@ Plug 'antoinemadec/coc-fzf'
       \ ? coc#_select_confirm() : "\<C-g>u\<tab>"
 
   " Use <c-space> to trigger completion
-  inoremap <silent><expr> <C-m> coc#refresh()
+  inoremap <silent><expr> <C-'> coc#refresh()
 
   " position. Coc only does snippet and additional edit on confirm.
   inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -1321,6 +1334,15 @@ augroup rust_env
 augroup END
 " \ nnoremap ;k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-R>0<CR>|
 " }}} === vim-rust ===
+
+" ================ zig ================= {{{
+augroup zig_env
+  autocmd!
+  autocmd FileType zig
+    \ nnoremap <Leader>r<CR> : FloatermNew --autoclose=0 zig run ./%<CR>|
+    \ nnoremap <buffer> ;ff           :Format<cr>
+augroup END
+" }}} === zig ===
 
 " ============== vim-go ============== {{{
 Plug 'fatih/vim-go', { 'for': 'go' }
@@ -2100,7 +2122,6 @@ call plug#end()
   cnoreabbrev W w
   cnoreabbrev Qall qall
 
-  noremap Q gq
 
   nnoremap ;w :update<CR>
   nnoremap w; :update<CR>
@@ -2113,7 +2134,8 @@ call plug#end()
   command! -bang -nargs=* Q q
 
   " use qq to record, q to stop, Q to play a macro
-  " nnoremap Q @q
+  " noremap Q gq
+  nnoremap Q @q
   vnoremap Q :normal @q
 
   " easier navigation in normal / visual / operator pending mode
@@ -2134,8 +2156,9 @@ call plug#end()
   " save with root
   " cnoremap w!! w !sudo tee % >/dev/null<cr>
   cnoremap w!! execute ':silent w !sudo tee % > /dev/null' <bar> edit!
+  cnoremap W!! w !sudo tee % >/dev/null<cr>
 
-  " Replace all is aliased to S.
+  " Replace all
   nnoremap S :%s//g<Left><Left>
   " Replace under cursor
   nnoremap <Leader>sr :%s/\<<C-r><C-w>\>/
@@ -2152,6 +2175,10 @@ call plug#end()
   vnoremap <S-Tab> <<<Esc>gv
   inoremap <S-Tab> <C-d>
 
+  " Don't lose selection when shifting sidewards
+  xnoremap < <gv
+  xnoremap > >gv
+
   " use `u` to undo, use `U` to redo, mind = blown
   nnoremap U <C-r>
 
@@ -2159,12 +2186,12 @@ call plug#end()
   nnoremap d "_d
   vnoremap d "_d
   nnoremap D "_D
+  " delete line without copying
+  nnoremap E ^"_D
   " yank line without newline character
   nnoremap Y y$
   " make cut not go to clipboard
   nnoremap x "_x
-  " delete line without newline character
-  nnoremap E ^"_D
   " reselect the text that has just been pasted
   noremap gV `[v`]
   " select characters of line (no new line)
@@ -2175,8 +2202,13 @@ call plug#end()
   " nnoremap <Leader>sa a<Space><ESC>h
 
   " inserts a line above or below
-  nnoremap <expr> oo printf('m`%so<ESC>``', v:count1)
-  nnoremap <expr> OO printf('m`%sO<ESC>``', v:count1)
+  nnoremap <expr> zj printf('m`%so<ESC>``', v:count1)
+  nnoremap <expr> zk printf('m`%sO<ESC>``', v:count1)
+  nnoremap <silent> oo o<Esc>k
+  nnoremap <silent> OO O<Esc>j
+
+  " adds a space to beginning of line
+  nnoremap <silent> zl i <Esc>l
 
   " move through folded lines
   nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
@@ -2187,12 +2219,10 @@ call plug#end()
   vnoremap K :m '<-2<CR>gv=gv
 
   " move between windows
-  map <C-j> <C-W>j
-  imap <C-j> <C-W>j
-  map <C-k> <C-W>k
-  imap <C-k> <C-W>k
-  map <C-h> <C-W>h
-  map <C-l> <C-W>l
+  noremap <C-j> <C-W>j
+  noremap <C-k> <C-W>k
+  noremap <C-h> <C-W>h
+  noremap <C-l> <C-W>l
 
   " Using <ff> to fold or unfold
   nnoremap <silent> ff @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
@@ -2219,10 +2249,15 @@ call plug#end()
   nnoremap <silent> <space>b :<C-u>Buffers<cr>
 
   " resize windows
-  nnoremap + :vertical resize +5<CR>
-  nnoremap - :vertical resize -5<CR>
-  nnoremap s+ :resize +5<CR>
-  nnoremap s- :resize -5<CR>
+  " nnoremap + :vertical resize +5<CR>
+  " nnoremap - :vertical resize -5<CR>
+  " nnoremap s+ :resize +5<CR>
+  " nnoremap s- :resize -5<CR>
+
+  map <C-Up> :resize +1<CR>
+  map <C-Down> :resize -1<CR>
+  map <C-Right> :vertical resize +1<CR>
+  map <C-Left> :vertical resize -1<CR>
 
   " perform dot commands over visual blocks
   vnoremap . :normal .<CR>
@@ -2238,12 +2273,6 @@ call plug#end()
   " shellcheck
   nnoremap <Leader>sC :!shellcheck -x %<CR>
   nnoremap <F1> :!./%<CR>
-
-  " open corresponding .pdf/.html or preview
-  nmap <Leader>p :w <Bar> !open %<CR>
-
-  autocmd BufWritePost bm-files,bm-dirs !shortcuts
-  " noremap <Leader>ur :w<Home>silent <End> !urlview<CR>
   " }}} === General Mappings ===
 
 " ============== docs ============== {{{
@@ -2387,7 +2416,7 @@ call plug#end()
 
   augroup gogithub
       au!
-      au FileType *vim,*bash,*tmux nnoremap <buffer> <silent> <cr> :call <sid>go_github()<cr>
+      au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
   augroup END
   " }}}
 

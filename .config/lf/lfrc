@@ -335,7 +335,7 @@ cmd chmod ${{
   lf -remote 'send clear'
 }}
 
-# -- Ownership: change
+# === Ownership: change ========================================
 cmd chown ${{
   zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Ownership: " owner
@@ -344,7 +344,8 @@ cmd chown ${{
   lf -remote 'send clear'
 }}
 
-# -- GPG: encrypt recipient
+# == GPG == [[[
+# === GPG: encrypt recipient ===================================
 cmd gpg_encrypt_recipient %{{
   zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Recipient: " recipient
@@ -354,27 +355,45 @@ cmd gpg_encrypt_recipient %{{
   esac
 }}
 
+map te gpg_encrypt_recipient
 
-# -- GPG: encrypt symmetric
+# === GPG: encrypt symmetric ===================================
 cmd gpg_encrypt_pass ${{
-  gpg --symmetric $f;
+  gpg --symmetric "$f"
 }}
 
-# -- GPG: decrypt
+map tp gpg_encrypt_pass
+
+# === GPG: decrypt =============================================
 cmd gpg_decrypt ${{
-  gpg --output ${f%.gpg} --decrypt $f
+  gpg --output ${f%.gpg} --decrypt "$f"
 }}
 
-# -- GPG: sign
+map td gpg_decrypt
+
+# === GPG: sign ================================================
 cmd gpg_sign ${{
-  gpg --sign $f
+  gpg --sign "$f"
 }}
 
-# -- GPG: clearsign file
+map ts. gpg_sign
+
+# === GPG: sign detach =========================================
+cmd gpg_sign_detach ${{
+  gpg --sign --detach-sign "$f"
+}}
+
+map tsd gpg_sign_detach
+
+# === GPG: clearsign file ======================================
 cmd gpg_sign_clear ${{
   gpg --clearsign $f
 }}
 
+map tsc gpg_sign_clear
+
+map tT $gpg-tui # gpg-tui
+# ]]]
 
 # -- Config: lfrc
 cmd edit_config :{{
@@ -403,55 +422,35 @@ cmd diff_files !{{
 
 map D diff_files
 
-
 # -- Select: all files
 cmd select-files ${{
-  typeset -a files; files=( $(fd . -L -d1 -tf) )
+  typeset -a files; files=( ${(@f)"$(fd . -L -d1 -tf)"} )
   for fi in "${files[@]}"; do
     lf -remote "send $id toggle $fi"
   done
 }}
 
+map sf select-files
+
 # -- Select: all dirs
 cmd select-dirs ${{
-  typeset -a dirs; dirs=( $(fd . -L -d1 -td) )
+  typeset -a dirs; dirs=( ${(@f)"$(fd . -L -d1 -td)"} )
   for dir in "${dirs[@]}"; do
     lf -remote "send $id toggle $dir"
   done
 }}
 
+map sd select-dirs
+
 # -- Select: all executables
 cmd select-exec ${{
-  typeset -a xx; xx=( $(fd . -L -d1 -tx) )
+  typeset -a xx; xx=( ${(@f)"$(fd . -L -d1 -tx)"} )
   for x in "${xx[@]}"; do
     lf -remote "send $id toggle $x"
   done
 }}
 
-# # -- Select: all files
-# cmd select-files ${{
-#   { echo "$fs"; fd . -L -d1 -tf; } |
-#   if [[ "$lf_hidden" = "false" ]]; then
-# # remove any hidden files so you only select files you can see.
-#     grep '/\.[^/]\+$'
-#   else
-#     cat
-#       fi |
-#       gsed '/^$/d' | sort | uniq -u |
-#       gxargs -d '\n' -r -I{} lf -remote "send $id toggle {}"
-# }}
-
-# # -- Select: all directories
-# cmd select-dirs ${{
-#   { echo "$fs"; fd . -L -d1 -td; } |
-#       if [ "$lf_hidden" = "false" ]; then
-#         grep -v '/\.[^/]\+$'
-#       else
-#         cat
-#       fi |
-#       gsed '/^$/d' | sort | uniq -u |
-#       gxargs -d '\n' -r -I{} lf -remote "send $id toggle {}"
-# }}
+map sx select-exec
 
 # -- Bookmark Jump: specifically for lf
 cmd njump ${{
@@ -510,6 +509,8 @@ cmd cd-followlink &{{
     origin="$(realpath -s -- "$(readlink -- "$f")")"
     lf -remote "send $id select '$origin'"
 }}
+
+map L cd-followlink
 
 # === TAGS === [[[
 # -- Tag: tmsu set
@@ -651,30 +652,27 @@ cmd cpdragon %cpdragon
 cmd mvdragon %mvdragon
 cmd dlfile %dlfile
 
-# ========================== ZLE ==========================
-
-map H $lf -remote "send $id cd $OLDPWD"
-
-# Change directories
+# ========================== ZLE ========================== [[[
+# === ZLE: chang directories ===================================
 cmd zle-cd %{{
   print -l -- "_p9k_precmd; builtin cd "$PWD"; zle reset-prompt; zle -R" >&$ZLE_FIFO
 }}
 
-# Insert relative path into the CLI buffer
+# === ZLE: insert path into CLI =================================
 cmd zle-insert-relative %{{
     for f ($fx) {
       print -l -- "LBUFFER+=${LBUFFER:+ }${(q)$(realpath "$f" --relative-to=$PWD)}" >&$ZLE_FIFO
     }
 }}
 
-# Insert absolute path into the CLI buffer
+# === ZLE: insert abspath into CLI =============================
 cmd zle-insert-absolute %{{
     for f ($fx) {
       print -l -- "LBUFFER+=${LBUFFER:+ }${f}" >&$ZLE_FIFO
     }
 }}
 
-# Initialize the ZLE FIFO
+# === ZLE: initialize ==========================================
 cmd zle-init :{{
     map , zle-cd
     map ap zle-insert-relative
@@ -682,6 +680,7 @@ cmd zle-init :{{
 }}
 
 &[[ -n "$ZLE_FIFO" ]] && lf -remote "send $id zle-init"
+# ]]] === ZLE ===
 
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Mappings                                                                  │
@@ -795,12 +794,11 @@ map Ma $neomutt -a "$fx"  # mail a file
 # ]]]
 
 # == General == [[[
-map . set hidden!
-map L cd-followlink           # follow symlink on cd
-
 # Doesn't work
 # map H :cd ${OLDPWD:h}
+# map H $lf -remote "send $id cd $OLDPWD"
 
+map . set hidden!
 map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
@@ -830,9 +828,6 @@ map R reload
 map C clear
 map U unselect
 
-map sf select-files                              # select all files
-map sd select-dirs                               # select all dirs
-map sx select-exec                               # select all executables
 map sF $for f ($(print -ln -- *(ND) | fzf)) { lf -remote "send $id toggle $f" } # select  files fzf
 map sg push :glob-select<space>                  # select files matching pattern
 map sG push :glob-unselect<space>                # unselect files matching pattern
@@ -858,16 +853,6 @@ map <c-x>G !go build $fx && ./$(basename ${fx%.go}) # execute go file
 map <c-x>g !go run $fx                              # execute go file
 map <c-x>w push :wim<space>                         # open script source code
 map <c-x>p $cat $fx | up                            # cat file to up (unix piper)
-# ]]]
-
-# == GPG == [[[
-map te gpg_encrypt_recipient
-map tp gpg_encrypt_pass
-map td gpg_decrypt
-map ts. gpg_sign
-map tsc gpg_sign_clear
-map tsd gpg_sign_detach
-map tT $gpg-tui # gpg-tui
 # ]]]
 
 # == Torrent == [[[
@@ -933,10 +918,15 @@ map gL $lazygit   # git
 map bo $bow       # buku bookmarks
 # ]]]
 
+# ]]]
+
 # Doesn't work in tmux?
+
 map <m-1> down
+
 map <m-2> down
 map <c-m-up> up
 map <c-m-down> down
 
-# ]]]
+
+# vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

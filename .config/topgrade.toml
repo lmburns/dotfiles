@@ -14,7 +14,7 @@
 no_retry = false
 
 # Run inside tmux
-#run_in_tmux = true
+# run_in_tmux = true
 
 # List of remote machines with Topgrade installed on them
 #remote_topgrades = ["toothless", "pi", "parnas"]

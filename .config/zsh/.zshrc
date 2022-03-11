@@ -370,7 +370,9 @@ zt 0b light-mode for \
   zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
   zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"
   ' \
-    marzocchi/zsh-notify
+    marzocchi/zsh-notify \
+  lbin"bin/git-dsf;bin/diff-so-fancy" atinit'alias dsf="git-dsf"' \
+    zdharma-continuum/zsh-diff-so-fancy
 #  ]]] === wait'0b' ===
 
 #  === wait'0c' - programs - sourced === [[[
@@ -493,7 +495,7 @@ zt 0c light-mode null for \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' has'cargo' \
     crockeo/taskn \
-  lbin"!**/nvim" from'gh-r' lman \
+  lbin"!**/nvim" from'gh-r' lman bpick'*linux*.gz' \
     neovim/neovim \
   lbin atclone'make build' \
     @motemen/gore \
@@ -737,11 +739,12 @@ zt 0c light-mode null for \
 zt 0c light-mode null for \
   lbin from'gh-r' bpick'*linux*.tar.gz' \
     wagoodman/dive \
-  lbin'*/*/gpg-tui' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     orhun/gpg-tui \
   lbin from'gh-r' ver'nightly' \
     ClementTsang/bottom \
-  lbin from'gh-r' dl"$(grman)" lman \
+  lbin dl"$(grman)" lman \
+  atclone'CGO_ENABLED=0 go build -ldflags="-s -w" .' \
     gokcehan/lf \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
@@ -768,8 +771,7 @@ zt 0c light-mode null for \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; mv -f **/**.zsh _tig' \
   make'install' atpull'%atclone' mv"_tig -> $ZINIT[COMPLETIONS_DIR]" \
     jonas/tig \
-  lbin'*/delta;git-dsf' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
-  atload'alias dsf="git-dsf"' \
+  lbin'**/delta' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
     dandavison/delta \
   lbin from'gh-r' \
     extrawurst/gitui \
@@ -893,8 +895,6 @@ LIMIT 1
 
     typeset -g suggestion=$(_histdb_query "$query")
 }
-
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history histdb_top custom_history completion)
 # ]]]
 
 # === paths (GNU) === [[[
@@ -1003,6 +1003,7 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history histdb_top completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"
@@ -1119,7 +1120,8 @@ export FZF_COMPLETION_TRIGGER='~~'
     _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
 }
 
-export FZF_ALT_C_COMMAND="cat $HOME/.cd_history"
+export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --exclude ".git" --type d -d 1"
+export SKIM_ALT_C_COMMAND="$FZF_ALT_C_COMMAND"
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:execute(echo {2} | xargs -o nvim)'"
 export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview \"(exa -T {2} | less) 2>/dev/null | head -200\""
 
