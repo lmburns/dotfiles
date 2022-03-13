@@ -66,6 +66,7 @@
   set shortmess+=c
   set nofoldenable
   set foldmethod=marker
+  set foldmarker=[[[,]]]
   set conceallevel=2
   set concealcursor-=n                    " cancel conceal on cursor line
   set scrolloff=5                         " cusor 5 lines from bottom of page
@@ -352,7 +353,7 @@ endfunction "}}}
 " endfunction "}}}
 
 let g:ll_blacklist = '\v(help|nerdtree|quickmenu|startify|undotree|neoterm|'
-  \ . 'fugitive|coc-explorer|netrw|vim-plug|floaterm|qf)'
+  \ . 'fugitive|netrw|vim-plug|floaterm|qf)'
 
 function! FileSize() abort " {{{
   let l:bytes = getfsize(expand('%:p'))
@@ -594,7 +595,6 @@ Plug 'mhinz/vim-startify'
   \   { 'ug': [ 'Upgrade Plugin Manager', ':PlugUpgrade' ] },
   \   { 'uc': [ 'Update CoC Plugins', ':CocUpdate' ] },
   \   { 'vd': [ 'Make Wiki Entry', ':VimwikiMakeDiaryNote' ] },
-  \   { 'ce': [ 'Start CocExplorer', ':CocCommand explorer' ]}
   \ ]
 
   let g:startify_bookmarks = [
@@ -982,7 +982,6 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-diagnostic',
     \ 'coc-pairs',
     \ 'coc-yank',
-    \ 'coc-explorer',
     \ 'coc-marketplace',
     \ 'coc-tabnine',
     \ 'coc-tag',
@@ -1041,11 +1040,6 @@ Plug 'antoinemadec/coc-fzf'
   nmap <silent> <Leader>eo :CocCommand explorer --preset opt<CR>
   nmap <silent> <Leader>ex :CocCommand explorer
   nmap <silent> <Leader>el :CocList explPresets<CR>
-
-  function! ToggleCocExplorer() abort
-    execute 'CocCommand explorer --toggle --sources file+ --width=30 ' . getcwd()
-  endfunction
-  nnoremap <silent> <C-\> :call ToggleCocExplorer()<CR>
 
   " use `[g` and `]g` to navigate diagnostics
   nmap <silent> [g <Plug>(coc-diagnostic-prev)
@@ -1631,7 +1625,7 @@ Plug 'wfxr/minimap.vim'
   let g:minimap_auto_start_win_enter = 1
   let g:minimap_highlight_range = 1
   let g:minimap_block_filetypes =
-    \ ['fugitive', 'nerdtree', 'help', 'coc-explorer', 'vista']
+    \ ['fugitive', 'nerdtree', 'help', 'vista']
   let g:minimap_close_filetypes = ['startify', 'netrw', 'vim-plug', 'floaterm']
   let g:minimap_block_buftypes = ['nofile', 'nowrite', 'quickfix', 'terminal', 'prompt']
 " }}} === minimap ===

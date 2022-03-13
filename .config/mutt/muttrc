@@ -406,8 +406,7 @@ macro index,pager i2 \
     "switch to lucas@lmburns.com"
 macro index,pager i3 \
   '<sync-mailbox><enter-command>\
-    source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
-    "switch to lmb@lmburns.com"
+  source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lmb@lmburns.com"
 macro index,pager i4 \
   '<sync-mailbox><enter-command>\
     source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \

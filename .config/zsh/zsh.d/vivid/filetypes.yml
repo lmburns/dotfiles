@@ -152,6 +152,7 @@ programming:
     purescript: [.purs]
     python: [.py]
     r: [.r]
+    rasi: [.rasi]
     ruby: [.rb]
     rust: [.rs]
     scala: [.scala, .sbt]

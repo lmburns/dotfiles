@@ -1,0 +1,68 @@
+/* configuration { */
+/*   font: "JetBrainsMono Nerd Font Medium 10"; */
+/*   modi: "window,run,drun"; */
+/* } */
+
+* {
+  bg: #282828;
+  bg-alt: #3c3836;
+
+  fg: #fbf1c7;
+
+  blue: #83a598;
+
+  background-color: @bg;
+
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+}
+
+element {
+  padding: 12;
+  text-color: @fg;
+}
+
+element selected {
+  text-color: @blue;
+}
+
+element-text {
+  padding: 2;
+  background-color: inherit;
+  text-color: inherit;
+}
+
+entry {
+  background-color: @bg-alt;
+  padding: 12 0 12 3;
+  text-color: @fg;
+}
+
+inputbar {
+  children: [prompt, entry];
+}
+
+listview {
+  columns: 1;
+  lines: 8;
+}
+
+mainbox {
+  children: [inputbar, listview];
+}
+
+prompt {
+  background-color: @bg-alt;
+  enabled: true;
+  font: "FontAwesome 12";
+  padding: 12 0 0 12;
+  text-color: @fg;
+}
+
+window {
+  transparency: "real";
+}
+
+/* vim: ft=css:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

@@ -99,6 +99,36 @@ cmd q! ${{
 cmd Q! :q!
 map <esc> quit
 
+# toggle a second lf file manager pane
+cmd split ${{
+    bash $HOME/.config/lf/scripts/tmux_helper.sh --split
+}}
+
+# swap first and second lf file manager pane
+cmd swap ${{
+    bash $HOME/.config/lf/scripts/tmux_helper.sh --swap
+}}
+
+# open a new lf file manager (in new tab)
+cmd new-tab ${{
+   bash $HOME/.config/lf/scripts/tmux_helper.sh --new-tab
+}}
+
+cmd terminal ${{
+    bash $HOME/.config/lf/scripts/tmux_helper.sh --terminal
+}}
+map @ :terminal
+
+# print lf id
+cmd get-id %{{
+    echo "lf-id: $id"
+}}
+
+# rename/change the pane title
+cmd rename-title ${{
+    printf "\033]2;%s\033\\" "$@"
+}}
+
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Commands / Functions                                                      │
 # └───────────────────────────────────────────────────────────────────────────┘
@@ -626,13 +656,14 @@ cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height)
 cmd fd !clear; fd -Hi "$@"
 cmd rg !clear; rg "$1"
 cmd rgu !clear; rgu "$1"
-cmd massren $massren
-cmd mmv $mmv $fx
+cmd massren $massren $fx
+cmd mmv $mmv -- ${${(@f)fx}:t}
 cmd f2 !f2 -f "$1"
 cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
 cmd yank-path $print -r "$fx" | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
 cmd yank-name $print -r "${fx:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
+cmd yank-dir $print -r "${fx:h:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h:t}\nCopied to clipboard"
 cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 
@@ -771,6 +802,7 @@ map Bm massren                          # bulk rename with massren
 map Bv mmv                              # bulk rename only with selected
 map Bf push :f2<space>                  # use f2 to rename
 map ch chmod                            # change file permissions
+map = chmod                            # change file permissions
 map cH chown                            # change file owner
 
 map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
@@ -803,9 +835,11 @@ map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
 map Pp ppaste "copy"          # paste and preview progress
+# map y
 map y copy                    # general copy
-map Ya yank-path              # yank file path
+map Yp yank-path              # yank file path
 map Yn yank-name              # yank name of file path
+map Yd yank-dir               # yank name of directory
 map Yj copytojump             # copy to directory with zoxide
 map Yp copytopath             # copy to directory with path entered
 map Mj movetojump             # move to directory with zoxide
@@ -922,11 +956,10 @@ map bo $bow       # buku bookmarks
 
 # Doesn't work in tmux?
 
-map <m-1> down
-
-map <m-2> down
-map <c-m-up> up
-map <c-m-down> down
+# map <m-1> down
+# map <m-2> down
+# map <c-m-up> up
+# map <c-m-down> down
 
 
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

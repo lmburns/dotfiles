@@ -29,10 +29,12 @@ alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 alias strace="/usr/local/bin/strace"
+alias getcert='openssl s_client -connect'
 
 alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias open="handlr open"
 alias jor="journalctl"
+alias jortoday="journalctl -xe --since=today"
 alias xmm="xmodmap"
 alias s="systemctl"
 alias bctl="bluetoothctl"

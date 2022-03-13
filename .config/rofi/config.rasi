@@ -1,5 +1,5 @@
 configuration {
-  modi: "window,run,ssh,drun,combi,keys,filebrowser,file-browser-extended";
+  modi: "window,run,ssh,drun,combi,keys";
   font: "FiraMono Nerd Font Mono 12";
   location: 0;
   matching: "fuzzy";
@@ -13,15 +13,16 @@ configuration {
 
   kb-mode-next: "Tab";
   kb-mode-previous: "Shift+Tab";
+  kb-row-tab: "";
   kb-row-down: "Down,Control+j";
   kb-row-up: "Up,Control+k";
-  kb-accept-entry: "Return";
+  /* kb-element-prev: "Up,Control+k"; */
+  /* kb-element-next: "Down,Control+j,Hyper+j"; */
+  kb-accept-entry: "Return,KP_Enter";
   kb-remove-to-eol: "Control+1";
+  /* kb-remove-to-eol: ""; */
   kb-cancel: "Escape,Control+c,Control+bracketleft";
 
-  kb-remove-to-eol: "";
-  kb-accept-entry: "Return,KP_Enter";
-  kb-row-tab: "";
   kb-remove-char-back: "BackSpace,Shift+BackSpace";
 
   display-run: " ";
@@ -29,17 +30,22 @@ configuration {
   display-window: "  ";
   drun-display-format: "{name}";
 
-  /* terminal: "alacritty"; */
-  terminal: "handlr launch x-scheme-handler/terminal --";
+  terminal: "alacritty";
+  /* terminal: "handlr launch x-scheme-handler/terminal --"; */
   ssh-client: "ssh";
   window-match-fields: "all";
   drun-match-fields: "name,exec";
   dpi: 120;
-  threads: 2;
+  threads: 4;
+
   timeout {
       action: "kb-cancel";
       delay:  0;
   }
+}
+
+#textbox-prompt-colon {
+        enabled: false;
 }
 
 @theme "gruvbox"

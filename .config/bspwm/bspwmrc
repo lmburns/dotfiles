@@ -19,6 +19,9 @@ pgrep -x pasystray >/dev/null || pasystray &
 pgrep -x pcmanfm >/dev/null || pcmanfm -d &
 # Extra hotkey daemon for what sxhkd can't do
 pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
+
+pgrep -x copyq >/dev/null || copyq &
+
 launchpolybar &
 
 remaps &

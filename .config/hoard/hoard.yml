@@ -460,6 +460,8 @@ hoards:
     #   unix: "${XDG_DATA_HOME}/mail"
     muttrc:
       unix|mutt: "${HOME}/.muttrc"
+    help:
+      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/sample_rc"
   notmuch:
     notmuch-config:
       unix|notmuch: "${XDG_CONFIG_HOME}/notmuch/notmuch-config"

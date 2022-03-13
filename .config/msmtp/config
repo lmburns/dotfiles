@@ -30,18 +30,6 @@ tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
 tls_starttls off
 
-account lmb@lmburns.com
-host mail.lmburns.com
-port 465
-from lmb@lmburns.com
-user lmb@lmburns.com
-passwordeval "pass lmb@lmburns.com"
-auth on
-tls on
-tls_trust_file	/etc/ssl/certs/ca-certificates.crt
-logfile /home/lucas/.config/msmtp/msmtp.log
-tls_starttls off
-
 account burnsppl@gmail.com
 host smtp.gmail.com
 port 587
@@ -65,3 +53,15 @@ tls on
 tls_trust_file	/etc/ssl/certs/ca-certificates.crt
 logfile /home/lucas/.config/msmtp/msmtp.log
 tls_starttls off
+account lmb@lmburns.com
+host mail.lmburns.com
+port 465
+from lmb@lmburns.com
+user lmb@lmburns.com
+passwordeval "pass lmb@lmburns.com"
+auth on
+tls on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/lucas/.config/msmtp/msmtp.log
+tls_starttls off
+

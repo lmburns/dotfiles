@@ -495,8 +495,6 @@ zt 0c light-mode null for \
   lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' has'cargo' \
     crockeo/taskn \
-  lbin"!**/nvim" from'gh-r' lman bpick'*linux*.gz' \
-    neovim/neovim \
   lbin atclone'make build' \
     @motemen/gore \
   lbin from'gh-r' \
@@ -546,6 +544,8 @@ zt 0c light-mode null for \
   id-as'bisqwit/regex-opt' lbin atclone'xh --download https://bisqwit.iki.fi/src/arch/regex-opt-1.2.4.tar.gz' \
   atclone'ziextract --move --auto regex-*.tar.gz' make'all' \
     zdharma-zmirror/null
+  # lbin"!**/nvim" from'gh-r' lman bpick'*linux*.gz' \
+  #   neovim/neovim \
 
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 # greymd/teip
@@ -848,6 +848,7 @@ zshaddhistory() {
   [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
 }
 
+# Based on directory history
 _zsh_autosuggest_strategy_dir_history() {
   emulate -L zsh -o extended_glob
   if $_per_directory_history_is_global && [[ -r "$_per_directory_history_path" ]]; then
@@ -861,6 +862,7 @@ _zsh_autosuggest_strategy_dir_history() {
   fi
 }
 
+# Same as above, but not directory specific
 _zsh_autosuggest_strategy_custom_history() {
   emulate -L zsh -o extended_glob
   local prefix="${1//(#m)[\\*?[\]<>()|^~#]/\\$MATCH}"
@@ -874,7 +876,7 @@ _zsh_autosuggest_strategy_custom_history() {
 
 
 # return the latest used command in the current directory
-_zsh_autosuggest_strategy_histdb_top() {
+_zsh_autosuggest_strategy_histdb_top_here() {
     (( $+functions[_histdb_query] )) || return
     local query="
 SELECT commands.argv
@@ -1003,7 +1005,7 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history histdb_top completion)
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history histdb_top_here custom_history match_prev_cmd completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"

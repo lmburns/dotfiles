@@ -17,7 +17,6 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 
 # clipit &
 # greenclip daemon &
-copyq &
 setsid -f greenclip daemon > /dev/null 2>&1 &!
 ulauncher --hide-window &
 
