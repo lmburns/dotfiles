@@ -5,7 +5,8 @@
 # cf() {
   emulate -L zsh
   zmodload -Fa zsh/param/private b:private
-  setopt extendedglob globstarshort nullglob rcexpandparam no_shortloops warncreateglobal
+  setopt extendedglob globstarshort nullglob rcexpandparam \
+         no_shortloops warncreateglobal
 
   private body=$@[-1]
 

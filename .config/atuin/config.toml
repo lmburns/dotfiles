@@ -1,9 +1,9 @@
 
 ## where to store your encryption key, default is your system data directory
-# key_path = "~/.key"
+key_path = "~/.local/share/atuin/dbkey"
 
 ## where to store your auth session token, default is your system data directory
-# session_path = "~/.key"
+session_path = "~/.local/share/atuin/session-token"
 
 ## date format used, either "us" or "uk"
 db_path = "~/.config/atuin/history.db"
@@ -14,6 +14,5 @@ sync_frequency = "5m"
 ## address of the sync server
 # sync_address = "https://api.atuin.sh"
 
-## which search mode to use
-## possible values: prefix, fulltext
-# search_mode = "prefix"
+## possible values: prefix, fulltext, fuzzy
+search_mode = "fuzzy"

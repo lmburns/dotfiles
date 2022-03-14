@@ -1,0 +1,113 @@
+#!/usr/bin/env zsh
+
+emulate -L zsh
+
+TERMINAL_POSITION='left'
+
+function current_path() {
+    local current_path
+    current_path=$(\
+        tmux lsp -F "#{pane_active} #{pane_current_path}" \
+            | rg --color=never "^1 " \
+            | head -n1
+    )
+    print -r -- "${${(@s< >)current_path}[2]}"
+}
+
+function toggle_terminal() {
+    # >/dev/null
+    if { tmux lsp -F "#{pane_title}" | rg -q "^lf-terminal$" }; then
+        tmux killp -t $(tmux lsp -F "#{pane_id} #{pane_title}" | rg --color=never " lf-terminal$" | hck -f1)
+        tmux select-layout even-horizontal
+    else
+        builtin cd "$(current_path)"
+        if [[ "$TERMINAL_POSITION" = 'bottom' ]]; then
+            tmux split-window -v -p 30 -f 'printf "\033]2;%s\033\\" "lf-terminal" && exec "$SHELL"'
+        elif [ "$TERMINAL_POSITION" = 'right' ]; then
+            tmux split-window -h -f 'printf "\033]2;%s\033\\" "lf-terminal" && exec "$SHELL"'
+            tmux select-layout even-horizontal
+        elif [ "$TERMINAL_POSITION" = 'left' ]; then
+            tmux split-window -h -b -f 'printf "\033]2;%s\033\\" "lf-terminal" && exec "$SHELL"'
+            tmux select-layout even-horizontal
+        fi
+
+        local lfTerminalPaneNumber
+        lfTerminalPaneNumber=$(
+            tmux lsp -F "#{pane_id} #{pane_title}" \
+                | rg --color=never " lf-terminal$" \
+                | hck -f1
+        )
+
+        tmux send-keys -t $lfTerminalPaneNumber C-l  # clear terminal
+    fi
+}
+
+function cd_terminal() {
+    local lfTerminalPaneNumber
+    if { tmux lsp -F "#{pane_title}" | rg -q "^lf-terminal$" }; then
+        lfTerminalPaneNumber=$(tmux lsp -F "#{pane_id} #{pane_title}" | grep " lf-terminal$" | awk '{print $1}')
+        tmux send-keys -t $lfTerminalPaneNumber C-l  # clear terminal
+        tmux send-keys -t $lfTerminalPaneNumber C-u  # clear current line
+        tmux send-keys -t $lfTerminalPaneNumber " cd \"$(current_path)\"" C-m
+    fi
+}
+
+function split() {
+    if [[ "$(tmux lsp -F "#{pane_title}" | rg --color=never "^lf-pane-" | cw -l)" -ge 2 ]] ; then
+        tmux killp -t 2
+        if [[ $TERMINAL_POSITION = (left|right) ]]; then
+            tmux select-layout even-horizontal
+        fi
+    else
+        builtin cd "$(current_path)"
+        tmux split-window -h "exec lf"
+        if [[ $TERMINAL_POSITION = (left|right) ]]; then
+            tmux select-layout even-horizontal
+        fi
+    fi
+}
+
+function swap() {
+    local paneId1 paneId2
+    # >/dev/null
+    if { tmux lsp -F "#{pane_title}" | rg --color=never -q "^lf-pane-1$" } ; then
+        if { tmux lsp -F "#{pane_title}" | rg --color=never -q "^lf-pane-2$" } ; then
+            paneId1=$(tmux lsp -F "#{pane_id} #{pane_title}" | rg --color=never "lf-pane-1$" | hck -f1)
+            paneId2=$(tmux lsp -F "#{pane_id} #{pane_title}" | grep "lf-pane-2$" | hck -f1)
+            tmux swap-pane -s $paneId1 -t $paneId2
+        fi
+    fi
+}
+
+function new_tab() {
+    tmux set-option -g status on
+    tmux new-window lf
+}
+
+
+function quit() {
+    # quit current lf pane
+    tmux kill-pane
+}
+
+function quit_all() {
+    # quit all lf panes
+    tmux kill-window
+}
+
+[[ -z "$1" ]] && {
+    notify-send "tmux_helper" "No arguments were given"
+    exit 1
+}
+
+if [[ -v TMUX ]]; then
+    case $1 in
+        (terminal|--terminal)       toggle_terminal; exit ;;
+        (cd-terminal|--cd-terminal) cd_terminal;     exit ;;
+        (split|--split)             split;           exit;;
+        (swap|--swap)               swap;            exit ;;
+        (new-tab|--new-tab)         new_tab;         exit ;;
+        (quit|--quit)               quit;            exit ;;
+        (quit-all|--quit-all)       quit_all;        exit ;;
+    esac
+fi

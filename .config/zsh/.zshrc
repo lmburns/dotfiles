@@ -266,6 +266,7 @@ zt 0a light-mode for \
     tarrasch/zsh-bd \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
+  atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
     NICHOLAS85/updatelocal \
   trigger-load'!zhooks' \
     agkozak/zhooks \
@@ -304,8 +305,9 @@ zt 0a light-mode for \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' \
     kazhala/dotbare \
-  lbin'!' atload'export BMUX_DIR="$XDG_CONFIG_HOME/bmux"' \
-  atinit'_wbmux() { bmux }; zle -N _wbmux' \
+  lbin'!' atinit'_wbmux() { bmux }; zle -N _wbmux' \
+  atload'
+  export BMUX_DIR="$XDG_CONFIG_HOME/bmux"' \
     kazhala/bmux \
     anatolykopyl/doas-zsh-plugin \
   pick'timewarrior.plugin.zsh' \
@@ -342,8 +344,8 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- ${f}};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
-  atload'vbindkey "Up" history-substring-search-up;
-         vbindkey "Down" history-substring-search-down' \
+  atload'bindkey "^[[A" history-substring-search-up;
+         bindkey "^[[B" history-substring-search-down' \
     zsh-users/zsh-history-substring-search
 #  ]]] === wait'0b' - patched ===
 
@@ -372,7 +374,8 @@ zt 0b light-mode for \
   ' \
     marzocchi/zsh-notify \
   lbin"bin/git-dsf;bin/diff-so-fancy" atinit'alias dsf="git-dsf"' \
-    zdharma-continuum/zsh-diff-so-fancy
+    zdharma-continuum/zsh-diff-so-fancy \
+    OMZP::systemd/systemd.plugin.zsh
 #  ]]] === wait'0b' ===
 
 #  === wait'0c' - programs - sourced === [[[
@@ -594,8 +597,9 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     pkolaczk/fclones \
   lbin from'gh-r' \
     itchyny/mmv \
-  lbin from'gh-r' eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
+  lbin atclone'cargo br' atpull'%atclone' \
   atclone"./atuin gen-completions --shell zsh --out-dir $GENCOMP_DIR" atpull'%atclone' \
+  eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
     ellie/atuin \
   lbin'* -> sd' from'gh-r' \
     chmln/sd \
@@ -833,11 +837,6 @@ autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 #   compstate[list]=
 # }
 
-# LS_COLORS defined before zstyle
-typeset -gx LS_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
-typeset -gx {ZLS_COLORS,TREE_COLORS}="$LS_COLORS"
-typeset -gx JQ_COLORS="1;30:0;39:1;36:1;39:0;35:1;32:1;32:1"
-
 # typeset -g HELPDIR='/usr/share/zsh/help'
 # ]]]
 
@@ -994,6 +993,11 @@ path=( $GOPATH/bin(N-/) "${path[@]}" )
 # eval "$(keychain --agents ssh -q --inherit any --eval id_rsa git burnsac)"
 # eval "$(keychain --agents gpg -q --eval 0xC011CBEF6628B679)"
 
+# LS_COLORS defined before zstyle
+typeset -gx LS_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
+typeset -gx {ZLS_COLORS,TREE_COLORS}="$LS_COLORS"
+typeset -gx JQ_COLORS="1;30:0;39:1;36:1;39:0;35:1;32:1;32:1"
+
 typeset -gx GPG_TTY=$TTY
 typeset -gx PDFVIEWER='zathura'                                                   # texdoc pdfviewer
 typeset -gx FORGIT_LOG_FORMAT="%C(red)%C(bold)%h%C(reset) %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset"
@@ -1005,20 +1009,18 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history histdb_top_here custom_history match_prev_cmd completion)
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history match_prev_cmd completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"
 typeset -ga chwpd_dir_history_funcs=( "_dircycle_update_cycled" ".zinit-cd" )
 typeset -g PER_DIRECTORY_HISTORY_BASE="${ZPFX}/share/per-directory-history"
-typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"
+typeset -gx NQDIR="/tmp/nq" FNQ_DIR="$HOME/tmp/fnq"
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
 typeset -gx FZFGIT_DEFAULT_OPTS="--preview-window=':nohidden,right:65%:wrap'"
-typeset -gx CDHISTSIZE=20 CDHISTTILDE=TRUE CDHISTCOMMAND=cdh
-typeset -gx NQDIR="/tmp/nq" FNQ_DIR="$HOME/tmp/fnq"
 
 typeset -gx PASSWORD_STORE_ENABLE_EXTENSIONS='true'
-typeset -gx PASSWORD_STORE_EXTENSIONS_DIR="${BREW_PREFIX}/lib/password-store/extensions"
+# typeset -gx PASSWORD_STORE_EXTENSIONS_DIR="${BREW_PREFIX}/lib/password-store/extensions"
 
 # alias c=jd
 # ]]]
@@ -1116,13 +1118,14 @@ export SKIM_DEFAULT_COMMAND='fd --no-ignore --hidden --follow --exclude ".git"'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*"'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-export FZF_COMPLETION_TRIGGER='~~'
+export SKIM_COMPLETION_TRIGGER='~~'
+export FZF_COMPLETION_TRIGGER='**'
 (( $+commands[fd] )) && {
     _fzf_compgen_path() { fd --hidden --follow --exclude ".git" . "$1" }
     _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
 }
 
-export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --exclude ".git" --type d -d 1"
+export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --strip-cwd-prefix --exclude ".git" --type d -d 1 | lscolors"
 export SKIM_ALT_C_COMMAND="$FZF_ALT_C_COMMAND"
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:execute(echo {2} | xargs -o nvim)'"
 export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview \"(exa -T {2} | less) 2>/dev/null | head -200\""
@@ -1160,7 +1163,8 @@ zt 0b light-mode null id-as for \
   fast-theme XDG:kimbox.ini &>/dev/null' \
     zdharma-continuum/null
   # atload'local x="$XDG_CONFIG_HOME/cdhist/cdhist.rc"; [ -f "$x" ] && source "$x"' \
-    # zdharma-continuum/null
+  # atinit'typeset -gx CDHISTSIZE=20 CDHISTTILDE=TRUE CDHISTCOMMAND=cdh'\
+  #   zdharma-continuum/null
 
 # recache keychain if older than GPG cache time or first login
 # local first=${${${(M)${(%):-%l}:#*01}:+1}:-0}

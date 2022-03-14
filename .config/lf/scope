@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-# set -C -f -u
 setopt noclobber noglob nounset
 
 IFS="${$(printf '%b_' '\n')%_}"
@@ -18,8 +17,10 @@ IFS="${$(printf '%b_' '\n')%_}"
 local FILE_PATH="${1}"         # Full path of the highlighted file
 local WIDTH="${2}"
 local HEIGHT="${3}"
-local IMAGE_CACHE_PATH="${4}"  # Full path that should be used to cache image preview
+local X_COORD="${4}"
+local Y_COORD="${5}"
 
+local FILE_ABSPATH="${FILE_PATH:A}"
 local FILE_EXTENSION="${FILE_PATH##*.}"
 local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
 
@@ -27,6 +28,7 @@ local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
 local HIGHLIGHT_SIZE_MAX=262143  # 256KiB
 local HIGHLIGHT_TABWIDTH=8
 local MAXLN=200
+local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}")"
 
 # Functions:
 try() { output=$(eval '"$@"'); }
@@ -37,6 +39,41 @@ dump() { /bin/echo -E "$output"; }
 # a common post-processing function used after most commands
 trim() { head -n "$MAXLN"; }
 
+prev-image() {
+  if [[ -n $DISPLAY && -v FIFO_UEBERZUG ]]; then
+    #   "scaling_position_x": 0.5,
+    #   "scaling_position_y": 0.5,
+
+    # These load more images if the numbers are strings
+    (( $+commands[rjo] )) || { notify-send "Failure" "rjo isn't installed"; exit 1; }
+
+    command rjo \
+      "action=add" \
+      "identifier=PREVIEW" \
+      "x=\"$X_COORD\"" \
+      "y=\"$Y_COORD\"" \
+      "width=\"$(( WIDTH - 1 ))\"" \
+      "height=\"$(( HEIGHT - 1 ))\"" \
+      "scaler=contain" \
+      "path=$1" >"$FIFO_UEBERZUG"
+  else
+    # Handle non-ueberzug
+    # chafa --fill=block --symbols=block --size "$(( WIDTH - 4 ))"x"${HEIGHT}" -- "$1"
+
+    case "${MIMETYPE}" in
+      (image/*)
+        chafa --fill=block --symbols=block --size "$(( WIDTH - 4 ))"x"${HEIGHT}" -- "$1"
+      ;;
+      (video/*)
+        mediainfo -- "$1"
+      ;;
+     (pdf/*)
+        pdftotext -l 10 -nopgbrk -q -- "$1" - && \
+          { dump | trim | fmt -s -w $WIDTH; exit 0; }
+      ;;
+    esac
+  fi
+}
 
 handle_mime() {
   local mimetype="${1}"
@@ -44,6 +81,7 @@ handle_mime() {
     (text/html)
       w3m -dump "${FILE_PATH}" && { dump | trim | fmt -s -w $WIDTH; exit 4; } ;;
     (text/troff)
+      notify-send "okay" "1: $1\n2: $2\n3: $3\n4: $4\n:5: $5"
       man ./ "${FILE_PATH}" | col -b ;;
     (text/csv)
       cat -- "${FILE_PATH}" | tidy-viewer -n 30 ;;
@@ -55,12 +93,24 @@ handle_mime() {
     (application/zip)
       atool --list -- "${FILE_PATH}" ;;
     (image/*)
-      chafa --fill=block --symbols=block -s 80x"${HEIGHT}" "${FILE_PATH}" || exit 1;;
-    (video/* | audio/*|application/octet-stream)
-       mediainfo "${FILE_PATH}" || exit 1;;
+      prev-image "$FILE_PATH"
+      # prev-image "$FILE_PATH" "$WIDTH" "$HEIGHT" "$X_COORD" "$Y_COORD"
+    ;;
+    (audio/*|application/octet-stream)
+      mediainfo -- "$FILE_PATH"
+    ;;
+    (video/*)
+      CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
+        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
+      [[ ! -f "$CACHE" ]] && ffmpegthumbnailer -i "$FILE_PATH" -o "$CACHE" -s 0
+      prev-image "$CACHE"
+    ;;
     (*/pdf)
-      pdftotext -l 10 -nopgbrk -q "${FILE_PATH}" - && \
-        { dump | trim | fmt -s -w $WIDTH; exit 0; } || exit 1 ;;
+      CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
+        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
+      [[ ! -f "$CACHE.jpg" ]] && command pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
+      prev-image "$CACHE.jpg"
+    ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
       docx2txt "${FILE_PATH}" || exit 1 ;;
   esac
@@ -91,10 +141,6 @@ handle_other() {
   esac
 }
 
-# (*.dmg)   hdiutil imageinfo "${FILE_PATH}" | head -n 200 ;;
-
-# *.md) mdv "${FILE_PATH}" ;;
-
 typeset -A CO
 CO=(
   red    $'\e[38;5;1m'  bred   $'\e[01;31m' brred   $'\e[38;5;9m'
@@ -117,14 +163,8 @@ handle_fallback() {
     exit 1
 }
 
-local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}" )"
 handle_mime "${MIMETYPE}"
 handle_other
-handle_fallback
+[[ ! -v FIFO_UEBERZUG || $MIMETYPE != (image|video|pdf)/* ]] && handle_fallback
 
 exit 1
-
-### Attempt to use imgcat instead of cafa to view images:
-# image/*) /usr/local/bin/imgcat --width "$(identify -format '%w' "${FILE_PATH}")" --height "$(identify -format '%h' "${FILE_PATH}")" --iterm2 "${FILE_PATH}" || exit 1;;
-
-# fileviewer *.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm /usr/local/bin/imgcat --width %pw --height %ph --iterm2 %c:p %pd

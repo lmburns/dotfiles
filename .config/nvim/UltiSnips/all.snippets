@@ -120,6 +120,27 @@ snip += box[3]`
 $0
 endsnippet
 
+# snippet zbox "Ansii box, fits just around text (with comments)"
+# `!p
+# b, m, e, i = (s.strip() for s in get_comment_format())
+# m0 = m[0] if m else ''
+# bwidth_inner = bwidth - 3 - max(len(b), len(i + e)) if bwidth else twidth + 2
+# sline = b + m + bwidth_inner * m0 + 2 * m0
+# nspaces = (bwidth_inner - twidth) // 2
+# mlines = i + m + " " + " " * nspaces
+# mlinee = " " + " "*(bwidth_inner - twidth - nspaces) + m
+# eline = i + m + bwidth_inner * m0 + 2 * m0 + e
+#
+# snip.rv = get_comment_format()[0]
+# snip.rv += ' ┌' + '─' * (len(t[1]) + 2) + '┐'
+# snip += get_comment_format()[0]
+# ` │ ${1:${VISUAL:content}} │
+# `!p
+# snip.rv = get_comment_format()[0]
+# snip.rv += ' └' + '─' * (len(t[1]) + 2) + '┘'`
+# $0
+# endsnippet
+
 snippet bbox "Wider box" b
 `!p
 if not snip.c:
@@ -134,10 +155,15 @@ snip += box[3]`
 $0
 endsnippet
 
-snippet abox "Ansii box, fits just around text"
-`!p snip.rv = '┌' + '─' * (len(t[1]) + 2) + '┐'`
-│ $1 │
-`!p snip.rv = '└' + '─' * (len(t[1]) + 2) + '┘'`
+snippet abox "Ansii box, fits just around text (with comments)"
+`!p
+snip.rv = get_comment_format()[0]
+snip.rv += ' ┌' + '─' * (len(t[1]) + 2) + '┐'
+snip += get_comment_format()[0]
+` │ ${1:${VISUAL:content}} │
+`!p
+snip.rv = get_comment_format()[0]
+snip.rv += ' └' + '─' * (len(t[1]) + 2) + '┘'`
 $0
 endsnippet
 
@@ -223,13 +249,8 @@ purus eget erat facilisis porta quis ut felis. Donec facilisis orci vel lectus c
 eget bibendum nisi suscipit.
 endsnippet
 
-snippet mypy "all the env vars"
-`!p import os
-if not snip.c:
-	str = ""
-	for k,v in os.environ.items():
-		str+="{} {}\n".format(k,v)
-	snip.rv = str`
+snippet "lorem(([1-4])?[0-9])?" "Lorem Ipsum generator" r
+`!p snip.rv = " ".join(LOREM.split()[:int(match.group(1))]) if match.group(1) else LOREM`
 endsnippet
 
 snippet uuid "Random UUID" w

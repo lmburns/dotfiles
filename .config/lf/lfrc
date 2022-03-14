@@ -24,6 +24,10 @@ set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 
 # -- Previewer: custom
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
+$lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
+
+# set previewer '~/.config/lf/scope'
+# set cleaner '~/.config/lf/scripts/cleaner'
 
 # -- Previewer: lfimg
 # $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/others/preview"
@@ -45,6 +49,10 @@ $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
 # %  shell-pipe      shell command running with the ui
 # !  shell-wait      shell command waiting for key press
 # &  shell-async     shell command running asynchronously
+
+# ┌───────────────────────────────────────────────────────────────────────────┐
+# │ Builtins                                                                  │
+# └───────────────────────────────────────────────────────────────────────────┘
 
 ${{
   w=$(tput cols)
@@ -84,50 +92,51 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 }}
 
+# ┌───────────────────────────────────────────────────────────────────────────┐
+# │ Tmux                                                                      │
+# └───────────────────────────────────────────────────────────────────────────┘
+
 # TMUX: quit with :q
 cmd q ${{
-    bash $XDG_CONFIG_HOME/lf/scripts/tmux_helper.sh --quit
+    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit"
     lf -remote "send $id quit"
 }}
 cmd Q :q
 
-# TMUX: quit all with :q!
+# -- Tmux: Quit all with :q!
 cmd q! ${{
-    bash $HOME/.config/lf/scripts/tmux_helper.sh --quit-all
+    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit-all"
     lf -remote "send $id quit"
 }}
 cmd Q! :q!
 map <esc> quit
 
-# toggle a second lf file manager pane
+# -- Tmux: Toggle a second lf file manager pane
 cmd split ${{
-    bash $HOME/.config/lf/scripts/tmux_helper.sh --split
+    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --split"
 }}
 
-# swap first and second lf file manager pane
+# -- Tmux: Swap first and second lf file manager pane
 cmd swap ${{
-    bash $HOME/.config/lf/scripts/tmux_helper.sh --swap
+    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --swap"
 }}
 
-# open a new lf file manager (in new tab)
+# -- Tmux: Open a new lf file manager (in new tab)
 cmd new-tab ${{
-   bash $HOME/.config/lf/scripts/tmux_helper.sh --new-tab
+   emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --new-tab"
 }}
 
+# -- Tmux: Open a split screen terminal
 cmd terminal ${{
-    bash $HOME/.config/lf/scripts/tmux_helper.sh --terminal
+    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --terminal"
 }}
 map @ :terminal
 
-# print lf id
-cmd get-id %{{
-    echo "lf-id: $id"
+# -- Tmux: Open neovim in a split window
+cmd nvim-tmux ${{
+  nvim-tmux "$fx"
 }}
-
-# rename/change the pane title
-cmd rename-title ${{
-    printf "\033]2;%s\033\\" "$@"
-}}
+map E :nvim-tmux
 
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Commands / Functions                                                      │
@@ -805,7 +814,7 @@ map ch chmod                            # change file permissions
 map = chmod                            # change file permissions
 map cH chown                            # change file owner
 
-map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
+# map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
 map rs rmspace
 # ]]]
 
@@ -960,6 +969,20 @@ map bo $bow       # buku bookmarks
 # map <m-2> down
 # map <c-m-up> up
 # map <c-m-down> down
+
+#######################################################################
+#                          Helper Functions                           #
+#######################################################################
+
+# -- Print lf id
+cmd get-id %{{
+    echo "lf-id: $id"
+}}
+
+# -- Rename/change the pane title
+cmd rename-title ${{
+    printf "\033]2;%s\033\\" "$@"
+}}
 
 
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

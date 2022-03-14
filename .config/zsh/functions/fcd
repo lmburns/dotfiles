@@ -1,6 +1,15 @@
-# vim:ft=zsh:
-
 # Desc: change directories with fzf
 
+emulate -L zsh
+
 local dir
-dir=$(fd ${1:-.} --prune -td | fzf +m) && cd "$dir"
+dir=$(fd ${1:-.} --prune --strip-cwd-prefix --follow -td | lscolors | fzf +m)
+
+if [[ -z "$dir" ]]; then
+  zle && zle redisplay
+  return 0
+fi
+
+builtin cd "$dir"
+
+# vim:ft=zsh:

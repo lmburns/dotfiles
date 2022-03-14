@@ -63,6 +63,8 @@
     go_version
     rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
     perlbrew
+    nvm
+    nodenv
     # ${rust_version//(#b)(*)-(*)/$match[1]-${(C)${${match[2]}:0:1}}}
     rust_version            # rustc version (https://www.rust-lang.org)
     # load                  # CPU load
@@ -824,7 +826,7 @@
 
   ###########[ timewarrior: timewarrior tracking status (https://timewarrior.net/) ]############
   # Timewarrior color.
-  typeset -g POWERLEVEL9K_TIMEWARRIOR_FOREGROUND=4
+  typeset -g POWERLEVEL9K_TIMEWARRIOR_FOREGROUND=13
   # If the tracked task is longer than 24 characters, truncate and append "…".
   # Tip: To always display tasks without truncation, delete the following parameter.
   # Tip: To hide task names and display just the icon when time tracking is enabled, set the

@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+
+[[ -n "$FIFO_UEBERZUG" ]] && {
+  print -- \
+    '{"action": "remove", "identifier": "PREVIEW"}' > "$FIFO_UEBERZUG"
+}

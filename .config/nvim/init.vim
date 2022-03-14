@@ -2118,7 +2118,7 @@ call plug#end()
 
 
   nnoremap ;w :update<CR>
-  nnoremap w; :update<CR>
+  " nnoremap w; :update<CR>
   nnoremap ;q :q<CR>
   nnoremap q; :q<CR>
   " replace command history with quit

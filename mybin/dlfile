@@ -1,29 +1,25 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
 # Desc: download a file by dropping it into a window
 
+emulate -L zsh
+autoload -U colors
+
+local url name answer
 url=$(dragon -t -x)
 
-if [ -n "$url" ]; then
-  printf "File Name: "
-  name=""
-  while [ -z $name ] || [ -e $name ]
-  do
+[[ -n "$url" ]] && {
+  while [[ -z "$name" || -e "$name" ]] {
     read -r name
-    if [ -e "$name" ]; then
-      printf "File already exists, overwrite (y|n): "
-      read -r ans
 
-      if [ "$ans" = "y" ]; then
-        break
-      else
-        printf "File Name: "
-      fi
-    fi
-  done
+    if [[ -e "$name" ]]; then
+      print -Pr -- "%F{3}$name%f exists"
+      read -rq "?$fg_bold[red]Overwrite?$reset_color [y/n]? " answer
+      [[ $ans = y ]] && break
+      print -Pr -- "%F{4}%BFilename%f%f: "
+  }
 
-  # Download the file with curl
-  [ -n "$name" ] && curl -o "$name" "$url" || exit 1
-else
-  exit 1
-fi
+  [[ -n "$name" ]] && \
+    command curl -o "$name" "$url" || \
+    exit 1
+} || exit 1
