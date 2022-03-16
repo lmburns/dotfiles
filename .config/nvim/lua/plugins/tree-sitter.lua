@@ -1,6 +1,6 @@
 require('nvim-treesitter.configs').setup {
   ensure_installed = {
-    "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby", "zig"
+    "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby", "zig", "d"
   },
   -- "vim" "yaml" "toml" "ruby" "bash" "perl" "r"
   sync_install = false,

@@ -15,4 +15,4 @@ sync_frequency = "5m"
 # sync_address = "https://api.atuin.sh"
 
 ## possible values: prefix, fulltext, fuzzy
-search_mode = "fuzzy"
+search_mode = "prefix"

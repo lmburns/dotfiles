@@ -385,7 +385,7 @@ cursor:
   style:
     # Vim style zsh doesn't change back and forth
     shape: Block
-    blinking: On
+    blinking: Always
     blink_interval: 750
     unfocused_hollow: true
     vi_mode_style: Block

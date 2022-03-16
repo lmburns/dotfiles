@@ -1,7 +1,5 @@
 # Desc: lolcate fzf default (HOME)
 
-# files=(${(f)"$(locate -Ai -0 $@ | grep -z -vE '~$' | fzf --read0 -0 -1 -m)"})
-
 zparseopts -D -A opts -- u -update c -cd
 
 (( $+opts[-u] + $+opts[--update] )) && lolcate --db default --update && return 0
@@ -10,7 +8,7 @@ zparseopts -D -A opts -- u -update c -cd
 local sel
 sel=$(\
   lolcate --db default "$@" --mime "$mime" --color=always \
-  | sk \
+  |  \
     --delimiter / \
     --with-nth 4.. \
     --query "${*:-}"

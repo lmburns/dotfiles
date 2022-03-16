@@ -13,7 +13,7 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 # xsettingsd
 
 # Kill process if it hangs
-# bustd &
+bustd &
 
 # clipit &
 # greenclip daemon &

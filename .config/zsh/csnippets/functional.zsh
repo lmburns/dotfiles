@@ -16,7 +16,7 @@ function __print_func()      { __print_indent "%F{13}$1%f $@[2,-1]"; }
 
 function map() {
   emulate -L zsh -o rcquotes
-  (( ! $# )) && {
+  (( $# )) || {
     __print_start "map" "funcname [list]"
     __print_func_call "foo" '{ print ''x: \$1'' }'
     __print_func "map" "foo a b c d"
@@ -30,7 +30,7 @@ function map() {
 
 function mapl() {
   emulate -L zsh -o rcquotes
-  (( ! $# )) && {
+  (( $# )) || {
     __print_start "mapl" "lambda-function [list]"
     __print_func "mapl" "'echo \"x: "'\$1'"\"' a b c d"
     local v; for v ({a..d}) { __print_tab "x: $v" }
@@ -51,7 +51,7 @@ function mapl_() {
 
 function mapa() {
   emulate -L zsh
-  (( ! $# )) && {
+  (( $# )) || {
     __print_start "mapa" "lambda-arithmetic [list]\n\t(shorthand for mapl "'\\$[ f ]'" [list])"
     __print_func "mapa" "'"'\$1'" + 5' {1..3}"
     local t; for t ({6..8}) { __print_tab $t }
@@ -62,7 +62,7 @@ function mapa() {
 }
 
 function mapa__ () {
-  (( ! $# )) && return 1
+  (( $# )) || return 1
   local f="$1"; shift
   local x result=0
   for x { mapa_ "$x" "$f" || result=$? }
@@ -76,9 +76,14 @@ function mapa_() {
 # =============================== Each ===============================
 # ====================================================================
 
-# This actions like xargs, or `fd`'s -x/-X flags which implicitly add a '{}' to the end
-
 function eachl() {
+  (( $# )) || {
+    __print_start "eachl" "lambda-function [list]"
+    __print_func "eachl" "'echo \"x: "'\$1'"\"' a b c d"
+    local v; for v ({a..d}) { __print_tab "x: $v" }
+    return 1
+  }
+
   local f="$1"; shift
   local x result=0
   for x { each_ "$x" "$f" || result=$? }
@@ -86,9 +91,10 @@ function eachl() {
 }
 
 function each_() {
-  eval "$2"
+  eval "${(e)==2}"
 }
 
+# This actions like xargs, or `fd`'s -x/-X flags which implicitly add a '{}' to the end
 function each() {
   local f="$1 \"\$1\""; shift
   eachl "$f" "$@"
@@ -97,8 +103,11 @@ function each() {
 # ============================== Filter ==============================
 # ====================================================================
 
+function startswith() { print -- "$2" | rg -q "^$1"; }
+function endswith()   { print -- "$2" | rg -q "$1$"; }
+
 function filter() {
-  (( ! $# )) && {
+  (( $# )) || {
     __print_start "filter" "[func-list]"
     __print_func_call "baz" "{ print "'\$*'" | grep baz }"
     __print_func "filter" "baz titi bazaar biz"
@@ -110,6 +119,12 @@ function filter() {
 }
 
 function filterl() {
+  (( $# )) || {
+    __print_start "filterl" "lambda-function [list]"
+    __print_func "filterl" "'echo "'\$1'" | grep a >/dev/null' ab cd ef ada"
+    local v; for v (ab ada) { __print_tab "$v" }
+    return 1
+  }
   local f="$1"; shift
   local x
   for x { filter_ "$x" "$f" }
@@ -158,6 +173,14 @@ function foldl() {
 }
 
 function folda() {
+  (( $# >= 2 )) || {
+    __print_start "folda" "lambda-function [list]"
+    __print_func "folda" "'"'\$1 + \$2'"' {1..5}"
+    __print_tab "15"
+    __print_func "folda" "'"'\$1 * \$2'"' {1..20}"
+    __print_tab "120"
+    return 1
+  }
   local f="\$[ $1 ]"; shift
   foldlp "$f" "$@"
 }
@@ -183,4 +206,9 @@ function fold_() {
 function folde_() {
   local acc=$2 body=$3
   eval "${(e)==body}"
+}
+
+
+map_() {
+  echo ${(e)==f}
 }

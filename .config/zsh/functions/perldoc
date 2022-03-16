@@ -1,29 +1,17 @@
 # Desc: wrapper to colorize perldoc man pages
 
-# taken from colorized man pages
-# ks       make the keypad send commands
-# ke       make the keypad send digits
-# vb       emit visual bell
-# mb       start blink
-# md       start bold
-# me       turn off bold, blink and underline
-# so       start standout (reverse video)
-# se       stop standout
-# us       start underline
-# ue       stop underline
-
 perldoc() {
-  env \
-    LESS_TERMCAP_md=$(tput bold; tput setaf 3) \
-    LESS_TERMCAP_me=$(tput sgr0) \
-    LESS_TERMCAP_mb=$(tput blink) \
-    LESS_TERMCAP_us=$(tput setaf 2) \
-    LESS_TERMCAP_ue=$(tput sgr0) \
-    LESS_TERMCAP_so=$(tput smso) \
-    LESS_TERMCAP_se=$(tput rmso) \
-    PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
-    PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" \
-    perldoc "$@"
+  local -a environment
+  local k v
+
+  for k v ( "${(@kv)less_termcap}" ) {
+    environment+=( "LESS_TERMCAP_${k}=${v}" )
+  }
+
+  environment+=( PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" )
+  environment+=( PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbie''" )
+
+  command env $environment perldoc "$@"
 }
 
 # less -+C -E

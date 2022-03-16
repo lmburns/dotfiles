@@ -116,9 +116,8 @@
        name: (identifier) @constant)))
  (#lua-match? @constant "^[A-Z]"))
 
-; ### Just added, don't like
-; ((identifier) @constant.builtin
-;  (#any-of? @constant.builtin "Some" "None" "Ok" "Err"))
+((identifier) @constant.builtin
+ (#any-of? @constant.builtin "Some" "None" "Ok" "Err"))
 
 ;; Macro definitions
 "$" @function.macro

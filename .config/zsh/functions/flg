@@ -9,7 +9,7 @@ local mime sel
 
 sel=$(\
   lolcate --db git "$@" --mime "$mime" --color=always \
-  | sk \
+  | fzf \
     --delimiter / \
     --with-nth 6.. \
     --query "${*:-}"

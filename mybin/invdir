@@ -7,23 +7,29 @@ local combdir=${invdir}${PWD:h}
 
 [[ ! -d $combdir ]] && command mkdir -p $combdir
 
-[[ $1 = "build" ]] && {
-  inventorize \
-    --inventory $combdir/${PWD:t}.json \
-    build --hash-algorithm sha1
+case $1 {
+  (build)
+    inventorize \
+      --inventory $combdir/${PWD:t}.json \
+      build --hash-algorithm sha1
+  ;;
+  (update)
+    inventorize \
+      --inventory $combdir/${PWD:t}.json \
+      update --remove-missing
+  ;;
+  (verify)
+    inventorize \
+      --inventory $combdir/${PWD:t}.json \
+      verify
+  ;;
+  (*)
+    print -Pr -- \
+"%F{1}%BUsage%f%b: %F{2}invdir
+  %F{4}build%f: build the hash
+  %F{4}update%f: build the hash
+  %F{4}verify%f: verify the hash"
+  ;;
 }
-
-[[ $1 = "update" ]] && {
-  inventorize \
-    --inventory $combdir/${PWD:t}.json \
-    update --remove-missing
-}
-
-[[ $1 = "verify" ]] && {
-  inventorize \
-    --inventory $combdir/${PWD:t}.json \
-    verify
-}
-
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

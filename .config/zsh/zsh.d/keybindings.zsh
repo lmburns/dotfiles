@@ -11,7 +11,9 @@
 # typeset -gx WORDCHARS=' *?_-.~\'
 # typeset -g WORDCHARS='*?_-.[]~&;!#$%^(){}<>'
 
-# This keeps prompt from moving to the right with p10k
+declare -g VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
+declare -g VI_MODE_SET_CURSOR=true
+
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
     function zle-line-init() {
         echoti smkx
@@ -23,17 +25,25 @@ if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
     zle -N zle-line-finish
 }
 
+function remove_widget () {
+    local name=$1
+    local cap=$2
+    if (( ${+functions[$name]} )) && [[ ${functions[$name]} == *${cap}* ]]; then
+        local w=${widgets[$name]}
+        zle -D $name
+        [[ $w == user:* ]] && unfunction ${w#*:}
+    fi
+}
+# remove_widget zle-line-init smkx
+# remove_widget zle-line-finish rmkx
+# unfunction remove_widget
+
 builtin bindkey -v
 builtin bindkey -r '^[,'
 builtin bindkey -r '^[/'
 builtin bindkey -M vicmd -r 'R'
 
-# bindkey -M vicmd 'ys' add-surround
-# bindkey '^I' expand-or-complete-prefix
-# bindkey '^a' autosuggest-accept
-
 # autoload -Uz incarg
-
 # autoload -Uz insert-unicode-char
 # zle -N insert-unicode-char
 
@@ -47,22 +57,6 @@ zle -N change-surround surround
 
 # =========================== zle Functions ==========================
 # ====================================================================
-
-# ========================== Unused ==========================
-
-# Add command to history without executing it
-function commit-to-history() {
-  print -rs ${(z)BUFFER}
-  zle send-break
-}
-zle -N commit-to-history
-
-# Only slash should be considered as a word separator:
-function slash-backward-kill-word() {
-  local WORDCHARS="${WORDCHARS:s@/@}"
-  zle backward-kill-word
-}
-zle -N slash-backward-kill-word
 
 # =========================== Used ===========================
 
@@ -126,6 +120,18 @@ zle -N __unicode_translate # translate unicode to symbol
 # 'C-x C-m'         _complete_debug_generic
 # 'C-x C-t'         _complete_tag
 
+autoload up-line-or-beginning-search down-line-or-beginning-search
+
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+[[ -n "$terminfo[kpp]"   ]] && bindkey "$terminfo[kpp]"   up-line-or-beginning-search   # PAGE UP
+[[ -n "$terminfo[knp]"   ]] && bindkey "$terminfo[knp]"   down-line-or-beginning-search # PAGE DOWN
+[[ -n "$terminfo[khome]" ]] && bindkey "$terminfo[khome]" beginning-of-line             # HOME
+[[ -n "$terminfo[kend]"  ]] && bindkey "$terminfo[kend]"  end-of-line                   # END
+[[ -n "$terminfo[kdch1]" ]] && bindkey "$terminfo[kdch1]" delete-char                   # DELETE
+[[ -n "$terminfo[kbs]"   ]] && bindkey "$terminfo[kbs]"   backward-delete-char          # BACKSPACE
+
 # =============================== zaw ===============================
 # ====================================================================
 autoload -U read-from-minibuffer
@@ -168,7 +174,7 @@ if [[ $TMUX ]]; then
 fi
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
-typeset -gA keybindings; keybindings=(
+declare -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
 # 'M-q'             push-line-or-edit     # zsh-edit
 # 'F1'                    dotbare-fstat
@@ -227,6 +233,7 @@ typeset -gA keybindings; keybindings=(
   'mode=viins kj'         vi-cmd-mode
   'mode=visual S'         add-surround
   'mode=str C-o'          lc                 # lf change dir
+  'mode=str M-S-O'        lfub               # lf ueberzug
   'mode=str C-u'          lf                 # regular lf
   'mode=str ;o'           noptions           # edit zsh options
   'mode=@ C-b'            bow2               # surfraw open w3m
@@ -348,13 +355,26 @@ function callback-replace-buffer() {
 function callback-append-to-buffer() {
     LBUFFER="${BUFFER}${(j:; :)@}"
 }
-zle -N zaw-append-to-buffer
 
 function callback-edit-file() {
     local -a args
     args=("${(@q)@}")
     BUFFER="${EDITOR} ${args}"
     zle accept-line
+}
+
+# ========================== Unused ==========================
+
+# Add command to history without executing it
+function commit-to-history() {
+  print -rs ${(z)BUFFER}
+  zle send-break
+}
+
+# Only slash should be considered as a word separator:
+function slash-backward-kill-word() {
+  local WORDCHARS="${WORDCHARS:s@/@}"
+  zle backward-kill-word
 }
 
 # ============================ Other Func ============================
@@ -372,7 +392,7 @@ function lskb() {
 # ============================== Taken ===============================
 # ======================== From Valodim/github =======================
 
-# # applies $1 exnorm string to BUFFER
+# applies $1 exnorm string to BUFFER
 # function ex-norm-run() {
 #
 #     # this is a widget!
@@ -410,8 +430,8 @@ function lskb() {
 #
 # # ZSH_HIST_DIR from localhist, or just use $ZSH or just use $HOME
 # typeset -H ZSH_EXN_HIST=${ZSH_HIST_DIR:-${ZSH:-$HOME}}/.zsh_exnhist
-# function ex-norm () {
 #
+# function ex-norm () {
 #     # push exnorm history on stack, but only for the scope of this function
 #     fc -p -a $ZSH_EXN_HIST
 #     HISTNO=$HISTCMD
@@ -484,5 +504,7 @@ function lskb() {
 #
 # # these bindings may not be for everyone. I like them like this. jk is similar
 # # to jj for normal mode, q and @ are similar to the macro commands in vim.
+# bindkey -M main qq ex-norm
+# bindkey -M main @@ ex-norm-repeat
 # bindkey -M vicmd q ex-norm
 # bindkey -M vicmd @ ex-norm-repeat

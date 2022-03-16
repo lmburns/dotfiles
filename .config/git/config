@@ -117,15 +117,18 @@
   autoSquash = true
 
 [merge]
-  tool = nvimdiff
+  tool = nvim
   conflictstyle = diff3
 
 [mergetool]
   keepBackup = false
   prompt = true
 
-[mergetool "nvimdiff"]
-  cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+; [mergetool "nvimdiff"]
+;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[mergetool "nvim"]
+  cmd = nvim -f -c \"Gdiffsplit\" \"$MERGED\"
 
 [url "git@github.com:"]
   # Always use GitHub SSH protocol to push.

@@ -5,8 +5,6 @@ get_buku_ids() {
   buku -p -f 5 \
     | fzf --tac --layout=reverse-list -m \
     | hck -d $'\t' -f 1
-  # awk -F= '{print $1}'
-  # cut -d $'\t' -f 1
 }
 
 # buku open
@@ -34,8 +32,7 @@ fbw() {
   local -a ids; ids=( $(get_buku_ids) )
 
   foreach i (${ids[@]}) {
-    echo buku --write $i
-    print -Pr -- "%F{1}buku%f %F{2}--write%f $i"
     command buku --write $i
+    print -Pr -- "%F{1}buku%f %F{2}--write%f $i"
   }
 }

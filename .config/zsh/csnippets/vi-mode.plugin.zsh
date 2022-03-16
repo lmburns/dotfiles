@@ -1,28 +1,34 @@
-typeset -g VI_MODE_RESET_PROMPT_ON_MODE_CHANGE # reset on each change
-typeset -g VI_MODE_SET_CURSOR # change cursor on mode change
-typeset -g VI_KEYMAP=main
+declare -g VI_MODE_RESET_PROMPT_ON_MODE_CHANGE # reset on each change
+declare -g VI_MODE_SET_CURSOR # change cursor on mode change
+declare -g VI_KEYMAP=main
 
 function _vi-mode-set-cursor-shape-for-keymap() {
   [[ "$VI_MODE_SET_CURSOR" = true ]] || return
 
-  local _shape=0
+  integer _shape=0
   case "${1:-${VI_KEYMAP:-main}}" in
-    main)    _shape=6 ;; # vi insert: line
-    viins)   _shape=6 ;; # vi insert: line
-    isearch) _shape=6 ;; # inc search: line
-    command) _shape=6 ;; # read a command name
-    vicmd)   _shape=2 ;; # vi cmd: block
-    visual)  _shape=2 ;; # vi visual mode: block
+    main)    _shape=5 ;; # vi insert: line
+    viins)   _shape=5 ;; # vi insert: line
+    isearch) _shape=5 ;; # inc search: line
+    command) _shape=5 ;; # read a command name
+    vicmd)   _shape=0 ;; # vi cmd: block
+    visual)  _shape=0 ;; # vi visual mode: block
     viopp)   _shape=0 ;; # vi operation pending: blinking block
     *)       _shape=0 ;;
   esac
-  printf $'\e[%d q' "${_shape}"
+
+  # if [[ -z $TMUX ]] {
+    printf $'\e[%d q' "${_shape}"
+  # } else {
+    # Is \e\e needed?
+    # printf $'\ePtmux;\e\e\e[%d q\e\\' "${_shape}"
+  # }
 }
 
 # updates editor information when the keymap changes
 function zle-keymap-select() {
   # update keymap variable for the prompt
-  typeset -g VI_KEYMAP=$KEYMAP
+  declare -g VI_KEYMAP=$KEYMAP
 
   if [[ "${VI_MODE_RESET_PROMPT_ON_MODE_CHANGE:-}" = true ]]; then
     zle reset-prompt
@@ -35,15 +41,17 @@ zle -N zle-keymap-select
 function zle-line-init() {
   local prev_vi_keymap
   prev_vi_keymap="${VI_KEYMAP:-}"
-  typeset -g VI_KEYMAP=main
-  [[ "$prev_vi_keymap" != 'main' ]] && [[ "${VI_MODE_RESET_PROMPT_ON_MODE_CHANGE:-}" = true ]] && zle reset-prompt
+  declare -g VI_KEYMAP=main
+  [[ $prev_vi_keymap != 'main' && ${VI_MODE_RESET_PROMPT_ON_MODE_CHANGE:-} = true ]] && \
+    zle reset-prompt
+
   (( ! ${+terminfo[smkx]} )) || echoti smkx
   _vi-mode-set-cursor-shape-for-keymap "${VI_KEYMAP}"
 }
 zle -N zle-line-init
 
 function zle-line-finish() {
-  typeset -g VI_KEYMAP=main
+  declare -g VI_KEYMAP=main
   (( ! ${+terminfo[rmkx]} )) || echoti rmkx
   _vi-mode-set-cursor-shape-for-keymap default
 }

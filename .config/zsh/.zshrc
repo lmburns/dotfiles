@@ -309,22 +309,19 @@ zt 0a light-mode for \
   atload'
   export BMUX_DIR="$XDG_CONFIG_HOME/bmux"' \
     kazhala/bmux \
-    anatolykopyl/doas-zsh-plugin \
   pick'timewarrior.plugin.zsh' \
     svenXY/timewarrior \
-    zdharma-continuum/zflai \
   pick'async.zsh' \
     mafredri/zsh-async \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' blockf \
     psprint/zsh-navigation-tools \
+    zdharma-continuum/zflai \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
   atinit'alias zmand="info zsh "' \
     mattmc3/zman \
-  pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
-  src"histdb-interactive.zsh" atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
-  atinit'bindkey "\Ce" _histdb-isearch' \
-    larkery/zsh-histdb
+    anatolykopyl/doas-zsh-plugin \
+    olets/zsh-abbr
 
 # ]]] === wait'0a' block ===
 
@@ -344,10 +341,13 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- ${f}};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
-  atload'bindkey "^[[A" history-substring-search-up;
-         bindkey "^[[B" history-substring-search-down' \
+  atload'vbindkey "Up" history-substring-search-up;
+         vbindkey "Down" history-substring-search-down' \
     zsh-users/zsh-history-substring-search
 #  ]]] === wait'0b' - patched ===
+
+# atuin syncs across computers, keeps own copy
+# histdb is more friendly with manual search
 
 #  === wait'0b' === [[[
 zt 0b light-mode for \
@@ -356,11 +356,17 @@ zt 0b light-mode for \
   autoload'#manydots-magic' \
     knu/zsh-manydots-magic \
     RobSis/zsh-reentry-hook \
-  compile'h*' trackbinds bindmap'^R -> ^F' \
+  compile'h*~*.zwc' trackbinds bindmap'^R -> ^F' \
   atload'
   zstyle ":history-search-multi-word" highlight-color "fg=cyan,bold";
   zstyle ":history-search-multi-word" page-size "16"' \
     zdharma-continuum/history-search-multi-word \
+  pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
+  src"histdb-interactive.zsh" atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
+  atinit'bindkey "\Ce" _histdb-isearch' \
+    larkery/zsh-histdb \
+  trackbinds bindmap"^R -> ^W" \
+    m42e/zsh-histdb-fzf \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
@@ -370,12 +376,13 @@ zt 0b light-mode for \
   wait'[[ -n $DISPLAY ]]' atload'
   zstyle ":notify:*" expire-time 6
   zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
-  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"
-  ' \
+  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
     marzocchi/zsh-notify \
   lbin"bin/git-dsf;bin/diff-so-fancy" atinit'alias dsf="git-dsf"' \
     zdharma-continuum/zsh-diff-so-fancy \
     OMZP::systemd/systemd.plugin.zsh
+
+# jeffreytse/zsh-vi-mode
 #  ]]] === wait'0b' ===
 
 #  === wait'0c' - programs - sourced === [[[
@@ -873,28 +880,67 @@ _zsh_autosuggest_strategy_custom_history() {
     typeset -g suggestion="${history[(r)$pattern]}"
 }
 
+# Histdb is good, though, the above allows for toggling on and off
 
-# return the latest used command in the current directory
+# Return the latest used command in the current directory
+# Else, find most recent command
 _zsh_autosuggest_strategy_histdb_top_here() {
     (( $+functions[_histdb_query] )) || return
-    local query="
+#   local query="
+# SELECT commands.argv
+# FROM   history
+#   LEFT JOIN commands
+#     ON history.command_id = commands.rowid
+#   LEFT JOIN places
+#     ON history.place_id = places.rowid
+# WHERE places.dir LIKE '$(sql_escape $PWD)%'
+#     AND commands.argv LIKE '$(sql_escape $1)%'
+# GROUP BY commands.argv
+# ORDER BY count(*) desc
+# LIMIT    1
+# "
+
+#   local query="
+# SELECT commands.argv
+# FROM   history
+#   LEFT JOIN commands
+#     ON history.command_id = commands.rowid
+#   LEFT JOIN places
+#     ON history.place_id = places.rowid
+# WHERE    commands.argv LIKE '$(sql_escape $1)%'
+# -- GROUP BY commands.argv, places.dir
+# ORDER BY places.dir != '$(sql_escape $PWD)',
+#   history.start_time DESC
+# LIMIT 1
+# "
+
+# count(*) desc
+
+# Is this complexity necessary?
+   local query="
 SELECT commands.argv
-FROM history
-  LEFT JOIN commands
-     ON history.command_id = commands.rowid
-  LEFT JOIN places
-    ON history.place_id = places.rowid
-WHERE commands.argv LIKE '${1//'/''}%'
-ORDER BY places.dir != '${PWD//'/''}',
+FROM   history
+  LEFT JOIN commands ON history.command_id = commands.rowid
+  LEFT JOIN places   ON history.place_id   = places.rowid
+WHERE  places.dir LIKE
+  CASE WHEN exists(
+      SELECT commands.argv
+      FROM   history
+        LEFT JOIN commands ON history.command_id = commands.rowid
+        LEFT JOIN places   ON history.place_id   = places.rowid
+      WHERE  places.dir LIKE '$(sql_escape $PWD)%'
+        AND commands.argv LIKE '$(sql_escape $1)%'
+    ) THEN '$(sql_escape $PWD)%'
+    ELSE '%'
+  END
+  AND commands.argv LIKE '$(sql_escape $1)%'
+GROUP BY  commands.argv
+ORDER BY  places.dir LIKE '$(sql_escape $PWD)%' DESC,
   history.start_time DESC
 LIMIT 1
 "
-#   places.dir LIKE '$(sql_escape $PWD)%'
-#   AND commands.argv LIKE '$(sql_escape $1)%'
-# GROUP BY  commands.argv
-# ORDER BY  count(*) desc
 
-    typeset -g suggestion=$(_histdb_query "$query")
+  typeset -g suggestion=$(_histdb_query "$query")
 }
 # ]]]
 
@@ -1009,7 +1055,7 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(dir_history custom_history match_prev_cmd completion)
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(histdb_top_here dir_history custom_history match_prev_cmd completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"

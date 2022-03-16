@@ -68,12 +68,12 @@ function man() {
 
 # Find aliases; taken from OMZ
 function alias-finder() {
-  local cmd="" exact="" longer="" wordStart="" wordEnd="" multiWordEnd=""
-  for i in $@; do
+  local cmd exact longer wordStart wordEnd multiWordEnd
+  foreach i ($@) {
     case $i in
-      -e|--exact) exact=true;;
-      -l|--longer) longer=true;;
-      *)
+      (-e|--exact) exact=true;;
+      (-l|--longer) longer=true;;
+      (*)
         if [[ -z $cmd ]]; then
           cmd=$i
         else
@@ -81,7 +81,7 @@ function alias-finder() {
         fi
         ;;
     esac
-  done
+  }
   cmd=$(sed 's/[].\|$(){}?+*^[]/\\&/g' <<< $cmd) # adds escaping for grep
   if (( $(wc -l <<< $cmd) == 1 )); then
     while [[ $cmd != "" ]]; do
