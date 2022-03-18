@@ -25,14 +25,14 @@
 
 [color]
   ui = auto
-  # diff = auto
-  # status = auto
-  # branch = auto
+  ; grep = auto
 
 [color "branch"]
-  current = yellow reverse
-  local = yellow
-  remote = green
+  current = "#4c96a8" bold
+  upstream = "#fe8019" bold
+  local = "#dc3958"
+  remote = "#819c3b"
+  plain = "#733e8b"
 
 [color "diff-highlight"]
   oldNormal = red bold
@@ -42,17 +42,46 @@
 
 [color "diff"]
   meta = 39
+  commit = "#FF5813" bold
   whitespace = red reverse
   new = green bold
   old = red bold
-  commit = 222 bold
   frag = magenta bold
+  ; context =
+
+[color "decorate"]
+  branch = "#819C3B" bold
+  remoteBranch = 12 bold
+  HEAD = 14 bold
+  tag = "#98676A" bold
+  stash = "#7EB2B1" bold
 
 [color "status"]
-  untracked = red
-  changed = green
-  updated = blue
+  header = "#7e5053" bold
   added = yellow
+  updated = blue
+  changed = green
+  untracked = red
+  branch = "#733e8b"
+  nobranch = "#dc3958" bold
+  unmerged = "#fe8019"
+
+[color "interactive"]
+  prompt = "#fe8019" bold
+  header = "#7e5053" bold
+  help = green bold
+  error = red bold
+
+; [color "grep"]
+;   context = "#A06469" bold
+;   filename = "#A06469" bold
+;   function = "#A06469" bold
+;   linenumber = "#A06469" bold
+;   match = "#A06469" bold
+;   matchContext = "#A06469" bold
+;   matchSelected = "#A06469" bold
+;   selected = "#A06469" bold
+;   separator = "#A06469" bold
 
 [diff]
   algorithm = patience
@@ -124,11 +153,9 @@
   keepBackup = false
   prompt = true
 
-; [mergetool "nvimdiff"]
-;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-
 [mergetool "nvim"]
   cmd = nvim -f -c \"Gdiffsplit\" \"$MERGED\"
+;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 
 [url "git@github.com:"]
   # Always use GitHub SSH protocol to push.
@@ -248,38 +275,64 @@
   # Open repository in the browser
   open = "!handlr open $(git remote get-url origin)"
 
+  whenadded = log --diff-filter=A
+
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
 
 # ================== THIRD PARTY ==============================
 [delta]
-  features = unobstrusive-line-numbers decorations color-moved side-by-side hyperlinks
+  features = decorations color-moved hyperlinks
+  # side-by-side unobstrusive-line-numbers
   paging = auto
-  whitespace-error-style = 22 reverse
-  syntax-theme = kimbro
-  line-numbers-left-format = ""
-  line-numbers-right-format = "│ "
   max-line-distance = 0.3
-  hunk-header-style = syntax bold
-  hunk-header-decoration-style = "#4b5263" box
-# plus-style = "syntax #088649"
-# plus-emph-style = "syntax #088649"
-# minus-style = syntax "#7E5053"
-# minus-empty-line-marker-style = "syntax #7E5053"
+  syntax-theme = kimbro
+  dark = true
+  whitespace-error-style = 22 reverse
+  zero-style = syntax
 
-[delta "decorations"]
-  commit-decoration-style = bold magenta ul
-  file-style = bold magenta ul
-  file-decoration-style = none
-  hunk-header-decoration-style = yellow box ul
+  line-numbers = true
+  line-numbers-left-format = "┊{nm:>4}┊"
+  line-numbers-left-style = "#D9AE80"
+  line-numbers-right-format = "│{np:>4}│"
+  line-numbers-right-style = "#D9AE80"
+  line-numbers-minus-style = "#EF1D55"
+  line-numbers-plus-style = "#819C3B"
+  line-numbers-zero-style = "#7E602C"
 
-[delta "unobstrusive-line-numbers"]
-  line-numbers-left-format = "{nm:>4}┊"
-  line-numbers-right-format = "{np:>4}│"
-  line-numbers-left-style = white
-  line-numbers-right-style = white
-  line-numbers-minus-style = 124
-  line-numbers-plus-style = 28
+  commit-style = raw
+  commit-decoration-style = bold "#98676A" ul
+
+  file-added-label = [+]
+  file-copied-label = [C]
+  file-modified-label = [M]
+  file-removed-label = [-]
+  file-renamed-label = [R]
+  ; file-style = omit
+  file-style = bold "#7EB2B1" ul
+  file-decoration-style = "#4C96A8" box
+
+  ; hunk-header-style = syntax bold
+  hunk-header-style = file line-number syntax bold
+  hunk-header-decoration-style = 13 bold box ul
+  hunk-header-line-number-style = "#A06469"
+  hunk-header-file-style = "#dc3958" bold
+
+  blame-format = "{author:<18} ({commit:>7}) ┊{timestamp:^16}┊ "
+  blame-palette = "#101010 #200020 #002800 #000028 #202000 #280000 #002020 #002800 #202020"
+
+  plus-style = syntax "#182d09"
+  plus-emph-style = syntax "#134d0d"
+  minus-style = syntax "#461c16"
+  minus-emph-style = syntax "#742d21"
+  minus-empty-line-marker-style = syntax "#FF9500"
+
+  # ??
+  ; map-styles = \
+  ;     bold purple => syntax "#330f29", \
+  ;     bold blue => syntax "#271344", \
+  ;     bold cyan => syntax "#0d3531", \
+  ;     bold yellow => syntax "#222f14"
 
 [interactive]
   diffFilter = delta --color-only
@@ -291,6 +344,7 @@
 [global]
   ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
 	basedir = /home/lucas/projects/github
-# vim:ft=gitconfig:et
 [credential]
 	helper = cache
+
+; vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

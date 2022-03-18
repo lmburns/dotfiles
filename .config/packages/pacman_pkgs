@@ -71,7 +71,6 @@ code-minimap
 cointop
 colloid-gtk-theme-git
 conky
-copyq
 cppcheck
 cpulimit
 crabz
@@ -79,11 +78,13 @@ croc
 ctags
 daemonize
 dash
+dcd
 ddrescue
 debtap
 deepin-wallpapers
 devour
 dfc
+dfmt
 dfrs
 dialog
 dict-devils
@@ -99,17 +100,22 @@ discord
 discover
 disfetch
 dive
+dmd
+dmd-docs
 dnsmasq
 docker
 dolphin
 dosfstools
 downgrade
 drkonqi
+dscanner
+dub
 duf
 dunst
 dust
 dxhd-git
 easytag
+ect
 edk2-ovmf
 efibootmgr
 elementary-wallpapers
@@ -172,10 +178,10 @@ gst-plugin-gtk
 gst-plugins-ugly
 gstreamer-vaapi
 gtk-engine-murrine
-guilded
 gwenview
 hawck-git
 hck
+hfsprogs
 hnwatch
 hollywood
 hsetroot
@@ -192,6 +198,7 @@ id3v2
 iftop
 imgcat
 interception-dual-function-keys
+inxi
 iotop
 iptables-nft
 isync
@@ -374,6 +381,7 @@ msmtp
 mtools
 mtr-gtk
 museeks-bin
+musl
 mutt
 mycli
 naabu
@@ -399,6 +407,7 @@ notmuch
 npm
 numlockx
 nushell
+nvm
 obconf-qt
 ocamlbuild
 octopi
@@ -486,6 +495,7 @@ python-xattr
 qeh-git
 qemu
 qemu-arch-extra
+qimgv
 qt5-styleplugins
 qterminal
 qtscrcpy
@@ -515,6 +525,7 @@ ruby-docs
 ruby-install
 run-or-raise
 rust-analyzer
+rust-musl
 rustscan
 rusty-krab-manager-git
 rusty-tags
@@ -528,6 +539,7 @@ scrot
 sddm-kcm
 seahorse
 seclists
+serve-d
 sharutils
 shellcaster
 shotgun
@@ -663,7 +675,6 @@ xclip
 xcolor
 xcwd-git
 xdg-desktop-portal-gtk
-xdg-desktop-portal-kde
 xdo
 xdotool
 xf86-video-vesa
@@ -781,6 +792,7 @@ zathura-pdf-poppler
 zeroconf-ioslave
 zig
 zip
+zls-bin
 zoxide
 zsh
 zsh-doc

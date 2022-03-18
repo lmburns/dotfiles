@@ -21,7 +21,7 @@ function fzf-dmenu() {
       | sed 's/\(.*\)\.desktop/\1/g' \
       | fzf -e
   ).desktop"
-  (( ! $? )) && {
+  [[ -n "${selected%.desktop}" && $? -eq 0 ]] && {
     nohup $(\
       grep '^Exec' "/usr/share/applications/$selected" \
         | tail -1 \

@@ -18,6 +18,9 @@ typeset -ga mylogs
 typeset -F4 SECONDS=0
 function zflai-msg()    { mylogs+=( "$1" ); }
 function zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
+function zflai-print()  {
+  print -rl -- ${(%)mylogs//(#b)(\[*\]): (*)/"%F{1}$match[1]%f: $match[2]"};
+}
 
 # Write zprof to $mylogs
 function zflai-zprof() {
@@ -29,44 +32,47 @@ function zflai-zprof() {
 
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
-typeset -g TIMEFMT=$'\n================\nCPU\t%P\nuser\t%*U\nsystem\t%*S\ntotal\t%*E'
-typeset -g DIRSTACKSIZE=20
+typeset -g DIRSTACKSIZE=25
 typeset -g HISTSIZE=10000000
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g SAVEHIST=8000000
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g LISTMAX=50                            # Size of asking history
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get)" # Ignore pattern
-typeset -g PROMPT_EOL_MARK='%F{14}%S%#%f%s'      # Show non-newline ending
+typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
+typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
-typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'
 typeset -g MAILCHECK=0    # Don't check for mail
 typeset -g KEYTIMEOUT=15  # Key action time
 typeset -g FCEDIT=$EDITOR # History editor
 
-# typeset -g PROMPT_EOL_MARK=''
-# typeset -g REPORTTIME=5   # Report the time of command if longer than 5sec
-# fignore=( zwc ) # File suffixes to ignore for completion
-
 # Various highlights for CLI
 typeset -ga zle_highlight=(
-# region:fg="#a89983",bg="#4c96a8"
+  # region:fg="#a89983",bg="#4c96a8"
+  # paste:standout
   region:standout
   special:standout
   suffix:bold
   isearch:underline
-  paste:standout
+  paste:none
 )
 
 [[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
 
 () {
-  # zmodload -Fa zsh/param/private b:private
-  # private i; i=${(@j::):-%\({1..36}"e,$( echoti cuf 2 ),)"}
+  # local i; i=${(@j::):-%\({1..36}"e,$( echoti cuf 2 ),)"}
   # typeset -g PS4=$'%(?,,\t\t-> %F{9}%?%f\n)'
   # PS4+=$'%2<< %{\e[2m%}%e%22<<             %F{10}%N%<<%f %3<<  %I%<<%b %(1_,%F{11}%_%f ,)'
-  typeset -g PS2="%F{1}%B>%f%b "
-  typeset -g RPS2="%F{14}%i:%_%f"
+  declare -g PS2="%F{1}%B>%f%b "
+  declare -g RPS2="%F{14}%i:%_%f"
+
+  autoload -Uz colors; colors
+  local red=$fg_bold[red] blue=$fg[blue] rst=$reset_color
+  declare -g TIMEFMT=(
+    "$red%J$rst"$'\n'
+    "User: $blue%U$rst"$'\t'"System: $blue%S$rst  Total: $blue%*Es$rst"$'\n'
+    "CPU:  $blue%P$rst"$'\t'"Mem:    $blue%M MB$rst"
+  )
 }
 
 # setopt brace_ccl # expand in braces, which would not otherwise, into a sorted list
@@ -110,6 +116,7 @@ setopt unset                # don't error out when unset parameters are used
 setopt long_list_jobs       # list jobs in long format by default
 setopt notify               # report status of jobs immediately
 setopt multios              # perform multiple implicit tees and cats with redirection
+# setopt ksh_option_print    # print all options
 
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't set HUP to jobs when shell exits
@@ -153,13 +160,33 @@ function set-dirstack() {
   )
 }
 set-dirstack
-[[ $PWD = $HOME || $PWD = "." ]] && (){
-  local dir
-  for dir ($dirstack) {
-    [[ -d "$dir" ]] && { cd -q "$dir"; break }
-  }
-} 2>/dev/null
+
+# [[ $PWD = ('~'|/)* ]]
+[[ $PWD = ('~'|/)* ]] && () {
+  # if (( ! $#dirstack && (DIRSTACKSIZE || ! $+DIRSTACKSIZE) )); then
+    local d dir=${(%):-%~} stack=()
+    foreach d ($dirstack) {
+      {
+        if [[ ($#stack -ne 0 || $d != $dir) ]]; then
+          d=${~d}
+          if [[ -d ${d::=${(g:oce:)d}} ]]; then
+            stack+=($d)
+            (( $+DIRSTACK && $#stack >= DIRSTACK - 1 )) && break
+          fi
+        fi
+      } always {
+        TRY_BLOCK_ERROR=0
+      }
+    } 2>/dev/null
+    dirstack=($stack)
+  # fi
+}
 alias c=cdr
+
+# local dir
+# for dir ($dirstack) {
+#   [[ -d "$dir" ]] && { cd -q "$dir"; break }
+# }
 
 fpath=( ${0:h}/{functions,completions} "${fpath[@]}" )
 autoload -Uz $fpath[1]/*(:t)
@@ -219,13 +246,13 @@ zt 0b light-mode null id-as for \
 zt light-mode for \
   zdharma-continuum/zinit-annex-patch-dl \
   zdharma-continuum/zinit-annex-submods \
+  zdharma-continuum/zinit-annex-bin-gem-node \
   NICHOLAS85/z-a-linkman \
   NICHOLAS85/z-a-linkbin \
     atinit'Z_A_USECOMP=1' \
   NICHOLAS85/z-a-eval \
   lmburns/z-a-check
 
-# zdharma-continuum/zinit-annex-bin-gem-node \
 # zdharma-continuum/zinit-annex-rust
 # zdharma-continuum/zinit-annex-as-monitor
 # zdharma-continuum/zinit-annex-readurl
@@ -334,6 +361,7 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
     hlissner/zsh-autopair \
   trackbinds bindmap'\e[1\;6D -> ^[[1\;6D; \e[1\;6C -> ^[[1\;6C' \
     michaelxmcbride/zsh-dircycle \
+  trackbinds bindmap'^H -> ^X^I' \
   atload'add-zsh-hook chpwd @chwpd_dir-history-var;
   add-zsh-hook zshaddhistory @append_dir-history-var; @chwpd_dir-history-var now' \
     kadaan/per-directory-history \
@@ -378,8 +406,6 @@ zt 0b light-mode for \
   zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
   zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
     marzocchi/zsh-notify \
-  lbin"bin/git-dsf;bin/diff-so-fancy" atinit'alias dsf="git-dsf"' \
-    zdharma-continuum/zsh-diff-so-fancy \
     OMZP::systemd/systemd.plugin.zsh
 
 # jeffreytse/zsh-vi-mode
@@ -553,7 +579,7 @@ zt 0c light-mode null for \
     o2sh/onefetch \
   id-as'bisqwit/regex-opt' lbin atclone'xh --download https://bisqwit.iki.fi/src/arch/regex-opt-1.2.4.tar.gz' \
   atclone'ziextract --move --auto regex-*.tar.gz' make'all' \
-    zdharma-zmirror/null
+    zdharma-continuum/null
   # lbin"!**/nvim" from'gh-r' lman bpick'*linux*.gz' \
   #   neovim/neovim \
 
@@ -561,25 +587,14 @@ zt 0c light-mode null for \
 # greymd/teip
 
 # === Testing [[[
-# zt 0c light-mode for \
-#   pip'jrnl' id-as'jrnl' \
-#     zdharma-zmirror/null \
-#   gem'!kramdown' id-as'kramdown' null \
-#     zdharma-zmirror/null \
-#   binary cargo'!viu' id-as"$(id_as viu)" \
-#     zdharma-continuum/null
-
-# zt 0c light-mode null has'%PLUGIN%' for \
-#   param'PLUGIN -> loop' lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-#     miserlou/loop
-
-# zt 0c light-mode null check'%PLUGIN%' for \
-#   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-#   miserlou/loop
+zt 0c light-mode for \
+  pipx'jrnl' id-as'jrnl' \
+    zdharma-continuum/null
+  # gem'!kramdown' id-as'kramdown' null \
+  #   zdharma-continuum/null \
+  # binary cargo'!viu' id-as"$(id_as viu)" \
+  #   zdharma-continuum/null
 # === Testing ]]]
-
-# lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-#   atanunq/viu \
 
 # == rust [[[
 # Cargo plugin
@@ -739,7 +754,7 @@ zt 0c light-mode null for \
   atclone'cargo br && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \
   atclone"command mv -f rusty*/tar*/rel*/rusty-man . && cargo clean" \
   atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
-    zdharma-zmirror/null
+    zdharma-continuum/null
 
 # Canop/bacon
 
@@ -782,7 +797,7 @@ zt 0c light-mode null for \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; mv -f **/**.zsh _tig' \
   make'install' atpull'%atclone' mv"_tig -> $ZINIT[COMPLETIONS_DIR]" \
     jonas/tig \
-  lbin'**/delta' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
+  lbin'**/delta;git-dsf -> dsf' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
     dandavison/delta \
   lbin from'gh-r' \
     extrawurst/gitui \
@@ -848,6 +863,15 @@ autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 # ]]]
 
 # === helper functions === [[[
+# Shorten command length
+add-zsh-hook zshaddhistory max_history_len
+function max_history_len() {
+    if (( $#1 > 240 )) {
+        return 2
+    }
+    return 0
+}
+
 zshaddhistory() {
   emulate -L zsh
   # whence ${${(z)1}[1]} >| /dev/null || return 1 # doesn't add setting arrays
@@ -1197,7 +1221,7 @@ $FZF_DEFAULT_OPTS
 # source $ZDOTDIR/.zkbd/tmux-256color-:0
 
 zt 0b light-mode null id-as for \
-  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,git-token}.zsh" \
+  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,git-token,abbreviations}.zsh" \
     zdharma-continuum/null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";
@@ -1231,9 +1255,6 @@ export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 path=( "${ZPFX}/bin" "${path[@]}" )                # add back to be beginning
 path=( "${path[@]:#}" )                            # remove empties
 path=( "${(u)path[@]}" )                           # remove duplicates; goenv adds twice?
-
-# Messes up syntax highlighting
-function zflai-print()  { print -rl -- ${(%)mylogs//(#b)(\[*\]): (*)/%F{1}$match[1]%f: $match[2]}; }
 
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof

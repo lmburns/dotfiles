@@ -1,10 +1,11 @@
 function prev() {
   PREV=$(fc -lrn | head -n1)
-  sh -c "pet new `printf %q "$PREV"`"
+  pet new $(print "${(q)PREV}")
 }
 
+# Color does not work
 function pet-select() {
-  BUFFER=$(pet search --query "$LBUFFER")
+  BUFFER=$(pet search --color --query "$LBUFFER")
   CURSOR=$#BUFFER
   zle redisplay
 }

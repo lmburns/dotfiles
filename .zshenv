@@ -57,7 +57,6 @@ export SYSTEMD_COLORS=1
 export LESS="\
   --ignore-case \
   --line-numbers \
-  --hilite-unread \
   --hilite-search \
   --LONG-PROMPT \
   --no-init \
@@ -141,6 +140,7 @@ export PINENTRY_USER_DATA="USE_CURSES=1"
 export UMCONFIG_HOME="${XDG_CONFIG_HOME}/um"
 export GRIPHOME="${XDG_CONFIG_HOME}/grip"
 # export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
+export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 
 export GOGODB_PATH="${XDG_DATA_HOME}/gogo/gogo.db"
 export BKT_TMPDIR="${XDG_DATA_HOME}/bkt/cache"

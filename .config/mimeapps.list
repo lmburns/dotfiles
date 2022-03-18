@@ -1,8 +1,8 @@
 [Added Associations]
 application/x-yaml=neovide.desktop;nvim.desktop;
 inode/directory=lf.desktop;
-x-scheme-handler/http=brave-browser.desktop;
-x-scheme-handler/https=brave-browser.desktop;
+x-scheme-handler/http=librewolf.desktop;
+x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
 
@@ -26,8 +26,8 @@ text/plain=nvim.desktop;
 text/x-log=nvim.desktop;
 text/x-matlab=nvim.desktop;
 text/x-shellscript=nvim.desktop;
-x-scheme-handler/http=brave-browser.desktop;
-x-scheme-handler/https=brave-browser.desktop;
+x-scheme-handler/http=librewolf.desktop;
+x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/magnet=torrent.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;

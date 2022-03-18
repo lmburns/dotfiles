@@ -88,6 +88,10 @@ alt + {h,j,k,l}
 shift + alt + {h,j,k,l}
     bspc node -s {west,south,north,east}
 
+# Equivalent ^
+# super + shift + {Left,Down,Up,Right}
+#   bspwm_smart_move {west,south,north,east}
+
 # super + {_,shift + }{h,j,k,l}
 #     bspc node -{f,s} {west,south,north,east}
 
@@ -312,7 +316,7 @@ mod3 + {b,v,p,period,s}
 
 # Password manager dmenu script
 ctrl + alt + p
-    prs-dmenu
+    prs-type
 
 # super + F9
 #   thunderbird

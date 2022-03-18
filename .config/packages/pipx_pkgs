@@ -7,13 +7,13 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package buku 4.6, installed using Python 3.10.0
     - buku
     - bukuserver
-   package cdhist 2.6, installed using Python 3.10.0
+   package cdhist 2.7, installed using Python 3.10.0
     - cdhist
    package ddgr 1.9, installed using Python 3.10.0
     - ddgr
    package dte 0.3.1, installed using Python 3.10.0
     - dte
-   package epy-reader 2022.1.25, installed using Python 3.10.0
+   package epy-reader 2022.2.14, installed using Python 3.10.0
     - epy
    package fmdpy 0.4, installed using Python 3.10.0
     - fmdpy
@@ -21,9 +21,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - glances
    package greg 0.4.8, installed using Python 3.10.0
     - greg
-   package grip 4.5.2, installed using Python 3.10.0
+   package grip 4.6.0, installed using Python 3.10.0
     - grip
-   package jrnl 2.8.3, installed using Python 3.10.0
+   package jrnl 2.8.4, installed using Python 3.10.0
     - jrnl
    package khal 0.10.4, installed using Python 3.10.0
     - ikhal
@@ -34,9 +34,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - litecli
    package mplug 0.2.1, installed using Python 3.10.0
     - mplug
-   package organize-tool 1.10.1, installed using Python 3.10.0
+   package organize-tool 2.1.2, installed using Python 3.10.0
     - organize
-   package pdm 1.12.8, installed using Python 3.10.0
+   package pdm 1.13.4, installed using Python 3.10.0
     - pdm
    package pipdeptree 2.2.1, installed using Python 3.10.0
     - pipdeptree
@@ -45,7 +45,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
     - pire
-   package poetry 1.1.12, installed using Python 3.10.0
+   package poetry 1.1.13, installed using Python 3.10.0
     - poetry
    package pre-commit 2.17.0, installed using Python 3.10.0
     - pre-commit
@@ -56,20 +56,22 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - px
    package pyflow 0.3.1, installed using Python 3.10.0
     - pyflow
-   package rich-cli 1.4.0, installed using Python 3.10.0
+   package rich-cli 1.5.1, installed using Python 3.10.0
     - rich
    package stig 0.12.2a0, installed using Python 3.10.0
     - stig
    package surfraw-tools 0.2.0, installed using Python 3.10.0
     - mkelvis
     - opensearch2elvis
+   package ueberzug 18.1.9, installed using Python 3.10.0
+    - ueberzug
    package vim-vint 0.3.21, installed using Python 3.10.0
     - vint
    package you-get 0.4.1555, installed using Python 3.10.0
     - you-get
    package youtube-dl 2021.12.17, installed using Python 3.10.0
     - youtube-dl
-   package yt-dlp 2022.1.21, installed using Python 3.10.0
+   package yt-dlp 2022.3.8.2, installed using Python 3.10.0
     - yt-dlp
    package ytmdl 2021.11.7, installed using Python 3.10.0
     - ytmdl

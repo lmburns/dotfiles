@@ -371,12 +371,6 @@ function commit-to-history() {
   zle send-break
 }
 
-# Only slash should be considered as a word separator:
-function slash-backward-kill-word() {
-  local WORDCHARS="${WORDCHARS:s@/@}"
-  zle backward-kill-word
-}
-
 # ============================ Other Func ============================
 # View keybindings
 function lskb() {

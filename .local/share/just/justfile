@@ -14,6 +14,17 @@ alias h := help
 help:
   @$EDITOR $XDG_DATA_HOME/just/overall.just
 
+# get the urls of dotfile repos
+dot-urls:
+  #!/usr/bin/env zsh
+  [[ $PWD == $HOME/opt/dotfiles ]] || print -Pr -- "%F{1}Error%f: Wrong directory"
+  {
+    () {
+      sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;
+      cat $1 >| out
+    } =(mgit config --get remote.origin.url)
+  } && print -Pr "%F{13}Success%f"
+
 # append vim filetype modeline
 append-vim-type EXT FT:
   fd -tf -e {{EXT}} -x sed -i -e '$a/* vim: ft={{FT}}:et:sw=2:ts=2:sts=-1:fdm=marker:fmr='{{'{{{,}}}'}}':' {}
@@ -69,8 +80,8 @@ expac-updown:
   @expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh
 
 # expac recently installed
-expac-recent:
-  @expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac
+expac-recent SIZE="20":
+  @expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n {{SIZE}} | tac | bat -l log
 
 # expac search regex
 expac-regex ARGS:
@@ -177,7 +188,7 @@ rsync SRC DEST:
 # rsync home dir
 rsync-home:
   sudo rsync -rzau --delete-after --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
-  ~ /run/media/lucas/Linux/manual
+  ~ /run/media/lucas/b7c5122b-4f9c-4068-840c-c9b0ab61c318/Manual
 
 # rsync projects directory
 rsync-proj:
@@ -187,10 +198,10 @@ rsync-proj:
 
 # rsync server
 rsync-server:
-  rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
+  sudo rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
     --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
     --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/exfat/server
+    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/macos/server
 
 # pull www folder server
 www-pull:

@@ -50,7 +50,7 @@ function RG() {
         --delimiter : \
         --bind 'ctrl-e:execute($EDITOR "$(echo {} | hck -d: -f1)" >/dev/tty </dev/tty)' \
         --bind='ctrl-y:execute-silent(echo {+} | hck -d: -f1 | xsel -b)' \
-        --preview 'bat --style=numbers,header,changes,snip --color=always --highlight-line {2} {1}' \
+        --preview 'bat --style=numbers,header,changes,snip --color=always --highlight-line {2} -- {1}' \
         --preview-window 'default:right:60%:~1:+{2}+3/2:border-left'
   )")
   selected=(${(@s.:.)selected})

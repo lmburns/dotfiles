@@ -29,7 +29,6 @@ ORDER BY places.dir != '${PWD//'/''}',
 }
 zle -N fz-history-widget
 
-
 function fz-find() {
   local selected dir cut
   cut=$(grep -oP '[^* ]+(?=\*{1,2}$)' <<< $BUFFER)

@@ -1,3 +1,9 @@
+#===========================================================================
+#    Author: Lucas Burns
+#     Email: burnsac@me.com
+#   Created: 2022-03-11 23:00
+#===========================================================================
+
 # ============================ Zsh Specific ==========================
 # ====================================================================
 
@@ -224,7 +230,7 @@ function rmsym() { command rm -- *(-@D); }
 # Remove broken symlinks recursively
 function rmsymr() { command rm -- **/*(-@D); }
 # Remove ansi from file
-function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;  }
+function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
 # Remove space from file name
 function rmspace() { f2 -f '\s' -r '_' -RF $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }

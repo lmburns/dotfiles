@@ -68,6 +68,7 @@ function man() {
 
 # Find aliases; taken from OMZ
 function alias-finder() {
+  setopt extendedglob
   local cmd exact longer wordStart wordEnd multiWordEnd
   foreach i ($@) {
     case $i in
@@ -96,7 +97,8 @@ function alias-finder() {
       else
         local finder=$wordStart$cmd$wordEnd
       fi
-      alias | grep -E "=$finder"
+      print -Prl -- \
+        ${${(@f)"$(alias | grep -E "=$finder")"}/(#b)(*)=(*)/"%F{1}%B$match[1]%f%b=$match[2]"}
       if [[ $exact = true || $longer = true ]]; then
         break
       else

@@ -1105,7 +1105,7 @@ endfunction
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c,zig,d nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,zig,d,javascript nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).

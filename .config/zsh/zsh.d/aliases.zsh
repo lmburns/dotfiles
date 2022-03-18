@@ -4,6 +4,11 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
+#######################################################################
+#                               Aliases                               #
+#######################################################################
+
+
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
 alias -g G='| rg '      H='| head '      T='| tail '
@@ -80,6 +85,8 @@ alias :q='exit'
   alias .js='.j --show'
 
   alias .jr='just --justfile $HOME/projects/rust/rust_justfile --working-directory $PWD'
+
+  # foreach recipe in $(.j --summary) { alias=".j $recipe" }
 }
 
 (( ${+commands[pet]} )) && {
