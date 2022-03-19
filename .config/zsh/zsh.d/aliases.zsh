@@ -185,7 +185,8 @@ alias plm='pl $match[@]'
 alias plM='pl $MATCH'
 alias plr='pl $reply[@]'
 alias plR='pl $REPLY'
-alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
+# alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
+alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ng="noglob"

@@ -672,7 +672,7 @@ Plug 'ludovicchabant/vim-gutentags'
     " let g:gutentags_define_advanced_commands = 1
     let g:gutentags_ctags_exclude = [
       \  '*.git', '*.svn', '*.hg',
-      \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components',
+      \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components', 'target',
       \  '*-lock.json',  '*.lock',
       \  '*.min.*',
       \  '*.bak',
@@ -949,7 +949,10 @@ Plug 'antoinemadec/coc-fzf'
   command! -nargs=0 CocMarket :CocList marketplace
   command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
-  nnoremap <silent> <A-'>  :<C-u>CocList yank<CR>
+  " nnoremap <silent> <A-'>  :<C-u>CocList yank<CR>
+  nnoremap <silent> <A-'> :CocFzfList yank<CR>
+
+  nnoremap <LocalLeader>c :Telescope coc<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
   nnoremap <A-s> :CocFzfList symbols<CR>
   " nnoremap <A-c> :CocFzfList commands<CR>
@@ -958,7 +961,8 @@ Plug 'antoinemadec/coc-fzf'
   " nnoremap <C-x><C-r> :CocCommand fzf-preview.CocReferences<CR>
   nnoremap <C-x><C-d> :CocCommand fzf-preview.CocTypeDefinition<CR>
   nnoremap <C-x><C-]> :CocCommand fzf-preview.CocImplementations<CR>
-  nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
+  " nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
+  nnoremap <C-x><C-h> :Telescope coc diagnostics<CR>
 
   " TODO: Use more!
   " remap for do codeAction of current line
@@ -1591,15 +1595,6 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'dhruvmanila/telescope-bookmarks.nvim'
 Plug 'tami5/sqlite.lua'
 
-  map <A-f> :Telescope find_files<CR>
-  map ;g :Telescope git_files<CR>
-  map <A-b> :Telescope buffers theme=get_dropdown<CR>
-  map ;c :Telescope commands<CR>
-  map ;B :Telescope bookmarks<CR>
-  map ;r :Telescope live_grep theme=get_ivy<CR>
-
-  nmap <A-.> :Telescope oldfiles<CR>
-
   " nnoremap <space>o <cmd>Telescope find_files<cr>
   " nnoremap <space>p <cmd>Telescope git_files<cr>
   " nnoremap <space>f <cmd>Telescope live_grep<cr>
@@ -1610,10 +1605,6 @@ Plug 'tami5/sqlite.lua'
   " nnoremap <space>m <cmd>Telescope marks<cr>
   " nnoremap <space>; <cmd>Telescope command_history<cr>
   " nnoremap <space>/ <cmd>Telescope search_history<cr>
-  nnoremap ;b <cmd>Telescope builtin<CR>
-  nnoremap ;k <cmd>Telescope keymaps<CR>
-
-  nnoremap ;fd <cmd>Telescope fd<CR>
 
 " }}} === telescope ===
 
@@ -1788,26 +1779,36 @@ command! -nargs=? -complete=dir AF
   " change directory to buffers dir
   nmap <Leader>cd :lcd %:p:h<CR>
   nmap <Leader>Lo :Locate .<CR>
-  nmap <Leader>rg :RG<CR>
   nmap <C-f> :Rg<CR>
 
+  map ;c :Telescope commands<CR>
+  map ;B :Telescope bookmarks<CR>
+  nnoremap ;b <cmd>Telescope builtin<CR>
+
   nmap <silent> <Leader>bu  :Telescope buffers<CR>
-  " nmap <silent> <Leader>bu  :Buffers<CR>
+  nmap <silent> <LocalLeader>b :Telescope buffers theme=get_dropdown<CR>
   nmap <silent> <Leader>a  :CocCommand fzf-preview.AllBuffers<CR>
+  nmap <silent> <Leader>A  :Windows<CR>
+  " nmap <silent> <Leader>bu  :Buffers<CR>
 
   nmap <silent> <Leader>C  :CocCommand fzf-preview.Changes<CR>
 
-  nmap <silent> <Leader>A  :Windows<CR>
-
   " nmap <silent> <Leader>;  :BLines<CR>
-  nmap <silent> <Leader>;  :CocCommand fzf-preview.Lines<CR>
   " nmap <silent> <Leader>;  :CocCommand fzf-preview.BufferLines<CR>
+  " nmap <silent> <Leader>;  :CocCommand fzf-preview.Lines<CR>
+  nmap ;r :Telescope live_grep theme=get_ivy<CR>
+  nmap <Leader>; :Telescope current_buffer_fuzzy_find<CR>
+  nmap <Leader>rg :RG<CR>
 
   " nmap <silent> ,f  :Files<CR>
   nmap <silent> <LocalLeader>f  :CocCommand fzf-preview.ProjectFiles<CR>
   " nmap <silent> ,d  :CocCommand fzf-preview.DirectoryFiles<CR>
-  nmap <silent> <LocalLeader>r  :CocCommand fzf-preview.MruFiles<CR>
+  " nmap <silent> <LocalLeader>r  :CocCommand fzf-preview.MruFiles<CR>
   nmap <silent> <LocalLeader>g  :CocCommand fzf-preview.GitFiles<CR>
+  nnoremap ;fd <cmd>Telescope fd<CR>
+  nmap <A-f> :Telescope find_files<CR>
+  nmap <A-.> :Telescope oldfiles<CR>
+  nmap ;g :Telescope git_files<CR>
 
   " nmap <silent> <LocalLeader>T  :CocCommand fzf-preview.TodoComments<CR>
   nmap <silent> <LocalLeader>T  :TodoTelescope<CR>
@@ -1818,13 +1819,13 @@ command! -nargs=? -complete=dir AF
   nmap <silent> <Leader>hf :History<CR>
   " nmap <silent> <Leader>hh :History/<CR>
   nmap <silent> <Leader>hh :Telescope search_history<CR>
-  nmap <silent> <Leader>cs :Colors<CR>
+  nmap <Leader>cs :Telescope colorscheme<CR>
+  " nmap <silent> <Leader>cs :Colors<CR>
   " nnoremap <A-s> :CocFzfList snippets<CR>
   nmap <silent> <Leader>si :Snippets<CR>
   nmap <silent> <Leader>ls :LS<CR>
-  nmap <silent> <Leader>ht :Helptags<CR>
   nmap <silent> <Leader>cm :Commands<CR>
-  nmap <silent> <Leader>mm :Maps<CR>
+  nmap <silent> <Leader>ht :Helptags<CR>
   nmap <silent> <Leader>T  :Tags<CR>
   nmap <silent> <a-t> :BTags<CR>
   nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
@@ -1835,6 +1836,8 @@ command! -nargs=? -complete=dir AF
   nmap <Leader>mfd :delm! | delm A-Z0-9<CR>
   nmap <Leader>mld :delmarks a-z<CR>
 
+  nnoremap ;k <cmd>Telescope keymaps<CR>
+  nmap <silent> <Leader>mm :Maps<CR>
   nmap <C-l>m <plug>(fzf-maps-n)
   xmap <C-l>m <plug>(fzf-maps-x)
   imap <C-l>m <plug>(fzf-maps-i)

@@ -164,6 +164,14 @@ function src-locate() {
 }
 zle -N src-locate
 
+# TODO: Set this to history file that is similar to per-dir-history
+function stash_buffer() {
+  [[ -z $BUFFER ]] && return
+  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
+  BUFFER=
+}
+zle -N stash_buffer
+
 # ============================= BINDINGS =============================
 # ====================================================================
 if [[ $TMUX ]]; then
@@ -252,6 +260,7 @@ declare -gA keybindings; keybindings=(
 # ========================== Testing ==========================
 # 'mode=vicmd Q'    save-alias
   'mode=vicmd ;d'   dirstack-plus
+  'C-x o'           stash_buffer
 )
 
 vbindkey -A keybindings

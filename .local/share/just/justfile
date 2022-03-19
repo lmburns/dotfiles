@@ -38,11 +38,11 @@ rage-d DEC OUT:
   rage -d -i ~/.ssh/burnsac -o {{invocation_directory()}}/{{OUT}} {{invocation_directory()}}/{{DEC}}
 
 # create a tomb
-tomb:
+tomb SIZE="100" NAME="secret":
   #!/usr/bin/env zsh
-  name="${2:-secret}"
+  name="{{NAME}}"
 
-  tomb dig -s "${1:-100}" "${name}.tomb" -f
+  tomb dig -s "{{SIZE}}" "${name}.tomb" -f
   print -P "%F{1}Created%f: %F{2}${name}.tomb%f"
 
   tomb forge "${name}.tomb.key" -gr E93ACCAAAEB024788C106EDEC011CBEF6628B679 -f
@@ -61,7 +61,7 @@ memory:
 
 # refresh wifi
 refresh-wifi:
-  @ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up
+  @ip link set wlp4s0 down && sleep 5 && ip link set wlp4s0 up
 
 # systemctl enabled
 systemctl-enabled:

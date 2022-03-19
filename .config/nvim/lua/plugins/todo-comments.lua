@@ -7,6 +7,7 @@ require("todo-comments").setup({
       alt = { "FIXME", "BUG", "FIXIT", "FIX", "ISSUE" }
     },
     TODO = { icon = " ", color = "#d16d9e" },
+    TEST = { icon = " ", color = "#819c3b" },
     HACK = { icon = " ", color = "#d8a657" },
     WARN = { icon = " ", color = "#EC5f67", alt = { "WARNING", "XXX" } },
     CHANGED = {

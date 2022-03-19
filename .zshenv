@@ -64,6 +64,7 @@ export LESS="\
   --RAW-CONTROL-CHARS \
   --mouse \
   --wheel-lines=3 \
+  --tabs 4 \
   --force \
   --prompt ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
 

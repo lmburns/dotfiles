@@ -33,9 +33,9 @@ function zflai-zprof() {
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
 typeset -g DIRSTACKSIZE=25
-typeset -g HISTSIZE=10000000
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
-typeset -g SAVEHIST=8000000
+typeset -g SAVEHIST=10_000_000
+typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g LISTMAX=50                            # Size of asking history
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get)" # Ignore pattern
@@ -45,6 +45,7 @@ typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g MAILCHECK=0    # Don't check for mail
 typeset -g KEYTIMEOUT=15  # Key action time
 typeset -g FCEDIT=$EDITOR # History editor
+typeset -g READNULLCMD=$PAGER # Read contents of file with <file
 
 # Various highlights for CLI
 typeset -ga zle_highlight=(
@@ -74,9 +75,6 @@ typeset -ga zle_highlight=(
     "CPU:  $blue%P$rst"$'\t'"Mem:    $blue%M MB$rst"
   )
 }
-
-# setopt brace_ccl # expand in braces, which would not otherwise, into a sorted list
-# setopt list_types # show type of file with indicator at end
 
 setopt hist_ignore_space    # don't add if starts with space
 setopt hist_reduce_blanks   # remove superfluous blanks from each command
@@ -111,12 +109,16 @@ setopt hash_list_all # when a completion is attempted, hash it first
 
 setopt rc_quotes            # allow '' inside '' to indicate a single '
 setopt interactive_comments # allow comments in history
-setopt c_bases              # 0xFF instead of 16#FF
 setopt unset                # don't error out when unset parameters are used
 setopt long_list_jobs       # list jobs in long format by default
 setopt notify               # report status of jobs immediately
 setopt multios              # perform multiple implicit tees and cats with redirection
+setopt c_bases              # 0xFF instead of 16#FF
+setopt c_precedences        # use precendence of operators found in C
+setopt octal_zeroes         # 077 instead of 8#77
 # setopt ksh_option_print    # print all options
+# setopt brace_ccl           # expand in braces, which would not otherwise, into a sorted list
+# setopt list_types          # show type of file with indicator at end
 
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't set HUP to jobs when shell exits
@@ -153,6 +155,7 @@ zstyle+ ':chpwd:*' recent-dirs-default true \
 zstyle ':completion:*' recent-dirs-insert  both
 
 # Can be called across sessions to update the dirstack without sourcing
+# This should be fixed to update across sessions without ever needing to be called
 function set-dirstack() {
   [[ -v dirstack ]] || typeset -ga dirstack
   dirstack=(
@@ -161,21 +164,23 @@ function set-dirstack() {
 }
 set-dirstack
 
-# [[ $PWD = ('~'|/)* ]]
-[[ $PWD = ('~'|/)* ]] && () {
+# Taken from romkatv/zsh4humans
+local dir=${(%):-%~}
+[[ $dir = ('~'|/)* ]] && () {
   # if (( ! $#dirstack && (DIRSTACKSIZE || ! $+DIRSTACKSIZE) )); then
-    local d dir=${(%):-%~} stack=()
+    local d stack=()
     foreach d ($dirstack) {
       {
         if [[ ($#stack -ne 0 || $d != $dir) ]]; then
           d=${~d}
           if [[ -d ${d::=${(g:oce:)d}} ]]; then
             stack+=($d)
+            # Where is DIRSTACK ever set?
             (( $+DIRSTACK && $#stack >= DIRSTACK - 1 )) && break
           fi
         fi
       } always {
-        TRY_BLOCK_ERROR=0
+        let TRY_BLOCK_ERROR=0
       }
     } 2>/dev/null
     dirstack=($stack)
