@@ -157,7 +157,7 @@ programming:
     ruby: [.rb, .rbs]
     rust: [.rs]
     scala: [.scala, .sbt]
-    shell: [.sh, .bash, .zsh, .fish]
+    shell: [.sh, .bash, .fish]
     sql: [.sql]
     swift: [.swift]
     tablegen: [.td]
@@ -165,6 +165,7 @@ programming:
     typescript: [.ts, .tsx]
     viml: [.vim]
     zig: [.zig]
+    zsh: [.zsh, .ztst]
 
     database: [.sqlite, .sqlite3, .db]
     jq: [.jq]

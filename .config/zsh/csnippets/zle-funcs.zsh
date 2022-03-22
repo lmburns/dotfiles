@@ -578,4 +578,5 @@ zvm_switch_keyword_handlers=(
 
 zle -N zvm_switch_keyword
 
+
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

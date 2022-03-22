@@ -4,7 +4,7 @@ client:
   read_local_logs: true
   show_confirmation_questions: false
   show_expanded_aliases: true
-  dark_mode: false
+  dark_mode: true
   max_status_lines: ~
   status_time_format: "%H:%M:%S"
   status_datetime_format: "%Y-%m-%d\n%H:%M:%S"
@@ -14,12 +14,10 @@ daemon:
   pause_all_on_failure: false
   callback: "notify-send '{{ command }}' 'Pueue status: {{ result }}\nPueue task: {{ id }}'"
   callback_log_lines: 10
-  groups:
-    default: 2
 shared:
   pueue_directory: /home/lucas/.local/share/pueue
   use_unix_socket: true
-  unix_socket_path: /home/lucas/.local/share/pueue/pueue_lucasburns.socket
+  unix_socket_path: /home/lucas/.local/share/pueue/pueue_lucas.socket
   host: 127.0.0.1
   port: "6924"
   daemon_cert: /home/lucas/.local/share/pueue/certs/daemon.cert

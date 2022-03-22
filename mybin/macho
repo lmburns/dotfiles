@@ -1,11 +1,13 @@
 #!/usr/bin/env zsh
 
+# Why does this color the preview?
 export FZF_DEFAULT_OPTS="
 $FZF_DEFAULT_OPTS
 --layout=reverse
 --prompt='Manual: '
 --preview-window=':nohidden'
---preview='echo {1} | sed -E \"s/^\((.+)\)/\1/\" | xargs -I{S} man -Pcat {S} {2} 2>/dev/null'"
+--preview='echo {1} | sed -E \"s/^\((.+)\)/\1/\" \\
+  | xargs -I{S} man -P \"bat --paging=never --color=always -l man\" {S} {2} 2>/dev/null'"
 
 while getopts ":s:" opt; do
   case $opt in

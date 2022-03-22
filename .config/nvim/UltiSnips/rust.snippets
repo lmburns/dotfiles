@@ -46,6 +46,7 @@ snippet mtests "mod tests..." b
 #[cfg(test)]
 mod tests {
 	use super::*;
+
 	#[test]
 	fn ${1:it_works}() {
 		$2
@@ -62,6 +63,12 @@ endsnippet
 
 snippet fnp "fn name(?) -> ? {}"
 fn ${1:function_name}($2)${3/..*/ -> /}$3 {
+	${VISUAL}$0
+}
+endsnippet
+
+snippet pcfn "pub(crate) fn name(?) -> ? {}"
+pub(crate) fn ${1:function_name}($2)${3/..*/ -> /}$3 {
 	${VISUAL}$0
 }
 endsnippet

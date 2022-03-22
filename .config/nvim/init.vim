@@ -56,6 +56,7 @@
   set expandtab softtabstop=2 smartindent
   set ignorecase smartcase
   set number
+  set relativenumber
   set nostartofline
   set linebreak
   set wrap
@@ -64,6 +65,7 @@
   set matchtime=2
   set cmdheight=2
   set shortmess+=c
+  set inccommand=nosplit
   set nofoldenable
   set foldmethod=marker
   set foldmarker=[[[,]]]
@@ -961,8 +963,9 @@ Plug 'antoinemadec/coc-fzf'
   " nnoremap <C-x><C-r> :CocCommand fzf-preview.CocReferences<CR>
   nnoremap <C-x><C-d> :CocCommand fzf-preview.CocTypeDefinition<CR>
   nnoremap <C-x><C-]> :CocCommand fzf-preview.CocImplementations<CR>
-  " nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
-  nnoremap <C-x><C-h> :Telescope coc diagnostics<CR>
+  nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
+  " This seems to only do current buffer
+  nnoremap <C-x><h> :Telescope coc diagnostics<CR>
 
   " TODO: Use more!
   " remap for do codeAction of current line
@@ -1084,8 +1087,6 @@ Plug 'antoinemadec/coc-fzf'
   nmap gC <Plug>(coc-git-commit)
 
   nmap <silent> <Leader><Leader>o <Plug>(coc-openlink)
-  nmap <silent> <Leader>se :<C-u>CocCommand snippets.editSnippets<cr>
-  " nmap <silent> <leader><space><space>so :<C-u>CocCommand snippets.openSnippetFiles<cr>
   " nmap <silent> <leader><space><space>l <Plug>(coc-codelens-action)
 
   " inoremap <silent><expr> <C-j>
@@ -1109,7 +1110,7 @@ endfunction
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c,zig,d,javascript nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1637,10 +1638,10 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
     \ call fzf#vim#files('~/.config', <bang>0)
   command! -bang Proj
     \ call fzf#vim#files('~/projects', fzf#vim#with_preview(), <bang>0)
-command! -nargs=? -complete=dir AF
-  \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
-    \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore
-    \ . '.expand(<q-args>) })))
+  command! -nargs=? -complete=dir AF
+    \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
+      \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore
+      \ . '.expand(<q-args>) })))
 
   " command! -bang -nargs=* Rg
   "   \ call fzf#vim#grep(
@@ -1709,6 +1710,17 @@ command! -nargs=? -complete=dir AF
   command! PlugHelp call fzf#run(fzf#wrap({
     \ 'source': sort(keys(g:plugs)),
     \ 'sink':   function('s:plug_help_sink')}))
+
+  " TODO: Make like macho
+  command! -nargs=? Apropos call fzf#run(fzf#wrap({
+      \ 'source': 'apropos '
+          \ . (len(<q-args>) > 0 ? shellescape(<q-args>) : ".")
+          \ .' | cut -d " " -f 1',
+      \ 'sink': 'tab Man',
+      \ 'options': [
+          \ '--preview', 'MANPAGER=cat MANWIDTH='.(&columns/2-4).' man {}']}))
+
+  " \ . '| grep -vE "^.+ \(0\)" | awk ''{print $2 "    " $1}'' | sed -E "s/^\((.+)\)/\1/"',
 
   " Line completion (same as :Bline)
   " imap <C-a> <C-x><C-l>
@@ -1789,7 +1801,6 @@ command! -nargs=? -complete=dir AF
   nmap <silent> <LocalLeader>b :Telescope buffers theme=get_dropdown<CR>
   nmap <silent> <Leader>a  :CocCommand fzf-preview.AllBuffers<CR>
   nmap <silent> <Leader>A  :Windows<CR>
-  " nmap <silent> <Leader>bu  :Buffers<CR>
 
   nmap <silent> <Leader>C  :CocCommand fzf-preview.Changes<CR>
 
@@ -1819,10 +1830,15 @@ command! -nargs=? -complete=dir AF
   nmap <silent> <Leader>hf :History<CR>
   " nmap <silent> <Leader>hh :History/<CR>
   nmap <silent> <Leader>hh :Telescope search_history<CR>
+
   nmap <Leader>cs :Telescope colorscheme<CR>
   " nmap <silent> <Leader>cs :Colors<CR>
-  " nnoremap <A-s> :CocFzfList snippets<CR>
-  nmap <silent> <Leader>si :Snippets<CR>
+
+  " nmap <silent> <leader><space><space>so :<C-u>CocCommand snippets.openSnippetFiles<cr>
+  " nmap <silent> <Leader>se :<C-u>CocCommand snippets.editSnippets<cr>
+  " nmap <silent> <Leader>si :Snippets<CR>
+  nmap <silent> <Leader>se :CocFzfList snippets<CR>
+  nmap <silent> <Leader>si :Telescope ultisnips<CR>
   nmap <silent> <Leader>ls :LS<CR>
   nmap <silent> <Leader>cm :Commands<CR>
   nmap <silent> <Leader>ht :Helptags<CR>
@@ -1887,6 +1903,7 @@ command! -nargs=? -complete=dir AF
   Plug 'nvim-lua/popup.nvim'
   Plug 'nvim-lua/plenary.nvim'
   Plug 'lewis6991/gitsigns.nvim'
+  Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
   Plug 'fhill2/telescope-ultisnips.nvim'
   Plug 'fannheyward/telescope-coc.nvim'
   Plug 'folke/todo-comments.nvim'
@@ -2190,7 +2207,8 @@ call plug#end()
   " make cut not go to clipboard
   nnoremap x "_x
   " reselect the text that has just been pasted
-  noremap gV `[v`]
+  " noremap gV `[v`]
+  nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
   " select characters of line (no new line)
   nnoremap vv ^vg_
   " make visual yanks place the cursor back where started
@@ -2198,22 +2216,26 @@ call plug#end()
   " insert a space after current character
   " nnoremap <Leader>sa a<Space><ESC>h
 
+  " adds a space to left of cursor
+  nnoremap <silent> zl i <Esc>l
+
   " inserts a line above or below
   nnoremap <expr> zj printf('m`%so<ESC>``', v:count1)
   nnoremap <expr> zk printf('m`%sO<ESC>``', v:count1)
   nnoremap <silent> oo o<Esc>k
   nnoremap <silent> OO O<Esc>j
 
-  " adds a space to beginning of line
-  nnoremap <silent> zl i <Esc>l
-
   " move through folded lines
   nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
-  nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+  nnoremap   <expr> k (v:count == 0 ? 'gk' : 'k')
+  " nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
+  " nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
 
   " move selected text up down
   vnoremap J :m '>+1<CR>gv=gv
   vnoremap K :m '<-2<CR>gv=gv
+  " inoremap <C-J> <Esc>:m .+1<CR>==a
+  " inoremap <C-K> <Esc>:m .-2<CR>==a
 
   " move between windows
   noremap <C-j> <C-W>j
@@ -2243,7 +2265,7 @@ call plug#end()
   " close all buffers
   nnoremap <Leader>bQ :bufdo bd! #<cr>
   " list buffers
-  nnoremap <silent> <space>b :<C-u>Buffers<cr>
+  nnoremap <silent> <Leader>bl :Telescope buffers<cr>
 
   " resize windows
   " nnoremap + :vertical resize +5<CR>
@@ -2256,10 +2278,15 @@ call plug#end()
   map <C-Right> :vertical resize +1<CR>
   map <C-Left> :vertical resize -1<CR>
 
+  " Change vertical to horizontal
+  nnoremap <Leader>w- <C-w>t<C-w>K
+  " Change horizontal to vertical
+  nnoremap <Leader>w\ <C-w>t<C-w>H
+
   " perform dot commands over visual blocks
   vnoremap . :normal .<CR>
 
-  " for github - change tabs
+  " change tabs
   nnoremap <Leader>nt :setlocal noexpandtab<CR>
   xnoremap <Leader>re :retab!<CR>
   " close quickfix
@@ -2278,6 +2305,7 @@ call plug#end()
   " autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
   augroup cust_ft
     au!
+    au BufRead,BufNewFile *.ztst            setl ft=ztst
     au BufRead,BufNewFile *pre-commit       setl ft=sh
     au BufNewFile,BufRead coc-settings.json setl ft=jsonc
     au FileType json syntax match Comment +\/\/.\+$+
@@ -2312,9 +2340,6 @@ call plug#end()
 
   " autocmd BufReadPost *.odt silent %!pandoc "%" -tmarkdown -o /dev/stdout
   " autocmd BufWritePost *.odt :%!pandoc -f markdown "%" -o "%:r".odt
-
-  " check html syntax
-  nmap <Leader>h5 :!html5check %<CR>
 
   " NOTE: `,kp` compiles RMarkdown to PDF using NVim-R
   autocmd Filetype rmd map <F5> :!echo<space>"require(rmarkdown);<space>render('<c-r>%')"<space>\|<space>R<space>--vanilla<enter>
@@ -2372,6 +2397,13 @@ call plug#end()
     autocmd!
     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
       \| exe "normal! g'\"" | endif
+  augroup END
+
+  " Toggle between {non,}relative numbers
+  augroup numbertoggle
+    autocmd!
+    autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif
+    autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif
   augroup END
 
   " E: create file with subdirectories if needed {{{

@@ -88,6 +88,18 @@ zstyle+ ':completion'        ''          ''                                     
 
 zstyle '*' single-ignored show # don't insert single value
 
+zstyle -e ':completion:*' completer '
+  if [[ $_last_try != "$HISTNO$BUFFER$CURSOR" ]] ; then
+    _last_try="$HISTNO$BUFFER$CURSOR"
+    reply=(_expand_alias _complete _extensions _match _prefix _files)
+  elif [[ $words[1] == (rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim) ]] ; then
+    reply=(_complete _files)
+  else
+    reply=(_oldlist _expand _force_rehash _complete _ignored _correct _approximate _files)
+    # reply=(_complete _ignored _correct _approximate)
+  fi'
+# + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
+
 # + ''                show-completer = debugging
 # + ''                accept-exact '*(N)' \
 # + ''                use-compctl false \
@@ -97,11 +109,11 @@ zstyle '*' single-ignored show # don't insert single value
 
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                list-grouped true \
+      + ''                special-dirs false \
       + ':(^systemctl):*' group-name '' \
-      + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                file-sort access \
       + ''                use-cache true \
-      + ''                cache-path "${ZDOTDIR}/.zcompcache" \
+      + ''                cache-path "${ZSH_CACHE_DIR}/.zcompcache" \
       + ''                verbose true \
       + ''                extra-verbose true \
       + ''                rehash true \
@@ -153,11 +165,11 @@ zstyle+ ':completion:*' '' '' \
       + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
       + ':xcompress:*'    file-patterns   '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
       + ''                sort true                                                     \
-      + ':(rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bad|nvim):*'      sort false \
-      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|git-{add,rm}|bat|nvim):*' ignore-line other
+      + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim):*'   sort false \
+      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|git-(add,rm)|bat|nvim):*' ignore-line other
 
-# Doesn't work
-zstyle ':completion:complete:*:nvim:*' file-sort access
+zstyle+ ':completion:complete:*' '' '' \
+      + ':(nvim|cd):*' file-sort access
 
 # zstyle ':completion::approximate*:*' prefix-needed false
 
@@ -386,9 +398,11 @@ zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
 
 #zstyle ':completion:*:*:commands' list-colors '=(#b)([a-zA-Z]#)([0-9_.-]#)([a-zA-Z]#)*=0;34=1;37;45=0;34=1;37;45'
 
+
 # zstyle ':completion:*:*:*:*:options' \
 #   list-colors \
 #   '=(#b)([-<)(>]##)[ ]#([a-zA-Z0-9_.,:?@#-]##)[ ]#([<)(>]#)[ ]#([a-zA-Z0-9+?.,()@3-]#)*=1;32=1;31=34=1;31=34'
+
 
 # Highlight typed part of command
 # zstyle -e ':completion:*:-command-:*:commands' \

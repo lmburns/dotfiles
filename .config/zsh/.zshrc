@@ -11,7 +11,7 @@
 umask 022
 # limit coredumpsize 0
 
-typeset -gaxU path fpath manpath infopath cdpath
+typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
 
 typeset -ga mylogs
@@ -32,7 +32,7 @@ function zflai-zprof() {
 
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
-typeset -g DIRSTACKSIZE=25
+typeset -g DIRSTACKSIZE=20
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g SAVEHIST=10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
@@ -42,10 +42,11 @@ typeset -g HISTORY_IGNORE="(youtube-dl|you-get)" # Ignore pattern
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
-typeset -g MAILCHECK=0    # Don't check for mail
-typeset -g KEYTIMEOUT=15  # Key action time
-typeset -g FCEDIT=$EDITOR # History editor
-typeset -g READNULLCMD=$PAGER # Read contents of file with <file
+typeset -g MAILCHECK=0                 # Don't check for mail
+typeset -g KEYTIMEOUT=15               # Key action time
+typeset -g FCEDIT=$EDITOR              # History editor
+typeset -g READNULLCMD=$PAGER          # Read contents of file with <file
+typeset -g TMPPREFIX="${TMPDIR%/}/zsh" # Temporary file prefix for zsh
 
 # Various highlights for CLI
 typeset -ga zle_highlight=(
@@ -78,7 +79,6 @@ typeset -ga zle_highlight=(
 
 setopt hist_ignore_space    # don't add if starts with space
 setopt hist_reduce_blanks   # remove superfluous blanks from each command
-setopt hist_allow_clobber   # add '|' to output redirections in history
 setopt hist_ignore_all_dups # replace duplicate commands in history file
 setopt hist_fcntl_lock      # use fcntl to lock hist file
 setopt extended_history     # add beginning time, and duration to history
@@ -92,6 +92,7 @@ setopt auto_cd   auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
 setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
 
 setopt prompt_subst # allow substitution in prompt (p10k?)
+setopt correct      # try to correct mistakes
 
 setopt numeric_glob_sort # sort globs numerically
 setopt no_case_glob      # case insensitive globbing
@@ -165,6 +166,7 @@ function set-dirstack() {
 set-dirstack
 
 # Taken from romkatv/zsh4humans
+# ${(D)PWD}
 local dir=${(%):-%~}
 [[ $dir = ('~'|/)* ]] && () {
   # if (( ! $#dirstack && (DIRSTACKSIZE || ! $+DIRSTACKSIZE) )); then
@@ -173,10 +175,9 @@ local dir=${(%):-%~}
       {
         if [[ ($#stack -ne 0 || $d != $dir) ]]; then
           d=${~d}
-          if [[ -d ${d::=${(g:oce:)d}} ]]; then
+          if [[ -d ${d::=${(g:ceo:)d}} ]]; then
             stack+=($d)
-            # Where is DIRSTACK ever set?
-            (( $+DIRSTACK && $#stack >= DIRSTACK - 1 )) && break
+            (( $+DIRSTACKSIZE && $#stack >= DIRSTACKSIZE - 1 )) && break
           fi
         fi
       } always {
@@ -295,7 +296,7 @@ zt 0a light-mode for \
   is-snippet trigger-load'!x' blockf svn \
     OMZ::plugins/extract \
   trigger-load'!bd' pick'bd.zsh' \
-    tarrasch/zsh-bd \
+    Tarrasch/zsh-bd \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
   atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
@@ -305,6 +306,7 @@ zt 0a light-mode for \
   trigger-load'!ugit' \
     Bhupesh-V/ugit \
   trigger-load'!ga;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
+  atinit'forgit_ignore="/dev/null"' \
     wfxr/forgit \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist
@@ -323,7 +325,6 @@ zt 0a light-mode for \
 
 # === wait'0a' block === [[[
 zt 0a light-mode for \
-  atload'zstyle ":completion:*" special-dirs false' \
     OMZ::lib/completion.zsh \
   as'completion' atpull'zinit cclear' blockf \
     zsh-users/zsh-completions \
@@ -624,7 +625,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     pkolaczk/fclones \
   lbin from'gh-r' \
     itchyny/mmv \
-  lbin atclone'cargo br' atpull'%atclone' \
+  lbin atclone'cargo br' \
   atclone"./atuin gen-completions --shell zsh --out-dir $GENCOMP_DIR" atpull'%atclone' \
   eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
     ellie/atuin \
@@ -755,9 +756,9 @@ zt 0c light-mode null for \
   lbin'tar*/rel*/evcxr' atclone'cargo br' atpull'%atclone' \
     google/evcxr \
   lbin'rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
-  atclone'command rsync -vua --delete-after rusty-man/ .' \
+  atclone'command mv -vf rusty-man/* . && rm -rf rusty-man' \
   atclone'cargo br && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \
-  atclone"command mv -f rusty*/tar*/rel*/rusty-man . && cargo clean" \
+  atclone"command mv -f tar*/rel*/rusty-man ." \
   atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
     zdharma-continuum/null
 
@@ -839,52 +840,41 @@ stty intr '^C'
 stty susp '^Z'
 stty stop undef
 stty discard undef <$TTY >$TTY
+# Load when they are needed
 zmodload zsh/zprof             # ztodo
 zmodload zsh/attr              # extended attributes
 zmodload -mF zsh/files b:zf_\* # zf_ln zf_rm etc
-# autoload -Uz sticky-note regexp-replace
 autoload -Uz zmv zcalc zargs zed relative zrecompile
 alias fned="zed -f"
-alias zmv='noglob zmv -v' zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
+alias zmv='noglob zmv -v'  zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
 alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
+# autoload -Uz sticky-note regexp-replace
 
 [[ -v aliases[run-help] ]] && unalias run-help
 autoload +X -Uz run-help
 autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 # zmodload -F zsh/parameter p:functions_source
 # autoload -Uz $functions_source[run-help]-*~*.zwc
-
-# unalias which-command 2> /dev/null
-# zle -C  which-command list-choices which-command
-# function which-command() {
-#   zle -I
-#   command whatis      -- $words[@] 2> /dev/null
-#   builtin whence -aSv -- $words[@] 2> /dev/null
-#   compstate[insert]=
-#   compstate[list]=
-# }
-
-# typeset -g HELPDIR='/usr/share/zsh/help'
 # ]]]
 
 # === helper functions === [[[
 # Shorten command length
 add-zsh-hook zshaddhistory max_history_len
 function max_history_len() {
-    if (( $#1 > 240 )) {
-        return 2
-    }
-    return 0
+  if (( $#1 > 240 )) {
+    return 2
+  }
+  return 0
 }
 
-zshaddhistory() {
+function zshaddhistory() {
   emulate -L zsh
   # whence ${${(z)1}[1]} >| /dev/null || return 1 # doesn't add setting arrays
   [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
 }
 
 # Based on directory history
-_zsh_autosuggest_strategy_dir_history() {
+function _zsh_autosuggest_strategy_dir_history() {
   emulate -L zsh -o extended_glob
   if $_per_directory_history_is_global && [[ -r "$_per_directory_history_path" ]]; then
     local prefix="${1//(#m)[\\*?[\]<>()|^~#]/\\$MATCH}"
@@ -898,7 +888,7 @@ _zsh_autosuggest_strategy_dir_history() {
 }
 
 # Same as above, but not directory specific
-_zsh_autosuggest_strategy_custom_history() {
+function _zsh_autosuggest_strategy_custom_history() {
   emulate -L zsh -o extended_glob
   local prefix="${1//(#m)[\\*?[\]<>()|^~#]/\\$MATCH}"
   local pattern="$prefix*"
@@ -913,7 +903,7 @@ _zsh_autosuggest_strategy_custom_history() {
 
 # Return the latest used command in the current directory
 # Else, find most recent command
-_zsh_autosuggest_strategy_histdb_top_here() {
+function _zsh_autosuggest_strategy_histdb_top_here() {
     (( $+functions[_histdb_query] )) || return
 #   local query="
 # SELECT commands.argv
@@ -1120,7 +1110,7 @@ typeset -a SKIM_COLORS=(
 
 FZF_FILE_PREVIEW="([[ -f {} ]] && (bkt -- bat --style=numbers --color=always -- {}))"
 FZF_DIR_PREVIEW="([[ -d {} ]] && (bkt -- exa -T {} | less))"
-FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) =~ binary ]] && (echo {} is a binary file))"
+FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a binary file))"
 
 export FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
 
@@ -1251,8 +1241,6 @@ zt 0b light-mode null id-as for \
   zle && zle reset-prompt
 }
 # ]]]
-
-export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 
 [[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] \
     && path=( "$XDG_BIN_HOME" "${path[@]}")

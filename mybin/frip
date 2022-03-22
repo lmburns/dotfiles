@@ -13,7 +13,7 @@ zparseopts -D -A opts -- d: e: t:
 (( $+opts[-e] )) && exclude=$opts[-e]
 (( $+opts[-t] )) && type=$opts[-t]
 
-selection=( $(fd --color=always -d${maxdepth} ${exclude:+-E ${(b)exclude}} ${type:+-t${type}} \
+selection=( $(fd --color=always -d${maxdepth} ${exclude:+-E ${(b)exclude}} ${type:+-t${type}} --strip-cwd-prefix \
   | fzf -m --prompt "Delete Files> ") )
 
 [[ -n "$selection" ]] && rip -- "$selection[@]"

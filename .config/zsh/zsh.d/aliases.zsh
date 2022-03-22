@@ -13,7 +13,7 @@
 
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '
-alias -g CW='| cw'      R='| tac '
+alias -g CW='| cw'      R='| tac '       F='| fzf'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
 alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
 alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time
@@ -187,6 +187,7 @@ alias plr='pl $reply[@]'
 alias plR='pl $REPLY'
 # alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
 alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
+# alias ..='cd .. 2>/dev/null || cd "$(dirname $PWD)"' # Allows leaving from deleted directories
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ng="noglob"
@@ -253,7 +254,6 @@ alias nlfr='$EDITOR $XDG_CONFIG_HOME/lf/lfrc'
 alias nlfrs='$EDITOR $XDG_CONFIG_HOME/lf/scope'
 alias nxplr='$EDITOR $XDG_CONFIG_HOME/xplr/init.lua'
 alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
-alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
 alias nurls='$EDITOR $XDG_CONFIG_HOME/newsboat/urls'
 alias nnews='$EDITOR $XDG_CONFIG_HOME/newsboat/config'
 alias nw3m='$EDITOR $HOME/.w3m/keymap'
@@ -266,6 +266,8 @@ alias nsnip='$EDITOR $XDG_CONFIG_HOME/nvim/UltiSnips/all.snippets'
 alias nticker='$EDITOR $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias njaime='$EDITOR $XDG_CONFIG_HOME/jaime/config.yml'
 alias nssh='$EDITOR $HOME/.ssh/config'
+alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
+alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
 
 [[ $OSTYPE = darwin* ]] && {
   alias nyab='$EDITOR $XDG_CONFIG_HOME/yabai/yabairc'

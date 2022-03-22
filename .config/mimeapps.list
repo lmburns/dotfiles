@@ -23,6 +23,7 @@ inode/directory=lf.desktop;
 message/rfc822=mail.desktop;
 text/markdown=nvim.desktop;
 text/plain=nvim.desktop;
+text/rust=nvim.desktop;
 text/x-log=nvim.desktop;
 text/x-matlab=nvim.desktop;
 text/x-shellscript=nvim.desktop;

@@ -314,9 +314,15 @@ mod3 + {b,v,p,period,s}
 # alt + space
 #     dmenu-run
 
+# prs-copy
+
 # Password manager dmenu script
 ctrl + alt + p
-    prs-type
+    prs-dmenu
+
+# Clipboard history
+ctrl + alt + y
+    rofi-greenclip
 
 # super + F9
 #   thunderbird
@@ -337,14 +343,15 @@ XF86Audio{Mute,LowerVolume,RaiseVolume}
 shift + XF86Audio{Mute,LowerVolume,RaiseVolume}
     volume-notify 'bluetooth' {toggle,-5%,+5%}
 
-# ??
-XF86Mail
-    $TERMINAL -e neomutt
-
 # amixer-notify "toggle"
 # amixer-notify "set" "{5%-,5%+}"
 # pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
+
+# ??
+# XF86Mail
+F12
+    $TERMINAL -e neomutt
 
 # Sync email
 super + F8

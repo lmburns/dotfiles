@@ -13,6 +13,8 @@ colors:
   yellow_orange: "fe8019" # #fe8019
   dark_red: "DC3958" # #DC3958
   dark_purple: "733e8b" # #733e8b
+  dark_magenta: "b16185" # #b16185
+  gruv_magenta: "d3869b" # #d3869b
   dark_green: "088649" # #088649
   bright_yellow: "f79a32" # #f79a32
   bright_green: "a3b95a" # #a3b95a
@@ -117,6 +119,7 @@ programming:
     python: { foreground: green }
     ruby: { foreground: darker_red }
     javascript: { foreground: yellow }
+    zsh: { foreground: dark_magenta }
 
   tooling:
     packaging:

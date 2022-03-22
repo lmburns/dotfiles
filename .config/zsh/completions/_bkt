@@ -1,0 +1,22 @@
+#compdef bkt
+
+# zsh completions for 'bkt'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--ttl[duration the cached result will be valid for \[default: 60s\]]'
+  '--stale[duration after which the result will be asynchronously refreshed]'
+  '--warm[asynchronously execute and cache the given command, even if its]'
+  '--force[execute and cache the given command, even if its already cached]'
+  '--cwd[includes the current working directory in the cache key, so that]'
+  '--env[includes the given environment variable in the cache key, so that]'
+  '--discard-failures[dont cache invocations that fail (non-zero exit code). USE]'
+  '--scope[if set, all cached data will be scoped to this value, preventing]'
+  '--cache-dir[the directory under which to persist cached invocations; defaults]'
+  {-h,--help}'[print help information]'
+  {-V,--version}'[print version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

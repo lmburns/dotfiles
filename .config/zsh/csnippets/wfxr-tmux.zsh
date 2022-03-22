@@ -150,16 +150,17 @@ zle     -N    wfxr::fzf-file-edit-widget
 
 function fe() {
   local -a files sel
-  files=$(command fd -Hi -tf -d2)
+  files=$(command fd -Hi -tf -d2 --strip-cwd-prefix)
   sel=("$(
     print -rl -- "$files[@]" | \
-    fzf --query="$1" \
-      --multi \
-      --select-1 \
-      --exit-0 \
-      --bind=ctrl-x:toggle-sort \
-      --preview-window=':nohidden,right:65%:wrap' \
-      --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+      lscolors | \
+      fzf --query="$1" \
+        --multi \
+        --select-1 \
+        --exit-0 \
+        --bind=ctrl-x:toggle-sort \
+        --preview-window=':nohidden,right:65%:wrap' \
+        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
     )"
   )
   [[ -n "$sel" ]] && ${EDITOR:-vim} "${sel[@]}" || zle redisplay
@@ -264,8 +265,7 @@ if (( $+commands[copyq] )); then
               | nl -w2 -s" " \
               | tac \
               | fzf --layout=reverse --multi --prompt='Copyq> ' --tiebreak=index \
-              | perl -pe 's/^\s*\d+\s?//g && chomp if eof' \
-              | xsel -b
+              | perl -pe 's/^\s*\d+\s?//g && chomp if eof'
         )
         BUFFER="$BUFFER$CONTENT"
         CURSOR="$#BUFFER"

@@ -1,0 +1,25 @@
+#compdef histdb
+
+local arguments
+
+arguments=(
+  '--desc[reverse sort order of results]'
+  '--host[print the host column and show all hosts (otherwise current host)]'
+  '--host[find entries from host x]'
+  '--in[find only entries run in the current dir or below]'
+  '--in[find only entries in directory x or below]'
+  '--at[like --in, but excluding subdirectories]'
+  '-s+[only show session n]'
+  '-d[debug output query that will be run]'
+  '--detail[show details]'
+  '--forget[forget everything which matches in the history]'
+  "--yes[don't ask for confirmation when forgetting]"
+  "--exact[don't match substrings]"
+  "--sep[print with separator x, and don't tabulate]"
+  "--from[only show commands after date x (sqlite date parser)]"
+  "--until[only show commands before date x (sqlite date parser)]"
+  "--limit[only show n rows. defaults to 45 or 25]"
+  "--status[only show rows with exit status x. Can be 'error' to find all nonzero]"
+)
+
+_arguments -s $arguments

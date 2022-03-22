@@ -58,6 +58,7 @@ max_concurrency = 8
 # Custom commands
 [commands]
 #"Python Environment" = "~/dev/.env/bin/pip install -i https://pypi.python.org/simple -U --upgrade-strategy eager jupyter"
+cpan = "sudo /home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/bin/cpan -u"
 
 [brew]
 #greedy_cask = true

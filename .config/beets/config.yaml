@@ -1,7 +1,15 @@
 directory: ~/Music
 library: ~/.config/beets/library.db
 
-plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info duplicates
+plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info duplicates ydl
+
+ydl:
+  download: True # download files from sources after getting information,
+  split_files: True # try to split album files into separate tracks,
+  import: True # import files on youtube-dl after downloading and splitting,
+  # youtubedl_options: {} # youtube-dl available options -- https://git.io/fN0c7
+  # urls:
+  #   [] # list of default urls to download when no arguments are provided, you
 
 fetchart:
   sources: filesystem coverart itunes amazon albumart lastfm google

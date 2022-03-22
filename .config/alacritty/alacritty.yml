@@ -130,6 +130,8 @@ font:
     x: 0
     y: 0
 
+  builtin_box_drawing: true
+
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
@@ -140,7 +142,7 @@ schemes:
       background: '#221a02'
       foreground: '#c2a383'
       bright_foreground: '#f06431'
-      #dim_foreground: '#9a9a9a'
+      # dim_foreground: '#9a9a9a'
 
     # Cursor colors
     #
@@ -189,6 +191,16 @@ schemes:
       end:
         foreground: '#201f1f'
         background: '#f79a32'
+
+  # Line indicator
+  #
+  # Color used for the indicator displaying the position in history during
+  # search and vi mode.
+  #
+  # By default, these will use the opposing primary color.
+  # line_indicator:
+    # foreground: '#dc3958'
+    # background: None
 
     # blue:    '#733e8b'
     normal:

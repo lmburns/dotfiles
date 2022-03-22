@@ -52,6 +52,9 @@ xmodmap -e "add mod4 = Super_L Super_R"
 
 xmodmap -e "keycode any = Escape"
 
+# xmodmap -e "keycode 107 = Sys_Req"
+# xmodmap -e "keycode 110 = Sys_Req"
+
 killall xcape 2>/dev/null ; xcape -e "$mod=Escape"
 
 # setxkbmap -option caps:hyper

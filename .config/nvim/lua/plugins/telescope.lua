@@ -64,7 +64,13 @@ require("telescope").setup {
       url_open_plugin = nil,
       full_path = true,
       firefox_profile_name = nil
-    }
+    },
+    fzf = {
+      fuzzy = true,
+      override_generic_sorter = true,
+      override_file_sorter = true,
+      case_mode = "smart_case",
+    },
   }
 }
 
@@ -73,3 +79,4 @@ require("telescope").setup {
 require('telescope').load_extension('ultisnips')
 require('telescope').load_extension('coc')
 require('telescope').load_extension('bookmarks')
+require('telescope').load_extension('fzf')

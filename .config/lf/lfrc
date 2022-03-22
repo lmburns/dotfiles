@@ -642,6 +642,7 @@ cmd wutag-list !{{
 # ]]] === TAGS ===
 
 cmd fd_edit ${{
+  clear
   files=$(command fd -Hi -tf -d2 .)
   sel=("$(
     print -rl -- "$files[@]" | \
@@ -773,7 +774,7 @@ map as !du -hsx * | sort -rh | bat --paging=always               # directory inf
 map ai !clear; file-info $f  # info
 
 map <c-f> push :rg<space>                           # search with rg
-map <c-z> push :rgu<space>                          # search interactively with fzf
+map F push :rgu<space>                          # search interactively with fzf
 
 map Tk !clear; tokei
 # ]]]
@@ -824,7 +825,7 @@ map rs rmspace
 # == File movement == [[[
 map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
-map fr push :fd<space>--changed-within<space> # use fd to find recent file
+map fr push :fd<space>-d1<space>--changed-within<space> # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit (with preview)
 # map <c-b> broot_jump    # use broot to jump to directory
 map cc fzf_z              # fzf zioxide

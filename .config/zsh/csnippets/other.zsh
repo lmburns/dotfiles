@@ -68,12 +68,13 @@ function man() {
 
 # Find aliases; taken from OMZ
 function alias-finder() {
+  emulate -L zsh
   setopt extendedglob
   local cmd exact longer wordStart wordEnd multiWordEnd
   foreach i ($@) {
     case $i in
-      (-e|--exact) exact=true;;
-      (-l|--longer) longer=true;;
+      (-e|--exact) exact=1;;
+      (-l|--longer) longer=1;;
       (*)
         if [[ -z $cmd ]]; then
           cmd=$i
@@ -85,8 +86,8 @@ function alias-finder() {
   }
   cmd=$(sed 's/[].\|$(){}?+*^[]/\\&/g' <<< $cmd) # adds escaping for grep
   if (( $(wc -l <<< $cmd) == 1 )); then
-    while [[ $cmd != "" ]]; do
-      if [[ $longer = true ]]; then
+    while (( $#cmd )) {
+      if (( longer )); then
         wordStart="'{0,1}"
       else
         wordEnd="$"
@@ -98,12 +99,12 @@ function alias-finder() {
         local finder=$wordStart$cmd$wordEnd
       fi
       print -Prl -- \
-        ${${(@f)"$(alias | grep -E "=$finder")"}/(#b)(*)=(*)/"%F{1}%B$match[1]%f%b=$match[2]"}
-      if [[ $exact = true || $longer = true ]]; then
+        ${${(@f)"$(alias | rg "=$finder")"}/(#b)(*)=(*)/"%F{14}%B$match[1]%f%b=$match[2]"}
+      if (( exact || longer )); then
         break
       else
         cmd=$(sed -E 's/ {0,1}[^ ]*$//' <<< $cmd) # removes last word
       fi
-    done
+    }
   fi
 }

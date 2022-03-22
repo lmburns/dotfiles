@@ -2,16 +2,7 @@
 
 setopt noclobber noglob nounset
 
-IFS="${$(printf '%b_' '\n')%_}"
-
-# Meanings of exit codes:
-# code | meaning    | action of ranger
-# -----+------------+-------------------------------------------
-# 0    | success    | Display stdout as preview
-# 1    | no preview | Display no preview at all
-# 2    | plain text | Display the plain content of the file
-# 3    | fix width  | Don't reload when width changes
-# 4    | fix height | Don't reload when height changes
+# IFS="${$(printf '%b_' '\n')%_}"
 
 # Arguments:
 local FILE_PATH="${1}"         # Full path of the highlighted file
@@ -58,8 +49,6 @@ prev-image() {
       "path=$1" >"$FIFO_UEBERZUG"
   else
     # Handle non-ueberzug
-    # chafa --fill=block --symbols=block --size "$(( WIDTH - 4 ))"x"${HEIGHT}" -- "$1"
-
     case "${MIMETYPE}" in
       (image/*)
         chafa --fill=block --symbols=block --size "$(( WIDTH - 4 ))"x"${HEIGHT}" -- "$1"
@@ -81,8 +70,8 @@ handle_mime() {
     (text/html)
       w3m -dump "${FILE_PATH}" && { dump | trim | fmt -s -w $WIDTH; exit 4; } ;;
     (text/troff)
-      notify-send "okay" "1: $1\n2: $2\n3: $3\n4: $4\n:5: $5"
-      man ./ "${FILE_PATH}" | col -b ;;
+      # color isn't shown
+      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${FILE_PATH}" ;;
     (text/csv)
       cat -- "${FILE_PATH}" | tidy-viewer -n 30 ;;
     (text/* | */xml)
