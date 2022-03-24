@@ -1,0 +1,11 @@
+# Desc: search set items
+
+fset() {
+  local out
+  out=$(fzf <<<${(F)${(@f)"$(set)"}//prompt=*/})
+  [[ -n $out ]] && hck -d '=' -f2<<<$out
+}
+
+fset "$@"
+
+# vim:ft=zsh:

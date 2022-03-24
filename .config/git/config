@@ -145,6 +145,12 @@
   # Auto-add `--autosquash` to `git rebase`
   autoSquash = true
 
+[pretty]
+  l  = * %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  lg = %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  rf = * %C(auto)%h%Creset - %<(10)%C(bold)%gD %Creset- %C(auto)%d %gs %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  y = %C(bold yellow)%h%C(reset) %C(cyan)%s%C(reset) %C(bold magenta)-%C(reset) %ar %C(bold blue)<%an>%C(reset)%C(auto)%d%C(reset)%n
+
 [merge]
   tool = nvim
   conflictstyle = diff3
@@ -226,12 +232,13 @@
   lol = log --graph --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
+  ; lhist = log --pretty=format:"%Cred%h %Cgreen%d | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
   lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-  lgo = log --pretty='format:%h %G? %aN  %s'
-  hist = log --pretty=format:"%h%Cred %ad%Cgreen | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
+  ll   = lp --numstat
+  lll  = lp --patch
   # preferred git log view
-  lg = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(white)%s%C(reset) %C(dim white)-%C(reset) %ar %C(dim white)<%an>%C(reset)%C(auto)%d%C(reset)' --all
-  lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) %C(white)%s%C(reset) %C(dim white)-%C(reset) %ar %C(dim white)<%an>%C(reset)%C(auto)%d%C(reset)%n' --all --stat
+  lg = log --graph --abbrev-commit --decorate --pretty=lg --all
+  lg2 = log --graph --abbrev-commit --decorate --all --stat
   lss = log --show-signature
   # View the log and diff for a commit (previous if no SHA1 provided)
   details = log -n1 -p --format=fuller
@@ -275,6 +282,13 @@
   # Open repository in the browser
   open = "!handlr open $(git remote get-url origin)"
 
+  # Grep history
+  ghist = "!f() { git grep \"$1\" $(git rev-list --all); }; f"
+  ; ghistf = "!f() { git grep \"$1\" $(git rev-list --all -- \"$2\") -- \"$2\"; }; f"
+
+  # wip - save work in progress quickly and ready to push it if necessary
+  wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
+
   whenadded = log --diff-filter=A
 
 [blame "gpg"]
@@ -282,7 +296,7 @@
 
 # ================== THIRD PARTY ==============================
 [delta]
-  features = decorations color-moved hyperlinks
+  features = decorations color-moved # hyperlinks
   # side-by-side unobstrusive-line-numbers
   paging = auto
   max-line-distance = 0.3

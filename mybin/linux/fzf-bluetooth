@@ -17,7 +17,7 @@
 #   Arch repositories: rofi, bluez-utils (contains bluetoothctl)
 
 # colorscheme for fzf
-export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'--color fg:7,bg:-1,hl:6,fg+:6,bg+:-1,hl+:6 --color info:2,prompt:1,spinner:5,pointer:5,marker:3,header:8'
+# export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'--color fg:7,bg:-1,hl:6,fg+:6,bg+:-1,hl+:6 --color info:2,prompt:1,spinner:5,pointer:5,marker:3,header:8'
 
 # Checks if bluetooth controller is powered on
 power_on() {
@@ -280,7 +280,7 @@ show_menu() {
 }
 
 # Rofi command to pipe into, can add any options here
-rofi_command="fzf --reverse --border=horizontal --no-info"   #"rofi -config ~/.config/rofi/old/note.rasi -dmenu -no-fixed-num-lines -yoffset -200 -i -p"
+rofi_command="fzf --reverse --border=rounded --no-info"   #"rofi -config ~/.config/rofi/old/note.rasi -dmenu -no-fixed-num-lines -yoffset -200 -i -p"
 
 case "$1" in
     --status)

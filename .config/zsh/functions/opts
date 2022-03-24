@@ -1,0 +1,187 @@
+typeset -gA zsh_options
+
+zsh_options=(
+aliases              on
+aliasfuncdef         off
+allexport            off
+alwayslastprompt     'unset=completion funcs return to last prompt if numeric arg; set=return to last prompt if no numeric arg'
+alwaystoend          'completion completed in word moves cursor to end of word'
+appendcreate         off
+appendhistory        on
+autocd               'cd if not name of command and directory exists'
+autocontinue         off
+autolist             'automatically list choices on an ambiguous completion'
+automenu             'automatically use menu completion after second request for completion; overridden by MENU_COMPLETE'
+autonamedirs         'any param set to absolute path of directory becomes a named directory'
+autoparamkeys        'if a completion inserts a space and the character typed needs to be directly after, space is removed'
+autoparamslash       'if param completed is a directory, add a slash'
+autopushd            'make cd push the old directory onto the directory stack'
+autoremoveslash      'if slash is added when completing dir and doesn''t need to be, remove it'
+autoresume           off
+badpattern           'if a pattern for filename generation is bad then print error message'
+banghist             on
+bareglobqual         'treat trailing set of of parenthesis as a qualifier list'
+bashautolist         'ambiguous completion automatically list choices when called for twice'
+bashrematch          off
+beep                 off
+bgnice               on
+braceccl             'expand expressions in braces which would''t normally to a lexically sorted list'
+bsdecho              off
+caseglob             'make globbing sensitive to case'
+casematch            'make regex using zsh/regex sensitive to case'
+cbases               off
+cdablevars           'argument to cd doesn''t begin with slash, expand as if preceded with "~"'
+cdsilent             off
+chasedots            'resolve ".." to physical directory with links'
+chaselinks           'resolve symlinks to physical directory; implies CHASE_DOTS'
+checkjobs            on
+checkrunningjobs     on
+clobber              on
+combiningchars       'set=pattern "[[:WORD:]]" matches a zero-width punctuation character'
+completealiases      'prevent aliases from being substituted for completion purposes'
+completeinword       'unset=cursor set to end of word that completion started; set=completion done from both ends'
+continueonerror      off
+correct              off
+correctall           off
+cprecedences         off
+cshjunkiehistory     off
+cshjunkieloops       off
+cshjunkiequotes      off
+cshnullcmd           off
+cshnullglob          'if not matches delete pattern and report no errors; overrides NOMATCH'
+debugbeforecmd       on
+dvorak               off
+emacs                'equivalent of bindkey -e'
+equals               'perform "=" filename expansion'
+errexit              off
+errreturn            off
+evallineno           on
+exec                 on
+extendedglob         'treat "#", "~", "^" as part of patterns'
+extendedhistory      on
+flowcontrol          off
+forcefloat           'all values in arithmetic are treated as floats'
+functionargzero      on
+glob                 'perform filename generation'
+globalexport         on
+globalrcs            on
+globassign           off
+globcomplete         'current word has a glob pattern do not insert all results, but generate matches for completion'
+globdots             'do not require a leading "." for dotfiles'
+globstarshort        off
+globsubst            off
+hashcmds             on
+hashdirs             on
+hashexecutablesonly  off
+hashlistall          'make sure full command is hashed before completion on spelling mistakes'
+histallowclobber     off
+histbeep             on
+histexpiredupsfirst  off
+histfcntllock        on
+histfindnodups       off
+histignorealldups    on
+histignoredups       on
+histignorespace      on
+histlexwords         off
+histnofunctions      off
+histnostore          off
+histreduceblanks     on
+histsavebycopy       on
+histsavenodups       off
+histsubstpattern     off
+histverify           off
+hup                  off
+ignorebraces         off
+ignoreclosebraces    off
+ignoreeof            off
+incappendhistory     on
+incappendhistorytime off
+interactive          'this shell is an interactive shell'
+interactivecomments  'allow for comments on the command line'
+ksharrays            off
+kshautoload          off
+kshglob              off
+kshoptionprint       off
+kshtypeset           off
+kshzerosubscript     off
+listambiguous        'if there is an unambiguous prefix to insert then do so without a menu displayed'
+listbeep             'beep on ambiguous completion'
+listpacked           'make completion list smaller by printing in columns'
+listrowsfirst        'sort completion rows horizontally'
+listtypes            'when completing files show type of each file with identifying trailing mark'
+localloops           off
+localoptions         off
+localpatterns        off
+localtraps           off
+login                'this shell is a login shell'
+longlistjobs         on
+magicequalsubst      off
+mailwarning          off
+markdirs             off
+menucomplete         'when ambiguous completion, insert first match automatically'
+monitor              off
+multibyte            on
+multifuncdef         on
+multios              on
+nomatch              off
+notify               on
+nullglob             off
+numericglobsort      on
+octalzeroes          off
+overstrike           'start up the line editor in overstrike mode'
+pathdirs             off
+pathscript           off
+pipefail             off
+posixaliases         off
+posixargzero         off
+posixbuiltins        off
+posixcd              'more compatible with POSIX, "+/-" have no affect'
+posixidentifiers     off
+posixjobs            off
+posixstrings         off
+posixtraps           off
+printeightbit        off
+printexitvalue       off
+privileged           'enables privileged mode'
+promptbang           off
+promptcr             on
+promptpercent        on
+promptsp             on
+promptsubst          on
+pushdignoredups      'don''t push multiple copies of the same directory onto the directory stack'
+pushdminus           'exchange meaning of "+" and "-" when used with a number to specify a directory in the stack'
+pushdsilent          'do not print the directory stack after pushd or popd'
+pushdtohome          'have pushd with no arguments act like `pushd $HOME'
+rcexpandparam        off
+rcquotes             on
+rcs                  on
+recexact             'if string matches possible completion insert it even if it matches another'
+rematchpcre          off
+restricted           'enables restricted mode'
+rmstarsilent         off
+rmstarwait           off
+sharehistory         on
+shfileexpansion      off
+shglob               off
+shinstdin            'commands are read from stdin'
+shnullcmd            'do not use NULLCMD/READNULLCMD when doing redirections, instead use ":"'
+shoptionletters      'interpret single letter options'
+shortloops           on
+shwordsplit          'field splitting on unquoted params'
+singlecommand        'if reading from stdin it exits after a single command'
+singlelinezle        'use a single line command-line editing instead of multi'
+sourcetrace          off
+sunkeyboardhack      off
+transientrprompt     off
+trapsasync           'while waiting for a program to exit, handle signals and run traps immediately'
+typesetsilent        off
+unset                on
+verbose              off
+vi                   'equivalent of bindkey -v'
+warncreateglobal     off
+warnnestedvar        off
+xtrace               off
+zle                  'use the zsh line editor'
+)
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

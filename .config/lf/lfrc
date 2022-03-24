@@ -528,22 +528,31 @@ cmd ndel-bookmark ${{
 
 # -- Jump: wfxr plugin
 cmd jumpi ${{
+  clear
+  local field esc N R G Y B pattern PTH
+  local -a bmark_dirs
   field='\(\S\+\s*\)'
-  esc=$(printf '\033')
+  esc=$'\e'
   N="${esc}[0m"
   R="${esc}[31m"
   G="${esc}[32m"
   Y="${esc}[33m"
   B="${esc}[34m"
   pattern="s#^${field}${field}${field}${field}#$Y\1$R\2$N\3$B\4$N#"
-  PTH=$(sed 's#: # -> #' "$PATHMARKS_FILE"| nl| column -t \
-  | gsed "${pattern}" \
-  | fzf --ansi \
-      --height '40%' \
-      --preview="echo {} | sed 's#.*->  ##' | xargs exa --color=always" \
-      --preview-window="right:50%" \
-  | sed 's#.*->  ##')
-  [[ -d "$PTH" ]] && lf -remote "send $id cd \"$PTH\""
+
+  [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
+    PTH=$(\
+      dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases' \
+        | perl -pe 's{ = }{ → }; s/"//g' | nl | column -t \
+        | sed "${pattern}" \
+        | fzf --ansi \
+            --height '40%' \
+            --preview='\
+              f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+            --preview-window="right:50%" \
+        | sed 's#.*→  ##')
+    [[ -d "$PTH" ]] && lf -remote "send $id cd \"$PTH\""
+  }
 }}
 
 # -- Symlink: cd follow
@@ -772,6 +781,8 @@ map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
 map as !du -hsx * | sort -rh | bat --paging=always               # directory info
 map ai !clear; file-info $f  # info
+map ad usage                                  # get disk information
+map aI $dua i
 
 map <c-f> push :rg<space>                           # search with rg
 map F push :rgu<space>                          # search interactively with fzf
@@ -833,7 +844,6 @@ map ci jumpi              # wfxr plugin
 map cJ njump              # lf specifc - jump bookmark
 map cB nbookmark          # lf specifc - add bookmark
 map cD ndel-bookmark      # lf specifc - del bookmark
-map zi zoxide_i           # zoxide interactive
 map w fzf_cd              # fzf cd
 map Ma $neomutt -a "$fx"  # mail a file
 # ]]]
@@ -885,9 +895,6 @@ map sp :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
 map sP :{{ set preview;   set ratios 1:2; }}     # set display (no preview)
 map sR :{{ set reverse!; }}                      # reverse file order
 map sN :{{ set sortby natural; set info size; }} # revert back to normal
-
-map <c-u> usage                                  # get disk information
-map <c-s> $dua i
 # ]]]
 
 # == Shell == [[[

@@ -1,0 +1,18 @@
+# Desc: list files before a date
+
+function lsbefore() {
+  emulate -L zsh -o extendedglob
+  autoload -RUz before
+
+  if [[ ${(z)1} = -h || $# -eq 0 ]]  {
+    print -P -- "%F{1}before%f 2014/08/01\n%F{1}before%f today:12:00" && return 1
+  }
+
+  (( $# > 1 )) && {
+    exa -Fhbd --git --icons ${(z)@[1,-2]} -- *(e-before ${@[-1]}-N)
+  } || exa -Fhbd --git --icons -- *(e-before ${1}-N)
+}
+
+lsbefore "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

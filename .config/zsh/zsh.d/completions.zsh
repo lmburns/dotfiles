@@ -88,17 +88,17 @@ zstyle+ ':completion'        ''          ''                                     
 
 zstyle '*' single-ignored show # don't insert single value
 
-zstyle -e ':completion:*' completer '
-  if [[ $_last_try != "$HISTNO$BUFFER$CURSOR" ]] ; then
-    _last_try="$HISTNO$BUFFER$CURSOR"
-    reply=(_expand_alias _complete _extensions _match _prefix _files)
-  elif [[ $words[1] == (rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim) ]] ; then
-    reply=(_complete _files)
-  else
-    reply=(_oldlist _expand _force_rehash _complete _ignored _correct _approximate _files)
-    # reply=(_complete _ignored _correct _approximate)
-  fi'
-# + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
+# zstyle -e ':completion:*' completer '
+#   if [[ $_last_try != "$HISTNO$BUFFER$CURSOR" ]] ; then
+#     _last_try="$HISTNO$BUFFER$CURSOR"
+#     reply=(_expand_alias _complete _extensions _match _prefix _files)
+#   elif [[ $words[1] == (rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim) ]] ; then
+#     reply=(_complete _files)
+#   else
+#     reply=(_complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist)
+#     # reply=(_oldlist _expand _force_rehash _complete _ignored _correct _approximate _files)
+#     # reply=(_complete _ignored _correct _approximate)
+#   fi'
 
 # + ''                show-completer = debugging
 # + ''                accept-exact '*(N)' \
@@ -109,6 +109,7 @@ zstyle -e ':completion:*' completer '
 
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                list-grouped true \
+      + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                special-dirs false \
       + ':(^systemctl):*' group-name '' \
       + ''                file-sort access \
@@ -272,11 +273,11 @@ zstyle+ \
     + ':(exa|cd):*'              popup-pad 30 0 \
     + ':(exa|cd|cdr|cd_):*'      fzf-flags '--preview-window=nohidden,right:45%:wrap' \
     + ':(exa|cd|cd_):*' \
-          fzf-preview '[[ -d $realpath ]] && exa -T --color=always $(readlink -f $realpath)' \
+          fzf-preview '[[ -d $realpath ]] && bkt -- exa -TL 4 --color=always $(readlink -f $realpath)' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-preview 'r=$(readlink -f $realpath); w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --color=always --terminal-width=$w -- $r) \
-                        || ([[ -d $r ]] && ls --color=always -- $r)' \
+                        || ([[ -d $r ]] && bkt -- ls --color=always -- $r)' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'

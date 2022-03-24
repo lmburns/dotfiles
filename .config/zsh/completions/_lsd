@@ -1,0 +1,44 @@
+#compdef lsd
+
+# zsh completions for 'lsd'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--all}'[do not ignore entries starting with .]'
+  {-A,--almost-all}'[do not list implied . and ..]'
+  '--classic[enable classic mode (display output similar to ls)]'
+  {-L,--dereference}'[when showing file information for a symbolic link, show information for the file the link references rather than for the link]'
+  {-d,--directory-only}'[display directories themselves, and not their contents (recursively when used with --tree)]'
+  {-X,--extensionsort}'[sort by file extension]'
+  '--help[prints help information]'
+  {-h,--human-readable}'[for ls compatibility purposes ONLY, currently set by default]'
+  '--ignore-config[ignore the configuration file]'
+  {-F,--classify}'[append indicator (one of */=>@|) at the end of the file names]'
+  {-i,--inode}'[display the index number of each file]'
+  {-l,--long}'[display extended file metadata as a table]'
+  '--no-symlink[do not display symlink target]'
+  {-1,--oneline}'[display one entry per line]'
+  {-R,--recursive}'[recurse into directories]'
+  {-r,--reverse}'[reverse the order of the sort]'
+  {-S,--sizesort}'[sort by size]'
+  {-t,--timesort}'[sort by time modified]'
+  '--total-size[display the total size of directories]'
+  '--tree[recurse into directories and present the result as a tree]'
+  {-V,--version}'[prints version information]'
+  {-v,--versionsort}'[natural sort of (version) numbers within text]'
+  '--blocks[...            Specify the blocks that will be displayed and in what order \[possible values: permission, user, group, size, date]'
+  '--color[...              When to use terminal colours \[default: auto\]  \[possible values: always, auto, never\]]'
+  '--config-file[provide a custom lsd configuration file]'
+  '--date[...                How to display date \[possible values: date, relative, +date-time-format\] \[default: date\]]'
+  '--depth[...                Stop recursing into directories after reaching specified depth]'
+  '--group-dirs[...    Sort the directories then the files \[possible values: none, first, last\]]'
+  '--icon[...                When to print the icons \[default: auto\]  \[possible values: always, auto, never\]]'
+  '--icon-theme[...    Whether to use fancy or unicode icons \[default: fancy\]  \[possible values: fancy, unicode\]]'
+  {-I,--ignore-glob}'[...      Do not display files/directories with names matching the glob pattern(s). More than one can be specified by repeating]'
+  '--size[...                How to display size \[default: default\]  \[possible values: default, short, bytes\]]'
+  '--sort[...                sort by WORD instead of name \[possible values: size, time, version, extension\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

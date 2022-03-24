@@ -1,4 +1,7 @@
 git:
   paging:
     colorArg: always
-    pager: delta --dark --paging=never --24-bit-color=never
+    # Width does not work
+    pager: delta --dark --paging=never --24-bit-color=never --width $COLUMNS
+    # pager: diff-so-fancy
+    # useConfig: true

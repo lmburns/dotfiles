@@ -1,0 +1,15 @@
+# Desc: list processes likely to be killed first when memory is short
+
+foreach proc in /proc/<->#(N/)
+  printf "$fg_bold[blue]%2d$reset_color %5d %s\n" \
+      $(<$proc/oom_score) \
+      ${proc:t} \
+      ${"$(<$proc/cmdline)"[1,80]}
+end | sort -nr | head -n ${1:-15}
+
+(( $+commands[oomctl] )) && {
+  print
+  oomctl dump
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -1,0 +1,14 @@
+# Desc: cd to a directory file is in
+
+local files
+files=$(locate -Ai -0 $@ | grep -z -vE '~$' | fzf --read0 -0 -1 -m)
+
+[[ -n $file ]] && {
+  if [[ -d "$file" ]]; then
+    builtin cd -- "$file"
+  else
+    builtin cd -- "${file:h}"
+  fi
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

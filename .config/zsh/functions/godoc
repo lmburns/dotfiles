@@ -1,0 +1,5 @@
+# Desc: colorize go docs
+
+go doc "${(z)@}" | bat -l go
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

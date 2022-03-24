@@ -56,7 +56,7 @@
   set expandtab softtabstop=2 smartindent
   set ignorecase smartcase
   set number
-  set relativenumber
+  " set relativenumber
   set nostartofline
   set linebreak
   set wrap
@@ -657,44 +657,54 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
-    set tags=tags
-    set tags+=~/.config/nvim/cpp_src/tags
-    let g:gutentags_modules = ['ctags']
-    let g:gutentags_cache_dir = expand('~/.cache/tags')
-    let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
-    let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
-    let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-    let g:gutentags_ctags_tagfile = '.tags'
-    let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
-    let g:gutentags_generate_on_new = 1
-    let g:gutentags_generate_on_missing = 1
-    let g:gutentags_generate_on_write = 1
-    let g:gutentags_generate_on_empty_buffer = 0
-    let g:gutentags_file_list_command = 'rg --files'
-    " let g:gutentags_define_advanced_commands = 1
-    let g:gutentags_ctags_exclude = [
-      \  '*.git', '*.svn', '*.hg',
-      \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components', 'target',
-      \  '*-lock.json',  '*.lock',
-      \  '*.min.*',
-      \  '*.bak',
-      \  '*.zip',
-      \  '*.pyc',
-      \  '*.class',
-      \  '*.sln',
-      \  '*.csproj', '*.csproj.user',
-      \  '*.tmp',
-      \  '*.cache',
-      \  '*.vscode',
-      \  '*.pdb',
-      \  '*.exe', '*.dll', '*.bin',
-      \  '*.mp3', '*.ogg', '*.flac',
-      \  '*.swp', '*.swo',
-      \  '.DS_Store', '*.plist',
-      \  '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png', '*.svg',
-      \  '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
-      \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
-      \]
+  set tags=tags
+  set tags+=~/.config/nvim/cpp_src/tags
+  let g:gutentags_modules = ['ctags']
+  let g:gutentags_cache_dir = expand('~/.cache/tags')
+  let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
+  let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+  let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+  let g:gutentags_ctags_tagfile = '.tags'
+  let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
+  let g:gutentags_generate_on_new = 1
+  let g:gutentags_generate_on_missing = 1
+  let g:gutentags_generate_on_write = 1
+  let g:gutentags_generate_on_empty_buffer = 0
+  let g:gutentags_file_list_command = 'rg --files'
+
+  " Disable connecting gtags database automatically (gutentags_plus will handle the database connection)
+  let g:gutentags_auto_add_gtags_cscope = 0
+  " Disable default maps
+  let g:gutentags_plus_nomap = 1
+
+  " let g:gutentags_define_advanced_commands = 1
+  let g:gutentags_ctags_exclude = [
+    \  '*.git', '*.svn', '*.hg',
+    \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components', 'target',
+    \  '*-lock.json',  '*.lock',
+    \  '*.min.*',
+    \  '*.bak',
+    \  '*.zip',
+    \  '*.pyc',
+    \  '*.class',
+    \  '*.sln',
+    \  '*.csproj', '*.csproj.user',
+    \  '*.tmp',
+    \  '*.cache',
+    \  '*.vscode',
+    \  '*.pdb',
+    \  '*.exe', '*.dll', '*.bin',
+    \  '*.mp3', '*.ogg', '*.flac',
+    \  '*.swp', '*.swo',
+    \  '.DS_Store', '*.plist',
+    \  '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png', '*.svg',
+    \  '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+    \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
+    \]
+
+  if executable('gtags-cscope') && executable('gtags')
+    let g:gutentags_modules += ['gtags_cscope'] "'cscopeprg' will be set to gtags-cscope
+  endif
 
   function! s:SetupCTags()
     let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']
@@ -728,7 +738,12 @@ Plug 'liuchengxu/vista.vim'
 
   nmap <A-\> :Vista finder coc<CR>
   nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
+  " nmap <A-]> :<C-u>CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%'<CR>
   nmap <A-[> :CocCommand fzf-preview.VistaCtags<CR>
+
+  nmap <silent> <Leader>T  :Tags<CR>
+  nmap <silent> <A-t> :BTags<CR>
+  nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
   " nmap <C-S-\> :CocCommand fzf-preview.VistaCtags<CR>
   let g:vista_fzf_preview = ['down:50%']
   let g:vista_fzf_opt = ['--no-border']
@@ -902,9 +917,7 @@ Plug 'tpope/vim-fugitive'
 " }}} === git ===
 
 " ============== UndoTree ============== {{{
-Plug 'mbbill/undotree'
-  nnoremap <Leader>ut :UndotreeToggle<CR>
-
+  Plug 'mbbill/undotree', { 'on':  'UndotreeToggle' } | nnoremap <Leader>ut :UndotreeToggle<CR>
   let g:undotree_RelativeTimestamp = 1
   let g:undotree_ShortIndicators = 1
   let g:undotree_HelpLine = 0
@@ -948,11 +961,12 @@ Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lock
 " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
 Plug 'antoinemadec/coc-fzf'
   " prettier command for coc
-  command! -nargs=0 CocMarket :CocList marketplace
+  command! -nargs=0 CocMarket :CocFzfList marketplace
   command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
   " nnoremap <silent> <A-'>  :<C-u>CocList yank<CR>
   nnoremap <silent> <A-'> :CocFzfList yank<CR>
+  nnoremap <silent> <A-;> :Telescope neoclip<CR>
 
   nnoremap <LocalLeader>c :Telescope coc<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
@@ -965,7 +979,7 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <C-x><C-]> :CocCommand fzf-preview.CocImplementations<CR>
   nnoremap <C-x><C-h> :CocCommand fzf-preview.CocDiagnostics<CR>
   " This seems to only do current buffer
-  nnoremap <C-x><h> :Telescope coc diagnostics<CR>
+  nnoremap <C-x>h :Telescope coc diagnostics<CR>
 
   " TODO: Use more!
   " remap for do codeAction of current line
@@ -1017,9 +1031,10 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-lua',
     \ 'coc-tsserver',
     \ 'coc-zig',
-    \ 'coc-dlang'
+    \ 'coc-dlang',
     \ ]
 
+    " \ 'coc-clojure',
     " \ 'coc-nginx',
     " \ 'coc-toml',
 
@@ -1040,14 +1055,6 @@ Plug 'antoinemadec/coc-fzf'
       \   },
       \ }
 
-  nmap <silent> <Leader>ee :CocCommand explorer<CR>
-  " nmap <silent> <Leader>ec :CocCommand explorer --preset config<CR>
-  nmap <silent> <Leader>ep :CocCommand explorer --preset projects<CR>
-  nmap <silent> <Leader>eg :CocCommand explorer --preset github<CR>
-  nmap <silent> <Leader>eo :CocCommand explorer --preset opt<CR>
-  nmap <silent> <Leader>ex :CocCommand explorer
-  nmap <silent> <Leader>el :CocList explPresets<CR>
-
   " use `[g` and `]g` to navigate diagnostics
   nmap <silent> [g <Plug>(coc-diagnostic-prev)
   nmap <silent> ]g <Plug>(coc-diagnostic-next)
@@ -1056,10 +1063,10 @@ Plug 'antoinemadec/coc-fzf'
   " nmap <silent> (g :call CocAction('diagnosticPrevious')<CR>
 
   " goto code navigation
-  " nmap <silent> gd <Plug>(coc-definition)
-  " nmap <silent> gy <Plug>(coc-type-definition)
-  " nmap <silent> gi <Plug>(coc-implementation)
-  " nmap <silent> gr <Plug>(coc-references)
+  nmap <silent> gd <Plug>(coc-definition)
+  nmap <silent> gy <Plug>(coc-type-definition)
+  nmap <silent> gi <Plug>(coc-implementation)
+  nmap <silent> gr <Plug>(coc-references)
 
   " remap for rename current word
   nmap <Leader>rn <Plug>(coc-rename)
@@ -1185,6 +1192,7 @@ endfunction
 Plug 'sbdchd/neoformat'
 let g:neoformat_basic_format_retab = 1
 let g:neoformat_basic_format_trim = 1
+let g:neoformat_basic_format_align = 1
 
 " lua require('neoscroll').setup()
 
@@ -1201,6 +1209,20 @@ let g:neoformat_basic_format_trim = 1
       autocmd FileType zsh        nmap ;ff :Neoformat  expand<CR>
   augroup end
 " }}} === formatting ===
+
+" ============= targets ============== {{{
+Plug 'wellle/targets.vim'
+  " Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
+  " vI) = contents inside pair
+  " vAa = around alignment
+  " in( an( In( An( il( al( Il( Al( ... next and last pair
+  augroup define_object
+    autocmd User targets#mappings#user call targets#mappings#extend({
+          \ 'a': {'argument': [{'o':'(', 'c':')', 's': ','}]}
+          \ })
+  augroup END
+
+" }}} === targets ===
 
 " ============== nvim-r ============== {{{
 " FIX: This buffer is cleared
@@ -1453,6 +1475,25 @@ Plug 'plasticboy/vim-markdown'
   let g:vim_markdown_follow_anchor = 1
 "}}} === vim-markdown ===
 
+" =================== clojure ================ {{{ "
+" TODO: Use or delete
+" Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
+" Plug 'tpope/vim-fireplace',     { 'for': 'clojure' }
+" Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
+" Plug 'luochen1990/rainbow',     { 'for': 'clojure' }
+" let g:rainbow_active = 1
+" " Plug 'venantius/vim-cljfmt', { 'for': 'clojure' }
+" " Plug 'junegunn/rainbow_parentheses.vim'
+" augroup clojure_env
+"     autocmd!
+"     autocmd FileType clojure
+"         \ nmap <buffer> <silent> <c-l> <leader>>|
+"         \ nmap <buffer> <silent> <c-h> <leader><|
+"         \ silent! nunmap <c-l><c-l>|
+"         \ silent! nunmap <c-h><c-h>
+" augroup END
+" }}} === clojure === "
+
 " ============== vim-table-mode ============== {{{
 Plug 'dhruvasagar/vim-table-mode', { 'for': 'markdown' }
   " let g:table_mode_corner_corner='+'
@@ -1565,6 +1606,10 @@ Plug 'honza/vim-snippets'
   let g:UltiSnipsListSnippets="<C-u>"
   let g:UltiSnipsEditSplit='horizontal'
   " autocmd Filetype snippet set shiftwidth=4
+
+Plug 'vim-scripts/RltvNmbr.vim'
+nmap <Leader>rl :RltvNmbr<CR>
+
 " }}} ==== UltiSnips ===
 
 " ============== Vim Wiki ============== {{{
@@ -1585,6 +1630,9 @@ Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
+Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
+Plug 'jamessan/vim-gnupg'
+
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'RRethy/nvim-treesitter-endwise'
 Plug 'nvim-treesitter/playground'
@@ -1592,9 +1640,24 @@ Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 "}}} === Syntax Highlighting ===
 
 " ============= telescope ============= {{{
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+
+Plug 'nvim-telescope/telescope-frecency.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'fhill2/telescope-ultisnips.nvim'
+Plug 'fannheyward/telescope-coc.nvim'
 Plug 'dhruvmanila/telescope-bookmarks.nvim'
+Plug 'AckslD/nvim-neoclip.lua'
 Plug 'tami5/sqlite.lua'
+
+" Plug 'numToStr/Comment.nvim'
+Plug 'sindrets/diffview.nvim'
+Plug 'lewis6991/gitsigns.nvim'
+Plug 'folke/todo-comments.nvim'
+Plug 'Pocco81/HighStr.nvim'
+" Plug 'folke/which-key.nvim'
 
   " nnoremap <space>o <cmd>Telescope find_files<cr>
   " nnoremap <space>p <cmd>Telescope git_files<cr>
@@ -1623,6 +1686,8 @@ Plug 'wfxr/minimap.vim'
 " }}} === minimap ===
 
 " ============== FZF & Ripgrep ============== {{{
+" Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
+" Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   command! -bang Colors
     \ call fzf#vim#colors(g:fzf_vim_opts, <bang>0)
@@ -1712,6 +1777,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
     \ 'sink':   function('s:plug_help_sink')}))
 
   " TODO: Make like macho
+  " nmap ... :Telescope man_pages
   command! -nargs=? Apropos call fzf#run(fzf#wrap({
       \ 'source': 'apropos '
           \ . (len(<q-args>) > 0 ? shellescape(<q-args>) : ".")
@@ -1804,21 +1870,26 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
 
   nmap <silent> <Leader>C  :CocCommand fzf-preview.Changes<CR>
 
+  " == Lines
   " nmap <silent> <Leader>;  :BLines<CR>
   " nmap <silent> <Leader>;  :CocCommand fzf-preview.BufferLines<CR>
-  " nmap <silent> <Leader>;  :CocCommand fzf-preview.Lines<CR>
-  nmap ;r :Telescope live_grep theme=get_ivy<CR>
+  nmap <silent> <LocalLeader>;  :CocCommand fzf-preview.Lines<CR>
   nmap <Leader>; :Telescope current_buffer_fuzzy_find<CR>
-  nmap <Leader>rg :RG<CR>
 
-  " nmap <silent> ,f  :Files<CR>
-  nmap <silent> <LocalLeader>f  :CocCommand fzf-preview.ProjectFiles<CR>
+  " == Grep
+  nmap ;r :Telescope live_grep theme=get_ivy<CR>
+  nmap <LocalLeader>r :RG<CR>
+
+  " == Files
+  nmap <silent> <A-f>  :Files<CR>
+  nmap <silent> <LocalLeader>d  :CocCommand fzf-preview.ProjectFiles<CR>
   " nmap <silent> ,d  :CocCommand fzf-preview.DirectoryFiles<CR>
   " nmap <silent> <LocalLeader>r  :CocCommand fzf-preview.MruFiles<CR>
   nmap <silent> <LocalLeader>g  :CocCommand fzf-preview.GitFiles<CR>
   nnoremap ;fd <cmd>Telescope fd<CR>
-  nmap <A-f> :Telescope find_files<CR>
-  nmap <A-.> :Telescope oldfiles<CR>
+  nmap <LocalLeader>f :Telescope find_files<CR>
+  nmap <A-.> :Telescope frecency<CR>
+  " nmap <A-.> :Telescope oldfiles<CR>
   nmap ;g :Telescope git_files<CR>
 
   " nmap <silent> <LocalLeader>T  :CocCommand fzf-preview.TodoComments<CR>
@@ -1829,7 +1900,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   nmap <silent> <Leader>hc :Telescope command_history<CR>
   nmap <silent> <Leader>hf :History<CR>
   " nmap <silent> <Leader>hh :History/<CR>
-  nmap <silent> <Leader>hh :Telescope search_history<CR>
+  nmap <silent> <Leader>hs :Telescope search_history<CR>
 
   nmap <Leader>cs :Telescope colorscheme<CR>
   " nmap <silent> <Leader>cs :Colors<CR>
@@ -1842,9 +1913,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   nmap <silent> <Leader>ls :LS<CR>
   nmap <silent> <Leader>cm :Commands<CR>
   nmap <silent> <Leader>ht :Helptags<CR>
-  nmap <silent> <Leader>T  :Tags<CR>
-  nmap <silent> <a-t> :BTags<CR>
-  nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
 
   " nmap <silent> <Leader>mk :Marks<CR>
   nmap <silent> <m-/>  :CocCommand fzf-preview.Marks<CR>
@@ -1852,8 +1920,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   nmap <Leader>mfd :delm! | delm A-Z0-9<CR>
   nmap <Leader>mld :delmarks a-z<CR>
 
+  " nmap <silent> <Leader>mm :Maps<CR>
   nnoremap ;k <cmd>Telescope keymaps<CR>
-  nmap <silent> <Leader>mm :Maps<CR>
   nmap <C-l>m <plug>(fzf-maps-n)
   xmap <C-l>m <plug>(fzf-maps-x)
   imap <C-l>m <plug>(fzf-maps-i)
@@ -1878,12 +1946,13 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   let g:fzf_buffers_jump = 1
   let g:fzf_action = {
     \ 'ctrl-t': 'tab split',
-    \ 'ctrl-x': 'split',
-    \ 'ctrl-v': 'vsplit',
     \ 'ctrl-m': 'edit',
+    \ 'alt-v':  'vsplit',
+    \ 'alt-t':  'nabnew',
+    \ 'alt-x':  'split',
     \}
 
-  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'kimbie'
+  let $FZF_PREVIEW_PREVIEW_BAT_THEME = 'kimbro'
   let g:fzf_preview_use_dev_icons = 1
   let g:fzf_preview_dev_icon_prefix_string_length = 3
   let g:fzf_preview_dev_icons_limit = 2000
@@ -1893,24 +1962,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
     \ '--preview-window': 'wrap' ,
     \}
 " }}} === FZF & Ripgrep ===
-
-  " Plug 'vifm/vifm.vim'
-  " Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
-  " Plug 'yuki-yano/fzf-preview.vim', { 'branch': 'release/rpc' }
-
-  " Plug 'numToStr/Comment.nvim'
-  " Plug 'sindrets/diffview.nvim'
-  Plug 'nvim-lua/popup.nvim'
-  Plug 'nvim-lua/plenary.nvim'
-  Plug 'lewis6991/gitsigns.nvim'
-  Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
-  Plug 'fhill2/telescope-ultisnips.nvim'
-  Plug 'fannheyward/telescope-coc.nvim'
-  Plug 'folke/todo-comments.nvim'
-  Plug 'Pocco81/HighStr.nvim'
-  " Plug 'folke/which-key.nvim'
-
-  Plug 'jamessan/vim-gnupg'
 
   " HTML/CSS
   Plug 'alvan/vim-closetag'
@@ -2207,7 +2258,6 @@ call plug#end()
   " make cut not go to clipboard
   nnoremap x "_x
   " reselect the text that has just been pasted
-  " noremap gV `[v`]
   nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
   " select characters of line (no new line)
   nnoremap vv ^vg_
@@ -2215,6 +2265,9 @@ call plug#end()
   vnoremap y ygv<Esc>
   " insert a space after current character
   " nnoremap <Leader>sa a<Space><ESC>h
+
+  " paste over selected text
+  xnoremap p "_c<Esc>p
 
   " adds a space to left of cursor
   nnoremap <silent> zl i <Esc>l
@@ -2289,14 +2342,22 @@ call plug#end()
   " change tabs
   nnoremap <Leader>nt :setlocal noexpandtab<CR>
   xnoremap <Leader>re :retab!<CR>
-  " close quickfix
+  " close quickfix  TODO: delete one
   nnoremap <Leader>cc :cclose<CR>
+  nnoremap <silent> \q :call toggle#ToggleQuickFix()<CR>
+  nnoremap <silent> \l :call toggle#ToggleLocationList()<CR>
 
-  " :%s/<1b>\[[0-9;]*m//g                       " replace ANSI color codes
+  " keep focused in center of screen when searching
+  nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
+  nnoremap <expr> N (v:searchforward ? 'Nzzzv' : 'nzzzv')
 
-  " shellcheck
-  nnoremap <Leader>sC :!shellcheck -x %<CR>
-  nnoremap <F1> :!./%<CR>
+  " insert a place holder
+  inoremap ,p <++>
+
+  " jump to the next '<++>' and edit it
+  nnoremap <silent> <Leader>fe <Esc>/<++><CR>:nohlsearch<CR>c4l
+  nnoremap <silent> <Leader>fi <Esc>/<++><CR>:nohlsearch<CR>
+  inoremap <silent> ;f <Esc>/<++><CR>:nohlsearch<CR>"_c4l
   " }}} === General Mappings ===
 
 " ============== docs ============== {{{
@@ -2400,26 +2461,12 @@ call plug#end()
   augroup END
 
   " Toggle between {non,}relative numbers
-  augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif
-    autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif
-  augroup END
+  " augroup numbertoggle
+  "   autocmd!
+  "   autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif
+  "   autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif
+  " augroup END
 
-  " E: create file with subdirectories if needed {{{
-  function s:MKDir(...)
-    if !a:0
-      \|| stridx('`+', a:1[0])!=-1
-      \|| a:1=~#'\v\\@<![ *?[%#]'
-      \|| isdirectory(a:1)
-      \|| filereadable(a:1)
-      \|| isdirectory(fnamemodify(a:1, ':p:h'))
-      return
-    endif
-    return mkdir(fnamemodify(a:1, ':p:h'), 'p')
-  endfunction
-
-  command -bang -bar -nargs=? -complete=file EE :call s:MKDir(<f-args>) | e<bang> <args>
   " }}}
 
   " automatically reload buffer if changed outside current buffer
@@ -2447,34 +2494,103 @@ call plug#end()
       au!
       au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
   augroup END
+
+  " Sources neovim first
+  command! PluginUpdate source $VIMRC | :PlugUpdate
+  command! PluginClean  source $VIMRC | :PlugClean
   " }}}
 
   " ============== wilder.nvim ============== {{{ "
+  function! s:shouldDisable(x)
+    let l:cmd = wilder#cmdline#parse(a:x).cmd
+    return l:cmd ==# 'Man' || a:x =~# 'Git fetch origin '
+  endfunction
+
   call wilder#enable_cmdline_enter()
   set wildcharm=<Tab>
   cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
   cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
-  call wilder#set_option('modes', ['/', '?', ':'])
 
-  call wilder#set_option('renderer', wilder#popupmenu_renderer({
-              \ 'highlighter': wilder#basic_highlighter(),
-              \ 'left': [
-              \   wilder#popupmenu_devicons(),
-              \ ],
-              \ }))
+  call wilder#setup({
+      \ 'modes': [':', '/', '?'],
+      \ 'next_key': '<Tab>',
+      \ 'previous_key': '<S-Tab>',
+      \ 'accept_key': '<A-,>',
+      \ 'reject_key': '<A-.>',
+      \ })
+
+  " call wilder#set_option('modes', ['/', '?', ':'])
+  " call wilder#set_option('renderer', wilder#popupmenu_renderer({
+  "             \ 'highlighter': wilder#basic_highlighter(),
+  "             \ 'left': [
+  "             \   wilder#popupmenu_devicons(),
+  "             \ ],
+  "             \ }))
+  " call wilder#set_option('pipeline', [
+  "             \   wilder#branch(
+  "             \     wilder#cmdline_pipeline({
+  "             \       'language': 'python',
+  "             \       'fuzzy': 1,
+  "             \     }),
+  "             \     wilder#python_search_pipeline({
+  "             \       'pattern': wilder#python_fuzzy_pattern(),
+  "             \       'sorter': wilder#python_difflib_sorter(),
+  "             \       'engine': 're',
+  "             \     }),
+  "             \   ),
+  "             \ ])
+
+  call wilder#set_option('renderer', wilder#renderer_mux({
+        \ ':': wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
+        \   'highlighter': wilder#basic_highlighter(),
+        \   'border': 'rounded',
+        \   'max_height': 15,
+        \   'highlights': {
+        \     'border': 'Normal',
+        \     'default': 'Normal',
+        \     'accent': wilder#make_hl(
+        \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#A06469'}]),
+        \   },
+        \   'left': [
+        \     ' ', wilder#popupmenu_devicons(),
+        \   ],
+        \   'right': [
+        \     ' ', wilder#popupmenu_scrollbar(),
+        \   ],
+        \ })),
+        \
+        \ '/': wilder#wildmenu_renderer({
+        \   'highlighter': wilder#basic_highlighter(),
+        \   'highlights': {
+        \     'accent': wilder#make_hl(
+        \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#A06469'}]),
+        \   },
+        \ }),
+        \ }))
+
   call wilder#set_option('pipeline', [
-              \   wilder#branch(
-              \     wilder#cmdline_pipeline({
-              \       'language': 'python',
-              \       'fuzzy': 1,
-              \     }),
-              \     wilder#python_search_pipeline({
-              \       'pattern': wilder#python_fuzzy_pattern(),
-              \       'sorter': wilder#python_difflib_sorter(),
-              \       'engine': 're',
-              \     }),
-              \   ),
-              \ ])
+             \  wilder#branch(
+             \    [
+             \      wilder#check({-> getcmdtype() ==# ':'}),
+             \      {ctx, x -> s:shouldDisable(x) ? v:true : v:false},
+             \    ],
+             \    wilder#python_file_finder_pipeline({
+             \      'file_command': {_, arg -> arg[0] ==# '.' ? ['rg', '--files', '--hidden'] : ['rg', '--files']},
+             \      'dir_command':  {_, arg -> arg[0] ==# '.' ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+             \      'filters': ['fuzzy_filter', 'difflib_sorter'],
+             \    }),
+             \    wilder#cmdline_pipeline({
+             \      'language': 'python',
+             \      'fuzzy': 1,
+             \      'set_pcre2_pattern': 1,
+             \    }),
+             \    wilder#python_search_pipeline({
+             \      'pattern': wilder#python_fuzzy_pattern(),
+             \      'sorter': wilder#python_difflib_sorter(),
+             \      'engine': 're',
+             \    }),
+             \   ),
+             \ ])
  " }}} === wilder ===
 
   " ============== colorizer ============== {{{ "
@@ -2594,31 +2710,16 @@ command! Fcman :call s:FullCppMan()
   tnoremap :q! <C-\><C-n>:q!<CR>
 " }}} === Default Terminal ===
 
-" ==================== Neogit ==================== {{{
-lua <<EOF
--- require('neogit').setup {}
-EOF
-" }}} === Neogit ===
 
-" ================== TreeSitter ================== {{{
-lua require('plugins/tree-sitter')
-" }}} === TreeSitter ===
-
-" ================== WhichKey ================== {{{
+" ===================== Lua ====================== {{{
 " lua require('plugins/which-key')
-" }}} === WhichKey ===
-
-" ================== GitSigns ================== {{{
-lua require('plugins/git-signs')
-" GitSigns
-
-" =================== Comment =================== {{{
 " lua require('plugins/comment')
-" }}} === Comment ===
-
-" ================== Telescope ================== {{{
+lua require('utils')
+lua require('plugins/tree-sitter')
+lua require('plugins/diffview')
+lua require('plugins/git-signs')
 lua require('plugins/telescope')
-" }}} === Telescope ===
+" }}} === Lua ===
 
 highlight TelescopeSelection      guifg=#FF9500 gui=bold
 highlight TelescopeSelectionCaret guifg=#819C3B

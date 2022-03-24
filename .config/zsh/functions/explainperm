@@ -1,0 +1,19 @@
+# Desc: convert letter permissions to octal
+
+local -a permission=( ${(@s::)${_PMS:-"rwxrwxrwx"}} )
+local -a binary=()
+
+for i in ${(s::)1}; do
+  binary+=( ${(s::)${(l:3::0:)${"$(( [#2]i ))":2}}} )
+done
+
+for i j in ${permission:^binary}; do
+  if (( $j )); then
+    print -n $i
+  else
+    print -n _
+  fi
+done
+
+print
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

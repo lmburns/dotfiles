@@ -1,0 +1,36 @@
+# Desc: generates a function named $1 which:
+#     - executes $(which $1) [with args]
+#     - suppresses output lines which match $2
+#
+# From now on, using echo will work normally except that lines with
+# hello or world will not show at the output. To see the generated functions,
+# replace eval with echo below the 'tr' filter makes sure no spurious empty lines
+# pass from some commands
+
+suppress() {
+  emulate -L zsh
+
+  (( $# == 2 )) || {
+    print::error "2 arguments are expected"
+    print::info "%F{1}suppress%f gedit          'Gtk-WARNING\|connect to accessibility bus'"
+    print::info "%F{1}suppress%f gnome-terminal 'accessibility bus\|stop working with a future version'"
+    print::info "%F{1}suppress%f firefox        'g_slice_set_config'"
+    return 1
+  }
+
+  [[ "$1" == gen ]] && {
+    eval \
+    "${1}() {
+      \$(whence -c $1) \"\$@\" 2>&1 \\
+      | rg -v \"$2\"
+    }"
+    whence -f "$1"
+  } || {
+    eval "$1 2>&1 | rg -v \"$2\""
+  }
+
+}
+
+suppress "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

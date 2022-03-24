@@ -1,0 +1,66 @@
+# Desc: TODO: Create a prompt used for other scripts with zui
+
+-zui_std_cleanup deserialize:"prompter"
+-zui_std_init app:"prompter" app_name:"ZUI editor"
+
+emulate -LR zsh -o extendedglob -o typesetsilent -o warncreateglobal
+-zui_std_init2 # after emulate -LR
+
+-zui_std_store_default_app_config s:status_size 3
+-zui_std_store_default_app_config b:border 1
+-zui_std_store_default_app_config b:status_border 1
+-zui_std_store_default_app_config s:text_mode off
+
+local prompt="$1" width=100 offset=1 internal
+local -a lines logs
+
+[[ -z "$prompt" ]] && { echo "Required argument: prompt"; return 1; }
+
+demo_generator_A() {
+    local mod="$1" ice="$2"
+
+    # -zui_std_rc_button "button_relo_$ice" "${ZUI[RED]}Reload${ZUI[FMT_END]}" 'internal=1; lines=( "${(@f)"$(<$edited_file)"}" ) && logs+=( "File \`$edited_file'"'"' loaded" ); -zui_std_fly_mod_regen 2 1'
+
+    reply=()
+    -zui_std_rc_button "button_addl_$ice" "${ZUI[RED]}Add line${ZUI[FMT_END]}" 'internal=1; lines+=( "" ); -zui_std_fly_mod_regen 2 1'
+    -zui_std_rc_button "button_save_$ice" "${ZUI[RED]}Save${ZUI[FMT_END]}" 'internal=1; REPLY=$lines[1] && logs+=( "File saved" ) || logs+=( "Save failed" )'
+    # -zui_std_rc_button "button_remo_$ice" "${ZUI[RED]}Remove line${ZUI[FMT_END]}" 'internal=1; lines[-1]=( ); -zui_std_fly_mod_regen 2 1'
+
+    # Content
+    reply=( "${ZUI[YELLOW]}$prompt${ZUI[FMT_END]}" "${reply[*]}" )
+
+    # Non-selectable lines    Hops to jump with [ and ]   Local anchors
+    reply2=( 1 )              reply3=( 1 )                reply4=( )
+}
+
+demo_generator_B() {
+    local mod="$1" ice="$2"
+
+    integer size=${#lines} idx
+    local -a output
+    for (( idx=1; idx <= size; idx ++ )); do
+        reply=()  # use the output immediately to utilize array-append optimizations of zsh 5.3.2
+        noglob -zui_std_text_field "tfield${idx}" width offset lines[$idx]
+        output+=( "${reply[1]}" )
+    done
+
+    # Content           Non-selectable lines  Hops to jump with [ and ]   Local anchors
+    reply=( $output )   reply2=( )            reply3=( 1 )                reply4=( )
+}
+
+-zui-standard-status-callback() {
+    [[ "${#logs}" -gt 0 ]] && {
+        reply=( "Message: " "${logs[1]}" )
+        logs=( ${(@)logs[2,-1]} ); return 1;
+    }
+    return 0
+}
+
+## Start application ##
+zui-event-loop 1:demo_generator_A 1:demo_generator_B 1:demo_generator_A
+
+-zui_std_cleanup serialize
+
+return 0
+
+# vim:ft=zsh

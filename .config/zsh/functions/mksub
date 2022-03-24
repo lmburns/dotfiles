@@ -1,0 +1,20 @@
+# Desc: creates a subdir, & moves all files or dirs ...
+# that start with the same name into it, stripping that same part off.
+# trailing spaces in the argument name will also be stripped
+
+setopt extendedglob
+
+local d a i
+
+# strip whitespace from the dir
+d=${1% #}
+# create the sub dir, if it doesn't exist
+[[ ! -e $d ]] && command mkdir $d
+# glob all extensions, but not $d itself
+a=( $~1*~$d(N) )
+# move all of those one level down
+for i in $a {
+  command mv $i $d/${${i#$1}# #}
+}
+
+# vim: ft=zsh:et:sw=4:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

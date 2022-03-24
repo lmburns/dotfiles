@@ -37,12 +37,19 @@ commit_parsers = [
   { message = "^(feat.*|added|new): .*", group = "Added" },
   { message = "^.*: Add.*", group = "Added" },
   { message = "^.*: Support*", group = "Added" },
+
   { message = "^fix: *", group = "Fixed" },
   { message = "^*: Fix*", group = "Fixed" },
+
   { message = "^*: Remove*", group = "Removed" },
   { message = "^*: Delete*", group = "Removed" },
+
+{ message = "^(refactor|modified|updated): *", group = "Refactor" },
+  { message = "^.*: Modified.*", group = "Refactor" },
+  { message = "^.*: Updated*", group = "Refactor" },
+  { message = "^.*: Refactor*", group = "Refactor" },
+
   { message = "^doc: *", group = "Documentation" },
-  { message = "^refactor: *", group = "Refactor" },
   { message = "^(style|clean): *", group = "Styling" },
   { message = "^test: Add*", group = "Added" },
   { message = "^test: *", group = "Fixed" },

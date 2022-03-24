@@ -105,6 +105,7 @@ zle -N toggle-right-prompt
 zle -N fcq
 zle -N pw
 zle -N fe
+zle -N macho-zle
 
 # zle -N fcd-zle
 # zle -N bow2
@@ -195,6 +196,7 @@ declare -gA keybindings; keybindings=(
   'M-u'                   __unicode_translate   # translate 0000 to unicode
   'M-x'                   cd-fzf-ghqlist-widget # cd ghq fzf
   'M-S-P'                 toggle-right-prompt
+  'C-]'                   macho-zle
   'C-a'                   autosuggest-execute
   'C-y'                   yank
   'C-z'                   fancy-ctrl-z

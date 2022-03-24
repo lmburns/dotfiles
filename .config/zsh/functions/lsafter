@@ -1,0 +1,19 @@
+# Desc: list files after a date
+
+function lsafter() {
+  emulate -L zsh -o extendedglob
+  autoload -Uz after
+
+  if [[ ${(z)1} = -h || $# -eq 0 ]]  {
+    print -P -- "%F{1}after%f 2014/08/01\n%F{1}after%f today:12:00" && return 1
+  }
+
+  (( $# > 1 )) && {
+    exa -Fhbd --git --icons ${(z)@[1,-2]} -- *(e-after ${@[-1]}-N)
+  } || exa -Fhbd --git --icons -- *(e-after ${1}-N)
+
+}
+
+lsafter "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

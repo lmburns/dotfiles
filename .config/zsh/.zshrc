@@ -38,7 +38,7 @@ typeset -g SAVEHIST=10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g LISTMAX=50                            # Size of asking history
-typeset -g HISTORY_IGNORE="(youtube-dl|you-get)" # Ignore pattern
+typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp)" # Ignore pattern
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
@@ -377,7 +377,9 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
     zdharma-continuum/fast-syntax-highlighting \
   atload'vbindkey "Up" history-substring-search-up;
          vbindkey "Down" history-substring-search-down' \
-    zsh-users/zsh-history-substring-search
+    zsh-users/zsh-history-substring-search \
+  trackbinds bindmap"^R -> ^W" \
+    m42e/zsh-histdb-fzf
 #  ]]] === wait'0b' - patched ===
 
 # atuin syncs across computers, keeps own copy
@@ -399,8 +401,6 @@ zt 0b light-mode for \
   src"histdb-interactive.zsh" atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
   atinit'bindkey "\Ce" _histdb-isearch' \
     larkery/zsh-histdb \
-  trackbinds bindmap"^R -> ^W" \
-    m42e/zsh-histdb-fzf \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
@@ -972,6 +972,7 @@ LIMIT 1
 # hash -d opt=$HOME/opt
 hash -d pro=$HOME/projects
 hash -d ghq=$HOME/ghq
+hash -d config=$XDG_CONFIG_HOME
 
 # cdpath=( $HOME/{projects/github,.config} )
 # cdpath=( $XDG_CONFIG_HOME )

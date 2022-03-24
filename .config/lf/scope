@@ -68,14 +68,15 @@ handle_mime() {
   local mimetype="${1}"
   case "${mimetype}" in
     (text/html)
-      w3m -dump "${FILE_PATH}" && { dump | trim | fmt -s -w $WIDTH; exit 4; } ;;
+      w3m -dump "${FILE_PATH}" ;;
+      # bat -Pf --theme kimbro --style auto -l html -- "${FILE_PATH}" ;;
     (text/troff)
       # color isn't shown
       MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${FILE_PATH}" ;;
     (text/csv)
-      cat -- "${FILE_PATH}" | tidy-viewer -n 30 ;;
+      tidy-viewer -n 30 <$FILE_PATH ;;
+      # bat -Pf -l csv ${FILE_PATH} ;;
     (text/* | */xml)
-      # KimbieDark
       bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}" ;;
     (application/pgp-encrypted)
       bat -Pf --theme KimbieDark --style auto "${FILE_PATH}" ;;
@@ -91,7 +92,7 @@ handle_mime() {
     (video/*)
       CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
         stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
-      [[ ! -f "$CACHE" ]] && ffmpegthumbnailer -i "$FILE_PATH" -o "$CACHE" -s 0
+      [[ ! -f "$CACHE" ]] && command ffmpegthumbnailer -i "$FILE_PATH" -o "$CACHE" -s 0
       prev-image "$CACHE"
     ;;
     (*/pdf)
@@ -101,7 +102,7 @@ handle_mime() {
       prev-image "$CACHE.jpg"
     ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-      docx2txt "${FILE_PATH}" || exit 1 ;;
+      docx2txt "${FILE_PATH}" ;;
   esac
 }
 
@@ -116,7 +117,6 @@ handle_other() {
     (*.iso)   iso-info --no-header -l "${FILE_PATH}";;
     (*.doc)   catdoc "${FILE_PATH}" ;;
     (*.docx)  docx2txt "${FILE_PATH}" - ;;
-    # (*.csv)   bat --paging=always -f -l csv ${FILE_PATH} ;;
     (*.json)  jq --color-output . "${FILE_PATH}";;
     (*.asc|*.log)   bat -Pf --theme KimbieDark --style auto "${FILE_PATH}";;
     (*.ipynb) jupview -t KimbieDark "${FILE_PATH}" ;;

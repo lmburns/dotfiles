@@ -1,0 +1,21 @@
+# Desc: list contents of archive
+
+function arc.list() {
+  [[ -f "$1" ]] && {
+    case "${1:l}" in
+      (*.tar.bz2|*.tbz2|*.tbz)  tar  jtf "$1" ;;
+      (*.tar.gz)                tar  ztf "$1" ;;
+      (*.tar|*.tgz|*.tar.xz)    tar  tf  "$1" ;;
+      (*.gz)                    gzip l   "$1" ;;
+      (*.rar)                   rar  vb  "$1" ;;
+      (*.zip)                   unzip l   "$1" ;;
+      (*.7z)                    7z    l   "$1" ;;
+      (*.lzo)                   lzop  l   "$1" ;;
+      (*.xz|*.txz|*.lzma|*.tlz) xz    l   "$1" ;;
+    esac
+  }
+}
+
+arc.list "$@"
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:
