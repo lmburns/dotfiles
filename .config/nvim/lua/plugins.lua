@@ -73,7 +73,8 @@ return packer.startup(
           {
             "nvim-treesitter/nvim-treesitter-textobjects",
             after = "nvim-treesitter",
-          }, { "nvim-treesitter/playground", cmd = "TSPlaygroundToggle" },
+          },
+          { "nvim-treesitter/playground", cmd = "TSPlaygroundToggle" },
           { "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } },
         },
         run = ":TSUpdate",
@@ -228,6 +229,7 @@ return packer.startup(
       -- ]]] === Git ===
 
       -- ================================ LSP =============================== [[[
+      -- TODO: lua-dev
       -- Mainly for Lua LSP
       -- use(
       --     {

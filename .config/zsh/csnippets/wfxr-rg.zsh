@@ -54,7 +54,7 @@ function RG() {
         --preview-window 'default:right:60%:~1:+{2}+3/2:border-left'
   )")
   selected=(${(@s.:.)selected})
-  [ -n "${selected[1]}" ] && ${EDITOR} "+${selected[2]}" -- "${selected[1]}"
+  [[ -n "${selected[1]}" ]] && ${EDITOR} "+${selected[2]}" -- "${selected[1]}"
 }
 
 # --preview-window 'nohidden,up,60%,border-bottom,+{2}+3/3,~3'

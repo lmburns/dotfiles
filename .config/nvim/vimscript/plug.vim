@@ -558,8 +558,7 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
-  set tags=tags
-  set tags+=~/.config/nvim/_cpp_src/tags
+  set tags=tags;,.tags;./.tags
   let g:gutentags_modules = ['ctags']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
   let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
@@ -612,6 +611,7 @@ Plug 'ludovicchabant/vim-gutentags'
   endfunction
 
   function! s:SetupCPPTags()
+    set tags+=~/.config/nvim/_cpp_src/tags
     let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
   endfunction
 
@@ -2034,12 +2034,6 @@ call plug#end()
   let g:neovide_cursor_vfx_mode = 'torpedo'
   " let g:neovide_cursor_vfx_mode = "pixiedust"
 
-  " set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-  " set guicursor=a:blinkon100
-  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
-      \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
-      \,sm:block-blinkwait175-blinkoff150-blinkon175
-
   syntax enable
   colorscheme kimbox
   " colorscheme overcast
@@ -2072,82 +2066,7 @@ call plug#end()
 
 " }}} === Theme Settings ===
 
-" ============== Spell Check ============== {{{
-  " set completeopt+=menuone,preview
-  " set complete+=kspell complete-=w complete-=b complete-=u complete-=t
-  " set spelllang=en_us
-  " set spellsuggest+=10
-  " set spellfile=~/.config/nvim/spell/en.utf-8.add
-
-  " nnoremap <silent> <F10> :set spell!<cr>
-  " inoremap <silent> <F10> <C-O>:set spell!<cr>
-
-  noremap <Leader>ss :setlocal spell!<CR>
-  noremap <Leader>sn ]s
-  noremap <Leader>sp [s
-  noremap <Leader>sa zg
-  noremap <Leader>s? z=
-  noremap <Leader>su zuw
-  noremap <Leader>su1 zug
-  " augroup spell
-  "   " add markdown
-  "   autocmd!
-  "   autocmd FileType text,gitcommit,markdown,mail setlocal spell
-  "   autocmd BufRead,BufNewFile neomutt-void* setlocal spell
-  " augroup END
-" }}} === Spell Check ===
-
 " ============== General Mappings ============== {{{
-  nnoremap q: <Nop>
-  nnoremap q/ <Nop>
-  nnoremap q? <Nop>
-
-  cnoreabbrev W! w!
-  cnoreabbrev Q! q!
-  cnoreabbrev Qall! qall!
-  cnoreabbrev Wq wq
-  cnoreabbrev Wa wa
-  cnoreabbrev wQ wq
-  cnoreabbrev WQ wq
-  cnoreabbrev W w
-  cnoreabbrev Qall qall
-
-
-  nnoremap ;w :update<CR>
-  " nnoremap w; :update<CR>
-  nnoremap ;q :q<CR>
-  nnoremap q; :q<CR>
-  " replace command history with quit
-  " map q: :MinimapToggle<CR> :q<CR>
-  " map q: :q<CR>
-  map Q: :q
-  command! -bang -nargs=* Q q
-
-  " use qq to record, q to stop, Q to play a macro
-  " noremap Q gq
-  nnoremap Q @q
-  vnoremap Q :normal @q
-
-  " easier navigation in normal / visual / operator pending mode
-  noremap gkk   {
-  noremap gjj   }
-  noremap H     g^
-  xnoremap H    g^
-  noremap L     g_
-  xnoremap L    g_
-
-  " quit
-  " noremap <C-c> :q<cr>
-  " save write
-  noremap <C-s> :update<cr>
-  " save & quit
-  " noremap <C-x> :x<cr>
-
-  " save with root
-  " cnoremap w!! w !sudo tee % >/dev/null<cr>
-  cnoremap w!! execute ':silent w !sudo tee % > /dev/null' <bar> edit!
-  cnoremap W!! w !sudo tee % >/dev/null<cr>
-
   " Replace all
   nnoremap S :%s//g<Left><Left>
   " Replace under cursor
@@ -2271,8 +2190,8 @@ call plug#end()
   nnoremap <Leader>cc :cclose<CR>
 
   " keep focused in center of screen when searching
-  nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
-  nnoremap <expr> N (v:searchforward ? 'Nzzzv' : 'nzzzv')
+  " nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
+  " nnoremap <expr> N (v:searchforward ? 'Nzzzv' : 'nzzzv')
 
   " insert a place holder
   inoremap ,p <++>
@@ -2377,29 +2296,7 @@ call plug#end()
 " }}} === Syntax ===
 
 " ============== Other Functions ============== {{{
-  augroup jump_last_position
-    autocmd!
-    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-      \| exe "normal! g'\"" | endif
-  augroup END
 
-  " Toggle between {non,}relative numbers
-  " augroup numbertoggle
-  "   autocmd!
-  "   autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif
-  "   autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif
-  " augroup END
-
-  " }}}
-
-  " automatically reload buffer if changed outside current buffer
-  augroup auto_read
-    autocmd!
-    autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
-      \ if mode() == 'n' && getcmdwintype() == '' | checktime | endif
-    autocmd FileChangedShellPost * echohl WarningMsg
-      \ | echo "File changed on disk. Buffer reloaded!" | echohl None
-  augroup END
 
   " open in browser {{{
   function! s:go_github()

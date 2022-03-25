@@ -32,6 +32,49 @@ function M.opt(o, v, scopes)
   end
 end
 
+-- Source: https://teukka.tech/luanvim.html
+function M.create(definitions)
+  for group_name, definition in pairs(definitions) do
+    vim.cmd("augroup " .. group_name)
+    vim.cmd("autocmd!")
+    for _, def in pairs(definition) do
+      local command = table.concat(vim.tbl_flatten { "autocmd", def }, " ")
+      vim.cmd(command)
+    end
+    vim.cmd("augroup END")
+  end
+end
+
+function M.augroup(name, commands)
+  vim.cmd("augroup " .. name)
+  vim.cmd("autocmd!")
+  for _, c in ipairs(commands) do
+    vim.cmd(
+        string.format(
+            "autocmd %s %s %s %s", table.concat(c.events, ","),
+            table.concat(c.targets or {}, ","),
+            table.concat(c.modifiers or {}, " "), c.command
+        )
+    )
+  end
+  vim.cmd("augroup END")
+end
+
+function M.autocmd(group, cmds, clear)
+  clear = clear == nil and false or clear
+  if type(cmds) == "string" then
+    cmds = { cmds }
+  end
+  cmd("augroup " .. group)
+  if clear then
+    cmd [[au!]]
+  end
+  for _, c in ipairs(cmds) do
+    cmd("autocmd " .. c)
+  end
+  cmd [[augroup END]]
+end
+
 function M.map(modes, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
@@ -73,33 +116,6 @@ function M.vmap_lua(keys, action, options)
   --     noremap = true
   -- }, options)
   vim.api.nvim_set_keymap("v", keys, "<cmd>'<,'>lua " .. action .. "<CR>", opts)
-end
-
-function M.augroup(definitions)
-  for group_name, definition in pairs(definitions) do
-    cmd("augroup " .. group_name)
-    cmd("autocmd!")
-    for _, def in ipairs(definition) do
-      local command = table.concat(vim.tbl_flatten { "autocmd", def }, " ")
-      cmd(command)
-    end
-    cmd("augroup END")
-  end
-end
-
-function M.autocmd(group, cmds, clear)
-  clear = clear == nil and false or clear
-  if type(cmds) == "string" then
-    cmds = { cmds }
-  end
-  cmd("augroup " .. group)
-  if clear then
-    cmd [[au!]]
-  end
-  for _, c in ipairs(cmds) do
-    cmd("autocmd " .. c)
-  end
-  cmd [[augroup END]]
 end
 
 function M.t(str)
@@ -163,6 +179,10 @@ end
 
 function M.has_key(table, key)
   return table.key ~= nil
+end
+
+function M.executable(e)
+  return fn.executable(e) > 0
 end
 
 -- Allows us to use utils globally

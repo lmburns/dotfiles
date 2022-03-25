@@ -3,113 +3,151 @@ local opt = utils.opt
 local map = utils.map
 
 -- Leader/local leader
-vim.g.mapleader = " "
-vim.g.maplocalleader = [[,]]
+g.mapleader = [[ ]]
+g.maplocalleader = [[,]]
 
--- Disable some built-in plugins we don't want
-local disabled_built_ins = {
-  "gzip",
-  "man",
-  "matchit",
-  "matchparen",
-  "shada_plugin",
-  "tarPlugin",
-  "tar",
-  "zipPlugin",
-  "zip",
-  "netrwPlugin",
-}
+vim.tbl_map(
+    function(p)
+      vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
+    end, {
+      "2html_plugin",
+      "gzip",
+      "matchit",
+      "netrw",
+      "netrwPlugin",
+      "python_provider",
+      "ruby_provider",
+      "perl_provider",
+      "tar",
+      "tarPlugin",
+      "vimball",
+      "vimballPlugin",
+      "zip",
+      "zipPlugin",
+    }
+)
 
-for i = 1, 10 do
-  g["loaded_" .. disabled_built_ins[i]] = 1
-end
+g["loaded_shada_plugin"] = 0
 
 -- Settings
-opt("termguicolors", true)
-opt("background", "dark")
-opt("number", true)
-opt("cursorline", true)
+o.termguicolors = true
+o.background = "dark"
+o.number = true
+o.cursorline = true
 o.clipboard:append("unnamedplus")
 
-opt("magic", true)
-opt("tabstop", 2)
-opt("shiftwidth", 0)
-opt("expandtab", true)
-opt("softtabstop", 2)
+o.magic = true
+o.tabstop = 2
+o.shiftwidth = 0
+o.expandtab = true
+o.softtabstop = 2
 
-opt("smartcase", true)
-opt("ignorecase", true)
-opt("startofline", false)
-opt("synmaxcol", 1000) -- do not highlight long lines
+o.smartcase = true
+o.ignorecase = true
+o.startofline = false
+o.backspace = [[indent,eol,start]]
+o.synmaxcol = 1000 -- do not highlight long lines
 
-opt("foldenable", false)
-opt("foldmethod", "marker")
-opt("foldmarker", "[[[,]]]")
+o.foldenable = false
+o.foldmethod = "marker"
+o.foldmarker = "[[[,]]]"
 
-opt("scrolloff", 5) -- cursor 5 lines from bottom of page
-opt("sidescrolloff", 15)
+o.scrolloff = 5 -- cursor 5 lines from bottom of page
+o.sidescrolloff = 15
 
-opt("title", true)
-opt("list", true) -- display tabs and trailing spaces visually
+o.title = true
+o.list = true -- display tabs and trailing spaces visually
 o.listchars:append(
     { tab = "‣ ", trail = "•", precedes = "«", extends = "»",
       nbsp = "␣" }
 )
-opt("incsearch", true) -- incremential search highligh
-opt("pumheight", 10) -- number of items in popup menu
+o.incsearch = true -- incremential search highlight
+o.pumheight = 10 -- number of items in popup menu
 
-opt("mouse", "a") -- enable mouse all modes
-opt("linebreak", true)
-opt("history", 1000)
+o.mouse = "a" -- enable mouse all modes
+o.linebreak = true
+-- o.history = 1000
 
-opt("wrap", true)
-o.whichwrap:append("<,>,h,l")
-opt("lazyredraw", true)
-opt("cmdheight", 2)
-opt("showmatch", true)
-opt("matchtime", 2)
+o.joinspaces = false -- prevent inserting two spaces with J
+o.whichwrap:append("<,>,h,l,[,]")
+o.wrap = true
+o.lazyredraw = true
+o.cmdheight = 2
+o.matchtime = 2
 
 o.wildoptions:append("pum")
-opt("wildignore", { "*.o", "*~", "*.pyc", "*.git", "node_modules" })
-opt("wildmenu", true)
-opt("wildmode", "full")
+o.wildignore = { "*.o", "*~", "*.pyc", "*.git", "node_modules" }
+o.wildmenu = true
+o.wildmode = "full"
+o.wildignorecase = true -- ignore case when completing file names and directories
+o.wildcharm = 26 -- equals set wildcharm=<C-Z>, used in the mapping section
 
-opt("smartindent", true)
--- opt("cindent", true)
+o.smartindent = true
+-- o.cindent = true
 
-opt("autoread", true)
-opt("swapfile", false) -- no swap files
-opt("undofile", true)
-opt("undodir", fn.stdpath("data") .. "/vim-persisted-undo/")
+o.swapfile = false -- no swap files
+o.undolevels = 1000
+o.undoreload = 10000
+o.undofile = true
+o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 fn.mkdir(vim.o.undodir, "p")
+-- ??
+o.shada = '!,\'1000,<50,s10,h' -- increase the shadafile size so that history is longer
 
-opt("belloff", "all")
-opt("visualbell", false)
-opt("errorbells", false)
-opt("confirm", true) -- confirm when editing readonly
-opt("diffopt", "vertical")
-opt("inccommand", "nosplit")
-opt("splitbelow", true)
-opt("splitright", true)
+o.belloff = "all"
+o.visualbell = false
+o.errorbells = false
+o.confirm = true -- confirm when editing readonly
+o.diffopt = "vertical"
+o.inccommand = "nosplit"
+o.splitbelow = true
+o.splitright = true
 
-opt("concealcursor", "vic")
-opt("conceallevel", 2)
+o.concealcursor = "n" -- "vic"
+o.conceallevel = 2
 o.fillchars:append("msgsep: ,vert:│") -- customize message separator
-opt("updatetime", 100)
-opt("timeoutlen", 350)
-opt("showmode", false) -- hide file, it's in lightline
-opt("showcmd", false)
-opt("signcolumn", "yes")
-opt("hidden", true)
-opt("backup", false)
+-- g.cursorhold_updatetime = 1000
+o.updatetime = 100
+o.timeoutlen = 350
+o.showmatch = true
+o.showmode = false -- hide file, it's in lightline
+o.showcmd = false
+o.signcolumn = "yes"
+o.hidden = true -- enable modified buffers in background
+o.backup = false
 o.writebackup = false
 o.shortmess:append("c") -- don't give 'ins-completion-menu' messages.
 
+opt("grepprg", "rg --ignore-case --vimgrep --color=never")
+opt("grepformat", "%f:%l:%c:%m,%f:%l:%m")
+
+o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
+                  ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" ..
+                  ",sm:block-blinkwait175-blinkoff150-blinkon175"
+
 -- ============== Spell Check ============== [[[
-o.completeopt:append({"menuone", "preview"})
-o.complete:append({"kspell"})
-o.complete:remove({"w", "b", "u", "t"})
+o.completeopt:append({ "menuone", "preview" })
+o.complete:append({ "kspell" })
+o.complete:remove({ "w", "b", "u", "t" })
 o.spelllang = "en_us"
 o.spellsuggest = "10"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- ]]] === Spell Check ===
+
+
+-- ============= Abbreviations ============= [[[
+cmd [[
+    :cabbrev C PackerCompile
+    :cabbrev U PackerUpdate
+
+    :cnoreabbrev W! w!
+    :cnoreabbrev Q! q!
+    :cnoreabbrev Qall! qall!
+    :cnoreabbrev Wq wq
+    :cnoreabbrev Wa wa
+    :cnoreabbrev wQ wq
+    :cnoreabbrev WQ wq
+    :cnoreabbrev W w
+    :cnoreabbrev Qall qall
+]]
+-- ]]] === Abbreviations ===

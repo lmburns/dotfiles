@@ -671,7 +671,11 @@ cmd rsyncto ${{ rsync -uvrP $fx root@burnsac.xyz:"$1" }}
 cmd rsyncfrom ${{ rsync -uvrP root@burnsac.xyz:"$1" "$2" }}
 cmd fzf_cd ${{
   clear
-  lf -remote "send $id cd '$(fd . --exact-depth=1 -td -HiL | fzf --no-height --pointer="cd")'"
+  lf -remote "send $id cd '$(fd . -d1 -td -HiL | fzf --no-height --pointer="cd")'"
+}}
+cmd fzf_cd_depth ${{
+  clear
+  lf -remote "send $id cd '$(fd . -d4 -td -HiL | fzf --no-height --pointer="cd")'"
 }}
 
 cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height)
@@ -845,6 +849,7 @@ map cJ njump              # lf specifc - jump bookmark
 map cB nbookmark          # lf specifc - add bookmark
 map cD ndel-bookmark      # lf specifc - del bookmark
 map w fzf_cd              # fzf cd
+map W fzf_cd_depth        # fzf cd further depth
 map Ma $neomutt -a "$fx"  # mail a file
 # ]]]
 

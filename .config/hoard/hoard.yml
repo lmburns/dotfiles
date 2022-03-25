@@ -491,21 +491,21 @@ hoards:
     unix|neofetch: "${XDG_CONFIG_HOME}/neofetch/config.conf"
   nvim:
     init:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/init.vim"
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/init.lua"
     coc:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/coc-settings.json"
     snippets:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/UltiSnips"
-    indentline:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/indentline.vim"
+    lua:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/lua"
+    vimscript:
+      unix|neovim: "${XDG_CONFIG_HOME}/nvim/vimscript"
     ftplugin:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/ftplugin"
     autoload:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/autoload"
     after:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/after"
-    lua:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/lua"
     spell:
       unix|neovim: "${XDG_CONFIG_HOME}/nvim/spell"
     syntax:
