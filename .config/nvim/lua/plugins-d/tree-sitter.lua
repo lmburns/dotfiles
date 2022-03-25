@@ -1,6 +1,12 @@
-require('nvim-treesitter.configs').setup {
+-- local M = {}
+-- function M.config()
+--   vim.cmd [[packadd nvim-treesitter]]
+--   vim.cmd [[packadd nvim-treesitter-refactor]]
+--   vim.cmd [[packadd nvim-treesitter-textobjects]]
+require("nvim-treesitter.configs").setup {
   ensure_installed = {
-    "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby", "zig", "d"
+    "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby",
+    "zig", "d",
   },
   -- "vim" "yaml" "toml" "ruby" "bash" "perl" "r"
   sync_install = false,
@@ -8,7 +14,7 @@ require('nvim-treesitter.configs').setup {
   highlight = {
     enable = true, -- false will disable the whole extension
     disable = {}, -- list of language that will be disabled
-    additional_vim_regex_highlighting = false
+    additional_vim_regex_highlighting = false,
   },
   autotag = { enable = true },
   playground = {
@@ -17,22 +23,22 @@ require('nvim-treesitter.configs').setup {
     updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
     persist_queries = false, -- Whether the query persists across vim sessions
     keybindings = {
-      toggle_query_editor = 'o',
-      toggle_hl_groups = 'i',
-      toggle_injected_languages = 't',
-      toggle_anonymous_nodes = 'a',
-      toggle_language_display = 'I',
-      focus_language = 'f',
-      unfocus_language = 'F',
-      update = 'R',
-      goto_node = '<cr>',
-      show_help = '?'
-    }
+      toggle_query_editor = "o",
+      toggle_hl_groups = "i",
+      toggle_injected_languages = "t",
+      toggle_anonymous_nodes = "a",
+      toggle_language_display = "I",
+      focus_language = "f",
+      unfocus_language = "F",
+      update = "R",
+      goto_node = "<cr>",
+      show_help = "?",
+    },
   },
   query_linter = {
     enable = true,
     use_virtual_text = true,
-    lint_events = { "BufWrite", "CursorHold" }
+    lint_events = { "BufWrite", "CursorHold" },
   },
   incremental_selection = { enable = true },
   indent = { enable = false },
@@ -45,9 +51,12 @@ require('nvim-treesitter.configs').setup {
         ["ac"] = "@class.outer",
         ["ic"] = "@class.inner",
         ["al"] = "@loop.outer",
-        ["il"] = "@loop.inner"
-      }
-    }
+        ["il"] = "@loop.inner",
+      },
+    },
   },
-  endwise = { enable = true }
+  endwise = { enable = true },
 }
+-- end
+--
+-- return M

@@ -4,118 +4,19 @@
 "      Home: https://github.com/lmburns                                    
 "============================================================================
 
-  scriptencoding utf-8
-  set ttyfast
-  set nocompatible
-  let mapleader = ' '
-  let maplocalleader = ','
-
-  " UndoHistory: store undo history in a file. even after closing and reopening vim
-  if has('persistent_undo')
-    let target_path = expand('~/.vim/vim-persisted-undo/')
-
-    if !isdirectory(target_path)
-      call system('mkdir -p ' . target_path)
-    endif
-
-    let &undodir = target_path
-    set undofile
-  endif
-
-  if &modifiable
-    set fileencoding=utf-8       " utf-8 files
-    set fileformat=unix          " use unix line endings
-    set fileformats=unix,dos     " try unix line endings before dos, use unix
-  endif
-
-  set background=dark
   set path+=**
-  " set history=1000
-  set lazyredraw
-  set belloff=all                           " turn off bell
-  set title
-  set noshowmode                            " hide file, it's in airline
-  set noshowcmd
-  set noswapfile                            " no swap files
-  set list lcs=tab:‣\ ,trail:•,nbsp:␣       " customize invisibles ‣\ »·
-  set fillchars+=msgsep:\ ,vert:\│          " customize message separator
-  set incsearch                             " incremential search highligh
-  set encoding=utf-8
-  set pumheight=10                          " number of items in popup menu
-  " Kind of hard to read with any transparency at all, especially when using show_documentation
-  " highlight PmenuSel blend=0
-  " set pumblend=3                           " transparent popup_menu
-  " set winblend=3                           " transparent floating window
-  set hidden
-  set nobackup
-  set nowritebackup
-  set magic
-  set clipboard+=unnamedplus                " use system clipboard
-  set splitbelow splitright                 " split screen below and right
-  set tabstop=2 shiftwidth=0
-  set expandtab softtabstop=2 smartindent
-  set ignorecase smartcase
-  set number
-  " set relativenumber
-  set nostartofline
-  set linebreak
-  set wrap
-  set whichwrap+=<,>,h,l
-  set showmatch
-  set matchtime=2
-  set cmdheight=2
-  set shortmess+=c
-  set inccommand=nosplit
-  set nofoldenable
-  set foldmethod=marker
-  set foldmarker=[[[,]]]
-  set conceallevel=2
-  set concealcursor-=n                    " cancel conceal on cursor line
-  set scrolloff=5                         " cusor 5 lines from bottom of page
-  set cursorline                          " show line where cursor is
-  " set cursorcolumn
-  set mouse=a                             " enable mouse all modes
-  set wildmode=full                       " autocompletion
-  set wildmenu                            " autocompletion
-  set wildignore+=.git,.DS_Store,node_modules
-  set wildoptions=pum
-  set diffopt=vertical
-  set synmaxcol=1000                      " do not highlight long lines
-  set signcolumn=yes
-  set timeoutlen=350                      " keycode delay
-  set updatetime=100
-  set confirm                             " confirm when editing readonly
-  set noerrorbells
-  set belloff=all
   filetype plugin indent on
 
   nnoremap <silent><F3> :set relativenumber!<CR>
   nnoremap <silent><F2> :set nowrap!<CR>
 
-  " autocmd CursorHold * update
-  " disable highlighting once leaving search
-  " autocmd CmdlineEnter /,\? :set hlsearch
-  " autocmd CmdlineLeave /,\? :set nohlsearch
-" }}} === General Settings ===
-
 call plug#begin("~/.vim/plugged")
+
+" <++> Extra
+" bennypowers/nvim-regexplainer
 
 " Not needed, here for manual pages
 Plug 'junegunn/vim-plug'
-
-" View id3 files
-Plug 'AndrewRadev/id3.vim'
-" View info files
-Plug 'alx741/vinfo'
-Plug 'HiPhish/info.vim'
-
-if &buftype =~? 'info'
-    nmap <buffer> gu <Plug>(InfoUp)
-    nmap <buffer> gn <Plug>(InfoNext)
-    nmap <buffer> gp <Plug>(InfoPrev)
-    nmap <buffer> gm <Plug>(InfoMenu)
-    nmap <buffer> gf <Plug>(InfoFollow)
-endif
 
 " ============= Icons ============= {{{
 Plug 'ryanoasis/vim-devicons'
@@ -658,7 +559,7 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
   set tags=tags
-  set tags+=~/.config/nvim/cpp_src/tags
+  set tags+=~/.config/nvim/_cpp_src/tags
   let g:gutentags_modules = ['ctags']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
   let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
@@ -737,9 +638,16 @@ Plug 'liuchengxu/vista.vim'
   let g:vista#renderer#enable_icon = 1
 
   nmap <A-\> :Vista finder coc<CR>
-  nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
-  " nmap <A-]> :<C-u>CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%'<CR>
+  nmap <A-]> :Vista finder ctags<CR>
   nmap <A-[> :CocCommand fzf-preview.VistaCtags<CR>
+  " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
+
+  " Doesn't reload
+  " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%:wrap'<CR>
+  " nmap <A-[> :CocCommand fzf-preview.VistaCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%:wrap'<CR>
+
+  nnoremap ;s :Telescope coc workspace_symbols<CR>
+  nnoremap <LocalLeader>s :CocFzfList symbols<CR>
 
   nmap <silent> <Leader>T  :Tags<CR>
   nmap <silent> <A-t> :BTags<CR>
@@ -753,7 +661,7 @@ Plug 'liuchengxu/vista.vim'
 
 if has('nvim')
   Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'norcalli/nvim-colorizer.lua'
+  " Plug 'norcalli/nvim-colorizer.lua'
   " nvim-blame-line {{{ "
   Plug 'tveskag/nvim-blame-line'
   augroup git_blame
@@ -898,8 +806,8 @@ Plug 'tpope/vim-fugitive'
   nmap <silent> ,ga :<C-u>CocCommand git.chunkStage<CR>
   nmap <silent> <Leader>gF :<C-u>CocCommand git.foldUnchanged<CR>
   nmap <silent> <Leader>go :<C-u>CocCommand git.browserOpen<CR>
-  nmap <silent> <Leader>gla :<C-u>CocList commits<cr>
-  nmap <silent> <Leader>glc :<C-u>CocList bcommits<cr>
+  nmap <silent> <Leader>gla :<C-u>CocFzfList commits<cr>
+  nmap <silent> <Leader>glc :<C-u>CocFzfList bcommits<cr>
   nmap <silent> <Leader>gll <Plug>(coc-git-commit)
 
   nmap [q :cprev<CR>
@@ -950,7 +858,7 @@ Plug 'preservim/nerdcommenter'
 
 " ============== indentline ============== {{{
 Plug 'yggdroot/indentline'
-  source ~/.config/nvim/indentline.vim
+  source ~/.config/nvim/vimscript/plugins/indentline.vim
 " }}}
 
 " ============ coc-nvim ============ {{{
@@ -970,7 +878,6 @@ Plug 'antoinemadec/coc-fzf'
 
   nnoremap <LocalLeader>c :Telescope coc<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
-  nnoremap <A-s> :CocFzfList symbols<CR>
   " nnoremap <A-c> :CocFzfList commands<CR>
   nnoremap <A-c> :Telescope coc commands<CR>
 
@@ -991,8 +898,6 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <C-[> :Telescope coc definitions<CR>
   " nnoremap <C-x><C-]> :Telescope coc implementations<CR>
   " nnoremap <C-x><C-h> :Telescope coc diagnostics<CR>
-
-  nnoremap ;s :Telescope coc workspace_symbols<CR>
 
   nnoremap ;n :Telescope coc locations<CR>
   " type_definitions
@@ -1028,12 +933,13 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-prettier',
     \ 'coc-r-lsp',
     \ 'coc-perl',
-    \ 'coc-lua',
     \ 'coc-tsserver',
     \ 'coc-zig',
     \ 'coc-dlang',
+    \ 'coc-lua',
     \ ]
 
+    " \ 'coc-sumneko-lua',
     " \ 'coc-clojure',
     " \ 'coc-nginx',
     " \ 'coc-toml',
@@ -1117,7 +1023,7 @@ endfunction
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript,typescript nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1193,8 +1099,6 @@ Plug 'sbdchd/neoformat'
 let g:neoformat_basic_format_retab = 1
 let g:neoformat_basic_format_trim = 1
 let g:neoformat_basic_format_align = 1
-
-" lua require('neoscroll').setup()
 
  " Formatting options that are better than coc's :Format
   nnoremap ;ff :Format<CR>
@@ -1630,8 +1534,6 @@ Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
-Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
-Plug 'jamessan/vim-gnupg'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'RRethy/nvim-treesitter-endwise'
@@ -1639,25 +1541,45 @@ Plug 'nvim-treesitter/playground'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 "}}} === Syntax Highlighting ===
 
+" ========== File Viewer ========== {{{
+Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
+Plug 'jamessan/vim-gnupg'
+Plug 'AndrewRadev/id3.vim'
+
+Plug 'alx741/vinfo'
+Plug 'HiPhish/info.vim'
+
+if &buftype =~? 'info'
+    nmap <buffer> gu <Plug>(InfoUp)
+    nmap <buffer> gn <Plug>(InfoNext)
+    nmap <buffer> gp <Plug>(InfoPrev)
+    nmap <buffer> gm <Plug>(InfoMenu)
+    nmap <buffer> gf <Plug>(InfoFollow)
+endif
+" }}} === File Viewer ===
+
 " ============= telescope ============= {{{
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'tami5/sqlite.lua'
+
+Plug 'AckslD/nvim-neoclip.lua'
+
 Plug 'nvim-telescope/telescope.nvim'
 
-Plug 'nvim-telescope/telescope-frecency.nvim'
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'nvim-telescope/telescope-frecency.nvim'
 Plug 'fhill2/telescope-ultisnips.nvim'
 Plug 'fannheyward/telescope-coc.nvim'
 Plug 'dhruvmanila/telescope-bookmarks.nvim'
-Plug 'AckslD/nvim-neoclip.lua'
-Plug 'tami5/sqlite.lua'
 
 " Plug 'numToStr/Comment.nvim'
+" Plug 'folke/which-key.nvim'
 Plug 'sindrets/diffview.nvim'
+
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'folke/todo-comments.nvim'
 Plug 'Pocco81/HighStr.nvim'
-" Plug 'folke/which-key.nvim'
 
   " nnoremap <space>o <cmd>Telescope find_files<cr>
   " nnoremap <space>p <cmd>Telescope git_files<cr>
@@ -1863,8 +1785,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   map ;B :Telescope bookmarks<CR>
   nnoremap ;b <cmd>Telescope builtin<CR>
 
-  nmap <silent> <Leader>bu  :Telescope buffers<CR>
-  nmap <silent> <LocalLeader>b :Telescope buffers theme=get_dropdown<CR>
+  nmap <silent> <LocalLeader>b :Telescope buffers<CR>
   nmap <silent> <Leader>a  :CocCommand fzf-preview.AllBuffers<CR>
   nmap <silent> <Leader>A  :Windows<CR>
 
@@ -1877,7 +1798,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   nmap <Leader>; :Telescope current_buffer_fuzzy_find<CR>
 
   " == Grep
-  nmap ;r :Telescope live_grep theme=get_ivy<CR>
+  nmap ;e :Telescope live_grep theme=get_ivy<CR>
+  nmap ;r :Telescope git_grep<CR>
   nmap <LocalLeader>r :RG<CR>
 
   " == Files
@@ -1956,6 +1878,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   let g:fzf_preview_use_dev_icons = 1
   let g:fzf_preview_dev_icon_prefix_string_length = 3
   let g:fzf_preview_dev_icons_limit = 2000
+  " let g:fzf_preview_fzf_preview_window_option = 'nohidden'
   let g:fzf_preview_default_fzf_options = {
     \ '--no-border': v:true,
     \ '--reverse': v:true,
@@ -2150,13 +2073,15 @@ call plug#end()
 " }}} === Theme Settings ===
 
 " ============== Spell Check ============== {{{
-  set completeopt+=menuone,preview
-  set complete+=kspell complete-=w complete-=b complete-=u complete-=t
-  set spelllang=en_us
-  set spellsuggest+=10
-  set spellfile=~/.config/nvim/spell/en.utf-8.add
+  " set completeopt+=menuone,preview
+  " set complete+=kspell complete-=w complete-=b complete-=u complete-=t
+  " set spelllang=en_us
+  " set spellsuggest+=10
+  " set spellfile=~/.config/nvim/spell/en.utf-8.add
+
   " nnoremap <silent> <F10> :set spell!<cr>
   " inoremap <silent> <F10> <C-O>:set spell!<cr>
+
   noremap <Leader>ss :setlocal spell!<CR>
   noremap <Leader>sn ]s
   noremap <Leader>sp [s
@@ -2164,12 +2089,12 @@ call plug#end()
   noremap <Leader>s? z=
   noremap <Leader>su zuw
   noremap <Leader>su1 zug
-  augroup spell
-    " add markdown
-    autocmd!
-    autocmd FileType text,gitcommit,markdown,mail setlocal spell
-    autocmd BufRead,BufNewFile neomutt-void* setlocal spell
-  augroup END
+  " augroup spell
+  "   " add markdown
+  "   autocmd!
+  "   autocmd FileType text,gitcommit,markdown,mail setlocal spell
+  "   autocmd BufRead,BufNewFile neomutt-void* setlocal spell
+  " augroup END
 " }}} === Spell Check ===
 
 " ============== General Mappings ============== {{{
@@ -2342,10 +2267,8 @@ call plug#end()
   " change tabs
   nnoremap <Leader>nt :setlocal noexpandtab<CR>
   xnoremap <Leader>re :retab!<CR>
-  " close quickfix  TODO: delete one
+  " close quickfix
   nnoremap <Leader>cc :cclose<CR>
-  nnoremap <silent> \q :call toggle#ToggleQuickFix()<CR>
-  nnoremap <silent> \l :call toggle#ToggleLocationList()<CR>
 
   " keep focused in center of screen when searching
   nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
@@ -2492,7 +2415,7 @@ call plug#end()
 
   augroup gogithub
       au!
-      au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
+      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
   augroup END
 
   " Sources neovim first
@@ -2593,12 +2516,6 @@ call plug#end()
              \ ])
  " }}} === wilder ===
 
-  " ============== colorizer ============== {{{ "
-  lua require 'colorizer'.setup(
-            \ {'vim'; 'sh'; 'zsh'; 'markdown'; 'tmux'; 'yaml'; 'lua';},
-            \ { RGB = false; })
-  " }}} === colorizer ===
-
   " IndentSize: Change indent size depending on file type {{{
   function! <SID>IndentSize(amount)
     exe "setlocal expandtab"
@@ -2606,23 +2523,6 @@ call plug#end()
        \ . " sts=" . a:amount
   endfunction
   " }}} IndentSize
-
-  " DiffSaved: Show diff since last save {{{
-  function! s:DiffSaved()
-    let filetype=&filetype
-    diffthis
-    vnew | r # | normal! 1Gdd
-    diffthis
-    exe 'setl bt=nofile bh=wipe nobl noswf ro ft=' . filetype
-  endfunction
-  command! DS call s:DiffSaved()
-  " }}} DiffSaved
-
-  " FIX: make work get args
-  " function s:TagFile()
-  "   let fname=resolve(expand('%:p'))
-  "   call system('tag --set "$arg"'.resolve(expand('%:p')))
-  " endfunction
 
   " ExecuteBuffer: execute current buffer === {{{ "
   function! s:execute_buffer()
@@ -2714,11 +2614,27 @@ command! Fcman :call s:FullCppMan()
 " ===================== Lua ====================== {{{
 " lua require('plugins/which-key')
 " lua require('plugins/comment')
-lua require('utils')
-lua require('plugins/tree-sitter')
-lua require('plugins/diffview')
-lua require('plugins/git-signs')
-lua require('plugins/telescope')
+" lua require('neoscroll').setup()
+
+" lua require('base')
+" lua require('lutils')
+" lua require('options')
+" lua require('plugins')
+
+" lua require('plugins-d/tree-sitter')
+" lua require('plugins-d/nvim-neoclip')
+" lua require('plugins-d/diffview')
+" lua require('plugins-d/gitsigns')
+" lua require('plugins-d/telescope')
+" lua require('plugins-d/todo-comments')
+
+" ============== highlight line ============== {{{
+" lua require('plugins-d/HighStr')
+
+vnoremap <silent> <Leader>hi :<c-u>HSHighlight<space>
+vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
+" }}} === highlight line ===
+
 " }}} === Lua ===
 
 highlight TelescopeSelection      guifg=#FF9500 gui=bold
@@ -2734,17 +2650,6 @@ highlight TelescopePreviewBorder  guifg=#A06469
 highlight TelescopeMatching       guifg=#FF5813
 
 highlight TelescopePromptPrefix   guifg=#EF1D55
-
-" ============== todo-comments-vim ============== {{{
-lua require('plugins/todo-comments')
-" }}} === todo-comments-vim ===
-
-" ============== highlight line ============== {{{
-lua require('plugins/highlight-line')
-
-vnoremap <silent> <Leader>hi :<c-u>HSHighlight<space>
-vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
-" }}} === highlight line ===
 
 " ============== background transparent / colors ============== {{{
   highlight DiffAdd      ctermfg=white ctermbg=NONE guifg=#5F875F guibg=NONE
@@ -2783,49 +2688,5 @@ vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
   " hi Delimiter guifg=#088649
   " hi Operator guifg=#088649
 " }}} === transparent ===
-
-" ============== tmux ============== {{{
-function! s:tmux_copy_mode_toggle()
-    setlocal number!
-    if &signcolumn ==? 'no'
-        setlocal signcolumn=auto
-    else
-        setlocal signcolumn=no
-    endif
-endfunction
-command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
-
-" autocmd BufEnter * let &titlestring = '' . expand("%:t")
-" set title
-
-" au BufEnter * if empty(&buftype) | call system('tmux rename-window '.expand('%:t:S')) | endif
-
-if exists('$TMUX') && !exists('$NORENAME')
-  augroup rename_tmux
-    au!
-    au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%:t') | endif
-    au VimLeave * call system('tmux set-window automatic-rename on')
-  augroup END
-endif
-
-nnoremap <silent> <Leader>. :call system('tmux select-pane -t :.+')<cr>
-" }}} === tmux ===
-
-  " Fixes clearing of clipboard when using copyq
-if executable('xsel')
-    function! PreserveClipboard()
-        call system('xsel -ib', getreg('+'))
-    endfunction
-    function! PreserveClipboadAndSuspend()
-        call PreserveClipboard()
-        suspend
-    endfunction
-    augroup preserve_clipboard
-      au!
-      au VimLeave * call PreserveClipboard()
-    augroup END
-    nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
-    vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
-endif
 
 " vim: ft=vim:et:sw=0:ts=2:sts=2:tw=78:fdm=marker:fmr={{{,}}}:

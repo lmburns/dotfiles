@@ -86,7 +86,7 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 # export QT_STYLE_OVERRIDE=kvantum
 
 export XINITRC="${HOME}/.xinitrc"
-export VIMRC="${XDG_CONFIG_HOME}/nvim/init.vim"
+export VIMRC="${XDG_CONFIG_HOME}/nvim/vimscript/plug.vim"
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME}/notmuch/notmuch-config"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
 export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"
