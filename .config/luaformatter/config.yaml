@@ -4,7 +4,7 @@ use_tab: false
 tab_width: 4
 continuation_indent_width: 4
 keep_simple_control_block_one_line: false
-keep_simple_function_one_line: false
+keep_simple_function_one_line: true
 align_args: true
 align_parameter: false
 align_table_field: true

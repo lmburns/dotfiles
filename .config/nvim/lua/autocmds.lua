@@ -40,9 +40,9 @@ autocmd(
       [[FileType nroff setl wrap textwidth=85 colorcolumn=+1]],
       [[Filetype *json setl shiftwidth=2]],
 
-      [[BufWritePre * %s/\s\+$//e            " End of lines]],
-      [[BufWritePre * %s#\($\n\s*\)\+\%$##e  " End of file]],
-      [[FileType * setl formatoptions-=cro   " Disable automatic comment]],
+      [[BufWritePre * %s/\s\+$//e]],
+      [[BufWritePre * %s#\($\n\s*\)\+\%$##e]],
+      [[FileType * setl formatoptions-=cro]],
 
       [[BufReadPre   *.docx silent set ro]],
       [[BufEnter     *.docx silent set modifiable]],

@@ -4,13 +4,118 @@
 "      Home: https://github.com/lmburns                                    
 "============================================================================
 
-call plug#begin("~/.vim/plugged")
+  scriptencoding utf-8
+  set ttyfast
+  set nocompatible
+  let mapleader = ' '
+  let maplocalleader = ','
 
-" <++> Extra
-" bennypowers/nvim-regexplainer
+  " UndoHistory: store undo history in a file. even after closing and reopening vim
+  if has('persistent_undo')
+    let target_path = expand('~/.vim/vim-persisted-undo/')
+
+    if !isdirectory(target_path)
+      call system('mkdir -p ' . target_path)
+    endif
+
+    let &undodir = target_path
+    set undofile
+  endif
+
+  if &modifiable
+    set fileencoding=utf-8       " utf-8 files
+    set fileformat=unix          " use unix line endings
+    set fileformats=unix,dos     " try unix line endings before dos, use unix
+  endif
+
+  set background=dark
+  set path+=**
+  " set history=1000
+  set lazyredraw
+  set belloff=all                           " turn off bell
+  set title
+  set noshowmode                            " hide file, it's in airline
+  set noshowcmd
+  set noswapfile                            " no swap files
+  set list lcs=tab:‣\ ,trail:•,nbsp:␣       " customize invisibles ‣\ »·
+  set fillchars+=msgsep:\ ,vert:\│          " customize message separator
+  set incsearch                             " incremential search highligh
+  set encoding=utf-8
+  set pumheight=10                          " number of items in popup menu
+  " Kind of hard to read with any transparency at all, especially when using show_documentation
+  " highlight PmenuSel blend=0
+  " set pumblend=3                           " transparent popup_menu
+  " set winblend=3                           " transparent floating window
+  set hidden
+  set nobackup
+  set nowritebackup
+  set magic
+  set clipboard+=unnamedplus                " use system clipboard
+  set splitbelow splitright                 " split screen below and right
+  set tabstop=2 shiftwidth=0
+  set expandtab softtabstop=2 smartindent
+  set ignorecase smartcase
+  set number
+  " set relativenumber
+  set nostartofline
+  set linebreak
+  set wrap
+  set whichwrap+=<,>,h,l
+  set showmatch
+  set matchtime=2
+  set cmdheight=2
+  set shortmess+=c
+  set inccommand=nosplit
+  set nofoldenable
+  set foldmethod=marker
+  set foldmarker=[[[,]]]
+  set conceallevel=2
+  set concealcursor-=n                    " cancel conceal on cursor line
+  set scrolloff=5                         " cusor 5 lines from bottom of page
+  set cursorline                          " show line where cursor is
+  " set cursorcolumn
+  set mouse=a                             " enable mouse all modes
+  set wildmode=full                       " autocompletion
+  set wildmenu                            " autocompletion
+  set wildignore+=.git,.DS_Store,node_modules
+  set wildoptions=pum
+  set diffopt=vertical
+  set synmaxcol=1000                      " do not highlight long lines
+  set signcolumn=yes
+  set timeoutlen=350                      " keycode delay
+  set updatetime=100
+  set confirm                             " confirm when editing readonly
+  set noerrorbells
+  set belloff=all
+  filetype plugin indent on
+
+  nnoremap <silent><F3> :set relativenumber!<CR>
+  nnoremap <silent><F2> :set nowrap!<CR>
+
+  " autocmd CursorHold * update
+  " disable highlighting once leaving search
+  " autocmd CmdlineEnter /,\? :set hlsearch
+  " autocmd CmdlineLeave /,\? :set nohlsearch
+" }}} === General Settings ===
+
+call plug#begin("~/.vim/plugged")
 
 " Not needed, here for manual pages
 Plug 'junegunn/vim-plug'
+
+" View id3 files
+Plug 'AndrewRadev/id3.vim'
+" View info files
+Plug 'alx741/vinfo'
+Plug 'HiPhish/info.vim'
+
+if &buftype =~? 'info'
+    nmap <buffer> gu <Plug>(InfoUp)
+    nmap <buffer> gn <Plug>(InfoNext)
+    nmap <buffer> gp <Plug>(InfoPrev)
+    nmap <buffer> gm <Plug>(InfoMenu)
+    nmap <buffer> gf <Plug>(InfoFollow)
+endif
 
 " ============= Icons ============= {{{
 Plug 'ryanoasis/vim-devicons'
@@ -552,7 +657,8 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
-  set tags=tags;,.tags;./.tags
+  set tags=tags
+  set tags+=~/.config/nvim/cpp_src/tags
   let g:gutentags_modules = ['ctags']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
   let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
@@ -605,7 +711,6 @@ Plug 'ludovicchabant/vim-gutentags'
   endfunction
 
   function! s:SetupCPPTags()
-    set tags+=~/.config/nvim/_cpp_src/tags
     let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
   endfunction
 
@@ -632,16 +737,9 @@ Plug 'liuchengxu/vista.vim'
   let g:vista#renderer#enable_icon = 1
 
   nmap <A-\> :Vista finder coc<CR>
-  nmap <A-]> :Vista finder ctags<CR>
+  nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
+  " nmap <A-]> :<C-u>CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%'<CR>
   nmap <A-[> :CocCommand fzf-preview.VistaCtags<CR>
-  " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
-
-  " Doesn't reload
-  " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%:wrap'<CR>
-  " nmap <A-[> :CocCommand fzf-preview.VistaCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%:wrap'<CR>
-
-  nnoremap ;s :Telescope coc workspace_symbols<CR>
-  nnoremap <LocalLeader>s :CocFzfList symbols<CR>
 
   nmap <silent> <Leader>T  :Tags<CR>
   nmap <silent> <A-t> :BTags<CR>
@@ -655,7 +753,7 @@ Plug 'liuchengxu/vista.vim'
 
 if has('nvim')
   Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
-  " Plug 'norcalli/nvim-colorizer.lua'
+  Plug 'norcalli/nvim-colorizer.lua'
   " nvim-blame-line {{{ "
   Plug 'tveskag/nvim-blame-line'
   augroup git_blame
@@ -778,6 +876,8 @@ Plug 'kdheepak/lazygit.nvim'
 " }}}  === Floaterm | lf ===
 
 " ============== git  ============== {{{
+" Plug 'airblade/vim-gitgutter'
+
 " ============== fugitive ============== {{{
 Plug 'tpope/vim-fugitive'
   nnoremap <Leader>gu :G<CR>3j
@@ -798,8 +898,8 @@ Plug 'tpope/vim-fugitive'
   nmap <silent> ,ga :<C-u>CocCommand git.chunkStage<CR>
   nmap <silent> <Leader>gF :<C-u>CocCommand git.foldUnchanged<CR>
   nmap <silent> <Leader>go :<C-u>CocCommand git.browserOpen<CR>
-  nmap <silent> <Leader>gla :<C-u>CocFzfList commits<cr>
-  nmap <silent> <Leader>glc :<C-u>CocFzfList bcommits<cr>
+  nmap <silent> <Leader>gla :<C-u>CocList commits<cr>
+  nmap <silent> <Leader>glc :<C-u>CocList bcommits<cr>
   nmap <silent> <Leader>gll <Plug>(coc-git-commit)
 
   nmap [q :cprev<CR>
@@ -870,6 +970,7 @@ Plug 'antoinemadec/coc-fzf'
 
   nnoremap <LocalLeader>c :Telescope coc<CR>
   nnoremap <C-x><C-l> :CocFzfList<CR>
+  nnoremap <A-s> :CocFzfList symbols<CR>
   " nnoremap <A-c> :CocFzfList commands<CR>
   nnoremap <A-c> :Telescope coc commands<CR>
 
@@ -890,6 +991,8 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap <C-[> :Telescope coc definitions<CR>
   " nnoremap <C-x><C-]> :Telescope coc implementations<CR>
   " nnoremap <C-x><C-h> :Telescope coc diagnostics<CR>
+
+  nnoremap ;s :Telescope coc workspace_symbols<CR>
 
   nnoremap ;n :Telescope coc locations<CR>
   " type_definitions
@@ -925,13 +1028,12 @@ Plug 'antoinemadec/coc-fzf'
     \ 'coc-prettier',
     \ 'coc-r-lsp',
     \ 'coc-perl',
+    \ 'coc-lua',
     \ 'coc-tsserver',
     \ 'coc-zig',
     \ 'coc-dlang',
-    \ 'coc-lua',
     \ ]
 
-    " \ 'coc-sumneko-lua',
     " \ 'coc-clojure',
     " \ 'coc-nginx',
     " \ 'coc-toml',
@@ -1015,7 +1117,7 @@ endfunction
 
   augroup cocgroup
       au!
-      au FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript,typescript nmap <silent> <c-]> <Plug>(coc-definition)
+      au FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript nmap <silent> <c-]> <Plug>(coc-definition)
       " Highlight symbol under cursor on CursorHold
       au CursorHold * silent call CocActionAsync('highlight')
       " Setup formatexpr specified filetype(s).
@@ -1091,6 +1193,8 @@ Plug 'sbdchd/neoformat'
 let g:neoformat_basic_format_retab = 1
 let g:neoformat_basic_format_trim = 1
 let g:neoformat_basic_format_align = 1
+
+" lua require('neoscroll').setup()
 
  " Formatting options that are better than coc's :Format
   nnoremap ;ff :Format<CR>
@@ -1414,7 +1518,7 @@ Plug 'dhruvasagar/vim-table-mode', { 'for': 'markdown' }
 " }}} === vim-table-mode ===
 
 " ============== mkdx ============== {{{
-Plug 'SidOfc/mkdx', { 'for': 'markdown' }
+Plug 'SidOfc/mkdx'
   let g:mkdx#settings     = {
         \ 'restore_visual': 1,
         \ 'gf_on_steroids': 1,
@@ -1526,6 +1630,8 @@ Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']
 Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
 Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
+Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
+Plug 'jamessan/vim-gnupg'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'RRethy/nvim-treesitter-endwise'
@@ -1533,42 +1639,24 @@ Plug 'nvim-treesitter/playground'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 "}}} === Syntax Highlighting ===
 
-" ========== File Viewer ========== {{{
-Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
-Plug 'jamessan/vim-gnupg'
-Plug 'AndrewRadev/id3.vim'
-
-Plug 'alx741/vinfo'
-Plug 'HiPhish/info.vim'
-
-if &buftype =~? 'info'
-    nmap <buffer> gu <Plug>(InfoUp)
-    nmap <buffer> gn <Plug>(InfoNext)
-    nmap <buffer> gp <Plug>(InfoPrev)
-    nmap <buffer> gm <Plug>(InfoMenu)
-    nmap <buffer> gf <Plug>(InfoFollow)
-endif
-" }}} === File Viewer ===
-
 " ============= telescope ============= {{{
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'tami5/sqlite.lua'
-Plug 'AckslD/nvim-neoclip.lua'
 Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+
 Plug 'nvim-telescope/telescope-frecency.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'fhill2/telescope-ultisnips.nvim'
 Plug 'fannheyward/telescope-coc.nvim'
 Plug 'dhruvmanila/telescope-bookmarks.nvim'
+Plug 'AckslD/nvim-neoclip.lua'
+Plug 'tami5/sqlite.lua'
 
+" Plug 'numToStr/Comment.nvim'
 Plug 'sindrets/diffview.nvim'
-
 Plug 'lewis6991/gitsigns.nvim'
 Plug 'folke/todo-comments.nvim'
 Plug 'Pocco81/HighStr.nvim'
-
-" Plug 'numToStr/Comment.nvim'
 " Plug 'folke/which-key.nvim'
 
   " nnoremap <space>o <cmd>Telescope find_files<cr>
@@ -1775,7 +1863,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   map ;B :Telescope bookmarks<CR>
   nnoremap ;b <cmd>Telescope builtin<CR>
 
-  nmap <silent> <LocalLeader>b :Telescope buffers<CR>
+  nmap <silent> <Leader>bu  :Telescope buffers<CR>
+  nmap <silent> <LocalLeader>b :Telescope buffers theme=get_dropdown<CR>
   nmap <silent> <Leader>a  :CocCommand fzf-preview.AllBuffers<CR>
   nmap <silent> <Leader>A  :Windows<CR>
 
@@ -1788,8 +1877,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   nmap <Leader>; :Telescope current_buffer_fuzzy_find<CR>
 
   " == Grep
-  nmap ;e :Telescope live_grep theme=get_ivy<CR>
-  nmap ;r :Telescope git_grep<CR>
+  nmap ;r :Telescope live_grep theme=get_ivy<CR>
   nmap <LocalLeader>r :RG<CR>
 
   " == Files
@@ -1868,7 +1956,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
   let g:fzf_preview_use_dev_icons = 1
   let g:fzf_preview_dev_icon_prefix_string_length = 3
   let g:fzf_preview_dev_icons_limit = 2000
-  " let g:fzf_preview_fzf_preview_window_option = 'nohidden'
   let g:fzf_preview_default_fzf_options = {
     \ '--no-border': v:true,
     \ '--reverse': v:true,
@@ -1878,6 +1965,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } } | Plug 'junegunn/fzf.vim'
 
   " HTML/CSS
   Plug 'alvan/vim-closetag'
+  Plug 'ap/vim-css-color'
 
 " ============== Themes ============== {{{
   " Plug 'Rigellute/rigel'
@@ -2001,10 +2089,13 @@ call plug#end()
     au ColorScheme gruvbit call s:gruvbit_setup()
   augroup END
 
+  " set t_Co=256
+  set termguicolors
+
   set guioptions-=m
   set guioptions-=r
   set guioptions-=L
-
+  set guitablabel=%M\ %t
   if exists('g:neovide')
     set guifont=FiraMono\ Nerd\ Font\ Mono:style=Medium:h12
     nnoremap <D-v> "+p
@@ -2019,6 +2110,12 @@ call plug#end()
   let g:neovide_cursor_vfx_particle_density=12.0
   let g:neovide_cursor_vfx_mode = 'torpedo'
   " let g:neovide_cursor_vfx_mode = "pixiedust"
+
+  " set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+  " set guicursor=a:blinkon100
+  set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+      \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+      \,sm:block-blinkwait175-blinkoff150-blinkon175
 
   syntax enable
   colorscheme kimbox
@@ -2052,11 +2149,252 @@ call plug#end()
 
 " }}} === Theme Settings ===
 
-" ============== General Mappings ============== {{{
+" ============== Spell Check ============== {{{
+  set completeopt+=menuone,preview
+  set complete+=kspell complete-=w complete-=b complete-=u complete-=t
+  set spelllang=en_us
+  set spellsuggest+=10
+  set spellfile=~/.config/nvim/spell/en.utf-8.add
+  " nnoremap <silent> <F10> :set spell!<cr>
+  " inoremap <silent> <F10> <C-O>:set spell!<cr>
+  noremap <Leader>ss :setlocal spell!<CR>
+  noremap <Leader>sn ]s
+  noremap <Leader>sp [s
+  noremap <Leader>sa zg
+  noremap <Leader>s? z=
+  noremap <Leader>su zuw
+  noremap <Leader>su1 zug
+  augroup spell
+    " add markdown
+    autocmd!
+    autocmd FileType text,gitcommit,markdown,mail setlocal spell
+    autocmd BufRead,BufNewFile neomutt-void* setlocal spell
+  augroup END
+" }}} === Spell Check ===
 
+" ============== General Mappings ============== {{{
+  nnoremap q: <Nop>
+  nnoremap q/ <Nop>
+  nnoremap q? <Nop>
+
+  cnoreabbrev W! w!
+  cnoreabbrev Q! q!
+  cnoreabbrev Qall! qall!
+  cnoreabbrev Wq wq
+  cnoreabbrev Wa wa
+  cnoreabbrev wQ wq
+  cnoreabbrev WQ wq
+  cnoreabbrev W w
+  cnoreabbrev Qall qall
+
+
+  nnoremap ;w :update<CR>
+  " nnoremap w; :update<CR>
+  nnoremap ;q :q<CR>
+  nnoremap q; :q<CR>
+  " replace command history with quit
+  " map q: :MinimapToggle<CR> :q<CR>
+  " map q: :q<CR>
+  map Q: :q
+  command! -bang -nargs=* Q q
+
+  " use qq to record, q to stop, Q to play a macro
+  " noremap Q gq
+  nnoremap Q @q
+  vnoremap Q :normal @q
+
+  " easier navigation in normal / visual / operator pending mode
+  noremap gkk   {
+  noremap gjj   }
+  noremap H     g^
+  xnoremap H    g^
+  noremap L     g_
+  xnoremap L    g_
+
+  " quit
+  " noremap <C-c> :q<cr>
+  " save write
+  noremap <C-s> :update<cr>
+  " save & quit
+  " noremap <C-x> :x<cr>
+
+  " save with root
+  " cnoremap w!! w !sudo tee % >/dev/null<cr>
+  cnoremap w!! execute ':silent w !sudo tee % > /dev/null' <bar> edit!
+  cnoremap W!! w !sudo tee % >/dev/null<cr>
+
+  " Replace all
+  nnoremap S :%s//g<Left><Left>
+  " Replace under cursor
+  nnoremap <Leader>sr :%s/\<<C-r><C-w>\>/
+  " Replace quotes on the line
+  nnoremap <Leader>Q :s/'/"/g<CR>:nohlsearch<CR>
+  " Title case enitre line
+  nnoremap <Leader>sc :s/\v<(\w)(\S*)/\u\1\L\2/g<CR>:nohlsearch<CR>
+  " s/\v<(.)(\w*)/\u\1\L\2/g
+
+  " use tab and shift tab to indent and de-indent code
+  nnoremap <Tab>   >>
+  nnoremap <S-Tab> <<
+  vnoremap <Tab>   >><Esc>gv
+  vnoremap <S-Tab> <<<Esc>gv
+  inoremap <S-Tab> <C-d>
+
+  " Don't lose selection when shifting sidewards
+  xnoremap < <gv
+  xnoremap > >gv
+
+  " use `u` to undo, use `U` to redo, mind = blown
+  nnoremap U <C-r>
+
+  " make deleting line not go to clipbard
+  nnoremap d "_d
+  vnoremap d "_d
+  nnoremap D "_D
+  " delete line without copying
+  nnoremap E ^"_D
+  " yank line without newline character
+  nnoremap Y y$
+  " make cut not go to clipboard
+  nnoremap x "_x
+  " reselect the text that has just been pasted
+  nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+  " select characters of line (no new line)
+  nnoremap vv ^vg_
+  " make visual yanks place the cursor back where started
+  vnoremap y ygv<Esc>
+  " insert a space after current character
+  " nnoremap <Leader>sa a<Space><ESC>h
+
+  " paste over selected text
+  xnoremap p "_c<Esc>p
+
+  " adds a space to left of cursor
+  nnoremap <silent> zl i <Esc>l
+
+  " inserts a line above or below
+  nnoremap <expr> zj printf('m`%so<ESC>``', v:count1)
+  nnoremap <expr> zk printf('m`%sO<ESC>``', v:count1)
+  nnoremap <silent> oo o<Esc>k
+  nnoremap <silent> OO O<Esc>j
+
+  " move through folded lines
+  nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+  nnoremap   <expr> k (v:count == 0 ? 'gk' : 'k')
+  " nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
+  " nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
+
+  " move selected text up down
+  vnoremap J :m '>+1<CR>gv=gv
+  vnoremap K :m '<-2<CR>gv=gv
+  " inoremap <C-J> <Esc>:m .+1<CR>==a
+  " inoremap <C-K> <Esc>:m .-2<CR>==a
+
+  " move between windows
+  noremap <C-j> <C-W>j
+  noremap <C-k> <C-W>k
+  noremap <C-h> <C-W>h
+  noremap <C-l> <C-W>l
+
+  " Using <ff> to fold or unfold
+  nnoremap <silent> ff @=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>
+  " nnoremap <silent> <SPACE><CR> zi
+  nnoremap <silent><expr> fl &foldlevel ? 'zM' :'zR'
+
+  " Remap mark jumping
+  noremap ' `
+  noremap ` '
+  " g'" = last known position
+
+  " buffer switching
+  nnoremap gt :bnext<CR>
+  nnoremap gT :bprevious<CR>
+  nnoremap <C-S-Right> :bnext<CR>
+  nnoremap <C-S-Left> :bprevious<CR>
+  " new buffer
+  nnoremap <Leader>bn :enew<cr>
+  " close buffer
+  nnoremap <Leader>bq :bp <bar> bd! #<cr>
+  " close all buffers
+  nnoremap <Leader>bQ :bufdo bd! #<cr>
+  " list buffers
+  nnoremap <silent> <Leader>bl :Telescope buffers<cr>
+
+  " resize windows
+  " nnoremap + :vertical resize +5<CR>
+  " nnoremap - :vertical resize -5<CR>
+  " nnoremap s+ :resize +5<CR>
+  " nnoremap s- :resize -5<CR>
+
+  map <C-Up> :resize +1<CR>
+  map <C-Down> :resize -1<CR>
+  map <C-Right> :vertical resize +1<CR>
+  map <C-Left> :vertical resize -1<CR>
+
+  " Change vertical to horizontal
+  nnoremap <Leader>w- <C-w>t<C-w>K
+  " Change horizontal to vertical
+  nnoremap <Leader>w\ <C-w>t<C-w>H
+
+  " perform dot commands over visual blocks
+  vnoremap . :normal .<CR>
+
+  " change tabs
+  nnoremap <Leader>nt :setlocal noexpandtab<CR>
+  xnoremap <Leader>re :retab!<CR>
+  " close quickfix  TODO: delete one
+  nnoremap <Leader>cc :cclose<CR>
+  nnoremap <silent> \q :call toggle#ToggleQuickFix()<CR>
+  nnoremap <silent> \l :call toggle#ToggleLocationList()<CR>
+
+  " keep focused in center of screen when searching
+  nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
+  nnoremap <expr> N (v:searchforward ? 'Nzzzv' : 'nzzzv')
+
+  " insert a place holder
+  inoremap ,p <++>
+
+  " jump to the next '<++>' and edit it
+  nnoremap <silent> <Leader>fe <Esc>/<++><CR>:nohlsearch<CR>c4l
+  nnoremap <silent> <Leader>fi <Esc>/<++><CR>:nohlsearch<CR>
+  inoremap <silent> ;f <Esc>/<++><CR>:nohlsearch<CR>"_c4l
   " }}} === General Mappings ===
 
 " ============== docs ============== {{{
+  " set filetypes
+  " au Filetype *vim,*tmux setl foldenable | setl foldmethod=marker
+  " autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+  augroup cust_ft
+    au!
+    au BufRead,BufNewFile *.ztst            setl ft=ztst
+    au BufRead,BufNewFile *pre-commit       setl ft=sh
+    au BufNewFile,BufRead coc-settings.json setl ft=jsonc
+    au FileType json syntax match Comment +\/\/.\+$+
+    au BufRead,BufNewFile calcurse-note*,~/.local/share/calcurse/notes/* set filetype=markdown
+    au BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
+    au BufRead,BufNewFile *.tex set filetype=tex
+    au FileType nroff setl wrap textwidth=85 colorcolumn=+1
+    au Filetype *json setl shiftwidth=2
+
+    " Disable automatic comment
+    au FileType * setl formatoptions-=cro
+    au BufWritePre * %s/\s\+$//e            " End of lines
+    au BufWritePre * %s#\($\n\s*\)\+\%$##e  " End of file
+
+    au BufReadPre   *.docx silent set ro
+    au BufEnter     *.docx silent set modifiable
+    au BufEnter     *.docx silent  %!pandoc --columns=78 -f docx -t markdown "%"
+    au BufWritePost *.docx :!pandoc -f markdown -t docx % > tmp.docx
+
+    au BufReadPre *.odt silent set ro
+    au BufEnter   *.odt silent  %!pandoc --columns=78 -f odt -t markdown "%"
+
+    autocmd BufReadPre *.rtf silent set ro
+    autocmd BufReadPost *.rtf silent %!unrtf --text
+  augroup END
+
+  " autocmd BufReadPost *.doc,*.docx,*.rtf,*.odp,*.odt silent %!pandoc "%" -tplain -o /dev/stdout
+
   let g:zipPlugin_ext = '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,*.oxt,*.kmz,*.wsz,*.xap,*.docm,*.dotx,*.dotm,*.potx,*.potm,*.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,*.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx'
 
   " autocmd BufReadPost *.odt :%!odt2txt %
@@ -2072,10 +2410,73 @@ call plug#end()
 " }}} === General Mappings ===
 
 " ============== Syntax ============== {{{
+  map <F9> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+  \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+  \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+  nmap <c-a> :call <SID>SynStack()<CR>
+  function! <SID>SynStack()
+    if !exists("*synstack")
+      return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+  endfunction
+
+  ":verbose hi <name>
+  " SyntaxQuery: Display the syntax stack at current cursor position
+  function! s:syntax_query() abort
+    for id in synstack(line("."), col("."))
+      execute 'hi' synIDattr(id, "name")
+    endfor
+  endfunction
+  command! SQ call s:syntax_query()
+  nnoremap <Leader>sll :syn list
+  nnoremap <Leader>slo :verbose hi
+
+  " === custom syntax groups ===
+  " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
+  " FIX: allow punctuation
+  augroup ccommtitle
+    autocmd!
+    autocmd Syntax * syn match
+      \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
+      \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
+    autocmd Syntax * syn match myTodo
+      \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
+      \ contained containedin=.*Comment.*,vimCommentTitle
+    " perlLabel
+    autocmd Syntax * syn keyword cmTitle contained=Comment
+    autocmd Syntax * syn keyword myTodo contained=Comment
+  augroup END
+  " hi def link cmLineComment Comment
+  hi def link cmTitle vimCommentTitle
+  hi def link myTodo Todo
 " }}} === Syntax ===
 
 " ============== Other Functions ============== {{{
+  augroup jump_last_position
+    autocmd!
+    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+      \| exe "normal! g'\"" | endif
+  augroup END
 
+  " Toggle between {non,}relative numbers
+  " augroup numbertoggle
+  "   autocmd!
+  "   autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif
+  "   autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif
+  " augroup END
+
+  " }}}
+
+  " automatically reload buffer if changed outside current buffer
+  augroup auto_read
+    autocmd!
+    autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
+      \ if mode() == 'n' && getcmdwintype() == '' | checktime | endif
+    autocmd FileChangedShellPost * echohl WarningMsg
+      \ | echo "File changed on disk. Buffer reloaded!" | echohl None
+  augroup END
 
   " open in browser {{{
   function! s:go_github()
@@ -2091,7 +2492,7 @@ call plug#end()
 
   augroup gogithub
       au!
-      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
+      au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
   augroup END
 
   " Sources neovim first
@@ -2192,6 +2593,12 @@ call plug#end()
              \ ])
  " }}} === wilder ===
 
+  " ============== colorizer ============== {{{ "
+  lua require 'colorizer'.setup(
+            \ {'vim'; 'sh'; 'zsh'; 'markdown'; 'tmux'; 'yaml'; 'lua';},
+            \ { RGB = false; })
+  " }}} === colorizer ===
+
   " IndentSize: Change indent size depending on file type {{{
   function! <SID>IndentSize(amount)
     exe "setlocal expandtab"
@@ -2199,6 +2606,23 @@ call plug#end()
        \ . " sts=" . a:amount
   endfunction
   " }}} IndentSize
+
+  " DiffSaved: Show diff since last save {{{
+  function! s:DiffSaved()
+    let filetype=&filetype
+    diffthis
+    vnew | r # | normal! 1Gdd
+    diffthis
+    exe 'setl bt=nofile bh=wipe nobl noswf ro ft=' . filetype
+  endfunction
+  command! DS call s:DiffSaved()
+  " }}} DiffSaved
+
+  " FIX: make work get args
+  " function s:TagFile()
+  "   let fname=resolve(expand('%:p'))
+  "   call system('tag --set "$arg"'.resolve(expand('%:p')))
+  " endfunction
 
   " ExecuteBuffer: execute current buffer === {{{ "
   function! s:execute_buffer()
@@ -2290,27 +2714,11 @@ command! Fcman :call s:FullCppMan()
 " ===================== Lua ====================== {{{
 " lua require('plugins/which-key')
 " lua require('plugins/comment')
-" lua require('neoscroll').setup()
-
-" lua require('base')
-" lua require('lutils')
-" lua require('options')
-" lua require('plugins')
-
+lua require('lutils')
 lua require('plugins-d/tree-sitter')
-" lua require('plugins-d/nvim-neoclip')
-" lua require('plugins-d/diffview')
-" lua require('plugins-d/gitsigns')
-" lua require('plugins-d/telescope')
-" lua require('plugins-d/todo-comments')
-
-" ============== highlight line ============== {{{
-" lua require('plugins-d/HighStr')
-
-vnoremap <silent> <Leader>hi :<c-u>HSHighlight<space>
-vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
-" }}} === highlight line ===
-
+lua require('plugins-d/diffview')
+lua require('plugins-d/gitsigns')
+lua require('plugins-d/telescope')
 " }}} === Lua ===
 
 highlight TelescopeSelection      guifg=#FF9500 gui=bold
@@ -2326,6 +2734,17 @@ highlight TelescopePreviewBorder  guifg=#A06469
 highlight TelescopeMatching       guifg=#FF5813
 
 highlight TelescopePromptPrefix   guifg=#EF1D55
+
+" ============== todo-comments-vim ============== {{{
+lua require('plugins-d/todo-comments')
+" }}} === todo-comments-vim ===
+
+" ============== highlight line ============== {{{
+lua require('plugins-d/HighStr')
+
+vnoremap <silent> <Leader>hi :<c-u>HSHighlight<space>
+vnoremap <silent> <Leader>hr :<c-u>HSRmHighlight<CR>
+" }}} === highlight line ===
 
 " ============== background transparent / colors ============== {{{
   highlight DiffAdd      ctermfg=white ctermbg=NONE guifg=#5F875F guibg=NONE
@@ -2364,5 +2783,49 @@ highlight TelescopePromptPrefix   guifg=#EF1D55
   " hi Delimiter guifg=#088649
   " hi Operator guifg=#088649
 " }}} === transparent ===
+
+" ============== tmux ============== {{{
+function! s:tmux_copy_mode_toggle()
+    setlocal number!
+    if &signcolumn ==? 'no'
+        setlocal signcolumn=auto
+    else
+        setlocal signcolumn=no
+    endif
+endfunction
+command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
+
+" autocmd BufEnter * let &titlestring = '' . expand("%:t")
+" set title
+
+" au BufEnter * if empty(&buftype) | call system('tmux rename-window '.expand('%:t:S')) | endif
+
+if exists('$TMUX') && !exists('$NORENAME')
+  augroup rename_tmux
+    au!
+    au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%:t') | endif
+    au VimLeave * call system('tmux set-window automatic-rename on')
+  augroup END
+endif
+
+nnoremap <silent> <Leader>. :call system('tmux select-pane -t :.+')<cr>
+" }}} === tmux ===
+
+  " Fixes clearing of clipboard when using copyq
+if executable('xsel')
+    function! PreserveClipboard()
+        call system('xsel -ib', getreg('+'))
+    endfunction
+    function! PreserveClipboadAndSuspend()
+        call PreserveClipboard()
+        suspend
+    endfunction
+    augroup preserve_clipboard
+      au!
+      au VimLeave * call PreserveClipboard()
+    augroup END
+    nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+    vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+endif
 
 " vim: ft=vim:et:sw=0:ts=2:sts=2:tw=78:fdm=marker:fmr={{{,}}}:

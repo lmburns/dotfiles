@@ -15,10 +15,15 @@ fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 
 cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
 
-exec = vim.api.nvim_exec
+api = vim.api
+
+exec = api.nvim_exec
+
+uv = vim.loop
 
 local M = {}
 
+-- Modify vim options
 function M.opt(o, v, scopes)
   scopes = scopes or { vim.o }
   v = v == nil and true or v
@@ -32,8 +37,8 @@ function M.opt(o, v, scopes)
   end
 end
 
--- Source: https://teukka.tech/luanvim.html
-function M.create(definitions)
+-- Create many augroups
+function M.augroups(definitions)
   for group_name, definition in pairs(definitions) do
     vim.cmd("augroup " .. group_name)
     vim.cmd("autocmd!")
@@ -45,6 +50,7 @@ function M.create(definitions)
   end
 end
 
+-- Create a single augroup
 function M.augroup(name, commands)
   vim.cmd("augroup " .. name)
   vim.cmd("autocmd!")
@@ -118,9 +124,7 @@ function M.vmap_lua(keys, action, options)
   vim.api.nvim_set_keymap("v", keys, "<cmd>'<,'>lua " .. action .. "<CR>", opts)
 end
 
-function M.t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
+function M.t(str) return vim.api.nvim_replace_termcodes(str, true, true, true) end
 
 function M.is_buffer_empty()
   -- Check whether the current buffer is empty
@@ -150,9 +154,7 @@ function M.all(...)
   end
 end
 
-function M.clear_module(module_name)
-  package.loaded[module_name] = nil
-end
+function M.clear_module(module_name) package.loaded[module_name] = nil end
 
 function M.prequire(m)
   local ok, err = pcall(require, m)
@@ -177,13 +179,35 @@ function M.map_lua_buf(mode, keys, action, options, buf_nr)
   )
 end
 
-function M.has_key(table, key)
-  return table.key ~= nil
-end
+function M.has_key(table, key) return table.key ~= nil end
 
-function M.executable(e)
-  return fn.executable(e) > 0
-end
+function M.executable(e) return fn.executable(e) > 0 end
+
+cmd [[
+    function! IsPluginInstalled(name) abort
+      return luaeval("_G.packer_plugins['" .. a:name .. "'] ~= nil")
+    endfunction
+]]
+
+-- my_packer.is_plugin_installed = function(name)
+--   return _G.packer_plugins[name] ~= nil
+-- end
+--
+-- function AutocmdLazyConfig(plugin_name)
+--   local timer = vim.loop.new_timer()
+--   timer:start(
+--       1000, 0, vim.schedule_wrap(
+--           function()
+--             if _G.packer_plugins[plugin_name].loaded then
+--               timer:close() -- Always close handles to avoid leaks.
+--               vim.cmd(
+--                   string.format("doautocmd User %s", "packer-" .. plugin_name)
+--               )
+--             end
+--           end
+--       )
+--   )
+-- end
 
 -- Allows us to use utils globally
 _G.utils = M

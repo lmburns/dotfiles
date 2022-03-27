@@ -11,7 +11,7 @@ local no_errors, error_msg = pcall(function()
 
   local time
   local profile_info
-  local should_profile = true
+  local should_profile = false
   if should_profile then
     local hrtime = vim.loop.hrtime
     profile_info = {}
@@ -96,9 +96,10 @@ _G.packer_plugins = {
     wants = { "plenary.nvim" }
   },
   kimbox = {
-    after = { "telescope.nvim" },
+    config = { "\27LJ\2\n0\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\21plugins-d/kimbox\frequire\0" },
     loaded = true,
-    only_config = true
+    path = "/home/lucas/.local/share/nvim/site/pack/packer/start/kimbox",
+    url = "https://github.com/lmburns/kimbox"
   },
   neogit = {
     config = { "\27LJ\2\n?\0\0\3\0\3\0\0066\0\0\0'\2\1\0B\0\2\0029\0\2\0B\0\1\1K\0\1\0\vconfig\21plugins-d/neogit\frequire\0" },
@@ -116,57 +117,35 @@ _G.packer_plugins = {
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-colorizer.lua",
     url = "https://github.com/norcalli/nvim-colorizer.lua"
   },
-  ["nvim-neoclip.lua"] = {
-    config = { "\27LJ\2\n6\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\27plugins-d/nvim-neoclip\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-neoclip.lua",
-    url = "https://github.com/AckslD/nvim-neoclip.lua"
-  },
   ["nvim-tree-docs"] = {
-    load_after = {
-      ["nvim-treesitter"] = true
-    },
-    loaded = false,
+    load_after = {},
+    loaded = true,
     needs_bufread = false,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-tree-docs",
     url = "https://github.com/nvim-treesitter/nvim-tree-docs"
   },
   ["nvim-treesitter"] = {
-    after = { "nvim-tree-docs", "nvim-treesitter-textobjects", "playground", "nvim-ts-rainbow", "nvim-treesitter-refactor" },
-    config = { "\27LJ\2\n5\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\26plugins-d/tree-sitter\frequire\0" },
-    loaded = false,
-    needs_bufread = true,
-    only_cond = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-treesitter",
-    url = "https://github.com/nvim-treesitter/nvim-treesitter"
+    after = { "nvim-treesitter-refactor", "nvim-treesitter-textobjects", "nvim-tree-docs", "nvim-ts-rainbow" },
+    loaded = true,
+    only_config = true
   },
   ["nvim-treesitter-refactor"] = {
-    load_after = {
-      ["nvim-treesitter"] = true
-    },
-    loaded = false,
+    load_after = {},
+    loaded = true,
     needs_bufread = false,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-treesitter-refactor",
     url = "https://github.com/nvim-treesitter/nvim-treesitter-refactor"
   },
   ["nvim-treesitter-textobjects"] = {
-    load_after = {
-      ["nvim-treesitter"] = true
-    },
-    loaded = false,
+    load_after = {},
+    loaded = true,
     needs_bufread = false,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-treesitter-textobjects",
     url = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects"
   },
   ["nvim-ts-rainbow"] = {
-    load_after = {
-      ["nvim-treesitter"] = true
-    },
-    loaded = false,
+    load_after = {},
+    loaded = true,
     needs_bufread = false,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-ts-rainbow",
     url = "https://github.com/p00f/nvim-ts-rainbow"
@@ -183,11 +162,10 @@ _G.packer_plugins = {
     url = "https://github.com/wbthomason/packer.nvim"
   },
   playground = {
-    load_after = {
-      ["nvim-treesitter"] = true
-    },
+    commands = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
     loaded = false,
     needs_bufread = true,
+    only_cond = false,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/playground",
     url = "https://github.com/nvim-treesitter/playground"
   },
@@ -206,117 +184,41 @@ _G.packer_plugins = {
     path = "/home/lucas/.local/share/nvim/site/pack/packer/start/sqlite.lua",
     url = "https://github.com/tami5/sqlite.lua"
   },
-  ["telescope-bookmarks.nvim"] = {
-    config = { "\27LJ\2\nN\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\14bookmarks\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-bookmarks.nvim",
-    url = "https://github.com/dhruvmanila/telescope-bookmarks.nvim"
-  },
-  ["telescope-coc.nvim"] = {
-    config = { "\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\bcoc\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-coc.nvim",
-    url = "https://github.com/fannheyward/telescope-coc.nvim"
-  },
-  ["telescope-frecency.nvim"] = {
-    config = { "\27LJ\2\nM\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\rfrecency\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-frecency.nvim",
-    url = "https://github.com/nvim-telescope/telescope-frecency.nvim"
-  },
-  ["telescope-fzf-native.nvim"] = {
-    config = { "\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\bfzf\19load_extension\14telescope\frequire\0" },
-    loaded = true,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/start/telescope-fzf-native.nvim",
-    url = "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
-  },
-  ["telescope-ghq.nvim"] = {
-    config = { "\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\bghq\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-ghq.nvim",
-    url = "https://github.com/nvim-telescope/telescope-ghq.nvim"
-  },
-  ["telescope-github.nvim"] = {
-    config = { "\27LJ\2\nG\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\agh\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-github.nvim",
-    url = "https://github.com/nvim-telescope/telescope-github.nvim"
-  },
-  ["telescope-packer.nvim"] = {
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-packer.nvim",
-    url = "https://github.com/nvim-telescope/telescope-packer.nvim"
-  },
-  ["telescope-ultisnips.nvim"] = {
-    config = { "\27LJ\2\nN\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\14ultisnips\19load_extension\14telescope\frequire\0" },
-    load_after = {
-      ["telescope.nvim"] = true
-    },
-    loaded = false,
-    needs_bufread = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope-ultisnips.nvim",
-    url = "https://github.com/fhill2/telescope-ultisnips.nvim"
-  },
   ["telescope.nvim"] = {
-    after = { "telescope-packer.nvim", "telescope-coc.nvim", "telescope-frecency.nvim", "telescope-ghq.nvim", "nvim-neoclip.lua", "telescope-github.nvim", "telescope-bookmarks.nvim", "telescope-ultisnips.nvim" },
-    commands = { "Telescope" },
-    config = { "\27LJ\2\n3\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\24plugins-d/telescope\frequire\0" },
-    load_after = {},
-    loaded = false,
-    needs_bufread = true,
-    only_cond = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/telescope.nvim",
-    url = "https://github.com/nvim-telescope/telescope.nvim",
-    wants = { "popup.nvim", "plenary.nvim", "telescope-github.nvim", "telescope-ghq.nvim", "telescope-frecency.nvim", "telescope-coc.nvim", "telescope-ultisnips.nvim", "telescope-fzf-native.nvim" }
+    config = { "require('plugins-d/telescope')" },
+    loaded = true,
+    path = "/home/lucas/.local/share/nvim/site/pack/packer/start/telescope.nvim",
+    url = "https://github.com/nvim-telescope/telescope.nvim"
   },
   ["todo-comments.nvim"] = {
     config = { "\27LJ\2\n7\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\28plugins-d/todo-comments\frequire\0" },
-    loaded = false,
-    needs_bufread = false,
-    only_cond = false,
-    path = "/home/lucas/.local/share/nvim/site/pack/packer/opt/todo-comments.nvim",
-    url = "https://github.com/folke/todo-comments.nvim"
+    loaded = true,
+    path = "/home/lucas/.local/share/nvim/site/pack/packer/start/todo-comments.nvim",
+    url = "https://github.com/folke/todo-comments.nvim",
+    wants = { "plenary.nvim" }
   },
   ["vim-devicons"] = {
     loaded = true,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/start/vim-devicons",
     url = "https://github.com/ryanoasis/vim-devicons"
   },
+  ["vim-easy-align"] = {
+    config = { "\27LJ\2\n8\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\29plugins-d/vim-easy-align\frequire\0" },
+    loaded = true,
+    path = "/home/lucas/.local/share/nvim/site/pack/packer/start/vim-easy-align",
+    url = "https://github.com/junegunn/vim-easy-align"
+  },
   ["vizunicode.vim"] = {
     loaded = true,
     path = "/home/lucas/.local/share/nvim/site/pack/packer/start/vizunicode.vim",
-    url = "https://github.com/wfxr/vizunicode.vim"
+    url = "https://github.com/wfxr/vizunicode.vim",
+    wants = { "vim-devicons" }
   }
 }
 
 time([[Defining packer_plugins]], false)
 local module_lazy_loads = {
-  ["^neogit"] = "neogit",
-  ["^telescope"] = "telescope.nvim"
+  ["^neogit"] = "neogit"
 }
 local lazy_load_called = {['packer.load'] = true}
 local function lazy_load_module(module_name)
@@ -343,43 +245,57 @@ if not vim.g.packer_custom_loader_enabled then
   vim.g.packer_custom_loader_enabled = true
 end
 
--- Config for: telescope-fzf-native.nvim
-time([[Config for telescope-fzf-native.nvim]], true)
-try_loadstring("\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0'\2\3\0B\0\2\1K\0\1\0\bfzf\19load_extension\14telescope\frequire\0", "config", "telescope-fzf-native.nvim")
-time([[Config for telescope-fzf-native.nvim]], false)
+-- Config for: telescope.nvim
+time([[Config for telescope.nvim]], true)
+require('plugins-d/telescope')
+time([[Config for telescope.nvim]], false)
+-- Config for: todo-comments.nvim
+time([[Config for todo-comments.nvim]], true)
+try_loadstring("\27LJ\2\n7\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\28plugins-d/todo-comments\frequire\0", "config", "todo-comments.nvim")
+time([[Config for todo-comments.nvim]], false)
+-- Config for: nvim-treesitter
+time([[Config for nvim-treesitter]], true)
+try_loadstring("\27LJ\2\n5\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\26plugins-d/tree-sitter\frequire\0", "config", "nvim-treesitter")
+time([[Config for nvim-treesitter]], false)
+-- Config for: vim-easy-align
+time([[Config for vim-easy-align]], true)
+try_loadstring("\27LJ\2\n8\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\29plugins-d/vim-easy-align\frequire\0", "config", "vim-easy-align")
+time([[Config for vim-easy-align]], false)
 -- Config for: kimbox
 time([[Config for kimbox]], true)
 try_loadstring("\27LJ\2\n0\0\0\3\0\2\0\0046\0\0\0'\2\1\0B\0\2\1K\0\1\0\21plugins-d/kimbox\frequire\0", "config", "kimbox")
 time([[Config for kimbox]], false)
 -- Load plugins in order defined by `after`
 time([[Sequenced loading]], true)
-vim.cmd [[ packadd popup.nvim ]]
-vim.cmd [[ packadd sqlite.lua ]]
-vim.cmd [[ packadd plenary.nvim ]]
+vim.cmd [[ packadd nvim-ts-rainbow ]]
+vim.cmd [[ packadd nvim-tree-docs ]]
+vim.cmd [[ packadd nvim-treesitter-textobjects ]]
+vim.cmd [[ packadd nvim-treesitter-refactor ]]
 time([[Sequenced loading]], false)
 
 -- Command lazy-loads
 time([[Defining lazy-load commands]], true)
 pcall(vim.cmd, [[command -nargs=* -range -bang -complete=file DiffviewFileHistory lua require("packer.load")({'diffview.nvim'}, { cmd = "DiffviewFileHistory", l1 = <line1>, l2 = <line2>, bang = <q-bang>, args = <q-args>, mods = "<mods>" }, _G.packer_plugins)]])
-pcall(vim.cmd, [[command -nargs=* -range -bang -complete=file Telescope lua require("packer.load")({'telescope.nvim'}, { cmd = "Telescope", l1 = <line1>, l2 = <line2>, bang = <q-bang>, args = <q-args>, mods = "<mods>" }, _G.packer_plugins)]])
 pcall(vim.cmd, [[command -nargs=* -range -bang -complete=file DiffviewOpen lua require("packer.load")({'diffview.nvim'}, { cmd = "DiffviewOpen", l1 = <line1>, l2 = <line2>, bang = <q-bang>, args = <q-args>, mods = "<mods>" }, _G.packer_plugins)]])
+pcall(vim.cmd, [[command -nargs=* -range -bang -complete=file TSHighlightCapturesUnderCursor lua require("packer.load")({'playground'}, { cmd = "TSHighlightCapturesUnderCursor", l1 = <line1>, l2 = <line2>, bang = <q-bang>, args = <q-args>, mods = "<mods>" }, _G.packer_plugins)]])
+pcall(vim.cmd, [[command -nargs=* -range -bang -complete=file TSPlaygroundToggle lua require("packer.load")({'playground'}, { cmd = "TSPlaygroundToggle", l1 = <line1>, l2 = <line2>, bang = <q-bang>, args = <q-args>, mods = "<mods>" }, _G.packer_plugins)]])
 time([[Defining lazy-load commands]], false)
 
 vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Filetype lazy-loads
 time([[Defining lazy-load filetype autocommands]], true)
-vim.cmd [[au FileType sh ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "sh" }, _G.packer_plugins)]]
-vim.cmd [[au FileType markdown ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "markdown" }, _G.packer_plugins)]]
-vim.cmd [[au FileType yaml ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "yaml" }, _G.packer_plugins)]]
-vim.cmd [[au FileType lua ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "lua" }, _G.packer_plugins)]]
-vim.cmd [[au FileType zsh ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "zsh" }, _G.packer_plugins)]]
 vim.cmd [[au FileType vim ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "vim" }, _G.packer_plugins)]]
+vim.cmd [[au FileType lua ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "lua" }, _G.packer_plugins)]]
+vim.cmd [[au FileType markdown ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "markdown" }, _G.packer_plugins)]]
+vim.cmd [[au FileType zsh ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "zsh" }, _G.packer_plugins)]]
+vim.cmd [[au FileType sh ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "sh" }, _G.packer_plugins)]]
 vim.cmd [[au FileType tmux ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "tmux" }, _G.packer_plugins)]]
+vim.cmd [[au FileType yaml ++once lua require("packer.load")({'nvim-colorizer.lua'}, { ft = "yaml" }, _G.packer_plugins)]]
 time([[Defining lazy-load filetype autocommands]], false)
   -- Event lazy-loads
 time([[Defining lazy-load event autocommands]], true)
-vim.cmd [[au VimEnter * ++once lua require("packer.load")({'HighStr.nvim', 'todo-comments.nvim', 'nvim-colorizer.lua', 'diffview.nvim', 'neogit', 'nvim-treesitter', 'gitsigns.nvim'}, { event = "VimEnter *" }, _G.packer_plugins)]]
+vim.cmd [[au VimEnter * ++once lua require("packer.load")({'gitsigns.nvim', 'neogit', 'diffview.nvim', 'HighStr.nvim'}, { event = "VimEnter *" }, _G.packer_plugins)]]
 time([[Defining lazy-load event autocommands]], false)
 vim.cmd("augroup END")
 if should_profile then save_profiles() end

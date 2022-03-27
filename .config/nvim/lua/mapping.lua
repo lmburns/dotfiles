@@ -2,6 +2,9 @@ local utils = require("common.utils")
 local map = utils.map
 
 -- ============== General Mappings ============== [[[
+map("i", "jk", "<ESC>")
+map("i", "kj", "<ESC>")
+
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
@@ -30,7 +33,7 @@ map("n", "L", "g_")
 map("x", "L", "g_")
 
 -- Save write
-map("n", "<C-s>", ":update<CR>")
+-- map("n", "<C-s>", ":update<CR>")
 -- Save & quit
 -- map("n", "<C-x>", ":x<CR>")
 

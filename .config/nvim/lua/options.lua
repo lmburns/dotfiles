@@ -49,6 +49,7 @@ o.synmaxcol = 1000 -- do not highlight long lines
 o.foldenable = false
 o.foldmethod = "marker"
 o.foldmarker = "[[[,]]]"
+o.formatoptions:remove({ "c", "r", "o"})
 
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
@@ -142,6 +143,7 @@ o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 cmd [[
     :cabbrev C PackerCompile
     :cabbrev U PackerUpdate
+    :cabbrev S PackerSync
 
     :cnoreabbrev W! w!
     :cnoreabbrev Q! q!
@@ -161,6 +163,9 @@ cmd(
       filetype on
       filetype plugin on
       filetype plugin indent on
+
+      syntax on
+      syntax enable
     ]]
 )
 -- ]]] === Commands ===

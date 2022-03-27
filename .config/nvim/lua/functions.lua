@@ -3,10 +3,6 @@ local map = utils.map
 local autocmd = utils.autocmd
 
 -- ============================ Commands ============================== [[[
-cmd([[command! PU packadd packer.nvim | lua require('plugins').update()]])
-cmd([[command! PI packadd packer.nvim | lua require('plugins').install()]])
-cmd([[command! PS packadd packer.nvim | lua require('plugins').sync()]])
-cmd([[command! PC packadd packer.nvim | lua require('plugins').clean()]])
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[

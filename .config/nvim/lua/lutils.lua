@@ -1,7 +1,7 @@
 local M = {}
 
 -- Print text nicely
-function M.put(...)
+function _G.put(...)
   local objects = {}
   for i = 1, select("#", ...) do
     local v = select(i, ...)
@@ -29,7 +29,7 @@ function M.dump(o)
 end
 
 -- Capture output of command
-function M.capture(cmd, raw)
+function _G.capture(cmd, raw)
   local f = assert(io.popen(cmd, "r"))
   local s = assert(f:read("*a"))
   f:close()
