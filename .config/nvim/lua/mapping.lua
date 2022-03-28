@@ -1,5 +1,20 @@
+local M = {}
+
 local utils = require("common.utils")
 local map = utils.map
+
+M.mappings = {}
+
+local function map2(modes, lhs, rhs, opts)
+  opts = opts or {}
+  opts.noremap = opts.noremap == nil and true or opts.noremap
+  if type(modes) == "string" then
+    modes = { modes }
+  end
+  for _, mode in ipairs(modes) do
+    table.insert(M.mappings, { mode, lhs, rhs, opts })
+  end
+end
 
 -- ============== General Mappings ============== [[[
 map("i", "jk", "<ESC>")
@@ -65,8 +80,30 @@ map("i", "<S-Tab>", "<C-d>")
 map("x", "<", "<gv")
 map("x", ">", ">gv")
 
--- Use `u` to undo, use `U` to redo, mind = blown
+-- Use `u` to undo, use `U` to redo
 map("n", "U", "<C-r>")
+-- map('n', 'u', [[:execute('later ' . v:count1 . 'f')<CR>]])
+-- map('n', 'U', [[:execute('earlier ' . v:count1 . 'f')<CR>]])
+
+-- Yank mappings
+map("n", "y", [[v:lua.require'common.yank'.wrap()]], { expr = true })
+map("n", "yw", [[v:lua.require'common.yank'.wrap('iw')]], { expr = true })
+map("n", "yW", [[v:lua.require'common.yank'.wrap('iW')]], { expr = true })
+-- Copy directory
+map(
+    "n", "yd",
+    [[:lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>]]
+)
+-- Copy name
+map(
+    "n", "yn",
+    [[:lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>]]
+)
+-- Copy path
+map(
+    "n", "yp",
+    [[:lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>]]
+)
 
 -- Make deleting line not go to clipbard
 map("n", "d", "\"_d")
@@ -89,6 +126,9 @@ map("v", "y", "ygv<Esc>")
 
 -- Paste over selected text
 map("x", "p", "_c<Esc>p")
+
+-- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
+-- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 
 -- Adds a space  to left of cursor
 map("n", "zl", "i <Esc>l", { silent = true })
@@ -126,14 +166,35 @@ map("n", "fl", "&foldlevel ? 'zM' :'zR'", { silent = true, expr = true })
 -- map("n", "<Space><CR>", "zi", { silent = true })
 
 -- Remap mark jumping
-map("", "'", "`")
-map("", "`", "'")
+map({ "n", "x", "o" }, "'", "`")
+map({ "n", "x", "o" }, "`", "'")
 
 -- Buffer switching
 map("n", "gt", ":bnext<CR>")
 map("n", "gT", ":bprevious<CR>")
 map("n", "<C-S-Right>", ":bnext<CR>")
 map("n", "<C-S-Left>", ":bprevious<CR>")
+
+map(
+    { "n", "x", "o" }, "0", [[v:lua.require'common.builtin'.jump0()]],
+    { expr = true }
+)
+
+-- TODO: Remove or use
+map(
+    { "n", "x" }, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]],
+    { expr = true }
+)
+map(
+    { "n", "x" }, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]],
+    { expr = true }
+)
+map("n", "[b", [[:execute(v:count1 . 'bprev')<CR>]])
+map("n", "]b", [[:execute(v:count1 . 'bnext')<CR>]])
+map("n", "[q", [[:execute(v:count1 . 'cprev')<CR>]])
+map("n", "]q", [[:execute(v:count1 . 'cnext')<CR>]])
+map("n", "[Q", ":cfirst<CR>")
+map("n", "]Q", ":clast<CR>")
 
 -- New buffer
 map("n", "<Leader>bn", ":enew<CR>")
@@ -168,6 +229,10 @@ map("n", "<Leader>nt", ":setlocal noexpandtab<CR>")
 map("x", "<Leader>re", ":retab!<CR>")
 -- Close quickfix
 map("n", "<Leader>cc", ":cclose<CR>")
+-- Close diff
+map("n", "qd", [[:lua require('common.kutils').close_diff()<CR>]])
+-- Switch to last buffer
+map("n", "<A-u>", [[:lua require('common.builtin').switch_lastbuf()<CR>]])
 
 -- Keep focused in center of screen when searching
 -- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
@@ -194,6 +259,12 @@ map("n", "<Leader>su1", "zug")
 -- ]]] === Spelling ===
 
 -- ==================== Other =================== [[[
-map("n", "F2", ":set nowrap!<CR>", { silent = true })
-map("n", "F3", ":set relativenumber!<CR>", { silent = true })
+-- map("n", "F2", ":set nowrap!<CR>", { silent = true })
+-- map("n", "F3", ":set relativenumber!<CR>", { silent = true })
+map("n", "<Leader>ec", ":e ~/.config/nvim/coc-settings.json<CR>")
+map("n", "<Leader>ev", ":e $VIMRC<CR>")
+map("n", "<Leader>sv", ":so $VIMRC<CR>")
+map("n", "<Leader>ez", ":e $ZDOTDIR/.zshrc<CR>")
 -- ]]] === Other ===
+
+return M

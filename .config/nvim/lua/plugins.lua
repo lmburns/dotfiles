@@ -21,9 +21,9 @@ if not vim.loop.fs_stat(install_path) then
   )
 end
 
-cmd [[packadd packer.nvim]]
+cmd([[packadd packer.nvim]])
 local packer = require("packer")
-local use = packer.use
+-- local use = packer.use
 
 -- Recompile Packer when the file is saved
 -- autocmd(
@@ -57,12 +57,23 @@ return packer.startup(
           keybindings = { prompt_revert = "R", diff = "D" },
         },
       },
-      function()
+      function(use)
+        local function conf(name)
+          if name:match("^plugs%.") then
+            return ([[require('%s')]]):format(name)
+          else
+            return ([[require('plugs.config').%s()]]):format(name)
+          end
+        end
+
         -- Package manager
         use({ "wbthomason/packer.nvim", opt = true })
 
         -- ============================ Vim Library =========================== [[[
         use({ "tpope/vim-repeat" })
+
+        -- Prevent clipboard from being hijacked by snippets and such
+        -- use({ "kevinhwang91/nvim-hclipboard" })
         -- ]]] === Vim Library ===
 
         -- ============================ Lua Library =========================== [[[
@@ -79,13 +90,47 @@ return packer.startup(
             {
               "wfxr/vizunicode.vim",
               wants = "vim-devicons",
-              setup = autocmd(
+              config = autocmd(
                   "vizunicode_custom",
                   "BufEnter coc-settings.json VizUnicodeAll", true
               ),
             }
         )
         -- ]]] === Icons ===
+
+        -- ============================ File Manager =========================== [[[
+        use(
+            {
+              "kevinhwang91/rnvimr",
+              opt = false,
+              config = [[require("plugs.rnvimr")]],
+            }
+        )
+
+        use({ "ptzz/lf.vim", config = conf("lf") })
+        -- ]]] === File Manager ===
+
+        -- ============================ Neo/Floaterm =========================== [[[
+        use(
+            {
+              "voldikss/fzf-floaterm",
+              requires = { "voldikss/vim-floaterm" },
+              config = conf("floaterm"),
+            }
+        )
+
+        use({ "kassio/neoterm", config = conf("neoterm") })
+        -- ]]] === Floaterm ===
+
+        -- =========================== BetterQuickFix ========================== [[[
+        use(
+            {
+              "kevinhwang91/nvim-bqf",
+              ft = "qf",
+              config = [[require("plugs.bqf")]],
+            }
+        )
+        -- ]]] === BetterQuickFix ===
 
         -- ============================ EasyAlign ============================= [[[
         use(
@@ -108,22 +153,23 @@ return packer.startup(
               "junegunn/goyo.vim",
               {
                 "junegunn/limelight.vim",
-                config = [[require("plugins-d/limelight")]],
+                config = [[require("plugs.limelight")]],
               },
             }
         )
         -- ]]] === Limelight ===
 
         -- ============================= Vimtex =============================== [[[
-        use({ "lervag/vimtex", config = [[require("plugins-d/vimtex")]] })
+        use({ "lervag/vimtex", config = conf("plugs.vimtex") })
         -- ]]] === Vimtex ===
 
-        -- use({ })
-        -- use({ })
+        -- ============================ Open Browser =========================== [[[
+        use({ "tyru/open-browser.vim", conf = conf("open_browser") })
+        -- ]]] === Open Browser ===
 
         -- =========================== Colorscheme ============================ [[[
         local colorscheme = "kimbox"
-        use({ "lmburns/kimbox", config = [[require("plugins-d/kimbox")]] })
+        use({ "lmburns/kimbox", config = [[require("plugs.kimbox")]] })
         -- ]]] === Colorscheme ===
 
         -- ============================= Lualine ============================== [[[
@@ -132,7 +178,7 @@ return packer.startup(
               "nvim-lualine/lualine.nvim",
               after = colorscheme,
               requires = { "kyazdani42/nvim-web-devicons", opt = true },
-              config = [[require("plugins-d/lualine")]],
+              config = [[require("plugs.lualine")]],
             }
         )
 
@@ -147,23 +193,27 @@ return packer.startup(
         -- ]]] === Lualine ===
 
         -- =========================== Indentline ============================= [[[
-        use(
-            {
-              "yggdroot/indentline",
-              config = [[require("plugins-d/indentline")]],
-            }
-        )
+        use({ "yggdroot/indentline", config = [[require("plugs.indentline")]] })
         -- ]]] === Indentline ===
 
-        -- ============================= Operator============================== [[[
-        use({ "tpope/vim-surround" })
-        use({ "tpope/vim-endwise" })
-
+        -- =============================== Fzf ================================ [[[
         use(
             {
-              "gbprod/substitute.nvim",
-              config = [[require("plugins-d/substitute")]],
+              "junegunn/fzf.vim",
+              requires = { { "junegunn/fzf", run = "./install --bin" } },
+              config = conf("plugs.fzf")
             }
+        )
+
+        -- use({ "lotabout/skim", run = "./install --bin" })
+        -- ]]] === Fzf ===
+
+        -- ============================= Operator============================== [[[
+        -- Similar to vim-sandwhich (I kind of use both)
+        use({ "tpope/vim-surround" })
+        use(
+            { "gbprod/substitute.nvim",
+              config = [[require("plugs.substitute")]] }
         )
         use(
             {
@@ -177,10 +227,19 @@ return packer.startup(
               end,
             }
         )
+
+        use(
+            {
+              "Raimondi/delimitMate",
+              event = "InsertEnter",
+              config = conf("delimitmate"),
+            }
+        )
         -- use(
         --     { "AndrewRadev/switch.vim",
-        --       config = [[require("plugins-d/switch")]] }
+        --       config = [[require("plugs.switch")]] }
         -- )
+
         -- ]]] === Operator ===
 
         -- =============================== Tags =============================== [[[
@@ -196,15 +255,19 @@ return packer.startup(
               end,
             }
         )
-        use({ "liuchengxu/vista.vim", config = [[require("plugins-d/vista")]] })
+        use({ "liuchengxu/vista.vim", config = [[require("plugs.vista")]] })
         -- ]]] === Tags ===
+
+        -- ============================= Startify ============================= [[[
+        use { "mhinz/vim-startify", config = conf("plugs.startify") }
+        -- ]]] === Startify ===
 
         -- ============================= UndoTree ============================= [[[
         use(
             {
               "mbbill/undotree",
               cmd = "UndoTreeToggle",
-              config = [[require("plugins-d/undotree")]],
+              config = [[require("plugs.undotree")]],
             }
         )
         -- ]]] === UndoTree ===
@@ -213,10 +276,182 @@ return packer.startup(
         use(
             {
               "preservim/nerdcommenter",
-              config = [[require("plugins-d/nerdcommenter")]],
+              config = [[require("plugs.nerdcommenter")]],
             }
         )
         -- ]]] === UndoTree ===
+
+        -- ============================== Targets ============================== [[[
+        use({ "wellle/targets.vim", config = conf("targets") })
+        -- ]]] === Neoformat ===
+
+        -- ============================== Nvim-R =============================== [[[
+        use(
+            {
+              "jalvesaq/Nvim-R",
+              branch = "stable",
+              config = conf("plugs.nvim-r"),
+            }
+        )
+        -- ]]] === Nvim-R ===
+
+        -- ========================= VimSlime - Python ========================= [[[
+        -- use(
+        --     {
+        --       "jpalardy/vim-slime",
+        --       ft = "python",
+        --       config = conf("plugs.vim-slime"),
+        --     }
+        -- )
+        -- ]]] === VimSlime - Python ===
+
+        -- ============================= Vim - Rust ============================ [[[
+        use({ "rust-lang/rust.vim", ft = "rust", config = conf("plugs.rust") })
+
+        use({ "nastevens/vim-cargo-make" })
+        -- ]]] === VimSlime - Python ===
+
+        -- ============================== Vim - Go ============================= [[[
+        use({ "fatih/vim-go", ft = "go", config = conf("plugs.vim-go") })
+        -- ]]] === VimSlime - Python ===
+
+        -- ============================== Markdown ============================= [[[
+        use(
+            {
+              "vim-pandoc/vim-pandoc-syntax",
+              ft = { "pandoc", "markdown", "vimwiki" },
+              config = conf("pandoc"),
+            }
+        )
+
+        use(
+            {
+              "plasticboy/vim-markdown",
+              ft = { "markdown", "vimwiki" },
+              config = conf("markdown"),
+            }
+        )
+
+        use(
+            {
+              "dhruvasagar/vim-table-mode",
+              ft = { "markdown", "vimwiki" },
+              config = conf("table_mode"),
+            }
+        )
+
+        use(
+            {
+              "SidOfc/mkdx",
+              ft = { "markdown", "vimwiki" },
+              config = conf("mkdx"),
+            }
+        )
+
+        use({ "vimwiki/vimwiki", config = conf("vimwiki") })
+
+        cmd [[
+          augroup markdown
+            autocmd!
+            autocmd FileType markdown,vimwiki
+              \ setl iskeyword+=-|
+              \ vnoremap ``` <esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|
+              \ nnoremap <buffer> <F4> !pandoc % --pdf-engine=xelatex -o %:r.pdf|
+              \ inoremap ** ****<Left><Left>|
+              \ inoremap <expr> <right> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"|
+              \ vnoremap <Leader>si :s/`/*/g<CR>
+          augroup END
+        ]]
+        -- ]]] === VimSlime - Python ===
+
+        -- ========================= Syntax-Highlighting ======================= [[[
+        use(
+            {
+              "sheerun/vim-polyglot",
+              setup = function()
+                g.polyglot_disabled = {
+                  "markdown",
+                  "python",
+                  "rust",
+                  "java",
+                  "lua",
+                  "ruby",
+                  "zig",
+                  "d",
+                  "dockerfile",
+                  "rustpeg",
+                  "lf",
+                  "ron",
+                }
+              end,
+            }
+        )
+
+        use({ "wfxr/dockerfile.vim" })
+
+        use({ "rhysd/vim-rustpeg" })
+
+        use({ "NoahTheDuke/vim-just" })
+
+        use({ "camnw/lf-vim" })
+
+        use({ "ron-rs/ron.vim" })
+        -- ]]] === Syntax-Highlighting ===
+
+        -- ============================= File-Viewer =========================== [[[
+        use { "mattn/vim-xxdcursor" }
+        use {
+          "fidian/hexmode",
+          config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
+        }
+
+        use { "jamessan/vim-gnupg" }
+
+        use { "AndrewRadev/id3.vim" }
+
+        use { "alx741/vinfo" }
+
+        use { "HiPhish/info.vim", config = conf("info") }
+        -- ]]] === File Viewer ===
+
+        -- ============================== Snippets ============================= [[[
+        use({ "SirVer/ultisnips", config = conf("ultisnips") })
+        use({ "honza/vim-snippets" })
+        -- ]]] === Snippets ===
+
+        -- ============================== Minimap ============================== [[[
+        use { "wfxr/minimap.vim", config = conf("minimap") }
+        -- ]]] === Minimap ===
+
+        -- ============================= Highlight ============================ [[[
+        use(
+            {
+              "norcalli/nvim-colorizer.lua",
+              ft = { "vim", "sh", "zsh", "markdown", "tmux", "yaml", "lua" },
+              config = function() require("plugs.colorizer") end,
+            }
+        )
+        use(
+            {
+              "Pocco81/HighStr.nvim",
+              event = "VimEnter",
+              config = function() require("plugs.HighStr") end,
+            }
+        )
+        -- TODO: hi
+        use(
+            {
+              "folke/todo-comments.nvim",
+              config = conf("plugs.todo-comments"),
+              wants = { "plenary.nvim" },
+              opt = false,
+            }
+        )
+        -- ]]] === Highlight ===
+
+        -- ============================= Neoformat ============================= [[[
+        use({ "sbdchd/neoformat", config = conf("plugs.neoformat") })
+        -- ]]] === Neoformat ===
 
         -- =============================== Coc ================================ [[[
         -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
@@ -228,43 +463,16 @@ return packer.startup(
               "neoclide/coc.nvim",
               branch = "master",
               run = "yarn install --frozen-lockfile",
+              config = [[require('plugs.coc').init()]],
             }
         ) -- ]]] === Coc ===
-
-        -- ============================= Highlight ============================ [[[
-        use(
-            {
-              "norcalli/nvim-colorizer.lua",
-              ft = { "vim", "sh", "zsh", "markdown", "tmux", "yaml", "lua" },
-              config = function() require("plugins-d/colorizer") end,
-            }
-        )
-        use(
-            {
-              "Pocco81/HighStr.nvim",
-              event = "VimEnter",
-              config = function() require("plugins-d/HighStr") end,
-            }
-        )
-        -- TODO: hi
-        use(
-            {
-              "folke/todo-comments.nvim",
-              config = function()
-                require("plugins-d/todo-comments")
-              end,
-              wants = { "plenary.nvim" },
-              opt = false,
-            }
-        )
-        -- ]]] === Highlight ===
 
         -- ============================= Treesitter ============================ [[[
         use(
             {
               "nvim-treesitter/nvim-treesitter",
               run = ":TSUpdate",
-              config = function() require("plugins-d/tree-sitter") end,
+              config = conf("plugs.tree-sitter"),
             }
         )
 
@@ -274,6 +482,7 @@ return packer.startup(
               after = "nvim-treesitter",
             }
         )
+        use({ "RRethy/nvim-treesitter-endwise", after = "nvim-treesitter" })
         use(
             {
               "nvim-treesitter/nvim-treesitter-textobjects",
@@ -296,12 +505,14 @@ return packer.startup(
         -- 'numToStr/Comment.nvim'
         -- 'folke/which-key.nvim'
         --
-        use {
-          "nvim-telescope/telescope.nvim",
-          config = [[require('plugins-d/telescope')]],
-          after = { "popup.nvim", "plenary.nvim", colorscheme },
-          -- wants = { "popup.nvim", "plenary.nvim" },
-        }
+        use(
+            {
+              "nvim-telescope/telescope.nvim",
+              config = [[require('plugs.telescope')]],
+              after = { "popup.nvim", "plenary.nvim", colorscheme },
+              -- wants = { "popup.nvim", "plenary.nvim" },
+            }
+        )
 
         use(
             {
@@ -391,19 +602,28 @@ return packer.startup(
               "AckslD/nvim-neoclip.lua",
               requires = { "nvim-telescope/telescope.nvim", "tami5/sqlite.lua" },
               after = { "telescope.nvim", "sqlite.lua" },
-              config = function() require("plugins-d/nvim-neoclip") end,
+              config = function() require("plugs.nvim-neoclip") end,
             }
         )
 
         -- ]]] === Telescope ===
 
         -- ================================ Git =============================== [[[
+        use { "tpope/vim-fugitive", config = conf("fugitive") }
+
+        use(
+            {
+              "kdheepak/lazygit.nvim",
+              config = map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true }),
+            }
+        )
+
         use(
             {
               "lewis6991/gitsigns.nvim",
               event = "VimEnter",
               config = function()
-                require("plugins-d/gitsigns").config()
+                require("plugs.gitsigns").config()
               end,
               wants = { "plenary.nvim" },
             }
@@ -414,9 +634,7 @@ return packer.startup(
               "TimUntersberger/neogit",
               event = "VimEnter",
               module = "neogit",
-              config = function()
-                require("plugins-d/neogit").config()
-              end,
+              config = function() require("plugs.neogit").config() end,
             }
         )
 
@@ -426,66 +644,11 @@ return packer.startup(
               event = "VimEnter",
               cmd = { "DiffviewOpen", "DiffviewFileHistory" },
               config = function()
-                require("plugins-d/diffview").config()
+                require("plugs.diffview").config()
               end,
             }
         )
         -- ]]] === Git ===
-
-        -- ================================ LSP =============================== [[[
-        -- TODO: lua-dev
-        -- Mainly for Lua LSP
-        -- use(
-        --     {
-        --       "neovim/nvim-lspconfig",
-        --       event = { "BufRead" },
-        --       after = { "nvim-treesitter" },
-        --       config = function()
-        --         require("plugins-d/nvim-lspconfig")
-        --       end,
-        --       requires = { { "nvim-lua/lsp-status.nvim", opt = true } },
-        --     }
-        -- )
-
-        -- Allows managing LSP servers
-        -- use(
-        --     {
-        --       "williamboman/nvim-lsp-installer",
-        --       after = { "nvim-lspconfig", "nlsp-settings.nvim" },
-        --       config = function()
-        --         require("plugins-d/nvim-lsp-installer")
-        --       end,
-        --     }
-        -- )
-
-        -- use(
-        --     {
-        --       "ray-x/lsp_signature.nvim",
-        --       after = "nvim-lspconfig",
-        --       config = function()
-        --         require("lsp_signature").setup()
-        --       end,
-        --     }
-        -- )
-        --
-        -- -- JSON/YAML files
-        -- use(
-        --     {
-        --       "tamago324/nlsp-settings.nvim",
-        --       after = { "nvim-lspconfig" },
-        --       config = function()
-        --         require("plugins-d/nlsp-settings")
-        --       end,
-        --     }
-        -- )
-        --
-        -- use { "jose-elias-alvarez/null-ls.nvim", module = "null-ls" }
-        --
-        -- -- Neovim Lua
-        -- use({ "tjdevries/nlua.nvim", event = "VimEnter" })
-        -- use({ "bfredl/nvim-luadev", event = "VimEnter" })
-        -- use({ "folke/lua-dev.nvim", after = { "nvim-lspconfig" } })
-        -- ]]] === LSP ===
 
         -- ============================= Completion ============================ [[[
 
@@ -511,46 +674,7 @@ return packer.startup(
         --       end,
         --     }
         -- )
-
-        -- use(
-        --     {
-        --       "hrsh7th/nvim-cmp",
-        --       after = { "lspkind-nvim", "LuaSnip", "nvim-autopairs" },
-        --       config = function()
-        --         require("plugins-d/nvim-cmp")
-        --       end,
-        --     }
-        -- )
-
-        -- use(
-        --     {
-        --       "onsails/lspkind-nvim",
-        --       event = "VimEnter",
-        --       config = function()
-        --         require("plugins-d/lspkind-nvim")
-        --       end,
-        --     }
-        -- )
-
-        -- use({ "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-buffer", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-path", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-omni", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-nvim-lua", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-copilot", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-emoji", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-calc", after = "nvim-cmp" })
-        -- use({ "f3fora/cmp-spell", after = "nvim-cmp" })
-        -- use({ "ray-x/cmp-treesitter", after = "nvim-cmp" })
-        -- use({ "hrsh7th/cmp-cmdline", after = "nvim-cmp" })
         -- ]]] === Completion ===
-
       end,
     }
 )
-
--- require('mapping')
--- -- require('highlight')
--- require("functions")
---
--- vim.cmd("source ~/.config/nvim/vimscript/plug.vim")

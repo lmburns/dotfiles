@@ -3,6 +3,12 @@ local map = utils.map
 local autocmd = utils.autocmd
 
 -- ============================ Commands ============================== [[[
+cmd [[
+    command! -range=% -nargs=0 RmAnsi <line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g
+    command! -nargs=? -complete=buffer FollowSymlink lua require('common.kutils').follow_symlink(<f-args>)
+    command! -nargs=0 CleanEmptyBuf lua require('common.kutils').clean_empty_bufs()
+    command! -nargs=0 Jumps lua require('common.builtin').jumps2qf()
+]]
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[

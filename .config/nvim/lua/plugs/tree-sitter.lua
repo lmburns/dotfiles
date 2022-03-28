@@ -1,4 +1,5 @@
--- local M = {}
+local M = {}
+
 -- function M.config()
 --   vim.cmd [[packadd nvim-treesitter]]
 --   vim.cmd [[packadd nvim-treesitter-refactor]]

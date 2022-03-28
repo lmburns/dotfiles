@@ -1,5 +1,6 @@
 local M = {}
 
+local debounce = require("common.debounce")
 require("common.utils")
 
 M.termcodes = setmetatable(

@@ -6,6 +6,7 @@ o = vim.opt -- vim options: behaves like `:set`
 -- vim.opt_local -- behaves like `:setlocal`
 
 g = vim.g -- vim global variables:
+go = vim.go -- vim global options
 
 w = vim.wo -- vim window options: behaves like `:setlocal`
 
@@ -14,6 +15,8 @@ b = vim.bo -- vim buffer options: behaves like `:setlocal`
 fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 
 cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
+
+env = vim.env -- environment variable access
 
 api = vim.api
 
@@ -92,6 +95,12 @@ function M.map(modes, lhs, rhs, opts)
   end
 end
 
+function M.bmap(bufnr, mode, lhs, rhs, opts)
+  opts = opts or {}
+  opts.noremap = opts.noremap == nil and true or opts.noremap
+  api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+end
+
 -- Merge two tables together
 function M.merge_tables(a, b)
   if type(a) == "table" and type(b) == "table" then
@@ -124,6 +133,7 @@ function M.vmap_lua(keys, action, options)
   vim.api.nvim_set_keymap("v", keys, "<cmd>'<,'>lua " .. action .. "<CR>", opts)
 end
 
+-- Replace termcodes; e.g., t'<C-n'
 function M.t(str) return vim.api.nvim_replace_termcodes(str, true, true, true) end
 
 function M.is_buffer_empty()

@@ -12,6 +12,8 @@ map("n", "<Leader>il", ":IndentLinesToggle<CR>")
 -- g.indentLine_showFirstIndentLevel = 1
 -- g.indentLine_fileType = ['javascript', 'c']
 -- g.indentLine_bufNameExclude = []
+g.indentLine_faster = 1
+
 g.indentLine_fileTypeExclude = {
   "vimwiki",
   "coc-explorer",

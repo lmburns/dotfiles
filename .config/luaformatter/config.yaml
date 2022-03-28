@@ -19,7 +19,7 @@ chop_down_kv_table: true
 break_after_functioncall_lp: true
 break_before_functioncall_rp: true
 break_after_functiondef_lp: true
-break_before_functiondef_rp: false
+break_before_functiondef_rp: true
 break_after_table_lb: true
 break_before_table_rb: true
 break_after_operator: true

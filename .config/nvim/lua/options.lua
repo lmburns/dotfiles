@@ -32,6 +32,7 @@ vim.tbl_map(
 o.path:append("**")
 o.number = true
 o.cursorline = true
+o.cursorlineopt = "number,screenline"
 o.clipboard:append("unnamedplus")
 
 o.magic = true
@@ -49,17 +50,20 @@ o.synmaxcol = 1000 -- do not highlight long lines
 o.foldenable = false
 o.foldmethod = "marker"
 o.foldmarker = "[[[,]]]"
-o.formatoptions:remove({ "c", "r", "o"})
+o.formatoptions:remove({ "c", "r", "o" })
+o.nrformats = "octal,hex,bin,unsigned"
 
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
 o.title = true
+o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
 o.list = true -- display tabs and trailing spaces visually
 o.listchars:append(
     { tab = "‣ ", trail = "•", precedes = "«", extends = "»",
       nbsp = "␣" }
 )
+o.showbreak = "⏎"
 o.incsearch = true -- incremential search highlight
 o.pumheight = 10 -- number of items in popup menu
 
@@ -96,7 +100,7 @@ o.belloff = "all"
 o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
-o.diffopt = "vertical"
+o.diffopt:append(",vertical,internal,algorithm:patience")
 o.inccommand = "nosplit"
 o.splitbelow = true
 o.splitright = true
@@ -114,12 +118,13 @@ o.signcolumn = "yes"
 o.hidden = true -- enable modified buffers in background
 o.backup = false
 o.writebackup = false
-o.shortmess:append("c") -- don't give 'ins-completion-menu' messages.
+o.shortmess:append("acsIS") -- don't give 'ins-completion-menu' messages.
 
 opt("grepprg", "rg --ignore-case --vimgrep --color=never")
 opt("grepformat", "%f:%l:%c:%m,%f:%l:%m")
 
 o.background = "dark"
+o.cedit = "<C-x>"
 
 -- ================== Gui ================== [[[
 o.termguicolors = true
@@ -139,12 +144,35 @@ o.spellsuggest = "10"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- ]]] === Spell Check ===
 
--- ============= Abbreviations ============= [[[
-cmd [[
-    :cabbrev C PackerCompile
-    :cabbrev U PackerUpdate
-    :cabbrev S PackerSync
+-- =============== Clipboard =============== [[[
+local clipboard
+if env.DISPLAY and fn.executable("xsel") == 1 then
+  clipboard = {
+    name = "xsel",
+    copy = {
+      ["+"] = { "xsel", "--nodetach", "-i", "-b" },
+      ["*"] = { "xsel", "--nodetach", "-i", "-p" },
+    },
+    paste = { ["+"] = { "xsel", "-o", "-b" }, ["*"] = { "xsel", "-o", "-p" } },
+    cache_enabled = true,
+  }
+elseif env.TMUX then
+  clipboard = {
+    name = "tmux",
+    copy = { ["+"] = { "tmux", "load-buffer", "-w", "-" } },
+    paste = { ["+"] = { "tmux", "save-buffer", "-" } },
+    cache_enabled = true,
+  }
+  clipboard.copy["*"] = clipboard.copy["+"]
+  clipboard.paste["*"] = clipboard.paste["+"]
+end
 
+g.clipboard = clipboard
+-- ]]] === Clipboard ===
+
+-- ============= Abbreviations ============= [[[
+cmd(
+    [[
     :cnoreabbrev W! w!
     :cnoreabbrev Q! q!
     :cnoreabbrev Qall! qall!
@@ -155,6 +183,7 @@ cmd [[
     :cnoreabbrev W w
     :cnoreabbrev Qall qall
 ]]
+)
 -- ]]] === Abbreviations ===
 
 -- =============== Commands ================ [[[
