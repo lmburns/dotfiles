@@ -1,6 +1,5 @@
 -- local sorters = require "telescope.sorters"
 -- local previewers = require "telescope.previewers"
--- local lutils = require("lutils")
 -- local Path = require("plenary.path")
 -- local utils = require("telescope.utils")
 -- local pickers = require("telescope.pickers")
@@ -8,21 +7,30 @@
 -- local make_entry = require("telescope.make_entry")
 -- local conf = require("telescope.config").values
 -- local themes = require("telescope.themes")
+local lutils = require("lutils")
 local telescope = require("telescope")
+local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local sorters = require("telescope.sorters")
 local previewers = require("telescope.previewers")
 local action_layout = require("telescope.actions.layout")
+local conf = require("telescope.config").values
 
 -- ============================ Config ===========================
 
 require("telescope").setup(
+    -- Why is this on?
+    ---@diagnostic disable-next-line: redundant-parameter
     {
       defaults = {
         prompt_prefix = "❱ ",
         selection_caret = "❱ ",
         entry_prefix = "  ",
         initial_mode = "insert",
+        selection_strategy = "reset",
+        sorting_strategy = "descending",
+        layout_strategy = "horizontal",
+        -- layout_strategy = "flex",
         border = {},
         borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
         use_less = true,
@@ -33,13 +41,19 @@ require("telescope").setup(
             ["<C-k>"] = actions.move_selection_previous,
             ["<C-t>"] = action_layout.toggle_preview,
             ["<C-s>"] = actions.select_horizontal,
+            ["<C-d>"] = actions.results_scrolling_down,
+            ["<C-u>"] = actions.results_scrolling_up,
 
             ["<C-x>"] = false,
             ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
             ["<C-q>"] = actions.send_selected_to_qflist,
             -- ["<C-g>"] = custom_actions.multi_selection_open,
           },
-          n = { ["<ESC>"] = actions.close },
+          n = {
+            ["<ESC>"] = actions.close,
+            ["<C-d>"] = actions.results_scrolling_down,
+            ["<C-u>"] = actions.results_scrolling_up,
+          },
         },
         vimgrep_arguments = {
           "rg",
@@ -66,10 +80,6 @@ require("telescope").setup(
         file_previewer = previewers.vim_buffer_cat.new,
         grep_previewer = previewers.vim_buffer_vimgrep.new,
         qflist_previewer = previewers.vim_buffer_qflist.new,
-        selection_strategy = "reset",
-        sorting_strategy = "descending",
-        -- layout_strategy = "horizontal",
-        layout_strategy = "flex",
         layout_config = {
           width = 0.85,
           horizontal = {
@@ -91,6 +101,25 @@ require("telescope").setup(
         scroll_strategy = "cycle",
       },
       pickers = {
+        buffers = {
+          preview = true,
+          only_cwd = false,
+          show_all_buffers = false,
+          ignore_current_buffer = true,
+          sort_lastused = true,
+          theme = "dropdown",
+          sorter = require("telescope.sorters").get_substr_matcher(),
+          selection_strategy = "closest",
+          path_display = { "shorten" },
+          layout_strategy = "center",
+          winblend = 0,
+          layout_config = { width = 70 },
+          color_devicons = true,
+          mappings = {
+            i = { ["<c-d>"] = actions.delete_buffer },
+            n = { ["<c-d>"] = actions.delete_buffer },
+          },
+        },
         live_grep = {
           grep_open_files = false,
           only_sort_text = true,
@@ -119,13 +148,14 @@ require("telescope").setup(
     }
 )
 
--- telescope_builtin.packer = function(opts)
+-- builtin.packer = function(opts)
 --   require("telescope").extensions.packer.plugins(opts)
 -- end
 
 -- ============================ Setup ============================
 
 local options = {
+  hidden = true,
   path_display = {},
   layout_strategy = "horizontal",
   layout_config = { preview_width = 0.65 },
@@ -152,7 +182,7 @@ function _G.__telescope_buffers()
         ignore_current_buffer = true,
         sort_lastused = true,
         theme = "dropdown",
-        sorter = require("telescope.sorters").get_substr_matcher(),
+        sorter = sorters.get_substr_matcher(),
         selection_strategy = "closest",
         path_display = { "shorten" },
         layout_strategy = "center",
@@ -185,6 +215,38 @@ function _G.__telescope_commits()
   }
 end
 
+-- vim.keymap.set(
+--     "n", "<leader>os", function()
+--       require("telescope.builtin").live_grep {
+--         search_dirs = { lutils.capture("git rev-parse --show-toplevel") },
+--       }
+--     end
+-- )
+--
+-- gittool.exe_root(...)
+
+builtin.git_grep = function(opts)
+  opts.search_dirs = {}
+  opts.search_dirs[1] = lutils.capture("git rev-parse --show-toplevel")
+  opts.vimgrep_arguments = {
+    "rg",
+    "--color=never",
+    "--no-heading",
+    "--with-filename",
+    "--line-number",
+    "--column",
+    "--smart-case",
+  }
+  builtin.live_grep(
+      {
+        mappings = conf.mappings,
+        opts = opts,
+        prompt_title = "Git Grep",
+        search_dirs = opts.search_dirs,
+      }
+  )
+end
+
 -- telescope.load_extension("ultisnips")
 -- telescope.load_extension("coc")
 -- telescope.load_extension("bookmarks")
@@ -202,7 +264,7 @@ map("n", ";B", ":Telescope bookmarks<CR>")
 
 map("n", "<Leader>;", ":Telescope current_buffer_fuzzy_find<CR>")
 map("n", ";r", ":Telescope git_grep<CR>")
-map("n", "<A-.>", ":Telescope frequency<CR>")
+map("n", "<A-.>", ":Telescope frecency<CR>")
 map("n", ";fd", ":Telescope fd<CR>")
 map("n", ";g", ":Telescope git_files<CR>")
 
@@ -220,6 +282,10 @@ map("n", "<C-[>", ":Telescope coc definitions<CR>")
 map("n", ";n", ":Telescope coc locations<CR>")
 map("n", "<A-;>", ":Telescope neoclip<CR>")
 
+map("n", "<Leader>si", ":Telescope ultisnips<CR>", { silent = true })
+
+map("n", ";k", ":Telescope keymaps<CR>")
+
 -- map("n", "<LocalLeader>f", ":Telescope find_files<CR>")
 -- map("n", ";e", ":Telescope live_grep theme=get_ivy<CR>")
 
@@ -228,7 +294,7 @@ map("n", "<LocalLeader>f", ":lua __telescope_files()<CR>")
 map("n", ";e", ":lua __telescope_grep()<CR>")
 
 -- ========================== Highlight ==========================
-vim.cmd [[highlight TelescopeSelection  guifg=#FF9500 gui=bold]]
+cmd [[highlight TelescopeSelection      guifg=#FF9500 gui=bold]]
 cmd [[highlight TelescopeSelectionCaret guifg=#819C3B]]
 cmd [[highlight TelescopeMultiSelection guifg=#4C96A8]]
 cmd [[highlight TelescopeMultiIcon      guifg=#7EB2B1]]
@@ -239,7 +305,6 @@ cmd [[highlight TelescopeResultsBorder  guifg=#A06469]]
 cmd [[highlight TelescopePreviewBorder  guifg=#A06469]]
 cmd [[highlight TelescopeMatching       guifg=#FF5813]]
 cmd [[highlight TelescopePromptPrefix   guifg=#EF1D55]]
-
 
 -- -- ========================== Extra ==========================
 --

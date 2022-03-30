@@ -364,5 +364,12 @@
   "solargraph.diagnostics": true,
   "solargraph.autoformat": true,
   "solargraph.formatting": true,
-  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d"
+  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+  "outline.keepWindow": true,
+  "outline.sortBy": "position",
+  "outline.splitCommand": "botright 40vs",
+  "outline.showLineNumber": true,
+  "tree.key.activeFilter": "zf",
+  "tree.key.close": "qq",
+  "tree.key.toggle": "t"
 }

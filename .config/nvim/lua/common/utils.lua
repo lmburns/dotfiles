@@ -40,6 +40,12 @@ function M.opt(o, v, scopes)
   end
 end
 
+-- Create an augroup with the lua api
+function M.create_augroup(name, clear)
+  clear = clear == nil and true or clear
+  api.nvim_create_augroup(name, { clear = clear })
+end
+
 -- Create many augroups
 function M.augroups(definitions)
   for group_name, definition in pairs(definitions) do
@@ -69,6 +75,7 @@ function M.augroup(name, commands)
   vim.cmd("augroup END")
 end
 
+-- Create an autocmd
 function M.autocmd(group, cmds, clear)
   clear = clear == nil and false or clear
   if type(cmds) == "string" then
@@ -84,6 +91,7 @@ function M.autocmd(group, cmds, clear)
   cmd [[augroup END]]
 end
 
+-- Create a key mapping
 function M.map(modes, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
@@ -91,10 +99,11 @@ function M.map(modes, lhs, rhs, opts)
     modes = { modes }
   end
   for _, mode in ipairs(modes) do
-    vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
+    api.nvim_set_keymap(mode, lhs, rhs, opts)
   end
 end
 
+-- Create a buffer key mapping
 function M.bmap(bufnr, mode, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
@@ -136,10 +145,8 @@ end
 -- Replace termcodes; e.g., t'<C-n'
 function M.t(str) return vim.api.nvim_replace_termcodes(str, true, true, true) end
 
-function M.is_buffer_empty()
-  -- Check whether the current buffer is empty
-  return vim.fn.empty(vim.fn.expand("%:t")) == 1
-end
+-- Check whether the current buffer is empty
+function M.is_buffer_empty() return vim.fn.empty(vim.fn.expand("%:t")) == 1 end
 
 function M.has_width_gt(cols)
   -- Check if the windows width is greater than a given number of columns
@@ -166,6 +173,7 @@ end
 
 function M.clear_module(module_name) package.loaded[module_name] = nil end
 
+-- Safely require a plugin
 function M.prequire(m)
   local ok, err = pcall(require, m)
   if not ok then
@@ -218,6 +226,20 @@ cmd [[
 --       )
 --   )
 -- end
+
+function M.preserve(arguments)
+  local arguments =
+      string.format("keepjumps keeppatterns execute %q", arguments)
+  -- local original_cursor = vim.fn.winsaveview()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_command(arguments)
+  local lastline = vim.fn.line("$")
+  -- vim.fn.winrestview(original_cursor)
+  if line > lastline then
+    line = lastline
+  end
+  vim.api.nvim_win_set_cursor({ 0 }, { line, col })
+end
 
 -- Allows us to use utils globally
 _G.utils = M

@@ -1,23 +1,40 @@
-local M = {}
-
--- function M.config()
---   vim.cmd [[packadd nvim-treesitter]]
---   vim.cmd [[packadd nvim-treesitter-refactor]]
---   vim.cmd [[packadd nvim-treesitter-textobjects]]
 require("nvim-treesitter.configs").setup {
   ensure_installed = {
-    "c", "cpp", "go", "gomod", "rust", "python", "java", "query", "lua", "ruby",
-    "zig", "d",
+    "cmake",
+    "css",
+    "d",
+    "dart",
+    "dockerfile",
+    "go",
+    "gomod",
+    "html",
+    "java",
+    "java",
+    "json",
+    "jsonc",
+    "kotlin",
+    "lua",
+    "make",
+    "python",
+    "query",
+    "ruby",
+    "rust",
+    "scss",
+    "teal",
+    "typescript",
+    "tsx",
+    "vue",
+    "zig",
   },
-  -- "vim" "yaml" "toml" "ruby" "bash" "perl" "r"
   sync_install = false,
   ignore_install = {}, -- List of parsers to ignore installing
   highlight = {
     enable = true, -- false will disable the whole extension
-    disable = {}, -- list of language that will be disabled
+    disable = { "html", "comment" }, -- list of language that will be disabled
     additional_vim_regex_highlighting = false,
   },
   autotag = { enable = true },
+
   playground = {
     enable = true,
     disable = {},
@@ -43,21 +60,20 @@ require("nvim-treesitter.configs").setup {
   },
   incremental_selection = { enable = true },
   indent = { enable = false },
+  endwise = { enable = true },
+  matchup = { enable = false },
   textobjects = {
-    select = {
+    select = { enable = true, disable = { "comment" } },
+    move = {
       enable = true,
-      keymaps = {
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        ["ac"] = "@class.outer",
-        ["ic"] = "@class.inner",
-        ["al"] = "@loop.outer",
-        ["il"] = "@loop.inner",
+      disable = { "comment" },
+      goto_next_start = { ["]m"] = "@function.outer" },
+      goto_next_end = { ["]M"] = "@function.outer", ["]f"] = "@function.outer" },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[f"] = "@function.outer",
       },
+      goto_previous_end = { ["[M"] = "@function.outer" },
     },
   },
-  endwise = { enable = true },
 }
--- end
---
--- return M

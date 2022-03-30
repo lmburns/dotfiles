@@ -761,7 +761,7 @@ map r
 map ee $$EDITOR "$f"                            # open file in editor
 map ec edit_config                              # edit & source lfrc
 map es edit_scope                               # edit lfrc scope
-map ev $$EDITOR $XDG_CONFIG_HOME/nvim/vimscript/plug.vim  # open nvim config
+map ev $$EDITOR $VIMRC                          # open nvim config
 map ew $$EDITOR $HOME/vimwiki/index.md          # open vimwiki
 map ez $$EDITOR $ZDOTDIR/.zshrc                 # edit zshrc
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh      # edit zsh aliases

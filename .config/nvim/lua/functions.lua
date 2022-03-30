@@ -49,6 +49,74 @@ map(
 )
 -- ]]] === Syntax ===
 
+-- ========================= Builtin Terminal ========================= [[[
+g.term_buf = 0
+g.term_win = 0
+
+cmd [[
+  function! TermToggle(height)
+    if win_gotoid(g:term_win)
+        hide
+    else
+        botright new
+        exec "resize " . a:height
+        try
+            exec "buffer " . g:term_buf
+        catch
+            call termopen("zsh", {"detach": 0})
+            let g:term_buf = bufnr("")
+            set nonumber
+            set norelativenumber
+            set signcolumn=no
+        endtry
+        startinsert!
+        let g:term_win = win_getid()
+    endif
+  endfunction
+]]
+
+cmd [[command! -nargs=* TP botright sp | resize 20 | term <args>]]
+cmd [[command! -nargs=* VT vsp | term <args>]]
+
+map("n", "<A-i>", ":TP<CR>A")
+-- Toggle terminal on/off (neovim)
+map("n", "<C-t>", ":call TermToggle(12)<CR>")
+map("i", "<C-t>", "<Esc>:call TermToggle(12)<CR>")
+map("t", "<C-t>", [[<C-\><C-n>:call TermToggle(12)<CR>]])
+
+-- Terminal go back to normal mode
+map("t", "<Esc>", [[<C-\><C-n>]])
+map("t", ":q!", [[<C-\><C-n>:q!<CR>]])
+-- ]]] === Terminal ===
+
+-- ========================== Execute Buffer ========================== [[[
+cmd [[
+  function! s:execute_buffer()
+    if !empty(expand('%'))
+        write
+        call system('chmod +x '.expand('%'))
+        silent e
+        vsplit | terminal ./%
+    else
+        echohl WarningMsg
+        echo 'Save the file first'
+        echohl None
+    endif
+  endfunction
+
+  command! RUN :call s:execute_buffer()
+]]
+
+autocmd(
+    "ExecuteBuffer", {
+      [[FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>r<CR> :RUN<cr>]],
+      [[FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>lru :FloatermNew --autoclose=0 ./%<cr>]],
+      [[FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc % && node %:r.js <CR>]],
+      [[FileType javascript nnoremap <Leader>r<CR> :FloatermNew node % <CR>]],
+    }, true
+)
+-- ]]] === Execute Buffer ===
+
 -- Show changes since last save
 cmd [[
   function! s:DiffSaved()
@@ -74,15 +142,12 @@ cmd [[
           call openbrowser#open(s:url)
       end
   endfunction
-]]
 
--- autocmd(
---     "gogithub", {
---       [[
---       FileType vim,bash,tmux,zsh,lua nnoremap <buffer> <silent> <Leader><CR> :call <sid>go_github()<CR>
---       ]],
---     }, true
--- )
+  augroup gogithub
+      au!
+      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
+  augroup END
+]]
 
 -- Hide number & sign columns to do tmux copy
 cmd [[

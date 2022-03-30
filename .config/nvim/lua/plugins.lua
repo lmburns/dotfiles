@@ -3,12 +3,6 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-26 15:02
 -- ==========================================================================
--- Lua utilities
--- require('lutils')
---
--- require('base')
--- require('options')
--- require('autocmds')
 local utils = require("common/utils")
 local autocmd = utils.autocmd
 local map = utils.map
@@ -23,13 +17,6 @@ end
 
 cmd([[packadd packer.nvim]])
 local packer = require("packer")
--- local use = packer.use
-
--- Recompile Packer when the file is saved
--- autocmd(
---     "source_packer",
---     { [[BufWritePost plugins.lua source <afile> | PackerSync]] }, true
--- )
 
 packer.init(
     {
@@ -44,7 +31,7 @@ packer.init(
         end,
       },
       git = { clone_timeout = 300 },
-      profile = { enable = false },
+      profile = { enable = true },
     }
 )
 
@@ -108,6 +95,8 @@ return packer.startup(
         )
 
         use({ "ptzz/lf.vim", config = conf("lf") })
+        -- use({ "haorenW1025/floatLf-nvim" })
+
         -- ]]] === File Manager ===
 
         -- ============================ Neo/Floaterm =========================== [[[
@@ -123,13 +112,7 @@ return packer.startup(
         -- ]]] === Floaterm ===
 
         -- =========================== BetterQuickFix ========================== [[[
-        use(
-            {
-              "kevinhwang91/nvim-bqf",
-              ft = "qf",
-              config = [[require("plugs.bqf")]],
-            }
-        )
+        use({ "kevinhwang91/nvim-bqf", ft = "qf", config = conf("bqf") })
         -- ]]] === BetterQuickFix ===
 
         -- ============================ EasyAlign ============================= [[[
@@ -167,27 +150,53 @@ return packer.startup(
         use({ "tyru/open-browser.vim", conf = conf("open_browser") })
         -- ]]] === Open Browser ===
 
+        -- ============================== VCooler ============================== [[[
+        use {
+          "KabbAmine/vCoolor.vim",
+          keys = {
+            { "n", "<Leader>pc" },
+            { "n", "<Leader>yb" },
+            { "n", "<Leader>yr" },
+          },
+          setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
+          config = conf("vcoolor"),
+        }
+        -- ]]] === VCooler ===
+
         -- =========================== Colorscheme ============================ [[[
         local colorscheme = "kimbox"
         use({ "lmburns/kimbox", config = [[require("plugs.kimbox")]] })
         -- ]]] === Colorscheme ===
 
-        -- ============================= Lualine ============================== [[[
+        -- =========================== Statusline ============================= [[[
         use(
             {
               "nvim-lualine/lualine.nvim",
               after = colorscheme,
               requires = { "kyazdani42/nvim-web-devicons", opt = true },
-              config = [[require("plugs.lualine")]],
+              config = conf("plugs.lualine"),
             }
         )
 
         use(
             {
               "SmiteshP/nvim-gps",
-              requires = { { "nvim-treesitter/nvim-treesitter", opt = true } },
+              requires = { "nvim-treesitter/nvim-treesitter" },
               after = "nvim-treesitter",
               config = [[require("nvim-gps").setup()]],
+            }
+        )
+
+        use(
+            {
+              "akinsho/bufferline.nvim",
+              after = { colorscheme, "lualine.nvim" },
+              setup = function()
+                cmd [[
+                  hi! TabLineSel guibg=#ddc7a1 gui=bold
+                ]]
+              end,
+              config = conf("plugs.bufferline"),
             }
         )
         -- ]]] === Lualine ===
@@ -201,7 +210,7 @@ return packer.startup(
             {
               "junegunn/fzf.vim",
               requires = { { "junegunn/fzf", run = "./install --bin" } },
-              config = conf("plugs.fzf")
+              config = conf("plugs.fzf"),
             }
         )
 
@@ -255,7 +264,7 @@ return packer.startup(
               end,
             }
         )
-        use({ "liuchengxu/vista.vim", config = [[require("plugs.vista")]] })
+        use({ "liuchengxu/vista.vim", config = conf("plugs.vista") })
         -- ]]] === Tags ===
 
         -- ============================= Startify ============================= [[[
@@ -267,18 +276,13 @@ return packer.startup(
             {
               "mbbill/undotree",
               cmd = "UndoTreeToggle",
-              config = [[require("plugs.undotree")]],
+              config = conf("plugs.undotree"),
             }
         )
         -- ]]] === UndoTree ===
 
         -- ========================== NerdCommenter =========================== [[[
-        use(
-            {
-              "preservim/nerdcommenter",
-              config = [[require("plugs.nerdcommenter")]],
-            }
-        )
+        use({ "preservim/nerdcommenter", config = conf("plugs.nerdcommenter") })
         -- ]]] === UndoTree ===
 
         -- ============================== Targets ============================== [[[
@@ -296,13 +300,7 @@ return packer.startup(
         -- ]]] === Nvim-R ===
 
         -- ========================= VimSlime - Python ========================= [[[
-        -- use(
-        --     {
-        --       "jpalardy/vim-slime",
-        --       ft = "python",
-        --       config = conf("plugs.vim-slime"),
-        --     }
-        -- )
+        use({ "jpalardy/vim-slime", ft = "python", config = conf("slime") })
         -- ]]] === VimSlime - Python ===
 
         -- ============================= Vim - Rust ============================ [[[
@@ -343,49 +341,39 @@ return packer.startup(
         use(
             {
               "SidOfc/mkdx",
-              ft = { "markdown", "vimwiki" },
+              -- ft = { "markdown", "vimwiki" },
               config = conf("mkdx"),
             }
         )
 
         use({ "vimwiki/vimwiki", config = conf("vimwiki") })
-
-        cmd [[
-          augroup markdown
-            autocmd!
-            autocmd FileType markdown,vimwiki
-              \ setl iskeyword+=-|
-              \ vnoremap ``` <esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|
-              \ nnoremap <buffer> <F4> !pandoc % --pdf-engine=xelatex -o %:r.pdf|
-              \ inoremap ** ****<Left><Left>|
-              \ inoremap <expr> <right> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"|
-              \ vnoremap <Leader>si :s/`/*/g<CR>
-          augroup END
-        ]]
         -- ]]] === VimSlime - Python ===
 
+        -- ================================ Wilder ============================= [[[
+        use {
+          "gelguy/wilder.nvim",
+          run = ":UpdateRemotePlugins",
+          config = conf("plugs.wilder"),
+        }
+        -- ]]] === Wilder ===
+
         -- ========================= Syntax-Highlighting ======================= [[[
-        use(
-            {
-              "sheerun/vim-polyglot",
-              setup = function()
-                g.polyglot_disabled = {
-                  "markdown",
-                  "python",
-                  "rust",
-                  "java",
-                  "lua",
-                  "ruby",
-                  "zig",
-                  "d",
-                  "dockerfile",
-                  "rustpeg",
-                  "lf",
-                  "ron",
-                }
-              end,
-            }
-        )
+        g.polyglot_disabled = {
+          "markdown",
+          "python",
+          "rust",
+          "java",
+          "lua",
+          "ruby",
+          "zig",
+          "d",
+          "dockerfile",
+          "rustpeg",
+          "lf",
+          "ron",
+          "typescript",
+        }
+        use({ "sheerun/vim-polyglot" })
 
         use({ "wfxr/dockerfile.vim" })
 
@@ -397,6 +385,10 @@ return packer.startup(
 
         use({ "ron-rs/ron.vim" })
         -- ]]] === Syntax-Highlighting ===
+
+        -- =========================== Keymaps - Nest ========================== [[[
+        -- use({ "LionC/nest.nvim", config = conf("plugs.keymaps") })
+        -- ]]] === Keymaps ===
 
         -- ============================= File-Viewer =========================== [[[
         use { "mattn/vim-xxdcursor" }
@@ -428,17 +420,16 @@ return packer.startup(
             {
               "norcalli/nvim-colorizer.lua",
               ft = { "vim", "sh", "zsh", "markdown", "tmux", "yaml", "lua" },
-              config = function() require("plugs.colorizer") end,
+              config = conf("plugs.colorizer"),
             }
         )
         use(
             {
               "Pocco81/HighStr.nvim",
               event = "VimEnter",
-              config = function() require("plugs.HighStr") end,
+              config = conf("plugs.HighStr"),
             }
         )
-        -- TODO: hi
         use(
             {
               "folke/todo-comments.nvim",
@@ -456,7 +447,6 @@ return packer.startup(
         -- =============================== Coc ================================ [[[
         -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
         use({ "vim-perl/vim-perl", ft = "perl" })
-        use({ "antoinemadec/coc-fzf" })
 
         use(
             {
@@ -465,9 +455,17 @@ return packer.startup(
               run = "yarn install --frozen-lockfile",
               config = [[require('plugs.coc').init()]],
             }
-        ) -- ]]] === Coc ===
+        )
+        use({ "antoinemadec/coc-fzf", after = "coc.nvim" })
+        -- ]]] === Coc ===
 
         -- ============================= Treesitter ============================ [[[
+        use {
+          "danymat/neogen",
+          config = conf("neogen"),
+          keys = { { "n", "<Leader>dg" } },
+          requires = "nvim-treesitter/nvim-treesitter",
+        }
         use(
             {
               "nvim-treesitter/nvim-treesitter",
@@ -482,6 +480,7 @@ return packer.startup(
               after = "nvim-treesitter",
             }
         )
+        -- Adds 'end' to ruby and lua
         use({ "RRethy/nvim-treesitter-endwise", after = "nvim-treesitter" })
         use(
             {
@@ -492,14 +491,22 @@ return packer.startup(
         use(
             {
               "nvim-treesitter/playground",
-              cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+              after = "nvim-treesitter",
+              -- cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
             }
         )
-        use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
         use({ "nvim-treesitter/nvim-tree-docs", after = { "nvim-treesitter" } })
+        use { "nanotee/luv-vimdocs", opt = false }
 
+        use { "mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter" }
+
+        -- use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
         -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
         -- ]]] === Treesitter ===
+
+        -- ============================= Html/Css ============================= [[[
+        use { "alvan/vim-closetag" }
+        -- ]]] === Html ===
 
         -- ============================= Telescope ============================ [[[
         -- 'numToStr/Comment.nvim'
@@ -508,7 +515,7 @@ return packer.startup(
         use(
             {
               "nvim-telescope/telescope.nvim",
-              config = [[require('plugs.telescope')]],
+              config = conf("plugs.telescope"),
               after = { "popup.nvim", "plenary.nvim", colorscheme },
               -- wants = { "popup.nvim", "plenary.nvim" },
             }
@@ -609,7 +616,16 @@ return packer.startup(
         -- ]]] === Telescope ===
 
         -- ================================ Git =============================== [[[
-        use { "tpope/vim-fugitive", config = conf("fugitive") }
+        use {
+          "tpope/vim-fugitive",
+          fn = "fugitive#*",
+          cmd = { "Git", "Gedit", "Gread", "Gwrite", "Gdiffsplit",
+                  "Gvdiffsplit" },
+          event = "BufReadPre */.git/index",
+          config = conf("plugs.fugitive"),
+        }
+
+        use { "tpope/vim-rhubarb" }
 
         use(
             {
@@ -621,27 +637,22 @@ return packer.startup(
         use(
             {
               "lewis6991/gitsigns.nvim",
-              event = "VimEnter",
-              config = function()
-                require("plugs.gitsigns").config()
-              end,
-              wants = { "plenary.nvim" },
+              config = conf("plugs.gitsigns"),
+              requires = { "nvim-lua/plenary.nvim" },
             }
         )
 
         use(
             {
               "TimUntersberger/neogit",
-              event = "VimEnter",
-              module = "neogit",
-              config = function() require("plugs.neogit").config() end,
+              config = conf("plugs.neogit"),
+              requires = { "nvim-lua/plenary.nvim" },
             }
         )
 
         use(
             {
               "sindrets/diffview.nvim",
-              event = "VimEnter",
               cmd = { "DiffviewOpen", "DiffviewFileHistory" },
               config = function()
                 require("plugs.diffview").config()
@@ -675,6 +686,11 @@ return packer.startup(
         --     }
         -- )
         -- ]]] === Completion ===
+
+        -- use { "farmergreg/vim-lastplace" }
+
+        use({ "rcarriga/nvim-notify", config = conf("notify") })
+
       end,
     }
 )

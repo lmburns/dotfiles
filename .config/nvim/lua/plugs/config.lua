@@ -3,19 +3,24 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
+local create_augroup = utils.create_augroup
 
 function M.bqf()
-  if g.colors_name == "one" then
-    cmd("hi! link BqfPreviewBorder Parameter")
-  end
+  cmd("hi! link BqfPreviewBorder Parameter")
 
   require("bqf").setup(
       {
         auto_enable = true,
         auto_resize_height = true,
         preview = { auto_preview = true, delay_syntax = 50 },
-        func_map = { split = "<C-s>", drop = "o", openc = "O",
-                     tabdrop = "<C-t>" },
+        func_map = {
+          split = "<C-s>",
+          drop = "o",
+          openc = "O",
+          tabdrop = "<C-t>",
+          pscrollup = "<C-u>",
+          pscrolldown = "<C-d>",
+        },
         filter = {
           fzf = {
             action_for = {
@@ -24,7 +29,7 @@ function M.bqf()
               ["ctrl-t"] = "tab drop",
               ["ctrl-x"] = "",
             },
-            extra_opts = { "-d", "│" },
+            extra_opts = { "--delimiter", "│" },
           },
         },
       }
@@ -51,6 +56,7 @@ end
 function M.lf()
   g.lf_map_keys = 0
   g.lf_replace_netrw = 1
+
   map("n", "<Leader>lf", ":Lf<CR>")
   map("n", "<C-o>", ":Lf<CR>")
 
@@ -107,19 +113,21 @@ function M.neoterm()
   g.neoterm_default_mod = "belowright" -- open terminal in bottom split
   g.neoterm_size = 14 -- terminal split size
   g.neoterm_autoscroll = 1 -- scroll to the bottom
+
+  map("n", "<Leader>rr", ":Tclear<CR>")
+  map("n", "<Leader>rt", ":Ttoggle<CR>")
+  map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
 end
 
 function M.targets()
   -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
   -- vI) = contents inside pair
-  -- vAa = around alignment
   -- in( an( In( An( il( al( Il( Al( ... next and last pair
-
-  -- autocmd(
-  --     "define_targets",
-  --     "User targets#mappings#user call targets#mappings#extend({ 'a': {'argument': [{'o':'(', 'c':')', 's': ','}]}})]]",
-  --     true
-  -- )
+  -- {a,I}{,.;+=...} = a/inside separator
+  -- ia = in argument
+  -- aa = an argument
+  -- inb anb Inb Anb ilb alb Ilb Alb = any block
+  -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
   cmd [[
    augroup define_object
@@ -128,6 +136,23 @@ function M.targets()
            \ })
    augroup END
   ]]
+
+  g.targets_aiAI = "aIAi"
+  g.targets_seekRanges =
+      "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+  g.targets_jumpRanges = g.targets_seekRanges
+
+  -- Seeking next/last objects
+  g.targets_nl = "nm"
+
+  -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
+  -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
+  -- map("o", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
+  -- map("x", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
+  -- map("o", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
+  -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
+  -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+  -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
 end
 
 function M.pandoc()
@@ -167,25 +192,27 @@ function M.markdown()
 end
 
 function M.table_mode()
-  cmd [[
-    augroup tablemode
-      autocmd!
-      autocmd FileType markdown,vimwiki
-        \ let g:table_mode_map_prefix = '<Leader>t'|
-        \ let g:table_mode_realign_map = '<Leader>tr'|
-        \ let g:table_mode_delete_row_map = '<Leader>tdd'|
-        \ let g:table_mode_delete_column_map = '<Leader>tdc'|
-        \ let g:table_mode_insert_column_after_map = '<Leader>tic'|
-        \ let g:table_mode_echo_cell_map = '<Leader>t?'|
-        \ let g:table_mode_sort_map = '<Leader>ts'|
-        \ let g:table_mode_tableize_map = '<Leader>tt'|
-        \ let g:table_mode_tableize_d_map = '<Leader>T' |
-        \ let g:table_mode_tableize_auto_border = 1|
-        \ let g:table_mode_corner='|'|
-        \ let g:table_mode_fillchar = '-'|
-        \ let g:table_mode_separator = '|'|
-    augroup END
-  ]]
+  api.nvim_create_autocmd(
+      "FileType", {
+        callback = function()
+          g.table_mode_map_prefix = "<Leader>t"
+          g.table_mode_realign_map = "<Leader>tr"
+          g.table_mode_delete_row_map = "<Leader>tdd"
+          g.table_mode_delete_column_map = "<Leader>tdc"
+          g.table_mode_insert_column_after_map = "<Leader>tic"
+          g.table_mode_echo_cell_map = "<Leader>t?"
+          g.table_mode_sort_map = "<Leader>ts"
+          g.table_mode_tableize_map = "<Leader>tt"
+          g.table_mode_tableize_d_map = "<Leader>T"
+          g.table_mode_tableize_auto_border = 1
+          g.table_mode_corner = "|"
+          g.table_mode_fillchar = "-"
+          g.table_mode_separator = "|"
+        end,
+        pattern = { "markdown", "vimwiki" },
+        group = api.nvim_create_augroup("TableMode", { clear = true }),
+      }
+  )
 end
 
 function M.mkdx()
@@ -207,11 +234,11 @@ function M.mkdx()
   }
 
   cmd [[
-    function! <SID>MkdxGoToHeader(header)
+    function! s:MkdxGoToHeader(header)
       call cursor(str2nr(get(matchlist(a:header, ' *\([0-9]\+\)'), 1, '')), 1)
     endfunction
 
-    function! <SID>MkdxFormatHeader(key, val)
+    function! s:MkdxFormatHeader(key, val)
       let text = get(a:val, 'text', '')
       let lnum = get(a:val, 'lnum', '')
 
@@ -219,19 +246,19 @@ function M.mkdx()
       return repeat(' ', 4 - strlen(lnum)) . lnum . ': ' . text
     endfunction
 
-    function! <SID>MkdxFzfQuickfixHeaders()
+    function! s:MkdxFzfQuickfixHeaders()
       let headers = filter(
-        \ map(mkdx#QuickfixHeaders(0),function('<SID>MkdxFormatHeader')),
+        \ map(mkdx#QuickfixHeaders(0),function('s:MkdxFormatHeader')),
         \ 'v:val != ""'
         \ )
 
       call fzf#run(fzf#wrap({
         \ 'source': headers,
-        \ 'sink': function('<SID>MkdxGoToHeader')
+        \ 'sink': function('s:MkdxGoToHeader')
         \ }))
     endfunction
 
-    nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
+    nnoremap <silent> <Leader>I :call s:MkdxFzfQuickfixHeaders()<Cr>
    ]]
 end
 
@@ -269,18 +296,6 @@ function M.info()
   ]]
 end
 
-function M.fugitive()
-  map("n", "<Leader>gu", ":G<CR>3j")
-  map("n", "<Leader>gq", ":G<CR>:q<CR>")
-  map("n", "<Leader>gw", ":Gwrite<CR>")
-  map("n", "<Leader>gr", ":Gread<CR>")
-  map("n", "<Leader>gh", ":diffget //2<CR>")
-  map("n", "<Leader>gl", ":diffget //3<CR>")
-  map("n", "<Leader>gp", ":Git push<CR>")
-
-  map("n", "<Leader>d", ":Gdiff<CR>")
-end
-
 function M.minimap()
   map("n", "<Leader>mi", ":MinimapToggle<CR>")
 
@@ -297,6 +312,77 @@ function M.minimap()
     "terminal",
     "prompt",
   }
+end
+
+function M.slime()
+  g.slime_target = "neovim"
+  g.syntastic_python_pylint_post_args = "--max-line-length=120"
+
+  cmd [[
+    if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
+      let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
+    endif
+
+    augroup repl
+      autocmd!
+      autocmd FileType python
+        \ xmap <buffer> ,l <Plug>SlimeRegionSend|
+        \ nmap <buffer> ,l <Plug>SlimeLineSend|
+        \ nmap <buffer> ,p <Plug>SlimeParagraphSend|
+        \ nnoremap <silent> ✠ :TREPLSendLine<CR><Esc><Home><Down>|
+        \ inoremap <silent> ✠ <Esc>:TREPLSendLine<CR><Esc>A|
+        \ xnoremap <silent> ✠ :TREPLSendSelection<CR><Esc><Esc>
+        \ nnoremap <Leader>rF :T ptpython<CR>|
+        \ nnoremap <Leader>rf :T ipython --no-autoindent --colors=Linux --matplotlib<CR>|
+        \ nmap <buffer> <Leader>r<CR> :VT python %<CR>|
+        \ nnoremap ,rp :SlimeSend1 <C-r><C-w><CR>|
+        \ nnoremap ,rP :SlimeSend1 print(<C-r><C-w>)<CR>|
+        \ nnoremap ,rs :SlimeSend1 print(len(<C-r><C-w>), type(<C-r><C-w>))<CR>|
+        \ nnoremap ,rt :SlimeSend1 <C-r><C-w>.dtype<CR>|
+        \ nnoremap 223 ::%s/^\(\s*print\)\s\+\(.*\)/\1(\2)<CR>|
+        \ nnoremap ,rr :FloatermNew --autoclose=0 python %<space>|
+        \ call <SID>IndentSize(4)
+      autocmd FileType perl nmap <buffer> ,l <Plug>SlimeLineSend
+    augroup END
+  ]]
+end
+
+function M.notify()
+  require("notify").setup(
+      {
+        stages = "slide",
+        timeout = 2000,
+        minimum_width = 30,
+        render = "minimal",
+        icons = {
+          ERROR = " ",
+          WARN = " ",
+          INFO = " ",
+          DEBUG = " ",
+          TRACE = " ",
+        },
+      }
+  )
+end
+
+function M.neogen()
+  local neogen = require("neogen")
+  neogen.setup(
+      {
+        enabled = true,
+        input_after_comment = true,
+        languages = { lua = { template = { annotation_convention = "emmylua" } } },
+      }
+  )
+  map("i", "<C-j>", [[:lua require('neogen').jump_next()<CR>]])
+  map("i", "<C-k>", [[:lua require('neogen').jump_prev()<CR>]])
+  map("n", "<Leader>dg", [[:Neogen<Space>]], { silent = false })
+end
+
+function M.vcoolor()
+  map("n", "<Leader>pc", ":VCoolor<CR>")
+  map("n", "<Leader>yb", ":VCoolIns b<CR>")
+  map("n", "<Leader>yr", ":VCoolIns r<CR>")
 end
 
 return M

@@ -65,7 +65,8 @@ function M.show_documentation()
   local ft = vim.bo.ft
   if ft == "help" or ft == "vim" then
     cmd(("sil! h %s"):format(fn.expand("<cword>")))
-  else
+  elseif fn["coc#rpc#ready"]() then
+    -- definitionHover -- doHover
     local err, res = M.a2sync("definitionHover")
     if err then
       if res == "timeout" then
@@ -73,6 +74,8 @@ function M.show_documentation()
       end
       cmd("norm! K")
     end
+  else
+    cmd("!" .. o.keywordprg .. " " .. fn.expand("<cword>"))
   end
 end
 
@@ -250,6 +253,57 @@ function M.diagnostic(winid, nr, keep)
   )
 end
 
+M.hl_fallback = (function()
+  local fb_bl_ft = {
+    "qf",
+    "fzf",
+    "vim",
+    "sh",
+    "python",
+    "go",
+    "c",
+    "cpp",
+    "rust",
+    "java",
+    "lua",
+    "typescript",
+    "javascript",
+    "css",
+    "html",
+    "xml",
+  }
+  local hl_fb_tbl = {}
+  local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
+  local function cur_word_pat()
+    local lnum, col = unpack(api.nvim_win_get_cursor(0))
+    local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
+    local _, e_off = re_e:match_str(line:sub(col + 1, -1))
+    local pat = ""
+    if e_off ~= 0 then
+      local s, e = re_s:match_str(line:sub(1, col + 1))
+      local word = line:sub(s + 1, e + e_off - 1)
+      pat = ([[\<%s\>]]):format(word:gsub("[\\/~]", [[\%1]]))
+    end
+    return pat
+  end
+
+  return function()
+    local ft = vim.bo.ft
+    if vim.tbl_contains(fb_bl_ft, ft) or api.nvim_get_mode().mode == "t" then
+      return
+    end
+
+    local m_id, winid = unpack(hl_fb_tbl)
+    pcall(fn.matchdelete, m_id, winid)
+
+    winid = api.nvim_get_current_win()
+    m_id = fn.matchadd(
+        "CocHighlightText", cur_word_pat(), -1, -1, { window = winid }
+    )
+    hl_fb_tbl = { m_id, winid }
+  end
+end)()
+
 function M.post_open_float()
   local winid = vim.g.coc_last_float_win
   if winid and api.nvim_win_is_valid(winid) then
@@ -265,6 +319,21 @@ function _G.check_backspace()
   local col = api.nvim_win_get_cursor(0)[2]
   return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and
              true
+end
+
+function M.did_init(silent)
+  if vim.g.coc_service_initialized == 0 then
+    if silent then
+      vim.notify([[coc.nvim hasn't initialized]], vim.log.levels.WARN)
+    end
+    return false
+  end
+  return true
+end
+
+function M.skip_snippet()
+  fn.CocActionAsync("snippetNext")
+  return utils.termcodes["<BS>"]
 end
 
 -- UNUSED
@@ -343,25 +412,22 @@ function M.init()
 
   g.coc_fzf_opts = { "--no-border", "--layout=reverse-list" }
 
-  g.coc_explorer_global_presets = {
-    config = { ["root-uri"] = "~/.config" },
-    projects = { ["root-uri"] = "~/projects" },
-    github = { ["root-uri"] = "~/projects/github" },
-    opt = { ["root-uri"] = "~/opt" },
-  }
+  -- Disable CocFzfList
+  vim.schedule(function() cmd("au! CocFzfLocation User CocLocationsChange") end)
 
+  -- [[CursorHold * silent call CocActionAsync('highlight')]],
   autocmd(
       "Coc", {
         [[User CocLocationsChange ++nested lua require('plugs.coc').jump2loc()]],
+        [[User CocDiagnosticChange ++nested lua require('plugs.coc').diagnostic_change()]],
         [[FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript,typescript nmap <silent> <c-]> <Plug>(coc-definition)]],
-        [[CursorHold * silent call CocActionAsync('highlight')]],
-        [[FileType typescript,json setl formatexpr=CocAction('formatSelected')]],
+        [[CursorHold * sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]],
+        [[FileType typescript,json setl formatexpr=CocActionAsync('formatSelected')]],
         [[User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')]],
         [[FileType list lua vim.cmd('pa nvim-bqf') require('bqf.magicwin.handler').attach()]],
         [[VimLeavePre * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]],
         [[FileType log :let b:coc_enabled = 0]],
-        -- [[CocDiagnosticChange ++nested lua require('plugs.coc').diagnostic_change()]],
-        -- [[CocOpenFloat lua require('plugs.coc').post_open_float()]]
+        [[User CocOpenFloat lua require('plugs.coc').post_open_float()]],
       }, true
   )
 
@@ -387,27 +453,20 @@ function M.init()
   map("n", "<A-[>", ":CocCommand fzf-preview.VistaCtags<CR>")
   map("n", "<LocalLeader>t", ":CocCommand fzf-preview.BufferTags<CR>")
 
-  -- TODO: Use more!
-  -- Remap for do codeAction of current line
-  map("n", "<Leader>wc", "<Plug>(coc-codeaction)", { noremap = false })
-  map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)", { noremap = false })
-  map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)", { noremap = false })
-
   -- map("n", "<C-x><C-r>", ":Telescope coc references<CR>")
   -- map("n", "<C-x><C-[>", ":Telescope coc definitions<CR>")
   -- map("n", "<C-x><C-]>", ":Telescope coc implementations<CR>")
   -- map("n", "<C-x><C-r>", ":Telescope coc diagnostics<CR>")
 
   -- Use `[g` and `]g` to navigate diagnostics
-  map("n", "[g", "<Plug>(coc-diagnostic-prev)", { noremap = false })
-  map("n", "]g", "<Plug>(coc-diagnostic-next)", { noremap = false })
+  -- map("n", "[g", "<Plug>(coc-diagnostic-prev)", { noremap = false })
+  -- map("n", "]g", "<Plug>(coc-diagnostic-next)", { noremap = false })
+  map("n", "[g", ":call CocAction('diagnosticPrevious')<CR>", { silent = true })
+  map("n", "]g", ":call CocAction('diagnosticNext')<CR>", { silent = true })
   map(
       "n", "<Leader>?", ":call CocAction('diagnosticInfo')<CR>",
       { silent = true }
   )
-
-  map("n", ")g", ":call CocAction('diagnosticNext')<CR>", { silent = true })
-  map("n", "(g", ":call CocAction('diagnosticPrevious')<CR>", { silent = true })
 
   -- Goto code navigation
   map("n", "gd", [[:lua require('plugs.coc').go2def()<CR>]])
@@ -480,6 +539,12 @@ function M.init()
       [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]]
   )
 
+  -- TODO: Use more!
+  -- Remap for do codeAction of current line
+  map("n", "<Leader>wc", "<Plug>(coc-codeaction)", { noremap = false })
+  map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)", { noremap = false })
+  map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)", { noremap = false })
+
   -- Popup
   map(
       "i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]],
@@ -494,7 +559,7 @@ function M.init()
 
   map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], { expr = true })
 
-  map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
+  -- map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
 
   -- g.endwise_no_mappings = true
   -- map(
@@ -521,6 +586,7 @@ function M.init()
       { silent = true }
   )
 
+  -- Git
   map("n", "<Leader>gD", ":CocCommand git.diffCached<CR>", { silent = true })
   map("n", "<Leader>gu", ":<C-u>CocCommand git.chunkUndo<CR>", { silent = true })
   map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", { silent = true })
@@ -539,7 +605,39 @@ function M.init()
       { noremap = true, silent = true }
   )
 
-  map("n", ";ff", ":Format<CR>")
+  -- Snippet
+  -- map(
+  --     "i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
+  --     { expr = true }
+  -- )
+  -- map(
+  --     "s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]],
+  --     { noremap = true, expr = true }
+  -- )
+
+  -- map("n", ";ff", ":Format<CR>")
+
+  map(
+      "n", "<Leader>ab", ":CocCommand fzf-preview.AllBuffers<CR>",
+      { silent = true }
+  )
+  map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
+  map(
+      "n", "<LocalLeader>;", ":CocCommand fzf-preview.Lines<CR>",
+      { silent = true }
+  )
+
+  map(
+      "n", "<LocalLeader>d", ":CocCommand fzf-preview.ProjectFiles<CR>",
+      { silent = true }
+  )
+  map(
+      "n", "<LocalLeader>g", ":CocCommand fzf-preview.GitFiles<CR>",
+      { silent = true }
+  )
+
+  map("n", "<Leader>se", ":CocFzfList snippets<CR>", { silent = true })
+  map("n", "<M-/>", ":CocCommand fzf-preview.Marks<CR>", { silent = true })
 end
 
 return M

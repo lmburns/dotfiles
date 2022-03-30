@@ -1,78 +1,8 @@
 -- TODO: Show tab numbers (buffers)
+local utils = require("common.utils")
+local map = utils.map
+
 -- ========================== Custom ==========================
-local function is_available_gps()
-  local ok, _ = pcall(require, "nvim-gps")
-  if not ok then
-    return false
-  end
-  return require("nvim-gps").is_available()
-end
-
-local function neartest_method() return vim.b.vista_nearest_method_or_function end
-vim.cmd [[autocmd VimEnter * call vista#RunForNearestMethodOrFunction()]]
-
-local file_encoding = function()
-  local encoding = vim.opt.fileencoding:get()
-  if encoding == "utf-8" then
-    return ""
-  else
-    return encoding
-  end
-end
-
-local sections_1 = {
-  lualine_a = { "mode" },
-  lualine_b = {
-    { "filetype", icon_only = true },
-    "filesize",
-    file_encoding,
-    {
-      "filename",
-      path = 1,
-      symbols = { modified = "[+]", readonly = " ", unnamed = "[No name]" },
-    },
-  },
-  lualine_c = { "g:coc_status" },
-  lualine_x = {
-    {
-      "diagnostics",
-      sources = { "coc" },
-      symbols = { error = " ", warn = " ", info = " ", hint = " " },
-    },
-  },
-  lualine_y = { "branch", "diff" },
-  lualine_z = { "progress", "location" },
-}
-
-local sections_2 = {
-  lualine_a = { "mode" },
-  lualine_b = { "" },
-  lualine_c = { { "filetype", icon_only = true }, { "filename", path = 1 } },
-  lualine_x = { "fileformat", "filetype" },
-  lualine_y = { "filesize", "progress" },
-  lualine_z = { "location" },
-}
-
-function LualineToggle()
-  local lualine_require = require("lualine_require")
-  local modules = lualine_require.lazy_require(
-      { config_module = "lualine.config" }
-  )
-  local utils = require("lualine.utils.utils")
-
-  local current_config = modules.config_module.get_config()
-  if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
-    current_config.sections = utils.deepcopy(sections_2)
-  else
-    current_config.sections = utils.deepcopy(sections_1)
-  end
-  require("lualine").setup(current_config)
-end
-
-vim.api.nvim_set_keymap(
-    "n", "!", ":lua LualineToggle()<CR>", { noremap = true, silent = true }
-)
-
 local colors = {
   ocean = "#221a02",
   black = "#291804",
@@ -111,6 +41,88 @@ local kimbox = {
   terminal = { a = { fg = colors.yellow, bg = colors.bg, gui = "bold" } },
   visual = { a = { fg = colors.orange, bg = colors.bg, gui = "bold" } },
 }
+
+local conditions = {
+  -- Show function in statusbar
+  is_available_gps = function()
+    local ok, _ = pcall(require, "nvim-gps")
+    if not ok then
+      return false
+    end
+    return require("nvim-gps").is_available()
+  end,
+
+  hide_in_width = function() return vim.fn.winwidth(0) > 80 end,
+}
+
+local plugins = {
+  -- Show function is statusbar with vista
+  vista_nearest_method = function()
+    -- vim.cmd [[autocmd VimEnter * call vista#RunForNearestMethodOrFunction()]]
+    return vim.b.vista_nearest_method_or_function
+  end,
+
+  file_encoding = function()
+    local encoding = vim.opt.fileencoding:get()
+    if encoding == "utf-8" then
+      return ""
+    else
+      return encoding
+    end
+  end,
+
+}
+
+local sections_1 = {
+  lualine_a = { "mode" },
+  lualine_b = {
+    { "filetype", icon_only = false },
+    { "filesize", cond = conditions.hide_in_width },
+    plugins.file_encoding,
+    {
+      "filename",
+      path = 1,
+      symbols = { modified = "[+]", readonly = " ", unnamed = "[No name]" },
+    },
+  },
+  lualine_c = { "g:coc_status" },
+  lualine_x = {
+    {
+      "diagnostics",
+      sources = { "coc" },
+      symbols = { error = " ", warn = " ", info = " ", hint = " " },
+    },
+  },
+  lualine_y = { "branch", { "diff", cond = conditions.hide_in_width } },
+  lualine_z = { "progress", "location" },
+}
+
+local sections_2 = {
+  lualine_a = { "mode" },
+  lualine_b = { "" },
+  lualine_c = { { "filetype", icon_only = true }, { "filename", path = 1 } },
+  lualine_x = { "fileformat", "filetype" },
+  lualine_y = { "filesize", "progress" },
+  lualine_z = { "location" },
+}
+
+function LualineToggle()
+  local lualine_require = require("lualine_require")
+  local modules = lualine_require.lazy_require(
+      { config_module = "lualine.config" }
+  )
+  local utils = require("lualine.utils.utils")
+
+  local current_config = modules.config_module.get_config()
+  if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
+    current_config.sections = utils.deepcopy(sections_2)
+  else
+    current_config.sections = utils.deepcopy(sections_1)
+  end
+  require("lualine").setup(current_config)
+end
+
+map("n", "!", ":lua LualineToggle()<CR>", { silent = true })
 
 -- ========================== Terminal ==========================
 
@@ -220,16 +232,20 @@ require("lualine").setup(
         lualine_y = {},
         lualine_z = {},
       },
-      tabline = {
-        lualine_a = { "tabs" },
-        lualine_b = { { "buffers" } },
-        lualine_c = {},
-        lualine_x = {},
-        lualine_y = {},
-        lualine_z = {
-          { "require(\"nvim-gps\").get_location()", cond = is_available_gps },
-        },
-      },
+      tabline = {},
+      -- tabline = {
+      --   lualine_a = { "tabs" },
+      --   lualine_b = { { "buffers" } },
+      --   lualine_c = {},
+      --   lualine_x = {},
+      --   lualine_y = {},
+      --   lualine_z = {
+      --     {
+      --       "require(\"nvim-gps\").get_location()",
+      --       cond = conditions.is_available_gps,
+      --     },
+      --   },
+      -- },
       extensions = {
         "quickfix",
         my_toggleterm,

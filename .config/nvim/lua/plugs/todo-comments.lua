@@ -82,4 +82,4 @@ require("todo-comments").setup(
     }
 )
 
-map("n", "<Leader>T", ":TodoTelescope<CR>", { silent = true })
+map("n", "<LocalLeader>T", ":TodoTelescope<CR>", { silent = true })

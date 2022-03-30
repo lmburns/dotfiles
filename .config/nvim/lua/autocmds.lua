@@ -10,23 +10,6 @@ autocmd(
     }, true
 )
 
--- Return to last position in file
-autocmd(
-    "jump_last_position", {
-      [[
-        BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-      ]],
-    }, true
-)
-
--- Automatically reload buffer if changed outside current buffer
-autocmd(
-    "auto_read", {
-      [[FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() == 'n' && getcmdwintype() == '' | checktime | endif]],
-      [[FileChangedShellPost * echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
-    }, true
-)
-
 -- === Custom file type settings === [[[
 autocmd(
     "custom_ft", {
@@ -80,7 +63,25 @@ cmd [[ hi def link myTodo Todo ]]
 
 -- ]]] === Custom syntax groups ===
 
--- setup = {{'BufWritePost', 'plugins.lua', 'PackerCompile'},
+-- ================================ Zig =============================== [[[
+cmd [[
+  augroup zig_env
+    autocmd!
+    autocmd FileType zig
+      \ nnoremap <Leader>r<CR> : FloatermNew --autoclose=0 zig run ./%<CR>|
+      \ nnoremap <buffer> ;ff           :Format<cr>
+  augroup END
+]]
+-- ]]] === Zig ===
+
+
+-- Automatically reload buffer if changed outside current buffer
+autocmd(
+    "auto_read", {
+      [[FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() == 'n' && getcmdwintype() == '' | checktime | endif]],
+      [[FileChangedShellPost * echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
+    }, true
+)
 
 -- ============================== Unused ============================== [[[
 
@@ -93,32 +94,3 @@ cmd [[ hi def link myTodo Todo ]]
 -- )
 
 -- ]]] === Unused ===
-
--- ========================== Tutorial ==========================
-
--- augroup(
---     "ClearCommandMessages", {
---       {
---         events = { "CmdlineLeave", "CmdlineChanged" },
---         targets = { ":" },
---         command = "lua require('as.autocommands').clear_messages()",
---       },
---     }
--- )
-
--- vim.api.nvim_create_autocmd(
---     { "BufEnter", "TermOpen", "TermEnter" }, {
---       group = groupname,
---       pattern = "term://*",
---       callback = function()
---         vim.keymap.set(
---             "n", "<CR>", function()
---               vim.cmd(
---                   [[call vimrc#open_file_with_line_col(expand('<cfile>'), expand('<cWORD>'))<CR>]]
---               )
---             end, { noremap = true, silent = true, buffer = true }
---         )
---       end,
---       once = false,
---     }
--- )

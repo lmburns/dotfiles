@@ -6,6 +6,35 @@ local map = utils.map
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
+-- vim.g.loaded_logiPat = 1
+-- vim.g.loaded_getscriptPlugin = 1
+-- vim.g.loaded_matchparen = 1
+-- vim.g.loaded_netrwFileHandlers = 1
+-- vim.g.loaded_rrhelper = 1
+-- vim.g.loaded_spellfile_plugin = 1
+-- vim.g.loaded_zipPlugin = 1
+
+vim.g.do_filetype_lua = 1
+-- vim.g.did_load_filetypes = 0
+
+vim.filetype.add(
+    {
+      extension = {
+        eslintrc = "json",
+        prettierrc = "json",
+        conf = "conf",
+        mdx = "markdown",
+        mjml = "html",
+      },
+      pattern = {
+        [".*%.env.*"] = "sh",
+        [".*ignore"] = "conf",
+        -- ['.*tmux.*conf$'] = 'tmux',
+      },
+      filename = { ["yup.lock"] = "yaml" },
+    }
+)
+
 vim.tbl_map(
     function(p)
       vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
@@ -15,6 +44,7 @@ vim.tbl_map(
       "matchit",
       "netrw",
       "netrwPlugin",
+      "netrwSettings",
       "python_provider",
       "ruby_provider",
       "perl_provider",
@@ -27,6 +57,14 @@ vim.tbl_map(
       "zipPlugin",
     }
 )
+
+-- Base
+vim.env.LANG = "en_US.UTF-8"
+
+o.encoding = "utf-8"
+o.fileencoding = "utf-8" -- utf-8 files
+o.fileformat = "unix" -- use unix line endings
+o.fileformats = "unix,dos,mac" -- try unix line endings before dos, use unix
 
 -- Settings
 o.path:append("**")
@@ -64,6 +102,7 @@ o.listchars:append(
       nbsp = "␣" }
 )
 o.showbreak = "⏎"
+o.showtabline = 2
 o.incsearch = true -- incremential search highlight
 o.pumheight = 10 -- number of items in popup menu
 
@@ -94,7 +133,7 @@ o.undoreload = 10000
 o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 fn.mkdir(vim.o.undodir, "p")
--- o.shada = "!,'1000,<50,s10,h" -- increase the shadafile size so that history is longer
+o.shada = "!,'1000,<50,s10,h" -- increase the shadafile size so that history is longer
 
 o.belloff = "all"
 o.visualbell = false
@@ -105,7 +144,7 @@ o.inccommand = "nosplit"
 o.splitbelow = true
 o.splitright = true
 
-o.concealcursor = "n" -- "vic"
+o.concealcursor = "vic" -- "-=n"
 o.conceallevel = 2
 o.fillchars:append("msgsep: ,vert:│") -- customize message separator
 -- g.cursorhold_updatetime = 1000
@@ -114,7 +153,7 @@ o.timeoutlen = 350
 o.showmatch = true
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
-o.signcolumn = "yes"
+o.signcolumn = "yes:1"
 o.hidden = true -- enable modified buffers in background
 o.backup = false
 o.writebackup = false
@@ -133,6 +172,18 @@ g.guitablabel = "%M %t"
 o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
                   ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" ..
                   ",sm:block-blinkwait175-blinkoff150-blinkon175"
+o.guifont = [[FiraMono\ Nerd\ Font\ Mono:style=Medium:h12]]
+
+if fn.exists("g:neovide") then
+  map("n", "<D-v>", "\"+p")
+  map("i", "<D-v>", "<C-r>+")
+end
+
+g.neovide_input_use_logo = true
+g.neovide_transparency = 0.9
+g.neovide_cursor_vfx_particle_lifetime = 2.0
+g.neovide_cursor_vfx_particle_density = 12.0
+g.neovide_cursor_vfx_mode = "torpedo"
 -- ]]] === Gui ===
 
 -- ============== Spell Check ============== [[[
@@ -189,11 +240,11 @@ cmd(
 -- =============== Commands ================ [[[
 cmd(
     [[
-      filetype on
-      filetype plugin on
+      " filetype on
+      " filetype plugin on
       filetype plugin indent on
 
-      syntax on
+      " syntax on
       syntax enable
     ]]
 )

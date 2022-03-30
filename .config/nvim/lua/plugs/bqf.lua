@@ -1,8 +1,6 @@
 require("common.utils")
 
-if g.colors_name == "one" then
-  cmd("hi! link BqfPreviewBorder Parameter")
-end
+cmd("hi! link BqfPreviewBorder Parameter")
 
 require("bqf").setup(
     {
@@ -25,7 +23,7 @@ require("bqf").setup(
             ["ctrl-t"] = "tab drop",
             ["ctrl-x"] = "",
           },
-          extra_opts = { "-d", "│" },
+          extra_opts = { "--delimiter", "│" },
         },
       },
     }

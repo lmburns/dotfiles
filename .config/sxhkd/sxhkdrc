@@ -443,3 +443,5 @@ alt + control + shift + c
 
 # super + {t,shift + t,s,f}
 #   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# vim: ft=sxhkdrc:et:sw=4:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

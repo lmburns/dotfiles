@@ -21,7 +21,6 @@ cmd [[
   hi HighlightedyankRegion ctermbg=Red   guibg=#fb4934
   hi GitBlameVirtualText   cterm=italic  ctermfg=245   gui=italic guifg=#665c54
 
-
   hi VimwikiBold    guifg=#a25bc4 gui=bold
   hi VimwikiCode    guifg=#d3869b
   hi VimwikiItalic  guifg=#83a598 gui=italic
@@ -32,4 +31,6 @@ cmd [[
   hi VimwikiHeader4 guifg=#819C3B gui=bold
   hi VimwikiHeader5 guifg=#98676A gui=bold
   hi VimwikiHeader6 guifg=#458588 gui=bold
+
+  highlight TabLineSel guifg=#37662b guibg=NONE
 ]]

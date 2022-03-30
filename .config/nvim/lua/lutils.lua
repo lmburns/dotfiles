@@ -29,7 +29,7 @@ function M.dump(o)
 end
 
 -- Capture output of command
-function _G.capture(cmd, raw)
+function M.capture(cmd, raw)
   local f = assert(io.popen(cmd, "r"))
   local s = assert(f:read("*a"))
   f:close()

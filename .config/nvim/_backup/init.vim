@@ -2118,7 +2118,6 @@ call plug#end()
       \,sm:block-blinkwait175-blinkoff150-blinkon175
 
   syntax enable
-  colorscheme kimbox
   " colorscheme overcast
   " colorscheme serenade
   " colorscheme everforest
