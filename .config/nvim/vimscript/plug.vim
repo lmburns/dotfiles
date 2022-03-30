@@ -252,7 +252,7 @@ call plug#end()
 " let g:kimbox_background = 'medium' " brown
 " let g:kimbox_background = 'darker' " dark dark purple
 " let g:kimbox_background = 'ocean' " dark purple
-let g:kimbox_allow_bold = 1
+" let g:kimbox_allow_bold = 1
 " let g:overcast_allow_bold = 1
 "
 " let g:oceanic_material_background = "ocean"

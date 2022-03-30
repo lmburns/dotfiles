@@ -3,9 +3,8 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
--- TODO: Change buffer highlight of bufferline
--- TODO: Change color of show_documentation background
 -- TODO: Fix bqf fzf
+-- TODO: Possibly fork rnvimr to lf
 local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
@@ -69,6 +68,7 @@ autocmd(
 --       [[FileType cpp nnoremap <buffer> <Leader>kk :Fcman<CR>]],
 --     }, true
 -- )
+
 api.nvim_create_autocmd(
     "FileType", {
       callback = function()
@@ -152,12 +152,10 @@ api.nvim_create_autocmd(
     }
 )
 
-cmd [[highlight CocFloating ctermbg=red]]
-
-cmd [[
-    filetype off
-    let g:did_load_filetypes = 0
-]]
+-- cmd [[
+--     filetype off
+--     let g:did_load_filetypes = 0
+-- ]]
 
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
@@ -181,13 +179,17 @@ vim.schedule(
           function()
             require("plugs.tree-sitter")
 
+            -- NOTE: This prevents `jsonc` and such being set locally
+            -- unlet g:did_load_filetypes
+            -- doautoall syntaxset FileType
+
             -- au! syntaxset
             -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
+            -- NOTE: This prevents indentline from running
+            -- doautoall filetypedetect BufRead
             cmd [[
-               unlet g:did_load_filetypes
                runtime! filetype.vim
-               filetype on
-               doautoall filetypedetect BufRead
+               filetype plugin indent on
             ]]
 
           end, 20
@@ -277,63 +279,73 @@ vim.schedule(
           end, 200
       )
 
+      vim.defer_fn(
+          function()
+            g.coc_global_extensions = {
+              "coc-snippets",
+              "coc-diagnostic",
+              "coc-yank",
+              "coc-marketplace",
+              "coc-tabnine",
+              "coc-tag",
+              "coc-html",
+              "coc-css",
+              "coc-json",
+              "coc-yaml",
+              "coc-pyright",
+              "coc-vimtex",
+              "coc-vimlsp",
+              "coc-sh",
+              "coc-sql",
+              "coc-xml",
+              "coc-fzf-preview",
+              "coc-syntax",
+              "coc-git",
+              "coc-go",
+              "coc-clangd",
+              "coc-rls",
+              "coc-rust-analyzer",
+              "coc-toml",
+              "coc-solargraph",
+              "coc-prettier",
+              "coc-r-lsp",
+              "coc-perl",
+              "coc-tsserver",
+              "coc-zig",
+              "coc-dlang",
+              "coc-lua",
+            }
+
+            g.coc_enable_locationlist = 0
+            g.coc_selectmode_mapping = 0
+
+            api.nvim_create_autocmd(
+                "User", {
+                  callback = function()
+                    require("plugs.coc").init()
+                  end,
+                  once = true,
+                  group = create_augroup("CocInit", true),
+                }
+            )
+
+            -- au User CocNvimInit ++once lua require('plugs.coc').init()
+            cmd [[
+              hi! link CocSemDefaultLibrary Special
+              hi! link CocSemDocumentation Number
+              hi! CocSemStatic gui=bold
+           ]]
+
+            cmd("packadd coc.nvim")
+          end, 300
+      )
+
       -- vim.defer_fn(
       --     function()
-      --       g.coc_global_extensions = {
-      --         "coc-snippets",
-      --         "coc-diagnostic",
-      --         "coc-yank",
-      --         "coc-marketplace",
-      --         "coc-tabnine",
-      --         "coc-tag",
-      --         "coc-html",
-      --         "coc-css",
-      --         "coc-json",
-      --         "coc-yaml",
-      --         "coc-pyright",
-      --         "coc-vimtex",
-      --         "coc-vimlsp",
-      --         "coc-sh",
-      --         "coc-sql",
-      --         "coc-xml",
-      --         "coc-fzf-preview",
-      --         "coc-syntax",
-      --         "coc-git",
-      --         "coc-go",
-      --         "coc-clangd",
-      --         "coc-rls",
-      --         "coc-rust-analyzer",
-      --         "coc-toml",
-      --         "coc-solargraph",
-      --         "coc-prettier",
-      --         "coc-r-lsp",
-      --         "coc-perl",
-      --         "coc-tsserver",
-      --         "coc-zig",
-      --         "coc-dlang",
-      --         "coc-lua",
-      --       }
-      --
-      --       g.coc_enable_locationlist = 0
-      --       g.coc_selectmode_mapping = 0
-      --
-      --       cmd [[
-      --         au User CocNvimInit ++once lua require('plugs.coc').init()
-      --
-      --         hi! link CocSemDefaultLibrary Special
-      --         hi! link CocSemDocumentation Number
-      --         hi! CocSemStatic gui=bold
-      --      ]]
-      --
-      --       cmd("packadd coc.nvim")
-      --     end, 300
+      --     end, 800
       -- )
-
-      -- vim.defer_fn(function() require("plugs.fold") end, 800)
 
     end
 )
-
-vim.cmd("source ~/.config/nvim/vimscript/plug.vim")
 
 -- ]]] === Defer Loading ===

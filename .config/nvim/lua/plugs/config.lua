@@ -137,13 +137,13 @@ function M.targets()
    augroup END
   ]]
 
-  g.targets_aiAI = "aIAi"
-  g.targets_seekRanges =
-      "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
-  g.targets_jumpRanges = g.targets_seekRanges
-
-  -- Seeking next/last objects
-  g.targets_nl = "nm"
+  -- g.targets_aiAI = "aIAi"
+  -- g.targets_seekRanges =
+  --     "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+  -- g.targets_jumpRanges = g.targets_seekRanges
+  --
+  -- -- Seeking next/last objects
+  -- g.targets_nl = "nm"
 
   -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
   -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
@@ -384,5 +384,29 @@ function M.vcoolor()
   map("n", "<Leader>yb", ":VCoolIns b<CR>")
   map("n", "<Leader>yr", ":VCoolIns r<CR>")
 end
+
+function M.surround()
+  map("n", "ds", "<Plug>Dsurround", {})
+  map("n", "cs", "<Plug>Csurround", {})
+  map("n", "cS", "<Plug>CSurround", {})
+  map("n", "ys", "<Plug>Ysurround", {})
+  map("n", "yS", "<Plug>YSurround", {})
+  map("n", "yss", "<Plug>Yssurround", {})
+  map("n", "ygs", "<Plug>YSsurround", {})
+  map("x", "S", "<Plug>VSurround", {})
+  map("x", "gS", "<Plug>VgSurround", {})
+end
+
+function M.lazygit()
+  g.lazygit_floating_window_winblend = 0 -- transparency of floating window
+  g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+  g.lazygit_floating_window_corner_chars = { "╭", "╮", "╰", "╯" } -- customize lazygit popup window corner characters
+  g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
+  g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+
+  map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true })
+end
+
+-- Unused
 
 return M

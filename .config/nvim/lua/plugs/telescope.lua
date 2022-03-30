@@ -262,11 +262,15 @@ map("n", ";b", ":Telescope builtin<CR>")
 map("n", ";c", ":Telescope commands<CR>")
 map("n", ";B", ":Telescope bookmarks<CR>")
 
+-- List buffers
+map("n", "<Leader>bl", ":Telescope buffers<CR>", { silent = true })
+
 map("n", "<Leader>;", ":Telescope current_buffer_fuzzy_find<CR>")
 map("n", ";r", ":Telescope git_grep<CR>")
 map("n", "<A-.>", ":Telescope frecency<CR>")
 map("n", ";fd", ":Telescope fd<CR>")
 map("n", ";g", ":Telescope git_files<CR>")
+
 
 map("n", "<Leader>hc", ":Telescope command_history<CR>")
 map("n", "<Leader>hs", ":Telescope search_history<CR>")

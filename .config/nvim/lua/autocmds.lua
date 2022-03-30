@@ -1,13 +1,43 @@
 local utils = require("common.utils")
 local autocmd = utils.autocmd
 local augroup = utils.augroup
+local create_augroup = utils.create_augroup
 
 -- Spelling
-autocmd(
-    "spell", {
-      [[FileType text,gitcommit,markdown,mail setlocal spell]],
-      [[BufRead,BufNewFile neomutt-void* setlocal spell]],
-    }, true
+local spellcheck = create_augroup("Spellcheck")
+api.nvim_create_autocmd(
+    "FileType", {
+      command = "setlocal spell",
+      group = spellcheck,
+      pattern = { "gitcommit", "markdown", "text", "mail" },
+    }
+)
+
+api.nvim_create_autocmd(
+    { "BufRead", "BufNewFile" }, {
+      command = "setlocal spell",
+      group = spellcheck,
+      pattern = "neomutt-archbox*",
+    }
+)
+
+-- WHY doesn't this work in lua files?
+-- I've realized that `FileType *` doesn't work, but BufRead does
+api.nvim_create_autocmd(
+    "BufRead", {
+      command = "setl formatoptions-=cro conceallevel=0",
+      group = create_augroup("FormatOptions"),
+      pattern = "*",
+    }
+)
+
+-- Something else is setting this
+api.nvim_create_autocmd(
+    { "BufNewFile", "BufRead" }, {
+      command = "setl ft=jsonc",
+      pattern = "coc-settings.json",
+      group = create_augroup("CustomFt", true),
+    }
 )
 
 -- === Custom file type settings === [[[
@@ -15,7 +45,6 @@ autocmd(
     "custom_ft", {
       [[BufRead,BufNewFile *.ztst            setl ft=ztst]],
       [[BufRead,BufNewFile *pre-commit       setl ft=sh]],
-      [[BufNewFile,BufRead coc-settings.json setl ft=jsonc]],
       [[FileType json syntax match Comment +\/\/.\+$+]],
       [[BufRead,BufNewFile calcurse-note*,~/.local/share/calcurse/notes/* set filetype=markdown]],
       [[BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff]],
@@ -25,7 +54,6 @@ autocmd(
 
       [[BufWritePre * %s/\s\+$//e]],
       [[BufWritePre * %s#\($\n\s*\)\+\%$##e]],
-      [[FileType * setl formatoptions-=cro]],
 
       [[BufReadPre   *.docx silent set ro]],
       [[BufEnter     *.docx silent set modifiable]],
@@ -73,7 +101,6 @@ cmd [[
   augroup END
 ]]
 -- ]]] === Zig ===
-
 
 -- Automatically reload buffer if changed outside current buffer
 autocmd(

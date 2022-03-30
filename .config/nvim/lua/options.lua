@@ -14,8 +14,12 @@ g.maplocalleader = [[,]]
 -- vim.g.loaded_spellfile_plugin = 1
 -- vim.g.loaded_zipPlugin = 1
 
-vim.g.do_filetype_lua = 1
--- vim.g.did_load_filetypes = 0
+-- Lua filetype detection
+g.do_filetype_lua = 1
+
+-- Runs `filetype.lua` and uses builtin filetype detection
+-- I have noticed that treesitter syntax highlighting is delayed when this is used
+-- g.did_load_filetypes = 0
 
 vim.filetype.add(
     {
@@ -25,6 +29,7 @@ vim.filetype.add(
         conf = "conf",
         mdx = "markdown",
         mjml = "html",
+        sxhkdrc = "sxhkdrc",
       },
       pattern = {
         [".*%.env.*"] = "sh",
@@ -88,9 +93,9 @@ o.synmaxcol = 1000 -- do not highlight long lines
 o.foldenable = false
 o.foldmethod = "marker"
 o.foldmarker = "[[[,]]]"
+-- This does not work globally for whatever reason
 o.formatoptions:remove({ "c", "r", "o" })
 o.nrformats = "octal,hex,bin,unsigned"
-
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
@@ -101,7 +106,7 @@ o.listchars:append(
     { tab = "‣ ", trail = "•", precedes = "«", extends = "»",
       nbsp = "␣" }
 )
-o.showbreak = "⏎"
+-- o.showbreak = "⏎"
 o.showtabline = 2
 o.incsearch = true -- incremential search highlight
 o.pumheight = 10 -- number of items in popup menu
@@ -145,7 +150,7 @@ o.splitbelow = true
 o.splitright = true
 
 o.concealcursor = "vic" -- "-=n"
-o.conceallevel = 2
+o.conceallevel = 0
 o.fillchars:append("msgsep: ,vert:│") -- customize message separator
 -- g.cursorhold_updatetime = 1000
 o.updatetime = 100
@@ -238,13 +243,12 @@ cmd(
 -- ]]] === Abbreviations ===
 
 -- =============== Commands ================ [[[
+-- syntax on
+-- filetype on
+-- filetype plugin on
 cmd(
     [[
-      " filetype on
-      " filetype plugin on
       filetype plugin indent on
-
-      " syntax on
       syntax enable
     ]]
 )

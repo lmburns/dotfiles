@@ -84,8 +84,200 @@ function M.setup()
 
           -- always_show_bufferline = true
           -- sort_by = 'relative_directory'
+        },
+        highlights = {
+          -- Status background
+          fill = { guifg = "#A06469", guibg = "#221a0f" },
+          background = { guifg = "#e8c097", guibg = "#221a0f" },
 
-          highlights = { fill = { guibg = { attribute = "bg", highlight = "" } } },
+          tab = { guifg = "#e8c097", guibg = "#221a0f" },
+          tab_selected = { guifg = "#e8c097", guibg = "#5e452b" },
+          -- tab_close = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- close_button = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- close_button_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- close_button_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          buffer_visible = {
+            guifg = "#A06469",
+            guibg = "#5e452b",
+          },
+          buffer_selected = {
+            guifg = "#e8c097",
+            guibg = "#5e452b",
+            gui = "bold,italic",
+          },
+          -- diagnostic = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- diagnostic_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- diagnostic_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          -- },
+          -- info = {
+          --   guifg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- info_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- info_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- info_diagnostic = {
+          --   guifg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- info_diagnostic_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- info_diagnostic_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- warning = {
+          --   guifg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- warning_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- warning_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- warning_diagnostic = {
+          --   guifg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- warning_diagnostic_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- warning_diagnostic_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = warning_diagnostic_fg,
+          -- },
+          -- error = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- error_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- error_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- error_diagnostic = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   guisp = "#FFFFFF",
+          -- },
+          -- error_diagnostic_visible = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- error_diagnostic_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          --   gui = "bold,italic",
+          --   guisp = "#FFFFFF",
+          -- },
+          modified = {
+            guifg = "#EF1D55",
+            guibg = "#221a0f",
+          },
+          modified_visible = {
+            guifg = "#EF1D55",
+            guibg = "#5e452b",
+          },
+          modified_selected = {
+            guifg = "#EF1D55",
+            guibg = "#5e452b",
+          },
+          -- duplicate_selected = {
+          --   guifg = "#FFFFFF",
+          --   gui = "italic",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- duplicate_visible = {
+          --   guifg = "#FFFFFF",
+          --   gui = "italic",
+          --   guibg = "#FFFFFF",
+          -- },
+          -- duplicate = {
+          --   guifg = "#FFFFFF",
+          --   gui = "italic",
+          --   guibg = "#FFFFFF",
+          -- },
+          separator_selected = {
+            guifg = "#221a0f",
+            guibg = "#5e452b",
+          },
+          separator_visible = {
+            guifg = "#221a0f",
+            guibg = "#5e452b",
+          },
+          separator = {
+            guifg = "#221a0f",
+            guibg = "#221a0f",
+          },
+          -- indicator_selected = {
+          --   guifg = "#FFFFFF",
+          --   guibg = "#FFFFFF",
+          -- },
+          pick_selected = {
+            guifg = "#DC3958",
+            guibg = "#5e452b",
+            gui = "bold,italic",
+          },
+          pick_visible = {
+            guifg = "#819C3B",
+            guibg = "#221a0f",
+            gui = "bold,italic",
+          },
+          pick = {
+            guifg = "#819C3B",
+            guibg = "#221a0f",
+            gui = "bold,italic",
+          },
         },
       }
   )
@@ -115,14 +307,8 @@ local function init()
   map("n", "<Leader>9", ":BufferLineGoToBuffer 9<CR>", { silent = true })
 
   -- TODO: Fix this
-  -- vim.defer_fn(
-  --     function()
-  --       cmd [[
-  --         hi! TabLineSel ctermbg=Red guibg=#ddc7a1
-  --         hi! WildMenu guibg=#ddc7a1
-  --       ]]
-  --     end, 100
-  -- )
+  -- cmd("packadd bufferline.nvim")
+  -- cmd [[hi TabLineSel guibg=#ddc7a1]]
   M.setup()
 end
 

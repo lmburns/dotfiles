@@ -191,11 +191,6 @@ return packer.startup(
             {
               "akinsho/bufferline.nvim",
               after = { colorscheme, "lualine.nvim" },
-              setup = function()
-                cmd [[
-                  hi! TabLineSel guibg=#ddc7a1 gui=bold
-                ]]
-              end,
               config = conf("plugs.bufferline"),
             }
         )
@@ -219,11 +214,28 @@ return packer.startup(
 
         -- ============================= Operator============================== [[[
         -- Similar to vim-sandwhich (I kind of use both)
-        use({ "tpope/vim-surround" })
+        -- use({ "tpope/vim-surround" })
+        --
         use(
-            { "gbprod/substitute.nvim",
-              config = [[require("plugs.substitute")]] }
+            {
+              "tpope/vim-surround",
+              setup = [[vim.g.surround_no_mappings = 1]],
+              keys = {
+                { "n", "ds" },
+                { "n", "cs" },
+                { "n", "cS" },
+                { "n", "ys" },
+                { "n", "yS" },
+                { "n", "yss" },
+                { "n", "ygs" },
+                { "x", "S" },
+                { "x", "gS" },
+              },
+              config = conf("surround"),
+            }
         )
+
+        use({ "gbprod/substitute.nvim", config = conf("plugs.substitute") })
         use(
             {
               "machakann/vim-sandwich",
@@ -282,7 +294,8 @@ return packer.startup(
         -- ]]] === UndoTree ===
 
         -- ========================== NerdCommenter =========================== [[[
-        use({ "preservim/nerdcommenter", config = conf("plugs.nerdcommenter") })
+        -- use({ "preservim/nerdcommenter", config = conf("plugs.nerdcommenter") })
+        use({ "numToStr/Comment.nvim", config = conf("plugs.comment") })
         -- ]]] === UndoTree ===
 
         -- ============================== Targets ============================== [[[
@@ -341,7 +354,7 @@ return packer.startup(
         use(
             {
               "SidOfc/mkdx",
-              -- ft = { "markdown", "vimwiki" },
+              ft = { "markdown", "vimwiki" },
               config = conf("mkdx"),
             }
         )
@@ -360,22 +373,37 @@ return packer.startup(
         -- ========================= Syntax-Highlighting ======================= [[[
         g.polyglot_disabled = {
           "markdown",
-          "python",
-          "rust",
-          "java",
-          "lua",
-          "ruby",
-          "zig",
-          "d",
-          "dockerfile",
           "rustpeg",
           "lf",
           "ron",
-          "typescript",
+
+          "cmake",
+          "css",
+          "d",
+          "dart",
+          "dockerfile",
+          "go",
+          "gomod",
+          "html",
+          "java",
+          -- "json",
+          -- "kotlin",
+          "lua",
+          "make",
+          "python",
+          "query",
+          "ruby",
+          "rust",
+          "scss",
+          -- "teal",
+          -- "tsx",
+          -- "typescript",
+          -- "vue",
+          "zig",
         }
         use({ "sheerun/vim-polyglot" })
 
-        use({ "wfxr/dockerfile.vim" })
+        -- use({ "wfxr/dockerfile.vim" })
 
         use({ "rhysd/vim-rustpeg" })
 
@@ -470,7 +498,7 @@ return packer.startup(
             {
               "nvim-treesitter/nvim-treesitter",
               run = ":TSUpdate",
-              config = conf("plugs.tree-sitter"),
+              -- config = conf("plugs.tree-sitter"),
             }
         )
 
@@ -509,7 +537,6 @@ return packer.startup(
         -- ]]] === Html ===
 
         -- ============================= Telescope ============================ [[[
-        -- 'numToStr/Comment.nvim'
         -- 'folke/which-key.nvim'
         --
         use(
@@ -616,23 +643,26 @@ return packer.startup(
         -- ]]] === Telescope ===
 
         -- ================================ Git =============================== [[[
-        use {
-          "tpope/vim-fugitive",
-          fn = "fugitive#*",
-          cmd = { "Git", "Gedit", "Gread", "Gwrite", "Gdiffsplit",
-                  "Gvdiffsplit" },
-          event = "BufReadPre */.git/index",
-          config = conf("plugs.fugitive"),
-        }
-
-        use { "tpope/vim-rhubarb" }
-
         use(
             {
-              "kdheepak/lazygit.nvim",
-              config = map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true }),
+              "tpope/vim-fugitive",
+              fn = "fugitive#*",
+              cmd = {
+                "Git",
+                "Gedit",
+                "Gread",
+                "Gwrite",
+                "Gdiffsplit",
+                "Gvdiffsplit",
+              },
+              event = "BufReadPre */.git/index",
+              config = conf("plugs.fugitive"),
             }
         )
+
+        use({ "tpope/vim-rhubarb" })
+
+        use({ "kdheepak/lazygit.nvim", config = conf("lazygit") })
 
         use(
             {
@@ -654,9 +684,7 @@ return packer.startup(
             {
               "sindrets/diffview.nvim",
               cmd = { "DiffviewOpen", "DiffviewFileHistory" },
-              config = function()
-                require("plugs.diffview").config()
-              end,
+              config = conf("plugs.diffview"),
             }
         )
         -- ]]] === Git ===

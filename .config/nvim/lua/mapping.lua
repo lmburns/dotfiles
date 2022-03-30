@@ -180,7 +180,6 @@ map(
     { expr = true }
 )
 
--- TODO: Remove or use
 map(
     { "n", "x" }, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]],
     { expr = true }
@@ -211,12 +210,12 @@ map("n", "<Leader>bn", ":enew<CR>")
 map("n", "<Leader>bq", ":bp <Bar> bd! #<CR>")
 -- Close all buffers
 map("n", "<Leader>bQ", ":bufdo bd! #<CR>")
--- List buffers
-map("n", "<Leader>bl", ":Telescope buffers<CR>", { silent = true })
 
 -- Split last buffer
-map('n', '<C-w>s', [[:lua require('builtin').split_lastbuf()<CR>]])
-map('n', '<C-w>v', [[:lua require('builtin').split_lastbuf(true)<CR>]])
+map('n', '<C-w>s', [[:lua require('common.builtin').split_lastbuf()<CR>]])
+map('n', '<C-w>v', [[:lua require('common.builtin').split_lastbuf(true)<CR>]])
+
+map('n', '<C-w>;', [[<Cmd>lua require('common.win').go2recent()<CR>]])
 
 -- Resize windows
 -- map("n", "+", ":vertical resize +5<CR>")

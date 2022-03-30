@@ -584,20 +584,20 @@ local function init()
     ]]
 
   map("n", "<Leader>f;", [[<Cmd>lua require('plugs.fzf').cmdhist()<CR>]])
-  map(
-      "n", "<Leader>fc",
-      [[:lua require('common.gittool').root_exe('BCommits')<CR>]]
-  )
-  map(
-      "n", "<Leader>fg",
-      [[:lua require('common.gittool').root_exe('GFiles')<CR>]]
-  )
-  map(
-      "n", "<Leader>ff",
-      [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]]
-  )
-
-  map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
+  -- map(
+  --     "n", "<Leader>fc",
+  --     [[:lua require('common.gittool').root_exe('BCommits')<CR>]]
+  -- )
+  -- map(
+  --     "n", "<Leader>fg",
+  --     [[:lua require('common.gittool').root_exe('GFiles')<CR>]]
+  -- )
+  -- map(
+  --     "n", "<Leader>ff",
+  --     [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]]
+  -- )
+  --
+  -- map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
   map("n", "<C-f>", ":Rg<CR>")
 
   -- Change directory to buffers dir
@@ -618,13 +618,6 @@ local function init()
   map("x", "<C-l>m", "<Plug>(fzf-maps-x)", { noremap = false })
   map("i", "<C-l>m", "<Plug>(fzf-maps-i)", { noremap = false })
   map("o", "<C-l>m", "<Plug>(fzf-maps-o)", { noremap = false })
-
-  -- default_preview_window = { "right:50%,border-left", "ctrl-/" }
-  default_action = {
-    ["ctrl-t"] = "tab split",
-    ["ctrl-x"] = "split",
-    ["ctrl-v"] = "vsplit",
-  }
 end
 
 init()

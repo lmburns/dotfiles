@@ -358,50 +358,51 @@ end
 -- ========================== Init ==========================
 
 function M.init()
-  g.coc_global_extensions = {
-    "coc-snippets",
-    "coc-diagnostic",
-    "coc-yank",
-    "coc-marketplace",
-    "coc-tabnine",
-    "coc-tag",
-    "coc-html",
-    "coc-css",
-    "coc-json",
-    "coc-yaml",
-    "coc-pyright",
-    "coc-vimtex",
-    "coc-vimlsp",
-    "coc-sh",
-    "coc-sql",
-    "coc-xml",
-    "coc-fzf-preview",
-    "coc-syntax",
-    "coc-git",
-    "coc-go",
-    "coc-clangd",
-    "coc-rls",
-    "coc-rust-analyzer",
-    "coc-toml",
-    "coc-solargraph",
-    "coc-prettier",
-    "coc-r-lsp",
-    "coc-perl",
-    "coc-tsserver",
-    "coc-zig",
-    "coc-dlang",
-    "coc-lua",
-  }
+  -- g.coc_global_extensions = {
+  --   "coc-snippets",
+  --   "coc-diagnostic",
+  --   "coc-yank",
+  --   "coc-marketplace",
+  --   "coc-tabnine",
+  --   "coc-tag",
+  --   "coc-html",
+  --   "coc-css",
+  --   "coc-json",
+  --   "coc-yaml",
+  --   "coc-pyright",
+  --   "coc-vimtex",
+  --   "coc-vimlsp",
+  --   "coc-sh",
+  --   "coc-sql",
+  --   "coc-xml",
+  --   "coc-fzf-preview",
+  --   "coc-syntax",
+  --   "coc-git",
+  --   "coc-go",
+  --   "coc-clangd",
+  --   "coc-rls",
+  --   "coc-rust-analyzer",
+  --   "coc-toml",
+  --   "coc-solargraph",
+  --   "coc-prettier",
+  --   "coc-r-lsp",
+  --   "coc-perl",
+  --   "coc-tsserver",
+  --   "coc-zig",
+  --   "coc-dlang",
+  --   "coc-lua",
+  -- }
 
   -- 'coc-pairs',
+  --
   -- 'coc-sumneko-lua',
   -- 'coc-clojure',
   -- 'coc-nginx',
   -- 'coc-toml',
   -- 'coc-explorer'
 
-  g.coc_enable_locationlist = 0
-  g.coc_selectmode_mapping = 0
+  -- g.coc_enable_locationlist = 0
+  -- g.coc_selectmode_mapping = 0
 
   diag_qfid = -1
 

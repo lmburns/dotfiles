@@ -3,6 +3,21 @@
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
   "coc.preferences.listOfWorkspaceEdit": "location",
+  "coc.preferences.formatOnSaveFiletypes": ["go"],
+  "coc.preferences.formatOnType": true,
+
+  // Filetypes that enable semanticTokens highlighting
+  "semanticTokens.filetypes": [
+    "c",
+    "go",
+    "html",
+    "java",
+    "javascript",
+    // "lua",
+    "rust",
+    "typescript"
+  ],
+
   "diagnostic.errorSign": "••",
   "diagnostic.warningSign": "•",
   "diagnostic.infoSign": "•",
@@ -15,28 +30,29 @@
   "diagnostic.enableHighlightLineNumber": false,
   "diagnostic.locationlistUpdate": false,
 
+  // FloatBorder
   "diagnostic.floatConfig": {
     "border": true,
-    "borderhighlight": "FloatBorder",
-    "highlight": "Normal",
+    "borderhighlight": "#D9AE80",
+    // "highlight": "Normal",
     "maxWidth": 120,
     "focusable": false
   },
   "hover.floatConfig": {
     "border": true,
-    "borderhighlight": "FloatBorder",
-    "highlight": "Normal",
+    "borderhighlight": "#D9AE80",
+    // "highlight": "Normal",
     "maxWidth": 120,
     "focusable": false
   },
   "signature.floatConfig": {
     "border": true,
-    "borderhighlight": "FloatBorder",
-    "highlight": "Normal",
+    "borderhighlight": "#D9AE80",
+    // "highlight": "Normal",
     "maxWidth": 120,
     "focusable": false
   },
-  "dialog.floatHighlight": "Normal",
+  // "dialog.floatHighlight": "Normal",
   "dialog.floatBorderHighlight": "Normal",
 
   "diagnostic-languageserver.filetypes": {
@@ -52,19 +68,17 @@
   "codeLens.subseparator": " | ",
   "codeLens.position": "right_align",
   // "codeLens.position": "eol",
+  "coc.source.file.triggerCharacters": ["/"],
   "list.indicator": "➤",
-  "coc.preferences.formatOnSaveFiletypes": ["go"],
-  "coc.preferences.formatOnType": true,
   "signature.enable": true,
   "sh.enable": true,
   // "python.jediEnabled": true,
   "python.formatting.provider": "black",
-  // "python.formatting.blackPath": "/home/lucas/.local/bin/black",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
+  "python.linting.pylintPath": "pylint",
   "python.linting.flake8Enabled": true,
   "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
-  // "python.condaPath": "~/opt/anaconda3/bin/conda",
   "coc.source.file.ignoreHidden": false,
   "coc.source.file.shortcut": "\uf414",
   "coc.source.around.firstMatch": false,
@@ -178,6 +192,7 @@
   "suggest.detailMaxLength": 100,
   "suggest.noselect": false,
   "suggest.selection": "none",
+
   // "suggest.completionItemKindLabels": {
   //   "keyword": "\uf1de",
   //   "variable": "\uf169",
@@ -302,6 +317,11 @@
       "command": "/usr/bin/serve-d",
       "filetypes": ["d"]
     },
+    "dockerfile": {
+      "command": "docker-langserver",
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
+    },
     "lua": {
       "command": "/usr/bin/lua-language-server",
       // "args": [
@@ -364,12 +384,29 @@
   "solargraph.diagnostics": true,
   "solargraph.autoformat": true,
   "solargraph.formatting": true,
+
   "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+
   "outline.keepWindow": true,
   "outline.sortBy": "position",
   "outline.splitCommand": "botright 40vs",
   "outline.showLineNumber": true,
+
   "tree.key.activeFilter": "zf",
   "tree.key.close": "qq",
-  "tree.key.toggle": "t"
+  "tree.key.toggle": "t",
+
+  "clangd.trace.server": "off",
+  "vimlsp.trace.server": "off",
+  "xml.trace.server": "off",
+  "html.trace.server": "off",
+  "css.trace.server": "off",
+  "tsserver.trace.server": "off",
+  "go.trace.server": "off",
+  "json.trace.server": "off",
+
+  "yaml.trace.server": "off",
+  "yaml.validate": true,
+  "yaml.format.singleQuote": true,
+  "yaml.completion": true,
 }
