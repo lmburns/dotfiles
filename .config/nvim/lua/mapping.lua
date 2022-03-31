@@ -175,6 +175,7 @@ map("n", "gT", ":bprevious<CR>")
 map("n", "<C-S-Right>", ":bnext<CR>")
 map("n", "<C-S-Left>", ":bprevious<CR>")
 
+map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], { expr = true })
 map(
     { "n", "x", "o" }, "0", [[v:lua.require'common.builtin'.jump0()]],
     { expr = true }
@@ -198,11 +199,11 @@ map("n", "]q", [[:execute(v:count1 . 'cnext')<CR>]])
 map("n", "[Q", ":cfirst<CR>")
 map("n", "]Q", ":clast<CR>")
 -- Location list
-map('n', '[s', [[<Cmd>execute(v:count1 . 'lprev')<CR>]])
-map('n', ']s', [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
+map("n", "[s", [[<Cmd>execute(v:count1 . 'lprev')<CR>]])
+map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 -- First/last location list
-map('n', '[S', '<Cmd>lfirst<CR>')
-map('n', ']S', '<Cmd>llast<CR>')
+map("n", "[S", "<Cmd>lfirst<CR>")
+map("n", "]S", "<Cmd>llast<CR>")
 
 -- New buffer
 map("n", "<Leader>bn", ":enew<CR>")
@@ -212,10 +213,10 @@ map("n", "<Leader>bq", ":bp <Bar> bd! #<CR>")
 map("n", "<Leader>bQ", ":bufdo bd! #<CR>")
 
 -- Split last buffer
-map('n', '<C-w>s', [[:lua require('common.builtin').split_lastbuf()<CR>]])
-map('n', '<C-w>v', [[:lua require('common.builtin').split_lastbuf(true)<CR>]])
+map("n", "<C-w>s", [[:lua require('common.builtin').split_lastbuf()<CR>]])
+map("n", "<C-w>v", [[:lua require('common.builtin').split_lastbuf(true)<CR>]])
 
-map('n', '<C-w>;', [[<Cmd>lua require('common.win').go2recent()<CR>]])
+map("n", "<C-w>;", [[<Cmd>lua require('common.win').go2recent()<CR>]])
 
 -- Resize windows
 -- map("n", "+", ":vertical resize +5<CR>")
@@ -245,6 +246,8 @@ map("n", "<Leader>cc", ":cclose<CR>")
 map("n", "qd", [[:lua require('common.kutils').close_diff()<CR>]])
 -- Switch to last buffer
 map("n", "<A-u>", [[:lua require('common.builtin').switch_lastbuf()<CR>]])
+-- Close quickfix
+map("n", "qc", [[:lua require('common.qf').close()<CR>]])
 
 -- Keep focused in center of screen when searching
 -- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
@@ -268,6 +271,8 @@ map("n", "<Leader>sa", "zg")
 map("n", "<Leader>s?", "z=")
 map("n", "<Leader>su", "zuw")
 map("n", "<Leader>su1", "zug")
+-- Correct last spelling mistake
+map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u")
 -- ]]] === Spelling ===
 
 -- ==================== Other =================== [[[
@@ -278,12 +283,7 @@ map("n", "<Leader>ev", ":e $VIMRC<CR>")
 map("n", "<Leader>sv", ":so $VIMRC<CR>")
 map("n", "<Leader>ez", ":e $ZDOTDIR/.zshrc<CR>")
 
--- Marks
-map("n", "<Leader>mlm", ":marks<CR>")
-map("n", "<Leader>mfd", ":delm! | delm A-Z0-9<CR>")
-map("n", "<Leader>mld", ":delmarks a-z<CR>")
-
-map('n', '<Leader>jj', '<Cmd>Jumps<CR>')
+map("n", "<Leader>jj", "<Cmd>Jumps<CR>")
 -- ]]] === Other ===
 
 return M

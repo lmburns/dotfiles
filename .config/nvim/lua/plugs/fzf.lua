@@ -2,7 +2,6 @@ local M = {}
 
 local mru = require("common.mru")
 local cutils = require("common.utils")
-local cmdhist = require("common.cmdhist")
 local utils = require("common.kutils")
 
 local coc = require("plugs.coc")
@@ -123,6 +122,7 @@ local function format_files(b_list, m_list)
   return out
 end
 
+-- TODO: Fix opening files from this
 function M.files()
   local cur_bufnr = api.nvim_get_current_buf()
 
@@ -173,104 +173,102 @@ function M.files()
   fn.FzfWrapper(opts)
 end
 
-local function format_outline(symbols)
-  local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
-  local out = {}
-  local name = api.nvim_buf_get_name(0)
-  local hl_map = {
-    Function = "Function",
-    Method = "Function",
-    Interface = "Structure",
-    Struct = "Structure",
-    Class = "Structure",
-  }
-  for _, s in ipairs(symbols) do
-    local k = s.kind
-    local lnum = s.lnum
-    local col = s.col
-    local kind = utils.ansi[hl_map[k]]:format(("%-10s"):format(k))
-    local text = s.text
-    local level =
-        s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
-    local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
-    table.insert(out, o_str)
-  end
-  return out
-end
+-- TODO: Modify these for my fzf functions
+-- local function format_outline(symbols)
+--   local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
+--   local out = {}
+--   local name = api.nvim_buf_get_name(0)
+--   local hl_map = {
+--     Function = "Function",
+--     Method = "Function",
+--     Interface = "Structure",
+--     Struct = "Structure",
+--     Class = "Structure",
+--   }
+--   for _, s in ipairs(symbols) do
+--     local k = s.kind
+--     local lnum = s.lnum
+--     local col = s.col
+--     local kind = utils.ansi[hl_map[k]]:format(("%-10s"):format(k))
+--     local text = s.text
+--     local level =
+--         s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
+--     local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
+--     table.insert(out, o_str)
+--   end
+--   return out
+-- end
+--
+-- function M.outline()
+--   local syms = coc.run_command(
+--       "kvs.symbol.docSymbols",
+--       { "", { "Function", "Method", "Interface", "Struct", "Class" } }
+--   )
+--   local opts = {
+--     options = {
+--       "+m",
+--       "--prompt",
+--       "Outline> ",
+--       "--tiebreak",
+--       "index",
+--       "--ansi",
+--       "-d",
+--       "\t",
+--       "--tabstop",
+--       "1",
+--       "--with-nth",
+--       "4..",
+--       "--preview-window",
+--       "+{2}/2",
+--     },
+--   }
+--   opts = build_opt(opts)
+--   opts.name = "outline"
+--   opts.source = format_outline(syms)
+--   opts["sink*"] = function(lines)
+--     if #lines ~= 2 then
+--       return
+--     end
+--     local expect = lines[1]
+--     local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
+--     local path = g1:match("^(.*):%d+$")
+--     local lnum, col = tonumber(g2), tonumber(g3)
+--     do_action(expect, path, nil, lnum, col)
+--   end
+--   fn.FzfWrapper(opts)
+-- end
 
-function M.outline()
-  local syms = coc.run_command(
-      "kvs.symbol.docSymbols",
-      { "", { "Function", "Method", "Interface", "Struct", "Class" } }
-  )
-  local opts = {
-    options = {
-      "+m",
-      "--prompt",
-      "Outline> ",
-      "--tiebreak",
-      "index",
-      "--ansi",
-      "-d",
-      "\t",
-      "--tabstop",
-      "1",
-      "--with-nth",
-      "4..",
-      "--preview-window",
-      "+{2}/2",
-    },
-  }
-  opts = build_opt(opts)
-  opts.name = "outline"
-  opts.source = format_outline(syms)
-  opts["sink*"] = function(lines)
-    if #lines ~= 2 then
-      return
-    end
-    local expect = lines[1]
-    local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
-    local path = g1:match("^(.*):%d+$")
-    local lnum, col = tonumber(g2), tonumber(g3)
-    do_action(expect, path, nil, lnum, col)
-  end
-  fn.FzfWrapper(opts)
-end
-
-function M.cmdhist()
-  -- Unset the regular floating window
-  g.fzf_layout = nil
-
-  local opts = {
-    name = "history-command",
-    source = cmdhist.list(),
-    ["sink*"] = function(ret)
-      local key, cmdl = unpack(ret)
-      if key == "ctrl-y" then
-        fn.setreg(vim.v.register, cmdl)
-      else
-        fn.histadd(":", cmdl)
-        cmdhist.store()
-        if key == "ctrl-e" then
-          cmd("redraw")
-          api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
-        else
-          api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
-        end
-      end
-    end,
-    options = {
-      "+m",
-      "--prompt",
-      "Hist: ",
-      "--tiebreak",
-      "index",
-      "--expect",
-      "ctrl-e,ctrl-y",
-    },
-  }
-  fn.FzfWrapper(opts)
-end
+-- function M.cmdhist()
+--   local opts = {
+--     name = "history-command",
+--     source = cmdhist.list(),
+--     ["sink*"] = function(ret)
+--       local key, cmdl = unpack(ret)
+--       if key == "ctrl-y" then
+--         fn.setreg(vim.v.register, cmdl)
+--       else
+--         fn.histadd(":", cmdl)
+--         cmdhist.store()
+--         if key == "ctrl-e" then
+--           cmd("redraw")
+--           api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
+--         else
+--           api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
+--         end
+--       end
+--     end,
+--     options = {
+--       "+m",
+--       "--prompt",
+--       "Hist: ",
+--       "--tiebreak",
+--       "index",
+--       "--expect",
+--       "ctrl-e,ctrl-y",
+--     },
+--   }
+--   fn.FzfWrapper(opts)
+-- end
 
 function M.resize_preview_layout()
   local layout = vim.g.fzf_layout.window
@@ -316,7 +314,6 @@ local function init()
   g.fzf_layout = { window = { width = 0.7, height = 0.7 } }
 
   -- g.fzf_preview_window = ''
-  g.fzf_preview_quit_map = 1
   g.fzf_history_dir = "~/.local/share/fzf-history"
   g.fzf_vim_opts = { options = { "--no-border" } }
   g.fzf_buffers_jump = 1
@@ -330,6 +327,8 @@ local function init()
   }
 
   env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
+  g.fzf_preview_window = { "right:50%,border-left", "ctrl-/" }
+  g.fzf_preview_quit_map = 1
   g.fzf_preview_use_dev_icons = 1
   g.fzf_preview_dev_icon_prefix_string_length = 3
   g.fzf_preview_dev_icons_limit = 2000
@@ -340,7 +339,6 @@ local function init()
     ["--preview-window"] = "wrap",
   }
 
-  g.loaded_fzf = nil
   cmd("packadd fzf")
   cmd("packadd fzf.vim")
 
@@ -476,6 +474,7 @@ local function init()
           \ '--preview', 'MANPAGER=cat MANWIDTH='.(&columns/2-4).' man {}']}))
 ]]
 
+  -- Tags
   map("n", "<Leader>t", ":Tags<CR>", { silent = true })
   map("n", "<A-t>", ":BTags<CR>", { silent = true })
 
@@ -575,6 +574,7 @@ local function init()
             au FileType fzf lua require('plugs.fzf').prepare_ft()
             au VimResized * lua pcall(require('plugs.fzf').resize_preview_layout)
 
+            " This lazy-loads fzf
             au FuncUndefined fzf#* lua require('plugs.fzf')
             au CmdUndefined FZF,BCommits,History,GFiles,Marks,Buffers,Rg lua require('plugs.fzf')
         aug END
@@ -583,26 +583,26 @@ local function init()
         sil! aug! fzf_buffers
     ]]
 
-  map("n", "<Leader>f;", [[<Cmd>lua require('plugs.fzf').cmdhist()<CR>]])
-  -- map(
-  --     "n", "<Leader>fc",
-  --     [[:lua require('common.gittool').root_exe('BCommits')<CR>]]
-  -- )
-  -- map(
-  --     "n", "<Leader>fg",
-  --     [[:lua require('common.gittool').root_exe('GFiles')<CR>]]
-  -- )
-  -- map(
-  --     "n", "<Leader>ff",
-  --     [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]]
-  -- )
-  --
-  -- map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
+  map("n", "<Leader>f;", [[<Cmd>:History:<CR>]])
+  map(
+      "n", "<Leader>fc",
+      [[:lua require('common.gittool').root_exe('BCommits')<CR>]]
+  )
+  map(
+      "n", "<Leader>fg",
+      [[:lua require('common.gittool').root_exe('GFiles')<CR>]]
+  )
+  map(
+      "n", "<Leader>ff",
+      [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]]
+  )
+
+  map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
   map("n", "<C-f>", ":Rg<CR>")
 
   -- Change directory to buffers dir
   map("n", "<Leader>cd", ":lcd %:p:h<CR>")
-  map("n", "<Leader>Lo", ":Locate .<CR>")
+  map("n", "<Leader>lo", ":Locate .<CR>")
 
   map("n", "<Leader>A", ":Windows<CR>", { silent = true })
   map("n", "<LocalLeader>r", ":RG<CR>")
@@ -618,6 +618,8 @@ local function init()
   map("x", "<C-l>m", "<Plug>(fzf-maps-x)", { noremap = false })
   map("i", "<C-l>m", "<Plug>(fzf-maps-i)", { noremap = false })
   map("o", "<C-l>m", "<Plug>(fzf-maps-o)", { noremap = false })
+
+  M.resize_preview_layout()
 end
 
 init()

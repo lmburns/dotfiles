@@ -6,6 +6,8 @@ local map = utils.map
 local t = utils.t
 local autocmd = utils.autocmd
 
+local diag_qfid
+
 -- function! s:show_documentation()
 --   if (index(['vim','help'], &filetype) >= 0)
 --     execute 'h '.expand('<cword>')
@@ -20,7 +22,7 @@ function M.go2def()
   local cur_bufnr = api.nvim_get_current_buf()
   local by
   if vim.bo.ft == "help" then
-    api.nvim_feedkeys(utils.termcodes["<C-]>"], "n", false)
+    api.nvim_feedkeys(kutils.termcodes["<C-]>"], "n", false)
     by = "tag"
   else
     local err, res = M.a2sync("jumpDefinition", { "drop" })
@@ -333,7 +335,7 @@ end
 
 function M.skip_snippet()
   fn.CocActionAsync("snippetNext")
-  return utils.termcodes["<BS>"]
+  return kutils.termcodes["<BS>"]
 end
 
 -- UNUSED
@@ -342,7 +344,7 @@ function M.scroll(down)
   if #fn["coc#float#get_float_win_list"]() > 0 then
     return fn["coc#float#scroll"](down)
   else
-    return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
+    return down and kutils.termcodes["<C-f>"] or kutils.termcodes["<C-b>"]
   end
 end
 
@@ -351,59 +353,13 @@ function M.scroll_insert(right)
       api.nvim_get_current_win() ~= vim.g.coc_last_float_win then
     return fn["coc#float#scroll"](right)
   else
-    return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
+    return right and kutils.termcodes["<Right>"] or kutils.termcodes["<Left>"]
   end
 end
 
 -- ========================== Init ==========================
 
 function M.init()
-  -- g.coc_global_extensions = {
-  --   "coc-snippets",
-  --   "coc-diagnostic",
-  --   "coc-yank",
-  --   "coc-marketplace",
-  --   "coc-tabnine",
-  --   "coc-tag",
-  --   "coc-html",
-  --   "coc-css",
-  --   "coc-json",
-  --   "coc-yaml",
-  --   "coc-pyright",
-  --   "coc-vimtex",
-  --   "coc-vimlsp",
-  --   "coc-sh",
-  --   "coc-sql",
-  --   "coc-xml",
-  --   "coc-fzf-preview",
-  --   "coc-syntax",
-  --   "coc-git",
-  --   "coc-go",
-  --   "coc-clangd",
-  --   "coc-rls",
-  --   "coc-rust-analyzer",
-  --   "coc-toml",
-  --   "coc-solargraph",
-  --   "coc-prettier",
-  --   "coc-r-lsp",
-  --   "coc-perl",
-  --   "coc-tsserver",
-  --   "coc-zig",
-  --   "coc-dlang",
-  --   "coc-lua",
-  -- }
-
-  -- 'coc-pairs',
-  --
-  -- 'coc-sumneko-lua',
-  -- 'coc-clojure',
-  -- 'coc-nginx',
-  -- 'coc-toml',
-  -- 'coc-explorer'
-
-  -- g.coc_enable_locationlist = 0
-  -- g.coc_selectmode_mapping = 0
-
   diag_qfid = -1
 
   fn["coc#config"](
@@ -412,9 +368,6 @@ function M.init()
   )
 
   g.coc_fzf_opts = { "--no-border", "--layout=reverse-list" }
-
-  -- Disable CocFzfList
-  vim.schedule(function() cmd("au! CocFzfLocation User CocLocationsChange") end)
 
   -- [[CursorHold * silent call CocActionAsync('highlight')]],
   autocmd(
@@ -449,9 +402,10 @@ function M.init()
   -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
   map("n", "<C-x><C-d>", ":CocCommand fzf-preview.CocTypeDefinition<CR>")
   map("n", "<C-x><C-]>", ":CocCommand fzf-preview.CocImplementations<CR>")
-  map("n", "<C-x><C-h>", ":CocCommand fzf-preview.CocImplementations<CR>")
+  map("n", "<C-x><C-h>", ":CocCommand fzf-preview.CocDiagnostics<CR>")
 
   map("n", "<A-[>", ":CocCommand fzf-preview.VistaCtags<CR>")
+  map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
   map("n", "<LocalLeader>t", ":CocCommand fzf-preview.BufferTags<CR>")
 
   -- map("n", "<C-x><C-r>", ":Telescope coc references<CR>")
@@ -475,6 +429,12 @@ function M.init()
   map("n", "gi", [[<Cmd>call CocActionAsync('jumpImplementation', 'drop')<CR>]])
   map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
 
+  map(
+      "n", "<M-q>",
+      [[<Cmd>lua vim.notify(vim.fn.CocAction('getCurrentFunctionSymbol'))<CR>]]
+  )
+  map("n", "<Leader>qd", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])
+
   -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
   -- map(
   --     "n", "gy", "<Plug>(coc-type-definition)",
@@ -497,10 +457,10 @@ function M.init()
   map("n", "<Leader>qf", "<Plug>(coc-fix-current)", { noremap = false })
 
   -- Create mappings for function text object
-  map("x", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
-  map("x", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
-  map("o", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
-  map("o", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
+  -- map("x", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
+  -- map("x", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
+  -- map("o", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
+  -- map("o", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
 
   -- map("n", "{g", "<Plug>(coc-git-prevchunk)")
   -- map("n", "}g", "<Plug>(coc-git-nextchunk)")
@@ -568,6 +528,11 @@ function M.init()
   --     { noremap = true }
   -- )
   -- map("i", "<CR>", "<Plug>CustomCocCR<Plug>DiscretionaryEnd", { noremap = true })
+
+  map(
+      "i", "<C-l>", [[v:lua.require'plugs.coc'.accept_complete()]],
+      { noremap = true, expr = true }
+  )
 
   -- Git
   map(
@@ -639,6 +604,31 @@ function M.init()
 
   map("n", "<Leader>se", ":CocFzfList snippets<CR>", { silent = true })
   map("n", "<M-/>", ":CocCommand fzf-preview.Marks<CR>", { silent = true })
+
+  -- map(
+  --     "n", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
+  --     { noremap = true, expr = true, silent = true }
+  -- )
+  -- map(
+  --     "n", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
+  --     { noremap = true, expr = true, silent = true }
+  -- )
+  -- map(
+  --     "s", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
+  --     { noremap = true, expr = true, silent = true }
+  -- )
+  -- map(
+  --     "s", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
+  --     { noremap = true, expr = true, silent = true }
+  -- )
+  -- map(
+  --     "i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]],
+  --     { expr = true, silent = true }
+  -- )
+  -- map(
+  --     "i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]],
+  --     { noremap = true, expr = true, silent = true }
+  -- )
 end
 
 return M

@@ -42,4 +42,19 @@ function M.capture(cmd, raw)
   return s
 end
 
+-- Capture output of a command using plenary
+-- local job = require("plenary.job")
+-- job:new(
+--     {
+--       command = "rg",
+--       args = { "--files" },
+--       cwd = "~",
+--       env = { ["testing"] = "empty" },
+--       on_exit = function(j, ret)
+--         print(ret)
+--         print(j:result())
+--       end,
+--     }
+-- ):sync()
+
 return M

@@ -1,9 +1,6 @@
 " autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/,$RUST_SRC_PATH/rusty-tags.vi
 " autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
 
-let g:gutentags_project_root = ['.git']
-let g:gutentags_cache_dir = expand('~/.cache/tags')
-
 " set tags=./.tags;,.tags
 " let $GTAGSLABEL = 'native-pygments'
 " let $GTAGSCONF = '~/.gtags.conf'
@@ -14,24 +11,27 @@ let g:gutentags_cache_dir = expand('~/.cache/tags')
 "   let g:gutentags_ctags_extra_args = ['vi', '--quiet', "--start-dir=" . expand("%:p:h")]
 "   let g:gutentags_ctags_tagfile = '.rusty-tags'
 " else
-set tags=tags;,.tags;./.tags
+set tags=tags,./.tags,.tags
 let g:gutentags_modules = ['ctags']
-let g:gutentags_cache_dir = expand('~/.cache/tags')
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
 let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
 let g:gutentags_ctags_tagfile = '.tags'
-let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
-let g:gutentags_generate_on_new = 1
-let g:gutentags_generate_on_missing = 1
-let g:gutentags_generate_on_write = 1
-let g:gutentags_generate_on_empty_buffer = 0
-let g:gutentags_file_list_command = 'rg --files'
+let g:gutentags_project_root = ['.git']
+let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+" let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
+" let g:gutentags_generate_on_new = 1
+" let g:gutentags_generate_on_missing = 1
+" let g:gutentags_generate_on_write = 1
+" let g:gutentags_generate_on_empty_buffer = 0
+" let g:gutentags_file_list_command = 'rg --files'
 
 " Disable connecting gtags database automatically (gutentags_plus will handle the database connection)
-let g:gutentags_auto_add_gtags_cscope = 0
+" let g:gutentags_auto_add_gtags_cscope = 0
+
 " Disable default maps
-let g:gutentags_plus_nomap = 1
+" let g:gutentags_plus_nomap = 1
 
 " let g:gutentags_define_advanced_commands = 1
 let g:gutentags_ctags_exclude = [

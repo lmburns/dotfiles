@@ -20,6 +20,8 @@ function M.bqf()
           tabdrop = "<C-t>",
           pscrollup = "<C-u>",
           pscrolldown = "<C-d>",
+          fzffilter = "zf",
+          ptogglemode = "z,",
         },
         filter = {
           fzf = {
@@ -371,11 +373,11 @@ function M.neogen()
       {
         enabled = true,
         input_after_comment = true,
-        languages = { lua = { template = { annotation_convention = "emmylua" } } },
+        languages = { lua = { template = { annotation_convention = "ldoc" } } },
       }
   )
-  map("i", "<C-j>", [[:lua require('neogen').jump_next()<CR>]])
-  map("i", "<C-k>", [[:lua require('neogen').jump_prev()<CR>]])
+  map("i", "<C-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
+  map("i", "<C-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
   map("n", "<Leader>dg", [[:Neogen<Space>]], { silent = false })
 end
 
@@ -383,6 +385,65 @@ function M.vcoolor()
   map("n", "<Leader>pc", ":VCoolor<CR>")
   map("n", "<Leader>yb", ":VCoolIns b<CR>")
   map("n", "<Leader>yr", ":VCoolIns r<CR>")
+end
+
+function M.hlslens()
+  require("hlslens").setup(
+      {
+        auto_enable = true,
+        enable_incsearch = true,
+        calm_down = false,
+        nearest_only = false,
+        nearest_float_when = "auto",
+        float_shadow_blend = 50,
+        virt_priority = 100,
+      }
+  )
+  cmd([[com! HlSearchLensToggle lua require('hlslens').toggle()]])
+
+  map(
+      "n", "n",
+      [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR><Cmd>lua require('hlslens').start()<CR>]]
+  )
+  map(
+      "n", "N",
+      [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR><Cmd>lua require('hlslens').start()<CR>]]
+  )
+  map(
+      "n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
+      {}
+  )
+  map(
+      "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
+      {}
+  )
+  map(
+      "n", "g*",
+      [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {}
+  )
+  map(
+      "n", "g#",
+      [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {}
+  )
+
+  map(
+      "x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
+      {}
+  )
+  map(
+      "x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
+      {}
+  )
+  map(
+      "x", "g*",
+      [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {}
+  )
+  map(
+      "x", "g#",
+      [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {}
+  )
+
+  g["asterisk#keeppos"] = 1
 end
 
 function M.surround()

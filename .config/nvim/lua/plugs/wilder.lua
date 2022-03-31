@@ -3,8 +3,6 @@ local map = utils.map
 
 g.wildcharm = "<Tab>"
 
-cmd [[call wilder#enable_cmdline_enter()]]
-
 map(
     "c", "<Tab>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]],
     { noremap = false, expr = true }
@@ -14,6 +12,7 @@ map(
     { noremap = false, expr = true }
 )
 
+fn["wilder#enable_cmdline_enter"]()
 fn["wilder#setup"](
     {
       modes = { ":", "/", "?" },
@@ -23,6 +22,11 @@ fn["wilder#setup"](
       reject_key = "<A-.>",
     }
 )
+
+function _G.wilderDisable(e)
+  local cmd = fn["wilder#cmdline#parse"](e).cmd
+  return cmd == "Man"
+end
 
 cmd [[
   function! s:shouldDisable(x)
@@ -39,7 +43,7 @@ cmd [[
         \     'border': 'Normal',
         \     'default': 'Normal',
         \     'accent': wilder#make_hl(
-        \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#A06469'}]),
+        \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#EF1D55'}]),
         \   },
         \   'left': [
         \     ' ', wilder#popupmenu_devicons(),
@@ -53,7 +57,7 @@ cmd [[
         \   'highlighter': wilder#basic_highlighter(),
         \   'highlights': {
         \     'accent': wilder#make_hl(
-        \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#A06469'}]),
+        \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#EF1D55'}]),
         \   },
         \ }),
         \ }))
@@ -129,11 +133,25 @@ cmd [[
 --     )
 -- )
 --
--- -- {
--- --   fn['wilder#check']({function() fn.getcmdtype() == ':' end}),
--- --   {function(ctx, x) > s:shouldDisable(x) ? v:true : v:false},
--- -- },
---
+-- {
+--   fn['wilder#check']({function() fn.getcmdtype() == ':' end}),
+--   {function(ctx, x) > s:shouldDisable(x) ? v:true : v:false},
+-- },
+
+-- {
+--   fn["wilder#check"](
+--       {function() return fn.getcmdtype() == ":" end}, {
+--         function(ctx, x)
+--           if wilderDisable(x) then
+--             return true
+--           else
+--             return false
+--           end
+--         end,
+--       }
+--   ),
+-- }
+
 -- fn["wilder#set_option"](
 --     "pipeline", {
 --       wilder.call(

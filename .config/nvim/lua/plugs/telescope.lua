@@ -1,20 +1,19 @@
--- local sorters = require "telescope.sorters"
--- local previewers = require "telescope.previewers"
--- local Path = require("plenary.path")
--- local utils = require("telescope.utils")
--- local pickers = require("telescope.pickers")
--- local finders = require("telescope.finders")
--- local make_entry = require("telescope.make_entry")
--- local conf = require("telescope.config").values
--- local themes = require("telescope.themes")
+local themes = require("telescope.themes")
+local utils = require("telescope.utils")
+local Path = require("plenary.path")
 local lutils = require("lutils")
+local pickers = require("telescope.pickers")
+local finders = require("telescope.finders")
 local telescope = require("telescope")
 local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local sorters = require("telescope.sorters")
 local previewers = require("telescope.previewers")
 local action_layout = require("telescope.actions.layout")
+local make_entry = require("telescope.make_entry")
 local conf = require("telescope.config").values
+
+require("common.utils")
 
 -- ============================ Config ===========================
 
@@ -161,20 +160,57 @@ local options = {
   layout_config = { preview_width = 0.65 },
 }
 
+-- ========================== Helper ==========================
+
+local function join_uniq(tbl, tbl2)
+  local res = {}
+  local hash = {}
+  for _, v1 in ipairs(tbl) do
+    res[#res + 1] = v1
+    hash[v1] = true
+  end
+
+  for _, v in pairs(tbl2) do
+    if not hash[v] then
+      table.insert(res, v)
+    end
+  end
+  return res
+end
+
+local function filter_by_cwd_paths(tbl, cwd)
+  local res = {}
+  local hash = {}
+  for _, v in ipairs(tbl) do
+    if v:find(cwd, 1, true) then
+      local v1 = Path:new(v):normalize(cwd)
+      if not hash[v1] then
+        res[#res + 1] = v1
+        hash[v1] = true
+      end
+    end
+  end
+  return res
+end
+
+local function requiref(module) require(module) end
+
+-- ========================== Builtin ==========================
+
 function _G.__telescope_files()
   -- Launch file search using Telescope
   if vim.fn.isdirectory ".git" ~= 0 then
     -- if in a git project, use :Telescope git_files
-    require("telescope.builtin").git_files(options)
+    builtin.git_files(options)
   else
     -- otherwise, use :Telescope find_files
-    require("telescope.builtin").find_files(options)
+    builtin.find_files(options)
   end
 end
 
 function _G.__telescope_buffers()
-  require("telescope.builtin").buffers(
-      require("telescope.themes").get_dropdown {
+  builtin.buffers(
+      themes.get_dropdown {
         preview = true,
         only_cwd = false,
         sort_mru = true,
@@ -198,8 +234,8 @@ function _G.__telescope_buffers()
 end
 
 function _G.__telescope_grep()
-  require("telescope.builtin").live_grep {
-    require("telescope.themes").get_ivy {
+  builtin.live_grep {
+    themes.get_ivy {
       path_display = {},
       layout_strategy = "horizontal",
       grep_open_files = false,
@@ -209,7 +245,7 @@ function _G.__telescope_grep()
 end
 
 function _G.__telescope_commits()
-  require("telescope.builtin").git_commits {
+  builtin.git_commits {
     layout_strategy = "horizontal",
     layout_config = { preview_width = 0.55 },
   }
@@ -224,6 +260,95 @@ end
 -- )
 --
 -- gittool.exe_root(...)
+
+builtin.cst_mru = function(opts)
+  local get_mru = function(opts)
+    local res = pcall(requiref, "telescope._extensions.frecency")
+    if not res then
+      return vim.tbl_filter(
+          function(val) return 0 ~= fn.filereadable(val) end, vim.v.oldfiles
+      )
+    else
+      local db_client = require("telescope._extensions.frecency.db_client")
+      db_client.init()
+      -- too slow
+      -- local tbl = db_client.get_file_scores(opts, vim.fn.getcwd())
+      local tbl = db_client.get_file_scores(opts)
+      local get_filename_table = function(tbl)
+        local res = {}
+        for _, v in pairs(tbl) do
+          res[#res + 1] = v["filename"]
+        end
+        return res
+      end
+      return get_filename_table(tbl)
+    end
+  end
+  local results_mru = get_mru(opts)
+  local results_mru_cur = filter_by_cwd_paths(results_mru, vim.loop.cwd())
+
+  local show_untracked = utils.get_default(opts.show_untracked, true)
+  local recurse_submodules = utils.get_default(opts.recurse_submodules, false)
+  if show_untracked and recurse_submodules then
+    error("Git does not suppurt both --others and --recurse-submodules")
+  end
+  local cmd = {
+    "git",
+    "ls-files",
+    "--exclude-standard",
+    "--cached",
+    show_untracked and "--others" or nil,
+    recurse_submodules and "--recurse-submodules" or nil,
+  }
+  local results_git = utils.get_os_command_output(cmd)
+
+  local results = join_uniq(results_mru_cur, results_git)
+
+  pickers.new(
+      opts, {
+        prompt_title = "MRU",
+        finder = finders.new_table(
+            {
+              results = results,
+              entry_maker = opts.entry_maker or make_entry.gen_from_file(opts),
+            }
+        ),
+        -- default_text = vim.fn.getcwd(),
+        sorter = conf.file_sorter(opts),
+        previewer = conf.file_previewer(opts),
+      }
+  ):find()
+end
+
+-- Grep a string with a prompt
+builtin.grep_prompt = function(opts)
+  opts.search = vim.fn.input("Grep String > ")
+  builtin.cst_grep(opts)
+end
+
+builtin.cst_grep = function(opts)
+  builtin.grep_string(
+      {
+        opts = opts,
+        prompt_title = "grep_string: " .. opts.search,
+        search = opts.search,
+      }
+  )
+end
+
+builtin.cst_grep_in_dir = function(opts)
+  opts.search = vim.fn.input("Grep String > ")
+  opts.search_dirs = {}
+  opts.search_dirs[1] = vim.fn.input("Target Directory > ")
+  builtin.grep_string(
+      {
+        opts = opts,
+        prompt_title = "grep_string(dir): " .. opts.search,
+        search = opts.search,
+        search_dirs = opts.search_dirs,
+      }
+  )
+end
 
 builtin.git_grep = function(opts)
   opts.search_dirs = {}
@@ -247,14 +372,6 @@ builtin.git_grep = function(opts)
   )
 end
 
--- telescope.load_extension("ultisnips")
--- telescope.load_extension("coc")
--- telescope.load_extension("bookmarks")
--- telescope.load_extension("fzf")
--- telescope.load_extension("neoclip")
--- telescope.load_extension("frecency")
--- telescope.load_extension("packer")
-
 -- ========================== Mappings ===========================
 local map = require("common.utils").map
 
@@ -265,12 +382,17 @@ map("n", ";B", ":Telescope bookmarks<CR>")
 -- List buffers
 map("n", "<Leader>bl", ":Telescope buffers<CR>", { silent = true })
 
+-- vim.keymap.set(
+--     "n", "<leader>so", function()
+--       require("telescope.builtin").tags { only_current_buffer = true }
+--     end
+-- )
+
 map("n", "<Leader>;", ":Telescope current_buffer_fuzzy_find<CR>")
 map("n", ";r", ":Telescope git_grep<CR>")
 map("n", "<A-.>", ":Telescope frecency<CR>")
 map("n", ";fd", ":Telescope fd<CR>")
 map("n", ";g", ":Telescope git_files<CR>")
-
 
 map("n", "<Leader>hc", ":Telescope command_history<CR>")
 map("n", "<Leader>hs", ":Telescope search_history<CR>")
@@ -310,156 +432,10 @@ cmd [[highlight TelescopePreviewBorder  guifg=#A06469]]
 cmd [[highlight TelescopeMatching       guifg=#FF5813]]
 cmd [[highlight TelescopePromptPrefix   guifg=#EF1D55]]
 
--- -- ========================== Extra ==========================
---
--- local function join_uniq(tbl, tbl2)
---   local res = {}
---   local hash = {}
---   for _, v1 in ipairs(tbl) do
---     res[#res + 1] = v1
---     hash[v1] = true
---   end
---
---   for _, v in pairs(tbl2) do
---     if not hash[v] then
---       table.insert(res, v)
---     end
---   end
---   return res
--- end
---
--- local function filter_by_cwd_paths(tbl, cwd)
---   local res = {}
---   local hash = {}
---   for _, v in ipairs(tbl) do
---     if v:find(cwd, 1, true) then
---       local v1 = Path:new(v):normalize(cwd)
---       if not hash[v1] then
---         res[#res + 1] = v1
---         hash[v1] = true
---       end
---     end
---   end
---   return res
--- end
---
--- local function requiref(module)
---   require(module)
--- end
---
--- -- ========================== Builtin ==========================
---
--- telescope_builtin.cst_mru = function(opts)
---   local get_mru = function(opts)
---     local res = pcall(requiref, "telescope._extensions.frecency")
---     if not res then
---       return vim.tbl_filter(
---           function(val)
---             return 0 ~= vim.fn.filereadable(val)
---           end, vim.v.oldfiles
---       )
---     else
---       local db_client = require("telescope._extensions.frecency.db_client")
---       db_client.init()
---       -- too slow
---       -- local tbl = db_client.get_file_scores(opts, vim.fn.getcwd())
---       local tbl = db_client.get_file_scores(opts)
---       local get_filename_table = function(tbl)
---         local res = {}
---         for _, v in pairs(tbl) do
---           res[#res + 1] = v["filename"]
---         end
---         return res
---       end
---       return get_filename_table(tbl)
---     end
---   end
---   local results_mru = get_mru(opts)
---   local results_mru_cur = filter_by_cwd_paths(results_mru, vim.loop.cwd())
---
---   local show_untracked = utils.get_default(opts.show_untracked, true)
---   local recurse_submodules = utils.get_default(opts.recurse_submodules, false)
---   if show_untracked and recurse_submodules then
---     error("Git does not suppurt both --others and --recurse-submodules")
---   end
---   local cmd = {
---     "git",
---     "ls-files",
---     "--exclude-standard",
---     "--cached",
---     show_untracked and "--others" or nil,
---     recurse_submodules and "--recurse-submodules" or nil,
---   }
---   local results_git = utils.get_os_command_output(cmd)
---
---   local results = join_uniq(results_mru_cur, results_git)
---
---   pickers.new(
---       opts, {
---         prompt_title = "MRU",
---         finder = finders.new_table(
---             {
---               results = results,
---               entry_maker = opts.entry_maker or make_entry.gen_from_file(opts),
---             }
---         ),
---         -- default_text = vim.fn.getcwd(),
---         sorter = conf.file_sorter(opts),
---         previewer = conf.file_previewer(opts),
---       }
---   ):find()
--- end
---
--- -- Grep a string with a prompt
--- telescope_builtin.grep_prompt = function(opts)
---   opts.search = vim.fn.input("Grep String > ")
---   telescope_builtin.cst_grep(opts)
--- end
---
--- telescope_builtin.cst_grep = function(opts)
---   require("telescope.builtin").grep_string(
---       {
---         opts = opts,
---         prompt_title = "grep_string: " .. opts.search,
---         search = opts.search,
---       }
---   )
--- end
---
--- telescope_builtin.cst_grep_in_dir = function(opts)
---   opts.search = vim.fn.input("Grep String > ")
---   opts.search_dirs = {}
---   opts.search_dirs[1] = vim.fn.input("Target Directory > ")
---   require("telescope.builtin").grep_string(
---       {
---         opts = opts,
---         prompt_title = "grep_string(dir): " .. opts.search,
---         search = opts.search,
---         search_dirs = opts.search_dirs,
---       }
---   )
--- end
---
--- -- TODO: Fix showing full path
--- -- Live grep in the base git repo
--- telescope_builtin.git_grep = function(opts)
---   opts.search_dirs = {}
---   opts.search_dirs[1] = lutils.capture("git rev-parse --show-toplevel")
---   opts.vimgrep_arguments = {
---     "rg",
---     "--color=never",
---     "--no-heading",
---     "--with-filename",
---     "--line-number",
---     "--column",
---     "--smart-case",
---   }
---   telescope_builtin.live_grep(
---       {
---         mappings = conf.mappings,
---         opts = opts,
---         prompt_title = "Git Grep",
---         search_dirs = opts.search_dirs,
---       }
---   )
--- end
+-- telescope.load_extension("ultisnips")
+-- telescope.load_extension("coc")
+-- telescope.load_extension("bookmarks")
+-- telescope.load_extension("fzf")
+-- telescope.load_extension("neoclip")
+-- telescope.load_extension("frecency")
+-- telescope.load_extension("packer")

@@ -1,6 +1,7 @@
 local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
+local create_augroup = utils.create_augroup
 
 -- ============================ Commands ============================== [[[
 cmd [[
@@ -14,27 +15,28 @@ cmd [[
 -- ============================ Functions ============================= [[[
 -- ============================== Syntax ============================== [[[
 -- Show syntax group
--- FIXME: Using <SID>, <SID>SynStack() ..
 cmd [[
-  function! s:syn_stack() abort
+  function! SynStack() abort
     if !exists("*synstack")
       return
     endif
     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
   endfunction
+
+  command! Synstack call SynStack()
 ]]
 
 -- Display the syntax stack at current cursor position
 cmd [[
-  function! s:syntax_query() abort
+  function! SyntaxQuery() abort
     for id in synstack(line("."), col("."))
       execute 'hi' synIDattr(id, "name")
     endfor
   endfunction
 
-  command! SQ call s:syntax_query()
+  command! SQ call SyntaxQuery()
 
-  nnoremap <Leader>sll :syn list
+  nnoremap <Leader>sll :syn list<
   nnoremap <Leader>slo :verbose hi
 ]]
 
@@ -78,7 +80,7 @@ cmd [[
 cmd [[command! -nargs=* TP botright sp | resize 20 | term <args>]]
 cmd [[command! -nargs=* VT vsp | term <args>]]
 
-map("n", "<A-i>", ":TP<CR>A")
+-- map("n", "<A-i>", ":TP<CR>A")
 -- Toggle terminal on/off (neovim)
 map("n", "<C-t>", ":call TermToggle(12)<CR>")
 map("i", "<C-t>", "<Esc>:call TermToggle(12)<CR>")
@@ -107,13 +109,36 @@ cmd [[
   command! RUN :call s:execute_buffer()
 ]]
 
-autocmd(
-    "ExecuteBuffer", {
-      [[FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>r<CR> :RUN<cr>]],
-      [[FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>lru :FloatermNew --autoclose=0 ./%<cr>]],
-      [[FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc % && node %:r.js <CR>]],
-      [[FileType javascript nnoremap <Leader>r<CR> :FloatermNew node % <CR>]],
-    }, true
+local execute_buffer = create_augroup("ExecuteBuffer")
+api.nvim_create_autocmd(
+    "FileType", {
+      callback = function()
+        map("n", "<Leader>r<CR>", ":RUN<CR>")
+        map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
+      end,
+      pattern = { "sh", "bash", "zsh", "python", "ruby", "perl", "lua" },
+      group = execute_buffer,
+    }
+)
+
+api.nvim_create_autocmd(
+    "FileType", {
+      callback = function()
+        map("n", "<Leader>r<CR>", ":FloatermNew tsc % && node %:r.js <CR>")
+      end,
+      pattern = { "typescript" },
+      group = execute_buffer,
+    }
+)
+
+api.nvim_create_autocmd(
+    "FileType", {
+      callback = function()
+        map("n", "<Leader>r<CR>", ":FloatermNew node % <CR>")
+      end,
+      pattern = { "javascript" },
+      group = execute_buffer,
+    }
 )
 -- ]]] === Execute Buffer ===
 
@@ -184,14 +209,17 @@ vim.cmd [[
       function! PreserveClipboard()
           call system('xsel -ib', getreg('+'))
       endfunction
+
       function! PreserveClipboadAndSuspend()
           call PreserveClipboard()
           suspend
       endfunction
+
       augroup preserve_clipboard
         au!
         au VimLeave * call PreserveClipboard()
       augroup END
+
       nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
       vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
   endif

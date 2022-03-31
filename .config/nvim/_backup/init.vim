@@ -744,7 +744,7 @@ Plug 'liuchengxu/vista.vim'
   nmap <silent> <Leader>T  :Tags<CR>
   nmap <silent> <A-t> :BTags<CR>
   nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
-  " nmap <C-S-\> :CocCommand fzf-preview.VistaCtags<CR>
+
   let g:vista_fzf_preview = ['down:50%']
   let g:vista_fzf_opt = ['--no-border']
   " 'markdown': 'toc',"

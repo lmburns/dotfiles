@@ -1,9 +1,6 @@
--- Credit: kevinhwang91
 local M = {}
-local api = vim.api
-local fn = vim.fn
-local cmd = vim.cmd
 
+require("common.utils")
 local utils = require("common.kutils")
 
 function M.prefix_timeout(prefix)

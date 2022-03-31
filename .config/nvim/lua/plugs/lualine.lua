@@ -74,7 +74,7 @@ local plugins = {
 }
 
 local sections_1 = {
-  lualine_a = { "mode" },
+  lualine_a = { { "mode", fmt = function(str) return str:sub(1, 1) end } },
   lualine_b = {
     { "filetype", icon_only = false },
     { "filesize", cond = conditions.hide_in_width },

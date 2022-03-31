@@ -1,5 +1,5 @@
 {
-  "coc.preferences.useQuickfixForLocations": false,
+  "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
   "coc.preferences.listOfWorkspaceEdit": "location",
@@ -8,13 +8,13 @@
 
   // Filetypes that enable semanticTokens highlighting
   "semanticTokens.filetypes": [
-    "c",
+    // "c",
     "go",
     "html",
     "java",
     "javascript",
     // "lua",
-    "rust",
+    // "rust",
     "typescript"
   ],
 
@@ -36,7 +36,7 @@
     "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
-    "focusable": false
+    "focusable": true
   },
   "hover.floatConfig": {
     "border": true,
@@ -66,7 +66,7 @@
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
-  "codeLens.position": "right_align",
+  "codeLens.position": "eol",
   // "codeLens.position": "eol",
   "coc.source.file.triggerCharacters": ["/"],
   "list.indicator": "➤",
@@ -275,13 +275,11 @@
   "rust-analyzer.inlayHints.enable": true,
   "rust-analyzer.diagnostics.enable": true,
   "rust-analyzer.diagnostics.enableExperimental": true,
-  "rust-analyzer.lens.enable": false,
-  // TODO: CHANGE BACK
-  "rust-analyzer.lens.implementations": false,
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.implementations": true,
   // "rust-analyzer.lens.methodReferences": true,
   // "rust.show_warnings": false,
   // "rust.clippy_preference": "on",
-  // "rust.rustfmt_path": "/home/lucas/.local/share/cargo/bin/rustfmt",
   "languageserver": {
     "golang": {
       "command": "gopls",

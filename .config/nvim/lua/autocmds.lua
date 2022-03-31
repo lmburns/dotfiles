@@ -1,6 +1,5 @@
 local utils = require("common.utils")
 local autocmd = utils.autocmd
-local augroup = utils.augroup
 local create_augroup = utils.create_augroup
 
 -- Spelling

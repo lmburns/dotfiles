@@ -18,6 +18,44 @@ end
 cmd([[packadd packer.nvim]])
 local packer = require("packer")
 
+-- packer.on_compile_done = function()
+--   local fp = assert(io.open(packer.config.compile_path, "rw+"))
+--   local wbuf = {}
+--   local key_state = 0
+--   for line in fp:lines() do
+--     if key_state == 0 then
+--       table.insert(wbuf, line)
+--       if line:find("Keymap lazy%-loads") then
+--         key_state = 1
+--         table.insert(wbuf, [[vim.defer_fn(function()]])
+--       end
+--     elseif key_state == 1 then
+--       if line == "" then
+--         key_state = 2
+--         table.insert(wbuf, ("end, %d)"):format(15))
+--       end
+--       local _, e1 = line:find("vim%.cmd")
+--       if line:find("vim%.cmd") then
+--         local s2, e2 = line:find("%S+%s", e1 + 1)
+--         local map_mode = line:sub(s2, e2)
+--         line = ("pcall(vim.cmd, %s<unique>%s)"):format(
+--             map_mode, line:sub(e2 + 1)
+--         )
+--       end
+--       table.insert(wbuf, line)
+--     else
+--       table.insert(wbuf, line)
+--     end
+--   end
+--
+--   if key_state == 2 then
+--     fp:seek("set")
+--     fp:write(table.concat(wbuf, "\n"))
+--   end
+--
+--   fp:close()
+-- end
+
 packer.init(
     {
       -- compile_path = fn.stdpath("config") .. "/lua/compiled.lua",
@@ -112,22 +150,12 @@ return packer.startup(
         -- ]]] === Floaterm ===
 
         -- =========================== BetterQuickFix ========================== [[[
-        use({ "kevinhwang91/nvim-bqf", ft = "qf", config = conf("bqf") })
+        -- NOTE: using this with ft=qf causes errors
+        use({ "kevinhwang91/nvim-bqf", config = conf("bqf") })
         -- ]]] === BetterQuickFix ===
 
         -- ============================ EasyAlign ============================= [[[
-        use(
-            {
-              "junegunn/vim-easy-align",
-              config = function()
-                local config = fn.stdpath("config")
-                vim.cmd(
-                    "source " .. config ..
-                        "/vimscript/plugins/vim-easy-align.vim"
-                )
-              end,
-            }
-        )
+        use({ "junegunn/vim-easy-align", config = conf("plugs.easy-align") })
         -- ]]] === EasyAlign ===
 
         -- ============================ Limelight ============================= [[[
@@ -136,7 +164,7 @@ return packer.startup(
               "junegunn/goyo.vim",
               {
                 "junegunn/limelight.vim",
-                config = [[require("plugs.limelight")]],
+                config = conf("plugs.limelight"),
               },
             }
         )
@@ -147,7 +175,12 @@ return packer.startup(
         -- ]]] === Vimtex ===
 
         -- ============================ Open Browser =========================== [[[
-        use({ "tyru/open-browser.vim", conf = conf("open_browser") })
+        use(
+            {
+              "tyru/open-browser.vim",
+              conf = conf("open_browser"),
+            }
+        )
         -- ]]] === Open Browser ===
 
         -- ============================== VCooler ============================== [[[
@@ -163,10 +196,33 @@ return packer.startup(
         }
         -- ]]] === VCooler ===
 
+        -- =============================== Marks ============================== [[[
+        use({ "chentau/marks.nvim", config = conf("plugs.marks") })
+        -- ]]] === Marks ===
+
+        -- ============================== HlsLens ============================= [[[
+        use {
+          "kevinhwang91/nvim-hlslens",
+          config = conf("hlslens"),
+          requires = "haya14busa/vim-asterisk",
+        }
+        -- ]]] === HlsLens ===
+
         -- =========================== Colorscheme ============================ [[[
         local colorscheme = "kimbox"
-        use({ "lmburns/kimbox", config = [[require("plugs.kimbox")]] })
+        use({ "lmburns/kimbox", config = conf("plugs.kimbox") })
         -- ]]] === Colorscheme ===
+
+        -- ============================ Scrollbar ============================= [[[
+        use(
+            {
+              "petertriho/nvim-scrollbar",
+              requires = { "kevinhwang91/nvim-hlslens" },
+              after = { colorscheme, "nvim-hlslens" },
+              config = conf("plugs.scrollbar"),
+            }
+        )
+        -- ]]] === Scrollbar ===
 
         -- =========================== Statusline ============================= [[[
         use(
@@ -197,7 +253,7 @@ return packer.startup(
         -- ]]] === Lualine ===
 
         -- =========================== Indentline ============================= [[[
-        use({ "yggdroot/indentline", config = [[require("plugs.indentline")]] })
+        use({ "yggdroot/indentline", config = conf("plugs.indentline") })
         -- ]]] === Indentline ===
 
         -- =============================== Fzf ================================ [[[
@@ -276,7 +332,13 @@ return packer.startup(
               end,
             }
         )
-        use({ "liuchengxu/vista.vim", config = conf("plugs.vista") })
+        use(
+            {
+              "liuchengxu/vista.vim",
+              after = { "vim-gutentags" },
+              config = conf("plugs.vista"),
+            }
+        )
         -- ]]] === Tags ===
 
         -- ============================= Startify ============================= [[[
@@ -419,19 +481,21 @@ return packer.startup(
         -- ]]] === Keymaps ===
 
         -- ============================= File-Viewer =========================== [[[
-        use { "mattn/vim-xxdcursor" }
-        use {
-          "fidian/hexmode",
-          config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
-        }
+        use({ "mattn/vim-xxdcursor" })
+        use(
+            {
+              "fidian/hexmode",
+              config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
+            }
+        )
 
-        use { "jamessan/vim-gnupg" }
+        use({ "jamessan/vim-gnupg" })
 
-        use { "AndrewRadev/id3.vim" }
+        use({ "AndrewRadev/id3.vim" })
 
-        use { "alx741/vinfo" }
+        use({ "alx741/vinfo" })
 
-        use { "HiPhish/info.vim", config = conf("info") }
+        use({ "HiPhish/info.vim", config = conf("info") })
         -- ]]] === File Viewer ===
 
         -- ============================== Snippets ============================= [[[
@@ -481,7 +545,7 @@ return packer.startup(
               "neoclide/coc.nvim",
               branch = "master",
               run = "yarn install --frozen-lockfile",
-              config = [[require('plugs.coc').init()]],
+              -- config = [[require('plugs.coc').init()]],
             }
         )
         use({ "antoinemadec/coc-fzf", after = "coc.nvim" })
@@ -524,9 +588,11 @@ return packer.startup(
             }
         )
         use({ "nvim-treesitter/nvim-tree-docs", after = { "nvim-treesitter" } })
-        use { "nanotee/luv-vimdocs", opt = false }
+        use({ "nanotee/luv-vimdocs", opt = false })
 
-        use { "mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter" }
+        use(
+            { "mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter" }
+        )
 
         -- use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
         -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })

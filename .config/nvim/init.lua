@@ -4,7 +4,10 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- TODO: Fix bqf fzf
+-- TODO: Fix bqf closing window ml_get lnum
 -- TODO: Possibly fork rnvimr to lf
+--
+-- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
@@ -106,6 +109,8 @@ cmd [[cabbrev man <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Man' : 'man'
 
 require("functions")
 require("autocmds")
+require("common.qf")
+require("common.mru")
 require("highlight")
 
 -- ============================ Notify ================================ [[[
@@ -192,7 +197,7 @@ vim.schedule(
                filetype plugin indent on
             ]]
 
-          end, 20
+          end, 15
       )
 
       -- === Clipboard
@@ -224,27 +229,6 @@ vim.schedule(
                 }
             )
 
-            -- NOTE: For whatever reason this doesn't save to file
-            --       or keep the order in which the history was executed
-            --
-            -- api.nvim_create_autocmd(
-            --     "CmdlineEnter", {
-            --       callback = function()
-            --         require("common.cmdhist")
-            --       end,
-            --       group = api.nvim_create_augroup("CmdHist", { clear = true }),
-            --     }
-            -- )
-            --
-            -- api.nvim_create_autocmd(
-            --     "CmdlineEnter", {
-            --       callback = function()
-            --         require("common.cmdhijack")
-            --       end,
-            --       group = api.nvim_create_augroup("CmdHijack", { clear = true }),
-            --     }
-            -- )
-
             -- highlight syntax
             if fn.exists("##SearchWrapped") == 1 then
               api.nvim_create_autocmd(
@@ -252,9 +236,7 @@ vim.schedule(
                     callback = function()
                       require("common.builtin").search_wrap()
                     end,
-                    group = api.nvim_create_augroup(
-                        "SearchWrappedHighlight", { clear = true }
-                    ),
+                    group = create_augroup("SearchWrappedHighlight"),
                     pattern = "*",
                   }
               )
@@ -263,17 +245,13 @@ vim.schedule(
             api.nvim_create_autocmd(
                 "TextYankPost", {
                   callback = function()
-                    if not vim.b.visual_multi then
-                      pcall(
-                          vim.highlight.on_yank,
-                          { higroup = "IncSearch", timeout = 165 }
-                      )
-                    end
+                    pcall(
+                        vim.highlight.on_yank,
+                        { higroup = "IncSearch", timeout = 165 }
+                    )
                   end,
                   pattern = "*",
-                  group = api.nvim_create_augroup(
-                      "LuaHighlight", { clear = true }
-                  ),
+                  group = create_augroup("LuaHighlight"),
                 }
             )
           end, 200
@@ -318,6 +296,13 @@ vim.schedule(
 
             g.coc_enable_locationlist = 0
             g.coc_selectmode_mapping = 0
+
+            -- Disable CocFzfList
+            vim.schedule(
+                function()
+                  cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                end
+            )
 
             api.nvim_create_autocmd(
                 "User", {
