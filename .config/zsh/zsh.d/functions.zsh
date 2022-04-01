@@ -151,7 +151,9 @@ function lsfd()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
 # List deleted items?
 function lsdelete() { lsof -n | rg -i --color=always deleted }
 # List users on the computer
-function lsusers()  { cat /etc/passwd | hck -d':' -f1; }
+function lsusers()  {  hck -d':' -f1 <<< "$(</etc/passwd)"; }
+# List the fonts
+function lsfont() { fc-list -f '%{family}\n' | awk '!x[$0]++'; }
 
 # List functions
 function lsfuncs {
@@ -167,9 +169,6 @@ function lsfuncs {
   ) | bat
 }
 
-function lsfont() {
-  fc-list -f '%{family}\n' | awk '!x[$0]++'
-}
 
 # ============================= Profiling ============================
 # ====================================================================

@@ -269,9 +269,6 @@ local function init()
   map("n", "<Leader>8", ":BufferLineGoToBuffer 8<CR>", { silent = true })
   map("n", "<Leader>9", ":BufferLineGoToBuffer 9<CR>", { silent = true })
 
-  -- TODO: Fix this
-  -- cmd("packadd bufferline.nvim")
-  -- cmd [[hi TabLineSel guibg=#ddc7a1]]
   M.setup()
 end
 

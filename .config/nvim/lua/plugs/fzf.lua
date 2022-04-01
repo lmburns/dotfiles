@@ -311,9 +311,8 @@ local function init()
   g.rg_format = "%f:%l:%c:%m,%f:%l:%m"
 
   -- g.fzf_layout = { window = "call FloatingFZF()" }
-  g.fzf_layout = { window = { width = 0.7, height = 0.7 } }
+  g.fzf_layout = { window = { width = 0.8, height = 0.8 } }
 
-  -- g.fzf_preview_window = ''
   g.fzf_history_dir = "~/.local/share/fzf-history"
   g.fzf_vim_opts = { options = { "--no-border" } }
   g.fzf_buffers_jump = 1
@@ -343,11 +342,11 @@ local function init()
   cmd("packadd fzf.vim")
 
   -- Hide status and ruler for fzf
-  cmd [[
-    au FileType fzf
-      \ set laststatus& laststatus=0 |
-      \ au BufLeave <buffer> set laststatus&
-  ]]
+  -- cmd [[
+  --   au FileType fzf
+  --     \ set laststatus& laststatus=0 |
+  --     \ au BufLeave <buffer> set laststatus&
+  -- ]]
 
   -- Colors
   cmd [[command! -bang Colors call fzf#vim#colors(g:fzf_vim_opts, <bang>0)]]
@@ -512,44 +511,44 @@ local function init()
   ]]
 
   -- Floating window
-  cmd [[
-    function! s:create_float(hl, opts)
-      let buf = nvim_create_buf(v:false, v:true)
-      let opts = extend({'relative': 'editor', 'style': 'minimal'}, a:opts)
-      let win = nvim_open_win(buf, v:true, opts)
-      call setwinvar(win, '&winhighlight', 'NormalFloat:'.a:hl)
-      call setwinvar(win, '&colorcolumn', '')
-      return buf
-    endfunction
-
-    function! FloatingFZF()
-      " Size and position
-      let width = float2nr(&columns * 0.9)
-      let height = float2nr(&lines * 0.6)
-      let row = float2nr((&lines - height) / 2)
-      let col = float2nr((&columns - width) / 2)
-
-      " Border
-      let top = '┏━' . repeat('─', width - 4) . '━┓'
-      let mid = '│'  . repeat(' ', width - 2) .  '│'
-      let bot = '┗━' . repeat('─', width - 4) . '━┛'
-      let border = [top] + repeat([mid], height - 2) + [bot]
-
-      " Draw frame
-      let s:frame = s:create_float('Comment',
-        \ {'row': row, 'col': col, 'width': width, 'height': height})
-      call nvim_buf_set_lines(s:frame, 0, -1, v:true, border)
-
-      " Draw viewport
-      call s:create_float('Normal',
-        \ {'row': row + 1, 'col': col + 2, 'width': width - 4, 'height': height - 2})
-
-      augroup fzf_floating
-        au!
-        au BufWipeout <buffer> execute 'bwipeout' s:frame
-      augroup END
-    endfunction
-  ]]
+  -- cmd [[
+  --   function! s:create_float(hl, opts)
+  --     let buf = nvim_create_buf(v:false, v:true)
+  --     let opts = extend({'relative': 'editor', 'style': 'minimal'}, a:opts)
+  --     let win = nvim_open_win(buf, v:true, opts)
+  --     call setwinvar(win, '&winhighlight', 'NormalFloat:'.a:hl)
+  --     call setwinvar(win, '&colorcolumn', '')
+  --     return buf
+  --   endfunction
+  --
+  --   function! FloatingFZF()
+  --     " Size and position
+  --     let width = float2nr(&columns * 0.9)
+  --     let height = float2nr(&lines * 0.6)
+  --     let row = float2nr((&lines - height) / 2)
+  --     let col = float2nr((&columns - width) / 2)
+  --
+  --     " Border
+  --     let top = '┏━' . repeat('─', width - 4) . '━┓'
+  --     let mid = '│'  . repeat(' ', width - 2) .  '│'
+  --     let bot = '┗━' . repeat('─', width - 4) . '━┛'
+  --     let border = [top] + repeat([mid], height - 2) + [bot]
+  --
+  --     " Draw frame
+  --     let s:frame = s:create_float('Comment',
+  --       \ {'row': row, 'col': col, 'width': width, 'height': height})
+  --     call nvim_buf_set_lines(s:frame, 0, -1, v:true, border)
+  --
+  --     " Draw viewport
+  --     call s:create_float('Normal',
+  --       \ {'row': row + 1, 'col': col + 2, 'width': width - 4, 'height': height - 2})
+  --
+  --     augroup fzf_floating
+  --       au!
+  --       au BufWipeout <buffer> execute 'bwipeout' s:frame
+  --     augroup END
+  --   endfunction
+  -- ]]
 
   -- Fzf wrapper
   cmd [[
@@ -598,6 +597,7 @@ local function init()
   )
 
   map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
+
   map("n", "<C-f>", ":Rg<CR>")
 
   -- Change directory to buffers dir
@@ -606,13 +606,13 @@ local function init()
 
   map("n", "<Leader>A", ":Windows<CR>", { silent = true })
   map("n", "<LocalLeader>r", ":RG<CR>")
-  -- map("n", "<A-f>", ":Files<CR>", { silent = true })
+  map("n", "<A-f>", ":Files<CR>", { silent = true })
   -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
   map("n", "<Leader>hf", ":History<CR>", { silent = true })
 
   map("n", "<Leader>ls", ":LS<CR>", { silent = true })
-  map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
-  map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
+  -- map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
+  -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 
   map("n", "<C-l>m", "<Plug>(fzf-maps-n)", { noremap = false })
   map("x", "<C-l>m", "<Plug>(fzf-maps-x)", { noremap = false })

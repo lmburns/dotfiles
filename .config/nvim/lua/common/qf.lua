@@ -126,8 +126,7 @@ function M.qftf(qinfo)
         else
           fname = fname:gsub("^" .. vim.env.HOME, "~")
         end
-        -- char in fname may occur more than 1 width, ignore this issue in order to keep
-        -- performance
+        -- char in fname may occur more than 1 width
         if #fname <= limit then
           fname = fname_fmt1:format(fname)
         else
@@ -239,7 +238,7 @@ end
 
 local function init()
   vim.g.qf_disable_statusline = true
-  vim.o.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
+  vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
   cmd [[
       com! -nargs=1 Cdos lua require('common.qf').batch_sub(false, <q-args>)

@@ -20,6 +20,8 @@ set sortby "natural"  # don't sort files in any special way
 set preview on        # preview file on the right pane
 set drawbox on        # draw a border around all panes
 set ratios '1:2:3'    # ratio of pane widths
+# FIX: Doesn't change the color
+set tagfmt "\033[34m%s\033[0m"
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 
 # -- Previewer: custom
@@ -494,6 +496,26 @@ cmd select-exec ${{
 
 map sx select-exec
 
+# -- Tag Jump: builtin lf tags
+cmd jump_tag ${{
+  local tags="${XDG_DATA_HOME}/lf/tags"
+  [[ ! -r $tags ]] && {
+    print "No tag file found"
+    return
+  }
+
+  local target=$(column -t -s':' $tags | sort -k 2,2 \
+    | fzf --prompt="Tags> " --info=inline \
+    | hck -f1
+  )
+
+  if [[ -d "$target" ]]; then
+    lf -remote "send $id cd '$target'"
+  elif [[ -n "$target" ]]; then
+    lf -remote "send $id cd '${target:h}'"
+  fi
+}}
+
 # -- Bookmark Jump: specifically for lf
 cmd njump ${{
   bookmarks="${XDG_DATA_HOME}/lf/bookmarks"
@@ -921,6 +943,7 @@ map tos $stig                          # transmisison TUI
 # ]]]
 
 # == Tagging == [[[
+map Tj jump_tag
 map Tms tmsu-set
 map Tmr tmsu-remove
 map Tml tmsu-list

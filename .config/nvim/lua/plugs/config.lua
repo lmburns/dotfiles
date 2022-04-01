@@ -12,27 +12,49 @@ function M.bqf()
   require("bqf").setup(
       {
         auto_enable = true,
-        auto_resize_height = true,
-        preview = { auto_preview = true, delay_syntax = 50 },
+        auto_resize_height = true, -- highly recommended enable
+        preview = {
+          win_height = 12,
+          win_vheight = 12,
+          delay_syntax = 80,
+          border_chars = {
+            "┃",
+            "┃",
+            "━",
+            "━",
+            "┏",
+            "┓",
+            "┗",
+            "┛",
+            "█",
+          },
+          should_preview_cb = function(bufnr, qwinid)
+            local ret = true
+            local bufname = vim.api.nvim_buf_get_name(bufnr)
+            local fsize = vim.fn.getfsize(bufname)
+            if fsize > 100 * 1024 then
+              -- skip file size greater than 100k
+              ret = false
+            elseif bufname:match("^fugitive://") then
+              -- skip fugitive buffer
+              ret = false
+            end
+            return ret
+          end,
+        },
+        -- make `drop` and `tab drop` to become preferred
         func_map = {
-          split = "<C-s>",
           drop = "o",
           openc = "O",
+          split = "<C-s>",
           tabdrop = "<C-t>",
-          pscrollup = "<C-u>",
-          pscrolldown = "<C-d>",
-          fzffilter = "zf",
+          tabc = "",
           ptogglemode = "z,",
         },
         filter = {
           fzf = {
-            action_for = {
-              ["enter"] = "drop",
-              ["ctrl-s"] = "split",
-              ["ctrl-t"] = "tab drop",
-              ["ctrl-x"] = "",
-            },
-            extra_opts = { "--delimiter", "│" },
+            action_for = { ["ctrl-s"] = "split", ["ctrl-t"] = "tab drop" },
+            extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
           },
         },
       }
@@ -373,7 +395,7 @@ function M.hlslens()
   )
   map(
       "n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
-      {}
+      { noremap = false }
   )
   -- map(
   --     "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
@@ -381,20 +403,22 @@ function M.hlslens()
   -- )
   map(
       "n", "g*",
-      [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {}
+      [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]],
+      { noremap = false }
   )
   map(
       "n", "g#",
-      [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {}
+      [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]],
+      { noremap = false }
   )
 
   map(
       "x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
-      {}
+      { noremap = false }
   )
   map(
       "x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
-      {}
+      { noremap = false }
   )
   map(
       "x", "g*",
@@ -409,15 +433,15 @@ function M.hlslens()
 end
 
 function M.surround()
-  map("n", "ds", "<Plug>Dsurround", {})
-  map("n", "cs", "<Plug>Csurround", {})
-  map("n", "cS", "<Plug>CSurround", {})
-  map("n", "ys", "<Plug>Ysurround", {})
-  map("n", "yS", "<Plug>YSurround", {})
-  map("n", "yss", "<Plug>Yssurround", {})
-  map("n", "ygs", "<Plug>YSsurround", {})
-  map("x", "S", "<Plug>VSurround", {})
-  map("x", "gS", "<Plug>VgSurround", {})
+  map("n", "ds", "<Plug>Dsurround", { noremap = false })
+  map("n", "cs", "<Plug>Csurround", { noremap = false })
+  map("n", "cS", "<Plug>CSurround", { noremap = false })
+  map("n", "ys", "<Plug>Ysurround", { noremap = false })
+  map("n", "yS", "<Plug>YSurround", { noremap = false })
+  map("n", "yss", "<Plug>Yssurround", { noremap = false })
+  map("n", "ygs", "<Plug>YSsurround", { noremap = false })
+  map("x", "S", "<Plug>VSurround", { noremap = false })
+  map("x", "gS", "<Plug>VgSurround", { noremap = false })
 end
 
 function M.lazygit()
@@ -431,5 +455,27 @@ function M.lazygit()
 end
 
 -- Unused
+
+-- function M.sneak()
+--   g["sneak#label"] = 1
+--
+--   map(
+--       { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
+--       { noremap = false, expr = true }
+--   )
+--   map(
+--       { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
+--       { noremap = false, expr = true }
+--   )
+--
+--
+--   map("n", "w", "<Plug>Sneak_s", { noremap = false })
+--   map("n", "W", "<Plug>Sneak_S", { noremap = false })
+--
+--   -- Repeat the last Sneak
+--   -- map({ "n", "x" }, "gs", "f<CR>")
+--   -- map("n", "gS", "F<CR>")
+--   -- map("x", "gS", "Z<CR>")
+-- end
 
 return M

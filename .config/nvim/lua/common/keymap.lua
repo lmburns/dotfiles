@@ -17,12 +17,13 @@ return setmetatable(
               bmap = function(buf, key, action, opts)
                 vim.api.nvim_buf_set_keymap(buf, mode, key, action, opts)
               end,
-            },
-            { __call = function(this, key, action)
+            }, {
+              __call = function(this, key, action, opts)
                 opts = opts or p.nore
                 opts.noremap = opts.noremap == nil and true or opts.noremap
                 this.nmap(key, action, opts)
-            end }
+              end,
+            }
         )
       end,
     }

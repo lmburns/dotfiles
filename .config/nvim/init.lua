@@ -66,18 +66,18 @@ cmd [[
   command! Fcman :call s:FullCppMan()
 ]]
 
-autocmd(
-    "c_env", {
-      [[FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>]],
-    }, true
+api.nvim_create_autocmd(
+    "FileType", {
+      callback = function()
+        map(
+            "n", "<Leader>r<CR>",
+            ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>"
+        )
+      end,
+      pattern = "c",
+      group = create_augroup("CEnv", true),
+    }
 )
-
--- autocmd(
---     "cpp_env", {
---       [[FileType cpp nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>]],
---       [[FileType cpp nnoremap <buffer> <Leader>kk :Fcman<CR>]],
---     }, true
--- )
 
 api.nvim_create_autocmd(
     "FileType", {
@@ -86,7 +86,7 @@ api.nvim_create_autocmd(
             "n", "<Leader>r<CR>",
             ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>"
         )
-        map("n", "<Leader>kk", ":Fcman<CR>", { buffer = true })
+        map("n", "<Leader>kk", ":Fcman<CR>")
       end,
       pattern = "cpp",
       group = create_augroup("CppEnv", true),
@@ -118,12 +118,15 @@ require("functions")
 require("autocmds")
 require("common.qf")
 require("common.mru")
+require("common.reg")
 require("highlight")
 
-autocmd(
-    "misc_aucmds",
-    { [[BufWinEnter * checktime]], [[FileType qf set nobuflisted ]] }, true
-)
+cmd [[
+    aug TermFix
+        au!
+        au TermEnter * lua vim.schedule(function() vim.cmd('noh') vim.fn.clearmatches() end)
+    aug END
+]]
 
 -- ============================ Notify ================================ [[[
 vim.notify = function(...)
@@ -150,8 +153,19 @@ api.nvim_create_autocmd(
     }
 )
 
--- BufRead * autocmd FileType <buffer> if line("'\"") > 1 && line("'\"") <= line("$") | exe 'normal! g`"' | endif
---
+api.nvim_create_autocmd(
+    "BufRead", {
+      callback = function()
+        -- Buffer option here doesn't work like global
+        o.formatoptions:remove({ "c", "r", "o" })
+        w.conceallevel = 2
+        w.concealcursor = "v"
+      end,
+      group = create_augroup("FormatOptions"),
+      pattern = "*",
+    }
+)
+
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 api.nvim_create_autocmd(
@@ -334,14 +348,9 @@ vim.schedule(
               hi! CocSemStatic gui=bold
            ]]
 
-           cmd("packadd coc.nvim")
+            cmd("packadd coc.nvim")
           end, 250
       )
-
-      -- vim.defer_fn(
-      --     function()
-      --     end, 800
-      -- )
 
     end
 )

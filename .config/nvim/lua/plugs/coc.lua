@@ -458,7 +458,7 @@ function M.init()
   map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
 
   map(
-      "n", "<M-q>",
+      "n", "<A-q>",
       [[<Cmd>lua vim.notify(vim.fn.CocAction('getCurrentFunctionSymbol'))<CR>]]
   )
   map("n", "<Leader>qd", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])

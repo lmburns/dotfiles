@@ -776,7 +776,7 @@ zt 0c light-mode null for \
   lbin from'gh-r' ver'nightly' \
     ClementTsang/bottom \
   lbin dl"$(grman)" lman \
-  atclone'CGO_ENABLED=0 go build -ldflags="-s -w" .' \
+  atclone'CGO_ENABLED=0 go build -ldflags="-s -w" .' atpull'%atclone' \
     gokcehan/lf \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
@@ -1127,14 +1127,12 @@ $FZF_COLORS
 --bind='?:toggle-preview,alt-w:toggle-preview-wrap'
 --bind='alt-a:select-all,ctrl-r:toggle-all'
 --bind='ctrl-b:execute(bat --paging=always -f {+})'
---bind=\"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | xsel --trim -b)+abort\"
---bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---bind='ctrl-s:toggle-sort'
---bind='alt-p:preview-up,alt-n:preview-down'
---bind='ctrl-k:preview-up,ctrl-j:preview-down'
---bind='ctrl-u:half-page-up,ctrl-d:half-page-down'
---bind=change:top
-"
+--bind=ctrl-s:toggle-sort
+--bind=alt-p:preview-up,alt-n:preview-down
+--bind=ctrl-k:preview-up,ctrl-j:preview-down
+--bind=ctrl-u:half-page-up,ctrl-d:half-page-down
+--bind=alt-,:first,alt-.:last,change:first"
+
 SKIM_DEFAULT_OPTIONS="
 --prompt '❱ '
 --cmd-prompt 'c❱ '
@@ -1150,8 +1148,7 @@ SKIM_DEFAULT_OPTIONS="
 --bind='ctrl-s:toggle-sort'
 --bind='alt-p:preview-up,alt-n:preview-down'
 --bind='ctrl-k:preview-up,ctrl-j:preview-down'
---bind='ctrl-u:half-page-up,ctrl-d:half-page-down'
-"
+--bind='ctrl-u:half-page-up,ctrl-d:half-page-down'"
 # SKIM_DEFAULT_OPTIONS=${(F)${(M)${(@f)FZF_DEFAULT_OPTS}/(#m)*info*/${${(@s. .)MATCH}:#--info*}}:#--(bind=change:top|pointer*|marker*|color*)}
 # SKIM_DEFAULT_OPTIONS+=$'\n'"--cmd-prompt=➤"
 # SKIM_DEFAULT_OPTIONS+=$'\n'"--bind='ctrl-p:preview-up,ctrl-n:preview-down'"

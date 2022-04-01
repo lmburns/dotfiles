@@ -53,6 +53,16 @@ require("telescope").setup(
             -- ["<C-g>"] = custom_actions.multi_selection_open,
           },
           n = {
+            ["j"] = actions.move_selection_next,
+            ["k"] = actions.move_selection_previous,
+            ["<Down>"] = actions.move_selection_next,
+            ["<Up>"] = actions.move_selection_previous,
+            ["H"] = actions.move_to_top,
+            ["M"] = actions.move_to_middle,
+            ["L"] = actions.move_to_bottom,
+
+            ["?"] = action_layout.toggle_preview,
+
             ["<ESC>"] = actions.close,
             ["<C-d>"] = actions.results_scrolling_down,
             ["<C-u>"] = actions.results_scrolling_up,
@@ -147,7 +157,18 @@ require("telescope").setup(
         frecency = {
           ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
         },
-        packer = { theme = "ivy", layout_config = { height = .5 } },
+        packer = {
+          theme = "ivy",
+          layout_config = { height = .5 },
+          preview = false,
+          mappings = {
+            ["j"] = actions.move_selection_next,
+            ["k"] = actions.move_selection_previous,
+            ["<Down>"] = actions.move_selection_next,
+            ["<Up>"] = actions.move_selection_previous,
+
+          },
+        },
         file_browser = { theme = "ivy", mappings = { ["i"] = {}, ["n"] = {} } },
       },
     }
@@ -404,6 +425,7 @@ map("n", "<Leader>bl", ":Telescope buffers<CR>", { silent = true })
 map("n", "<Leader>;", ":Telescope current_buffer_fuzzy_find<CR>")
 map("n", ";r", ":Telescope git_grep<CR>")
 map("n", "<A-.>", ":Telescope frecency<CR>")
+map("n", "<A-,>", ":Telescope oldfiles<CR>")
 map("n", ";fd", ":Telescope fd<CR>")
 map("n", ";g", ":Telescope git_files<CR>")
 

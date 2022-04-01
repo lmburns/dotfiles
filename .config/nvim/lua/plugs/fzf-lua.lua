@@ -4,67 +4,12 @@ local utils = require("common.utils")
 local map = utils.map
 local K = require("common.keymap")
 
--- buffers  open buffers
--- files  find or fd on a path
--- oldfiles   opened files history
--- quickfix   quickfix list
--- loclist  location list
--- lines  open buffers lines
--- blines   current buffer lines
--- tabs   open tabs
--- args   argument list
-
--- grep   search for a pattern with grep or rg
--- grep_last  run search again with the last pattern
--- grep_cword   search word under cursor
--- grep_cWORD   search WORD under cursor
--- grep_visual  search visual selection
--- grep_project   search all project lines (fzf.vim's :Rg)
--- grep_curbuf  search current buffer lines
--- lgrep_curbuf   live grep current buffer
--- live_grep  live grep current project
--- live_grep_resume   live grep continue last search
--- live_grep_glob   live_grep with rg --glob support
--- live_grep_native   performant version of live_grep
-
--- tags   search project tags
--- btags  search buffer tags
--- tags_grep  grep project tags
--- tags_grep_cword  tags_grep word under cursor
--- tags_grep_cWORD  tags_grep WORD under cursor
--- tags_grep_visual   tags_grep visual selection
--- tags_live_grep   live grep project tags
-
--- git_files  git ls-files
--- git_status   git status
--- git_commits  git commit log (project)
--- git_bcommits   git commit log (buffer)
--- git_branches   git branches
-
--- resume   resume last command/query
--- builtin  fzf-lua builtin commands
--- help_tags  help tags
--- man_pages  man pages
--- colorschemes   color schemes
--- highlights   highlight groups
--- commands   neovim commands
--- command_history  command history
--- search_history   search history
--- marks  :marks
--- jumps  :jumps
--- changes  :changes
--- registers  :registers
--- tagstack   :tags
--- keymaps  key mappings
--- spell_suggest  spelling suggestions
--- filetypes  neovim filetypes
--- packadd  :packadd
-
 function M.setup()
   local actions = require "fzf-lua.actions"
+
+  ---@diagnostic disable-next-line: redundant-parameter
   require"fzf-lua".setup {
-    -- fzf_bin         = 'sk',            -- use skim instead of fzf?
-    -- https://github.com/lotabout/skim
+    fzf_bin = "fzf", -- use skim instead of fzf?
     global_resume = true, -- enable global `resume`?
     -- can also be sent individually:
     -- `<any_function>.({ gl ... })`
@@ -78,7 +23,7 @@ function M.setup()
       -- Only valid when using a float window
       -- (i.e. when 'split' is not defined, default)
       height = 0.85, -- window height
-      width = 0.80, -- window width
+      width = 0.85, -- window width
       row = 0.35, -- window row position (0=top, 1=bottom)
       col = 0.50, -- window col position (0=left, 1=right)
       -- border argument passthrough to nvim_open_win(), also used
@@ -101,7 +46,7 @@ function M.setup()
       preview = {
         -- default     = 'bat',           -- override the default previewer?
         -- default uses the 'builtin' previewer
-        border = "border", -- border|noborder, applies only to
+        border = "noborder", -- border|noborder, applies only to
         -- native fzf previewers (bat/cat/git/etc)
         wrap = "nowrap", -- wrap|nowrap
         hidden = "nohidden", -- hidden|nohidden
@@ -160,9 +105,9 @@ function M.setup()
       fzf = {
         -- fzf '--bind=' options
         ["ctrl-z"] = "abort",
-        ["ctrl-u"] = "unix-line-discard",
-        ["ctrl-f"] = "half-page-down",
-        ["ctrl-b"] = "half-page-up",
+        ["alt-d"] = "unix-line-discard",
+        ["ctrl-d"] = "half-page-down",
+        ["ctrl-u"] = "half-page-up",
         ["ctrl-a"] = "beginning-of-line",
         ["ctrl-e"] = "end-of-line",
         ["alt-a"] = "toggle-all",
@@ -212,6 +157,7 @@ function M.setup()
       ["--info"] = "inline",
       ["--height"] = "100%",
       ["--layout"] = "reverse",
+      ["--no-border"] = "",
     },
     -- fzf '--color=' options (optional)
     --[[ fzf_colors = {
@@ -234,7 +180,7 @@ function M.setup()
       bat = {
         cmd = "bat",
         args = "--style=numbers,changes --color always",
-        theme = "Coldark-Dark", -- bat preview theme (bat --list-themes)
+        theme = "kimbro", -- bat preview theme (bat --list-themes)
         config = nil, -- nil uses $BAT_CONFIG_PATH
       },
       head = { cmd = "head", args = nil },
@@ -244,10 +190,14 @@ function M.setup()
         cmd_untracked = "git diff --color --no-index /dev/null",
         -- pager        = "delta",      -- if you have `delta` installed
       },
+
+      -- === Man
       man = {
         -- NOTE: remove the `-c` flag when using man-db
-        cmd = "man -c %s | col -bx",
+        cmd = "man %s | col -bx",
       },
+
+      -- === Builtin
       builtin = {
         syntax = true, -- preview syntax highlight?
         syntax_limit_l = 0, -- syntax limit (lines), 0=nolimit
@@ -269,7 +219,8 @@ function M.setup()
         ueberzug_scaler = "cover",
       },
     },
-    -- provider setup
+
+    -- === Files
     files = {
       -- previewer      = "bat",          -- uncomment to override previewer
       -- (name from 'previewers' table)
@@ -295,7 +246,11 @@ function M.setup()
         ["ctrl-y"] = function(selected) print(selected[1]) end,
       },
     },
+
+    -- === Git
     git = {
+
+      -- === Git Files
       files = {
         prompt = "GitFiles❯ ",
         cmd = "git ls-files --exclude-standard",
@@ -307,6 +262,8 @@ function M.setup()
         -- directory can also be used to hide the header when not wanted
         -- show_cwd_header = true
       },
+
+      -- === Git Status
       status = {
         prompt = "GitStatus❯ ",
         cmd = "git status -s",
@@ -320,12 +277,16 @@ function M.setup()
           ["left"] = { actions.git_stage, actions.resume },
         },
       },
+
+      -- === Git Commits
       commits = {
         prompt = "Commits❯ ",
         cmd = "git log --pretty=oneline --abbrev-commit --color",
         preview = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
         actions = { ["default"] = actions.git_checkout },
       },
+
+      -- === Git Bcommits
       bcommits = {
         prompt = "BCommits❯ ",
         cmd = "git log --pretty=oneline --abbrev-commit --color",
@@ -337,6 +298,8 @@ function M.setup()
           ["ctrl-t"] = actions.git_buf_tabedit,
         },
       },
+
+      -- === Git Branches
       branches = {
         prompt = "Branches❯ ",
         cmd = "git branch --all --color",
@@ -356,6 +319,8 @@ function M.setup()
         -- ["A"]        = { icon = "+", color = "green" },
       },
     },
+
+    -- === Grep
     grep = {
       prompt = "Rg❯ ",
       input_prompt = "Grep For❯ ",
@@ -392,18 +357,25 @@ function M.setup()
       no_header = false, -- hide grep|cwd header?
       no_header_i = false, -- hide interactive header?
     },
+
+    -- === Args
     args = {
       prompt = "Args❯ ",
       files_only = true,
       -- actions inherit from 'actions.files' and merge
       actions = { ["ctrl-x"] = { actions.arg_del, actions.resume } },
     },
+
+    -- === Oldfiles
     oldfiles = {
       prompt = "History❯ ",
       cwd_only = false,
       stat_file = true, -- verify files exist on disk
       include_current_session = false, -- include bufs from current session
+      winopts = { preview = { horizontal = "right:40%" } },
     },
+
+    -- === Buffers
     buffers = {
       prompt = "Buffers❯ ",
       file_icons = true, -- show file icons?
@@ -418,6 +390,8 @@ function M.setup()
         ["ctrl-x"] = { actions.buf_del, actions.resume },
       },
     },
+
+    -- === Tabs
     tabs = {
       prompt = "Tabs❯ ",
       tab_title = "Tab",
@@ -435,6 +409,8 @@ function M.setup()
         ["--with-nth"] = "2..",
       },
     },
+
+    -- === Lines
     lines = {
       previewer = "builtin", -- set to 'false' to disable
       prompt = "Lines❯ ",
@@ -449,6 +425,8 @@ function M.setup()
       },
       -- actions inherit from 'actions.buffers'
     },
+
+    -- === Blines
     blines = {
       previewer = "builtin", -- set to 'false' to disable
       prompt = "BLines❯ ",
@@ -462,6 +440,8 @@ function M.setup()
       },
       -- actions inherit from 'actions.buffers'
     },
+
+    -- === Tags
     tags = {
       prompt = "Tags❯ ",
       ctags_file = "tags",
@@ -480,6 +460,8 @@ function M.setup()
       no_header = false, -- hide grep|cwd header?
       no_header_i = false, -- hide interactive header?
     },
+
+    -- === BTags
     btags = {
       prompt = "BTags❯ ",
       ctags_file = "tags",
@@ -496,6 +478,8 @@ function M.setup()
       },
       -- actions inherit from 'actions.files'
     },
+
+    -- === Colorschems
     colorschemes = {
       prompt = "Colorschemes❯ ",
       live_preview = true, -- apply the colorscheme on preview?
@@ -507,7 +491,11 @@ function M.setup()
         -- require('feline').reset_highlights()
       end,
     },
+
+    -- === Quickfix
     quickfix = { file_icons = true, git_icons = true },
+
+    -- === LSP
     lsp = {
       prompt_postfix = "❯ ", -- will be appended to the LSP label
       -- to override use 'prompt' instead
@@ -542,7 +530,7 @@ function M.setup()
     -- padding can help kitty term users with
     -- double-width icon rendering
     file_icon_padding = "",
-    file_icon_colors = { ["lua"] = "blue" },
+    file_icon_colors = { lua = "blue", rust = "orange" },
     -- uncomment if your terminal/font does not support unicode character
     -- 'EN SPACE' (U+2002), the below sets it to 'NBSP' (U+00A0) instead
     -- nbsp = '\xc2\xa0',
@@ -551,12 +539,20 @@ end
 
 function init()
   M.setup()
-  K.n("<A-f>", "<Cmd>lua require('fzf-lua').files()<CR>")
+
+  -- K.n("<A-f>", "<Cmd>lua require('fzf-lua').files()<CR>")
   K.n("<Leader>qo", "<Cmd>lua require('fzf-lua').quickfix()<CR>")
   K.n("<Leader>ll", "<Cmd>lua require('fzf-lua').loclist()<CR>")
-  K.n("<A-,>", "<Cmd>lua require('fzf-lua').oldfiles()<CR>")
+  -- K.n("<A-,>", "<Cmd>lua require('fzf-lua').oldfiles()<CR>")
   K.n("<LocalLeader>e", "<Cmd>lua require('fzf-lua').live_grep()<CR>")
   K.n("<LocalLeader>h", "<Cmd>lua require('fzf-lua').man_pages()<CR>")
+  K.n("<Leader>ht", "<Cmd>lua require('fzf-lua').help_tags()<CR>")
+  K.n("<Leader>cm", "<Cmd>lua require('fzf-lua').commands()<CR>")
+  K.n("<Leader>ch", "<Cmd>lua require('fzf-lua').changes()<CR>")
+  K.n("<C-l>k", "<Cmd>lua require('fzf-lua').keymaps()<CR>")
+  K.n("<Leader>jf", "<Cmd>lua require('fzf-lua').jumps()<CR>")
+  K.n("<Leader>pa", "<Cmd>lua require('fzf-lua').packadd()<CR>")
+  K.n("<LocalLeader>v", "<Cmd>lua require('fzf-lua').builtin()<CR>")
 end
 
 init()

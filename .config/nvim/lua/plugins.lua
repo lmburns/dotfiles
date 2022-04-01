@@ -19,43 +19,43 @@ end
 cmd([[packadd packer.nvim]])
 local packer = require("packer")
 
--- packer.on_compile_done = function()
---   local fp = assert(io.open(packer.config.compile_path, "rw+"))
---   local wbuf = {}
---   local key_state = 0
---   for line in fp:lines() do
---     if key_state == 0 then
---       table.insert(wbuf, line)
---       if line:find("Keymap lazy%-loads") then
---         key_state = 1
---         table.insert(wbuf, [[vim.defer_fn(function()]])
---       end
---     elseif key_state == 1 then
---       if line == "" then
---         key_state = 2
---         table.insert(wbuf, ("end, %d)"):format(15))
---       end
---       local _, e1 = line:find("vim%.cmd")
---       if line:find("vim%.cmd") then
---         local s2, e2 = line:find("%S+%s", e1 + 1)
---         local map_mode = line:sub(s2, e2)
---         line = ("pcall(vim.cmd, %s<unique>%s)"):format(
---             map_mode, line:sub(e2 + 1)
---         )
---       end
---       table.insert(wbuf, line)
---     else
---       table.insert(wbuf, line)
---     end
---   end
---
---   if key_state == 2 then
---     fp:seek("set")
---     fp:write(table.concat(wbuf, "\n"))
---   end
---
---   fp:close()
--- end
+packer.on_compile_done = function()
+  local fp = assert(io.open(packer.config.compile_path, "rw+"))
+  local wbuf = {}
+  local key_state = 0
+  for line in fp:lines() do
+    if key_state == 0 then
+      table.insert(wbuf, line)
+      if line:find("Keymap lazy%-loads") then
+        key_state = 1
+        table.insert(wbuf, [[vim.defer_fn(function()]])
+      end
+    elseif key_state == 1 then
+      if line == "" then
+        key_state = 2
+        table.insert(wbuf, ("end, %d)"):format(15))
+      end
+      local _, e1 = line:find("vim%.cmd")
+      if line:find("vim%.cmd") then
+        local s2, e2 = line:find("%S+%s", e1 + 1)
+        local map_mode = line:sub(s2, e2)
+        line = ("pcall(vim.cmd, %s<unique>%s)"):format(
+            map_mode, line:sub(e2 + 1)
+        )
+      end
+      table.insert(wbuf, line)
+    else
+      table.insert(wbuf, line)
+    end
+  end
+
+  if key_state == 2 then
+    fp:seek("set")
+    fp:write(table.concat(wbuf, "\n"))
+  end
+
+  fp:close()
+end
 
 packer.init(
     {
@@ -65,6 +65,8 @@ packer.init(
       display = {
         title = "Packer",
         prompt_border = "rounded",
+        open_cmd = "tabedit",
+        keybindings = { prompt_revert = "R", diff = "D" },
         open_fn = function()
           return require("packer.util").float({ border = "rounded" })
         end,
@@ -76,13 +78,6 @@ packer.init(
 
 return packer.startup(
     {
-      config = {
-        -- opt_default = true,
-        display = {
-          open_cmd = "tabedit",
-          keybindings = { prompt_revert = "R", diff = "D" },
-        },
-      },
       function(use)
         local function conf(name)
           if name:match("^plugs%.") then
@@ -141,8 +136,7 @@ return packer.startup(
         -- ]]] === Floaterm ===
 
         -- =========================== BetterQuickFix ========================== [[[
-        -- NOTE: using this with ft=qf causes errors
-        use({ "kevinhwang91/nvim-bqf", config = conf("bqf") })
+        use({ "kevinhwang91/nvim-bqf", ft = { "qf" }, config = conf("bqf") })
         -- ]]] === BetterQuickFix ===
 
         -- ============================ EasyAlign ============================= [[[
@@ -153,6 +147,7 @@ return packer.startup(
         use(
             {
               "folke/zen-mode.nvim",
+              cmd = "ZenMode",
               {
                 "folke/twilight.nvim",
                 config = conf("plugs.twilight"),
@@ -186,6 +181,10 @@ return packer.startup(
         -- =============================== Marks ============================== [[[
         use({ "chentau/marks.nvim", config = conf("plugs.marks") })
         -- ]]] === Marks ===
+
+        -- ============================== WhichKey ============================ [[[
+        use({ "folke/which-key.nvim", config = conf("plugs.which-key") })
+        -- ]]] === WhichKey ===
 
         -- ============================== HlsLens ============================= [[[
         use {
@@ -265,8 +264,6 @@ return packer.startup(
 
         -- ============================= Operator============================== [[[
         -- Similar to vim-sandwhich (I kind of use both)
-        -- use({ "tpope/vim-surround" })
-        --
         use(
             {
               "tpope/vim-surround",
@@ -292,7 +289,7 @@ return packer.startup(
               "machakann/vim-sandwich",
               config = function()
                 local config = fn.stdpath("config")
-                vim.cmd(
+                cmd(
                     "source " .. config ..
                         "/vimscript/plugins/vim-sandwhich.vim"
                 )
@@ -307,6 +304,16 @@ return packer.startup(
               config = conf("delimitmate"),
             }
         )
+
+        -- use(
+        --     {
+        --       "justinmk/vim-sneak",
+        --       after = "vim-surround",
+        --       keys = { { "n", "f" }, { "n", "F" } },
+        --       config = conf("sneak"),
+        --     }
+        -- )
+
         -- use(
         --     { "AndrewRadev/switch.vim",
         --       config = [[require("plugs.switch")]] }
@@ -434,7 +441,6 @@ return packer.startup(
           "rustpeg",
           "lf",
           "ron",
-
           "cmake",
           "css",
           "d",
@@ -443,8 +449,7 @@ return packer.startup(
           "go",
           "gomod",
           "html",
-          "java",
-          -- "json",
+          "java", -- "json",
           -- "kotlin",
           "lua",
           "make",
@@ -452,8 +457,7 @@ return packer.startup(
           "query",
           "ruby",
           "rust",
-          "scss",
-          -- "teal",
+          "scss", -- "teal",
           -- "tsx",
           -- "typescript",
           -- "vue",
@@ -656,7 +660,7 @@ return packer.startup(
                   "nvim-telescope/telescope-file-browser.nvim",
                   after = { "telescope.nvim" },
                   config = [[require("telescope").load_extension("file_browser")]],
-                },
+                }, -- TODO: Use or remove; Does this do anything?
                 {
                   "nvim-telescope/telescope-smart-history.nvim",
                   requires = { "tami5/sqlite.lua" },
@@ -675,9 +679,7 @@ return packer.startup(
             {
               "nvim-telescope/telescope-packer.nvim",
               after = { "telescope.nvim" },
-              -- config = function()
-              --   require("telescope").load_extension("packer")
-              -- end
+              -- config = [[require("telescope").load_extension("packer")]],
               config = function()
                 require("telescope.builtin").packer = function(opts)
                   require("telescope").extensions.packer.packer(opts)

@@ -20,16 +20,6 @@ api.nvim_create_autocmd(
     }
 )
 
--- WHY doesn't this work in lua files?
--- I've realized that `FileType *` doesn't work, but BufRead does
-api.nvim_create_autocmd(
-    "BufRead", {
-      command = "setl formatoptions-=cro conceallevel=0",
-      group = create_augroup("FormatOptions"),
-      pattern = "*",
-    }
-)
-
 -- Something else is setting this
 api.nvim_create_autocmd(
     { "BufNewFile", "BufRead" }, {
@@ -50,6 +40,8 @@ autocmd(
       [[BufRead,BufNewFile *.tex set filetype=tex]],
       [[FileType nroff setl wrap textwidth=85 colorcolumn=+1]],
       [[Filetype *json setl shiftwidth=2]],
+
+      [[FileType qf set nobuflisted]],
 
       [[BufWritePre * %s/\s\+$//e]],
       [[BufWritePre * %s#\($\n\s*\)\+\%$##e]],

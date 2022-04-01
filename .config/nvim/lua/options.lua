@@ -6,6 +6,9 @@ local map = utils.map
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
+map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
+map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
+
 -- vim.g.loaded_logiPat = 1
 -- vim.g.loaded_getscriptPlugin = 1
 -- vim.g.loaded_matchparen = 1
@@ -62,6 +65,8 @@ vim.tbl_map(
       "zipPlugin",
     }
 )
+
+g.c_syntax_for_h = 1
 
 -- Base
 vim.env.LANG = "en_US.UTF-8"
@@ -177,7 +182,7 @@ g.guitablabel = "%M %t"
 o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
                   ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" ..
                   ",sm:block-blinkwait175-blinkoff150-blinkon175"
-o.guifont = [[FiraMono\ Nerd\ Font\ Mono:style=Medium:h12]]
+o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
 if fn.exists("g:neovide") then
   map("n", "<D-v>", "\"+p")

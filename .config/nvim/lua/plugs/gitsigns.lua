@@ -23,8 +23,8 @@ local function mappings(bufnr)
       { noremap = true, expr = true }
   )
 
-  bmap(bufnr, "n", "<Leader>hs", "<Cmd>Gitsigns stage_hunk<CR>")
-  bmap(bufnr, "x", "<Leader>hs", ":Gitsigns stage_hunk<CR>")
+  bmap(bufnr, "n", "<Leader>he", "<Cmd>Gitsigns stage_hunk<CR>")
+  bmap(bufnr, "x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
   bmap(bufnr, "n", "<Leader>hS", "<Cmd>Gitsigns undo_stage_hunk<CR>")
   bmap(bufnr, "n", "<Leader>hu", "<Cmd>Gitsigns reset_hunk<CR>")
   bmap(bufnr, "x", "<Leader>hu", ":Gitsigns reset_hunk<CR>")
