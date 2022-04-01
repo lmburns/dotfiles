@@ -6,6 +6,7 @@
 local utils = require("common/utils")
 local autocmd = utils.autocmd
 local map = utils.map
+local create_augroup = utils.create_augroup
 
 -- Install Packer if it isn't already
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
@@ -58,7 +59,7 @@ local packer = require("packer")
 
 packer.init(
     {
-      -- compile_path = fn.stdpath("config") .. "/lua/compiled.lua",
+      compile_path = fn.stdpath("config") .. "/plugin/packer_compiled.lua",
       auto_clean = true,
       compile_on_sync = true,
       display = {
@@ -111,16 +112,6 @@ return packer.startup(
 
         -- =============================== Icons ============================== [[[
         use({ "ryanoasis/vim-devicons" })
-        use(
-            {
-              "wfxr/vizunicode.vim",
-              wants = "vim-devicons",
-              config = autocmd(
-                  "vizunicode_custom",
-                  "BufEnter coc-settings.json VizUnicodeAll", true
-              ),
-            }
-        )
         -- ]]] === Icons ===
 
         -- ============================ File Manager =========================== [[[
@@ -161,10 +152,11 @@ return packer.startup(
         -- ============================ Limelight ============================= [[[
         use(
             {
-              "junegunn/goyo.vim",
+              "folke/zen-mode.nvim",
               {
-                "junegunn/limelight.vim",
-                config = conf("plugs.limelight"),
+                "folke/twilight.nvim",
+                config = conf("plugs.twilight"),
+                after = "zen-mode.nvim",
               },
             }
         )
@@ -175,12 +167,7 @@ return packer.startup(
         -- ]]] === Vimtex ===
 
         -- ============================ Open Browser =========================== [[[
-        use(
-            {
-              "tyru/open-browser.vim",
-              conf = conf("open_browser"),
-            }
-        )
+        use({ "tyru/open-browser.vim", conf = conf("open_browser") })
         -- ]]] === Open Browser ===
 
         -- ============================== VCooler ============================== [[[
@@ -262,6 +249,14 @@ return packer.startup(
               "junegunn/fzf.vim",
               requires = { { "junegunn/fzf", run = "./install --bin" } },
               config = conf("plugs.fzf"),
+            }
+        )
+
+        use(
+            {
+              "ibhagwan/fzf-lua",
+              requires = { "kyazdani42/nvim-web-devicons" },
+              config = conf("plugs.fzf-lua"),
             }
         )
 
@@ -417,7 +412,8 @@ return packer.startup(
             {
               "SidOfc/mkdx",
               ft = { "markdown", "vimwiki" },
-              config = conf("mkdx"),
+              after = "fzf.vim",
+              config = conf("plugs.mkdx"),
             }
         )
 
@@ -545,7 +541,7 @@ return packer.startup(
               "neoclide/coc.nvim",
               branch = "master",
               run = "yarn install --frozen-lockfile",
-              -- config = [[require('plugs.coc').init()]],
+              config = [[require('plugs.coc').tag_cmd()]],
             }
         )
         use({ "antoinemadec/coc-fzf", after = "coc.nvim" })
@@ -555,7 +551,11 @@ return packer.startup(
         use {
           "danymat/neogen",
           config = conf("neogen"),
-          keys = { { "n", "<Leader>dg" } },
+          keys = {
+            { "n", "<Leader>dg" },
+            { "n", "<Leader>df" },
+            { "n", "<Leader>dc" },
+          },
           requires = "nvim-treesitter/nvim-treesitter",
         }
         use(
@@ -608,90 +608,80 @@ return packer.startup(
         use(
             {
               "nvim-telescope/telescope.nvim",
+              opt = false,
               config = conf("plugs.telescope"),
               after = { "popup.nvim", "plenary.nvim", colorscheme },
-              -- wants = { "popup.nvim", "plenary.nvim" },
+              requires = {
+                {
+                  "nvim-telescope/telescope-ghq.nvim",
+                  after = "telescope.nvim",
+                  config = function()
+                    require("telescope").load_extension("ghq")
+                    cmd [[com! -nargs=0 Ghq :Telescope ghq list]]
+                  end,
+                },
+                {
+                  "nvim-telescope/telescope-github.nvim",
+                  after = "telescope.nvim",
+                  config = [[require("telescope").load_extension("gh")]],
+                },
+                {
+                  "nvim-telescope/telescope-frecency.nvim",
+                  after = "telescope.nvim",
+                  requires = "tami5/sqlite.lua",
+                  config = [[require("telescope").load_extension("frecency")]],
+                },
+                {
+                  "fannheyward/telescope-coc.nvim",
+                  after = "telescope.nvim",
+                  config = [[require("telescope").load_extension("coc")]],
+                },
+                {
+                  "fhill2/telescope-ultisnips.nvim",
+                  after = "telescope.nvim",
+                  config = [[require("telescope").load_extension("ultisnips")]],
+                },
+                {
+                  "nvim-telescope/telescope-fzf-native.nvim",
+                  after = "telescope.nvim",
+                  run = "make",
+                  config = [[require("telescope").load_extension("fzf")]],
+                },
+                {
+                  "dhruvmanila/telescope-bookmarks.nvim",
+                  after = "telescope.nvim",
+                  config = [[require("telescope").load_extension("bookmarks")]],
+                },
+                {
+                  "nvim-telescope/telescope-file-browser.nvim",
+                  after = { "telescope.nvim" },
+                  config = [[require("telescope").load_extension("file_browser")]],
+                },
+                {
+                  "nvim-telescope/telescope-smart-history.nvim",
+                  requires = { "tami5/sqlite.lua" },
+                  after = { "telescope.nvim", "sqlite.lua" },
+                  config = [[require("telescope").load_extension("smart_history")]],
+                  run = function()
+                    os.execute("mkdir -p" .. fn.stdpath("data") .. "/databases/")
+                  end,
+                },
+              },
             }
         )
 
+        -- FIX: Doesn't work all the time and is hard to configure
         use(
             {
-              "nvim-telescope/telescope-github.nvim",
-              after = "telescope.nvim",
-              config = function()
-                require("telescope").load_extension("gh")
-              end,
-            }
-        )
-
-        use(
-            {
-              "nvim-telescope/telescope-ghq.nvim",
-              after = "telescope.nvim",
-              config = function()
-                require("telescope").load_extension("ghq")
-              end,
-            }
-        )
-
-        use(
-            {
-              "nvim-telescope/telescope-frecency.nvim",
-              after = "telescope.nvim",
-              requires = "tami5/sqlite.lua",
-              config = function()
-                require("telescope").load_extension("frecency")
-              end,
-            }
-        )
-
-        -- use(
-        --     {
-        --       "nvim-telescope/telescope-packer.nvim",
-        --       after = "telescope.nvim",
-        --       config = function()
-        --         require("telescope").load_extension("packer")
-        --       end,
-        --     }
-        -- )
-
-        use(
-            {
-              "fannheyward/telescope-coc.nvim",
-              after = "telescope.nvim",
-              config = function()
-                require("telescope").load_extension("coc")
-              end,
-            }
-        )
-
-        use(
-            {
-              "fhill2/telescope-ultisnips.nvim",
-              after = "telescope.nvim",
-              config = function()
-                require("telescope").load_extension("ultisnips")
-              end,
-            }
-        )
-
-        use(
-            {
-              "nvim-telescope/telescope-fzf-native.nvim",
-              after = "telescope.nvim",
-              run = "make",
-              config = function()
-                require("telescope").load_extension("fzf")
-              end,
-            }
-        )
-
-        use(
-            {
-              "dhruvmanila/telescope-bookmarks.nvim",
+              "nvim-telescope/telescope-packer.nvim",
               after = { "telescope.nvim" },
+              -- config = function()
+              --   require("telescope").load_extension("packer")
+              -- end
               config = function()
-                require("telescope").load_extension("bookmarks")
+                require("telescope.builtin").packer = function(opts)
+                  require("telescope").extensions.packer.packer(opts)
+                end
               end,
             }
         )
@@ -788,3 +778,16 @@ return packer.startup(
       end,
     }
 )
+
+-- ============================== Disabled ============================= [[[
+-- ==> zen-mode; twilight
+-- use(
+--     {
+--       "junegunn/goyo.vim",
+--       {
+--         "junegunn/limelight.vim",
+--         config = conf("plugs.limelight"),
+--       },
+--     }
+-- )
+-- ]]] === Disabled ===

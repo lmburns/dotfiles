@@ -7,21 +7,14 @@ o = vim.opt -- vim options: behaves like `:set`
 
 g = vim.g -- vim global variables:
 go = vim.go -- vim global options
-
 w = vim.wo -- vim window options: behaves like `:setlocal`
-
 b = vim.bo -- vim buffer options: behaves like `:setlocal`
 
 fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
-
 cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
-
 env = vim.env -- environment variable access
-
 api = vim.api
-
 exec = api.nvim_exec
-
 uv = vim.loop
 
 local M = {}

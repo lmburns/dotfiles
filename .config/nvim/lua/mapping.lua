@@ -172,8 +172,6 @@ map({ "n", "x", "o" }, "`", "'")
 -- Buffer switching
 map("n", "gt", ":bnext<CR>")
 map("n", "gT", ":bprevious<CR>")
-map("n", "<C-S-Right>", ":bnext<CR>")
-map("n", "<C-S-Left>", ":bprevious<CR>")
 
 map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], { expr = true })
 map(

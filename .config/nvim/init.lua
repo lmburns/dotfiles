@@ -24,14 +24,21 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
       [[customlist,v:lua.require'packer'.loader_complete]]
   cmd(
       ([[
-        com! PI lua require('plugins').install()
-        com! PU lua require('plugins').update()
-        com! PS lua require('plugins').sync()
+        com! PackerInstall lua require('plugins').install()
+        com! PackerUpdate lua require('plugins').update()
+        com! PackerSync lua require('plugins').sync()
         com! PackerClean lua require('plugins').clean()
-        com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
         com! PackerStatus lua require('plugins').status()
-        com! -nargs=? PC lua require('plugins').compile(<q-args>)
+        com! -nargs=? PackerCompile lua require('plugins').compile(<q-args>)
         com! -nargs=+ -complete=%s PackerLoad lua require('plugins').loader(<f-args>)
+
+        cnoreabbrev PI PackerInstall
+        cnoreabbrev PU PackerUpdate
+        cnoreabbrev PS PackerSync
+        cnoreabbrev PC PackerCompile
+
+        com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
+        com! PSS so ~/.config/nvim/lua/plugins.lua | PackerSync
     ]]):format(packer_loader_complete)
   )
 else
@@ -112,6 +119,11 @@ require("autocmds")
 require("common.qf")
 require("common.mru")
 require("highlight")
+
+autocmd(
+    "misc_aucmds",
+    { [[BufWinEnter * checktime]], [[FileType qf set nobuflisted ]] }, true
+)
 
 -- ============================ Notify ================================ [[[
 vim.notify = function(...)
@@ -304,25 +316,26 @@ vim.schedule(
                 end
             )
 
-            api.nvim_create_autocmd(
-                "User", {
-                  callback = function()
-                    require("plugs.coc").init()
-                  end,
-                  once = true,
-                  group = create_augroup("CocInit", true),
-                }
-            )
+            -- api.nvim_create_autocmd(
+            --     "User", {
+            --       callback = function()
+            --         require("plugs.coc").init()
+            --       end,
+            --       once = true,
+            --       group = create_augroup("CocNvimInit", true),
+            --     }
+            -- )
 
-            -- au User CocNvimInit ++once lua require('plugs.coc').init()
             cmd [[
+              au User CocNvimInit ++once lua require('plugs.coc').init()
+
               hi! link CocSemDefaultLibrary Special
               hi! link CocSemDocumentation Number
               hi! CocSemStatic gui=bold
            ]]
 
-            cmd("packadd coc.nvim")
-          end, 300
+           cmd("packadd coc.nvim")
+          end, 250
       )
 
       -- vim.defer_fn(

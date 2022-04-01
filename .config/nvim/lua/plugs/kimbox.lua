@@ -3,8 +3,8 @@ local M = {}
 require("common.utils")
 
 local function init()
-  cmd("packadd kimbox")
   g.kimbox_allow_bold = 1
+  cmd("packadd kimbox")
   cmd [[colorscheme kimbox]]
 
 -- g.kimbox_background = 'deep'

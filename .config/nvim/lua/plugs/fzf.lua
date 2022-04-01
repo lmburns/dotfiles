@@ -606,8 +606,8 @@ local function init()
 
   map("n", "<Leader>A", ":Windows<CR>", { silent = true })
   map("n", "<LocalLeader>r", ":RG<CR>")
-  map("n", "<A-f>", ":Files<CR>", { silent = true })
-  map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
+  -- map("n", "<A-f>", ":Files<CR>", { silent = true })
+  -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
   map("n", "<Leader>hf", ":History<CR>", { silent = true })
 
   map("n", "<Leader>ls", ":LS<CR>", { silent = true })

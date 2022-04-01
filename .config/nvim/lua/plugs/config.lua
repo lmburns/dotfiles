@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local K = require("common.keymap")
 local map = utils.map
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
@@ -217,53 +218,6 @@ function M.table_mode()
   )
 end
 
-function M.mkdx()
-  g["mkdx#settings"] = {
-    restore_visual = 1,
-    gf_on_steroids = 1,
-    highlight = { enable = 1 },
-    enter = { shift = 1 },
-    map = { prefix = "m", enable = 1 },
-    links = { external = { enable = 1 } },
-    checkbox = { toggles = { " ", "x", "-" } },
-    tokens = { strike = "~~", list = "*" },
-    fold = { enable = 1, components = { "toc", "fence" } },
-    toc = {
-      text = "Table of Contents",
-      update_on_write = 1,
-      details = { nesting_level = 0 },
-    },
-  }
-
-  cmd [[
-    function! s:MkdxGoToHeader(header)
-      call cursor(str2nr(get(matchlist(a:header, ' *\([0-9]\+\)'), 1, '')), 1)
-    endfunction
-
-    function! s:MkdxFormatHeader(key, val)
-      let text = get(a:val, 'text', '')
-      let lnum = get(a:val, 'lnum', '')
-
-      if (empty(text) || empty(lnum)) | return text | endif
-      return repeat(' ', 4 - strlen(lnum)) . lnum . ': ' . text
-    endfunction
-
-    function! s:MkdxFzfQuickfixHeaders()
-      let headers = filter(
-        \ map(mkdx#QuickfixHeaders(0),function('s:MkdxFormatHeader')),
-        \ 'v:val != ""'
-        \ )
-
-      call fzf#run(fzf#wrap({
-        \ 'source': headers,
-        \ 'sink': function('s:MkdxGoToHeader')
-        \ }))
-    endfunction
-
-    nnoremap <silent> <Leader>I :call s:MkdxFzfQuickfixHeaders()<Cr>
-   ]]
-end
-
 function M.vimwiki()
   g.vimwiki_ext2syntax = {
     [".Rmd"] = "markdown",
@@ -376,9 +330,17 @@ function M.neogen()
         languages = { lua = { template = { annotation_convention = "ldoc" } } },
       }
   )
-  map("i", "<C-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
-  map("i", "<C-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
-  map("n", "<Leader>dg", [[:Neogen<Space>]], { silent = false })
+  K.i("<C-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
+  K.i("<C-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
+  K.n("<Leader>dg", [[:Neogen<Space>]])
+  K.n(
+      "<Leader>df",
+      [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]]
+  )
+  K.n(
+      "<Leader>dc",
+      [[<cmd>lua require("neogen").generate({ type = "class" })<CR>]]
+  )
 end
 
 function M.vcoolor()
@@ -413,10 +375,10 @@ function M.hlslens()
       "n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
       {}
   )
-  map(
-      "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
-      {}
-  )
+  -- map(
+  --     "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
+  --     {}
+  -- )
   map(
       "n", "g*",
       [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {}

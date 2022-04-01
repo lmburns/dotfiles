@@ -3,8 +3,8 @@ local M = {}
 local kutils = require("common.kutils")
 local utils = require("common.utils")
 local map = utils.map
-local t = utils.t
 local autocmd = utils.autocmd
+local create_augroup = utils.create_augroup
 
 local diag_qfid
 
@@ -357,6 +357,35 @@ function M.scroll_insert(right)
   end
 end
 
+-- If this is ran in `init.lua` the command is not overwritten
+function M.tag_cmd()
+  api.nvim_create_autocmd(
+      "FileType", {
+        callback = function()
+          map(
+              "n", "<C-]>", "<Plug>(coc-definition)",
+              { noremap = false, silent = true }
+          )
+        end,
+        group = create_augroup("MyCocDef"),
+        pattern = {
+          "rust",
+          "scala",
+          "python",
+          "ruby",
+          "perl",
+          "lua",
+          "c",
+          "cpp",
+          "zig",
+          "d",
+          "javascript",
+          "typescript",
+        },
+      }
+  )
+end
+
 -- ========================== Init ==========================
 
 function M.init()
@@ -371,10 +400,9 @@ function M.init()
 
   -- [[CursorHold * silent call CocActionAsync('highlight')]],
   autocmd(
-      "Coc", {
+      "CocNvimSetup", {
         [[User CocLocationsChange ++nested lua require('plugs.coc').jump2loc()]],
         [[User CocDiagnosticChange ++nested lua require('plugs.coc').diagnostic_change()]],
-        [[FileType rust,scala,python,ruby,perl,lua,c,cpp,zig,d,javascript,typescript nmap <silent> <c-]> <Plug>(coc-definition)]],
         [[CursorHold * sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]],
         [[FileType typescript,json setl formatexpr=CocActionAsync('formatSelected')]],
         [[User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')]],
@@ -385,15 +413,15 @@ function M.init()
       }, true
   )
 
-  cmd [[command! -nargs=0 CocMarket :CocFzfList marketplace]]
-  cmd [[command! -nargs=0 Prettier :CocCommand prettier.formatFile]]
+  cmd [[com! -nargs=0 CocMarket :CocFzfList marketplace]]
+  cmd [[com! -nargs=0 Prettier :CocCommand prettier.formatFile]]
   -- use `:Format` to format current buffer
-  cmd [[command! -nargs=0 Format :call CocAction('format')]]
+  cmd [[com! -nargs=0 Format :call CocAction('format')]]
   -- use `:Fold` to fold current buffer
-  cmd [[command! -nargs=? Fold :call CocAction('fold', <f-args>)]]
+  cmd [[com! -nargs=? Fold :call CocAction('fold', <f-args>)]]
   -- use `:OR` for organize import of current buffer
-  cmd [[command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')]]
-  cmd [[command! -nargs=0 CocOutput CocCommand workspace.showOutput]]
+  cmd [[com! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')]]
+  cmd [[com! -nargs=0 CocOutput CocCommand workspace.showOutput]]
 
   map("n", "<LocalLeader>s", ":CocFzfList symbols<CR>")
   -- map("n", "<A-c>", ":CocFzfList commands<CR>")

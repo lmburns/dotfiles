@@ -4,6 +4,28 @@ local utils = require("common.utils")
 local map = utils.map
 
 function M.setup()
+  local diagnostics_signs = {
+    ["error"] = "",
+    warning = "",
+    default = "",
+  }
+
+  local colors = {
+    magenta = "#A06469",
+    purple = "#98676A",
+    dbg = "#221a0f",
+    lbg = "#5e452b",
+    fg = "#e8c097",
+    red = "#EF1D55",
+    dred = "#DC3958",
+    green = "#819C3B",
+    yellow = "#FF9500",
+    orange = "#FF5813",
+    blue = "#4C96A8",
+    cyan = "#7EB2B1",
+    dpurple = "#733e8b"
+  }
+
   require("bufferline").setup(
       {
         options = {
@@ -35,10 +57,17 @@ function M.setup()
             end
           end,
 
-          -- diagnostics = "coc", -- false
-          -- diagnostics_indicator = function(
-          --     count, level, diagnostics_dict, context
-          -- ) return "(" .. count .. ")" end,
+          diagnostics = "coc", -- false
+          diagnostics_indicator = function(
+              count, level, diagnostics_dict, context
+          )
+            local s = " "
+            for e, n in pairs(diagnostics_dict) do
+              local sym = diagnostics_signs[e] or diagnostics_signs.default
+              s = s .. (#s > 1 and " " or "") .. sym .. " " .. n
+            end
+            return s
+          end,
 
           -- NOTE: this will be called a lot so don't do any heavy processing here
           custom_filter = function(buf_number)
@@ -87,11 +116,11 @@ function M.setup()
         },
         highlights = {
           -- Status background
-          fill = { guifg = "#A06469", guibg = "#221a0f" },
-          background = { guifg = "#e8c097", guibg = "#221a0f" },
+          fill = { guifg = colors.magenta, guibg = colors.dbg },
+          background = { guifg = colors.fg, guibg = colors.dbg },
 
-          tab = { guifg = "#e8c097", guibg = "#221a0f" },
-          tab_selected = { guifg = "#e8c097", guibg = "#5e452b" },
+          tab = { guifg = colors.fg, guibg = colors.dbg },
+          tab_selected = { guifg = colors.fg, guibg = colors.lbg },
           -- tab_close = {
           --   guifg = "#FFFFFF",
           --   guibg = "#FFFFFF",
@@ -108,176 +137,108 @@ function M.setup()
           --   guifg = "#FFFFFF",
           --   guibg = "#FFFFFF",
           -- },
-          buffer_visible = {
-            guifg = "#A06469",
-            guibg = "#5e452b",
-          },
+          buffer_visible = { guifg = colors.magenta, guibg = colors.lbg },
           buffer_selected = {
-            guifg = "#e8c097",
-            guibg = "#5e452b",
+            guifg = colors.fg,
+            guibg = colors.lbg,
             gui = "bold,italic",
           },
-          -- diagnostic = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- diagnostic_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- diagnostic_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          -- },
-          -- info = {
-          --   guifg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- info_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- info_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- info_diagnostic = {
-          --   guifg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- info_diagnostic_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- info_diagnostic_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- warning = {
-          --   guifg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- warning_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- warning_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- warning_diagnostic = {
-          --   guifg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- warning_diagnostic_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- warning_diagnostic_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = warning_diagnostic_fg,
-          -- },
-          -- error = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- error_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- error_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- error_diagnostic = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   guisp = "#FFFFFF",
-          -- },
-          -- error_diagnostic_visible = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- error_diagnostic_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          --   gui = "bold,italic",
-          --   guisp = "#FFFFFF",
-          -- },
-          modified = {
-            guifg = "#EF1D55",
-            guibg = "#221a0f",
+          diagnostic = { guifg = colors.red, guibg = colors.dbg },
+          diagnostic_visible = { guifg = colors.red, guibg = colors.lbg },
+          diagnostic_selected = {
+            guifg = colors.red,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          modified_visible = {
-            guifg = "#EF1D55",
-            guibg = "#5e452b",
+          hint = { guifg = colors.cyan, guibg = colors.dbg },
+          hint_visible = { guifg = colors.blue, guibg = colors.lbg },
+          hint_selected = {
+            guifg = colors.blue,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          modified_selected = {
-            guifg = "#EF1D55",
-            guibg = "#5e452b",
+          hint_diagnostic = { guifg = colors.blue, guibg = colors.dbg },
+          hint_diagnostic_visible = { guifg = colors.blue, guibg = colors.lbg },
+          hint_diagnostic_selected = {
+            guifg = colors.blue,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          -- duplicate_selected = {
-          --   guifg = "#FFFFFF",
-          --   gui = "italic",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- duplicate_visible = {
-          --   guifg = "#FFFFFF",
-          --   gui = "italic",
-          --   guibg = "#FFFFFF",
-          -- },
-          -- duplicate = {
-          --   guifg = "#FFFFFF",
-          --   gui = "italic",
-          --   guibg = "#FFFFFF",
-          -- },
-          separator_selected = {
-            guifg = "#221a0f",
-            guibg = "#5e452b",
+          info = { guifg = colors.purple, guibg = colors.dbg },
+          info_visible = { guifg = colors.purple, guibg = colors.lbg },
+          info_selected = {
+            guifg = colors.purple,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          separator_visible = {
-            guifg = "#221a0f",
-            guibg = "#5e452b",
+          info_diagnostic = { guifg = colors.purple, guibg = colors.dbg },
+          info_diagnostic_visible = { guifg = colors.purple, guibg = colors.lbg },
+          info_diagnostic_selected = {
+            guifg = colors.purple,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          separator = {
-            guifg = "#221a0f",
-            guibg = "#221a0f",
+          warning = { guifg = colors.orange, guibg = colors.dbg },
+          warning_visible = { guifg = colors.orange, guibg = colors.lgb },
+          warning_selected = {
+            guifg = colors.orange,
+            guibg = colors.lbg,
+            gui = "bold,italic",
           },
-          -- indicator_selected = {
-          --   guifg = "#FFFFFF",
-          --   guibg = "#FFFFFF",
-          -- },
+          warning_diagnostic = { guifg = colors.orange, guibg = colors.dbg },
+          warning_diagnostic_visible = {
+            guifg = colors.orange,
+            guibg = colors.lbg,
+          },
+          warning_diagnostic_selected = {
+            guifg = colors.orange,
+            guibg = colors.lbg,
+            gui = "bold,italic",
+          },
+          error = { guifg = colors.red, guibg = colors.dbg },
+          error_visible = { guifg = colors.red, guibg = colors.lbg },
+          error_selected = {
+            guifg = colors.red,
+            guibg = colors.lbg,
+            gui = "bold,italic",
+          },
+          error_diagnostic = { guifg = colors.red, guibg = colors.dbg },
+          error_diagnostic_visible = { guifg = colors.red, guibg = colors.lbg },
+          error_diagnostic_selected = {
+            guifg = colors.red,
+            guibg = colors.lbg,
+            gui = "bold,italic",
+          },
+          modified = { guifg = colors.red, guibg = colors.dbg },
+          modified_visible = { guifg = colors.red, guibg = colors.lbg },
+          modified_selected = { guifg = colors.red, guibg = colors.lbg },
+          duplicate_selected = {
+            guifg = colors.cyan,
+            gui = "italic",
+            guibg = colors.lbg,
+          },
+          duplicate_visible = {
+            guifg = colors.cyan,
+            gui = "italic",
+            guibg = colors.lbg,
+          },
+          duplicate = { guifg = colors.red, gui = "italic", guibg = colors.dbg },
+          separator_selected = { guifg = colors.dbg, guibg = colors.lbg },
+          separator_visible = { guifg = colors.dbg, guibg = colors.lbg },
+          separator = { guifg = colors.dbg, guibg = colors.dbg },
+          indicator_selected = { guifg = colors.red, guibg = colors.lbg },
           pick_selected = {
-            guifg = "#DC3958",
-            guibg = "#5e452b",
+            guifg = colors.dred,
+            guibg = colors.lbg,
             gui = "bold,italic",
           },
           pick_visible = {
-            guifg = "#819C3B",
-            guibg = "#221a0f",
+            guifg = colors.green,
+            guibg = colors.dbg,
             gui = "bold,italic",
           },
-          pick = {
-            guifg = "#819C3B",
-            guibg = "#221a0f",
-            gui = "bold,italic",
-          },
+          pick = { guifg = colors.green, guibg = colors.dbg,
+                   gui = "bold,italic" },
         },
       }
   )
@@ -288,6 +249,8 @@ local function init()
 
   map("n", "[b", ":BufferLineCyclePrev<CR>", { silent = true })
   map("n", "]b", ":BufferLineCycleNext<CR>", { silent = true })
+  map("n", "<C-S-Left>", ":BufferLineCyclePrev<CR>")
+  map("n", "<C-S-Right>", ":BufferLineCycleNext<CR>")
   -- map("n", "[b", [[:execute(v:count1 . 'bprev')<CR>]])
   -- map("n", "]b", [[:execute(v:count1 . 'bnext')<CR>]])
 

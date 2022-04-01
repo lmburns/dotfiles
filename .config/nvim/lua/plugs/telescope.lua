@@ -22,6 +22,10 @@ require("telescope").setup(
     ---@diagnostic disable-next-line: redundant-parameter
     {
       defaults = {
+        history = {
+          path = fn.stdpath("data") .. "/databases/telescope_history.sqlite3",
+          limit = 10000,
+        },
         prompt_prefix = "❱ ",
         selection_caret = "❱ ",
         entry_prefix = "  ",
@@ -143,6 +147,8 @@ require("telescope").setup(
         frecency = {
           ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
         },
+        packer = { theme = "ivy", layout_config = { height = .5 } },
+        file_browser = { theme = "ivy", mappings = { ["i"] = {}, ["n"] = {} } },
       },
     }
 )
@@ -371,6 +377,13 @@ builtin.git_grep = function(opts)
       }
   )
 end
+
+builtin.ultisnips = function(opts) telescope.extensions.ultisnips
+    .ultisnips(opts) end
+
+builtin.coc = function(opts) telescope.extensions.coc.coc(opts) end
+
+builtin.ghq = function(opts) telescope.extensions.ghq.list(opts) end
 
 -- ========================== Mappings ===========================
 local map = require("common.utils").map
