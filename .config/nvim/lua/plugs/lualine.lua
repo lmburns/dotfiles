@@ -31,15 +31,35 @@ local kimbox = {
     c = { fg = colors.fg, bg = colors.brown3 },
     x = { fg = colors.fg, bg = colors.bg },
   },
-  command = { a = { fg = colors.blue, bg = colors.bg, gui = "bold" } },
+  command = {
+    a = { fg = colors.blue, bg = colors.bg, gui = "bold" },
+    b = { fg = colors.fg, bg = colors.bg },
+    c = { fg = colors.fg, bg = colors.brown3 },
+    x = { fg = colors.fg, bg = colors.bg },
+  },
   inactive = {
     a = { fg = colors.red, bg = colors.bg },
     b = { fg = colors.magenta, bg = colors.bg },
   },
-  insert = { a = { fg = colors.green, bg = colors.bg, gui = "bold" } },
-  replace = { a = { fg = colors.red, bg = colors.bg, gui = "bold" } },
+  insert = {
+    a = { fg = colors.green, bg = colors.bg, gui = "bold" },
+    b = { fg = colors.fg, bg = colors.bg },
+    c = { fg = colors.fg, bg = colors.brown3 },
+    x = { fg = colors.fg, bg = colors.bg },
+  },
+  replace = {
+    a = { fg = colors.red, bg = colors.bg, gui = "bold" },
+    b = { fg = colors.fg, bg = colors.bg },
+    c = { fg = colors.fg, bg = colors.brown3 },
+    x = { fg = colors.fg, bg = colors.bg },
+  },
   terminal = { a = { fg = colors.yellow, bg = colors.bg, gui = "bold" } },
-  visual = { a = { fg = colors.orange, bg = colors.bg, gui = "bold" } },
+  visual = {
+    a = { fg = colors.orange, bg = colors.bg, gui = "bold" },
+    b = { fg = colors.fg, bg = colors.bg },
+    c = { fg = colors.fg, bg = colors.brown3 },
+    x = { fg = colors.fg, bg = colors.bg },
+  },
 }
 
 local conditions = {
@@ -53,6 +73,14 @@ local conditions = {
   end,
 
   hide_in_width = function() return vim.fn.winwidth(0) > 80 end,
+
+  buffer_not_empty = function() return vim.fn.empty(vim.fn.expand("%:t")) ~= 1 end,
+
+  check_git_workspace = function()
+    local filepath = vim.fn.expand("%:p:h")
+    local gitdir = vim.fn.finddir(".git", filepath .. ";")
+    return gitdir and #gitdir > 0 and #gitdir < #filepath
+  end,
 }
 
 local plugins = {
@@ -60,6 +88,10 @@ local plugins = {
   vista_nearest_method = function()
     -- vim.cmd [[autocmd VimEnter * call vista#RunForNearestMethodOrFunction()]]
     return vim.b.vista_nearest_method_or_function
+  end,
+
+  gutentags_progress = function()
+    return vim.fn["gutentags#statusline"]("[", "]")
   end,
 
   file_encoding = function()
@@ -71,19 +103,55 @@ local plugins = {
     end
   end,
 
+  search_result = function()
+    if vim.v.hlsearch == 0 then
+      return ""
+    end
+    local last_search = vim.fn.getreg("/")
+    if not last_search or last_search == "" then
+      return ""
+    end
+    local searchcount = vim.fn.searchcount { maxcount = 9999 }
+    return
+        last_search .. "(" .. searchcount.current .. "/" .. searchcount.total ..
+            ")"
+  end,
+
+  progress = function()
+    local current_line = vim.fn.line "."
+    local total_lines = vim.fn.line "$"
+    local chars = {
+      "__",
+      "▁▁",
+      "▂▂",
+      "▃▃",
+      "▄▄",
+      "▅▅",
+      "▆▆",
+      "▇▇",
+      "██",
+    }
+    local line_ratio = current_line / total_lines
+    local index = math.ceil(line_ratio * #chars)
+    return chars[index]
+  end,
+
 }
 
 local sections_1 = {
   lualine_a = { { "mode", fmt = function(str) return str:sub(1, 1) end } },
   lualine_b = {
     { "filetype", icon_only = false },
-    { "filesize", cond = conditions.hide_in_width },
+    { "filesize", cond = conditions.hide_in_width,
+      color = { fg = colors.green } },
     plugins.file_encoding,
     {
       "filename",
       path = 1,
-      symbols = { modified = "[+]", readonly = " ", unnamed = "[No name]" },
+      symbols = { modified = "[+]", readonly = "[] ", unnamed = "[No name]" },
     },
+    { "%w", cond = function() return vim.wo.previewwindow end },
+    { "%q", cond = function() return vim.bo.buftype == "quickfix" end },
   },
   lualine_c = { "g:coc_status" },
   lualine_x = {
@@ -92,17 +160,38 @@ local sections_1 = {
       sources = { "coc" },
       symbols = { error = " ", warn = " ", info = " ", hint = " " },
     },
+    {
+      "require(\"nvim-gps\").get_location()",
+      cond = conditions.is_available_gps and conditions.hide_in_width,
+      color = { fg = colors.blue },
+    },
   },
-  lualine_y = { "branch", { "diff", cond = conditions.hide_in_width } },
-  lualine_z = { "progress", "location" },
+  lualine_y = {
+    { "branch", icon = "", condition = conditions.check_git_workspace },
+    { "diff", cond = conditions.hide_in_width },
+  },
+  lualine_z = { "%l:%c", "%p%%/%L" },
 }
 
 local sections_2 = {
   lualine_a = { "mode" },
-  lualine_b = { "" },
-  lualine_c = { { "filetype", icon_only = true }, { "filename", path = 1 } },
-  lualine_x = { "fileformat", "filetype" },
-  lualine_y = { "filesize", "progress" },
+  lualine_b = {
+    { "filetype", icon_only = true },
+    "fileformat",
+    { "filesize", cond = conditions.hide_in_width },
+    plugins.file_encoding,
+    {
+      "filename",
+      path = 1,
+      symbols = { modified = "[+]", readonly = " ", unnamed = "[No name]" },
+    },
+  },
+  lualine_c = {},
+  lualine_x = {
+    { "require(\"nvim-gps\").get_location()",
+      cond = conditions.is_available_gps },
+  },
+  lualine_y = { plugins.progress, plugins.gutentags_progress },
   lualine_z = { "location" },
 }
 

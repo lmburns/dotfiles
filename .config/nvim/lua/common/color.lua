@@ -20,4 +20,15 @@ function M.fg_bg(group, fgcol, bgcol)
   cmd("hi " .. group .. " guifg=" .. fgcol .. " guibg=" .. bgcol)
 end
 
+--- Define complete highlight group
+-- @param  group Group
+-- @param  options  Fg/Bg/Gui colors
+function M.set_hl(group, options)
+  local bg = options.bg == nil and "" or "guibg=" .. options.bg
+  local fg = options.fg == nil and "" or "guifg=" .. options.fg
+  local gui = options.gui == nil and "" or "gui=" .. options.gui
+
+  vim.cmd(string.format("hi %s %s %s %s", group, bg, fg, gui))
+end
+
 return M
