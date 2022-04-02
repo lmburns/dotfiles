@@ -52,10 +52,6 @@ map("x", "L", "g_")
 -- Save & quit
 -- map("n", "<C-x>", ":x<CR>")
 
--- Save with root
-map("c", "w!!", "execute ':silent w !sudo tee % > /dev/null' <bar> edit!")
-map("c", "W!!", "w !sudo tee % >/dev/null<CR>")
-
 -- Navigate merge conflict markers
 map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], { silent = true })
 map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], { silent = true })
@@ -203,6 +199,28 @@ map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 map("n", "[S", "<Cmd>lfirst<CR>")
 map("n", "]S", "<Cmd>llast<CR>")
 
+-- Folding
+map(
+    "n", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]],
+    { noremap = true, expr = true }
+)
+map(
+    "x", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]],
+    { noremap = true, expr = true }
+)
+
+map(
+    "n", "zf", [[<Cmd>lua require('common.fold').with_highlight('a')<CR>]],
+    { silent = false }
+)
+map("n", "zF", [[<Cmd>lua require('common.fold').with_highlight('A')<CR>]])
+map("n", "zo", [[<Cmd>lua require('common.fold').with_highlight('o')<CR>]])
+map("n", "zO", [[<Cmd>lua require('common.fold').with_highlight('O')<CR>]])
+map("n", "zv", [[<Cmd>lua require('common.fold').with_highlight('v')<CR>]])
+
+map("n", "z[", [[<Cmd>lua require('common.fold').nav_fold(false)<CR>]])
+map("n", "z]", [[<Cmd>lua require('common.fold').nav_fold(true)<CR>]])
+
 -- New buffer
 map("n", "<Leader>bn", ":enew<CR>")
 -- Close buffer
@@ -257,7 +275,7 @@ map("i", ",p", "<++>")
 -- Jump to the next '<++>' and edit it
 map("n", "<Leader>fe", "<Esc>/<++><CR>:nohlsearch<CR>c4l", { silent = true })
 map("n", "<Leader>fi", "<Esc>/<++><CR>:nohlsearch<CR>", { silent = true })
-map("i", ";f", "<Esc>/<++><CR>:nohlsearch<CR>\"_c4l", { silent = true })
+map("i", ";fi", "<Esc>/<++><CR>:nohlsearch<CR>\"_c4l", { silent = true })
 
 -- ]]] === General Mappings ===
 
@@ -276,7 +294,7 @@ map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u")
 -- ==================== Other =================== [[[
 -- map("n", "F2", ":set nowrap!<CR>", { silent = true })
 -- map("n", "F3", ":set relativenumber!<CR>", { silent = true })
-map("n", "<Leader>ec", ":e ~/.config/nvim/coc-settings.json<CR>")
+map("n", "<Leader>ec", ":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>")
 map("n", "<Leader>ev", ":e $VIMRC<CR>")
 map("n", "<Leader>sv", ":so $VIMRC<CR>")
 map("n", "<Leader>ez", ":e $ZDOTDIR/.zshrc<CR>")

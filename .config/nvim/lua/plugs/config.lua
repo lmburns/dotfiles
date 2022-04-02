@@ -12,49 +12,27 @@ function M.bqf()
   require("bqf").setup(
       {
         auto_enable = true,
-        auto_resize_height = true, -- highly recommended enable
-        preview = {
-          win_height = 12,
-          win_vheight = 12,
-          delay_syntax = 80,
-          border_chars = {
-            "┃",
-            "┃",
-            "━",
-            "━",
-            "┏",
-            "┓",
-            "┗",
-            "┛",
-            "█",
-          },
-          should_preview_cb = function(bufnr, qwinid)
-            local ret = true
-            local bufname = vim.api.nvim_buf_get_name(bufnr)
-            local fsize = vim.fn.getfsize(bufname)
-            if fsize > 100 * 1024 then
-              -- skip file size greater than 100k
-              ret = false
-            elseif bufname:match("^fugitive://") then
-              -- skip fugitive buffer
-              ret = false
-            end
-            return ret
-          end,
-        },
-        -- make `drop` and `tab drop` to become preferred
+        auto_resize_height = true,
+        preview = { auto_preview = true, delay_syntax = 50 },
         func_map = {
+          split = "<C-s>",
           drop = "o",
           openc = "O",
-          split = "<C-s>",
           tabdrop = "<C-t>",
-          tabc = "",
+          pscrollup = "<C-u>",
+          pscrolldown = "<C-d>",
+          fzffilter = "zf",
           ptogglemode = "z,",
         },
         filter = {
           fzf = {
-            action_for = { ["ctrl-s"] = "split", ["ctrl-t"] = "tab drop" },
-            extra_opts = { "--bind", "ctrl-o:toggle-all", "--prompt", "> " },
+            action_for = {
+              ["enter"] = "drop",
+              ["ctrl-s"] = "split",
+              ["ctrl-t"] = "tab drop",
+              ["ctrl-x"] = "",
+            },
+            extra_opts = { "--delimiter", "│" },
           },
         },
       }
@@ -73,10 +51,12 @@ end
 
 function M.open_browser()
   map(
-      "n", "<CR>", "<Plug>(openbrowser-open)",
+      "n", "o<CR>", "<Plug>(openbrowser-open)",
       { noremap = false, buffer = true, silent = true }
   )
 end
+
+function M.suda() map("n", "<Leader>W", ":SudaWrite<CR>") end
 
 function M.lf()
   g.lf_map_keys = 0
@@ -89,7 +69,7 @@ end
 
 function M.floaterm()
   map("n", "<Leader>fll", ":Floaterms<CR>")
-  map("n", "<Leader>flt", ":FloatermToggle<CR>")
+  map("n", ";fl", ":FloatermToggle<CR>")
 
   g.fzf_floaterm_newentries = {
     ["+lazygit"] = {
@@ -122,6 +102,7 @@ function M.floaterm()
     },
     ["+tokei"] = { title = "tokei", height = 0.9, width = 0.9, cmd = "tokei" },
     ["+dust"] = { title = "dust", height = 0.9, width = 0.9, cmd = "dust" },
+    ["+zsh"] = { title = "zsh", height = 0.9, width = 0.9, cmd = "zsh" },
   }
 
   g.floaterm_shell = "zsh"
@@ -139,7 +120,7 @@ function M.neoterm()
   g.neoterm_size = 14 -- terminal split size
   g.neoterm_autoscroll = 1 -- scroll to the bottom
 
-  map("n", "<Leader>rr", ":Tclear<CR>")
+  map("n", "<Leader>rr", "<Cmd>execute v:count.'Tclear'<CR>")
   map("n", "<Leader>rt", ":Ttoggle<CR>")
   map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
 end
@@ -454,28 +435,67 @@ function M.lazygit()
   map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true })
 end
 
+function M.sandwhich()
+  -- Sandwhich
+  -- sdb = surrounding automatic
+  -- saiw( == ysiw(
+  -- sd( == ds(
+  -- sr(" == cs("
+
+  -- runtime macros/sandwich/keymap/surround.vim
+
+  map(
+      { "x", "o" }, "is", "<Plug>(textobj-sandwich-query-i)",
+      { noremap = false }
+  )
+  map(
+      { "x", "o" }, "as", "<Plug>(textobj-sandwich-query-a)",
+      { noremap = false }
+  )
+  map(
+      { "x", "o" }, "iss", "<Plug>(textobj-sandwich-auto-i)",
+      { noremap = false }
+  )
+  map(
+      { "x", "o" }, "ass", "<Plug>(textobj-sandwich-auto-a)",
+      { noremap = false }
+  )
+  map(
+      { "x", "o" }, "im", "<Plug>(textobj-sandwich-literal-query-i)",
+      { noremap = false }
+  )
+  map(
+      { "x", "o" }, "am", "<Plug>(textobj-sandwich-literal-query-a)",
+      { noremap = false }
+  )
+  map("o", ";", "ib")
+  map("o", ":", "ab")
+
+  map("n", "<Leader>ci", "cs`*")
+  map("n", "<Leader>o", "ysiw")
+  map("n", "mlw", "yss`")
+end
+
 -- Unused
 
--- function M.sneak()
---   g["sneak#label"] = 1
---
---   map(
---       { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
---       { noremap = false, expr = true }
---   )
---   map(
---       { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
---       { noremap = false, expr = true }
---   )
---
---
---   map("n", "w", "<Plug>Sneak_s", { noremap = false })
---   map("n", "W", "<Plug>Sneak_S", { noremap = false })
---
---   -- Repeat the last Sneak
---   -- map({ "n", "x" }, "gs", "f<CR>")
---   -- map("n", "gS", "F<CR>")
---   -- map("x", "gS", "Z<CR>")
--- end
+function M.sneak()
+  g["sneak#label"] = 1
+
+  -- map(
+  --     { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
+  --     { noremap = false, expr = true }
+  -- )
+  -- map(
+  --     { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
+  --     { noremap = false, expr = true }
+  -- )
+
+  map("n", "f", "<Plug>Sneak_s", { noremap = false })
+  map("n", "F", "<Plug>Sneak_S", { noremap = false })
+
+  -- Repeat the last Sneak
+  map("n", "gs", "f<CR>", { noremap = false })
+  map("n", "gS", "F<CR>", { noremap = false })
+end
 
 return M

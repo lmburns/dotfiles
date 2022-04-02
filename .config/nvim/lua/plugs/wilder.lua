@@ -34,9 +34,14 @@ cmd [[
     return l:cmd ==# 'Man' || a:x =~# 'Git fetch origin '
   endfunction
 
+   "\      'file_command': {_, arg -> arg[0] ==# '.'
+   "\                               ? ['rg', '--files', '--hidden', '--color=never']
+   "\                               : ['rg', '--files', '--color=never']},
+   "\      'dir_command':  {_, arg -> arg[0] ==# '.' ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+
   call wilder#set_option('renderer', wilder#renderer_mux({
         \ ':': wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
-        \   'highlighter': wilder#basic_highlighter(),
+        \   'highlighter': wilder#lua_pcre2_highlighter(),
         \   'border': 'rounded',
         \   'max_height': 15,
         \   'highlights': {
@@ -60,6 +65,12 @@ cmd [[
         \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#EF1D55'}]),
         \   },
         \ }),
+        \ 'substitute': wilder#wildmenu_renderer({
+        \   'highlighter': wilder#basic_highlighter(),
+        \   'separator': ' · ',
+        \   'left': [' ', wilder#wildmenu_spinner(), ' '],
+        \   'right': [' ', wilder#wildmenu_index()],
+        \ }),
         \ }))
 
   call wilder#set_option('pipeline', [
@@ -69,15 +80,27 @@ cmd [[
              \      {ctx, x -> s:shouldDisable(x) ? v:true : v:false},
              \    ],
              \    wilder#python_file_finder_pipeline({
-             \      'file_command': {_, arg -> arg[0] ==# '.' ? ['rg', '--files', '--hidden'] : ['rg', '--files']},
-             \      'dir_command':  {_, arg -> arg[0] ==# '.' ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
+             \      'file_command': ['rg', '--files', '--hidden', '--color=never'],
+             \      'dir_command': ['fd', '-td', '-H'],
              \      'filters': ['fuzzy_filter', 'difflib_sorter'],
+             \    }),
+             \    wilder#substitute_pipeline({
+             \      'pipeline': wilder#python_search_pipeline({
+             \        'skip_cmdtype_check': 1,
+             \        'pattern': wilder#python_fuzzy_pattern({
+             \          'start_at_boundary': 0,
+             \        }),
+             \      }),
              \    }),
              \    wilder#cmdline_pipeline({
              \      'language': 'python',
              \      'fuzzy': 1,
              \      'set_pcre2_pattern': 1,
              \    }),
+             \    [
+             \      wilder#check({_, x -> empty(x)}),
+             \      wilder#history(),
+             \    ],
              \    wilder#python_search_pipeline({
              \      'pattern': wilder#python_fuzzy_pattern(),
              \      'sorter': wilder#python_difflib_sorter(),

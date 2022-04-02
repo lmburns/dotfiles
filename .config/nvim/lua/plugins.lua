@@ -165,17 +165,28 @@ return packer.startup(
         use({ "tyru/open-browser.vim", conf = conf("open_browser") })
         -- ]]] === Open Browser ===
 
+        use(
+            {
+              "kevinhwang91/suda.vim",
+              keys = { { "n", "<Leader>W" } },
+              cmd = { "SudaRead", "SudaWrite" },
+              config = conf("suda"),
+            }
+        )
+
         -- ============================== VCooler ============================== [[[
-        use {
-          "KabbAmine/vCoolor.vim",
-          keys = {
-            { "n", "<Leader>pc" },
-            { "n", "<Leader>yb" },
-            { "n", "<Leader>yr" },
-          },
-          setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
-          config = conf("vcoolor"),
-        }
+        use(
+            {
+              "KabbAmine/vCoolor.vim",
+              keys = {
+                { "n", "<Leader>pc" },
+                { "n", "<Leader>yb" },
+                { "n", "<Leader>yr" },
+              },
+              setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
+              config = conf("vcoolor"),
+            }
+        )
         -- ]]] === VCooler ===
 
         -- =============================== Marks ============================== [[[
@@ -284,18 +295,7 @@ return packer.startup(
         )
 
         use({ "gbprod/substitute.nvim", config = conf("plugs.substitute") })
-        use(
-            {
-              "machakann/vim-sandwich",
-              config = function()
-                local config = fn.stdpath("config")
-                cmd(
-                    "source " .. config ..
-                        "/vimscript/plugins/vim-sandwhich.vim"
-                )
-              end,
-            }
-        )
+        use({ "machakann/vim-sandwich", config = conf("sandwhich") })
 
         use(
             {
@@ -305,14 +305,16 @@ return packer.startup(
             }
         )
 
-        -- use(
-        --     {
-        --       "justinmk/vim-sneak",
-        --       after = "vim-surround",
-        --       keys = { { "n", "f" }, { "n", "F" } },
-        --       config = conf("sneak"),
-        --     }
-        -- )
+        use(
+            {
+              "justinmk/vim-sneak",
+              after = "vim-surround",
+              keys = { { "n", "f" }, { "n", "F" } },
+              config = conf("sneak"),
+            }
+        )
+
+        use({ "pseewald/vim-anyfold", cmd = "AnyFoldActivate" })
 
         -- use(
         --     { "AndrewRadev/switch.vim",
@@ -431,11 +433,13 @@ return packer.startup(
         use {
           "gelguy/wilder.nvim",
           run = ":UpdateRemotePlugins",
+          rocks = "pcre2",
           config = conf("plugs.wilder"),
         }
         -- ]]] === Wilder ===
 
         -- ========================= Syntax-Highlighting ======================= [[[
+        -- o.nocompatible = true
         g.polyglot_disabled = {
           "markdown",
           "rustpeg",
@@ -549,6 +553,8 @@ return packer.startup(
             }
         )
         use({ "antoinemadec/coc-fzf", after = "coc.nvim" })
+
+        use { "kevinhwang91/coc-kvs", run = "yarn install --frozen-lockfile" }
         -- ]]] === Coc ===
 
         -- ============================= Treesitter ============================ [[[

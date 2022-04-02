@@ -6,6 +6,8 @@ local map = utils.map
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
+cmd [[set nocompatible]]
+
 map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
 map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
@@ -37,7 +39,6 @@ vim.filetype.add(
       pattern = {
         [".*%.env.*"] = "sh",
         [".*ignore"] = "conf",
-        -- ['.*tmux.*conf$'] = 'tmux',
       },
       filename = { ["yup.lock"] = "yaml" },
     }
@@ -95,9 +96,10 @@ o.startofline = false
 o.backspace = [[indent,eol,start]]
 o.synmaxcol = 1000 -- do not highlight long lines
 
-o.foldenable = false
-o.foldmethod = "marker"
-o.foldmarker = "[[[,]]]"
+-- o.foldenable = false
+-- o.foldmethod = "marker"
+-- o.foldmarker = "[[[,]]]"
+
 -- This does not work globally for whatever reason
 o.formatoptions:remove({ "c", "r", "o" })
 o.nrformats = "octal,hex,bin,unsigned"
@@ -248,7 +250,6 @@ cmd(
 -- ]]] === Abbreviations ===
 
 -- =============== Commands ================ [[[
--- syntax on
 -- filetype on
 -- filetype plugin on
 cmd(

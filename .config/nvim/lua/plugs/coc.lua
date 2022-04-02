@@ -255,6 +255,18 @@ function M.diagnostic(winid, nr, keep)
   )
 end
 
+function M.run_command(name, args, cb)
+  local action_fn
+  args = args or {}
+  if type(cb) == "function" then
+    action_fn = fn.CocActionAsync
+    table.insert(args, cb)
+  else
+    action_fn = fn.CocAction
+  end
+  return action_fn("runCommand", name, unpack(args))
+end
+
 M.hl_fallback = (function()
   local fb_bl_ft = {
     "qf",
@@ -413,12 +425,12 @@ function M.init()
       }, true
   )
 
+  -- use `:Fold` to fold current buffer
+  -- cmd [[com! -nargs=? Fold :call CocAction('fold', <f-args>)]]
   cmd [[com! -nargs=0 CocMarket :CocFzfList marketplace]]
   cmd [[com! -nargs=0 Prettier :CocCommand prettier.formatFile]]
   -- use `:Format` to format current buffer
   cmd [[com! -nargs=0 Format :call CocAction('format')]]
-  -- use `:Fold` to fold current buffer
-  cmd [[com! -nargs=? Fold :call CocAction('fold', <f-args>)]]
   -- use `:OR` for organize import of current buffer
   cmd [[com! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')]]
   cmd [[com! -nargs=0 CocOutput CocCommand workspace.showOutput]]

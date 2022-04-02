@@ -29,6 +29,22 @@ api.nvim_create_autocmd(
     }
 )
 
+-- Fix terminal highlights
+api.nvim_create_autocmd(
+    "TermEnter", {
+      callback = function()
+        vim.schedule(
+            function()
+              cmd("nohlsearch")
+              vim.fn.clearmatches()
+            end
+        )
+      end,
+      pattern = "*",
+      group = create_augroup("TermFix", true),
+    }
+)
+
 -- === Custom file type settings === [[[
 autocmd(
     "custom_ft", {

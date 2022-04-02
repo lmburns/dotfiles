@@ -1,15 +1,40 @@
 local M = {}
 
--- Print text nicely
-function _G.put(...)
+local function inspect(v)
+    local s
+    local t = type(v)
+    if t == 'nil' then
+        s = 'nil'
+    elseif t ~= 'string' then
+        s = vim.inspect(v)
+    else
+        s = tostring(v)
+    end
+    return s
+end
+
+-- Print text nicely (newline)
+function _G.pln(...)
   local objects = {}
   for i = 1, select("#", ...) do
     local v = select(i, ...)
-    table.insert(objects, vim.inspect(v))
+    table.insert(objects, inspect(v))
   end
 
   print(table.concat(objects, "\n"))
   return ...
+end
+
+-- Print text nicely
+function _G.p(...)
+    local argc = select('#', ...)
+    local msg_tbl = {}
+    for i = 1, argc do
+        local arg = select(i, ...)
+        table.insert(msg_tbl, inspect(arg))
+    end
+
+    print(table.concat(msg_tbl, ' '))
 end
 
 -- Dump table
@@ -56,5 +81,13 @@ end
 --       end,
 --     }
 -- ):sync()
+
+-- Help
+-- print(vim.inspect(vim.fn.api_info()))
+-- print(vim.inspect(vim))
+--
+-- print(vim.inspect(vim.loop))
+-- Reference: https://github.com/luvit/luv/blob/master/docs.md
+-- Examples:  https://github.com/luvit/luv/tree/master/examples
 
 return M

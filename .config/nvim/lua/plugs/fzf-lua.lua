@@ -105,12 +105,14 @@ function M.setup()
       fzf = {
         -- fzf '--bind=' options
         ["ctrl-z"] = "abort",
+        ["esc"] = "abort",
         ["alt-d"] = "unix-line-discard",
         ["ctrl-d"] = "half-page-down",
         ["ctrl-u"] = "half-page-up",
         ["ctrl-a"] = "beginning-of-line",
         ["ctrl-e"] = "end-of-line",
         ["alt-a"] = "toggle-all",
+
         -- Only valid with fzf previewers (bat/cat/git/etc)
         ["f3"] = "toggle-preview-wrap",
         ["f4"] = "toggle-preview",

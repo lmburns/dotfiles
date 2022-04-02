@@ -121,13 +121,6 @@ require("common.mru")
 require("common.reg")
 require("highlight")
 
-cmd [[
-    aug TermFix
-        au!
-        au TermEnter * lua vim.schedule(function() vim.cmd('noh') vim.fn.clearmatches() end)
-    aug END
-]]
-
 -- ============================ Notify ================================ [[[
 vim.notify = function(...)
   cmd [[PackerLoad nvim-notify]]
@@ -157,11 +150,20 @@ api.nvim_create_autocmd(
     "BufRead", {
       callback = function()
         -- Buffer option here doesn't work like global
-        o.formatoptions:remove({ "c", "r", "o" })
-        w.conceallevel = 2
-        w.concealcursor = "v"
+        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+        vim.opt_local.conceallevel = 2
+        vim.opt_local.concealcursor = "v"
       end,
       group = create_augroup("FormatOptions"),
+      pattern = "*",
+    }
+)
+
+-- Don't know why vim-polyglot sets files with no extensions to `sh`
+api.nvim_create_autocmd(
+    { "BufRead", "BufNewFile" }, {
+      command = "if expand('<afile>:e') == '' | set ft= | end",
+      group = create_augroup("FixPolyglot"),
       pattern = "*",
     }
 )
@@ -348,9 +350,12 @@ vim.schedule(
               hi! CocSemStatic gui=bold
            ]]
 
+            cmd("packadd coc-kvs")
             cmd("packadd coc.nvim")
           end, 250
       )
+
+      vim.defer_fn(function() require("common.fold") end, 800)
 
     end
 )
