@@ -120,6 +120,7 @@ programming:
     ruby: { foreground: darker_red }
     javascript: { foreground: yellow }
     zsh: { foreground: dark_magenta }
+    solidity: { foreground: magenta }
 
   tooling:
     packaging:

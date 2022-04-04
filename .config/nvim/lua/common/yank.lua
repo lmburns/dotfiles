@@ -1,4 +1,5 @@
 local M = {}
+
 local utils = require("common.utils")
 local autocmd = utils.autocmd
 

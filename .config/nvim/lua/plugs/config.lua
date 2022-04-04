@@ -1,8 +1,11 @@
 local M = {}
 
+local kutils = require("common.kutils")
 local utils = require("common.utils")
 local K = require("common.keymap")
 local map = utils.map
+local fmap = utils.fmap
+
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
@@ -288,9 +291,9 @@ function M.slime()
         \ xmap <buffer> ,l <Plug>SlimeRegionSend|
         \ nmap <buffer> ,l <Plug>SlimeLineSend|
         \ nmap <buffer> ,p <Plug>SlimeParagraphSend|
-        \ nnoremap <silent> ✠ :TREPLSendLine<CR><Esc><Home><Down>|
-        \ inoremap <silent> ✠ <Esc>:TREPLSendLine<CR><Esc>A|
-        \ xnoremap <silent> ✠ :TREPLSendSelection<CR><Esc><Esc>
+        \ nnoremap <silent> <S-CR> :TREPLSendLine<CR><Esc><Home><Down>|
+        \ inoremap <silent> <S-CR> <Esc>:TREPLSendLine<CR><Esc>A|
+        \ xnoremap <silent> <S-CR> :TREPLSendSelection<CR><Esc><Esc>
         \ nnoremap <Leader>rF :T ptpython<CR>|
         \ nnoremap <Leader>rf :T ipython --no-autoindent --colors=Linux --matplotlib<CR>|
         \ nmap <buffer> <Leader>r<CR> :VT python %<CR>|
@@ -299,8 +302,8 @@ function M.slime()
         \ nnoremap ,rs :SlimeSend1 print(len(<C-r><C-w>), type(<C-r><C-w>))<CR>|
         \ nnoremap ,rt :SlimeSend1 <C-r><C-w>.dtype<CR>|
         \ nnoremap 223 ::%s/^\(\s*print\)\s\+\(.*\)/\1(\2)<CR>|
-        \ nnoremap ,rr :FloatermNew --autoclose=0 python %<space>|
-        \ call <SID>IndentSize(4)
+        \ nnoremap ,rr :FloatermNew --autoclose=0 python %<space>
+
       autocmd FileType perl nmap <buffer> ,l <Plug>SlimeLineSend
     augroup END
   ]]
@@ -474,6 +477,208 @@ function M.sandwhich()
   map("n", "<Leader>ci", "cs`*")
   map("n", "<Leader>o", "ysiw")
   map("n", "mlw", "yss`")
+end
+
+function M.hop()
+  -- "etovxqpdygfblzhckisuran"
+  require("hop").setup({ keys = "asdfqwertzxcvbuiop" })
+
+  -- map("n", "<Leader><Leader>k", ":HopLineBC<CR>")
+  -- map("n", "<Leader><Leader>j", ":HopLineAC<CR>")
+  map("n", "<Leader><Leader>k", ":HopLineStartBC<CR>")
+  map("n", "<Leader><Leader>j", ":HopLineStartAC<CR>")
+
+  map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>")
+  map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>")
+  map("n", "<Leader><Leader>K", ":HopWordBC<CR>")
+  map("n", "<Leader><Leader>J", ":HopWordAC<CR>")
+  map("n", "<Leader><Leader>/", ":HopPattern<CR>")
+
+  -- ========================== f-Mapping ==========================
+
+  -- Normal
+  fmap {
+    "n",
+    "f",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+          }
+      )
+    end,
+  }
+
+  -- Normal
+  fmap {
+    "n",
+    "F",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+          }
+      )
+    end,
+  }
+
+  -- Motions
+  fmap {
+    "o",
+    "f",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = true,
+          }
+      )
+    end,
+  }
+
+  -- Motions
+  fmap {
+    "o",
+    "F",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            inclusive_jump = true,
+          }
+      )
+    end,
+  }
+
+  -- Visual mode
+  fmap {
+    { "x" },
+    "f",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+    end,
+  }
+
+  -- Visual mode
+  fmap {
+    { "x" },
+    "F",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+    end,
+  }
+
+  -- ========================== t-Mapping ==========================
+
+  -- Normal
+  fmap {
+    { "n" },
+    "t",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+      api.nvim_feedkeys(kutils.termcodes["h"], "n", false)
+    end,
+  }
+
+  -- Normal
+  fmap {
+    { "n" },
+    "T",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+      api.nvim_feedkeys(kutils.termcodes["l"], "n", false)
+    end,
+  }
+
+  -- Motions
+  fmap {
+    { "o" },
+    "t",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+    end,
+  }
+
+  -- Motions
+  fmap {
+    { "o" },
+    "T",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+    end,
+  }
+
+  -- Visual mode
+  fmap {
+    { "x" },
+    "t",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+      api.nvim_feedkeys(kutils.termcodes["h"], "v", false)
+    end,
+  }
+
+  -- Visual mode
+  fmap {
+    { "x" },
+    "T",
+    function()
+      require("hop").hint_char1(
+          {
+            direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+            current_line_only = true,
+            inclusive_jump = false,
+          }
+      )
+      api.nvim_feedkeys(kutils.termcodes["l"], "v", false)
+    end,
+  }
 end
 
 -- Unused

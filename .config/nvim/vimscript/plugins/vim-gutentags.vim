@@ -67,8 +67,8 @@ function! s:SetupCTags()
 endfunction
 
 function! s:SetupCPPTags()
-    set tags+=~/.config/nvim/_cpp_src/tags
-    let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
+    " set tags+=~/.config/tags/cpp_src
+    let g:gutentags_ctags_extra_args += ['/home/lucas/.config/tags/cpp_src']
 endfunction
 
 function! s:SetupRubyTags()

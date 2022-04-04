@@ -12,10 +12,10 @@
     "go",
     "html",
     "java",
-    "javascript",
+    // "javascript",
     // "lua",
     // "rust",
-    "typescript"
+    // "typescript"
   ],
 
   "diagnostic.errorSign": "••",
@@ -409,4 +409,11 @@
   "yaml.completion": true,
   "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
   "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
+
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "javascript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove",
 }

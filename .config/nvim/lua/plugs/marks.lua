@@ -45,6 +45,7 @@ local function init()
   map("n", "<Leader>mlm", ":marks<CR>")
   map("n", "<Leader>mfd", ":delm! | delm A-Z0-9<CR>")
   map("n", "<Leader>mld", ":delmarks a-z<CR>")
+
   M.setup()
 end
 

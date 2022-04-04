@@ -11,4 +11,4 @@ g.vista_sidebar_position = "topleft vertical"
 g["vista#renderer#enable_icon"] = 1
 
 map("n", [[<A-\>]], ":Vista finder fzf:coc<CR>")
--- map("n", [[<A-]>]], ":Vista finder ctags<CR>")
+map("n", [[<A-]>]], ":Vista finder ctags<CR>")

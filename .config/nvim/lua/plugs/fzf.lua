@@ -270,6 +270,31 @@ end
 --   fn.FzfWrapper(opts)
 -- end
 
+-- \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
+-- \ 'options': '--no-border',
+-- \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+-- \ 'window': 'call FloatingFZF()'})
+
+function M.copyq_fzf()
+  local opts = {
+    name = "copy-clipboard",
+    source = (function()
+      local ret = {}
+      local val = require("lutils").capture(
+        [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']]
+        )
+
+      for v in val:gmatch("[^%z]+") do
+        table.insert(ret, v)
+      end
+      return ret
+    end)(),
+    options = { "+m", "--prompt", "Copyq> ", "--tiebreak", "index" },
+  }
+
+  fn.FzfWrapper(opts)
+end
+
 function M.resize_preview_layout()
   local layout = vim.g.fzf_layout.window
   if vim.o.columns * layout.width - 2 > 100 then
@@ -511,44 +536,44 @@ local function init()
   ]]
 
   -- Floating window
-  -- cmd [[
-  --   function! s:create_float(hl, opts)
-  --     let buf = nvim_create_buf(v:false, v:true)
-  --     let opts = extend({'relative': 'editor', 'style': 'minimal'}, a:opts)
-  --     let win = nvim_open_win(buf, v:true, opts)
-  --     call setwinvar(win, '&winhighlight', 'NormalFloat:'.a:hl)
-  --     call setwinvar(win, '&colorcolumn', '')
-  --     return buf
-  --   endfunction
-  --
-  --   function! FloatingFZF()
-  --     " Size and position
-  --     let width = float2nr(&columns * 0.9)
-  --     let height = float2nr(&lines * 0.6)
-  --     let row = float2nr((&lines - height) / 2)
-  --     let col = float2nr((&columns - width) / 2)
-  --
-  --     " Border
-  --     let top = '┏━' . repeat('─', width - 4) . '━┓'
-  --     let mid = '│'  . repeat(' ', width - 2) .  '│'
-  --     let bot = '┗━' . repeat('─', width - 4) . '━┛'
-  --     let border = [top] + repeat([mid], height - 2) + [bot]
-  --
-  --     " Draw frame
-  --     let s:frame = s:create_float('Comment',
-  --       \ {'row': row, 'col': col, 'width': width, 'height': height})
-  --     call nvim_buf_set_lines(s:frame, 0, -1, v:true, border)
-  --
-  --     " Draw viewport
-  --     call s:create_float('Normal',
-  --       \ {'row': row + 1, 'col': col + 2, 'width': width - 4, 'height': height - 2})
-  --
-  --     augroup fzf_floating
-  --       au!
-  --       au BufWipeout <buffer> execute 'bwipeout' s:frame
-  --     augroup END
-  --   endfunction
-  -- ]]
+  cmd [[
+    function! s:create_float(hl, opts)
+      let buf = nvim_create_buf(v:false, v:true)
+      let opts = extend({'relative': 'editor', 'style': 'minimal'}, a:opts)
+      let win = nvim_open_win(buf, v:true, opts)
+      call setwinvar(win, '&winhighlight', 'NormalFloat:'.a:hl)
+      call setwinvar(win, '&colorcolumn', '')
+      return buf
+    endfunction
+
+    function! FloatingFZF()
+      " Size and position
+      let width = float2nr(&columns * 0.9)
+      let height = float2nr(&lines * 0.6)
+      let row = float2nr((&lines - height) / 2)
+      let col = float2nr((&columns - width) / 2)
+
+      " Border
+      let top = '┏━' . repeat('─', width - 4) . '━┓'
+      let mid = '│'  . repeat(' ', width - 2) .  '│'
+      let bot = '┗━' . repeat('─', width - 4) . '━┛'
+      let border = [top] + repeat([mid], height - 2) + [bot]
+
+      " Draw frame
+      let s:frame = s:create_float('Comment',
+        \ {'row': row, 'col': col, 'width': width, 'height': height})
+      call nvim_buf_set_lines(s:frame, 0, -1, v:true, border)
+
+      " Draw viewport
+      call s:create_float('Normal',
+        \ {'row': row + 1, 'col': col + 2, 'width': width - 4, 'height': height - 2})
+
+      augroup fzf_floating
+        au!
+        au BufWipeout <buffer> execute 'bwipeout' s:frame
+      augroup END
+    endfunction
+  ]]
 
   -- Fzf wrapper
   cmd [[

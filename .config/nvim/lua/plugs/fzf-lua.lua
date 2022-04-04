@@ -1,14 +1,13 @@
 local M = {}
 
-local utils = require("common.utils")
-local map = utils.map
-local K = require("common.keymap")
+require("common.utils")
+local fzf_lua = require("fzf-lua")
 
 function M.setup()
   local actions = require "fzf-lua.actions"
 
   ---@diagnostic disable-next-line: redundant-parameter
-  require"fzf-lua".setup {
+  fzf_lua.setup {
     fzf_bin = "fzf", -- use skim instead of fzf?
     global_resume = true, -- enable global `resume`?
     -- can also be sent individually:
@@ -84,6 +83,24 @@ function M.setup()
         --     { silent = true, noremap = true })
       end,
     },
+    winopts_fn = function()
+      -- Use custom borders hls if they exist in the colorscheme
+      local border = "Normal"
+      local hls = { "TelescopeBorder", "FloatermBorder", "FloatBorder" }
+      for _, hl in ipairs(hls) do
+        if #vim.fn.synIDattr(vim.fn.hlID(hl), "fg") > 0 then
+          border = hl
+          break
+        end
+      end
+      return {
+        hl = { border = border },
+        -- preview = {
+        --   -- conditionally override the layout paramter thus overriding the 'flex' layout
+        --   layout = vim.api.nvim_win_get_width(0)<100 and 'vertical' or 'horizontal'
+        -- }
+      }
+    end,
     keymap = {
       -- These override the default tables completely
       -- no need to set to `false` to disable a bind
@@ -537,24 +554,118 @@ function M.setup()
     -- 'EN SPACE' (U+2002), the below sets it to 'NBSP' (U+00A0) instead
     -- nbsp = '\xc2\xa0',
   }
+
+  -- register fzf-lua as vim.ui.select interface
+  -- fzf_lua.register_ui_select(
+  --     { winopts = { win_height = 0.30, win_width = 0.70, win_row = 0.40 } }
+  -- )
+end
+
+function M.branch_compare(opts)
+  if not opts then
+    opts = {}
+  end
+
+  local function branch_compare(selected, o)
+    -- remove anything past space
+    local branch = selected[1]:match("[^ ]+")
+    -- do nothing for active branch
+    if branch:find("%*") ~= nil then
+      return
+    end
+    -- git_cwd is only required if you want to also run
+    -- this outside your current working directory
+    -- all it does is add `git -C <cwd_path>`
+    -- this enables you to run:
+    -- branch_compare({ cwd = "~/Sources/nvim/fzf-lua" })
+    o.cmd = require"fzf-lua.path".git_cwd(
+        -- change this to whaetever command works best for you:
+        -- git diff --name-only $(git merge-base HEAD [SELECTED_BRANCH])
+        ("git diff --name-only %s"):format(branch), o.cwd
+    )
+    -- replace the previewer with our custom command
+    o.previewer = {
+      cmd = require"fzf-lua.path".git_cwd("git diff", o.cwd),
+      args = ("--color main %s -- "):format(branch),
+      _new = function() return require"fzf-lua.previewer".cmd_async end,
+    }
+    -- disable git icons, without adjustments they will
+    -- display their current status and not the branch status
+    -- TODO: supply `files` with `git_diff_cmd`, `git_untracked_cmd`
+    o.git_icons = false
+    -- reset the default action that was carried over from the
+    -- `git_branches` call
+    o.actions = nil
+    require"fzf-lua".files(o)
+  end
+  opts.prompt = "BranchCompare❯ "
+  opts.actions = { ["default"] = branch_compare }
+  require"fzf-lua".git_branches(opts)
+end
+
+function M.installed_plugins(opts)
+  if not opts then
+    opts = {}
+  end
+  opts.prompt = "Plugins❯ "
+  opts.cwd = fn.stdpath("data") .. "/site/pack/packer/"
+  fzf_lua.files(opts)
+end
+
+function M.edit_neovim(opts)
+  if not opts then
+    opts = {}
+  end
+  opts.prompt = "<Neovim> "
+  opts.cwd = "$XDG_CONFIG_HOME/nvim"
+  fzf_lua.files(opts)
+end
+
+function M.edit_zsh(opts)
+  if not opts then
+    opts = {}
+  end
+  opts.prompt = "~ zsh ~ "
+  opts.cwd = "$ZDOTDIR"
+  fzf_lua.files(opts)
+end
+
+local function map_fzf(mode, key, f, opts, buffer)
+  local rhs = function()
+    if not pcall(require, "fzf-lua") then
+      require("packer").loader("fzf-lua")
+    end
+
+    if M[f] then
+      require("plugs.fzf-lua")[f](opts or {})
+    else
+      require("fzf-lua")[f](opts or {})
+    end
+  end
+
+  require("common.utils").remap(
+      mode, key, rhs, { noremap = true, silent = true, buffer = buffer }
+  )
 end
 
 function init()
   M.setup()
 
-  -- K.n("<A-f>", "<Cmd>lua require('fzf-lua').files()<CR>")
-  K.n("<Leader>qo", "<Cmd>lua require('fzf-lua').quickfix()<CR>")
-  K.n("<Leader>ll", "<Cmd>lua require('fzf-lua').loclist()<CR>")
-  -- K.n("<A-,>", "<Cmd>lua require('fzf-lua').oldfiles()<CR>")
-  K.n("<LocalLeader>e", "<Cmd>lua require('fzf-lua').live_grep()<CR>")
-  K.n("<LocalLeader>h", "<Cmd>lua require('fzf-lua').man_pages()<CR>")
-  K.n("<Leader>ht", "<Cmd>lua require('fzf-lua').help_tags()<CR>")
-  K.n("<Leader>cm", "<Cmd>lua require('fzf-lua').commands()<CR>")
-  K.n("<Leader>ch", "<Cmd>lua require('fzf-lua').changes()<CR>")
-  K.n("<C-l>k", "<Cmd>lua require('fzf-lua').keymaps()<CR>")
-  K.n("<Leader>jf", "<Cmd>lua require('fzf-lua').jumps()<CR>")
-  K.n("<Leader>pa", "<Cmd>lua require('fzf-lua').packadd()<CR>")
-  K.n("<LocalLeader>v", "<Cmd>lua require('fzf-lua').builtin()<CR>")
+  -- map_fzf("n", "<A-f>", "files")
+  map_fzf("n", "<Leader>qo", "quickfix")
+  map_fzf("n", "<Leader>ll", "loclist")
+  -- map_fzf("n", "<A-,>", "oldfiles")
+  map_fzf("n", "<LocalLeader>e", "live_grep")
+  map_fzf("n", "<LocalLeader>h", "man_pages")
+  map_fzf("n", "<Leader>ht", "help_tags")
+  map_fzf("n", "<Leader>cm", "commands")
+  map_fzf("n", "<Leader>ch", "changes")
+  map_fzf("n", "<C-l>k", "keymaps")
+  map_fzf("n", "<Leader>jf", "jumps")
+  map_fzf("n", "<Leader>pa", "packadd")
+  map_fzf("n", "<LocalLeader>v", "builtin")
+
+  -- map_fzf("n", "<Leader>e;", "edit_neovim")
 end
 
 init()

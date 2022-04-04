@@ -13,6 +13,20 @@ local function inspect(v)
     return s
 end
 
+P = function(...)
+  print(vim.inspect(...))
+  return ...
+end
+
+RELOAD = function(...)
+  return require("plenary.reload").reload_module(...)
+end
+
+R = function(name)
+  RELOAD(name)
+  return require(name)
+end
+
 -- Print text nicely (newline)
 function _G.pln(...)
   local objects = {}

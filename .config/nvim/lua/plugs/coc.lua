@@ -350,6 +350,17 @@ function M.skip_snippet()
   return kutils.termcodes["<BS>"]
 end
 
+function M.organize_import()
+  local err, ret = M.a2sync("organizeImport", {}, 1000)
+  if err then
+    if ret == "timeout" then
+      vim.notify("organizeImport timeout", vim.log.levels.WARN)
+    else
+      vim.notify("No action for organizeImport", vim.log.levels.WARN)
+    end
+  end
+end
+
 -- UNUSED
 
 function M.scroll(down)
@@ -434,6 +445,7 @@ function M.init()
   -- use `:OR` for organize import of current buffer
   cmd [[com! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')]]
   cmd [[com! -nargs=0 CocOutput CocCommand workspace.showOutput]]
+  cmd [[com! -nargs=0 DiagnosticToggleBuffer call CocAction('diagnosticToggleBuffer')]]
 
   map("n", "<LocalLeader>s", ":CocFzfList symbols<CR>")
   -- map("n", "<A-c>", ":CocFzfList commands<CR>")
@@ -445,13 +457,16 @@ function M.init()
   map("n", "<C-x><C-h>", ":CocCommand fzf-preview.CocDiagnostics<CR>")
 
   map("n", "<A-[>", ":CocCommand fzf-preview.VistaCtags<CR>")
-  map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
+  -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
   map("n", "<LocalLeader>t", ":CocCommand fzf-preview.BufferTags<CR>")
 
-  -- map("n", "<C-x><C-r>", ":Telescope coc references<CR>")
-  -- map("n", "<C-x><C-[>", ":Telescope coc definitions<CR>")
-  -- map("n", "<C-x><C-]>", ":Telescope coc implementations<CR>")
-  -- map("n", "<C-x><C-r>", ":Telescope coc diagnostics<CR>")
+  map("s", "<Bs>", "<C-g>\"_c")
+  map("s", "<Del>", "<C-g>\"_c")
+  map("s", "<C-h>", "<C-g>\"_c")
+  map("s", "<C-w>", "<Esc>a")
+
+  -- map("s", "<C-o>", "<Nop>")
+  -- map("s", "<C-o>o", "<Esc>a<C-o>o")
 
   -- Use `[g` and `]g` to navigate diagnostics
   -- map("n", "[g", "<Plug>(coc-diagnostic-prev)", { noremap = false })
@@ -473,7 +488,7 @@ function M.init()
       "n", "<A-q>",
       [[<Cmd>lua vim.notify(vim.fn.CocAction('getCurrentFunctionSymbol'))<CR>]]
   )
-  map("n", "<Leader>qd", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])
+  map("n", "<Leader>xl", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])
 
   -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
   -- map(
@@ -481,7 +496,7 @@ function M.init()
   --     { noremap = false, silent = true }
   -- )
   -- map(
-  --     "n", "gi", "<Plug>(coc-implementation)",
+  --     "n", "gI", "<Plug>(coc-implementation)",
   --     { noremap = false, silent = true }
   -- )
   -- map("n", "gr", "<Plug>(coc-references)", { noremap = false, silent = true })
@@ -514,16 +529,12 @@ function M.init()
   -- Show commit contains current position
   map("n", "gC", "<Plug>(coc-git-commit)", { noremap = false })
 
-  map(
-      "n", "<Leader><Leader>o", "<Plug>(coc-openlink)",
-      { noremap = true, silent = true }
-  )
-  map(
-      "n", "<Leader><Leader>l", "<Plug>(coc-codelens-action)",
-      { noremap = true, silent = true }
-  )
+  map("n", "<Leader><Leader>o", "<Plug>(coc-openlink)", { noremap = true })
+  map("n", "<Leader><Leader>;", "<Plug>(coc-codelens-action)", { silent = true })
 
-  -- Show completions
+  map("n", "<Leader>qi", [[<Cmd>lua require('plugs.coc').organize_import()<CR>]])
+
+  -- Show documentation
   map("n", "K", [[:silent lua require('plugs.coc').show_documentation()<CR>]])
 
   -- Refresh coc completions
@@ -570,8 +581,8 @@ function M.init()
   -- map("i", "<CR>", "<Plug>CustomCocCR<Plug>DiscretionaryEnd", { noremap = true })
 
   map(
-      "i", "<C-l>", [[v:lua.require'plugs.coc'.accept_complete()]],
-      { noremap = true, expr = true }
+      "i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]],
+      { expr = true }
   )
 
   -- Git
@@ -612,14 +623,11 @@ function M.init()
   )
 
   -- Snippet
-  -- map(
-  --     "i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
-  --     { expr = true }
-  -- )
-  -- map(
-  --     "s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]],
-  --     { noremap = true, expr = true }
-  -- )
+  map(
+      "i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
+      { expr = true, noremap = false }
+  )
+  map("s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]], { expr = true })
 
   -- map("n", ";ff", ":Format<CR>")
 
@@ -627,7 +635,7 @@ function M.init()
       "n", "<Leader>ab", ":CocCommand fzf-preview.AllBuffers<CR>",
       { silent = true }
   )
-  map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
+  -- map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
   map(
       "n", "<LocalLeader>;", ":CocCommand fzf-preview.Lines<CR>",
       { silent = true }
@@ -642,33 +650,40 @@ function M.init()
       { silent = true }
   )
 
+  map("n", "<Leader>jd", ":CocDiagnostics<CR>", { silent = true })
+
   map("n", "<Leader>se", ":CocFzfList snippets<CR>", { silent = true })
   map("n", "<M-/>", ":CocCommand fzf-preview.Marks<CR>", { silent = true })
 
-  -- map(
-  --     "n", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
-  --     { noremap = true, expr = true, silent = true }
-  -- )
-  -- map(
-  --     "n", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
-  --     { noremap = true, expr = true, silent = true }
-  -- )
-  -- map(
-  --     "s", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
-  --     { noremap = true, expr = true, silent = true }
-  -- )
-  -- map(
-  --     "s", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
-  --     { noremap = true, expr = true, silent = true }
-  -- )
-  -- map(
-  --     "i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]],
-  --     { expr = true, silent = true }
-  -- )
-  -- map(
-  --     "i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]],
-  --     { noremap = true, expr = true, silent = true }
-  -- )
+  map(
+      "n", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
+      { expr = true, silent = true }
+  )
+  map(
+      "n", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
+      { expr = true, silent = true }
+  )
+  map(
+      "s", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]],
+      { expr = true, silent = true }
+  )
+  map(
+      "s", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]],
+      { expr = true, silent = true }
+  )
+  map(
+      "i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]],
+      { expr = true, silent = true }
+  )
+  map(
+      "i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]],
+      { expr = true, silent = true }
+  )
+
+  map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
+  map("n", "<Leader>st", [[<Cmd>CocCommand go.test.toggle<CR>]])
+  map("n", "<Leader>tf", [[<Cmd>CocCommand go.test.generate.function<CR>]])
+  map("x", "<Leader>tf", [[:CocCommand go.test.generate.function<CR>]])
 end
 
 return M

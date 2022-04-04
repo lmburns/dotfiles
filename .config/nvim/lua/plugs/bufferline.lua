@@ -23,7 +23,7 @@ function M.setup()
     orange = "#FF5813",
     blue = "#4C96A8",
     cyan = "#7EB2B1",
-    dpurple = "#733e8b"
+    dpurple = "#733e8b",
   }
 
   require("bufferline").setup(
@@ -179,7 +179,7 @@ function M.setup()
             gui = "bold,italic",
           },
           warning = { guifg = colors.orange, guibg = colors.dbg },
-          warning_visible = { guifg = colors.orange, guibg = colors.lgb },
+          warning_visible = { guifg = colors.orange, guibg = colors.lbg },
           warning_selected = {
             guifg = colors.orange,
             guibg = colors.lbg,
@@ -259,15 +259,13 @@ local function init()
   -- map("n", [[<C-S-\<>]], ":BufferLineMovePrev<CR>", { silent = true })
   -- map("n", [[<C-S-\>>]], ":BufferLineMoveNext<CR>", { silent = true })
 
-  map("n", "<Leader>1", ":BufferLineGoToBuffer 1<CR>", { silent = true })
-  map("n", "<Leader>2", ":BufferLineGoToBuffer 2<CR>", { silent = true })
-  map("n", "<Leader>3", ":BufferLineGoToBuffer 3<CR>", { silent = true })
-  map("n", "<Leader>4", ":BufferLineGoToBuffer 4<CR>", { silent = true })
-  map("n", "<Leader>5", ":BufferLineGoToBuffer 5<CR>", { silent = true })
-  map("n", "<Leader>6", ":BufferLineGoToBuffer 6<CR>", { silent = true })
-  map("n", "<Leader>7", ":BufferLineGoToBuffer 7<CR>", { silent = true })
-  map("n", "<Leader>8", ":BufferLineGoToBuffer 8<CR>", { silent = true })
-  map("n", "<Leader>9", ":BufferLineGoToBuffer 9<CR>", { silent = true })
+  for i = 1, 9 do
+    i = tostring(i)
+    map(
+        "n", "<Leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>",
+        { silent = true }
+    )
+  end
 
   M.setup()
 end

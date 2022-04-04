@@ -119,7 +119,24 @@ programming:
     crystal: [.cr]
     csharp: [.cs, .csx]
     css: [css]
-    cxx: [.c, .cpp, .cc, .cp, .cxx, .c++, .h, .hh, .hpp, .hxx, .h++, .inc, .inl, .ipp, .def]
+    cxx:
+      [
+        .c,
+        .cpp,
+        .cc,
+        .cp,
+        .cxx,
+        .c++,
+        .h,
+        .hh,
+        .hpp,
+        .hxx,
+        .h++,
+        .inc,
+        .inl,
+        .ipp,
+        .def,
+      ]
     d: [.d, .di]
     dart: [.dart]
     diff: [.diff, .patch]
@@ -169,6 +186,7 @@ programming:
 
     database: [.sqlite, .sqlite3, .db]
     jq: [.jq]
+    solidity: [.sol]
 
   tooling:
     vcs:
@@ -248,10 +266,10 @@ programming:
         - .dox
 
       man-page:
-        - '.1'
-        - '.2'
-        - '.3'
-        - '.5'
+        - ".1"
+        - ".2"
+        - ".3"
+        - ".5"
 
     continuous-integration:
       - appveyor.yml
@@ -450,7 +468,7 @@ unimportant:
   other:
     - "~"
     - .bak
-    - .git  # only works for '.git' files (submodules)
+    - .git # only works for '.git' files (submodules)
     - .lock
     - .log
     - .orig

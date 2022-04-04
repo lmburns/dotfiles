@@ -51,6 +51,13 @@ function M.setup()
 end
 
 local function init()
+  -- cmd([[highlight default link WhichKey          htmlH1]])
+  -- cmd([[highlight default link WhichKeySeperator String]])
+  -- cmd([[highlight default link WhichKeyGroup     Keyword]])
+  -- cmd([[highlight default link WhichKeyDesc      Include]])
+  -- cmd([[highlight default link WhichKeyFloat     CursorLine]])
+  -- cmd([[highlight default link WhichKeyValue     Comment]])
+
   M.setup()
 
   K.n("<Leader>wh", "<Cmd>WhichKey<CR>")

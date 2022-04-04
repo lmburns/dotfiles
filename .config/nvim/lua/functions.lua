@@ -1,3 +1,5 @@
+local M = {}
+
 local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
@@ -5,7 +7,7 @@ local create_augroup = utils.create_augroup
 
 -- ============================ Commands ============================== [[[
 cmd [[
-    command! -range=% -nargs=0 RmAnsi <line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g
+    command! -range=% -nargs=0 RmOnsi <line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g
     command! -nargs=? -complete=buffer FollowSymlink lua require('common.kutils').follow_symlink(<f-args>)
     command! -nargs=0 CleanEmptyBuf lua require('common.kutils').clean_empty_bufs()
     command! -nargs=0 Jumps lua require('common.builtin').jumps2qf()
@@ -13,6 +15,34 @@ cmd [[
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[
+cmd [[
+  function! s:executor() abort
+    if &ft == 'lua'
+      call execute(printf(":lua %s", getline(".")))
+    elseif &ft == 'vim'
+      exe getline(">")
+    endif
+  endfunction
+
+  nnoremap <Leader>xx :call <SID>executor()<CR>
+  vnoremap <Leader>xx :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
+
+  if !exists('*SaveAndExec')
+    function! SaveAndExec() abort
+      if &filetype == 'vim'
+        :silent! write
+        :source %
+      elseif &filetype == 'lua'
+        :silent! write
+        :luafile %
+      endif
+      return
+    endfunction
+  endif
+
+  nnoremap <Leader><Leader>x :call SaveAndExec()<CR>
+]]
+
 -- ============================== Syntax ============================== [[[
 -- Show syntax group
 cmd [[
@@ -124,7 +154,10 @@ api.nvim_create_autocmd(
 api.nvim_create_autocmd(
     "FileType", {
       callback = function()
-        map("n", "<Leader>r<CR>", ":FloatermNew tsc % && node %:r.js <CR>")
+        map(
+            "n", "<Leader>r<CR>",
+            ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>"
+        )
       end,
       pattern = { "typescript" },
       group = execute_buffer,
@@ -134,7 +167,7 @@ api.nvim_create_autocmd(
 api.nvim_create_autocmd(
     "FileType", {
       callback = function()
-        map("n", "<Leader>r<CR>", ":FloatermNew node % <CR>")
+        map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
       end,
       pattern = { "javascript" },
       group = execute_buffer,
@@ -225,3 +258,5 @@ vim.cmd [[
   endif
 ]]
 -- ]]] === Functions ===
+
+return M

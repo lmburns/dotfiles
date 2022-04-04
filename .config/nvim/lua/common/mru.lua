@@ -89,7 +89,7 @@ M.store_buf = (function()
 end)()
 
 local function init()
-  db = vim.env.HOME .. "/.mru_file"
+  db = fn.stdpath("data") .. "/mru_file"
   max = 1000
   bufs = {}
   tmp_prefix = uv.os_tmpdir()

@@ -16,7 +16,7 @@ local function map2(modes, lhs, rhs, opts)
   end
 end
 
--- ============== General Mappings ============== [[[
+-- ============== General mappings ============== [[[
 map("i", "jk", "<ESC>")
 map("i", "kj", "<ESC>")
 
@@ -38,6 +38,9 @@ cmd([[ command! -bang -nargs=* Q q ]])
 -- Use qq to record, q to stop, Q to play a macro
 map("n", "Q", "@q")
 map("v", "Q", ":normal @q")
+
+-- Repeat last command
+map("n", "<F2>", "@:")
 
 -- Easier navigation in normal / visual / operator pending mode
 map("n", "gkk", "{")
@@ -239,11 +242,10 @@ map("n", "<C-w>;", [[<Cmd>lua require('common.win').go2recent()<CR>]])
 -- map("n", "-", ":vertical resize -5<CR>")
 -- map("n", "s+", ":resize +5<CR>")
 -- map("n", "s-", ":resize -5<CR>")
-
-map("", "<C-Up>", ":resize +1<CR>", { noremap = false })
-map("", "<C-Down>", ":resize -1<CR>", { noremap = false })
-map("", "<C-Right>", ":vertical resize +1<CR>", { noremap = false })
-map("", "<C-Left>", ":vertical resize +1<CR>", { noremap = false })
+map("n", "<C-Up>", [[:lua require('common.utils').resize(false, -1)<CR>]])
+map("n", "<C-Down>", [[:lua require('common.utils').resize(false, 1)<CR>]])
+map("n", "<C-Right>", [[:lua require('common.utils').resize(true, 1)<CR>]])
+map("n", "<C-Left>", [[:lua require('common.utils').resize(true, -1)<CR>]])
 
 -- Change vertical to horizontal
 map("n", "<Leader>w-", "<C-w>t<C-w>K")
@@ -277,7 +279,7 @@ map("n", "<Leader>fe", "<Esc>/<++><CR>:nohlsearch<CR>c4l", { silent = true })
 map("n", "<Leader>fi", "<Esc>/<++><CR>:nohlsearch<CR>", { silent = true })
 map("i", ";fi", "<Esc>/<++><CR>:nohlsearch<CR>\"_c4l", { silent = true })
 
--- ]]] === General Mappings ===
+-- ]]] === General mappings ===
 
 -- ================== Spelling ================== [[[
 map("n", "<Leader>ss", ":setlocal spell!<CR>")

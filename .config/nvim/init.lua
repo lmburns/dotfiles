@@ -3,8 +3,6 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
--- TODO: Fix bqf fzf
--- TODO: Fix bqf closing window ml_get lnum
 -- TODO: Possibly fork rnvimr to lf
 --
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
@@ -287,39 +285,41 @@ vim.schedule(
 
       vim.defer_fn(
           function()
+            -- FIX: This doesn't automatically install like it did in vim
             g.coc_global_extensions = {
-              "coc-snippets",
-              "coc-diagnostic",
-              "coc-yank",
-              "coc-marketplace",
-              "coc-tabnine",
-              "coc-tag",
-              "coc-html",
+              "coc-clangd",
               "coc-css",
-              "coc-json",
-              "coc-yaml",
-              "coc-pyright",
-              "coc-vimtex",
-              "coc-vimlsp",
-              "coc-sh",
-              "coc-sql",
-              "coc-xml",
+              "coc-diagnostic",
+              "coc-dlang",
               "coc-fzf-preview",
-              "coc-syntax",
               "coc-git",
               "coc-go",
-              "coc-clangd",
-              "coc-rls",
-              "coc-rust-analyzer",
-              "coc-toml",
-              "coc-solargraph",
-              "coc-prettier",
-              "coc-r-lsp",
-              "coc-perl",
-              "coc-tsserver",
-              "coc-zig",
-              "coc-dlang",
+              "coc-html",
+              "coc-json",
               "coc-lua",
+              "coc-marketplace",
+              "coc-perl",
+              "coc-prettier",
+              "coc-pyright",
+              "coc-rls",
+              "coc-r-lsp",
+              "coc-rust-analyzer",
+              "coc-sh",
+              "coc-snippets",
+              "coc-solargraph",
+              "coc-solidity",
+              "coc-sql",
+              "coc-syntax",
+              "coc-tabnine",
+              "coc-tag",
+              "coc-toml",
+              "coc-tsserver",
+              "coc-vimlsp",
+              "coc-vimtex",
+              "coc-xml",
+              "coc-yaml",
+              "coc-yank",
+              "coc-zig",
             }
 
             g.coc_enable_locationlist = 0
@@ -344,10 +344,6 @@ vim.schedule(
 
             cmd [[
               au User CocNvimInit ++once lua require('plugs.coc').init()
-
-              hi! link CocSemDefaultLibrary Special
-              hi! link CocSemDocumentation Number
-              hi! CocSemStatic gui=bold
            ]]
 
             cmd("packadd coc-kvs")

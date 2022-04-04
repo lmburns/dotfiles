@@ -10,10 +10,12 @@ local actions = require("telescope.actions")
 local sorters = require("telescope.sorters")
 local previewers = require("telescope.previewers")
 local action_layout = require("telescope.actions.layout")
+local action_state = require("telescope.actions.state")
 local make_entry = require("telescope.make_entry")
 local conf = require("telescope.config").values
 
 require("common.utils")
+require("lutils")
 
 -- ============================ Config ===========================
 
@@ -40,23 +42,35 @@ require("telescope").setup(
         path_display = {},
         mappings = {
           i = {
-            ["<C-j>"] = actions.move_selection_next,
-            ["<C-k>"] = actions.move_selection_previous,
+            ["<C-x>"] = false,
+            -- ["<C-j>"] = actions.move_selection_next,
+            -- ["<C-k>"] = actions.move_selection_previous,
+
+            ["<C-k>"] = actions.cycle_history_next,
+            ["<C-j>"] = actions.cycle_history_prev,
+
+            -- ["<C-m>"] = action_layout.toggle_mirror,
             ["<C-t>"] = action_layout.toggle_preview,
+            ["<M-p>"] = action_layout.toggle_prompt_position,
+
             ["<C-s>"] = actions.select_horizontal,
             ["<C-d>"] = actions.results_scrolling_down,
             ["<C-u>"] = actions.results_scrolling_up,
 
-            ["<C-x>"] = false,
             ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
             ["<C-q>"] = actions.send_selected_to_qflist,
-            -- ["<C-g>"] = custom_actions.multi_selection_open,
+
+            ["<C-w>"] = function() vim.api.nvim_input "<c-s-w>" end,
           },
           n = {
             ["j"] = actions.move_selection_next,
             ["k"] = actions.move_selection_previous,
             ["<Down>"] = actions.move_selection_next,
             ["<Up>"] = actions.move_selection_previous,
+
+            ["gg"] = actions.move_to_top,
+            ["G"] = actions.move_to_bottom,
+
             ["H"] = actions.move_to_top,
             ["M"] = actions.move_to_middle,
             ["L"] = actions.move_to_bottom,
@@ -76,6 +90,14 @@ require("telescope").setup(
           "--line-number",
           "--column",
           "--smart-case",
+        },
+        find_command = {
+          "fd",
+          "--type=f",
+          "--hidden",
+          "--follow",
+          "--exclude=.git",
+          "--strip-cwd-prefix",
         },
         file_ignore_patterns = {
           "%.jpg",
@@ -99,7 +121,13 @@ require("telescope").setup(
             mirror = false,
             prompt_position = "bottom",
             preview_cutoff = 120,
-            preview_width = 0.5,
+            preview_width = function(_, cols, _)
+              if cols > 200 then
+                return math.floor(cols * 0.4)
+              else
+                return math.floor(cols * 0.5)
+              end
+            end,
           },
           vertical = {
             mirror = false,
@@ -130,17 +158,102 @@ require("telescope").setup(
           color_devicons = true,
           mappings = {
             i = { ["<c-d>"] = actions.delete_buffer },
-            n = { ["<c-d>"] = actions.delete_buffer },
+            n = {
+              ["<c-d>"] = actions.delete_buffer,
+              ["x"] = function(prompt_bufnr)
+                local current_picker = action_state.get_current_picker(
+                    prompt_bufnr
+                )
+                local selected_bufnr = action_state.get_selected_entry().bufnr
+
+                --- get buffers with lower number
+                local replacement_buffers = {}
+                for entry in current_picker.manager:iter() do
+                  if entry.bufnr < selected_bufnr then
+                    table.insert(replacement_buffers, 1, entry.bufnr)
+                  end
+                end
+
+                current_picker:delete_selection(
+                    function(selection)
+                      local bufnr = selection.bufnr
+                      -- get associated window(s)
+                      local winids = fn.win_findbuf(bufnr)
+                      -- get windows in current tab to check
+                      local tabwins = api.nvim_tabpage_list_wins(0)
+                      -- fill winids with new empty buffers
+                      for _, winid in ipairs(winids) do
+                        if vim.tbl_contains(tabwins, winid) then
+                          local new_buf = vim.F.if_nil(
+                              table.remove(replacement_buffers),
+                              api.nvim_create_buf(false, true)
+                          )
+                          api.nvim_win_set_buf(winid, new_buf)
+                        end
+                      end
+                      -- remove buffer at last
+                      api.nvim_buf_delete(bufnr, { force = true })
+                    end
+                )
+              end,
+            },
           },
         },
+
         live_grep = {
           grep_open_files = false,
           only_sort_text = true,
           theme = "ivy",
         },
-        find_files = { theme = "ivy" },
+
+        find_files = {
+          theme = "ivy",
+          find_command = { "fd", "--type", "f", "--strip-cwd-prefix" },
+          on_input_filter_cb = function(prompt)
+            if prompt:sub(#prompt) == "@" then
+              vim.schedule(
+                  function()
+                    local prompt_bufnr = api.nvim_get_current_buf()
+                    actions.select_default(prompt_bufnr)
+                    builtin.current_buffer_fuzzy_find()
+                    -- properly enter prompt in insert mode
+                    cmd [[normal! A]]
+                  end
+              )
+            end
+          end,
+        },
+
+        git_commits = {
+          mappings = {
+            i = {
+              ["<C-l>"] = function(prompt_bufnr)
+                R("telescope.actions").close(prompt_bufnr)
+                local value = action_state.get_selected_entry().value
+                cmd("DiffviewOpen " .. value .. "~1.." .. value)
+              end,
+
+              ["<C-s>"] = function(prompt_bufnr)
+                R("telescope.actions").close(prompt_bufnr)
+                local value = action_state.get_selected_entry().value
+                cmd("DiffviewOpen " .. value)
+              end,
+
+              ["<C-u>"] = function(prompt_bufnr)
+                R("telescope.actions").close(prompt_bufnr)
+                local value = action_state.get_selected_entry().value
+                local rev = utils.get_os_command_output(
+                                { "git", "rev-parse", "upstream/master" },
+                                uv.cwd()
+                            )[1]
+                cmd("DiffviewOpen " .. rev .. " " .. value)
+              end,
+            },
+          },
+        },
       },
       extensions = {
+
         bookmarks = {
           selected_browser = "buku",
           url_open_command = "handlr open",
@@ -148,15 +261,19 @@ require("telescope").setup(
           full_path = true,
           firefox_profile_name = nil,
         },
+
         fzf = {
           fuzzy = true,
           override_generic_sorter = true,
           override_file_sorter = true,
           case_mode = "smart_case",
+
         },
+
         frecency = {
           ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
         },
+
         packer = {
           theme = "ivy",
           layout_config = { height = .5 },
@@ -169,7 +286,14 @@ require("telescope").setup(
 
           },
         },
+
         file_browser = { theme = "ivy", mappings = { ["i"] = {}, ["n"] = {} } },
+
+        ["ui-select"] = {
+          themes.get_dropdown {
+            -- even more opts
+          },
+        },
       },
     }
 )
@@ -185,6 +309,8 @@ local options = {
   path_display = {},
   layout_strategy = "horizontal",
   layout_config = { preview_width = 0.65 },
+  border = {},
+  borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
 }
 
 -- ========================== Helper ==========================
@@ -226,7 +352,7 @@ local function requiref(module) require(module) end
 
 function _G.__telescope_files()
   -- Launch file search using Telescope
-  if vim.fn.isdirectory ".git" ~= 0 then
+  if fn.isdirectory ".git" ~= 0 then
     -- if in a git project, use :Telescope git_files
     builtin.git_files(options)
   else
@@ -278,6 +404,27 @@ function _G.__telescope_commits()
   }
 end
 
+function _G.installed_plugins()
+  builtin.find_files { cwd = fn.stdpath("data") .. "/site/pack/packer/" }
+end
+
+-- Doesn't work
+function _G.__telescope_grep_cword()
+  builtin.grep_string {
+    path_display = { "absolute" },
+    word_match = "-w",
+    search = vim.fn.expand("<cword>"),
+  }
+end
+
+-- Doesn't work
+function _G.__telescope_grep_cWORD()
+  builtin.grep_string {
+    path_display = { "absolute" },
+    search = vim.fn.expand("<cWORD>"),
+  }
+end
+
 -- vim.keymap.set(
 --     "n", "<leader>os", function()
 --       require("telescope.builtin").live_grep {
@@ -317,7 +464,7 @@ builtin.cst_mru = function(opts)
   local show_untracked = utils.get_default(opts.show_untracked, true)
   local recurse_submodules = utils.get_default(opts.recurse_submodules, false)
   if show_untracked and recurse_submodules then
-    error("Git does not suppurt both --others and --recurse-submodules")
+    error("Git does not support both --others and --recurse-submodules")
   end
   local cmd = {
     "git",
@@ -379,7 +526,12 @@ end
 
 builtin.git_grep = function(opts)
   opts.search_dirs = {}
-  opts.search_dirs[1] = lutils.capture("git rev-parse --show-toplevel")
+  opts.search_dirs[1] = utils.get_os_command_output{
+    "git",
+    "rev-parse",
+    "--show-toplevel",
+  }[1]
+
   opts.vimgrep_arguments = {
     "rg",
     "--color=never",
@@ -395,10 +547,32 @@ builtin.git_grep = function(opts)
         opts = opts,
         prompt_title = "Git Grep",
         search_dirs = opts.search_dirs,
+        path_display = { "smart" },
       }
   )
 end
 
+-- Frecency messes up with prompt_title
+builtin.edit_nvim = function()
+  builtin.fd { path_display = { "smart" }, search_dirs = { "~/.config/nvim" } }
+end
+
+builtin.edit_zsh = function()
+  builtin.find_files {
+    path_display = { "absolute" },
+    cwd = "~/.config/zsh/",
+    prompt = "~ zsh ~",
+    hidden = true,
+
+    layout_strategy = "vertical",
+    layout_config = {
+      horizontal = { width = { padding = 0.15 } },
+      vertical = { preview_height = 0.70 },
+    },
+  }
+end
+
+-- ========================= Extensions ==========================
 builtin.ultisnips = function(opts) telescope.extensions.ultisnips
     .ultisnips(opts) end
 
@@ -453,6 +627,9 @@ map("n", ";k", ":Telescope keymaps<CR>")
 map("n", "<LocalLeader>b", ":lua __telescope_buffers()<CR>")
 map("n", "<LocalLeader>f", ":lua __telescope_files()<CR>")
 map("n", ";e", ":lua __telescope_grep()<CR>")
+map("n", "<Leader>e;", ":Telescope edit_nvim<CR>")
+
+map("n", "<Leader>e,", ":lua __telescope_grep_cWORD<CR>")
 
 -- ========================== Highlight ==========================
 cmd [[highlight TelescopeSelection      guifg=#FF9500 gui=bold]]
@@ -467,6 +644,7 @@ cmd [[highlight TelescopePreviewBorder  guifg=#A06469]]
 cmd [[highlight TelescopeMatching       guifg=#FF5813]]
 cmd [[highlight TelescopePromptPrefix   guifg=#EF1D55]]
 
+telescope.load_extension("notify")
 -- telescope.load_extension("ultisnips")
 -- telescope.load_extension("coc")
 -- telescope.load_extension("bookmarks")

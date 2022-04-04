@@ -36,6 +36,17 @@ function M.jump0()
   return expr
 end
 
+-- function M.oldf2qf()
+--   local current_buffer = api.nvim_get_current_buf()
+--   local current_file = api.nvim_buf_get_name(current_buffer)
+--
+--   for _, file in ipairs(vim.v.oldfiles) do
+--     if uv.fs_stat(file) and file ~= current_file and not sess_map[file] then
+--       add_entry(file, co)
+--     end
+--   end
+-- end
+
 function M.jumps2qf()
   local locs, pos = unpack(fn.getjumplist())
   local items, idx = {}, 1

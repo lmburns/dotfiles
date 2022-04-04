@@ -1,9 +1,9 @@
 -- Set globals
 o = vim.opt -- vim options: behaves like `:set`
--- vim.o -- behaves like `:set` (global)
--- vim.opt -- behaves like `:set` (global and local)
--- vim.opt_global -- behaves like `:setglobal`
--- vim.opt_local -- behaves like `:setlocal`
+-- o           --  behaves like `:set` (global)
+-- opt         --  behaves like `:set` (global and local)
+-- opt_global  --  behaves like `:setglobal`
+-- opt_local   --  behaves like `:setlocal`
 
 g = vim.g -- vim global variables:
 go = vim.go -- vim global options
@@ -42,22 +42,22 @@ end
 -- Create many augroups
 function M.augroups(definitions)
   for group_name, definition in pairs(definitions) do
-    vim.cmd("augroup " .. group_name)
-    vim.cmd("autocmd!")
+    cmd("augroup " .. group_name)
+    cmd("autocmd!")
     for _, def in pairs(definition) do
-      local command = table.concat(vim.tbl_flatten { "autocmd", def }, " ")
-      vim.cmd(command)
+      local command = table.concat(tbl_flatten { "autocmd", def }, " ")
+      cmd(command)
     end
-    vim.cmd("augroup END")
+    cmd("augroup END")
   end
 end
 
 -- Create a single augroup
 function M.augroup(name, commands)
-  vim.cmd("augroup " .. name)
-  vim.cmd("autocmd!")
+  cmd("augroup " .. name)
+  cmd("autocmd!")
   for _, c in ipairs(commands) do
-    vim.cmd(
+    cmd(
         string.format(
             "autocmd %s %s %s %s", table.concat(c.events, ","),
             table.concat(c.targets or {}, ","),
@@ -65,7 +65,7 @@ function M.augroup(name, commands)
         )
     )
   end
-  vim.cmd("augroup END")
+  cmd("augroup END")
 end
 
 -- Create an autocmd
@@ -96,103 +96,149 @@ function M.map(modes, lhs, rhs, opts)
   end
 end
 
+-- NOTE: Whats the difference between vim.keymap.set and vim.api.nvim_set_keymap?
+
 -- Create a buffer key mapping
-function M.bmap(bufnr, mode, lhs, rhs, opts)
+M.bmap = function(bufnr, mode, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
   api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
 end
 
--- Merge two tables together
-function M.merge_tables(a, b)
-  if type(a) == "table" and type(b) == "table" then
-    for k, v in pairs(b) do
-      if type(v) == "table" and type(a[k] or false) == "table" then
-        merge(a[k], v)
-      else
-        a[k] = v
-      end
+-- This allows for lua function mapping
+M.fmap = function(tbl)
+  opts = tbl[4] or {}
+  opts.noremap = opts.noremap == nil and true or opts.noremap
+  vim.keymap.set(tbl[1], tbl[2], tbl[3], opts)
+end
+
+-- ========================== Mapping Implentation ==========================
+-- ======================== Credit: ibhagwan/nvim-lua =======================
+--
+-- Credit to uga-rosa@github
+-- https://github.com/uga-rosa/dotfiles/blob/main/.config/nvim/lua/utils.lua
+
+---Return a string for vim from a lua function.
+---Functions are stored in _G.myluafunc.
+---@param func function
+---@return string VimFunctionString
+_G.myluafunc = setmetatable(
+    {}, {
+      __call = function(self, idx, args, count)
+        return self[idx](args, count)
+      end,
+    }
+)
+
+local func2str = function(func, args)
+  local idx = #_G.myluafunc + 1
+  _G.myluafunc[idx] = func
+  if not args then
+    return ("lua myluafunc(%s)"):format(idx)
+  else
+    -- return ("lua myluafunc(%s, <q-args>)"):format(idx)
+    return ("lua myluafunc(%s, <q-args>, <count>)"):format(idx)
+  end
+end
+
+function M.remap(modes, lhs, rhs, opts)
+  modes = type(modes) == "string" and { modes } or modes
+  opts = opts or {}
+  opts = type(opts) == "string" and { opts } or opts
+
+  local fallback = function() return api.nvim_feedkeys(M.t(lhs), "n", true) end
+
+  local _rhs = (function()
+    if type(rhs) == "function" then
+      opts.noremap = true
+      opts.cmd = true
+      return func2str(function() rhs(fallback) end)
+    else
+      return rhs
+    end
+  end)()
+
+  for key, opt in ipairs(opts) do
+    opts[opt] = true
+    opts[key] = nil
+  end
+
+  local buffer = (function()
+    if opts.buffer then
+      opts.buffer = nil
+      return true
+    end
+  end)()
+
+  _rhs = (function()
+    if opts.cmd then
+      opts.cmd = nil
+      return ("<cmd>%s<cr>"):format(_rhs)
+    else
+      return _rhs
+    end
+  end)()
+
+  for _, mode in ipairs(modes) do
+    if buffer then
+      api.nvim_buf_set_keymap(0, mode, lhs, _rhs, opts)
+    else
+      api.nvim_set_keymap(mode, lhs, _rhs, opts)
     end
   end
-  return a
-end
-
--- Easier mapping
-function M.map_lua(mode, keys, action, options)
-  local opts = options or { noremap = true }
-  -- options = M.merge_tables({
-  --     noremap = true
-  -- }, options)
-  vim.api.nvim_set_keymap(mode, keys, "<cmd>lua " .. action .. "<CR>", opts)
-end
-
--- Easier visual mapping
-function M.vmap_lua(keys, action, options)
-  local opts = options or { noremap = true }
-  -- options = M.merge_tables({
-  --     noremap = true
-  -- }, options)
-  vim.api.nvim_set_keymap("v", keys, "<cmd>'<,'>lua " .. action .. "<CR>", opts)
 end
 
 -- Replace termcodes; e.g., t'<C-n'
-function M.t(str) return vim.api.nvim_replace_termcodes(str, true, true, true) end
-
--- Check whether the current buffer is empty
-function M.is_buffer_empty() return vim.fn.empty(vim.fn.expand("%:t")) == 1 end
-
-function M.has_width_gt(cols)
-  -- Check if the windows width is greater than a given number of columns
-  return vim.fn.winwidth(0) / 2 > cols
-end
+function M.t(str) return api.nvim_replace_termcodes(str, true, true, true) end
 
 -- print/debug helper
 function M.dump(...)
-  local objects = vim.tbl_map(vim.inspect, { ... })
+  local objects = tbl_map(inspect, { ... })
   print(table.unpack(objects))
 end
 
-function M.all(...)
-  local args = { ... }
-  return function()
-    for _, fn in ipairs(args) do
-      if not fn() then
-        return false
+---API for command mappings
+-- Supports lua function args
+---@param args string|table
+function M.command(args)
+  if type(args) == "table" then
+    for i = 2, #args do
+      if fn.exists(":" .. args[2]) == 2 then
+        cmd("delcommand " .. args[2])
+      end
+      if type(args[i]) == "function" then
+        args[i] = func2str(args[i], true)
       end
     end
-    return true
+    args = table.concat(args, " ")
   end
+  cmd("command! " .. args)
+end
+
+-- Expand or minimize current buffer in a more natural direction (tmux-like)
+function M.resize(vertical, margin)
+  local cur_win = api.nvim_get_current_win()
+  -- go (possibly) right
+  vim.cmd(string.format("wincmd %s", vertical and "l" or "j"))
+  local new_win = api.nvim_get_current_win()
+
+  -- determine direction cond on increase and existing right-hand buffer
+  local not_last = not (cur_win == new_win)
+  local sign = margin > 0
+  -- go to previous window if required otherwise flip sign
+  if not_last == true then
+    vim.cmd [[wincmd p]]
+  else
+    sign = not sign
+  end
+
+  sign = sign and "+" or "-"
+  local dir = vertical and "vertical " or ""
+  local cmd = dir .. "resize " .. sign .. math.abs(margin) .. "<CR>"
+  vim.cmd(cmd)
 end
 
 function M.clear_module(module_name) package.loaded[module_name] = nil end
-
--- Safely require a plugin
-function M.prequire(m)
-  local ok, err = pcall(require, m)
-  if not ok then
-    return nil, err
-  end
-  return err
-end
-
--- Buffer local mappings
-function M.map_buf(mode, keys, action, options, buf_nr)
-  options = M.merge_tables({ noremap = true }, options)
-  local buf = buf_nr or 0
-  vim.api.nvim_buf_set_keymap(buf, mode, keys, action, options)
-end
-
-function M.map_lua_buf(mode, keys, action, options, buf_nr)
-  options = M.merge_tables({ noremap = true }, options)
-  local buf = buf_nr or 0
-  vim.api.nvim_buf_set_keymap(
-      buf, mode, keys, "<cmd>lua " .. action .. "<CR>", options
-  )
-end
-
-function M.has_key(table, key) return table.key ~= nil end
-
-function M.executable(e) return fn.executable(e) > 0 end
 
 cmd [[
     function! IsPluginInstalled(name) abort
@@ -205,13 +251,13 @@ cmd [[
 -- end
 --
 -- function AutocmdLazyConfig(plugin_name)
---   local timer = vim.loop.new_timer()
+--   local timer = loop.new_timer()
 --   timer:start(
---       1000, 0, vim.schedule_wrap(
+--       1000, 0, schedule_wrap(
 --           function()
 --             if _G.packer_plugins[plugin_name].loaded then
 --               timer:close() -- Always close handles to avoid leaks.
---               vim.cmd(
+--               cmd(
 --                   string.format("doautocmd User %s", "packer-" .. plugin_name)
 --               )
 --             end
@@ -220,18 +266,23 @@ cmd [[
 --   )
 -- end
 
-function M.preserve(arguments)
-  local arguments =
-      string.format("keepjumps keeppatterns execute %q", arguments)
-  -- local original_cursor = vim.fn.winsaveview()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  vim.api.nvim_command(arguments)
-  local lastline = vim.fn.line("$")
-  -- vim.fn.winrestview(original_cursor)
-  if line > lastline then
-    line = lastline
+-- Check whether the current buffer is empty
+function M.is_buffer_empty() return fn.empty(fn.expand("%:t")) == 1 end
+
+-- Check if the windows width is greater than a given number of columns
+function M.has_width_gt(cols) return fn.winwidth(0) / 2 > cols end
+
+function M.merge(a, b)
+  if type(a) == "table" and type(b) == "table" then
+    for k, v in pairs(b) do
+      if type(v) == "table" and type(a[k] or false) == "table" then
+        M.merge(a[k], v)
+      else
+        a[k] = v
+      end
+    end
   end
-  vim.api.nvim_win_set_cursor({ 0 }, { line, col })
+  return a
 end
 
 -- Allows us to use utils globally

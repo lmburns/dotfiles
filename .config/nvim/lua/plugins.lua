@@ -221,6 +221,16 @@ return packer.startup(
         )
         -- ]]] === Scrollbar ===
 
+        -- ============================ Trouble =============================== [[[
+        -- use(
+        --     {
+        --       "folke/trouble.nvim",
+        --       requires = { "kyazdani42/nvim-web-devicons", opt = true },
+        --       config = conf("plugs.trouble"),
+        --     }
+        -- )
+        -- ]]] === Trouble ===
+
         -- =========================== Statusline ============================= [[[
         use(
             {
@@ -305,16 +315,18 @@ return packer.startup(
             }
         )
 
-        use(
-            {
-              "justinmk/vim-sneak",
-              after = "vim-surround",
-              keys = { { "n", "f" }, { "n", "F" } },
-              config = conf("sneak"),
-            }
-        )
+        use({ "phaazon/hop.nvim", config = conf("hop") })
 
         use({ "pseewald/vim-anyfold", cmd = "AnyFoldActivate" })
+
+        -- use(
+        --     {
+        --       "justinmk/vim-sneak",
+        --       after = "vim-surround",
+        --       keys = { { "n", "f" }, { "n", "F" } },
+        --       config = conf("sneak"),
+        --     }
+        -- )
 
         -- use(
         --     { "AndrewRadev/switch.vim",
@@ -453,7 +465,8 @@ return packer.startup(
           "go",
           "gomod",
           "html",
-          "java", -- "json",
+          "java",
+          -- "json",
           -- "kotlin",
           "lua",
           "make",
@@ -461,11 +474,12 @@ return packer.startup(
           "query",
           "ruby",
           "rust",
-          "scss", -- "teal",
+          "scss",
+          -- "teal",
           -- "tsx",
-          -- "typescript",
           -- "vue",
           "zig",
+          -- "typescript",
         }
         use({ "sheerun/vim-polyglot" })
 
@@ -666,8 +680,14 @@ return packer.startup(
                   "nvim-telescope/telescope-file-browser.nvim",
                   after = { "telescope.nvim" },
                   config = [[require("telescope").load_extension("file_browser")]],
-                }, -- TODO: Use or remove; Does this do anything?
+                },
                 {
+                  "nvim-telescope/telescope-ui-select.nvim",
+                  after = { "telescope.nvim" },
+                  config = [[require("telescope").load_extension("ui-select")]],
+                },
+                {
+                  -- TODO: Use or remove; Does this do anything?
                   "nvim-telescope/telescope-smart-history.nvim",
                   requires = { "tami5/sqlite.lua" },
                   after = { "telescope.nvim", "sqlite.lua" },
@@ -700,7 +720,7 @@ return packer.startup(
               "AckslD/nvim-neoclip.lua",
               requires = { "nvim-telescope/telescope.nvim", "tami5/sqlite.lua" },
               after = { "telescope.nvim", "sqlite.lua" },
-              config = function() require("plugs.nvim-neoclip") end,
+              config = [[require("plugs.nvim-neoclip")]],
             }
         )
 
