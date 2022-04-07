@@ -24,7 +24,7 @@ g.do_filetype_lua = 1
 
 -- Runs `filetype.lua` and uses builtin filetype detection
 -- I have noticed that treesitter syntax highlighting is delayed when this is used
--- g.did_load_filetypes = 0
+g.did_load_filetypes = 1
 
 vim.filetype.add(
     {
@@ -36,11 +36,8 @@ vim.filetype.add(
         mjml = "html",
         sxhkdrc = "sxhkdrc",
       },
-      pattern = {
-        [".*%.env.*"] = "sh",
-        [".*ignore"] = "conf",
-      },
-      filename = { ["yup.lock"] = "yaml" },
+      pattern = { [".*%.env.*"] = "sh", [".*ignore"] = "conf" },
+      filename = { ["yup.lock"] = "yaml", [".editorconfig"] = "dosini" },
     }
 )
 
@@ -96,11 +93,18 @@ o.startofline = false
 o.backspace = [[indent,eol,start]]
 o.synmaxcol = 1000 -- do not highlight long lines
 
--- o.foldenable = false
--- o.foldmethod = "marker"
--- o.foldmarker = "[[[,]]]"
+o.foldenable = false
+o.foldmethod = "marker"
+o.foldmarker = "[[[,]]]"
 
--- This does not work globally for whatever reason
+-- cmd [[set foldmethod=expr]] -- use treesitter folding support
+-- cmd [[set foldexpr=nvim_treesitter#foldexpr()]]
+-- opt.foldlevelstart = 99
+-- opt.foldnestmax = 10 -- deepest fold is 10 levels
+-- opt.foldenable = false -- don't fold by default
+-- opt.foldlevel = 1
+
+-- This does not work globally for whatever reason (didn't in vim either)
 o.formatoptions:remove({ "c", "r", "o" })
 o.nrformats = "octal,hex,bin,unsigned"
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
@@ -113,7 +117,7 @@ o.listchars:append(
     { tab = "‣ ", trail = "•", precedes = "«", extends = "»",
       nbsp = "␣" }
 )
--- o.showbreak = "⏎"
+o.showbreak = [[↪ ]] -- "⏎"
 o.showtabline = 2
 o.incsearch = true -- incremential search highlight
 o.pumheight = 10 -- number of items in popup menu
@@ -234,8 +238,7 @@ g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
 -- ============= Abbreviations ============= [[[
-cmd(
-    [[
+cmd [[
     cnoreabbrev W! w!
     cnoreabbrev Q! q!
     cnoreabbrev Qall! qall!
@@ -246,7 +249,9 @@ cmd(
     cnoreabbrev W w
     cnoreabbrev Qall qall
 ]]
-)
+
+cmd [[cabbrev tel <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Telescope' : 'tel')<CR>]]
+
 -- ]]] === Abbreviations ===
 
 -- =============== Commands ================ [[[

@@ -871,6 +871,8 @@ key_bindings:
   - { key: Comma,     mods: Control|Option|Super, action:  SpawnNewInstance }
   - { key: Space,     mods: Control|Shift,        action:  ToggleViMode     }
   - { key: B,         mods: Control|Option,       command: { program: "alacritty", args: ["-e", "btm"] } }
+  - { key: Return,   mods: Shift,   chars: "\x1b[13;2u" }
+  - { key: Return,   mods: Control, chars: "\x1b[13;5u" }
 
   # Vi Mode
   - { key: Space,  mods: Control,       mode: Vi, action: ScrollToBottom          }

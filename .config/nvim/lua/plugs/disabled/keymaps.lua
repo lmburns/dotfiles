@@ -1,4 +1,3 @@
--- TODO: Use this or remove it
 local nest = require("nest")
 
 nest.applyKeymaps {

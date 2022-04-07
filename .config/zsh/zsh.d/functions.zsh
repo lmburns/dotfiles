@@ -80,8 +80,8 @@ function lszle() {
 function lszstyle() {
   print -Plr -- \
     ${${(@)${(@f):-"$(zstyle -L ':*')"}/*list-colors*/}//(#b)(zstyle) (*) (*) (*)/\
-%F{1}$match[1]%f %F{3}$match[2]%f %F{14}%B$match[3]%b%f %F{2}$match[4]} | \
-  bat
+%F{1}$match[1]%f %F{3}$match[2]%f %F{14}%B$match[3]%b%f %F{2}$match[4]} \
+  | bat
 }
 
 # Desc: tells from-where a zsh completion is coming from
@@ -127,6 +127,7 @@ function creinstall() {
   }
 
   (( $+functions[defer] )) && { defer -c '___creinstall && src' }
+  unfunction 'creinstall'
 }
 
 # ================================ Wifi ==============================

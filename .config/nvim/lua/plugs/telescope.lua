@@ -17,6 +17,18 @@ local conf = require("telescope.config").values
 require("common.utils")
 require("lutils")
 
+-- local home = vim.loop.os_homedir()
+-- local cwd = vim.fn.getcwd()
+
+local set_prompt_to_entry_value = function(prompt_bufnr)
+  local entry = action_state.get_selected_entry()
+  if not entry or not type(entry) == "table" then
+    return
+  end
+
+  action_state.get_current_picker(prompt_bufnr):reset_prompt(entry.ordinal)
+end
+
 -- ============================ Config ===========================
 
 require("telescope").setup(
@@ -26,20 +38,51 @@ require("telescope").setup(
       defaults = {
         history = {
           path = fn.stdpath("data") .. "/databases/telescope_history.sqlite3",
-          limit = 10000,
+          limit = 1000,
+        },
+        dynamic_preview_title = true,
+        preview = {
+          filesize_limit = 5,
+          timeout = 150,
+          treesitter = true,
+          filesize_hook = function(filepath, bufnr, opts)
+            local path = Path:new(filepath)
+            local height = vim.api.nvim_win_get_height(opts.winid)
+            local lines = vim.split(path:head(height), "[\r]?\n")
+            api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+          end,
         },
         prompt_prefix = "❱ ",
         selection_caret = "❱ ",
         entry_prefix = "  ",
+        multi_icon = "<>",
+        -- cache_picker = { num_pickers = 20 },
         initial_mode = "insert",
+        winblend = 3,
+        set_env = { ["COLORTERM"] = "truecolor" },
         selection_strategy = "reset",
         sorting_strategy = "descending",
         layout_strategy = "horizontal",
+        color_devicons = true,
+        scroll_strategy = "cycle",
         -- layout_strategy = "flex",
         border = {},
         borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-        use_less = true,
+
+        -- Using "smart" here slows down majorly
         path_display = {},
+        -- path_display = function(opts, fname)
+        --   local og_fname = fname
+        --
+        --   fname = Path:new(fname):make_relative(cwd)
+        --   if vim.startswith(fname, home) then
+        --     fname = "~/" .. Path:new(fname):make_relative(home)
+        --   elseif fname ~= og_fname then
+        --     fname = "./" .. fname
+        --   end
+        --
+        --   return utils.transform_path({}, fname)
+        -- end,
         mappings = {
           i = {
             ["<C-x>"] = false,
@@ -48,8 +91,10 @@ require("telescope").setup(
 
             ["<C-k>"] = actions.cycle_history_next,
             ["<C-j>"] = actions.cycle_history_prev,
+            ["<C-g>s"] = actions.select_all,
+            ["<C-g>a"] = actions.add_selection,
 
-            -- ["<C-m>"] = action_layout.toggle_mirror,
+            ["<C-m>"] = action_layout.toggle_mirror,
             ["<C-t>"] = action_layout.toggle_preview,
             ["<M-p>"] = action_layout.toggle_prompt_position,
 
@@ -60,7 +105,23 @@ require("telescope").setup(
             ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
             ["<C-q>"] = actions.send_selected_to_qflist,
 
-            ["<C-w>"] = function() vim.api.nvim_input "<c-s-w>" end,
+            ["<C-w>"] = function()
+              vim.api.nvim_input "<c-s-w>"
+            end,
+
+            -- Single selection hop
+            ["<C-h>"] = function(prompt_bufnr)
+              telescope.extensions.hop.hop(prompt_bufnr)
+            end,
+
+            -- custom hop loop to multi selects and sending selected entries to quickfix list
+            ["<M-;>"] = function(prompt_bufnr)
+              local opts = {
+                callback = actions.toggle_selection,
+                loop_callback = actions.send_selected_to_qflist,
+              }
+              telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
+            end,
           },
           n = {
             ["j"] = actions.move_selection_next,
@@ -106,6 +167,8 @@ require("telescope").setup(
           "%.svg",
           "%.otf",
           "%.ttf",
+          "tags",
+          ".tags",
           "target/.*",
           ".git/.*",
           "node_modules/.*",
@@ -115,12 +178,15 @@ require("telescope").setup(
         file_previewer = previewers.vim_buffer_cat.new,
         grep_previewer = previewers.vim_buffer_vimgrep.new,
         qflist_previewer = previewers.vim_buffer_qflist.new,
+
         layout_config = {
-          width = 0.85,
+          width = 0.95,
+          height = 0.85,
+
           horizontal = {
             mirror = false,
             prompt_position = "bottom",
-            preview_cutoff = 120,
+            -- preview_cutoff = 120,
             preview_width = function(_, cols, _)
               if cols > 200 then
                 return math.floor(cols * 0.4)
@@ -129,18 +195,20 @@ require("telescope").setup(
               end
             end,
           },
+
           vertical = {
+            width = 0.9,
+            height = 0.95,
             mirror = false,
             prompt_position = "bottom",
-            preview_cutoff = 120,
+            -- preview_cutoff = 120,
             preview_width = 0.5,
           },
+
+          flex = { horizontal = { preview_width = 0.9 } },
         },
-        winblend = 3,
-        set_env = { ["COLORTERM"] = "truecolor" },
-        color_devicons = true,
-        scroll_strategy = "cycle",
       },
+
       pickers = {
         buffers = {
           preview = true,
@@ -151,7 +219,7 @@ require("telescope").setup(
           theme = "dropdown",
           sorter = require("telescope.sorters").get_substr_matcher(),
           selection_strategy = "closest",
-          path_display = { "shorten" },
+          path_display = { "smart" },
           layout_strategy = "center",
           winblend = 0,
           layout_config = { width = 70 },
@@ -270,8 +338,55 @@ require("telescope").setup(
 
         },
 
+        hop = {
+          -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
+          keys = {
+            "a",
+            "s",
+            "d",
+            "f",
+            "q",
+            "w",
+            "e",
+            "r",
+            "t",
+            ";",
+            "b",
+            "z",
+            "x",
+            "i",
+            "o",
+          },
+
+          -- Highlight groups to link to signs and lines; the below configuration refers to demo
+          -- sign_hl typically only defines foreground to possibly be combined with line_hl
+          sign_hl = { "WarningMsg", "Title" },
+
+          -- optional, typically a table of two highlight groups that are alternated between
+          line_hl = { "CursorLine", "Normal" },
+
+          -- options specific to `hop_loop`
+          -- true temporarily disables Telescope selection highlighting
+          clear_selection_hl = false,
+          -- highlight hopped to entry with telescope selection highlight
+          -- note: mutually exclusive with `clear_selection_hl`
+          trace_entry = true,
+          -- jump to entry where hoop loop was started from
+          reset_selection = true,
+        },
+
         frecency = {
           ignore_patterns = { "*.git/*", "*/tmp/*", "*/node_modules/*" },
+          persistent_filter = false,
+          show_scores = true,
+          show_unindexed = true,
+          disable_devicons = false,
+          workspaces = {
+            ["conf"] = "/home/lucas/.config",
+            ["nvim"] = "/home/lucas/.config/nvim",
+            ["data"] = "/home/lucas/.local/share",
+            ["project"] = "/home/lucas/projects",
+          },
         },
 
         packer = {
@@ -287,7 +402,54 @@ require("telescope").setup(
           },
         },
 
-        file_browser = { theme = "ivy", mappings = { ["i"] = {}, ["n"] = {} } },
+        file_browser = {
+          theme = "ivy",
+          -- These aren't working
+          attach_mappings = function(prompt_bufnr, map)
+            local current_picker = action_state.get_current_picker(prompt_bufnr)
+
+            local modify_cwd = function(new_cwd)
+              local finder = current_picker.finder
+
+              finder.path = new_cwd
+              finder.files = true
+              current_picker:refresh(false, { reset_prompt = true })
+            end
+
+            map(
+                "i", "-", function()
+                  modify_cwd(current_picker.cwd .. "/..")
+                end
+            )
+
+            map(
+                "i", "~", function()
+                  modify_cwd(vim.fn.expand "~")
+                end
+            )
+
+            -- local modify_depth = function(mod)
+            --   return function()
+            --     opts.depth = opts.depth + mod
+            --
+            --     current_picker:refresh(false, { reset_prompt = true })
+            --   end
+            -- end
+            --
+            -- map("i", "<M-=>", modify_depth(1))
+            -- map("i", "<M-+>", modify_depth(-1))
+
+            map(
+                "n", "yy", function()
+                  local entry = action_state.get_selected_entry()
+                  require("common.yank").yank_reg(vim.v.register, entry.value)
+                  -- vim.fn.setreg("+", entry.value)
+                end
+            )
+
+            return true
+          end,
+        },
 
         ["ui-select"] = {
           themes.get_dropdown {
@@ -346,17 +508,16 @@ local function filter_by_cwd_paths(tbl, cwd)
   return res
 end
 
-local function requiref(module) require(module) end
+local function requiref(module)
+  require(module)
+end
 
 -- ========================== Builtin ==========================
 
 function _G.__telescope_files()
-  -- Launch file search using Telescope
-  if fn.isdirectory ".git" ~= 0 then
-    -- if in a git project, use :Telescope git_files
+  if #require("common.gittool").root() ~= 0 then
     builtin.git_files(options)
   else
-    -- otherwise, use :Telescope find_files
     builtin.find_files(options)
   end
 end
@@ -404,10 +565,6 @@ function _G.__telescope_commits()
   }
 end
 
-function _G.installed_plugins()
-  builtin.find_files { cwd = fn.stdpath("data") .. "/site/pack/packer/" }
-end
-
 -- Doesn't work
 function _G.__telescope_grep_cword()
   builtin.grep_string {
@@ -440,7 +597,9 @@ builtin.cst_mru = function(opts)
     local res = pcall(requiref, "telescope._extensions.frecency")
     if not res then
       return vim.tbl_filter(
-          function(val) return 0 ~= fn.filereadable(val) end, vim.v.oldfiles
+          function(val)
+            return 0 ~= fn.filereadable(val)
+          end, vim.v.oldfiles
       )
     else
       local db_client = require("telescope._extensions.frecency.db_client")
@@ -554,31 +713,69 @@ end
 
 -- Frecency messes up with prompt_title
 builtin.edit_nvim = function()
-  builtin.fd { path_display = { "smart" }, search_dirs = { "~/.config/nvim" } }
+  builtin.fd {
+    -- prompt_title = "< Search Nvim >",
+    path_display = { "smart" },
+    search_dirs = { "~/.config/nvim" },
+    attach_mappings = function(_, map)
+      map("i", "<C-y>", set_prompt_to_entry_value)
+
+      -- TODO: Find something useful for this
+      -- actions.select_default:replace_if(
+      --     function()
+      --       -- If this fails, then do regular default
+      --     end, function()
+      --       -- Do something if first returns true
+      --     end
+      -- )
+
+      return true
+    end,
+  }
 end
 
+-- FIX: Insert mode doesn't start
+builtin.grep_nvim = function()
+  builtin.live_grep {
+    initial_mode = "insert",
+    path_display = { "smart" },
+    search_dirs = { "~/.config/nvim" },
+    prompt_title = "Nvim Grep",
+  }
+end
+
+-- Theme isn't working
 builtin.edit_zsh = function()
   builtin.find_files {
-    path_display = { "absolute" },
-    cwd = "~/.config/zsh/",
-    prompt = "~ zsh ~",
-    hidden = true,
-
-    layout_strategy = "vertical",
-    layout_config = {
-      horizontal = { width = { padding = 0.15 } },
-      vertical = { preview_height = 0.70 },
+    themes.get_dropdown {
+      path_display = { "smart" },
+      cwd = "~/.config/zsh/",
+      -- prompt_title = "~ Search Zsh ~",
+      hidden = true,
     },
   }
 end
 
+builtin.installed_plugins = function()
+  builtin.find_files { cwd = fn.stdpath("data") .. "/site/pack/packer/" }
+end
+
 -- ========================= Extensions ==========================
-builtin.ultisnips = function(opts) telescope.extensions.ultisnips
-    .ultisnips(opts) end
+builtin.ultisnips = function(opts)
+  telescope.extensions.ultisnips.ultisnips(opts)
+end
 
-builtin.coc = function(opts) telescope.extensions.coc.coc(opts) end
+builtin.coc = function(opts)
+  telescope.extensions.coc.coc(opts)
+end
 
-builtin.ghq = function(opts) telescope.extensions.ghq.list(opts) end
+builtin.ghq = function(opts)
+  telescope.extensions.ghq.list(opts)
+end
+
+builtin.notify = function(opts)
+  telescope.extensions.notify.notify(opts)
+end
 
 -- ========================== Mappings ===========================
 local map = require("common.utils").map
@@ -611,10 +808,12 @@ map("n", ";s", ":Telescope coc workspace_symbols<CR>")
 
 map("n", "<LocalLeader>c", ":Telescope coc<CR>")
 map("n", "<A-c>", ":Telescope coc commands<CR>")
+
 map("n", "<C-x>h", ":Telescope coc diagnostics<CR>")
 map("n", "<C-x><C-r>", ":Telescope coc references<CR>")
 map("n", "<C-[>", ":Telescope coc definitions<CR>")
 map("n", ";n", ":Telescope coc locations<CR>")
+
 map("n", "<A-;>", ":Telescope neoclip<CR>")
 
 map("n", "<Leader>si", ":Telescope ultisnips<CR>", { silent = true })
@@ -627,9 +826,11 @@ map("n", ";k", ":Telescope keymaps<CR>")
 map("n", "<LocalLeader>b", ":lua __telescope_buffers()<CR>")
 map("n", "<LocalLeader>f", ":lua __telescope_files()<CR>")
 map("n", ";e", ":lua __telescope_grep()<CR>")
-map("n", "<Leader>e;", ":Telescope edit_nvim<CR>")
 
-map("n", "<Leader>e,", ":lua __telescope_grep_cWORD<CR>")
+map("n", "<Leader>e;", ":Telescope edit_nvim<CR>")
+map("n", "<Leader>e,", ":Telescope grep_nvim<CR>")
+
+-- map("n", "<Leader>e,", ":lua __telescope_grep_cWORD<CR>")
 
 -- ========================== Highlight ==========================
 cmd [[highlight TelescopeSelection      guifg=#FF9500 gui=bold]]
@@ -644,7 +845,11 @@ cmd [[highlight TelescopePreviewBorder  guifg=#A06469]]
 cmd [[highlight TelescopeMatching       guifg=#FF5813]]
 cmd [[highlight TelescopePromptPrefix   guifg=#EF1D55]]
 
-telescope.load_extension("notify")
+cmd [[highlight TelescopePathSeparator guifg=#98676A]]
+cmd [[highlight TelescopeFrecencyScores guifg=#819C3B]]
+cmd [[highlight TelescopeBufferLoaded   guifg=#EF1D55]]
+
+_ = telescope.load_extension("notify")
 -- telescope.load_extension("ultisnips")
 -- telescope.load_extension("coc")
 -- telescope.load_extension("bookmarks")

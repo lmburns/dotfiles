@@ -39,4 +39,13 @@ function reload.update_package_path()
     vim._update_package_paths()
 end
 
+function reload.reload_module(m_name)
+    m_name = vim.trim(m_name)
+    for p in pairs(package.loaded) do
+        if p:sub(1, #m_name) == m_name then
+            package.loaded[p] = nil
+        end
+    end
+end
+
 return reload

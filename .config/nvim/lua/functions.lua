@@ -24,6 +24,7 @@ cmd [[
     endif
   endfunction
 
+  nnoremap <Leader>xl :luafile %<CR>
   nnoremap <Leader>xx :call <SID>executor()<CR>
   vnoremap <Leader>xx :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
 
@@ -112,9 +113,10 @@ cmd [[command! -nargs=* VT vsp | term <args>]]
 
 -- map("n", "<A-i>", ":TP<CR>A")
 -- Toggle terminal on/off (neovim)
-map("n", "<C-t>", ":call TermToggle(12)<CR>")
-map("i", "<C-t>", "<Esc>:call TermToggle(12)<CR>")
-map("t", "<C-t>", [[<C-\><C-n>:call TermToggle(12)<CR>]])
+
+-- map("n", "<C-t>", ":call TermToggle(12)<CR>")
+-- map("i", "<C-t>", "<Esc>:call TermToggle(12)<CR>")
+-- map("t", "<C-t>", [[<C-\><C-n>:call TermToggle(12)<CR>]])
 
 -- Terminal go back to normal mode
 map("t", "<Esc>", [[<C-\><C-n>]])

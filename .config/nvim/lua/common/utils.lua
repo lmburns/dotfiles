@@ -115,13 +115,10 @@ end
 -- ========================== Mapping Implentation ==========================
 -- ======================== Credit: ibhagwan/nvim-lua =======================
 --
--- Credit to uga-rosa@github
--- https://github.com/uga-rosa/dotfiles/blob/main/.config/nvim/lua/utils.lua
-
----Return a string for vim from a lua function.
----Functions are stored in _G.myluafunc.
----@param func function
----@return string VimFunctionString
+--- Return a string for vim from a lua function.
+--- Functions are stored in _G.myluafunc.
+--- @param func function
+--- @return string VimFunctionString
 _G.myluafunc = setmetatable(
     {}, {
       __call = function(self, idx, args, count)

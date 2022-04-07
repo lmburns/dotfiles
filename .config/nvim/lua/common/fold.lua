@@ -56,7 +56,15 @@ local function apply_fold(bufnr, ranges)
   api.nvim_buf_call(
       bufnr, function()
         vim.wo.foldmethod = "manual"
+
+        -- NOTE: This moves the cursor one place to the left if typing starts within
+        --       1 second of opening the file
         cmd("norm! zE")
+
+        -- if api.nvim_get_mode().mode == "i" then
+        --   cmd("norm! l")
+        -- end
+
         local fold_cmd = {}
         for _, f in ipairs(ranges) do
           table.insert(
@@ -163,7 +171,11 @@ function M.defer_attach(bufnr)
   end
 
   wo.foldmethod = "manual"
-  vim.defer_fn(function() M.attach(bufnr) end, 1000)
+  vim.defer_fn(
+      function()
+        M.attach(bufnr)
+      end, 1000
+  )
 end
 
 function M.foldtext()
@@ -235,21 +247,30 @@ local function init()
   vim.g.anyfold_identify_comments = 0
   vim.g.anyfold_motion = 0
 
+  -- blacklist
   bl_ft = { "", "man", "markdown", "git", "floggraph" }
   coc_loaded_ft = {}
   anyfold_prefer_ft = { "vim" }
 
-  api.nvim_create_autocmd(
-      "FileType", {
-        callback = function()
-          require("common.fold").defer_attach(tonumber(vim.fn.expand("<abuf>")))
-        end,
-        group = create_augroup("FoldLoad"),
-        pattern = "*",
-      }
-  )
+  -- api.nvim_create_autocmd(
+  --     "FileType", {
+  --       callback = function()
+  --         require("common.fold").defer_attach(tonumber(vim.fn.expand("<abuf>")))
+  --       end,
+  --       group = create_augroup("FoldLoad"),
+  --       pattern = "*",
+  --     }
+  -- )
+
+  cmd([[
+      aug FoldLoad
+          au!
+          au FileType * lua require('common.fold').defer_attach(tonumber(vim.fn.expand('<abuf>')))
+      aug END
+  ]])
 
   cmd [[com! -nargs=0 Fold lua require('common.fold').attach(nil, true)]]
+
   for _, bufnr in ipairs(api.nvim_list_bufs()) do
     M.defer_attach(bufnr)
   end

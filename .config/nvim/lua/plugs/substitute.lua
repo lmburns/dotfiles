@@ -1,7 +1,9 @@
 local M = {}
 local K = require("common.keymap")
 
-function M.setup() require("substitute").setup() end
+function M.setup()
+  require("substitute").setup()
+end
 
 local function init()
   M.setup()

@@ -42,24 +42,16 @@ function M.bqf()
   )
 end
 
-function M.delimitmate()
-  g.delimitMate_jump_expansion = 1
-  g.delimitMate_expand_cr = 2
-  map(
-      "i", "<CR>", ("pumvisible() ? %s : %s . \"<Plug>delimitMateCR\""):format(
-          [["\<C-y>"]], [[(getline('.') =~ '^\s*$' ? '' : "\<C-g>u")]]
-      ), { noremap = false, expr = true }
-  )
-end
-
 function M.open_browser()
   map(
-      "n", "o<CR>", "<Plug>(openbrowser-open)",
-      { noremap = false, buffer = true, silent = true }
+      "n", "<Leader>gb", "<Plug>(openbrowser-open)",
+      { noremap = true, silent = true }
   )
 end
 
-function M.suda() map("n", "<Leader>W", ":SudaWrite<CR>") end
+function M.suda()
+  map("n", "<Leader>W", ":SudaWrite<CR>")
+end
 
 function M.lf()
   g.lf_map_keys = 0
@@ -110,12 +102,24 @@ function M.floaterm()
 
   g.floaterm_shell = "zsh"
   g.floaterm_wintype = "float"
-  g.floaterm_height = 0.8
-  g.floaterm_width = 0.8
+  g.floaterm_height = 0.85
+  g.floaterm_width = 0.9
+  g.floaterm_borderchars = "─│─│╭╮╯╰"
+
+  -- TODO: Resize floaterm
+  -- Floaterm needs keys to expect and not act within
+  -- fmap {
+  --   "n",
+  --   "<Leader>xi",
+  --   function()
+  --     g.floaterm_height = (g.floaterm_height + 0.1) % 1
+  --     g.floaterm_width = (g.floaterm_width + 0.1) % 1
+  --     cmd((":FloatermUpdate --height=%d --width=%d"):format(g.floaterm_height, g.floaterm_width))
+  --   end,
+  -- }
 
   -- Stackoverflow helper
   map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
-
 end
 
 function M.neoterm()
@@ -198,6 +202,21 @@ function M.markdown()
     "help",
   }
   g.vim_markdown_follow_anchor = 1
+
+  cmd [[
+    hi VimwikiBold    guifg=#a25bc4 gui=bold
+    hi VimwikiCode    guifg=#d3869b
+    hi VimwikiItalic  guifg=#83a598 gui=italic
+
+    hi VimwikiHeader1 guifg=#F14A68 gui=bold
+    hi VimwikiHeader2 guifg=#F06431 gui=bold
+    hi VimwikiHeader3 guifg=#689d6a gui=bold
+    hi VimwikiHeader4 guifg=#819C3B gui=bold
+    hi VimwikiHeader5 guifg=#98676A gui=bold
+    hi VimwikiHeader6 guifg=#458588 gui=bold
+
+    highlight TabLineSel guifg=#37662b guibg=NONE
+  ]]
 end
 
 function M.table_mode()
@@ -310,6 +329,29 @@ function M.slime()
 end
 
 function M.notify()
+  cmd [[
+    highlight NotifyERRORBorder guifg=#8A1F1F
+    highlight NotifyWARNBorder guifg=#79491D
+    highlight NotifyINFOBorder guifg=#4F6752
+    highlight NotifyDEBUGBorder guifg=#8B8B8B
+    highlight NotifyTRACEBorder guifg=#4F3552
+    highlight NotifyERRORIcon guifg=#F70067
+    highlight NotifyWARNIcon guifg=#fe8019
+    highlight NotifyINFOIcon guifg=#a3b95a
+    highlight NotifyDEBUGIcon guifg=#8B8B8B
+    highlight NotifyTRACEIcon guifg=#D484FF
+    highlight NotifyERRORTitle  guifg=#F70067
+    highlight NotifyWARNTitle guifg=#fe8019
+    highlight NotifyINFOTitle guifg=#a3b95a
+    highlight NotifyDEBUGTitle  guifg=#8B8B8B
+    highlight NotifyTRACETitle  guifg=#D484FF
+    highlight link NotifyERRORBody Normal
+    highlight link NotifyWARNBody Normal
+    highlight link NotifyINFOBody Normal
+    highlight link NotifyDEBUGBody Normal
+    highlight link NotifyTRACEBody Normal
+  ]]
+
   require("notify").setup(
       {
         stages = "slide",
@@ -438,6 +480,19 @@ function M.lazygit()
   map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true })
 end
 
+function M.scratchpad()
+  g.scratchpad_autostart = 0
+  g.scratchpad_autosize = 0
+  g.scratchpad_textwidth = 80
+  g.scratchpad_minwidth = 12
+  g.scratchpad_location = '~/.cache/scratchpad'
+  -- g.scratchpad_daily = 0
+  -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
+  -- g.scratchpad_daily_format = '%Y-%m-%d'
+
+  map("n", "<Leader>sc", "<cmd>ScratchPad<CR>")
+end
+
 function M.sandwhich()
   -- Sandwhich
   -- sdb = surrounding automatic
@@ -471,12 +526,14 @@ function M.sandwhich()
       { "x", "o" }, "am", "<Plug>(textobj-sandwich-literal-query-a)",
       { noremap = false }
   )
-  map("o", ";", "ib")
-  map("o", ":", "ab")
 
-  map("n", "<Leader>ci", "cs`*")
-  map("n", "<Leader>o", "ysiw")
-  map("n", "mlw", "yss`")
+  K.o(";", "ib", { noremap = false })
+  K.o(":", "ab", { noremap = false })
+
+  -- Why does noremap need to be used here?
+  K.n("<Leader>ci", "cs`*", { noremap = false })
+  K.n("<Leader>o", "ysiw", { noremap = false })
+  K.n("mlw", "yss`", { noremap = false })
 end
 
 function M.hop()
@@ -683,24 +740,45 @@ end
 
 -- Unused
 
-function M.sneak()
-  g["sneak#label"] = 1
+-- function M.delimitmate()
+--   g.delimitMate_jump_expansion = 1
+--   g.delimitMate_expand_cr = 2
+--
+--   cmd("au FileType html let b:delimitMate_matchpairs = '(:),[:],{:}'")
+--   cmd("au FileType vue let b:delimitMate_matchpairs = '(:),[:],{:}'")
+--
+--   map(
+--       "i", "<CR>", ("pumvisible() ? %s : %s . \"<Plug>delimitMateCR\""):format(
+--           [["\<C-y>"]], [[(getline('.') =~ '^\s*$' ? '' : "\<C-g>u")]]
+--       ), { noremap = false, expr = true }
+--   )
+-- end
 
-  -- map(
-  --     { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
-  --     { noremap = false, expr = true }
-  -- )
-  -- map(
-  --     { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
-  --     { noremap = false, expr = true }
-  -- )
 
-  map("n", "f", "<Plug>Sneak_s", { noremap = false })
-  map("n", "F", "<Plug>Sneak_S", { noremap = false })
+-- function M.sneak()
+--   g["sneak#label"] = 1
+--
+--   -- map(
+--   --     { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
+--   --     { noremap = false, expr = true }
+--   -- )
+--   -- map(
+--   --     { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
+--   --     { noremap = false, expr = true }
+--   -- )
+--
+--   map("n", "f", "<Plug>Sneak_s", { noremap = false })
+--   map("n", "F", "<Plug>Sneak_S", { noremap = false })
+--
+--   -- Repeat the last Sneak
+--   map("n", "gs", "f<CR>", { noremap = false })
+--   map("n", "gS", "F<CR>", { noremap = false })
+-- end
 
-  -- Repeat the last Sneak
-  map("n", "gs", "f<CR>", { noremap = false })
-  map("n", "gS", "F<CR>", { noremap = false })
-end
+
+-- function M.luadev()
+--   map("n", "<Leader>xl", "<Plug>(Luadev-RunLine)", { noremap = false })
+--   map("n", "<Leader>xx", "<Plug>(Luadev-Run)", { noremap = false })
+-- end
 
 return M

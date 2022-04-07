@@ -182,6 +182,10 @@
   // "coc.preferences.semanticTokensHighlights": false,
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "snippets.extends": {
+    "cpp": ["c"],
+    "typescript": ["javascript"]
+  },
   "coc.preferences.snippetHighlight": false,
   "suggest.disableMenu": false,
   "suggest.snippetIndicator": "",
@@ -410,10 +414,15 @@
   "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
   "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
 
+  // I don't see these working
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "javascript.format.semicolons": "remove",
   "typescript.format.semicolons": "remove",
+
+  // "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+  // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+  // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true
 }

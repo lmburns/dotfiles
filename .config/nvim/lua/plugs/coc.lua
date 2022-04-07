@@ -18,6 +18,21 @@ local diag_qfid
 --   endif
 -- endfunction
 
+function M.getsymbol()
+  local ok, _ = pcall(require, "nvim-gps")
+
+  if not ok then
+    local symbol = fn.CocAction("getCurrentFunctionSymbol")
+    if #symbol == 0 then
+      return "N/A"
+    else
+      return symbol
+    end
+  end
+
+  return require("nvim-gps").get_location()
+end
+
 function M.go2def()
   local cur_bufnr = api.nvim_get_current_buf()
   local by
@@ -99,7 +114,11 @@ function M.a2sync(action, args, time)
       end
   )
   fn.CocActionAsync(action, unpack(args))
-  local wait_ret = vim.wait(time or 1000, function() return done end)
+  local wait_ret = vim.wait(
+      time or 1000, function()
+        return done
+      end
+  )
   err = err or not wait_ret
   if not wait_ret then
     res = "timeout"
@@ -288,6 +307,7 @@ M.hl_fallback = (function()
   }
   local hl_fb_tbl = {}
   local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
+
   local function cur_word_pat()
     local lnum, col = unpack(api.nvim_win_get_cursor(0))
     local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
@@ -322,7 +342,11 @@ function M.post_open_float()
   local winid = vim.g.coc_last_float_win
   if winid and api.nvim_win_is_valid(winid) then
     local bufnr = api.nvim_win_get_buf(winid)
-    api.nvim_buf_call(bufnr, function() vim.wo[winid].showbreak = "NONE" end)
+    api.nvim_buf_call(
+        bufnr, function()
+          vim.wo[winid].showbreak = "NONE"
+        end
+    )
   end
 end
 
@@ -460,7 +484,7 @@ function M.init()
   -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
   map("n", "<LocalLeader>t", ":CocCommand fzf-preview.BufferTags<CR>")
 
-  map("s", "<Bs>", "<C-g>\"_c")
+  map("s", "<BS>", "<C-g>\"_c")
   map("s", "<Del>", "<C-g>\"_c")
   map("s", "<C-h>", "<C-g>\"_c")
   map("s", "<C-w>", "<Esc>a")
@@ -482,24 +506,16 @@ function M.init()
   map("n", "gd", [[:lua require('plugs.coc').go2def()<CR>]])
   map("n", "gy", [[<Cmd>call CocActionAsync('jumpTypeDefinition', 'drop')<CR>]])
   map("n", "gi", [[<Cmd>call CocActionAsync('jumpImplementation', 'drop')<CR>]])
-  map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
-
-  map(
-      "n", "<A-q>",
-      [[<Cmd>lua vim.notify(vim.fn.CocAction('getCurrentFunctionSymbol'))<CR>]]
-  )
-  map("n", "<Leader>xl", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])
+  map("n", "gr", [[<Cmd>call CocActionAsync('jumpReferences', 'drop')<CR>]])
+  -- map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
 
   -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
-  -- map(
-  --     "n", "gy", "<Plug>(coc-type-definition)",
-  --     { noremap = false, silent = true }
-  -- )
-  -- map(
-  --     "n", "gI", "<Plug>(coc-implementation)",
-  --     { noremap = false, silent = true }
-  -- )
-  -- map("n", "gr", "<Plug>(coc-references)", { noremap = false, silent = true })
+  -- map("n", "gy", "<Plug>(coc-type-definition)", { noremap = false })
+  -- map("n", "gi", "<Plug>(coc-implementation)", { noremap = false })
+  -- map("n", "gr", "<Plug>(coc-references)", { noremap = false, silent = false })
+
+  map("n", "<A-q>", [[<Cmd>lua vim.notify(require'plugs.coc'.getsymbol())<CR>]])
+  map("n", "<Leader>x;", [[<Cmd>lua require('plugs.coc').diagnostic()<CR>]])
 
   -- Remap for rename current word
   -- map("n", "<Leader>rn", "<Plug>(coc-rename)", { noremap = false })
@@ -569,7 +585,7 @@ function M.init()
   --     { silent = true, expr = true }
   -- )
 
-  map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], { expr = true })
+  map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]])
 
   -- map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
 
@@ -681,9 +697,9 @@ function M.init()
   )
 
   map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
-  map("n", "<Leader>st", [[<Cmd>CocCommand go.test.toggle<CR>]])
-  map("n", "<Leader>tf", [[<Cmd>CocCommand go.test.generate.function<CR>]])
-  map("x", "<Leader>tf", [[:CocCommand go.test.generate.function<CR>]])
+  -- map("n", "<Leader>st", [[<Cmd>CocCommand go.test.toggle<CR>]])
+  -- map("n", "<Leader>tf", [[<Cmd>CocCommand go.test.generate.function<CR>]])
+  -- map("x", "<Leader>tf", [[:CocCommand go.test.generate.function<CR>]])
 end
 
 return M

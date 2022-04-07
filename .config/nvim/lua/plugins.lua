@@ -16,46 +16,46 @@ if not vim.loop.fs_stat(install_path) then
   )
 end
 
-cmd([[packadd packer.nvim]])
+cmd [[packadd packer.nvim]]
 local packer = require("packer")
 
-packer.on_compile_done = function()
-  local fp = assert(io.open(packer.config.compile_path, "rw+"))
-  local wbuf = {}
-  local key_state = 0
-  for line in fp:lines() do
-    if key_state == 0 then
-      table.insert(wbuf, line)
-      if line:find("Keymap lazy%-loads") then
-        key_state = 1
-        table.insert(wbuf, [[vim.defer_fn(function()]])
-      end
-    elseif key_state == 1 then
-      if line == "" then
-        key_state = 2
-        table.insert(wbuf, ("end, %d)"):format(15))
-      end
-      local _, e1 = line:find("vim%.cmd")
-      if line:find("vim%.cmd") then
-        local s2, e2 = line:find("%S+%s", e1 + 1)
-        local map_mode = line:sub(s2, e2)
-        line = ("pcall(vim.cmd, %s<unique>%s)"):format(
-            map_mode, line:sub(e2 + 1)
-        )
-      end
-      table.insert(wbuf, line)
-    else
-      table.insert(wbuf, line)
-    end
-  end
-
-  if key_state == 2 then
-    fp:seek("set")
-    fp:write(table.concat(wbuf, "\n"))
-  end
-
-  fp:close()
-end
+-- packer.on_compile_done = function()
+--   local fp = assert(io.open(packer.config.compile_path, "rw+"))
+--   local wbuf = {}
+--   local key_state = 0
+--   for line in fp:lines() do
+--     if key_state == 0 then
+--       table.insert(wbuf, line)
+--       if line:find("Keymap lazy%-loads") then
+--         key_state = 1
+--         table.insert(wbuf, [[vim.defer_fn(function()]])
+--       end
+--     elseif key_state == 1 then
+--       if line == "" then
+--         key_state = 2
+--         table.insert(wbuf, ("end, %d)"):format(15))
+--       end
+--       local _, e1 = line:find("vim%.cmd")
+--       if line:find("vim%.cmd") then
+--         local s2, e2 = line:find("%S+%s", e1 + 1)
+--         local map_mode = line:sub(s2, e2)
+--         line = ("pcall(vim.cmd, %s<unique>%s)"):format(
+--             map_mode, line:sub(e2 + 1)
+--         )
+--       end
+--       table.insert(wbuf, line)
+--     else
+--       table.insert(wbuf, line)
+--     end
+--   end
+--
+--   if key_state == 2 then
+--     fp:seek("set")
+--     fp:write(table.concat(wbuf, "\n"))
+--   end
+--
+--   fp:close()
+-- end
 
 packer.init(
     {
@@ -63,7 +63,6 @@ packer.init(
       auto_clean = true,
       compile_on_sync = true,
       display = {
-        title = "Packer",
         prompt_border = "rounded",
         open_cmd = "tabedit",
         keybindings = { prompt_revert = "R", diff = "D" },
@@ -90,6 +89,9 @@ return packer.startup(
         -- Package manager
         use({ "wbthomason/packer.nvim", opt = true })
 
+        -- Cache startup
+        use({ "lewis6991/impatient.nvim" })
+
         -- ============================ Vim Library =========================== [[[
         use({ "tpope/vim-repeat" })
 
@@ -108,6 +110,57 @@ return packer.startup(
         -- =============================== Icons ============================== [[[
         use({ "ryanoasis/vim-devicons" })
         -- ]]] === Icons ===
+
+        -- ============================== Debugging ============================ [[[
+        use(
+            {
+              "mfussenegger/nvim-dap",
+              setup = [[require('plugs.dap').setup()]],
+              config = [[require('plugs.dap').config()]],
+              after = "telescope.nvim",
+              wants = "one-small-step-for-vimkind",
+              requires = {
+                { "jbyuki/one-small-step-for-vimkind" },
+                {
+                  "nvim-telescope/telescope-dap.nvim",
+                  after = "nvim-dap",
+                  config = [[require("telescope").load_extension("dap")]],
+                },
+                {
+                  "rcarriga/nvim-dap-ui",
+                  after = "nvim-dap",
+                  config = function()
+                    require("dapui").setup()
+                  end,
+                },
+                {
+                  "mfussenegger/nvim-dap-python",
+                  after = "nvim-dap",
+                  wants = "nvim-dap",
+                  config = function()
+                    require("dap-python").setup(
+                        ("%s/shims/python"):format(
+                            env.PYENV_ROOT
+                        )
+                    )
+                  end,
+                },
+              },
+            }
+        )
+
+        use({ "rafcamlet/nvim-luapad", cmd = "Luapad", ft = "lua" })
+
+        -- use(
+        --     {
+        --       "puremourning/vimspector",
+        --       setup = [[vim.g.vimspector_enable_mappings = 'HUMAN']],
+        --       disable = true,
+        --     }
+        -- )
+
+        -- use({ "bfredl/nvim-luadev", config = conf("luadev") })
+        -- ]]] === Debugging ===
 
         -- ============================ File Manager =========================== [[[
         use(
@@ -143,6 +196,11 @@ return packer.startup(
         use({ "junegunn/vim-easy-align", config = conf("plugs.easy-align") })
         -- ]]] === EasyAlign ===
 
+        -- ============================ Open Browser =========================== [[[
+        -- FIX: Binding isn't working but function is
+        use({ "tyru/open-browser.vim", conf = conf("open_browser") })
+        -- ]]] === Open Browser ===
+
         -- ============================ Limelight ============================= [[[
         use(
             {
@@ -160,10 +218,6 @@ return packer.startup(
         -- ============================= Vimtex =============================== [[[
         use({ "lervag/vimtex", config = conf("plugs.vimtex") })
         -- ]]] === Vimtex ===
-
-        -- ============================ Open Browser =========================== [[[
-        use({ "tyru/open-browser.vim", conf = conf("open_browser") })
-        -- ]]] === Open Browser ===
 
         use(
             {
@@ -207,6 +261,21 @@ return packer.startup(
 
         -- =========================== Colorscheme ============================ [[[
         local colorscheme = "kimbox"
+
+        use({ "sainnhe/gruvbox-material" })
+        use({ "sainnhe/edge" })
+        use({ "sainnhe/everforest" })
+        use({ "sainnhe/sonokai" })
+        use({ "glepnir/oceanic-material" })
+        use({ "marko-cerovac/material.nvim" })
+        use({ "franbach/miramare" })
+        use({ "pineapplegiant/spaceduck" })
+        use({ "ghifarit53/daycula-vim" })
+        use({ "ghifarit53/tokyonight-vim" })
+        use({ "nanotech/jellybeans.vim" })
+        use({ "savq/melange" })
+        -- use({ "kaicataldo/material.vim" })
+
         use({ "lmburns/kimbox", config = conf("plugs.kimbox") })
         -- ]]] === Colorscheme ===
 
@@ -284,6 +353,56 @@ return packer.startup(
         -- ]]] === Fzf ===
 
         -- ============================= Operator============================== [[[
+        use(
+            {
+              "phaazon/hop.nvim",
+              config = conf("hop"),
+              keys = {
+                { "n", "f" },
+                { "x", "f" },
+                { "o", "f" },
+
+                { "n", "F" },
+                { "x", "F" },
+                { "o", "F" },
+
+                { "n", "t" },
+                { "x", "t" },
+                { "o", "t" },
+
+                { "n", "T" },
+                { "x", "T" },
+                { "o", "T" },
+
+                { "n", "<Leader><Leader>h" },
+                { "n", "<Leader><Leader>j" },
+                { "n", "<Leader><Leader>k" },
+                { "n", "<Leader><Leader>l" },
+                { "n", "<Leader><Leader>J" },
+                { "n", "<Leader><Leader>K" },
+                { "n", "<Leader><Leader>/" },
+              },
+            }
+        )
+
+        use(
+            {
+              "gbprod/substitute.nvim",
+              config = conf("plugs.substitute"),
+              keys = {
+                { "n", "s" },
+                { "n", "ss" },
+                { "n", "se" },
+                { "x", "s" },
+
+                { "n", "sx" },
+                { "n", "sxx" },
+                { "n", "sxc" },
+                { "x", "X" },
+              },
+            }
+        )
+
         -- Similar to vim-sandwhich (I kind of use both)
         use(
             {
@@ -304,27 +423,38 @@ return packer.startup(
             }
         )
 
-        use({ "gbprod/substitute.nvim", config = conf("plugs.substitute") })
-        use({ "machakann/vim-sandwich", config = conf("sandwhich") })
-
         use(
             {
-              "Raimondi/delimitMate",
-              event = "InsertEnter",
-              config = conf("delimitmate"),
+              "machakann/vim-sandwich",
+              config = conf("sandwhich"),
+              -- keys = {
+              --   { "n", "sd" },
+              --   { "n", "sr" },
+              --   { "n", "sa" },
+              --   { "v", "sa" },
+              --   { "o", "is" },
+              --   { "o", "as" },
+              --   { "o", "ib" },
+              --   { "o", "ab" },
+              -- },
             }
         )
 
-        use({ "phaazon/hop.nvim", config = conf("hop") })
-
         use({ "pseewald/vim-anyfold", cmd = "AnyFoldActivate" })
+
+        use(
+            {
+              "windwp/nvim-autopairs",
+              config = conf("plugs.autopairs"),
+              event = "InsertEnter",
+            }
+        )
 
         -- use(
         --     {
-        --       "justinmk/vim-sneak",
-        --       after = "vim-surround",
-        --       keys = { { "n", "f" }, { "n", "F" } },
-        --       config = conf("sneak"),
+        --       "Raimondi/delimitMate",
+        --       event = "InsertEnter",
+        --       config = conf("delimitmate"),
         --     }
         -- )
 
@@ -397,11 +527,20 @@ return packer.startup(
         -- ============================= Vim - Rust ============================ [[[
         use({ "rust-lang/rust.vim", ft = "rust", config = conf("plugs.rust") })
 
-        use({ "nastevens/vim-cargo-make" })
+        -- use(
+        --     {
+        --       "simrat39/rust-tools.nvim",
+        --       ft = "rust",
+        --       config = function()
+        --         require("rust-tools").setup {}
+        --       end,
+        --       requires = { "plenary.nvim", "nvim-lspconfig" },
+        --     }
+        -- )
         -- ]]] === VimSlime - Python ===
 
         -- ============================== Vim - Go ============================= [[[
-        use({ "fatih/vim-go", ft = "go", config = conf("plugs.vim-go") })
+        use({ "fatih/vim-go", ft = "go", config = conf("plugs.go") })
         -- ]]] === VimSlime - Python ===
 
         -- ============================== Markdown ============================= [[[
@@ -438,20 +577,22 @@ return packer.startup(
             }
         )
 
-        use({ "vimwiki/vimwiki", config = conf("vimwiki") })
-        -- ]]] === VimSlime - Python ===
+        use({ "vimwiki/vimwiki", config = conf("vimwiki"), after = colorscheme })
+
+        use({ "FraserLee/ScratchPad", config = conf("scratchpad") })
+        -- ]]] === Markdown ===
 
         -- ================================ Wilder ============================= [[[
-        use {
-          "gelguy/wilder.nvim",
-          run = ":UpdateRemotePlugins",
-          rocks = "pcre2",
-          config = conf("plugs.wilder"),
-        }
-        -- ]]] === Wilder ===
+        use(
+            {
+              "gelguy/wilder.nvim",
+              run = ":UpdateRemotePlugins",
+              rocks = "pcre2",
+              config = conf("plugs.wilder"),
+            }
+        ) -- ]]] === Wilder ===
 
         -- ========================= Syntax-Highlighting ======================= [[[
-        -- o.nocompatible = true
         g.polyglot_disabled = {
           "markdown",
           "rustpeg",
@@ -479,19 +620,24 @@ return packer.startup(
           -- "tsx",
           -- "vue",
           "zig",
+          "sensible",
+          -- "ftdetect",
           -- "typescript",
         }
-        use({ "sheerun/vim-polyglot" })
+        -- TODO: Change back when merged
+        use({ "nyuszika7h/vim-polyglot" })
 
         -- use({ "wfxr/dockerfile.vim" })
 
-        use({ "rhysd/vim-rustpeg" })
+        use({ "rhysd/vim-rustpeg", ft = "rustpeg" })
 
-        use({ "NoahTheDuke/vim-just" })
+        use({ "nastevens/vim-cargo-make" })
 
-        use({ "camnw/lf-vim" })
+        use({ "NoahTheDuke/vim-just", ft = "just" })
 
-        use({ "ron-rs/ron.vim" })
+        use({ "camnw/lf-vim", ft = "lf" })
+
+        use({ "ron-rs/ron.vim", ft = "ron" })
         -- ]]] === Syntax-Highlighting ===
 
         -- =========================== Keymaps - Nest ========================== [[[
@@ -624,6 +770,15 @@ return packer.startup(
 
         -- ============================= Html/Css ============================= [[[
         use { "alvan/vim-closetag" }
+
+        -- use(
+        --     {
+        --       "windwp/nvim-ts-autotag",
+        --       requires = { { "nvim-treesitter/nvim-treesitter", opt = true } },
+        --       after = { "nvim-treesitter" },
+        --       config = conf("plugs.autotag")
+        --     }
+        -- )
         -- ]]] === Html ===
 
         -- ============================= Telescope ============================ [[[
@@ -687,6 +842,11 @@ return packer.startup(
                   config = [[require("telescope").load_extension("ui-select")]],
                 },
                 {
+                  "nvim-telescope/telescope-hop.nvim",
+                  after = { "telescope.nvim" },
+                  config = [[require("telescope").load_extension("hop")]],
+                },
+                {
                   -- TODO: Use or remove; Does this do anything?
                   "nvim-telescope/telescope-smart-history.nvim",
                   requires = { "tami5/sqlite.lua" },
@@ -705,6 +865,11 @@ return packer.startup(
             {
               "nvim-telescope/telescope-packer.nvim",
               after = { "telescope.nvim" },
+              requires = {
+                "nvim-telescope/telescope.nvim",
+                "wbthomason/packer.nvim",
+              },
+              wants = { "telescope.nvim", "packer.nvim" },
               -- config = [[require("telescope").load_extension("packer")]],
               config = function()
                 require("telescope.builtin").packer = function(opts)
@@ -818,4 +983,15 @@ return packer.startup(
 --       },
 --     }
 -- )
+
+-- ==> hop
+-- use(
+--     {
+--       "justinmk/vim-sneak",
+--       after = "vim-surround",
+--       keys = { { "n", "f" }, { "n", "F" } },
+--       config = conf("sneak"),
+--     }
+-- )
+
 -- ]]] === Disabled ===

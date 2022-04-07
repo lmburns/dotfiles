@@ -92,8 +92,8 @@ autocmd(
     }, true
 )
 
-cmd [[ hi def link cmTitle vimCommentTitle ]]
-cmd [[ hi def link myTodo Todo ]]
+cmd [[hi def link cmTitle vimCommentTitle]]
+cmd [[hi def link myTodo Todo]]
 -- cmd [[ hi def link cmLineComment Comment ]]
 
 -- ]]] === Custom syntax groups ===

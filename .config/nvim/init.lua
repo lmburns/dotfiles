@@ -4,6 +4,7 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- TODO: Possibly fork rnvimr to lf
+-- FIX: Folding causing cursor to move one left on startup
 --
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local utils = require("common.utils")
@@ -14,6 +15,7 @@ local create_augroup = utils.create_augroup
 -- Lua utilities
 require("lutils")
 require("options")
+require("impatient").enable_profile()
 
 -- Plugins need to be compiled to work it seems
 local conf_dir = fn.stdpath("config")
@@ -93,6 +95,7 @@ api.nvim_create_autocmd(
 -- ]]]
 
 -- =========================== Markdown =============================== [[[
+-- FIX: Shift-Tab in markdown
 cmd [[
   augroup markdown
     autocmd!
@@ -102,7 +105,7 @@ cmd [[
       \ nnoremap <buffer> <F4> !pandoc % --pdf-engine=xelatex -o %:r.pdf|
       \ inoremap ** ****<Left><Left>|
       \ inoremap <expr> <right> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"|
-      \ vnoremap <Leader>si :s/`/*/g<CR>
+      \ imap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
   augroup END
 ]]
 -- ]]] === Markdown ===
@@ -117,7 +120,6 @@ require("autocmds")
 require("common.qf")
 require("common.mru")
 require("common.reg")
-require("highlight")
 
 -- ============================ Notify ================================ [[[
 vim.notify = function(...)
@@ -129,7 +131,9 @@ end
 
 api.nvim_create_autocmd(
     "BufHidden", {
-      callback = function() require("common.builtin").wipe_empty_buf() end,
+      callback = function()
+        require("common.builtin").wipe_empty_buf()
+      end,
       buffer = 0,
       once = true,
       group = create_augroup("FirstBuf", true),
@@ -138,7 +142,9 @@ api.nvim_create_autocmd(
 
 api.nvim_create_autocmd(
     "WinLeave", {
-      callback = function() require("common.win").record() end,
+      callback = function()
+        require("common.win").record()
+      end,
       pattern = "*",
       group = create_augroup("MruWin", true),
     }
@@ -151,17 +157,14 @@ api.nvim_create_autocmd(
         vim.opt_local.formatoptions:remove({ "c", "r", "o" })
         vim.opt_local.conceallevel = 2
         vim.opt_local.concealcursor = "v"
+
+        -- Allows a shared statusline
+        if b.ft ~= "fzf" then
+          vim.opt_local.laststatus = 3
+        end
+
       end,
       group = create_augroup("FormatOptions"),
-      pattern = "*",
-    }
-)
-
--- Don't know why vim-polyglot sets files with no extensions to `sh`
-api.nvim_create_autocmd(
-    { "BufRead", "BufNewFile" }, {
-      command = "if expand('<afile>:e') == '' | set ft= | end",
-      group = create_augroup("FixPolyglot"),
       pattern = "*",
     }
 )
@@ -271,9 +274,10 @@ vim.schedule(
             api.nvim_create_autocmd(
                 "TextYankPost", {
                   callback = function()
+                    cmd [[hi HighlightedyankRegion ctermbg=Red   guibg=#cc6666]]
                     pcall(
                         vim.highlight.on_yank,
-                        { higroup = "IncSearch", timeout = 165 }
+                        { higroup = "HighlightedyankRegion", timeout = 165 }
                     )
                   end,
                   pattern = "*",
@@ -286,7 +290,7 @@ vim.schedule(
       vim.defer_fn(
           function()
             -- FIX: This doesn't automatically install like it did in vim
-            g.coc_global_extensions = {
+            vim.g.coc_global_extensions = {
               "coc-clangd",
               "coc-css",
               "coc-diagnostic",
@@ -314,6 +318,7 @@ vim.schedule(
               "coc-tag",
               "coc-toml",
               "coc-tsserver",
+              "coc-eslint",
               "coc-vimlsp",
               "coc-vimtex",
               "coc-xml",
@@ -344,14 +349,18 @@ vim.schedule(
 
             cmd [[
               au User CocNvimInit ++once lua require('plugs.coc').init()
-           ]]
+            ]]
 
             cmd("packadd coc-kvs")
             cmd("packadd coc.nvim")
-          end, 250
+          end, 300
       )
 
-      vim.defer_fn(function() require("common.fold") end, 800)
+      vim.defer_fn(
+          function()
+            require("common.fold")
+          end, 800
+      )
 
     end
 )

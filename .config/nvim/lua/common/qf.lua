@@ -202,15 +202,7 @@ function M.syntax()
 
   local title = vim.w.quickfix_title
   if title:match("^%**[Oo]utline") then
-    cmd [[
-      syn match Function /^\(Method\|Function\)\s*/ nextgroup=qfSeparator
-      syn match Structure /^\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
-      syn match qfSeparator /│/ contained nextgroup=qfLineNr
-      syn match qfLineNr /[^│]*/ contained
-      hi def link qfSeparator Delimiter
-      hi def link qfLineNr LineNr
-    ]]
-
+    require("common.qfext").outline_syntax()
   else
     cmd [[
       syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft

@@ -37,7 +37,9 @@ function M.hijack_synset()
     if ft_enabled[ft] then
       configs.reattach_module("highlight", bufnr)
       vim.defer_fn(
-          function() configs.reattach_module("textobjects.move", bufnr) end, 300
+          function()
+            configs.reattach_module("textobjects.move", bufnr)
+          end, 300
       )
     else
       vim.bo.syntax = ft
@@ -92,9 +94,10 @@ local function init()
     highlight = {
       enable = true, -- false will disable the whole extension
       disable = { "html", "comment", "zsh" }, -- list of language that will be disabled
-      additional_vim_regex_highlighting = false,
+      additional_vim_regex_highlighting = true,
     },
     autotag = { enable = true },
+    autopairs = { enable = true },
 
     playground = {
       enable = true,
@@ -121,7 +124,7 @@ local function init()
       lint_events = { "BufWrite", "CursorHold" },
     },
     incremental_selection = { enable = true },
-    indent = { enable = false },
+    indent = { enable = true },
     endwise = { enable = true },
     matchup = { enable = false },
     textobjects = {
@@ -160,7 +163,10 @@ local function init()
       [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]]
   )
   map("o", "if", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
-  map("o", "af", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
+  map(
+      "o", "af",
+      [[<Cmd>lua require('common.textobj').select('func', false)<CR>]]
+  )
 
   map(
       "x", "ik",
@@ -170,7 +176,10 @@ local function init()
       "x", "ak",
       [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]]
   )
-  map("o", "ik", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
+  map(
+      "o", "ik",
+      [[<Cmd>lua require('common.textobj').select('class', true)<CR>]]
+  )
   map(
       "o", "ak",
       [[<Cmd>lua require('common.textobj').select('class', false)<CR>]]

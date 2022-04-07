@@ -1,5 +1,6 @@
 local M = {}
 
+require("lutils")
 require("common.utils")
 local fzf_lua = require("fzf-lua")
 
@@ -133,6 +134,7 @@ function M.setup()
         -- Only valid with fzf previewers (bat/cat/git/etc)
         ["f3"] = "toggle-preview-wrap",
         ["f4"] = "toggle-preview",
+        ["?"] = "toggle-preview",
         ["shift-down"] = "preview-page-down",
         ["shift-up"] = "preview-page-up",
       },
@@ -633,11 +635,11 @@ end
 local function map_fzf(mode, key, f, opts, buffer)
   local rhs = function()
     if not pcall(require, "fzf-lua") then
-      require("packer").loader("fzf-lua")
+      R("packer").loader("fzf-lua")
     end
 
     if M[f] then
-      require("plugs.fzf-lua")[f](opts or {})
+      R("plugs.fzf-lua")[f](opts or {})
     else
       require("fzf-lua")[f](opts or {})
     end

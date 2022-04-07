@@ -1623,8 +1623,8 @@ Plug 'vimwiki/vimwiki'
 "}}} === Vim Wiki ===
 
 " ========= Syntax Highlighting ======== {{{
-Plug 'sheerun/vim-polyglot'
 let g:polyglot_disabled = ['markdown', 'python', 'rust', 'java', 'lua', 'ruby', 'zig', 'd']
+Plug 'sheerun/vim-polyglot'
 Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
 Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
 Plug 'NoahTheDuke/vim-just' | let g:polyglot_disabled += ['just']

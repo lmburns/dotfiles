@@ -1,5 +1,6 @@
 local M = {}
 
+require("lutils")
 local mru = require("common.mru")
 local cutils = require("common.utils")
 local utils = require("common.kutils")
@@ -134,7 +135,11 @@ function M.files()
           expr
       )
   )
-  table.sort(b_list, function(a, b) return a.lastused > b.lastused end)
+  table.sort(
+      b_list, function(a, b)
+        return a.lastused > b.lastused
+      end
+  )
   local m_list = mru.list()
   local header = #b_list > 0 and b_list[1].bufnr == cur_bufnr and "1" or "0"
   local opts = {
@@ -280,9 +285,9 @@ function M.copyq_fzf()
     name = "copy-clipboard",
     source = (function()
       local ret = {}
-      local val = require("lutils").capture(
-        [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']]
-        )
+      local val = os.capture(
+          [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']]
+      )
 
       for v in val:gmatch("[^%z]+") do
         table.insert(ret, v)
@@ -367,11 +372,11 @@ local function init()
   cmd("packadd fzf.vim")
 
   -- Hide status and ruler for fzf
-  -- cmd [[
-  --   au FileType fzf
-  --     \ set laststatus& laststatus=0 |
-  --     \ au BufLeave <buffer> set laststatus&
-  -- ]]
+  cmd [[
+    au FileType fzf
+      \ set laststatus& laststatus=0 |
+      \ au BufLeave <buffer> set laststatus&
+  ]]
 
   -- Colors
   cmd [[command! -bang Colors call fzf#vim#colors(g:fzf_vim_opts, <bang>0)]]

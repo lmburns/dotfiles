@@ -1,66 +1,9 @@
--- TODO: Show tab numbers (buffers)
 local utils = require("common.utils")
 local map = utils.map
 
 -- ========================== Custom ==========================
-local colors = {
-  ocean = "#221a02",
-  black = "#291804",
-  red = "#DC3958",
-  red2 = "#EF1D55",
-  green = "#819C3B",
-  yellow = "#FF9500",
-  orange = "#FF5813",
-  blue = "#4C96A8",
-  magenta = "#A06469",
-  purple = "#98676A",
-  cyan = "#7EB2B1",
-  white = "#e8c097",
-  fg = "#D9AE80",
-  bg = "#221a02",
-  gray1 = "#a89984",
-  brown1 = "#7E602C",
-  brown2 = "#5e452b",
-  brown3 = "#362712",
-}
 
-local kimbox = {
-  normal = {
-    a = { fg = colors.purple, bg = colors.bg, gui = "bold" },
-    b = { fg = colors.fg, bg = colors.bg },
-    c = { fg = colors.fg, bg = colors.brown3 },
-    x = { fg = colors.fg, bg = colors.bg },
-  },
-  command = {
-    a = { fg = colors.blue, bg = colors.bg, gui = "bold" },
-    b = { fg = colors.fg, bg = colors.bg },
-    c = { fg = colors.fg, bg = colors.brown3 },
-    x = { fg = colors.fg, bg = colors.bg },
-  },
-  inactive = {
-    a = { fg = colors.red, bg = colors.bg },
-    b = { fg = colors.magenta, bg = colors.bg },
-  },
-  insert = {
-    a = { fg = colors.green, bg = colors.bg, gui = "bold" },
-    b = { fg = colors.fg, bg = colors.bg },
-    c = { fg = colors.fg, bg = colors.brown3 },
-    x = { fg = colors.fg, bg = colors.bg },
-  },
-  replace = {
-    a = { fg = colors.red, bg = colors.bg, gui = "bold" },
-    b = { fg = colors.fg, bg = colors.bg },
-    c = { fg = colors.fg, bg = colors.brown3 },
-    x = { fg = colors.fg, bg = colors.bg },
-  },
-  terminal = { a = { fg = colors.yellow, bg = colors.bg, gui = "bold" } },
-  visual = {
-    a = { fg = colors.orange, bg = colors.bg, gui = "bold" },
-    b = { fg = colors.fg, bg = colors.bg },
-    c = { fg = colors.fg, bg = colors.brown3 },
-    x = { fg = colors.fg, bg = colors.bg },
-  },
-}
+local colors = require("kimbox.lualine").colors()
 
 local conditions = {
   -- Show function in statusbar
@@ -72,9 +15,23 @@ local conditions = {
     return require("nvim-gps").is_available()
   end,
 
-  hide_in_width = function() return vim.fn.winwidth(0) > 80 end,
+  hide_in_width = function()
+    return vim.fn.winwidth(0) > 80
+  end,
 
-  buffer_not_empty = function() return vim.fn.empty(vim.fn.expand("%:t")) ~= 1 end,
+  -- TODO: Make this better
+  coc_status_width = function()
+    if fn.exists("g:coc_status") then
+      if fn.strwidth("g:coc_status") > 30 then
+        return false
+      end
+    end
+    return true
+  end,
+
+  buffer_not_empty = function()
+    return vim.fn.empty(vim.fn.expand("%:t")) ~= 1
+  end,
 
   check_git_workspace = function()
     local filepath = vim.fn.expand("%:p:h")
@@ -139,7 +96,14 @@ local plugins = {
 }
 
 local sections_1 = {
-  lualine_a = { { "mode", fmt = function(str) return str:sub(1, 1) end } },
+  lualine_a = {
+    {
+      "mode",
+      fmt = function(str)
+        return str:sub(1, 1)
+      end,
+    },
+  },
   lualine_b = {
     { "filetype", icon_only = false },
     { "filesize", cond = conditions.hide_in_width,
@@ -150,8 +114,18 @@ local sections_1 = {
       path = 1,
       symbols = { modified = "[+]", readonly = "[] ", unnamed = "[No name]" },
     },
-    { "%w", cond = function() return vim.wo.previewwindow end },
-    { "%q", cond = function() return vim.bo.buftype == "quickfix" end },
+    {
+      "%w",
+      cond = function()
+        return vim.wo.previewwindow
+      end,
+    },
+    {
+      "%q",
+      cond = function()
+        return vim.bo.buftype == "quickfix"
+      end,
+    },
   },
   lualine_c = { "g:coc_status" },
   lualine_x = {
@@ -162,14 +136,12 @@ local sections_1 = {
     },
     {
       "require(\"nvim-gps\").get_location()",
-      cond = conditions.is_available_gps and conditions.hide_in_width,
+      cond = conditions.is_available_gps and conditions.hide_in_width and
+          conditions.coc_status_width,
       color = { fg = colors.blue },
     },
   },
-  lualine_y = {
-    { "branch", icon = "", condition = conditions.check_git_workspace },
-    { "diff", cond = conditions.hide_in_width },
-  },
+  lualine_y = { { "diff", cond = conditions.hide_in_width } },
   lualine_z = { "%l:%c", "%p%%/%L" },
 }
 
@@ -188,8 +160,12 @@ local sections_2 = {
   },
   lualine_c = {},
   lualine_x = {
-    { "require(\"nvim-gps\").get_location()",
-      cond = conditions.is_available_gps },
+    {
+      "require(\"nvim-gps\").get_location()",
+      cond = conditions.is_available_gps,
+      color = { fg = colors.red },
+    },
+    { "branch", icon = "", condition = conditions.check_git_workspace },
   },
   lualine_y = { plugins.progress, plugins.gutentags_progress },
   lualine_z = { "location" },
@@ -296,7 +272,7 @@ require("lualine").setup(
     {
       options = {
         icons_enabled = true,
-        theme = kimbox,
+        theme = 'kimbox',
         section_separators = { left = "", right = "" },
         component_separators = { left = "", right = "" },
         -- Not sure if these work

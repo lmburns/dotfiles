@@ -68,7 +68,7 @@ function M.dump(o)
 end
 
 -- Capture output of command
-function M.capture(cmd, raw)
+function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, "r"))
   local s = assert(f:read("*a"))
   f:close()

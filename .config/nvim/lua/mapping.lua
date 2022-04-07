@@ -2,9 +2,11 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
+local fmap = utils.fmap
 
 M.mappings = {}
 
+-- This is for returning them and sending them to a delayed function
 local function map2(modes, lhs, rhs, opts)
   opts = opts or {}
   opts.noremap = opts.noremap == nil and true or opts.noremap
@@ -25,9 +27,9 @@ map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
 map("n", ";w", ":update<CR>")
 
-map("n", ";q", ":q<CR>")
-map("n", "q;", ":q<CR>")
 map("n", "Q:", ":q", { noremap = false })
+map("n", ";q", [[<Cmd>lua require('common.builtin').fix_quit()<CR>]])
+map("n", "qa", "<Cmd>qa<CR>")
 
 -- Replace command history with quit
 -- map q: :MinimapToggle<CR> :q<CR>
@@ -39,8 +41,25 @@ cmd([[ command! -bang -nargs=* Q q ]])
 map("n", "Q", "@q")
 map("v", "Q", ":normal @q")
 
+-- Use qq to record and stop (only records q)
+fmap {
+  "n",
+  "qq",
+  function()
+    return vim.fn.reg_recording() == "" and "qq" or "q"
+  end,
+  { noremap = true, expr = true },
+}
+map("n", "q", "<Nop>", { silent = true })
+
 -- Repeat last command
 map("n", "<F2>", "@:")
+map("n", "<Leader>2;", "@:")
+map("x", "<Leader>2;", "@:")
+map(
+    "c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]],
+    { noremap = true, expr = true }
+)
 
 -- Easier navigation in normal / visual / operator pending mode
 map("n", "gkk", "{")
@@ -49,11 +68,6 @@ map("n", "H", "g^")
 map("x", "H", "g^")
 map("n", "L", "g_")
 map("x", "L", "g_")
-
--- Save write
--- map("n", "<C-s>", ":update<CR>")
--- Save & quit
--- map("n", "<C-x>", ":x<CR>")
 
 -- Navigate merge conflict markers
 map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], { silent = true })
@@ -79,10 +93,11 @@ map("i", "<S-Tab>", "<C-d>")
 map("x", "<", "<gv")
 map("x", ">", ">gv")
 
+-- NOTE: Use g- and g+
 -- Use `u` to undo, use `U` to redo
 map("n", "U", "<C-r>")
--- map('n', 'u', [[:execute('later ' . v:count1 . 'f')<CR>]])
--- map('n', 'U', [[:execute('earlier ' . v:count1 . 'f')<CR>]])
+map("n", ";u", [[:execute('earlier ' . v:count1 . 'f')<CR>]], { silent = false })
+map("n", ";U", [[:execute('later ' . v:count1 . 'f')<CR>]], { silent = false })
 
 -- Yank mappings
 map("n", "y", [[v:lua.require'common.yank'.wrap()]], { expr = true })
@@ -115,7 +130,7 @@ map("n", "Y", "y$")
 -- Make cut not go to clipboard
 map("n", "x", "\"_x")
 -- Reselect the text that has just been pasted
-map("n", "gp", [[ '`[' . strpart(getregtype(), 0, 1) . '`]' ]], { expr = true })
+map("n", "gp", [['`[' . strpart(getregtype(), 0, 1) . '`]']], { expr = true })
 -- Select characters of line (no new line)
 map("n", "vv", "^vg_")
 -- Make visual yanks place the cursor back where started
@@ -126,29 +141,40 @@ map("v", "y", "ygv<Esc>")
 -- Paste over selected text
 -- map("x", "p", "_c<Esc>p")
 
+-- Paste before
 map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
+-- Paste after
 map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 
 -- Adds a space  to left of cursor
 map("n", "zl", "i <Esc>l", { silent = true })
 
--- Inserts a line above or below
+-- Inserts a line above or below (these are the same)
 map("n", "zj", "printf('m`%so<ESC>``', v:count1)", { expr = true })
 map("n", "zk", "printf('m`%sO<ESC>``', v:count1)", { expr = true })
 map("n", "oo", "o<Esc>k", { silent = true })
 map("n", "OO", "O<Esc>j", { silent = true })
 
 -- Move through folded lines
-map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
-map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
--- map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr=true})
--- map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr=true})
+-- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
+-- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
+map(
+    "n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']],
+    { expr = true }
+)
+map(
+    "n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']],
+    { expr = true }
+)
 
 -- Move selected text up down
 map("v", "J", ":m '>+1<CR>gv=gv")
 map("v", "K", ":m '<-2<CR>gv=gv")
--- map("i", "<C-J>", "<Esc>:m .+1<CR>==a")
--- map("i", "<C-K>", "<Esc>:m .-2<CR>==a")
+
+map("i", "<C-J>", "<C-o><Cmd>m +1<CR>")
+map("i", "<C-K>", "<C-o><Cmd>m -2<CR>")
+-- map("n", "<C-,>", "<Cmd>m +1<CR>")
+-- map("n", "<C-.>", "<Cmd>m -2<CR>")
 
 -- Move between windows
 map("n", "<C-j>", "<C-W>j")
@@ -262,10 +288,12 @@ map("x", "<Leader>re", ":retab!<CR>")
 map("n", "<Leader>cc", ":cclose<CR>")
 -- Close diff
 map("n", "qd", [[:lua require('common.kutils').close_diff()<CR>]])
--- Switch to last buffer
-map("n", "<A-u>", [[:lua require('common.builtin').switch_lastbuf()<CR>]])
 -- Close quickfix
 map("n", "qc", [[:lua require('common.qf').close()<CR>]])
+-- Switch to last buffer
+map("n", "<A-u>", [[:lua require('common.builtin').switch_lastbuf()<CR>]])
+-- qf Extension
+map("n", "<Leader>ft", [[<Cmd>lua require('common.qfext').outline()<CR>]])
 
 -- Keep focused in center of screen when searching
 -- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
@@ -302,6 +330,51 @@ map("n", "<Leader>sv", ":so $VIMRC<CR>")
 map("n", "<Leader>ez", ":e $ZDOTDIR/.zshrc<CR>")
 
 map("n", "<Leader>jj", "<Cmd>Jumps<CR>")
+
+-- Show file info
+map("n", "<C-g>", "2<C-g>")
 -- ]]] === Other ===
+
+-- ============== Function Mappings ============= [[[
+-- Focus floating window with <C-w><C-w>
+fmap {
+  "n",
+  "<C-w><C-w>",
+  function()
+    if api.nvim_win_get_config(fn.win_getid()).relative ~= "" then
+      cmd [[ wincmd p ]]
+      return
+    end
+    for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
+      local winid = fn.win_getid(winnr)
+      local conf = api.nvim_win_get_config(winid)
+      if conf.focusable and conf.relative ~= "" then
+        fn.win_gotoid(winid)
+        return
+      end
+    end
+  end,
+  { noremap = true, silent = false },
+}
+
+-- Allow the use of extended function keys
+local fkey = 1
+for i = 13, 24, 1 do
+  map(
+      { "n", "x" }, ("<F%d>"):format(i), ("<S-F%d>"):format(fkey),
+      { silent = true }
+  )
+  fkey = fkey + 1
+end
+
+fkey = 1
+for i = 25, 36, 1 do
+  map(
+      { "n", "x" }, ("<F%d>"):format(i), ("<C-F%d>"):format(fkey),
+      { silent = true }
+  )
+  fkey = fkey + 1
+end
+-- ]]] === Function Mappings ===
 
 return M
