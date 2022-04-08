@@ -80,10 +80,15 @@ function! s:SetupPerlTags()
     let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4']
 endfunction
 
+function! s:SetupLuaTags()
+    let g:gutentags_ctags_extra_args += [$VIMRUNTIME . "/lua"]
+endfunction
+
 augroup gutentags
     autocmd!
     autocmd! User vim-gutentags call gutentags#setup_gutentags()
     autocmd! FileType cpp call <SID>SetupCPPTags()
     autocmd! FileType ruby call <SID>SetupRubyTags()
     autocmd! FileType perl call <SID>SetupPerlTags()
+    autocmd! FileType lua call <SID>SetupLuaTags()
 augroup END

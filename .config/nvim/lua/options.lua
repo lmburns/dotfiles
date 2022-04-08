@@ -97,12 +97,13 @@ o.foldenable = false
 o.foldmethod = "marker"
 o.foldmarker = "[[[,]]]"
 
--- cmd [[set foldmethod=expr]] -- use treesitter folding support
--- cmd [[set foldexpr=nvim_treesitter#foldexpr()]]
--- opt.foldlevelstart = 99
--- opt.foldnestmax = 10 -- deepest fold is 10 levels
--- opt.foldenable = false -- don't fold by default
--- opt.foldlevel = 1
+-- o.foldmethod = "expr"
+-- o.foldexpr = "nvim_treesitter#foldexpr()"
+
+-- o.foldlevelstart = 99
+-- o.foldnestmax = 10 -- deepest fold is 10 levels
+-- o.foldenable = false -- don't fold by default
+-- o.foldlevel = 1
 
 -- This does not work globally for whatever reason (didn't in vim either)
 o.formatoptions:remove({ "c", "r", "o" })
@@ -236,23 +237,6 @@ end
 
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
-
--- ============= Abbreviations ============= [[[
-cmd [[
-    cnoreabbrev W! w!
-    cnoreabbrev Q! q!
-    cnoreabbrev Qall! qall!
-    cnoreabbrev Wq wq
-    cnoreabbrev Wa wa
-    cnoreabbrev wQ wq
-    cnoreabbrev WQ wq
-    cnoreabbrev W w
-    cnoreabbrev Qall qall
-]]
-
-cmd [[cabbrev tel <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Telescope' : 'tel')<CR>]]
-
--- ]]] === Abbreviations ===
 
 -- =============== Commands ================ [[[
 -- filetype on

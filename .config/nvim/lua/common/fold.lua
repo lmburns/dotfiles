@@ -234,10 +234,12 @@ function M.with_highlight(c)
     foend = fn.foldclosedend(".")
   end
 
+  cmd("hi MyFoldHighlight guibg=#5e452b")
+
   local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
   if ok then
     if fn.foldclosed(".") == -1 and fostart > 0 and foend > fostart then
-      utils.highlight(0, "Visual", fostart - 1, foend, nil, 400)
+      utils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
     end
   end
 end
@@ -248,7 +250,18 @@ local function init()
   vim.g.anyfold_motion = 0
 
   -- blacklist
-  bl_ft = { "", "man", "markdown", "git", "floggraph" }
+  bl_ft = {
+    "",
+    "man",
+    "markdown",
+    "git",
+    "floggraph",
+    "neoterm",
+    "floaterm",
+    "toggleterm",
+    "fzf",
+    "telescope",
+  }
   coc_loaded_ft = {}
   anyfold_prefer_ft = { "vim" }
 
@@ -262,12 +275,14 @@ local function init()
   --     }
   -- )
 
-  cmd([[
+  cmd(
+      [[
       aug FoldLoad
           au!
           au FileType * lua require('common.fold').defer_attach(tonumber(vim.fn.expand('<abuf>')))
       aug END
-  ]])
+  ]]
+  )
 
   cmd [[com! -nargs=0 Fold lua require('common.fold').attach(nil, true)]]
 

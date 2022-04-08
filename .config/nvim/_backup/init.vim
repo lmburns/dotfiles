@@ -1615,7 +1615,13 @@ nmap <Leader>rl :RltvNmbr<CR>
 " ============== Vim Wiki ============== {{{
 Plug 'vimwiki/vimwiki'
 " Plug 'tools-life/taskwiki'
-  let g:vimwiki_ext2syntax = {'.Rmd': 'markdown', '.rmd': 'markdown','.md': 'markdown', '.markdown': 'markdown', '.mdown': 'markdown'}
+  let g:vimwiki_ext2syntax = {
+        \ '.Rmd': 'markdown',
+        \ '.rmd': 'markdown',
+        \ '.md': 'markdown',
+        \ '.markdown': 'markdown',
+        \ '.mdown': 'markdown'
+        \ }
   let g:vimwiki_list = [{'path': '~/vimwiki', 'syntax': 'markdown', 'ext': '.md'}]
   let g:vimwiki_table_mappings = 0
 

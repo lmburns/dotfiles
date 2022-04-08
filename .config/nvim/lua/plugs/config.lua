@@ -122,16 +122,6 @@ function M.floaterm()
   map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
 end
 
-function M.neoterm()
-  g.neoterm_default_mod = "belowright" -- open terminal in bottom split
-  g.neoterm_size = 14 -- terminal split size
-  g.neoterm_autoscroll = 1 -- scroll to the bottom
-
-  map("n", "<Leader>rr", "<Cmd>execute v:count.'Tclear'<CR>")
-  map("n", "<Leader>rt", ":Ttoggle<CR>")
-  map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
-end
-
 function M.targets()
   -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
   -- vI) = contents inside pair
@@ -201,7 +191,48 @@ function M.markdown()
     "toml",
     "help",
   }
+  -- use `ge`
   g.vim_markdown_follow_anchor = 1
+  -- g.vim_markdown_folding_disabled = 1
+
+  g.vim_markdown_conceal = 0
+  g.vim_markdown_conceal_code_blocks = 0
+end
+
+function M.table_mode()
+  -- api.nvim_create_autocmd(
+  --     "FileType", {
+  --       callback = function()
+  --         g.table_mode_map_prefix = "<Leader>t"
+  --         g.table_mode_realign_map = "<Leader>tr"
+  --         g.table_mode_delete_row_map = "<Leader>tdd"
+  --         g.table_mode_delete_column_map = "<Leader>tdc"
+  --         g.table_mode_insert_column_after_map = "<Leader>tic"
+  --         g.table_mode_echo_cell_map = "<Leader>t?"
+  --         g.table_mode_sort_map = "<Leader>ts"
+  --         g.table_mode_tableize_map = "<Leader>tt"
+  --         g.table_mode_tableize_d_map = "<Leader>T"
+  --         g.table_mode_tableize_auto_border = 1
+  --         g.table_mode_corner = "|"
+  --         g.table_mode_fillchar = "-"
+  --         g.table_mode_separator = "|"
+  --       end,
+  --       pattern = { "markdown", "vimwiki" },
+  --       group = api.nvim_create_augroup("TableMode", { clear = true }),
+  --     }
+  -- )
+end
+
+function M.vimwiki()
+  -- g.vimwiki_ext2syntax = {
+  --   [".Rmd"] = "markdown",
+  --   [".rmd"] = "markdown",
+  --   [".md"] = "markdown",
+  --   [".markdown"] = "markdown",
+  --   [".mdown"] = "markdown",
+  -- }
+  -- g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
+  -- g.vimwiki_table_mappings = 0
 
   cmd [[
     hi VimwikiBold    guifg=#a25bc4 gui=bold
@@ -214,45 +245,8 @@ function M.markdown()
     hi VimwikiHeader4 guifg=#819C3B gui=bold
     hi VimwikiHeader5 guifg=#98676A gui=bold
     hi VimwikiHeader6 guifg=#458588 gui=bold
-
-    highlight TabLineSel guifg=#37662b guibg=NONE
   ]]
-end
-
-function M.table_mode()
-  api.nvim_create_autocmd(
-      "FileType", {
-        callback = function()
-          g.table_mode_map_prefix = "<Leader>t"
-          g.table_mode_realign_map = "<Leader>tr"
-          g.table_mode_delete_row_map = "<Leader>tdd"
-          g.table_mode_delete_column_map = "<Leader>tdc"
-          g.table_mode_insert_column_after_map = "<Leader>tic"
-          g.table_mode_echo_cell_map = "<Leader>t?"
-          g.table_mode_sort_map = "<Leader>ts"
-          g.table_mode_tableize_map = "<Leader>tt"
-          g.table_mode_tableize_d_map = "<Leader>T"
-          g.table_mode_tableize_auto_border = 1
-          g.table_mode_corner = "|"
-          g.table_mode_fillchar = "-"
-          g.table_mode_separator = "|"
-        end,
-        pattern = { "markdown", "vimwiki" },
-        group = api.nvim_create_augroup("TableMode", { clear = true }),
-      }
-  )
-end
-
-function M.vimwiki()
-  g.vimwiki_ext2syntax = {
-    [".Rmd"] = "markdown",
-    [".rmd"] = "markdown",
-    [".md"] = "markdown",
-    [".markdown"] = "markdown",
-    [".mdown"] = "markdown",
-  }
-  g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
-  g.vimwiki_table_mappings = 0
+  -- highlight TabLineSel guifg=#37662b guibg=NONE
 
   map("n", "<Leader>vw", ":VimwikiIndex<CR>")
 end
@@ -485,7 +479,7 @@ function M.scratchpad()
   g.scratchpad_autosize = 0
   g.scratchpad_textwidth = 80
   g.scratchpad_minwidth = 12
-  g.scratchpad_location = '~/.cache/scratchpad'
+  g.scratchpad_location = "~/.cache/scratchpad"
   -- g.scratchpad_daily = 0
   -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
   -- g.scratchpad_daily_format = '%Y-%m-%d'
@@ -738,7 +732,59 @@ function M.hop()
   }
 end
 
+function M.window_picker()
+  require("nvim-window").setup(
+      {
+        -- The characters available for hinting windows.
+        chars = {
+          "a",
+          "s",
+          "d",
+          "f",
+          "q",
+          "w",
+          "e",
+          "r",
+          "t",
+          "z",
+          "g",
+          ";",
+          ",",
+        },
+
+        -- A group to use for overwriting the Normal highlight group in the floating
+        -- window. This can be used to change the background color.
+        normal_hl = "Normal",
+
+        -- The highlight group to apply to the line that contains the hint characters.
+        -- This is used to make them stand out more.
+        hint_hl = "Bold",
+
+        -- The border style to use for the floating window.
+        border = "single",
+      }
+  )
+
+  map("n", "<Leader>wp", ":lua require('nvim-window').pick()<CR>")
+end
+
+function M.luadev()
+  map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
+  map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })
+end
+
 -- Unused
+
+-- function M.neoterm()
+--   g.neoterm_default_mod = "belowright" -- open terminal in bottom split
+--   g.neoterm_size = 14 -- terminal split size
+--   g.neoterm_autoscroll = 1 -- scroll to the bottom
+--
+--   map("n", "<Leader>rr", "<Cmd>execute v:count.'Tclear'<CR>")
+--   map("n", "<Leader>rt", ":Ttoggle<CR>")
+--   map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
+-- end
+
 
 -- function M.delimitmate()
 --   g.delimitMate_jump_expansion = 1
@@ -773,12 +819,6 @@ end
 --   -- Repeat the last Sneak
 --   map("n", "gs", "f<CR>", { noremap = false })
 --   map("n", "gS", "F<CR>", { noremap = false })
--- end
-
-
--- function M.luadev()
---   map("n", "<Leader>xl", "<Plug>(Luadev-RunLine)", { noremap = false })
---   map("n", "<Leader>xx", "<Plug>(Luadev-Run)", { noremap = false })
 -- end
 
 return M

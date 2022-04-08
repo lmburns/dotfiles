@@ -35,7 +35,7 @@ map("n", "qa", "<Cmd>qa<CR>")
 -- map q: :MinimapToggle<CR> :q<CR>
 -- map q: :q<CR>
 
-cmd([[ command! -bang -nargs=* Q q ]])
+cmd([[command! -bang -nargs=* Q q]])
 
 -- Use qq to record, q to stop, Q to play a macro
 map("n", "Q", "@q")
@@ -158,6 +158,8 @@ map("n", "OO", "O<Esc>j", { silent = true })
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
 -- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
+
+-- Jumps more than 5 modify jumplist
 map(
     "n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']],
     { expr = true }
@@ -280,6 +282,8 @@ map("n", [[<Leader>w\]], "<C-w>t<C-w>H")
 
 -- perform dot commands over visual blocks
 map("v", ".", ":normal .<CR>")
+-- Toggle hlsearch
+map("n", "<Esc><Esc>", "<Esc>:nohlsearch<CR>")
 
 -- Change tabs
 map("n", "<Leader>nt", ":setlocal noexpandtab<CR>")

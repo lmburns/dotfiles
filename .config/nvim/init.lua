@@ -13,9 +13,9 @@ local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
 -- Lua utilities
+require("impatient").enable_profile()
 require("lutils")
 require("options")
-require("impatient").enable_profile()
 
 -- Plugins need to be compiled to work it seems
 local conf_dir = fn.stdpath("config")
@@ -32,11 +32,6 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         com! -nargs=? PackerCompile lua require('plugins').compile(<q-args>)
         com! -nargs=+ -complete=%s PackerLoad lua require('plugins').loader(<f-args>)
 
-        cnoreabbrev PI PackerInstall
-        cnoreabbrev PU PackerUpdate
-        cnoreabbrev PS PackerSync
-        cnoreabbrev PC PackerCompile
-
         com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
         com! PSS so ~/.config/nvim/lua/plugins.lua | PackerSync
     ]]):format(packer_loader_complete)
@@ -45,6 +40,7 @@ else
   require("plugins").compile()
 end
 
+require("abbr")
 require("mapping")
 
 -- ============================ UndoTree ============================== [[[
@@ -108,12 +104,17 @@ cmd [[
       \ imap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
   augroup END
 ]]
--- ]]] === Markdown ===
 
--- ============================== Man ================================= [[[
-g.no_man_maps = 1
-cmd [[cabbrev man <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Man' : 'man')<CR>]]
--- ]]]
+g.vimwiki_ext2syntax = {
+  [".Rmd"] = "markdown",
+  [".rmd"] = "markdown",
+  [".md"] = "markdown",
+  [".markdown"] = "markdown",
+  [".mdown"] = "markdown",
+}
+g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
+g.vimwiki_table_mappings = 0
+-- ]]] === Markdown ===
 
 require("functions")
 require("autocmds")
@@ -129,6 +130,7 @@ vim.notify = function(...)
 end
 -- ]]]
 
+-- ======================== More Autocmds ============================= [[[
 api.nvim_create_autocmd(
     "BufHidden", {
       callback = function()
@@ -156,7 +158,7 @@ api.nvim_create_autocmd(
         -- Buffer option here doesn't work like global
         vim.opt_local.formatoptions:remove({ "c", "r", "o" })
         vim.opt_local.conceallevel = 2
-        vim.opt_local.concealcursor = "v"
+        vim.opt_local.concealcursor = "vc"
 
         -- Allows a shared statusline
         if b.ft ~= "fzf" then
@@ -185,6 +187,7 @@ api.nvim_create_autocmd(
       group = create_augroup("jump_last_position", true),
     }
 )
+-- ]]] === More Autocmds ===
 
 -- cmd [[
 --     filetype off
@@ -196,6 +199,12 @@ g.loaded_clipboard_provider = 1
 
 vim.schedule(
     function()
+
+      vim.defer_fn(
+          function()
+            require("common.fold")
+          end, 50
+      )
 
       -- === Defer mappings
       -- vim.defer_fn(
@@ -356,13 +365,5 @@ vim.schedule(
           end, 300
       )
 
-      vim.defer_fn(
-          function()
-            require("common.fold")
-          end, 800
-      )
-
     end
 )
-
--- ]]] === Defer Loading ===

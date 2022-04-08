@@ -405,6 +405,7 @@ function M.scroll_insert(right)
 end
 
 -- If this is ran in `init.lua` the command is not overwritten
+-- TODO: Figure out why
 function M.tag_cmd()
   api.nvim_create_autocmd(
       "FileType", {
@@ -584,8 +585,6 @@ function M.init()
   --     [[pumvisible() ? "\<C-n>" : v:lua.check_back_space() ? "\<TAB>" : coc#refresh()]],
   --     { silent = true, expr = true }
   -- )
-
-  map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]])
 
   -- map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
 

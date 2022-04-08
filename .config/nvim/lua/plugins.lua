@@ -159,7 +159,8 @@ return packer.startup(
         --     }
         -- )
 
-        -- use({ "bfredl/nvim-luadev", config = conf("luadev") })
+        use({ "tjdevries/nlua.nvim" })
+        -- use({ "bfredl/nvim-luadev", config = conf("luadev"), ft = "lua" })
         -- ]]] === Debugging ===
 
         -- ============================ File Manager =========================== [[[
@@ -185,7 +186,15 @@ return packer.startup(
             }
         )
 
-        use({ "kassio/neoterm", config = conf("neoterm") })
+        use(
+            {
+              "akinsho/toggleterm.nvim",
+              config = conf("plugs.neoterm"),
+              keys = { "gxx", "gx", "<C-\\>" },
+              cmd = { "T" },
+            }
+        )
+        -- use({ "kassio/neoterm", config = conf("neoterm") })
         -- ]]] === Floaterm ===
 
         -- =========================== BetterQuickFix ========================== [[[
@@ -352,7 +361,17 @@ return packer.startup(
         -- use({ "lotabout/skim", run = "./install --bin" })
         -- ]]] === Fzf ===
 
-        -- ============================= Operator============================== [[[
+        -- ====================== Window Picker ======================= [[[
+        use(
+            {
+              "https://gitlab.com/yorickpeterse/nvim-window",
+              config = conf("window_picker"),
+              keys = { { "n", "<Leader>wp" } },
+            }
+        )
+        -- ]]] === Window Picker ===
+
+        -- ============================= Operator ============================== [[[
         use(
             {
               "phaazon/hop.nvim",

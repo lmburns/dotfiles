@@ -26,9 +26,9 @@ local function init()
         \ nmap     <buffer> <Leader><Leader>v :VT rust-script % -- |
         \ nmap     <buffer> <Leader>e<CR> :VT cargo eval  %<CR>|
         \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
-        \ nnoremap <Leader>K : set winblend=0 \| FloatermNew --autoclose=0 rusty-man --viewer tui<space>|
-        \ nnoremap <Leader>k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-r><C-w> --viewer tui<CR>|
-        \ nnoremap <buffer> ;ff           :RustFmt<cr>
+        \ nnoremap <buffer> ;ff           :RustFmt<CR>|
+        \ vnoremap <buffer> ;ff           :RustFmtRange<CR>|
+        \ let g:rustfmt_autosave_if_config_present = 1
     augroup END
   ]]
 end

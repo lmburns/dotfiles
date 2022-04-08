@@ -993,6 +993,7 @@ path=(
   $GOENV_ROOT/bin(N-/)
   $CARGO_HOME/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
+  $XDG_DATA_HOME/luarocks/bin(N-/)
   $HOME/.poetry/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
