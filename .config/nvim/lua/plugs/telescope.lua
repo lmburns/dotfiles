@@ -833,21 +833,24 @@ map("n", "<Leader>e,", ":Telescope grep_nvim<CR>")
 -- map("n", "<Leader>e,", ":lua __telescope_grep_cWORD<CR>")
 
 -- ========================== Highlight ==========================
-cmd [[highlight TelescopeSelection      guifg=#FF9500 gui=bold]]
-cmd [[highlight TelescopeSelectionCaret guifg=#819C3B]]
-cmd [[highlight TelescopeMultiSelection guifg=#4C96A8]]
-cmd [[highlight TelescopeMultiIcon      guifg=#7EB2B1]]
-cmd [[highlight TelescopeNormal         guibg=#00000]]
-cmd [[highlight TelescopeBorder         guifg=#A06469]]
-cmd [[highlight TelescopePromptBorder   guifg=#A06469]]
-cmd [[highlight TelescopeResultsBorder  guifg=#A06469]]
-cmd [[highlight TelescopePreviewBorder  guifg=#A06469]]
-cmd [[highlight TelescopeMatching       guifg=#FF5813]]
-cmd [[highlight TelescopePromptPrefix   guifg=#EF1D55]]
+local colors = require("kimbox.colors")
+local fg = require("common.color").fg
+local bg = require("common.color").bg
 
-cmd [[highlight TelescopePathSeparator guifg=#98676A]]
-cmd [[highlight TelescopeFrecencyScores guifg=#819C3B]]
-cmd [[highlight TelescopeBufferLoaded   guifg=#EF1D55]]
+fg("TelescopeSelection", colors.yellow, "bold")
+fg("TelescopeSelectionCaret", colors.blue)
+fg("TelescopeMultiSelection", colors.aqua)
+bg("TelescopeNormal", colors.bg0)
+fg("TelescopeBorder", colors.magenta)
+fg("TelescopePromptBorder", colors.magenta)
+fg("TelescopeResultsBorder", colors.magenta)
+fg("TelescopePreviewBorder", colors.magenta)
+fg("TelescopeMatching", colors.orange)
+fg("TelescopePromptPrefix", colors.red)
+
+fg("TelescopePathSeparator", colors.purple)
+fg("TelescopeFrecencyScores", colors.green)
+fg("TelescopeBufferLoaded", colors.red)
 
 _ = telescope.load_extension("notify")
 -- telescope.load_extension("ultisnips")

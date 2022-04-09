@@ -103,9 +103,9 @@ local function init()
     stdin = 1,
   }
 
-  map("n", "<SubLeader>ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
+  map("n", ";ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
   map(
-      "x", "<SubLeader>ff",
+      "x", ";ff",
       [[:lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]]
   )
 

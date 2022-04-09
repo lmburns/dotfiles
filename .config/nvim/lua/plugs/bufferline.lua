@@ -5,9 +5,10 @@ local map = utils.map
 
 function M.setup()
   local diagnostics_signs = {
-    ["error"] = "",
+    error = "",
     warning = "",
-    default = "",
+    hint = "",
+    info = ""
   }
 
   require("bufferline").setup(

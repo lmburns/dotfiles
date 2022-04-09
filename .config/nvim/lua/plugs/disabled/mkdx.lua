@@ -30,21 +30,24 @@ local function init()
           \ 'restore_visual': 1,
           \ 'gf_on_steroids': 1,
           \ 'highlight': { 'enable':   1 },
-          \ 'enter':     { 'shift':    1 },
+          \ 'enter':     { 'shift':    1, 'enable': 0 },
           \ 'map':       { 'prefix': "'", 'enable': 1 },
           \ 'links':     { 'external': { 'enable': 1 } },
           \ 'checkbox':  {'toggles': [' ', 'x', '-'] },
           \ 'tokens':    { 'strike': '~~',
           \                'list': '*' },
-          \ 'fold':      { 'enable':   1,
+          \ 'fold':      { 'enable':   0,
           \                'components': ['toc', 'fence'] },
           \ 'toc': {
           \    'text': 'Table of Contents',
-          \    'update_on_write': 1,
+          \    'update_on_write': 0,
+          \    'position': 0,
           \    'details': { 'nesting_level': 0 }
           \ }
           \ }
    ]]
+
+  g["mkdx#settings.toc.update_on_write"] = 0
 end
 
 init()

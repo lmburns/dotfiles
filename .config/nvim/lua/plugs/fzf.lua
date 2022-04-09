@@ -357,10 +357,16 @@ local function init()
 
   env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
   g.fzf_preview_window = { "right:50%,border-left", "ctrl-/" }
+
   g.fzf_preview_quit_map = 1
   g.fzf_preview_use_dev_icons = 1
   g.fzf_preview_dev_icon_prefix_string_length = 3
   g.fzf_preview_dev_icons_limit = 2000
+
+  g.fzf_preview_git_status_preview_command =
+      [==[[[ $(git diff --cached -- {-1}) != \"\" ]] && git diff --cached --color=always -- {-1} | delta || ]==] ..
+          [==[[[ $(git diff -- {-1}) != \"\" ]] && git diff --color=always -- {-1} | delta ]==]
+
   -- g.fzf_preview_fzf_preview_window_option = 'nohidden'
   g.fzf_preview_default_fzf_options = {
     ["--no-border"] = true,

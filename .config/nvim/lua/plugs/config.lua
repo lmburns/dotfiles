@@ -4,6 +4,7 @@ local kutils = require("common.kutils")
 local utils = require("common.utils")
 local K = require("common.keymap")
 local map = utils.map
+local bmap = utils.bmap
 local fmap = utils.fmap
 
 local autocmd = utils.autocmd
@@ -351,6 +352,9 @@ function M.notify()
         stages = "slide",
         timeout = 2000,
         minimum_width = 30,
+        -- on_close = function()
+        -- -- Could create something to write to a file
+        -- end,
         render = "minimal",
         icons = {
           ERROR = " ",
@@ -484,7 +488,7 @@ function M.scratchpad()
   -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
   -- g.scratchpad_daily_format = '%Y-%m-%d'
 
-  map("n", "<Leader>sc", "<cmd>ScratchPad<CR>")
+  map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
 
 function M.sandwhich()
@@ -649,6 +653,7 @@ function M.hop()
             inclusive_jump = false,
           }
       )
+      -- api.nvim_input("h")
       api.nvim_feedkeys(kutils.termcodes["h"], "n", false)
     end,
   }
@@ -768,12 +773,17 @@ function M.window_picker()
   map("n", "<Leader>wp", ":lua require('nvim-window').pick()<CR>")
 end
 
-function M.luadev()
-  map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
-  map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })
+--- This involves the original in `nlua` to be commented out
+function M.nlua()
+  map("n", "M", [[<cmd>lua require("nlua").keyword_program()<CR>]])
 end
 
 -- Unused
+
+-- function M.luadev()
+--   map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
+--   map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })
+-- end
 
 -- function M.neoterm()
 --   g.neoterm_default_mod = "belowright" -- open terminal in bottom split
@@ -784,7 +794,6 @@ end
 --   map("n", "<Leader>rt", ":Ttoggle<CR>")
 --   map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
 -- end
-
 
 -- function M.delimitmate()
 --   g.delimitMate_jump_expansion = 1
@@ -799,7 +808,6 @@ end
 --       ), { noremap = false, expr = true }
 --   )
 -- end
-
 
 -- function M.sneak()
 --   g["sneak#label"] = 1

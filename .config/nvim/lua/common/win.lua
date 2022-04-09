@@ -37,7 +37,9 @@ function M.go2recent()
   end
 end
 
-local function init() mru_list = {} end
+local function init()
+  mru_list = {}
+end
 
 init()
 

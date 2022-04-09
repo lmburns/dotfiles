@@ -94,6 +94,9 @@ local function init()
     highlight = {
       enable = true, -- false will disable the whole extension
       disable = { "html", "comment", "zsh" }, -- list of language that will be disabled
+
+      -- I like the additional highlighting; however, when CocAction('highlight') is used
+      -- the regular syntax (not treesitter) is used as the foreground
       additional_vim_regex_highlighting = true,
     },
     autotag = { enable = true },

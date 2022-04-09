@@ -11,7 +11,7 @@
     // "c",
     "go",
     "html",
-    "java",
+    "java"
     // "javascript",
     // "lua",
     // "rust",
@@ -325,19 +325,17 @@
       "args": ["--stdio"]
     },
     "lua": {
-      "command": "/usr/bin/lua-language-server",
-      // "args": [
-      //   "-E",
-      //   "/home/lucas/.local/share/nvim/sumneko/lua-language-server/main.lua"
-      // ],
+      // "command": "/usr/bin/lua-language-server",
+      "command": "/home/lucas/.config/coc/extensions/coc-lua-data/sumneko-lua-ls/bin/Linux/lua-language-server",
       "filetypes": ["lua"],
       "rootPatterns": [".git/"],
       "settings": {
         "Lua": {
           "workspace": {
-            "maxPreload": 2000,
-            "preloadFileSize": 1000,
-            "checkThirdParty": false
+            "maxPreload": 10000,
+            "preloadFileSize": 10000,
+            // "checkThirdParty": false,
+            // "library": { "/usr/share/nvim/runtime/lua": true }
           },
           "runtime": {
             "version": "LuaJIT"
@@ -420,7 +418,7 @@
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "javascript.format.semicolons": "remove",
-  "typescript.format.semicolons": "remove",
+  "typescript.format.semicolons": "remove"
 
   // "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
   // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,

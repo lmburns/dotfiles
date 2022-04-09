@@ -1,5 +1,6 @@
 local M = {}
 
+require("lutils")
 local kutils = require("common.kutils")
 local utils = require("common.utils")
 local map = utils.map
@@ -405,32 +406,82 @@ function M.scroll_insert(right)
 end
 
 -- If this is ran in `init.lua` the command is not overwritten
--- TODO: Figure out why
 function M.tag_cmd()
-  api.nvim_create_autocmd(
-      "FileType", {
-        callback = function()
-          map(
-              "n", "<C-]>", "<Plug>(coc-definition)",
-              { noremap = false, silent = true }
-          )
-        end,
-        group = create_augroup("MyCocDef"),
-        pattern = {
-          "rust",
-          "scala",
-          "python",
-          "ruby",
-          "perl",
-          "lua",
-          "c",
-          "cpp",
-          "zig",
-          "d",
-          "javascript",
-          "typescript",
+  local au = require("common.utils").au
+
+  au(
+      "MyCocDef", {
+        {
+          "FileType",
+          {
+            "rust",
+            "scala",
+            "python",
+            "ruby",
+            "perl",
+            "lua",
+            "c",
+            "cpp",
+            "zig",
+            "d",
+            "javascript",
+            "typescript",
+          },
+          function()
+            map(
+                "n", "<C-]>", "<Plug>(coc-definition)",
+                { noremap = true, silent = true }
+            )
+          end,
         },
       }
+  )
+
+  -- nlua uses 'K' to help show documentation in vim
+  -- au(
+  --     "LuaShowDoc", {
+  --       {
+  --         "FileType",
+  --         "lua",
+  --         function()
+  --           map(
+  --               "n", "M",
+  --               [[:lua require('plugs.coc').show_documentation()<CR>]],
+  --               { noremap = true, silent = true }
+  --           )
+  --         end,
+  --       },
+  --     }
+  -- )
+end
+
+--- Adds all lua runtime paths to coc
+--- Taken from tjdevries/nlua
+local function get_lua_runtime()
+  local result = {};
+  for _, path in pairs(api.nvim_list_runtime_paths()) do
+    local lua_path = path .. "/lua/";
+    if vim.fn.isdirectory(lua_path) then
+      result[lua_path] = true
+    end
+  end
+
+  result[fn.expand("$VIMRUNTIME/lua")] = true
+  result[fn.expand("~/ghq/github.com/neovim/neovim/src/nvim/lua")] = true
+
+  return result;
+end
+
+--- Setup the Lua language-server
+function M.lua_langserver()
+  local bin = fn["coc#util#get_config"]("languageserver.lua").command
+  local main = fn.fnamemodify(bin, ":h") .. "/main.lua"
+
+  fn["coc#config"]("languageserver.lua", { args = { "-E", main } })
+
+  fn["coc#config"](
+      "languageserver.lua.settings.Lua.workspace",
+      { library = get_lua_runtime() }
   )
 end
 
@@ -438,11 +489,7 @@ end
 
 function M.init()
   diag_qfid = -1
-
-  fn["coc#config"](
-      "languageserver.lua.settings.Lua.workspace",
-      { library = { [vim.env.VIMRUNTIME .. "/lua"] = true } }
-  )
+  M.lua_langserver()
 
   g.coc_fzf_opts = { "--no-border", "--layout=reverse-list" }
 
@@ -460,6 +507,14 @@ function M.init()
         [[User CocOpenFloat lua require('plugs.coc').post_open_float()]],
       }, true
   )
+
+  cmd [[
+    hi link CocSemVariable TSVariable
+    hi link CocSemNamespace Namespace
+    hi link CocSemClass Type
+    hi link CocSemEnum Number
+    hi link CocSemEnumMember Enum
+  ]]
 
   -- use `:Fold` to fold current buffer
   -- cmd [[com! -nargs=? Fold :call CocAction('fold', <f-args>)]]
@@ -507,8 +562,11 @@ function M.init()
   map("n", "gd", [[:lua require('plugs.coc').go2def()<CR>]])
   map("n", "gy", [[<Cmd>call CocActionAsync('jumpTypeDefinition', 'drop')<CR>]])
   map("n", "gi", [[<Cmd>call CocActionAsync('jumpImplementation', 'drop')<CR>]])
-  map("n", "gr", [[<Cmd>call CocActionAsync('jumpReferences', 'drop')<CR>]])
-  -- map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
+  map("n", "gr", [[<Cmd>call CocActionAsync('jumpUsed', 'drop')<CR>]])
+  map("n", "gR", [[<Cmd>call CocActionAsync('jumpReferences', 'drop')<CR>]])
+
+  -- coc-declaration
+  -- coc-references-used
 
   -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
   -- map("n", "gy", "<Plug>(coc-type-definition)", { noremap = false })

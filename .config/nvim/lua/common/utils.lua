@@ -39,36 +39,7 @@ function M.create_augroup(name, clear)
   api.nvim_create_augroup(name, { clear = clear })
 end
 
--- Create many augroups
-function M.augroups(definitions)
-  for group_name, definition in pairs(definitions) do
-    cmd("augroup " .. group_name)
-    cmd("autocmd!")
-    for _, def in pairs(definition) do
-      local command = table.concat(tbl_flatten { "autocmd", def }, " ")
-      cmd(command)
-    end
-    cmd("augroup END")
-  end
-end
-
--- Create a single augroup
-function M.augroup(name, commands)
-  cmd("augroup " .. name)
-  cmd("autocmd!")
-  for _, c in ipairs(commands) do
-    cmd(
-        string.format(
-            "autocmd %s %s %s %s", table.concat(c.events, ","),
-            table.concat(c.targets or {}, ","),
-            table.concat(c.modifiers or {}, " "), c.command
-        )
-    )
-  end
-  cmd("augroup END")
-end
-
--- Create an autocmd
+-- Create an autocmd with vim commands
 function M.autocmd(group, cmds, clear)
   clear = clear == nil and false or clear
   if type(cmds) == "string" then
@@ -84,6 +55,32 @@ function M.autocmd(group, cmds, clear)
   cmd [[augroup END]]
 end
 
+--- Create an autocmd
+-- @param name: augroup name
+-- @param commands: autocmd to execute
+function M.au(name, commands)
+  local group = M.create_augroup(name)
+
+  for _, command in ipairs(commands) do
+    local event = command[1]
+    local patt = command[2]
+    local action = command[3]
+    local desc = command[4] or ""
+
+    if type(action) == "string" then
+      api.nvim_create_autocmd(
+          event,
+          { pattern = patt, command = action, group = group, desc = desc }
+      )
+    else
+      api.nvim_create_autocmd(
+          event,
+          { pattern = patt, callback = action, group = group, desc = desc }
+      )
+    end
+  end
+end
+
 -- Create a key mapping
 function M.map(modes, lhs, rhs, opts)
   opts = opts or {}
@@ -95,8 +92,6 @@ function M.map(modes, lhs, rhs, opts)
     api.nvim_set_keymap(mode, lhs, rhs, opts)
   end
 end
-
--- NOTE: Whats the difference between vim.keymap.set and vim.api.nvim_set_keymap?
 
 -- Create a buffer key mapping
 M.bmap = function(bufnr, mode, lhs, rhs, opts)
@@ -270,32 +265,6 @@ function M.clear_module(module_name)
   package.loaded[module_name] = nil
 end
 
-cmd [[
-    function! IsPluginInstalled(name) abort
-      return luaeval("_G.packer_plugins['" .. a:name .. "'] ~= nil")
-    endfunction
-]]
-
--- my_packer.is_plugin_installed = function(name)
---   return _G.packer_plugins[name] ~= nil
--- end
---
--- function AutocmdLazyConfig(plugin_name)
---   local timer = loop.new_timer()
---   timer:start(
---       1000, 0, schedule_wrap(
---           function()
---             if _G.packer_plugins[plugin_name].loaded then
---               timer:close() -- Always close handles to avoid leaks.
---               cmd(
---                   string.format("doautocmd User %s", "packer-" .. plugin_name)
---               )
---             end
---           end
---       )
---   )
--- end
-
 -- Check whether the current buffer is empty
 function M.is_buffer_empty()
   return fn.empty(fn.expand("%:t")) == 1
@@ -322,7 +291,9 @@ end
 -- Can also use #T ?
 function M.tablelength(T)
   local count = 0
-  for _ in pairs(T) do count = count + 1 end
+  for _ in pairs(T) do
+    count = count + 1
+  end
   return count
 end
 
@@ -365,6 +336,33 @@ function M.get_visual_selection()
   lines[1] = string.sub(lines[1], cscol)
   return table.concat(lines, "\n")
 end
+
+function M.notify(options)
+  if type(options) == "string" then
+    api.nvim_notify(
+        options, vim.log.levels.INFO, { icon = "", title = "Notification" }
+    )
+    return
+  end
+
+  local forced = vim.tbl_extend(
+      "force", {
+        message = "This is a sample notification.",
+        icon = "",
+        title = "Notification",
+        level = vim.log.levels.INFO,
+      }, options or {}
+  )
+  api.nvim_notify(
+      forced.message, forced.level, { title = forced.title, icon = forced.icon }
+  )
+end
+
+-- ================= Tips ================== [[[
+-- Search global variables:
+--    filter <pattern> let g:
+
+-- ]]] === Tips ===
 
 -- Allows us to use utils globally
 _G.utils = M

@@ -3,6 +3,7 @@ local map = utils.map
 
 g.wildcharm = "<Tab>"
 
+-- Allow both Tab/S-Tab and Ctrl{j,k} to rotate through completions
 map(
     "c", "<Tab>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]],
     { noremap = false, expr = true }
@@ -16,8 +17,8 @@ fn["wilder#enable_cmdline_enter"]()
 fn["wilder#setup"](
     {
       modes = { ":", "/", "?" },
-      next_key = "<Tab>",
-      previous_key = "<S-Tab>",
+      next_key = "<C-j>",
+      previous_key = "<C-k>",
       accept_key = "<A-,>",
       reject_key = "<A-.>",
     }

@@ -90,5 +90,4 @@ augroup gutentags
     autocmd! FileType cpp call <SID>SetupCPPTags()
     autocmd! FileType ruby call <SID>SetupRubyTags()
     autocmd! FileType perl call <SID>SetupPerlTags()
-    autocmd! FileType lua call <SID>SetupLuaTags()
 augroup END

@@ -77,6 +77,10 @@ local function init()
         allow_reverse = false,
         term_colors = true,
 
+        popup = {
+          background = false, -- use background color for pmenu
+        },
+
         toggle_style_list = require("kimbox").bgs_list,
       }
   )

@@ -17,7 +17,7 @@ require("impatient").enable_profile()
 require("lutils")
 require("options")
 
--- Plugins need to be compiled to work it seems
+-- Plugins need to be compiled each time to work it seems
 local conf_dir = fn.stdpath("config")
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
   local packer_loader_complete =
@@ -35,6 +35,16 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
         com! PSS so ~/.config/nvim/lua/plugins.lua | PackerSync
     ]]):format(packer_loader_complete)
+  )
+
+  -- Is there a way to repeat these?
+  local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
+  cmd(
+      ([[
+        com! -nargs=+ -complete=%s.create PackerSnapshot lua require('plugins').snapshot(<f-args>)
+        com! -nargs=+ -complete=%s.rollback PackerSnapshotRollback  lua require('plugins').rollback(<f-args>)
+        com! -nargs=+ -complete=%s.snapshot PackerSnapshotDelete lua require('plugins.snapshot').delete(<f-args>)
+    ]]):format(snargs, snargs, snargs)
   )
 else
   require("plugins").compile()
@@ -130,65 +140,6 @@ vim.notify = function(...)
 end
 -- ]]]
 
--- ======================== More Autocmds ============================= [[[
-api.nvim_create_autocmd(
-    "BufHidden", {
-      callback = function()
-        require("common.builtin").wipe_empty_buf()
-      end,
-      buffer = 0,
-      once = true,
-      group = create_augroup("FirstBuf", true),
-    }
-)
-
-api.nvim_create_autocmd(
-    "WinLeave", {
-      callback = function()
-        require("common.win").record()
-      end,
-      pattern = "*",
-      group = create_augroup("MruWin", true),
-    }
-)
-
-api.nvim_create_autocmd(
-    "BufRead", {
-      callback = function()
-        -- Buffer option here doesn't work like global
-        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
-        vim.opt_local.conceallevel = 2
-        vim.opt_local.concealcursor = "vc"
-
-        -- Allows a shared statusline
-        if b.ft ~= "fzf" then
-          vim.opt_local.laststatus = 3
-        end
-
-      end,
-      group = create_augroup("FormatOptions"),
-      pattern = "*",
-    }
-)
-
--- I've noticed that `BufRead` works, but `BufReadPost` doesn't
--- at least, with allowing opening a file with `nvim +5`
-api.nvim_create_autocmd(
-    "BufRead", {
-      callback = function()
-        -- local ft = vim.api.nvim_get_option_value("filetype", {})
-        local row, col = unpack(api.nvim_buf_get_mark(0, "\""))
-        if { row, col } ~= { 0, 0 } and row <= api.nvim_buf_line_count(0) then
-          api.nvim_win_set_cursor(0, { row, 0 })
-        end
-      end,
-      pattern = "*",
-      once = false,
-      group = create_augroup("jump_last_position", true),
-    }
-)
--- ]]] === More Autocmds ===
-
 -- cmd [[
 --     filetype off
 --     let g:did_load_filetypes = 0
@@ -263,7 +214,7 @@ vim.schedule(
                 "BufWritePost", {
                   command = "so <afile> | PackerCompile",
                   pattern = "*/plugins.lua",
-                  group = create_augroup("Packer"),
+                  group = create_augroup("lmb__Packer"),
                 }
             )
 
@@ -290,7 +241,8 @@ vim.schedule(
                     )
                   end,
                   pattern = "*",
-                  group = create_augroup("LuaHighlight"),
+                  group = create_augroup("lmb__Highlight"),
+                  desc = "Highlight a selection on yank",
                 }
             )
           end, 200
@@ -304,6 +256,7 @@ vim.schedule(
               "coc-css",
               "coc-diagnostic",
               "coc-dlang",
+              "coc-docker",
               "coc-fzf-preview",
               "coc-git",
               "coc-go",
@@ -358,6 +311,10 @@ vim.schedule(
 
             cmd [[
               au User CocNvimInit ++once lua require('plugs.coc').init()
+
+              hi! link CocSemDefaultLibrary Special
+              hi! link CocSemDocumentation Number
+              hi! CocSemStatic gui=bold
             ]]
 
             cmd("packadd coc-kvs")

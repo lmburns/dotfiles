@@ -5,12 +5,17 @@ require("common.utils")
 -- Define bg color
 -- @param group Group
 -- @param color Color
-function M.bg(group, col) cmd("hi " .. group .. " guibg=" .. col) end
+function M.bg(group, col)
+  cmd("hi " .. group .. " guibg=" .. col)
+end
 
 -- Define fg color
 -- @param group Group
 -- @param color Color
-function M.fg(group, col) cmd("hi " .. group .. " guifg=" .. col) end
+function M.fg(group, col, gui)
+  local g = gui == nil and "" or (" gui=%s"):format(gui)
+  cmd("hi " .. group .. " guifg=" .. col .. g)
+end
 
 -- Define bg and fg color
 -- @param group Group

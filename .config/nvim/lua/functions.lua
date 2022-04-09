@@ -2,8 +2,7 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
-local autocmd = utils.autocmd
-local create_augroup = utils.create_augroup
+local au = utils.au
 
 -- ============================ Commands ============================== [[[
 cmd [[
@@ -15,35 +14,6 @@ cmd [[
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[
-cmd [[
-  function! s:executor() abort
-    if &ft == 'lua'
-      call execute(printf(":lua %s", getline(".")))
-    elseif &ft == 'vim'
-      exe getline(">")
-    endif
-  endfunction
-
-  nnoremap <Leader>xl :luafile %<CR>
-  nnoremap <Leader>xx :call <SID>executor()<CR>
-  vnoremap <Leader>xx :<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>
-
-  if !exists('*SaveAndExec')
-    function! SaveAndExec() abort
-      if &filetype == 'vim'
-        :silent! write
-        :source %
-      elseif &filetype == 'lua'
-        :silent! write
-        :luafile %
-      endif
-      return
-    endfunction
-  endif
-
-  nnoremap <Leader><Leader>x :call SaveAndExec()<CR>
-]]
-
 -- ============================== Syntax ============================== [[[
 -- Show syntax group
 cmd [[
@@ -141,38 +111,70 @@ cmd [[
   command! RUN :call s:execute_buffer()
 ]]
 
-local execute_buffer = create_augroup("ExecuteBuffer")
-api.nvim_create_autocmd(
-    "FileType", {
-      callback = function()
-        map("n", "<Leader>r<CR>", ":RUN<CR>")
-        map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
-      end,
-      pattern = { "sh", "bash", "zsh", "python", "ruby", "perl", "lua" },
-      group = execute_buffer,
-    }
-)
+cmd [[
+  function! LuaExecutor() abort
+    if &ft == 'lua'
+      call execute(printf(":lua %s", getline(".")))
+    elseif &ft == 'vim'
+      exe getline(">")
+    endif
+  endfunction
 
-api.nvim_create_autocmd(
-    "FileType", {
-      callback = function()
-        map(
-            "n", "<Leader>r<CR>",
-            ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>"
-        )
-      end,
-      pattern = { "typescript" },
-      group = execute_buffer,
-    }
-)
+ if !exists('*SaveAndExec')
+    function! SaveAndExec() abort
+      if &filetype == 'vim'
+        :silent! write
+        :source %
+      elseif &filetype == 'lua'
+        :silent! write
+        :luafile %
+      endif
+      return
+    endfunction
+  endif
+]]
 
-api.nvim_create_autocmd(
-    "FileType", {
-      callback = function()
-        map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
-      end,
-      pattern = { "javascript" },
-      group = execute_buffer,
+
+au(
+    "ExecuteBuffer", {
+      {
+        "FileType",
+        { "sh", "bash", "zsh", "python", "ruby", "perl", "lua" },
+        function()
+          map("n", "<Leader>r<CR>", ":RUN<CR>")
+          map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
+        end,
+      },
+      {
+        "FileType",
+        "typescript",
+        function()
+          map(
+              "n", "<Leader>r<CR>",
+              ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>"
+          )
+        end,
+      },
+      {
+        "FileType",
+        "javascript",
+        function()
+          map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
+        end,
+      },
+      {
+        "FileType",
+        "lua",
+        function()
+          map("n", "<Leader>xl", ":luafile %<CR>")
+          map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
+          map(
+              "v", "<Leader>xx",
+              [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]]
+          )
+          map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
+        end,
+      },
     }
 )
 -- ]]] === Execute Buffer ===
@@ -205,7 +207,7 @@ cmd [[
 
   augroup gogithub
       au!
-      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
+      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> 1<cr> :call <sid>go_github()<cr>
   augroup END
 ]]
 

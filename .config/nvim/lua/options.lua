@@ -8,16 +8,8 @@ g.maplocalleader = [[,]]
 
 cmd [[set nocompatible]]
 
-map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
-map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
-
--- vim.g.loaded_logiPat = 1
--- vim.g.loaded_getscriptPlugin = 1
--- vim.g.loaded_matchparen = 1
--- vim.g.loaded_netrwFileHandlers = 1
--- vim.g.loaded_rrhelper = 1
--- vim.g.loaded_spellfile_plugin = 1
--- vim.g.loaded_zipPlugin = 1
+-- map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
+-- map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
 -- Lua filetype detection
 g.do_filetype_lua = 1
@@ -26,6 +18,7 @@ g.do_filetype_lua = 1
 -- I have noticed that treesitter syntax highlighting is delayed when this is used
 g.did_load_filetypes = 1
 
+-- Figure these out:
 vim.filetype.add(
     {
       extension = {
@@ -35,26 +28,32 @@ vim.filetype.add(
         mdx = "markdown",
         mjml = "html",
         sxhkdrc = "sxhkdrc",
+        ztst = "ztst",
       },
       pattern = { [".*%.env.*"] = "sh", [".*ignore"] = "conf" },
       filename = { ["yup.lock"] = "yaml", [".editorconfig"] = "dosini" },
     }
 )
 
+-- vim.g.loaded_getscriptPlugin = 1
+-- vim.g.loaded_matchparen = 1
 vim.tbl_map(
     function(p)
       vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end, {
       "2html_plugin",
       "gzip",
+      "logiPat", -- boolean logical pattern matcher
       "matchit",
       "netrw",
       "netrwPlugin",
+      "netrwFileHandlers",
       "netrwSettings",
       "python_provider",
       "ruby_provider",
       "perl_provider",
       "shada_plugin",
+      "rrhelper",
       "tar",
       "tarPlugin",
       "vimball",

@@ -1203,7 +1203,7 @@ $FZF_DEFAULT_OPTS
 --header='A:select-all, B:pager, Y:copy, E:nvim'
 --preview-window=:nohidden
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind 'ctrl-a:select-all'
+--bind 'alt-a:select-all'
 --bind 'ctrl-b:execute(bat --paging=always -f {+})'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
 --bind 'ctrl-e:execute(echo {+} | xargs -o nvim)'

@@ -9,7 +9,7 @@ local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
 local opt = {
-  disable_filetype = { "TelescopePrompt" },
+  disable_filetype = { "TelescopePrompt", "toggleterm", "floaterm" },
   disable_in_macro = false,
   disable_in_visualblock = false,
   ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
@@ -76,13 +76,13 @@ function M.rules()
     Rule(" ", " "):with_pair(
         function(opts)
           local pair = opts.line:sub(opts.col - 1, opts.col)
-          return vim.tbl_contains({ "()", "{}", "[]", "<>" }, pair)
+          return vim.tbl_contains({ "()", "{}", "[]" }, pair)
         end
     ):with_move(cond.none()):with_cr(cond.none()):with_del(
         function(opts)
           local col = api.nvim_win_get_cursor(0)[2]
           local context = opts.line:sub(col - 1, col + 2)
-          return vim.tbl_contains({ "(  )", "{  }", "[  ]", "<  >" }, context)
+          return vim.tbl_contains({ "(  )", "{  }", "[  ]" }, context)
         end
     ),
 
@@ -104,11 +104,11 @@ function M.rules()
         end
     ):with_cr(cond.none()):with_del(cond.none()):use_key "]",
 
-    Rule("", " >"):with_pair(cond.none()):with_move(
-        function(opts)
-          return opts.char == ">"
-        end
-    ):with_cr(cond.none()):with_del(cond.none()):use_key(">"),
+    -- Rule("", " >"):with_pair(cond.none()):with_move(
+    --     function(opts)
+    --       return opts.char == ">"
+    --     end
+    -- ):with_cr(cond.none()):with_del(cond.none()):use_key(">"),
   }
 
   autopairs.add_rules {
@@ -139,11 +139,13 @@ function M.rules()
         ):with_pair(ts_conds.is_ts_node({ "string" })),
 
         -- Allows matching '<' '>' in Rust or C++ or Typescript
+        -- bracket("<", ">", { "rust", "cpp", "typescript" }),
+
         Rule("<", ">", { "rust", "cpp", "typescript" }):with_pair(
             cond.not_before_regex_check(
                 " "
             )
-        ),
+        ):with_pair(cond.not_after_regex(opt.ignored_next_char)),
 
         -- Allows matching '' is strings
         Rule("'", "'", { "lua" }):with_pair(ts_conds.is_ts_node({ "string" })),

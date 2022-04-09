@@ -60,6 +60,7 @@ local packer = require("packer")
 packer.init(
     {
       compile_path = fn.stdpath("config") .. "/plugin/packer_compiled.lua",
+      snapshot_path = fn.stdpath("cache") .. "/packer.nvim",
       auto_clean = true,
       compile_on_sync = true,
       display = {
@@ -70,7 +71,6 @@ packer.init(
           return require("packer.util").float({ border = "rounded" })
         end,
       },
-      git = { clone_timeout = 300 },
       profile = { enable = true },
     }
 )
@@ -159,17 +159,14 @@ return packer.startup(
         --     }
         -- )
 
-        use({ "tjdevries/nlua.nvim" })
+        use({ "tjdevries/nlua.nvim", ft = "lua", config = conf("nlua") })
+
         -- use({ "bfredl/nvim-luadev", config = conf("luadev"), ft = "lua" })
         -- ]]] === Debugging ===
 
         -- ============================ File Manager =========================== [[[
         use(
-            {
-              "kevinhwang91/rnvimr",
-              opt = false,
-              config = [[require("plugs.rnvimr")]],
-            }
+            { "kevinhwang91/rnvimr", opt = false, config = conf("plugs.rnvimr") }
         )
 
         use({ "ptzz/lf.vim", config = conf("lf") })
@@ -191,7 +188,7 @@ return packer.startup(
               "akinsho/toggleterm.nvim",
               config = conf("plugs.neoterm"),
               keys = { "gxx", "gx", "<C-\\>" },
-              cmd = { "T" },
+              cmd = { "T", "TE" },
             }
         )
         -- use({ "kassio/neoterm", config = conf("neoterm") })
@@ -255,10 +252,6 @@ return packer.startup(
         -- =============================== Marks ============================== [[[
         use({ "chentau/marks.nvim", config = conf("plugs.marks") })
         -- ]]] === Marks ===
-
-        -- ============================== WhichKey ============================ [[[
-        use({ "folke/which-key.nvim", config = conf("plugs.which-key") })
-        -- ]]] === WhichKey ===
 
         -- ============================== HlsLens ============================= [[[
         use {
@@ -587,12 +580,17 @@ return packer.startup(
             }
         )
 
+        -- FIX: TOC is written each time
         use(
             {
               "SidOfc/mkdx",
               ft = { "markdown", "vimwiki" },
-              after = "fzf.vim",
-              config = conf("plugs.mkdx"),
+              config = function()
+                vim.cmd(
+                    "source " .. fn.stdpath("config") ..
+                        "/vimscript/plugins/mkdx.vim"
+                )
+              end,
             }
         )
 
@@ -986,6 +984,10 @@ return packer.startup(
         -- use { "farmergreg/vim-lastplace" }
 
         use({ "rcarriga/nvim-notify", config = conf("notify") })
+
+        -- ============================== WhichKey ============================ [[[
+        use({ "folke/which-key.nvim", config = conf("plugs.which-key") })
+        -- ]]] === WhichKey ===
 
       end,
     }

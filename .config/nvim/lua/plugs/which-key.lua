@@ -4,6 +4,8 @@ local K = require("common.keymap")
 local wk = require("which-key")
 
 function M.setup()
+  -- Why is this on?
+  ---@diagnostic disable-next-line: redundant-parameter
   wk.setup {
     plugins = {
       marks = true, -- shows a list of your marks on ' and `
@@ -61,13 +63,16 @@ local function init()
   M.setup()
 
   K.n("<Leader>wh", "<Cmd>WhichKey<CR>")
-  K.n("<Leader><Leader><CR>", "<Cmd>WhichKey \\ <CR>")
+
+  K.n("<Leader><Leader><CR>", [[<Cmd>WhichKey \ \ <CR>]])
+  K.n("<Leader><CR>", [[<Cmd>WhichKey \ <CR>]])
   K.n("<LocalLeader><CR>", "<Cmd>WhichKey <LocalLeader><CR>")
   K.n("<SubLeader><CR>", "<Cmd>WhichKey <SubLeader><CR>")
   K.n(";<CR>", "<Cmd>WhichKey ;<CR>")
   K.n("g<CR>", "<Cmd>WhichKey g<CR>")
   K.n("[<CR>", "<Cmd>WhichKey [<CR>")
   K.n("]<CR>", "<Cmd>WhichKey ]<CR>")
+  K.n("<C-x><CR>", "<Cmd>WhichKey ]<CR>")
 
   -- K.n("<EasyMotion><CR>", "<Cmd>WhichKey <EasyMotion><CR>")
 end

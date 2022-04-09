@@ -67,6 +67,11 @@ function M.dump(o)
   end
 end
 
+M.join_paths = function(...)
+  local separator = "/"
+  return table.concat({ ... }, separator)
+end
+
 -- Capture output of command
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, "r"))
