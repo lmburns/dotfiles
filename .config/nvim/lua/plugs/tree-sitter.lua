@@ -83,7 +83,7 @@ local function init()
       "ruby",
       "rust",
       "scss",
-      -- "teal",
+      "teal",
       "typescript",
       -- "tsx",
       -- "vue",

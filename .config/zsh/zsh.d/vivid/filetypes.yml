@@ -187,6 +187,7 @@ programming:
     database: [.sqlite, .sqlite3, .db]
     jq: [.jq]
     solidity: [.sol]
+    teal: [.tl]
 
   tooling:
     vcs:

@@ -716,6 +716,7 @@ builtin.edit_nvim = function()
   builtin.fd {
     -- prompt_title = "< Search Nvim >",
     path_display = { "smart" },
+    prompt_prefix = "  ",
     search_dirs = { "~/.config/nvim" },
     attach_mappings = function(_, map)
       map("i", "<C-y>", set_prompt_to_entry_value)
@@ -802,7 +803,7 @@ map("n", ";g", ":Telescope git_files<CR>")
 
 map("n", "<Leader>hc", ":Telescope command_history<CR>")
 map("n", "<Leader>hs", ":Telescope search_history<CR>")
-map("n", "<Leader>cs", ":Telescope colorscheme<CR>")
+-- map("n", "<Leader>cs", ":Telescope colorscheme<CR>")
 
 map("n", ";s", ":Telescope coc workspace_symbols<CR>")
 
@@ -840,7 +841,7 @@ local bg = require("common.color").bg
 fg("TelescopeSelection", colors.yellow, "bold")
 fg("TelescopeSelectionCaret", colors.blue)
 fg("TelescopeMultiSelection", colors.aqua)
-bg("TelescopeNormal", colors.bg0)
+-- bg("TelescopeNormal", colors.bg0)
 fg("TelescopeBorder", colors.magenta)
 fg("TelescopePromptBorder", colors.magenta)
 fg("TelescopeResultsBorder", colors.magenta)

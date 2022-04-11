@@ -15,12 +15,12 @@ map("n", "<Leader>il", ":IndentLinesToggle<CR>")
 g.indentLine_faster = 1
 
 g.indentLine_fileTypeExclude = {
-  "vimwiki",
   "coc-explorer",
   "help",
   "undotree",
   "diff",
   "fzf",
+  "vimwiki",
   "floaterm",
   "markdown",
 }

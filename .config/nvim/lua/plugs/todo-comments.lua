@@ -16,6 +16,7 @@ function M.setup()
           TEST = { icon = " ", color = "#819c3b" },
           HACK = { icon = " ", color = "#d8a657" },
           WARN = { icon = " ", color = "#EC5f67", alt = { "WARNING", "XXX" } },
+          TIP = { icon = "", color = "#9a9a9a", alt = { "HINT" } },
           CHANGED = {
             icon = " ",
             color = "#89b482",

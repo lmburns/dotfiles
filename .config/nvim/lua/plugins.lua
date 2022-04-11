@@ -19,6 +19,14 @@ end
 cmd [[packadd packer.nvim]]
 local packer = require("packer")
 
+local function prefer_local(url, path)
+  if not path then
+    local name = url:match("[^/]*$")
+    path = "~/projects/nvim/" .. name
+  end
+  return uv.fs_stat(fn.expand(path)) ~= nil and path or url
+end
+
 -- packer.on_compile_done = function()
 --   local fp = assert(io.open(packer.config.compile_path, "rw+"))
 --   local wbuf = {}
@@ -91,6 +99,9 @@ return packer.startup(
 
         -- Cache startup
         use({ "lewis6991/impatient.nvim" })
+
+        -- Faster version of filetype.vim
+        use({ "nathom/filetype.nvim" })
 
         -- ============================ Vim Library =========================== [[[
         use({ "tpope/vim-repeat" })
@@ -170,6 +181,7 @@ return packer.startup(
         )
 
         use({ "ptzz/lf.vim", config = conf("lf") })
+        use({ prefer_local("lf.nvim"), config = conf("lfnvim") })
         -- use({ "haorenW1025/floatLf-nvim" })
 
         -- ]]] === File Manager ===
@@ -263,19 +275,33 @@ return packer.startup(
 
         -- =========================== Colorscheme ============================ [[[
         local colorscheme = "kimbox"
+        -- Needed for some themes
+        use({ "rktjmp/lush.nvim" })
 
         use({ "sainnhe/gruvbox-material" })
         use({ "sainnhe/edge" })
         use({ "sainnhe/everforest" })
         use({ "sainnhe/sonokai" })
         use({ "glepnir/oceanic-material" })
-        use({ "marko-cerovac/material.nvim" })
         use({ "franbach/miramare" })
         use({ "pineapplegiant/spaceduck" })
         use({ "ghifarit53/daycula-vim" })
-        use({ "ghifarit53/tokyonight-vim" })
-        use({ "nanotech/jellybeans.vim" })
+        -- use({ "nanotech/jellybeans.vim" })
+        use({ "metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim" })
+        -- use({ "kabouzeid/nvim-jellybeans", requires = "rktjmp/lush.nvim" })
         use({ "savq/melange" })
+        use({ "folke/tokyonight.nvim" })
+        use({ "haishanh/night-owl.vim" })
+        use({ "b4skyx/serenade" })
+        use({ "KeitaNakamura/neodark.vim" })
+        -- use(
+        --     {
+        --       "catppuccin/nvim",
+        --       as = "catppuccin",
+        --       config = [[require("plugs.kimbox").catppuccin()]],
+        --     }
+        -- )
+        use({ "marko-cerovac/material.nvim" })
         -- use({ "kaicataldo/material.vim" })
 
         use({ "lmburns/kimbox", config = conf("plugs.kimbox") })
@@ -331,7 +357,15 @@ return packer.startup(
         -- ]]] === Lualine ===
 
         -- =========================== Indentline ============================= [[[
-        use({ "yggdroot/indentline", config = conf("plugs.indentline") })
+        -- use({ "yggdroot/indentline", config = conf("plugs.indentline") })
+
+        use(
+            {
+              "lukas-reineke/indent-blankline.nvim",
+              config = conf("plugs.indent_blankline"),
+              after = colorscheme,
+            }
+        )
         -- ]]] === Indentline ===
 
         -- =============================== Fzf ================================ [[[
@@ -355,6 +389,7 @@ return packer.startup(
         -- ]]] === Fzf ===
 
         -- ====================== Window Picker ======================= [[[
+        -- sindrets/winshift.nvim
         use(
             {
               "https://gitlab.com/yorickpeterse/nvim-window",
@@ -416,6 +451,7 @@ return packer.startup(
         )
 
         -- Similar to vim-sandwhich (I kind of use both)
+        -- ur4ltz/surround.nvim
         use(
             {
               "tpope/vim-surround",
@@ -452,7 +488,18 @@ return packer.startup(
             }
         )
 
-        use({ "pseewald/vim-anyfold", cmd = "AnyFoldActivate" })
+        -- use({ "lambdalisue/readablefold.vim", event = "VimEnter" })
+        use(
+            {
+              "pseewald/vim-anyfold",
+              cmd = "AnyFoldActivate",
+              setup = [[vim.g.anyfold_fold_display = 0]],
+            }
+        )
+
+        use(
+            { "anuvyklack/pretty-fold.nvim", config = conf("plugs.pretty-fold") }
+        )
 
         use(
             {
@@ -470,11 +517,7 @@ return packer.startup(
         --     }
         -- )
 
-        -- use(
-        --     { "AndrewRadev/switch.vim",
-        --       config = [[require("plugs.switch")]] }
-        -- )
-
+        use({ "monaqa/dial.nvim", config = conf("dial") })
         -- ]]] === Operator ===
 
         -- =============================== Tags =============================== [[[
@@ -556,6 +599,15 @@ return packer.startup(
         -- ]]] === VimSlime - Python ===
 
         -- ============================== Markdown ============================= [[[
+        -- use(
+        --     {
+        --       "renerocksai/telekasten.nvim",
+        --       after = { "telescope.nvim" },
+        --       require = { "renerocksai/calendar-vim" },
+        --       config = conf("plugs.telekasten")
+        --     }
+        -- )
+
         use(
             {
               "vim-pandoc/vim-pandoc-syntax",
@@ -693,7 +745,7 @@ return packer.startup(
             {
               "norcalli/nvim-colorizer.lua",
               ft = { "vim", "sh", "zsh", "markdown", "tmux", "yaml", "lua" },
-              config = conf("plugs.colorizer"),
+              config = conf("colorizer"),
             }
         )
         use(
@@ -731,20 +783,22 @@ return packer.startup(
         )
         use({ "antoinemadec/coc-fzf", after = "coc.nvim" })
 
-        use { "kevinhwang91/coc-kvs", run = "yarn install --frozen-lockfile" }
+        use({ "kevinhwang91/coc-kvs", run = "yarn install --frozen-lockfile" })
         -- ]]] === Coc ===
 
         -- ============================= Treesitter ============================ [[[
-        use {
-          "danymat/neogen",
-          config = conf("neogen"),
-          keys = {
-            { "n", "<Leader>dg" },
-            { "n", "<Leader>df" },
-            { "n", "<Leader>dc" },
-          },
-          requires = "nvim-treesitter/nvim-treesitter",
-        }
+        use(
+            {
+              "danymat/neogen",
+              config = conf("neogen"),
+              keys = {
+                { "n", "<Leader>dg" },
+                { "n", "<Leader>df" },
+                { "n", "<Leader>dc" },
+              },
+              requires = "nvim-treesitter/nvim-treesitter",
+            }
+        )
         use(
             {
               "nvim-treesitter/nvim-treesitter",
@@ -774,8 +828,6 @@ return packer.startup(
               -- cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
             }
         )
-        use({ "nvim-treesitter/nvim-tree-docs", after = { "nvim-treesitter" } })
-        use({ "nanotee/luv-vimdocs", opt = false })
 
         use(
             { "mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter" }
@@ -783,6 +835,9 @@ return packer.startup(
 
         -- use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
         -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
+
+        use({ "nvim-treesitter/nvim-tree-docs", after = { "nvim-treesitter" } })
+        use({ "nanotee/luv-vimdocs", opt = false })
         -- ]]] === Treesitter ===
 
         -- ============================= Html/Css ============================= [[[
@@ -864,7 +919,6 @@ return packer.startup(
                   config = [[require("telescope").load_extension("hop")]],
                 },
                 {
-                  -- TODO: Use or remove; Does this do anything?
                   "nvim-telescope/telescope-smart-history.nvim",
                   requires = { "tami5/sqlite.lua" },
                   after = { "telescope.nvim", "sqlite.lua" },
@@ -903,6 +957,14 @@ return packer.startup(
               requires = { "nvim-telescope/telescope.nvim", "tami5/sqlite.lua" },
               after = { "telescope.nvim", "sqlite.lua" },
               config = [[require("plugs.nvim-neoclip")]],
+            }
+        )
+
+        use(
+            {
+              "stevearc/dressing.nvim",
+              event = "BufWinEnter",
+              config = conf("plugs.dressing"),
             }
         )
 
@@ -955,37 +1017,12 @@ return packer.startup(
         )
         -- ]]] === Git ===
 
-        -- ============================= Completion ============================ [[[
-
-        -- use(
-        --     {
-        --       "hrsh7th/nvim-cmp",
-        --       requires = {
-        --         "hrsh7th/cmp-buffer",
-        --         "hrsh7th/cmp-calc",
-        --         "hrsh7th/cmp-cmdline",
-        --         "hrsh7th/cmp-nvim-lsp",
-        --         "hrsh7th/cmp-path",
-        --         "hrsh7th/cmp-vsnip",
-        --         "hrsh7th/cmp-nvim-lsp-signature-help",
-        --         "petertriho/cmp-git",
-        --         "hrsh7th/cmp-copilot",
-        --         "lukas-reineke/cmp-rg",
-        --         { "hrsh7th/vim-vsnip", requires = { "hrsh7th/vim-vsnip-integ" } },
-        --       },
-        --       config = function()
-        --         -- See lspconfig comment on why this is in a function wrapper
-        --         require("plugins.cmp").setup()
-        --       end,
-        --     }
-        -- )
-        -- ]]] === Completion ===
-
-        -- use { "farmergreg/vim-lastplace" }
-
         use({ "rcarriga/nvim-notify", config = conf("notify") })
 
         -- ============================== WhichKey ============================ [[[
+        -- TODO: -- Setup this plugin
+        -- use({ "mrjones2014/legendary.nvim", config = conf("plugs.legendary") })
+
         use({ "folke/which-key.nvim", config = conf("plugs.which-key") })
         -- ]]] === WhichKey ===
 
@@ -1012,6 +1049,74 @@ return packer.startup(
 --       after = "vim-surround",
 --       keys = { { "n", "f" }, { "n", "F" } },
 --       config = conf("sneak"),
+--     }
+-- )
+
+-- ==> dial
+-- use({ "AndrewRadev/switch.vim" })
+
+-- ============================= Completion ============================ [[[
+
+-- use(
+--     {
+--       "hrsh7th/nvim-cmp",
+--       requires = {
+--         "hrsh7th/cmp-buffer",
+--         "hrsh7th/cmp-calc",
+--         "hrsh7th/cmp-cmdline",
+--         "hrsh7th/cmp-nvim-lsp",
+--         "hrsh7th/cmp-path",
+--         "hrsh7th/cmp-vsnip",
+--         "hrsh7th/cmp-nvim-lsp-signature-help",
+--         "petertriho/cmp-git",
+--         "hrsh7th/cmp-copilot",
+--         "lukas-reineke/cmp-rg",
+--         { "hrsh7th/vim-vsnip", requires = { "hrsh7th/vim-vsnip-integ" } },
+--       },
+--       config = function()
+--         -- See lspconfig comment on why this is in a function wrapper
+--         require("plugins.cmp").setup()
+--       end,
+--     }
+-- )
+-- ]]] === Completion ===
+
+-- use({
+--   "ThePrimeagen/harpoon",
+--   after = { "telescope.nvim" },
+--   config = conf("plugs.harpoon"),
+-- })
+
+-- use({
+--   "folke/persistence.nvim",
+--   event = "BufReadPre", -- this will only start session saving when an actual file was opened
+--   module = "persistence",
+--   config = conf("persistence")
+-- })
+
+-- use(
+--     {
+--       "https://gitlab.com/yorickpeterse/nvim-pqf",
+--       ft = { "qf" },
+--       after = "nvim-bqf",
+--       config = [[require('pqf').setup()]],
+--     }
+-- )
+
+-- use(
+--     {
+--       "cutlass/gbprod.nvim",
+--       config = conf("cutlass"),
+--       -- keys = {
+--       --   { "n", "c" },
+--       --   { "n", "cc" },
+--       --   { "n", "C" },
+--       --   { "n", "d" },
+--       --   { "n", "dd" },
+--       --   { "n", "D" },
+--       --   { "n", "x" },
+--       --   { "n", "X" },
+--       -- },
 --     }
 -- )
 

@@ -197,6 +197,8 @@ function M.dump(...)
   print(table.unpack(objects))
 end
 
+-- command = vim.api.nvim_add_user_command
+
 ---API for command mappings
 -- Supports lua function args
 ---@param args string|table
@@ -275,19 +277,6 @@ function M.has_width_gt(cols)
   return fn.winwidth(0) / 2 > cols
 end
 
-function M.merge(a, b)
-  if type(a) == "table" and type(b) == "table" then
-    for k, v in pairs(b) do
-      if type(v) == "table" and type(a[k] or false) == "table" then
-        M.merge(a[k], v)
-      else
-        a[k] = v
-      end
-    end
-  end
-  return a
-end
-
 -- Can also use #T ?
 function M.tablelength(T)
   local count = 0
@@ -337,6 +326,9 @@ function M.get_visual_selection()
   return table.concat(lines, "\n")
 end
 
+--- Wrapper to send a notification
+--- This may not be that useful
+---@param  options same options as `nvim_notify`
 function M.notify(options)
   if type(options) == "string" then
     api.nvim_notify(
@@ -356,6 +348,40 @@ function M.notify(options)
   api.nvim_notify(
       forced.message, forced.level, { title = forced.title, icon = forced.icon }
   )
+end
+
+M.preserve = function(arguments)
+  local arguments =
+      string.format("keepjumps keeppatterns execute %q", arguments)
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  api.nvim_command(arguments)
+  local lastline = fn.line("$")
+  if line > lastline then
+    line = lastline
+  end
+
+  api.nvim_win_set_cursor(0, { line, col })
+end
+
+-- vim.cmd([[cnoreab cls Preserve]])
+-- vim.cmd([[command! Preserve lua preserve('%s/\\s\\+$//ge')]])
+-- vim.cmd([[command! Reindent lua preserve("sil keepj normal! gg=G")]])
+-- vim.cmd([[command! BufOnly lua preserve("silent! %bd|e#
+
+---Remove duplicate blank lines (2 -> 1)
+M.squeeze_blank_lines = function()
+  if vim.bo.binary == false and vim.opt.filetype:get() ~= "diff" then
+    local old_query = vim.fn.getreg("/") -- save search register
+    M.preserve("sil! 1,.s/^\\n\\{2,}/\\r/gn") -- set current search count number
+    local result = fn.searchcount({ maxcount = 1000, timeout = 500 }).current
+    local line, col = unpack(api.nvim_win_get_cursor(0))
+    M.preserve("sil! keepp keepj %s/^\\n\\{2,}/\\r/ge")
+    M.preserve("sil! keepp keepj %s/\\v($\\n\\s*)+%$/\\r/e")
+    if result > 0 then
+      api.nvim_win_set_cursor(0, { (line - result), col })
+    end
+    fn.setreg("/", old_query) -- restore search register
+  end
 end
 
 -- ================= Tips ================== [[[

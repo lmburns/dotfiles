@@ -4,12 +4,28 @@ local M = {}
 
 require("common.utils")
 
+M.catppuccin = function()
+  require("catppuccin").setup(
+      {
+        transparent_background = false,
+        term_colors = false,
+        styles = {
+          comments = "italic",
+          functions = "bold",
+          keywords = "none",
+          strings = "none",
+          variables = "none",
+        },
+      }
+  )
+end
+
 local function init()
   -- === Gruvbox ===
-  -- g.gruvbox_material_background = 'medium'
-  g.gruvbox_material_background = "hard"
+  g.gruvbox_material_background = "medium"
+  -- g.gruvbox_material_background = "hard"
   g.gruvbox_material_palette = "mix"
-  -- g.gruvbox_material_palette = 'material'
+  g.gruvbox_material_palette = "material"
   g.gruvbox_material_enable_bold = 1
   g.gruvbox_material_disable_italic_comment = 1
   g.gruvbox_material_current_word = "grey background"
@@ -22,19 +38,22 @@ local function init()
   g.gruvbox_material_diagnostic_line_highlight = 0
   g.gruvbox_material_diagnostic_virtual_text = "colored"
 
+  g.gruvbox_enable_italic = 0
+
   -- === Oceanic ===
   g.oceanic_material_background = "ocean"
   -- g.oceanic_material_background = "deep"
   -- g.oceanic_material_background = "medium"
   -- g.oceanic_material_background = "darker"
   g.oceanic_material_allow_bold = 1
-  g.oceanic_material_allow_italic = 1
+  g.oceanic_material_allow_italic = 0
   g.oceanic_material_allow_underline = 1
 
   -- === Everforest ===
   g.everforest_disable_italic_comment = 1
   g.everforest_background = "hard"
   g.everforest_enable_italic = 0
+  g.everforest_enable_bold = 1
   g.everforest_sign_column_background = "none"
   g.everforest_better_performance = 1
 
@@ -63,6 +82,10 @@ local function init()
 
   -- === Material ===
   g.material_style = "deep ocean"
+  -- g.material_style = "palenight"
+
+  -- === Tokyo Night ===
+  g.tokyonight_style = "night" -- night day
 
   -- === Kimbox ===
 
@@ -84,9 +107,10 @@ local function init()
         toggle_style_list = require("kimbox").bgs_list,
       }
   )
-  require("kimbox").load()
 
-  -- cmd [[colorscheme kimbox]]
+  -- require("kimbox").load()
+  -- cmd [[colorscheme jellybeans-nvim]]
+  cmd [[colorscheme gruvbox-material]]
 
   -- cmd [[hi VertColumn guibg=#D9AE80]]
   -- cmd [[hi VertSplit guibg=#7E602C]]

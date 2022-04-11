@@ -3,6 +3,9 @@ local M = {}
 require("common.utils")
 local utils = require("common.kutils")
 
+---Set a timeout for a character-prefix in keybindings
+---@param prefix string
+---@return string
 function M.prefix_timeout(prefix)
   local char = fn.getcharstr(0)
   return char == "" and utils.termcodes["<Ignore>"] or prefix .. char
@@ -23,6 +26,9 @@ function M.wipe_empty_buf()
   )
 end
 
+---Return string allowing jumping from column 0 to first character on the line
+---These could be the same if there is no whitespace prefix
+---@return string jump position in a mapping
 function M.jump0()
   local lnum, col = unpack(api.nvim_win_get_cursor(0))
   local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]
@@ -72,6 +78,7 @@ function M.jumps2qf()
   end
 end
 
+---Move to last buffer
 function M.switch_lastbuf()
   local alter_bufnr = fn.bufnr("#")
   local cur_bufnr = api.nvim_get_current_buf()
@@ -90,6 +97,8 @@ function M.switch_lastbuf()
   end
 end
 
+---Split the screen of the last buffer
+---@param vertical boolean vertical splitting if true, else horizontal
 function M.split_lastbuf(vertical)
   local sp = vertical and "vert" or ""
   local binfo = api.nvim_eval(

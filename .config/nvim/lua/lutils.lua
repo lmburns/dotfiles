@@ -1,16 +1,16 @@
 local M = {}
 
 local function inspect(v)
-    local s
-    local t = type(v)
-    if t == 'nil' then
-        s = 'nil'
-    elseif t ~= 'string' then
-        s = vim.inspect(v)
-    else
-        s = tostring(v)
-    end
-    return s
+  local s
+  local t = type(v)
+  if t == "nil" then
+    s = "nil"
+  elseif t ~= "string" then
+    s = vim.inspect(v)
+  else
+    s = tostring(v)
+  end
+  return s
 end
 
 P = function(...)
@@ -41,14 +41,14 @@ end
 
 -- Print text nicely
 function _G.p(...)
-    local argc = select('#', ...)
-    local msg_tbl = {}
-    for i = 1, argc do
-        local arg = select(i, ...)
-        table.insert(msg_tbl, inspect(arg))
-    end
+  local argc = select("#", ...)
+  local msg_tbl = {}
+  for i = 1, argc do
+    local arg = select(i, ...)
+    table.insert(msg_tbl, inspect(arg))
+  end
 
-    print(table.concat(msg_tbl, ' '))
+  print(table.concat(msg_tbl, " "))
 end
 
 -- Dump table
@@ -67,11 +67,6 @@ function M.dump(o)
   end
 end
 
-M.join_paths = function(...)
-  local separator = "/"
-  return table.concat({ ... }, separator)
-end
-
 -- Capture output of command
 function os.capture(cmd, raw)
   local f = assert(io.popen(cmd, "r"))
@@ -84,6 +79,23 @@ function os.capture(cmd, raw)
   s = string.gsub(s, "%s+$", "")
   s = string.gsub(s, "[\n\r]+", " ")
   return s
+end
+
+---Merge two tables
+---@param a 'table'
+---@param b 'table'
+---@return 'table'
+function M.merge(a, b)
+  if type(a) == "table" and type(b) == "table" then
+    for k, v in pairs(b) do
+      if type(v) == "table" and type(a[k] or false) == "table" then
+        M.merge(a[k], v)
+      else
+        a[k] = v
+      end
+    end
+  end
+  return a
 end
 
 -- Capture output of a command using plenary

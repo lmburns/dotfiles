@@ -11,7 +11,7 @@ function M.setup()
       marks = true, -- shows a list of your marks on ' and `
       registers = false, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
       presets = { -- adds help for a bunch of default keybindings
-        operators = true, -- adds help for operators like d, y, ... and registers them for motion / text object completion
+        operators = true, -- adds help for operators like d, y, ... and registers them for motion
         motions = false, -- adds help for motions
         text_objects = true, -- help for text objects triggered after entering an operator
         windows = false, -- default bindings on <c-w>

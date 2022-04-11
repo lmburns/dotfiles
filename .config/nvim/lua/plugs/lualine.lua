@@ -134,12 +134,12 @@ local sections_1 = {
       sources = { "coc" },
       symbols = { error = " ", warn = " ", info = " ", hint = " " },
     },
-    {
-      "require(\"nvim-gps\").get_location()",
-      cond = conditions.is_available_gps and conditions.hide_in_width and
-          conditions.coc_status_width,
-      color = { fg = colors.blue },
-    },
+    -- {
+    --   "require(\"nvim-gps\").get_location()",
+    --   cond = conditions.is_available_gps and conditions.hide_in_width and
+    --       conditions.coc_status_width,
+    --   color = { fg = colors.blue },
+    -- },
   },
   lualine_y = { { "diff", cond = conditions.hide_in_width } },
   lualine_z = { "%l:%c", "%p%%/%L" },
@@ -272,7 +272,8 @@ require("lualine").setup(
     {
       options = {
         icons_enabled = true,
-        theme = 'kimbox',
+        -- theme = 'kimbox',
+        theme = 'auto',
         section_separators = { left = "", right = "" },
         component_separators = { left = "", right = "" },
         -- Not sure if these work

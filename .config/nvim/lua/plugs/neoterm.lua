@@ -27,14 +27,15 @@ terminal.setup(
       start_in_insert = true,
       insert_mappings = true,
       persist_size = true,
-      -- direction = 'float',
-      direction = "horizontal",
+      shell = vim.o.shell,
+      direction = "float",
+      -- direction = "horizontal",
       close_on_exit = true,
       float_opts = {
         border = "rounded",
         width = math.floor(vim.o.columns * 0.85),
         height = math.floor(vim.o.lines * 0.8),
-        winblend = 15,
+        winblend = 4,
         highlights = { border = "Normal", background = "Normal" },
       },
     }
@@ -123,10 +124,11 @@ remap(
     end
 )
 
+-- Terminal repl
 command(
     {
       "-count -nargs=*",
-      "T",
+      "TR",
       function(args, count)
         term_exec(args, count)
       end,
@@ -154,34 +156,6 @@ cmd(
 -- Sample on how a command can be rand
 -- require'toggleterm'.exec("git push",    <count>, 12)
 
--- TODO: Use this with lf fork
-local Terminal = require("toggleterm.terminal").Terminal
-local lf = Terminal:new(
-    {
-      cmd = "lf",
-      dir = "git_dir",
-      direction = "float",
-      float_opts = { border = "double" },
-      winblend = 3,
-      on_open = function(term)
-        vim.cmd("startinsert!")
-        vim.api.nvim_buf_set_keymap(
-            term.bufnr, "n", "q", "<cmd>close<CR>",
-            { noremap = true, silent = true }
-        )
-      end,
-      -- on_close = function(term)
-      --   vim.cmd("Closing terminal")
-      -- end,
-    }
-)
-
-function M.lazygit_toggle()
-  lf:toggle()
-end
-
-map("n", ";a", "<cmd>lua require('plugs.neoterm').lazygit_toggle()<CR>")
-
 function neoterm(cmd, id)
   if not id or id < 1 then
     id = 1
@@ -196,10 +170,11 @@ function neoterm(cmd, id)
   return terminal.exec(cmd, id)
 end
 
+-- Equivalent to neoterms `T`
 command(
     {
       "-count -nargs=*",
-      "TE",
+      "T",
       function(args, count)
         neoterm(args, count)
       end,

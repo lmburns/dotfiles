@@ -93,7 +93,7 @@ map("i", "<S-Tab>", "<C-d>")
 map("x", "<", "<gv")
 map("x", ">", ">gv")
 
--- NOTE: Use g- and g+
+-- TIP: Use g- and g+
 -- Use `u` to undo, use `U` to redo
 map("n", "U", "<C-r>")
 map("n", ";u", [[:execute('earlier ' . v:count1 . 'f')<CR>]], { silent = false })

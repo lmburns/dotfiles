@@ -29,6 +29,8 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         com! PackerSync lua require('plugins').sync()
         com! PackerClean lua require('plugins').clean()
         com! PackerStatus lua require('plugins').status()
+        com! PackerProfile lua require('plugins').profile_output()
+
         com! -nargs=? PackerCompile lua require('plugins').compile(<q-args>)
         com! -nargs=+ -complete=%s PackerLoad lua require('plugins').loader(<f-args>)
 
@@ -151,11 +153,11 @@ g.loaded_clipboard_provider = 1
 vim.schedule(
     function()
 
-      vim.defer_fn(
-          function()
-            require("common.fold")
-          end, 50
-      )
+      -- vim.defer_fn(
+      --     function()
+      --       require("common.fold")
+      --     end, 50
+      -- )
 
       -- === Defer mappings
       -- vim.defer_fn(
@@ -250,7 +252,6 @@ vim.schedule(
 
       vim.defer_fn(
           function()
-            -- FIX: This doesn't automatically install like it did in vim
             vim.g.coc_global_extensions = {
               "coc-clangd",
               "coc-css",
@@ -309,13 +310,14 @@ vim.schedule(
             --     }
             -- )
 
+            local link = require("common.color").link
+
             cmd [[
               au User CocNvimInit ++once lua require('plugs.coc').init()
-
-              hi! link CocSemDefaultLibrary Special
-              hi! link CocSemDocumentation Number
               hi! CocSemStatic gui=bold
             ]]
+            link("CocSemDefaultLibrary", "Special")
+            link("CocSemDocumentation", "Number")
 
             cmd("packadd coc-kvs")
             cmd("packadd coc.nvim")

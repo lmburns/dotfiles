@@ -54,15 +54,6 @@ function M.suda()
   map("n", "<Leader>W", ":SudaWrite<CR>")
 end
 
-function M.lf()
-  g.lf_map_keys = 0
-  g.lf_replace_netrw = 1
-
-  map("n", "<Leader>lf", ":Lf<CR>")
-  map("n", "<C-o>", ":Lf<CR>")
-
-end
-
 function M.floaterm()
   map("n", "<Leader>fll", ":Floaterms<CR>")
   map("n", ";fl", ":FloatermToggle<CR>")
@@ -373,7 +364,7 @@ function M.neogen()
       {
         enabled = true,
         input_after_comment = true,
-        languages = { lua = { template = { annotation_convention = "ldoc" } } },
+        languages = { lua = { template = { annotation_convention = "emmylua" } } },
       }
   )
   K.i("<C-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
@@ -478,6 +469,7 @@ function M.lazygit()
   map("n", "<Leader>lg", ":LazyGit<CR>", { silent = true })
 end
 
+-- ============================ ScratchPad ============================
 function M.scratchpad()
   g.scratchpad_autostart = 0
   g.scratchpad_autosize = 0
@@ -491,6 +483,7 @@ function M.scratchpad()
   map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
 
+-- ============================ Sandwhich =============================
 function M.sandwhich()
   -- Sandwhich
   -- sdb = surrounding automatic
@@ -534,6 +527,31 @@ function M.sandwhich()
   K.n("mlw", "yss`", { noremap = false })
 end
 
+function M.dial()
+  local augend = require("dial.augend")
+  local dmap = require("dial.map")
+
+  require("dial.config").augends:register_group(
+      {
+        -- default augends used when no group name is specified
+        default = {
+          augend.integer.alias.decimal, -- nonnegative decimal number (0, 1, 2, 3, ...)
+          augend.integer.alias.hex, -- nonnegative hex number  (0x01, 0x1a1f, etc.)
+          augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
+          augend.constant.alias.bool, -- boolean value (true <-> false)
+        },
+      }
+  )
+
+  map("n", "+", dmap.inc_normal(), { silent = true })
+  map("n", "_", dmap.dec_normal(), { silent = true })
+  map("v", "+", dmap.inc_visual(), { silent = true })
+  map("v", "_", dmap.dec_visual(), { silent = true })
+  map("v", "g+", dmap.inc_gvisual(), { silent = true })
+  map("v", "g_", dmap.dec_gvisual(), { silent = true })
+end
+
+-- =============================== Hop ================================
 function M.hop()
   -- "etovxqpdygfblzhckisuran"
   require("hop").setup({ keys = "asdfqwertzxcvbuiop" })
@@ -737,6 +755,7 @@ function M.hop()
   }
 end
 
+-- ========================== Window Picker ===========================
 function M.window_picker()
   require("nvim-window").setup(
       {
@@ -770,15 +789,64 @@ function M.window_picker()
       }
   )
 
-  map("n", "<Leader>wp", ":lua require('nvim-window').pick()<CR>")
+  map("n", "<Leader>wp", "<cmd>lua require('nvim-window').pick()<CR>")
 end
 
---- This involves the original in `nlua` to be commented out
+-- =============================== nlua ===============================
+--- This involves the original mapping in `nlua` to be commented out
 function M.nlua()
   map("n", "M", [[<cmd>lua require("nlua").keyword_program()<CR>]])
 end
 
--- Unused
+-- ============================ colorizer =============================
+function M.colorizer()
+  require("colorizer").setup(
+      {
+        "vim",
+        "sh",
+        "zsh",
+        "markdown",
+        "tmux",
+        "yaml",
+        "xml",
+        lua = { names = false },
+      }, {
+        RGB = false,
+        RRGGBB = true,
+        RRGGBBAA = true,
+        names = false,
+        mode = "background",
+      }
+  )
+end
+
+-- ============================== cutlass =============================
+function M.cutlass()
+  require("cutlass").setup({ cut_key = nil, override_del = nil, exclude = { "vx" } })
+end
+
+-- ================================ lf ================================
+function M.lf()
+  g.lf_map_keys = 0
+  g.lf_replace_netrw = 1
+
+  map("n", "<A-o>", ":Lf<CR>")
+
+end
+
+function M.lfnvim()
+  g.lf_map_keys = 0
+  g.lf_replace_netrw = 1
+
+  require("lf").setup({ border = "double" })
+
+  -- map("n", "<A-o>", ":Lf<CR>")
+  map("n", "<C-o>", ":Lfnvim<CR>")
+
+end
+
+-- ============================== Unused ==============================
+-- ====================================================================
 
 -- function M.luadev()
 --   map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })

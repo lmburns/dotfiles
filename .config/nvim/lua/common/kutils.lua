@@ -47,7 +47,10 @@ function M.write_file(path, data, sync)
                       assert(not err_close, err_close)
                       if succ then
                         -- may rename by other syn write
-                        uv.fs_rename(path_, path, function() end)
+                        uv.fs_rename(
+                            path_, path, function()
+                            end
+                        )
                       end
                     end
                 )
@@ -150,8 +153,9 @@ end
 
 function M.close_diff()
   local winids = vim.tbl_filter(
-      function(winid) return vim.wo[winid].diff end,
-      api.nvim_tabpage_list_wins(0)
+      function(winid)
+        return vim.wo[winid].diff
+      end, api.nvim_tabpage_list_wins(0)
   )
 
   if #winids > 1 then
@@ -257,8 +261,9 @@ M.highlight = (function()
     o = opt and vim.tbl_deep_extend("keep", o, opt) or o
     local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
     vim.defer_fn(
-        function() pcall(api.nvim_buf_del_extmark, bufnr, ns, id) end,
-        delay or 300
+        function()
+          pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
+        end, delay or 300
     )
   end
 end)()

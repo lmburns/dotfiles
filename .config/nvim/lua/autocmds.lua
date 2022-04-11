@@ -1,5 +1,6 @@
 local utils = require("common.utils")
 local autocmd = utils.autocmd
+local map = utils.map
 local au = utils.au
 local create_augroup = utils.create_augroup
 
@@ -30,7 +31,7 @@ do
   local o = vim.opt_local
 
   api.nvim_create_autocmd(
-      "BufRead", {
+      "BufEnter", {
         callback = function()
           -- Buffer option here doesn't work like global
           o.formatoptions:remove({ "c", "r", "o" })
@@ -188,8 +189,32 @@ au(
       { "FileType", "json", [[setl shiftwidth=2]] },
       { "FileType", "qf", [[set nobuflisted]] },
 
-      { "BufWritePre", "*", [[%s/\s\+$//e]] },
-      { "BufWritePre", "*", [[%s#\($\n\s*\)\+\%$##e]] },
+      -- Delete trailing spaces
+      {
+        "BufWritePre",
+        "*",
+        function()
+          require("common.utils").preserve("%s/\\s\\+$//ge")
+        end,
+      },
+
+      -- Delete trailing blank lines
+      {
+        "BufWritePre",
+        "*",
+        function()
+          require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
+        end,
+      },
+
+      -- Delete blank lines if more than 2 in a row
+      -- {
+      --   "BufWritePre",
+      --   "*",
+      --   function()
+      --     require("common.utils").squeeze_blank_lines()
+      --   end,
+      -- },
 
       { "BufWritePre", { "*.odt", "*.rtf" }, [[silent set ro]] },
       { "BufWritePre", "*.odt",
@@ -222,15 +247,45 @@ cmd [[hi def link myTodo Todo]]
 -- ]]] === Custom syntax groups ===
 
 -- ================================ Zig =============================== [[[
-cmd [[
-  augroup zig_env
-    autocmd!
-    autocmd FileType zig
-      \ nnoremap <Leader>r<CR> : FloatermNew --autoclose=0 zig run ./%<CR>|
-      \ nnoremap <buffer> ;ff           :Format<cr>
-  augroup END
-]]
+au(
+    "lmb__ZigEnv", {
+      {
+        "FileType",
+        "zig",
+        function()
+          map(
+              "n", "<Leader>r<CR>",
+              "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>"
+          )
+          map("n", ";ff", ":Format<CR>")
+        end,
+      },
+    }
+)
 -- ]]] === Zig ===
+
+-- ======================= CursorLine Control ========================= [[[
+-- Cursorline highlighting control
+--  Only have it on in the active buffer
+do
+  id = create_augroup("lmb__CursorLineControl")
+  local set_cursorline = function(event, value, pattern)
+    vim.api.nvim_create_autocmd(
+        event, {
+          group = id,
+          pattern = pattern,
+          callback = function()
+            vim.opt_local.cursorline = value
+          end,
+        }
+    )
+  end
+
+  set_cursorline("WinLeave", false)
+  set_cursorline("WinEnter", true)
+  set_cursorline("FileType", false, "TelescopePrompt")
+end
+-- ]]]
 
 -- ========================== Buffer Reload =========================== [[[
 -- autocmd(

@@ -57,7 +57,7 @@ local function apply_fold(bufnr, ranges)
       bufnr, function()
         vim.wo.foldmethod = "manual"
 
-        -- NOTE: This moves the cursor one place to the left if typing starts within
+        -- FIXME: This moves the cursor one place to the left if typing starts within
         --       1 second of opening the file
         cmd("norm! zE")
 
@@ -151,7 +151,7 @@ function M.attach(bufnr, force)
   cmd(("au! FoldLoad * <buffer=%d>"):format(bufnr))
   vim.wo.foldenable = true
   vim.wo.foldlevel = 99
-  vim.wo.foldtext = [[v:lua.require'common.fold'.foldtext()]]
+  -- vim.wo.foldtext = [[v:lua.require'common.fold'.foldtext()]]
 end
 
 function M.defer_attach(bufnr)
@@ -261,6 +261,7 @@ local function init()
     "toggleterm",
     "fzf",
     "telescope",
+    "scratchpad"
   }
   coc_loaded_ft = {}
   anyfold_prefer_ft = { "vim" }

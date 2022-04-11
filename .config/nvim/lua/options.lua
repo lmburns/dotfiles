@@ -13,27 +13,8 @@ cmd [[set nocompatible]]
 
 -- Lua filetype detection
 g.do_filetype_lua = 1
-
--- Runs `filetype.lua` and uses builtin filetype detection
--- I have noticed that treesitter syntax highlighting is delayed when this is used
 g.did_load_filetypes = 1
-
--- Figure these out:
-vim.filetype.add(
-    {
-      extension = {
-        eslintrc = "json",
-        prettierrc = "json",
-        conf = "conf",
-        mdx = "markdown",
-        mjml = "html",
-        sxhkdrc = "sxhkdrc",
-        ztst = "ztst",
-      },
-      pattern = { [".*%.env.*"] = "sh", [".*ignore"] = "conf" },
-      filename = { ["yup.lock"] = "yaml", [".editorconfig"] = "dosini" },
-    }
-)
+-- vim.filetype.add()
 
 -- vim.g.loaded_getscriptPlugin = 1
 -- vim.g.loaded_matchparen = 1

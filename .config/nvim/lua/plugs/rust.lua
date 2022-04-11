@@ -28,9 +28,9 @@ local function init()
         \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
         \ nnoremap <buffer> ;ff           :RustFmt<CR>|
         \ vnoremap <buffer> ;ff           :RustFmtRange<CR>|
-        \ let g:rustfmt_autosave_if_config_present = 1
     augroup END
   ]]
+  -- \ let g:rustfmt_autosave_if_config_present = 1
 end
 
 init()

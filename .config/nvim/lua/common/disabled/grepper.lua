@@ -1,12 +1,13 @@
 local M = {}
 
--- Doesn't really work, doesn't open quickfix
+-- Doesn't work, doesn't open quickfix
 local Job = require("plenary.job")
+local map = require("common.utils").map
 
 local get_job = function(str, cwd)
   local job = Job:new{
     command = "rg",
-    args = { "--vimgrep", str },
+    args = { "--color=never", "--vimgrep", str },
 
     on_stdout = vim.schedule_wrap(
         function(_, line)
@@ -29,7 +30,11 @@ local get_job = function(str, cwd)
         end
     ),
 
-    on_exit = vim.schedule_wrap(function() vim.cmd [[copen]] end),
+    on_exit = vim.schedule_wrap(
+        function()
+          vim.cmd [[copen]]
+        end
+    ),
   }
 
   return job
@@ -56,11 +61,13 @@ function M.replace_string(search, replace, opts)
   return job:sync()
 end
 
--- map(
---     "n", "<Leader>gg",
---     [[:lua require('grepper').grep_for_string(vim.fn.input('Grep >'))<CR>]]
--- )
---
+LB_GREP = M
+
+map(
+    "n", "<Leader>gg",
+    [[:lua LB_GREP.grep_for_string(vim.fn.input('Grep >'))<CR>]]
+)
+
 -- map(
 --     "n", "<Leader>gr",
 --     [[:lua require('grepper').replace_string(vim.fn.input("Grep > "), vim.fn.input("Replace with > "))<CR>]]
