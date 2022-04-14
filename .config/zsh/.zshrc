@@ -1039,6 +1039,8 @@ zt 0c light-mode as'completion' for \
       zdharma-continuum/null \
     id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
       zdharma-continuum/null \
+    id-as'luarocks' has'luarocks' nocd eval'luarocks --lua-version=5.1 path' \
+      zdharma-continuum/null \
     id-as'keychain_init' has'keychain' nocd \
     eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \
       && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \

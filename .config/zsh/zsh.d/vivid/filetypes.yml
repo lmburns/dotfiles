@@ -98,6 +98,7 @@ markup:
     - .csv
     - .markdown
     - .md
+    - .norg
     - .mdown
     - .rst
     - .xml

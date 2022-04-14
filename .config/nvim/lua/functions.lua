@@ -1,16 +1,46 @@
 local M = {}
 
 local utils = require("common.utils")
+local command = utils.command
 local map = utils.map
 local au = utils.au
 
 -- ============================ Commands ============================== [[[
-cmd [[
-    command! -range=% -nargs=0 RmOnsi <line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g
-    command! -nargs=? -complete=buffer FollowSymlink lua require('common.kutils').follow_symlink(<f-args>)
-    command! -nargs=0 CleanEmptyBuf lua require('common.kutils').clean_empty_bufs()
-    command! -nargs=0 Jumps lua require('common.builtin').jumps2qf()
-]]
+
+command(
+    "Jumps",
+    function()
+        require("common.builtin").jumps2qf()
+    end,
+    {nargs = 0}
+)
+
+command(
+    "CleanEmptyBuf",
+    function()
+        require("common.kutils").clean_empty_bufs()
+    end,
+    {nargs = 0}
+)
+
+command(
+    "FollowSymlink",
+    function(tbl)
+        require("common.kutils").follow_symlink(tbl.args)
+    end,
+    {nargs = "?", complete = "buffer"}
+)
+
+command("RmAnsi", [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]], {nargs = 0, range = "%"})
+
+-- `Grepper` is used for multiple buffers, this is for one
+command(
+    "VG",
+    function(tbl)
+        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1], tbl.fargs[2] or "%"))
+    end,
+    {nargs = "+"}
+)
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[
@@ -43,50 +73,11 @@ cmd [[
 
 map("n", "<Leader>sll", ":syn list")
 map("n", "<Leader>slo", ":verbose hi")
-
-map(
-    "n", "<F9>",
-    [[:echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<']] ..
-        [[ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"]] ..
-        [[ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>]]
-)
 -- ]]] === Syntax ===
 
 -- ========================= Builtin Terminal ========================= [[[
 g.term_buf = 0
 g.term_win = 0
-
-cmd [[
-  function! TermToggle(height)
-    if win_gotoid(g:term_win)
-        hide
-    else
-        botright new
-        exec "resize " . a:height
-        try
-            exec "buffer " . g:term_buf
-        catch
-            call termopen("zsh", {"detach": 0})
-            let g:term_buf = bufnr("")
-            set nonumber
-            set norelativenumber
-            set signcolumn=no
-        endtry
-        startinsert!
-        let g:term_win = win_getid()
-    endif
-  endfunction
-]]
-
-cmd [[command! -nargs=* TP botright sp | resize 20 | term <args>]]
-cmd [[command! -nargs=* VT vsp | term <args>]]
-
--- map("n", "<A-i>", ":TP<CR>A")
--- Toggle terminal on/off (neovim)
-
--- map("n", "<C-t>", ":call TermToggle(12)<CR>")
--- map("i", "<C-t>", "<Esc>:call TermToggle(12)<CR>")
--- map("t", "<C-t>", [[<C-\><C-n>:call TermToggle(12)<CR>]])
 
 -- Terminal go back to normal mode
 map("t", "<Esc>", [[<C-\><C-n>]])
@@ -134,47 +125,41 @@ cmd [[
   endif
 ]]
 
-
 au(
-    "ExecuteBuffer", {
-      {
-        "FileType",
-        { "sh", "bash", "zsh", "python", "ruby", "perl", "lua" },
-        function()
-          map("n", "<Leader>r<CR>", ":RUN<CR>")
-          map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
-        end,
-      },
-      {
-        "FileType",
-        "typescript",
-        function()
-          map(
-              "n", "<Leader>r<CR>",
-              ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>"
-          )
-        end,
-      },
-      {
-        "FileType",
-        "javascript",
-        function()
-          map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
-        end,
-      },
-      {
-        "FileType",
-        "lua",
-        function()
-          map("n", "<Leader>xl", ":luafile %<CR>")
-          map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
-          map(
-              "v", "<Leader>xx",
-              [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]]
-          )
-          map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
-        end,
-      },
+    "ExecuteBuffer",
+    {
+        {
+            "FileType",
+            {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
+            function()
+                map("n", "<Leader>r<CR>", ":RUN<CR>")
+                map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
+            end
+        },
+        {
+            "FileType",
+            "typescript",
+            function()
+                map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
+            end
+        },
+        {
+            "FileType",
+            "javascript",
+            function()
+                map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
+            end
+        },
+        {
+            "FileType",
+            "lua",
+            function()
+                map("n", "<Leader>xl", ":luafile %<CR>")
+                map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
+                map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
+                map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
+            end
+        }
     }
 )
 -- ]]] === Execute Buffer ===
@@ -231,7 +216,7 @@ cmd [[
 
 -- Automatic rename of tmux window
 if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
-  vim.cmd [[
+    vim.cmd [[
       augroup rename_tmux
         au!
         au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%:t') | endif

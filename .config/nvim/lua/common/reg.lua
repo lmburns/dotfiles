@@ -1,3 +1,7 @@
+---Credit: kevinhwang91
+---Module that allows for peeking a vim registers
+---Making it easier to see what you're copying and pasting to
+
 local M = {}
 local api = vim.api
 local fn = vim.fn

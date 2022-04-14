@@ -10,9 +10,14 @@ function M.setup()
     plugins = {
       marks = true, -- shows a list of your marks on ' and `
       registers = false, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+      -- FIX: Get this to work
+      spelling = {
+        enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
+        suggestions = 20, -- how many suggestions should be shown in the list?
+      },
       presets = { -- adds help for a bunch of default keybindings
         operators = true, -- adds help for operators like d, y, ... and registers them for motion
-        motions = false, -- adds help for motions
+        motions = true, -- adds help for motions
         text_objects = true, -- help for text objects triggered after entering an operator
         windows = false, -- default bindings on <c-w>
         nav = true, -- misc bindings to work with windows
@@ -33,7 +38,7 @@ function M.setup()
       scroll_up = "<c-u>", -- binding to scroll up inside the popup
     },
     window = {
-      border = "none", -- none, single, double, shadow
+      border = "rounded", -- none, single, double, shadow
       position = "bottom", -- bottom, top
       margin = { 1, 0, 1, 0 }, -- extra window margin [top, right, bottom, left]
       padding = { 2, 2, 2, 2 }, -- extra window padding [top, right, bottom, left]
@@ -48,7 +53,8 @@ function M.setup()
     -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
     hidden = { "lua", "^ " }, -- hide mapping boilerplate
     show_help = true, -- show help message on the command line when the popup is visible
-    triggers = { "auto" }, -- or specifiy a list manually
+    triggers = { "auto" }, -- automatically setup triggers
+    -- triggers = {"<leader>"} -- or specify a list manually
   }
 end
 
@@ -62,18 +68,26 @@ local function init()
 
   M.setup()
 
-  K.n("<Leader>wh", "<Cmd>WhichKey<CR>")
+  -- K.n("<Leader>wh", "<Cmd>WhichKey<CR>")
 
   K.n("<Leader><Leader><CR>", [[<Cmd>WhichKey \ \ <CR>]])
   K.n("<Leader><CR>", [[<Cmd>WhichKey \ <CR>]])
   K.n("<LocalLeader><CR>", "<Cmd>WhichKey <LocalLeader><CR>")
-  K.n("<SubLeader><CR>", "<Cmd>WhichKey <SubLeader><CR>")
   K.n(";<CR>", "<Cmd>WhichKey ;<CR>")
   K.n("g<CR>", "<Cmd>WhichKey g<CR>")
   K.n("[<CR>", "<Cmd>WhichKey [<CR>")
   K.n("]<CR>", "<Cmd>WhichKey ]<CR>")
   K.n("<C-x><CR>", "<Cmd>WhichKey ]<CR>")
 
+  K.n("c<CR>", [[<Cmd>WhichKey c<CR>]])
+  K.n("<C-w><CR>", [[<Cmd>WhichKey <C-w><CR>]])
+
+  wk.register({
+    name = "TESTING",
+    ["<Leader>wh"] = {"<Cmd>WhichKey<CR>", "WhichKey open"}
+  })
+
+  -- K.n("<SubLeader><CR>", "<Cmd>WhichKey <SubLeader><CR>")
   -- K.n("<EasyMotion><CR>", "<Cmd>WhichKey <EasyMotion><CR>")
 end
 

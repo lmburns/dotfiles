@@ -1028,5 +1028,4 @@ cmd rename-title ${{
     printf "\033]2;%s\033\\" "$@"
 }}
 
-
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

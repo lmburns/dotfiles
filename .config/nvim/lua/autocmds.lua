@@ -9,17 +9,18 @@ local create_augroup = utils.create_augroup
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 api.nvim_create_autocmd(
-    "BufRead", {
-      callback = function()
-        -- local ft = vim.api.nvim_get_option_value("filetype", {})
-        local row, col = unpack(api.nvim_buf_get_mark(0, "\""))
-        if { row, col } ~= { 0, 0 } and row <= api.nvim_buf_line_count(0) then
-          api.nvim_win_set_cursor(0, { row, 0 })
-        end
-      end,
-      pattern = "*",
-      once = false,
-      group = create_augroup("lmb__RestoreCursor"),
+    "BufRead",
+    {
+        callback = function()
+            -- local ft = vim.api.nvim_get_option_value("filetype", {})
+            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
+            if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
+                api.nvim_win_set_cursor(0, {row, 0})
+            end
+        end,
+        pattern = "*",
+        once = false,
+        group = create_augroup("lmb__RestoreCursor")
     }
 )
 -- ]]] === Restore cursor ===
@@ -28,216 +29,210 @@ api.nvim_create_autocmd(
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them
 do
-  local o = vim.opt_local
+    local o = vim.opt_local
 
-  api.nvim_create_autocmd(
-      "BufEnter", {
-        callback = function()
-          -- Buffer option here doesn't work like global
-          o.formatoptions:remove({ "c", "r", "o" })
-          o.conceallevel = 2
-          o.concealcursor = "vc"
+    api.nvim_create_autocmd(
+        "BufEnter",
+        {
+            callback = function()
+                -- Buffer option here doesn't work like global
+                o.formatoptions:remove({"c", "r", "o"})
+                o.conceallevel = 2
+                o.concealcursor = "vc"
 
-          -- Allows a shared statusline
-          if b.ft ~= "fzf" then
-            vim.opt_local.laststatus = 3
-          end
-
-        end,
-        group = create_augroup("lmb__FormatOptions"),
-        pattern = "*",
-      }
-  )
+                -- Allows a shared statusline
+                if b.ft ~= "fzf" then
+                    vim.opt_local.laststatus = 3
+                end
+            end,
+            group = create_augroup("lmb__FormatOptions"),
+            pattern = "*"
+        }
+    )
 end
 -- ]]] === Format Options ===
 
 -- === Remove Empty Buffers === [[[
 api.nvim_create_autocmd(
-    "BufHidden", {
-      callback = function()
-        require("common.builtin").wipe_empty_buf()
-      end,
-      buffer = 0,
-      once = true,
-      group = create_augroup("lmb__FirstBuf"),
-      desc = "Remove empty, hidden buffers",
+    "BufHidden",
+    {
+        callback = function()
+            require("common.builtin").wipe_empty_buf()
+        end,
+        buffer = 0,
+        once = true,
+        group = create_augroup("lmb__FirstBuf"),
+        desc = "Remove empty, hidden buffers"
     }
 )
 -- ]]]
 
 -- === MRU === [[[
 api.nvim_create_autocmd(
-    "WinLeave", {
-      callback = function()
-        require("common.win").record()
-      end,
-      pattern = "*",
-      group = create_augroup("lmb__MruWin"),
-      desc = "Add file to custom MRU list",
+    "WinLeave",
+    {
+        callback = function()
+            require("common.win").record()
+        end,
+        pattern = "*",
+        group = create_augroup("lmb__MruWin"),
+        desc = "Add file to custom MRU list"
     }
 ) -- ]]]
 
 -- === Spelling === [[[
 do
-  local id = create_augroup("lmb__Spellcheck")
-  api.nvim_create_autocmd(
-      "FileType", {
-        command = "setlocal spell",
-        group = id,
-        pattern = { "gitcommit", "markdown", "text", "mail" },
-      }
-  )
+    local id = create_augroup("lmb__Spellcheck")
+    api.nvim_create_autocmd(
+        "FileType",
+        {
+            command = "setlocal spell",
+            group = id,
+            pattern = {"gitcommit", "markdown", "text", "mail"}
+        }
+    )
 
-  api.nvim_create_autocmd(
-      { "BufRead", "BufNewFile" },
-      { command = "setlocal spell", group = id, pattern = "neomutt-archbox*" }
-  )
+    api.nvim_create_autocmd(
+        {"BufRead", "BufNewFile"},
+        {command = "setlocal spell", group = id, pattern = "neomutt-archbox*"}
+    )
 end
 
 -- Fix terminal highlights
 api.nvim_create_autocmd(
-    "TermEnter", {
-      callback = function()
-        vim.schedule(
-            function()
-              cmd("nohlsearch")
-              vim.fn.clearmatches()
-            end
-        )
-      end,
-      pattern = "*",
-      group = create_augroup("lmb__TermFix"),
-      desc = "Clear matches and highlights when entering a terminal",
+    "TermEnter",
+    {
+        callback = function()
+            vim.schedule(
+                function()
+                    cmd("nohlsearch")
+                    vim.fn.clearmatches()
+                end
+            )
+        end,
+        pattern = "*",
+        group = create_augroup("lmb__TermFix"),
+        desc = "Clear matches and highlights when entering a terminal"
     }
 )
 -- ]]] === Spelling ===
 
 -- === Clear cmd line message === [[[
 do
-  local timer
-  local timeout = 5000
+    local timer
+    local timeout = 5000
 
-  -- Automatically clear command-line messages after a few seconds delay
-  -- Source: https://unix.stackexchange.com/a/613645
-  api.nvim_create_autocmd(
-      "CmdlineLeave", {
-        group = create_augroup("lmb__ClearCliMsgs"),
-        pattern = ":",
-        callback = function()
-          if timer then
-            timer:stop()
-          end
-          timer = vim.defer_fn(
-              function()
-                if fn.mode() == "n" then
-                  api.nvim_echo({}, false, {})
+    -- Automatically clear command-line messages after a few seconds delay
+    -- Source: https://unix.stackexchange.com/a/613645
+    api.nvim_create_autocmd(
+        "CmdlineLeave",
+        {
+            group = create_augroup("lmb__ClearCliMsgs"),
+            pattern = ":",
+            callback = function()
+                if timer then
+                    timer:stop()
                 end
-              end, timeout
-          )
-        end,
-        desc = ("Clear command-line messages after %d seconds"):format(
-            timeout / 1000
-        ),
-      }
-  )
+                timer =
+                    vim.defer_fn(
+                    function()
+                        if fn.mode() == "n" then
+                            api.nvim_echo({}, false, {})
+                        end
+                    end,
+                    timeout
+                )
+            end,
+            desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
+        }
+    )
 end -- ]]]
 
 -- === Auto Resize on Resize Event === [[[
 do
-  local id = create_augroup("lmb__VimResize")
-  local o = vim.o
+    local id = create_augroup("lmb__VimResize")
+    local o = vim.o
 
-  api.nvim_create_autocmd(
-      "VimResized", {
-        group = id,
-        callback = function()
-          local last_tab = api.nvim_get_current_tabpage()
-          cmd [[tabdo wincmd =]]
-          api.nvim_set_current_tabpage(last_tab)
-        end,
-        desc = "Equalize windows across tabs",
-      }
-  )
+    api.nvim_create_autocmd(
+        "VimResized",
+        {
+            group = id,
+            callback = function()
+                local last_tab = api.nvim_get_current_tabpage()
+                cmd [[tabdo wincmd =]]
+                api.nvim_set_current_tabpage(last_tab)
+            end,
+            desc = "Equalize windows across tabs"
+        }
+    )
 
-  api.nvim_create_autocmd(
-      { "VimEnter", "VimResized" }, {
-        group = id,
-        callback = function()
-          o.previewheight = math.floor(o.lines / 3)
-        end,
-        desc = "Update previewheight as per the new Vim size",
-      }
-  )
+    api.nvim_create_autocmd(
+        {"VimEnter", "VimResized"},
+        {
+            group = id,
+            callback = function()
+                o.previewheight = math.floor(o.lines / 3)
+            end,
+            desc = "Update previewheight as per the new Vim size"
+        }
+    )
 end -- ]]]
 
 -- === Custom file type settings === [[[
 au(
-    "lmb__CustomFileType", {
-      { { "BufRead", "BufNewFile" }, "*.ztst", "setl ft=ztst" },
-      { { "BufRead", "BufNewFile" }, "*.pre-commit", "setl ft=sh" },
-      { { "BufRead", "BufNewFile" }, "coc-settings.json", "setl ft=jsonc" },
-      {
-        { "BufRead", "BufNewFile" },
-        { "calcurse-note*", "~/.local/share/calcurse/notes/*" },
-        "set ft=markdown",
-      },
-      { { "BufRead", "BufNewFile" }, "*.ms,*.me,*.mom,*.man", "set ft=groff" },
-      { { "BufRead", "BufNewFile" }, "*.tex", "setl ft=tex" },
-
-      { "FileType", "json", [[syntax match Comment +\/\/.\+$+]] },
-      { "FileType", "nroff", [[setl wrap textwidth=85 colorcolumn=+1]] },
-      { "FileType", "json", [[setl shiftwidth=2]] },
-      { "FileType", "qf", [[set nobuflisted]] },
-
-      -- Delete trailing spaces
-      {
-        "BufWritePre",
-        "*",
-        function()
-          require("common.utils").preserve("%s/\\s\\+$//ge")
-        end,
-      },
-
-      -- Delete trailing blank lines
-      {
-        "BufWritePre",
-        "*",
-        function()
-          require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
-        end,
-      },
-
-      -- Delete blank lines if more than 2 in a row
-      -- {
-      --   "BufWritePre",
-      --   "*",
-      --   function()
-      --     require("common.utils").squeeze_blank_lines()
-      --   end,
-      -- },
-
-      { "BufWritePre", { "*.odt", "*.rtf" }, [[silent set ro]] },
-      { "BufWritePre", "*.odt",
-        [[%!pandoc --columns=78 -f odt -t markdown "%"]] },
-      { "BufWritePre", "*.rt", [[silent %!unrtf --text]] },
+    "lmb__CustomFileType",
+    {
+        {{"BufRead", "BufNewFile"}, "*.ztst", "setl ft=ztst"},
+        {{"BufRead", "BufNewFile"}, "*.pre-commit", "setl ft=sh"},
+        {{"BufRead", "BufNewFile"}, "coc-settings.json", "setl ft=jsonc"},
+        {
+            {"BufRead", "BufNewFile"},
+            {"calcurse-note*", "~/.local/share/calcurse/notes/*"},
+            "set ft=markdown"
+        },
+        {{"BufRead", "BufNewFile"}, "*.ms,*.me,*.mom,*.man", "set ft=groff"},
+        {{"BufRead", "BufNewFile"}, "*.tex", "setl ft=tex"},
+        {"FileType", "json", [[syntax match Comment +\/\/.\+$+]]},
+        {"FileType", "nroff", [[setl wrap textwidth=85 colorcolumn=+1]]},
+        {"FileType", "json", [[setl shiftwidth=2]]},
+        {"FileType", "qf", [[set nobuflisted]]},
+        {
+            "BufWritePre",
+            "*",
+            function()
+                -- Delete trailing spaces
+                require("common.utils").preserve("%s/\\s\\+$//ge")
+                -- Delete trailing blank lines
+                require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
+                -- Delete blank lines if more than 2 in a row
+                -- require("common.utils").squeeze_blank_lines()
+            end
+        },
+        {"BufWritePre", {"*.odt", "*.rtf"}, [[silent set ro]]},
+        {
+            "BufWritePre",
+            "*.odt",
+            [[%!pandoc --columns=78 -f odt -t markdown "%"]]
+        },
+        {"BufWritePre", "*.rt", [[silent %!unrtf --text]]}
     }
 )
 -- ]]] === Custom file type ===
 
 -- === Custom syntax groups === [[[
 autocmd(
-    "ccommtitle", {
-      [[ Syntax * syn match ]] ..
-          [[ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
-          [[ contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]],
-
-      [[ Syntax * syn match myTodo ]] ..
-          [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
-          [[ contained containedin=.*Comment.*,vimCommentTitle ]],
-
-      [[Syntax * syn keyword cmTitle contained=Comment]],
-      [[Syntax * syn keyword myTodo contained=Comment]],
-    }, true
+    "ccommtitle",
+    {
+        [[ Syntax * syn match ]] ..
+            [[ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
+                [[ contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]],
+        [[ Syntax * syn match myTodo ]] ..
+            [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
+                [[ contained containedin=.*Comment.*,vimCommentTitle ]],
+        [[Syntax * syn keyword cmTitle contained=Comment]],
+        [[Syntax * syn keyword myTodo contained=Comment]]
+    },
+    true
 )
 
 cmd [[hi def link cmTitle vimCommentTitle]]
@@ -248,18 +243,16 @@ cmd [[hi def link myTodo Todo]]
 
 -- ================================ Zig =============================== [[[
 au(
-    "lmb__ZigEnv", {
-      {
-        "FileType",
-        "zig",
-        function()
-          map(
-              "n", "<Leader>r<CR>",
-              "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>"
-          )
-          map("n", ";ff", ":Format<CR>")
-        end,
-      },
+    "lmb__ZigEnv",
+    {
+        {
+            "FileType",
+            "zig",
+            function()
+                map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
+                map("n", ";ff", ":Format<CR>")
+            end
+        }
     }
 )
 -- ]]] === Zig ===
@@ -268,22 +261,23 @@ au(
 -- Cursorline highlighting control
 --  Only have it on in the active buffer
 do
-  id = create_augroup("lmb__CursorLineControl")
-  local set_cursorline = function(event, value, pattern)
-    vim.api.nvim_create_autocmd(
-        event, {
-          group = id,
-          pattern = pattern,
-          callback = function()
-            vim.opt_local.cursorline = value
-          end,
-        }
-    )
-  end
+    id = create_augroup("lmb__CursorLineControl")
+    local set_cursorline = function(event, value, pattern)
+        vim.api.nvim_create_autocmd(
+            event,
+            {
+                group = id,
+                pattern = pattern,
+                callback = function()
+                    vim.opt_local.cursorline = value
+                end
+            }
+        )
+    end
 
-  set_cursorline("WinLeave", false)
-  set_cursorline("WinEnter", true)
-  set_cursorline("FileType", false, "TelescopePrompt")
+    set_cursorline("WinLeave", false)
+    set_cursorline("WinEnter", true)
+    set_cursorline("FileType", false, "TelescopePrompt")
 end
 -- ]]]
 
@@ -296,34 +290,38 @@ end
 -- )
 
 do
-  local id = create_augroup("lmb__AutoReloadFile")
+    local id = create_augroup("lmb__AutoReloadFile")
 
-  api.nvim_create_autocmd(
-      { "BufEnter", "CursorHold" }, {
-        group = id,
-        callback = function()
-          local bufnr = tonumber(fn.expand "<abuf>")
-          local name = api.nvim_buf_get_name(bufnr)
-          if name == "" -- Only check for normal files
-          or vim.bo[bufnr].buftype ~= "" -- To avoid: E211: File "..." no longer available
-          or not fn.filereadable(name) then
-            return
-          end
+    api.nvim_create_autocmd(
+        {"BufEnter", "CursorHold"},
+        {
+            group = id,
+            callback = function()
+                local bufnr = tonumber(fn.expand "<abuf>")
+                local name = api.nvim_buf_get_name(bufnr)
+                if
+                    name == "" or -- Only check for normal files
+                        vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
+                        not fn.filereadable(name)
+                 then
+                    return
+                end
 
-          vim.cmd(bufnr .. "checktime")
-        end,
-        desc = "Reload file when modified outside of the instance",
-      }
-  )
+                vim.cmd(bufnr .. "checktime")
+            end,
+            desc = "Reload file when modified outside of the instance"
+        }
+    )
 
-  api.nvim_create_autocmd(
-      "FileChangedShellPost", {
-        group = id,
-        pattern = "*",
-        command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
-        desc = "Display a message if the buffer is changed outside of instance",
-      }
-  )
+    api.nvim_create_autocmd(
+        "FileChangedShellPost",
+        {
+            group = id,
+            pattern = "*",
+            command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
+            desc = "Display a message if the buffer is changed outside of instance"
+        }
+    )
 end
 -- ]]] === Buffer Reload ===
 
@@ -339,33 +337,64 @@ end
 --   - Only in the active window
 --   - Ignore quickfix window
 --   - Disable in insert mode
+local legendary = require("legendary")
+-- local h = require("legendary.helpers")
+
 do
-  local id = create_augroup("lmb__AutoNumberToggle")
-  local o = vim.o
+    -- local id = create_augroup("lmb__AutoNumberToggle")
+    local o = vim.o
 
-  api.nvim_create_autocmd(
-      { "BufEnter", "FocusGained", "InsertLeave", "WinEnter" }, {
-        group = id,
-        callback = function()
-          if o.number and o.filetype ~= "qf" then
-            o.relativenumber = true
-          end
-        end,
-        desc = "Set relativenumber",
-      }
-  )
+    -- FIX: Not showing as registered in legendary
+    --      However the name actually shows when listing autocmds unlike the others
+    legendary.bind_autocmds(
+        {
+            name = "lmb__AutoNumberToggle",
+            {
+                {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
+                function()
+                    if o.number and o.filetype ~= "qf" then
+                        o.relativenumber = true
+                    end
+                end,
+                opts = {desc = "Set relativenumber"}
+            },
+            {
+                {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
+                function()
+                    if o.number and o.filetype ~= "qf" then
+                        o.relativenumber = false
+                    end
+                end,
+                opts = {desc = "Unset relativenumber"}
+            }
+        }
+    )
 
-  api.nvim_create_autocmd(
-      { "BufLeave", "FocusLost", "InsertEnter", "WinLeave" }, {
-        group = id,
-        callback = function()
-          if o.number and o.filetype ~= "qf" then
-            o.relativenumber = false
-          end
-        end,
-        desc = "Unset relativenumber",
-      }
-  )
+    -- api.nvim_create_autocmd(
+    --     {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
+    --     {
+    --         group = id,
+    --         callback = function()
+    --             if o.number and o.filetype ~= "qf" then
+    --                 o.relativenumber = true
+    --             end
+    --         end,
+    --         desc = "Set relativenumber"
+    --     }
+    -- )
+    --
+    -- api.nvim_create_autocmd(
+    --     {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
+    --     {
+    --         group = id,
+    --         callback = function()
+    --             if o.number and o.filetype ~= "qf" then
+    --                 o.relativenumber = false
+    --             end
+    --         end,
+    --         desc = "Unset relativenumber"
+    --     }
+    -- )
 end
 -- ]]] === Relative Numbers ===
 

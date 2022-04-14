@@ -36,5 +36,6 @@ cabbrev("PC", "PackerCompile")
 
 g.no_man_maps = 1
 cabbrev("man", "Man")
+cabbrev("vg", "vimgrep")
 
 return M

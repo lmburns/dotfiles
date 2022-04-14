@@ -58,9 +58,9 @@ let g:gutentags_ctags_exclude = [
     \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
     \]
 
-if executable('gtags-cscope') && executable('gtags')
-    let g:gutentags_modules += ['gtags_cscope'] "'cscopeprg' will be set to gtags-cscope
-endif
+" if executable('gtags-cscope') && executable('gtags')
+"     let g:gutentags_modules += ['gtags_cscope'] "'cscopeprg' will be set to gtags-cscope
+" endif
 
 function! s:SetupCTags()
     let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']

@@ -1,31 +1,54 @@
--- Create many augroups
-function M.augroups(definitions)
-  for group_name, definition in pairs(definitions) do
-    cmd("augroup " .. group_name)
-    cmd("autocmd!")
-    for _, def in pairs(definition) do
-      local command = table.concat(tbl_flatten { "autocmd", def }, " ")
-      cmd(command)
-    end
-    cmd("augroup END")
+-- Create an autocmd with vim commands
+function M.autocmd(group, cmds, clear)
+  clear = clear == nil and false or clear
+  if type(cmds) == "string" then
+    cmds = { cmds }
   end
+  cmd("augroup " .. group)
+  if clear then
+    cmd [[au!]]
+  end
+  for _, c in ipairs(cmds) do
+    cmd("autocmd " .. c)
+  end
+  cmd [[augroup END]]
 end
 
+-- Modify vim options
+function M.opt(o, v, scopes)
+    scopes = scopes or {vim.o}
+    v = v == nil and true or v
 
--- Create a single augroup
-function M.augroup(name, commands)
-  cmd("augroup " .. name)
-  cmd("autocmd!")
-  for _, c in ipairs(commands) do
-    cmd(
-        string.format(
-            "autocmd %s %s %s %s", table.concat(c.events, ","),
-            table.concat(c.targets or {}, ","),
-            table.concat(c.modifiers or {}, " "), c.command
-        )
-    )
+    if type(v) == "table" then
+        v = table.concat(v, ",")
+    end
+
+    for _, s in ipairs(scopes) do
+        s[o] = v
+    end
+end
+
+-- Another command function
+function M.cmd(name, action, flags)
+  local flag_pairs = {}
+
+  if flags then
+    for flag, value in pairs(flags) do
+      if value == true then
+        table.insert(flag_pairs, "-" .. flag)
+      else
+        table.insert(flag_pairs, "-" .. flag .. "=" .. value)
+      end
+    end
   end
-  cmd("augroup END")
+
+  action = action:gsub("\n%s*", " ")
+
+  local def = table.concat(
+      { "command!", table.concat(flag_pairs, " "), name, action }, " "
+  )
+
+  vim.cmd(def)
 end
 
 

@@ -50,7 +50,8 @@ function M.setup()
       -- Options for telescope selector
       -- These are passed into the telescope picker directly. Can be used like:
       -- telescope = require('telescope.themes').get_ivy({...})
-      telescope = require("telescope.themes").get_cursor({}),
+      telescope = require('telescope.themes').get_dropdown({}),
+      -- telescope = require("telescope.themes").get_cursor({}),
 
       -- Options for fzf selector
       fzf = { window = { width = 0.5, height = 0.4 } },

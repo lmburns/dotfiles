@@ -1,0 +1,36 @@
+-- ========================== Changed ==========================
+-- ==> zen-mode; twilight
+-- use(
+--     {
+--       "junegunn/goyo.vim",
+--       {
+--         "junegunn/limelight.vim",
+--         config = conf("plugs.limelight"),
+--       },
+--     }
+-- )
+-- ==> hop
+-- use(
+--     {
+--       "justinmk/vim-sneak",
+--       after = "vim-surround",
+--       keys = { { "n", "f" }, { "n", "F" } },
+--       config = conf("sneak"),
+--     }
+-- )
+-- ==> dial
+-- use({ "AndrewRadev/switch.vim" })
+-- ========================== Other ==========================
+-- use({
+--   "ThePrimeagen/harpoon",
+--   after = { "telescope.nvim" },
+--   config = conf("plugs.harpoon"),
+-- })
+-- use(
+--     {
+--       "https://gitlab.com/yorickpeterse/nvim-pqf",
+--       ft = { "qf" },
+--       after = "nvim-bqf",
+--       config = [[require('pqf').setup()]],
+--     }
+-- )

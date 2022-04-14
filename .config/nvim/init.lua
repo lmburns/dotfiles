@@ -7,23 +7,27 @@
 -- FIX: Folding causing cursor to move one left on startup
 --
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
+local ok, impatient = pcall(require, "impatient")
+if ok then
+    impatient.enable_profile()
+end
+
 local utils = require("common.utils")
 local map = utils.map
-local autocmd = utils.autocmd
+local augroup = utils.augroup
+local au = utils.au
 local create_augroup = utils.create_augroup
 
 -- Lua utilities
-require("impatient").enable_profile()
 require("lutils")
 require("options")
 
 -- Plugins need to be compiled each time to work it seems
 local conf_dir = fn.stdpath("config")
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
-  local packer_loader_complete =
-      [[customlist,v:lua.require'packer'.loader_complete]]
-  cmd(
-      ([[
+    local packer_loader_complete = [[customlist,v:lua.require'packer'.loader_complete]]
+    cmd(
+        ([[
         com! PackerInstall lua require('plugins').install()
         com! PackerUpdate lua require('plugins').update()
         com! PackerSync lua require('plugins').sync()
@@ -36,30 +40,34 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
 
         com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
         com! PSS so ~/.config/nvim/lua/plugins.lua | PackerSync
-    ]]):format(packer_loader_complete)
-  )
+    ]]):format(
+            packer_loader_complete
+        )
+    )
 
-  -- Is there a way to repeat these?
-  local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
-  cmd(
-      ([[
+    -- Is there a way to repeat these?
+    local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
+    cmd(
+        ([[
         com! -nargs=+ -complete=%s.create PackerSnapshot lua require('plugins').snapshot(<f-args>)
         com! -nargs=+ -complete=%s.rollback PackerSnapshotRollback  lua require('plugins').rollback(<f-args>)
         com! -nargs=+ -complete=%s.snapshot PackerSnapshotDelete lua require('plugins.snapshot').delete(<f-args>)
-    ]]):format(snargs, snargs, snargs)
-  )
+    ]]):format(
+            snargs,
+            snargs,
+            snargs
+        )
+    )
 else
-  require("plugins").compile()
+    require("plugins").compile()
 end
 
 require("abbr")
 require("mapping")
 
 -- ============================ UndoTree ============================== [[[
-require("common.utils").map("n", "<Leader>ut", ":UndotreeToggle<CR>")
-vim.cmd(
-    [[command! -nargs=0 UndotreeToggle lua require('plugs.undotree').toggle()]]
-) -- ]]]
+require("which-key").register({["<Leader>ut"]= {":UndotreeToggle<CR>", "Toggle undotree"}})
+vim.cmd([[command! -nargs=0 UndotreeToggle lua require('plugs.undotree').toggle()]]) -- ]]]
 
 -- ============================== C/Cpp =============================== [[[
 cmd [[
@@ -75,29 +83,25 @@ cmd [[
 ]]
 
 api.nvim_create_autocmd(
-    "FileType", {
-      callback = function()
-        map(
-            "n", "<Leader>r<CR>",
-            ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>"
-        )
-      end,
-      pattern = "c",
-      group = create_augroup("CEnv", true),
+    "FileType",
+    {
+        callback = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+        end,
+        pattern = "c",
+        group = create_augroup("CEnv", true)
     }
 )
 
 api.nvim_create_autocmd(
-    "FileType", {
-      callback = function()
-        map(
-            "n", "<Leader>r<CR>",
-            ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>"
-        )
-        map("n", "<Leader>kk", ":Fcman<CR>")
-      end,
-      pattern = "cpp",
-      group = create_augroup("CppEnv", true),
+    "FileType",
+    {
+        callback = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
+            map("n", "<Leader>kk", ":Fcman<CR>")
+        end,
+        pattern = "cpp",
+        group = create_augroup("CppEnv", true)
     }
 )
 -- ]]]
@@ -118,13 +122,13 @@ cmd [[
 ]]
 
 g.vimwiki_ext2syntax = {
-  [".Rmd"] = "markdown",
-  [".rmd"] = "markdown",
-  [".md"] = "markdown",
-  [".markdown"] = "markdown",
-  [".mdown"] = "markdown",
+    [".Rmd"] = "markdown",
+    [".rmd"] = "markdown",
+    [".md"] = "markdown",
+    [".markdown"] = "markdown",
+    [".mdown"] = "markdown"
 }
-g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
+g.vimwiki_list = {{path = "~/vimwiki", syntax = "markdown", ext = ".md"}}
 g.vimwiki_table_mappings = 0
 -- ]]] === Markdown ===
 
@@ -133,12 +137,13 @@ require("autocmds")
 require("common.qf")
 require("common.mru")
 require("common.reg")
+require("common.grepper")
 
 -- ============================ Notify ================================ [[[
 vim.notify = function(...)
-  cmd [[PackerLoad nvim-notify]]
-  vim.notify = require("notify")
-  vim.notify(...)
+    cmd [[PackerLoad nvim-notify]]
+    vim.notify = require("notify")
+    vim.notify(...)
 end
 -- ]]]
 
@@ -152,177 +157,186 @@ g.loaded_clipboard_provider = 1
 
 vim.schedule(
     function()
+        -- vim.defer_fn(
+        --     function()
+        --       require("common.fold")
+        --     end, 50
+        -- )
 
-      -- vim.defer_fn(
-      --     function()
-      --       require("common.fold")
-      --     end, 50
-      -- )
+        -- === Defer mappings
+        -- vim.defer_fn(
+        --     function()
+        --       local maps = require("mapping").mappings
+        --       local map = require("common.utils").map
+        --       for _, m in ipairs(maps) do
+        --         map(unpack(m))
+        --       end
+        --     end, 10
+        -- )
 
-      -- === Defer mappings
-      -- vim.defer_fn(
-      --     function()
-      --       local maps = require("mapping").mappings
-      --       local map = require("common.utils").map
-      --       for _, m in ipairs(maps) do
-      --         map(unpack(m))
-      --       end
-      --     end, 10
-      -- )
+        -- === Treesitter
+        vim.defer_fn(
+            function()
+                require("plugs.tree-sitter")
 
-      -- === Treesitter
-      vim.defer_fn(
-          function()
-            require("plugs.tree-sitter")
+                -- NOTE: This prevents `jsonc` and such being set locally
+                -- unlet g:did_load_filetypes
+                -- doautoall syntaxset FileType
 
-            -- NOTE: This prevents `jsonc` and such being set locally
-            -- unlet g:did_load_filetypes
-            -- doautoall syntaxset FileType
+                -- au! syntaxset
+                -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
 
-            -- au! syntaxset
-            -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
-            -- NOTE: This prevents indentline from running
-            -- doautoall filetypedetect BufRead
-            cmd [[
-               runtime! filetype.vim
-               filetype plugin indent on
-            ]]
+                -- cmd [[
+                --    runtime! filetype.vim
+                --    filetype plugin indent on
+                -- ]]
+            end,
+            15
+        )
 
-          end, 15
-      )
+        -- === Clipboard
+        vim.defer_fn(
+            function()
+                g.loaded_clipboard_provider = nil
+                cmd("runtime autoload/provider/clipboard.vim")
 
-      -- === Clipboard
-      vim.defer_fn(
-          function()
-            local autocmd = require("common.utils").autocmd
-            g.loaded_clipboard_provider = nil
-            cmd("runtime autoload/provider/clipboard.vim")
-
-            if fn.exists("##ModeChanged") == 1 then
-              autocmd(
-                  "SelectModeNoYank", {
-                    [[ModeChanged *:s set clipboard=]],
-                    [[ModeChanged s:* set clipboard=unnamedplus]],
-                  }, true
-              )
-            else
-              -- Nice, but doesn't copy newline at beginning of line when switching buffers
-              --
-              -- cmd("packadd nvim-hclipboard")
-              -- require("hclipboard").start()
-            end
-
-            api.nvim_create_autocmd(
-                "BufWritePost", {
-                  command = "so <afile> | PackerCompile",
-                  pattern = "*/plugins.lua",
-                  group = create_augroup("lmb__Packer"),
-                }
-            )
-
-            -- highlight syntax
-            if fn.exists("##SearchWrapped") == 1 then
-              api.nvim_create_autocmd(
-                  "SearchWrapped", {
-                    callback = function()
-                      require("common.builtin").search_wrap()
-                    end,
-                    group = create_augroup("SearchWrappedHighlight"),
-                    pattern = "*",
-                  }
-              )
-            end
-
-            api.nvim_create_autocmd(
-                "TextYankPost", {
-                  callback = function()
-                    cmd [[hi HighlightedyankRegion ctermbg=Red   guibg=#cc6666]]
-                    pcall(
-                        vim.highlight.on_yank,
-                        { higroup = "HighlightedyankRegion", timeout = 165 }
+                if fn.exists("##ModeChanged") == 1 then
+                    augroup(
+                        "SelectModeNoYank",
+                        {
+                            {
+                                event = "ModeChanged",
+                                pattern = "*:s",
+                                command = [[set clipboard=]]
+                            },
+                            {
+                                event = "ModeChanged",
+                                pattern = "s:*",
+                                command = [[set clipboard=unnamedplus]]
+                            }
+                        }
                     )
-                  end,
-                  pattern = "*",
-                  group = create_augroup("lmb__Highlight"),
-                  desc = "Highlight a selection on yank",
-                }
-            )
-          end, 200
-      )
-
-      vim.defer_fn(
-          function()
-            vim.g.coc_global_extensions = {
-              "coc-clangd",
-              "coc-css",
-              "coc-diagnostic",
-              "coc-dlang",
-              "coc-docker",
-              "coc-fzf-preview",
-              "coc-git",
-              "coc-go",
-              "coc-html",
-              "coc-json",
-              "coc-lua",
-              "coc-marketplace",
-              "coc-perl",
-              "coc-prettier",
-              "coc-pyright",
-              "coc-rls",
-              "coc-r-lsp",
-              "coc-rust-analyzer",
-              "coc-sh",
-              "coc-snippets",
-              "coc-solargraph",
-              "coc-solidity",
-              "coc-sql",
-              "coc-syntax",
-              "coc-tabnine",
-              "coc-tag",
-              "coc-toml",
-              "coc-tsserver",
-              "coc-eslint",
-              "coc-vimlsp",
-              "coc-vimtex",
-              "coc-xml",
-              "coc-yaml",
-              "coc-yank",
-              "coc-zig",
-            }
-
-            g.coc_enable_locationlist = 0
-            g.coc_selectmode_mapping = 0
-
-            -- Disable CocFzfList
-            vim.schedule(
-                function()
-                  cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                else
+                    -- Nice, but doesn't copy newline at beginning of line when switching buffers
+                    --
+                    -- cmd("packadd nvim-hclipboard")
+                    -- require("hclipboard").start()
                 end
-            )
 
-            -- api.nvim_create_autocmd(
-            --     "User", {
-            --       callback = function()
-            --         require("plugs.coc").init()
-            --       end,
-            --       once = true,
-            --       group = create_augroup("CocNvimInit", true),
-            --     }
-            -- )
+                augroup(
+                    "lmb__Packer",
+                    {
+                        {
+                            event = "BufWritePost",
+                            pattern = "*/plugins.lua",
+                            command = [[so <afile> | PackerCompile]]
+                        }
+                    }
+                )
 
-            local link = require("common.color").link
+                -- highlight syntax
+                if fn.exists("##SearchWrapped") == 1 then
+                    api.nvim_create_autocmd(
+                        "SearchWrapped",
+                        {
+                            callback = function()
+                                require("common.builtin").search_wrap()
+                            end,
+                            group = create_augroup("SearchWrappedHighlight"),
+                            pattern = "*"
+                        }
+                    )
+                end
 
-            cmd [[
-              au User CocNvimInit ++once lua require('plugs.coc').init()
-              hi! CocSemStatic gui=bold
-            ]]
-            link("CocSemDefaultLibrary", "Special")
-            link("CocSemDocumentation", "Number")
+                api.nvim_create_autocmd(
+                    "TextYankPost",
+                    {
+                        callback = function()
+                            cmd [[hi HighlightedyankRegion ctermbg=Red   guibg=#cc6666]]
+                            pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
+                        end,
+                        pattern = "*",
+                        group = create_augroup("lmb__Highlight"),
+                        desc = "Highlight a selection on yank"
+                    }
+                )
+            end,
+            200
+        )
 
-            cmd("packadd coc-kvs")
-            cmd("packadd coc.nvim")
-          end, 300
-      )
+        vim.defer_fn(
+            function()
+                vim.g.coc_global_extensions = {
+                    "coc-clangd",
+                    "coc-css",
+                    "coc-diagnostic",
+                    "coc-dlang",
+                    "coc-docker",
+                    "coc-fzf-preview",
+                    "coc-git",
+                    "coc-go",
+                    "coc-html",
+                    "coc-json",
+                    "coc-lua",
+                    "coc-marketplace",
+                    "coc-perl",
+                    "coc-prettier",
+                    "coc-pyright",
+                    "coc-rls",
+                    "coc-r-lsp",
+                    "coc-rust-analyzer",
+                    "coc-sh",
+                    "coc-snippets",
+                    "coc-solargraph",
+                    "coc-solidity",
+                    "coc-sql",
+                    "coc-syntax",
+                    "coc-tabnine",
+                    "coc-tag",
+                    "coc-toml",
+                    "coc-tsserver",
+                    "coc-eslint",
+                    "coc-vimlsp",
+                    "coc-vimtex",
+                    "coc-xml",
+                    "coc-yaml",
+                    "coc-yank",
+                    "coc-zig"
+                }
 
+                g.coc_enable_locationlist = 0
+                g.coc_selectmode_mapping = 0
+
+                -- Disable CocFzfList
+                vim.schedule(
+                    function()
+                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                    end
+                )
+
+                -- api.nvim_create_autocmd(
+                --     "User", {
+                --       callback = function()
+                --         require("plugs.coc").init()
+                --       end,
+                --       once = true,
+                --       group = create_augroup("CocNvimInit"),
+                --     }
+                -- )
+
+                local link = require("common.color").link
+
+                cmd [[
+                  au User CocNvimInit ++once lua require('plugs.coc').init()
+                  hi! CocSemStatic gui=bold
+                ]]
+                link("CocSemDefaultLibrary", "Special")
+                link("CocSemDocumentation", "Number")
+
+                cmd("packadd coc-kvs")
+                cmd("packadd coc.nvim")
+            end,
+            300
+        )
     end
 )

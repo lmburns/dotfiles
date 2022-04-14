@@ -20,27 +20,28 @@ g.did_load_filetypes = 1
 -- vim.g.loaded_matchparen = 1
 vim.tbl_map(
     function(p)
-      vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
-    end, {
-      "2html_plugin",
-      "gzip",
-      "logiPat", -- boolean logical pattern matcher
-      "matchit",
-      "netrw",
-      "netrwPlugin",
-      "netrwFileHandlers",
-      "netrwSettings",
-      "python_provider",
-      "ruby_provider",
-      "perl_provider",
-      "shada_plugin",
-      "rrhelper",
-      "tar",
-      "tarPlugin",
-      "vimball",
-      "vimballPlugin",
-      "zip",
-      "zipPlugin",
+        vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
+    end,
+    {
+        "2html_plugin",
+        "gzip",
+        "logiPat", -- boolean logical pattern matcher
+        "matchit",
+        "netrw",
+        "netrwPlugin",
+        "netrwFileHandlers",
+        "netrwSettings",
+        "python_provider",
+        "ruby_provider",
+        "perl_provider",
+        "shada_plugin",
+        "rrhelper",
+        "tar",
+        "tarPlugin",
+        "vimball",
+        "vimballPlugin",
+        "zip",
+        "zipPlugin"
     }
 )
 
@@ -48,6 +49,8 @@ g.c_syntax_for_h = 1
 
 -- Base
 vim.env.LANG = "en_US.UTF-8"
+
+-- set_option_value / set_option
 
 o.encoding = "utf-8"
 o.fileencoding = "utf-8" -- utf-8 files
@@ -57,6 +60,7 @@ o.fileformats = "unix,dos,mac" -- try unix line endings before dos, use unix
 -- Settings
 o.path:append("**")
 o.number = true
+-- o.relativenumber = true
 o.cursorline = true
 o.cursorlineopt = "number,screenline"
 o.clipboard:append("unnamedplus")
@@ -67,8 +71,8 @@ o.shiftwidth = 0
 o.expandtab = true
 o.softtabstop = 2
 
-o.smartcase = true
 o.ignorecase = true
+o.smartcase = true
 o.startofline = false
 o.backspace = [[indent,eol,start]]
 o.synmaxcol = 1000 -- do not highlight long lines
@@ -86,17 +90,22 @@ o.foldmarker = "[[[,]]]"
 -- o.foldlevel = 1
 
 -- This does not work globally for whatever reason (didn't in vim either)
-o.formatoptions:remove({ "c", "r", "o" })
+o.formatoptions:remove({"c", "r", "o"})
 o.nrformats = "octal,hex,bin,unsigned"
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
 o.title = true
-o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
+o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
 o.list = true -- display tabs and trailing spaces visually
 o.listchars:append(
-    { tab = "‣ ", trail = "•", precedes = "«", extends = "»",
-      nbsp = "␣" }
+    {
+        tab = "‣ ",
+        trail = "•",
+        precedes = "«",
+        extends = "»",
+        nbsp = "␣"
+    }
 )
 o.showbreak = [[↪ ]] -- "⏎"
 o.showtabline = 2
@@ -115,14 +124,15 @@ o.cmdheight = 2
 o.matchtime = 2
 
 o.wildoptions:append("pum")
-o.wildignore = { "*.o", "*~", "*.pyc", "*.git", "node_modules" }
+o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
 o.wildmode = "full"
-o.wildignorecase = true -- ignore case when completing file names and directories
+-- o.wildignorecase = true -- ignore case when completing file names and directories
 o.wildcharm = 26 -- equals set wildcharm=<C-Z>, used in the mapping section
 
 o.smartindent = true
 -- o.cindent = true
+o.sessionoptions = {"buffers", "curdir", "tabpages", "winsize"}
 
 o.swapfile = false -- no swap files
 o.undolevels = 1000
@@ -156,8 +166,8 @@ o.backup = false
 o.writebackup = false
 o.shortmess:append("acsIS") -- don't give 'ins-completion-menu' messages.
 
-opt("grepprg", "rg --ignore-case --vimgrep --color=never")
-opt("grepformat", "%f:%l:%c:%m,%f:%l:%m")
+o.grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never"
+o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 
 o.background = "dark"
 o.cedit = "<C-x>"
@@ -166,14 +176,14 @@ o.cedit = "<C-x>"
 o.termguicolors = true
 -- o.guioptions:remove({ "m", "r", "l" })
 g.guitablabel = "%M %t"
-o.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
-                  ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" ..
-                  ",sm:block-blinkwait175-blinkoff150-blinkon175"
+o.guicursor =
+    "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
+    ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
 o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
 if fn.exists("g:neovide") then
-  map("n", "<D-v>", "\"+p")
-  map("i", "<D-v>", "<C-r>+")
+    map("n", "<D-v>", '"+p')
+    map("i", "<D-v>", "<C-r>+")
 end
 
 g.neovide_input_use_logo = true
@@ -184,9 +194,9 @@ g.neovide_cursor_vfx_mode = "torpedo"
 -- ]]] === Gui ===
 
 -- ============== Spell Check ============== [[[
-o.completeopt:append({ "menuone", "preview" })
-o.complete:append({ "kspell" })
-o.complete:remove({ "w", "b", "u", "t" })
+o.completeopt:append({"menuone", "preview"})
+o.complete:append({"kspell"})
+o.complete:remove({"w", "b", "u", "t"})
 o.spelllang = "en_us"
 o.spellsuggest = "10"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
@@ -195,24 +205,24 @@ o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- =============== Clipboard =============== [[[
 local clipboard
 if env.DISPLAY and fn.executable("xsel") == 1 then
-  clipboard = {
-    name = "xsel",
-    copy = {
-      ["+"] = { "xsel", "--nodetach", "-i", "-b" },
-      ["*"] = { "xsel", "--nodetach", "-i", "-p" },
-    },
-    paste = { ["+"] = { "xsel", "-o", "-b" }, ["*"] = { "xsel", "-o", "-p" } },
-    cache_enabled = true,
-  }
+    clipboard = {
+        name = "xsel",
+        copy = {
+            ["+"] = {"xsel", "--nodetach", "-i", "-b"},
+            ["*"] = {"xsel", "--nodetach", "-i", "-p"}
+        },
+        paste = {["+"] = {"xsel", "-o", "-b"}, ["*"] = {"xsel", "-o", "-p"}},
+        cache_enabled = true
+    }
 elseif env.TMUX then
-  clipboard = {
-    name = "tmux",
-    copy = { ["+"] = { "tmux", "load-buffer", "-w", "-" } },
-    paste = { ["+"] = { "tmux", "save-buffer", "-" } },
-    cache_enabled = true,
-  }
-  clipboard.copy["*"] = clipboard.copy["+"]
-  clipboard.paste["*"] = clipboard.paste["+"]
+    clipboard = {
+        name = "tmux",
+        copy = {["+"] = {"tmux", "load-buffer", "-w", "-"}},
+        paste = {["+"] = {"tmux", "save-buffer", "-"}},
+        cache_enabled = true
+    }
+    clipboard.copy["*"] = clipboard.copy["+"]
+    clipboard.paste["*"] = clipboard.paste["+"]
 end
 
 g.clipboard = clipboard
@@ -221,10 +231,8 @@ g.clipboard = clipboard
 -- =============== Commands ================ [[[
 -- filetype on
 -- filetype plugin on
-cmd(
-    [[
+cmd([[
       filetype plugin indent on
       syntax enable
-    ]]
-)
+    ]])
 -- ]]] === Commands ===

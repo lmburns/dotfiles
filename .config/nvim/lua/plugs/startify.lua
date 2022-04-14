@@ -52,8 +52,8 @@ cmd [[
 ]]
 
 g.startify_commands = {
-  { up = { "Update Plugins", ":PlugUpdate" } },
-  { ug = { "Upgrade Plugin Manager", ":PlugUpgrade" } },
+  { up = { "Packer Compile", ":PackerCompile" } },
+  { ug = { "Upgrade Plugins", ":PackerSync" } },
   { uc = { "Update CoC Plugins", ":CocUpdate" } },
   { vd = { "Make Wiki Entry", ":VimwikiMakeDiaryNote" } },
 }
@@ -62,8 +62,8 @@ g.startify_bookmarks = {
   { co = "~/.config/nvim/init.vim" },
   { gc = "~/.config/git/config" },
   { lc = "~/.config/lf/lfrc" },
-  { zs = "~/.config/zsh/zshrc" },
-  { za = "~/.config/zsh/zsh-aliases" },
+  { zs = "~/.config/zsh/.zshrc" },
+  { za = "~/.config/zsh/zsh.d/aliases.zsh" },
   { vi = "~/vimwiki/index.md" },
   { vib = "~/vimwiki/scripting/index.md" },
 }
