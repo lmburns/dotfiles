@@ -7,8 +7,9 @@
   "coc.preferences.formatOnType": true,
 
   // Filetypes that enable semanticTokens highlighting
+  // "coc.preferences.semanticTokensHighlights": true,
   "semanticTokens.filetypes": [
-    // "c",
+    "c",
     "go",
     "html",
     "java"
@@ -179,7 +180,6 @@
     "<<": "gitStage",
     ">>": "gitUnstage"
   },
-  // "coc.preferences.semanticTokensHighlights": false,
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
   "snippets.extends": {

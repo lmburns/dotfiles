@@ -44,8 +44,7 @@ function M.setup()
             -- Initial commands to bind
             commands = {},
             -- Initial augroups and autocmds to bind
-            autocmds = {
-            },
+            autocmds = {},
             -- which_key = {
             --     -- you can put which-key.nvim tables here,
             --     -- or alternatively have them auto-register,
@@ -88,10 +87,14 @@ end
 
 local function init()
     M.setup()
+    local wk = require("which-key")
 
-    require("which-key").register(
+    require("legendary").bind_keymap(
         {
-            ["<C-,>"] = {"<Cmd>Legendary keymaps<CR>", "Show Legendary keymaps"}
+            "<C-,>",
+            "<Cmd>Legendary keymaps<CR>",
+            description = "Show Legendary keymaps",
+            mode = {"n", "i", "x"}
         }
     )
 end

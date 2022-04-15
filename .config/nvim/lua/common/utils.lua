@@ -1,5 +1,6 @@
 -- Set globals
 o = vim.opt -- vim options: behaves like `:set`
+opt_local = vim.opt_local
 -- o           --  behaves like `:set` (global)
 -- opt         --  behaves like `:set` (global and local)
 -- opt_global  --  behaves like `:setglobal`
@@ -16,6 +17,7 @@ env = vim.env -- environment variable access
 api = vim.api
 exec = api.nvim_exec
 uv = vim.loop
+F = vim.F
 
 fmt = string.format
 

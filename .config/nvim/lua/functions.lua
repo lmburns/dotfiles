@@ -141,6 +141,7 @@ au(
             "typescript",
             function()
                 map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
+                -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
             end
         },
         {

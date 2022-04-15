@@ -5,12 +5,12 @@ local map = utils.map
 local fmap = utils.fmap
 local command = utils.command
 
--- Legendary needs to be called again in this file for them to register
+-- Legendary needs to be called again in this file for the keybindings to register
 require("legendary").setup()
 local wk = require("which-key")
 
-M.mappings = {}
-
+-- M.mappings = {}
+--
 -- This is for returning them and sending them to a delayed function
 -- local function map2(modes, lhs, rhs, opts)
 --     opts = opts or {}
@@ -61,8 +61,12 @@ fmap {
 map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
-map("n", "<F2>", "@:")
-map("n", "<Leader>2;", "@:")
+wk.register(
+    {
+        ["<F2>"] = {"@:", "Repeat last command"},
+        ["<Leader>2;"] = {"@:", "Repeat last command"}
+    }
+)
 map("x", "<Leader>2;", "@:")
 map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
@@ -80,7 +84,7 @@ map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 
 wk.register(
     {
-        S = {":%s//g<Left><Left>", "Replace all"},
+        ["S"] = {":%s//g<Left><Left>", "Replace all"},
         ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
@@ -100,7 +104,7 @@ map("x", ">", ">gv")
 -- TIP: Use g- and g+
 wk.register(
     {
-        U = {"<C-r>", "Redo action"},
+        ["U"] = {"<C-r>", "Redo action"},
         [";u"] = {":execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"}
     }
@@ -117,28 +121,37 @@ wk.register(
         ["yp"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>", "Copy full path"}
     }
 )
-map("n", "y", [[v:lua.require'common.yank'.wrap()]], {expr = true})
-map("n", "yw", [[v:lua.require'common.yank'.wrap('iw')]], {expr = true})
-map("n", "yW", [[v:lua.require'common.yank'.wrap('iW')]], {expr = true})
 
--- Make deleting line not go to clipbard
-map("n", "d", '"_d')
-map("v", "d", '"_d')
-map("n", "D", '"_D')
--- Delete line without copying
-map("n", "E", '^"_D')
--- Yank line without newline character
-map("n", "Y", "y$")
--- Make cut not go to clipboard
-map("n", "x", '"_x')
--- Reselect the text that has just been pasted
-map("n", "gp", [['`[' . strpart(getregtype(), 0, 1) . '`]']], {expr = true})
--- Select characters of line (no new line)
-map("n", "vv", "^vg_")
--- Make visual yanks place the cursor back where started
-map("v", "y", "ygv<Esc>")
--- Insert a space after current character
--- map("n", "<Leader>sa", 'a<Space><Esc>h')
+wk.register(
+    {
+        ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
+        ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
+        ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
+        ["gp"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
+    },
+    {expr = true}
+)
+
+wk.register(
+    {
+        ["d"] = {[["_d]], "Delete motion (blackhole)"},
+        ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
+        ["E"] = {[[^"_D]], "Delete line (blackhole)"},
+        ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
+        ["x"] = {[["_x]], "Cut letter (blackhole)"},
+        ["vv"] = {[[^vg_]], "Select entire line (without newline)"}
+    }
+)
+
+wk.register(
+    {
+        ["d"] = {[["_d]], "Delete (blackhole)"},
+        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"}
+        -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
+        -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
+    },
+    {mode = "v"}
+)
 
 -- Paste over selected text
 -- map("x", "p", "_c<Esc>p")
@@ -147,17 +160,22 @@ map("v", "y", "ygv<Esc>")
 map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 -- Paste after
 map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
--- Search visual selection
-map("v", "//", [[y/<C-R>"<CR>]])
 
--- Adds a space  to left of cursor
-map("n", "zl", "i <Esc>l", {silent = true})
+wk.register(
+    {
+        ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
+        ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+        ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+    },
+    {expr = true}
+)
 
--- Inserts a line above or below (these are the same)
-map("n", "zj", "printf('m`%so<ESC>``', v:count1)", {expr = true})
-map("n", "zk", "printf('m`%sO<ESC>``', v:count1)", {expr = true})
-map("n", "oo", "o<Esc>k", {silent = true})
-map("n", "OO", "O<Esc>j", {silent = true})
+wk.register(
+    {
+        ["oo"] = {"o<Esc>k", "Insert line below cursor"},
+        ["OO"] = {"O<Esc>j", "Insert line above cursor"}
+    }
+)
 
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
@@ -175,22 +193,13 @@ map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {e
 -- map("n", "<C-,>", "<Cmd>m +1<CR>")
 -- map("n", "<C-.>", "<Cmd>m -2<CR>")
 
--- Using <ff> to fold or unfold
-map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
-map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
--- Refocus folds
-map("n", "<LocalLeader>z", [[zMzvzz]])
--- Recursively open whatever top level fold
-map("n", "zO", [[zCzO]])
--- map("n", "<Space><CR>", "zi", { silent = true })
-
 -- Remap mark jumping
 map({"n", "x", "o"}, "'", "`")
 map({"n", "x", "o"}, "`", "'")
 
 -- Buffer switching
-map("n", "gt", ":bnext<CR>")
-map("n", "gT", ":bprevious<CR>")
+-- map("n", "gt", ":bnext<CR>")
+-- map("n", "gT", ":bprevious<CR>")
 
 map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
@@ -225,6 +234,15 @@ map("n", "zv", [[<Cmd>lua require('common.fold').with_highlight('v')<CR>]])
 
 map("n", "z[", [[<Cmd>lua require('common.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('common.fold').nav_fold(true)<CR>]])
+
+-- Using <ff> to fold or unfold
+map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
+map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
+-- Refocus folds
+map("n", "<LocalLeader>z", [[zMzvzz]])
+-- Recursively open whatever top level fold
+map("n", "zO", [[zCzO]])
+-- map("n", "<Space><CR>", "zi", { silent = true })
 
 -- Buffer
 wk.register(

@@ -104,9 +104,6 @@ return packer.startup(
             -- ============================ Vim Library =========================== [[[
             use({"tpope/vim-repeat"})
             use({"ryanoasis/vim-devicons"})
-
-            -- Prevent clipboard from being hijacked by snippets and such
-            -- use({ "kevinhwang91/nvim-hclipboard" })
             -- ]]] === Vim Library ===
 
             -- ============================ Lua Library =========================== [[[
@@ -130,6 +127,8 @@ return packer.startup(
             use({"max397574/better-escape.nvim", config = conf("better_esc")})
             use({"mrjones2014/smart-splits.nvim", config = conf("smartsplits")})
             use({"fedepujol/move.nvim", config = conf("move")})
+            -- Prevent clipboard from being hijacked by snippets and such
+            use({"kevinhwang91/nvim-hclipboard"})
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
@@ -982,6 +981,11 @@ return packer.startup(
                             "jvgrootveld/telescope-zoxide",
                             after = {"telescope.nvim"},
                             config = [[require("telescope").load_extension("zoxide")]]
+                        },
+                        {
+                            prefer_local("telescope-rualdi.nvim"),
+                            after = {"telescope.nvim"},
+                            config = [[require("telescope").load_extension("rualdi")]]
                         }
                     }
                 }

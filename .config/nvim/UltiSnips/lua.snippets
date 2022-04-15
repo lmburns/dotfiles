@@ -1,0 +1,142 @@
+# Lua Snippets
+
+snippet --- "Heading Comment" b
+------------------------------------------------------------------------------
+-- ${1:Heading}
+------------------------------------------------------------------------------
+
+$0
+endsnippet
+
+snippet #! "Lua Shebang" b
+#!/usr/bin/env lua
+
+$0
+endsnippet
+
+snippet af "empty anonymous function()" w
+function() ${1:${VISUAL}} end$0
+endsnippet
+
+snippet lof "local function() block" b
+local function ${1:name}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet fun "function() block" b
+function ${1:func}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet m "function Class:method()" w
+function `!v CurrentLuaClass()`${1:name}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet self "self method" w
+function self:${1:methodName}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet for "for i = first, last do" b
+for ${1:i} = ${2:first}, ${3:last}${4/^..*/(?0:,:)/}${4:step} do
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet forp "for k, v in pairs() do" b
+for ${1:k}, ${2:v} in pairs(${3:table_name}) do
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet fori "for i, v in ipairs() do" b
+for ${1:i}, ${2:v} in ipairs(${3:table_name}) do
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet while "while loop" b
+while ${1:true} do
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet ll "local var = value" b
+local ${1:varName} = ${2:value}
+endsnippet
+
+snippet lo "local var" b
+local $0
+endsnippet
+
+snippet req "require('module')" b
+require('${1:module}')
+endsnippet
+
+snippet loreq "require a module as a variable" b
+local ${1:var} = require("${2:module}")$0
+endsnippet
+
+snippet if "if statement" b
+if ${1:true} then
+	$0
+end
+endsnippet
+
+snippet elseif "elseif statement" b
+elseif ${1:true} then
+	$0
+endsnippet
+
+snippet p "print" b
+print(${0:"string"})
+endsnippet
+
+# ==============================================================================
+# Busted Snippets
+# ==============================================================================
+
+snippet desc "describe(message, func)" b
+describe("${1:Noun}", function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet it "it(message, func)" b
+it("${1:Verb}", function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet before_each "before_each(func)" b
+before_each(function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet after_each "after_each(func)" b
+after_each(function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet setup "setup(func)" b
+setup(function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet teardown "teardown(func)" b
+teardown(function()
+	${0:${VISUAL:-- body}}
+end)
+endsnippet
+
+snippet finally "finally(func)" b
+finally(function() $0 end)
+endsnippet

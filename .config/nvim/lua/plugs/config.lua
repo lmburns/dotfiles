@@ -374,8 +374,8 @@ function M.neogen()
             languages = {lua = {template = {annotation_convention = "emmylua"}}}
         }
     )
-    map("i", "<C-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
-    map("i", "<C-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
+    map("i", "<C-.>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
+    map("i", "<C-,>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
     map("n", "<Leader>dg", [[:Neogen<Space>]])
     map("n", "<Leader>df", [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]])
     map("n", "<Leader>dc", [[<cmd>lua require("neogen").generate({ type = "class" })<CR>]])
@@ -922,6 +922,7 @@ function M.lfnvim()
 
     -- map("n", "<A-o>", ":Lf<CR>")
     map("n", "<C-o>", ":Lfnvim<CR>")
+    -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 
 -- ============================== Unused ==============================

@@ -337,6 +337,13 @@ require("telescope").setup(
                 override_file_sorter = true,
                 case_mode = "smart_case"
             },
+            rualdi = {
+                prompt_title = "Rualdi",
+                alias_hl = "MoreMsg",
+                path_hl = "Comment",
+                opener = "Lfnvim",
+                theme = "ivy",
+            },
             hop = {
                 -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
                 keys = {
@@ -872,6 +879,10 @@ builtin.zoxide = function(opts)
     telescope.extensions.zoxide.list(opts)
 end
 
+builtin.rualdi = function(opts)
+    telescope.extensions.rualdi.list(opts)
+end
+
 -- ========================== Mappings ===========================
 local map = require("common.utils").map
 local wk = require("which-key")
@@ -922,7 +933,8 @@ wk.register(
         ["<LocalLeader>f"] = {":lua require('plugs.telescope').cst_files()<CR>", "Telescope files (cst)"},
         [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
-        ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"}
+        ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
+        ["<Leader>rr"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
     }
 )
 
@@ -934,7 +946,8 @@ wk.register(
 -- ========================== Highlight ==========================
 local colors = require("kimbox.colors")
 local fg = require("common.color").fg
-local bg = require("common.color").bg
+-- local hl = require("common.color").hl
+-- local bg = require("common.color").bg
 
 fg("TelescopeSelection", colors.yellow, "bold")
 fg("TelescopeSelectionCaret", colors.blue)

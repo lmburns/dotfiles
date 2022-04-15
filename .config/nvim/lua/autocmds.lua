@@ -1,26 +1,28 @@
 local utils = require("common.utils")
-local autocmd = utils.autocmd
 local map = utils.map
 local au = utils.au
+local augroup = utils.augroup
 local create_augroup = utils.create_augroup
 
 -- === Restore Cursor Position === [[[
 --
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
-api.nvim_create_autocmd(
-    "BufRead",
+augroup(
+    "lmb__RestoreCursor",
     {
-        callback = function()
-            -- local ft = vim.api.nvim_get_option_value("filetype", {})
-            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
-            if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
-                api.nvim_win_set_cursor(0, {row, 0})
-            end
-        end,
-        pattern = "*",
-        once = false,
-        group = create_augroup("lmb__RestoreCursor")
+        {
+            event = "BufRead",
+            command = function()
+                -- local ft = vim.api.nvim_get_option_value("filetype", {})
+                local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
+                if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
+                    api.nvim_win_set_cursor(0, {row, 0})
+                end
+            end,
+            pattern = "*",
+            once = false
+        }
     }
 )
 -- ]]] === Restore cursor ===
@@ -120,7 +122,7 @@ api.nvim_create_autocmd(
 -- === Clear cmd line message === [[[
 do
     local timer
-    local timeout = 5000
+    local timeout = 10000
 
     -- Automatically clear command-line messages after a few seconds delay
     -- Source: https://unix.stackexchange.com/a/613645
@@ -220,19 +222,33 @@ au(
 -- ]]] === Custom file type ===
 
 -- === Custom syntax groups === [[[
-autocmd(
-    "ccommtitle",
+au(
+    "lmb__CommentTitle",
     {
-        [[ Syntax * syn match ]] ..
-            [[ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
-                [[ contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]],
-        [[ Syntax * syn match myTodo ]] ..
-            [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
-                [[ contained containedin=.*Comment.*,vimCommentTitle ]],
-        [[Syntax * syn keyword cmTitle contained=Comment]],
-        [[Syntax * syn keyword myTodo contained=Comment]]
-    },
-    true
+        {
+            "Syntax",
+            "*",
+            [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
+                [[contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]]
+        },
+        {
+            "Syntax",
+            "*",
+            [[syn match myTodo ]] ..
+                [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
+                    [[ contained containedin=.*Comment.*,vimCommentTitle ]]
+        },
+        {
+            "Syntax",
+            "*",
+            [[syn keyword cmTitle contained=Comment]]
+        },
+        {
+            "Syntax",
+            "*",
+            [[syn keyword myTodo contained=Comment]]
+        }
+    }
 )
 
 cmd [[hi def link cmTitle vimCommentTitle]]
@@ -242,16 +258,17 @@ cmd [[hi def link myTodo Todo]]
 -- ]]] === Custom syntax groups ===
 
 -- ================================ Zig =============================== [[[
-au(
+augroup(
     "lmb__ZigEnv",
     {
         {
-            "FileType",
-            "zig",
-            function()
+            event = "FileType",
+            pattern = "zig",
+            command = function()
                 map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
                 map("n", ";ff", ":Format<CR>")
-            end
+            end,
+            description = "Setup zig environment"
         }
     }
 )
@@ -261,7 +278,7 @@ au(
 -- Cursorline highlighting control
 --  Only have it on in the active buffer
 do
-    id = create_augroup("lmb__CursorLineControl")
+    local id = create_augroup("lmb__CursorLineControl")
     local set_cursorline = function(event, value, pattern)
         vim.api.nvim_create_autocmd(
             event,
@@ -289,14 +306,12 @@ end
 --     }, true
 -- )
 
-do
-    local id = create_augroup("lmb__AutoReloadFile")
-
-    api.nvim_create_autocmd(
-        {"BufEnter", "CursorHold"},
+augroup(
+    "lmb__AutoReloadFile",
+    {
         {
-            group = id,
-            callback = function()
+            event = {"BufEnter", "CursorHold"},
+            command = function()
                 local bufnr = tonumber(fn.expand "<abuf>")
                 local name = api.nvim_buf_get_name(bufnr)
                 if
@@ -309,20 +324,16 @@ do
 
                 vim.cmd(bufnr .. "checktime")
             end,
-            desc = "Reload file when modified outside of the instance"
-        }
-    )
-
-    api.nvim_create_autocmd(
-        "FileChangedShellPost",
+            description = "Reload file when modified outside of the instance"
+        },
         {
-            group = id,
+            event = "FileChangedShellPost",
             pattern = "*",
             command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
-            desc = "Display a message if the buffer is changed outside of instance"
+            description = "Display a message if the buffer is changed outside of instance"
         }
-    )
-end
+    }
+)
 -- ]]] === Buffer Reload ===
 
 -- ========================= Relative Numbers ========================= [[[
@@ -337,64 +348,34 @@ end
 --   - Only in the active window
 --   - Ignore quickfix window
 --   - Disable in insert mode
-local legendary = require("legendary")
--- local h = require("legendary.helpers")
-
 do
     -- local id = create_augroup("lmb__AutoNumberToggle")
     local o = vim.o
 
-    -- FIX: Not showing as registered in legendary
     --      However the name actually shows when listing autocmds unlike the others
-    legendary.bind_autocmds(
+    augroup(
+        "lmb__AutoNumberToggle",
         {
-            name = "lmb__AutoNumberToggle",
             {
-                {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
-                function()
+                event = {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
+                command = function()
                     if o.number and o.filetype ~= "qf" then
                         o.relativenumber = true
                     end
                 end,
-                opts = {desc = "Set relativenumber"}
+                description = "Set relativenumber"
             },
             {
-                {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
-                function()
+                event = {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
+                command = function()
                     if o.number and o.filetype ~= "qf" then
                         o.relativenumber = false
                     end
                 end,
-                opts = {desc = "Unset relativenumber"}
+                description = "Unset relativenumber"
             }
         }
     )
-
-    -- api.nvim_create_autocmd(
-    --     {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
-    --     {
-    --         group = id,
-    --         callback = function()
-    --             if o.number and o.filetype ~= "qf" then
-    --                 o.relativenumber = true
-    --             end
-    --         end,
-    --         desc = "Set relativenumber"
-    --     }
-    -- )
-    --
-    -- api.nvim_create_autocmd(
-    --     {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
-    --     {
-    --         group = id,
-    --         callback = function()
-    --             if o.number and o.filetype ~= "qf" then
-    --                 o.relativenumber = false
-    --             end
-    --         end,
-    --         desc = "Unset relativenumber"
-    --     }
-    -- )
 end
 -- ]]] === Relative Numbers ===
 

@@ -34,7 +34,7 @@ vim.tbl_map(
         "python_provider",
         "ruby_provider",
         "perl_provider",
-        "shada_plugin",
+        -- "shada_plugin",
         "rrhelper",
         "tar",
         "tarPlugin",
@@ -114,7 +114,7 @@ o.pumheight = 10 -- number of items in popup menu
 
 o.mouse = "a" -- enable mouse all modes
 o.linebreak = true
--- o.history = 1000
+o.history = 10000
 
 o.joinspaces = false -- prevent inserting two spaces with J
 o.whichwrap:append("<,>,h,l,[,]")
@@ -140,7 +140,8 @@ o.undoreload = 10000
 o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 fn.mkdir(vim.o.undodir, "p")
-o.shada = "!,'1000,<50,s10,h" -- increase the shadafile size so that history is longer
+o.shada = [['100,<50,s100,/20,@20,:1000,h]]
+o.shadafile = fn.stdpath("data") .. "/shada/main.shada"
 
 o.belloff = "all"
 o.visualbell = false

@@ -179,10 +179,6 @@ vim.schedule(
             function()
                 require("plugs.tree-sitter")
 
-                -- NOTE: This prevents `jsonc` and such being set locally
-                -- unlet g:did_load_filetypes
-                -- doautoall syntaxset FileType
-
                 -- au! syntaxset
                 -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
 
@@ -219,8 +215,8 @@ vim.schedule(
                 else
                     -- Nice, but doesn't copy newline at beginning of line when switching buffers
                     --
-                    -- cmd("packadd nvim-hclipboard")
-                    -- require("hclipboard").start()
+                    cmd("packadd nvim-hclipboard")
+                    require("hclipboard").start()
                 end
 
                 augroup(
