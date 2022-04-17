@@ -264,15 +264,52 @@ augroup(
         {
             event = "FileType",
             pattern = "zig",
+            description = "Setup zig environment",
             command = function()
                 map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
                 map("n", ";ff", ":Format<CR>")
-            end,
-            description = "Setup zig environment"
+            end
         }
     }
 )
 -- ]]] === Zig ===
+
+-- ============================== C/Cpp =============================== [[[
+cmd [[
+  function! s:FullCppMan()
+      let old_isk = &iskeyword
+      setl iskeyword+=:
+      let str = expand("<cword>")
+      let &l:iskeyword = old_isk
+      execute 'Man ' . str
+  endfunction
+
+  command! Fcman :call s:FullCppMan()
+]]
+
+api.nvim_create_autocmd(
+    "FileType",
+    {
+        pattern = "c",
+        group = create_augroup("CEnv"),
+        callback = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+        end
+    }
+)
+
+api.nvim_create_autocmd(
+    "FileType",
+    {
+        pattern = "cpp",
+        group = create_augroup("CppEnv"),
+        callback = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
+            map("n", "<Leader>kk", ":Fcman<CR>")
+        end
+    }
+)
+-- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
 -- Cursorline highlighting control
@@ -280,13 +317,13 @@ augroup(
 do
     local id = create_augroup("lmb__CursorLineControl")
     local set_cursorline = function(event, value, pattern)
-        vim.api.nvim_create_autocmd(
+        api.nvim_create_autocmd(
             event,
             {
                 group = id,
                 pattern = pattern,
                 callback = function()
-                    vim.opt_local.cursorline = value
+                    opt_local.cursorline = value
                 end
             }
         )
@@ -336,48 +373,53 @@ augroup(
 )
 -- ]]] === Buffer Reload ===
 
--- ========================= Relative Numbers ========================= [[[
--- autocmd(
---     "number_toggle", {
---       [[BufEnter,FocusGained,InsertLeave,WinEnter * if &nu | set rnu   | endif]],
---       [[BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu | set nornu | endif]],
---     }, true
--- )
-
+-- =========================== RNU Column ============================= [[[
 -- Toggle relative/non-relative nubmers:
 --   - Only in the active window
 --   - Ignore quickfix window
---   - Disable in insert mode
-do
-    -- local id = create_augroup("lmb__AutoNumberToggle")
-    local o = vim.o
+--   - Only when searching in cmdline or in insert mode
 
-    --      However the name actually shows when listing autocmds unlike the others
-    augroup(
-        "lmb__AutoNumberToggle",
+augroup(
+    "RnuColumn",
+    {
         {
-            {
-                event = {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
-                command = function()
-                    if o.number and o.filetype ~= "qf" then
-                        o.relativenumber = true
-                    end
-                end,
-                description = "Set relativenumber"
-            },
-            {
-                event = {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
-                command = function()
-                    if o.number and o.filetype ~= "qf" then
-                        o.relativenumber = false
-                    end
-                end,
-                description = "Unset relativenumber"
-            }
+            event = {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
+            pattern = "*",
+            command = function()
+                require("common.rnu").focus(false)
+            end
+        },
+        {
+            event = {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
+            pattern = "*",
+            command = function()
+                require("common.rnu").focus(true)
+            end
+        },
+        {
+            event = "WinEnter",
+            pattern = "*",
+            command = function()
+                require("common.rnu").win_enter()
+            end
+        },
+        {
+            event = "CmdlineEnter",
+            pattern = [[/,\?]],
+            command = function()
+                require("common.rnu").scmd_enter()
+            end
+        },
+        {
+            event = "CmdlineLeave",
+            pattern = [[/,\?]],
+            command = function()
+                require("common.rnu").scmd_leave()
+            end
         }
-    )
-end
--- ]]] === Relative Numbers ===
+    }
+)
+-- ]]] === RNU Column ===
 
 -- ============================== Unused ============================== [[[
 

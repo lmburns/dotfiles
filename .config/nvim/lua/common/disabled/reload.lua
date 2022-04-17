@@ -48,4 +48,8 @@ function reload.reload_module(m_name)
     end
 end
 
+function reload.clear_module(module_name)
+    package.loaded[module_name] = nil
+end
+
 return reload

@@ -23,7 +23,7 @@ local function set_win_rnu(val)
 end
 
 local function set_rnu()
-  set_win_rnu(false)
+  set_win_rnu(true)
   cmd("hi! link FoldColumn NONE")
 end
 

@@ -35,6 +35,8 @@ local function mappings(bufnr)
   )
   bmap(bufnr, "o", "ih", ":<C-u>Gitsigns select_hunk<CR>")
   bmap(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>")
+  bmap(bufnr, "n", '<Leader>hQ', "<Cmd>Gitsigns setqflist all")
+  bmap(bufnr, "n", '<Leader>hq', "<Cmd>Gitsigns setqflist")
 end
 
 function M.setup()

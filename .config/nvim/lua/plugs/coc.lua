@@ -1,6 +1,6 @@
 local M = {}
 
-require("lutils")
+require("dev")
 local kutils = require("common.kutils")
 local utils = require("common.utils")
 local command = utils.command
@@ -10,16 +10,6 @@ local augroup = utils.augroup
 local wk = require("which-key")
 
 local diag_qfid
-
--- function! s:show_documentation()
---   if (index(['vim','help'], &filetype) >= 0)
---     execute 'h '.expand('<cword>')
---   elseif (coc#rpc#ready())
---     call CocActionAsync('doHover')
---   else
---     execute '!' . &keywordprg . " " . expand('<cword>')
---   endif
--- endfunction
 
 function M.getsymbol()
     local ok, _ = pcall(require, "nvim-gps")
@@ -101,7 +91,11 @@ function M.show_documentation()
     end
 end
 
--- CocActionAsync
+---CocActionAsync
+---@param action string: CocAction to run
+---@param args table: Arguments to pass to that CocAction
+---@param time number: Time to wait for action to be performed
+---@return string, string: Error, result
 function M.a2sync(action, args, time)
     local done = false
     local err = false
@@ -162,7 +156,7 @@ end
 
 -- Jump to location list
 function M.jump2loc(locs, skip)
-    locs = locs or vim.g.coc_jump_locations
+    locs = locs or g.coc_jump_locations
     fn.setloclist(0, {}, " ", {title = "CocLocationList", items = locs})
     if not skip then
         local winid = fn.getloclist(0, {winid = 0}).winid
@@ -196,13 +190,13 @@ end
 
 -- Coc rename
 function M.rename()
-    vim.g.coc_jump_locations = nil
+    g.coc_jump_locations = nil
     fn.CocActionAsync(
         "rename",
         "",
         function(err, res)
             if err == vim.NIL and res then
-                local loc = vim.g.coc_jump_locations
+                local loc = g.coc_jump_locations
                 if loc then
                     local uri = vim.uri_from_bufnr(0)
                     local dont_open = true
@@ -353,7 +347,7 @@ M.hl_fallback =
 end)()
 
 function M.post_open_float()
-    local winid = vim.g.coc_last_float_win
+    local winid = g.coc_last_float_win
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
         api.nvim_buf_call(
@@ -374,7 +368,7 @@ function _G.check_backspace()
 end
 
 function M.did_init(silent)
-    if vim.g.coc_service_initialized == 0 then
+    if g.coc_service_initialized == 0 then
         if silent then
             vim.notify([[coc.nvim hasn't initialized]], vim.log.levels.WARN)
         end
@@ -412,7 +406,7 @@ end
 function M.scroll_insert(right)
     if
         #fn["coc#float#get_float_win_list"]() > 0 and fn.pumvisible() == 0 and
-            api.nvim_get_current_win() ~= vim.g.coc_last_float_win
+            api.nvim_get_current_win() ~= g.coc_last_float_win
      then
         return fn["coc#float#scroll"](right)
     else
@@ -712,14 +706,12 @@ function M.init()
     -- Refresh coc completions
     map("i", "<A-r>", "coc#refresh()", {expr = true, silent = true})
 
+    -- TODO: Use more!
     -- CodeActions
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-
-    -- TODO: Use more!
-    -- Remap for do codeAction of current line
-    map("n", "<Leader>wc", "<Plug>(coc-codeaction)", {noremap = false})
-    map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)", {noremap = false})
-    map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)", {noremap = false})
+    map("n", "<C-CR>", "<Plug>(coc-codeaction)")
+    map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
+    map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 
     -- Popup
     map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
@@ -773,7 +765,7 @@ function M.init()
             ["<Leader>ab"] = {":CocCommand fzf-preview.AllBuffers<CR>", "All buffers (fzf)"},
             ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
             ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
-            ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
+            -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
             ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (fzf)"},
             ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
             ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}

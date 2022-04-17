@@ -1,6 +1,8 @@
--- Set globals
+-- ========================== Globals ==========================
+
 o = vim.opt -- vim options: behaves like `:set`
 opt_local = vim.opt_local
+opt_global = vim.opt_global
 -- o           --  behaves like `:set` (global)
 -- opt         --  behaves like `:set` (global and local)
 -- opt_global  --  behaves like `:setglobal`
@@ -21,12 +23,17 @@ F = vim.F
 
 fmt = string.format
 
+dev = require("dev")
+List = require("plenary.collections.py_list")
+
+-- ========================== Functions ==========================
+
 local M = {}
 
 ---Safely check if a plugin is installed
 ---@param check string Module to check if is installed
 ---@return table Module
-function M.prequire(check)
+M.prequire = function(check)
     local ok, ret = pcall(require, check)
     if not ok then
         M.notify(("%s was sourced but not installed"):format(check))
@@ -123,15 +130,22 @@ M.map = function(modes, lhs, rhs, opts)
     opts = opts or {}
     opts.noremap = opts.noremap == nil and true or opts.noremap
 
-    if rhs:lower():sub(1, #"<plug>") == "<plug>" then
-        opts.noremap = false
-    end
-
     if type(modes) == "string" then
         modes = {modes}
     end
-    for _, mode in ipairs(modes) do
-        api.nvim_set_keymap(mode, lhs, rhs, opts)
+
+    if type(rhs) == "function" then
+        for _, mode in ipairs(modes) do
+            vim.keymap.set(mode, lhs, rhs, opts)
+        end
+    else
+        if rhs:lower():sub(1, #"<plug>") == "<plug>" then
+            opts.noremap = false
+        end
+
+        for _, mode in ipairs(modes) do
+            api.nvim_set_keymap(mode, lhs, rhs, opts)
+        end
     end
 end
 
@@ -150,12 +164,13 @@ M.fmap = function(tbl)
 end
 
 -- Replace termcodes; e.g., t'<C-n>'
-function M.t(str)
+M.t = function(str)
     return api.nvim_replace_termcodes(str, true, true, true)
 end
 
--- print/debug helper
-function M.dump(...)
+---Debug helper
+---@vararg table | string | number: Anything to dump
+M.dump = function(...)
     local objects = vim.tbl_map(M.inspect, {...})
     print(table.unpack(objects))
 end
@@ -170,36 +185,9 @@ end
 ---@param name any
 ---@param rhs string|fun(args: CommandArgs)
 ---@param opts table
-function M.command(name, rhs, opts)
+M.command = function(name, rhs, opts)
     opts = opts or {}
     api.nvim_create_user_command(name, rhs, opts)
-end
-
--- Expand or minimize current buffer in a more natural direction (tmux-like)
-function M.resize(vertical, margin)
-    local cur_win = api.nvim_get_current_win()
-    -- go (possibly) right
-    vim.cmd(string.format("wincmd %s", vertical and "l" or "j"))
-    local new_win = api.nvim_get_current_win()
-
-    -- determine direction cond on increase and existing right-hand buffer
-    local not_last = not (cur_win == new_win)
-    local sign = margin > 0
-    -- go to previous window if required otherwise flip sign
-    if not_last == true then
-        vim.cmd [[wincmd p]]
-    else
-        sign = not sign
-    end
-
-    sign = sign and "+" or "-"
-    local dir = vertical and "vertical " or ""
-    local cmd = dir .. "resize " .. sign .. math.abs(margin) .. "<CR>"
-    vim.cmd(cmd)
-end
-
-function M.clear_module(module_name)
-    package.loaded[module_name] = nil
 end
 
 -- Check whether the current buffer is empty
@@ -375,7 +363,7 @@ local func2str = function(func, args)
     end
 end
 
-function M.remap(modes, lhs, rhs, opts)
+M.remap = function(modes, lhs, rhs, opts)
     modes = type(modes) == "string" and {modes} or modes
     opts = opts or {}
     opts = type(opts) == "string" and {opts} or opts

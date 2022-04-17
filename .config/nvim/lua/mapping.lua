@@ -2,7 +2,6 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
-local fmap = utils.fmap
 local command = utils.command
 
 -- Legendary needs to be called again in this file for the keybindings to register
@@ -50,14 +49,14 @@ map("n", "Q", "@q")
 map("v", "Q", ":normal @q")
 
 -- Use qq to record and stop (only records q)
-fmap {
+map(
     "n",
     "qq",
     function()
-        return vim.fn.reg_recording() == "" and "qq" or "q"
+        return fn.reg_recording() == "" and "qq" or "q"
     end,
     {noremap = true, expr = true}
-}
+)
 map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
@@ -231,6 +230,8 @@ map("n", "zF", [[<Cmd>lua require('common.fold').with_highlight('A')<CR>]])
 map("n", "zo", [[<Cmd>lua require('common.fold').with_highlight('o')<CR>]])
 map("n", "zO", [[<Cmd>lua require('common.fold').with_highlight('O')<CR>]])
 map("n", "zv", [[<Cmd>lua require('common.fold').with_highlight('v')<CR>]])
+-- Recursively open whatever top level fold
+map("n", "zR", [[<Cmd>lua require('common.fold').with_highlight('CzO')<CR>]])
 
 map("n", "z[", [[<Cmd>lua require('common.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('common.fold').nav_fold(true)<CR>]])
@@ -240,8 +241,6 @@ map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = tr
 map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 -- Refocus folds
 map("n", "<LocalLeader>z", [[zMzvzz]])
--- Recursively open whatever top level fold
-map("n", "zO", [[zCzO]])
 -- map("n", "<Space><CR>", "zi", { silent = true })
 
 -- Buffer

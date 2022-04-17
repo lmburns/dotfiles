@@ -15,11 +15,11 @@ end
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
-local au = utils.au
+-- local au = utils.au
 local create_augroup = utils.create_augroup
 
 -- Lua utilities
-require("lutils")
+require("dev")
 require("options")
 
 -- Plugins need to be compiled each time to work it seems
@@ -65,47 +65,6 @@ end
 require("abbr")
 require("mapping")
 
--- ============================ UndoTree ============================== [[[
-require("which-key").register({["<Leader>ut"]= {":UndotreeToggle<CR>", "Toggle undotree"}})
-vim.cmd([[command! -nargs=0 UndotreeToggle lua require('plugs.undotree').toggle()]]) -- ]]]
-
--- ============================== C/Cpp =============================== [[[
-cmd [[
-  function! s:FullCppMan()
-      let old_isk = &iskeyword
-      setl iskeyword+=:
-      let str = expand("<cword>")
-      let &l:iskeyword = old_isk
-      execute 'Man ' . str
-  endfunction
-
-  command! Fcman :call s:FullCppMan()
-]]
-
-api.nvim_create_autocmd(
-    "FileType",
-    {
-        callback = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
-        end,
-        pattern = "c",
-        group = create_augroup("CEnv", true)
-    }
-)
-
-api.nvim_create_autocmd(
-    "FileType",
-    {
-        callback = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
-            map("n", "<Leader>kk", ":Fcman<CR>")
-        end,
-        pattern = "cpp",
-        group = create_augroup("CppEnv", true)
-    }
-)
--- ]]]
-
 -- =========================== Markdown =============================== [[[
 -- FIX: Shift-Tab in markdown
 cmd [[
@@ -136,7 +95,7 @@ require("functions")
 require("autocmds")
 require("common.qf")
 require("common.mru")
-require("common.reg")
+-- require("common.reg")
 require("common.grepper")
 
 -- ============================ Notify ================================ [[[
@@ -310,22 +269,26 @@ vim.schedule(
                     end
                 )
 
-                -- api.nvim_create_autocmd(
-                --     "User", {
-                --       callback = function()
-                --         require("plugs.coc").init()
-                --       end,
-                --       once = true,
-                --       group = create_augroup("CocNvimInit"),
-                --     }
-                -- )
+                api.nvim_create_autocmd(
+                    "User",
+                    {
+                        callback = function()
+                            require("plugs.coc").init()
+                        end,
+                        once = true,
+                        pattern = "CocNvimInit"
+                    }
+                )
 
-                local link = require("common.color").link
+                local color = require("common.color")
+                local link = color.link
+                local set_hl = color.set_hl
 
-                cmd [[
-                  au User CocNvimInit ++once lua require('plugs.coc').init()
-                  hi! CocSemStatic gui=bold
-                ]]
+                -- cmd [[
+                --   au User CocNvimInit ++once lua require('plugs.coc').init()
+                -- ]]
+
+                set_hl("CocSemStatic", {gui = "bold"})
                 link("CocSemDefaultLibrary", "Special")
                 link("CocSemDocumentation", "Number")
 

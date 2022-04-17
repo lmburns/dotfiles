@@ -1,3 +1,6 @@
+---A file containing configuration items for plugins I didn't think
+---were big enough for their own file
+
 local M = {}
 
 local kutils = require("common.kutils")
@@ -7,14 +10,14 @@ local K = require("common.keymap")
 local wk = require("which-key")
 local map = utils.map
 local bmap = utils.bmap
-local fmap = utils.fmap
+local color = require("common.color")
 
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
 -- ================================ bqf ===============================
 function M.bqf()
-    cmd("hi! link BqfPreviewBorder Parameter")
+    color.link("BqfPreviewBorder", "Parameter")
 
     require("bqf").setup(
         {
@@ -48,12 +51,19 @@ end
 
 -- =========================== open-browser ===========================
 function M.open_browser()
-    map("n", "<Leader>gb", "<Plug>(openbrowser-open)", {noremap = true, silent = true})
+    map("n", "<LocalLeader>o", "<Plug>(openbrowser-open)")
 end
 
 -- =============================== Suda ===============================
 function M.suda()
     map("n", "<Leader>W", ":SudaWrite<CR>")
+end
+
+-- =============================== Suda ===============================
+-- ============================== GHLine ==============================
+function M.ghline()
+    map("", "<Leader>gO", "<Plug>(gh-repo)")
+    map("", "<Leader>gL", "<Plug>(gh-line)")
 end
 
 -- ============================== Flaoterm ============================
@@ -482,18 +492,6 @@ function M.sandwhich()
     map("n", "mlw", "yss`", {noremap = false})
 end
 
--- ============================ AbbrevMan =============================
-function M.abbrevman()
-    require("abbrev-man").setup(
-        {
-            load_natural_dictionaries_at_startup = true,
-            load_programming_dictionaries_at_startup = true,
-            natural_dictionaries = {["nt_en"] = {["adn"] = "and"}},
-            programming_dictionaries = {["pr_py"] = {}}
-        }
-    )
-end
-
 -- =========================== BetterEscape ===========================
 function M.better_esc()
     require("better_escape").setup {
@@ -578,7 +576,9 @@ function M.move()
     wk.register(
         {
             ["<C-S-l>"] = {":MoveHChar(1)<CR>", "Move character one left"},
-            ["<C-S-h>"] = {":MoveHChar(-1)<CR>", "Move character one right"}
+            ["<C-S-h>"] = {":MoveHChar(-1)<CR>", "Move character one right"},
+            ["<C-S-j>"] = {":MoveLine(1)<CR>", "Move line down"},
+            ["<C-S-k>"] = {":MoveLine(-1)<CR>", "Move line up"}
         },
         {mode = "n"}
     )
@@ -603,7 +603,7 @@ function M.hop()
     -- ========================== f-Mapping ==========================
 
     -- Normal
-    fmap {
+    map(
         "n",
         "f",
         function()
@@ -614,10 +614,10 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Normal
-    fmap {
+    map(
         "n",
         "F",
         function()
@@ -628,10 +628,10 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Motions
-    fmap {
+    map(
         "o",
         "f",
         function()
@@ -643,10 +643,10 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Motions
-    fmap {
+    map(
         "o",
         "F",
         function()
@@ -658,11 +658,11 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Visual mode
-    fmap {
-        {"x"},
+    map(
+        "x",
         "f",
         function()
             require("hop").hint_char1(
@@ -673,11 +673,11 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Visual mode
-    fmap {
-        {"x"},
+    map(
+        "x",
         "F",
         function()
             require("hop").hint_char1(
@@ -688,13 +688,13 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- ========================== t-Mapping ==========================
 
     -- Normal
-    fmap {
-        {"n"},
+    map(
+        "n",
         "t",
         function()
             require("hop").hint_char1(
@@ -707,11 +707,11 @@ function M.hop()
             -- api.nvim_input("h")
             api.nvim_feedkeys(kutils.termcodes["h"], "n", false)
         end
-    }
+    )
 
     -- Normal
-    fmap {
-        {"n"},
+    map(
+        "n",
         "T",
         function()
             require("hop").hint_char1(
@@ -723,11 +723,11 @@ function M.hop()
             )
             api.nvim_feedkeys(kutils.termcodes["l"], "n", false)
         end
-    }
+    )
 
     -- Motions
-    fmap {
-        {"o"},
+    map(
+        "o",
         "t",
         function()
             require("hop").hint_char1(
@@ -738,11 +738,11 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Motions
-    fmap {
-        {"o"},
+    map(
+        "o",
         "T",
         function()
             require("hop").hint_char1(
@@ -753,11 +753,11 @@ function M.hop()
                 }
             )
         end
-    }
+    )
 
     -- Visual mode
-    fmap {
-        {"x"},
+    map(
+        "x",
         "t",
         function()
             require("hop").hint_char1(
@@ -769,11 +769,11 @@ function M.hop()
             )
             api.nvim_feedkeys(kutils.termcodes["h"], "v", false)
         end
-    }
+    )
 
     -- Visual mode
-    fmap {
-        {"x"},
+    map(
+        "x",
         "T",
         function()
             require("hop").hint_char1(
@@ -785,7 +785,7 @@ function M.hop()
             )
             api.nvim_feedkeys(kutils.termcodes["l"], "v", false)
         end
-    }
+    )
 end
 
 -- ========================== Window Picker ===========================
@@ -906,6 +906,16 @@ function M.trevj()
     map("n", "<Leader>k", [[:lua require('trevj').format_at_cursor()<CR>]])
 end
 
+-- ============================ registers =============================
+function M.registers()
+    g.registers_return_symbol = "⏎"
+    g.registers_tab_symbol = "\t" -- "·"
+    g.registers_show_empty_registers = 0
+    -- g.registers_hide_only_whitespace = 1
+    g.registers_window_border = "rounded"
+    g.registers_insert_modes = false -- removes <C-R> insert mapping
+end
+
 -- ================================ lf ================================
 function M.lf()
     g.lf_map_keys = 0
@@ -915,10 +925,11 @@ function M.lf()
 end
 
 function M.lfnvim()
-    g.lf_map_keys = 0
     g.lf_replace_netrw = 1
 
-    require("lf").setup({border = "double"})
+    require("lf").setup(
+        {border = "rounded", highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}}
+    )
 
     -- map("n", "<A-o>", ":Lf<CR>")
     map("n", "<C-o>", ":Lfnvim<CR>")
@@ -975,6 +986,18 @@ end
 --   -- Repeat the last Sneak
 --   map("n", "gs", "f<CR>", { noremap = false })
 --   map("n", "gS", "F<CR>", { noremap = false })
+-- end
+
+-- ============================ AbbrevMan =============================
+-- function M.abbrevman()
+--     require("abbrev-man").setup(
+--         {
+--             load_natural_dictionaries_at_startup = true,
+--             load_programming_dictionaries_at_startup = true,
+--             natural_dictionaries = {["nt_en"] = {["adn"] = "and"}},
+--             programming_dictionaries = {["pr_py"] = {}}
+--         }
+--     )
 -- end
 
 return M

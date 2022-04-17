@@ -20,7 +20,7 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 local Path = require("plenary.path")
 
 local b_utils = require("common.utils")
-require("lutils")
+require("dev")
 
 -- local home = vim.loop.os_homedir()
 -- local cwd = vim.fn.getcwd()
@@ -73,20 +73,7 @@ require("telescope").setup(
             -- layout_strategy = "flex",
             border = {},
             borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
-            -- Using "smart" here slows down majorly
             path_display = {},
-            -- path_display = function(opts, fname)
-            --   local og_fname = fname
-            --
-            --   fname = Path:new(fname):make_relative(cwd)
-            --   if vim.startswith(fname, home) then
-            --     fname = "~/" .. Path:new(fname):make_relative(home)
-            --   elseif fname ~= og_fname then
-            --     fname = "./" .. fname
-            --   end
-            --
-            --   return utils.transform_path({}, fname)
-            -- end,
             mappings = {
                 i = {
                     ["<C-x>"] = false,
@@ -342,7 +329,7 @@ require("telescope").setup(
                 alias_hl = "MoreMsg",
                 path_hl = "Comment",
                 opener = "Lfnvim",
-                theme = "ivy",
+                theme = "ivy"
             },
             hop = {
                 -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
@@ -512,7 +499,8 @@ local options = {
     layout_strategy = "horizontal",
     layout_config = {preview_width = 0.65},
     border = {},
-    borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
+    borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
+    cwd = fn.expand("%:p:h")
 }
 
 -- ========================== Helper ==========================
@@ -555,10 +543,12 @@ end
 -- ========================== Builtin ==========================
 
 M.cst_files = function()
-    if #require("common.gittool").root() ~= 0 then
-        builtin.git_files(options)
-    else
+    local root = require("common.gittool").root()
+    if #root == 0 then
+        -- Use the current filename instead of the directory
         builtin.find_files(options)
+    else
+        builtin.git_files(options)
     end
 end
 
@@ -945,9 +935,10 @@ wk.register(
 
 -- ========================== Highlight ==========================
 local colors = require("kimbox.colors")
-local fg = require("common.color").fg
--- local hl = require("common.color").hl
+local color = require("common.color")
+local fg = color.fg
 -- local bg = require("common.color").bg
+-- local hl = color.set_hl
 
 fg("TelescopeSelection", colors.yellow, "bold")
 fg("TelescopeSelectionCaret", colors.blue)

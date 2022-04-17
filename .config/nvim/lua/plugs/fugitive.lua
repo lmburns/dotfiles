@@ -2,88 +2,117 @@ local M = {}
 
 local utils = require("common.utils")
 local create_augroup = utils.create_augroup
-local bmap = function(...) utils.bmap(0, ...) end
+local wk = require("which-key")
+
+local bmap = function(...)
+    utils.bmap(0, ...)
+end
 
 function M.index()
-  local bufname = api.nvim_buf_get_name(0)
-  if fn.winnr("$") == 1 and bufname == "" then
-    cmd("Git")
-  else
-    cmd("tab Git")
-  end
-  if bufname == "" then
-    cmd("sil! noa bw #")
-  end
+    local bufname = api.nvim_buf_get_name(0)
+    if fn.winnr("$") == 1 and bufname == "" then
+        cmd("Git")
+    else
+        cmd("tab Git")
+    end
+    if bufname == "" then
+        cmd("sil! noa bw #")
+    end
 end
 
 -- placeholder for Git difftool --name-only :)
 function M.diff_hist()
-  local info = fn.getqflist({ idx = 0, context = 0 })
-  local idx, ctx = info.idx, info.context
-  if idx and ctx and type(ctx.items) == "table" then
-    local diff = ctx.items[idx].diff or {}
-    if #diff == 1 then
-      cmd("abo vert diffs " .. diff[1].filename)
-      cmd("winc p")
+    local info = fn.getqflist({idx = 0, context = 0})
+    local idx, ctx = info.idx, info.context
+    if idx and ctx and type(ctx.items) == "table" then
+        local diff = ctx.items[idx].diff or {}
+        if #diff == 1 then
+            cmd("abo vert diffs " .. diff[1].filename)
+            cmd("winc p")
+        end
     end
-  end
 end
 
 function M.map()
-  bmap(
-      "n", "st", ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>",
-      { noremap = false, silent = true }
-  )
-  bmap("n", "<Leader>gb", ":GBrowse<CR>")
+    bmap("n", "st", ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>", {noremap = false, silent = true})
+    bmap("n", "<Leader>gb", ":GBrowse<CR>")
 end
 
 local function init()
-  local bufname = api.nvim_buf_get_name(0)
-  if bufname:find("/.git/index$") then
-    vim.schedule(
-        function() cmd(("do fugitive BufReadCmd %s"):format(bufname)) end
-    )
-  end
+    local bufname = api.nvim_buf_get_name(0)
+    if bufname:find("/.git/index$") then
+        vim.schedule(
+            function()
+                cmd(("do fugitive BufReadCmd %s"):format(bufname))
+            end
+        )
+    end
 
-  vim.g.nremap = {
-    ["d?"] = "s?",
-    dv = "sv",
-    dp = "sp",
-    ds = "sh",
-    dh = "sh",
-    dq = "",
-    d2o = "s2o",
-    d3o = "s3o",
-    dd = "ss",
-    s = "<C-s>",
-    u = "<C-u>",
-    O = "T",
-    a = "",
-    X = "x",
-    ["-"] = "a",
-    ["*"] = "",
-    ["#"] = "",
-    ["<C-W>gf"] = "gF",
-    ["[m"] = "[f",
-    ["]m"] = "]f",
-  }
-  vim.g.xremap = { s = "S", u = "<C-u>", ["-"] = "a", X = "x" }
+    vim.g.nremap = {
+        ["d?"] = "s?",
+        dv = "sv",
+        dp = "sp",
+        ds = "sh",
+        dh = "sh",
+        dq = "",
+        d2o = "s2o",
+        d3o = "s3o",
+        dd = "ss",
+        s = "<C-s>",
+        u = "<C-u>",
+        O = "T",
+        a = "",
+        X = "x",
+        ["-"] = "a",
+        ["*"] = "",
+        ["#"] = "",
+        ["<C-W>gf"] = "gF",
+        ["[m"] = "[f",
+        ["]m"] = "]f"
+    }
+    g.xremap = {s = "S", u = "<C-u>", ["-"] = "a", X = "x"}
 
-  -- api.nvim_create_autocmd(
-  --     { "User", "FugitiveIndex", "FugitiveCommit" }, {
-  --       callback = function() require("plugs.fugitive").map() end,
-  --       group = create_augroup("FugitiveCustom"),
-  --     }
-  -- )
+    -- api.nvim_create_autocmd(
+    --     { "User", "FugitiveIndex", "FugitiveCommit" }, {
+    --       callback = function() require("plugs.fugitive").map() end,
+    --       group = create_augroup("FugitiveCustom"),
+    --     }
+    -- )
 
-  cmd [[
+    cmd [[
         aug FugitiveCustom
             au!
             au User FugitiveIndex,FugitiveCommit lua require('plugs.fugitive').map()
         aug end
     ]]
 
-  cmd [[packadd vim-rhubarb]]
+    cmd [[packadd vim-rhubarb]]
+
+    wk.register(
+        {
+            ["<Leader>gg"] = {[[<Cmd>lua require('plugs.fugitive').index()<CR>]], "Fugitive index"},
+            ["<Leader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
+            ["<Leader>gb"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
+            ["<Leader>gw"] = {
+                [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+                "Fugitive Gwrite (sym)"
+            },
+            ["<Leader>gr"] = {
+                [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+                "Fugitive Gread (sym)"
+            }
+        }
+    )
+
+    wk.register(
+        {
+            ["<Leader>gc"] = {":Git commit<Space>", "Fugitive commit"},
+            ["<Leader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
+            ["<Leader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
+            ["<Leader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"}
+        },
+        {silent = false}
+    )
 end
 
 init()

@@ -1,6 +1,7 @@
 local utils = require("common.utils")
 local opt = utils.opt
 local map = utils.map
+local list = require("dev").list
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -55,14 +56,14 @@ vim.env.LANG = "en_US.UTF-8"
 o.encoding = "utf-8"
 o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
-o.fileformats = "unix,dos,mac" -- try unix line endings before dos, use unix
+o.fileformats = list {"unix", "dos", "mac"} -- try unix line endings before dos, use unix
 
 -- Settings
 o.path:append("**")
 o.number = true
 -- o.relativenumber = true
 o.cursorline = true
-o.cursorlineopt = "number,screenline"
+o.cursorlineopt = list {"number", "screenline"}
 o.clipboard:append("unnamedplus")
 
 o.magic = true
@@ -74,7 +75,7 @@ o.softtabstop = 2
 o.ignorecase = true
 o.smartcase = true
 o.startofline = false
-o.backspace = [[indent,eol,start]]
+o.backspace = list {"indent", "eol", "start"}
 o.synmaxcol = 1000 -- do not highlight long lines
 
 o.foldenable = false
@@ -91,7 +92,7 @@ o.foldmarker = "[[[,]]]"
 
 -- This does not work globally for whatever reason (didn't in vim either)
 o.formatoptions:remove({"c", "r", "o"})
-o.nrformats = "octal,hex,bin,unsigned"
+o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
@@ -140,7 +141,7 @@ o.undoreload = 10000
 o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 fn.mkdir(vim.o.undodir, "p")
-o.shada = [['100,<50,s100,/20,@20,:1000,h]]
+o.shada = list {"'100", "<50", "s100", "/20", "@20", ":1000", "h"}
 o.shadafile = fn.stdpath("data") .. "/shada/main.shada"
 
 o.belloff = "all"
@@ -232,8 +233,8 @@ g.clipboard = clipboard
 -- =============== Commands ================ [[[
 -- filetype on
 -- filetype plugin on
-cmd([[
-      filetype plugin indent on
-      syntax enable
-    ]])
+cmd [[
+  filetype plugin indent on
+  syntax enable
+]]
 -- ]]] === Commands ===

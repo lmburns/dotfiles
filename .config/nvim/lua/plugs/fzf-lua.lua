@@ -1,6 +1,6 @@
 local M = {}
 
-require("lutils")
+require("dev")
 require("common.utils")
 local fzf_lua = require("fzf-lua")
 

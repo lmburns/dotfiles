@@ -1,7 +1,6 @@
 local M = {}
 
-require("common.utils")
-local K = require("common.keymap")
+local map = require("common.utils").map
 
 function M.setup_twighlight()
   require("twilight").setup {
@@ -82,8 +81,8 @@ local function init()
   M.setup_twighlight()
   M.setup_zenmode()
 
-  K.n("<Leader>li", ":Twilight<CR>")
-  K.n("<Leader>zm", ":ZenMode<CR>")
+  map("n", "<Leader>li", ":Twilight<CR>")
+  map("n", "<Leader>zm", ":ZenMode<CR>")
 end
 
 init()

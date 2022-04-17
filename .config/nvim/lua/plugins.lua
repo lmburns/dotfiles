@@ -125,10 +125,12 @@ return packer.startup(
             -- ========================== Fixes / Addons ========================== [[[
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", config = conf("better_esc")})
+            -- numToStr/Navigator.nvim
             use({"mrjones2014/smart-splits.nvim", config = conf("smartsplits")})
             use({"fedepujol/move.nvim", config = conf("move")})
             -- Prevent clipboard from being hijacked by snippets and such
             use({"kevinhwang91/nvim-hclipboard"})
+            use({"tversteeg/registers.nvim", config = conf("registers")})
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
@@ -244,8 +246,7 @@ return packer.startup(
             -- ]]] === EasyAlign ===
 
             -- ============================ Open Browser =========================== [[[
-            -- FIX: Binding isn't working but function is
-            use({"tyru/open-browser.vim", conf = conf("open_browser")})
+            use({"tyru/open-browser.vim", config = conf("open_browser")})
             -- ]]] === Open Browser ===
 
             -- ============================ Limelight ============================= [[[
@@ -353,8 +354,7 @@ return packer.startup(
             -- ]]] === Colorscheme ===
 
             -- ============================= Spelling ============================= [[[
-            -- NOTE: Delete?
-            use({"Pocco81/AbbrevMan.nvim", config = conf("abbrevman")})
+            -- use({"Pocco81/AbbrevMan.nvim", config = conf("abbrevman")})
             -- ]]] === Spelling ===
 
             -- ============================ Scrollbar ============================= [[[
@@ -413,8 +413,8 @@ return packer.startup(
             use(
                 {
                     "lukas-reineke/indent-blankline.nvim",
-                    config = conf("plugs.indent_blankline"),
-                    after = colorscheme
+                    after = colorscheme,
+                    config = conf("plugs.indent_blankline")
                 }
             )
             -- ]]] === Indentline ===
@@ -441,6 +441,7 @@ return packer.startup(
 
             -- ====================== Window Picker ======================= [[[
             -- sindrets/winshift.nvim
+            -- t9md/vim-choosewin
             use(
                 {
                     "https://gitlab.com/yorickpeterse/nvim-window",
@@ -454,7 +455,8 @@ return packer.startup(
             use(
                 {
                     "AckslD/nvim-trevJ.lua",
-                    config = conf("trevj")
+                    config = conf("trevj"),
+                    keys = {{"n", "<Leader>k"}}
                 }
             )
 
@@ -568,7 +570,20 @@ return packer.startup(
             --     }
             -- )
 
-            use({"monaqa/dial.nvim", config = conf("plugs.dial")})
+            use(
+                {
+                    "monaqa/dial.nvim",
+                    config = conf("plugs.dial"),
+                    keys = {
+                        {"n", "+"},
+                        {"n", "_"},
+                        {"v", "+"},
+                        {"v", "_"},
+                        {"v", "g+"},
+                        {"v", "g_"}
+                    }
+                }
+            )
             -- ]]] === Operator ===
 
             -- =============================== Tags =============================== [[[
@@ -663,6 +678,15 @@ return packer.startup(
             --     }
             -- )
 
+            -- use(
+            --     {
+            --         "lukas-reineke/headlines.nvim",
+            --         config = function()
+            --             require("headlines").setup()
+            --         end
+            --     }
+            -- )
+
             use(
                 {
                     "vim-pandoc/vim-pandoc-syntax",
@@ -749,15 +773,10 @@ return packer.startup(
             use({"nyuszika7h/vim-polyglot"})
 
             -- use({ "wfxr/dockerfile.vim" })
-
             use({"rhysd/vim-rustpeg", ft = "rustpeg"})
-
             use({"nastevens/vim-cargo-make"})
-
             use({"NoahTheDuke/vim-just", ft = "just"})
-
             use({"camnw/lf-vim", ft = "lf"})
-
             use({"ron-rs/ron.vim", ft = "ron"})
             -- ]]] === Syntax-Highlighting ===
 
@@ -823,6 +842,8 @@ return packer.startup(
 
             -- =============================== Coc ================================ [[[
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
+            -- use({"teal-language/vim-teal", ft = "teal"})
+            -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
             use({"vim-perl/vim-perl", ft = "perl"})
 
             use(
@@ -830,12 +851,13 @@ return packer.startup(
                     "neoclide/coc.nvim",
                     branch = "master",
                     run = "yarn install --frozen-lockfile",
-                    config = [[require('plugs.coc').tag_cmd()]]
+                    config = [[require('plugs.coc').tag_cmd()]],
+                    requires = {
+                        {"antoinemadec/coc-fzf", after = "coc.nvim"},
+                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
+                    }
                 }
             )
-            use({"antoinemadec/coc-fzf", after = "coc.nvim"})
-
-            use({"kevinhwang91/coc-kvs", run = "yarn install --frozen-lockfile"})
             -- ]]] === Coc ===
 
             -- ============================= Treesitter ============================ [[[
@@ -1040,6 +1062,18 @@ return packer.startup(
                 }
             )
 
+            use(
+                {
+                    "rbong/vim-flog",
+                    cmd = {"Flog", "Flogsplit"},
+                    keys = {
+                        {"n", "<Leader>gl"},
+                        {"n", "<Leader>gf"}
+                    },
+                    requires = {{"tpope/vim-fugitive"}},
+                    config = conf("plugs.flog")
+                }
+            )
             use({"tpope/vim-rhubarb"})
 
             use({"kdheepak/lazygit.nvim", config = conf("lazygit")})
@@ -1060,6 +1094,18 @@ return packer.startup(
                 }
             )
 
+            use(
+                {
+                    "ruanyl/vim-gh-line",
+                    keys = {
+                        {"n", "<Leader>gO"},
+                        {"n", "<Leader>gL"},
+                        {"x", "<Leader>gL"}
+                    },
+                    setup = [[vim.g.gh_line_blame_map_default = 0]],
+                    config = conf("ghline")
+                }
+            )
             use(
                 {
                     "sindrets/diffview.nvim",
@@ -1133,6 +1179,15 @@ return packer.startup(
 --       --   { "n", "x" },
 --       --   { "n", "X" },
 --       -- },
+--     }
+-- )
+
+-- yank over ssh with ':OCSYank' or ':OSCYankReg +'
+-- use(
+--     {
+--         "ojroques/vim-oscyank",
+--         config = [[vim.g.oscyank_term = 'tmux']],
+--         cmd = {"OSCYank", "OSCYankReg"}
 --     }
 -- )
 -- ]]] === Disabled ===

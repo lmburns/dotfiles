@@ -1,9 +1,10 @@
 local M = {}
 
-require("common.utils")
-local utils = require("common.kutils")
+local utils = require("common.utils")
+local kutils = require("common.kutils")
 local coc = require("plugs.coc")
-local create_augroup = require("common.utils").create_augroup
+local augroup = utils.augroup
+local command = utils.command
 
 local bl_ft
 local coc_loaded_ft
@@ -41,7 +42,7 @@ function M.use_anyfold(bufnr, force)
                 api.nvim_buf_call(
                     bufnr,
                     function()
-                        utils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
+                        kutils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
                         cmd("AnyFoldActivate")
                     end
                 )
@@ -57,19 +58,18 @@ local function apply_fold(bufnr, ranges)
         function()
             vim.wo.foldmethod = "manual"
 
+            local mode = api.nvim_get_mode().mode
+
             -- FIXME: This moves the cursor one place to the left if typing starts within
             --       1 second of opening the file
-
-            -- local mode = api.nvim_get_mode().mode
-            -- if mode == "i" or mode == "ic" then
-            --     -- cmd("norm! l")
-            --     vim.notify("INIT")
-            --     cmd("norm! <C-o>zE")
-            -- else
-            --     vim.notify(api.nvim_get_mode().mode)
-            cmd("norm! zE")
-            -- cmd("norm! <C-o>zE")
-            -- end
+            if mode:match("[ic]+") then
+                -- cmd("norm! l")
+                --     vim.notify("INIT")
+                --     cmd("norm! <C-o>zE")
+                cmd("norm! zE")
+            else
+                cmd("norm! <C-o>zE")
+            end
 
             local fold_cmd = {}
             for _, f in ipairs(ranges) do
@@ -136,7 +136,9 @@ function M.attach(bufnr, force)
                     else
                         apply_fold(bufnr, r)
                     end
+
                     vim.b[bufnr].loaded_fold = "coc"
+
                     cmd(
                         ("au FoldLoad BufWritePost <buffer=%d> %s"):format(
                             bufnr,
@@ -199,7 +201,7 @@ function M.foldtext()
         end
     end
     local pad = " "
-    fs_line = utils.expandtab(fs_line, vim.bo.ts)
+    fs_line = kutils.expandtab(fs_line, vim.bo.ts)
     local winid = api.nvim_get_current_win()
     local textoff = fn.getwininfo(winid)[1].textoff
     local width = api.nvim_win_get_width(0) - textoff
@@ -249,15 +251,15 @@ function M.with_highlight(c)
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
         if fn.foldclosed(".") == -1 and fostart > 0 and foend > fostart then
-            utils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
+            kutils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
         end
     end
 end
 
 local function init()
-    vim.g.anyfold_fold_display = 0
-    vim.g.anyfold_identify_comments = 0
-    vim.g.anyfold_motion = 0
+    g.anyfold_fold_display = 0
+    g.anyfold_identify_comments = 0
+    g.anyfold_motion = 0
 
     -- blacklist
     bl_ft = {
@@ -276,26 +278,26 @@ local function init()
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}
 
-    -- api.nvim_create_autocmd(
-    --     "FileType", {
-    --       callback = function()
-    --         require("common.fold").defer_attach(tonumber(vim.fn.expand("<abuf>")))
-    --       end,
-    --       group = create_augroup("FoldLoad"),
-    --       pattern = "*",
-    --     }
-    -- )
-
-    cmd(
-        [[
-      aug FoldLoad
-          au!
-          au FileType * lua require('common.fold').defer_attach(tonumber(vim.fn.expand('<abuf>')))
-      aug END
-  ]]
+    augroup(
+        "FoldLoad",
+        {
+            {
+                event = "FileType",
+                pattern = "*",
+                command = function()
+                    require("common.fold").defer_attach(tonumber(fn.expand("<abuf>")))
+                end
+            }
+        }
     )
 
-    cmd [[com! -nargs=0 Fold lua require('common.fold').attach(nil, true)]]
+    command(
+        "Fold",
+        function()
+            require("common.fold").attach(nil, true)
+        end,
+        {nargs = 0}
+    )
 
     for _, bufnr in ipairs(api.nvim_list_bufs()) do
         M.defer_attach(bufnr)

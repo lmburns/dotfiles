@@ -1,36 +1,35 @@
 local M = {}
 
-local utils = require("common.utils")
-local map = utils.map
+local command = require("common.utils").command
 
 function M.toggle()
-  fn["undotree#UndotreeToggle"]()
-  require("plugs.undotree").clean_undo()
+    fn["undotree#UndotreeToggle"]()
+    require("plugs.undotree").clean_undo()
 end
 
 -- TODO: always clean filename with '%'
 function M.clean_undo()
-  local u_dir = vim.o.undodir
-  local pre_len = u_dir:len(vim.o.undodir) + 2
-  for file in vim.gsplit(fn.globpath(u_dir, "*"), "\n") do
-    local fp_per = file:sub(pre_len, -1)
-    local fp = fp_per:gsub("%%", "/")
-    if fn.glob(fp) == "" then
-      os.remove(fp)
+    local u_dir = vim.o.undodir
+    local pre_len = u_dir:len(vim.o.undodir) + 2
+    for file in vim.gsplit(fn.globpath(u_dir, "*"), "\n") do
+        local fp_per = file:sub(pre_len, -1)
+        local fp = fp_per:gsub("%%", "/")
+        if fn.glob(fp) == "" then
+            os.remove(fp)
+        end
     end
-  end
 end
 
 local function init()
-  g.undotree_SplitWidth = 45
-  g.undotree_SetFocusWhenToggle = 1
-  g.undotree_RelativeTimestamp = 1
-  g.undotree_ShortIndicators = 1
-  g.undotree_HelpLine = 0
-  g.undotree_WindowLayout = 3
+    g.undotree_SplitWidth = 45
+    g.undotree_SetFocusWhenToggle = 1
+    g.undotree_RelativeTimestamp = 1
+    g.undotree_ShortIndicators = 1
+    g.undotree_HelpLine = 0
+    g.undotree_WindowLayout = 3
 
-  cmd(
-      [[
+    cmd(
+        [[
         function! Undotree_CustomMap()
             nmap <buffer> <C-u> <Plug>UndotreeUndo
             nunmap <buffer> u
@@ -38,7 +37,17 @@ local function init()
 
         packadd undotree
     ]]
-  )
+    )
+
+    require("which-key").register({["<Leader>ut"] = {":UndotreeToggle<CR>", "Toggle undotree"}})
+
+    command(
+        "UndoTreeToggle",
+        function()
+            require("plugs.undotree").toggle()
+        end,
+        {nargs = 0}
+    )
 end
 
 init()

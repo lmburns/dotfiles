@@ -1,19 +1,20 @@
 local M = {}
 
-require("common.utils")
+local map = require("common.utils").map
 
 function M.setup()
-  require("neogit").setup(
-      {
-        disable_commit_confirmation = true,
-        integrations = { diffview = true },
-        sections = { stashes = { folded = false }, recent = { folded = false } },
-      }
-  )
+    require("neogit").setup(
+        ---@diagnostic disable-next-line: redundant-parameter
+        {
+            disable_commit_confirmation = true,
+            integrations = {diffview = true},
+            sections = {stashes = {folded = false}, recent = {folded = false}}
+        }
+    )
 end
 
 local function init()
-  cmd [[
+    cmd [[
     hi NeogitNotificationInfo guifg=#4C96A8
     hi NeogitNotificationWarning guifg=#FF9500
     hi NeogitNotificationError guifg=#c44323
@@ -24,7 +25,8 @@ local function init()
     hi def NeogitHunkHeader guifg=#A06469
     hi def NeogitHunkHeaderHighlight guifg=#FF5813
   ]]
-  M.setup()
+
+    M.setup()
 end
 
 init()

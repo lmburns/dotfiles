@@ -1,13 +1,15 @@
 local M = {}
 
-require("lutils")
+require("dev")
 local mru = require("common.mru")
-local cutils = require("common.utils")
-local augroup = cutils.augroup
-local utils = require("common.kutils")
+local utils = require("common.utils")
+local kutils = require("common.kutils")
+local augroup = utils.augroup
 
 local coc = require("plugs.coc")
-local map = cutils.map
+local map = utils.map
+
+local wk = require("which-key")
 
 local default_preview_window, default_action
 
@@ -91,20 +93,20 @@ local function format_files(b_list, m_list)
             local modified = b.changed == 1
             local flag = ""
             if modified then
-                flag = utils.ansi.Statement:format("+ ")
+                flag = kutils.ansi.Statement:format("+ ")
             elseif readonly then
-                flag = utils.ansi.Special:format("- ")
+                flag = kutils.ansi.Special:format("- ")
             end
 
             local sname = name == "" and "[No name]" or fn.fnamemodify(name, ":~:.")
             if bufnr == cur_bufnr then
-                sname = utils.ansi.Directory:format(sname)
+                sname = kutils.ansi.Directory:format(sname)
             elseif bufnr == alt_bufnr then
-                sname = utils.ansi.Constant:format(sname)
+                sname = kutils.ansi.Constant:format(sname)
             end
 
             sname = flag .. sname
-            local bufnr_str = utils.ansi.Number:format(tostring(bufnr))
+            local bufnr_str = kutils.ansi.Number:format(tostring(bufnr))
             local digit = math.floor(math.log10(bufnr)) + 1
             local padding = (" "):rep(max_digit - digit)
             local o_str = fmt:format(name, lnum, lnum, padding, bufnr_str, sname)
@@ -192,10 +194,10 @@ end
 --     local k = s.kind
 --     local lnum = s.lnum
 --     local col = s.col
---     local kind = utils.ansi[hl_map[k]]:format(("%-10s"):format(k))
+--     local kind = kutils.ansi[hl_map[k]]:format(("%-10s"):format(k))
 --     local text = s.text
 --     local level =
---         s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
+--         s.level > 0 and kutils.ansi.NonText:format(("| "):rep(s.level)) or ""
 --     local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
 --     table.insert(out, o_str)
 --   end
@@ -254,9 +256,9 @@ end
 --         cmdhist.store()
 --         if key == "ctrl-e" then
 --           cmd("redraw")
---           api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
+--           api.nvim_feedkeys(":" .. kutils.termcodes["<Up>"], "n", false)
 --         else
---           api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
+--           api.nvim_feedkeys((":" .. cmdl .. kutils.termcodes["<CR>"]), "", false)
 --         end
 --       end
 --     end,
@@ -536,7 +538,7 @@ local function init()
       \ 'source':  'cat /usr/share/dict/words',
       \ 'options': '--multi --reverse --margin 15%,0',
       \ 'left':    20})
-  ]]
+    ]]
 
     -- Clipboard manager
     cmd [[
@@ -627,33 +629,37 @@ local function init()
         sil! aug! fzf_buffers
     ]]
 
-    map("n", "<Leader>f;", [[<Cmd>:History:<CR>]])
-    map("n", "<Leader>fc", [[:lua require('common.gittool').root_exe('BCommits')<CR>]])
-    map("n", "<Leader>fg", [[:lua require('common.gittool').root_exe('GFiles')<CR>]])
-    map("n", "<Leader>ff", [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]])
-
-    map("n", "<Leader>f,", [[:lua require('common.gittool').root_exe('Rg')<CR>]])
-
-    map("n", "<C-f>", ":Rg<CR>")
+    wk.register(
+        {
+            ["f;"] = {[[<Cmd>:History:<CR>]], "History (fzf)"},
+            ["fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
+            ["<Leader>fg"] = {[[:lua require('common.gittool').root_exe('GFiles')<CR>]], "GFiles Git (fzf)"},
+            ["<Leader>ff"] = {
+                [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],
+                "Files Git (fzf)"
+            },
+            ["<Leader>f,"] = {[[:lua require('common.gittool').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
+            ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
+            ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
+            ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
+            ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
+            ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
+            ["<Leader>hf"] = {":History<CR>", "History (fzf)"},
+            ["<Leader>ls"] = {":LS<CR>", "LS (fzf)"}
+        }
+    )
 
     -- Change directory to buffers dir
     map("n", "<Leader>cd", ":lcd %:p:h<CR>")
-    map("n", "<Leader>lo", ":Locate .<CR>")
 
-    map("n", "<Leader>A", ":Windows<CR>", {silent = true})
-    map("n", "<LocalLeader>r", ":RG<CR>")
-    map("n", "<A-f>", ":Files<CR>", {silent = true})
     -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
-    map("n", "<Leader>hf", ":History<CR>", {silent = true})
-
-    map("n", "<Leader>ls", ":LS<CR>", {silent = true})
     -- map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 
-    map("n", "<C-l>m", "<Plug>(fzf-maps-n)", {noremap = false})
-    map("x", "<C-l>m", "<Plug>(fzf-maps-x)", {noremap = false})
-    map("i", "<C-l>m", "<Plug>(fzf-maps-i)", {noremap = false})
-    map("o", "<C-l>m", "<Plug>(fzf-maps-o)", {noremap = false})
+    map("n", "<C-l>m", "<Plug>(fzf-maps-n)")
+    map("x", "<C-l>m", "<Plug>(fzf-maps-x)")
+    map("i", "<C-l>m", "<Plug>(fzf-maps-i)")
+    map("o", "<C-l>m", "<Plug>(fzf-maps-o)")
 
     M.resize_preview_layout()
 end

@@ -159,7 +159,7 @@ local function inc_dec_augroup(group, ft)
         group = group,
         callback = function()
           map("n", "+", dmap.inc_normal(ft))
-          map("n", "-", dmap.dec_normal(ft))
+          map("n", "_", dmap.dec_normal(ft))
           map("v", "+", dmap.inc_visual(ft), { silent = true })
           map("v", "_", dmap.dec_visual(ft), { silent = true })
           map("v", "g+", dmap.inc_gvisual(ft), { silent = true })
