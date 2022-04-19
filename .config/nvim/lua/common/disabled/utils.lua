@@ -72,6 +72,24 @@ function M.resize(vertical, margin)
     vim.cmd(cmd)
 end
 
+---API for command mappings
+-- Supports lua function args
+---@param args string|table
+function M.cmd(args)
+    if type(args) == "table" then
+        for i = 2, #args do
+            if fn.exists(":" .. args[2]) == 2 then
+                cmd("delcommand " .. args[2])
+            end
+            if type(args[i]) == "function" then
+                args[i] = func2str(args[i], true)
+            end
+        end
+        args = table.concat(args, " ")
+    end
+    cmd("command! " .. args)
+end
+
 cmd [[
     function! IsPluginInstalled(name) abort
       return luaeval("_G.packer_plugins['" .. a:name .. "'] ~= nil")

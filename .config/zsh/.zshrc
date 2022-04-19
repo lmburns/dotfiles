@@ -919,45 +919,45 @@ function _zsh_autosuggest_strategy_histdb_top_here() {
 # LIMIT    1
 # "
 
-#   local query="
-# SELECT commands.argv
-# FROM   history
-#   LEFT JOIN commands
-#     ON history.command_id = commands.rowid
-#   LEFT JOIN places
-#     ON history.place_id = places.rowid
-# WHERE    commands.argv LIKE '$(sql_escape $1)%'
-# -- GROUP BY commands.argv, places.dir
-# ORDER BY places.dir != '$(sql_escape $PWD)',
-#   history.start_time DESC
-# LIMIT 1
-# "
+  local query="
+SELECT commands.argv
+FROM   history
+  LEFT JOIN commands
+    ON history.command_id = commands.rowid
+  LEFT JOIN places
+    ON history.place_id = places.rowid
+WHERE    commands.argv LIKE '$(sql_escape $1)%'
+-- GROUP BY commands.argv, places.dir
+ORDER BY places.dir != '$(sql_escape $PWD)',
+  history.start_time DESC
+LIMIT 1
+"
 
 # count(*) desc
 
 # Is this complexity necessary?
-   local query="
-SELECT commands.argv
-FROM   history
-  LEFT JOIN commands ON history.command_id = commands.rowid
-  LEFT JOIN places   ON history.place_id   = places.rowid
-WHERE  places.dir LIKE
-  CASE WHEN exists(
-      SELECT commands.argv
-      FROM   history
-        LEFT JOIN commands ON history.command_id = commands.rowid
-        LEFT JOIN places   ON history.place_id   = places.rowid
-      WHERE  places.dir LIKE '$(sql_escape $PWD)%'
-        AND commands.argv LIKE '$(sql_escape $1)%'
-    ) THEN '$(sql_escape $PWD)%'
-    ELSE '%'
-  END
-  AND commands.argv LIKE '$(sql_escape $1)%'
-GROUP BY  commands.argv
-ORDER BY  places.dir LIKE '$(sql_escape $PWD)%' DESC,
-  history.start_time DESC
-LIMIT 1
-"
+#    local query="
+# SELECT commands.argv
+# FROM   history
+#   LEFT JOIN commands ON history.command_id = commands.rowid
+#   LEFT JOIN places   ON history.place_id   = places.rowid
+# WHERE  places.dir LIKE
+#   CASE WHEN exists(
+#       SELECT commands.argv
+#       FROM   history
+#         LEFT JOIN commands ON history.command_id = commands.rowid
+#         LEFT JOIN places   ON history.place_id   = places.rowid
+#       WHERE  places.dir LIKE '$(sql_escape $PWD)%'
+#         AND commands.argv LIKE '$(sql_escape $1)%'
+#     ) THEN '$(sql_escape $PWD)%'
+#     ELSE '%'
+#   END
+#   AND commands.argv LIKE '$(sql_escape $1)%'
+# GROUP BY  commands.argv
+# ORDER BY  places.dir LIKE '$(sql_escape $PWD)%' DESC,
+#   history.start_time DESC
+# LIMIT 1
+# "
 
   typeset -g suggestion=$(_histdb_query "$query")
 }

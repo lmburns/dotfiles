@@ -655,7 +655,7 @@ function M.init()
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-            ["<Leader>ac"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
+            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
             ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"}
         }
     )
@@ -709,7 +709,7 @@ function M.init()
     -- TODO: Use more!
     -- CodeActions
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-    map("n", "<C-CR>", "<Plug>(coc-codeaction)")
+    -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")
     map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
     map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 

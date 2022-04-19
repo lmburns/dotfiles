@@ -10,6 +10,7 @@ local K = require("common.keymap")
 local wk = require("which-key")
 local map = utils.map
 local bmap = utils.bmap
+local command = utils.command
 local color = require("common.color")
 
 local autocmd = utils.autocmd
@@ -47,6 +48,44 @@ function M.bqf()
             }
         }
     )
+end
+
+-- =========================== QFReflector ============================
+function M.qf_reflector()
+    g.qf_modifiable = 1
+    g.qf_write_changes = 1
+end
+
+-- ============================= Listish ==============================
+function M.listish()
+    require("listish").config(
+        {
+            theme_list = true,
+            clearqflist = "Clearquickfix", -- command
+            clearloclist = "Clearloclist", -- command
+            lists_close = "<leader>cc", -- closes both qf/loacal lists
+            in_list_dd = "dd", -- delete current item in the list
+            quickfix = {
+                open = "qo",
+                on_cursor = "<leader>qq", -- add current position to the list
+                add_note = "qn", -- add current position with your note to the list
+                clear = "<leader>qd", -- clear all items
+                close = "<leader>qc",
+                next = "]q",
+                prev = "[q"
+            },
+            locallist = {
+                open = "<leader>wo",
+                on_cursor = "<leader>ww",
+                add_note = "<leader>wn",
+                clear = "<leader>wd",
+                close = "<leader>wc",
+                next = "]w",
+                prev = "[w"
+            }
+        }
+    )
+    cmd([[pa cfilter]])
 end
 
 -- =========================== open-browser ===========================
@@ -866,7 +905,7 @@ function M.grepper()
         simple_prompt = 1,
         searchreg = 1,
         stop = 50000,
-        tools = {"rg"},
+        tools = {"rg", "git"},
         rg = {
             grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never",
             grepformat = "%f:%l:%c:%m,%f:%l:%m"
@@ -997,6 +1036,31 @@ end
 --             natural_dictionaries = {["nt_en"] = {["adn"] = "and"}},
 --             programming_dictionaries = {["pr_py"] = {}}
 --         }
+--     )
+-- end
+
+-- ============================== Spectre =============================
+-- function M.spectre()
+--     require("spectre").setup()
+--
+--     -- require("spectre.actions").get_current_entry()
+--     -- require("spectre.actions").get_all_entries()
+--     -- require("spectre.actions").get_state()
+--     -- require("spectre").open(
+--     --     {
+--     --         is_insert_mode = true,
+--     --         cwd = "~/.config/nvim",
+--     --         search_text = "test",
+--     --         replace_text = "test",
+--     --         path = "lua/**/*.lua"
+--     --     }
+--     -- )
+--
+--     command(
+--         "SpectreOpen",
+--         function()
+--             require("spectre").open()
+--         end
 --     )
 -- end
 

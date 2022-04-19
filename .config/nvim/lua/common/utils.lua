@@ -20,6 +20,7 @@ api = vim.api
 exec = api.nvim_exec
 uv = vim.loop
 F = vim.F
+levels = vim.log.levels
 
 fmt = string.format
 
@@ -33,10 +34,11 @@ local M = {}
 ---Safely check if a plugin is installed
 ---@param check string Module to check if is installed
 ---@return table Module
-M.prequire = function(check)
+M.prequire = function(check, opts)
+    opts = opts or {silent = false}
     local ok, ret = pcall(require, check)
-    if not ok then
-        M.notify(("%s was sourced but not installed"):format(check))
+    if not ok and not opts.silent then
+        M.notify({message = ("%s was sourced but not installed"):format(check), level = levels.ERROR})
         return nil
     end
     return ret
@@ -190,6 +192,16 @@ M.command = function(name, rhs, opts)
     api.nvim_create_user_command(name, rhs, opts)
 end
 
+---Creates a command for a given buffer
+---@param name string
+---@param command string|function
+---@param opts table
+M.bcommand = function(name, rhs, opts, bufnr)
+  opts = opts or {}
+  -- opts.force = true
+  api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
+end
+
 -- Check whether the current buffer is empty
 function M.is_buffer_empty()
     return fn.empty(fn.expand("%:t")) == 1
@@ -243,7 +255,7 @@ end
 ---@param  options same options as `nvim_notify`
 M.notify = function(options)
     if type(options) == "string" then
-        api.nvim_notify(options, vim.log.levels.INFO, {icon = "", title = "Notification"})
+        api.nvim_notify(options, levels.INFO, {icon = "", title = "Notification"})
         return
     end
 
@@ -254,7 +266,7 @@ M.notify = function(options)
             message = "This is a sample notification.",
             icon = "",
             title = "Notification",
-            level = vim.log.levels.INFO
+            level = levels.INFO
         },
         options or {}
     )
@@ -264,6 +276,7 @@ end
 M.preserve = function(arguments)
     local arguments = fmt("keepjumps keeppatterns execute %q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
+    -- nvim.ex.keepjumps(nvim.ex.keeppatterns())
     api.nvim_command(arguments)
     local lastline = fn.line("$")
     if line > lastline then
@@ -281,7 +294,7 @@ end
 ---Remove duplicate blank lines (2 -> 1)
 M.squeeze_blank_lines = function()
     if vim.bo.binary == false and vim.opt.filetype:get() ~= "diff" then
-        local old_query = vim.fn.getreg("/") -- save search register
+        local old_query = fn.getreg("/") -- save search register
         M.preserve("sil! 1,.s/^\\n\\{2,}/\\r/gn") -- set current search count number
         local result = fn.searchcount({maxcount = 1000, timeout = 500}).current
         local line, col = unpack(api.nvim_win_get_cursor(0))
@@ -417,27 +430,57 @@ M.remap = function(modes, lhs, rhs, opts)
     end
 end
 
----API for command mappings
--- Supports lua function args
----@param args string|table
--- function M.cmd(args)
---     if type(args) == "table" then
---         for i = 2, #args do
---             if fn.exists(":" .. args[2]) == 2 then
---                 cmd("delcommand " .. args[2])
---             end
---             if type(args[i]) == "function" then
---                 args[i] = func2str(args[i], true)
---             end
---         end
---         args = table.concat(args, " ")
---     end
---     cmd("command! " .. args)
--- end
+--- Usage:
+--- 1. Call `local stop = utils.profile('my-log')` at the top of the file
+--- 2. At the bottom of the file call `stop()`
+--- 3. Restart neovim, the newly created log file should open
+M.profile = function(filename)
+    local base = "/tmp/config/profile/"
+    fn.mkdir(base, "p")
+    local success, profile = pcall(require, "plenary.profile.lua_profiler")
+    if not success then
+        api.nvim_echo({"Plenary is not installed.", "Title"}, true, {})
+    end
+    profile.start()
+    return function()
+        profile.stop()
+        local logfile = base .. filename .. ".log"
+        profile.report(logfile)
+        vim.defer_fn(
+            function()
+                cmd("tabedit " .. logfile)
+            end,
+            1000
+        )
+    end
+end
+
+M.reload_config = function()
+    -- Handle impatient.nvim automatically.
+    local luacache = (_G.__luacache or {}).cache
+
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)
+    -- require("plenary.reload").reload_module(dir)
+
+    for name, _ in pairs(package.loaded) do
+        if name:match("^plugs.") then
+            package.loaded[name] = nil
+
+            if luacache then
+                luacache[name] = nil
+            end
+        end
+    end
+
+    dofile(env.MYVIMRC)
+end
 
 -- ================= Tips ================== [[[
 -- Search global variables:
 --    filter <pattern> let g:
+
+-- Patterns
+--   http://lua-users.org/wiki/PatternsTutorial
 -- ]]] === Tips ===
 
 -- Allows us to use utils globally

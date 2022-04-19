@@ -1,10 +1,5 @@
 local M = {}
 
--- TODO: Set this up
--- The problem is that which-key needs to be loaded afterwards
--- If which-key is specified to be loaded afterwards, then which-key
--- is unable to be used in any file in the configuration setup.
-
 function M.setup()
     require("legendary").setup(
         {
@@ -45,13 +40,13 @@ function M.setup()
             commands = {},
             -- Initial augroups and autocmds to bind
             autocmds = {},
-            -- which_key = {
-            --     -- you can put which-key.nvim tables here,
-            --     -- or alternatively have them auto-register,
-            --     -- see section on which-key integration
-            --     mappings = {},
-            --     opts = {}
-            -- },
+            which_key = {
+                -- you can put which-key.nvim tables here,
+                -- or alternatively have them auto-register,
+                -- see section on which-key integration
+                mappings = {},
+                opts = {}
+            },
             -- Automatically add which-key tables to legendary
             -- see "which-key.nvim Integration" below for more details
             auto_register_which_key = true,
@@ -87,16 +82,32 @@ end
 
 local function init()
     M.setup()
-    local wk = require("which-key")
+    -- local wk = require("which-key")
 
-    require("legendary").bind_keymap(
+    require("legendary").bind_keymaps(
         {
-            "<C-,>",
-            "<Cmd>Legendary keymaps<CR>",
-            description = "Show Legendary keymaps",
-            mode = {"n", "i", "x"}
+            {
+                "<C-,>",
+                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("n"))<CR>]],
+                description = "Show Legendary keymaps (normal)",
+                mode = "n"
+            },
+            {
+                "<C-,>",
+                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("i"))<CR>]],
+                description = "Show Legendary keymaps (insert)",
+                mode = "i"
+            },
+            {
+                "<C-,>",
+                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("v"))<CR>]],
+                description = "Show Legendary keymaps (visual)",
+                mode = "v"
+            }
         }
     )
+
+    require("common.utils").map("n", "X", ":echo 'hi sir'<CR>")
 end
 
 init()

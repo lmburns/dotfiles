@@ -107,6 +107,16 @@ return packer.startup(
             -- ]]] === Vim Library ===
 
             -- ============================ Lua Library =========================== [[[
+            use(
+                {
+                    "norcalli/nvim.lua",
+                    desc = "Shortcut `nvim` object",
+                    config = function()
+                        -- Make global
+                        nvim = require("nvim")
+                    end
+                }
+            )
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
             use({"tami5/sqlite.lua"})
@@ -134,7 +144,7 @@ return packer.startup(
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
-            -- TODO: -- Setup this plugin
+            use({"folke/which-key.nvim", config = conf("plugs.which-key")})
             use(
                 {
                     "mrjones2014/legendary.nvim",
@@ -142,7 +152,6 @@ return packer.startup(
                     requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
                 }
             )
-            use({"folke/which-key.nvim", config = conf("plugs.which-key")})
             -- ]]] === WhichKey ===
 
             -- ======================== Session Management ======================== [[[
@@ -238,7 +247,22 @@ return packer.startup(
             -- ]]] === Floaterm ===
 
             -- =========================== BetterQuickFix ========================== [[[
+            -- romainl/vim-qf
+
+            -- FIX: cclose won't work
+            -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, config = conf("qf_reflector")})
+
             use({"kevinhwang91/nvim-bqf", ft = {"qf"}, config = conf("bqf")})
+            use(
+                {
+                    "arsham/listish.nvim",
+                    requires = {
+                        {"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}},
+                        {"norcalli/nvim.lua"}
+                    },
+                    config = conf("listish")
+                }
+            )
             -- ]]] === BetterQuickFix ===
 
             -- ============================ EasyAlign ============================= [[[
@@ -1163,7 +1187,14 @@ return packer.startup(
 -- )
 
 -- 'mvllow/modes.nvim'
--- 'nvim-pack/nvim-spectre'
+
+-- use(
+--     {
+--         "windwp/nvim-spectre",
+--         cmd = "SpectreOpen",
+--         config = conf("spectre")
+--     }
+-- )
 
 -- use(
 --     {

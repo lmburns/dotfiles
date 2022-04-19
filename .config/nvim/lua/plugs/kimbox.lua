@@ -81,7 +81,7 @@ M.kanagawa = function()
     local ibg = cp.sumiInk1
 
     local overrides = {
-        BufferLineFill = {bg = bg},
+        BufferLineFill = {bg = ibg},
         BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
         BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
         BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, style = "bold,italic"}, -- current
@@ -91,9 +91,9 @@ M.kanagawa = function()
         BufferLineTabClose = {fg = cp.fujiWhite, bg = ibg},
         --
         BufferLineIndicatorSelected = {fg = cp.samuraiRed, bg = cp.sumiInk4},
-        BufferLineSeparator = {fg = bg, bg = ibg},
-        BufferLineSeparatorVisible = {fg = bg, bg = cp.sumiInk4},
-        BufferLineSeparatorSelected = {fg = bg, bg = cp.sumiInk4},
+        BufferLineSeparator = {fg = ibg, bg = ibg},
+        BufferLineSeparatorVisible = {fg = ibg, bg = cp.sumiInk4},
+        BufferLineSeparatorSelected = {fg = ibg, bg = cp.sumiInk4},
         --
         BufferLineNumbers = {fg = cp.fujiWhite, bg = ibg},
         BufferLineNumbersVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
@@ -384,9 +384,9 @@ local function init()
     -- M.edge()
     -- M.vscode()
 
-    -- require("kimbox").load()
+    require("kimbox").load()
     -- cmd [[colorscheme catppuccin]]
-    cmd [[colorscheme kanagawa]]
+    -- cmd [[colorscheme kanagawa]]
     -- cmd [[colorscheme material]]
     -- cmd [[colorscheme tokyonight]]
     -- cmd [[colorscheme everforest]]

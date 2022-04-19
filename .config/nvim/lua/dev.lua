@@ -4,9 +4,6 @@ local M = {}
 
 ---@alias vector any[]
 
-local is_windows = jit.os == "Windows"
-local path_sep = package.config:sub(1, 1)
-
 P = function(...)
     print(vim.inspect(...))
     return ...
@@ -228,6 +225,44 @@ function M.vec_push(t, ...)
     return t
 end
 
+---Checks if a list-like (vector) table contains `value`.
+---
+---@param t table Table to check
+---@param value any Value to compare
+---@returns true if `t` contains `value`
+M.contains = function(t, value)
+    return vim.tbl_contains(t, value)
+end
+
+---Apply a function to each value in a table.
+---@param tbl table
+---@param func function (value)
+M.map = function(tbl, func)
+    -- local t = {}
+    -- for k, v in pairs(tbl) do
+    --     t[k] = func(v)
+    -- end
+    -- return t
+    return vim.tbl_map(func, tbl)
+end
+
+---Filter table based on function
+---@param tbl table Table to be filtered
+---@param func function Function to apply filter
+---@return table
+M.filter = function(tbl, func)
+    return vim.tbl_filter(func, tbl)
+end
+
+---Apply function to each element of table
+---@param tbl Table A list of elements
+---@param func function to be applied
+M.each = function(tbl, func)
+    for _, item in ipairs(tbl) do
+        func(item)
+    end
+end
+
 -- ============================== Buffers =============================
 -- ====================================================================
 
@@ -273,11 +308,98 @@ function M.find_buf_with_option(option, value)
     return nil
 end
 
+-- =============================== List ===============================
+-- ====================================================================
+---Return a concatenated table as as string
+---@param value table: Table to concatenate
+---@param str string: String to concatenate to the table
+---@param sep string: Separator to concatenate the table
+---@return string
 function M.list(value, str, sep)
     sep = sep or ","
     str = str or ""
     value = type(value) == "table" and table.concat(value, sep) or value
     return str ~= "" and table.concat({value, str}, sep) or value
+end
+
+-- ============================ Switch-Case ===========================
+-- ====================================================================
+
+---Switch/case statement
+---
+---Usage:
+--- <code>
+--- a = switch {
+---   [1] = function (x) print(x,10) end,
+---   [2] = function (x) print(x,20) end,
+---   default = function (x) print(x,0) end,
+--- }
+---
+--- a:case(2)  -- ie. call case 2
+--- a:case(9)
+--- </code>
+---
+---@param t table: Table gets `:case` added
+---@return table
+-- function M.switch(t)
+--     t.case = function(self, x)
+--         local f = self[x] or self.default
+--         if f then
+--             if type(f) == "function" then
+--                 f(x, self)
+--             else
+--                 error("case " .. tostring(x) .. " not a function")
+--             end
+--         end
+--     end
+--     return t
+-- end
+
+---Switch/case statement. Allows return statement
+---
+---Usage:
+---<code>
+--- c = 1
+--- switch(c) : caseof {
+---     [1]   = function (x) print(x,"one") end,
+---     [2]   = function (x) print(x,"two") end,
+---     [3]   = 12345, -- this is an invalid case stmt
+---   default = function (x) print(x,"default") end,
+---   missing = function (x) print(x,"missing") end,
+--- }
+---
+--- -- also test the return value
+--- -- sort of like the way C's ternary "?" is often used
+--- -- but perhaps more like LISP's "cond"
+--- --
+--- print("expect to see 468:  ".. 123 +
+---   switch(2):caseof{
+---     [1] = function(x) return 234 end,
+---     [2] = function(x) return 345 end
+---   })
+---</code>
+---@param c table
+---@return table
+function M.switch(c)
+    local swtbl = {
+        casevar = c,
+        caseof = function(self, code)
+            local f
+            if (self.casevar) then
+                f = code[self.casevar] or code.default
+            else
+                f = code.missing or code.default
+            end
+            if f then
+                if type(f) == "function" then
+                    return f(self.casevar, self)
+                else
+                    error("case " .. tostring(self.casevar) .. " not a function")
+                end
+            end
+        end
+    }
+    return swtbl
 end
 
 -- Capture output of a command using plenary

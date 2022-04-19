@@ -47,7 +47,8 @@ local function init()
         {
             m = {
                 name = "+marks",
-                ["la"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
+                -- ["la"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
+                ["m"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
                 ["lg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
                 ["0"] = {"<Cmd>BookmarksQFList 0<CR>", "List bookmark marks"},
                 ["fd"] = {":delm! | delm A-Z0-9<CR>", "Delete all marks in buffer"}

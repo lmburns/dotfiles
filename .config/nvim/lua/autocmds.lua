@@ -119,6 +119,59 @@ api.nvim_create_autocmd(
 )
 -- ]]] === Spelling ===
 
+-- === Tmux === [[[
+if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
+    -- vim.cmd [[
+    --   augroup rename_tmux
+    --     au!
+    --     au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%(%m%)%(%{expand("%:~")}%)') | endif
+    --     au VimLeave * call system('tmux set-window automatic-rename on')
+    --   augroup END
+    -- ]]
+
+    augroup(
+        "lmb__RenameTmux",
+        {
+            {
+                event = {"BufWinEnter", "BufEnter"},
+                pattern = "*",
+                description = "Automatic rename of tmux window",
+                command = function()
+                    local bufnr = api.nvim_get_current_buf()
+
+                    -- I have TMUX already automatically change title
+                    -- It sets it to titlestring
+                    if vim.bo[bufnr].buftype == "" then
+                        o.titlestring = fn.expand("%:t:S")
+                    elseif vim.bo[bufnr].buftype == "terminal" then
+                        -- FIX: This block is never picked up
+                        -- if b.ft == "toggleterm" then
+                        --     o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
+                        -- else
+                        o.titlestring = "Terminal"
+                    end
+                end
+            },
+            -- {
+            --     event = "FileType",
+            --     pattern = "toggleterm",
+            --     command = function()
+            --         o.titlestring = ("ToggleTerm #%d"):format(vim.b.toggle_number or 1000)
+            --     end
+            -- },
+            {
+                event = "VimLeave",
+                pattern = "*",
+                description = "Turn back on Tmux auto-rename",
+                command = function()
+                    os.execute("tmux set-window automatic-rename on")
+                end
+            }
+        }
+    )
+end
+-- ]]] === Tmux ===
+
 -- === Clear cmd line message === [[[
 do
     local timer
@@ -161,7 +214,8 @@ do
             group = id,
             callback = function()
                 local last_tab = api.nvim_get_current_tabpage()
-                cmd [[tabdo wincmd =]]
+                -- cmd [[tabdo wincmd =]]
+                nvim.ex.tabdo("wincmd =")
                 api.nvim_set_current_tabpage(last_tab)
             end,
             desc = "Equalize windows across tabs"
@@ -349,7 +403,8 @@ augroup(
         {
             event = {"BufEnter", "CursorHold"},
             command = function()
-                local bufnr = tonumber(fn.expand "<abuf>")
+                -- local bufnr = tonumber(fn.expand "<abuf>")
+                local bufnr = api.nvim_get_current_buf()
                 local name = api.nvim_buf_get_name(bufnr)
                 if
                     name == "" or -- Only check for normal files

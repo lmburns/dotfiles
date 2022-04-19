@@ -20,6 +20,7 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 local Path = require("plenary.path")
 
 local b_utils = require("common.utils")
+local map = b_utils.map
 require("dev")
 
 -- local home = vim.loop.os_homedir()
@@ -32,6 +33,18 @@ local set_prompt_to_entry_value = function(prompt_bufnr)
     end
 
     action_state.get_current_picker(prompt_bufnr):reset_prompt(entry.ordinal)
+end
+
+local qf_multi_select = function(prompt_bufnr)
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local num_selections = table.getn(picker:get_multi_selection())
+
+    if num_selections > 1 then
+        actions.send_selected_to_qflist(prompt_bufnr)
+        actions.open_qflist(prompt_bufnr)
+    else
+        actions.file_edit(prompt_bufnr)
+    end
 end
 
 -- ============================ Config ===========================
@@ -92,6 +105,7 @@ require("telescope").setup(
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
                     ["<C-q>"] = actions.send_selected_to_qflist,
+                    ["<M-q>"] = qf_multi_select,
                     ["<C-o>"] = actions_generate.which_key(),
                     ["<C-w>"] = function()
                         vim.api.nvim_input "<c-s-w>"
@@ -123,6 +137,8 @@ require("telescope").setup(
                     ["<ESC>"] = actions.close,
                     ["<C-d>"] = actions.results_scrolling_down,
                     ["<C-u>"] = actions.results_scrolling_up,
+                    ["<C-q>"] = actions.send_selected_to_qflist,
+                    ["<M-q>"] = qf_multi_select,
                     ["<C-o>"] = actions_generate.which_key(
                         {
                             name_width = 20, -- typically leads to smaller floats
@@ -647,6 +663,40 @@ M.cst_grep_cWORD = function()
         search = vim.fn.expand("<cWORD>")
     }
 end
+
+M.keymaps = function(mode)
+    local title =
+        require("dev").switch(mode):caseof {
+        n = function()
+            return "Normal"
+        end,
+        i = function()
+            return "Insert"
+        end,
+        o = function()
+            return "Operator"
+        end,
+        -- Only time a table is used is in visual mode
+        default = function()
+            return "Visual"
+        end
+    }
+
+    if type(mode) == "string" then
+        mode = {mode}
+    end
+
+    builtin.keymaps {
+        modes = mode,
+        show_plug = true,
+        prompt_title = ("Mappings (%s)"):format(title)
+    }
+end
+
+map("n", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
+map("i", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('i')<CR>")
+map("x", "<C-l>i", ":lua require('plugs.telescope').keymaps({'x', 'v', 's'})<CR>")
+map("o", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
 
 -- ========================== Builtin ============================
 builtin.cst_mru = function(opts)

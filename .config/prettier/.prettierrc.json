@@ -1,6 +1,13 @@
 {
   "useTabs": false,
   "printWidth": 100,
-  "semi": false,
-  "singleQuote": true
+  "semi": true,
+  "singleQuote": false,
+  "quoteProps": "as-needed",
+  "endOfLine": "lf",
+  "trailingComma": "es5",
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "jsxSingleQuote": false,
+  "bracketSpacing": true
 }

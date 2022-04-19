@@ -62,14 +62,14 @@ local function apply_fold(bufnr, ranges)
 
             -- FIXME: This moves the cursor one place to the left if typing starts within
             --       1 second of opening the file
-            if mode:match("[ic]+") then
-                -- cmd("norm! l")
-                --     vim.notify("INIT")
-                --     cmd("norm! <C-o>zE")
-                cmd("norm! zE")
-            else
-                cmd("norm! <C-o>zE")
-            end
+            -- if mode:match("[ic]+") then
+            --     -- cmd("norm! l")
+            --     --     vim.notify("INIT")
+            --     --     cmd("norm! <C-o>zE")
+            --     cmd("norm! zE")
+            -- else
+            --     cmd("norm! <C-o>zE")
+            -- end
 
             local fold_cmd = {}
             for _, f in ipairs(ranges) do

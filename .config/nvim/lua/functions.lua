@@ -4,6 +4,7 @@ local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
 local au = utils.au
+local augroup = utils.augroup
 
 -- ============================ Commands ============================== [[[
 
@@ -214,17 +215,6 @@ cmd [[
 --     "n", "<Leader>.", ":call system('tmux select-pane -t :.+')<cr>",
 --     { silent = true }
 -- )
-
--- Automatic rename of tmux window
-if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
-    vim.cmd [[
-      augroup rename_tmux
-        au!
-        au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%:t') | endif
-        au VimLeave * call system('tmux set-window automatic-rename on')
-      augroup END
-    ]]
-end
 
 -- Prevent vim clearing the system clipboard
 vim.cmd [[

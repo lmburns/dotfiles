@@ -96,6 +96,13 @@ function M.setup()
     )
 end
 
+---Bufdelete moves forward, I'm used to moving backwards
+function M.bufdelete()
+    local bufnr = api.nvim_get_current_buf()
+    cmd("bp")
+    require("bufdelete").bufdelete(bufnr)
+end
+
 local function init()
     local wk = require("which-key")
 
@@ -108,6 +115,18 @@ local function init()
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
             ["@"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
             ["#"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"}
+        }
+    )
+
+    -- Builtin
+    wk.register(
+        {
+            ["<Leader>b"] = {
+                n = {":enew<CR>", "New buffer"},
+                -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
+                q = { "<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer" },
+                Q = {":bufdo bd! #<CR>", "Close all buffers"}
+            }
         }
     )
 

@@ -7,21 +7,19 @@ local list = require("dev").list
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
-cmd [[set nocompatible]]
-
 -- map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
 -- map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
 -- Lua filetype detection
 g.do_filetype_lua = 1
 g.did_load_filetypes = 1
--- vim.filetype.add()
+-- vim.filetype.add({...})
 
 -- vim.g.loaded_getscriptPlugin = 1
 -- vim.g.loaded_matchparen = 1
 vim.tbl_map(
     function(p)
-        vim.g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
+        g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end,
     {
         "2html_plugin",
@@ -35,7 +33,6 @@ vim.tbl_map(
         "python_provider",
         "ruby_provider",
         "perl_provider",
-        -- "shada_plugin",
         "rrhelper",
         "tar",
         "tarPlugin",
@@ -110,7 +107,7 @@ o.listchars:append(
 )
 o.showbreak = [[↪ ]] -- "⏎"
 o.showtabline = 2
-o.incsearch = true -- incremential search highlight
+o.incsearch = true -- incremental search highlight
 o.pumheight = 10 -- number of items in popup menu
 
 o.mouse = "a" -- enable mouse all modes
@@ -128,11 +125,11 @@ o.wildoptions:append("pum")
 o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
 o.wildmode = "full"
--- o.wildignorecase = true -- ignore case when completing file names and directories
+o.wildignorecase = true -- ignore case when completing file names and directories
 o.wildcharm = 26 -- equals set wildcharm=<C-Z>, used in the mapping section
 
 o.smartindent = true
--- o.cindent = true
+o.cindent = true
 o.sessionoptions = {"buffers", "curdir", "tabpages", "winsize"}
 
 o.swapfile = false -- no swap files
@@ -141,7 +138,17 @@ o.undoreload = 10000
 o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 fn.mkdir(vim.o.undodir, "p")
-o.shada = list {"'100", "<50", "s100", "/20", "@20", ":1000", "h"}
+o.shada =
+    list {
+    "!", -- save and restore global variables starting with uppercase
+    "'1000", -- previously edited files
+    "<50", -- lines saved in each register
+    "s100", -- maximum size of an item in KiB
+    "/5000", -- search pattern history
+    "@1000", -- input line history
+    ":5000", -- command line history
+    "h" -- disable `hlsearch` on loading
+}
 o.shadafile = fn.stdpath("data") .. "/shada/main.shada"
 
 o.belloff = "all"
@@ -200,7 +207,7 @@ o.completeopt:append({"menuone", "preview"})
 o.complete:append({"kspell"})
 o.complete:remove({"w", "b", "u", "t"})
 o.spelllang = "en_us"
-o.spellsuggest = "10"
+-- o.spellsuggest = "10"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- ]]] === Spell Check ===
 

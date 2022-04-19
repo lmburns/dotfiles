@@ -8,6 +8,7 @@ local augroup = utils.augroup
 
 local coc = require("plugs.coc")
 local map = utils.map
+local command = utils.command
 
 local wk = require("which-key")
 
@@ -280,6 +281,7 @@ end
 -- \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
 -- \ 'window': 'call FloatingFZF()'})
 
+-- TODO: Finish this
 function M.copyq_fzf()
     local opts = {
         name = "copy-clipboard",
@@ -439,16 +441,16 @@ local function init()
   ]]
 
     -- Rg
-    cmd [[
-  command! -bang -nargs=* Rg
-    \ call fzf#vim#grep(
-      \ 'rg --column --line-number --hidden --smart-case '
-        \ . '--no-heading --color=always '
-        \ . shellescape(<q-args>),
-        \ 1,
-        \ {'options':  '--delimiter : --nth 4..'},
-        \ 0)
-  ]]
+  --   cmd [[
+  -- command! -bang -nargs=* Rg
+  --   \ call fzf#vim#grep(
+  --     \ 'rg --column --line-number --hidden --smart-case '
+  --       \ . '--no-heading --color=always '
+  --       \ . shellescape(<q-args>),
+  --       \ 1,
+  --       \ {'options':  '--delimiter : --nth 4..'},
+  --       \ 0)
+  -- ]]
 
     -- Rgf
     cmd [[
@@ -488,26 +490,6 @@ local function init()
       \ 'options': [ '--multi', '--preview', 'cat {}' ]
       \ }))
   ]]
-
-    -- PlugHelp
-    cmd [[
-  function! s:plug_help_sink(line)
-    let dir = g:plugs[a:line].dir
-    for pat in ['doc/*.txt', 'README.md']
-      let match = get(split(globpath(dir, pat), "\n"), 0, '')
-      if len(match)
-        execute 'tabedit' match
-        return
-      endif
-    endfor
-    tabnew
-    execute 'Explore' dir
-  endfunction
-
-  command! PlugHelp call fzf#run(fzf#wrap({
-    \ 'source': sort(keys(g:plugs)),
-    \ 'sink':   function('s:plug_help_sink')}))
-]]
 
     -- Apropos
     cmd [[
@@ -625,14 +607,19 @@ local function init()
             au CmdUndefined FZF,BCommits,History,GFiles,Marks,Buffers,Rg lua require('plugs.fzf')
         aug END
 
+        "com! -nargs=* -bar -bang Maps call fzf#vim#maps(<q-args>, <bang>0)
+        com! -bar -bang Helptags call fzf#vim#helptags(<bang>0)
+
         sil! au! fzf_buffers *
         sil! aug! fzf_buffers
     ]]
 
+    command("Maps", [[call fzf#vim#maps(<q-args>, <bang>0)]], {nargs = "*", bang = true, bar = true})
+
     wk.register(
         {
-            ["f;"] = {[[<Cmd>:History:<CR>]], "History (fzf)"},
-            ["fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
+            ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "History (fzf)"},
+            ["<Leader>fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
             ["<Leader>fg"] = {[[:lua require('common.gittool').root_exe('GFiles')<CR>]], "GFiles Git (fzf)"},
             ["<Leader>ff"] = {
                 [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],

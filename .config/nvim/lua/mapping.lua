@@ -5,7 +5,14 @@ local map = utils.map
 local command = utils.command
 
 -- Legendary needs to be called again in this file for the keybindings to register
-require("legendary").setup()
+-- Not sure why these options only work from here
+require("legendary").setup(
+    ---@diagnostic disable-next-line: redundant-parameter
+    {
+        include_builtin = false,
+        include_legendary_cmds = false
+    }
+)
 local wk = require("which-key")
 
 -- M.mappings = {}
@@ -243,18 +250,6 @@ map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 map("n", "<LocalLeader>z", [[zMzvzz]])
 -- map("n", "<Space><CR>", "zi", { silent = true })
 
--- Buffer
-wk.register(
-    {
-        ["<Leader>b"] = {
-            n = {":enew<CR>", "New buffer"},
-            -- q = { ":bp <Bar> bd! #<CR>", "Close buffer" },
-            q = {":Bdelete<CR>", "Close buffer"},
-            Q = {":bufdo bd! #<CR>", "Close all buffers"}
-        }
-    }
-)
-
 -- Window/Buffer
 -- Grepping for keybindings is more difficult with this
 wk.register(
@@ -294,29 +289,26 @@ wk.register(
     }
 )
 
--- Change vertical to horizontal
-map("n", "<Leader>w-", "<C-w>t<C-w>K")
--- Change horizontal to vertical
-map("n", [[<Leader>w\]], "<C-w>t<C-w>H")
-
 -- perform dot commands over visual blocks
 map("v", ".", ":normal .<CR>")
--- Toggle hlsearch
-map("n", "<Esc><Esc>", "<Esc>:nohlsearch<CR>")
 
 -- Change tabs
 map("n", "<Leader>nt", ":setlocal noexpandtab<CR>")
 map("x", "<Leader>re", ":retab!<CR>")
--- Close quickfix
-map("n", "<Leader>cc", ":cclose<CR>")
--- Close diff
-map("n", "qd", [[:lua require('common.kutils').close_diff()<CR>]])
--- Close quickfix
-map("n", "qc", [[:lua require('common.qf').close()<CR>]])
--- Switch to last buffer
-map("n", "<A-u>", [[:lua require('common.builtin').switch_lastbuf()<CR>]])
--- qf Extension
-map("n", "<Leader>ft", [[<Cmd>lua require('common.qfext').outline()<CR>]])
+
+wk.register(
+    {
+        -- Change vertical to horizontal
+        ["<Leader>w-"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
+        ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
+        ["<Esc><Esc>"] = {"<Esc>:nohlsearch<CR>", "Disable hlsearch"},
+        ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
+        ["<Leader>cc"] = {":cclose<CR>", "Close quickfix (cclose)"},
+        ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
+        ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
+        ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline()<CR>]], "Quickfix function outline"}
+    }
+)
 
 -- Keep focused in center of screen when searching
 -- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })

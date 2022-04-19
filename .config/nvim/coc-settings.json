@@ -417,8 +417,8 @@
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "javascript.format.semicolons": "remove",
-  "typescript.format.semicolons": "remove"
+  // "javascript.format.semicolons": "remove",
+  // "typescript.format.semicolons": "remove"
 
   // "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
   // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
