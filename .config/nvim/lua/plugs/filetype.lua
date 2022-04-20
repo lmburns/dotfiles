@@ -41,7 +41,6 @@ function M.setup()
 
             ["pdf"] = function()
               b.filetype = "pdf"
-              -- Open in PDF viewer (Skim.app) automatically
               fn.jobstart("zathura " .. "\"" .. fn.expand("%") .. "\"")
             end,
 

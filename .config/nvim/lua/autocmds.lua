@@ -13,15 +13,28 @@ augroup(
     {
         {
             event = "BufRead",
+            pattern = "*",
+            once = false, -- want this to run on each tab I open
             command = function()
-                -- local ft = vim.api.nvim_get_option_value("filetype", {})
+                local types =
+                    _t(
+                    {
+                        "nofile",
+                        "fugitive",
+                        "gitcommit",
+                        "gitrebase",
+                        "commit",
+                        "rebase"
+                    }
+                )
+                if fn.expand("%") == "" or types:contains(b.filetype) then
+                    return
+                end
                 local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
                 if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
                     api.nvim_win_set_cursor(0, {row, 0})
                 end
-            end,
-            pattern = "*",
-            once = false
+            end
         }
     }
 )
@@ -44,7 +57,7 @@ do
 
                 -- Allows a shared statusline
                 if b.ft ~= "fzf" then
-                    vim.opt_local.laststatus = 3
+                    o.laststatus = 3
                 end
             end,
             group = create_augroup("lmb__FormatOptions"),
@@ -307,9 +320,9 @@ au(
     }
 )
 
-cmd [[hi def link cmTitle vimCommentTitle]]
-cmd [[hi def link myTodo Todo]]
--- cmd [[ hi def link cmLineComment Comment ]]
+ex.hi("def link cmTitle vimCommentTitle")
+-- ex.hi("def link myTodo Todo")
+-- ex.hi("def link cmLineComment Comment")
 
 -- ]]] === Custom syntax groups ===
 
@@ -403,7 +416,7 @@ augroup(
     "lmb__AutoReloadFile",
     {
         {
-            event = {"BufEnter", "CursorHold"},
+            event = {"BufEnter", "CursorHold", "FocusGained"},
             command = function()
                 -- local bufnr = tonumber(fn.expand "<abuf>")
                 local bufnr = api.nvim_get_current_buf()
@@ -436,25 +449,26 @@ augroup(
 --   - Ignore quickfix window
 --   - Only when searching in cmdline or in insert mode
 
+-- FIX: Rnu not working on startup until insert mode (focus not working either)
 augroup(
     "RnuColumn",
     {
         {
-            event = {"BufLeave", "FocusLost", "InsertEnter", "WinLeave"},
+            event = {"FocusLost", "InsertEnter"},
             pattern = "*",
             command = function()
                 require("common.rnu").focus(false)
             end
         },
         {
-            event = {"BufEnter", "FocusGained", "InsertLeave", "WinEnter"},
+            event = {"FocusGained", "InsertLeave"},
             pattern = "*",
             command = function()
                 require("common.rnu").focus(true)
             end
         },
         {
-            event = "WinEnter",
+            event = {"WinEnter", "BufEnter"},
             pattern = "*",
             command = function()
                 require("common.rnu").win_enter()

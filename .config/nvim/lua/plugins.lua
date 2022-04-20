@@ -99,7 +99,7 @@ return packer.startup(
             use({"lewis6991/impatient.nvim"})
 
             -- Faster version of filetype.vim
-            use({"nathom/filetype.nvim"})
+            use({"nathom/filetype.nvim", config = conf("plugs.filetype")})
 
             -- ============================ Vim Library =========================== [[[
             use({"tpope/vim-repeat"})
@@ -107,14 +107,10 @@ return packer.startup(
             -- ]]] === Vim Library ===
 
             -- ============================ Lua Library =========================== [[[
-            use(
-                {
-                    "norcalli/nvim.lua",
-                    desc = "Shortcut `nvim` object"
-                }
-            )
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
+            use({"norcalli/nvim.lua"})
+            use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
             use({"kyazdani42/nvim-web-devicons"})
 
@@ -254,8 +250,8 @@ return packer.startup(
                 {
                     "arsham/listish.nvim",
                     requires = {
-                        {"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}},
-                        {"norcalli/nvim.lua"}
+                        "arsham/arshlib.nvim",
+                        "norcalli/nvim.lua"
                     },
                     config = conf("listish")
                 }
@@ -342,6 +338,7 @@ return packer.startup(
             -- Needed for some themes
             use({"rktjmp/lush.nvim"})
 
+            use({"eddyekofo94/gruvbox-flat.nvim"})
             use({"sainnhe/gruvbox-material"})
             use({"sainnhe/edge"})
             use({"sainnhe/everforest"})
@@ -364,11 +361,14 @@ return packer.startup(
             use({"EdenEast/nightfox.nvim"})
             use({"catppuccin/nvim", as = "catppuccin"})
             use({"marko-cerovac/material.nvim"})
-            -- use({"ghifarit53/daycula-vim"})
+            use({"ghifarit53/daycula-vim"})
+            use({"rmehri01/onenord.nvim"})
+            use({"numToStr/Sakura.nvim"})
+            -- use({ "Mofiqul/vscode.nvim" })
+            -- use({"AlessandroYorba/Alduin"})
             -- use({ "olimorris/onedarkpro.nvim" })
             -- use({ "kaicataldo/material.vim" })
             -- use({ "tiagovla/tokyodark.nvim" })
-            -- use({ "Mofiqul/vscode.nvim" })
             -- use({ 'projekt0n/github-nvim-theme' })
 
             use({"lmburns/kimbox", config = conf("plugs.kimbox")})
@@ -457,6 +457,7 @@ return packer.startup(
                 }
             )
 
+            -- use({"vijaymarupudi/nvim-fzf"})
             -- use({ "lotabout/skim", run = "./install --bin" })
             -- ]]] === Fzf ===
 
@@ -528,24 +529,27 @@ return packer.startup(
 
             -- Similar to vim-sandwhich (I kind of use both)
             -- ur4ltz/surround.nvim
-            use(
-                {
-                    "tpope/vim-surround",
-                    setup = [[vim.g.surround_no_mappings = 1]],
-                    keys = {
-                        {"n", "ds"},
-                        {"n", "cs"},
-                        {"n", "cS"},
-                        {"n", "ys"},
-                        {"n", "yS"},
-                        {"n", "yss"},
-                        {"n", "ygs"},
-                        {"x", "S"},
-                        {"x", "gS"}
-                    },
-                    config = conf("surround")
-                }
-            )
+
+            -- b = (), B = {}, r = [], a = <>
+            -- use(
+            --     {
+            --         "tpope/vim-surround",
+            --         setup = [[vim.g.surround_no_mappings = 1]],
+            --         keys = {
+            --             {"n", "ds"},
+            --             {"n", "cs"},
+            --             {"n", "cS"},
+            --             {"n", "ys"},
+            --             {"n", "ysW"},
+            --             {"n", "yS"},
+            --             {"n", "yss"},
+            --             {"n", "ygs"},
+            --             {"x", "S"},
+            --             {"x", "gS"}
+            --         },
+            --         config = conf("surround")
+            --     }
+            -- )
 
             use(
                 {
@@ -782,39 +786,44 @@ return packer.startup(
             ) -- ]]] === Wilder ===
 
             -- ========================= Syntax-Highlighting ======================= [[[
-            g.polyglot_disabled = {
-                "markdown",
-                "rustpeg",
-                "lf",
-                "ron",
-                "cmake",
-                "css",
-                "d",
-                "dart",
-                "dockerfile",
-                "go",
-                "gomod",
-                "html",
-                "java",
-                -- "json",
-                -- "kotlin",
-                "lua",
-                "make",
-                "python",
-                "query",
-                "ruby",
-                "rust",
-                "scss",
-                -- "teal",
-                -- "tsx",
-                -- "vue",
-                "zig",
-                "sensible"
-                -- "ftdetect",
-                -- "typescript",
-            }
-            -- TODO: Change back when merged
-            use({"nyuszika7h/vim-polyglot"})
+            use(
+                {
+                    "sheerun/vim-polyglot",
+                    setup = function()
+                        g.polyglot_disabled = {
+                            "ftdetect",
+                            -- "sensible",
+                            "markdown",
+                            "rustpeg",
+                            "lf",
+                            "ron",
+                            "cmake",
+                            "css",
+                            "d",
+                            "dart",
+                            "dockerfile",
+                            "go",
+                            "gomod",
+                            "html",
+                            "java",
+                            -- "json",
+                            -- "kotlin",
+                            -- "lua",
+                            "make",
+                            "python",
+                            "query",
+                            "ruby",
+                            "rust",
+                            "scss",
+                            -- "teal",
+                            -- "tsx",
+                            -- "vue",
+                            "zig"
+                            -- "typescript",
+                        }
+                    end
+                }
+            )
 
             -- use({ "wfxr/dockerfile.vim" })
             use({"rhysd/vim-rustpeg", ft = "rustpeg"})
@@ -1053,7 +1062,10 @@ return packer.startup(
                             after = {"telescope.nvim", "sqlite.lua"},
                             config = [[require("telescope").load_extension("smart_history")]],
                             run = function()
-                                os.execute("mkdir -p" .. fn.stdpath("data") .. "/databases/")
+                                local path = Path:new(fn.stdpath("data") .. "/databases/")
+                                if not path:exists() then
+                                    path:mkdir()
+                                end
                             end
                         },
                         {
@@ -1171,6 +1183,14 @@ return packer.startup(
                 }
             )
             -- ]]] === Git ===
+
+            use(
+                {
+                    ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
+                    config = conf("plugs.nvim-reload"),
+                    opt = true
+                }
+            )
 
             use({"rcarriga/nvim-notify", config = conf("notify")})
         end

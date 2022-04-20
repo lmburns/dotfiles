@@ -246,7 +246,7 @@ function M.with_highlight(c)
         foend = fn.foldclosedend(".")
     end
 
-    cmd("hi MyFoldHighlight guibg=#5e452b")
+    ex.hi("MyFoldHighlight guibg=#5e452b")
 
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then

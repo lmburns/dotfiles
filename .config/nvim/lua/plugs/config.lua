@@ -71,7 +71,7 @@ function M.listish()
                 open = "qo",
                 on_cursor = "qa", -- add current position to the list
                 add_note = "qn", -- add current position with your note to the list
-                clear = "<leader>qd", -- clear all items
+                clear = "qd", -- clear all items
                 close = "<leader>qc",
                 next = "]q",
                 prev = "[q"
@@ -157,7 +157,7 @@ end
 
 -- =========================== open-browser ===========================
 function M.open_browser()
-    map("n", "<LocalLeader>o", "<Plug>(openbrowser-open)")
+    map("n", "gX", "<Plug>(openbrowser-open)")
 end
 
 -- =============================== Suda ===============================
@@ -554,15 +554,15 @@ end
 
 -- ============================= Surround =============================
 function M.surround()
-    map("n", "ds", "<Plug>Dsurround", {noremap = false})
-    map("n", "cs", "<Plug>Csurround", {noremap = false})
-    map("n", "cS", "<Plug>CSurround", {noremap = false})
-    map("n", "ys", "<Plug>Ysurround", {noremap = false})
-    map("n", "yS", "<Plug>YSurround", {noremap = false})
-    map("n", "yss", "<Plug>Yssurround", {noremap = false})
-    map("n", "ygs", "<Plug>YSsurround", {noremap = false})
-    map("x", "S", "<Plug>VSurround", {noremap = false})
-    map("x", "gS", "<Plug>VgSurround", {noremap = false})
+    map("n", "ds", "<Plug>Dsurround")
+    map("n", "cs", "<Plug>Csurround")
+    map("n", "cS", "<Plug>CSurround")
+    map("n", "ys", "<Plug>Ysurround")
+    map("n", "yS", "<Plug>YSurround")
+    map("n", "yss", "<Plug>Yssurround")
+    map("n", "ygs", "<Plug>YSsurround")
+    map("x", "S", "<Plug>VSurround")
+    map("x", "gS", "<Plug>VgSurround")
 end
 
 -- ============================== LazyGit =============================
@@ -593,22 +593,18 @@ end
 -- ============================ Sandwhich =============================
 function M.sandwhich()
     -- Sandwhich
-    -- sdb = surrounding automatic
-    -- saiw( == ysiw(
-    -- sd( == ds(
-    -- sr(" == cs("
+    -- dss = automatic deletion
+    -- css = automatic changing
 
-    -- runtime macros/sandwich/keymap/surround.vim
+    ex.runtime("macros/sandwich/keymap/surround.vim")
 
-    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)", {noremap = false})
-    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)", {noremap = false})
-    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)", {noremap = false})
-    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)", {noremap = false})
-    map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)", {noremap = false})
-    map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)", {noremap = false})
+    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
+    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
+    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
+    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
+    map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
+    map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
 
-    -- Why does noremap need to be used here?
-    map("n", "<Leader>ci", "cs`*", {noremap = false})
     map("n", "<Leader>o", "ysiw", {noremap = false})
     map("n", "mlw", "yss`", {noremap = false})
 end

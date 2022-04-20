@@ -299,8 +299,6 @@ M.vscode = function()
     g.vscode_style = "dark"
     g.vscode_transparent = 0
     g.vscode_italic_comment = 0
-
-    cmd [[colorscheme vscode]]
 end
 
 -- === OneDark ===
@@ -344,6 +342,32 @@ M.onedark = function()
     -- od.load()
 end
 
+-- === OneNord ===
+M.onenord = function()
+    require("onenord").setup(
+        {
+            theme = "dark", -- "dark" or "light". Alternatively, remove the option and set vim.o.background instead
+            borders = true, -- Split window borders
+            fade_nc = false, -- Fade non-current windows, making them more distinguishable
+            styles = {
+                comments = "NONE", -- Style that is applied to comments: see `highlight-args` for options
+                strings = "NONE", -- Style that is applied to strings: see `highlight-args` for options
+                keywords = "NONE", -- Style that is applied to keywords: see `highlight-args` for options
+                functions = "bold", -- Style that is applied to functions: see `highlight-args` for options
+                variables = "NONE", -- Style that is applied to variables: see `highlight-args` for options
+                diagnostics = "underline" -- Style that is applied to diagnostics: see `highlight-args` for options
+            },
+            disable = {
+                background = false, -- Disable setting the background color
+                cursorline = false, -- Disable the cursorline
+                eob_lines = true -- Hide the end-of-buffer lines
+            },
+            custom_highlights = {}, -- Overwrite default highlight groups
+            custom_colors = {} -- Overwrite default colors
+        }
+    )
+end
+
 -- === NightFly ===
 M.nightfly = function()
     g.nightflyItalics = 0
@@ -381,18 +405,20 @@ local function init()
     M.catppuccin()
     M.material()
     M.nightfox()
-    -- M.edge()
+    M.edge()
+    M.onenord()
     -- M.vscode()
 
     require("kimbox").load()
-    -- cmd [[colorscheme catppuccin]]
-    -- cmd [[colorscheme kanagawa]]
-    -- cmd [[colorscheme material]]
-    -- cmd [[colorscheme tokyonight]]
-    -- cmd [[colorscheme everforest]]
-    -- cmd [[colorscheme jellybeans-nvim]]
-    -- cmd [[colorscheme spaceduck]]
-    -- cmd [[colorscheme gruvbox-material]]
+    -- ex.colorscheme("catppuccin")
+    -- ex.colorscheme("kanagawa")
+    -- ex.colorscheme("material")
+    -- ex.colorscheme("tokyonight")
+    -- ex.colorscheme("jellybeans-nvim")
+    -- ex.colorscheme("onenord")
+    -- ex.colorscheme("everforest")
+    -- ex.colorscheme("spaceduck")
+    -- ex.colorscheme("gruvbox-material")
 
     -- cmd [[hi VertColumn guibg=#D9AE80]]
     -- cmd [[hi VertSplit guibg=#7E602C]]

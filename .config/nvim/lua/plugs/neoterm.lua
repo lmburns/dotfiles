@@ -3,7 +3,6 @@ local terminal = utils.prequire("toggleterm")
 
 local M = {}
 
-local remap = utils.remap
 local map = utils.map
 local command = utils.command
 
@@ -73,7 +72,7 @@ local function ft_repl_cmd(ft)
             return
         end
         for _, c in ipairs(t) do
-            if vim.fn.executable(c:match("[^ ]+")) == 1 then
+            if fn.executable(c:match("[^ ]+")) == 1 then
                 return c
             end
         end
@@ -105,16 +104,16 @@ local function term_exec(cmd, id)
     return terminal.exec(cmd, id)
 end
 
-remap(
-    {"n"},
+map(
+    "n",
     "gxx",
     function()
-        return term_exec(vim.fn.getline("."))
+        return term_exec(fn.getline("."))
     end
 )
 
-remap(
-    {"v"},
+map(
+    "v",
     "gx",
     function()
         local mode = vim.fn.mode()
@@ -138,8 +137,7 @@ command(
 -- ====================================================================
 
 function M.set_terminal_keymaps()
-    local bmap = require("common.utils").bmap
-    bmap(0, "t", "<Esc>", [[<C-\><C-n>]])
+    map(0, "t", "<Esc>", [[<C-\><C-n>]])
     -- bmap(0, "t", "jk", [[<C-\><C-n>]])
     -- bmap(0, "t", "kj", [[<C-\><C-n>]])
     -- bmap(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
@@ -148,10 +146,18 @@ function M.set_terminal_keymaps()
     -- bmap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
 end
 
-cmd("autocmd! TermOpen term://*toggleterm#* lua require'plugs.neoterm'.set_terminal_keymaps()")
+api.nvim_create_autocmd(
+    "TermOpen",
+    {
+        pattern = "term://*toggleterm#*",
+        callback = function()
+            require("plugs.neoterm").set_terminal_keymaps()
+        end
+    }
+)
 
--- Sample on how a command can be rand
--- require'toggleterm'.exec("git push",    <count>, 12)
+-- Sample on how a command can be ran
+-- require'toggleterm'.exec("git push", <count>, 12)
 
 function neoterm(cmd, id)
     if not id or id < 1 then

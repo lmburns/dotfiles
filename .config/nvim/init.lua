@@ -13,8 +13,8 @@ if ok then
 end
 
 local utils = require("common.utils")
-local map = utils.map
 local augroup = utils.augroup
+-- local map = utils.map
 -- local au = utils.au
 -- local create_augroup = utils.create_augroup
 
@@ -22,7 +22,6 @@ local augroup = utils.augroup
 require("dev")
 require("options")
 
--- Plugins need to be compiled each time to work it seems
 local conf_dir = fn.stdpath("config")
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     local packer_loader_complete = [[customlist,v:lua.require'packer'.loader_complete]]
@@ -99,11 +98,6 @@ a.async_void(
 )()
 -- ]]]
 
--- cmd [[
---     filetype off
---     let g:did_load_filetypes = 0
--- ]]
-
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
 
@@ -178,7 +172,11 @@ vim.schedule(
                         {
                             event = "BufWritePost",
                             pattern = "*/plugins.lua",
-                            command = [[so <afile> | PackerCompile]]
+                            command = function()
+                                ex.source("<afile>")
+                                ex.PackerCompile()
+                            end,
+                            description = "Source plugins file"
                         }
                     }
                 )

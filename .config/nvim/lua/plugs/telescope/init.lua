@@ -50,8 +50,6 @@ end
 -- ============================ Config ===========================
 
 require("telescope").setup(
-    -- Why is this on?
-    ---@diagnostic disable-next-line: redundant-parameter
     {
         defaults = {
             history = {
@@ -65,7 +63,7 @@ require("telescope").setup(
                 treesitter = true,
                 filesize_hook = function(filepath, bufnr, opts)
                     local path = Path:new(filepath)
-                    local height = vim.api.nvim_win_get_height(opts.winid)
+                    local height = api.nvim_win_get_height(opts.winid)
                     local lines = vim.split(path:head(height), "[\r]?\n")
                     api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
                 end
@@ -90,13 +88,12 @@ require("telescope").setup(
             mappings = {
                 i = {
                     ["<C-x>"] = false,
-                    -- ["<C-j>"] = actions.move_selection_next,
-                    -- ["<C-k>"] = actions.move_selection_previous,
-
+                    ["<C-Left>"] = actions.move_selection_next,
+                    ["<C-Right>"] = actions.move_selection_previous,
+                    -- ["<C-g>"] = actions.add_selection,
+                    ["<M-a>"] = actions.select_all,
                     ["<C-k>"] = actions.cycle_history_next,
                     ["<C-j>"] = actions.cycle_history_prev,
-                    ["<C-g>s"] = actions.select_all,
-                    ["<C-g>a"] = actions.add_selection,
                     ["<C-m>"] = action_layout.toggle_mirror,
                     ["<C-t>"] = action_layout.toggle_preview,
                     ["<M-p>"] = action_layout.toggle_prompt_position,
@@ -105,11 +102,13 @@ require("telescope").setup(
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
                     ["<C-q>"] = actions.send_selected_to_qflist,
+                    ["<M-,>"] = actions.smart_send_to_qflist,
                     ["<M-q>"] = qf_multi_select,
                     ["<C-o>"] = actions_generate.which_key(),
-                    ["<C-w>"] = function()
-                        vim.api.nvim_input "<c-s-w>"
-                    end,
+                    -- ["<C-w>"] = function()
+                    --     vim.api.nvim_input "<c-s-w>"
+                    -- end,
+
                     -- Single selection hop
                     ["<C-h>"] = function(prompt_bufnr)
                         telescope.extensions.hop.hop(prompt_bufnr)
@@ -139,6 +138,7 @@ require("telescope").setup(
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<C-q>"] = actions.send_selected_to_qflist,
                     ["<M-q>"] = qf_multi_select,
+                    ["<M-,>"] = actions.smart_send_to_qflist,
                     ["<C-o>"] = actions_generate.which_key(
                         {
                             name_width = 20, -- typically leads to smaller floats

@@ -9,6 +9,35 @@ local augroup = utils.augroup
 -- ============================ Commands ============================== [[[
 
 command(
+    "NvimRestart",
+    function()
+        if not pcall(require, "nvim-reload") then
+            require("packer").loader("nvim-reload")
+        end
+        local reload = R("plugs.nvim-reload")
+        -- R("nvim-reload").Restart()
+        reload.Restart()
+    end,
+    {nargs = "*"}
+)
+
+command(
+    "Grep",
+    function(tbl)
+        api.nvim_exec(([[noautocmd grep! %s | redraw! | copen]]):format(tbl.args), true)
+    end,
+    {nargs = "+", complete = "file"}
+)
+
+command(
+    "LGrep",
+    function(tbl)
+        api.nvim_exec(([[noautocmd lgrep! %s | redraw! | lopen]]):format(tbl.args), true)
+    end,
+    {nargs = "+", complete = "file"}
+)
+
+command(
     "Jumps",
     function()
         require("common.builtin").jumps2qf()

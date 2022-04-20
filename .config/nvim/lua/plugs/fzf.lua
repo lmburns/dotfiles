@@ -12,11 +12,11 @@ local command = utils.command
 
 local wk = require("which-key")
 
-local default_preview_window, default_action
+local default_preview_window
 
 function M.fzf(sources, sinkfunc)
-    local fzf_run = vim.fn["fzf#run"]
-    local fzf_wrap = vim.fn["fzf#wrap"]
+    local fzf_run = fn["fzf#run"]
+    local fzf_wrap = fn["fzf#wrap"]
 
     local wrapped =
         fzf_wrap(
@@ -39,7 +39,6 @@ end
 
 local function do_action(expect, path, bufnr, lnum, col)
     local action = vim.g.fzf_action or {}
-    action = vim.tbl_extend("keep", action, default_action)
     local jump_cmd = action[expect] or "edit"
     local bi
     if jump_cmd == "drop" then
@@ -192,6 +191,7 @@ function M.files()
         local g1, _, g3 = unpack(vim.split(lines[2], "\t"))
         local path = g1:match("^(.*):%d+$")
         local bufnr = tonumber(g3:match("%[(%d+)%]$"))
+
         do_action(expect, path, bufnr)
     end
     fn.FzfWrapper(opts)
@@ -246,9 +246,7 @@ function M.outline()
     opts.name = "outline"
     opts.source = format_outline(syms)
     opts["sink*"] = function(lines)
-        p(lines)
         if #lines ~= 2 then
-            vim.notify("return")
             return
         end
         local expect = lines[1]
@@ -297,32 +295,86 @@ end
 -- \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
 -- \ 'window': 'call FloatingFZF()'})
 
+function M.copyq()
+    -- inoremap <expr> <a-.> fzf#vim#complete({
+    --   \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
+    --   \ 'options': '--no-border',
+    --   \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+    --   \ 'window': 'call FloatingFZF()'})
+
+    local fzf_complete = fn["fzf#vim#complete"]
+    local opts = {
+        -- source = [[copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac]],
+        source = (function()
+            local ret = {}
+            local j =
+                Job:new(
+                {
+                    command = "copyq",
+                    args = {
+                        "eval",
+                        "--",
+                        [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]],
+                        "| tac"
+                    },
+                    enable_recording = true,
+                    on_stdout = vim.schedule_wrap(
+                        function(_, data)
+                            table.insert(ret, data)
+                        end
+                    )
+                }
+            )
+
+            j:sync()
+
+            -- for _, line in pairs(j) do
+            --     line = line:gsub("\0", "")
+            --     table.insert(ret, line)
+            -- end
+
+            return table.concat(j:result(), " ")
+        end)(),
+        options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"},
+        reducer = function(line)
+            p(line)
+            -- return fn.substitute(line[0], [[^ *[0-9]\+ ]], '', '')
+        end
+    }
+
+    fzf_complete(opts)
+end
+
+-- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
+
 -- TODO: Finish this
 function M.copyq_fzf()
     local opts = {
-        name = "copy-clipboard",
-        source = require("plenary.job"):new(
+        options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
+    }
+
+    opts.name = "copy-clipboard"
+    opts.source =
+        (function()
+        -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
+        local res = {}
+        local val =
+            Job:new(
             {
                 command = "copyq",
                 args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
                 enable_recording = true
             }
-        ):sync(),
-        -- source = (function()
-        --     -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
-        --     local val =
-        --         require("plenary.job"):new(
-        --         {
-        --             command = "copyq",
-        --             args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
-        --             enable_recording = true
-        --         }
-        --     ):sync()
-        --
-        --     return val
-        -- end)(),
-        options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
-    }
+        ):sync()
+
+        for _, item in pairs(val) do
+            if item ~= "" then
+                table.insert(res, item)
+            end
+        end
+
+        return res
+    end)()
 
     fn.FzfWrapper(opts)
 end
@@ -539,12 +591,6 @@ local function init()
           \ '--preview', 'MANPAGER=cat MANWIDTH='.(&columns/2-4).' man {}']}))
 ]]
 
-    -- Tags
-    map("n", "<Leader>t", ":Tags<CR>", {silent = true})
-    map("n", "<A-t>", ":BTags<CR>", {silent = true})
-
-    map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)", {noremap = false})
-
     -- Word completion popup
     cmd [[
     inoremap <expr> <C-x><C-w> fzf#vim#complete#word({
@@ -702,6 +748,12 @@ local function init()
     -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
     -- map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
+
+    -- Tags
+    -- map("n", "<Leader>t", ":Tags<CR>", {silent = true})
+    map("n", "<A-t>", ":BTags<CR>", {silent = true})
+
+    map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)", {noremap = false})
 
     map("n", "<C-l>m", "<Plug>(fzf-maps-n)")
     map("x", "<C-l>m", "<Plug>(fzf-maps-x)")

@@ -13,7 +13,10 @@ g.maplocalleader = [[,]]
 -- Lua filetype detection
 g.do_filetype_lua = 1
 g.did_load_filetypes = 1
--- vim.filetype.add({...})
+-- vim.filetype.add({
+--     extension = {},
+--     filename = {}
+-- })
 
 -- vim.g.loaded_getscriptPlugin = 1
 -- vim.g.loaded_matchparen = 1
@@ -22,6 +25,7 @@ vim.tbl_map(
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end,
     {
+        "fzf",
         "2html_plugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
@@ -43,7 +47,9 @@ vim.tbl_map(
     }
 )
 
-g.c_syntax_for_h = 1
+-- We do this to prevent the loading of the system fzf.vim plugin. This is
+-- present at least on Arch/Manjaro/Void
+api.nvim_command('set rtp-=/usr/share/vim/vimfiles')
 
 -- Base
 vim.env.LANG = "en_US.UTF-8"
@@ -58,7 +64,7 @@ o.fileformats = list {"unix", "mac", "dos"}
 -- Settings
 o.path:append("**")
 o.number = true
--- o.relativenumber = true
+o.relativenumber = true
 o.cursorline = true
 o.cursorlineopt = list {"number", "screenline"}
 o.clipboard:append("unnamedplus")
@@ -120,6 +126,7 @@ o.wrap = true
 o.lazyredraw = true
 o.cmdheight = 2
 o.matchtime = 2
+-- o.autoread = true
 
 o.wildoptions:append("pum")
 o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
@@ -191,8 +198,8 @@ o.guicursor =
 o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
 if fn.exists("g:neovide") then
-    map("n", "<D-v>", '"+p')
-    map("i", "<D-v>", "<C-r>+")
+    map("n", "<C-p>", '"+p')
+    map("i", "<C-p>", "<C-r>+")
 end
 
 g.neovide_input_use_logo = true
@@ -240,8 +247,8 @@ g.clipboard = clipboard
 -- =============== Commands ================ [[[
 -- filetype on
 -- filetype plugin on
+-- filetype plugin indent on
 cmd [[
-  filetype plugin indent on
   syntax enable
 ]]
 -- ]]] === Commands ===

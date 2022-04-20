@@ -336,7 +336,7 @@ wk.register(
 
 -- ==================== Other =================== [[[
 
-map("n", "<Leader>jj", "<Cmd>Jumps<CR>")
+map("n", "<Leader>jj", "Jumps", {cmd = true})
 
 wk.register(
     {
@@ -350,7 +350,7 @@ wk.register(
                 v = {":e $VIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"}
             },
-            ["sv"] = {":so $VIMRC<CR>", "Source neovim config"}
+            ["sv"] = {":luafile $VIMRC<CR>", "Source neovim config"}
         }
     }
 )

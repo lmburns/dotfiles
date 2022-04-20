@@ -26,6 +26,8 @@ fmt = string.format
 
 dev = require("dev")
 List = require("plenary.collections.py_list")
+Path = require("plenary.path")
+Job = require("plenary.job")
 async = require("plenary.async")
 a = require("plenary.async_lib")
 nvim = require("nvim")
@@ -52,24 +54,6 @@ end
 function M.create_augroup(name, clear)
     clear = clear == nil and true or clear
     return api.nvim_create_augroup(name, {clear = clear})
-end
-
----Create an autocmd with vim commands
----
----This allows very easy transition from vim commands
-function M.autocmd(group, cmds, clear)
-    clear = clear == nil and false or clear
-    if type(cmds) == "string" then
-        cmds = {cmds}
-    end
-    cmd("augroup " .. group)
-    if clear then
-        cmd [[au!]]
-    end
-    for _, c in ipairs(cmds) do
-        cmd("autocmd " .. c)
-    end
-    cmd [[augroup END]]
 end
 
 ---Create an autocmd; returns the group ID
@@ -137,14 +121,42 @@ M.augroup = function(name, commands)
     return id
 end
 
+--- @class MapArgs
+--- @field unique boolean
+--- @field expr boolean
+--- @field script boolean
+--- @field nowait boolean
+--- @field silent boolean
+--- @field buffer boolean|number
+--- @field replace_keycodes boolean
+--- @field remap boolean
+--- @field callback function
+--- @field cmd boolean
+
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
 ---@param bufnr? number: Optional buffer id
 ---@param modes string|table: Modes the keymapping should be bound
 ---@param lhs string: Keybinding that is mapped
----@param rhs string|function: String or lua function that is bound ot a key
----@param opts table: Options given to keybindings
+---@param rhs string|function: String or Lua function that will be bound to a key
+---@param opts MapArgs: Options given to keybindings
+---
+--- See: **:map-arguments**
+---
+--- ## Options
+--- - `unique`: (boolean, default false) Mapping will fail if it isn't unique
+--- - `expr`: (boolean, default false) Inserts expression into the window
+--- - `script`: (boolean, default false) Mapping is local to a script (`<SID>`)
+--- - `nowait`: (boolean, default false) Do not wait for keys to be pressed
+--- - `silent`: (boolean, default false) Do not echo command output in CmdLine window
+--- - `buffer`: (boolean|number, default nil) Make the mapping specific to a buffer
+---
+--- - `replace_keycodes`: (boolean, default true) When this and `expr` are true, termcodes are replaced
+--- - `remap`: (boolean, default false) Make the mapping recursive. Inverse of `noremap`
+--- - `callback`: (function, default nil) Use a Lua function to bind to a key
+---
+--- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
 M.map = function(bufnr, modes, lhs, rhs, opts)
     -- If it is a buffer mapping
     if type(bufnr) ~= "number" then
@@ -155,34 +167,71 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         bufnr = nil
     end
 
-    opts = opts or {}
-    opts.noremap = opts.noremap == nil and true or opts.noremap
+    vim.validate {
+        bufnr = {bufnr, {"n", "nil"}},
+        mode = {modes, {"s", "t"}},
+        lhs = {lhs, "s"},
+        rhs = {rhs, {"s", "f"}},
+        opts = {opts, "t", true}
+    }
 
-    if type(modes) == "string" then
-        modes = {modes}
+    opts = vim.deepcopy(opts) or {}
+    modes = type(modes) == "string" and {modes} or modes
+    if opts.remap == nil then
+        opts.noremap = true
+    else
+        -- remaps behavior is opposite of noremap option
+        opts.noremap = not opts.remap
+        opts.remap = nil
     end
 
-    if type(rhs) == "function" then
-        if bufnr ~= nil and opts.bufnr == nil then
-            opts.bufnr = bufnr
+    rhs = (function()
+        if type(rhs) == "function" then
+            if opts.expr then
+                local og_rhs = rhs
+                rhs = function()
+                    local res = og_rhs()
+                    if res == nil then
+                        return ""
+                    elseif opts.replace_keycodes ~= false then
+                        return M.t(res, true, true, true)
+                    else
+                        return res
+                    end
+                end
+            end
+
+            opts.callback = rhs
+            rhs = ""
+        else
+            if rhs:lower():sub(1, #"<plug>") == "<plug>" then
+                opts.noremap = false
+            end
+
+            if opts.cmd then
+                opts.cmd = nil
+                rhs = ("<Cmd>%s<CR>"):format(rhs)
+            end
         end
 
+        opts.replace_keycodes = nil
+        return rhs
+    end)()
+
+    bufnr = (function()
+        local b = bufnr == nil and opts.buffer or bufnr
+        b = b == true and 0 or b
+        opts.buffer = nil
+        return b
+    end)()
+
+    if bufnr ~= nil then
         for _, mode in ipairs(modes) do
-            vim.keymap.set(mode, lhs, rhs, opts)
+            api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
         end
     else
-        if rhs:lower():sub(1, #"<plug>") == "<plug>" then
-            opts.noremap = false
-        end
-
-        if bufnr ~= nil then
-            for _, mode in ipairs(modes) do
-                api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
-            end
-        else
-            for _, mode in ipairs(modes) do
-                api.nvim_set_keymap(mode, lhs, rhs, opts)
-            end
+        for _, mode in ipairs(modes) do
+            api.nvim_set_keymap(mode, lhs, rhs, opts)
         end
     end
 end
@@ -310,7 +359,7 @@ M.notify = function(options)
 end
 
 M.preserve = function(arguments)
-    local arguments = fmt("keepjumps keeppatterns execute %q", arguments)
+    arguments = fmt("keepjumps keeppatterns execute %q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     -- nvim.ex.keepjumps(nvim.ex.keeppatterns())
     api.nvim_command(arguments)
@@ -375,10 +424,10 @@ M.colors = function(filter)
 end
 
 M.open_url_under_cursor = function()
-    if vim.fn.has("mac") == 1 then
-        vim.cmd('call jobstart(["open", expand("<cfile>")], {"detach": v:true})')
-    elseif vim.fn.has("unix") == 1 then
-        vim.cmd('call jobstart(["xdg-open", expand("<cfile>")], {"detach": v:true})')
+    if fn.has("mac") == 1 then
+        fn.jobstart(("open %s"):format(fn.expand("<cfile>")), {detach = true})
+    elseif fn.has("unix") == 1 then
+        fn.jobstart(("handlr open %s"):format(fn.expand("<cfile>")), {detach = true})
     else
         vim.notify("Error: gx is not supported on this OS!")
     end
