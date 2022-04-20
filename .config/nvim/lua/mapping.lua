@@ -36,7 +36,6 @@ local wk = require("which-key")
 wk.register(
     {
         [";q"] = {[[:lua require('common.builtin').fix_quit()<CR>]], "Quit"},
-        ["qa"] = {[[:qa<CR>]], "Quit all"},
         [";w"] = {[[:update<CR>]], "Update file"}
     }
 )
@@ -152,9 +151,9 @@ wk.register(
 wk.register(
     {
         ["d"] = {[["_d]], "Delete (blackhole)"},
-        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"}
+        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"},
         -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
-        -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
+        ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
     {mode = "v"}
 )

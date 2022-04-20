@@ -1,6 +1,7 @@
 local M = {}
 
-require("common.utils")
+local command = require("common.utils").command
+local nvim = require("nvim")
 
 -- WIP
 function M.batch_sub(is_loc, pat_rep)
@@ -228,13 +229,24 @@ local function init()
     vim.g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    cmd [[
-      com! -nargs=1 Cdos lua R('common.qf').batch_sub(false, <q-args>)
-      com! -nargs=1 Ldos lua R('common.qf').batch_sub(true, <q-args>)
+    nvim.ex.cabbrev("cdos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>")
+    nvim.ex.cabbrev("ldos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>")
 
-      cabbrev cdos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>
-      cabbrev ldos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>
-  ]]
+    command(
+        "Cdos",
+        function(tbl)
+            require("common.qf").batch_sub(false, tbl.args)
+        end,
+        {nargs = 1}
+    )
+
+    command(
+        "Ldos",
+        function(tbl)
+            require("common.qf").batch_sub(true, tbl.args)
+        end,
+        {nargs = 1}
+    )
 end
 
 init()

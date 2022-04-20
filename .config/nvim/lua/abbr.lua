@@ -2,40 +2,40 @@ local M = {}
 
 require("common.utils")
 
-local function cabbrev(input, replace)
-  local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
+function M.cabbrev(input, replace)
+    local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
 
-  vim.cmd(cmd:format(input, input, replace))
+    vim.cmd(cmd:format(input, input, replace))
 end
 
 function M.command(cmd, match)
-  if fn.getcmdtype() == ':' and fn.getcmdline():match('^' .. cmd) then
-    return match
-  else
-    return cmd
-  end
+    if fn.getcmdtype() == ":" and fn.getcmdline():match("^" .. cmd) then
+        return match
+    else
+        return cmd
+    end
 end
 
-cabbrev("W!", "w!")
-cabbrev("Q!", "q!")
-cabbrev("Qall!", "qll!")
-cabbrev("Qall", "qll")
-cabbrev("Wq", "wq")
-cabbrev("Wa", "wa")
-cabbrev("wQ", "wq")
-cabbrev("WQ", "wq")
-cabbrev("W", "w")
+M.cabbrev("W!", "w!")
+M.cabbrev("Q!", "q!")
+M.cabbrev("Qall!", "qll!")
+M.cabbrev("Qall", "qll")
+M.cabbrev("Wq", "wq")
+M.cabbrev("Wa", "wa")
+M.cabbrev("wQ", "wq")
+M.cabbrev("WQ", "wq")
+M.cabbrev("W", "w")
 
-cabbrev("tel", "Telescope")
-cabbrev('Review', 'DiffviewOpen')
+M.cabbrev("tel", "Telescope")
+M.cabbrev("Review", "DiffviewOpen")
 
-cabbrev("PI", "PackerInstall")
-cabbrev("PU", "PackerUpdate")
-cabbrev("PS", "PackerSync")
-cabbrev("PC", "PackerCompile")
+M.cabbrev("PI", "PackerInstall")
+M.cabbrev("PU", "PackerUpdate")
+M.cabbrev("PS", "PackerSync")
+M.cabbrev("PC", "PackerCompile")
 
 g.no_man_maps = 1
-cabbrev("man", "Man")
-cabbrev("vg", "vimgrep")
+M.cabbrev("man", "Man")
+M.cabbrev("vg", "vimgrep")
 
 return M

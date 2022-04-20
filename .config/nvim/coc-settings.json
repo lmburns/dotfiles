@@ -324,6 +324,11 @@
       "filetypes": ["dockerfile"],
       "args": ["--stdio"]
     },
+    "crystal": {
+      "command": "crystalline",
+      "args": ["--stdio"],
+      "filetypes": ["crystal"]
+    },
     "lua": {
       // "command": "/usr/bin/lua-language-server",
       "command": "/home/lucas/.config/coc/extensions/coc-lua-data/sumneko-lua-ls/bin/Linux/lua-language-server",
@@ -333,7 +338,7 @@
         "Lua": {
           "workspace": {
             "maxPreload": 10000,
-            "preloadFileSize": 10000,
+            "preloadFileSize": 10000
             // "checkThirdParty": false,
             // "library": { "/usr/share/nvim/runtime/lua": true }
           },
@@ -354,7 +359,7 @@
               "before_each",
               "after_each"
             ],
-            "disable": ["lowercase-global"],
+            "disable": ["lowercase-global", "redundant-parameter"],
             "neededFileStatus": {
               "different-requires": "None"
             }
@@ -416,7 +421,7 @@
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true
   // "javascript.format.semicolons": "remove",
   // "typescript.format.semicolons": "remove"
 

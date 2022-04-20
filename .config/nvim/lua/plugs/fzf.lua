@@ -14,6 +14,24 @@ local wk = require("which-key")
 
 local default_preview_window, default_action
 
+function M.fzf(sources, sinkfunc)
+    local fzf_run = vim.fn["fzf#run"]
+    local fzf_wrap = vim.fn["fzf#wrap"]
+
+    local wrapped =
+        fzf_wrap(
+        "test",
+        {
+            source = sources,
+            options = {"--reverse"}
+            -- don't set `sink` or `sink*` here
+        }
+    )
+    wrapped["sink*"] = nil -- this line is required if you want to use `sink` only
+    wrapped.sink = sinkfunc
+    fzf_run(wrapped)
+end
+
 local function build_opt(opts)
     local preview_args = vim.g.fzf_preview_window or default_preview_window
     return fn["fzf#vim#with_preview"](opts, unpack(preview_args))
@@ -180,69 +198,67 @@ function M.files()
 end
 
 -- TODO: Modify these for my fzf functions
--- local function format_outline(symbols)
---   local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
---   local out = {}
---   local name = api.nvim_buf_get_name(0)
---   local hl_map = {
---     Function = "Function",
---     Method = "Function",
---     Interface = "Structure",
---     Struct = "Structure",
---     Class = "Structure",
---   }
---   for _, s in ipairs(symbols) do
---     local k = s.kind
---     local lnum = s.lnum
---     local col = s.col
---     local kind = kutils.ansi[hl_map[k]]:format(("%-10s"):format(k))
---     local text = s.text
---     local level =
---         s.level > 0 and kutils.ansi.NonText:format(("| "):rep(s.level)) or ""
---     local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
---     table.insert(out, o_str)
---   end
---   return out
--- end
---
--- function M.outline()
---   local syms = coc.run_command(
---       "kvs.symbol.docSymbols",
---       { "", { "Function", "Method", "Interface", "Struct", "Class" } }
---   )
---   local opts = {
---     options = {
---       "+m",
---       "--prompt",
---       "Outline> ",
---       "--tiebreak",
---       "index",
---       "--ansi",
---       "-d",
---       "\t",
---       "--tabstop",
---       "1",
---       "--with-nth",
---       "4..",
---       "--preview-window",
---       "+{2}/2",
---     },
---   }
---   opts = build_opt(opts)
---   opts.name = "outline"
---   opts.source = format_outline(syms)
---   opts["sink*"] = function(lines)
---     if #lines ~= 2 then
---       return
---     end
---     local expect = lines[1]
---     local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
---     local path = g1:match("^(.*):%d+$")
---     local lnum, col = tonumber(g2), tonumber(g3)
---     do_action(expect, path, nil, lnum, col)
---   end
---   fn.FzfWrapper(opts)
--- end
+local function format_outline(symbols)
+    local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
+    local out = {}
+    local name = api.nvim_buf_get_name(0)
+    local hl_map = {
+        Function = "Function",
+        Method = "Function",
+        Interface = "Structure",
+        Struct = "Structure",
+        Class = "Structure"
+    }
+    for _, s in ipairs(symbols) do
+        local k = s.kind
+        local lnum = s.lnum
+        local col = s.col
+        local kind = kutils.ansi[hl_map[k]]:format(("%-10s"):format(k))
+        local text = s.text
+        local level = s.level > 0 and kutils.ansi.NonText:format(("| "):rep(s.level)) or ""
+        local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
+        table.insert(out, o_str)
+    end
+    return out
+end
+
+function M.outline()
+    local syms = coc.run_command("kvs.symbol.docSymbols", {"", {"Function", "Method", "Interface", "Struct", "Class"}})
+    local opts = {
+        options = {
+            "+m",
+            "--prompt",
+            "Outline> ",
+            "--tiebreak",
+            "index",
+            "--ansi",
+            "-d",
+            "\t",
+            "--tabstop",
+            "1",
+            "--with-nth",
+            "4..",
+            "--preview-window",
+            "+{2}/2"
+        }
+    }
+    opts = build_opt(opts)
+    opts.name = "outline"
+    opts.source = format_outline(syms)
+    opts["sink*"] = function(lines)
+        p(lines)
+        if #lines ~= 2 then
+            vim.notify("return")
+            return
+        end
+        local expect = lines[1]
+        local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
+        local path = g1:match("^(.*):%d+$")
+        local lnum, col = tonumber(g2), tonumber(g3)
+        do_action(expect, path, nil, lnum, col)
+    end
+    fn.FzfWrapper(opts)
+end
 
 -- function M.cmdhist()
 --   local opts = {
@@ -285,16 +301,26 @@ end
 function M.copyq_fzf()
     local opts = {
         name = "copy-clipboard",
-        source = (function()
-            local ret = {}
-            local val =
-                os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
-
-            for v in val:gmatch("[^%z]+") do
-                table.insert(ret, v)
-            end
-            return ret
-        end)(),
+        source = require("plenary.job"):new(
+            {
+                command = "copyq",
+                args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
+                enable_recording = true
+            }
+        ):sync(),
+        -- source = (function()
+        --     -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
+        --     local val =
+        --         require("plenary.job"):new(
+        --         {
+        --             command = "copyq",
+        --             args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
+        --             enable_recording = true
+        --         }
+        --     ):sync()
+        --
+        --     return val
+        -- end)(),
         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
     }
 
@@ -326,13 +352,24 @@ function M.prepare_ft()
     end
 
     require("common.shadowwin").create()
-    cmd(
-        [[
-        aug Fzf
-            au BufWipeout <buffer> lua require('common.shadowwin').close()
-            au VimResized <buffer> lua require('common.shadowwin').resize()
-        aug END
-    ]]
+    augroup(
+        {"Fzf", false},
+        {
+            {
+                event = "BufWipeout",
+                buffer = api.nvim_get_current_buf(),
+                command = function()
+                    require("common.shadowwin").close()
+                end
+            },
+            {
+                event = "VimResized",
+                buffer = api.nvim_get_current_buf(),
+                command = function()
+                    require("common.shadowwin").resize()
+                end
+            }
+        }
     )
 end
 
@@ -359,7 +396,7 @@ local function init()
         ["ctrl-s"] = "split",
         ["ctrl-m"] = "edit",
         ["alt-v"] = "vsplit",
-        ["alt-t"] = "nabnew",
+        ["alt-t"] = "tabnew",
         ["alt-x"] = "split"
     }
 
@@ -441,16 +478,16 @@ local function init()
   ]]
 
     -- Rg
-  --   cmd [[
-  -- command! -bang -nargs=* Rg
-  --   \ call fzf#vim#grep(
-  --     \ 'rg --column --line-number --hidden --smart-case '
-  --       \ . '--no-heading --color=always '
-  --       \ . shellescape(<q-args>),
-  --       \ 1,
-  --       \ {'options':  '--delimiter : --nth 4..'},
-  --       \ 0)
-  -- ]]
+    --   cmd [[
+    -- command! -bang -nargs=* Rg
+    --   \ call fzf#vim#grep(
+    --     \ 'rg --column --line-number --hidden --smart-case '
+    --       \ . '--no-heading --color=always '
+    --       \ . shellescape(<q-args>),
+    --       \ 1,
+    --       \ {'options':  '--delimiter : --nth 4..'},
+    --       \ 0)
+    -- ]]
 
     -- Rgf
     cmd [[
@@ -597,23 +634,46 @@ local function init()
             call fzf#run(wrapped)
         endfunction
 
-        aug Fzf
-            au!
-            au FileType fzf lua require('plugs.fzf').prepare_ft()
-            au VimResized * lua pcall(require('plugs.fzf').resize_preview_layout)
-
-            " This lazy-loads fzf
-            au FuncUndefined fzf#* lua require('plugs.fzf')
-            au CmdUndefined FZF,BCommits,History,GFiles,Marks,Buffers,Rg lua require('plugs.fzf')
-        aug END
-
-        "com! -nargs=* -bar -bang Maps call fzf#vim#maps(<q-args>, <bang>0)
-        com! -bar -bang Helptags call fzf#vim#helptags(<bang>0)
-
         sil! au! fzf_buffers *
         sil! aug! fzf_buffers
     ]]
 
+    augroup(
+        "Fzf",
+        {
+            {
+                event = "FileType",
+                pattern = "fzf",
+                command = function()
+                    require("plugs.fzf").prepare_ft()
+                end
+            },
+            {
+                event = "VimResized",
+                pattern = "*",
+                command = function()
+                    pcall(require("plugs.fzf").resize_preview_layout)
+                end
+            },
+            {
+                -- Lazy loads fzf
+                event = "FuncUndefined",
+                pattern = "fzf#*",
+                command = function()
+                    require("plugs.fzf")
+                end
+            },
+            {
+                event = "CmdUndefined",
+                pattern = {"FZF", "BCommits", "History", "GFiles", "Marks", "Buffers", "Rg"},
+                command = function()
+                    require("plugs.fzf")
+                end
+            }
+        }
+    )
+
+    command("Helptags", [[call fzf#vim#helptags(<bang>0)]], {bang = true, bar = true})
     command("Maps", [[call fzf#vim#maps(<q-args>, <bang>0)]], {nargs = "*", bang = true, bar = true})
 
     wk.register(

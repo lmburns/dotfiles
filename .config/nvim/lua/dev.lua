@@ -18,7 +18,7 @@ R = function(name)
     return require(name)
 end
 
--- Capture output of command
+-- Capture output of command as a string
 function os.capture(cmd, raw)
     local f = assert(io.popen(cmd, "r"))
     local s = assert(f:read("*a"))
@@ -30,6 +30,22 @@ function os.capture(cmd, raw)
     s = string.gsub(s, "%s+$", "")
     s = string.gsub(s, "[\n\r]+", " ")
     return s
+end
+
+---Capture output of a command in a table
+---@param command string: shell command to run
+---@return table
+function os.caplines(command)
+    local lines = {}
+    local file = io.popen(command)
+
+    for line in file:lines() do
+        table.insert(lines, line)
+    end
+
+    file:close()
+
+    return lines
 end
 
 -- ============================== Print ===============================

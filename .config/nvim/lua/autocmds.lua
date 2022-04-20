@@ -133,17 +133,18 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
         "lmb__RenameTmux",
         {
             {
-                event = {"BufWinEnter", "BufEnter"},
+                event = {"FileType", "BufEnter"},
                 pattern = "*",
+                once = false,
                 description = "Automatic rename of tmux window",
                 command = function()
                     local bufnr = api.nvim_get_current_buf()
 
                     -- I have TMUX already automatically change title
                     -- It sets it to titlestring
-                    if vim.bo[bufnr].buftype == "" then
-                        o.titlestring = fn.expand("%:t:S")
-                    elseif vim.bo[bufnr].buftype == "terminal" then
+                    if vim.bo[bufnr].bt == "" then
+                        o.titlestring = fn.expand("%:t")
+                    elseif vim.bo[bufnr].bt == "terminal" then
                         -- FIX: This block is never picked up
                         -- if b.ft == "toggleterm" then
                         --     o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
@@ -152,13 +153,14 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
                     end
                 end
             },
-            -- {
-            --     event = "FileType",
-            --     pattern = "toggleterm",
-            --     command = function()
-            --         o.titlestring = ("ToggleTerm #%d"):format(vim.b.toggle_number or 1000)
-            --     end
-            -- },
+            {
+                event = {"FileType"},
+                pattern = "toggleterm",
+                command = function()
+                    -- Buffer variable is not set yet, so b.toggle_number isn't working
+                    o.titlestring = ("ToggleTerm #%d"):format(F.if_nil(vim.b.toggle_number, 1))
+                end
+            },
             {
                 event = "VimLeave",
                 pattern = "*",

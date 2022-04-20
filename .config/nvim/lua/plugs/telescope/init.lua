@@ -1005,7 +1005,7 @@ fg("TelescopePathSeparator", colors.purple)
 fg("TelescopeFrecencyScores", colors.green)
 fg("TelescopeBufferLoaded", colors.red)
 
-_ = telescope.load_extension("notify")
+-- telescope.load_extension("notify")
 -- telescope.load_extension("ultisnips")
 -- telescope.load_extension("coc")
 -- telescope.load_extension("bookmarks")

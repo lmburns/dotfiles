@@ -1,6 +1,6 @@
 local M = {}
 
-local map = require("common.utils").map
+-- local map = require("common.utils").map
 
 function M.setup()
     ---@diagnostic disable-next-line: redundant-parameter

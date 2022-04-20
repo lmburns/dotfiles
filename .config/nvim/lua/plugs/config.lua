@@ -1,5 +1,6 @@
----A file containing configuration items for plugins I didn't think
----were big enough for their own file
+---Contains configuration items for plugins that don't deserve their own file
+--@module config
+--@author lmburns
 
 local M = {}
 
@@ -63,11 +64,12 @@ function M.listish()
             theme_list = true,
             clearqflist = "Clearquickfix", -- command
             clearloclist = "Clearloclist", -- command
-            lists_close = "<leader>cc", -- closes both qf/loacal lists
+            clear_notes = "ClearListNotes", -- command
+            lists_close = "<leader>cc", -- closes both qf/local lists
             in_list_dd = "dd", -- delete current item in the list
             quickfix = {
                 open = "qo",
-                on_cursor = "<leader>qq", -- add current position to the list
+                on_cursor = "qa", -- add current position to the list
                 add_note = "qn", -- add current position with your note to the list
                 clear = "<leader>qd", -- clear all items
                 close = "<leader>qc",
@@ -86,6 +88,71 @@ function M.listish()
         }
     )
     cmd([[pa cfilter]])
+end
+
+-- =========================== PackageInfo ============================
+function M.package_info()
+    require("package-info").setup(
+        {
+            colors = {
+                up_to_date = "#3C4048", -- Text color for up to date package virtual text
+                outdated = "#d19a66" -- Text color for outdated package virtual text
+            },
+            icons = {
+                enable = true, -- Whether to display icons
+                style = {
+                    up_to_date = "|  ", -- Icon for up to date packages
+                    outdated = "|  " -- Icon for outdated packages
+                }
+            },
+            autostart = true, -- Whether to autostart when `package.json` is opened
+            hide_up_to_date = true, -- It hides up to date versions when displaying virtual text
+            hide_unstable_versions = false, -- It hides unstable versions from version list e.g next-11.1.3-canary3
+            -- `npm`, `yarn`
+            package_manager = "yarn"
+        }
+    )
+
+    command(
+        "PackageInfo",
+        function()
+            require("package-info").show()
+        end
+    )
+end
+
+-- =========================== regexplainer ===========================
+function M.regexplainer()
+    require("regexplainer").setup {
+        -- 'narrative'
+        mode = "narrative", -- TODO: 'ascii', 'graphical'
+        -- automatically show the explainer when the cursor enters a regexp
+        auto = false,
+        -- filetypes (i.e. extensions) in which to run the autocommand
+        filetypes = {
+            "html",
+            "js",
+            "cjs",
+            "mjs",
+            "ts",
+            "jsx",
+            "tsx",
+            "cjsx",
+            "mjsx"
+        },
+        debug = false, -- Whether to log debug messages
+        display = "popup", -- 'split', 'popup', 'pasteboard'
+        mappings = {
+            toggle = "gR",
+            show = "gS"
+            -- hide = 'gH',
+            -- show_split = 'gP',
+            -- show_popup = 'gU',
+        },
+        narrative = {
+            separator = "\n"
+        }
+    }
 end
 
 -- =========================== open-browser ===========================
@@ -393,7 +460,11 @@ function M.notify()
     hi link NotifyTRACEBody Normal
   ]]
 
-    require("notify").setup(
+    ---@type table<string, fun(bufnr: number, notif: table, highlights: table)>
+    local renderer = require("notify.render")
+    local notify = require("notify")
+
+    notify.setup(
         {
             stages = "slide",
             timeout = 2000,
@@ -401,7 +472,10 @@ function M.notify()
             -- on_close = function()
             -- -- Could create something to write to a file
             -- end,
-            render = "minimal",
+            render = function(bufnr, notif, highlights)
+                local style = notif.title[1] == "" and "minimal" or "default"
+                renderer[style](bufnr, notif, highlights)
+            end,
             icons = {
                 ERROR = " ",
                 WARN = " ",
@@ -411,6 +485,14 @@ function M.notify()
             }
         }
     )
+
+    wk.register(
+        {
+            ["<Leader>nd"] = {notify.dismiss, "Dismiss notification"}
+        }
+    )
+
+    require("telescope").load_extension("notify")
 end
 
 -- =============================== Neogen =============================
@@ -626,7 +708,7 @@ end
 -- =============================== Hop ================================
 function M.hop()
     -- "etovxqpdygfblzhckisuran"
-    require("hop").setup({keys = "asdfqwertzxcvbuiop"})
+    require("hop").setup({keys = "asdfjklhmnwertzxcvbuiop"})
 
     -- map("n", "<Leader><Leader>k", ":HopLineBC<CR>")
     -- map("n", "<Leader><Leader>j", ":HopLineAC<CR>")
@@ -871,6 +953,7 @@ end
 function M.colorizer()
     require("colorizer").setup(
         {
+            "gitconfig",
             "vim",
             "sh",
             "zsh",

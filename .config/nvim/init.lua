@@ -16,7 +16,7 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 -- local au = utils.au
-local create_augroup = utils.create_augroup
+-- local create_augroup = utils.create_augroup
 
 -- Lua utilities
 require("dev")
@@ -26,6 +26,7 @@ require("options")
 local conf_dir = fn.stdpath("config")
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     local packer_loader_complete = [[customlist,v:lua.require'packer'.loader_complete]]
+    local config = ("%s/%s"):format(fn.stdpath("config"), "lua")
     cmd(
         ([[
         com! PackerInstall lua require('plugins').install()
@@ -38,10 +39,12 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         com! -nargs=? PackerCompile lua require('plugins').compile(<q-args>)
         com! -nargs=+ -complete=%s PackerLoad lua require('plugins').loader(<f-args>)
 
-        com! PSC so ~/.config/nvim/lua/plugins.lua | PackerCompile
-        com! PSS so ~/.config/nvim/lua/plugins.lua | PackerSync
+        com! PSC so %s/plugins.lua | PackerCompile
+        com! PSS so %s/plugins.lua | PackerSync
     ]]):format(
-            packer_loader_complete
+            packer_loader_complete,
+            config,
+            config
         )
     )
 
@@ -66,20 +69,6 @@ require("abbr")
 require("mapping")
 
 -- =========================== Markdown =============================== [[[
--- FIX: Shift-Tab in markdown
-cmd [[
-  augroup markdown
-    autocmd!
-    autocmd FileType markdown,vimwiki
-      \ setl iskeyword+=-|
-      \ vnoremap ``` <esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|
-      \ nnoremap <buffer> <F4> !pandoc % --pdf-engine=xelatex -o %:r.pdf|
-      \ inoremap ** ****<Left><Left>|
-      \ inoremap <expr> <right> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"|
-      \ imap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<C-h>"
-  augroup END
-]]
-
 g.vimwiki_ext2syntax = {
     [".Rmd"] = "markdown",
     [".rmd"] = "markdown",
@@ -99,11 +88,15 @@ require("common.mru")
 require("common.grepper")
 
 -- ============================ Notify ================================ [[[
-vim.notify = function(...)
-    cmd [[PackerLoad nvim-notify]]
-    vim.notify = require("notify")
-    vim.notify(...)
-end
+a.async_void(
+    function()
+        vim.notify = function(...)
+            cmd [[PackerLoad nvim-notify]]
+            vim.notify = require("notify")
+            vim.notify(...)
+        end
+    end
+)()
 -- ]]]
 
 -- cmd [[
@@ -116,6 +109,9 @@ g.loaded_clipboard_provider = 1
 
 vim.schedule(
     function()
+        local color = require("common.color")
+        local set_hl = color.set_hl
+
         -- vim.defer_fn(
         --     function()
         --       require("common.fold")
@@ -133,21 +129,21 @@ vim.schedule(
         --     end, 10
         -- )
 
-        -- === Treesitter
-        vim.defer_fn(
-            function()
-                require("plugs.tree-sitter")
-
-                -- au! syntaxset
-                -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
-
-                -- cmd [[
-                --    runtime! filetype.vim
-                --    filetype plugin indent on
-                -- ]]
-            end,
-            15
-        )
+        -- -- === Treesitter
+        -- vim.defer_fn(
+        --     function()
+        --         require("plugs.tree-sitter")
+        --
+        --         -- au! syntaxset
+        --         -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
+        --
+        --         -- cmd [[
+        --         --    runtime! filetype.vim
+        --         --    filetype plugin indent on
+        --         -- ]]
+        --     end,
+        --     15
+        -- )
 
         -- === Clipboard
         vim.defer_fn(
@@ -172,8 +168,6 @@ vim.schedule(
                         }
                     )
                 else
-                    -- Nice, but doesn't copy newline at beginning of line when switching buffers
-                    --
                     cmd("packadd nvim-hclipboard")
                     require("hclipboard").start()
                 end
@@ -191,28 +185,32 @@ vim.schedule(
 
                 -- highlight syntax
                 if fn.exists("##SearchWrapped") == 1 then
-                    api.nvim_create_autocmd(
-                        "SearchWrapped",
+                    augroup(
+                        "SearchWrappedHighlight",
                         {
-                            callback = function()
-                                require("common.builtin").search_wrap()
-                            end,
-                            group = create_augroup("SearchWrappedHighlight"),
-                            pattern = "*"
+                            {
+                                event = "SearchWrapped",
+                                pattern = "*",
+                                command = function()
+                                    require("common.builtin").search_wrap()
+                                end
+                            }
                         }
                     )
                 end
 
-                api.nvim_create_autocmd(
-                    "TextYankPost",
+                augroup(
+                    "lmb__Highlight",
                     {
-                        callback = function()
-                            cmd [[hi HighlightedyankRegion ctermbg=Red   guibg=#cc6666]]
-                            pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
-                        end,
-                        pattern = "*",
-                        group = create_augroup("lmb__Highlight"),
-                        desc = "Highlight a selection on yank"
+                        {
+                            event = "TextYankPost",
+                            pattern = "*",
+                            command = function()
+                                set_hl("HighlightedyankRegion", {guibg = "#cc6666"})
+                                pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
+                            end,
+                            description = "Highlight a selection on yank"
+                        }
                     }
                 )
             end,
@@ -222,17 +220,17 @@ vim.schedule(
         vim.defer_fn(
             function()
                 vim.g.coc_global_extensions = {
+                    -- "coc-docker",
+                    -- "coc-lua",
                     "coc-clangd",
                     "coc-css",
                     "coc-diagnostic",
                     "coc-dlang",
-                    "coc-docker",
                     "coc-fzf-preview",
                     "coc-git",
                     "coc-go",
                     "coc-html",
                     "coc-json",
-                    "coc-lua",
                     "coc-marketplace",
                     "coc-perl",
                     "coc-prettier",
@@ -280,9 +278,7 @@ vim.schedule(
                     }
                 )
 
-                local color = require("common.color")
                 local link = color.link
-                local set_hl = color.set_hl
 
                 -- cmd [[
                 --   au User CocNvimInit ++once lua require('plugs.coc').init()

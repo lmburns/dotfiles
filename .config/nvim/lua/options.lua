@@ -53,7 +53,7 @@ vim.env.LANG = "en_US.UTF-8"
 o.encoding = "utf-8"
 o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
-o.fileformats = list {"unix", "dos", "mac"} -- try unix line endings before dos, use unix
+o.fileformats = list {"unix", "mac", "dos"}
 
 -- Settings
 o.path:append("**")

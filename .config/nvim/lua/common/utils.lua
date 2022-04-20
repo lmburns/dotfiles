@@ -26,6 +26,10 @@ fmt = string.format
 
 dev = require("dev")
 List = require("plenary.collections.py_list")
+async = require("plenary.async")
+a = require("plenary.async_lib")
+nvim = require("nvim")
+ex = nvim.ex
 
 -- ========================== Functions ==========================
 
@@ -103,11 +107,17 @@ end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string
+---@param name string|table
 ---@param commands Autocommand[]
 ---@return number
 M.augroup = function(name, commands)
-    local id = M.create_augroup(name)
+    local id
+    if type(name) == "table" then
+        id = M.create_augroup(name[1], name[2])
+    else
+        id = M.create_augroup(name)
+    end
+
     for _, autocmd in ipairs(commands) do
         local is_callback = type(autocmd.command) == "function"
         api.nvim_create_autocmd(
@@ -127,8 +137,24 @@ M.augroup = function(name, commands)
     return id
 end
 
--- Create a key mapping
-M.map = function(modes, lhs, rhs, opts)
+---Create a key mapping
+---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
+---
+---@param bufnr? number: Optional buffer id
+---@param modes string|table: Modes the keymapping should be bound
+---@param lhs string: Keybinding that is mapped
+---@param rhs string|function: String or lua function that is bound ot a key
+---@param opts table: Options given to keybindings
+M.map = function(bufnr, modes, lhs, rhs, opts)
+    -- If it is a buffer mapping
+    if type(bufnr) ~= "number" then
+        opts = rhs
+        rhs = lhs
+        lhs = modes
+        modes = bufnr
+        bufnr = nil
+    end
+
     opts = opts or {}
     opts.noremap = opts.noremap == nil and true or opts.noremap
 
@@ -137,6 +163,10 @@ M.map = function(modes, lhs, rhs, opts)
     end
 
     if type(rhs) == "function" then
+        if bufnr ~= nil and opts.bufnr == nil then
+            opts.bufnr = bufnr
+        end
+
         for _, mode in ipairs(modes) do
             vim.keymap.set(mode, lhs, rhs, opts)
         end
@@ -145,8 +175,14 @@ M.map = function(modes, lhs, rhs, opts)
             opts.noremap = false
         end
 
-        for _, mode in ipairs(modes) do
-            api.nvim_set_keymap(mode, lhs, rhs, opts)
+        if bufnr ~= nil then
+            for _, mode in ipairs(modes) do
+                api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+            end
+        else
+            for _, mode in ipairs(modes) do
+                api.nvim_set_keymap(mode, lhs, rhs, opts)
+            end
         end
     end
 end
@@ -158,11 +194,11 @@ M.bmap = function(bufnr, mode, lhs, rhs, opts)
     api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
 end
 
--- This allows for lua function mapping
-M.fmap = function(tbl)
-    opts = tbl[4] or {}
+-- This allows for lua function mapping only
+M.fmap = function(mode, lhs, rhs, opts)
+    opts = opts or {}
     opts.noremap = opts.noremap == nil and true or opts.noremap
-    vim.keymap.set(tbl[1], tbl[2], tbl[3], opts)
+    vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 -- Replace termcodes; e.g., t'<C-n>'
@@ -197,18 +233,18 @@ end
 ---@param command string|function
 ---@param opts table
 M.bcommand = function(name, rhs, opts, bufnr)
-  opts = opts or {}
-  -- opts.force = true
-  api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
+    opts = opts or {}
+    -- opts.force = true
+    api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
 end
 
 -- Check whether the current buffer is empty
-function M.is_buffer_empty()
+M.is_buffer_empty = function()
     return fn.empty(fn.expand("%:t")) == 1
 end
 
 -- Check if the windows width is greater than a given number of columns
-function M.has_width_gt(cols)
+M.has_width_gt = function(cols)
     return fn.winwidth(0) / 2 > cols
 end
 
@@ -396,6 +432,9 @@ M.remap = function(modes, lhs, rhs, opts)
                 end
             )
         else
+            if rhs:lower():sub(1, #"<plug>") == "<plug>" then
+                opts.noremap = false
+            end
             return rhs
         end
     end)()

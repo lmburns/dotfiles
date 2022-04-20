@@ -110,11 +110,7 @@ return packer.startup(
             use(
                 {
                     "norcalli/nvim.lua",
-                    desc = "Shortcut `nvim` object",
-                    config = function()
-                        -- Make global
-                        nvim = require("nvim")
-                    end
+                    desc = "Shortcut `nvim` object"
                 }
             )
             use({"nvim-lua/popup.nvim"})
@@ -204,6 +200,7 @@ return packer.startup(
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
+            use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", config = conf("nlua")})
             -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup()]]})
 
@@ -257,7 +254,7 @@ return packer.startup(
                 {
                     "arsham/listish.nvim",
                     requires = {
-                        {"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}},
+                        {"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}},
                         {"norcalli/nvim.lua"}
                     },
                     config = conf("listish")
@@ -688,6 +685,29 @@ return packer.startup(
             -- )
             -- ]]] === VimSlime - Python ===
 
+            -- ============================= Javascript ============================ [[[
+            use(
+                {
+                    "vuki656/package-info.nvim",
+                    requires = "MunifTanjim/nui.nvim",
+                    config = conf("package_info")
+                }
+            )
+
+            use(
+                {
+                    "bennypowers/nvim-regexplainer",
+                    requires = {
+                        "nvim-lua/plenary.nvim",
+                        "MunifTanjim/nui.nvim",
+                        {"nvim-treesitter/nvim-treesitter", opt = true}
+                    },
+                    after = {"nvim-treesitter"},
+                    config = conf("regexplainer")
+                }
+            )
+            -- ]]] === Javascript ===
+
             -- ============================== Vim - Go ============================= [[[
             use({"fatih/vim-go", ft = "go", config = conf("plugs.go")})
             -- ]]] === VimSlime - Python ===
@@ -839,7 +859,21 @@ return packer.startup(
             use(
                 {
                     "norcalli/nvim-colorizer.lua",
-                    ft = {"vim", "sh", "zsh", "markdown", "tmux", "yaml", "lua"},
+                    cmd = "ColorizerToggle",
+                    ft = {
+                        "gitconfig",
+                        "vim",
+                        "sh",
+                        "zsh",
+                        "markdown",
+                        "tmux",
+                        "yaml",
+                        "xml",
+                        "css",
+                        "typescript",
+                        "javascript",
+                        "lua"
+                    },
                     config = conf("colorizer")
                 }
             )
@@ -901,8 +935,8 @@ return packer.startup(
             use(
                 {
                     "nvim-treesitter/nvim-treesitter",
-                    run = ":TSUpdate"
-                    -- config = conf("plugs.tree-sitter"),
+                    run = ":TSUpdate",
+                    config = conf("plugs.tree-sitter")
                 }
             )
             use(
@@ -933,7 +967,6 @@ return packer.startup(
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
 
             use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
-            use({"nanotee/luv-vimdocs", opt = false})
             -- ]]] === Treesitter ===
 
             -- ============================= Html/Css ============================= [[[
