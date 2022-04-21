@@ -218,6 +218,12 @@ M.gruvbox = function()
     -- cmd [[colorscheme gruvbox-material]]
 end
 
+-- === Gruvbox-Flat ===
+M.gruvbox_flat = function()
+    g.gruvbox_italic_functions = true
+    g.gruvbox_sidebars = {"qf", "vista_kind", "terminal", "packer"}
+end
+
 -- === Oceanic ===
 M.ocean_material = function()
     g.oceanic_material_background = "ocean"
@@ -326,7 +332,7 @@ end
 
 M.tokyonight = function()
     -- === Tokyo Night ===
-    g.tokyonight_style = "night" -- night day storm
+    g.tokyonight_style = "storm" -- night day storm
     g.tokyonight_italic_comments = false
     g.tokyonight_italic_keywords = false
     -- g.tokyonight_style = "storm"
@@ -437,6 +443,7 @@ end
 local function init()
     M.kimbox()
     M.gruvbox()
+    M.gruvbox_flat()
     M.everforest()
     M.ocean_material()
     M.miramare()
@@ -450,8 +457,8 @@ local function init()
     -- M.vscode()
 
     require("kimbox").load()
-    -- ex.colorscheme("catppuccin")
     -- ex.colorscheme("kanagawa")
+    -- ex.colorscheme("catppuccin")
     -- ex.colorscheme("material")
     -- ex.colorscheme("tokyonight")
     -- ex.colorscheme("jellybeans-nvim")

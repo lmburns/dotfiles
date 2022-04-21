@@ -4,6 +4,7 @@
 --  Created: 2022-03-26 15:02
 -- ==========================================================================
 local utils = require("common/utils")
+local command = utils.command
 local autocmd = utils.autocmd
 local map = utils.map
 local create_augroup = utils.create_augroup
@@ -77,6 +78,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
+        log = {level = "trace"},
         profile = {enable = true}
     }
 )
@@ -100,6 +102,9 @@ return packer.startup(
 
             -- Faster version of filetype.vim
             use({"nathom/filetype.nvim", config = conf("plugs.filetype")})
+
+            -- Have more than one configuration
+            -- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
 
             -- ============================ Vim Library =========================== [[[
             use({"tpope/vim-repeat"})
@@ -135,6 +140,7 @@ return packer.startup(
             -- Prevent clipboard from being hijacked by snippets and such
             use({"kevinhwang91/nvim-hclipboard"})
             use({"tversteeg/registers.nvim", config = conf("registers")})
+            use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
@@ -196,7 +202,7 @@ return packer.startup(
             )
 
             -- use({ "bfredl/nvim-luadev", config = conf("luadev"), ft = "lua" })
-            use({"rafcamlet/nvim-luapad", cmd = "Luapad", ft = "lua"})
+            use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua"})
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
@@ -394,6 +400,22 @@ return packer.startup(
                     config = conf("plugs.scrollbar")
                 }
             )
+
+            -- use(
+            --     {
+            --         "karb94/neoscroll.nvim",
+            --         keys = {"<C-u>", "<C-d>", "gg", "G"},
+            --         config = conf("neoscroll")
+            --     }
+            -- )
+
+            use(
+                {
+                    "edluffy/specs.nvim",
+                    -- after = "neoscroll.nvim",
+                    config = conf("specs")
+                }
+            )
             -- ]]] === Scrollbar ===
 
             -- ============================ Trouble =============================== [[[
@@ -485,14 +507,15 @@ return packer.startup(
                 {
                     "AckslD/nvim-trevJ.lua",
                     config = conf("trevj"),
-                    keys = {{"n", "<Leader>k"}}
+                    keys = {{"n", "gJ"}},
+                    requires = "nvim-treesitter"
                 }
             )
 
             use(
                 {
                     "phaazon/hop.nvim",
-                    config = conf("hop"),
+                    config = conf("plugs.hop"),
                     keys = {
                         {"n", "f"},
                         {"x", "f"},
@@ -563,15 +586,22 @@ return packer.startup(
                     "machakann/vim-sandwich",
                     config = conf("sandwhich")
                     -- keys = {
-                    --   { "n", "sd" },
-                    --   { "n", "sr" },
-                    --   { "n", "sa" },
-                    --   { "v", "sa" },
-                    --   { "o", "is" },
-                    --   { "o", "as" },
-                    --   { "o", "ib" },
-                    --   { "o", "ab" },
-                    -- },
+                    --     {"n", "ds"},
+                    --     {"n", "cs"},
+                    --     {"n", "cS"},
+                    --     {"n", "ys"},
+                    --     {"n", "ysW"},
+                    --     {"n", "yS"},
+                    --     {"n", "yss"},
+                    --     {"n", "ygs"},
+                    --     {"x", "S"},
+                    --     {"x", "gS"},
+                    --     {"v", "sa"},
+                    --     {"o", "is"},
+                    --     {"o", "as"},
+                    --     {"o", "ib"},
+                    --     {"o", "ab"}
+                    -- }
                 }
             )
 
@@ -653,11 +683,13 @@ return packer.startup(
 
             -- ========================== NerdCommenter =========================== [[[
             -- use({ "preservim/nerdcommenter", config = conf("plugs.nerdcommenter") })
-            use({"numToStr/Comment.nvim", config = conf("plugs.comment")})
+            use({"numToStr/Comment.nvim", config = conf("plugs.comment"), after = "nvim-treesitter"})
             -- ]]] === UndoTree ===
 
             -- ============================== Targets ============================== [[[
+            -- kana/vim-textobj-user
             use({"wellle/targets.vim", config = conf("targets")})
+            use({"andymass/vim-matchup", config = conf("matchup")})
             -- ]]] === Neoformat ===
 
             -- ============================== Nvim-R =============================== [[[
@@ -825,7 +857,8 @@ return packer.startup(
                             -- "teal",
                             -- "tsx",
                             -- "vue",
-                            "zig"
+                            "zig",
+                            "zsh"
                             -- "typescript",
                         }
                     end
@@ -854,11 +887,8 @@ return packer.startup(
             )
 
             use({"jamessan/vim-gnupg"})
-
             use({"AndrewRadev/id3.vim"})
-
             use({"alx741/vinfo"})
-
             use({"HiPhish/info.vim", config = conf("info")})
             -- ]]] === File Viewer ===
 
@@ -950,34 +980,50 @@ return packer.startup(
 
             use(
                 {
-                    "nvim-treesitter/nvim-treesitter",
-                    run = ":TSUpdate"
                     -- config = conf("plugs.tree-sitter")
-                }
-            )
-            use(
-                {
-                    "nvim-treesitter/nvim-treesitter-refactor",
-                    after = "nvim-treesitter"
-                }
-            )
-            -- Adds 'end' to ruby and lua
-            use({"RRethy/nvim-treesitter-endwise", after = "nvim-treesitter"})
-            use(
-                {
-                    "nvim-treesitter/nvim-treesitter-textobjects",
-                    after = "nvim-treesitter"
-                }
-            )
-            use(
-                {
-                    "nvim-treesitter/playground",
-                    after = "nvim-treesitter"
-                    -- cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+                    "nvim-treesitter/nvim-treesitter",
+                    run = ":TSUpdate",
+                    after = "targets.vim",
+                    requires = {
+                        {
+                            "nvim-treesitter/nvim-treesitter-refactor",
+                            after = "nvim-treesitter",
+                            desc = "Refactor module"
+                        },
+                        {
+                            "RRethy/nvim-treesitter-endwise",
+                            after = "nvim-treesitter",
+                            desc = "Adds 'end' to ruby and lua"
+                        },
+                        {
+                            "nvim-treesitter/nvim-treesitter-textobjects",
+                            after = "nvim-treesitter"
+                        },
+                        {
+                            "nvim-treesitter/playground",
+                            after = "nvim-treesitter"
+                            -- cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+                        },
+                        {
+                            "windwp/nvim-ts-autotag",
+                            after = "nvim-treesitter",
+                            desc = "Html/Css tagging"
+                        },
+                        {
+                            -- Embedded langauge comment strings
+                            "JoosepAlviste/nvim-ts-context-commentstring",
+                            after = "nvim-treesitter"
+                        },
+                        {
+                            "michaeljsmith/vim-indent-object",
+                            after = "nvim-treesitter",
+                            desc = "ai li aI iL text objects"
+                        }
+                    }
                 }
             )
 
-            use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter"})
+            use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
 
             -- use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
@@ -985,22 +1031,7 @@ return packer.startup(
             use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
             -- ]]] === Treesitter ===
 
-            -- ============================= Html/Css ============================= [[[
-            use {"alvan/vim-closetag"}
-
-            -- use(
-            --     {
-            --       "windwp/nvim-ts-autotag",
-            --       requires = { { "nvim-treesitter/nvim-treesitter", opt = true } },
-            --       after = { "nvim-treesitter" },
-            --       config = conf("plugs.autotag")
-            --     }
-            -- )
-            -- ]]] === Html ===
-
             -- ============================= Telescope ============================ [[[
-            -- 'folke/which-key.nvim'
-            --
             use(
                 {
                     "nvim-telescope/telescope.nvim",
@@ -1011,10 +1042,7 @@ return packer.startup(
                         {
                             "nvim-telescope/telescope-ghq.nvim",
                             after = "telescope.nvim",
-                            config = function()
-                                require("telescope").load_extension("ghq")
-                                cmd [[com! -nargs=0 Ghq :Telescope ghq list]]
-                            end
+                            config = [[require("telescope").load_extension("ghq")]]
                         },
                         {
                             "nvim-telescope/telescope-github.nvim",

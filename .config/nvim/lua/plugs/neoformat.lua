@@ -1,7 +1,6 @@
 local M = {}
 
 local utils = require("common.utils")
-local au = utils.au
 local map = utils.map
 local coc = require("plugs.coc")
 local gittool = require("common.gittool")
@@ -165,13 +164,13 @@ local function init()
     map("n", ";ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
     map("x", ";ff", [[:lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
 
-    -- au(
+    -- augroup(
     --     "lmb__Formatting",
     --     {
     --         {
-    --             "FileType",
-    --             "lua",
-    --             function()
+    --             event = "FileType",
+    --             pattern = "lua",
+    --             command = function()
     --                 map("n", ";ff", "<Cmd>Neoformat! lua luafmt<CR>")
     --                 -- map("n", ";ff", "<Cmd>Neoformat! lua luaformat<CR>")
     --             end

@@ -1,5 +1,7 @@
 local M = {}
 
+-- local t = require("common.utils").t
+
 -- This is mean to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
 
@@ -8,15 +10,15 @@ local map = utils.map
 
 function M.vimgrep_qf(mode)
     local regions = M.get_regions(mode)
-    local text = table.concat(M.get_text(regions), "\n")
+    -- Multiline in unsupported, so concatenate with a space
+    local text = table.concat(M.get_text(regions), " ")
     -- Vimgrep doesn't respect smartcase
     cmd(([[:vimgrep '\C%s' %% | copen]]):format(text))
 end
 
-function M.vg_motion(options)
-    options = options or {}
+function M.vg_motion(motion)
     vim.o.operatorfunc = "v:lua.require'common.grepper'.vimgrep_qf"
-    api.nvim_feedkeys("g@" .. (options.motion or ""), "i", false)
+    api.nvim_feedkeys("g@" .. (motion or ""), "i", false)
 end
 
 -- Credit: gbprod/substitute.nvim

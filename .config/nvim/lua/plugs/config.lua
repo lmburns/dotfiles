@@ -4,12 +4,11 @@
 
 local M = {}
 
-local kutils = require("common.kutils")
+-- local kutils = require("common.kutils")
 local utils = require("common.utils")
 
 local wk = require("which-key")
 local map = utils.map
-local bmap = utils.bmap
 local command = utils.command
 local color = require("common.color")
 
@@ -164,7 +163,6 @@ function M.suda()
     map("n", "<Leader>W", ":SudaWrite<CR>")
 end
 
--- =============================== Suda ===============================
 -- ============================== GHLine ==============================
 function M.ghline()
     map("", "<Leader>gO", "<Plug>(gh-repo)")
@@ -175,7 +173,7 @@ end
 function M.persistence()
     require("persistence").setup(
         {
-            dir = ("%s/%s"):format(fn.stdpath("data"), "sessions"),
+            dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
             options = {"buffers", "curdir", "tabpages", "winsize"}
         }
     )
@@ -235,23 +233,34 @@ function M.floaterm()
 end
 
 -- ============================== targets =============================
+-- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
 function M.targets()
     -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
+    -- r,b,B,q,p,f,k = <>, (), {}, '', paragraph, function, class
     -- vI) = contents inside pair
     -- in( an( In( An( il( al( Il( Al( ... next and last pair
-    -- {a,I}{,.;+=...} = a/inside separator
+    -- {a,I,A}{,.;+=...} = a/inside/around separator
     -- ia = in argument
     -- aa = an argument
     -- inb anb Inb Anb ilb alb Ilb Alb = any block
     -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
-    cmd [[
-   augroup define_object
-     autocmd User targets#mappings#user call targets#mappings#extend({
-           \ 'a': {'argument': [{'o':'(', 'c':')', 's': ','}]}
-           \ })
-   augroup END
-  ]]
+    -- cib = change in () or {}
+
+    autocmd(
+        {
+            event = "User",
+            pattern = "targets#mappings#user",
+            command = function()
+                fn["targets#mappings#extend"](
+                    {
+                        a = {argument = {{o = "(", c = ")", s = ","}}},
+                        r = {pair = {{o = "<", c = ">"}}}
+                    }
+                )
+            end
+        }
+    )
 
     -- g.targets_aiAI = "aIAi"
     -- g.targets_seekRanges =
@@ -259,7 +268,7 @@ function M.targets()
     -- g.targets_jumpRanges = g.targets_seekRanges
     --
     -- -- Seeking next/last objects
-    -- g.targets_nl = "nm"
+    g.targets_nl = "nl"
 
     -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
     -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
@@ -269,6 +278,31 @@ function M.targets()
     -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
     -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
     -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+end
+
+-- ============================== matchup =============================
+function M.matchup()
+    -- hi MatchParenCur cterm=underline gui=underline
+    -- hi MatchWordCur cterm=underline gui=underline
+
+    g.loaded_matchit = 1
+    g.matchup_enabled = 1
+    g.matchup_motion_enabled = 1
+    g.matchup_text_obj_enabled = 1
+    g.matchup_matchparen_enabled = 1
+    g.matchup_surround_enabled = 0
+    -- g.matchup_transmute_enabled = 0
+    -- g.matchup_matchparen_offscreen = {method = "status_manual"}
+    g.matchup_matchparen_offscreen = {method = "popup"}
+
+    -- g.matchup_text_obj_linewise_operators = {"d", "y"}
+    -- g.matchup_matchparen_deferred = 1
+    -- g.matchup_matchparen_deferred_show_delay = 100
+    -- g.matchup_matchparen_hi_surround_always = 1
+    -- g.matchup_override_vimtex = 1
+    -- g.matchup_delim_start_plaintext = 0
+    -- map("o", "%", "]%")
+    -- map("o", "%", "<Plug>(matchup-%)")
 end
 
 -- =============================== pandoc =============================
@@ -352,18 +386,17 @@ function M.vimwiki()
     -- g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
     -- g.vimwiki_table_mappings = 0
 
-    cmd [[
-    hi VimwikiBold    guifg=#a25bc4 gui=bold
-    hi VimwikiCode    guifg=#d3869b
-    hi VimwikiItalic  guifg=#83a598 gui=italic
+    local hl = color.set_hl
+    hl("VimwikiBold", {guifg = "#a25bc4", gui = "bold"})
+    hl("VimwikiCode", {guifg = "#d3869b"})
+    hl("VimwikiItalic", {guifg = "#83a598", gui = "italic"})
+    hl("VimwikiHeader1", {guifg = "#F14A68", gui = "bold"})
+    hl("VimwikiHeader2", {guifg = "#F06431", gui = "bold"})
+    hl("VimwikiHeader3", {guifg = "#689d6a", gui = "bold"})
+    hl("VimwikiHeader4", {guifg = "#819C3B", gui = "bold"})
+    hl("VimwikiHeader5", {guifg = "#98676A", gui = "bold"})
+    hl("VimwikiHeader6", {guifg = "#458588", gui = "bold"})
 
-    hi VimwikiHeader1 guifg=#F14A68 gui=bold
-    hi VimwikiHeader2 guifg=#F06431 gui=bold
-    hi VimwikiHeader3 guifg=#689d6a gui=bold
-    hi VimwikiHeader4 guifg=#819C3B gui=bold
-    hi VimwikiHeader5 guifg=#98676A gui=bold
-    hi VimwikiHeader6 guifg=#458588 gui=bold
-  ]]
     -- highlight TabLineSel guifg=#37662b guibg=NONE
 
     map("n", "<Leader>vw", ":VimwikiIndex<CR>")
@@ -380,15 +413,23 @@ end
 
 -- =============================== Info ===============================
 function M.info()
-    cmd [[
-    if &buftype =~? 'info'
-        nmap <buffer> gu <Plug>(InfoUp)
-        nmap <buffer> gn <Plug>(InfoNext)
-        nmap <buffer> gp <Plug>(InfoPrev)
-        nmap <buffer> gm <Plug>(InfoMenu)
-        nmap <buffer> gf <Plug>(InfoFollow)
-    endif
-  ]]
+    -- Anonymous (no group)
+    nvim.create_autocmd(
+        "BufEnter",
+        {
+            pattern = "*",
+            callback = function()
+                local bufnr = nvim.get_current_buf()
+                if b[bufnr].ft == "info" then
+                    map("n", "gu", "<Plug>(InfoUp)", {buffer = bufnr})
+                    map("n", "gn", "<Plug>(InfoNext)", {buffer = bufnr})
+                    map("n", "gp", "<Plug>(InfoPrev)", {buffer = bufnr})
+                    map("n", "gm", "<Plug>(InfoMenu)", {buffer = bufnr})
+                    map("n", "gf", "<Plug>(InfoFollow)", {buffer = bufnr})
+                end
+            end
+        }
+    )
 end
 
 -- ============================== Minimap =============================
@@ -543,8 +584,18 @@ function M.hlslens()
     )
     cmd([[com! HlSearchLensToggle lua require('hlslens').toggle()]])
 
-    map("n", "n", [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR><Cmd>lua require('hlslens').start()<CR>]])
-    map("n", "N", [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR><Cmd>lua require('hlslens').start()<CR>]])
+    map(
+        "n",
+        "n",
+        [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]] ..
+            [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
+    )
+    map(
+        "n",
+        "N",
+        [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]] ..
+            [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
+    )
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     -- map(
     --     "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
@@ -562,16 +613,64 @@ function M.hlslens()
 end
 
 -- ============================= Surround =============================
-function M.surround()
-    map("n", "ds", "<Plug>Dsurround")
-    map("n", "cs", "<Plug>Csurround")
-    map("n", "cS", "<Plug>CSurround")
-    map("n", "ys", "<Plug>Ysurround")
-    map("n", "yS", "<Plug>YSurround")
-    map("n", "yss", "<Plug>Yssurround")
-    map("n", "ygs", "<Plug>YSsurround")
-    map("x", "S", "<Plug>VSurround")
-    map("x", "gS", "<Plug>VgSurround")
+-- function M.surround()
+--     map("n", "ds", "<Plug>Dsurround")
+--     map("n", "cs", "<Plug>Csurround")
+--     map("n", "cS", "<Plug>CSurround")
+--     map("n", "ys", "<Plug>Ysurround")
+--     map("n", "yS", "<Plug>YSurround")
+--     map("n", "yss", "<Plug>Yssurround")
+--     map("n", "ygs", "<Plug>YSsurround")
+--     map("x", "S", "<Plug>VSurround")
+--     map("x", "gS", "<Plug>VgSurround")
+-- end
+
+-- ============================ Sandwhich =============================
+function M.sandwhich()
+    -- Sandwhich
+    -- dss = automatic deletion
+    -- css = automatic changing
+    -- ySi = ask head and tail
+    -- yS = to end of line
+    -- yss = whole line
+    -- yiss = inside nearest delimiter
+
+    ex.runtime("macros/sandwich/keymap/surround.vim")
+
+    cmd [[
+      let g:sandwich#recipes += [
+      \   {'buns': ['{ ', ' }'], 'nesting': 1, 'match_syntax': 1,
+      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['{']},
+      \
+      \   {'buns': ['[ ', ' ]'], 'nesting': 1, 'match_syntax': 1,
+      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['[']},
+      \
+      \   {'buns': ['( ', ' )'], 'nesting': 1, 'match_syntax': 1,
+      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['(']},
+      \
+      \   {'buns': ['{\s*', '\s*}'],   'nesting': 1, 'regex': 1,
+      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+      \    'action': ['delete'], 'input': ['{']},
+      \
+      \   {'buns': ['\[\s*', '\s*\]'], 'nesting': 1, 'regex': 1,
+      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+      \    'action': ['delete'], 'input': ['[']},
+      \
+      \   {'buns': ['(\s*', '\s*)'],   'nesting': 1, 'regex': 1,
+      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
+      \    'action': ['delete'], 'input': ['(']},
+      \ ]
+    ]]
+
+    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
+    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
+    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
+    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
+    map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
+    map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
+
+    map("n", "<Leader>o", "ysiw")
+    -- map("n", "mlw", "yss`", {noremap = false})
 end
 
 -- ============================== LazyGit =============================
@@ -597,25 +696,6 @@ function M.scratchpad()
     -- g.scratchpad_daily_format = '%Y-%m-%d'
 
     map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
-end
-
--- ============================ Sandwhich =============================
-function M.sandwhich()
-    -- Sandwhich
-    -- dss = automatic deletion
-    -- css = automatic changing
-
-    ex.runtime("macros/sandwich/keymap/surround.vim")
-
-    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
-    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
-    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
-    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
-    map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
-    map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
-
-    map("n", "<Leader>o", "ysiw", {noremap = false})
-    map("n", "mlw", "yss`", {noremap = false})
 end
 
 -- =========================== BetterEscape ===========================
@@ -710,210 +790,6 @@ function M.move()
     )
 end
 
--- =============================== Hop ================================
-function M.hop()
-    -- "etovxqpdygfblzhckisuran"
-    require("hop").setup({keys = "asdfjklhmnwertzxcvbuiop"})
-
-    -- map("n", "<Leader><Leader>k", ":HopLineBC<CR>")
-    -- map("n", "<Leader><Leader>j", ":HopLineAC<CR>")
-    map("n", "<Leader><Leader>k", ":HopLineStartBC<CR>")
-    map("n", "<Leader><Leader>j", ":HopLineStartAC<CR>")
-
-    map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>")
-    map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>")
-    map("n", "<Leader><Leader>K", ":HopWordBC<CR>")
-    map("n", "<Leader><Leader>J", ":HopWordAC<CR>")
-    map("n", "<Leader><Leader>/", ":HopPattern<CR>")
-
-    -- ========================== f-Mapping ==========================
-
-    -- Normal
-    map(
-        "n",
-        "f",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true
-                }
-            )
-        end
-    )
-
-    -- Normal
-    map(
-        "n",
-        "F",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true
-                }
-            )
-        end
-    )
-
-    -- Motions
-    map(
-        "o",
-        "f",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = true
-                }
-            )
-        end
-    )
-
-    -- Motions
-    map(
-        "o",
-        "F",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = true
-                }
-            )
-        end
-    )
-
-    -- Visual mode
-    map(
-        "x",
-        "f",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-        end
-    )
-
-    -- Visual mode
-    map(
-        "x",
-        "F",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-        end
-    )
-
-    -- ========================== t-Mapping ==========================
-
-    -- Normal
-    map(
-        "n",
-        "t",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-            -- api.nvim_input("h")
-            api.nvim_feedkeys(kutils.termcodes["h"], "n", false)
-        end
-    )
-
-    -- Normal
-    map(
-        "n",
-        "T",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-            api.nvim_feedkeys(kutils.termcodes["l"], "n", false)
-        end
-    )
-
-    -- Motions
-    map(
-        "o",
-        "t",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-        end
-    )
-
-    -- Motions
-    map(
-        "o",
-        "T",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-        end
-    )
-
-    -- Visual mode
-    map(
-        "x",
-        "t",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-            api.nvim_feedkeys(kutils.termcodes["h"], "v", false)
-        end
-    )
-
-    -- Visual mode
-    map(
-        "x",
-        "T",
-        function()
-            require("hop").hint_char1(
-                {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = false
-                }
-            )
-            api.nvim_feedkeys(kutils.termcodes["l"], "v", false)
-        end
-    )
-end
-
 -- ========================== Window Picker ===========================
 function M.window_picker()
     require("nvim-window").setup(
@@ -946,6 +822,53 @@ function M.window_picker()
     )
 
     map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
+end
+
+-- ============================== LazyGit =============================
+function M.lazygit()
+    g.lazygit_floating_window_winblend = 0 -- transparency of floating window
+    g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner characters
+    g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
+    g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+
+    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
+end
+
+-- =============================== Specs ==============================
+function M.specs()
+    require("specs").setup(
+        {
+            show_jumps = true,
+            min_jump = fn.winheight("%"),
+            popup = {
+                delay_ms = 0, -- delay before popup displays
+                inc_ms = 20, -- time increments used for fade/resize effects
+                blend = 20, -- starting blend, between 0-100 (fully transparent), see :h winblend
+                width = 20,
+                winhl = "PMenu",
+                fader = require("specs").linear_fader,
+                resizer = require("specs").shrink_resizer
+            },
+            ignore_filetypes = {},
+            ignore_buftypes = {nofile = true}
+        }
+    )
+end
+
+-- ============================ ScratchPad ============================
+function M.scratchpad()
+    g.scratchpad_autostart = 0
+    g.scratchpad_autosize = 0
+    g.scratchpad_autofocus = 1
+    g.scratchpad_textwidth = 80
+    g.scratchpad_minwidth = 12
+    g.scratchpad_location = "~/.cache/scratchpad"
+    -- g.scratchpad_daily = 0
+    -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
+    -- g.scratchpad_daily_format = '%Y-%m-%d'
+
+    map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
 
 -- =============================== nlua ===============================
@@ -982,9 +905,9 @@ function M.colorizer()
 end
 
 -- ============================== cutlass =============================
-function M.cutlass()
-    require("cutlass").setup({cut_key = nil, override_del = nil, exclude = {"vx"}})
-end
+-- function M.cutlass()
+--     require("cutlass").setup({cut_key = nil, override_del = nil, exclude = {"vx"}})
+-- end
 
 -- ============================== grepper =============================
 function M.grepper()
@@ -1026,11 +949,18 @@ function M.trevj()
                     table_constructor = {final_separator = ",", final_end_line = true},
                     arguments = {final_separator = false, final_end_line = true},
                     parameters = {final_separator = false, final_end_line = true}
+                },
+                html = {
+                    start_tag = {
+                        final_separator = false,
+                        final_end_line = true,
+                        skip = {tag_name = true}
+                    }
                 }
             }
         }
     )
-    map("n", "<Leader>k", [[:lua require('trevj').format_at_cursor()<CR>]])
+    map("n", "gJ", [[:lua require('trevj').format_at_cursor()<CR>]])
 end
 
 -- ============================ registers =============================

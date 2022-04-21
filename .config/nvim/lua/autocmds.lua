@@ -1,6 +1,5 @@
 local utils = require("common.utils")
 local map = utils.map
-local au = utils.au
 local augroup = utils.augroup
 local create_augroup = utils.create_augroup
 
@@ -252,27 +251,14 @@ do
 end -- ]]]
 
 -- === Custom file type settings === [[[
-au(
+augroup(
     "lmb__CustomFileType",
     {
-        {{"BufRead", "BufNewFile"}, "*.ztst", "setl ft=ztst"},
-        {{"BufRead", "BufNewFile"}, "*.pre-commit", "setl ft=sh"},
-        {{"BufRead", "BufNewFile"}, "coc-settings.json", "setl ft=jsonc"},
+        {event = "FileType", pattern = "qf", command = [[set nobuflisted]]},
         {
-            {"BufRead", "BufNewFile"},
-            {"calcurse-note*", "~/.local/share/calcurse/notes/*"},
-            "set ft=markdown"
-        },
-        {{"BufRead", "BufNewFile"}, "*.ms,*.me,*.mom,*.man", "set ft=groff"},
-        {{"BufRead", "BufNewFile"}, "*.tex", "setl ft=tex"},
-        {"FileType", "json", [[syntax match Comment +\/\/.\+$+]]},
-        {"FileType", "nroff", [[setl wrap textwidth=85 colorcolumn=+1]]},
-        {"FileType", "json", [[setl shiftwidth=2]]},
-        {"FileType", "qf", [[set nobuflisted]]},
-        {
-            "BufWritePre",
-            "*",
-            function()
+            event = "BufWritePre",
+            pattern = "*",
+            command = function()
                 -- Delete trailing spaces
                 require("common.utils").preserve("%s/\\s\\+$//ge")
                 -- Delete trailing blank lines
@@ -281,53 +267,53 @@ au(
                 -- require("common.utils").squeeze_blank_lines()
             end
         },
-        {"BufWritePre", {"*.odt", "*.rtf"}, [[silent set ro]]},
+        {event = "BufWritePre", pattern = {"*.odt", "*.rtf"}, command = [[silent set ro]]},
         {
-            "BufWritePre",
-            "*.odt",
-            [[%!pandoc --columns=78 -f odt -t markdown "%"]]
+            event = "BufWritePre",
+            pattern = "*.odt",
+            command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
         },
-        {"BufWritePre", "*.rt", [[silent %!unrtf --text]]}
+        {event = "BufWritePre", pattern = "*.rt", command = [[silent %!unrtf --text]]}
     }
 )
 
-nvim.create_autocmd(
-    {"BufNewFile", "BufRead"},
-    {
-        pattern = "*",
-        callback = function()
-            require("filetype").resolve()
-        end
-    }
-)
+-- nvim.create_autocmd(
+--     {"BufNewFile", "BufRead"},
+--     {
+--         pattern = "*",
+--         callback = function()
+--             require("filetype").resolve()
+--         end
+--     }
+-- )
 -- ]]] === Custom file type ===
 
 -- === Custom syntax groups === [[[
-au(
+augroup(
     "lmb__CommentTitle",
     {
         {
-            "Syntax",
-            "*",
-            [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
+            event = "Syntax",
+            pattern = "*",
+            command = [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
                 [[contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]]
         },
         {
-            "Syntax",
-            "*",
-            [[syn match myTodo ]] ..
+            event = "Syntax",
+            pattern = "*",
+            command = [[syn match myTodo ]] ..
                 [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
                     [[ contained containedin=.*Comment.*,vimCommentTitle ]]
         },
         {
-            "Syntax",
-            "*",
-            [[syn keyword cmTitle contained=Comment]]
+            event = "Syntax",
+            pattern = "*",
+            command = [[syn keyword cmTitle contained=Comment]]
         },
         {
-            "Syntax",
-            "*",
-            [[syn keyword myTodo contained=Comment]]
+            event = "Syntax",
+            pattern = "*",
+            command = [[syn keyword myTodo contained=Comment]]
         }
     }
 )
@@ -448,7 +434,9 @@ augroup(
         {
             event = "FileChangedShellPost",
             pattern = "*",
-            command = [[echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
+            command = function()
+                api.nvim_echo({{"File changed on disk. Buffer reloaded!", "WarningMsg"}}, true, {})
+            end,
             description = "Display a message if the buffer is changed outside of instance"
         }
     }
@@ -462,6 +450,7 @@ augroup(
 --   - Only when searching in cmdline or in insert mode
 
 -- FIX: Rnu not working on startup until insert mode (focus not working either)
+--      It has worked before
 augroup(
     "RnuColumn",
     {

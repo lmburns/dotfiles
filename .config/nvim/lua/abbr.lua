@@ -2,6 +2,9 @@ local M = {}
 
 require("common.utils")
 
+---Create a `cnoreabbrev`
+---@param input string: Thing to be replaced
+---@param replace string: The abbreviation
 function M.cabbrev(input, replace)
     local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
 
@@ -37,5 +40,8 @@ M.cabbrev("PC", "PackerCompile")
 g.no_man_maps = 1
 M.cabbrev("man", "Man")
 M.cabbrev("vg", "vimgrep")
+M.cabbrev("grep", "Grep")
+M.cabbrev("lgrep", "LGrep")
+M.cabbrev("bufferiz", "Bufferize")
 
 return M

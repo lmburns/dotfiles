@@ -20,7 +20,7 @@ api = vim.api
 exec = api.nvim_exec
 uv = vim.loop
 F = vim.F
-levels = vim.log.levels
+log = vim.log
 
 fmt = string.format
 
@@ -31,7 +31,7 @@ Job = require("plenary.job")
 async = require("plenary.async")
 a = require("plenary.async_lib")
 nvim = require("nvim")
-ex = nvim.ex
+ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
 -- ========================== Functions ==========================
 
@@ -44,7 +44,7 @@ M.prequire = function(check, opts)
     opts = opts or {silent = false}
     local ok, ret = pcall(require, check)
     if not ok and not opts.silent then
-        M.notify({message = ("%s was sourced but not installed"):format(check), level = levels.ERROR})
+        M.notify({message = ("%s was sourced but not installed"):format(check), level = log.levels.ERROR})
         return nil
     end
     return ret
@@ -64,30 +64,6 @@ M.create_augroup = function(name, clear)
     return api.nvim_create_augroup(name, {clear = clear})
 end
 
----Create an autocmd; returns the group ID
----
----Used when all that is needed is the name, pattern, and command/callback
--- @param name: augroup name
--- @param commands: autocmd to execute
-M.au = function(name, commands)
-    local group = M.create_augroup(name)
-
-    for _, command in ipairs(commands) do
-        local event = command[1]
-        local patt = command[2]
-        local action = command[3]
-        local desc = command[4] or ""
-
-        if type(action) == "string" then
-            api.nvim_create_autocmd(event, {pattern = patt, command = action, group = group, desc = desc})
-        else
-            api.nvim_create_autocmd(event, {pattern = patt, callback = action, group = group, desc = desc})
-        end
-    end
-
-    return group
-end
-
 ---@class Autocommand
 ---@field description string
 ---@field event  string[] list of autocommand events
@@ -99,11 +75,12 @@ end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string|table
+---@param name string|table: Augroup name. If a table, `true` can be passed to clear the group
 ---@param commands Autocommand[]
 ---@return number
 M.augroup = function(name, commands)
     local id
+    -- If name is a table, user wants to probably clear the augroup
     if type(name) == "table" then
         id = M.create_augroup(name[1], name[2])
     else
@@ -111,22 +88,29 @@ M.augroup = function(name, commands)
     end
 
     for _, autocmd in ipairs(commands) do
-        local is_callback = type(autocmd.command) == "function"
-        api.nvim_create_autocmd(
-            autocmd.event,
-            {
-                group = id,
-                pattern = autocmd.pattern,
-                desc = autocmd.description,
-                callback = is_callback and autocmd.command or nil,
-                command = not is_callback and autocmd.command or nil,
-                once = autocmd.once,
-                nested = autocmd.nested,
-                buffer = autocmd.buffer
-            }
-        )
+        M.autocmd(autocmd, id)
     end
     return id
+end
+
+---Create a single autocmd
+---@param autocmd Autocommand[]
+---@param id? number Group id
+M.autocmd = function(autocmd, id)
+    local is_callback = type(autocmd.command) == "function"
+    api.nvim_create_autocmd(
+        autocmd.event,
+        {
+            group = F.if_nil(id, nil),
+            pattern = autocmd.pattern,
+            desc = autocmd.description or autocmd.desc,
+            callback = F.tern(is_callback, autocmd.command, nil),
+            command = F.tern(not is_callback, autocmd.command, nil),
+            once = autocmd.once,
+            nested = autocmd.nested,
+            buffer = autocmd.buffer
+        }
+    )
 end
 
 --- @class MapArgs
@@ -140,6 +124,8 @@ end
 --- @field remap boolean
 --- @field callback function
 --- @field cmd boolean
+
+-- Why is the `ShowDocumentation` key needed to be pressed multiple times for this function?
 
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
@@ -292,12 +278,23 @@ end
 
 ---Creates a command for a given buffer
 ---@param name string
----@param command string|function
+---@param rhs string|function
 ---@param opts table
 M.bcommand = function(name, rhs, opts, bufnr)
     opts = opts or {}
     -- opts.force = true
     api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
+end
+
+---Source a lua or vimscript file
+---@param path string path relative to the nvim directory
+---@param prefix boolean?
+M.source = function(path, prefix)
+    if not prefix then
+        cmd(fmt("source %s", path))
+    else
+        cmd(("source %s/%s"):format(fn.stdpath("config"), path))
+    end
 end
 
 -- Check whether the current buffer is empty
@@ -348,12 +345,11 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
---- Wrapper to send a notification
---- This may not be that useful
----@param  options same options as `nvim_notify`
+---Wrapper to send a notification
+---@param options table same options as `nvim_notify`
 M.notify = function(options)
     if type(options) == "string" then
-        api.nvim_notify(options, levels.INFO, {icon = "", title = "Notification"})
+        api.nvim_notify(options, log.levels.INFO, {icon = "", title = "Notification"})
         return
     end
 
@@ -364,7 +360,7 @@ M.notify = function(options)
             message = "This is a sample notification.",
             icon = "",
             title = "Notification",
-            level = levels.INFO
+            level = log.levels.INFO
         },
         options or {}
     )
@@ -539,7 +535,7 @@ M.profile = function(filename)
     fn.mkdir(base, "p")
     local success, profile = pcall(require, "plenary.profile.lua_profiler")
     if not success then
-        api.nvim_echo({"Plenary is not installed.", "Title"}, true, {})
+        api.nvim_echo({{"Plenary is not installed.", "Title"}}, true, {})
     end
     profile.start()
     return function()
@@ -555,6 +551,7 @@ M.profile = function(filename)
     end
 end
 
+---Reload all lua modules
 M.reload_config = function()
     -- Handle impatient.nvim automatically.
     local luacache = (_G.__luacache or {}).cache
@@ -573,6 +570,45 @@ M.reload_config = function()
     end
 
     dofile(env.MYVIMRC)
+end
+
+---Reload lua modules in a given path
+---@param path string
+---@param recursive string
+M.reload_path = function(path, recursive)
+    if recursive then
+        for key, value in pairs(package.loaded) do
+            if key ~= "_G" and value and fn.match(key, path) ~= -1 then
+                package.loaded[key] = nil
+                require(key)
+            end
+        end
+    else
+        package.loaded[path] = nil
+        require(path)
+    end
+end
+
+---NOTE: this plugin returns the currently loaded state of a plugin given
+---given certain assumptions i.e. it will only be true if the plugin has been
+---loaded e.g. lazy loading will return false
+---@param plugin_name string
+---@return boolean?
+M.plugin_loaded = function(plugin_name)
+    local plugins = _G.packer_plugins or {}
+    return plugins[plugin_name] and plugins[plugin_name].loaded
+end
+
+---Return a value based on two values
+---@param condition boolean Statement to be tested
+---@param is_if any Return if condition is truthy
+---@param is_else any Return if condition is not truthy
+F.tern = function(condition, is_if, is_else)
+    if condition then
+        return is_if
+    else
+        return is_else
+    end
 end
 
 -- ================= Tips ================== [[[

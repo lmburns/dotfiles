@@ -4,13 +4,12 @@ local wk = require("which-key")
 local map = require("common.utils").map
 
 function M.setup()
-    -- Why is this on?
-    ---@diagnostic disable-next-line: redundant-parameter
+    -- FIX: Get this spelling/motions to work without remap
+    -- TODO: Get '?' to map to current operator
     wk.setup {
         plugins = {
             marks = true, -- shows a list of your marks on ' and `
             registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
-            -- FIX: Get this to work
             spelling = {
                 enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
                 suggestions = 20 -- how many suggestions should be shown in the list?
@@ -94,6 +93,13 @@ local function init()
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
             ["z="] = {[[<Cmd>WhichKey z=<CR>]], "WhichKey spelling"}
         }
+    )
+
+    wk.register(
+        {
+            ["?"] = {"<Cmd>WhichKey d<CR>", "WhichKey operator"}
+        },
+        {mode = "o"}
     )
 
     -- registers.nvim is better for this

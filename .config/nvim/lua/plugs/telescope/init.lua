@@ -20,6 +20,7 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 local Path = require("plenary.path")
 
 local b_utils = require("common.utils")
+local command = b_utils.command
 local map = b_utils.map
 require("dev")
 
@@ -922,6 +923,14 @@ end
 builtin.rualdi = function(opts)
     telescope.extensions.rualdi.list(opts)
 end
+
+command(
+    "Ghq",
+    function()
+        telescope.extensions.ghq.list()
+    end,
+    {nargs = 0}
+)
 
 -- ========================== Mappings ===========================
 local map = require("common.utils").map

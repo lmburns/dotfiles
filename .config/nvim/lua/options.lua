@@ -11,8 +11,8 @@ g.maplocalleader = [[,]]
 -- map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
 -- Lua filetype detection
-g.do_filetype_lua = 1
-g.did_load_filetypes = 1
+-- g.do_filetype_lua = 1
+-- g.did_load_filetypes = 1
 -- vim.filetype.add({
 --     extension = {},
 --     filename = {}
@@ -247,7 +247,7 @@ g.clipboard = clipboard
 -- filetype on
 -- filetype plugin on
 -- filetype plugin indent on
-cmd [[
-  syntax enable
-]]
+-- cmd [[
+--   syntax enable
+-- ]]
 -- ]]] === Commands ===

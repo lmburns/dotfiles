@@ -416,14 +416,12 @@ end
 
 -- If this is ran in `init.lua` the command is not overwritten
 function M.tag_cmd()
-    local au = require("common.utils").au
-
-    au(
+    augroup(
         "MyCocDef",
         {
             {
-                "FileType",
-                {
+                event = "FileType",
+                pattern = {
                     "rust",
                     "scala",
                     "python",
@@ -437,7 +435,7 @@ function M.tag_cmd()
                     "javascript",
                     "typescript"
                 },
-                function()
+                command = function()
                     map("n", "<C-]>", "<Plug>(coc-definition)", {noremap = true, silent = true})
                 end
             }
@@ -445,12 +443,12 @@ function M.tag_cmd()
     )
 
     -- nlua uses 'K' to help show documentation in vim
-    -- au(
+    -- augroup(
     --     "LuaShowDoc", {
     --       {
-    --         "FileType",
-    --         "lua",
-    --         function()
+    --         event = "FileType",
+    --         pattern = "lua",
+    --         command = function()
     --           map(
     --               "n", "M",
     --               [[:lua require('plugs.coc').show_documentation()<CR>]],
@@ -648,7 +646,8 @@ function M.init()
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
-            ["<Leader>x;"] = {":lua require('plugs.coc').diagnostic()<CR>j", "Get diagnostics"},
+            ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>j", "Coc diagnostics (project)"},
+            ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
             ["<Leader>qf"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
@@ -770,7 +769,6 @@ function M.init()
             ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
             ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
             -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
-            ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (fzf)"},
             ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
             ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}
         }
@@ -778,10 +776,8 @@ function M.init()
 
     -- map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
 
-    map("n", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], {expr = true, silent = true})
-    map("n", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], {expr = true, silent = true})
-    map("s", "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], {expr = true, silent = true})
-    map("s", "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], {expr = true, silent = true})
+    map({"n", "s"}, "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], {expr = true, silent = true})
+    map({"n", "s"}, "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], {expr = true, silent = true})
     map("i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]], {expr = true, silent = true})
     map("i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]], {expr = true, silent = true})
 

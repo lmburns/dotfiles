@@ -3,7 +3,6 @@ local M = {}
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
-local au = utils.au
 local augroup = utils.augroup
 
 -- ============================ Commands ============================== [[[
@@ -12,11 +11,27 @@ command(
     "NvimRestart",
     function()
         if not pcall(require, "nvim-reload") then
-            require("packer").loader("nvim-reload")
+            -- require("packer").loader("nvim-reload")
+            vim.notify("RELOADING")
+            ex.PackerLoad("nvim-reload")
         end
         local reload = R("plugs.nvim-reload")
-        -- R("nvim-reload").Restart()
         reload.Restart()
+        -- ex.PackerSync()
+    end,
+    {nargs = "*"}
+)
+
+command(
+    "NvimReload",
+    function()
+        if not pcall(require, "nvim-reload") then
+            ex.PackerLoad("nvim-reload")
+        end
+        local reload = require("nvim-reload")
+        -- R("nvim-reload").Restart()
+        reload.Reload()
+        ex.colorscheme("kimbox")
     end,
     {nargs = "*"}
 )
@@ -155,36 +170,36 @@ cmd [[
   endif
 ]]
 
-au(
+augroup(
     "ExecuteBuffer",
     {
         {
-            "FileType",
-            {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
-            function()
+            event = "FileType",
+            pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
+            command = function()
                 map("n", "<Leader>r<CR>", ":RUN<CR>")
                 map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
             end
         },
         {
-            "FileType",
-            "typescript",
-            function()
+            event = "FileType",
+            pattern = "typescript",
+            command = function()
                 map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
                 -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
             end
         },
         {
-            "FileType",
-            "javascript",
-            function()
+            event = "FileType",
+            pattern = "javascript",
+            command = function()
                 map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
             end
         },
         {
-            "FileType",
-            "lua",
-            function()
+            event = "FileType",
+            pattern = "lua",
+            command = function()
                 map("n", "<Leader>xl", ":luafile %<CR>")
                 map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
                 map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])

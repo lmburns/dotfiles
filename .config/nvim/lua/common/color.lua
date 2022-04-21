@@ -2,6 +2,9 @@ local M = {}
 
 require("common.utils")
 
+---@alias Group string
+---@alias Color string
+
 ---Define bg color
 ---@param group Group
 ---@param color Color
@@ -12,15 +15,15 @@ end
 ---Define fg color
 ---@param group Group
 ---@param color Color
-function M.fg(group, col, gui)
+function M.fg(group, color, gui)
     local g = gui == nil and "" or (" gui=%s"):format(gui)
-    cmd(("hi %s guifg=%s %s"):format(group, col, g))
+    cmd(("hi %s guifg=%s %s"):format(group, color, g))
 end
 
 ---Define bg and fg color
 ---@param group Group
----@param fgcol Fg Color
----@param bgcol Bg Color
+---@param fgcol Color
+---@param bgcol Color
 function M.fg_bg(group, fgcol, bgcol)
     cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
 end

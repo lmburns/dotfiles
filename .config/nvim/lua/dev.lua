@@ -2,8 +2,6 @@
 
 local M = {}
 
----@alias vector any[]
-
 P = function(...)
     print(vim.inspect(...))
     return ...
@@ -56,6 +54,8 @@ function M.inspect(v)
     local t = type(v)
     if t == "nil" then
         s = "nil"
+    elseif t == "userdata" then
+        s = ("Userdata:\n%s"):format(vim.inspect(getmetatable(v)))
     elseif t ~= "string" then
         s = vim.inspect(v)
     else
@@ -73,7 +73,7 @@ function _G.pln(...)
         table.insert(msg_tbl, M.inspect(arg))
     end
 
-    print(table.concat(msg_tbl, "\n"))
+    print(table.concat(msg_tbl, "\n\n"))
 end
 
 -- Print text nicely
@@ -214,13 +214,29 @@ function M.vec_join(...)
     return result
 end
 
+---Find an item in a list
+---@generic T
+---@param haystack T[]
+---@param matcher fun(arg: T):boolean
+---@return T
+M.find = function(haystack, matcher)
+    local found
+    for _, needle in ipairs(haystack) do
+        if matcher(needle) then
+            found = needle
+            break
+        end
+    end
+    return found
+end
+
 ---Return the first index a given object can be found in a vector, or -1 if
 ---it's not present.
 ---
 ---@param t vector
 ---@param v any
 ---@return integer
-function M.vec_indexof(t, v)
+M.vec_indexof = function(t, v)
     for i, vt in ipairs(t) do
         if vt == v then
             return i
@@ -234,7 +250,7 @@ end
 ---
 ---@param t vector
 ---@return vector t
-function M.vec_push(t, ...)
+M.vec_push = function(t, ...)
     for _, v in ipairs({...}) do
         t[#t + 1] = v
     end
@@ -284,7 +300,7 @@ end
 
 ---Return a table of the id's of loaded buffers
 ---@return table
-function M.list_loaded_bufs()
+M.list_loaded_bufs = function()
     return vim.tbl_filter(
         function(id)
             return api.nvim_buf_is_loaded(id)
@@ -293,7 +309,7 @@ function M.list_loaded_bufs()
     )
 end
 
-function M.list_listed_bufs()
+M.list_listed_bufs = function()
     return vim.tbl_filter(
         function(id)
             return vim.bo[id].buflisted
@@ -302,7 +318,7 @@ function M.list_listed_bufs()
     )
 end
 
-function M.find_buf_with_var(var, value)
+M.find_buf_with_var = function(var, value)
     for _, id in ipairs(api.nvim_list_bufs()) do
         local ok, v = pcall(api.nvim_buf_get_var, id, var)
         if ok and v == value then
@@ -331,7 +347,7 @@ end
 ---@param str string: String to concatenate to the table
 ---@param sep string: Separator to concatenate the table
 ---@return string
-function M.list(value, str, sep)
+M.list = function(value, str, sep)
     sep = sep or ","
     str = str or ""
     value = type(value) == "table" and table.concat(value, sep) or value
@@ -418,27 +434,6 @@ function M.switch(c)
     return swtbl
 end
 
--- Capture output of a command using plenary
--- local job = require("plenary.job")
--- job:new(
---     {
---       command = "rg",
---       args = { "--files" },
---       cwd = "~",
---       env = { ["testing"] = "empty" },
---       on_exit = function(j, ret)
---         print(ret)
---         print(j:result())
---       end,
---     }
--- ):sync()
-
--- Help
--- print(vim.inspect(vim.fn.api_info()))
--- print(vim.inspect(vim))
---
--- print(vim.inspect(vim.loop))
--- Reference: https://github.com/luvit/luv/blob/master/docs.md
 -- Examples:  https://github.com/luvit/luv/tree/master/examples
 
 return M

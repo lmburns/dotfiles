@@ -66,7 +66,7 @@ local function apply_fold(bufnr, ranges)
             --     -- cmd("norm! l")
             --     --     vim.notify("INIT")
             --     --     cmd("norm! <C-o>zE")
-            --     cmd("norm! zE")
+                cmd("norm! zE")
             -- else
             --     cmd("norm! <C-o>zE")
             -- end

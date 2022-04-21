@@ -59,7 +59,7 @@ function M.setup()
           },
         },
         excluded_buftypes = { "terminal" },
-        excluded_filetypes = { "prompt", "TelescopePrompt" },
+        excluded_filetypes = { "prompt", "TelescopePrompt", "bufferize" },
         autocmd = {
           render = {
             "BufEnter",

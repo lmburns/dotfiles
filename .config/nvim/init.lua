@@ -89,7 +89,7 @@ require("common.grepper")
 a.async_void(
     function()
         vim.notify = function(...)
-            cmd [[PackerLoad nvim-notify]]
+            ex.PackerLoad("nvim-notify")
             vim.notify = require("notify")
             vim.notify(...)
         end
@@ -99,6 +99,9 @@ a.async_void(
 
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
+
+-- ex.filetype("off")
+-- g.did_load_filetypes = 0 -- this messes up NvimRestart
 
 vim.schedule(
     function()
@@ -127,13 +130,45 @@ vim.schedule(
             function()
                 require("plugs.tree-sitter")
 
+                g.do_filetype_lua = 1
+                g.did_load_filetypes = 1
+
+                -- nvim.create_autocmd(
+                --     {"BufNewFile", "BufRead"},
+                --     {
+                --         pattern = "*",
+                --         callback = function()
+                --             require("filetype").resolve()
+                --         end
+                --     }
+                -- )
+
                 -- runtime! filetype.vim
-                cmd [[
-                    au! syntaxset
-                    au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
-                    filetype on
-                    filetype plugin indent on
-                ]]
+                -- cmd [[
+                --     au! syntaxset
+                --     au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
+                --     syntax on
+                --     filetype on
+                --     filetype plugin indent on
+                -- ]]
+
+                augroup(
+                    {"syntaxset", true},
+                    {
+                        {
+                            event = "FileType",
+                            pattern = "*",
+                            command = function()
+                                require("plugs.tree-sitter").hijack_synset()
+                            end
+                        }
+                    }
+                )
+
+                ex.syntax("on")
+                ex.filetype("on")
+                -- doautoall filetypedetect " BufRead
+                ex.doautoall("filetypedetect") -- Runs filetype.resolve()
             end,
             15
         )
@@ -264,7 +299,7 @@ vim.schedule(
                     end
                 )
 
-                api.nvim_create_autocmd(
+                nvim.create_autocmd(
                     "User",
                     {
                         callback = function()

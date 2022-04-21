@@ -1,6 +1,6 @@
 local M = {}
 
-local au = require("common.utils").au
+local augroup = require("common.utils").augroup
 
 function M.setup()
     g.vimtex_view_method = "zathura"
@@ -19,13 +19,13 @@ end
 local function init()
     M.setup()
 
-    au(
+    augroup(
         "lmb__Vimtex",
         {
-            {"InsertEnter", "*.tex", [[set conceallevel=0]]},
-            {"InsertLeave", "*.tex", [[set conceallevel=2]]},
-            {"BufEnter", "*.tex", [[set concealcursor-=n]]},
-            {"VimLeave", "*.tex", [[!texclear %]]}
+            {event = "InsertEnter", pattern = "*.tex", command = [[set conceallevel=0]]},
+            {event = "InsertLeave", pattern = "*.tex", command = [[set conceallevel=2]]},
+            {event = "BufEnter", pattern = "*.tex", command = [[set concealcursor-=n]]},
+            {event = "VimLeave", pattern = "*.tex", command = [[!texclear %]]}
         }
     )
 end

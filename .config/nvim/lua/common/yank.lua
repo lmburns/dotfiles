@@ -1,7 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
-local au = utils.au
+local augroup = utils.augroup
 
 local last_wv
 local winid
@@ -52,13 +52,13 @@ function M.yank_reg(regname, context, level, opts)
 end
 
 local function init()
-    au(
+    augroup(
         "TextYank",
         {
             {
-                "TextYankPost",
-                "*",
-                function()
+                event = "TextYankPost",
+                pattern = "*",
+                command = function()
                     require("common.yank").restore()
                 end
             }

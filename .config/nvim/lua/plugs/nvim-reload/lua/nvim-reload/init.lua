@@ -7,10 +7,12 @@ local scan_dir = require("plenary.scandir").scan_dir
 local Path = require("plenary.path")
 
 -- Paths to unload Lua modules from
-M.lua_reload_dirs = {fn.stdpath("config")}
+-- M.lua_reload_dirs = {fn.stdpath("config")}
+M.lua_reload_dirs = {}
 
 -- Paths to reload Vim files from
-M.vim_reload_dirs = {fn.stdpath("config"), fn.stdpath("data") .. "/site/pack/*/start/*"}
+M.vim_reload_dirs = {}
+-- M.vim_reload_dirs = {fn.stdpath("config"), fn.stdpath("data") .. "/site/pack/*/start/*"}
 
 -- External files outside the runtimepaths to source
 M.files_reload_external = {}
@@ -115,15 +117,18 @@ local function reload_runtime_files()
             local runtime_files = get_runtime_files_in_path(path)
 
             for _, file in ipairs(runtime_files) do
-                if not pcall(ex.source, file) then
-                    vim.notify(file)
-                end
+                -- if not pcall(ex.source, file) then
+                --     vim.notify(file)
+                -- end
+
+                -- iswap and 2 others error out
+                pcall(ex.source, file)
             end
         end
     end
 
     for _, file in ipairs(M.files_reload_external) do
-        cmd("source " .. file)
+        ex.source(file)
     end
 end
 
@@ -144,6 +149,7 @@ local function unload_lua_modules()
 
     for _, module in ipairs(M.modules_reload_external) do
         package.loaded[module] = nil
+        -- RELOAD(module)
     end
 end
 
@@ -187,7 +193,9 @@ function M.Restart()
     M.Reload()
 
     -- Manually run VimEnter autocmd to emulate a new run of Vim
-    cmd("doautocmd VimEnter")
+    -- cmd("doautoall VimEnter")
+    -- cmd("doautocmd BufEnter")
+    -- cmd("doautocmd FileType")
 end
 
 return M

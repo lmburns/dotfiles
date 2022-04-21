@@ -153,7 +153,7 @@ wk.register(
         ["d"] = {[["_d]], "Delete (blackhole)"},
         ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"},
         -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
-        ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
+        -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
     {mode = "v"}
 )
@@ -169,18 +169,18 @@ map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 wk.register(
     {
         ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
-        ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
-        ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+        ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+        ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
     },
     {expr = true}
 )
 
-wk.register(
-    {
-        ["oo"] = {"o<Esc>k", "Insert line below cursor"},
-        ["OO"] = {"O<Esc>j", "Insert line above cursor"}
-    }
-)
+-- wk.register(
+--     {
+--         ["oo"] = {"o<Esc>k", "Insert line below cursor"},
+--         ["OO"] = {"O<Esc>j", "Insert line above cursor"}
+--     }
+-- )
 
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
@@ -304,6 +304,7 @@ wk.register(
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["<Leader>cc"] = {":cclose<CR>", "Close quickfix (cclose)"},
         ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
+        ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
         ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline()<CR>]], "Quickfix function outline"}
     }

@@ -3,12 +3,11 @@ local reload = require("nvim-reload")
 local nvim_reload_dir = fn.stdpath("data") .. "/site/pack/*/opt/nvim-reload"
 local plugin_dirs_autoload = fn.stdpath("data") .. "/site/pack/*/start/*"
 local plugin_dirs_lazyload = {
+    -- fn.stdpath("data") .. "/site/pack/*/opt/lualine.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/fzf-lua",
-    fn.stdpath("data") .. "/site/pack/*/opt/nvim-fzf",
-    fn.stdpath("data") .. "/site/pack/*/opt/lualine.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/telescope.nvim",
-    fn.stdpath("data") .. "/site/pack/*/opt/which-key.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/toggleterm.nvim",
+    fn.stdpath("data") .. "/site/pack/*/opt/which-key.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/indent-blankline.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/nvim-dap"
 }
@@ -39,19 +38,18 @@ end
 -- FIX: Motions like `dw` delete way more
 reload.post_reload_hook = function()
     cmd [[nohl]]
+
+    -- cmd("doautocmd ColorScheme")
+    cmd("doautocmd VimEnter")
+    -- cmd("doautoall WinEnter")
+
     -- recompile packer
-    cmd [[pa packer.nvim]]
+    -- cmd [[pa packer.nvim]]
     require("plugins").compile()
 
-    -- cmd [[pa nvim-treesitter]]
-    -- require("plugs.tree-sitter")
-
-    ex.PackerLoad("coc.nvim")
-
-    -- if reload.lsp_was_loaded and vim.fn.exists(":PackerLoad") ~= 0 then
-    --     vim.cmd("PackerLoad nvim-lspconfig")
-    --     vim.cmd("PackerLoad nvim-lsp-installer")
-    -- end
+    -- cmd [[pa coc-kvs]]
+    -- cmd [[pa coc.nvim]]
+    -- ex.PackerLoad("coc.nvim")
 
     -- re-source all language specific settings, scans all runtime files under
     -- '/usr/share/nvim/runtime/(indent|syntax)' and 'after/ftplugin'
@@ -61,7 +59,11 @@ reload.post_reload_hook = function()
             for _, e in ipairs({"vim", "lua"}) do
                 if ft and #ft > 0 and s:match(("/%s.%s"):format(ft, e)) then
                     local file = fn.expand(s:match("[^: ]*$"))
-                    ex.source(file)
+                    if e == "vim" then
+                        ex.source(file)
+                    else
+                        ex.luafile(file)
+                    end
                     return s
                 end
             end
@@ -69,6 +71,26 @@ reload.post_reload_hook = function()
         end,
         fn.split(fn.execute("scriptnames"), "\n")
     )
+
+    -- ex.PackerLoad("nvim-treesitter")
+    cmd [[pa nvim-treesitter]]
+    -- require("plugs.tree-sitter")
+
+    cmd [[syntax on]]
+    -- local tbl = require("impatient").modpaths.cache
+    -- for k, v in pairs(tbl) do
+    --     if k:match("^nvim%-treesitter*") then
+    --         -- ex.luafile(v)
+    --         RELOAD(k)
+    --     end
+    -- end
+
+    -- cmd("luafile " .. require('packer').config.compile_path)
+
+    -- cmd("doautocmd NvimTreesitter")
+    -- cmd("doautoall WinEnter")
+    -- cmd("doautocmd BufEnter")
+    -- cmd("doautocmd FileType")
 end
 
 return reload

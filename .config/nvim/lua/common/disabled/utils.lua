@@ -1,3 +1,27 @@
+---Create an autocmd; returns the group ID
+---
+---Used when all that is needed is the name, pattern, and command/callback
+-- @param name: augroup name
+-- @param commands: autocmd to execute
+M.au = function(name, commands)
+    local group = M.create_augroup(name)
+
+    for _, command in ipairs(commands) do
+        local event = command[1]
+        local patt = command[2]
+        local action = command[3]
+        local desc = command[4] or ""
+
+        if type(action) == "string" then
+            api.nvim_create_autocmd(event, {pattern = patt, command = action, group = group, desc = desc})
+        else
+            api.nvim_create_autocmd(event, {pattern = patt, callback = action, group = group, desc = desc})
+        end
+    end
+
+    return group
+end
+
 ---Create an autocmd with vim commands
 ---
 ---This allows very easy transition from vim commands

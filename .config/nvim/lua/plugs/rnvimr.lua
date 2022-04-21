@@ -2,7 +2,7 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
-local au = utils.au
+local augroup = utils.augroup
 
 function M.setup()
     -- Replace Netrw
@@ -84,13 +84,13 @@ local function init()
 
     map("n", "<M-i>", ":RnvimrToggle<CR>", {silent = true})
 
-    au(
+    augroup(
         "RnvimrKeymap",
         {
             {
-                "FileType",
-                "rnvimr",
-                function()
+                event = "FileType",
+                pattern = "rnvimr",
+                command = function()
                     map("t", "<M-i>", "<Cmd>RnvimrResize<CR>", {silent = true})
                     map("t", "<C-o>", "<Cmd>RnvimrToggle<CR>", {silent = true})
                 end
