@@ -6,7 +6,6 @@ local M = {}
 
 local kutils = require("common.kutils")
 local utils = require("common.utils")
-local K = require("common.keymap")
 
 local wk = require("which-key")
 local map = utils.map
@@ -71,7 +70,7 @@ function M.listish()
                 open = "qo",
                 on_cursor = "qa", -- add current position to the list
                 add_note = "qn", -- add current position with your note to the list
-                clear = "qd", -- clear all items
+                clear = "qi", -- clear all items
                 close = "<leader>qc",
                 next = "]q",
                 prev = "[q"
@@ -172,7 +171,17 @@ function M.ghline()
     map("", "<Leader>gL", "<Plug>(gh-line)")
 end
 
--- ============================== Flaoterm ============================
+-- ============================= Persistence ==========================
+function M.persistence()
+    require("persistence").setup(
+        {
+            dir = ("%s/%s"):format(fn.stdpath("data"), "sessions"),
+            options = {"buffers", "curdir", "tabpages", "winsize"}
+        }
+    )
+end
+
+-- ============================== Floaterm ============================
 function M.floaterm()
     map("n", "<Leader>fll", ":Floaterms<CR>")
     map("n", ";fl", ":FloatermToggle<CR>")
@@ -1057,6 +1066,27 @@ end
 -- ============================== Unused ==============================
 -- ====================================================================
 
+-- ========================== Session Manager =========================
+-- function M.session_manager()
+--     require("session_manager").setup(
+--         {
+--             sessions_dir = Path:new(fn.stdpath("data"), "sessions"),
+--             path_replacer = "__",
+--             colon_replacer = "++",
+--             autoload_mode = require("session_manager.config").AutoloadMode.LastSession,
+--             autosave_last_session = true,
+--             autosave_ignore_not_normal = true,
+--             autosave_ignore_filetypes = {
+--                 -- All buffers of these file types will be closed before the session is saved.
+--                 "gitcommit"
+--             },
+--             autosave_only_in_session = false,
+--             max_path_length = 80
+--         }
+--     )
+-- end
+
+-- ============================== Luadev ==============================
 -- function M.luadev()
 --   map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
 --   map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })

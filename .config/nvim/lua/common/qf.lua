@@ -226,11 +226,11 @@ function M.syntax()
 end
 
 local function init()
-    vim.g.qf_disable_statusline = true
+    g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    nvim.ex.cabbrev("cdos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>")
-    nvim.ex.cabbrev("ldos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>")
+    ex.cabbrev("cdos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>")
+    ex.cabbrev("ldos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>")
 
     command(
         "Cdos",

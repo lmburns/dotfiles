@@ -9,7 +9,7 @@ function M.setup()
     wk.setup {
         plugins = {
             marks = true, -- shows a list of your marks on ' and `
-            registers = false, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
+            registers = true, -- shows your registers on " in NORMAL or <C-r> in INSERT mode
             -- FIX: Get this to work
             spelling = {
                 enabled = true, -- enabling this will show WhichKey when pressing z= to select spelling suggestions
@@ -95,6 +95,15 @@ local function init()
             ["z="] = {[[<Cmd>WhichKey z=<CR>]], "WhichKey spelling"}
         }
     )
+
+    -- registers.nvim is better for this
+    -- map(
+    --     '"',
+    --     "n",
+    --     function()
+    --         require("which-key").show("@", {mode = "n", auto = true})
+    --     end
+    -- )
 
     -- K.n("<SubLeader><CR>", "<Cmd>WhichKey <SubLeader><CR>")
     -- K.n("<EasyMotion><CR>", "<Cmd>WhichKey <EasyMotion><CR>")

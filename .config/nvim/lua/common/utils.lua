@@ -50,8 +50,16 @@ M.prequire = function(check, opts)
     return ret
 end
 
+---Execute a command in normal mode. Equivalent to `norm! <cmd>`
+---@param mode string
+---@param motion string
+M.normal = function(mode, motion)
+    local sequence = M.t(motion, true, false, false)
+    nvim.feedkeys(sequence, mode, true)
+end
+
 -- Create an augroup with the lua api
-function M.create_augroup(name, clear)
+M.create_augroup = function(name, clear)
     clear = clear == nil and true or clear
     return api.nvim_create_augroup(name, {clear = clear})
 end
@@ -194,7 +202,7 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
                     if res == nil then
                         return ""
                     elseif opts.replace_keycodes ~= false then
-                        return M.t(res, true, true, true)
+                        return M.t(res)
                     else
                         return res
                     end
@@ -251,15 +259,20 @@ M.fmap = function(mode, lhs, rhs, opts)
 end
 
 -- Replace termcodes; e.g., t'<C-n>'
-M.t = function(str)
-    return api.nvim_replace_termcodes(str, true, true, true)
+---@param str string: String to be converted
+---@param from_part boolean: Legacy vim parameter. Usually true
+---@param do_lt boolean: Also translate `<lt>` (Ignored if special is false)
+---@param special boolean: Replace keycodes, e.g., `<CR>` => `\r`
+---@return string
+M.t = function(str, from_part, do_lt, special)
+    return api.nvim_replace_termcodes(str, F.if_nil(from_part, true), F.if_nil(do_lt, true), F.if_nil(special, true))
 end
 
 ---Debug helper
 ---@vararg table | string | number: Anything to dump
 M.dump = function(...)
-    local objects = vim.tbl_map(M.inspect, {...})
-    print(table.unpack(objects))
+    local objects = vim.tbl_map(require("dev").inspect, {...})
+    print(unpack(objects))
 end
 
 --- @class CommandArgs
@@ -297,7 +310,7 @@ M.has_width_gt = function(cols)
     return fn.winwidth(0) / 2 > cols
 end
 
-function M.get_visual_selection()
+M.get_visual_selection = function()
     -- this will exit visual mode
     -- use 'gv' to reselect the text
     local _, csrow, cscol, cerow, cecol
@@ -359,10 +372,8 @@ M.notify = function(options)
 end
 
 M.preserve = function(arguments)
-    arguments = fmt("keepjumps keeppatterns execute %q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
-    -- nvim.ex.keepjumps(nvim.ex.keeppatterns())
-    api.nvim_command(arguments)
+    ex.keepj(ex.keepp(fn.execute(arguments)))
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -461,6 +472,7 @@ local func2str = function(func, args)
     end
 end
 
+---Remap keys (create a Vim function with Lua)
 M.remap = function(modes, lhs, rhs, opts)
     modes = type(modes) == "string" and {modes} or modes
     opts = opts or {}

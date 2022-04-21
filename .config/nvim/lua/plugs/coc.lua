@@ -486,7 +486,13 @@ function M.lua_langserver()
 
     fn["coc#config"]("languageserver.lua", {args = {"-E", main}})
 
+    local settings = fn["coc#util#get_config"]("languageserver.lua").settings
+    -- NOTE: This will only work if all references to `lspconfig` are removed
+    local luadev = require("lua-dev").setup({}).settings
+    settings = vim.tbl_deep_extend("force", settings, luadev)
+
     fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = get_lua_runtime()})
+    fn["coc#config"]("languageserver.lua", {settings = settings})
 end
 
 -- ========================== Init ==========================
@@ -496,8 +502,6 @@ function M.init()
     M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
-
-    -- [[CursorHold * silent call CocActionAsync('highlight')]],
 
     augroup(
         "CocNvimSetup",

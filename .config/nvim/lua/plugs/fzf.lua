@@ -348,36 +348,36 @@ end
 -- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
 
 -- TODO: Finish this
-function M.copyq_fzf()
-    local opts = {
-        options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
-    }
-
-    opts.name = "copy-clipboard"
-    opts.source =
-        (function()
-        -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
-        local res = {}
-        local val =
-            Job:new(
-            {
-                command = "copyq",
-                args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
-                enable_recording = true
-            }
-        ):sync()
-
-        for _, item in pairs(val) do
-            if item ~= "" then
-                table.insert(res, item)
-            end
-        end
-
-        return res
-    end)()
-
-    fn.FzfWrapper(opts)
-end
+-- function M.copyq_fzf()
+--     local opts = {
+--         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
+--     }
+--
+--     opts.name = "copy-clipboard"
+--     opts.source =
+--         (function()
+--         -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
+--         local res = {}
+--         local val =
+--             Job:new(
+--             {
+--                 command = "copyq",
+--                 args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
+--                 enable_recording = true
+--             }
+--         ):sync()
+--
+--         for _, item in pairs(val) do
+--             if item ~= "" then
+--                 table.insert(res, item)
+--             end
+--         end
+--
+--         return res
+--     end)()
+--
+--     fn.FzfWrapper(opts)
+-- end
 
 function M.resize_preview_layout()
     local layout = vim.g.fzf_layout.window

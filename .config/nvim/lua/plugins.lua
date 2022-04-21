@@ -109,6 +109,8 @@ return packer.startup(
             -- ============================ Lua Library =========================== [[[
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
+            -- Allows ex commands as functions
+            -- vim.api.nvim_<func> => nvim.<func>
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
@@ -152,9 +154,11 @@ return packer.startup(
                     "folke/persistence.nvim",
                     event = "BufReadPre", -- this will only start session saving when an actual file was opened
                     module = "persistence",
-                    config = [[require('persistence').setup()]]
+                    config = conf("persistence")
                 }
             )
+
+            -- use({"Shatur/neovim-session-manager", event = "BufReadPre", config = conf("session_manager")})
             -- ]]] === Session ===
 
             -- ============================== Debugging ============================ [[[
@@ -198,7 +202,10 @@ return packer.startup(
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", config = conf("nlua")})
-            -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup()]]})
+            -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup({}).settings]]})
+
+            -- This works if all references to `lspconfig` are removed
+            use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- use(
             --     {
@@ -350,7 +357,7 @@ return packer.startup(
             use({"vv9k/bogster"})
             use({"cocopon/iceberg.vim"})
             use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
-            -- use({ "kabouzeid/nvim-jellybeans", requires = "rktjmp/lush.nvim" })
+            use({"wadackel/vim-dogrun"})
             use({"savq/melange"})
             use({"folke/tokyonight.nvim"})
             use({"bluz71/vim-nightfly-guicolors"})
@@ -944,8 +951,8 @@ return packer.startup(
             use(
                 {
                     "nvim-treesitter/nvim-treesitter",
-                    run = ":TSUpdate",
-                    config = conf("plugs.tree-sitter")
+                    run = ":TSUpdate"
+                    -- config = conf("plugs.tree-sitter")
                 }
             )
             use(

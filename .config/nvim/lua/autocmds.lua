@@ -83,35 +83,37 @@ api.nvim_create_autocmd(
 -- ]]]
 
 -- === MRU === [[[
-api.nvim_create_autocmd(
-    "WinLeave",
+augroup(
+    "lmb__MruWin",
     {
-        callback = function()
-            require("common.win").record()
-        end,
-        pattern = "*",
-        group = create_augroup("lmb__MruWin"),
-        desc = "Add file to custom MRU list"
+        {
+            event = "WinLeave",
+            pattern = "*",
+            command = function()
+                require("common.win").record()
+            end,
+            description = "Add file to custom MRU list"
+        }
     }
-) -- ]]]
+)
+-- ]]]
 
 -- === Spelling === [[[
-do
-    local id = create_augroup("lmb__Spellcheck")
-    api.nvim_create_autocmd(
-        "FileType",
+augroup(
+    "lmb__Spellcheck",
+    {
         {
+            event = "FileType",
             command = "setlocal spell",
-            group = id,
             pattern = {"gitcommit", "markdown", "text", "mail"}
+        },
+        {
+            event = {"BufRead", "BufNewFile"},
+            command = "setlocal spell",
+            pattern = "neomutt-archbox*"
         }
-    )
-
-    api.nvim_create_autocmd(
-        {"BufRead", "BufNewFile"},
-        {command = "setlocal spell", group = id, pattern = "neomutt-archbox*"}
-    )
-end
+    }
+)
 
 -- Fix terminal highlights
 api.nvim_create_autocmd(
@@ -121,7 +123,7 @@ api.nvim_create_autocmd(
             vim.schedule(
                 function()
                     cmd("nohlsearch")
-                    vim.fn.clearmatches()
+                    fn.clearmatches()
                 end
             )
         end,
@@ -286,6 +288,16 @@ au(
             [[%!pandoc --columns=78 -f odt -t markdown "%"]]
         },
         {"BufWritePre", "*.rt", [[silent %!unrtf --text]]}
+    }
+)
+
+nvim.create_autocmd(
+    {"BufNewFile", "BufRead"},
+    {
+        pattern = "*",
+        callback = function()
+            require("filetype").resolve()
+        end
     }
 )
 -- ]]] === Custom file type ===

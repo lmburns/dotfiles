@@ -102,8 +102,7 @@ end
 ---@param vertical boolean vertical splitting if true, else horizontal
 function M.split_lastbuf(vertical)
     local sp = vertical and "vert" or ""
-    local binfo =
-        api.nvim_eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
+    local binfo = nvim.eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
     local last_buf_info
     for _, bi in ipairs(binfo) do
         if fn.bufwinnr(bi.bufnr) == -1 then
@@ -119,11 +118,11 @@ function M.search_wrap()
     if api.nvim_get_mode().mode ~= "n" then
         return
     end
-    local bufnr = api.nvim_get_current_buf()
+    local bufnr = nvim.get_current_buf()
     local topline = fn.line("w0")
     vim.schedule(
         function()
-            if bufnr == api.nvim_get_current_buf() and topline ~= fn.line("w0") then
+            if bufnr == nvim.get_current_buf() and topline ~= fn.line("w0") then
                 local lnum = fn.line(".") - 1
                 utils.highlight(bufnr, "Reverse", {lnum}, {lnum + 1}, {hl_eol = true}, 350)
             end

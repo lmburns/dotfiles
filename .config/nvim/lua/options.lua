@@ -25,7 +25,6 @@ vim.tbl_map(
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end,
     {
-        "fzf",
         "2html_plugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
@@ -49,7 +48,7 @@ vim.tbl_map(
 
 -- We do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
-api.nvim_command('set rtp-=/usr/share/vim/vimfiles')
+o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
 vim.env.LANG = "en_US.UTF-8"

@@ -391,6 +391,8 @@
   "solargraph.formatting": true,
 
   "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+  "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
+  "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
 
   "outline.keepWindow": true,
   "outline.sortBy": "position",
@@ -414,8 +416,6 @@
   "yaml.validate": true,
   "yaml.format.singleQuote": true,
   "yaml.completion": true,
-  "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
-  "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
 
   // I don't see these working
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,

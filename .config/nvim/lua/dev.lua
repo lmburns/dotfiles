@@ -51,7 +51,7 @@ end
 -- ============================== Print ===============================
 -- ====================================================================
 
-local function inspect(v)
+function M.inspect(v)
     local s
     local t = type(v)
     if t == "nil" then
@@ -70,7 +70,7 @@ function _G.pln(...)
     local msg_tbl = {}
     for i = 1, argc do
         local arg = select(i, ...)
-        table.insert(msg_tbl, inspect(arg))
+        table.insert(msg_tbl, M.inspect(arg))
     end
 
     print(table.concat(msg_tbl, "\n"))
@@ -82,7 +82,7 @@ function _G.p(...)
     local msg_tbl = {}
     for i = 1, argc do
         local arg = select(i, ...)
-        table.insert(msg_tbl, inspect(arg))
+        table.insert(msg_tbl, M.inspect(arg))
     end
 
     print(table.concat(msg_tbl, " "))

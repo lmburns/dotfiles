@@ -47,7 +47,7 @@ function M.hijack_synset()
 end
 
 function M.setup_iswap()
-    cmd("packadd iswap.nvim")
+    ex.packadd("iswap.nvim")
 
     require("iswap").setup {
         grey = "disable",
@@ -146,8 +146,8 @@ local function init()
         }
     }
 
-    cmd("packadd nvim-treesitter")
-    cmd("packadd nvim-treesitter-textobjects")
+    ex.packadd("nvim-treesitter")
+    ex.packadd("nvim-treesitter-textobjects")
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
@@ -167,20 +167,20 @@ local function init()
     map("o", "ak", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
 
     queries = require("nvim-treesitter.query")
-    -- local hl_disabled = conf.highlight.disable
-    -- ft_enabled = {}
-    -- for _, lang in ipairs(conf.ensure_installed) do
-    --   if not vim.tbl_contains(hl_disabled, lang) then
-    --     local parser = parsers.list[lang]
-    --     local used_by, filetype = parser.used_by, parser.filetype
-    --     if used_by then
-    --       for _, ft in ipairs(used_by) do
-    --         ft_enabled[ft] = true
-    --       end
-    --     end
-    --     ft_enabled[filetype or lang] = true
-    --   end
-    -- end
+    local hl_disabled = conf.highlight.disable
+    ft_enabled = {}
+    for _, lang in ipairs(conf.ensure_installed) do
+      if not vim.tbl_contains(hl_disabled, lang) then
+        local parser = parsers.list[lang]
+        local used_by, filetype = parser.used_by, parser.filetype
+        if used_by then
+          for _, ft in ipairs(used_by) do
+            ft_enabled[ft] = true
+          end
+        end
+        ft_enabled[filetype or lang] = true
+      end
+    end
 end
 
 init()

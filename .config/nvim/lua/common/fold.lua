@@ -217,15 +217,19 @@ function M.nav_fold(forward)
     local cur_l, cur_c
     while cnt > 0 do
         if forward then
-            cmd("keepj norm! ]z")
+            -- cmd("keepj norm! ]z")
+            ex.keepj(ex.norm_("]z"))
         else
-            cmd("keepj norm! zk")
+            -- cmd("keepj norm! zk")
+            ex.keepj(ex.norm_("zk"))
         end
         cur_l, cur_c = unpack(api.nvim_win_get_cursor(0))
         if forward then
-            cmd("keepj norm! zj_")
+            -- cmd("keepj norm! zj_")
+            ex.keepj(ex.norm_("zj_"))
         else
-            cmd("keepj norm! [z_")
+            -- cmd("keepj norm! [z_")
+            ex.keepj(ex.norm_("[z_"))
         end
         cnt = cnt - 1
     end

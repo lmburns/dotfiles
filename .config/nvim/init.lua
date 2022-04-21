@@ -3,7 +3,6 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
--- TODO: Possibly fork rnvimr to lf
 -- FIX: Folding causing cursor to move one left on startup
 --
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
@@ -124,20 +123,20 @@ vim.schedule(
         -- )
 
         -- -- === Treesitter
-        -- vim.defer_fn(
-        --     function()
-        --         require("plugs.tree-sitter")
-        --
-        --         -- au! syntaxset
-        --         -- au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
-        --
-        --         -- cmd [[
-        --         --    runtime! filetype.vim
-        --         --    filetype plugin indent on
-        --         -- ]]
-        --     end,
-        --     15
-        -- )
+        vim.defer_fn(
+            function()
+                require("plugs.tree-sitter")
+
+                -- runtime! filetype.vim
+                cmd [[
+                    au! syntaxset
+                    au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
+                    filetype on
+                    filetype plugin indent on
+                ]]
+            end,
+            15
+        )
 
         -- === Clipboard
         vim.defer_fn(
