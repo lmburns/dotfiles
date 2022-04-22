@@ -63,8 +63,8 @@ else
     require("plugins").compile()
 end
 
-require("abbr")
 require("mapping")
+require("abbr")
 
 -- =========================== Markdown =============================== [[[
 g.vimwiki_ext2syntax = {

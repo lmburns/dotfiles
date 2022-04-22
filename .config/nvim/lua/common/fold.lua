@@ -269,6 +269,7 @@ local function init()
     bl_ft = {
         "",
         "man",
+        "vimwiki",
         "markdown",
         "git",
         "floggraph",
@@ -277,7 +278,8 @@ local function init()
         "toggleterm",
         "fzf",
         "telescope",
-        "scratchpad"
+        "scratchpad",
+        "luapad"
     }
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}

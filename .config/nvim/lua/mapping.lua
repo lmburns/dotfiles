@@ -139,7 +139,6 @@ wk.register(
 
 wk.register(
     {
-        ["d"] = {[["_d]], "Delete motion (blackhole)"},
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
@@ -151,7 +150,7 @@ wk.register(
 wk.register(
     {
         ["d"] = {[["_d]], "Delete (blackhole)"},
-        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"},
+        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"}
         -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },

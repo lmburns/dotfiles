@@ -4,8 +4,20 @@ local wk = require("which-key")
 local map = require("common.utils").map
 
 function M.setup()
-    -- FIX: Get this spelling/motions to work without remap
-    -- TODO: Get '?' to map to current operator
+    -- TODO: Get '?' to map to popup for current operator
+    -- FIX: gc operator
+
+    local presets = require("which-key.plugins.presets")
+    -- presets.operators['"_d'] = "Delete blackhole"
+    presets.operators["gc"] = "Commenter"
+
+    wk.register(
+        {
+            ["d"] = {[["_d]], "Delete blackhole"}
+        },
+        {prefix = "", preset = true}
+    )
+
     wk.setup {
         plugins = {
             marks = true, -- shows a list of your marks on ' and `
@@ -27,7 +39,9 @@ function M.setup()
         },
         operators = {
             -- add operators that will trigger motion and text object completion
-            gc = "Comments"
+            gc = "Comments",
+            ['"_d'] = "Delete (blackhole)",
+            ['d'] = "Delete (blackhole 2)"
         },
         key_labels = {
             -- override the label used to display some keys. It doesn't effect WK in any other way.
@@ -61,7 +75,9 @@ function M.setup()
         -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
         hidden = {"lua", "^ ", "<silent>"}, -- hide mapping boilerplate
         show_help = true, -- show help message on the command line when the popup is visible
-        triggers = {"auto"} -- automatically setup triggers
+        triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
+        triggers = "auto"
+        -- triggers = {"z=", "auto"} -- automatically setup triggers
         -- triggers = {"<leader>"} -- or specify a list manually
     }
 end
@@ -90,8 +106,7 @@ local function init()
             ["]<CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
             ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
             ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
-            ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
-            ["z="] = {[[<Cmd>WhichKey z=<CR>]], "WhichKey spelling"}
+            ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"}
         }
     )
 

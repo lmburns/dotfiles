@@ -810,7 +810,6 @@ return packer.startup(
             )
 
             use({"vimwiki/vimwiki", config = conf("vimwiki"), after = colorscheme})
-
             use({"FraserLee/ScratchPad", config = conf("scratchpad")})
             -- ]]] === Markdown ===
 
