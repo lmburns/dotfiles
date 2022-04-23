@@ -266,21 +266,7 @@ local function init()
     g.anyfold_motion = 0
 
     -- blacklist
-    bl_ft = {
-        "",
-        "man",
-        "vimwiki",
-        "markdown",
-        "git",
-        "floggraph",
-        "neoterm",
-        "floaterm",
-        "toggleterm",
-        "fzf",
-        "telescope",
-        "scratchpad",
-        "luapad"
-    }
+    bl_ft = BLACKLIST_FT
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}
 

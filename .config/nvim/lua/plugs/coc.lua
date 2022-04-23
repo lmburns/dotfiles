@@ -629,7 +629,8 @@ function M.init()
 
     wk.register(
         {
-            ["<LocalLeader>s"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
+            ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
+            ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
             ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
             ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
             ["<C-x><C-d>"] = {":CocCommand fzf-preview.CocTypeDefinition<CR>", "List coc definitions"},
@@ -739,21 +740,23 @@ function M.init()
     -- Git
     wk.register(
         {
+            -- ["<Leader>gD"] = {":CocCommand git.diffCached<CR>", "Git diff cached"},
             ["<LocalLeader>gg"] = {":CocCommand fzf-preview.GitActions<CR>", "Git actions (fzf)"},
             ["<LocalLeader>gs"] = {":CocCommand fzf-preview.GitStatus<CR>", "Git status (fzf)"},
             ["<LocalLeader>gr"] = {":CocCommand fzf-preview.GitLogs<CR>", "Git logs (fzf)"},
             ["<LocalLeader>gp"] = {":<C-u>CocList --normal gstatus<CR>", "Git status"},
-            ["<Leader>gD"] = {":CocCommand git.diffCached<CR>", "Git diff cached"},
             ["<Leader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
         }
     )
 
     -- Git
     -- map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", {silent = true})
+    -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
     map("n", "<Leader>gF", ":<C-u>CocCommand git.foldUnchanged<CR>", {silent = true})
-    map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
     map("n", "<Leader>gla", ":<C-u>CocFzfList commits<cr>", {silent = true})
     map("n", "<Leader>glc", ":<C-u>CocFzfList bcommits<cr>", {silent = true})
+
+    -- nmap <silent> gs <Plug>(coc-git-chunkinfo)
     map("n", "<Leader>gll", "<Plug>(coc-git-commit)", {noremap = true, silent = true})
 
     -- Snippet

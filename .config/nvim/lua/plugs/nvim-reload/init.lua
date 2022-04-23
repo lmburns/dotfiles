@@ -34,8 +34,6 @@ reload.pre_reload_hook = function()
     -- reload.lsp_was_loaded = pcall(require, "lspconfig")
 end
 
--- FIX: Treesitter not working when switching files
--- FIX: Motions like `dw` delete way more
 reload.post_reload_hook = function()
     cmd [[nohl]]
 
@@ -73,10 +71,10 @@ reload.post_reload_hook = function()
     )
 
     -- ex.PackerLoad("nvim-treesitter")
-    cmd [[pa nvim-treesitter]]
+    ex.pa("nvim-treesitter")
     -- require("plugs.tree-sitter")
 
-    cmd [[syntax on]]
+    ex.syntax("on")
     -- local tbl = require("impatient").modpaths.cache
     -- for k, v in pairs(tbl) do
     --     if k:match("^nvim%-treesitter*") then

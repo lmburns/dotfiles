@@ -33,6 +33,32 @@ a = require("plenary.async_lib")
 nvim = require("nvim")
 ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
+BLACKLIST_FT = {
+    "",
+    "man",
+    "help",
+    "quickmenu",
+    "qf",
+    "vimwiki",
+    "markdown",
+    "git",
+    "floggraph",
+    "neoterm",
+    "floaterm",
+    "toggleterm",
+    "fzf",
+    "telescope",
+    "TelescopePrompt",
+    "scratchpad",
+    "luapad",
+    "aerial",
+    "NvimTree",
+    "coc-explorer",
+    "undotree",
+    "neoterm",
+    "floaterm",
+}
+
 -- ========================== Functions ==========================
 
 local M = {}

@@ -43,7 +43,8 @@ function M.setup()
 end
 
 local function init()
-    require("which-key").register(
+    local wk = require("which-key")
+    wk.register(
         {
             m = {
                 name = "+marks",
@@ -55,6 +56,13 @@ local function init()
             }
         },
         {prefix = "<Leader>"}
+    )
+
+    wk.register(
+        {
+            ["qm"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
+            ["qM"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"}
+        }
     )
 
     -- map("n", "<Leader>mld", ":delmarks a-z<CR>")

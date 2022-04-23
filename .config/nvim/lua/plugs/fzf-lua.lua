@@ -251,7 +251,6 @@ function M.setup()
             -- executed command priority is 'cmd' (if exists)
             -- otherwise auto-detect prioritizes `fd`:`rg`:`find`
             -- default options are controlled by 'fd|rg|find|_opts'
-            -- NOTE: 'find -printf' requires GNU find
             -- cmd            = "find . -type f -printf '%P\n'",
             find_opts = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
             rg_opts = "--color=never --files --hidden --follow -g '!.git'",

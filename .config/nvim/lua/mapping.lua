@@ -78,10 +78,8 @@ map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = 
 -- Easier navigation in normal / visual / operator pending mode
 map("n", "gkk", "{")
 map("n", "gjj", "}")
-map("n", "H", "g^")
-map("x", "H", "g^")
-map("n", "L", "g_")
-map("x", "L", "g_")
+map({"n", "x", "o"}, "H", "g^")
+map({"n", "x", "o"}, "L", "g_")
 
 -- Navigate merge conflict markers
 map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
@@ -210,21 +208,22 @@ map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = tru
 
 map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
 map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
--- Buffers; Bufferline takes care of this
--- map("n", "[b", [[:execute(v:count1 . 'bprev')<CR>]])
--- map("n", "]b", [[:execute(v:count1 . 'bnext')<CR>]])
--- Errors
-map("n", "[q", [[:execute(v:count1 . 'cprev')<CR>]])
-map("n", "]q", [[:execute(v:count1 . 'cnext')<CR>]])
--- First/last errors
-map("n", "[Q", ":cfirst<CR>")
-map("n", "]Q", ":clast<CR>")
+
+wk.register(
+    {
+        ["[q"] = {[[:execute(v:count1 . 'cprev')<CR>]], "Previous error"},
+        ["]q"] = {[[:execute(v:count1 . 'cnext')<CR>]], "Next error"},
+        ["[Q"] = {":cfirst<CR>", "First error"},
+        ["]Q"] = {":clast<CR>", "Last error"},
+        ["[S"] = {"<Cmd>lfirst<CR>", "First location list"},
+        ["]S"] = {"<Cmd>llast<CR>", "Last location list"},
+        ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
+        ["]t"] = {"<Cmd>tabn<CR>", "Next tab"},
+    }
+)
 -- Location list
 -- map("n", "[s", [[<Cmd>execute(v:count1 . 'lprev')<CR>]])
 -- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
--- First/last location list
-map("n", "[S", "<Cmd>lfirst<CR>")
-map("n", "]S", "<Cmd>llast<CR>")
 
 -- Folding
 map("n", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})

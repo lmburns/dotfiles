@@ -165,8 +165,9 @@ end
 
 -- ============================== GHLine ==============================
 function M.ghline()
-    map("", "<Leader>gO", "<Plug>(gh-repo)")
+    map("", "<Leader>go", "<Plug>(gh-repo)")
     map("", "<Leader>gL", "<Plug>(gh-line)")
+    -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
 end
 
 -- ============================= Persistence ==========================
@@ -230,79 +231,6 @@ function M.floaterm()
 
     -- Stackoverflow helper
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
-end
-
--- ============================== targets =============================
--- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
-function M.targets()
-    -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
-    -- r,b,B,q,p,f,k = <>, (), {}, '', paragraph, function, class
-    -- vI) = contents inside pair
-    -- in( an( In( An( il( al( Il( Al( ... next and last pair
-    -- {a,I,A}{,.;+=...} = a/inside/around separator
-    -- ia = in argument
-    -- aa = an argument
-    -- inb anb Inb Anb ilb alb Ilb Alb = any block
-    -- inq anq Inq Anq ilq alq Ilq Alq == any quote
-
-    -- cib = change in () or {}
-
-    autocmd(
-        {
-            event = "User",
-            pattern = "targets#mappings#user",
-            command = function()
-                fn["targets#mappings#extend"](
-                    {
-                        a = {argument = {{o = "(", c = ")", s = ","}}},
-                        r = {pair = {{o = "<", c = ">"}}}
-                    }
-                )
-            end
-        }
-    )
-
-    -- g.targets_aiAI = "aIAi"
-    -- g.targets_seekRanges =
-    --     "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
-    -- g.targets_jumpRanges = g.targets_seekRanges
-    --
-    -- -- Seeking next/last objects
-    g.targets_nl = "nl"
-
-    -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
-    -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
-    -- map("o", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
-    -- map("x", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
-    -- map("o", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
-    -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
-    -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
-    -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
-end
-
--- ============================== matchup =============================
-function M.matchup()
-    -- hi MatchParenCur cterm=underline gui=underline
-    -- hi MatchWordCur cterm=underline gui=underline
-
-    g.loaded_matchit = 1
-    g.matchup_enabled = 1
-    g.matchup_motion_enabled = 1
-    g.matchup_text_obj_enabled = 1
-    g.matchup_matchparen_enabled = 1
-    g.matchup_surround_enabled = 0
-    -- g.matchup_transmute_enabled = 0
-    -- g.matchup_matchparen_offscreen = {method = "status_manual"}
-    g.matchup_matchparen_offscreen = {method = "popup"}
-
-    -- g.matchup_text_obj_linewise_operators = {"d", "y"}
-    -- g.matchup_matchparen_deferred = 1
-    -- g.matchup_matchparen_deferred_show_delay = 100
-    -- g.matchup_matchparen_hi_surround_always = 1
-    -- g.matchup_override_vimtex = 1
-    -- g.matchup_delim_start_plaintext = 0
-    -- map("o", "%", "]%")
-    -- map("o", "%", "<Plug>(matchup-%)")
 end
 
 -- =============================== pandoc =============================
@@ -517,7 +445,7 @@ function M.notify()
     notify.setup(
         {
             stages = "slide",
-            timeout = 2000,
+            timeout = 3000,
             minimum_width = 30,
             -- on_close = function()
             -- -- Could create something to write to a file
@@ -634,6 +562,10 @@ function M.sandwhich()
     -- yS = to end of line
     -- yss = whole line
     -- yiss = inside nearest delimiter
+    -- ysiwf = funcname?
+    -- ysiwt = tag
+    -- y{a,i}si = head - tail
+    -- yar = <here>
 
     ex.runtime("macros/sandwich/keymap/surround.vim")
 
@@ -659,6 +591,20 @@ function M.sandwhich()
       \   {'buns': ['(\s*', '\s*)'],   'nesting': 1, 'regex': 1,
       \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
       \    'action': ['delete'], 'input': ['(']},
+      \   {
+      \     'buns'        : ['{', '}'],
+      \     'motionwise'  : ['line'],
+      \     'kind'        : ['add'],
+      \     'linewise'    : 1,
+      \     'command'     : ["'[+1,']-1normal! >>"],
+      \   },
+      \   {
+      \     'buns'        : ['{', '}'],
+      \     'motionwise'  : ['line'],
+      \     'kind'        : ['delete'],
+      \     'linewise'    : 1,
+      \     'command'     : ["'[,']normal! <<"],
+      \   }
       \ ]
     ]]
 
@@ -666,36 +612,99 @@ function M.sandwhich()
     map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
     map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
     map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
-    map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
-    map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
+    -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
+    -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
+    map("n", "ygs", "<Plug>(sandwich-add):normal! V<CR>")
+    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)")
 
-    map("n", "<Leader>o", "ysiw")
+    wk.register(
+        {
+            ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"}
+        }
+    )
+
+    -- map("n", "<Leader>o", "ysiw")
     -- map("n", "mlw", "yss`", {noremap = false})
 end
 
--- ============================== LazyGit =============================
-function M.lazygit()
-    g.lazygit_floating_window_winblend = 0 -- transparency of floating window
-    g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
-    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner characters
-    g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
-    g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+-- ============================== targets =============================
+-- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
+function M.targets()
+    -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
+    -- r,b,B,q,p,f,k = <>, (), {}, '', paragraph, function, class
+    -- vI) = contents inside pair
+    -- in( an( In( An( il( al( Il( Al( ... next and last pair
+    -- {a,I,A}{,.;+=...} = a/inside/around separator
+    -- ia = in argument
+    -- aa = an argument
+    -- inb anb Inb Anb ilb alb Ilb Alb = any block
+    -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
-    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
+    -- cib = change in () or {}
+
+    autocmd(
+        {
+            event = "User",
+            pattern = "targets#mappings#user",
+            command = function()
+                fn["targets#mappings#extend"](
+                    {
+                        a = {argument = {{o = "(", c = ")", s = ","}}},
+                        r = {pair = {{o = "<", c = ">"}}}
+                    }
+                )
+            end
+        }
+    )
+
+    -- c: on cursor position
+    -- l: left of cursor in current line
+    -- r: right of cursor in current line
+    -- a: above cursor on screen
+    -- b: below cursor on screen
+    -- A: above cursor off screen
+    -- B: below cursor off screen
+    g.targets_seekRanges =
+        "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+    -- g.targets_jumpRanges = g.targets_seekRanges
+    -- g.targets_aiAI = "aIAi"
+    --
+    -- -- Seeking next/last objects
+    g.targets_nl = "nl"
+
+    -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
+    -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
+    -- map("o", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
+    -- map("x", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
+    -- map("o", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
+    -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
+    -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+    -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
 end
 
--- ============================ ScratchPad ============================
-function M.scratchpad()
-    g.scratchpad_autostart = 0
-    g.scratchpad_autosize = 0
-    g.scratchpad_textwidth = 80
-    g.scratchpad_minwidth = 12
-    g.scratchpad_location = "~/.cache/scratchpad"
-    -- g.scratchpad_daily = 0
-    -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
-    -- g.scratchpad_daily_format = '%Y-%m-%d'
+-- ============================== matchup =============================
+function M.matchup()
+    -- hi MatchParenCur cterm=underline gui=underline
+    -- hi MatchWordCur cterm=underline gui=underline
 
-    map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
+    g.loaded_matchit = 1
+    g.matchup_enabled = 1
+    g.matchup_motion_enabled = 1
+    g.matchup_text_obj_enabled = 1
+    g.matchup_matchparen_enabled = 1
+    g.matchup_surround_enabled = 0
+    -- g.matchup_transmute_enabled = 0
+    -- g.matchup_matchparen_offscreen = {method = "status_manual"}
+    g.matchup_matchparen_offscreen = {method = "popup"}
+
+    -- g.matchup_text_obj_linewise_operators = {"d", "y"}
+    -- g.matchup_matchparen_deferred = 1
+    -- g.matchup_matchparen_deferred_show_delay = 100
+    -- g.matchup_matchparen_hi_surround_always = 1
+    -- g.matchup_override_vimtex = 1
+    -- g.matchup_delim_start_plaintext = 0
+    map("o", "%", "]%")
+    -- map("o", "%", "<Plug>(matchup-%)")
 end
 
 -- =========================== BetterEscape ===========================
@@ -982,7 +991,7 @@ function M.lf()
 end
 
 function M.lfnvim()
-    g.lf_replace_netrw = 1
+    g.lf_netrw = 1
 
     require("lf").setup(
         {border = "rounded", highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}}

@@ -1,5 +1,6 @@
 local M = {}
 
+local wk = require("which-key")
 local map = require("common.utils").map
 
 function M.cur_file()
@@ -20,8 +21,12 @@ local function init()
         g.flog_build_log_command_fn = "flog#build_git_forest_log_command"
     end
 
-    map("n", "<Leader>gl", "<Cmd>Flog<CR>")
-    map("n", "<Leader>gf", [[<Cmd>lua require('plugs.flog').cur_file()<CR>]])
+    wk.register(
+        {
+            ["<Leader>gl"] = {"<Cmd>Flog<CR>", "Flog"},
+            ["<Leader>gf"] = {[[<Cmd>lua require('plugs.flog').cur_file()<CR>]], "Flog current file"}
+        }
+    )
 end
 
 init()

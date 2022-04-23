@@ -63,7 +63,7 @@ function M.setup()
                     ["ms"] = nroff_ft,
                     ["me"] = nroff_ft,
                     ["mom"] = nroff_ft,
-                    ["man"] = nroff_ft
+                    ["man"] = nroff_ft,
                 },
                 function_literal = {
                     Brewfile = function()

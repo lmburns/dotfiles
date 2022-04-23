@@ -966,23 +966,9 @@ return packer.startup(
             -- ============================= Treesitter ============================ [[[
             use(
                 {
-                    "danymat/neogen",
-                    config = conf("neogen"),
-                    keys = {
-                        {"n", "<Leader>dg"},
-                        {"n", "<Leader>df"},
-                        {"n", "<Leader>dc"}
-                    },
-                    requires = "nvim-treesitter/nvim-treesitter"
-                }
-            )
-
-            use(
-                {
                     -- config = conf("plugs.tree-sitter")
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
-                    after = "targets.vim",
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",
@@ -1009,15 +995,62 @@ return packer.startup(
                             desc = "Html/Css tagging"
                         },
                         {
-                            -- Embedded langauge comment strings
                             "JoosepAlviste/nvim-ts-context-commentstring",
-                            after = "nvim-treesitter"
+                            after = "nvim-treesitter",
+                            desc = "Embedded language comment strings"
                         },
                         {
                             "michaeljsmith/vim-indent-object",
                             after = "nvim-treesitter",
-                            desc = "ai li aI iL text objects"
+                            desc = "ai ii aI iI text objects"
+                        },
+                        {
+                            "haringsrob/nvim_context_vt",
+                            after = "nvim-treesitter",
+                            desc = "Adds -> context messages"
+                        },
+                        {
+                            "David-Kunz/treesitter-unit",
+                            after = "nvim-treesitter",
+                            desc = "Adds unit text object"
+                        },
+                        {
+                            "m-demare/hlargs.nvim",
+                            after = "nvim-treesitter",
+                            desc = "Highlight argument definitions"
+                        },
+                        {
+                            "stevearc/aerial.nvim",
+                            after = "nvim-treesitter"
+                        },
+                        {
+                            "danymat/neogen",
+                            config = conf("neogen"),
+                            after = "nvim-treesitter",
+                            keys = {
+                                {"n", "<Leader>dg"},
+                                {"n", "<Leader>df"},
+                                {"n", "<Leader>dc"}
+                            }
+                        },
+                        {
+                            "s1n7ax/nvim-comment-frame",
+                            after = "nvim-treesitter"
                         }
+                        -- {
+                        --     "mfussenegger/nvim-ts-hint-textobject",
+                        --     after = "nvim-treesitter",
+                        --     desc = "Similar to hop but highlight"
+                        -- }
+                        -- {
+                        --     "romgrk/nvim-treesitter-context",
+                        --     after = "nvim-treesitter"
+                        -- },
+                        -- {
+                        --     "yioneko/nvim-yati",
+                        --     after = "nvim-treesitter",
+                        --     desc = "Yet another tressitter indent"
+                        -- },
                     }
                 }
             )
@@ -1116,7 +1149,6 @@ return packer.startup(
                 }
             )
 
-            -- FIX: Doesn't work all the time and is hard to configure
             use(
                 {
                     "nvim-telescope/telescope-packer.nvim",
@@ -1129,6 +1161,8 @@ return packer.startup(
                     -- config = [[require("telescope").load_extension("packer")]],
                     config = function()
                         require("telescope.builtin").packer = function(opts)
+                            -- FIX: Doesn't work all the time and is hard to configure
+                            -- require("plugins").compile()
                             require("telescope").extensions.packer.packer(opts)
                         end
                     end
@@ -1141,7 +1175,7 @@ return packer.startup(
                     "AckslD/nvim-neoclip.lua",
                     requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
                     after = {"telescope.nvim", "sqlite.lua"},
-                    config = [[require("plugs.nvim-neoclip")]]
+                    config = conf("plugs.nvim-neoclip")
                 }
             )
             -- ]]] === Telescope ===
@@ -1212,7 +1246,7 @@ return packer.startup(
             use(
                 {
                     "sindrets/diffview.nvim",
-                    cmd = {"DiffviewOpen", "DiffviewFileHistory"},
+                    -- cmd = {"DiffviewOpen", "DiffviewFileHistory"},
                     config = conf("plugs.diffview")
                 }
             )
@@ -1274,6 +1308,7 @@ return packer.startup(
 -- )
 
 -- 'mvllow/modes.nvim'
+-- 'GustavoKatel/sidebar.nvim'
 
 -- use(
 --     {

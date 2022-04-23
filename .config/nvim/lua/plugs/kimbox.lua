@@ -1,3 +1,7 @@
+---Contains colorscheme information (named after the colorscheme I use the most)
+--@module kimbox
+--@author Lucas Burns
+
 local M = {}
 
 local hl = require("common.color").set_hl
@@ -335,6 +339,8 @@ M.tokyonight = function()
     g.tokyonight_style = "storm" -- night day storm
     g.tokyonight_italic_comments = false
     g.tokyonight_italic_keywords = false
+    g.tokyonight_italic_functions = false
+    g.tokyonight_sidebars = {"qf", "vista_kind", "terminal", "packer"}
     -- g.tokyonight_style = "storm"
 
     -- cmd [[colorscheme tokyonight]]
@@ -470,10 +476,8 @@ local function init()
     -- cmd [[hi VertColumn guibg=#D9AE80]]
     -- cmd [[hi VertSplit guibg=#7E602C]]
 
-    -- cmd [[hi Floaterm guifg=#A06469]]
-    -- cmd [[hi FloatermNC guifg=#A06469]]
+    cmd [[hi Todo guibg=none]]
     cmd [[hi FloatermBorder guifg=#A06469 gui=none]]
-
     -- cmd [[hi RnvimrNormal guifg=#A06469]]
     -- cmd [[hi RnvimrCurses guifg=#A06469]]
 end

@@ -56,6 +56,7 @@ text:
       - .tml
       - .toml
       - .yaml
+      - .ron
       - .yml
 
     metadata:

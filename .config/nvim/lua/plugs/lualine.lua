@@ -97,11 +97,11 @@ local plugins = {
 local sections_1 = {
     lualine_a = {
         {
-            "mode"
+            "mode",
             -- Doesn't show operator mode?
-            -- fmt = function(str)
-            --     return str == "V-LINE" and "VL" or (str == "V-BLOCK" and "VB" or str:sub(1, 1))
-            -- end
+            fmt = function(str)
+                return str == "V-LINE" and "VL" or (str == "V-BLOCK" and "VB" or str:sub(1, 1))
+            end
         }
     },
     lualine_b = {
@@ -283,16 +283,7 @@ require("lualine").setup(
             section_separators = {left = "", right = ""},
             component_separators = {left = "", right = ""},
             -- Not sure if these work
-            disabled_filetypes = {
-                "NvimTree",
-                "coc-explorer",
-                "help",
-                "quickmenu",
-                "undotree",
-                "neoterm",
-                "floaterm",
-                "qf"
-            },
+            disabled_filetypes = BLACKLIST_FT,
             always_divide_middle = true
         },
         sections = sections_1,

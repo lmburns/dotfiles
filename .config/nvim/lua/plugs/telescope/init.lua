@@ -24,6 +24,8 @@ local command = b_utils.command
 local map = b_utils.map
 require("dev")
 
+local wk = require("which-key")
+
 -- local home = vim.loop.os_homedir()
 -- local cwd = vim.fn.getcwd()
 
@@ -924,6 +926,10 @@ builtin.rualdi = function(opts)
     telescope.extensions.rualdi.list(opts)
 end
 
+-- builtin.aerial = function(opts)
+--     telescope.extensions.aerial.aerial(opts)
+-- end
+
 command(
     "Ghq",
     function()
@@ -933,8 +939,6 @@ command(
 )
 
 -- ========================== Mappings ===========================
-local map = require("common.utils").map
-local wk = require("which-key")
 
 wk.register(
     {
@@ -950,7 +954,8 @@ wk.register(
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
-        ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"}
+        ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
+        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbol"},
     }
 )
 

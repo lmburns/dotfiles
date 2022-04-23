@@ -347,7 +347,6 @@ end
 
 -- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
 
--- TODO: Finish this
 -- function M.copyq_fzf()
 --     local opts = {
 --         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}

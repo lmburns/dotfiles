@@ -113,8 +113,9 @@ augroup(
         }
     }
 )
+-- ]]] === Spelling ===
 
--- Fix terminal highlights
+-- === Fix terminal highlights ===
 api.nvim_create_autocmd(
     "TermEnter",
     {
@@ -131,7 +132,55 @@ api.nvim_create_autocmd(
         desc = "Clear matches and highlights when entering a terminal"
     }
 )
--- ]]] === Spelling ===
+-- ]]] === Terminal ===
+
+-- === Help/Man pages in vertical ===
+
+augroup(
+    "lmb__Help",
+    {
+        {
+            event = "FileType",
+            pattern = {"help", "man"},
+            command = function()
+                -- do nothing for floating windows
+                local cfg = api.nvim_win_get_config(0)
+                if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) then
+                    return
+                end
+                -- do not run if Diffview is open
+                if g.diffview_nvim_loaded and require("diffview.lib").get_current_view() then
+                    return
+                end
+                -- local var = vim.bo.filetype .. "_init"
+                -- local ok, is_init = pcall(vim.api.nvim_buf_get_var, 0, var)
+                -- if ok and is_init == true then return end
+                -- vim.api.nvim_buf_set_var(0, var, true)
+                local width = math.floor(vim.o.columns * 0.75)
+                cmd("wincmd L")
+                cmd("vertical resize " .. width)
+            end
+        },
+        {
+            event = "BufHidden",
+            pattern = "*",
+            command = function()
+                if b.ft == "man" then
+                    local bufnr = api.nvim_get_current_buf()
+                    vim.defer_fn(
+                        function()
+                            if api.nvim_buf_is_valid(bufnr) then
+                                api.nvim_buf_delete(bufnr, {force = true})
+                            end
+                        end,
+                        0
+                    )
+                end
+            end
+        }
+    }
+)
+-- ]]] === Help ===
 
 -- === Tmux === [[[
 if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then

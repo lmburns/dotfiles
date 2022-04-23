@@ -888,6 +888,7 @@ key_bindings:
   - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
   - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
   - { key: Period, mods: Control, chars: "\x1b[46;5u" }
+  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
 
   # Vi Mode
   - { key: Space, mods: Control, mode: Vi, action: ScrollToBottom }

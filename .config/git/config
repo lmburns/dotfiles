@@ -160,7 +160,7 @@
   prompt = true
 
 [mergetool "nvim"]
-  cmd = nvim -f -c \"Gdiffsplit\" \"$MERGED\"
+  cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
 ;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 
 [url "git@github.com:"]
