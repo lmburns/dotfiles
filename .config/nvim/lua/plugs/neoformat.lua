@@ -110,9 +110,9 @@ local function init()
     -- g.neoformat_enabled_lua = { "luaformat" }
     -- g.neoformat_enabled_lua = { "luafmt" }
 
-    g.neoformat_enabled_python = {
-        "black"
-    }
+    -- g.neoformat_enabled_teal = {
+    --     "luaformat"
+    -- }
     g.neoformat_enabled_python = {
         "black"
     }

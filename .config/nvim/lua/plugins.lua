@@ -139,6 +139,7 @@ return packer.startup(
             use({"fedepujol/move.nvim", config = conf("move")})
             -- Prevent clipboard from being hijacked by snippets and such
             use({"kevinhwang91/nvim-hclipboard"})
+            use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", config = conf("registers")})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             -- ]]] === Fixes ===
@@ -369,7 +370,6 @@ return packer.startup(
             use({"bluz71/vim-nightfly-guicolors"})
             use({"haishanh/night-owl.vim"})
             use({"rebelot/kanagawa.nvim"})
-            use({"b4skyx/serenade"})
             use({"KeitaNakamura/neodark.vim"})
             use({"EdenEast/nightfox.nvim"})
             use({"catppuccin/nvim", as = "catppuccin"})
@@ -377,6 +377,7 @@ return packer.startup(
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
             use({"numToStr/Sakura.nvim"})
+            -- use({"b4skyx/serenade"})
             -- use({ "Mofiqul/vscode.nvim" })
             -- use({"AlessandroYorba/Alduin"})
             -- use({ "olimorris/onedarkpro.nvim" })
@@ -386,10 +387,6 @@ return packer.startup(
 
             use({"lmburns/kimbox", config = conf("plugs.kimbox")})
             -- ]]] === Colorscheme ===
-
-            -- ============================= Spelling ============================= [[[
-            -- use({"Pocco81/AbbrevMan.nvim", config = conf("abbrevman")})
-            -- ]]] === Spelling ===
 
             -- ============================ Scrollbar ============================= [[[
             use(
@@ -512,6 +509,8 @@ return packer.startup(
                 }
             )
 
+            -- use({"AndrewRadev/splitjoin.vim", keys = {{"n", "gJ"}, {"n", "gS"}}})
+
             use(
                 {
                     "phaazon/hop.nvim",
@@ -548,16 +547,29 @@ return packer.startup(
                         {"n", "s"},
                         {"n", "ss"},
                         {"n", "se"},
-                        {"x", "s"},
+                        {"n", "sr"},
+                        {"n", "<Leader>sr"},
+                        {"n", "sS"},
                         {"n", "sx"},
                         {"n", "sxx"},
                         {"n", "sxc"},
+                        {"x", "s"},
                         {"x", "X"}
                     }
                 }
             )
 
-            -- Similar to vim-sandwhich (I kind of use both)
+            -- :Subvert/child{,ren}/adult{,s}/g
+            use(
+                {
+                    "tpope/vim-abolish",
+                    cmd = {"S", "Subvert"},
+                    keys = {
+                        {"n", "cr"}
+                    }
+                }
+            )
+
             -- ur4ltz/surround.nvim
 
             -- b = (), B = {}, r = [], a = <>
@@ -684,6 +696,7 @@ return packer.startup(
             -- ========================== NerdCommenter =========================== [[[
             -- use({ "preservim/nerdcommenter", config = conf("plugs.nerdcommenter") })
             use({"numToStr/Comment.nvim", config = conf("plugs.comment"), after = "nvim-treesitter"})
+            use({"LudoPinelli/comment-box.nvim", config = conf("comment_box")})
             -- ]]] === UndoTree ===
 
             -- ============================== Targets ============================== [[[
@@ -713,7 +726,7 @@ return packer.startup(
                 {
                     "Saecki/crates.nvim",
                     event = {"BufRead Cargo.toml"},
-                    config = [[require("crates").setup()]]
+                    config = conf("crates")
                 }
             )
             -- use(
@@ -1034,9 +1047,14 @@ return packer.startup(
                             }
                         },
                         {
-                            "s1n7ax/nvim-comment-frame",
-                            after = "nvim-treesitter"
+                            "lewis6991/spellsitter.nvim",
+                            after = "nvim-treesitter",
+                            config = [[require("spellsitter").setup()]]
                         }
+                        -- {
+                        --     "s1n7ax/nvim-comment-frame",
+                        --     after = "nvim-treesitter"
+                        -- }
                         -- {
                         --     "mfussenegger/nvim-ts-hint-textobject",
                         --     after = "nvim-treesitter",
@@ -1124,6 +1142,11 @@ return packer.startup(
                             config = [[require("telescope").load_extension("hop")]]
                         },
                         {
+                            "crispgm/telescope-heading.nvim",
+                            after = "telescope.nvim",
+                            config = [[require("telescope").load_extension("heading")]]
+                        },
+                        {
                             "nvim-telescope/telescope-smart-history.nvim",
                             requires = {"tami5/sqlite.lua"},
                             after = {"telescope.nvim", "sqlite.lua"},
@@ -1159,10 +1182,16 @@ return packer.startup(
                     },
                     wants = {"telescope.nvim", "packer.nvim"},
                     -- config = [[require("telescope").load_extension("packer")]],
+                    -- FIX: Doesn't work all the time and is hard to configure
                     config = function()
                         require("telescope.builtin").packer = function(opts)
-                            -- FIX: Doesn't work all the time and is hard to configure
+
+                            if not _G.packer_plugins["packer.nvim"].loaded then
+                                ex.packadd("packer.nvim")
+                            end
                             -- require("plugins").compile()
+
+                            require("telescope").load_extension("packer")
                             require("telescope").extensions.packer.packer(opts)
                         end
                     end
@@ -1170,14 +1199,14 @@ return packer.startup(
             )
 
             -- nvim-neoclip: Clipboard manager
-            use(
-                {
-                    "AckslD/nvim-neoclip.lua",
-                    requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
-                    after = {"telescope.nvim", "sqlite.lua"},
-                    config = conf("plugs.nvim-neoclip")
-                }
-            )
+            -- use(
+            --     {
+            --         "AckslD/nvim-neoclip.lua",
+            --         requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
+            --         after = {"telescope.nvim", "sqlite.lua"},
+            --         config = conf("plugs.nvim-neoclip")
+            --     }
+            -- )
             -- ]]] === Telescope ===
 
             -- ================================ Git =============================== [[[
@@ -1266,7 +1295,9 @@ return packer.startup(
 )
 
 -- ============================== Disabled ============================= [[[
--- ================================ LSP =============================== [[[
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           LSP                            │
+-- ╰──────────────────────────────────────────────────────────╯
 -- ==== Completion ====
 -- use(
 --     {
@@ -1296,8 +1327,11 @@ return packer.startup(
 -- "pechorin/any-jump.vim" => Definition jumping
 -- "j-hui/fidget.nvim" => Standalone for LSP progress
 -- "filipdutescu/renamer.nvim" => Like code action rename
--- ]]] === LSP ===
+-- "jubnzv/virtual-types.nvim" => Code lens
 
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Disabled                         │
+-- ╰──────────────────────────────────────────────────────────╯
 -- use(
 --     {
 --         "nvim-neorg/neorg",
@@ -1307,8 +1341,10 @@ return packer.startup(
 --     }
 -- )
 
--- 'mvllow/modes.nvim'
--- 'GustavoKatel/sidebar.nvim'
+-- 'jbyuki/venn.nvim'          => Draw ASCII diagrams in Neovim
+-- '0styx0/abbreinder.nvim'    => Abbreviation reminders
+-- 'mvllow/modes.nvim'         => Highlight cursorline based on mode
+-- 'GustavoKatel/sidebar.nvim' => Sidebar with information
 
 -- use(
 --     {
@@ -1332,15 +1368,6 @@ return packer.startup(
 --       --   { "n", "x" },
 --       --   { "n", "X" },
 --       -- },
---     }
--- )
-
--- yank over ssh with ':OCSYank' or ':OSCYankReg +'
--- use(
---     {
---         "ojroques/vim-oscyank",
---         config = [[vim.g.oscyank_term = 'tmux']],
---         cmd = {"OSCYank", "OSCYankReg"}
 --     }
 -- )
 -- ]]] === Disabled ===

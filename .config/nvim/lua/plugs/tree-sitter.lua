@@ -409,35 +409,35 @@ M.setup_context_vt = function()
     )
 end
 
-M.setup_comment_frame = function()
-    ex.packadd("nvim-comment-frame")
-
-    require("nvim-comment-frame").setup(
-        {
-            -- if true, <leader>cf keymap will be disabled
-            disable_default_keymap = false,
-            -- adds custom keymap
-            keymap = "<leader>cc",
-            multiline_keymap = "<leader>C",
-            -- start the comment with this string
-            start_str = "//",
-            -- end the comment line with this string
-            end_str = "//",
-            -- fill the comment frame border with this character
-            fill_char = "-",
-            -- width of the comment frame
-            frame_width = 70,
-            -- wrap the line after 'n' characters
-            line_wrap_len = 50,
-            -- automatically indent the comment frame based on the line
-            auto_indent = true,
-            -- add comment above the current line
-            add_comment_above = true,
-            -- configurations for individual language goes here
-            languages = {}
-        }
-    )
-end
+-- M.setup_comment_frame = function()
+--     ex.packadd("nvim-comment-frame")
+--
+--     require("nvim-comment-frame").setup(
+--         {
+--             -- if true, <leader>cf keymap will be disabled
+--             disable_default_keymap = false,
+--             -- adds custom keymap
+--             keymap = "<leader>cc",
+--             multiline_keymap = "<leader>C",
+--             -- start the comment with this string
+--             start_str = "//",
+--             -- end the comment line with this string
+--             end_str = "//",
+--             -- fill the comment frame border with this character
+--             fill_char = "-",
+--             -- width of the comment frame
+--             frame_width = 70,
+--             -- wrap the line after 'n' characters
+--             line_wrap_len = 50,
+--             -- automatically indent the comment frame based on the line
+--             auto_indent = true,
+--             -- add comment above the current line
+--             add_comment_above = true,
+--             -- configurations for individual language goes here
+--             languages = {}
+--         }
+--     )
+-- end
 
 M.setup = function()
     return {
@@ -465,7 +465,8 @@ M.setup = function()
             "typescript",
             -- "tsx",
             -- "vue",
-            "zig"
+            "zig",
+            "help"
         },
         sync_install = false,
         ignore_install = {}, -- List of parsers to ignore installing
@@ -521,8 +522,8 @@ M.setup = function()
             keymaps = {
                 init_selection = "<M-n>", -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                node_incremental = "<tab>", -- increment to the upper named parent
-                node_decremental = "<s-tab>" -- decrement to the previous node
+                node_incremental = "<C-j>", -- increment to the upper named parent
+                node_decremental = "<C-k>" -- decrement to the previous node
             }
         },
         context_commentstring = {
@@ -569,22 +570,21 @@ M.setup = function()
                     -- ["if"] = "@function.inner",
                     -- ["ak"] = "@class.outer",
                     -- ["ik"] = "@class.inner",
-                    ["iC"] = "@call.inner",
-                    ["aC"] = "@call.outer",
+                    ["ac"] = "@call.outer",
+                    ["ic"] = "@call.inner",
                     ["ao"] = "@block.outer",
                     ["io"] = "@block.inner",
                     ["aM"] = "@comment.outer",
-                    ["ic"] = "@conditional.inner",
-                    ["ac"] = "@conditional.outer",
-
+                    ["iM"] = "@comment.inner",
+                    ["ad"] = "@conditional.outer",
+                    ["id"] = "@conditional.inner",
                     -- targets.nvim does this good (with seeking)
                     -- Though it isn't specifically parameters
                     ["ah"] = "@parameter.outer",
                     ["ih"] = "@parameter.inner",
-
                     -- ["am"] = "@statement.outer"
-                    ["om"] = "@loop.outer",
-                    ["im"] = "@loop.inner",
+                    ["am"] = "@loop.outer",
+                    ["im"] = "@loop.inner"
 
                     -- @conditional.inner
                     -- @conditional.outer
@@ -661,6 +661,14 @@ M.setup = function()
 end
 
 local function init()
+    wk.register(
+        {
+            ["<Leader>.f"] = "Swap next function",
+            ["<Leader>.e"] = "Swap next element",
+            ["<Leader>,f"] = "Swap previous function",
+            ["<Leader>,e"] = "Swap previous element"
+        }
+    )
     local conf = M.setup()
 
     ex.packadd("nvim-treesitter")
@@ -671,11 +679,11 @@ local function init()
     configs.setup(conf)
 
     -- cmd("au! NvimTreesitter FileType *")
+    -- M.setup_comment_frame()
     M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
-    M.setup_comment_frame()
 
     -- 'r = Smart rename
     -- 'd = Go to definition of symbol under cursor
@@ -684,8 +692,8 @@ local function init()
     --
     -- <M-n> = Start scope selection
     -- <M-n> = increment upper scope
-    -- <Tab> = increment upper named parent
-    -- <S-Tab> = decrement to previous node
+    -- <C-j> = increment upper named parent
+    -- <C-k> = decrement to previous node
     --
     -- ai = An Indentation level and line above
     -- ii = Inner Indentation level (no line above)
@@ -713,6 +721,47 @@ local function init()
     map("x", "ak", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
     map("o", "ik", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
     map("o", "ak", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
+
+    wk.register(
+        {
+            ["ac"] = "Around call",
+            ["ic"] = "Inner call",
+            ["ao"] = "Around block",
+            ["io"] = "Inner block",
+            ["aM"] = "Around comment",
+            ["iM"] = "Inner comment",
+            ["ad"] = "Around conditional",
+            ["id"] = "Inner conditional",
+            ["ah"] = "Around parameter",
+            ["ih"] = "Inner parameter",
+            ["am"] = "Around loop",
+            ["im"] = "Inner loop",
+            ["au"] = "Around unit",
+            ["iu"] = "Inner unit",
+            ["af"] = "Around function",
+            ["if"] = "Inner function",
+            ["ak"] = "Around class",
+            ["ik"] = "Inner class",
+            ["ai"] = "Indentation level and line above",
+            ["ii"] = "Inner Indentation level (no line above)",
+            ["aI"] = "An Indention level and lines above/below",
+            ["iI"] = "Inner Indentation level (no lines above/below)"
+        },
+        {mode = "o"}
+    )
+
+    wk.register(
+        {
+            ["'r"] = "Smart rename",
+            ["'d"] = "Go to definition under cursor",
+            ["'D"] = "List all definitions in file",
+            ["gO"] = "List all definitions in TOC",
+            ["<M-n>"] = "Start scope selection/Increment",
+            ["[["] = "Aerial prevous function",
+            ["]]"] = "Aerial next function"
+        },
+        {mode = "n"}
+    )
 
     -- Not as wide of a range
     -- map("x", "m", [[:<C-u>lua require('tsht').nodes()<CR>]], {noremap = false})

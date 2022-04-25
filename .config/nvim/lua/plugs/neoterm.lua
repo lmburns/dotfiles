@@ -182,4 +182,6 @@ command(
     {nargs = "*", count = true}
 )
 
+map("n", "gxo", "<Cmd>T<CR>")
+
 return M

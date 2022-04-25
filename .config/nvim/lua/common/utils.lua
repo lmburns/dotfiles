@@ -42,6 +42,10 @@ BLACKLIST_FT = {
     "vimwiki",
     "markdown",
     "git",
+    "gitcommit",
+    "gitrebase",
+    "commit",
+    "rebase",
     "floggraph",
     "neoterm",
     "floaterm",
@@ -57,6 +61,8 @@ BLACKLIST_FT = {
     "undotree",
     "neoterm",
     "floaterm",
+    -- "nofile",
+    "fugitive"
 }
 
 -- ========================== Functions ==========================

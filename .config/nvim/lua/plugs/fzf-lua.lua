@@ -654,6 +654,7 @@ function init()
         {
             ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
             ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
+            ["<Leader>tl"] = {":lua require('fzf-lua').tabs()<CR>", "Location list (fzf-lua)"},
             ["<LocalLeader>e"] = {":lua require('fzf-lua').live_grep()<CR>", "Live grep (fzf-lua)"},
             ["<LocalLeader>h"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},

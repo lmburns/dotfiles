@@ -1,7 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
-local create_augroup = utils.create_augroup
+local augroup = utils.augroup
 local wk = require("which-key")
 
 local bmap = function(...)
@@ -33,6 +33,7 @@ function M.diff_hist()
     end
 end
 
+-- TODO: Fix fugitive buffer command autocommand
 function M.map()
     bmap("n", "st", ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>", {noremap = false, silent = true})
     bmap("n", "<Leader>gb", ":GBrowse<CR>")
@@ -79,12 +80,25 @@ local function init()
     --     }
     -- )
 
-    cmd [[
-        aug FugitiveCustom
-            au!
-            au User FugitiveIndex,FugitiveCommit lua require('plugs.fugitive').map()
-        aug end
-    ]]
+    -- cmd [[
+    --     aug FugitiveCustom
+    --         au!
+    --         au User FugitiveIndex,FugitiveCommit lua require('plugs.fugitive').map()
+    --     aug end
+    -- ]]
+
+    augroup(
+        "FugitiveCustom",
+        {
+            {
+                event = "User",
+                pattern = {"FugitiveIndex", "FugitiveCommit"},
+                command = function()
+                    require("plugs.fugitive").map()
+                end
+            }
+        }
+    )
 
     cmd [[packadd vim-rhubarb]]
 
@@ -95,12 +109,15 @@ local function init()
             ["<Leader>gb"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
             ["<Leader>gw"] = {
                 [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
-                "Fugitive Gwrite (sym)"
+                "Fugitive Gwrite"
             },
             ["<Leader>gr"] = {
                 [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
-                "Fugitive Gread (sym)"
-            }
+                "Fugitive Gread"
+            },
+            ["<Leader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
+            ["<Leader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},
+            -- ["<Leader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )
 

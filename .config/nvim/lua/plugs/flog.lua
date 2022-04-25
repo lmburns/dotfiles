@@ -24,7 +24,7 @@ local function init()
     wk.register(
         {
             ["<Leader>gl"] = {"<Cmd>Flog<CR>", "Flog"},
-            ["<Leader>gf"] = {[[<Cmd>lua require('plugs.flog').cur_file()<CR>]], "Flog current file"}
+            ["<Leader>gi"] = {[[<Cmd>lua require('plugs.flog').cur_file()<CR>]], "Flog current file"}
         }
     )
 end

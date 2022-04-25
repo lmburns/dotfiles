@@ -8,7 +8,11 @@ function M.outline()
         return
     end
 
-    local kinds = {"Function", "Method", "Interface", "Struct", "Class"}
+    -- Array Boolean Class    Constant  Constructor Enum     EnumMember Event
+    -- Field File    Function Interface Key         Method   Module     Namespace
+    -- Null  Number  Object   Operator  Package     Property String     Struct
+    -- TypeParameter Variable
+    local kinds = {"Function", "Method", "Interface", "Struct", "Enum", "Class"}
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].bt == "quickfix" then
         bufnr = fn.bufnr("#")

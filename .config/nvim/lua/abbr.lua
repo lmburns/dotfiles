@@ -42,6 +42,7 @@ M.cabbrev("man", "Man")
 M.cabbrev("vg", "vimgrep")
 M.cabbrev("grep", "Grep")
 M.cabbrev("lgrep", "LGrep")
-M.cabbrev("bufferiz", "Bufferize")
+M.cabbrev("buf", "Bufferize")
+M.cabbrev("req", "lua require('")
 
 return M

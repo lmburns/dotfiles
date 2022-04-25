@@ -2,8 +2,17 @@
 
 emulate -L zsh
 
-local dir
-dir=$(fd ${1:-.} --prune --strip-cwd-prefix --follow -td | lscolors | fzf +m)
+local dir=$(\
+{
+  [[ "$1" = <-> ]] && {
+    fd ${2:-.} -d${1} --strip-cwd-prefix --follow -td
+  } || {
+    fd ${2:-.} -d1 --prune --strip-cwd-prefix --follow -td
+  }
+} \
+  | lscolors \
+  | fzf +m
+)
 
 if [[ -z "$dir" ]]; then
   zle && zle redisplay

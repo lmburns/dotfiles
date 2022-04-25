@@ -67,16 +67,18 @@ end
 -- ]]] === Format Options ===
 
 -- === Remove Empty Buffers === [[[
-api.nvim_create_autocmd(
-    "BufHidden",
+augroup(
+    "lmb__FirstBuf",
     {
-        callback = function()
-            require("common.builtin").wipe_empty_buf()
-        end,
-        buffer = 0,
-        once = true,
-        group = create_augroup("lmb__FirstBuf"),
-        desc = "Remove empty, hidden buffers"
+        {
+            event = "BufHidden",
+            command = function()
+                require("common.builtin").wipe_empty_buf()
+            end,
+            buffer = 0,
+            once = true,
+            desc = "Remove first empty buffer"
+        }
     }
 )
 -- ]]]
@@ -136,26 +138,49 @@ api.nvim_create_autocmd(
 
 -- === Help/Man pages in vertical ===
 
+local split_should_return = function()
+    -- do nothing for floating windows
+    local cfg = api.nvim_win_get_config(0)
+    if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) then
+        return true
+    end
+    -- do not run if Diffview is open
+    if g.diffview_nvim_loaded and require("diffview.lib").get_current_view() then
+        return true
+    end
+
+    return false
+end
+
 augroup(
     "lmb__Help",
     {
         {
-            event = "FileType",
-            pattern = {"help", "man"},
+            event = "BufEnter",
+            pattern = "*.txt",
             command = function()
-                -- do nothing for floating windows
-                local cfg = api.nvim_win_get_config(0)
-                if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) then
+                if b.bt == "help" then
+                    if split_should_return() then
+                        return
+                    end
+
+                    local width = math.floor(vim.o.columns * 0.75)
+                    cmd("wincmd L")
+                    cmd("vertical resize " .. width)
+                end
+            end
+        },
+        {
+            -- This is ran more than once
+            -- Using help for this won't open vertical when opening the same thing twice in a row
+            event = "FileType",
+            pattern = {"man"},
+            once = false,
+            command = function()
+                if split_should_return() then
                     return
                 end
-                -- do not run if Diffview is open
-                if g.diffview_nvim_loaded and require("diffview.lib").get_current_view() then
-                    return
-                end
-                -- local var = vim.bo.filetype .. "_init"
-                -- local ok, is_init = pcall(vim.api.nvim_buf_get_var, 0, var)
-                -- if ok and is_init == true then return end
-                -- vim.api.nvim_buf_set_var(0, var, true)
+
                 local width = math.floor(vim.o.columns * 0.75)
                 cmd("wincmd L")
                 cmd("vertical resize " .. width)
@@ -240,7 +265,7 @@ end
 -- === Clear cmd line message === [[[
 do
     local timer
-    local timeout = 10000
+    local timeout = 6000
 
     -- Automatically clear command-line messages after a few seconds delay
     -- Source: https://unix.stackexchange.com/a/613645
@@ -511,12 +536,21 @@ augroup(
             end
         },
         {
+            -- FIX: This works sometimes
             event = {"FocusGained", "InsertLeave"},
             pattern = "*",
             command = function()
                 require("common.rnu").focus(true)
             end
         },
+        -- {
+        --     -- FIX: Bufferize filetype
+        --     event = "FileType",
+        --     pattern = {"bufferize"},
+        --     command = function()
+        --         require("common.rnu").focus(false)
+        --     end
+        -- },
         {
             event = {"WinEnter", "BufEnter"},
             pattern = "*",

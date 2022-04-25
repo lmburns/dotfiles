@@ -1,10 +1,13 @@
+local M = {}
+
 local utils = require("common.utils")
 local map = utils.map
 
--- ========================== Custom ==========================
-
 local colors = require("kimbox.lualine").colors()
 
+-- ╒══════════════════════════════════════════════════════════╕
+--                          Conditions
+-- ╘══════════════════════════════════════════════════════════╛
 local conditions = {
     -- Show function in statusbar
     is_available_gps = function()
@@ -36,6 +39,9 @@ local conditions = {
     end
 }
 
+-- ╒══════════════════════════════════════════════════════════╕
+--                           Plugins
+-- ╘══════════════════════════════════════════════════════════╛
 local plugins = {
     -- Show function is statusbar with vista
     vista_nearest_method = function()
@@ -43,7 +49,16 @@ local plugins = {
         return vim.b.vista_nearest_method_or_function
     end,
     gutentags_progress = function()
-        return vim.fn["gutentags#statusline"]("[", "]")
+        return fn["gutentags#statusline"]("[", "]")
+    end,
+    gps = function()
+        local opts = {
+            disable_icons = false,
+            separator = " > ",
+            depth = 4,
+            dept_limit_indicator = ".."
+        }
+        return require("nvim-gps").get_location(opts)
     end,
     luapad = function()
         local status = fn["luapad#lightline_status"]()
@@ -54,6 +69,12 @@ local plugins = {
         else
             return ""
         end
+    end,
+    debugger = function()
+        if not package.loaded["dap"] then
+            return ""
+        end
+        return require("dap").status()
     end,
     file_encoding = function()
         local encoding = vim.opt.fileencoding:get()
@@ -67,11 +88,11 @@ local plugins = {
         if vim.v.hlsearch == 0 then
             return ""
         end
-        local last_search = vim.fn.getreg("/")
+        local last_search = fn.getreg("/")
         if not last_search or last_search == "" then
             return ""
         end
-        local searchcount = vim.fn.searchcount {maxcount = 9999}
+        local searchcount = fn.searchcount {maxcount = 9999}
         return last_search .. "(" .. searchcount.current .. "/" .. searchcount.total .. ")"
     end,
     progress = function()
@@ -91,14 +112,20 @@ local plugins = {
         local line_ratio = current_line / total_lines
         local index = math.ceil(line_ratio * #chars)
         return chars[index]
+    end,
+    coc_status = function()
+        return vim.trim(g.coc_status or "")
     end
 }
 
+-- ╒══════════════════════════════════════════════════════════╕
+--                          Section 1
+-- ╘══════════════════════════════════════════════════════════╛
 local sections_1 = {
     lualine_a = {
         {
-            "mode",
             -- Doesn't show operator mode?
+            "mode",
             fmt = function(str)
                 return str == "V-LINE" and "VL" or (str == "V-BLOCK" and "VB" or str:sub(1, 1))
             end
@@ -115,25 +142,20 @@ local sections_1 = {
         {
             "filename",
             path = 1,
-            symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]"}
+            symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40}
         },
         {
             "%w",
             cond = function()
                 return vim.wo.previewwindow
             end
-        },
-        {
-            "%q",
-            cond = function()
-                return vim.bo.buftype == "quickfix"
-            end
         }
     },
-    lualine_c = {"g:coc_status"},
+    lualine_c = {plugins.coc_status},
     lualine_x = {
         {
-            'require("nvim-gps").get_location()',
+            -- 'require("nvim-gps").get_location()',
+            plugins.gps,
             cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
             color = {fg = colors.red}
         },
@@ -144,12 +166,19 @@ local sections_1 = {
         }
     },
     lualine_y = {
-        {"diff", cond = conditions.hide_in_width},
-        {plugins.luapad}
+        {"diff"},
+        {plugins.luapad, plugins.debugger}
     },
-    lualine_z = {"%l:%c", "%p%%/%L"}
+    lualine_z = {
+        "%l:%c",
+        "%p%%/%L",
+        plugins.search_result
+    }
 }
 
+-- ╒══════════════════════════════════════════════════════════╕
+--                          Section 2
+-- ╘══════════════════════════════════════════════════════════╛
 local sections_2 = {
     lualine_a = {"mode"},
     lualine_b = {
@@ -171,12 +200,16 @@ local sections_2 = {
             color = {fg = colors.red}
         },
         {"branch", icon = "", condition = conditions.check_git_workspace}
+        -- "b:gitsigns_head"
     },
     lualine_y = {plugins.progress, plugins.gutentags_progress},
     lualine_z = {"location"}
 }
 
-function LualineToggle()
+-- ╒══════════════════════════════════════════════════════════╕
+--                           Mapping
+-- ╘══════════════════════════════════════════════════════════╛
+function M.toggle_mode()
     local lualine_require = require("lualine_require")
     local modules = lualine_require.lazy_require({config_module = "lualine.config"})
     local utils = require("lualine.utils.utils")
@@ -190,10 +223,11 @@ function LualineToggle()
     require("lualine").setup(current_config)
 end
 
-map("n", "!", ":lua LualineToggle()<CR>", {silent = true})
+map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true})
 
--- ========================== Terminal ==========================
-
+-- ╒══════════════════════════════════════════════════════════╕
+--                           Terminal
+-- ╘══════════════════════════════════════════════════════════╛
 local terminal_status_color = function(status)
     local mode_colors = {
         Running = colors.orange,
@@ -269,52 +303,120 @@ local my_toggleterm = {
     filetypes = {"toggleterm"}
 }
 
-local my_extension = {
-    sections = {lualine_b = {"filetype"}},
-    filetypes = {"packager", "vista", "NvimTree", "coc-explorer"}
+-- ╒══════════════════════════════════════════════════════════╕
+--                           Quickfix
+-- ╘══════════════════════════════════════════════════════════╛
+local function is_loclist()
+    local winid = api.nvim_get_current_win()
+    return fn.getwininfo(winid)[1].loclist == 1
+    -- return vim.fn.getloclist(0, { filewinid = 1 }).filewinid ~= 0
+end
+
+local function qf_title()
+    return is_loclist() and "Location" or "Quickfix"
+end
+
+local function qf_cmd()
+    local winid = api.nvim_get_current_win()
+    return vim.w[winid].quickfix_title or ""
+end
+
+local function quickfix()
+    local what = {nr = 0, size = 0}
+    local info = is_loclist() and fn.getloclist(0, what) or fn.getqflist(what)
+    what = {nr = "$"}
+    local nr = (is_loclist() and fn.getloclist(0, what) or fn.getqflist(what)).nr
+
+    return ("(%d/%d) [%d]"):format(info.nr, nr, info.size)
+end
+
+local my_qf = {
+    sections = {
+        -- lualine_a = {quickfix},
+        lualine_a = {qf_title},
+        lualine_b = {
+            {
+                quickfix,
+                color = {fg = colors.green}
+            }
+        },
+        lualine_c = {{qf_cmd, color = {fg = colors.yellow}}}
+    },
+    filetypes = {"qf"}
 }
 
-require("lualine").setup(
-    {
-        options = {
-            icons_enabled = true,
-            -- theme = 'kimbox',
-            theme = "auto",
-            section_separators = {left = "", right = ""},
-            component_separators = {left = "", right = ""},
-            -- Not sure if these work
-            disabled_filetypes = BLACKLIST_FT,
-            always_divide_middle = true
-        },
-        sections = sections_1,
-        inactive_sections = {
-            lualine_a = {"mode"},
-            lualine_b = {},
-            lualine_c = {"filename"},
-            lualine_x = {"location"},
-            lualine_y = {},
-            lualine_z = {}
-        },
-        tabline = {},
-        -- tabline = {
-        --   lualine_a = { "tabs" },
-        --   lualine_b = { { "buffers" } },
-        --   lualine_c = {},
-        --   lualine_x = {},
-        --   lualine_y = {},
-        --   lualine_z = {
-        --     {
-        --       "require(\"nvim-gps\").get_location()",
-        --       cond = conditions.is_available_gps,
-        --     },
-        --   },
-        -- },
-        extensions = {
-            "quickfix",
-            my_toggleterm,
-            "symbols-outline",
-            my_extension,
-            "fzf"
-        }
+-- ╒══════════════════════════════════════════════════════════╕
+--                             Init
+-- ╘══════════════════════════════════════════════════════════╛
+local function init()
+    local my_extension = {
+        sections = {lualine_b = {"filetype"}},
+        filetypes = {
+            "packer",
+            "vista",
+            "NvimTree",
+            "coc-explorer",
+            "NeogitStatus"
+        } -- aerial
     }
-)
+
+    require("lualine").setup(
+        {
+            options = {
+                icons_enabled = true,
+                -- theme = 'kimbox',
+                theme = "auto",
+                section_separators = {left = "", right = ""},
+                component_separators = {left = "", right = ""},
+                disabled_filetypes = {
+                    "NvimTree",
+                    "coc-explorer",
+                    "help",
+                    "quickmenu",
+                    "undotree",
+                    "neoterm",
+                    "floaterm"
+                    -- "qf"
+                },
+                always_divide_middle = true
+            },
+            sections = sections_1,
+            inactive_sections = {
+                lualine_a = {"mode"},
+                lualine_b = {},
+                lualine_c = {"filename"},
+                lualine_x = {"location"},
+                lualine_y = {},
+                lualine_z = {}
+            },
+            tabline = {},
+            -- tabline = {
+            --   lualine_a = { "tabs" },
+            --   lualine_b = { { "buffers" } },
+            --   lualine_c = {},
+            --   lualine_x = {},
+            --   lualine_y = {},
+            --   lualine_z = {
+            --     {
+            --       'require("nvim-gps").get_location()',
+            --       cond = conditions.is_available_gps,
+            --     },
+            --   },
+            -- },
+            extensions = {
+                -- "quickfix",
+                my_qf,
+                my_toggleterm,
+                "symbols-outline",
+                my_extension,
+                "fzf",
+                "aerial",
+                "fugitive"
+            }
+        }
+    )
+end
+
+init()
+
+return M

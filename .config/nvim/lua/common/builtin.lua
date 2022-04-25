@@ -43,6 +43,8 @@ function M.jump0()
     return expr
 end
 
+-- TODO: Oldfiles
+
 -- function M.oldf2qf()
 --   local current_buffer = api.nvim_get_current_buf()
 --   local current_file = api.nvim_buf_get_name(current_buffer)
@@ -54,6 +56,7 @@ end
 --   end
 -- end
 
+---Set location list to jump list
 function M.jumps2qf()
     local locs, pos = unpack(fn.getjumplist())
     local items, idx = {}, 1
@@ -71,6 +74,41 @@ function M.jumps2qf()
     end
 
     fn.setloclist(0, {}, " ", {title = "JumpList", items = items, idx = idx})
+    local winid = fn.getloclist(0, {winid = 0}).winid
+    if winid == 0 then
+        cmd("abo lw")
+    else
+        api.nvim_set_current_win(winid)
+    end
+end
+
+---Set location list to changes
+function M.changes2qf()
+    local store_text
+    local locs, pos = unpack(fn.getchangelist())
+    local items, idx = {}, 1
+    local bufnr = api.nvim_get_current_buf()
+    for i = #locs, 1, -1 do
+        local loc = locs[i]
+
+        -- coladd
+        local col, _, lnum = loc.col + 1, loc.coladd, loc.lnum
+        local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
+
+        -- Remove consecutive duplicates
+        if text ~= store_text then
+            text = text and text:match("%C*") or "......"
+            table.insert(items, {bufnr = bufnr, lnum = lnum, col = col, text = text})
+
+            if pos + 1 == i then
+                idx = #items
+            end
+        end
+
+        store_text = text
+    end
+
+    fn.setloclist(0, {}, " ", {title = "ChangeList", items = items, idx = idx})
     local winid = fn.getloclist(0, {winid = 0}).winid
     if winid == 0 then
         cmd("abo lw")

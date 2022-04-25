@@ -169,7 +169,7 @@ local function init()
     --     ), { noremap = true, expr = true }
     -- )
 
-    map("i", "<CR>", [[v:lua.require'plugs.autopairs'.ap_coc()]], {expr = true, noremap = true})
+    -- map("i", "<CR>", [[v:lua.require'plugs.autopairs'.ap_coc()]], {expr = true, noremap = true})
 end
 
 init()

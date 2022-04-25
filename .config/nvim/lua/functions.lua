@@ -61,6 +61,14 @@ command(
 )
 
 command(
+    "Changes",
+    function()
+        require("common.builtin").changes2qf()
+    end,
+    {nargs = 0}
+)
+
+command(
     "CleanEmptyBuf",
     function()
         require("common.kutils").clean_empty_bufs()
@@ -111,9 +119,6 @@ cmd [[
   endfunction
 
   command! SQ call SyntaxQuery()
-
-  nnoremap <Leader>sll :syn list<
-  nnoremap <Leader>slo :verbose hi
 ]]
 
 map("n", "<Leader>sll", ":syn list")
@@ -223,24 +228,20 @@ cmd [[
   command! DS call s:DiffSaved()
 ]]
 
--- Open a github link in the browser
-cmd [[
-  function! s:go_github()
-      let s:repo = matchstr(expand('<cWORD>'), '\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+')
-      if empty(s:repo)
-          echo 'GoGithub: No repository found.'
-      else
-          let s:url = 'https://github.com/' . s:repo
-          " call netrw#BrowseX(s:url, 0)
-          call openbrowser#open(s:url)
-      end
-  endfunction
+---Open a github or regular link in the browser
+---
+---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
+---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
+function M.go_github()
+    local repo = fn.matchstr(fn.expand("<cWORD>"), [[\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+]])
 
-  augroup gogithub
-      au!
-      au FileType *vim,*bash,*tmux,zsh,lua nnoremap <buffer> <silent> 1<cr> :call <sid>go_github()<cr>
-  augroup END
-]]
+    if #repo > 0 then
+        local url = ("https://github.com/%s"):format(repo)
+        fn["openbrowser#open"](url)
+    else
+        fn["openbrowser#_keymap_open"]("n")
+    end
+end
 
 -- Hide number & sign columns to do tmux copy
 cmd [[

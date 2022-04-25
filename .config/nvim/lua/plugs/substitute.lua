@@ -3,30 +3,69 @@ local map = require("common.utils").map
 local wk = require("which-key")
 
 function M.setup()
-    require("substitute").setup()
+    require("substitute").setup(
+        {
+            yank_substitued_text = false,
+            range = {
+                prefix = "s",
+                prompt_current_text = false,
+                confirm = false,
+                complete_word = false,
+                motion1 = false,
+                motion2 = false
+            },
+            -- exchange = {
+            --     motion = false
+            -- },
+            on_substitute = function(event)
+                require("yanky").init_ring("p", event.register, event.count, event.vmode:match("[vV�]"))
+            end
+        }
+    )
 end
 
 local function init()
     M.setup()
 
-    wk.register({
-        ["s"] = {"<Cmd>lua require('substitute').operator()<CR>", "Substitute operator"},
-        ["ss"] = {"<Cmd>lua require('substitute').line()<CR>", "Substitute line"},
-        ["se"] = {"<Cmd>lua require('substitute').eol()<CR>", "Substitute EOL"},
-        ["sx"] = {"<Cmd>lua require('substitute.exchange').operator()<CR>", "Substitute exchange operator"},
-        ["sxx"] = {"<Cmd>lua require('substitute.exchange').line()<CR>", "Substitute exchange line"},
-        ["sxc"] = {"<Cmd>lua require('substitute.exchange').cancel()<CR>", "Substitute cancel"},
-    })
+    wk.register(
+        {
+            ["s"] = {"<Cmd>lua require('substitute').operator()<CR>", "Substitute operator"},
+            ["ss"] = {"<Cmd>lua require('substitute').line()<CR>", "Substitute line"},
+            ["se"] = {"<Cmd>lua require('substitute').eol()<CR>", "Substitute EOL"},
+            ["sx"] = {"<Cmd>lua require('substitute.exchange').operator()<CR>", "Substitute exchange operator"},
+            ["sxx"] = {"<Cmd>lua require('substitute.exchange').line()<CR>", "Substitute exchange line"},
+            ["sxc"] = {"<Cmd>lua require('substitute.exchange').cancel()<CR>", "Substitute cancel"},
+            -- ["<Leader>sr"] = {"<Cmd>lua require('substitute.range').operator({ prefix = 'S' })<CR>", "Substitute range word"},
+            ["<Leader>sr"] = {
+                "<Cmd>lua require('substitute.range').operator()<CR>",
+                "Substitute <motion><motion> operator"
+            },
+            ["sr"] = {"<Cmd>lua require('substitute.range').word()<CR>", "Substitute range word"},
+            ["sS"] = {
+                "<Cmd>lua require('substitute.range').operator()<CR>",
+                "Substitute <motion><motion> confirm"
+            }
+        }
+    )
 
     -- map("n", "s", ":lua require('substitute').operator()<CR>")
     -- map("n", "ss", ":lua require('substitute').line()<CR>")
     -- map("n", "se", ":lua require('substitute').eol()<CR>")
-    map("x", "s", ":lua require('substitute').visual()<CR>")
+    -- map("x", "s", ":lua require('substitute').visual()<CR>")
 
     -- map("n", "sx", ":lua require('substitute.exchange').operator()<CR>")
     -- map("n", "sxx", ":lua require('substitute.exchange').line()<CR>")
-    map("x", "X", ":lua require('substitute.exchange').visual()<CR>")
+    -- map("x", "X", ":lua require('substitute.exchange').visual()<CR>")
     -- map("n", "sxc", ":lua require('substitute.exchange').cancel()<CR>")
+
+    wk.register(
+        {
+            ["s"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
+            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"},
+            -- [";s"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
+        },
+        {mode = "x"}
+    )
 end
 
 init()

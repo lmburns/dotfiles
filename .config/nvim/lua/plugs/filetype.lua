@@ -39,7 +39,8 @@ function M.setup()
                     [".*%.env.*"] = "sh",
                     [".*ignore"] = "conf",
                     ["calcurse-note.*"] = "markdown",
-                    ["~/.local/share/calcurse/notes/.*"] = "markdown"
+                    ["~/.local/share/calcurse/notes/.*"] = "markdown",
+                    [".*sxhkdrc"] = "sxhkdrc"
                 },
                 -- The same as the ones above except the keys map to functions
                 function_extensions = {

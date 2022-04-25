@@ -464,6 +464,9 @@ require("telescope").setup(
             ["ui-select"] = {
                 themes.get_dropdown {}
             },
+            heading = {
+                treesitter = true
+            },
             -- This needs to be used on setup
             zoxide = {
                 prompt_title = "[ Zoxide List ]",
@@ -946,16 +949,18 @@ wk.register(
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
         [";B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
+        [";he"] = {":Telescope heading<CR>", "Telescope heading"},
         [";fd"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
+        [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},
         ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
         ["<Leader>;"] = {":Telescope current_buffer_fuzzy_find<CR>", "Telescope buffer lines"},
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
-        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbol"},
+        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbol"}
     }
 )
 
@@ -975,7 +980,7 @@ wk.register(
 -- Plugins
 wk.register(
     {
-        ["<A-;>"] = {":Telescope neoclip<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
 )

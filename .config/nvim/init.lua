@@ -178,6 +178,7 @@ vim.schedule(
             function()
                 g.loaded_clipboard_provider = nil
                 cmd("runtime autoload/provider/clipboard.vim")
+                require("plugs.yanking") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
                     augroup(

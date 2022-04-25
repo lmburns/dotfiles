@@ -75,8 +75,12 @@ end
 -- Use K to show documentation in preview window
 function M.show_documentation()
     local ft = vim.bo.ft
-    if ft == "help" or ft == "vim" then
+    if _t({"help", "vim"}):contains(ft) then
         cmd(("sil! h %s"):format(fn.expand("<cword>")))
+    elseif ft == "man" then
+        cmd(("Man %s"):format(fn.expand("<cword>")))
+    elseif fn.expand("%:t") == "Cargo.toml" then
+        require("crates").show_popup()
     elseif fn["coc#rpc#ready"]() then
         -- definitionHover -- doHover
         local err, res = M.a2sync("definitionHover")
@@ -87,7 +91,7 @@ function M.show_documentation()
             cmd("norm! K")
         end
     else
-        cmd("!" .. o.keywordprg .. " " .. fn.expand("<cword>"))
+        cmd(("!%s %s"):format(o.keywordprg, fn.expand("<cword>")))
     end
 end
 
@@ -359,7 +363,7 @@ function M.post_open_float()
     end
 end
 
-function _G.check_backspace()
+function M.check_backspace()
     -- local col = fn.col(".") - 1
     -- return col or (fn.getline(".")[col - 1]):match([[\s]])
 
@@ -500,6 +504,9 @@ function M.init()
     M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
+
+    g.coc_snippet_next = "<C-j>"
+    g.coc_snippet_prev = "<C-k>"
 
     augroup(
         "CocNvimSetup",
@@ -675,7 +682,7 @@ function M.init()
     -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
     -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
 
-    map("s", "<BS>", '<C-g>"_c')
+    -- map("s", "<BS>", '<C-g>"_c')
     map("s", "<Del>", '<C-g>"_c')
     map("s", "<C-h>", '<C-g>"_c')
     map("s", "<C-w>", "<Esc>a")
@@ -721,6 +728,15 @@ function M.init()
     map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
 
     -- map(
+    --     "i",
+    --     "<Tab>",
+    --     [[pumvisible() ? coc#_select_confirm() :]] ..
+    --         [[coc#expandableOrJumpable ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :]] ..
+    --             [[v:lua.require('plugs.coc').check_back_space() ? "\<C-g>u\<Tab>" :]] .. [[coc#refresh()]],
+    --     {expr = true, silent = true}
+    -- )
+
+    -- map(
     --     "i", "<Tab>",
     --     [[pumvisible() ? "\<C-n>" : v:lua.check_back_space() ? "\<TAB>" : coc#refresh()]],
     --     { silent = true, expr = true }
@@ -745,19 +761,19 @@ function M.init()
             ["<LocalLeader>gs"] = {":CocCommand fzf-preview.GitStatus<CR>", "Git status (fzf)"},
             ["<LocalLeader>gr"] = {":CocCommand fzf-preview.GitLogs<CR>", "Git logs (fzf)"},
             ["<LocalLeader>gp"] = {":<C-u>CocList --normal gstatus<CR>", "Git status"},
-            ["<Leader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
+            ["<LocalLeader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
         }
     )
 
     -- Git
     -- map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", {silent = true})
     -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
-    map("n", "<Leader>gF", ":<C-u>CocCommand git.foldUnchanged<CR>", {silent = true})
-    map("n", "<Leader>gla", ":<C-u>CocFzfList commits<cr>", {silent = true})
-    map("n", "<Leader>glc", ":<C-u>CocFzfList bcommits<cr>", {silent = true})
+    -- map("n", "<Leader>gla", ":<C-u>CocFzfList commits<cr>", {silent = true})
+    -- map("n", "<Leader>glc", ":<C-u>CocFzfList bcommits<cr>", {silent = true})
+    -- map("n", "<Leader>gF", ":<C-u>CocCommand git.foldUnchanged<CR>", {silent = true})
 
     -- nmap <silent> gs <Plug>(coc-git-chunkinfo)
-    map("n", "<Leader>gll", "<Plug>(coc-git-commit)", {noremap = true, silent = true})
+    -- map("n", "<Leader>gll", "<Plug>(coc-git-commit)", {noremap = true, silent = true})
 
     -- Snippet
     map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})

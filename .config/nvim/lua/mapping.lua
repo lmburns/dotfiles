@@ -76,8 +76,6 @@ map("x", "<Leader>2;", "@:")
 map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
 -- Easier navigation in normal / visual / operator pending mode
-map("n", "gkk", "{")
-map("n", "gjj", "}")
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
 
@@ -87,8 +85,8 @@ map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 
 wk.register(
     {
-        ["S"] = {":%s//g<Left><Left>", "Replace all"},
-        ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
+        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
+        -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
 )
@@ -130,7 +128,7 @@ wk.register(
         ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
         ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
         ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
-        ["gp"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
+        -- ["gp"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
     },
     {expr = true}
 )
@@ -159,9 +157,9 @@ wk.register(
 -- map("x", "p", "_c<Esc>p")
 
 -- Paste before
-map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
+-- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 -- Paste after
-map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
+-- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 
 wk.register(
     {
@@ -211,10 +209,10 @@ map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {exp
 
 wk.register(
     {
-        ["[q"] = {[[:execute(v:count1 . 'cprev')<CR>]], "Previous error"},
-        ["]q"] = {[[:execute(v:count1 . 'cnext')<CR>]], "Next error"},
-        ["[Q"] = {":cfirst<CR>", "First error"},
-        ["]Q"] = {":clast<CR>", "Last error"},
+        ["[q"] = {[[:execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
+        ["]q"] = {[[:execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
+        ["[Q"] = {":cfirst<CR>", "First item in quickfix"},
+        ["]Q"] = {":clast<CR>", "Last item in quickfix"},
         ["[S"] = {"<Cmd>lfirst<CR>", "First location list"},
         ["]S"] = {"<Cmd>llast<CR>", "Last location list"},
         ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
@@ -300,7 +298,6 @@ wk.register(
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["<Esc><Esc>"] = {"<Esc>:nohlsearch<CR>", "Disable hlsearch"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
-        ["<Leader>cc"] = {":cclose<CR>", "Close quickfix (cclose)"},
         ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},

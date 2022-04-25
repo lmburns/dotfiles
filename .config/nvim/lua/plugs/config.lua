@@ -12,8 +12,8 @@ local map = utils.map
 local command = utils.command
 local color = require("common.color")
 
+local augroup = utils.augroup
 local autocmd = utils.autocmd
-local create_augroup = utils.create_augroup
 
 -- ================================ bqf ===============================
 function M.bqf()
@@ -63,7 +63,7 @@ function M.listish()
             clearqflist = "Clearquickfix", -- command
             clearloclist = "Clearloclist", -- command
             clear_notes = "ClearListNotes", -- command
-            lists_close = "<leader>cc", -- closes both qf/local lists
+            lists_close = "<Nop>", -- closes both qf/local lists
             in_list_dd = "dd", -- delete current item in the list
             quickfix = {
                 open = "qo",
@@ -85,6 +85,19 @@ function M.listish()
             }
         }
     )
+
+    wk.register(
+        {
+            q = {
+                name = "+quickfix",
+                o = "Quickfix open",
+                a = "Quickfix add current line",
+                n = "Quickfix add note",
+                i = "Quickfix clear items"
+            }
+        }
+    )
+
     cmd([[pa cfilter]])
 end
 
@@ -155,7 +168,11 @@ end
 
 -- =========================== open-browser ===========================
 function M.open_browser()
-    map("n", "gX", "<Plug>(openbrowser-open)")
+    wk.register(
+        {
+            ["gX"] = {":lua require('functions').go_github()<CR>", "Open link under cursor"}
+        }
+    )
 end
 
 -- =============================== Suda ===============================
@@ -165,9 +182,14 @@ end
 
 -- ============================== GHLine ==============================
 function M.ghline()
-    map("", "<Leader>go", "<Plug>(gh-repo)")
-    map("", "<Leader>gL", "<Plug>(gh-line)")
     -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
+
+    wk.register(
+        {
+            ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
+            ["<Leader>gL"] = {"<Plug>(gh-line)", "Open git line"}
+        }
+    )
 end
 
 -- ============================= Persistence ==========================
@@ -278,10 +300,12 @@ end
 
 -- ============================= TableMode ============================
 function M.table_mode()
-    api.nvim_create_autocmd(
-        "FileType",
+    augroup(
+        "TableMode",
         {
-            callback = function()
+            event = "FileType",
+            pattern = {"markdown", "vimwiki"},
+            command = function()
                 g.table_mode_map_prefix = "<Leader>t"
                 g.table_mode_realign_map = "<Leader>tr"
                 g.table_mode_delete_row_map = "<Leader>tdd"
@@ -295,9 +319,7 @@ function M.table_mode()
                 g.table_mode_corner = "|"
                 g.table_mode_fillchar = "-"
                 g.table_mode_separator = "|"
-            end,
-            pattern = {"markdown", "vimwiki"},
-            group = create_augroup("TableMode")
+            end
         }
     )
 end
@@ -510,7 +532,13 @@ function M.hlslens()
             virt_priority = 100
         }
     )
-    cmd([[com! HlSearchLensToggle lua require('hlslens').toggle()]])
+
+    command(
+        "HlSearchLensToggle",
+        function()
+            require("hlslens").toggle()
+        end
+    )
 
     map(
         "n",
@@ -565,6 +593,7 @@ function M.sandwhich()
     -- ysiwf = funcname?
     -- ysiwt = tag
     -- y{a,i}si = head - tail
+    -- Si = head - tail
     -- yar = <here>
 
     ex.runtime("macros/sandwich/keymap/surround.vim")
@@ -608,6 +637,14 @@ function M.sandwhich()
       \ ]
     ]]
 
+    -- \   {
+    -- \     'buns'        : ["'", "'"],
+    -- \     'motionwise'  : ['line'],
+    -- \     'kind'        : ['add'],
+    -- \     'linewise'    : 1,
+    -- \     'command'     : ["'[+1,']-1normal! >>"],
+    -- \   },
+
     map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
     map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
     map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
@@ -623,7 +660,6 @@ function M.sandwhich()
         }
     )
 
-    -- map("n", "<Leader>o", "ysiw")
     -- map("n", "mlw", "yss`", {noremap = false})
 end
 
@@ -657,6 +693,14 @@ function M.targets()
         }
     )
 
+    wk.register(
+        {
+            ["ir"] = "inner angle bracket",
+            ["ar"] = "around angle bracket"
+        },
+        {mode = "o"}
+    )
+
     -- c: on cursor position
     -- l: left of cursor in current line
     -- r: right of cursor in current line
@@ -664,8 +708,7 @@ function M.targets()
     -- b: below cursor on screen
     -- A: above cursor off screen
     -- B: below cursor off screen
-    g.targets_seekRanges =
-        "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+    g.targets_seekRanges = "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
     -- g.targets_jumpRanges = g.targets_seekRanges
     -- g.targets_aiAI = "aIAi"
     --
@@ -833,6 +876,58 @@ function M.window_picker()
     map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
 end
 
+-- =============================== Yanky ==============================
+function M.yanky()
+    local mapping = require("yanky.telescope.mapping")
+
+    require("yanky").setup(
+        {
+            ring = {
+                history_length = 50,
+                storage = "shada",
+                sync_with_numbered_registers = true
+            },
+            picker = {
+                telescope = {
+                    mappings = {
+                        default = mapping.put("p"),
+                        i = {
+                            ["<C-j>"] = mapping.put("p"),
+                            ["<C-k>"] = mapping.put("P")
+                        },
+                        n = {
+                            ["p"] = mapping.put("p"),
+                            ["P"] = mapping.put("P")
+                        }
+                    }
+                }
+            },
+            system_clipboard = {
+                sync_with_ring = true
+            },
+            highlight = {
+                on_put = true,
+                on_yank = true,
+                timer = 300
+            },
+            preserve_cursor_position = {
+                enabled = true
+            }
+        }
+    )
+
+    color.set_hl("YankyPut", {guibg = "#cc6666"})
+
+    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
+    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
+    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
+    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
+    map("n", "<C-r>", "<Plug>(YankyCycleForward)")
+    map("n", "<C-n>", "<Plug>(YankyCycleBackward)")
+
+    require("telescope").load_extension("yank_history")
+end
+
 -- ============================== LazyGit =============================
 function M.lazygit()
     g.lazygit_floating_window_winblend = 0 -- transparency of floating window
@@ -949,27 +1044,102 @@ function M.grepper()
     )
 end
 
--- =============================== trevj ==============================
-function M.trevj()
-    require("trevj").setup(
+-- ============================ CommentBox ============================
+function M.comment_box()
+    local cb = require("comment-box")
+    cb.setup(
         {
-            containers = {
-                lua = {
-                    table_constructor = {final_separator = ",", final_end_line = true},
-                    arguments = {final_separator = false, final_end_line = true},
-                    parameters = {final_separator = false, final_end_line = true}
-                },
-                html = {
-                    start_tag = {
-                        final_separator = false,
-                        final_end_line = true,
-                        skip = {tag_name = true}
-                    }
-                }
-            }
+            doc_width = 80, -- width of the document
+            box_width = 60, -- width of the boxes
+            borders = {
+                -- symbols used to draw a box
+                top = "─",
+                bottom = "─",
+                left = "│",
+                right = "│",
+                top_left = "╭",
+                top_right = "╮",
+                bottom_left = "╰",
+                bottom_right = "╯"
+            },
+            line_width = 70, -- width of the lines
+            line = {
+                -- symbols used to draw a line
+                line = "─",
+                line_start = "─",
+                line_end = "─"
+            },
+            outer_blank_lines = false, -- insert a blank line above and below the box
+            inner_blank_lines = false, -- insert a blank line above and below the text
+            line_blank_line_above = false, -- insert a blank line above the line
+            line_blank_line_below = false -- insert a blank line below the line
         }
     )
-    map("n", "gJ", [[:lua require('trevj').format_at_cursor()<CR>]])
+
+    --        Box | Size | Text
+    -- lbox    L     F      L
+    -- clbox   C     F      L
+    -- cbox    L     F      C
+    -- ccbox   C     F      C
+    -- albox   L     A      L
+    -- aclbox  C     A      L
+    -- acbox   L     A      C
+    -- accbox  C     A      C
+
+    -- 21 20 19 18 7
+    map({"n", "v"}, "<Leader>bb", cb.cbox)
+    map(
+        {"n", "v"},
+        "<Leader>bh",
+        function()
+            cb.cbox(19)
+        end
+    )
+    map(
+        {"n", "v"},
+        "<Leader>cc",
+        function()
+            cb.cbox(21)
+        end
+    )
+    map(
+        {"n", "v"},
+        "<Leader>bi",
+        function()
+            cb.cbox(13)
+        end
+    )
+
+    map({"n", "v"}, "<Leader>be", cb.lbox)
+    map({"n", "v"}, "<Leader>ba", cb.acbox)
+    map({"n", "v"}, "<Leader>bc", cb.accbox)
+
+    -- cline
+    map(
+        {"n", "i"},
+        "<M-w>",
+        function()
+            -- 2 6 7
+            cb.line(6)
+        end
+    )
+
+    map("n", "<Leader>b?", cb.catalog)
+
+    wk.register(
+        {
+            ["<Leader>bb"] = "Left fixed box, center text (round)",
+            -- ["<Leader>bs"] = "Left fixed box, center text (side)",
+            ["<Leader>bh"] = "Left fixed box, center text (sides)",
+            ["<Leader>cc"] = "Left fixed box, center text (top)",
+            ["<Leader>bi"] = "Left fixed box, center text (side)",
+            ["<Leader>bc"] = "Center center box, center text (round)",
+            ["<Leader>ba"] = "Left center box, center text (round)",
+            ["<Leader>be"] = "Left fixed box, left text (round)",
+            ["<M-w>"] = "Insert thick line",
+            ["<Leader>b?"] = "Comment box catalog"
+        }
+    )
 end
 
 -- ============================ registers =============================
@@ -1002,8 +1172,82 @@ function M.lfnvim()
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 
--- ============================== Unused ==============================
--- ====================================================================
+-- =============================== trevj ==============================
+function M.trevj()
+    require("trevj").setup(
+        {
+            containers = {
+                lua = {
+                    table_constructor = {final_separator = ",", final_end_line = true},
+                    arguments = {final_separator = false, final_end_line = true},
+                    parameters = {final_separator = false, final_end_line = true}
+                },
+                html = {
+                    start_tag = {
+                        final_separator = false,
+                        final_end_line = true,
+                        skip = {tag_name = true}
+                    }
+                }
+            }
+        }
+    )
+    map("n", "gJ", [[:lua require('trevj').format_at_cursor()<CR>]])
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Crates                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.crates()
+    local crates = require("crates")
+
+    crates.setup(
+        {
+            smart_insert = true,
+            insert_closing_quote = true,
+            avoid_prerelease = true,
+            autoload = true,
+            autoupdate = true,
+            loading_indicator = true,
+            date_format = "%Y-%m-%d",
+            disable_invalid_feature_diagnostic = false
+        }
+    )
+
+    augroup(
+        "lmb__CratesBindings",
+        {
+            {
+                event = "BufEnter",
+                pattern = "Cargo.toml",
+                command = function()
+                    local bufnr = nvim.get_current_buf()
+                    map(
+                        "n",
+                        "<Leader>ca",
+                        function()
+                            crates.upgrade_all_crates()
+                        end,
+                        {buffer = bufnr}
+                    )
+
+                    map(
+                        "n",
+                        "<Leader>cu",
+                        function()
+                            crates.upgrade_crate()
+                        end,
+                        {buffer = bufnr}
+                    )
+                end
+            }
+        }
+    )
+end
+
+-- ╒══════════════════════════════════════════════════════════╕
+--                            Unused
+-- ╘══════════════════════════════════════════════════════════╛
 
 -- ========================== Session Manager =========================
 -- function M.session_manager()
@@ -1041,6 +1285,7 @@ end
 --   map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
 -- end
 
+-- ============================ Delimitmate ============================
 -- function M.delimitmate()
 --   g.delimitMate_jump_expansion = 1
 --   g.delimitMate_expand_cr = 2
@@ -1055,6 +1300,7 @@ end
 --   )
 -- end
 
+-- =============================== Sneak ==============================
 -- function M.sneak()
 --   g["sneak#label"] = 1
 --

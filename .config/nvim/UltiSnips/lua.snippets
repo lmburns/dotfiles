@@ -82,6 +82,12 @@ snippet loreq "require a module as a variable" b
 local ${1:var} = require("${2:module}")$0
 endsnippet
 
+snippet M "local M = {}" b
+local ${1:M} = {}
+$0
+return ${1:M}
+endsnippet
+
 snippet if "if statement" b
 if ${1:true} then
 	$0

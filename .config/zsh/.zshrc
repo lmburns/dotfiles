@@ -728,29 +728,31 @@ zt 0c light-mode null lbin \
     fornwall/rust-script \
     reitermarkus/cargo-eval \
     fanzeyi/cargo-play \
-    matthiaskrgr/cargo-cache \
     iamsauravsharma/cargo-trim \
-    razrfalcon/cargo-bloat \
     andrewradev/cargo-local \
     celeo/cargo-nav \
     g-k/cargo-show \
     mre/cargo-inspect \
     sminez/roc
 
+# razrfalcon/cargo-bloat \
+# matthiaskrgr/cargo-cache \
+
+# has'!cargo-deps' lbin from'gh-r' \
+#   est31/cargo-udeps \
+# lbin'tar*/rel*/cargo-{rm,add,upgrade}' \
+# atclone'cargo br' atpull'%atclone' \
+#   killercup/cargo-edit \
+# lbin from'gh-r' \
+#   cargo-generate/cargo-generate \
+# lbin'{cargo-make,makers}' atclone'cargo br' atpull'%atclone' \
+# atclone"command mv -f tar*/rel*/{cargo-make,makers} . && cargo clean" \
+# atload'export CARGO_MAKE_HOME="$XDG_CONFIG_HOME/cargo-make"' \
+# atload'alias ncmake="$EDITOR $CARGO_MAKE_HOME/Makefile.toml"' \
+# atload'alias cm="makers --makefile $CARGO_MAKE_HOME/Makefile.toml"' \
+#   sagiegurari/cargo-make \
+
 zt 0c light-mode null for \
-  has'!cargo-deps' lbin from'gh-r' \
-    est31/cargo-udeps \
-  lbin'tar*/rel*/cargo-{rm,add,upgrade}' \
-  atclone'cargo br' atpull'%atclone' \
-    killercup/cargo-edit \
-  lbin'{cargo-make,makers}' atclone'cargo br' atpull'%atclone' \
-  atclone"command mv -f tar*/rel*/{cargo-make,makers} . && cargo clean" \
-  atload'export CARGO_MAKE_HOME="$XDG_CONFIG_HOME/cargo-make"' \
-  atload'alias ncmake="$EDITOR $CARGO_MAKE_HOME/Makefile.toml"' \
-  atload'alias cm="makers --makefile $CARGO_MAKE_HOME/Makefile.toml"' \
-    sagiegurari/cargo-make \
-  lbin from'gh-r' \
-    cargo-generate/cargo-generate \
   lbin'* -> cargo-temp' from'gh-r' \
     yozhgoor/cargo-temp \
   lbin'tar*/rel*/evcxr' atclone'cargo br' atpull'%atclone' \

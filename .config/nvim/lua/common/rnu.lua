@@ -13,7 +13,7 @@ local function set_win_rnu(val)
     local cur_winid = api.nvim_get_current_win()
     for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
         if cur_winid == winid and vim.wo[cur_winid].nu then
-            if vim.bo.bt ~= "quickfix" then
+            if b.bt ~= "quickfix" then
                 vim.wo[cur_winid].rnu = val
             end
         elseif fn.win_gettype() ~= "popup" and vim.wo[winid].nu then

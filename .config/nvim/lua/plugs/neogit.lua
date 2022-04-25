@@ -1,14 +1,21 @@
 local M = {}
 
+local wk = require("which-key")
 local map = require("common.utils").map
 
+local ng = require("neogit")
+
 function M.setup()
-    require("neogit").setup(
-        ---@diagnostic disable-next-line: redundant-parameter
+    ng.setup(
         {
             disable_commit_confirmation = true,
             integrations = {diffview = true},
-            sections = {stashes = {folded = false}, recent = {folded = false}}
+            sections = {stashes = {folded = false}, recent = {folded = false}},
+            -- override/add mappings
+            mappings = {
+                -- modify status buffer mappings
+                status = {}
+            }
         }
     )
 end
@@ -27,6 +34,23 @@ local function init()
   ]]
 
     M.setup()
+
+    wk.register(
+        {
+            ["<Leader>g,"] = {
+                function()
+                    ng.open({cwd = fn.expand("%:h")})
+                end,
+                "Open Neogit"
+            },
+            ["<Leader>gp"] = {
+                function()
+                    ng.open({"pull", cwd = fn.expand("%:h")})
+                end,
+                "Open Neogit pull"
+            }
+        }
+    )
 end
 
 init()
