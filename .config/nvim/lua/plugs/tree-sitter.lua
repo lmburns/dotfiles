@@ -650,10 +650,12 @@ M.setup = function()
                 swap_next = {
                     ["<Leader>.f"] = "@function.outer",
                     ["<Leader>.e"] = "@element"
+                    -- ["<Leader>a"] = "@parameter.inner", -- iswap
                 },
                 swap_previous = {
                     ["<Leader>,f"] = "@function.outer",
                     ["<Leader>,e"] = "@element"
+                    -- ["<Leader>A"] = "@parameter.inner",
                 }
             }
         }
