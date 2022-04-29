@@ -499,6 +499,8 @@ end
 
 -- ========================== Init ==========================
 
+M.value = 100
+
 function M.init()
     diag_qfid = -1
     M.lua_langserver()
@@ -717,7 +719,6 @@ function M.init()
     -- Refresh coc completions
     map("i", "<A-r>", "coc#refresh()", {expr = true, silent = true})
 
-    -- TODO: Use more!
     -- CodeActions
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
     -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")
@@ -730,9 +731,10 @@ function M.init()
     -- map(
     --     "i",
     --     "<Tab>",
-    --     [[pumvisible() ? coc#_select_confirm() :]] ..
-    --         [[coc#expandableOrJumpable ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :]] ..
-    --             [[v:lua.require('plugs.coc').check_back_space() ? "\<C-g>u\<Tab>" :]] .. [[coc#refresh()]],
+    --     [[pumvisible() ? coc#_select_confirm() : ]] ..
+    --         [[coc#expandableOrJumpable() ? ]] ..
+    --             [["\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" : ]] ..
+    --                 [[v:lua.require'plugs.coc'.check_backspace() ? "\<TAB>" : ]] .. [[coc#refresh()]],
     --     {expr = true, silent = true}
     -- )
 

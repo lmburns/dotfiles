@@ -1,19 +1,28 @@
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
+local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
 -- === Restore Cursor Position === [[[
---
+-- FIX: This autocmd prevents wilder from having a right border
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
+
+-- cmd [[
+--   augroup jump_last_position
+--     autocmd!
+--     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+--       \| exe "normal! g'\"" | endif
+--   augroup END
+-- ]]
+
 augroup(
     "lmb__RestoreCursor",
     {
         {
-            event = "BufRead",
+            event = "BufReadPost",
             pattern = "*",
-            once = false, -- want this to run on each tab I open
             command = function()
                 local types =
                     _t(
@@ -26,9 +35,10 @@ augroup(
                         "rebase"
                     }
                 )
-                if fn.expand("%") == "" or types:contains(b.filetype) then
+                if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
                     return
                 end
+
                 local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
                 if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
                     api.nvim_win_set_cursor(0, {row, 0})
@@ -304,8 +314,7 @@ do
             group = id,
             callback = function()
                 local last_tab = api.nvim_get_current_tabpage()
-                -- cmd [[tabdo wincmd =]]
-                nvim.ex.tabdo("wincmd =")
+                ex.tabdo("wincmd =")
                 api.nvim_set_current_tabpage(last_tab)
             end,
             desc = "Equalize windows across tabs"
@@ -575,6 +584,14 @@ augroup(
     }
 )
 -- ]]] === RNU Column ===
+
+autocmd(
+    {
+        event = "VimEnter",
+        pattern = "*",
+        command = [[call vista#RunForNearestMethodOrFunction()]]
+    }
+)
 
 -- ============================== Unused ============================== [[[
 

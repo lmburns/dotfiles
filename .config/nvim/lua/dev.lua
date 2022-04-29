@@ -340,8 +340,9 @@ function M.find_buf_with_option(option, value)
     return nil
 end
 
--- =============================== List ===============================
--- ====================================================================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           List                           │
+-- ╰──────────────────────────────────────────────────────────╯
 ---Return a concatenated table as as string
 ---@param value table: Table to concatenate
 ---@param str string: String to concatenate to the table
@@ -354,8 +355,9 @@ M.list = function(value, str, sep)
     return str ~= "" and table.concat({value, str}, sep) or value
 end
 
--- ============================ Switch-Case ===========================
--- ====================================================================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Switch-case                        │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Switch/case statement
 ---

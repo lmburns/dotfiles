@@ -50,4 +50,4 @@ configuration {
 
 @theme "gruvbox"
 
-/* vim: ft=css:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
+// vim: ft=rasi:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

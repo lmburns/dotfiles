@@ -97,14 +97,16 @@ M.setup_hlargs = function()
     )
 end
 
-M.setup_iswap = function()
+M.setup_iswap = function(ff, ffe, ee)
     ex.packadd("iswap.nvim")
+
+    color.set_hl("ISwapSwap", {guibg = "#957FB8"})
 
     require("iswap").setup {
         keys = "asdfghjkl;",
         grey = "disable",
-        hl_snipe = "IncSearch",
-        hl_selection = "MatchParen",
+        hl_snipe = "ISwapSwap",
+        hl_selection = "WarningMsg",
         autoswap = true
     }
 
@@ -152,7 +154,8 @@ M.setup_aerial = function()
                 "Interface",
                 "Module",
                 "Method",
-                "Struct"
+                "Struct",
+                "Type"
             },
             -- Enum: split_width, full_width, last, none
             -- Determines line highlighting mode when multiple splits are visible.
@@ -168,16 +171,10 @@ M.setup_aerial = function()
             -- Highlight the closest symbol if the cursor is not exactly on one.
             highlight_closest = true,
             -- Highlight the symbol in the source buffer when cursor is in the aerial win
-            highlight_on_hover = false,
+            highlight_on_hover = true,
             -- When jumping to a symbol, highlight the line for this many ms.
             -- Set to false to disable
             highlight_on_jump = 300,
-            -- Define symbol icons. You can also specify "<Symbol>Collapsed" to change the
-            -- icon when the tree is collapsed at that symbol, or "Collapsed" to specify a
-            -- default collapsed icon. The default icon set is determined by the
-            -- "nerd_font" option below.
-            -- If you have lspkind-nvim installed, aerial will use it for icons.
-            icons = {},
             -- Control which windows and buffers aerial should ignore.
             -- If close_behavior is "global", focusing an ignored window/buffer will
             -- not cause the aerial window to update.
@@ -336,15 +333,9 @@ M.setup_aerial = function()
     -- hi link AerialFunction Special
     -- hi AerialFunctionIcon guifg=#cb4b16 guibg=NONE guisp=NONE gui=NONE cterm=NONE
     --
-    -- " There's also this group for the cursor position
     -- hi link AerialLine QuickFixLine
-    -- " If highlight_mode="split_width", you can set a separate color for the
-    -- " non-current location highlight
     -- hi AerialLineNC guibg=Gray
-    --
-    -- " You can customize the guides (if show_guide=true)
     -- hi link AerialGuide Comment
-    -- " You can set a different guide color for each level
     -- hi AerialGuide1 guifg=Red
     -- hi AerialGuide2 guifg=Blue
 end
@@ -445,22 +436,29 @@ M.setup = function()
             "cmake",
             "css",
             "d",
-            -- "dart",
+            "dart",
             "dockerfile",
             "go",
             "gomod",
             "html",
             "java",
             -- "json",
-            -- "kotlin",
+            "kotlin",
             "lua",
             "make",
             "norg",
+            -- Syntax isn't parsed the greatest
+            "perl",
             "python",
             "query",
+            "rasi",
+            -- Injections are sent into various filetypes
+            "regex",
             "ruby",
             "rust",
+            "scheme",
             "scss",
+            "solidity",
             "teal",
             "typescript",
             -- "tsx",
@@ -477,15 +475,7 @@ M.setup = function()
             -- I like the additional highlighting; however, when CocAction('highlight') is used
             -- the regular syntax (not treesitter) is used as the foreground
             additional_vim_regex_highlighting = true,
-            custom_captures = {
-                ["function.call"] = "TSFunction",
-                ["function.bracket"] = "Type",
-                ["namespace.type"] = "Namespace",
-                ["require_call"] = "RequireCall",
-                ["function_definition"] = "FunctionDefinition",
-                ["quantifier"] = "Special",
-                ["utils"] = "Function"
-            }
+            custom_captures = {}
         },
         autotag = {enable = true},
         autopairs = {enable = false}, -- there's a plugin for this
@@ -592,6 +582,25 @@ M.setup = function()
                     -- @loop.outer
                 }
             },
+            -- @block.inner
+            -- @block.outer
+            -- @call.inner
+            -- @call.outer
+            -- @class.inner
+            -- @class.outer
+            -- @comment.outer
+            -- @conditional.inner
+            -- @conditional.outer
+            -- @frame.inner
+            -- @frame.outer
+            -- @function.inner
+            -- @function.outer
+            -- @loop.inner
+            -- @loop.outer
+            -- @parameter.inner
+            -- @parameter.outer
+            -- @scopename.inner
+            -- @statement.outer
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
@@ -602,7 +611,9 @@ M.setup = function()
                     ["]m"] = "@class.outer",
                     ["]r"] = "@block.outer",
                     ["]c"] = "@comment.outer",
-                    ["]a"] = "@parameter.inner"
+                    ["]a"] = "@parameter.inner",
+                    ["]z"] = "@call.inner",
+                    ["]l"] = "@statement.inner"
                     -- ["gnf"] = "@function.outer",
                     -- ["gnif"] = "@function.inner",
                     -- ["gnp"] = "@parameter.inner",
@@ -613,7 +624,8 @@ M.setup = function()
                     -- ["]["] = "@function.outer",
                     ["]F"] = "@function.outer",
                     ["]M"] = "@class.outer",
-                    ["]R"] = "@block.outer"
+                    ["]R"] = "@block.outer",
+                    ["]Z"] = "@call.outer"
                     -- ["gnF"] = "@function.outer",
                     -- ["gniF"] = "@function.inner",
                     -- ["gnP"] = "@parameter.inner",
@@ -626,7 +638,9 @@ M.setup = function()
                     ["[m"] = "@class.outer",
                     ["[r"] = "@block.outer",
                     ["[c"] = "@comment.outer",
-                    ["[a"] = "@parameter.inner"
+                    ["[a"] = "@parameter.inner",
+                    ["[z"] = "@call.inner",
+                    ["[l"] = "@loop.inner"
                     -- ["gpf"] = "@function.outer",
                     -- ["gpif"] = "@function.inner",
                     -- ["gpp"] = "@parameter.inner",
@@ -637,7 +651,8 @@ M.setup = function()
                     -- ["[]"] = "@function.outer",
                     ["[F"] = "@function.outer",
                     ["[R"] = "@block.outer",
-                    ["[M"] = "@class.outer"
+                    ["[M"] = "@class.outer",
+                    ["[Z"] = "@call.outer"
                     -- ["gpF"] = "@function.outer",
                     -- ["gpiF"] = "@function.inner",
                     -- ["gpP"] = "@parameter.inner",
@@ -663,18 +678,10 @@ M.setup = function()
 end
 
 local function init()
-    wk.register(
-        {
-            ["<Leader>.f"] = "Swap next function",
-            ["<Leader>.e"] = "Swap next element",
-            ["<Leader>,f"] = "Swap previous function",
-            ["<Leader>,e"] = "Swap previous element"
-        }
-    )
     local conf = M.setup()
 
-    ex.packadd("nvim-treesitter")
-    ex.packadd("nvim-treesitter-textobjects")
+    -- ex.packadd("nvim-treesitter")
+    -- ex.packadd("nvim-treesitter-textobjects")
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
@@ -726,6 +733,15 @@ local function init()
 
     wk.register(
         {
+            ["<Leader>.f"] = "Swap next function",
+            ["<Leader>.e"] = "Swap next element",
+            ["<Leader>,f"] = "Swap previous function",
+            ["<Leader>,e"] = "Swap previous element"
+        }
+    )
+
+    wk.register(
+        {
             ["ac"] = "Around call",
             ["ic"] = "Inner call",
             ["ao"] = "Around block",
@@ -760,7 +776,29 @@ local function init()
             ["gO"] = "List all definitions in TOC",
             ["<M-n>"] = "Start scope selection/Increment",
             ["[["] = "Aerial prevous function",
-            ["]]"] = "Aerial next function"
+            ["]]"] = "Aerial next function",
+            ["]f"] = "Next function start",
+            ["]m"] = "Next class start",
+            ["]r"] = "Next block start",
+            ["]c"] = "Next comment start",
+            ["]a"] = "Next parameter start",
+            ["]z"] = "Next call start",
+            ["]l"] = "Next loop start",
+            ["]F"] = "Next function end",
+            ["]M"] = "Next class end",
+            ["]R"] = "Next block end",
+            ["]Z"] = "Next call end",
+            ["[f"] = "Previous function start",
+            ["[m"] = "Previous class start",
+            ["[r"] = "Previous block start",
+            ["[c"] = "Previous comment start",
+            ["[a"] = "Previous parameter start",
+            ["[z"] = "Previous call start",
+            ["[l"] = "Previous loop start",
+            ["[F"] = "Previous function end",
+            ["[R"] = "Previous block end",
+            ["[M"] = "Previous class end",
+            ["[Z"] = "Previous call end"
         },
         {mode = "n"}
     )

@@ -45,7 +45,6 @@ local conditions = {
 local plugins = {
     -- Show function is statusbar with vista
     vista_nearest_method = function()
-        -- vim.cmd [[autocmd VimEnter * call vista#RunForNearestMethodOrFunction()]]
         return vim.b.vista_nearest_method_or_function
     end,
     gutentags_progress = function()
@@ -327,7 +326,7 @@ local function quickfix()
     what = {nr = "$"}
     local nr = (is_loclist() and fn.getloclist(0, what) or fn.getqflist(what)).nr
 
-    return ("(%d/%d) [%d]"):format(info.nr, nr, info.size)
+    return ("(%d/%d)"):format(info.nr, nr)
 end
 
 local my_qf = {
@@ -338,9 +337,15 @@ local my_qf = {
             {
                 quickfix,
                 color = {fg = colors.green}
+            },
+            {
+                "%p%% [%L]",
+                color = {fg = colors.orange, gui = "bold"}
             }
         },
-        lualine_c = {{qf_cmd, color = {fg = colors.yellow}}}
+        lualine_c = {
+            {qf_cmd, color = {fg = colors.yellow}}
+        }
     },
     filetypes = {"qf"}
 }

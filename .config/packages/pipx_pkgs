@@ -34,6 +34,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - litecli
    package mplug 0.2.1, installed using Python 3.10.0
     - mplug
+   package mycli 1.25.0, installed using Python 3.10.0
+    - mycli
    package organize-tool 2.1.2, installed using Python 3.10.0
     - organize
    package pdm 1.13.4, installed using Python 3.10.0
@@ -58,6 +60,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - pyflow
    package rich-cli 1.5.1, installed using Python 3.10.0
     - rich
+   package setconf 0.7.7, installed using Python 3.10.0
+    - setconf
    package stig 0.12.2a0, installed using Python 3.10.0
     - stig
    package surfraw-tools 0.2.0, installed using Python 3.10.0

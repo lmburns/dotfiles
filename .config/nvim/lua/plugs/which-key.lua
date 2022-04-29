@@ -9,14 +9,15 @@ function M.setup()
 
     local presets = require("which-key.plugins.presets")
     -- presets.operators['"_d'] = "Delete blackhole"
-    presets.operators["gc"] = "Commenter"
+    -- presets.operators["gc"] = "Commenter"
+    -- presets.operators["d"] = nil
     presets.operators["s"] = "Substitute"
 
     wk.register(
         {
-            ["d"] = {[["_d]], "Delete blackhole"}
+            ["d"] = {[["_d]], "Delete"}
         },
-        {prefix = "", preset = true}
+        {auto = true}
     )
 
     wk.setup {
@@ -32,7 +33,7 @@ function M.setup()
                 operators = true, -- adds help for operators like d, y, ... and registers them for motion
                 motions = true, -- adds help for motions
                 text_objects = true, -- help for text objects triggered after entering an operator
-                windows = false, -- default bindings on <c-w>
+                windows = true, -- default bindings on <c-w>
                 nav = true, -- misc bindings to work with windows
                 z = true, -- bindings for folds, spelling and others prefixed with z
                 g = true -- bindings for prefixed with g
@@ -41,17 +42,12 @@ function M.setup()
         operators = {
             -- add operators that will trigger motion and text object completion
             gc = "Comments",
+            -- ['"_'] = "Blackhole",
             -- s = "Substitute",
-            ['"_d'] = "Delete (blackhole)",
-            ['d'] = "Delete (blackhole 2)"
+            -- ['"_d'] = "Delete (blackhole)",
+            -- ["d"] = "Delete"
         },
-        key_labels = {
-            -- override the label used to display some keys. It doesn't effect WK in any other way.
-            -- For example:
-            ["<space>"] = "SPC",
-            ["<cr>"] = "RET",
-            ["<tab>"] = "TAB"
-        },
+        key_labels = {},
         icons = {
             breadcrumb = "»", -- symbol used in the command line area that shows active key combo
             separator = "➜", -- symbol used between a key and it's label
@@ -78,9 +74,14 @@ function M.setup()
         hidden = {"lua", "^ ", "<silent>"}, -- hide mapping boilerplate
         show_help = true, -- show help message on the command line when the popup is visible
         triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
-        triggers = "auto"
+        triggers = "auto",
         -- triggers = {"z=", "auto"} -- automatically setup triggers
         -- triggers = {"<leader>"} -- or specify a list manually
+        triggers_blacklist = {
+            i = {"j", "k"},
+            v = {"j", "k"},
+            n = {"o", "O"}
+        }
     }
 end
 
@@ -109,10 +110,11 @@ local function init()
             ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
             ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
-            ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
+            ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"}
         }
     )
 
+    -- XXX: Workaround until custom operator gets fixed
     wk.register(
         {
             ["?"] = {"<Cmd>WhichKey d<CR>", "WhichKey operator"}
@@ -120,17 +122,14 @@ local function init()
         {mode = "o"}
     )
 
-    -- registers.nvim is better for this
     -- map(
-    --     '"',
     --     "n",
+    --     "gc",
     --     function()
-    --         require("which-key").show("@", {mode = "n", auto = true})
+    --         require("which-key").show("d", {mode = "gc", prefix = "", auto = true})
+    --         -- cmd [["_d]]
     --     end
     -- )
-
-    -- K.n("<SubLeader><CR>", "<Cmd>WhichKey <SubLeader><CR>")
-    -- K.n("<EasyMotion><CR>", "<Cmd>WhichKey <EasyMotion><CR>")
 end
 
 init()

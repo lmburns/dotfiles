@@ -106,8 +106,6 @@ local function init()
             }
         }
     )
-
-    require("common.utils").map("n", "X", ":echo 'hi sir'<CR>")
 end
 
 init()

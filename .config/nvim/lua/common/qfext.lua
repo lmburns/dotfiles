@@ -3,7 +3,7 @@ local M = {}
 require("common.utils")
 local coc = require("plugs.coc")
 
-function M.outline()
+function M.outline(fzf)
     if not coc.did_init() then
         return
     end
@@ -12,7 +12,17 @@ function M.outline()
     -- Field File    Function Interface Key         Method   Module     Namespace
     -- Null  Number  Object   Operator  Package     Property String     Struct
     -- TypeParameter Variable
-    local kinds = {"Function", "Method", "Interface", "Struct", "Enum", "Class"}
+
+    local kinds = {
+        "Class",
+        "Constructor",
+        "Enum",
+        "Function",
+        "Interface",
+        "Module",
+        "Method",
+        "Struct"
+    }
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].bt == "quickfix" then
         bufnr = fn.bufnr("#")
@@ -71,7 +81,7 @@ function M.outline()
             else
                 api.nvim_set_current_win(winid)
             end
-            if vim.b.bqf_enabled then
+            if vim.b.bqf_enabled and fzf then
                 api.nvim_feedkeys("zf", "m", false)
             end
         end

@@ -56,6 +56,9 @@
  (set! "priority" 105)
  )
 
+((identifier) @constant
+  (#lua-match? @constant "^[[:upper:]]"))
+
 ;; (
 ;;   (function_call
 ;;     name: (identifier) @function

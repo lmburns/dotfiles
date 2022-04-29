@@ -6,6 +6,10 @@ local cmt_utils = require("Comment.utils")
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
+local wk = require("which-key")
+
+local state = {}
+
 -- gcip = paragraph
 -- gcw = start next word
 -- gc5j = 5 lines down
@@ -89,16 +93,36 @@ function M.setup()
                     }
                 )
             end,
-
             -- Post-hook, called after commenting is done
             -- @type fun(ctx: Ctx)
             post_hook = nil
+
+            -- post_hook = function(ctx)
+            --     vim.schedule(
+            --         function()
+            --             if state and state.marks and #state.marks > 0 then
+            --                 vim.api.nvim_buf_set_mark(0, "<", state.marks[1][1], state.marks[1][2], {})
+            --                 vim.api.nvim_buf_set_mark(0, ">", state.marks[2][1], state.marks[2][2], {})
+            --                 vim.cmd [[normal gv]]
+            --                 local c = state.cursor
+            --                 local diff =
+            --                     #(vim.api.nvim_buf_get_lines(0, c[1] - 1, c[1], true))[1] - state.cursor_line_len
+            --                 vim.api.nvim_win_set_cursor(0, {state.cursor[1], state.cursor[2] + diff})
+            --                 state = {}
+            --             end
+            --         end
+            --     )
+            -- end
         }
     )
+
+    -- Can set the type of comment
+    require("Comment.ft").set("rescript", {"//%s", "/*%s*/"})
 end
 
 local function init()
     M.setup()
+
     map("n", "gl", ":lua require('Comment.api').toggle_current_linewise()<CR>")
     map("n", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>j")
     map("v", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>'>j")
@@ -107,6 +131,13 @@ local function init()
 
     map("x", "<C-.>", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
     map("x", "gl", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
+
+    -- wk.register(
+    --     {
+    --         ["gc"] = "Toggle comment prefix"
+    --     },
+    --     {mode = "n"}
+    -- )
 end
 
 init()

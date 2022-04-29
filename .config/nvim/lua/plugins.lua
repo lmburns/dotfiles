@@ -11,20 +11,12 @@ local create_augroup = utils.create_augroup
 
 -- Install Packer if it isn't already
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
-if not vim.loop.fs_stat(install_path) then
+if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
 cmd [[packadd packer.nvim]]
 local packer = require("packer")
-
-local function prefer_local(url, path)
-    if not path then
-        local name = url:match("[^/]*$")
-        path = "~/projects/nvim/" .. name
-    end
-    return uv.fs_stat(fn.expand(path)) ~= nil and path or url
-end
 
 -- packer.on_compile_done = function()
 --   local fp = assert(io.open(packer.config.compile_path, "rw+"))
@@ -78,10 +70,32 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "trace"},
+        -- log = {level = "debug"},
         profile = {enable = true}
     }
 )
+
+packer.set_handler(
+    "conf",
+    function(plugins, plugin, value)
+        local config
+        if value:match("^plugs%.") then
+            config = ([[require('%s')]]):format(value)
+        else
+            config = ([[require('plugs.config').%s()]]):format(value)
+        end
+
+        plugin.config = config
+    end
+)
+
+local function prefer_local(url, path)
+    if not path then
+        local name = url:match("[^/]*$")
+        path = "~/projects/nvim/" .. name
+    end
+    return uv.fs_stat(fn.expand(path)) ~= nil and path or url
+end
 
 return packer.startup(
     {
@@ -98,10 +112,10 @@ return packer.startup(
             use({"wbthomason/packer.nvim", opt = true})
 
             -- Cache startup
-            use({"lewis6991/impatient.nvim"})
+            use({"lewis6991/impatient.nvim", rocks = "mpack"})
 
             -- Faster version of filetype.vim
-            use({"nathom/filetype.nvim", config = conf("plugs.filetype")})
+            use({"nathom/filetype.nvim", conf = "plugs.filetype"})
 
             -- Have more than one configuration
             -- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
@@ -121,12 +135,11 @@ return packer.startup(
             use({"tami5/sqlite.lua"})
             use({"kyazdani42/nvim-web-devicons"})
 
-            -- Sets ui.select / ui.input
             use(
                 {
                     "stevearc/dressing.nvim",
                     event = "BufWinEnter",
-                    config = conf("plugs.dressing")
+                    conf = "plugs.dressing"
                 }
             )
             -- ]]] === Lua Library ===
@@ -135,13 +148,33 @@ return packer.startup(
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", config = conf("better_esc")})
             -- numToStr/Navigator.nvim
-            use({"mrjones2014/smart-splits.nvim", config = conf("smartsplits")})
+            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits"})
             use({"fedepujol/move.nvim", config = conf("move")})
             -- Prevent clipboard from being hijacked by snippets and such
             use({"kevinhwang91/nvim-hclipboard"})
             use({"gbprod/yanky.nvim"})
-            use({"tversteeg/registers.nvim", config = conf("registers")})
+            use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
+
+            -- use(
+            --     {
+            --         "mg979/vim-visual-multi",
+            --         setup = [[vim.g.VM_leader = '<Space>']],
+            --         keys = {
+            --             {"n", "<C-n>"},
+            --             {"x", "<C-n>"},
+            --             {"n", [[<Leader>\]]},
+            --             {"n", "<Leader>A"},
+            --             {"x", "<Leader>A"},
+            --             {"n", "<M-S-i>"},
+            --             {"n", "<M-S-o>"},
+            --             {"n", "g/"}
+            --         },
+            --         cmd = {"VMSearch"},
+            --         config = conf("visualmulti"),
+            --         wants = {"nvim-hlslens", "nvim-autopairs"}
+            --     }
+            -- )
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
@@ -278,6 +311,7 @@ return packer.startup(
 
             -- ============================ Open Browser =========================== [[[
             use({"tyru/open-browser.vim", config = conf("open_browser")})
+            use({"axieax/urlview.nvim", config = conf("urlview"), after = "telescope.nvim"})
             -- ]]] === Open Browser ===
 
             -- ============================ Limelight ============================= [[[
@@ -331,7 +365,25 @@ return packer.startup(
                 {
                     "kevinhwang91/nvim-hlslens",
                     config = conf("hlslens"),
-                    requires = "haya14busa/vim-asterisk"
+                    requires = "haya14busa/vim-asterisk",
+                    keys = {
+                        {"n", "n"},
+                        {"x", "n"},
+                        {"o", "n"},
+                        {"n", "N"},
+                        {"x", "N"},
+                        {"o", "N"},
+                        {"n", "/"},
+                        {"n", "?"},
+                        {"n", "*"},
+                        {"x", "*"},
+                        {"n", "#"},
+                        {"x", "#"},
+                        {"n", "g*"},
+                        {"x", "g*"},
+                        {"n", "g#"},
+                        {"x", "g#"}
+                    }
                 }
             )
             -- ]]] === HlsLens ===
@@ -398,19 +450,14 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "karb94/neoscroll.nvim",
-            --         keys = {"<C-u>", "<C-d>", "gg", "G"},
-            --         config = conf("neoscroll")
-            --     }
-            -- )
+            -- use({"karb94/neoscroll.nvim", config = conf("neoscroll"), desc = "Smooth scrolling"})
 
             use(
                 {
                     "edluffy/specs.nvim",
                     -- after = "neoscroll.nvim",
-                    config = conf("specs")
+                    config = conf("specs"),
+                    desc = "Keep an eye on where the cursor moves"
                 }
             )
             -- ]]] === Scrollbar ===
@@ -426,6 +473,8 @@ return packer.startup(
             -- ]]] === Trouble ===
 
             -- =========================== Statusline ============================= [[[
+
+            -- use ({ 'b0o/incline.nvim', config = conf("incline") })
             use(
                 {
                     "nvim-lualine/lualine.nvim",
@@ -563,7 +612,7 @@ return packer.startup(
             use(
                 {
                     "tpope/vim-abolish",
-                    cmd = {"S", "Subvert"},
+                    cmd = {"S", "Subvert", "Abolish"},
                     keys = {
                         {"n", "cr"}
                     }
@@ -831,7 +880,8 @@ return packer.startup(
                 {
                     "gelguy/wilder.nvim",
                     run = ":UpdateRemotePlugins",
-                    rocks = "pcre2",
+                    -- rocks = "pcre2",
+                    requires = "romgrk/fzy-lua-native",
                     config = conf("plugs.wilder")
                 }
             ) -- ]]] === Wilder ===
@@ -842,7 +892,7 @@ return packer.startup(
                     "sheerun/vim-polyglot",
                     setup = function()
                         g.polyglot_disabled = {
-                            "ftdetect",
+                            -- "ftdetect",
                             -- "sensible",
                             "markdown",
                             "rustpeg",
@@ -857,10 +907,12 @@ return packer.startup(
                             "gomod",
                             "html",
                             "java",
+                            -- "lua",
                             -- "json",
                             -- "kotlin",
                             -- "lua",
                             "make",
+                            "perl",
                             "python",
                             "query",
                             "ruby",
@@ -914,6 +966,7 @@ return packer.startup(
             -- ]]] === Minimap ===
 
             -- ============================= Highlight ============================ [[[
+            -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
             use(
                 {
                     "norcalli/nvim-colorizer.lua",
@@ -999,8 +1052,8 @@ return packer.startup(
                         },
                         {
                             "nvim-treesitter/playground",
-                            after = "nvim-treesitter"
-                            -- cmd = { "TSHighlightCapturesUnderCursor", "TSPlaygroundToggle" },
+                            after = "nvim-treesitter",
+                            -- cmd = {"TSHighlightCapturesUnderCursor", "TSPlaygroundToggle"}
                         },
                         {
                             "windwp/nvim-ts-autotag",
@@ -1181,14 +1234,13 @@ return packer.startup(
                         "wbthomason/packer.nvim"
                     },
                     wants = {"telescope.nvim", "packer.nvim"},
-                    -- config = [[require("telescope").load_extension("packer")]],
                     -- FIX: Doesn't work all the time and is hard to configure
+                    -- config = [[require("telescope").load_extension("packer")]],
                     config = function()
                         require("telescope.builtin").packer = function(opts)
-
-                            if not _G.packer_plugins["packer.nvim"].loaded then
-                                ex.packadd("packer.nvim")
-                            end
+                            -- if not _G.packer_plugins["packer.nvim"].loaded then
+                            ex.packadd("packer.nvim")
+                            -- end
                             -- require("plugins").compile()
 
                             require("telescope").load_extension("packer")
@@ -1198,7 +1250,6 @@ return packer.startup(
                 }
             )
 
-            -- nvim-neoclip: Clipboard manager
             -- use(
             --     {
             --         "AckslD/nvim-neoclip.lua",
@@ -1215,13 +1266,32 @@ return packer.startup(
                     "tpope/vim-fugitive",
                     fn = "fugitive#*",
                     cmd = {
-                        "Git",
+                        "0Git",
+                        "G",
+                        "GBrowse",
+                        "Gcd",
+                        "Gclog",
+                        "GDelete",
+                        "Gdiffsplit",
                         "Gedit",
                         "Ggrep",
+                        "Ghdiffsplit",
+                        "Git",
+                        "Glcd",
+                        "Glgrep",
+                        "Gllog",
+                        "GMove",
+                        "Gpedit",
                         "Gread",
-                        "Gwrite",
-                        "Gdiffsplit",
-                        "Gvdiffsplit"
+                        "GRemove",
+                        "GRename",
+                        "Gsplit",
+                        "Gtabedit",
+                        "GUnlink",
+                        "Gvdiffsplit",
+                        "Gvsplit",
+                        "Gwq",
+                        "Gwrite"
                     },
                     event = "BufReadPre */.git/index",
                     config = conf("plugs.fugitive")
@@ -1240,6 +1310,7 @@ return packer.startup(
                     config = conf("plugs.flog")
                 }
             )
+
             use({"tpope/vim-rhubarb"})
 
             use({"kdheepak/lazygit.nvim", config = conf("lazygit")})
@@ -1272,13 +1343,39 @@ return packer.startup(
                     config = conf("ghline")
                 }
             )
+
             use(
                 {
                     "sindrets/diffview.nvim",
-                    -- cmd = {"DiffviewOpen", "DiffviewFileHistory"},
-                    config = conf("plugs.diffview")
+                    cmd = {
+                        "DiffviewClose",
+                        "DiffviewFileHistory",
+                        "DiffviewFocusFiles",
+                        "DiffviewLog",
+                        "DiffviewOpen",
+                        "DiffviewRefresh",
+                        "DiffviewToggleFiles"
+                    },
+                    config = conf("plugs.diffview"),
+                    keys = {
+                        {"n", "<Leader>g;"}
+                    }
                 }
             )
+
+            -- use(
+            --     {
+            --         "christoomey/vim-conflicted",
+            --         cmd = {"Conflicted", "Merger", "GitNextConflict"},
+            --         keys = {
+            --             "<Plug>DiffgetLocal",
+            --             "<Plug>DiffgetUpstream",
+            --             "<Plug>DiffgetLocal",
+            --             "<Plug>DiffgetUpstream"
+            --         }
+            --     }
+            -- )
+
             -- ]]] === Git ===
 
             use(

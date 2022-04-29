@@ -41,13 +41,13 @@ cmd [[
 
   " Custom startup list, only show MRU from current directory/project
   let g:startify_lists = [
-  \  { 'type': 'sessions',  'header': [ " \ue62e Sessions" ]       },
   \  { 'type': 'bookmarks', 'header': [ " \uf5c2 Bookmarks" ]      },
   \  { 'type': 'commands',  'header': [ " \ufb32 Commands" ]       },
   \  { 'type': 'files',     'header': [ " \ufa1eMRU"] },
   \  { 'type': 'dir',       'header': [ " \ufa1eFiles ". getcwd() ] },
   \  { 'type':  function('s:gitModified'),  'header': ['git modified']},
-  \  { 'type':  function('s:gitTracked'), 'header': ['git untracked']}
+  \  { 'type':  function('s:gitTracked'), 'header': ['git untracked']},
+  \  { 'type': 'sessions',  'header': [ " \ue62e Sessions" ]       }
   \ ]
 ]]
 
@@ -59,8 +59,8 @@ g.startify_commands = {
 }
 
 g.startify_bookmarks = {
-  { co = "~/.config/nvim/init.vim" },
-  { gc = "~/.config/git/config" },
+  { co = "~/.config/nvim/init.lua" },
+  { pl = "~/.config/nvim/lua/plugins.lua" },
   { lc = "~/.config/lf/lfrc" },
   { zs = "~/.config/zsh/.zshrc" },
   { za = "~/.config/zsh/zsh.d/aliases.zsh" },

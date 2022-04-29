@@ -886,8 +886,9 @@ key_bindings:
   - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
   - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
   - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
-  # - { key: I, mods: Control, chars: "\x1b[105;5u" }
-  # - { key: M, mods: Control, chars: "\x1b[77;5u" }
+    # FIX: Tmux has to be recompiled
+  - { key: I, mods: Control, chars: "\x1b[105;5u" }
+  - { key: M, mods: Control, chars: "\x1b[77;5u" }
   # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
   # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
   - { key: Comma, mods: Control, chars: "\x1b[44;5u" }

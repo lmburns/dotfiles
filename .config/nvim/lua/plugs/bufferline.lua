@@ -113,8 +113,8 @@ local function init()
             ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
             ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
-            ["@"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
-            ["#"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"}
+            ["<C-A-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
+            ["<C-A-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"}
         }
     )
 

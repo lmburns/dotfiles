@@ -88,6 +88,15 @@ function M.listish()
 
     wk.register(
         {
+            ["]e"] = {":cnewer<CR>", "Next quickfix list"},
+            ["[e"] = {":colder<CR>", "Previous quickfix list"},
+            ["]w"] = "Next item in loclist",
+            ["[w"] = "Previous item in loclist"
+        }
+    )
+
+    wk.register(
+        {
             q = {
                 name = "+quickfix",
                 o = "Quickfix open",
@@ -354,16 +363,17 @@ end
 
 -- ============================= UltiSnips ============================
 function M.ultisnips()
+    -- This works on snippets like #! where a popup menu doesn't appear
     g.UltiSnipsExpandTrigger = "<Leader><tab>"
-    g.UltiSnipsJumpForwardTrigger = "<C-j>"
-    g.UltiSnipsJumpBackwardTrigger = "<C-k>"
-    g.UltiSnipsListSnippets = "<C-u>"
+    -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
+    -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"
+    -- g.UltiSnipsListSnippets = "<C-u>"
     g.UltiSnipsEditSplit = "horizontal"
 end
 
 -- =============================== Info ===============================
 function M.info()
-    -- Anonymous (no group)
+    -- Anonymous
     nvim.create_autocmd(
         "BufEnter",
         {
@@ -553,10 +563,7 @@ function M.hlslens()
             [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
     )
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    -- map(
-    --     "n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
-    --     {}
-    -- )
+    map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
     map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
 
@@ -678,18 +685,29 @@ function M.targets()
 
     -- cib = change in () or {}
 
-    autocmd(
+    -- cmd [[
+    --   augroup define_object
+    --     autocmd User targets#mappings#user call targets#mappings#extend({
+    --           \ 'a': {'argument': [{'o':'(', 'c':')', 's': ','}]}
+    --           \ })
+    --   augroup END
+    -- ]]
+
+    augroup(
+        "lmb__Targets",
         {
-            event = "User",
-            pattern = "targets#mappings#user",
-            command = function()
-                fn["targets#mappings#extend"](
-                    {
-                        a = {argument = {{o = "(", c = ")", s = ","}}},
-                        r = {pair = {{o = "<", c = ">"}}}
-                    }
-                )
-            end
+            {
+                event = "User",
+                pattern = "targets#mappings#user",
+                command = function()
+                    fn["targets#mappings#extend"](
+                        {
+                            a = {argument = {{o = "(", c = ")", s = ","}}},
+                            r = {pair = {{o = "<", c = ">"}}}
+                        }
+                    )
+                end
+            }
         }
     )
 
@@ -954,7 +972,7 @@ function M.specs()
                 fader = require("specs").linear_fader,
                 resizer = require("specs").shrink_resizer
             },
-            ignore_filetypes = {},
+            ignore_filetypes = {["TelescopePrompt"] = true},
             ignore_buftypes = {nofile = true}
         }
     )
@@ -1172,7 +1190,43 @@ function M.lfnvim()
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 
--- =============================== trevj ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         urlview                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.urlview()
+    require("urlview").setup(
+        {
+            -- Prompt title (`<context> <default_title>`, e.g. `Buffer Links:`)
+            default_title = "Links:",
+            -- Default picker to display links with
+            -- Options: "native" (vim.ui.select) or "telescope"
+            default_picker = "native",
+            -- Set the default protocol for us to prefix URLs with if they don't start with http/https
+            default_prefix = "https://",
+            -- Command or method to open links with
+            -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
+            navigate_method = "netrw",
+            -- Logs user warnings
+            debug = true,
+            -- Custom search captures
+            custom_searches = {
+                -- KEY: search source name
+                -- VALUE: custom search function or table (map with keys capture, format)
+                jira = {
+                    capture = "AXIE%-%d+",
+                    format = "https://jira.axieax.com/browse/%s"
+                }
+            }
+        }
+    )
+
+    map("n", "gL", "UrlView", {cmd = true})
+    require("telescope").load_extension("urlview")
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          trevj                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.trevj()
     require("trevj").setup(
         {
@@ -1245,11 +1299,102 @@ function M.crates()
     )
 end
 
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Neoscroll                         │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.neoscroll()
+    require("neoscroll").setup(
+        {
+            -- All these keys will be mapped to their corresponding default scrolling animation
+            -- mappings = {
+            --     "<C-u>",
+            --     "<C-d>",
+            --     "<C-b>",
+            --     "<C-f>",
+            --     "<C-y>",
+            --     "<C-e>",
+            --     "zt",
+            --     "zz",
+            --     "zb"
+            -- },
+            hide_cursor = true, -- Hide cursor while scrolling
+            stop_eof = true, -- Stop at <EOF> when scrolling downwards
+            use_local_scrolloff = false, -- Use the local scope of scrolloff instead of the global scope
+            respect_scrolloff = false, -- Stop scrolling when the cursor reaches the scrolloff margin of the file
+            cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
+            easing_function = nil, -- Default easing function
+            pre_hook = nil, -- Function to run before the scrolling animation starts
+            post_hook = nil, -- Function to run after the scrolling animation ends
+            performance_mode = false -- Disable "Performance Mode" on all buffers.
+        }
+    )
+
+    local t = {}
+
+    t["<C-u>"] = {"scroll", {"-vim.wo.scroll", "true", "250"}}
+    t["<C-d>"] = {"scroll", {"vim.wo.scroll", "true", "250"}}
+    -- t["<C-b>"] = {"scroll", {"-vim.api.nvim_win_get_height(0)", "true", "250"}}
+    -- t["<C-f>"] = {"scroll", {"vim.api.nvim_win_get_height(0)", "true", "250"}}
+    t["<C-y>"] = {"scroll", {"-0.10", "false", "80"}}
+    t["<C-e>"] = {"scroll", {"0.10", "false", "80"}}
+    t["zt"] = {"zt", {"150"}}
+    t["zz"] = {"zz", {"150"}}
+    t["zb"] = {"zb", {"150"}}
+    -- t["gg"] = {"scroll", {"-2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
+    -- t["G"] = {"scroll", {"2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
+
+    require("neoscroll.config").set_mappings(t)
+end
+
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Unused
 -- ╘══════════════════════════════════════════════════════════╛
 
--- ========================== Session Manager =========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       VisualMulti                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.visualmulti()
+--     g.VM_theme = "codedark"
+--     g.VM_highlight_matches = ""
+--     g.VM_show_warnings = 0
+--     g.VM_silent_exit = 1
+--     g.VM_default_mappings = 1
+--     g.VM_maps = {
+--         Delete = "s",
+--         Undo = "<C-u>",
+--         Redo = "<C-r>",
+--         ["Select Operator"] = "v",
+--         ["Select Cursor Up"] = "<M-C-u>",
+--         ["Select Cursor Down"] = "<M-C-p>",
+--         ["Move Left"] = "<M-C-i>",
+--         ["Move Right"] = "<M-C-o>"
+--     }
+--     map("n", "<C-n>", "<Plug>(VM-Find-Under)")
+--     map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
+--     map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
+--     map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
+--     map("n", "<Leader>A", "<Plug>(VM-Select-All)")
+--     map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
+--     map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)")
+--     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
+--     map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
+--     map("n", "g/", "<Cmd>VMSearch<CR>")
+--
+--     cmd(
+--         [[
+--         aug VisualMulti
+--             au!
+--             au User visual_multi_start lua require('common.vm').start()
+--             au User visual_multi_exit lua require('common.vm').exit()
+--             au User visual_multi_mappings lua require('common.vm').mappings()
+--         aug END
+--     ]]
+--     )
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Session Manager                      │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.session_manager()
 --     require("session_manager").setup(
 --         {
@@ -1269,7 +1414,45 @@ end
 --     )
 -- end
 
--- ============================== Luadev ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         incline                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.incline()
+--     require("incline").setup {
+--         render = function(props)
+--             local bufname = vim.api.nvim_buf_get_name(props.buf)
+--             if bufname == "" then
+--                 return "[No name]"
+--             else
+--                 bufname = vim.fn.fnamemodify(bufname, ":t")
+--             end
+--             return bufname
+--         end,
+--         debounce_threshold = 30,
+--         window = {
+--             width = "fit",
+--             placement = {horizontal = "right", vertical = "top"},
+--             margin = {
+--                 horizontal = {left = 1, right = 1},
+--                 vertical = {bottom = 0, top = 1}
+--             },
+--             padding = {left = 1, right = 1},
+--             padding_char = " ",
+--             zindex = 100
+--         },
+--         ignore = {
+--             floating_wins = true,
+--             unlisted_buffers = true,
+--             filetypes = {},
+--             buftypes = "special",
+--             wintypes = "special"
+--         }
+--     }
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Luadev                          │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.luadev()
 --   map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
 --   map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })
@@ -1285,7 +1468,9 @@ end
 --   map("n", "<Leader>ro", ":Ttoggle<CR> :Ttoggle<CR>")
 -- end
 
--- ============================ Delimitmate ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Delimitmate                        │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.delimitmate()
 --   g.delimitMate_jump_expansion = 1
 --   g.delimitMate_expand_cr = 2
@@ -1300,7 +1485,9 @@ end
 --   )
 -- end
 
--- =============================== Sneak ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Sneak                           │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.sneak()
 --   g["sneak#label"] = 1
 --
@@ -1321,7 +1508,9 @@ end
 --   map("n", "gS", "F<CR>", { noremap = false })
 -- end
 
--- ============================ AbbrevMan =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        AbbrevMan                         │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.abbrevman()
 --     require("abbrev-man").setup(
 --         {
@@ -1333,7 +1522,9 @@ end
 --     )
 -- end
 
--- ============================== Spectre =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Spectre                          │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.spectre()
 --     require("spectre").setup()
 --

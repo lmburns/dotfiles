@@ -286,7 +286,11 @@ require("telescope").setup(
             live_grep = {
                 grep_open_files = false,
                 only_sort_text = true,
-                theme = "ivy"
+                theme = "ivy",
+                on_input_filter_cb = function(prompt)
+                    -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
+                    return {prompt = prompt:gsub("%s", ".*")}
+                end
             },
             find_files = {
                 theme = "ivy",
@@ -566,6 +570,9 @@ end
 
 M.cst_files = function()
     local root = require("common.gittool").root()
+    -- Override this so it gets ran on each file
+    options.cwd = fn.expand("%:p:h")
+
     if #root == 0 then
         -- Use the current filename instead of the directory
         builtin.find_files(options)
@@ -586,7 +593,7 @@ M.cst_buffers = function()
             theme = "dropdown",
             sorter = sorters.get_substr_matcher(),
             selection_strategy = "closest",
-            path_display = {"shorten"},
+            path_display = {"smart"},
             layout_strategy = "center",
             winblend = 0,
             layout_config = {width = 70},
@@ -631,6 +638,7 @@ M.tags = function()
     -- local root = fn["gutentags#get_project_root"](bufdir)
 
     local file = vim.b.gutentags_files
+
     if not file then
         b_utils.notify("no gutentags file found")
         return
@@ -929,6 +937,10 @@ builtin.rualdi = function(opts)
     telescope.extensions.rualdi.list(opts)
 end
 
+builtin.urlview = function(opts)
+    telescope.extensions.urlview.urlview(opts)
+end
+
 -- builtin.aerial = function(opts)
 --     telescope.extensions.aerial.aerial(opts)
 -- end
@@ -954,7 +966,7 @@ wk.register(
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
         [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},
-        ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
+        -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
         ["<Leader>;"] = {":Telescope current_buffer_fuzzy_find<CR>", "Telescope buffer lines"},
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
@@ -969,11 +981,12 @@ wk.register(
     {
         ["<LocalLeader>c"] = {":Telescope coc<CR>", "Telescope coc menu"},
         ["<A-c>"] = {":Telescope coc commands<CR>", "Telescope coc commands"},
-        [";s"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc symbols"},
+        [";S"] = {":Telescope coc document_symbols<CR>", "Telescope coc doc symbols"},
+        [";s"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc workspace symbols"},
         ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Telescope coc diagnostics"},
         ["<C-x><C-r>"] = {":Telescope coc references<CR>", "Telescope coc references"},
         ["<C-[>"] = {":Telescope coc definitions<CR>", "Telescope coc definitions"},
-        [";n"] = {":Telescope coc locations<CR>", "Telescope coc locations"}
+        [";l"] = {":Telescope coc locations<CR>", "Telescope coc locations"}
     }
 )
 
@@ -983,6 +996,13 @@ wk.register(
         ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
+)
+
+wk.register(
+    {
+        ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
+    },
+    {mode = "i"}
 )
 
 -- Custom
@@ -1020,7 +1040,7 @@ fg("TelescopePreviewBorder", colors.magenta)
 fg("TelescopeMatching", colors.orange)
 fg("TelescopePromptPrefix", colors.red)
 
-fg("TelescopePathSeparator", colors.purple)
+fg("TelescopePathSeparator", colors.magenta)
 fg("TelescopeFrecencyScores", colors.green)
 fg("TelescopeBufferLoaded", colors.red)
 

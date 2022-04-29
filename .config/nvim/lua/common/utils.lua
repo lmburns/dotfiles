@@ -33,36 +33,40 @@ a = require("plenary.async_lib")
 nvim = require("nvim")
 ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
+-- Makes `_t` global
+require("arshlib")
+
 BLACKLIST_FT = {
     "",
-    "man",
-    "help",
-    "quickmenu",
-    "qf",
-    "vimwiki",
-    "markdown",
+    "aerial",
+    "coc-explorer",
+    "commit",
+    "floaterm",
+    "floggraph",
+    "fugitive",
+    "fzf",
     "git",
     "gitcommit",
     "gitrebase",
-    "commit",
-    "rebase",
-    "floggraph",
+    "help",
+    "luapad",
+    "man",
+    "markdown",
     "neoterm",
-    "floaterm",
-    "toggleterm",
-    "fzf",
+    "nerdtree",
+    "NvimTree",
+    "qf",
+    "quickmenu",
+    "rebase",
+    "scratchpad",
+    "startify",
     "telescope",
     "TelescopePrompt",
-    "scratchpad",
-    "luapad",
-    "aerial",
-    "NvimTree",
-    "coc-explorer",
+    "toggleterm",
     "undotree",
-    "neoterm",
-    "floaterm",
+    "vimwiki",
+    "vista",
     -- "nofile",
-    "fugitive"
 }
 
 -- ========================== Functions ==========================
@@ -381,7 +385,7 @@ end
 ---@param options table same options as `nvim_notify`
 M.notify = function(options)
     if type(options) == "string" then
-        api.nvim_notify(options, log.levels.INFO, {icon = "", title = "Notification"})
+        api.nvim_notify(options, log.levels.INFO, {icon = ""})
         return
     end
 
@@ -555,31 +559,6 @@ M.remap = function(modes, lhs, rhs, opts)
         else
             api.nvim_set_keymap(mode, lhs, _rhs, opts)
         end
-    end
-end
-
---- Usage:
---- 1. Call `local stop = utils.profile('my-log')` at the top of the file
---- 2. At the bottom of the file call `stop()`
---- 3. Restart neovim, the newly created log file should open
-M.profile = function(filename)
-    local base = "/tmp/config/profile/"
-    fn.mkdir(base, "p")
-    local success, profile = pcall(require, "plenary.profile.lua_profiler")
-    if not success then
-        api.nvim_echo({{"Plenary is not installed.", "Title"}}, true, {})
-    end
-    profile.start()
-    return function()
-        profile.stop()
-        local logfile = base .. filename .. ".log"
-        profile.report(logfile)
-        vim.defer_fn(
-            function()
-                cmd("tabedit " .. logfile)
-            end,
-            1000
-        )
     end
 end
 

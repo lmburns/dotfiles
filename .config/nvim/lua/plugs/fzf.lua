@@ -605,16 +605,16 @@ local function init()
     ]]
 
     -- Clipboard manager
-    cmd [[
-    inoremap <expr> <a-.> fzf#vim#complete({
-      \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
-      \ 'options': '--no-border',
-      \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
-      \ 'window': 'call FloatingFZF()'})
-  ]]
+  --   cmd [[
+  --   inoremap <expr> <a-.> fzf#vim#complete({
+  --     \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
+  --     \ 'options': '--no-border',
+  --     \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+  --     \ 'window': 'call FloatingFZF()'})
+  -- ]]
 
     cmd [[
-    inoremap <expr> <a-;> fzf#complete({
+    inoremap <expr> <a-.> fzf#complete({
         \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
         \ 'options': '--no-border',
         \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
@@ -726,7 +726,7 @@ local function init()
             ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "History (fzf)"},
             ["<Leader>fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
             ["<Leader>fg"] = {[[:lua require('common.gittool').root_exe('GFiles')<CR>]], "GFiles Git (fzf)"},
-            ["<Leader>ff"] = {
+            ["<Leader>fi"] = {
                 [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],
                 "Files Git (fzf)"
             },

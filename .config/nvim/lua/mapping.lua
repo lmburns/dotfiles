@@ -50,6 +50,9 @@ command("Q", "q", {bang = true, nargs = "*"})
 -- map q: :MinimapToggle<CR> :q<CR>
 -- map q: :q<CR>
 
+-- ╓                                                          ╖
+-- ║                          Macro                           ║
+-- ╙                                                          ╜
 -- Use qq to record, q to stop, Q to play a macro
 map("n", "Q", "@q")
 map("v", "Q", ":normal @q")
@@ -64,6 +67,16 @@ map(
     {noremap = true, expr = true}
 )
 map("n", "q", "<Nop>", {silent = true})
+
+-- stoeffel/.dotfiles
+-- vim.cmd [[
+--   function! ExecuteMacroOverVisualRange()
+--     echo "@".getcmdline()
+--     execute ":'<,'>normal @".nr2char(getchar())
+--   endfunction
+-- ]]
+--
+-- map("x", "@", ":<C-u>call ExecuteMacroOverVisualRange()<CR>", {silent = false})
 
 -- Repeat last command
 wk.register(
@@ -85,7 +98,7 @@ map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 
 wk.register(
     {
-        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
+        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"}
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
@@ -127,7 +140,7 @@ wk.register(
     {
         ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
         ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
-        ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
+        ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"}
         -- ["gp"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
     },
     {expr = true}
@@ -163,7 +176,9 @@ wk.register(
 
 wk.register(
     {
-        ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
+        -- ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
+        ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+        ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"},
         ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
         ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
     },
@@ -216,7 +231,7 @@ wk.register(
         ["[S"] = {"<Cmd>lfirst<CR>", "First location list"},
         ["]S"] = {"<Cmd>llast<CR>", "Last location list"},
         ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
-        ["]t"] = {"<Cmd>tabn<CR>", "Next tab"},
+        ["]t"] = {"<Cmd>tabn<CR>", "Next tab"}
     }
 )
 -- Location list
@@ -250,7 +265,7 @@ map("n", "<LocalLeader>z", [[zMzvzz]])
 wk.register(
     {
         ["<C-w>"] = {
-            name = "buffer",
+            name = "+buffer",
             s = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf()<CR>]],
                 "Split last buffer (horizontally)"
@@ -301,7 +316,8 @@ wk.register(
         ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
-        ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline()<CR>]], "Quickfix function outline"}
+        ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline(true)<CR>]], "Quickfix function outline"},
+        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline(false)<CR>]], "Quickfix function outline"}
     }
 )
 

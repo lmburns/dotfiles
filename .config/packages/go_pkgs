@@ -1,4 +1,5 @@
 asmfmt
+cgasm
 dlv
 drive-gen
 errcheck

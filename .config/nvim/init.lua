@@ -13,8 +13,9 @@ end
 
 local utils = require("common.utils")
 local augroup = utils.augroup
+local autocmd = utils.autocmd
+
 -- local map = utils.map
--- local au = utils.au
 -- local create_augroup = utils.create_augroup
 
 -- Lua utilities
@@ -152,18 +153,18 @@ vim.schedule(
                 --     filetype plugin indent on
                 -- ]]
 
-                augroup(
-                    {"syntaxset", true},
-                    {
-                        {
-                            event = "FileType",
-                            pattern = "*",
-                            command = function()
-                                require("plugs.tree-sitter").hijack_synset()
-                            end
-                        }
-                    }
-                )
+                -- augroup(
+                --     "syntaxset",
+                --     {
+                --         {
+                --             event = "FileType",
+                --             pattern = "*",
+                --             command = function()
+                --                 require("plugs.tree-sitter").hijack_synset()
+                --             end
+                --         }
+                --     }
+                -- )
 
                 ex.syntax("on")
                 ex.filetype("on")
@@ -296,18 +297,27 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
+                        -- augroup(
+                        --     {"CocFzfLocation", false},
+                        --     {
+                        --         event = "User",
+                        --         nested = true,
+                        --         pattern = "CocLocationsChange"
+                        --     }
+                        -- )
+
                         cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )
 
-                nvim.create_autocmd(
-                    "User",
+                autocmd(
                     {
-                        callback = function()
+                        event = "User",
+                        pattern = "CocNvimInit",
+                        once = true,
+                        command = function()
                             require("plugs.coc").init()
                         end,
-                        once = true,
-                        pattern = "CocNvimInit"
                     }
                 )
 

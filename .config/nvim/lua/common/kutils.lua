@@ -1,7 +1,7 @@
 local M = {}
 
 local debounce = require("common.debounce")
-require("common.utils")
+local utils = require("common.utils")
 
 M.termcodes =
     setmetatable(
@@ -10,7 +10,7 @@ M.termcodes =
         __index = function(tbl, k)
             local k_upper = k:upper()
             local v_upper = rawget(tbl, k_upper)
-            local c = v_upper or api.nvim_replace_termcodes(k, true, false, true)
+            local c = v_upper or utils.t(k, true, false, true)
             rawset(tbl, k, c)
             if not v_upper then
                 rawset(tbl, k_upper, c)

@@ -12,13 +12,21 @@
 "   let g:gutentags_ctags_tagfile = '.rusty-tags'
 " else
 set tags=tags,./.tags,.tags
+
+" Tips: If we need the tags for a project not managed by vcs, we can touch a .root file under the project root folder
+let g:gutentags_project_root = ['.git', '.root', '.project']
+
 let g:gutentags_modules = ['ctags']
+" Options for ctags
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
 let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
 let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" Tag file name for ctags
 let g:gutentags_ctags_tagfile = '.tags'
-let g:gutentags_project_root = ['.git']
+" Move tag files out of project dir to avoid being polluted
 let g:gutentags_cache_dir = expand('~/.cache/tags')
+
 
 " let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
 " let g:gutentags_generate_on_new = 1
@@ -33,7 +41,9 @@ let g:gutentags_cache_dir = expand('~/.cache/tags')
 " Disable default maps
 " let g:gutentags_plus_nomap = 1
 
-" let g:gutentags_define_advanced_commands = 1
+" Enable some other commands
+let g:gutentags_define_advanced_commands = 1
+
 let g:gutentags_ctags_exclude = [
     \  '*.git', '*.svn', '*.hg',
     \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components', 'target',

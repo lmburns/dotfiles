@@ -1,4 +1,3 @@
-4chan-downloader
 abook
 age
 akonadi-calendar-tools
@@ -6,6 +5,7 @@ akonadi-import-wizard
 akonadiconsole
 akregator
 alacritty
+alsa-firmware
 alsa-utils
 amfora
 archivemount-git
@@ -17,7 +17,6 @@ as-tree
 ascii-design
 asciidoctor
 asciiquarium
-asoundconf
 asp
 aspell-en
 astyle
@@ -49,9 +48,14 @@ breeze-gtk
 broot
 bspwm
 cabal-install
-caffeine-ng
 calcurse
 cantor
+cargo-bloat
+cargo-cache
+cargo-edit
+cargo-generate
+cargo-make
+cargo-udeps
 catimg
 ccls
 cervisia
@@ -64,6 +68,7 @@ cli-visualizer
 clipit
 clipman
 cloc
+clojure-lsp-bin
 cmatrix
 cmus
 code
@@ -71,10 +76,13 @@ code-minimap
 cointop
 colloid-gtk-theme-git
 conky
+copyq
 cppcheck
 cpulimit
 crabz
 croc
+crystal
+crystalline-bin
 ctags
 daemonize
 dash
@@ -104,9 +112,11 @@ dmd
 dmd-docs
 dnsmasq
 docker
+dockerfile-language-server
 dolphin
 dosfstools
 downgrade
+dprint
 drkonqi
 dscanner
 dub
@@ -119,6 +129,7 @@ ect
 edk2-ovmf
 efibootmgr
 elementary-wallpapers
+elinks
 elisa
 entr
 evtest
@@ -142,6 +153,7 @@ fq
 fswatch
 fx
 fzy
+ganache-bin
 gdrive-search
 gedit
 gifsicle
@@ -150,6 +162,7 @@ gimp
 git
 git-crypt
 git-lfs
+global
 glow-bin
 gnome-backgrounds
 gnome-contacts
@@ -157,6 +170,7 @@ gnome-font-viewer
 gnome-keyring
 gnome-tweaks
 go
+go-ipfs
 goaccess
 goenv
 google-java-format
@@ -309,6 +323,8 @@ kwrite
 kwrited
 latte-dock
 layer-shell-qt
+leiningen
+lemmy-help
 lf
 lib32-vulkan-intel
 libadwaita
@@ -321,12 +337,14 @@ librewolf-bin
 libvips
 libxkbcommon-doc
 linux
+linux-docs
 linux-firmware
 lldb
 lnav
 logkeys-git
 lokalize
 lowdown
+lsd
 lsix-git
 lsof
 ltrace
@@ -358,6 +376,7 @@ macchina
 mailutils
 maim
 make
+man-pages
 marble
 markdownpart
 mate-backgrounds
@@ -383,7 +402,6 @@ mtr-gtk
 museeks-bin
 musl
 mutt
-mycli
 naabu
 nautilus
 nb
@@ -402,6 +420,7 @@ nim
 nitrogen
 nmap
 nnn
+nodejs-lua-fmt
 nordic-theme-git
 notmuch
 npm
@@ -443,6 +462,8 @@ pcmanfm-qt
 perl-image-exiftool
 perl-json
 perl-tidy
+perl-x11-protocol
+perl-x11-protocol-other
 perlbrew
 phinger-cursors
 pidswallow
@@ -496,6 +517,7 @@ qeh-git
 qemu
 qemu-arch-extra
 qimgv
+qt5-base
 qt5-styleplugins
 qterminal
 qtscrcpy
@@ -585,7 +607,6 @@ task
 task-spooler
 taskd
 tasksh
-taskwarrior-tui
 tdrop-git
 teip
 telegram-cli-git
@@ -623,19 +644,21 @@ tmate
 tmsu-bin
 tmux
 toilet
-tomb-git
+tomb
 topgrade
 tor
 transmission-cli
 transmission-rss
 tree
 tremc
+tslint
 ttf-font-awesome-4
 ttf-liberation
 udiskie
 ulauncher
 umbrello
 ungoogled-chromium
+unluac
 unrar
 unrtf
 unzip
@@ -666,6 +689,7 @@ wine
 wl-clipboard
 wmctrl
 wmutils-git
+x-docs-pdf
 xautomation
 xbanish
 xbindkeys
@@ -782,6 +806,7 @@ xscreensaver
 xsel
 xsettingsd
 xss-lock
+xstarter
 xterm
 xtitle
 xwinfo-git

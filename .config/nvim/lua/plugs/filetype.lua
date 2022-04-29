@@ -24,6 +24,7 @@ function M.setup()
                     sxhkdrc = "sxhkdrc",
                     ztst = "ztst",
                     tl = "teal",
+                    rasi = "rasi",
                     ["pre-commit"] = "sh"
                 },
                 literal = {

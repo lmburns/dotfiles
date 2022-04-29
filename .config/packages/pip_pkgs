@@ -8,13 +8,15 @@ asyncio==3.4.3
 autokey==0.95.4
 autopep8==1.6.0
 backports.entry-points-selectable==1.1.1
-beets==1.6.0
+beets-ydl==0.0.4
 biopython==1.79
 blinker==1.4
 bookcut==1.3.7
+build==0.7.0
 cachecontrol==0.12.10
 cachy==0.3.0
 caffeine-ng==3.5.1
+callcatcher==1.2.1
 castero==0.9.4
 cleo==0.8.1
 cppman==0.5.3
@@ -43,6 +45,7 @@ mycli==1.24.3
 natsort==8.1.0
 nb-pdf-template==4.0.0
 neovim==0.3.1
+neovim-remote==2.4.0
 parsedatetime==2.6
 pgi==0.0.11.2
 pip-chill==1.0.1
@@ -50,7 +53,6 @@ pipx==1.0.0
 pkginfo==1.8.2
 poetry-core==1.0.7
 pre-commit==2.17.0
-psutil==5.9.0
 pygobject==3.42.0
 pylast==4.4.0
 pynput==1.7.6
@@ -65,6 +67,7 @@ rtv==1.27.0
 scapy==2.4.5
 shellingham==1.4.0
 sphinx-automodapi==0.14.1
+sphinx-rtd-theme==1.0.0
 sspipe==0.1.16
 taskw-gcal-sync==0.7.0
 tomlkit==0.8.0

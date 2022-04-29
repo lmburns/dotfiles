@@ -92,7 +92,6 @@ setopt auto_cd   auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
 setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
 
 setopt prompt_subst # allow substitution in prompt (p10k?)
-setopt correct      # try to correct mistakes
 
 setopt numeric_glob_sort # sort globs numerically
 setopt no_case_glob      # case insensitive globbing
@@ -105,8 +104,9 @@ setopt complete_in_word # cursor stays in same spot with completion
 setopt always_to_end    # cursor moves to end of word if completion is executed
 setopt auto_menu        # automatically use menu completion (fzf-tab?)
 
-setopt hash_cmds     # save location of command preventing path search
+# setopt hash_cmds     # save location of command preventing path search
 setopt hash_list_all # when a completion is attempted, hash it first
+setopt correct      # try to correct mistakes
 
 setopt rc_quotes            # allow '' inside '' to indicate a single '
 setopt interactive_comments # allow comments in history
@@ -985,6 +985,7 @@ manpath=(
   "${manpath[@]}"
 )
 
+# $HOME/.poetry/bin(N-/)
 path=(
   $HOME/mybin
   $HOME/texlive/2021/bin/x86_64-linux
@@ -996,7 +997,7 @@ path=(
   $CARGO_HOME/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $HOME/.poetry/bin(N-/)
+  $XDG_DATA_HOME/neovim/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/lib/{goenv/libexec,w3m}
@@ -1019,6 +1020,8 @@ zt 0c light-mode as'completion' for \
     zdharma-continuum/null
 # ]]] ===== completions =====
 
+# id-as'luarocks' has'luarocks' nocd eval'luarocks --lua-version=5.1 path' \
+#   zdharma-continuum/null \
 #===== variables ===== [[[
   zt 0c light-mode run-atpull nocompile'!' for \
     id-as'pipx_comp' has'pipx' nocd eval"register-python-argcomplete pipx" \
@@ -1040,8 +1043,6 @@ zt 0c light-mode as'completion' for \
     atload'alias o=__zoxide_z z=__zoxide_zi' \
       zdharma-continuum/null \
     id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
-      zdharma-continuum/null \
-    id-as'luarocks' has'luarocks' nocd eval'luarocks --lua-version=5.1 path' \
       zdharma-continuum/null \
     id-as'keychain_init' has'keychain' nocd \
     eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa git \

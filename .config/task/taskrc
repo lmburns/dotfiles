@@ -254,15 +254,18 @@ uda.taskwarrior-tui.task-report.pre-fill-task-meta-data=false
 uda.taskwarrior-tui.task-report.task-detail-prefetch=10
 uda.taskwarrior-tui.quick-tag.name=next
 
+uda.taskwarrior-tui.style.navbar=red
+uda.taskwarrior-tui.style.command=red
+
 uda.taskwarrior-tui.background_process=task sync
 uda.taskwarrior-tui.background_process_period=60
 
 # TODO: Change white titlebar
 uda.taskwarrior-tui.style.report.selection=
-uda.taskwarrior-tui.style.context.active=green
-uda.taskwarrior-tui.style.calendar.title=white
 uda.taskwarrior-tui.style.report.scrollbar=blue
 uda.taskwarrior-tui.style.report.scrollbar.area=blue
+uda.taskwarrior-tui.style.context.active=
+uda.taskwarrior-tui.style.calendar.title=
 
 # uda.taskwarrior-tui.style.color.project=red
 
