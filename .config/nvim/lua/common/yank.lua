@@ -55,13 +55,11 @@ local function init()
     augroup(
         "TextYank",
         {
-            {
-                event = "TextYankPost",
-                pattern = "*",
-                command = function()
-                    require("common.yank").restore()
-                end
-            }
+            event = "TextYankPost",
+            pattern = "*",
+            command = function()
+                require("common.yank").restore()
+            end
         }
     )
 end

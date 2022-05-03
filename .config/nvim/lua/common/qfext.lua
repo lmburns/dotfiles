@@ -89,8 +89,7 @@ function M.outline(fzf)
 end
 
 function M.outline_syntax()
-    cmd(
-        [[
+    cmd [[
         syn match Function /^\(Method\|Function\)\s*/ nextgroup=qfSeparator
         syn match Structure /^\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
         syn match qfSeparator /│/ contained nextgroup=qfLineNr
@@ -98,7 +97,6 @@ function M.outline_syntax()
         hi def link qfSeparator Delimiter
         hi def link qfLineNr LineNr
     ]]
-    )
 end
 
 return M

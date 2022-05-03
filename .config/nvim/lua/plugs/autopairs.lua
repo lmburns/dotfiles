@@ -9,7 +9,7 @@ local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
 local opt = {
-    disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm"},
+    disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
     disable_in_macro = false,
     disable_in_visualblock = false,
     ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),

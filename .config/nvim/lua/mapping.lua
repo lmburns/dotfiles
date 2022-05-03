@@ -177,8 +177,8 @@ wk.register(
 wk.register(
     {
         -- ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
-        ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
-        ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"},
+        -- ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+        -- ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"},
         ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
         ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
     },

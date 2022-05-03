@@ -463,6 +463,7 @@ M.setup = function()
             "typescript",
             -- "tsx",
             -- "vue",
+            "vim",
             "zig",
             "help"
         },
@@ -547,6 +548,13 @@ M.setup = function()
                     -- goto_previous_usage = "<a-#>"
                 }
             }
+        },
+        rainbow = {
+            enable = true,
+            extended_mode = true,
+            -- max_file_lines = 300,
+            -- disable = {"cpp"},
+            -- colors = {}
         },
         textobjects = {
             lsp_interop = {enable = false},

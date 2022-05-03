@@ -65,7 +65,7 @@ BLACKLIST_FT = {
     "toggleterm",
     "undotree",
     "vimwiki",
-    "vista",
+    "vista"
     -- "nofile",
 }
 
@@ -112,20 +112,21 @@ end
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
 ---@param name string|table: Augroup name. If a table, `true` can be passed to clear the group
----@param commands Autocommand[]
+---@param ... Autocommand[]
 ---@return number
-M.augroup = function(name, commands)
+M.augroup = function(name, ...)
     local id
-    -- If name is a table, user wants to probably clear the augroup
+    -- If name is a table, user wants to probably not clear the augroup
     if type(name) == "table" then
         id = M.create_augroup(name[1], name[2])
     else
         id = M.create_augroup(name)
     end
 
-    for _, autocmd in ipairs(commands) do
+    for _, autocmd in ipairs({...}) do
         M.autocmd(autocmd, id)
     end
+
     return id
 end
 
@@ -161,12 +162,12 @@ end
 --- @field callback function
 --- @field cmd boolean
 
--- Why is the `ShowDocumentation` key needed to be pressed multiple times for this function?
+-- FIXME: Why is the `ShowDocumentation` key needed to be pressed multiple times for this function?
 
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
----@param bufnr? number: Optional buffer id
+---@param bufnr? number: Optional buffer id. If not given, the first argument is `modes`
 ---@param modes string|table: Modes the keymapping should be bound
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
@@ -188,7 +189,7 @@ end
 ---
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
 M.map = function(bufnr, modes, lhs, rhs, opts)
-    -- If it is a buffer mapping
+    -- If it is not a buffer mapping, then shift all arguments
     if type(bufnr) ~= "number" then
         opts = rhs
         rhs = lhs

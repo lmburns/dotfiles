@@ -1,36 +1,41 @@
 local M = {}
 
-require("common.utils")
+local utils = require("common.utils")
+local augroup = utils.augroup
+local map = utils.map
 
 function M.setup()
-  -- g.rustfmt_autosave = 1
-  g.rust_recommended_style = 1
-  g.rust_fold = 1
+    -- g.rustfmt_autosave = 1
+    -- g.rustfmt_autosave_if_config_present = 1
+    g.rust_recommended_style = 1
+    g.rust_fold = 1
 end
 
 local function init()
-  M.setup()
+    M.setup()
 
-  cmd [[
-    augroup rust_env
-      autocmd!
-      autocmd FileType rust
-        \ nmap     <buffer> <Leader>h<CR> :VT cargo clippy<CR>|
-        \ nmap     <buffer> <Leader>n<CR> :VT cargo run   -q<CR>|
-        \ nmap     <buffer> <Leader><Leader>n :VT cargo run -q<space>|
-        \ nmap     <buffer> <Leader>t<CR> :RustTest<CR>|
-        \ nmap     <buffer> <Leader>b<CR> :VT cargo build -q<CR>|
-        \ nmap     <buffer> <Leader>r<CR> :VT cargo play  %<CR>|
-        \ nmap     <buffer> <Leader><Leader>r :VT cargo play % -- |
-        \ nmap     <buffer> <Leader>v<CR> :VT rust-script %<CR>|
-        \ nmap     <buffer> <Leader><Leader>v :VT rust-script % -- |
-        \ nmap     <buffer> <Leader>e<CR> :VT cargo eval  %<CR>|
-        \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
-        \ nnoremap <buffer> ;ff           :RustFmt<CR>|
-        \ vnoremap <buffer> ;ff           :RustFmtRange<CR>|
-    augroup END
-  ]]
-  -- \ let g:rustfmt_autosave_if_config_present = 1
+    augroup(
+        "RustEnv",
+        {
+            event = "FileType",
+            pattern = "rust",
+            command = function()
+                local bufnr = nvim.get_current_buf()
+
+                map("n", "<Leader>t<CR>", "RustTest", {buffer = bufnr, cmd = true})
+                map("n", "<Leader>h<CR>", ":T cargo clippy<CR>", {buffer = bufnr})
+                map("n", "<Leader>n<CR>", ":T cargo run -q<CR>", {buffer = bufnr})
+                map("n", "<Leader><Leader>n", ":T cargo run -q<space>", {buffer = bufnr})
+                map("n", "<Leader>b<CR>", ":T cargo build -q<CR>", {buffer = bufnr})
+                map("n", "<Leader>r<CR>", ":T cargo play %<CR>", {buffer = bufnr})
+                map("n", "<Leader>v<CR>", ":T rust-script %<CR>", {buffer = bufnr})
+                map("n", "<Leader>e<CR>", ":T cargo eval %<CR>", {buffer = bufnr})
+
+                map("n", ";ff", "RustFmt", {buffer = bufnr, cmd = true})
+                map("v", ";ff", "RustFmtRange", {buffer = bufnr, cmd = true})
+            end
+        }
+    )
 end
 
 init()

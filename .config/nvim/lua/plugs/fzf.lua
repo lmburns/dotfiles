@@ -406,20 +406,18 @@ function M.prepare_ft()
     augroup(
         {"Fzf", false},
         {
-            {
-                event = "BufWipeout",
-                buffer = api.nvim_get_current_buf(),
-                command = function()
-                    require("common.shadowwin").close()
-                end
-            },
-            {
-                event = "VimResized",
-                buffer = api.nvim_get_current_buf(),
-                command = function()
-                    require("common.shadowwin").resize()
-                end
-            }
+            event = "BufWipeout",
+            buffer = api.nvim_get_current_buf(),
+            command = function()
+                require("common.shadowwin").close()
+            end
+        },
+        {
+            event = "VimResized",
+            buffer = api.nvim_get_current_buf(),
+            command = function()
+                require("common.shadowwin").resize()
+            end
         }
     )
 end
@@ -605,13 +603,13 @@ local function init()
     ]]
 
     -- Clipboard manager
-  --   cmd [[
-  --   inoremap <expr> <a-.> fzf#vim#complete({
-  --     \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
-  --     \ 'options': '--no-border',
-  --     \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
-  --     \ 'window': 'call FloatingFZF()'})
-  -- ]]
+    --   cmd [[
+    --   inoremap <expr> <a-.> fzf#vim#complete({
+    --     \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
+    --     \ 'options': '--no-border',
+    --     \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+    --     \ 'window': 'call FloatingFZF()'})
+    -- ]]
 
     cmd [[
     inoremap <expr> <a-.> fzf#complete({
@@ -686,35 +684,33 @@ local function init()
     augroup(
         "Fzf",
         {
-            {
-                event = "FileType",
-                pattern = "fzf",
-                command = function()
-                    require("plugs.fzf").prepare_ft()
-                end
-            },
-            {
-                event = "VimResized",
-                pattern = "*",
-                command = function()
-                    pcall(require("plugs.fzf").resize_preview_layout)
-                end
-            },
-            {
-                -- Lazy loads fzf
-                event = "FuncUndefined",
-                pattern = "fzf#*",
-                command = function()
-                    require("plugs.fzf")
-                end
-            },
-            {
-                event = "CmdUndefined",
-                pattern = {"FZF", "BCommits", "History", "GFiles", "Marks", "Buffers", "Rg"},
-                command = function()
-                    require("plugs.fzf")
-                end
-            }
+            event = "FileType",
+            pattern = "fzf",
+            command = function()
+                require("plugs.fzf").prepare_ft()
+            end
+        },
+        {
+            event = "VimResized",
+            pattern = "*",
+            command = function()
+                pcall(require("plugs.fzf").resize_preview_layout)
+            end
+        },
+        {
+            -- Lazy loads fzf
+            event = "FuncUndefined",
+            pattern = "fzf#*",
+            command = function()
+                require("plugs.fzf")
+            end
+        },
+        {
+            event = "CmdUndefined",
+            pattern = {"FZF", "BCommits", "History", "GFiles", "Marks", "Buffers", "Rg"},
+            command = function()
+                require("plugs.fzf")
+            end
         }
     )
 

@@ -151,7 +151,7 @@ M.kanagawa = function()
             functionStyle = "bold",
             keywordStyle = "NONE",
             statementStyle = "NONE",
-            typeStyle = "NONE",
+            typeStyle = "bold",
             variablebuiltinStyle = "italic",
             specialReturn = true, -- special highlight for the return keyword
             specialException = true, -- special highlight for exception handling keywords
@@ -336,7 +336,8 @@ end
 
 M.tokyonight = function()
     -- === Tokyo Night ===
-    g.tokyonight_style = "storm" -- night day storm
+    -- g.tokyonight_style = "storm" -- night day storm
+    g.tokyonight_style = "night" -- night day storm
     g.tokyonight_italic_comments = false
     g.tokyonight_italic_keywords = false
     g.tokyonight_italic_functions = false

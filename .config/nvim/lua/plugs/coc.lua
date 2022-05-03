@@ -423,26 +423,24 @@ function M.tag_cmd()
     augroup(
         "MyCocDef",
         {
-            {
-                event = "FileType",
-                pattern = {
-                    "rust",
-                    "scala",
-                    "python",
-                    "ruby",
-                    "perl",
-                    "lua",
-                    "c",
-                    "cpp",
-                    "zig",
-                    "d",
-                    "javascript",
-                    "typescript"
-                },
-                command = function()
-                    map("n", "<C-]>", "<Plug>(coc-definition)", {noremap = true, silent = true})
-                end
-            }
+            event = "FileType",
+            pattern = {
+                "rust",
+                "scala",
+                "python",
+                "ruby",
+                "perl",
+                "lua",
+                "c",
+                "cpp",
+                "zig",
+                "d",
+                "javascript",
+                "typescript"
+            },
+            command = function()
+                map("n", "<C-]>", "<Plug>(coc-definition)", {noremap = true, silent = true})
+            end
         }
     )
 
@@ -489,11 +487,12 @@ function M.lua_langserver()
     fn["coc#config"]("languageserver.lua", {args = {"-E", main}})
 
     local settings = fn["coc#util#get_config"]("languageserver.lua").settings
-    -- NOTE: This will only work if all references to `lspconfig` are removed
+
+    -- This only works with max397574's fork
     local luadev = require("lua-dev").setup({}).settings
     settings = vim.tbl_deep_extend("force", settings, luadev)
 
-    fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = get_lua_runtime()})
+    -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = get_lua_runtime()})
     fn["coc#config"]("languageserver.lua", {settings = settings})
 end
 
@@ -513,68 +512,66 @@ function M.init()
     augroup(
         "CocNvimSetup",
         {
-            {
-                event = "User",
-                pattern = "CocLocationsChange",
-                nested = true,
-                command = function()
-                    require("plugs.coc").jump2loc()
-                end
-            },
-            {
-                event = "User",
-                pattern = "CocDiagnosticChange",
-                nested = true,
-                command = function()
-                    require("plugs.coc").diagnostic_change()
-                end
-            },
-            {
-                event = "CursorHold",
-                pattern = "*",
-                command = [[sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]]
-            },
-            {
-                event = "FileType",
-                pattern = {"typescript", "json"},
-                command = [[setl formatexpr=CocActionAsync('formatSelected')]]
-            },
-            {
-                event = "User",
-                pattern = "CocJumpPlaceholder",
-                command = [[call CocActionAsync('showSignatureHelp')]]
-            },
-            -- [[FileType list lua vim.cmd('pa nvim-bqf') require('bqf.magicwin.handler').attach()]],
-            {
-                event = "FileType",
-                pattern = "list",
-                command = function()
-                    vim.cmd("pa nvim-bqf")
-                    require("bqf.magicwin.handler").attach()
-                end
-            },
-            -- [[VimLeavePre * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]],
-            {
-                event = "VimLeavePre",
-                pattern = "*",
-                command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
-            },
-            -- [[FileType log :let b:coc_enabled = 0]],
-            {
-                event = "FileType",
-                pattern = "log",
-                command = function()
-                    vim.b.coc_enabled = 0
-                end
-            },
-            -- [[User CocOpenFloat lua require('plugs.coc').post_open_float()]]
-            {
-                event = "User",
-                pattern = "CocOpenFloat",
-                command = function()
-                    require("plugs.coc").post_open_float()
-                end
-            }
+            event = "User",
+            pattern = "CocLocationsChange",
+            nested = true,
+            command = function()
+                require("plugs.coc").jump2loc()
+            end
+        },
+        {
+            event = "User",
+            pattern = "CocDiagnosticChange",
+            nested = true,
+            command = function()
+                require("plugs.coc").diagnostic_change()
+            end
+        },
+        {
+            event = "CursorHold",
+            pattern = "*",
+            command = [[sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]]
+        },
+        {
+            event = "FileType",
+            pattern = {"typescript", "json"},
+            command = [[setl formatexpr=CocActionAsync('formatSelected')]]
+        },
+        {
+            event = "User",
+            pattern = "CocJumpPlaceholder",
+            command = [[call CocActionAsync('showSignatureHelp')]]
+        },
+        -- [[FileType list lua vim.cmd('pa nvim-bqf') require('bqf.magicwin.handler').attach()]],
+        {
+            event = "FileType",
+            pattern = "list",
+            command = function()
+                vim.cmd("pa nvim-bqf")
+                require("bqf.magicwin.handler").attach()
+            end
+        },
+        -- [[VimLeavePre * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]],
+        {
+            event = "VimLeavePre",
+            pattern = "*",
+            command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
+        },
+        -- [[FileType log :let b:coc_enabled = 0]],
+        {
+            event = "FileType",
+            pattern = "log",
+            command = function()
+                vim.b.coc_enabled = 0
+            end
+        },
+        -- [[User CocOpenFloat lua require('plugs.coc').post_open_float()]]
+        {
+            event = "User",
+            pattern = "CocOpenFloat",
+            command = function()
+                require("plugs.coc").post_open_float()
+            end
         }
     )
 

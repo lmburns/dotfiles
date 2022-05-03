@@ -90,13 +90,11 @@ local function init()
     augroup(
         "FugitiveCustom",
         {
-            {
-                event = "User",
-                pattern = {"FugitiveIndex", "FugitiveCommit"},
-                command = function()
-                    require("plugs.fugitive").map()
-                end
-            }
+            event = "User",
+            pattern = {"FugitiveIndex", "FugitiveCommit"},
+            command = function()
+                require("plugs.fugitive").map()
+            end
         }
     )
 
@@ -116,7 +114,7 @@ local function init()
                 "Fugitive Gread"
             },
             ["<Leader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
-            ["<Leader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},
+            ["<Leader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"}
             -- ["<Leader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )

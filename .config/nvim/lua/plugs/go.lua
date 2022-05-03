@@ -64,46 +64,42 @@ local function init()
     augroup(
         "lmb__GoRun",
         {
-            {
-                event = "FileType",
-                pattern = "go",
-                command = function()
-                    -- nmap <Leader>rp <Plug>(go-run)
-                    -- nmap <Leader>rv <Plug>(go-run-vertical)
-                    map("n", "<Leader>rp", ":GORUNS<CR>")
-                    map("n", "<Leader>ru", ":GORUN<CR>")
-                end
-            }
+            event = "FileType",
+            pattern = "go",
+            command = function()
+                -- nmap <Leader>rp <Plug>(go-run)
+                -- nmap <Leader>rv <Plug>(go-run-vertical)
+                map("n", "<Leader>rp", ":GORUNS<CR>")
+                map("n", "<Leader>ru", ":GORUN<CR>")
+            end
         }
     )
 
     augroup(
         "GoEnv",
         {
-            {
-                event = "FileType",
-                pattern = "go",
-                command = function()
-                    local bufnr = api.nvim_get_current_buf()
-                    opt_local.list = false
-                    map(bufnr, "n", "M", "<Plug>(go-doc)")
-                    map(bufnr, "n", "<Leader>b<CR>", ":lua require('plugs.go').build_go_files()<CR>")
-                    map(bufnr, "n", "<Leader>r<CR>", "<Plug>(go-run)")
-                    map(bufnr, "n", "<Leader>rr", ":GoRun %<CR>")
-                    map(bufnr, "n", "<Leader>ri", ":GoRun %<space>")
-                    map(bufnr, "n", "<Leader>t<CR>", "<Plug>(go-test)")
-                    map(bufnr, "n", "<Leader>c<CR>", "<Plug>(go-coverage-toggle)")
-                    map(bufnr, "n", "<Leader>gae", "<Plug>(go-alternate-edit)")
-                    map(bufnr, "n", "<Leader>i", "<Plug>(go-info)")
-                    map(bufnr, "n", "<Leader>sm", ":GoSameIdsToggle<CR>")
-                    map(bufnr, "n", "<Leader>f", ":GoDeclsDir<CR>")
-                    -- map(bufnr, "n", ";ff", ":GoFmt<CR>")
+            event = "FileType",
+            pattern = "go",
+            command = function()
+                local bufnr = api.nvim_get_current_buf()
+                opt_local.list = false
+                map(bufnr, "n", "M", "<Plug>(go-doc)")
+                map(bufnr, "n", "<Leader>b<CR>", ":lua require('plugs.go').build_go_files()<CR>")
+                map(bufnr, "n", "<Leader>r<CR>", "<Plug>(go-run)")
+                map(bufnr, "n", "<Leader>rr", ":GoRun %<CR>")
+                map(bufnr, "n", "<Leader>ri", ":GoRun %<space>")
+                map(bufnr, "n", "<Leader>t<CR>", "<Plug>(go-test)")
+                map(bufnr, "n", "<Leader>c<CR>", "<Plug>(go-coverage-toggle)")
+                map(bufnr, "n", "<Leader>gae", "<Plug>(go-alternate-edit)")
+                map(bufnr, "n", "<Leader>i", "<Plug>(go-info)")
+                map(bufnr, "n", "<Leader>sm", ":GoSameIdsToggle<CR>")
+                map(bufnr, "n", "<Leader>f", ":GoDeclsDir<CR>")
+                -- map(bufnr, "n", ";ff", ":GoFmt<CR>")
 
-                    command("A", [[call go#alternate#Switch(<bang>0, 'edit')]], {bang = true})
-                    command("AV", [[call go#alternate#Switch(<bang>0, 'vsplit')]], {bang = true})
-                    command("AS", [[call go#alternate#Switch(<bang>0, 'split')]], {bang = true})
-                end
-            }
+                command("A", [[call go#alternate#Switch(<bang>0, 'edit')]], {bang = true})
+                command("AV", [[call go#alternate#Switch(<bang>0, 'vsplit')]], {bang = true})
+                command("AS", [[call go#alternate#Switch(<bang>0, 'split')]], {bang = true})
+            end
         }
     )
 end

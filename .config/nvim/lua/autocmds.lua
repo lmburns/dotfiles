@@ -9,42 +9,32 @@ local create_augroup = utils.create_augroup
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 
--- cmd [[
---   augroup jump_last_position
---     autocmd!
---     autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
---       \| exe "normal! g'\"" | endif
---   augroup END
--- ]]
-
 augroup(
     "lmb__RestoreCursor",
     {
-        {
-            event = "BufReadPost",
-            pattern = "*",
-            command = function()
-                local types =
-                    _t(
-                    {
-                        "nofile",
-                        "fugitive",
-                        "gitcommit",
-                        "gitrebase",
-                        "commit",
-                        "rebase"
-                    }
-                )
-                if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
-                    return
-                end
-
-                local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
-                if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
-                    api.nvim_win_set_cursor(0, {row, 0})
-                end
+        event = "BufReadPost",
+        pattern = "*",
+        command = function()
+            local types =
+                _t(
+                {
+                    "nofile",
+                    "fugitive",
+                    "gitcommit",
+                    "gitrebase",
+                    "commit",
+                    "rebase"
+                }
+            )
+            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
+                return
             end
-        }
+
+            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
+            if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
+                api.nvim_win_set_cursor(0, {row, 0})
+            end
+        end
     }
 )
 -- ]]] === Restore cursor ===
@@ -80,15 +70,13 @@ end
 augroup(
     "lmb__FirstBuf",
     {
-        {
-            event = "BufHidden",
-            command = function()
-                require("common.builtin").wipe_empty_buf()
-            end,
-            buffer = 0,
-            once = true,
-            desc = "Remove first empty buffer"
-        }
+        event = "BufHidden",
+        command = function()
+            require("common.builtin").wipe_empty_buf()
+        end,
+        buffer = 0,
+        once = true,
+        desc = "Remove first empty buffer"
     }
 )
 -- ]]]
@@ -97,14 +85,12 @@ augroup(
 augroup(
     "lmb__MruWin",
     {
-        {
-            event = "WinLeave",
-            pattern = "*",
-            command = function()
-                require("common.win").record()
-            end,
-            description = "Add file to custom MRU list"
-        }
+        event = "WinLeave",
+        pattern = "*",
+        command = function()
+            require("common.win").record()
+        end,
+        description = "Add file to custom MRU list"
     }
 )
 -- ]]]
@@ -113,16 +99,14 @@ augroup(
 augroup(
     "lmb__Spellcheck",
     {
-        {
-            event = "FileType",
-            command = "setlocal spell",
-            pattern = {"gitcommit", "markdown", "text", "mail"}
-        },
-        {
-            event = {"BufRead", "BufNewFile"},
-            command = "setlocal spell",
-            pattern = "neomutt-archbox*"
-        }
+        event = "FileType",
+        command = "setlocal spell",
+        pattern = {"gitcommit", "markdown", "text", "mail"}
+    },
+    {
+        event = {"BufRead", "BufNewFile"},
+        command = "setlocal spell",
+        pattern = "neomutt-archbox*"
     }
 )
 -- ]]] === Spelling ===
@@ -165,28 +149,10 @@ end
 augroup(
     "lmb__Help",
     {
-        {
-            event = "BufEnter",
-            pattern = "*.txt",
-            command = function()
-                if b.bt == "help" then
-                    if split_should_return() then
-                        return
-                    end
-
-                    local width = math.floor(vim.o.columns * 0.75)
-                    cmd("wincmd L")
-                    cmd("vertical resize " .. width)
-                end
-            end
-        },
-        {
-            -- This is ran more than once
-            -- Using help for this won't open vertical when opening the same thing twice in a row
-            event = "FileType",
-            pattern = {"man"},
-            once = false,
-            command = function()
+        event = "BufEnter",
+        pattern = "*.txt",
+        command = function()
+            if b.bt == "help" then
                 if split_should_return() then
                     return
                 end
@@ -195,24 +161,40 @@ augroup(
                 cmd("wincmd L")
                 cmd("vertical resize " .. width)
             end
-        },
-        {
-            event = "BufHidden",
-            pattern = "*",
-            command = function()
-                if b.ft == "man" then
-                    local bufnr = api.nvim_get_current_buf()
-                    vim.defer_fn(
-                        function()
-                            if api.nvim_buf_is_valid(bufnr) then
-                                api.nvim_buf_delete(bufnr, {force = true})
-                            end
-                        end,
-                        0
-                    )
-                end
+        end
+    },
+    {
+        -- This is ran more than once
+        -- Using help for this won't open vertical when opening the same thing twice in a row
+        event = "FileType",
+        pattern = {"man"},
+        once = false,
+        command = function()
+            if split_should_return() then
+                return
             end
-        }
+
+            local width = math.floor(vim.o.columns * 0.75)
+            cmd("wincmd L")
+            cmd("vertical resize " .. width)
+        end
+    },
+    {
+        event = "BufHidden",
+        pattern = "*",
+        command = function()
+            if b.ft == "man" then
+                local bufnr = api.nvim_get_current_buf()
+                vim.defer_fn(
+                    function()
+                        if api.nvim_buf_is_valid(bufnr) then
+                            api.nvim_buf_delete(bufnr, {force = true})
+                        end
+                    end,
+                    0
+                )
+            end
+        end
     }
 )
 -- ]]] === Help ===
@@ -230,43 +212,41 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
     augroup(
         "lmb__RenameTmux",
         {
-            {
-                event = {"FileType", "BufEnter"},
-                pattern = "*",
-                once = false,
-                description = "Automatic rename of tmux window",
-                command = function()
-                    local bufnr = api.nvim_get_current_buf()
+            event = {"FileType", "BufEnter"},
+            pattern = "*",
+            once = false,
+            description = "Automatic rename of tmux window",
+            command = function()
+                local bufnr = api.nvim_get_current_buf()
 
-                    -- I have TMUX already automatically change title
-                    -- It sets it to titlestring
-                    if vim.bo[bufnr].bt == "" then
-                        o.titlestring = fn.expand("%:t")
-                    elseif vim.bo[bufnr].bt == "terminal" then
-                        -- FIX: This block is never picked up
-                        -- if b.ft == "toggleterm" then
-                        --     o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
-                        -- else
-                        o.titlestring = "Terminal"
-                    end
+                -- I have TMUX already automatically change title
+                -- It sets it to titlestring
+                if vim.bo[bufnr].bt == "" then
+                    o.titlestring = fn.expand("%:t")
+                elseif vim.bo[bufnr].bt == "terminal" then
+                    -- FIX: This block is never picked up
+                    -- if b.ft == "toggleterm" then
+                    --     o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
+                    -- else
+                    o.titlestring = "Terminal"
                 end
-            },
-            {
-                event = {"FileType"},
-                pattern = "toggleterm",
-                command = function()
-                    -- Buffer variable is not set yet, so b.toggle_number isn't working
-                    o.titlestring = ("ToggleTerm #%d"):format(F.if_nil(vim.b.toggle_number, 1))
-                end
-            },
-            {
-                event = "VimLeave",
-                pattern = "*",
-                description = "Turn back on Tmux auto-rename",
-                command = function()
-                    os.execute("tmux set-window automatic-rename on")
-                end
-            }
+            end
+        },
+        {
+            event = {"FileType"},
+            pattern = "toggleterm",
+            command = function()
+                -- Buffer variable is not set yet, so b.toggle_number isn't working
+                o.titlestring = ("ToggleTerm #%d"):format(F.if_nil(vim.b.toggle_number, 1))
+            end
+        },
+        {
+            event = "VimLeave",
+            pattern = "*",
+            description = "Turn back on Tmux auto-rename",
+            command = function()
+                os.execute("tmux set-window automatic-rename on")
+            end
         }
     )
 end
@@ -336,29 +316,37 @@ end -- ]]]
 -- === Custom file type settings === [[[
 augroup(
     "lmb__CustomFileType",
+    {event = "FileType", pattern = "qf", command = [[set nobuflisted]]},
+    {event = "BufWritePre", pattern = {"*.odt", "*.rtf"}, command = [[silent set ro]]},
     {
-        {event = "FileType", pattern = "qf", command = [[set nobuflisted]]},
-        {
-            event = "BufWritePre",
-            pattern = "*",
-            command = function()
-                -- Delete trailing spaces
-                require("common.utils").preserve("%s/\\s\\+$//ge")
-                -- Delete trailing blank lines
-                require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
-                -- Delete blank lines if more than 2 in a row
-                -- require("common.utils").squeeze_blank_lines()
-            end
-        },
-        {event = "BufWritePre", pattern = {"*.odt", "*.rtf"}, command = [[silent set ro]]},
-        {
-            event = "BufWritePre",
-            pattern = "*.odt",
-            command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
-        },
-        {event = "BufWritePre", pattern = "*.rt", command = [[silent %!unrtf --text]]}
-    }
+        event = "BufWritePre",
+        pattern = "*.odt",
+        command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
+    },
+    {event = "BufWritePre", pattern = "*.rt", command = [[silent %!unrtf --text]]}
 )
+
+a.async_void(
+    vim.schedule_wrap(
+        function()
+            augroup(
+                "lmb__TrimWhitespace",
+                {
+                    event = "BufWritePre",
+                    pattern = "*",
+                    command = function()
+                        -- Delete trailing spaces
+                        require("common.utils").preserve("%s/\\s\\+$//ge")
+                        -- Delete trailing blank lines
+                        require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
+                        -- Delete blank lines if more than 2 in a row
+                        -- require("common.utils").squeeze_blank_lines()
+                    end
+                }
+            )
+        end
+    )
+)()
 
 -- nvim.create_autocmd(
 --     {"BufNewFile", "BufRead"},
@@ -375,29 +363,27 @@ augroup(
 augroup(
     "lmb__CommentTitle",
     {
-        {
-            event = "Syntax",
-            pattern = "*",
-            command = [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
-                [[contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]]
-        },
-        {
-            event = "Syntax",
-            pattern = "*",
-            command = [[syn match myTodo ]] ..
-                [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
-                    [[ contained containedin=.*Comment.*,vimCommentTitle ]]
-        },
-        {
-            event = "Syntax",
-            pattern = "*",
-            command = [[syn keyword cmTitle contained=Comment]]
-        },
-        {
-            event = "Syntax",
-            pattern = "*",
-            command = [[syn keyword myTodo contained=Comment]]
-        }
+        event = "Syntax",
+        pattern = "*",
+        command = [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
+            [[contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]]
+    },
+    {
+        event = "Syntax",
+        pattern = "*",
+        command = [[syn match myTodo ]] ..
+            [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
+                [[ contained containedin=.*Comment.*,vimCommentTitle ]]
+    },
+    {
+        event = "Syntax",
+        pattern = "*",
+        command = [[syn keyword cmTitle contained=Comment]]
+    },
+    {
+        event = "Syntax",
+        pattern = "*",
+        command = [[syn keyword myTodo contained=Comment]]
     }
 )
 
@@ -411,15 +397,13 @@ ex.hi("def link cmTitle vimCommentTitle")
 augroup(
     "lmb__ZigEnv",
     {
-        {
-            event = "FileType",
-            pattern = "zig",
-            description = "Setup zig environment",
-            command = function()
-                map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
-                map("n", ";ff", ":Format<CR>")
-            end
-        }
+        event = "FileType",
+        pattern = "zig",
+        description = "Setup zig environment",
+        command = function()
+            map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
+            map("n", ";ff", ":Format<CR>")
+        end
     }
 )
 -- ]]] === Zig ===
@@ -437,23 +421,23 @@ cmd [[
   command! Fcman :call s:FullCppMan()
 ]]
 
-api.nvim_create_autocmd(
-    "FileType",
+augroup(
+    "lmb__CEnv",
     {
+        event = "FileType",
         pattern = "c",
-        group = create_augroup("CEnv"),
-        callback = function()
+        command = function()
             map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
         end
     }
 )
 
-api.nvim_create_autocmd(
-    "FileType",
+augroup(
+    "lmb__CppEnv",
     {
+        event = "FileType",
         pattern = "cpp",
-        group = create_augroup("CppEnv"),
-        callback = function()
+        command = function()
             map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
             map("n", "<Leader>kk", ":Fcman<CR>")
         end
@@ -496,32 +480,30 @@ end
 augroup(
     "lmb__AutoReloadFile",
     {
-        {
-            event = {"BufEnter", "CursorHold", "FocusGained"},
-            command = function()
-                -- local bufnr = tonumber(fn.expand "<abuf>")
-                local bufnr = api.nvim_get_current_buf()
-                local name = api.nvim_buf_get_name(bufnr)
-                if
-                    name == "" or -- Only check for normal files
-                        vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
-                        not fn.filereadable(name)
-                 then
-                    return
-                end
+        event = {"BufEnter", "CursorHold", "FocusGained"},
+        command = function()
+            -- local bufnr = tonumber(fn.expand "<abuf>")
+            local bufnr = api.nvim_get_current_buf()
+            local name = api.nvim_buf_get_name(bufnr)
+            if
+                name == "" or -- Only check for normal files
+                    vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
+                    not fn.filereadable(name)
+             then
+                return
+            end
 
-                vim.cmd(bufnr .. "checktime")
-            end,
-            description = "Reload file when modified outside of the instance"
-        },
-        {
-            event = "FileChangedShellPost",
-            pattern = "*",
-            command = function()
-                api.nvim_echo({{"File changed on disk. Buffer reloaded!", "WarningMsg"}}, true, {})
-            end,
-            description = "Display a message if the buffer is changed outside of instance"
-        }
+            vim.cmd(bufnr .. "checktime")
+        end,
+        description = "Reload file when modified outside of the instance"
+    },
+    {
+        event = "FileChangedShellPost",
+        pattern = "*",
+        command = function()
+            api.nvim_echo({{"File changed on disk. Buffer reloaded!", "WarningMsg"}}, true, {})
+        end,
+        description = "Display a message if the buffer is changed outside of instance"
     }
 )
 -- ]]] === Buffer Reload ===
@@ -537,50 +519,48 @@ augroup(
 augroup(
     "RnuColumn",
     {
-        {
-            event = {"FocusLost", "InsertEnter"},
-            pattern = "*",
-            command = function()
-                require("common.rnu").focus(false)
-            end
-        },
-        {
-            -- FIX: This works sometimes
-            event = {"FocusGained", "InsertLeave"},
-            pattern = "*",
-            command = function()
-                require("common.rnu").focus(true)
-            end
-        },
-        -- {
-        --     -- FIX: Bufferize filetype
-        --     event = "FileType",
-        --     pattern = {"bufferize"},
-        --     command = function()
-        --         require("common.rnu").focus(false)
-        --     end
-        -- },
-        {
-            event = {"WinEnter", "BufEnter"},
-            pattern = "*",
-            command = function()
-                require("common.rnu").win_enter()
-            end
-        },
-        {
-            event = "CmdlineEnter",
-            pattern = [[/,\?]],
-            command = function()
-                require("common.rnu").scmd_enter()
-            end
-        },
-        {
-            event = "CmdlineLeave",
-            pattern = [[/,\?]],
-            command = function()
-                require("common.rnu").scmd_leave()
-            end
-        }
+        event = {"FocusLost", "InsertEnter"},
+        pattern = "*",
+        command = function()
+            require("common.rnu").focus(false)
+        end
+    },
+    {
+        -- FIX: This works sometimes
+        event = {"FocusGained", "InsertLeave"},
+        pattern = "*",
+        command = function()
+            require("common.rnu").focus(true)
+        end
+    },
+    -- {
+    --     -- FIX: Bufferize filetype
+    --     event = "FileType",
+    --     pattern = {"bufferize"},
+    --     command = function()
+    --         require("common.rnu").focus(false)
+    --     end
+    -- },
+    {
+        event = {"WinEnter", "BufEnter"},
+        pattern = "*",
+        command = function()
+            require("common.rnu").win_enter()
+        end
+    },
+    {
+        event = "CmdlineEnter",
+        pattern = [[/,\?]],
+        command = function()
+            require("common.rnu").scmd_enter()
+        end
+    },
+    {
+        event = "CmdlineLeave",
+        pattern = [[/,\?]],
+        command = function()
+            require("common.rnu").scmd_leave()
+        end
     }
 )
 -- ]]] === RNU Column ===

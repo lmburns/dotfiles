@@ -1,7 +1,5 @@
 local M = {}
 
-local create_augroup = require("common.utils").create_augroup
-
 function M.setup()
   require("scrollbar").setup(
       {

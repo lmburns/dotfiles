@@ -152,12 +152,12 @@ local sections_1 = {
     },
     lualine_c = {plugins.coc_status},
     lualine_x = {
-        {
-            -- 'require("nvim-gps").get_location()',
-            plugins.gps,
-            cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
-            color = {fg = colors.red}
-        },
+        -- {
+        --     -- 'require("nvim-gps").get_location()',
+        --     plugins.gps,
+        --     cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
+        --     color = {fg = colors.red}
+        -- },
         {
             "diagnostics",
             sources = {"coc"},

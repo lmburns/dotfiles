@@ -58,7 +58,7 @@ local function apply_fold(bufnr, ranges)
         function()
             vim.wo.foldmethod = "manual"
 
-            local mode = api.nvim_get_mode().mode
+            -- local mode = api.nvim_get_mode().mode
 
             -- FIXME: This moves the cursor one place to the left if typing starts within
             --       1 second of opening the file
@@ -66,7 +66,7 @@ local function apply_fold(bufnr, ranges)
             --     -- cmd("norm! l")
             --     --     vim.notify("INIT")
             --     --     cmd("norm! <C-o>zE")
-                cmd("norm! zE")
+            cmd("norm! zE")
             -- else
             --     cmd("norm! <C-o>zE")
             -- end
@@ -109,6 +109,7 @@ function M.attach(bufnr, force)
                 if not force and vim.b[bufnr].loaded_fold then
                     return
                 end
+
                 if e == vim.NIL and type(r) == "table" then
                     -- language servers may need time to parser buffer
                     if #r == 0 then
@@ -266,20 +267,33 @@ local function init()
     g.anyfold_motion = 0
 
     -- blacklist
-    bl_ft = BLACKLIST_FT
+    bl_ft = {
+        "",
+        "man",
+        "vimwiki",
+        "markdown",
+        "git",
+        "floggraph",
+        "neoterm",
+        "floaterm",
+        "toggleterm",
+        "fzf",
+        "telescope",
+        "scratchpad",
+        "luapad",
+        "aerial"
+    }
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}
 
     augroup(
         "FoldLoad",
         {
-            {
-                event = "FileType",
-                pattern = "*",
-                command = function()
-                    require("common.fold").defer_attach(tonumber(fn.expand("<abuf>")))
-                end
-            }
+            event = "FileType",
+            pattern = "*",
+            command = function()
+                require("common.fold").defer_attach(tonumber(fn.expand("<abuf>")))
+            end
         }
     )
 

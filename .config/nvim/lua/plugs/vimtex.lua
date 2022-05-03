@@ -21,12 +21,10 @@ local function init()
 
     augroup(
         "lmb__Vimtex",
-        {
-            {event = "InsertEnter", pattern = "*.tex", command = [[set conceallevel=0]]},
-            {event = "InsertLeave", pattern = "*.tex", command = [[set conceallevel=2]]},
-            {event = "BufEnter", pattern = "*.tex", command = [[set concealcursor-=n]]},
-            {event = "VimLeave", pattern = "*.tex", command = [[!texclear %]]}
-        }
+        {event = "InsertEnter", pattern = "*.tex", command = [[set conceallevel=0]]},
+        {event = "InsertLeave", pattern = "*.tex", command = [[set conceallevel=2]]},
+        {event = "BufEnter", pattern = "*.tex", command = [[set concealcursor-=n]]},
+        {event = "VimLeave", pattern = "*.tex", command = [[!texclear %]]}
     )
 end
 

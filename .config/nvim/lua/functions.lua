@@ -12,7 +12,6 @@ command(
     function()
         if not pcall(require, "nvim-reload") then
             -- require("packer").loader("nvim-reload")
-            vim.notify("RELOADING")
             ex.PackerLoad("nvim-reload")
         end
         local reload = R("plugs.nvim-reload")
@@ -29,7 +28,6 @@ command(
             ex.PackerLoad("nvim-reload")
         end
         local reload = require("nvim-reload")
-        -- R("nvim-reload").Restart()
         reload.Reload()
         ex.colorscheme("kimbox")
     end,
@@ -39,7 +37,7 @@ command(
 command(
     "Grep",
     function(tbl)
-        api.nvim_exec(([[noautocmd grep! %s | redraw! | copen]]):format(tbl.args), true)
+        ex.noautocmd(("grep! %s | redraw! | copen"):format(tbl.args))
     end,
     {nargs = "+", complete = "file"}
 )
@@ -47,9 +45,18 @@ command(
 command(
     "LGrep",
     function(tbl)
-        api.nvim_exec(([[noautocmd lgrep! %s | redraw! | lopen]]):format(tbl.args), true)
+        ex.noautocmd(("lgrep! %s | redraw! | lcopen"):format(tbl.args))
     end,
     {nargs = "+", complete = "file"}
+)
+
+-- `Grepper` is used for multiple buffers, this is for one
+command(
+    "VG",
+    function(tbl)
+        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1], tbl.fargs[2] or "%"))
+    end,
+    {nargs = "+"}
 )
 
 command(
@@ -85,15 +92,6 @@ command(
 )
 
 command("RmAnsi", [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]], {nargs = 0, range = "%"})
-
--- `Grepper` is used for multiple buffers, this is for one
-command(
-    "VG",
-    function(tbl)
-        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1], tbl.fargs[2] or "%"))
-    end,
-    {nargs = "+"}
-)
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[
@@ -178,39 +176,37 @@ cmd [[
 augroup(
     "ExecuteBuffer",
     {
-        {
-            event = "FileType",
-            pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
-            command = function()
-                map("n", "<Leader>r<CR>", ":RUN<CR>")
-                map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
-            end
-        },
-        {
-            event = "FileType",
-            pattern = "typescript",
-            command = function()
-                map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
-                -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
-            end
-        },
-        {
-            event = "FileType",
-            pattern = "javascript",
-            command = function()
-                map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
-            end
-        },
-        {
-            event = "FileType",
-            pattern = "lua",
-            command = function()
-                map("n", "<Leader>xl", ":luafile %<CR>")
-                map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
-                map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
-                map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
-            end
-        }
+        event = "FileType",
+        pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
+        command = function()
+            map("n", "<Leader>r<CR>", ":RUN<CR>")
+            map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
+        end
+    },
+    {
+        event = "FileType",
+        pattern = "typescript",
+        command = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
+            -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
+        end
+    },
+    {
+        event = "FileType",
+        pattern = "javascript",
+        command = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
+        end
+    },
+    {
+        event = "FileType",
+        pattern = "lua",
+        command = function()
+            map("n", "<Leader>xl", ":luafile %<CR>")
+            map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
+            map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
+            map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
+        end
     }
 )
 -- ]]] === Execute Buffer ===
@@ -243,45 +239,84 @@ function M.go_github()
     end
 end
 
--- Hide number & sign columns to do tmux copy
-cmd [[
-  function! s:tmux_copy_mode_toggle()
-      setlocal number!
-      if &signcolumn ==? 'no'
-          setlocal signcolumn=auto
-      else
-          setlocal signcolumn=no
-      endif
-  endfunction
+---Hide number & sign columns to do tmux copy
+function M.tmux_copy_mode_toggle()
+    cmd [[
+        setlocal number!
+        setlocal rnu!
+    ]]
+    if o.signcolumn:get() == "no" then
+        opt_local.signcolumn = "yes:1"
+    else
+        opt_local.signcolumn = "no"
+    end
+end
 
-  command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
-]]
+command(
+    "TmuxCopyModeToggle",
+    function()
+        require("functions").tmux_copy_mode_toggle()
+    end,
+    {nargs = 0}
+)
+
 -- map(
 --     "n", "<Leader>.", ":call system('tmux select-pane -t :.+')<cr>",
 --     { silent = true }
 -- )
 
 -- Prevent vim clearing the system clipboard
-vim.cmd [[
-  if executable('xsel')
-      function! PreserveClipboard()
-          call system('xsel -ib', getreg('+'))
-      endfunction
+-- cmd [[
+--   if executable('xsel')
+--       function! PreserveClipboard()
+--           call system('xsel -ib', getreg('+'))
+--       endfunction
+--
+--       function! PreserveClipboadAndSuspend()
+--           call PreserveClipboard()
+--           suspend
+--       endfunction
+--
+--       augroup preserve_clipboard
+--         au!
+--         au VimLeave * call PreserveClipboard()
+--       augroup END
+--
+--       nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+--       vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+--   endif
+-- ]]
 
-      function! PreserveClipboadAndSuspend()
-          call PreserveClipboard()
-          suspend
-      endfunction
+if fn.executable("xsel") then
+    -- Doesn't call xsel. Vimscript version works
+    function M.preserve_clipboard()
+        -- fn.jobstart(("xsel -ib %s"):format(fn.getreg("+")))
+        fn.system(("xsel -ib %s"):format(fn.getreg("+")))
 
-      augroup preserve_clipboard
-        au!
-        au VimLeave * call PreserveClipboard()
-      augroup END
+        -- Job:new(
+        --     {
+        --         command = "xsel",
+        --         args = {"-ib", fn.getreg("+").." NOPE"}
+        --     }
+        -- ):start()
+    end
 
-      nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
-      vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
-  endif
-]]
+    function M.preserve_clipboard_and_suspend()
+        M.preserve_clipboard()
+        ex.suspend()
+    end
+
+    augroup(
+        "lmb__PreserveClipboard",
+        {
+            event = "VimLeave",
+            pattern = "*",
+            command = M.preserve_clipboard
+        }
+    )
+
+    map({"n", "v"}, "<C-z>", M.preserve_clipboard_and_suspend)
+end
 -- ]]] === Functions ===
 
 return M

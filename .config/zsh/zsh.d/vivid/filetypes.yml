@@ -190,6 +190,7 @@ programming:
     jq: [.jq]
     solidity: [.sol]
     teal: [.tl]
+    moon: [.moon]
 
   tooling:
     vcs:

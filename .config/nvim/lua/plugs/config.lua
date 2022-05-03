@@ -15,7 +15,9 @@ local color = require("common.color")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
 
--- ================================ bqf ===============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           bqf                            │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.bqf()
     color.link("BqfPreviewBorder", "Parameter")
 
@@ -49,13 +51,17 @@ function M.bqf()
     )
 end
 
--- =========================== QFReflector ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       QFReflector                        │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.qf_reflector()
     g.qf_modifiable = 1
     g.qf_write_changes = 1
 end
 
--- ============================= Listish ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Listish                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.listish()
     require("listish").config(
         {
@@ -110,7 +116,9 @@ function M.listish()
     cmd([[pa cfilter]])
 end
 
--- =========================== PackageInfo ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       PackageInfo                        │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.package_info()
     require("package-info").setup(
         {
@@ -141,7 +149,9 @@ function M.package_info()
     )
 end
 
--- =========================== regexplainer ===========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       regexplainer                       │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.regexplainer()
     require("regexplainer").setup {
         -- 'narrative'
@@ -175,7 +185,9 @@ function M.regexplainer()
     }
 end
 
--- =========================== open-browser ===========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       open-browser                       │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.open_browser()
     wk.register(
         {
@@ -184,12 +196,16 @@ function M.open_browser()
     )
 end
 
--- =============================== Suda ===============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Suda                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.suda()
     map("n", "<Leader>W", ":SudaWrite<CR>")
 end
 
--- ============================== GHLine ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          GHLine                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.ghline()
     -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
 
@@ -201,7 +217,9 @@ function M.ghline()
     )
 end
 
--- ============================= Persistence ==========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Persistence                        │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.persistence()
     require("persistence").setup(
         {
@@ -211,7 +229,9 @@ function M.persistence()
     )
 end
 
--- ============================== Floaterm ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Floaterm                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.floaterm()
     map("n", "<Leader>fll", ":Floaterms<CR>")
     map("n", ";fl", ":FloatermToggle<CR>")
@@ -264,7 +284,9 @@ function M.floaterm()
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
 end
 
--- =============================== pandoc =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Pandoc                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.pandoc()
     g["pandoc#filetypes#handled"] = {"pandoc", "markdown"}
     g["pandoc#after#modules#enabled"] = {"vim-table-mode"}
@@ -280,7 +302,9 @@ function M.pandoc()
     g["pandoc#syntax#conceal#cchar_overrides"] = {codelang = " "}
 end
 
--- ============================== markdown ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Markdown                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.markdown()
     g.markdown_fenced_languages = {
         "vim",
@@ -307,7 +331,9 @@ function M.markdown()
     g.vim_markdown_conceal_code_blocks = 0
 end
 
--- ============================= TableMode ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        TableMode                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.table_mode()
     augroup(
         "TableMode",
@@ -333,7 +359,9 @@ function M.table_mode()
     )
 end
 
--- ============================== VimWiki =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         VimWiki                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.vimwiki()
     -- g.vimwiki_ext2syntax = {
     --   [".Rmd"] = "markdown",
@@ -361,7 +389,9 @@ function M.vimwiki()
     map("n", "<Leader>vw", ":VimwikiIndex<CR>")
 end
 
--- ============================= UltiSnips ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        UltiSnips                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
     g.UltiSnipsExpandTrigger = "<Leader><tab>"
@@ -371,7 +401,9 @@ function M.ultisnips()
     g.UltiSnipsEditSplit = "horizontal"
 end
 
--- =============================== Info ===============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Info                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.info()
     -- Anonymous
     nvim.create_autocmd(
@@ -392,7 +424,9 @@ function M.info()
     )
 end
 
--- ============================== Minimap =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Minimap                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.minimap()
     map("n", "<Leader>mi", ":MinimapToggle<CR>")
 
@@ -411,7 +445,9 @@ function M.minimap()
     }
 end
 
--- =============================== Slime ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Slime                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.slime()
     g.slime_target = "neovim"
     g.syntastic_python_pylint_post_args = "--max-line-length=120"
@@ -445,7 +481,9 @@ function M.slime()
   ]]
 end
 
--- =============================== Notify =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Notify                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.notify()
     cmd [[
     hi NotifyERRORBorder guifg=#8A1F1F
@@ -505,7 +543,9 @@ function M.notify()
     require("telescope").load_extension("notify")
 end
 
--- =============================== Neogen =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Neogen                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.neogen()
     local neogen = require("neogen")
     neogen.setup(
@@ -522,14 +562,18 @@ function M.neogen()
     map("n", "<Leader>dc", [[<cmd>lua require("neogen").generate({ type = "class" })<CR>]])
 end
 
--- ============================== VCooler =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         VCooler                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.vcoolor()
     map("n", "<Leader>pc", ":VCoolor<CR>")
     map("n", "<Leader>yb", ":VCoolIns b<CR>")
     map("n", "<Leader>yr", ":VCoolIns r<CR>")
 end
 
--- ============================== HlsLens =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         HlsLens                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
     require("hlslens").setup(
         {
@@ -575,7 +619,9 @@ function M.hlslens()
     g["asterisk#keeppos"] = 1
 end
 
--- ============================= Surround =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Surround                         │
+-- ╰──────────────────────────────────────────────────────────╯
 -- function M.surround()
 --     map("n", "ds", "<Plug>Dsurround")
 --     map("n", "cs", "<Plug>Csurround")
@@ -588,7 +634,9 @@ end
 --     map("x", "gS", "<Plug>VgSurround")
 -- end
 
--- ============================ Sandwhich =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Sandwhich                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.sandwhich()
     -- Sandwhich
     -- dss = automatic deletion
@@ -670,7 +718,9 @@ function M.sandwhich()
     -- map("n", "mlw", "yss`", {noremap = false})
 end
 
--- ============================== targets =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         targets                          │
+-- ╰──────────────────────────────────────────────────────────╯
 -- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
 function M.targets()
     -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
@@ -696,18 +746,16 @@ function M.targets()
     augroup(
         "lmb__Targets",
         {
-            {
-                event = "User",
-                pattern = "targets#mappings#user",
-                command = function()
-                    fn["targets#mappings#extend"](
-                        {
-                            a = {argument = {{o = "(", c = ")", s = ","}}},
-                            r = {pair = {{o = "<", c = ">"}}}
-                        }
-                    )
-                end
-            }
+            event = "User",
+            pattern = "targets#mappings#user",
+            command = function()
+                fn["targets#mappings#extend"](
+                    {
+                        a = {argument = {{o = "(", c = ")", s = ","}}},
+                        r = {pair = {{o = "<", c = ">"}}}
+                    }
+                )
+            end
         }
     )
 
@@ -743,7 +791,9 @@ function M.targets()
     -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
 end
 
--- ============================== matchup =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         MatchUp                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.matchup()
     -- hi MatchParenCur cterm=underline gui=underline
     -- hi MatchWordCur cterm=underline gui=underline
@@ -768,7 +818,9 @@ function M.matchup()
     -- map("o", "%", "<Plug>(matchup-%)")
 end
 
--- =========================== BetterEscape ===========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       BetterEscape                       │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.better_esc()
     require("better_escape").setup {
         mapping = {"jk", "kj"}, -- a table with mappings to use
@@ -781,7 +833,9 @@ function M.better_esc()
     }
 end
 
--- =========================== SmartSplits ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       SmartSplits                        │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.smartsplits()
     require("smart-splits").setup(
         {
@@ -821,7 +875,9 @@ function M.smartsplits()
     )
 end
 
--- =============================== Move ===============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Move                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.move()
     -- Move selected text up down
     -- map("v", "J", ":m '>+1<CR>gv=gv")
@@ -860,7 +916,9 @@ function M.move()
     )
 end
 
--- ========================== Window Picker ===========================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Window Picker                       │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.window_picker()
     require("nvim-window").setup(
         {
@@ -894,7 +952,9 @@ function M.window_picker()
     map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
 end
 
--- =============================== Yanky ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Yanky                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.yanky()
     local mapping = require("yanky.telescope.mapping")
 
@@ -946,7 +1006,9 @@ function M.yanky()
     require("telescope").load_extension("yank_history")
 end
 
--- ============================== LazyGit =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         LazyGit                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.lazygit()
     g.lazygit_floating_window_winblend = 0 -- transparency of floating window
     g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
@@ -957,7 +1019,9 @@ function M.lazygit()
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
--- =============================== Specs ==============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Specs                           │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.specs()
     require("specs").setup(
         {
@@ -978,7 +1042,9 @@ function M.specs()
     )
 end
 
--- ============================ ScratchPad ============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        ScratchPad                        │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.scratchpad()
     g.scratchpad_autostart = 0
     g.scratchpad_autosize = 0
@@ -993,13 +1059,17 @@ function M.scratchpad()
     map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
 
--- =============================== nlua ===============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           NLua                           │
+-- ╰──────────────────────────────────────────────────────────╯
 --- This involves the original mapping in `nlua` to be commented out
 function M.nlua()
     map("n", "M", [[<cmd>lua require("nlua").keyword_program()<CR>]])
 end
 
--- ============================ colorizer =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Colorizer                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.colorizer()
     require("colorizer").setup(
         {
@@ -1026,12 +1096,9 @@ function M.colorizer()
     )
 end
 
--- ============================== cutlass =============================
--- function M.cutlass()
---     require("cutlass").setup({cut_key = nil, override_del = nil, exclude = {"vx"}})
--- end
-
--- ============================== grepper =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Grepper                          │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.grepper()
     g.grepper = {
         dir = "repo,file",
@@ -1062,7 +1129,9 @@ function M.grepper()
     )
 end
 
--- ============================ CommentBox ============================
+-- ╓                                                          ╖
+-- ║                        CommentBox                        ║
+-- ╙                                                          ╜
 function M.comment_box()
     local cb = require("comment-box")
     cb.setup(
@@ -1160,7 +1229,9 @@ function M.comment_box()
     )
 end
 
--- ============================ registers =============================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Registers                         │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.registers()
     g.registers_return_symbol = "⏎"
     g.registers_tab_symbol = "\t" -- "·"
@@ -1170,7 +1241,9 @@ function M.registers()
     g.registers_insert_modes = false -- removes <C-R> insert mapping
 end
 
--- ================================ lf ================================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                            LF                            │
+-- ╰──────────────────────────────────────────────────────────╯
 function M.lf()
     g.lf_map_keys = 0
     g.lf_replace_netrw = 1
@@ -1271,30 +1344,65 @@ function M.crates()
     augroup(
         "lmb__CratesBindings",
         {
-            {
-                event = "BufEnter",
-                pattern = "Cargo.toml",
-                command = function()
-                    local bufnr = nvim.get_current_buf()
-                    map(
-                        "n",
-                        "<Leader>ca",
-                        function()
-                            crates.upgrade_all_crates()
-                        end,
-                        {buffer = bufnr}
-                    )
+            event = "BufEnter",
+            pattern = "Cargo.toml",
+            command = function()
+                local bufnr = nvim.get_current_buf()
+                map(
+                    "n",
+                    "<Leader>ca",
+                    function()
+                        crates.upgrade_all_crates()
+                    end,
+                    {buffer = bufnr}
+                )
 
-                    map(
-                        "n",
-                        "<Leader>cu",
-                        function()
-                            crates.upgrade_crate()
-                        end,
-                        {buffer = bufnr}
-                    )
-                end
-            }
+                map(
+                    "n",
+                    "<Leader>cu",
+                    function()
+                        crates.upgrade_crate()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>ch",
+                    function()
+                        crates.open_homepage()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cr",
+                    function()
+                        crates.open_repository()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cd",
+                    function()
+                        crates.open_documentation()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["<Leader>ca"] = "Upgrade all crates",
+                        ["<Leader>cu"] = "Upgrade crate",
+                        ["<Leader>ch"] = "Open homepage",
+                        ["<Leader>cr"] = "Open repository",
+                        ["<Leader>cd"] = "Open documentation"
+                    }
+                )
+            end
         }
     )
 end
@@ -1349,6 +1457,13 @@ end
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Unused
 -- ╘══════════════════════════════════════════════════════════╛
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Cutlass                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.cutlass()
+--     require("cutlass").setup({cut_key = nil, override_del = nil, exclude = {"vx"}})
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                       VisualMulti                        │

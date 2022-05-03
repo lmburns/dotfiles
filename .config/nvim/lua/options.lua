@@ -81,13 +81,13 @@ o.backspace = list {"indent", "eol", "start"}
 o.synmaxcol = 1000 -- do not highlight long lines
 
 o.foldenable = false
-o.foldmethod = "marker"
-o.foldmarker = "[[[,]]]"
+-- o.foldmethod = "marker"
+-- o.foldmarker = "[[[,]]]"
 
 -- o.foldmethod = "expr"
 -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
--- o.foldlevelstart = 99
+o.foldlevelstart = 99
 -- o.foldnestmax = 10 -- deepest fold is 10 levels
 -- o.foldenable = false -- don't fold by default
 -- o.foldlevel = 1
@@ -138,6 +138,7 @@ o.smartindent = true
 o.cindent = true
 o.sessionoptions = {"buffers", "curdir", "tabpages", "winsize"}
 
+o.jumpoptions = 'stack'
 o.swapfile = false -- no swap files
 o.undolevels = 1000
 o.undoreload = 10000

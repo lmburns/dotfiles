@@ -109,11 +109,12 @@ vim.schedule(
         local color = require("common.color")
         local set_hl = color.set_hl
 
-        -- vim.defer_fn(
-        --     function()
-        --       require("common.fold")
-        --     end, 50
-        -- )
+        vim.defer_fn(
+            function()
+                require("common.fold")
+            end,
+            50
+        )
 
         -- === Defer mappings
         -- vim.defer_fn(
@@ -155,7 +156,6 @@ vim.schedule(
 
                 -- augroup(
                 --     "syntaxset",
-                --     {
                 --         {
                 --             event = "FileType",
                 --             pattern = "*",
@@ -163,7 +163,6 @@ vim.schedule(
                 --                 require("plugs.tree-sitter").hijack_synset()
                 --             end
                 --         }
-                --     }
                 -- )
 
                 ex.syntax("on")
@@ -185,16 +184,14 @@ vim.schedule(
                     augroup(
                         "SelectModeNoYank",
                         {
-                            {
-                                event = "ModeChanged",
-                                pattern = "*:s",
-                                command = [[set clipboard=]]
-                            },
-                            {
-                                event = "ModeChanged",
-                                pattern = "s:*",
-                                command = [[set clipboard=unnamedplus]]
-                            }
+                            event = "ModeChanged",
+                            pattern = "*:s",
+                            command = [[set clipboard=]]
+                        },
+                        {
+                            event = "ModeChanged",
+                            pattern = "s:*",
+                            command = [[set clipboard=unnamedplus]]
                         }
                     )
                 else
@@ -205,15 +202,13 @@ vim.schedule(
                 augroup(
                     "lmb__Packer",
                     {
-                        {
-                            event = "BufWritePost",
-                            pattern = "*/plugins.lua",
-                            command = function()
-                                ex.source("<afile>")
-                                ex.PackerCompile()
-                            end,
-                            description = "Source plugins file"
-                        }
+                        event = "BufWritePost",
+                        pattern = "*/plugins.lua",
+                        command = function()
+                            ex.source("<afile>")
+                            ex.PackerCompile()
+                        end,
+                        description = "Source plugins file"
                     }
                 )
 
@@ -222,13 +217,11 @@ vim.schedule(
                     augroup(
                         "SearchWrappedHighlight",
                         {
-                            {
-                                event = "SearchWrapped",
-                                pattern = "*",
-                                command = function()
-                                    require("common.builtin").search_wrap()
-                                end
-                            }
+                            event = "SearchWrapped",
+                            pattern = "*",
+                            command = function()
+                                require("common.builtin").search_wrap()
+                            end
                         }
                     )
                 end
@@ -236,15 +229,13 @@ vim.schedule(
                 augroup(
                     "lmb__Highlight",
                     {
-                        {
-                            event = "TextYankPost",
-                            pattern = "*",
-                            command = function()
-                                set_hl("HighlightedyankRegion", {guibg = "#cc6666"})
-                                pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
-                            end,
-                            description = "Highlight a selection on yank"
-                        }
+                        event = "TextYankPost",
+                        pattern = "*",
+                        command = function()
+                            set_hl("HighlightedyankRegion", {guibg = "#cc6666"})
+                            pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
+                        end,
+                        description = "Highlight a selection on yank"
                     }
                 )
             end,
@@ -317,7 +308,7 @@ vim.schedule(
                         once = true,
                         command = function()
                             require("plugs.coc").init()
-                        end,
+                        end
                     }
                 )
 
@@ -331,8 +322,8 @@ vim.schedule(
                 link("CocSemDefaultLibrary", "Special")
                 link("CocSemDocumentation", "Number")
 
-                cmd("packadd coc-kvs")
-                cmd("packadd coc.nvim")
+                cmd([[packadd coc-kvs]])
+                cmd([[packadd coc.nvim]])
             end,
             300
         )

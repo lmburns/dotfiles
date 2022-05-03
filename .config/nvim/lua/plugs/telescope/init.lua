@@ -287,6 +287,7 @@ require("telescope").setup(
                 grep_open_files = false,
                 only_sort_text = true,
                 theme = "ivy",
+                -- cwd = fn.expand("%:p:h"),
                 on_input_filter_cb = function(prompt)
                     -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
                     return {prompt = prompt:gsub("%s", ".*")}
@@ -371,7 +372,12 @@ require("telescope").setup(
                     "z",
                     "x",
                     "i",
-                    "o"
+                    "o",
+                    "y",
+                    "j",
+                    "k",
+                    "l",
+                    "m"
                 },
                 -- Highlight groups to link to signs and lines; the below configuration refers to demo
                 -- sign_hl typically only defines foreground to possibly be combined with line_hl
@@ -606,14 +612,33 @@ M.cst_buffers = function()
     )
 end
 
-M.cst_grep = function()
+M.cst_grep = function(opts)
     builtin.live_grep {
-        themes.get_ivy {
-            path_display = {},
-            layout_strategy = "horizontal",
-            grep_open_files = false,
-            layout_config = {preview_width = 0.4}
+        -- Theme completely overrides the options
+        -- require("telescope.themes").get_ivy({
+        prompt_title = "Grep",
+        mappings = conf.mappings,
+        opts = opts,
+        path_display = {"smart"},
+        grep_open_files = false,
+        cwd = fn.expand("%:p:h"),
+        on_input_filter_cb = function(prompt)
+            -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
+            return {prompt = prompt:gsub("%s", ".*")}
+        end,
+        theme = "ivy",
+        sorting_strategy = "ascending",
+        layout_strategy = "bottom_pane",
+        layout_config = {
+            height = 25
+        },
+        border = true,
+        borderchars = {
+            prompt = {"─", " ", " ", " ", "─", "─", " ", " "},
+            results = {" "},
+            preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
         }
+        -- })
     }
 end
 
@@ -782,12 +807,28 @@ builtin.grep_prompt = function(opts)
     builtin.cst_grep(opts)
 end
 
+-- builtin.cst_live_grep = function(opts)
+-- end
+
 builtin.cst_grep = function(opts)
-    builtin.grep_string(
+    -- opts.search_dirs = {}
+    -- opts.search_dirs[1] = fn.expand("%:p:h")
+
+    -- builtin.grep_string(
+    --     {
+    --         opts = opts,
+    --         search = opts.search,
+    --         search_dirs = opts.search_dirs
+    --     }
+    -- )
+
+    builtin.live_grep(
         {
+            mappings = conf.mappings,
             opts = opts,
-            prompt_title = "grep_string: " .. opts.search,
-            search = opts.search
+            prompt_title = "Grep",
+            cwd = fn.expand("%:p:h"),
+            path_display = {"smart"}
         }
     )
 end

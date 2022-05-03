@@ -7,7 +7,6 @@ local utils = require("common/utils")
 local command = utils.command
 local autocmd = utils.autocmd
 local map = utils.map
-local create_augroup = utils.create_augroup
 
 -- Install Packer if it isn't already
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
@@ -675,7 +674,13 @@ return packer.startup(
                 }
             )
 
-            use({"anuvyklack/pretty-fold.nvim", config = conf("plugs.pretty-fold")})
+            use(
+                {
+                    "anuvyklack/pretty-fold.nvim",
+                    requires = "anuvyklack/nvim-keymap-amend",
+                    config = conf("plugs.pretty-fold")
+                }
+            )
 
             use(
                 {
@@ -918,6 +923,7 @@ return packer.startup(
                             "ruby",
                             "rust",
                             "scss",
+                            "vim",
                             -- "teal",
                             -- "tsx",
                             -- "vue",
@@ -1052,7 +1058,7 @@ return packer.startup(
                         },
                         {
                             "nvim-treesitter/playground",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                             -- cmd = {"TSHighlightCapturesUnderCursor", "TSPlaygroundToggle"}
                         },
                         {
@@ -1103,6 +1109,10 @@ return packer.startup(
                             "lewis6991/spellsitter.nvim",
                             after = "nvim-treesitter",
                             config = [[require("spellsitter").setup()]]
+                        },
+                        {
+                            "p00f/nvim-ts-rainbow",
+                            after = "nvim-treesitter"
                         }
                         -- {
                         --     "s1n7ax/nvim-comment-frame",
@@ -1128,7 +1138,6 @@ return packer.startup(
 
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
 
-            -- use({ "p00f/nvim-ts-rainbow", after = { "nvim-treesitter" } })
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
 
             use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
