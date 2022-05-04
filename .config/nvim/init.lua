@@ -19,6 +19,7 @@ local autocmd = utils.autocmd
 -- local create_augroup = utils.create_augroup
 
 -- Lua utilities
+require("common.nvim")
 require("dev")
 require("options")
 
@@ -154,16 +155,16 @@ vim.schedule(
                 --     filetype plugin indent on
                 -- ]]
 
-                -- augroup(
-                --     "syntaxset",
-                --         {
-                --             event = "FileType",
-                --             pattern = "*",
-                --             command = function()
-                --                 require("plugs.tree-sitter").hijack_synset()
-                --             end
-                --         }
-                -- )
+                augroup(
+                    "syntaxset",
+                    {
+                        event = "FileType",
+                        pattern = "*",
+                        command = function()
+                            require("plugs.tree-sitter").hijack_synset()
+                        end
+                    }
+                )
 
                 ex.syntax("on")
                 ex.filetype("on")

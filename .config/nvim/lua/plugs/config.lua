@@ -583,7 +583,10 @@ function M.hlslens()
             nearest_only = false,
             nearest_float_when = "auto",
             float_shadow_blend = 50,
-            virt_priority = 100
+            virt_priority = 100,
+            build_position_cb = function(plist, _, _, _)
+                require("scrollbar.handlers.search").handler.show(plist.start_pos)
+            end
         }
     )
 

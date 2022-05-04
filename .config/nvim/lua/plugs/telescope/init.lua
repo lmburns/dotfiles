@@ -15,6 +15,7 @@ local previewers = require("telescope.previewers")
 local make_entry = require("telescope.make_entry")
 local conf = require("telescope.config").values
 
+local fb_utils = require "telescope._extensions.file_browser.utils"
 local z_utils = require("telescope._extensions.zoxide.utils")
 
 local Path = require("plenary.path")
@@ -48,6 +49,29 @@ local qf_multi_select = function(prompt_bufnr)
     else
         actions.file_edit(prompt_bufnr)
     end
+end
+
+-- TODO: Get this to work better
+local cd_parent = function(prompt_bufnr, opts)
+    -- local current_picker = action_state.get_current_picker(prompt_bufnr)
+    -- local finder = current_picker.finder
+    -- local parent_dir = Path:new(finder.path):parent()
+    --
+    -- finder.path = parent_dir:absolute()
+    -- finder.cwd = finder.path
+    -- cmd("lcd " .. finder.path)
+    -- current_picker:refresh(finder, {reset_prompt = true, multi = current_picker._multi})
+
+    local current_picker = action_state.get_current_picker(prompt_bufnr)
+    local finder = current_picker.finder
+    local parent_dir = Path:new(finder.path):parent()
+
+    opts.cwd = parent_dir:absolute()
+    -- Doesn't work cause it is overridden
+    current_picker.prompt_border:change_title(opts.cwd)
+
+    actions.close(prompt_bufnr)
+    builtin.live_grep(opts)
 end
 
 -- ============================ Config ===========================
@@ -613,15 +637,12 @@ M.cst_buffers = function()
 end
 
 M.cst_grep = function(opts)
-    builtin.live_grep {
-        -- Theme completely overrides the options
-        -- require("telescope.themes").get_ivy({
+    local default = {
         prompt_title = "Grep",
         mappings = conf.mappings,
         opts = opts,
         path_display = {"smart"},
         grep_open_files = false,
-        cwd = fn.expand("%:p:h"),
         on_input_filter_cb = function(prompt)
             -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
             return {prompt = prompt:gsub("%s", ".*")}
@@ -638,8 +659,29 @@ M.cst_grep = function(opts)
             results = {" "},
             preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
         }
-        -- })
     }
+
+    default.cwd = fn.expand("%:p:h")
+    default.attach_mappings = function(_, map)
+        map(
+            "n",
+            "<M-i>",
+            function(prompt_bufnr)
+                cd_parent(prompt_bufnr, default)
+            end
+        )
+        map(
+            "i",
+            "<M-i>",
+            function(prompt_bufnr)
+                cd_parent(prompt_bufnr, default)
+            end
+        )
+
+        return true
+    end
+
+    builtin.live_grep(default)
 end
 
 M.cst_commits = function()
@@ -1013,6 +1055,7 @@ wk.register(
         ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
+        ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbol"}
     }
 )
@@ -1051,7 +1094,7 @@ wk.register(
     {
         ["<LocalLeader>b"] = {":lua require('plugs.telescope').cst_buffers()<CR>", "Telescope buffers (cst)"},
         ["<LocalLeader>f"] = {":lua require('plugs.telescope').cst_files()<CR>", "Telescope files (cst)"},
-        [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
+        [";e"] = {":lua R('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
         ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
         ["<Leader>rr"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}

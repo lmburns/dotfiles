@@ -2,20 +2,6 @@
 
 local M = {}
 
-P = function(...)
-    print(vim.inspect(...))
-    return ...
-end
-
-RELOAD = function(...)
-    return require("plenary.reload").reload_module(...)
-end
-
-R = function(name)
-    RELOAD(name)
-    return require(name)
-end
-
 -- Capture output of command as a string
 function os.capture(cmd, raw)
     local f = assert(io.popen(cmd, "r"))

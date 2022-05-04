@@ -230,10 +230,17 @@ cmd [[
 ---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
 function M.go_github()
     local repo = fn.matchstr(fn.expand("<cWORD>"), [[\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+]])
+    local url =
+        fn.matchstr(
+        fn.expand("<cWORD>"),
+        [[\v(https?:\/\/)?(www\.)?[a-zA-Z0-9\+\~\%]{1,256}\.[a-zA-Z0-9()]{1,6}([a-zA-Z0-9()\@:\%\_\+\.\~#?&\/=\-]*)]]
+    )
 
-    if #repo > 0 then
-        local url = ("https://github.com/%s"):format(repo)
+    if #url > 0 then
         fn["openbrowser#open"](url)
+    elseif #repo > 0 then
+        local new = ("https://github.com/%s"):format(repo)
+        fn["openbrowser#open"](new)
     else
         fn["openbrowser#_keymap_open"]("n")
     end

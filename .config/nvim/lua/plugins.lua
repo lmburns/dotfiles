@@ -418,6 +418,7 @@ return packer.startup(
             use({"wadackel/vim-dogrun"})
             use({"savq/melange"})
             use({"folke/tokyonight.nvim"})
+            use({"tiagovla/tokyodark.nvim"})
             use({"bluz71/vim-nightfly-guicolors"})
             use({"haishanh/night-owl.vim"})
             use({"rebelot/kanagawa.nvim"})
@@ -427,13 +428,15 @@ return packer.startup(
             use({"marko-cerovac/material.nvim"})
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
-            use({"numToStr/Sakura.nvim"})
+            use({"andersevenrud/nordic.nvim"})
+            -- use({"numToStr/Sakura.nvim"})
+            -- use({"fcpg/vim-farout"})
+            -- use({"tyrannicaltoucan/vim-quantum"})
             -- use({"b4skyx/serenade"})
             -- use({ "Mofiqul/vscode.nvim" })
             -- use({"AlessandroYorba/Alduin"})
             -- use({ "olimorris/onedarkpro.nvim" })
             -- use({ "kaicataldo/material.vim" })
-            -- use({ "tiagovla/tokyodark.nvim" })
             -- use({ 'projekt0n/github-nvim-theme' })
 
             use({"lmburns/kimbox", config = conf("plugs.kimbox")})
@@ -443,7 +446,7 @@ return packer.startup(
             use(
                 {
                     "petertriho/nvim-scrollbar",
-                    requires = {"kevinhwang91/nvim-hlslens"},
+                    requires = "kevinhwang91/nvim-hlslens",
                     after = {colorscheme, "nvim-hlslens"},
                     config = conf("plugs.scrollbar")
                 }
@@ -1019,7 +1022,11 @@ return packer.startup(
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({"teal-language/vim-teal", ft = "teal"})
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
+
             use({"vim-perl/vim-perl", ft = "perl"})
+
+            -- use({"vim-crystal/vim-crystal", ft = "crystal"})
+            use({"jlcrochet/vim-crystal", ft = "crystal"})
 
             use(
                 {

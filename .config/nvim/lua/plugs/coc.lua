@@ -367,7 +367,7 @@ function M.check_backspace()
     -- local col = fn.col(".") - 1
     -- return col or (fn.getline(".")[col - 1]):match([[\s]])
 
-    local col = api.nvim_win_get_cursor(0)[2]
+    local _, col = unpack(api.nvim_win_get_cursor(0))
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
 end
 
@@ -396,8 +396,6 @@ function M.organize_import()
         end
     end
 end
-
--- UNUSED
 
 function M.scroll(down)
     if #fn["coc#float#get_float_win_list"]() > 0 then
@@ -439,27 +437,10 @@ function M.tag_cmd()
                 "typescript"
             },
             command = function()
-                map("n", "<C-]>", "<Plug>(coc-definition)", {noremap = true, silent = true})
+                map("n", "<C-]>", "<Plug>(coc-definition)", {silent = true})
             end
         }
     )
-
-    -- nlua uses 'K' to help show documentation in vim
-    -- augroup(
-    --     "LuaShowDoc", {
-    --       {
-    --         event = "FileType",
-    --         pattern = "lua",
-    --         command = function()
-    --           map(
-    --               "n", "M",
-    --               [[:lua require('plugs.coc').show_documentation()<CR>]],
-    --               { noremap = true, silent = true }
-    --           )
-    --         end,
-    --       },
-    --     }
-    -- )
 end
 
 --- Adds all lua runtime paths to coc
@@ -547,17 +528,15 @@ function M.init()
             event = "FileType",
             pattern = "list",
             command = function()
-                vim.cmd("pa nvim-bqf")
+                cmd("pa nvim-bqf")
                 require("bqf.magicwin.handler").attach()
             end
         },
-        -- [[VimLeavePre * if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]],
         {
             event = "VimLeavePre",
             pattern = "*",
             command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
         },
-        -- [[FileType log :let b:coc_enabled = 0]],
         {
             event = "FileType",
             pattern = "log",
@@ -788,7 +767,7 @@ function M.init()
             ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
             -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
             ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
-            ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}
+            -- ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}
         }
     )
 

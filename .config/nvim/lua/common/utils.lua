@@ -1,44 +1,62 @@
 -- ========================== Globals ==========================
 
-o = vim.opt -- vim options: behaves like `:set`
-opt_local = vim.opt_local
-opt_global = vim.opt_global
+_G["P"] = function(...)
+    local vars = vim.tbl_map(vim.inspect, {...})
+    print(unpack(vars))
+    return {...}
+end
+
+_G['PRINT'] = _G['P']
+
+_G["RELOAD"] = function(...)
+    return require("plenary.reload").reload_module(...)
+end
+
+_G["R"] = function(name)
+    RELOAD(name)
+    return require(name)
+end
+
+_G.o = vim.opt -- vim options: behaves like `:set`
+_G.opt_local = vim.opt_local
+_G.opt_global = vim.opt_global
 -- o           --  behaves like `:set` (global)
 -- opt         --  behaves like `:set` (global and local)
 -- opt_global  --  behaves like `:setglobal`
 -- opt_local   --  behaves like `:setlocal`
 
-g = vim.g -- vim global variables:
-go = vim.go -- vim global options
-w = vim.wo -- vim window options: behaves like `:setlocal`
-b = vim.bo -- vim buffer options: behaves like `:setlocal`
+_G.g = vim.g -- vim global variables:
+_G.go = vim.go -- vim global options
+_G.w = vim.wo -- vim window options: behaves like `:setlocal`
+_G.b = vim.bo -- vim buffer options: behaves like `:setlocal`
 
-fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
-cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
-env = vim.env -- environment variable access
-api = vim.api
-exec = api.nvim_exec
-uv = vim.loop
-F = vim.F
-log = vim.log
+_G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
+_G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
+_G.env = vim.env -- environment variable access
+_G.api = vim.api
+_G.exec = api.nvim_exec
+_G.uv = vim.loop
+_G.F = vim.F
+_G.log = vim.log
 
-fmt = string.format
+_G.fmt = string.format
 
-dev = require("dev")
-List = require("plenary.collections.py_list")
-Path = require("plenary.path")
-Job = require("plenary.job")
-async = require("plenary.async")
-a = require("plenary.async_lib")
-nvim = require("nvim")
-ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
+_G.dev = require("dev")
+_G.List = require("plenary.collections.py_list")
+_G.Path = require("plenary.path")
+_G.Job = require("plenary.job")
+_G.async = require("plenary.async")
+_G.a = require("plenary.async_lib")
+_G.nvim = require("nvim")
+_G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
 -- Makes `_t` global
 require("arshlib")
 
-BLACKLIST_FT = {
+_G.BLACKLIST_FT = {
     "",
     "aerial",
+    "bufferize",
     "coc-explorer",
     "commit",
     "floaterm",
@@ -55,6 +73,7 @@ BLACKLIST_FT = {
     "neoterm",
     "nerdtree",
     "NvimTree",
+    "prompt",
     "qf",
     "quickmenu",
     "rebase",
@@ -113,7 +132,7 @@ end
 ---returns the group ID so that it can be cleared or manipulated.
 ---@param name string|table: Augroup name. If a table, `true` can be passed to clear the group
 ---@param ... Autocommand[]
----@return number
+---@return number Group ID of the autocommand
 M.augroup = function(name, ...)
     local id
     -- If name is a table, user wants to probably not clear the augroup
@@ -133,6 +152,7 @@ end
 ---Create a single autocmd
 ---@param autocmd Autocommand[]
 ---@param id? number Group id
+---@return number Group ID of the autocommand
 M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     api.nvim_create_autocmd(
@@ -148,6 +168,8 @@ M.autocmd = function(autocmd, id)
             buffer = autocmd.buffer
         }
     )
+
+    return id
 end
 
 --- @class MapArgs
@@ -309,8 +331,26 @@ end
 ---@param rhs string|fun(args: CommandArgs)
 ---@param opts table
 M.command = function(name, rhs, opts)
+    vim.validate {
+        name = {name, "string"},
+        cmd = {
+            cmd,
+            function(c)
+                return type(c) == "string" or vim.is_callable(c)
+            end,
+            "a string or a lua function"
+        },
+        opts = {opts, "table", true}
+    }
+
     opts = opts or {}
-    api.nvim_create_user_command(name, rhs, opts)
+    if opts.buffer then
+        local buffer = type(opts.buffer) == "number" and opts.buffer or 0
+        opts.buffer = nil
+        api.nvim_buf_create_user_command(buffer, name, rhs, opts)
+    else
+        api.nvim_create_user_command(name, rhs, opts)
+    end
 end
 
 ---Creates a command for a given buffer
@@ -321,6 +361,28 @@ M.bcommand = function(name, rhs, opts, bufnr)
     opts = opts or {}
     -- opts.force = true
     api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
+end
+
+---Delete a command
+---@param name string Command to delete
+---@param buffer? boolean|number Whether to delete buffer command
+M.del_command = function(name, buffer)
+    vim.validate {
+        name = {name, "string"},
+        buffer = {
+            buffer,
+            function(b)
+                return type(b) == type(true) or type(b) == type(0)
+            end,
+            "a boolean or a number"
+        }
+    }
+    if buffer then
+        buffer = type(buffer) == type(0) and buffer or 0
+        api.nvim_buf_del_user_command(buffer, name)
+    else
+        api.nvim_del_user_command(name)
+    end
 end
 
 ---Source a lua or vimscript file
