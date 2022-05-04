@@ -121,7 +121,7 @@ nvim.has =
         cmd = function(cmd)
             return api.nvim_call_function("exists", {":" .. cmd}) == 2
         end,
-        command = function(command)
+        event = function(command)
             return api.nvim_call_function("exists", {"##" .. command}) == 2
         end,
         augroup = function(augroup)
@@ -147,7 +147,7 @@ nvim.exists =
         cmd = function(cmd)
             return api.nvim_call_function("exists", {":" .. cmd}) == 2
         end,
-        command = function(command)
+        event = function(command)
             return api.nvim_call_function("exists", {"##" .. command}) == 2
         end,
         augroup = function(augroup)
@@ -292,7 +292,7 @@ nvim.keymap =
             )
 
             if not modes:contains(mode) then
-                error(debug.traceback "Invalid mode")
+                error("Invalid mode")
             end
             return self.get(mode)
         end,

@@ -8,8 +8,6 @@
 + [sxhkd](#sxhkd)
 + [ZSH Functions](#zsh-functions)
 + [Scripts](#scripts)
-    + [All Scripts](#all-scripts)
-    + [More Complex Scripts](#complex-scripts)
 
 There are several more configuration file than the ones listed in contents. These are the ones that have been configured the most.
 
@@ -303,24 +301,27 @@ These are keybindings where after the '(release)', the previous keys no longer n
 + [`zshenv`](.zshev)
 + [`zsh-aliases`](.config/zsh/zsh-aliases)
 
+<summary>zsh Functions</summary>
+<details>
+
 ```sh
  $ pflist                                                 【  ~/.conf/zs/functions】─╯
-======================================================================================
+========================================================================================
 acc_print                  fancify text
 @append_dir-history-var    helper function for per-dir-hist
+arc.list                   list contents of archive
+aurview                    Temporarily look at an aur package
 autoenv-files              NICHOLAS85: find all autoenv zsh files and edit
-bcp                        delete (one or multiple) selected application(s)
 be                         use fzf to edit bookmark with buku
-bip                        brew install package fzf
+bindkey::help              list bindkeys prettily
+bkpdir                     Backup current directory
 bo                         use fzf to open bookmark with buku
 bot                        use fzf to open bookmark with buku (search by tag first)
 bow2                       a copy of bow but as a zsh func
-bracketed-paste-win-path
 .btitle                    buku - change title
 .btm                       buku - remove tags
 .btp                       buku -- add tags
-bup                        update (one or multiple) selected application(s)
-capzsh
+capzsh                     Dumps all functions/vars/commands etc
 ccheat                     cheatsheet of cheat and tldr
 cdown                      countdown timer
 cdownq                     countdown timer; no display
@@ -340,15 +341,18 @@ dockrmi                    select a docker image or images to remove
 docks                      select a running docker container to stop
 exchange                   swap files
 _ex_cmd                    Helper for vbindkey (taken from marlonrichert)
+explainperm                convert letter permissions to octal
 fbd                        cd to selected parent directory
 fcd                        change directories with fzf
 fcd-zle                    change directories with fzf
-fcq                        use copyq to view clipboard history
+fcq                        use copyq to view clipboard history (non-tmux)
+fcqt                       use copyq to view clipboard history (tmux)
 fcs                        get git commit sha
+fds                        list file descriptors
 fed                        open the selected file with the default editor
 fenv                       search environment vars with fzf
 ffig                       figlet font selector
-fif                        using ripgrep combined with preview
+fiff                       using ripgrep combined with preview
 fim                        open script in editor (this one does functions)
 fjj                        autojump fzf
 fjrnl                      search JRNL headlines
@@ -356,217 +360,91 @@ fkill                      interactively kill process with fzf
 flc                        lolcate fzf
 fld                        lolcate fzf default (HOME)
 flg                        lolcate fzf
+fll                        cd to a directory file is in
 flp                        lolcate fzf projects
 fman                       fzf man pages
-fmas                       install app with mas and fzf
 fmates                     use fzf with mates contacts open mutt
 fmpc                       fzf mpd
 fpdf                       search directory for pdf and open in zathura
 frd                        fzf recent directories
-from-where                 tells from-where a zsh completion is coming from
 fsearch                    search fonts on system
+fset                       search set items
 fssh                       fzf ssh
 ftags                      search ctags
 ftm                        create new tmux session, or switch
-fzf-close                  interactively close window with fzf
 g1all                      Iterates over .git directories, runs git "$@"
 g1zip                      Creates basename pwd-date archive
 getpid                     get pid and pipe to pstree
 gkey                       print keyboard shortcuts to application - iteractive option
-gman                       wrapper for gman to colorize
+godoc                      colorize go docs
 gsha                       show sha of branch
+help::glob                 show a help message about globbing
 hgrep                      grep history
 hist_stat                  zsh history stats
 id_process                 get num of process by id
-iso2dmg                    Converts file  (iso) to .dmg
+inputbox
+jotoday                    Show journalctl logs from a given date
 jrnlimport                 import file to jrnl
 listening                  listen on port entered
 listports                  list open ports
 lowercasecurdir            lowercase every file in current dir
-manfind                    find location of manpage
+lsafter                    list files after a date
+lsbefore                   list files before a date
+macho-zle                  macho for the use of zle
+mksub                      creates a subdir, & moves all files or dirs ...
 mp3                        use youtube-dl to get audio
 ngu                        get git repo url
 old_fk                     fzf rualdi and dirstack combined
-osx-ls-download-history    list download history
-paleta                     escape codes instead of prompt expansion
-palette                    display colors
-palette2                   palette alternative
-palette::colortest         print full palette with blocks
+oomscore                   list processes likely to be killed first when memory is short
+opts
+p10k::status               show description of p10k parts
 pblist                     lists mybin funcs with their embedded descriptions
 perldoc                    wrapper to colorize perldoc man pages
 pflist                     lists ZDOTDIR/functions/* with their embedded descriptions
 pier-exec                  execute pier command colorfully
+pllist                     lists mybin linux funcs with their embedded descriptions
 printc                     escape code for colors
 prompt_my_per_dir_status   helper function for per-dir-hist
-psfind                     queries mdfind by kMDItemDisplayName
+rel                        print the relative path of 2 files
 rm                         remove wrapper depending on if root
 rmhist                     remove a line from history
 run-multi                  run tasks in parallel
-sudo_                      sudo wrapper to allow aliases
-tab                        open new terminal tab in current dir
+setopt_wrap
+sudo                       sudo wrapper to allow aliases
+suppress                   generates a function named  which:
+tmfiles                    Display tags and files with tmsu
+tmjson                     Convert tmsu tags and files to json
+tmls                       Display tags and files with tmsu in current dir
+tmlsa                      Display tags of all files with tmsu in current dir
 tmm                        attach to tmux session or create new
+tmtag                      use tmsu to either edit a file or cd to dir
+tm-tagcount                tmsu list tag and count
+towebm                     convert an mp4 to a webm
 um                         wrapper to colorize um man pages
 urlshort                   shorten url with tinyurl
 vbindkey                   vim bindkey
 vii                        open file interactively with twf
-whichcomp                  tell which completion a command is using
-whim                       edit script from path
+whim                       open script/function/alias
 wtag                       use wutag to either edit a file or cd to dir
 xevk                       easy key reader
 zdr                        fzf-extras cd to parent directory
+zed2                       zed2
 zicompinit_fast            faster & more efficient compinit
-zman                       Searches zshall with special keyword () matching
+zman-mine                  Searches zshall with special keyword () matching
 zsh-help                   easier way to access zsh manual - taken from ZSH
-zstyle++
+zst
 ztes                       Searches zshall with special keyword () matching
-======================================================================================
+zuiprompt                  TODO: Create a prompt used for other scripts with zui
+========================================================================================
 ```
+
+</details>
 
 ---
 
-## <a name="scripts"></a>[Scripts](mybin)
+### Scripts
 
-+ [All Scripts](#all-scripts)
-+ [More Complex Scripts](#complex-scripts)
+There are many scripts found within this repo.
 
-+ Can be found [here](mybin/)
-
-### <a name="all-scripts"></a>All Scripts
-
-```sh
- $ pblist                                                                              【  ~/mybin】─╯
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-backup_calcurse      bash      backup calcurse reminders
-backup_crontab       sh        backup crontab
-backup_pkgs          bash      backup packages from brew, cargo, gem, go, npm, pip
-backup_task          sh        backup task folder
-brew-pkg-size        bash      brew packages and their sizes
-brew-why             bash      list all installed apps & dependencies
-btc-price            bash      send email to myself of current bitcoin price
-bunch_fzf            bash      bunch of
-checkdns             bash      check dnsmas, stubby, and dns servers
-clean-my-mac         bash      clean macos cache
-compiler             sh        compiles various kinds of documents
-cps                  zsh       when using a git alias for tracking dotfiles, send to multiple remotes
-cryptocheck          sh        check crypocurrency prices
-cryptonotify         zsh       send a notification of cryptocurrency prices
-downl                sh        uses dragon to download files
-fast-pp              bash      fast-p pdf finder source code
-flist                bash      fzf view of script directory with descriptions
-free                 python    get free memory like debian's 'free'
-frm                  bash      fuzzy remove files - trash-put
-ftr                  zsh       fzf trash-restore
-fzf_pdf              bash      search directory for pdfs, open with zathura
-gclp                 bash      git clone from clipboard
-glsha                bash      copy a git commits shasum
-grm                  sh        git repo manager for self-hosted git servers
-gstatd               sh        directory size information
-guprj                bash      upload projects to google drive
-gutxt                bash      upload text files to google drive
-guwww                bash      upload server to google drive
-harden               sh        harden a link (convert it to a singly linked file)
-html5check.py        python3   check html5 syntax
-image-mag-gen        sh        search for font files and add to imagemagick
-index-gen            bash      generate template for my website when creating new repo
-jupsync              sh        sync jupyter notebook and python file
-killport             sh        kills all processes running on the specified port
-launchd-creator      bash      generate launch daemon/agent
-lctl                 bash      a launchctl wrapper
-lf-chdir             bash      change directories with lf file manager
-lf-select            sh        reads file names from stdin and selects them in lf
-lf-updater-script    sh        update lf file manager
-linkhandler          sh        handle urls and do some action
-lockscreen           bash      lockscreen, change wallpaper
-macho                sh        fzf man pages macOS
-macho-pdf            sh        fzf man pages macOS - view in zathura
-mailboxes_sync       sh        count mail with mutt
-manp                 bash      view manpage in zathura
-manp1                bash      output manpage and view in zathura
-mbsync-hook          sh        mbsync hook
-mbsync-pre-post      sh        mbsync pre-post hooks
-mksc                 bash      generate a script in script directory
-my-pinentry          bash      choose pinentry depending on PINENTRY_USER_DATA
-newsb-notifier       sh        notifications for newsboat
-not-touch-hd         sh        use something without it touching harddrive
-notmuch-tagging.sh   bash      tag notmuch mail
-nv                   bash      open most recently viewed files in nvim with fzf
-opout                sh        open output of file for vim
-osx-cmds             bash      general rules for macos
-passcomp.zsh         zsh       adds call to _pass-vera completion from _pass completion
-perlii               perl
-pfctl-rules          sh        manipulate pfctl firewall
-port-scan            bash      performs port scan using nmap
-post-receive         sh        generic git post-receive hook
-ppkill               sh        interactive process killer
-pretty_csv           bash      create a pretty csv
-proxstat             bash      see if dnsmasq stuby privoxy are on
-pzz                  bash      search directory for pdf and open in zathura
-qndl                 sh        queue up tasks for urls
-rclg                 sh        general rclone copier
-remind               bash      add reminders from command line
-rf                   sh        search directory for files using ripgrep (obsolte, used fd)
-rga-fzf              bash      ripgrep preview matches with fzf
-rgf                  bash      interactively search files with rg (with reload)
-rgfa                 bash      interactively search for files (preview on size)
-rglf                 bash      ripgrep search directory for lf file manager
-rgn                  bash      interactively search files with rg (with reload) no preview
-rmcrap               bash      deletes .DS_Store and __MACOSX directories
-rotdir               sh        rotate image order with sxiv
-rss-notify           python    parse rss feeds and get notified
-rssadd               zsh       add url to newsboat, mod Luke Smiths to add tags
-santa-rules          bash      whitelist/blacklist apps with santactl
-santa-uninstall      bash      uninstall santa-ctl
-shortcuts            sh        update all shortcuts when one file is updated
-small_funcs          bash      list of all kinds of small functions to work on
-srv-bkp              bash      backup server
-srv-up               bash      backup server
-synctask             bash      sync tasks from taskwarrior to Reminders.app
-take                 zsh       create directory and cd into it
-todos                sh        grep for vim comments
-tomb                 bash      tomb but for macOS
-tordone              bash      notifier of finished torrent
-torque               bash      torque - minimal tui for transmission-daemon
-transadd             bash      add torrent to transmission
-trns                 zsh       transission wrapper
-update_block         bash      update block lists
-updb                 bash      updatedb for bash, macOS is sh which it is not
-webpull              sh        make a local archive of an entire website
-wim                  sh        open script in editor
-yabai-codesign       bash      codesign yabai
-ymld                 bash      parse a yaml file
-zm                   zsh       search zshall more efficiently
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-```
-
-### <a name="complex-scripts"></a>More Scripts
-
-### `jupview`
-
-Meant to be used with terminal file managers (`lf`, `nnn`, `ranger`, `vifm`) without any parameters given. For example:
-
-```sh
-#!/bin/sh
-
-handle_other() {
-  case "${1}" in
-    *.ipynb) jupview "${1}";;
-  esac
-}
-```
-
-This will show a preview of the .ipynb file in the terminal.
-
-![jupview preview](https://burnsac.xyz/gallery/media/large/jupview-preview.png)
-
-#### Usage
-
-```sh
-Options:
-    -P, --pager             View .ipynb file with a pager instead of stdout
-    -I, --no-input          Clear input cells of .ipynb file
-    -p, --no-prompt         Clear input / output prompts
-    -O, --clear-output      Clear output cells of .ipynb file
-    -t, --theme             Change syntax highlighting theme (gruvbox default)
-```
-
----
+* `pblist` (`b` = bin) will list all regular scripts
+* `pllist` (`l` = Linux) will list all Linux-specific scripts

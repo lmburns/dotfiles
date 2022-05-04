@@ -121,7 +121,7 @@ require("telescope").setup(
                     ["<M-a>"] = actions.select_all,
                     ["<C-k>"] = actions.cycle_history_next,
                     ["<C-j>"] = actions.cycle_history_prev,
-                    ["<C-m>"] = action_layout.toggle_mirror,
+                    -- ["<C-m>"] = action_layout.toggle_mirror,
                     ["<C-t>"] = action_layout.toggle_preview,
                     ["<M-p>"] = action_layout.toggle_prompt_position,
                     ["<C-s>"] = actions.select_horizontal,
