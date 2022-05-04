@@ -40,36 +40,7 @@ function M.setup()
                 "try_statement"
             },
             buftype_exclude = {"nofile", "terminal"},
-            filetype_exclude = {
-                "",
-                "alpha",
-                "dap-repl",
-                "dapui_breakpoints",
-                "dapui_scopes",
-                "dapui_stacks",
-                "dapui_watches",
-                "diff",
-                "floaterm",
-                "floatline",
-                "fugitive",
-                "fugitiveblame",
-                "fzf",
-                "help",
-                "json",
-                "jsonc",
-                "log",
-                "man",
-                "markdown",
-                "neoterm",
-                "NvimTree",
-                "packer",
-                "TelescopePrompt",
-                "toggleterm",
-                "Trouble",
-                "undotree",
-                "vimwiki",
-                "vista",
-            }
+            filetype_exclude = _t(BLACKLIST_FT):merge({"json", "jsonc"})
         }
     )
 end

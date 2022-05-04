@@ -167,14 +167,18 @@ nvim.exists =
     }
 )
 
--- Has access to line and nr
+---Has access to `line` and `nr`
 nvim.buffer = nvim.buf
 nvim.cmd = nvim.command
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
+
 nvim.buf =
     setmetatable(
-    {},
+    {
+        nr = nvim.buffer.nr,
+        line = nvim.buffer.line
+    },
     {
         __index = function(self, k)
             local mt = getmetatable(self)

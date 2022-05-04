@@ -1,93 +1,3 @@
--- ========================== Globals ==========================
-
-_G["P"] = function(...)
-    local vars = vim.tbl_map(vim.inspect, {...})
-    print(unpack(vars))
-    return {...}
-end
-
-_G['PRINT'] = _G['P']
-
-_G["RELOAD"] = function(...)
-    return require("plenary.reload").reload_module(...)
-end
-
-_G["R"] = function(name)
-    RELOAD(name)
-    return require(name)
-end
-
-_G.o = vim.opt -- vim options: behaves like `:set`
-_G.opt_local = vim.opt_local
-_G.opt_global = vim.opt_global
--- o           --  behaves like `:set` (global)
--- opt         --  behaves like `:set` (global and local)
--- opt_global  --  behaves like `:setglobal`
--- opt_local   --  behaves like `:setlocal`
-
-_G.g = vim.g -- vim global variables:
-_G.go = vim.go -- vim global options
-_G.w = vim.wo -- vim window options: behaves like `:setlocal`
-_G.b = vim.bo -- vim buffer options: behaves like `:setlocal`
-
-_G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
-_G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
-_G.env = vim.env -- environment variable access
-_G.api = vim.api
-_G.exec = api.nvim_exec
-_G.uv = vim.loop
-_G.F = vim.F
-_G.log = vim.log
-
-_G.fmt = string.format
-
-_G.dev = require("dev")
-_G.List = require("plenary.collections.py_list")
-_G.Path = require("plenary.path")
-_G.Job = require("plenary.job")
-_G.async = require("plenary.async")
-_G.a = require("plenary.async_lib")
-_G.nvim = require("nvim")
-_G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
-
--- Makes `_t` global
-require("arshlib")
-
-_G.BLACKLIST_FT = {
-    "",
-    "aerial",
-    "bufferize",
-    "coc-explorer",
-    "commit",
-    "floaterm",
-    "floggraph",
-    "fugitive",
-    "fzf",
-    "git",
-    "gitcommit",
-    "gitrebase",
-    "help",
-    "luapad",
-    "man",
-    "markdown",
-    "neoterm",
-    "nerdtree",
-    "NvimTree",
-    "prompt",
-    "qf",
-    "quickmenu",
-    "rebase",
-    "scratchpad",
-    "startify",
-    "telescope",
-    "TelescopePrompt",
-    "toggleterm",
-    "undotree",
-    "vimwiki",
-    "vista"
-    -- "nofile",
-}
-
 -- ========================== Functions ==========================
 
 local M = {}
@@ -683,6 +593,15 @@ F.tern = function(condition, is_if, is_else)
     else
         return is_else
     end
+end
+
+---Program to check if executable
+---@param exec string
+---@return boolean
+M.executable = function(exec)
+    vim.validate { exec = { exec, 'string' } }
+    assert(exec ~= '', debug.traceback 'Empty executable string')
+    return fn.executable(exec) == 1
 end
 
 -- ================= Tips ================== [[[

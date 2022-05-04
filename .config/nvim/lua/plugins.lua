@@ -74,6 +74,7 @@ packer.init(
     }
 )
 
+-- Does this work fully?
 packer.set_handler(
     "conf",
     function(plugins, plugin, value)
@@ -718,20 +719,16 @@ return packer.startup(
             -- ]]] === Operator ===
 
             -- =============================== Tags =============================== [[[
-            use(
-                {
-                    "ludovicchabant/vim-gutentags",
-                    config = function()
-                        local config = fn.stdpath("config")
-                        vim.cmd("source " .. config .. "/vimscript/plugins/vim-gutentags.vim")
-                    end
-                }
-            )
+            -- config = function()
+            --     local config = fn.stdpath("config")
+            --     vim.cmd("source " .. config .. "/vimscript/plugins/vim-gutentags.vim")
+            -- end
+            use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use(
                 {
                     "liuchengxu/vista.vim",
-                    after = {"vim-gutentags"},
-                    config = conf("plugs.vista")
+                    after = "vim-gutentags",
+                    conf = "plugs.vista"
                 }
             )
             -- ]]] === Tags ===

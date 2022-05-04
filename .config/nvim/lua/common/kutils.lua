@@ -186,6 +186,11 @@ M.cool_echo =
     (function()
     local lastmsg
     local debounced
+    ---Echo a colored message
+    ---@param msg string message to echo
+    ---@param hl string highlight group to link
+    ---@param history boolean add message to history
+    ---@param wait number amount of time to wait
     return function(msg, hl, history, wait)
         -- TODO without schedule wrapper may echo prefix spaces
         vim.schedule(
@@ -208,6 +213,8 @@ M.cool_echo =
         debounced()
     end
 end)()
+
+nvim.p = M.cool_echo
 
 function M.expandtab(str, ts, start)
     start = start or 1

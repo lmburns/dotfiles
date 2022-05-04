@@ -43,7 +43,7 @@ function M.use_anyfold(bufnr, force)
                     bufnr,
                     function()
                         kutils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
-                        cmd("AnyFoldActivate")
+                        ex.AnyFoldActivate()
                     end
                 )
             end

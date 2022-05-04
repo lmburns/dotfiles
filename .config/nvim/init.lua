@@ -11,6 +11,7 @@ if ok then
     impatient.enable_profile()
 end
 
+require("common.global")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd

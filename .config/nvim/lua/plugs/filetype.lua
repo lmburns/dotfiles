@@ -1,6 +1,7 @@
 local M = {}
 
-require("common.utils")
+local utils = require("common.utils")
+local map = utils.map
 
 local nroff_ft = function()
     b.filetype = "nroff"
@@ -10,6 +11,7 @@ local nroff_ft = function()
 end
 
 function M.setup()
+    -- This can basically replace all `FileType` autocmds
     vim.filetype.add(
         {
             extension = {
@@ -44,7 +46,10 @@ function M.setup()
                 ["ms"] = nroff_ft,
                 ["me"] = nroff_ft,
                 ["mom"] = nroff_ft,
-                ["man"] = nroff_ft
+                ["man"] = nroff_ft,
+                ["c"] = function()
+                    map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+                end
             },
             filename = {
                 ["yup.lock"] = "yaml",
@@ -54,7 +59,7 @@ function M.setup()
             },
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
-                [".*git/config"] = "gitconfig", -- Included in the plugin
+                [".*git/config"] = "gitconfig",
                 [".*%.env.*"] = "sh",
                 [".*ignore"] = "conf",
                 ["calcurse-note.*"] = "markdown",

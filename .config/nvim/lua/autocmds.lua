@@ -30,9 +30,9 @@ augroup(
                 return
             end
 
-            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
-            if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
-                api.nvim_win_set_cursor(0, {row, 0})
+            local row, col = unpack(nvim.buf.get_mark(0, '"'))
+            if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
+                nvim.win.set_cursor(0, {row, 0})
             end
         end
     }
@@ -45,10 +45,11 @@ augroup(
 do
     local o = vim.opt_local
 
-    api.nvim_create_autocmd(
-        "BufEnter",
+    augroup(
+        "lmb__FormatOptions",
         {
-            callback = function()
+            event = "BufEnter",
+            command = function()
                 -- Buffer option here doesn't work like global
                 o.formatoptions:remove({"c", "r", "o"})
                 o.conceallevel = 2
@@ -59,7 +60,6 @@ do
                     o.laststatus = 3
                 end
             end,
-            group = create_augroup("lmb__FormatOptions"),
             pattern = "*"
         }
     )
@@ -112,10 +112,11 @@ augroup(
 -- ]]] === Spelling ===
 
 -- === Fix terminal highlights ===
-api.nvim_create_autocmd(
-    "TermEnter",
+augroup(
+    "lmb__TermFix",
     {
-        callback = function()
+        event = "TermEnter",
+        command = function()
             vim.schedule(
                 function()
                     cmd("nohlsearch")
@@ -124,7 +125,6 @@ api.nvim_create_autocmd(
             )
         end,
         pattern = "*",
-        group = create_augroup("lmb__TermFix"),
         desc = "Clear matches and highlights when entering a terminal"
     }
 )
@@ -158,7 +158,7 @@ augroup(
                 end
 
                 local width = math.floor(vim.o.columns * 0.75)
-                cmd("wincmd L")
+                ex.wincmd("L")
                 cmd("vertical resize " .. width)
             end
         end
@@ -175,7 +175,7 @@ augroup(
             end
 
             local width = math.floor(vim.o.columns * 0.75)
-            cmd("wincmd L")
+            ex.wincmd("L")
             cmd("vertical resize " .. width)
         end
     },
@@ -184,11 +184,11 @@ augroup(
         pattern = "*",
         command = function()
             if b.ft == "man" then
-                local bufnr = api.nvim_get_current_buf()
+                local bufnr = nvim.buf.nr()
                 vim.defer_fn(
                     function()
-                        if api.nvim_buf_is_valid(bufnr) then
-                            api.nvim_buf_delete(bufnr, {force = true})
+                        if nvim.buf.is_valid(bufnr) then
+                            nvim.buf.delete(bufnr, {force = true})
                         end
                     end,
                     0
@@ -217,7 +217,7 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
             once = false,
             description = "Automatic rename of tmux window",
             command = function()
-                local bufnr = api.nvim_get_current_buf()
+                local bufnr = nvim.buf.nr()
 
                 -- I have TMUX already automatically change title
                 -- It sets it to titlestring
@@ -421,16 +421,16 @@ cmd [[
   command! Fcman :call s:FullCppMan()
 ]]
 
-augroup(
-    "lmb__CEnv",
-    {
-        event = "FileType",
-        pattern = "c",
-        command = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
-        end
-    }
-)
+-- augroup(
+--     "lmb__CEnv",
+--     {
+--         event = "FileType",
+--         pattern = "c",
+--         command = function()
+--             map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+--         end
+--     }
+-- )
 
 augroup(
     "lmb__CppEnv",

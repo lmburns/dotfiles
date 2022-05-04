@@ -445,11 +445,11 @@ end
 
 --- Adds all lua runtime paths to coc
 --- Taken from tjdevries/nlua
-local function get_lua_runtime()
+function M.get_lua_runtime()
     local result = {}
     for _, path in pairs(api.nvim_list_runtime_paths()) do
         local lua_path = path .. "/lua/"
-        if vim.fn.isdirectory(lua_path) then
+        if fn.isdirectory(lua_path) then
             result[lua_path] = true
         end
     end
@@ -473,7 +473,7 @@ function M.lua_langserver()
     local luadev = require("lua-dev").setup({}).settings
     settings = vim.tbl_deep_extend("force", settings, luadev)
 
-    -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = get_lua_runtime()})
+    -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = M.get_lua_runtime()})
     fn["coc#config"]("languageserver.lua", {settings = settings})
 end
 
