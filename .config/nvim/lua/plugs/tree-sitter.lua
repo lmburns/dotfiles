@@ -541,8 +541,6 @@ M.setup = function()
                 keymaps = {
                     goto_definition = "'d", -- mapping to go to definition of symbol under cursor
                     list_definitions = "'D", -- mapping to list all definitions in current file
-                    -- goto_definition = "gnd",
-                    -- list_definitions = "gnD",
                     list_definitions_toc = "gO"
                     -- goto_next_usage = "<a-*>",
                     -- goto_previous_usage = "<a-#>"
@@ -770,7 +768,7 @@ local function init()
             ["ik"] = "Inner class",
             ["ai"] = "Indentation level and line above",
             ["ii"] = "Inner Indentation level (no line above)",
-            ["aI"] = "An Indention level and lines above/below",
+            ["aI"] = "Indention level and lines above/below",
             ["iI"] = "Inner Indentation level (no lines above/below)"
         },
         {mode = "o"}
@@ -811,9 +809,10 @@ local function init()
         {mode = "n"}
     )
 
-    -- Not as wide of a range
-    -- map("x", "m", [[:<C-u>lua require('tsht').nodes()<CR>]], {noremap = false})
-    -- map("o", "m", [[<Cmd>lua require('tsht').nodes()<CR>]])
+    require("tsht").config.hint_keys = { "h", "j", "f", "d", "n", "v", "s", "l", "a" }
+    map("x", "m", [[:<C-u>lua require('tsht').nodes()<CR>]], {noremap = false})
+    map("o", "m", [[<Cmd>lua require('tsht').nodes()<CR>]])
+    map("n", "R", [[<Cmd>lua require('tsht').nodes()<CR>]])
 
     queries = require("nvim-treesitter.query")
     local hl_disabled = conf.highlight.disable

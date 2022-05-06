@@ -32,12 +32,12 @@ end
 ---@return string jump position in a mapping
 function M.jump0()
     local lnum, col = unpack(api.nvim_win_get_cursor(0))
-    local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]
+    local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]
     local expr
     if line:sub(1, col):match("^%s+$") then
         expr = "0"
     else
-        api.nvim_buf_set_mark(0, "`", lnum, col, {})
+        nvim.buf.set_mark(0, "`", lnum, col, {})
         expr = "^"
     end
     return expr
@@ -64,7 +64,7 @@ function M.jumps2qf()
         local loc = locs[i]
         local bufnr, lnum, col = loc.bufnr, loc.lnum, loc.col + 1
         if api.nvim_buf_is_valid(bufnr) then
-            local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
+            local text = nvim.buf.get_lines(bufnr, lnum - 1, lnum, false)[1]
             text = text and text:match("%C*") or "......"
             table.insert(items, {bufnr = bufnr, lnum = lnum, col = col, text = text})
         end
@@ -87,13 +87,13 @@ function M.changes2qf()
     local store_text
     local locs, pos = unpack(fn.getchangelist())
     local items, idx = {}, 1
-    local bufnr = api.nvim_get_current_buf()
+    local bufnr = nvim.buf.nr()
     for i = #locs, 1, -1 do
         local loc = locs[i]
 
         -- coladd
         local col, _, lnum = loc.col + 1, loc.coladd, loc.lnum
-        local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
+        local text = nvim.buf.get_lines(bufnr, lnum - 1, lnum, false)[1]
 
         -- Remove consecutive duplicates
         if text ~= store_text then
@@ -140,7 +140,8 @@ end
 ---@param vertical boolean vertical splitting if true, else horizontal
 function M.split_lastbuf(vertical)
     local sp = vertical and "vert" or ""
-    local binfo = nvim.eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
+    -- local binfo = nvim.eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
+    local binfo = fn.map(fn.getbufinfo({buflisted = 1}), '{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')
     local last_buf_info
     for _, bi in ipairs(binfo) do
         if fn.bufwinnr(bi.bufnr) == -1 then
@@ -160,7 +161,7 @@ function M.search_wrap()
     local topline = fn.line("w0")
     vim.schedule(
         function()
-            if bufnr == nvim.get_current_buf() and topline ~= fn.line("w0") then
+            if bufnr == nvim.buf.nr() and topline ~= fn.line("w0") then
                 local lnum = fn.line(".") - 1
                 utils.highlight(bufnr, "Reverse", {lnum}, {lnum + 1}, {hl_eol = true}, 350)
             end

@@ -25,24 +25,26 @@ vim.tbl_map(
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end,
     {
+        "ftplugin",
         "2html_plugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
         "matchit",
         "netrw",
-        "netrwPlugin",
         "netrwFileHandlers",
+        "netrwPlugin",
         "netrwSettings",
-        -- "python_provider",
-        -- "ruby_provider",
-        -- "perl_provider",
         "rrhelper",
         "tar",
         "tarPlugin",
         "vimball",
         "vimballPlugin",
         "zip",
-        "zipPlugin"
+        "zipPlugin",
+        -- "python_provider",
+        "ruby_provider",
+        "perl_provider",
+        "node_provider"
     }
 )
 
@@ -138,7 +140,7 @@ o.smartindent = true
 o.cindent = true
 o.sessionoptions = {"buffers", "curdir", "tabpages", "winsize"}
 
-o.jumpoptions = 'stack'
+o.jumpoptions = "stack"
 o.swapfile = false -- no swap files
 o.undolevels = 1000
 o.undoreload = 10000

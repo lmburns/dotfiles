@@ -224,6 +224,8 @@ cmd [[
   command! DS call s:DiffSaved()
 ]]
 
+-- https://github.com
+
 ---Open a github or regular link in the browser
 ---
 ---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
@@ -236,11 +238,14 @@ function M.go_github()
         [[\v(https?:\/\/)?(www\.)?[a-zA-Z0-9\+\~\%]{1,256}\.[a-zA-Z0-9()]{1,6}([a-zA-Z0-9()\@:\%\_\+\.\~#?&\/=\-]*)]]
     )
 
-    if #url > 0 then
+    --                    v This check is needed
+    if #url > 0 and #repo == 0 then
         fn["openbrowser#open"](url)
     elseif #repo > 0 then
         local new = ("https://github.com/%s"):format(repo)
         fn["openbrowser#open"](new)
+    elseif #url > 0 then
+        fn["openbrowser#open"](url)
     else
         fn["openbrowser#_keymap_open"]("n")
     end

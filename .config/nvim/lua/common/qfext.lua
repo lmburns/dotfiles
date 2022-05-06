@@ -1,6 +1,7 @@
 local M = {}
 
 require("common.utils")
+local gittool = require("common.gittool")
 local coc = require("plugs.coc")
 
 function M.outline(fzf)
@@ -86,6 +87,51 @@ function M.outline(fzf)
             end
         end
     )
+end
+
+---Turn conflict markers into a quickfix list
+function M.conflicts2qf()
+    if #gittool.root() == 0 then
+        log.err("Not in a git directory")
+        return
+    end
+
+    local conflicts = {}
+    local lines = os.capture("git --no-pager diff --no-color --check --relative", true)
+
+    for conflict in vim.gsplit(lines, "\n") do
+        if conflict ~= "" then
+            local fname = vim.split(conflict, ":")[1]
+            local lnum = vim.split(conflict, ":")[2]
+
+            if fn.split(fn.system(("head -n%d %s | tail -n1"):format(lnum, fname)))[1] ~= "<<<<<<<" then
+                goto continue
+            end
+
+            ex.badd(("+%d %s"):format(lnum, fname))
+            local bufnr = fn.bufnr(fname)
+            local text = nvim.buf.get_lines(bufnr, tonumber(lnum), tonumber(lnum) + 1, false)[1]
+
+            table.insert(
+                conflicts,
+                {
+                    bufnr = bufnr,
+                    lnum = lnum + 1,
+                    col = 1,
+                    text = text
+                    -- type = "M"
+                }
+            )
+
+            ::continue::
+        end
+
+        fn.setqflist(conflicts, "r")
+
+        if #conflicts > 0 then
+            ex.copen()
+        end
+    end
 end
 
 function M.outline_syntax()

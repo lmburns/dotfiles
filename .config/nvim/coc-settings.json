@@ -324,6 +324,10 @@
       "filetypes": ["dockerfile"],
       "args": ["--stdio"]
     },
+    "teal": {
+      "command": "teal-language-server",
+      "filetypes": ["teal"],
+    },
     "crystal": {
       "command": "crystalline",
       "args": ["--stdio"],

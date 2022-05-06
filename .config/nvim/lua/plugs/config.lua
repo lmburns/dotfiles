@@ -19,6 +19,7 @@ local autocmd = utils.autocmd
 -- │                           bqf                            │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.bqf()
+    -- FIX: Sometimes preview window is transparent
     color.link("BqfPreviewBorder", "Parameter")
 
     require("bqf").setup(
@@ -49,14 +50,6 @@ function M.bqf()
             }
         }
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       QFReflector                        │
--- ╰──────────────────────────────────────────────────────────╯
-function M.qf_reflector()
-    g.qf_modifiable = 1
-    g.qf_write_changes = 1
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1019,6 +1012,18 @@ function M.lazygit()
     g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
     g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
 
+    autocmd(
+        {
+            event = "BufEnter",
+            pattern = "*",
+            command = function()
+                require("lazygit.utils").project_root_dir()
+            end
+        }
+    )
+
+    require("telescope").load_extension("lazygit")
+
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
@@ -1068,6 +1073,25 @@ end
 --- This involves the original mapping in `nlua` to be commented out
 function M.nlua()
     map("n", "M", [[<cmd>lua require("nlua").keyword_program()<CR>]])
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Paperplanes                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.paperplanes()
+    -- paste.rs
+    -- post_string(string, meta, cb)
+    -- post_range(buffer, start, end, cb)
+    -- post_selection(cb)
+    -- post_buffer(buffer, cb)
+    require("paperplanes").setup(
+        {
+            register = "+",
+            provider = "0x0.st",
+            provider_options = {},
+            cmd = "curl"
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1665,6 +1689,14 @@ end
 --             require("spectre").open()
 --         end
 --     )
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       QFReflector                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.qf_reflector()
+--     g.qf_modifiable = 1
+--     g.qf_write_changes = 1
 -- end
 
 return M

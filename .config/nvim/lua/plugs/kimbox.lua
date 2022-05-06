@@ -448,6 +448,16 @@ M.kimbox = function()
 end
 
 local function init()
+    local colorscheme = ex.colorscheme
+
+    nvim.autocmd.LushTheme = {
+        event = "BufWritePost",
+        pattern = "*/lua/lush_theme/*.lua",
+        command = function()
+            require("plugs.lush").write_post()
+        end
+    }
+
     M.kimbox()
     M.gruvbox()
     M.gruvbox_flat()
@@ -461,26 +471,34 @@ local function init()
     M.nightfox()
     M.edge()
     M.onenord()
-    -- M.vscode()
+    M.vscode()
 
-    require("kimbox").load()
-    -- ex.colorscheme("kanagawa")
-    -- ex.colorscheme("catppuccin")
-    -- ex.colorscheme("material")
-    -- ex.colorscheme("tokyonight")
-    -- ex.colorscheme("jellybeans-nvim")
-    -- ex.colorscheme("onenord")
-    -- ex.colorscheme("everforest")
-    -- ex.colorscheme("spaceduck")
-    -- ex.colorscheme("gruvbox-material")
+    -- require("kimbox").load()
+    --
+    -- local theme = "jellybeans"
+    -- local theme = "lmspacegray"
+    -- local theme = "one"
+    --
+    -- local theme = "gruvbox-material"
+    -- local theme = "spaceduck"
+    -- local theme = "everforest"
+    -- local theme = "onenord"
+    -- local theme = "tokyonight"
+    -- local theme = "material"
+    -- local theme = "catppuccin"
+    -- local theme = "kanagawa"
+    local theme = "kimbox"
 
-    -- cmd [[hi VertColumn guibg=#D9AE80]]
-    -- cmd [[hi VertSplit guibg=#7E602C]]
+    if not pcall(colorscheme, theme) then
+        if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then
+            require("plugs.lush").dump(theme)
+        else
+            log.err("theme file does not exist")
+        end
+    end
 
-    cmd [[hi Todo guibg=none]]
-    cmd [[hi FloatermBorder guifg=#A06469 gui=none]]
-    -- cmd [[hi RnvimrNormal guifg=#A06469]]
-    -- cmd [[hi RnvimrCurses guifg=#A06469]]
+    ex.hi("Todo guibg=none")
+    ex.hi("FloatermBorder guifg=#A06469 gui=none")
 end
 
 init()

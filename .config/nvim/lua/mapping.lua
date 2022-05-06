@@ -64,7 +64,7 @@ map(
     function()
         return fn.reg_recording() == "" and "qq" or "q"
     end,
-    {noremap = true, expr = true}
+    {expr = true, desc = "Record macro"}
 )
 map("n", "q", "<Nop>", {silent = true})
 
@@ -82,11 +82,11 @@ map("n", "q", "<Nop>", {silent = true})
 wk.register(
     {
         ["<F2>"] = {"@:", "Repeat last command"},
-        ["<Leader>2;"] = {"@:", "Repeat last command"}
     }
 )
+
 map("x", "<Leader>2;", "@:")
-map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
+-- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
 -- Easier navigation in normal / visual / operator pending mode
 map({"n", "x", "o"}, "H", "g^")
@@ -95,6 +95,7 @@ map({"n", "x", "o"}, "L", "g_")
 -- Navigate merge conflict markers
 map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
+map("n", "qC", [[:lua require("common.qfext").conflicts2qf()<CR>]])
 
 wk.register(
     {
@@ -281,12 +282,12 @@ wk.register(
             ["<C-w>"] = {
                 function()
                     if api.nvim_win_get_config(fn.win_getid()).relative ~= "" then
-                        cmd [[wincmd p]]
+                        ex.wincmd("p")
                         return
                     end
                     for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
                         local winid = fn.win_getid(winnr)
-                        local conf = api.nvim_win_get_config(winid)
+                        local conf = nvim.win.get_config(winid)
                         if conf.focusable and conf.relative ~= "" then
                             fn.win_gotoid(winid)
                             return
@@ -370,6 +371,14 @@ wk.register(
 -- Show file info
 map("n", "<C-g>", "2<C-g>")
 -- ]]] === Other ===
+
+nvim.autocmd.lmb__LuaBindings = {
+    event = "FileType",
+    pattern = "lua",
+    command = function()
+        map("n", "<Leader>tt", "<Plug>PlenaryTestFile")
+    end
+}
 
 -- ============== Function Mappings ============= [[[
 -- Allow the use of extended function keys

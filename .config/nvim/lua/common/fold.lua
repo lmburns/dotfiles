@@ -5,6 +5,7 @@ local kutils = require("common.kutils")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
 local command = utils.command
+local map = utils.map
 
 local bl_ft
 local coc_loaded_ft
@@ -304,6 +305,8 @@ local function init()
         end,
         {nargs = 0}
     )
+
+    map("n", "<Leader>fo", "Fold", {cmd = true, desc = "Manually fold"})
 
     for _, bufnr in ipairs(api.nvim_list_bufs()) do
         M.defer_attach(bufnr)

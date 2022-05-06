@@ -4,6 +4,17 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
+-- augroup(
+--     {"filetypedetect", false},
+--     {
+--         event = {"BufRead", "BufNewFile"},
+--         pattern = "*",
+--         command = function()
+--             vim.filetype.match(vim.fn.expand("<afile>"))
+--         end
+--     }
+-- )
+
 -- === Restore Cursor Position === [[[
 -- FIX: This autocmd prevents wilder from having a right border
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
@@ -146,8 +157,7 @@ local split_should_return = function()
     return false
 end
 
-augroup(
-    "lmb__Help",
+nvim.autocmd.lmb__Help = {
     {
         event = "BufEnter",
         pattern = "*.txt",
@@ -196,7 +206,7 @@ augroup(
             end
         end
     }
-)
+}
 -- ]]] === Help ===
 
 -- === Tmux === [[[
@@ -209,8 +219,7 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
     --   augroup END
     -- ]]
 
-    augroup(
-        "lmb__RenameTmux",
+    nvim.autocmd.lmb__RenameTmux = {
         {
             event = {"FileType", "BufEnter"},
             pattern = "*",
@@ -248,7 +257,7 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
                 os.execute("tmux set-window automatic-rename on")
             end
         }
-    )
+    }
 end
 -- ]]] === Tmux ===
 
@@ -259,28 +268,25 @@ do
 
     -- Automatically clear command-line messages after a few seconds delay
     -- Source: https://unix.stackexchange.com/a/613645
-    api.nvim_create_autocmd(
-        "CmdlineLeave",
-        {
-            group = create_augroup("lmb__ClearCliMsgs"),
-            pattern = ":",
-            callback = function()
-                if timer then
-                    timer:stop()
-                end
-                timer =
-                    vim.defer_fn(
-                    function()
-                        if fn.mode() == "n" then
-                            api.nvim_echo({}, false, {})
-                        end
-                    end,
-                    timeout
-                )
-            end,
-            desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
-        }
-    )
+    nvim.autocmd.lmb__ClearCliMsgs = {
+        event = "CmdlineLeave",
+        pattern = ":",
+        command = function()
+            if timer then
+                timer:stop()
+            end
+            timer =
+                vim.defer_fn(
+                function()
+                    if fn.mode() == "n" then
+                        api.nvim_echo({}, false, {})
+                    end
+                end,
+                timeout
+            )
+        end,
+        desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
+    }
 end -- ]]]
 
 -- === Auto Resize on Resize Event === [[[
@@ -477,8 +483,7 @@ end
 --     }, true
 -- )
 
-augroup(
-    "lmb__AutoReloadFile",
+nvim.autocmd.lmb__AutoReloadFile = {
     {
         event = {"BufEnter", "CursorHold", "FocusGained"},
         command = function()
@@ -505,7 +510,7 @@ augroup(
         end,
         description = "Display a message if the buffer is changed outside of instance"
     }
-)
+}
 -- ]]] === Buffer Reload ===
 
 -- =========================== RNU Column ============================= [[[
@@ -516,8 +521,7 @@ augroup(
 
 -- FIX: Rnu not working on startup until insert mode (focus not working either)
 --      It has worked before
-augroup(
-    "RnuColumn",
+nvim.autocmd.RnuColumn = {
     {
         event = {"FocusLost", "InsertEnter"},
         pattern = "*",
@@ -562,7 +566,7 @@ augroup(
             require("common.rnu").scmd_leave()
         end
     }
-)
+}
 -- ]]] === RNU Column ===
 
 autocmd(

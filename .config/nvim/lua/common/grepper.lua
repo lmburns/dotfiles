@@ -28,7 +28,7 @@ end
 function M.get_text(regions)
     local all_lines = {}
     for _, region in ipairs(regions) do
-        local lines = api.nvim_buf_get_lines(0, region.start_row - 1, region.end_row, true)
+        local lines = nvim.buf.get_lines(0, region.start_row - 1, region.end_row, true)
         lines[vim.tbl_count(lines)] = string.sub(lines[vim.tbl_count(lines)], 0, region.end_col + 1)
         lines[1] = string.sub(lines[1], region.start_col + 1)
 

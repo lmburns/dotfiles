@@ -262,10 +262,25 @@ nvim.reg =
     }
 )
 
-nvim.command = {
-    set = utils.command,
-    del = utils.del_command
-}
+nvim.command =
+    setmetatable(
+    {
+        set = utils.command,
+        del = utils.del_command
+    },
+    {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = mt[k]
+            if x ~= nil then
+                return x
+            end
+
+            local cmds = api.nvim_get_commands({})
+            return k and cmds[k] or cmds
+        end
+    }
+)
 
 -- Allow this to be callable without explicitly calling `.add`
 nvim.keymap =
@@ -377,23 +392,24 @@ nvim.autocmd =
         end,
         __newindex = function(_, k, v)
             if type(k) == "string" and k ~= "" and type(v) == "table" then
-                local autocmds
-                if vim.tbl_islist(v) then
-                    autocmds = vim.deepcopy(v)
-                else
-                    autocmds = {v}
-                end
-
-                for _, aucmd in ipairs(autocmds) do
-                    if aucmd.group then
-                        local group = aucmd.group
-                        aucmd.group = nil
-                        utils.augroup(group, aucmd)
-                    else
-                        utils.autocmd(aucmd)
-                    end
-                end
+                local autocmds = F.tern(vim.tbl_islist(v), vim.deepcopy(v), {v})
+                utils.augroup(k, unpack(autocmds))
             end
+        end
+    }
+)
+
+nvim.executable = function(exe)
+    vim.validate {exe = {exe, "string"}}
+    return vim.fn.executable(exe) == 1
+end
+
+nvim.colors =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            utils.colors(k)
         end
     }
 )

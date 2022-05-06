@@ -327,6 +327,57 @@ function M.find_buf_with_option(option, value)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                          Reload                          │
+-- ╰──────────────────────────────────────────────────────────╯
+---Reload all lua modules
+M.reload_config = function()
+    -- Handle impatient.nvim automatically.
+    local luacache = (_G.__luacache or {}).cache
+
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)
+    -- require("plenary.reload").reload_module(dir)
+
+    for name, _ in pairs(package.loaded) do
+        if name:match("^plugs.") then
+            package.loaded[name] = nil
+
+            if luacache then
+                luacache[name] = nil
+            end
+        end
+    end
+
+    dofile(env.MYVIMRC)
+end
+
+---Reload lua modules in a given path and reload the module
+---@param path string
+---@param recursive string
+M.rreload_module = function(path, recursive)
+    if recursive then
+        for key, value in pairs(package.loaded) do
+            if key ~= "_G" and value and fn.match(key, path) ~= -1 then
+                package.loaded[key] = nil
+                require(key)
+            end
+        end
+    else
+        package.loaded[path] = nil
+        require(path)
+    end
+end
+
+---NOTE: this plugin returns the currently loaded state of a plugin given
+---given certain assumptions i.e. it will only be true if the plugin has been
+---loaded e.g. lazy loading will return false
+---@param plugin_name string
+---@return boolean?
+M.plugin_loaded = function(plugin_name)
+    local plugins = _G.packer_plugins or {}
+    return plugins[plugin_name] and plugins[plugin_name].loaded
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                           List                           │
 -- ╰──────────────────────────────────────────────────────────╯
 ---Return a concatenated table as as string

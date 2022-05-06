@@ -114,6 +114,9 @@ local plugins = {
     end,
     coc_status = function()
         return vim.trim(g.coc_status or "")
+    end,
+    sep = function()
+        return ""
     end
 }
 
@@ -140,8 +143,12 @@ local sections_1 = {
         plugins.file_encoding,
         {
             "filename",
-            path = 1,
-            symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40}
+            path = 0,
+            symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40},
+            color = function(section)
+                -- return { fg = vim.bo.modified and colors.purple or colors.fg }
+                return {gui = vim.bo.modified and "bold" or "none"}
+            end
         },
         {
             "%w",
@@ -152,12 +159,12 @@ local sections_1 = {
     },
     lualine_c = {plugins.coc_status},
     lualine_x = {
-        -- {
-        --     -- 'require("nvim-gps").get_location()',
-        --     plugins.gps,
-        --     cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
-        --     color = {fg = colors.red}
-        -- },
+        {
+            -- 'require("nvim-gps").get_location()',
+            plugins.gps,
+            cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
+            color = {fg = colors.red}
+        },
         {
             "diagnostics",
             sources = {"coc"},
@@ -165,8 +172,17 @@ local sections_1 = {
         }
     },
     lualine_y = {
-        {"diff"},
-        {plugins.luapad, plugins.debugger}
+        {
+            "diff",
+            -- diff_color = {
+            --     added = "DiffAdd",
+            --     modified = "DiffChange",
+            --     removed = "DiffDelete"
+            -- },
+            symbols = {added = "+", modified = "~", removed = "-"} -- Changes the symb
+        },
+        plugins.luapad,
+        plugins.debugger
     },
     lualine_z = {
         "%l:%c",
@@ -200,6 +216,7 @@ local sections_2 = {
         },
         {"branch", icon = "", condition = conditions.check_git_workspace}
         -- "b:gitsigns_head"
+        -- "Fugitivehead"
     },
     lualine_y = {plugins.progress, plugins.gutentags_progress},
     lualine_z = {"location"}
@@ -387,7 +404,7 @@ local function init()
             },
             sections = sections_1,
             inactive_sections = {
-                lualine_a = {"mode"},
+                lualine_a = {},
                 lualine_b = {},
                 lualine_c = {"filename"},
                 lualine_x = {"location"},

@@ -17,6 +17,7 @@ local conf = require("telescope.config").values
 
 local fb_utils = require "telescope._extensions.file_browser.utils"
 local z_utils = require("telescope._extensions.zoxide.utils")
+local kutils = require("common.kutils")
 
 local Path = require("plenary.path")
 
@@ -132,6 +133,10 @@ require("telescope").setup(
                     ["<M-,>"] = actions.smart_send_to_qflist,
                     ["<M-q>"] = qf_multi_select,
                     ["<C-o>"] = actions_generate.which_key(),
+                    -- Change once which-key can be disabled in filetypes
+                    ["<Space>"] = function()
+                        api.nvim_feedkeys(kutils.termcodes["<Space>"], "n", false)
+                    end,
                     -- ["<C-w>"] = function()
                     --     vim.api.nvim_input "<c-s-w>"
                     -- end,
@@ -205,8 +210,8 @@ require("telescope").setup(
                 "%.ods",
                 "%.odt",
                 "%.pdf",
-                "tags",
-                ".tags",
+                "^tags$",
+                "^%.tags$",
                 "target/",
                 ".git/",
                 ".vscode/",
@@ -251,6 +256,12 @@ require("telescope").setup(
             }
         },
         pickers = {
+            oldfiles = {
+                path_display = {"truncate"},
+                -- path_display = {"smart"},
+                layout_strategy = "horizontal",
+                layout_config = {preview_width = 0.45}
+            },
             buffers = {
                 preview = true,
                 only_cwd = false,

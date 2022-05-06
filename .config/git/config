@@ -1,6 +1,6 @@
 [user]
   name = Lucas Burns
-	email = burnsac@me.com
+  email = burnsac@me.com
   signingkey = C011CBEF6628B679
   # signingkey = E93ACCAAAEB024788C106EDEC011CBEF6628B679
 
@@ -86,9 +86,9 @@
 [diff]
   algorithm = patience
   colorMoved = default
-	indentHeuristic = on
+  indentHeuristic = on
   mnemonicPrefix = true
-	compactionHeuristic = true
+  compactionHeuristic = true
 #  renames = copies
 
 [log]
@@ -181,6 +181,13 @@
   #insteadOf = https://github.com/
 
 [alias]
+  # https://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git/2222920#2222920
+  # HEAD~ = go back number of generations
+  # HEAD^ = merge commits (2 or more immediate parents)
+  sub = submodule
+  subp = submodule foreach git pull
+  subc = submodule foreach git co master
+
   aliases = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\ \t => \\2/' | sort | bat
   alias-grep = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
   a = add
@@ -229,28 +236,33 @@
   l = log -p
   lc = log ORIG_HEAD.. --stat --no-merges
   lo = log --oneline --decorate --stat --graph
-  lol = log --graph --decorate --pretty=oneline --abbrev-commit
-  lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  lgs = log --graph --abbrev-commit --decorate --pretty=lg --all
+  lgf = log --graph --abbrev-commit --decorate --all --stat --pretty=l
+  ; lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  ; lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
   ; lhist = log --pretty=format:"%Cred%h %Cgreen%d | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
   lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-  ll   = lp --numstat
-  lll  = lp --patch
+  ll = log --graph --abbrev-commit --decorate --date=relative -10 --format=format:'%C(bold blue)%h%C(reset) %C(bold yellow)%d%C(reset) %C(white)%s%C(reset) %C(green)(%ar)%C(reset) %C(dim white)- %an%C(reset)'
+  # ll   = lp --numstat
+  lpa  = lp --patch
   # preferred git log view
-  lg = log --graph --abbrev-commit --decorate --pretty=lg --all
-  lg2 = log --graph --abbrev-commit --decorate --all --stat
   lss = log --show-signature
   # View the log and diff for a commit (previous if no SHA1 provided)
   details = log -n1 -p --format=fuller
+  whenadded = log --diff-filter=A
 
   m = merge
   ms = merge --squash
+
   pl = pull
   # Push to all remotes
   pa = !git remote | xargs -L1 git push --all
+
   ps = push
   pom = push origin master
   psf = push --force
+
   rao = remote add origin
   remotes = remote -v
   rmc = rm --cached
@@ -261,11 +273,16 @@
   stashes = stash list
   tags = tag --list
   # List tracked files
-  tr = ls-tree -r master --name-only
+  tr = !git ls-tree -r $(git branch --show-current) --name-only
   # List tracked files in an actual tree with 'as-tree'
-  trr = !git ls-tree -r master --name-only | as-tree --color always
+  trr = !git ls-tree -r $(git branch --show-current) --name-only | as-tree --color always
   # List untracked files
   utr = ls-files --other
+  ls-del = ls-files -d
+  ls-mod = ls-files -m
+  ls-new = ls-files --exclude-standard -o
+  ls-ign = ls-files --exclude-standard -o -i
+
   # Get name of default remote
   upstream = !git remote | egrep -o '(upstream|origin)' | tail -1
   # Use difftool
@@ -289,7 +306,15 @@
   # wip - save work in progress quickly and ready to push it if necessary
   wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
 
-  whenadded = log --diff-filter=A
+  undo = reset --soft HEAD^
+  r1 =  reset --hard HEAD~1
+  r2 =  reset --hard HEAD~2
+  r3 =  reset --hard HEAD~3
+  r4 =  reset --hard HEAD~4
+  r5 =  reset --hard HEAD~5
+  r6 =  reset --hard HEAD~6
+  r7 =  reset --hard HEAD~7
+  parent = merge-base  HEAD  #git merge-base  branch1 branch2
 
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
@@ -343,10 +368,10 @@
 
   # ??
   ; map-styles = \
-  ;     bold purple => syntax "#330f29", \
-  ;     bold blue => syntax "#271344", \
-  ;     bold cyan => syntax "#0d3531", \
-  ;     bold yellow => syntax "#222f14"
+    ;     bold purple => syntax "#330f29", \
+    ;     bold blue => syntax "#271344", \
+    ;     bold cyan => syntax "#0d3531", \
+    ;     bold yellow => syntax "#222f14"
 
 [interactive]
   diffFilter = delta --color-only
@@ -357,8 +382,8 @@
 
 [global]
   ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
-	basedir = /home/lucas/projects/github
+  basedir = /home/lucas/projects/github
 [credential]
-	helper = cache
+  helper = cache
 
 ; vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

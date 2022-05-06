@@ -120,6 +120,7 @@ end
 --- - `callback`: (function, default nil) Use a Lua function to bind to a key
 ---
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
+--- - `desc`: (string) Describe the keybinding, this hooks to `which-key`
 M.map = function(bufnr, modes, lhs, rhs, opts)
     -- If it is not a buffer mapping, then shift all arguments
     if type(bufnr) ~= "number" then
@@ -187,6 +188,10 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         opts.buffer = nil
         return b
     end)()
+
+    if opts.desc then
+        require("which-key").register({[lhs] = opts.desc})
+    end
 
     if bufnr ~= nil then
         for _, mode in ipairs(modes) do
@@ -282,13 +287,13 @@ M.del_command = function(name, buffer)
         buffer = {
             buffer,
             function(b)
-                return type(b) == type(true) or type(b) == type(0)
+                return type(b) == "boolean" or type(b) == "number"
             end,
             "a boolean or a number"
         }
     }
     if buffer then
-        buffer = type(buffer) == type(0) and buffer or 0
+        buffer = type(buffer) == "number" and buffer or 0
         api.nvim_buf_del_user_command(buffer, name)
     else
         api.nvim_del_user_command(name)
@@ -535,53 +540,6 @@ M.remap = function(modes, lhs, rhs, opts)
     end
 end
 
----Reload all lua modules
-M.reload_config = function()
-    -- Handle impatient.nvim automatically.
-    local luacache = (_G.__luacache or {}).cache
-
-    -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)
-    -- require("plenary.reload").reload_module(dir)
-
-    for name, _ in pairs(package.loaded) do
-        if name:match("^plugs.") then
-            package.loaded[name] = nil
-
-            if luacache then
-                luacache[name] = nil
-            end
-        end
-    end
-
-    dofile(env.MYVIMRC)
-end
-
----Reload lua modules in a given path
----@param path string
----@param recursive string
-M.reload_path = function(path, recursive)
-    if recursive then
-        for key, value in pairs(package.loaded) do
-            if key ~= "_G" and value and fn.match(key, path) ~= -1 then
-                package.loaded[key] = nil
-                require(key)
-            end
-        end
-    else
-        package.loaded[path] = nil
-        require(path)
-    end
-end
-
----NOTE: this plugin returns the currently loaded state of a plugin given
----given certain assumptions i.e. it will only be true if the plugin has been
----loaded e.g. lazy loading will return false
----@param plugin_name string
----@return boolean?
-M.plugin_loaded = function(plugin_name)
-    local plugins = _G.packer_plugins or {}
-    return plugins[plugin_name] and plugins[plugin_name].loaded
-end
 
 ---Return a value based on two values
 ---@param condition boolean Statement to be tested
@@ -599,8 +557,8 @@ end
 ---@param exec string
 ---@return boolean
 M.executable = function(exec)
-    vim.validate { exec = { exec, 'string' } }
-    assert(exec ~= '', debug.traceback 'Empty executable string')
+    vim.validate {exec = {exec, "string"}}
+    assert(exec ~= "", debug.traceback "Empty executable string")
     return fn.executable(exec) == 1
 end
 

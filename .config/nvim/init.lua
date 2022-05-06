@@ -106,6 +106,9 @@ g.loaded_clipboard_provider = 1
 -- ex.filetype("off")
 -- g.did_load_filetypes = 0 -- this messes up NvimRestart
 
+g.do_filetype_lua = 1
+g.did_load_filetypes = 0
+
 vim.schedule(
     function()
         local color = require("common.color")
@@ -134,19 +137,6 @@ vim.schedule(
             function()
                 require("plugs.tree-sitter")
 
-                g.do_filetype_lua = 1
-                g.did_load_filetypes = 1
-
-                -- nvim.create_autocmd(
-                --     {"BufNewFile", "BufRead"},
-                --     {
-                --         pattern = "*",
-                --         callback = function()
-                --             require("filetype").resolve()
-                --         end
-                --     }
-                -- )
-
                 -- runtime! filetype.vim
                 -- cmd [[
                 --     au! syntaxset
@@ -167,10 +157,22 @@ vim.schedule(
                     }
                 )
 
+                -- Why is this sometimes needed?
+                -- A file like `zsh.vim` thinks it is a `zsh` filetype without it
+                -- augroup(
+                --     "lmb__FileType",
+                --     {
+                --         event = "VimEnter",
+                --         pattern = "*",
+                --         command = function()
+                --             require("filetype").resolve()
+                --         end
+                --     }
+                -- )
+
                 ex.syntax("on")
                 ex.filetype("on")
-                -- doautoall filetypedetect " BufRead
-                ex.doautoall("filetypedetect") -- Runs filetype.resolve()
+                ex.doautoall("filetypedetect BufRead") -- Runs filetype.resolve()
             end,
             15
         )
