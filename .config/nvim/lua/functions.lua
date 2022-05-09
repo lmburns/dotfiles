@@ -226,6 +226,7 @@ cmd [[
 
 -- https://github.com
 
+-- FIX: Make better regex
 ---Open a github or regular link in the browser
 ---
 ---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
@@ -238,10 +239,7 @@ function M.go_github()
         [[\v(https?:\/\/)?(www\.)?[a-zA-Z0-9\+\~\%]{1,256}\.[a-zA-Z0-9()]{1,6}([a-zA-Z0-9()\@:\%\_\+\.\~#?&\/=\-]*)]]
     )
 
-    --                    v This check is needed
-    if #url > 0 and #repo == 0 then
-        fn["openbrowser#open"](url)
-    elseif #repo > 0 then
+    if #repo > 0 and #vim.split(repo, "/") == 2 then
         local new = ("https://github.com/%s"):format(repo)
         fn["openbrowser#open"](new)
     elseif #url > 0 then

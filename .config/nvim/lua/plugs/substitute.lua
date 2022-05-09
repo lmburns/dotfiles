@@ -41,6 +41,7 @@ local function init()
                 "Substitute <motion><motion> operator"
             },
             ["sr"] = {"<Cmd>lua require('substitute.range').word()<CR>", "Substitute range word"},
+            -- line word line line
             ["sS"] = {
                 "<Cmd>lua require('substitute.range').operator()<CR>",
                 "Substitute <motion><motion> confirm"

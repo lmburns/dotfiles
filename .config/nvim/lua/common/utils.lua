@@ -132,7 +132,7 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
     end
 
     vim.validate {
-        bufnr = {bufnr, {"n", "nil"}},
+        bufnr = {bufnr, {"n", "nil"}, true},
         mode = {modes, {"s", "t"}},
         lhs = {lhs, "s"},
         rhs = {rhs, {"s", "f"}},

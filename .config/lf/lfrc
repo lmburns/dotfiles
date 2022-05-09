@@ -779,6 +779,7 @@ map f
 map gh
 map .
 map r
+map t
 
 # == File Openers == [[[
 map ee $$EDITOR "$f"                            # open file in editor
@@ -853,7 +854,7 @@ map Bm massren                          # bulk rename with massren
 map Bv mmv                              # bulk rename only with selected
 map Bf push :f2<space>                  # use f2 to rename
 map ch chmod                            # change file permissions
-map = chmod                            # change file permissions
+map = chmod                             # change file permissions
 map cH chown                            # change file owner
 
 # map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
@@ -944,8 +945,7 @@ map tos $stig                          # transmisison TUI
 # ]]]
 
 # == Tagging == [[[
-map t
-map t push :tag<space>
+map ; push :tag<space>
 map Tj jump_tag
 map X tag-toggle
 
@@ -977,13 +977,17 @@ map gtb :git_branch
 map gtp !{{clear; git pull }}
 map gtP !{{clear; git pull --rebase }}
 map gtz !{{clear; git status }}
-map gtl ${{clear; git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit}}
-map gttr ${{clear; git ls-tree -r master --name-only | bat}}
-map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
-map gttu ${{clear; git ls-files --other | bat}}
+map gtl ${{clear; git log --graph --abbrev-commit --decorate --pretty=lg --all}}
+map gtL ${{clear; git log -p}}
+map gts ${{clear; git show --show-signature}}
 
-map gFd ${{clear; f::diff}}
-map gFc ${{clear; f::clean}}
+
+# map gttr ${{clear; git ls-tree -r master --name-only | bat}}
+# map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
+# map gttu ${{clear; git ls-files --other | bat}}
+
+# map gFd ${{clear; f::diff}}
+# map gFc ${{clear; f::clean}}
 map gFs ${{clear; fstat}}
 map gFa ${{clear; fadd}}
 map gFl ${{clear; flog}}
@@ -993,9 +997,9 @@ map gfa :{{ dotbare_add; unselect; }}
 map gfai ${{clear; dotbare fadd -f}}
 map gfs ${{clear; dotbare fstat}}
 map gfu ${{clear; dotbare funtrack}}
-map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
-map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
-map gftu ${{clear; dotbare ls-files --other | bat}}
+# map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
+# map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
+# map gftu ${{clear; dotbare ls-files --other | bat}}
 # ]]]
 
 # == TUI's == [[[
@@ -1013,6 +1017,10 @@ map bo $bow       # buku bookmarks
 # map <m-2> down
 # map <c-m-up> up
 # map <c-m-down> down
+
+map Hc cd ~/.config
+map Hi cd /run/media/lucas
+map Hh cd ~
 
 #######################################################################
 #                          Helper Functions                           #

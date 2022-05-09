@@ -4,6 +4,7 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
+-- FIX: Sometimes on first buffer, formatoptions do not work properly
 --
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -15,6 +16,7 @@ require("common.global")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
+local command = utils.command
 
 -- local map = utils.map
 -- local create_augroup = utils.create_augroup
@@ -30,7 +32,6 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     local config = ("%s/%s"):format(fn.stdpath("config"), "lua")
     cmd(
         ([[
-        com! PackerInstall lua require('plugins').install()
         com! PackerUpdate lua require('plugins').update()
         com! PackerSync lua require('plugins').sync()
         com! PackerClean lua require('plugins').clean()
@@ -51,16 +52,26 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
 
     -- Is there a way to repeat these?
     local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
-    cmd(
-        ([[
-        com! -nargs=+ -complete=%s.create PackerSnapshot lua require('plugins').snapshot(<f-args>)
-        com! -nargs=+ -complete=%s.rollback PackerSnapshotRollback  lua require('plugins').rollback(<f-args>)
-        com! -nargs=+ -complete=%s.snapshot PackerSnapshotDelete lua require('plugins.snapshot').delete(<f-args>)
-    ]]):format(
-            snargs,
-            snargs,
-            snargs
-        )
+    command(
+        "PackerSnapshot",
+        function(tbl)
+            require("plugins").snapshot(tbl.fargs)
+        end,
+        {nargs = "+", complete = ("%s.create"):format(snargs)}
+    )
+    command(
+        "PackerSnapshotRollback",
+        function(tbl)
+            require("plugins").rollback(tbl.fargs)
+        end,
+        {nargs = "+", complete = ("%s.rollback"):format(snargs)}
+    )
+    command(
+        "PackerSnapshotDelete",
+        function(tbl)
+            require("plugins").delete(tbl.fargs)
+        end,
+        {nargs = "+", complete = ("%s.snapshot"):format(snargs)}
     )
 else
     require("plugins").compile()
@@ -102,12 +113,11 @@ a.async_void(
 
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
+g.do_filetype_lua = 1
+g.did_load_filetypes = 0
 
 -- ex.filetype("off")
 -- g.did_load_filetypes = 0 -- this messes up NvimRestart
-
-g.do_filetype_lua = 1
-g.did_load_filetypes = 0
 
 vim.schedule(
     function()
@@ -199,7 +209,7 @@ vim.schedule(
                         }
                     )
                 else
-                    cmd("packadd nvim-hclipboard")
+                    ex.packadd("nvim-hclipboard")
                     require("hclipboard").start()
                 end
 

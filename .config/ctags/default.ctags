@@ -38,8 +38,8 @@
 --languages=+sh
 
 # === Typescript ===
---langmap=typescript:.ts
---regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/
+# --langmap=typescript:.ts
+# --regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*abstract class[ \t]+([a-zA-Z0-9_]+)/\2/a,abstract classes/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*module[ \t]+([a-zA-Z0-9_]+)/\2/n,modules/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*type[ \t]+([a-zA-Z0-9_]+)/\2/t,types/

@@ -13,3 +13,5 @@ if &winbl
 endif
 
 noremap <buffer> qa <Cmd>q<CR><Cmd>qa<CR>
+nnoremap <buffer> { :colder<CR>
+nnoremap <buffer> } :cnewer<CR>

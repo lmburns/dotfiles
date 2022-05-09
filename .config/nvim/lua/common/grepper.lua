@@ -4,6 +4,11 @@ local M = {}
 
 -- This is mean to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
+--
+-- FIX: There is an issue with some operators
+--      got| => works all the time
+--      gof| => works some of the time
+-- Fix the text that is grabbed when the operator is hit
 
 local utils = require("common.utils")
 local map = utils.map
@@ -13,7 +18,7 @@ function M.vimgrep_qf(mode)
     -- Multiline in unsupported, so concatenate with a space
     local text = table.concat(M.get_text(regions), " ")
     -- Vimgrep doesn't respect smartcase
-    cmd(([[:vimgrep '\C%s' %% | copen]]):format(text))
+    ex.vimgrep(([['\C%s' %% | copen]]):format(text))
 end
 
 function M.vg_motion(motion)

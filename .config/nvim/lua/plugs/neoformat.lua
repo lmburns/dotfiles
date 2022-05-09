@@ -20,7 +20,7 @@ local function save_doc(bufnr)
 end
 
 local function neoformat()
-    cmd("Neoformat")
+    ex.Neoformat()
     cmd("sil! up")
 end
 
@@ -29,7 +29,7 @@ function M.format_doc(save)
     gittool.root_exe(
         function()
             if coc.did_init() then
-                local bufnr = api.nvim_get_current_buf()
+                local bufnr = nvim.buf.nr()
                 local err, res =
                     coc.a2sync(
                     "hasProvider",

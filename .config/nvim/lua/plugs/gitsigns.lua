@@ -2,6 +2,7 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
+local augroup = utils.augroup
 local wk = require("which-key")
 local config
 
@@ -30,6 +31,7 @@ local function mappings(bufnr)
             ["<Leader>hq"] = {"<Cmd>Gitsigns setqflist<CR>", "Set qflist (git)"},
             ["<Leader>hQ"] = {"<Cmd>Gitsigns setqflist all<CR>", "Set qflist all (git)"},
             ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
+            ["<Leader>hl"] = {"<Cmd>Gitsigns toggle_linehl<CR>", "Toggle line highlight (git)"},
             ["<Leader>hb"] = {
                 function()
                     gs.blame_line({full = true})
@@ -40,8 +42,15 @@ local function mappings(bufnr)
         {buffer = bufnr}
     )
 
-    map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']], {expr = true, buffer = bufnr})
-    map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']], {expr = true, buffer = bufnr})
+    map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']], {expr = true})
+    map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']], {expr = true})
+
+    wk.register(
+        {
+            ["]c"] = "Next hunk",
+            ["[c"] = "Prevous hunk"
+        }
+    )
 
     -- map(bufnr, "n", "<Leader>he", "<Cmd>Gitsigns stage_hunk<CR>")
     -- map(bufnr, "x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
@@ -69,10 +78,25 @@ local function mappings(bufnr)
     -- bmap(bufnr, "x", "<Leader>hu", ":Gitsigns reset_hunk<CR>")
     -- map(bufnr, "n", "<Leader>hp", "<Cmd>Gitsigns preview_hunk<CR>")
     -- map(bufnr, "n", "<Leader>hv", [[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]])
-    map(bufnr, "o", "ih", ":<C-u>Gitsigns select_hunk<CR>")
-    map(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>")
     -- map(bufnr, "n", "<Leader>hQ", "<Cmd>Gitsigns setqflist all<CR>")
     -- map(bufnr, "n", "<Leader>hq", "<Cmd>Gitsigns setqflist<CR>")
+
+    map(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>")
+    map(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>")
+
+    wk.register(
+        {
+            ["ih"] = "Git hunk"
+        },
+        {mode = "o"}
+    )
+
+    wk.register(
+        {
+            ["ih"] = "Git hunk"
+        },
+        {mode = "x"}
+    )
 end
 
 function M.setup()
@@ -195,7 +219,8 @@ function M.setup()
 end
 
 local function init()
-    cmd("packadd plenary.nvim")
+    M.setup()
+    ex.packadd("plenary.nvim")
     cmd [[
         hi link GitSignsChangeLn DiffText
         hi link GitSignsAddInline GitSignsAddLn
@@ -203,7 +228,21 @@ local function init()
         hi link GitSignsChangeInline GitSignsChangeLn
     ]]
 
-    M.setup()
+    augroup(
+        "lmb__GitSignsBlameToggle",
+        {
+            event = {"InsertEnter"},
+            command = function()
+                require("gitsigns").toggle_current_line_blame(false)
+            end
+        },
+        {
+            event = {"InsertLeave"},
+            command = function()
+                require("gitsigns").toggle_current_line_blame(true)
+            end
+        }
+    )
 end
 
 init()

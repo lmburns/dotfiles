@@ -8,17 +8,10 @@ function M.setup()
     -- FIX: gc operator
 
     local presets = require("which-key.plugins.presets")
-    -- presets.operators['"_d'] = "Delete blackhole"
-    -- presets.operators["gc"] = "Commenter"
+    presets.operators["gc"] = "Commenter"
     -- presets.operators["d"] = nil
+    presets.operators['"_d'] = "Delete blackhole"
     presets.operators["s"] = "Substitute"
-
-    wk.register(
-        {
-            ["d"] = {[["_d]], "Delete"}
-        },
-        {auto = true}
-    )
 
     wk.setup {
         plugins = {
@@ -39,13 +32,14 @@ function M.setup()
                 g = true -- bindings for prefixed with g
             }
         },
+        -- NOTE: These are not added
         operators = {
             -- add operators that will trigger motion and text object completion
-            gc = "Comments",
+            -- gc = "Comments",
             -- ['"_'] = "Blackhole",
             -- s = "Substitute",
             -- ['"_d'] = "Delete (blackhole)",
-            -- ["d"] = "Delete"
+            ["d"] = "Delete Me"
         },
         key_labels = {},
         icons = {
@@ -83,6 +77,13 @@ function M.setup()
             n = {"o", "O"}
         }
     }
+
+    wk.register(
+        {
+            ["d"] = {[["_d]], "Delete"}
+        },
+        {auto = true, mode = "n"}
+    )
 end
 
 local function init()
@@ -111,7 +112,7 @@ local function init()
             ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
             ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
-            ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
+            ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"}
         }
     )
 

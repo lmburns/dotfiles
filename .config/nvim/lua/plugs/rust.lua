@@ -3,6 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local augroup = utils.augroup
 local map = utils.map
+local coc = require("plugs.coc")
 
 function M.setup()
     -- g.rustfmt_autosave = 1
@@ -30,6 +31,16 @@ local function init()
                 map("n", "<Leader>r<CR>", ":T cargo play %<CR>", {buffer = bufnr})
                 map("n", "<Leader>v<CR>", ":T rust-script %<CR>", {buffer = bufnr})
                 map("n", "<Leader>e<CR>", ":T cargo eval %<CR>", {buffer = bufnr})
+
+                map(
+                    "n",
+                    "<Leader>re",
+                    function()
+                        coc.run_command("rust-analyzer.reloadWorkspace", {})
+                        coc.run_command("rls.restart", {})
+                    end,
+                    {buffer = bufnr,  desc = "Reload Rust workspace"}
+                )
 
                 map("n", ";ff", "RustFmt", {buffer = bufnr, cmd = true})
                 map("v", ";ff", "RustFmtRange", {buffer = bufnr, cmd = true})

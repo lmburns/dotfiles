@@ -4,11 +4,14 @@
 
 local M = {}
 
-local hl = require("common.color").set_hl
+local utils = require("common.utils")
+local augroup = utils.augroup
+local autocmd = utils.autocmd
+
+local color = require("common.color")
+local hl = color.set_hl
 
 -- General configurations for various themes
-
-require("common.utils")
 
 M.catppuccin = function()
     local catppuccin = require("catppuccin")
@@ -30,49 +33,64 @@ M.catppuccin = function()
     local inactive_bg = cp.black1
 
     catppuccin.after_loading = function()
+        -- This still needs fixed a little more
         hl("BufferLineNumbers", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineNumbersVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineNumbersSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineNumbersSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineModified", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineModifiedVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineModifiedSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineModifiedSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineDiagnostic", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineDiagnosticSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineDiagnosticSelected", {guifg = cp.rd, guibg = cp.black4})
 
         hl("BufferLineHintDiagnostic", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineHintDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintDiagnosticSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineHintDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineInfoDiagnostic", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineInfoDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoDiagnosticSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineInfoDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineWarningDiagnostic", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineWarningDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningDiagnosticSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineWarningDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineErrorDiagnostic", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineErrorDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineErrorDiagnosticSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineErrorDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineHint", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineHintVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineHintSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineInfo", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineInfoVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineInfoSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineWarning", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineWarningVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineWarningSelected", {guifg = cp.red, guibg = cp.black4})
 
         hl("BufferLineError", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineErrorVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineErrorSelected", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineErrorSelected", {guifg = cp.red, guibg = cp.black4})
+
+        hl("BufferLineFill", {guifg = inactive_bg})
+        hl("BufferLineBackground", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineBufferVisible", {guifg = cp.mauve, guibg = cp.black4})
+        hl("BufferLineBufferSelected", {guifg = cp.mauve, guibg = cp.black4, style = "bold,italic"})
+
+        hl("BufferLineTab", {guifg = cp.mauve, guibg = inactive_bg})
+        hl("BufferLineTabSelected", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineTabClose", {guifg = cp.white, guibg = cp.black4})
+
+        hl("BufferLineIndicatorSelected", {guifg = cp.maroon, guibg = cp.black4})
+        hl("BufferLineSeparator", {guifg = inactive_bg, bg = cp.black4})
+        hl("BufferLineSeparatorVisible", {guifg = inactive_bg, bg = cp.black4})
+        hl("BufferLineSeparatorSelected", {guifg = inactive_bg, bg = cp.black4})
     end
 
     -- cmd [[colorscheme catppuccin]]
@@ -342,7 +360,9 @@ M.tokyonight = function()
     g.tokyonight_italic_keywords = false
     g.tokyonight_italic_functions = false
     g.tokyonight_sidebars = {"qf", "vista_kind", "terminal", "packer"}
-    -- g.tokyonight_style = "storm"
+
+    -- hl("Function", {gui=bold})
+    -- cmd("hi Function gui=bold")
 
     -- cmd [[colorscheme tokyonight]]
 end
@@ -426,9 +446,28 @@ M.nightfly = function()
     g.nightflyItalics = 0
 end
 
+-- === Leaf ===
+-- M.leaf = function()
+--     require("leaf").setup(
+--         {
+--             undercurl = true,
+--             commentStyle = "NONE",
+--             functionStyle = "bold",
+--             keywordStyle = "none",
+--             statementStyle = "bold",
+--             typeStyle = "NONE",
+--             variablebuiltinStyle = "none",
+--             transparent = false,
+--             colors = {},
+--             overrides = {},
+--             theme = "dark" -- default, alternatives: "dark", "lighter", "darker", "lightest", "darkest"
+--         }
+--     )
+-- end
+
 -- === Kimbox ===
 M.kimbox = function()
-    cmd("pa kimbox")
+    ex.packadd("kimbox")
     require("kimbox").setup(
         {
             style = "ocean",
@@ -471,7 +510,8 @@ local function init()
     M.nightfox()
     M.edge()
     M.onenord()
-    M.vscode()
+    -- M.leaf()
+    -- M.vscode()
 
     -- require("kimbox").load()
     --
@@ -483,22 +523,19 @@ local function init()
     -- local theme = "spaceduck"
     -- local theme = "everforest"
     -- local theme = "onenord"
-    -- local theme = "tokyonight"
     -- local theme = "material"
     -- local theme = "catppuccin"
+    -- local theme = "tokyonight"
     -- local theme = "kanagawa"
     local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then
             require("plugs.lush").dump(theme)
-        else
-            log.err("theme file does not exist")
+        -- else
+        --     log.err("theme file does not exist")
         end
     end
-
-    ex.hi("Todo guibg=none")
-    ex.hi("FloatermBorder guifg=#A06469 gui=none")
 end
 
 init()

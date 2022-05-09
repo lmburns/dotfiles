@@ -279,13 +279,13 @@ M.setup_aerial = function()
                 end
             },
             treesitter = {
-                -- How long to wait (in ms) after a buffer change before updating
                 update_delay = 300
             },
             markdown = {
-                -- How long to wait (in ms) after a buffer change before updating
                 update_delay = 300
             }
+            -- on_attach = function(bufnr)
+            -- end
         }
     )
 
@@ -323,9 +323,21 @@ M.setup_aerial = function()
     wk.register(
         {
             ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
-            ["[["] = {"<Cmd>AerialPrev<CR>", "Aerial previous"},
-            ["]]"] = {"<Cmd>AerialNext<CR>", "Aerial next"}
+            ["[["] = {"<Cmd>AerialPrevUp<CR>", "Aerial previous up"},
+            ["]]"] = {"<Cmd>AerialNextUp<CR>", "Aerial next up"},
+            ["{"] = {"<Cmd>AerialPrev<CR>", "Aerial previous (anon)"},
+            ["}"] = {"<Cmd>AerialNext<CR>", "Aerial next (anon)"}
         }
+    )
+
+    wk.register(
+        {
+            ["[["] = {"<Cmd>AerialPrevUp<CR>", "Aerial previous"},
+            ["]]"] = {"<Cmd>AerialNextUp<CR>", "Aerial next"},
+            ["{"] = {"<Cmd>AerialPrev<CR>", "Aerial previous (anon)"},
+            ["}"] = {"<Cmd>AerialNext<CR>", "Aerial next (anon)"}
+        },
+        {mode = "v"}
     )
 
     -- hi link AerialClass Type
@@ -539,8 +551,8 @@ M.setup = function()
             navigation = {
                 enable = true,
                 keymaps = {
-                    goto_definition = "'d", -- mapping to go to definition of symbol under cursor
-                    list_definitions = "'D", -- mapping to list all definitions in current file
+                    goto_definition = ";d", -- mapping to go to definition of symbol under cursor
+                    list_definitions = ";D", -- mapping to list all definitions in current file
                     list_definitions_toc = "gO"
                     -- goto_next_usage = "<a-*>",
                     -- goto_previous_usage = "<a-#>"
@@ -549,7 +561,7 @@ M.setup = function()
         },
         rainbow = {
             enable = true,
-            extended_mode = true,
+            extended_mode = true
             -- max_file_lines = 300,
             -- disable = {"cpp"},
             -- colors = {}
@@ -570,14 +582,14 @@ M.setup = function()
                     ["ic"] = "@call.inner",
                     ["ao"] = "@block.outer",
                     ["io"] = "@block.inner",
-                    ["aM"] = "@comment.outer",
-                    ["iM"] = "@comment.inner",
-                    ["ad"] = "@conditional.outer",
-                    ["id"] = "@conditional.inner",
+                    ["ad"] = "@comment.outer",
+                    ["id"] = "@comment.inner",
+                    ["al"] = "@conditional.outer",
+                    ["il"] = "@conditional.inner",
                     -- targets.nvim does this good (with seeking)
                     -- Though it isn't specifically parameters
-                    ["ah"] = "@parameter.outer",
-                    ["ih"] = "@parameter.inner",
+                    ["aj"] = "@parameter.outer",
+                    ["ij"] = "@parameter.inner",
                     -- ["am"] = "@statement.outer"
                     ["am"] = "@loop.outer",
                     ["im"] = "@loop.inner"
@@ -616,7 +628,7 @@ M.setup = function()
                     ["]f"] = "@function.outer",
                     ["]m"] = "@class.outer",
                     ["]r"] = "@block.outer",
-                    ["]c"] = "@comment.outer",
+                    ["]d"] = "@comment.outer",
                     ["]a"] = "@parameter.inner",
                     ["]z"] = "@call.inner",
                     ["]l"] = "@statement.inner"
@@ -643,7 +655,7 @@ M.setup = function()
                     ["[f"] = "@function.outer",
                     ["[m"] = "@class.outer",
                     ["[r"] = "@block.outer",
-                    ["[c"] = "@comment.outer",
+                    ["[d"] = "@comment.outer",
                     ["[a"] = "@parameter.inner",
                     ["[z"] = "@call.inner",
                     ["[l"] = "@loop.inner"
@@ -701,8 +713,8 @@ local function init()
     M.setup_context_vt()
 
     -- 'r = Smart rename
-    -- 'd = Go to definition of symbol under cursor
-    -- 'D = List all definitions in file
+    -- ;d = Go to definition of symbol under cursor
+    -- ;D = List all definitions in file
     -- gO = List definitions TOC
     --
     -- <M-n> = Start scope selection
@@ -752,12 +764,12 @@ local function init()
             ["ic"] = "Inner call",
             ["ao"] = "Around block",
             ["io"] = "Inner block",
-            ["aM"] = "Around comment",
-            ["iM"] = "Inner comment",
-            ["ad"] = "Around conditional",
-            ["id"] = "Inner conditional",
-            ["ah"] = "Around parameter",
-            ["ih"] = "Inner parameter",
+            ["ad"] = "Around comment",
+            ["id"] = "Inner comment",
+            ["al"] = "Around conditional",
+            ["il"] = "Inner conditional",
+            ["aj"] = "Around parameter",
+            ["ij"] = "Inner parameter",
             ["am"] = "Around loop",
             ["im"] = "Inner loop",
             ["au"] = "Around unit",
@@ -777,8 +789,8 @@ local function init()
     wk.register(
         {
             ["'r"] = "Smart rename",
-            ["'d"] = "Go to definition under cursor",
-            ["'D"] = "List all definitions in file",
+            [";d"] = "Go to definition under cursor",
+            [";D"] = "List all definitions in file",
             ["gO"] = "List all definitions in TOC",
             ["<M-n>"] = "Start scope selection/Increment",
             ["[["] = "Aerial prevous function",
@@ -786,7 +798,7 @@ local function init()
             ["]f"] = "Next function start",
             ["]m"] = "Next class start",
             ["]r"] = "Next block start",
-            ["]c"] = "Next comment start",
+            ["]d"] = "Next comment start",
             ["]a"] = "Next parameter start",
             ["]z"] = "Next call start",
             ["]l"] = "Next loop start",
@@ -797,7 +809,7 @@ local function init()
             ["[f"] = "Previous function start",
             ["[m"] = "Previous class start",
             ["[r"] = "Previous block start",
-            ["[c"] = "Previous comment start",
+            ["[d"] = "Previous comment start",
             ["[a"] = "Previous parameter start",
             ["[z"] = "Previous call start",
             ["[l"] = "Previous loop start",
@@ -809,10 +821,10 @@ local function init()
         {mode = "n"}
     )
 
-    require("tsht").config.hint_keys = { "h", "j", "f", "d", "n", "v", "s", "l", "a" }
-    map("x", "m", [[:<C-u>lua require('tsht').nodes()<CR>]], {noremap = false})
-    map("o", "m", [[<Cmd>lua require('tsht').nodes()<CR>]])
-    map("n", "R", [[<Cmd>lua require('tsht').nodes()<CR>]])
+    require("tsht").config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
+    map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("o", ",", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("n", "R", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
 
     queries = require("nvim-treesitter.query")
     local hl_disabled = conf.highlight.disable

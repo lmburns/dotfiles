@@ -6,17 +6,26 @@ require("common.utils")
 ---@param args table arguments to pass to git
 ---@param cb function(string)
 M.cmd = function(args, cb)
-    require("gitsigns.git").command(
-        args,
+    local stdout, _ret =
+        Job:new(
         {
             command = "git",
-            cwd = M.root(),
-            suppress_stderr = true
-        },
-        function(line)
-            cb(line)
-        end
-    )
+            args = args,
+            on_exit = function(j, ret)
+                if ret == 0 then
+                    if cb and type(cb) == "function" then
+                        cb(j:result())
+                    else
+                        return j:result()
+                    end
+                else
+                    api.nvim_echo({{"Command returned non-zero exit code", "ErrorMsg"}}, true, {})
+                end
+            end
+        }
+    ):sync()
+
+    return stdout
 end
 
 ---Get the root path of the git directory

@@ -110,14 +110,13 @@ local function init()
     M.setup()
 
     map("n", "<Leader>g;", ":DiffviewFileHistory<CR>")
-    -- map("n", "q;", ":DiffviewClose<CR>")
+    map("n", "<Leader>g.", "DiffviewOpen", {cmd = true})
 
     nvim.autocmd.DiffViewMappings = {
         event = "FileType",
         pattern = {"DiffviewFiles", "DiffviewFileHistory"},
         command = function()
             local bufnr = nvim.buf.nr()
-
             map("n", "qq", "DiffviewClose", {cmd = true, buffer = bufnr})
         end
     }

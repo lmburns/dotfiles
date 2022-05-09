@@ -8,7 +8,7 @@ function M.setup()
     g.vista_fzf_preview = {"down:50%"}
     g.vista_fzf_opt = {"--no-border"}
     g.vista_default_executive = "coc"
-    g.vista_sidebar_position = "topleft vertical"
+    g.vista_sidebar_position = "vertical botright"
     g["vista#renderer#enable_icon"] = 1
 end
 

@@ -79,7 +79,7 @@ local theme =
             SpecialKey {fg = mono3}, --
             -- SpellBad {}, --
             -- SpellCap {}, --
-            -- SpellLocal {}, --
+            SpellLocal {sp = red1, gui = "undercurl"}, --
             -- SpellRare {}, --
             StatusLine {fg = white1, bg = mono5}, --
             StatusLineNC {fg = black1, bg = mono1}, --

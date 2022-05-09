@@ -729,7 +729,7 @@ local function init()
             ["<Leader>f,"] = {[[:lua require('common.gittool').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
             ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
             ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
-            ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
+            -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
             ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
             ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
             ["<Leader>hf"] = {":History<CR>", "History (fzf)"},

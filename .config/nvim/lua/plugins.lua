@@ -14,7 +14,7 @@ if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
-cmd [[packadd packer.nvim]]
+ex.packadd("packer.nvim")
 local packer = require("packer")
 
 -- packer.on_compile_done = function()
@@ -77,14 +77,11 @@ packer.init(
 packer.set_handler(
     "conf",
     function(plugins, plugin, value)
-        local config
         if value:match("^plugs%.") then
-            config = ([[require('%s')]]):format(value)
+            plugin.config = ([[require('%s')]]):format(value)
         else
-            config = ([[require('plugs.config').%s()]]):format(value)
+            plugin.config = ([[require('plugs.config').%s()]]):format(value)
         end
-
-        plugin.config = config
     end
 )
 
@@ -114,9 +111,10 @@ PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
 packer.set_handler(
     "patch",
     function(plugins, plugin, value)
-        local await = require("packer.async").wait
-        local plugin_utils = require("packer.plugin_utils")
-        local run_hook = plugin_utils.post_update_hook
+        -- local await = require("packer.async").wait
+        -- local async = require("packer.async").sync
+        -- local plugin_utils = require("packer.plugin_utils")
+        -- local run_hook = plugin_utils.post_update_hook
 
         vim.validate {
             value = {value, {"b", "s"}}
@@ -136,7 +134,12 @@ packer.set_handler(
                 Job:new(
                     {
                         command = "patch",
-                        args = {"-s", "-N", "-p1", "-i", value}
+                        args = {"-s", "-N", "-p1", "-i", value},
+                        on_exit = function(_, ret)
+                            if ret ~= 0 then
+                                nvim.p(("Unable to apply patch to %s"):format(plugin.name), "ErrorMsg")
+                            end
+                        end
                     }
                 ):start()
             else
@@ -146,16 +149,16 @@ packer.set_handler(
 
         -- FIX: Get a post_update_hook to work
         -- await(
-        run_hook(
-            plugin,
-            {
-                task_update = function()
-                    -- Reset the repository after updating to apply the patch again
-                    local git = require("common.gittool").cmd
-                    git({"reset", "HEAD", "--hard"})
-                end
-            }
-        )
+        -- run_hook(
+        --     plugin,
+        --     {
+        --         task_update = function()
+        --             -- Reset the repository after updating to apply the patch again
+        --             local git = require("common.gittool").cmd
+        --             git({"reset", "HEAD", "--hard"})
+        --         end
+        --     }
+        -- )
         -- )
     end
 )
@@ -231,6 +234,8 @@ return packer.startup(
             --             {"x", "<Leader>A"},
             --             {"n", "<M-S-i>"},
             --             {"n", "<M-S-o>"},
+            --             {"n", "<C-Up>"},
+            --             {"n", "<C-Down>"},
             --             {"n", "g/"}
             --         },
             --         cmd = {"VMSearch"},
@@ -268,12 +273,12 @@ return packer.startup(
             use(
                 {
                     "mfussenegger/nvim-dap",
-                    setup = [[require('plugs.dap').setup()]],
-                    config = [[require('plugs.dap').config()]],
+                    conf = "plugs.dap",
                     after = "telescope.nvim",
                     wants = "one-small-step-for-vimkind",
                     requires = {
                         {"jbyuki/one-small-step-for-vimkind"},
+                        {"theHamsta/nvim-dap-virtual-text"},
                         {
                             "nvim-telescope/telescope-dap.nvim",
                             after = "nvim-dap",
@@ -492,7 +497,13 @@ return packer.startup(
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
             use({"andersevenrud/nordic.nvim"})
-            use({"projekt0n/github-nvim-theme"})
+            -- use({"ray-x/aurora"})
+            -- use({"shaunsingh/nord.nvim"})
+            -- use({"katawful/kat.nvim"})
+            -- use({"daschw/leaf.nvim"})
+            -- use({"Domeee/mosel.nvim"})
+            -- use({"lewpoly/sherbet.nvim"})
+            -- use({"projekt0n/github-nvim-theme"})
             -- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
             -- use({"Mofiqul/vscode.nvim"})
             -- use({"kvrohit/substrata.nvim"})
@@ -679,6 +690,7 @@ return packer.startup(
             use(
                 {
                     "tpope/vim-abolish",
+                    conf = "abolish",
                     cmd = {"S", "Subvert", "Abolish"},
                     keys = {
                         {"n", "cr"}
@@ -991,8 +1003,8 @@ return packer.startup(
                             -- "teal",
                             -- "tsx",
                             -- "vue",
-                            "zig",
-                            "zsh"
+                            "zig"
+                            -- "zsh"
                             -- "typescript",
                         }
                     end
@@ -1374,7 +1386,19 @@ return packer.startup(
                         "Gwrite"
                     },
                     event = "BufReadPre */.git/index",
-                    conf = "plugs.fugitive"
+                    conf = "plugs.fugitive",
+                    keys = {
+                        {"n", "<Leader>gg"},
+                        {"n", "<Leader>ge"},
+                        {"n", "<Leader>gb"},
+                        {"n", "<Leader>gw"},
+                        {"n", "<Leader>gr"},
+                        {"n", "<Leader>gf"},
+                        {"n", "<Leader>gF"},
+                        {"n", "<Leader>gC"},
+                        {"n", "<Leader>gd"},
+                        {"n", "<Leader>gt"}
+                    }
                 }
             )
 
@@ -1386,7 +1410,7 @@ return packer.startup(
                         {"n", "<Leader>gl"},
                         {"n", "<Leader>gf"}
                     },
-                    requires = {{"tpope/vim-fugitive"}},
+                    requires = "tpope/vim-fugitive",
                     conf = "plugs.flog"
                 }
             )
@@ -1438,7 +1462,8 @@ return packer.startup(
                     },
                     conf = "plugs.diffview",
                     keys = {
-                        {"n", "<Leader>g;"}
+                        {"n", "<Leader>g;"},
+                        {"n", "<Leader>g."}
                     }
                 }
             )
@@ -1482,6 +1507,8 @@ return packer.startup(
         end
     }
 )
+
+-- ray-x/sad.nvim
 
 -- ============================== Disabled ============================= [[[
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1559,4 +1586,14 @@ return packer.startup(
 --       -- },
 --     }
 -- )
+
+-- use(
+--     {
+--         "tanvirtin/vgit.nvim",
+--         requires = {"nvim-lua/plenary.nvim"},
+--         conf = "plugs.vgit",
+--         cmd = "VGit"
+--     }
+-- )
+
 -- ]]] === Disabled ===

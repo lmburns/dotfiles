@@ -184,7 +184,7 @@ end
 function M.open_browser()
     wk.register(
         {
-            ["gX"] = {":lua require('functions').go_github()<CR>", "Open link under cursor"}
+            ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"}
         }
     )
 end
@@ -637,13 +637,13 @@ function M.sandwhich()
     -- Sandwhich
     -- dss = automatic deletion
     -- css = automatic changing
-    -- ySi = ask head and tail
+    -- ySi = ask head and tail (Add)
     -- yS = to end of line
     -- yss = whole line
     -- yiss = inside nearest delimiter
     -- ysiwf = funcname?
     -- ysiwt = tag
-    -- y{a,i}si = head - tail
+    -- y{a,i}si = head - tail (select)
     -- Si = head - tail
     -- yar = <here>
 
@@ -1350,6 +1350,25 @@ function M.trevj()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                        -- Abolish                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.abolish()
+    wk.register(
+        {
+            ["rs"] = "Snake case",
+            ["rm"] = "Mixed case",
+            ["rc"] = "Camel case",
+            ["ru"] = "Upper case",
+            ["r-"] = "Dash case",
+            ["r."] = "Dot case",
+            ["r<Space>"] = "Space case",
+            ["rt"] = "Title case"
+        },
+        {mode = "o"}
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                          Crates                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.crates()
@@ -1435,51 +1454,129 @@ function M.crates()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                        Neoscroll                         │
+-- │                       VisualMulti                        │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.neoscroll()
-    require("neoscroll").setup(
+function M.visualmulti()
+    -- g.VM_theme = "purplegray"
+    g.VM_highlight_matches = ""
+    g.VM_show_warnings = 0
+    g.VM_silent_exit = 1
+    g.VM_default_mappings = 1
+    -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
+    g.VM_maps = {
+        -- Delete = "s",
+        Delete = "s",
+        Undo = "u",
+        Redo = "U",
+        ["Select Operator"] = "v",
+        ["Find Operator"] = "m",
+        ["Select Cursor Up"] = "<M-C-Up>",
+        ["Select Cursor Down"] = "<M-C-Down>",
+        ["Move Left"] = "<M-C-Left>",
+        ["Move Right"] = "<M-C-Right>",
+        ["Find Next"] = "]",
+        ["Find Prev"] = "[",
+        ["Goto Next"] = "}",
+        ["Goto Prev"] = "{",
+        ["Skip Region"] = "q",
+        ["Remove Region"] = "Q",
+        ["Invert Direction"] = "o",
+        ["Surround"] = "S",
+        ["Replace Pattern"] = "R",
+        ["Tools Menu"] = " `",
+        ["Show Regisers"] = ' "',
+        ["Case Setting"] = " c",
+        ["Toggle Whole Word"] = " w",
+        ["Transpose"] = " t",
+        ["Align"] = " a",
+        ["Duplicate"] = " d",
+        ["Merge Regions"] = " m"
+    }
+    map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
+    map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
+    map("n", "<C-n>", "<Plug>(VM-Find-Under)")
+    map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
+    map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
+    map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
+    map("n", "<Leader>A", "<Plug>(VM-Select-All)")
+    map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
+    map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)")
+    map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
+    map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
+    map("n", "g/", "<Cmd>VMSearch<CR>")
+
+    augroup(
+        "VisualMulti",
         {
-            -- All these keys will be mapped to their corresponding default scrolling animation
-            -- mappings = {
-            --     "<C-u>",
-            --     "<C-d>",
-            --     "<C-b>",
-            --     "<C-f>",
-            --     "<C-y>",
-            --     "<C-e>",
-            --     "zt",
-            --     "zz",
-            --     "zb"
-            -- },
-            hide_cursor = true, -- Hide cursor while scrolling
-            stop_eof = true, -- Stop at <EOF> when scrolling downwards
-            use_local_scrolloff = false, -- Use the local scope of scrolloff instead of the global scope
-            respect_scrolloff = false, -- Stop scrolling when the cursor reaches the scrolloff margin of the file
-            cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
-            easing_function = nil, -- Default easing function
-            pre_hook = nil, -- Function to run before the scrolling animation starts
-            post_hook = nil, -- Function to run after the scrolling animation ends
-            performance_mode = false -- Disable "Performance Mode" on all buffers.
+            event = "User",
+            pattern = "visual_multi_start",
+            command = function()
+                require("common.vm").start()
+            end
+        },
+        {
+            event = "User",
+            pattern = "visual_multi_exit",
+            command = function()
+                require("common.vm").exit()
+            end
+        },
+        {
+            event = "User",
+            pattern = "visual_multi_mappings",
+            command = function()
+                require("common.vm").mappings()
+            end
         }
     )
-
-    local t = {}
-
-    t["<C-u>"] = {"scroll", {"-vim.wo.scroll", "true", "250"}}
-    t["<C-d>"] = {"scroll", {"vim.wo.scroll", "true", "250"}}
-    -- t["<C-b>"] = {"scroll", {"-vim.api.nvim_win_get_height(0)", "true", "250"}}
-    -- t["<C-f>"] = {"scroll", {"vim.api.nvim_win_get_height(0)", "true", "250"}}
-    t["<C-y>"] = {"scroll", {"-0.10", "false", "80"}}
-    t["<C-e>"] = {"scroll", {"0.10", "false", "80"}}
-    t["zt"] = {"zt", {"150"}}
-    t["zz"] = {"zz", {"150"}}
-    t["zb"] = {"zb", {"150"}}
-    -- t["gg"] = {"scroll", {"-2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
-    -- t["G"] = {"scroll", {"2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
-
-    require("neoscroll.config").set_mappings(t)
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Neoscroll                         │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.neoscroll()
+--     require("neoscroll").setup(
+--         {
+--             -- All these keys will be mapped to their corresponding default scrolling animation
+--             -- mappings = {
+--             --     "<C-u>",
+--             --     "<C-d>",
+--             --     "<C-b>",
+--             --     "<C-f>",
+--             --     "<C-y>",
+--             --     "<C-e>",
+--             --     "zt",
+--             --     "zz",
+--             --     "zb"
+--             -- },
+--             hide_cursor = true, -- Hide cursor while scrolling
+--             stop_eof = true, -- Stop at <EOF> when scrolling downwards
+--             use_local_scrolloff = false, -- Use the local scope of scrolloff instead of the global scope
+--             respect_scrolloff = false, -- Stop scrolling when the cursor reaches the scrolloff margin of the file
+--             cursor_scrolls_alone = true, -- The cursor will keep on scrolling even if the window cannot scroll further
+--             easing_function = nil, -- Default easing function
+--             pre_hook = nil, -- Function to run before the scrolling animation starts
+--             post_hook = nil, -- Function to run after the scrolling animation ends
+--             performance_mode = false -- Disable "Performance Mode" on all buffers.
+--         }
+--     )
+--
+--     local t = {}
+--
+--     t["<C-u>"] = {"scroll", {"-vim.wo.scroll", "true", "250"}}
+--     t["<C-d>"] = {"scroll", {"vim.wo.scroll", "true", "250"}}
+--     -- t["<C-b>"] = {"scroll", {"-vim.api.nvim_win_get_height(0)", "true", "250"}}
+--     -- t["<C-f>"] = {"scroll", {"vim.api.nvim_win_get_height(0)", "true", "250"}}
+--     t["<C-y>"] = {"scroll", {"-0.10", "false", "80"}}
+--     t["<C-e>"] = {"scroll", {"0.10", "false", "80"}}
+--     t["zt"] = {"zt", {"150"}}
+--     t["zz"] = {"zz", {"150"}}
+--     t["zb"] = {"zb", {"150"}}
+--     -- t["gg"] = {"scroll", {"-2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
+--     -- t["G"] = {"scroll", {"2*vim.api.nvim_buf_line_count(0)", "true", "1", "5", e}}
+--
+--     require("neoscroll.config").set_mappings(t)
+-- end
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Unused
@@ -1490,48 +1587,6 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 -- function M.cutlass()
 --     require("cutlass").setup({cut_key = nil, override_del = nil, exclude = {"vx"}})
--- end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       VisualMulti                        │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.visualmulti()
---     g.VM_theme = "codedark"
---     g.VM_highlight_matches = ""
---     g.VM_show_warnings = 0
---     g.VM_silent_exit = 1
---     g.VM_default_mappings = 1
---     g.VM_maps = {
---         Delete = "s",
---         Undo = "<C-u>",
---         Redo = "<C-r>",
---         ["Select Operator"] = "v",
---         ["Select Cursor Up"] = "<M-C-u>",
---         ["Select Cursor Down"] = "<M-C-p>",
---         ["Move Left"] = "<M-C-i>",
---         ["Move Right"] = "<M-C-o>"
---     }
---     map("n", "<C-n>", "<Plug>(VM-Find-Under)")
---     map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
---     map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
---     map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
---     map("n", "<Leader>A", "<Plug>(VM-Select-All)")
---     map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
---     map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)")
---     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
---     map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
---     map("n", "g/", "<Cmd>VMSearch<CR>")
---
---     cmd(
---         [[
---         aug VisualMulti
---             au!
---             au User visual_multi_start lua require('common.vm').start()
---             au User visual_multi_exit lua require('common.vm').exit()
---             au User visual_multi_mappings lua require('common.vm').mappings()
---         aug END
---     ]]
---     )
 -- end
 
 -- ╭──────────────────────────────────────────────────────────╮

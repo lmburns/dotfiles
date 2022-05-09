@@ -621,7 +621,7 @@ function M.init()
             ["<C-x><C-d>"] = {":CocCommand fzf-preview.CocTypeDefinition<CR>", "List coc definitions"},
             ["<C-x><C-]>"] = {":CocCommand fzf-preview.CocImplementations<CR>", "List coc implementations"},
             ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
-            ["<A-[>"] = {":CocCommand fzf-preview.VistaCtags<CR>", "List vista ctags (coc)"},
+            ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
             ["<LocalLeader>t"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
             ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
             ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
@@ -721,13 +721,6 @@ function M.init()
     -- )
 
     -- map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
-
-    -- g.endwise_no_mappings = true
-    -- map(
-    --     "i", "<Plug>CustomCocCR", [[\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>]],
-    --     { noremap = true }
-    -- )
-    -- map("i", "<CR>", "<Plug>CustomCocCR<Plug>DiscretionaryEnd", { noremap = true })
 
     map("i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
 

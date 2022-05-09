@@ -52,14 +52,17 @@ augroup(
 
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
--- this is because other plugins overwrite them
+-- this is because other plugins overwrite them.
+--
+-- Without FileType, the first buffer that is loaded does not have these settings applied
 do
     local o = vim.opt_local
 
     augroup(
         "lmb__FormatOptions",
         {
-            event = "BufEnter",
+            event = {"BufEnter", "FileType"},
+            pattern = "*",
             command = function()
                 -- Buffer option here doesn't work like global
                 o.formatoptions:remove({"c", "r", "o"})
@@ -71,11 +74,30 @@ do
                     o.laststatus = 3
                 end
             end,
-            pattern = "*"
         }
     )
 end
 -- ]]] === Format Options ===
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                Colorscheme Modifications                 │
+-- ╰──────────────────────────────────────────────────────────╯
+augroup(
+    "lmb__ColorschemeSetup",
+    {
+        event = "ColorScheme",
+        pattern = "*",
+        command = function()
+            ex.hi("TSVariableBuiltin gui=none")
+            ex.hi("TSTypeBuiltin gui=none")
+            ex.hi("TSProperty gui=none")
+            ex.hi("TSVariable gui=none")
+            ex.hi("Function gui=bold")
+            ex.hi("Todo guibg=none")
+            ex.hi("FloatermBorder guifg=#A06469 gui=none")
+        end
+    }
+)
 
 -- === Remove Empty Buffers === [[[
 augroup(
@@ -162,7 +184,8 @@ nvim.autocmd.lmb__Help = {
         event = "BufEnter",
         pattern = "*.txt",
         command = function()
-            if b.bt == "help" then
+            local bufnr = nvim.buf.nr()
+            if b[bufnr].bt == "help" then
                 if split_should_return() then
                     return
                 end
@@ -170,6 +193,7 @@ nvim.autocmd.lmb__Help = {
                 local width = math.floor(vim.o.columns * 0.75)
                 ex.wincmd("L")
                 cmd("vertical resize " .. width)
+                map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
         end
     },
@@ -180,6 +204,7 @@ nvim.autocmd.lmb__Help = {
         pattern = {"man"},
         once = false,
         command = function()
+            local bufnr = nvim.buf.nr()
             if split_should_return() then
                 return
             end
@@ -187,6 +212,7 @@ nvim.autocmd.lmb__Help = {
             local width = math.floor(vim.o.columns * 0.75)
             ex.wincmd("L")
             cmd("vertical resize " .. width)
+            map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end
     },
     {
@@ -488,8 +514,8 @@ nvim.autocmd.lmb__AutoReloadFile = {
         event = {"BufEnter", "CursorHold", "FocusGained"},
         command = function()
             -- local bufnr = tonumber(fn.expand "<abuf>")
-            local bufnr = api.nvim_get_current_buf()
-            local name = api.nvim_buf_get_name(bufnr)
+            local bufnr = nvim.buf.nr()
+            local name = nvim.buf.get_name(bufnr)
             if
                 name == "" or -- Only check for normal files
                     vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
@@ -498,7 +524,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
                 return
             end
 
-            vim.cmd(bufnr .. "checktime")
+            cmd(bufnr .. "checktime")
         end,
         description = "Reload file when modified outside of the instance"
     },

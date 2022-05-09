@@ -81,7 +81,7 @@ map("n", "q", "<Nop>", {silent = true})
 -- Repeat last command
 wk.register(
     {
-        ["<F2>"] = {"@:", "Repeat last command"},
+        ["<F2>"] = {"@:", "Repeat last command"}
     }
 )
 
@@ -354,7 +354,7 @@ map("n", "<Leader>jj", "Jumps", {cmd = true})
 wk.register(
     {
         ["<Leader>"] = {
-            e = {
+           e = {
                 name = "+edit",
                 c = {
                     ":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>",

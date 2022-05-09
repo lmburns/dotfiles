@@ -17,7 +17,7 @@ function M.batch_sub(is_loc, pat_rep)
     local pat, rep = pr_tbl[2], pr_tbl[3]
     if pat == "" then
         pat = nvim.reg["/"]
-        -- pat = fn.getreg("/")
+    -- pat = fn.getreg("/")
     end
     if vim.o.gdefault then
         flag:gsub("g", "")

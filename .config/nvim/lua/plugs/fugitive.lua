@@ -49,7 +49,7 @@ local function init()
         )
     end
 
-    vim.g.nremap = {
+    g.nremap = {
         ["d?"] = "s?",
         dv = "sv",
         dp = "sp",
@@ -121,8 +121,8 @@ local function init()
 
     wk.register(
         {
-            ["<Leader>gc"] = {":Git commit<Space>", "Fugitive commit"},
-            ["<Leader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
+            ["<Leader>gC"] = {":Git commit<Space>", "Fugitive commit"},
+            -- ["<Leader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
             ["<Leader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
             ["<Leader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"}
         },

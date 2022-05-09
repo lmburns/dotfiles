@@ -65,16 +65,16 @@ end
 
 local function init()
     cmd [[
-    hi NeogitNotificationInfo guifg=#4C96A8
-    hi NeogitNotificationWarning guifg=#FF9500
-    hi NeogitNotificationError guifg=#c44323
+        hi NeogitNotificationInfo guifg=#4C96A8
+        hi NeogitNotificationWarning guifg=#FF9500
+        hi NeogitNotificationError guifg=#c44323
 
-    hi def NeogitDiffAddHighlight guifg=#819C3B
-    hi def NeogitDiffDeleteHighlight guifg=#DC3958
-    hi def NeogitDiffContextHighlight guifg=#b2b2b2
-    hi def NeogitHunkHeader guifg=#A06469
-    hi def NeogitHunkHeaderHighlight guifg=#FF5813
-  ]]
+        hi def NeogitDiffAddHighlight guifg=#819C3B
+        hi def NeogitDiffDeleteHighlight guifg=#DC3958
+        hi def NeogitDiffContextHighlight guifg=#b2b2b2
+        hi def NeogitHunkHeader guifg=#A06469
+        hi def NeogitHunkHeaderHighlight guifg=#FF5813
+    ]]
 
     M.setup()
 
@@ -103,7 +103,7 @@ local function init()
                     ng.open({"commit", cwd = fn.expand("%:p:h")})
                 end,
                 "Open Neogit commit"
-            },
+            }
         }
     )
 end

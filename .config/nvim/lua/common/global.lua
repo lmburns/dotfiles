@@ -29,8 +29,8 @@ _G.opt_global = vim.opt_global
 
 _G.g = vim.g -- vim global variables:
 _G.go = vim.go -- vim global options
-_G.w = vim.wo -- vim window options: behaves like `:setlocal`
-_G.b = vim.bo -- vim buffer options: behaves like `:setlocal`
+_G.w = vim.wo -- vim window options: behaves like `:setlocal` (alias for vim.wo)
+_G.b = vim.bo -- vim buffer options: behaves like `:setlocal` (alias for vim.bo)
 
 _G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 _G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')

@@ -20,6 +20,13 @@ function M.fg(group, color, gui)
     cmd(("hi %s guifg=%s %s"):format(group, color, g))
 end
 
+---Group to modify gui
+---@param group string
+---@param gui string
+function M.gui(group, gui)
+    cmd(("hi %s gui=%s"):format(group, g))
+end
+
 ---Define bg and fg color
 ---@param group Group
 ---@param fgcol Color
@@ -37,17 +44,6 @@ function M.link(from, to, bang)
     bang = bang ~= false and "!" or " default"
     cmd(("hi%s link %s %s"):format(bang, from, to))
 end
-
--- ---Define complete highlight group
--- ---@param  group string: Group
--- ---@param  options table: Fg/Bg/Gui colors
--- function M.set_hl(group, options)
---     local bg = options.bg == nil and "" or "guibg=" .. options.bg
---     local fg = options.fg == nil and "" or "guifg=" .. options.fg
---     local gui = options.gui == nil and "" or "gui=" .. options.gui
---
---     cmd(("hi %s %s %s %s"):format(group, bg, fg, gui))
--- end
 
 ---Create a highlight group
 ---@param higroup string: Group that is being defined

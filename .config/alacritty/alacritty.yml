@@ -74,6 +74,7 @@ window:
   gtk_theme_variant: dark
 
   opacity: 0.90
+  # opacity: 1
 
 scrolling:
   # Maximum number of lines in the scrollback buffer.

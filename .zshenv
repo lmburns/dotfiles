@@ -158,6 +158,7 @@ export MATES_DIR="${XDG_DATA_HOME}/mates"
 export JAIME_CACHE_DIR="${XDG_CONFIG_HOME}/jaime"
 export BARTIB_FILE="${XDG_CONFIG_HOME}/bartib/tasklog"
 export RPASTE_CONFIG="${XDG_CONFIG_HOME}/rpaste/config.toml"
+export PRE_COMMIT_COLOR='auto'
 
 # [ "$(tty)" = "/dev/tty1" ] && ! pidof -s Xorg >/dev/null 2>&1 && exec startx "$XINITRC"
 

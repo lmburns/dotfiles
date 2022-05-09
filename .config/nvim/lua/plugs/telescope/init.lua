@@ -911,6 +911,11 @@ builtin.git_grep = function(opts)
         "--show-toplevel"
     }[1]
 
+    if #opts.search_dirs == 0 then
+        log.err("Not in a git directory", true)
+        return
+    end
+
     opts.vimgrep_arguments = {
         "rg",
         "--color=never",
@@ -989,12 +994,47 @@ end
 
 -- Theme isn't working
 builtin.edit_zsh = function()
-    builtin.find_files {
-        themes.get_dropdown {
-            path_display = {"smart"},
-            cwd = "~/.config/zsh/",
-            -- prompt_title = "~ Search Zsh ~",
-            hidden = true
+    builtin.fd {
+        theme = "ivy",
+        path_display = {"smart"},
+        prompt_prefix = "  ",
+        search_dirs = {"~/.config/zsh"},
+        find_command = {
+            "fd",
+            "--type=f",
+            "--hidden",
+            "--follow",
+            "--exclude=.git",
+            "--exclude=_backup",
+            "--exclude=sessions"
+        },
+        hidden = true
+    }
+end
+
+-- TODO: Fix and get a better list of file paths
+M.grep_tags = function()
+    local search_dirs = {}
+    local files = fn.globpath(vim.o.runtimepath, 'doc/*', 1, 1)
+    for _, file in ipairs(files) do
+        if file ~= 'tags' then
+            table.insert(search_dirs, file)
+        end
+    end
+
+    builtin.live_grep {
+        initial_mode = "insert",
+        path_display = {"smart"},
+        search_dirs = search_dirs,
+        prompt_title = "Grep Tags",
+        vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case"
         }
     }
 end
@@ -1067,7 +1107,9 @@ wk.register(
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
-        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbol"}
+        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbols"},
+        ["<LocalLeader>S"] = {"<Cmd>Telescope treesitter<CR>", "List treesitter symbols"},
+        ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Telescope resume"},
     }
 )
 

@@ -190,14 +190,14 @@ augroup(
         command = function()
             require("plugs.gutentags").setup_rubytags()
         end
-    },
-    {
-        event = "FileType",
-        pattern = "lua",
-        command = function()
-            require("plugs.gutentags").setup_luatags()
-        end
     }
+    -- {
+    --     event = "FileType",
+    --     pattern = "lua",
+    --     command = function()
+    --         require("plugs.gutentags").setup_luatags()
+    --     end
+    -- }
 )
 
 return M

@@ -162,7 +162,9 @@ local sections_1 = {
         {
             -- 'require("nvim-gps").get_location()',
             plugins.gps,
-            cond = conditions.is_available_gps and conditions.hide_in_width and conditions.coc_status_width,
+            cond = function()
+                return conditions.is_available_gps() and conditions.hide_in_width() and conditions.coc_status_width()
+            end,
             color = {fg = colors.red}
         },
         {
@@ -185,6 +187,13 @@ local sections_1 = {
         plugins.debugger
     },
     lualine_z = {
+                {
+            "branch",
+            icon = "",
+            cond = function()
+                return conditions.check_git_workspace() and plugins.search_result() == ""
+            end
+        },
         "%l:%c",
         "%p%%/%L",
         plugins.search_result
@@ -214,7 +223,7 @@ local sections_2 = {
             cond = conditions.is_available_gps,
             color = {fg = colors.red}
         },
-        {"branch", icon = "", condition = conditions.check_git_workspace}
+        {"branch", icon = "", cond = conditions.check_git_workspace}
         -- "b:gitsigns_head"
         -- "Fugitivehead"
     },
