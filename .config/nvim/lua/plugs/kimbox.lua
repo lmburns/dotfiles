@@ -81,16 +81,28 @@ M.catppuccin = function()
         hl("BufferLineFill", {guifg = inactive_bg})
         hl("BufferLineBackground", {guifg = cp.white, guibg = inactive_bg})
         hl("BufferLineBufferVisible", {guifg = cp.mauve, guibg = cp.black4})
-        hl("BufferLineBufferSelected", {guifg = cp.mauve, guibg = cp.black4, style = "bold,italic"})
+        hl("BufferLineBufferSelected", {guifg = cp.mauve, guibg = cp.black4, gui = "bold,italic"})
 
         hl("BufferLineTab", {guifg = cp.mauve, guibg = inactive_bg})
         hl("BufferLineTabSelected", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineTabClose", {guifg = cp.white, guibg = cp.black4})
 
         hl("BufferLineIndicatorSelected", {guifg = cp.maroon, guibg = cp.black4})
-        hl("BufferLineSeparator", {guifg = inactive_bg, bg = cp.black4})
-        hl("BufferLineSeparatorVisible", {guifg = inactive_bg, bg = cp.black4})
-        hl("BufferLineSeparatorSelected", {guifg = inactive_bg, bg = cp.black4})
+        hl("BufferLineSeparator", {guifg = inactive_bg, guibg = cp.black4})
+        hl("BufferLineSeparatorVisible", {guifg = inactive_bg, guibg = cp.black4})
+        hl("BufferLineSeparatorSelected", {guifg = inactive_bg, guibg = cp.black4})
+
+        ex.hi("TSMethod gui=bold")
+        ex.hi("TSVariableBuiltin gui=none")
+        ex.hi("TSTypeBuiltin gui=none")
+        ex.hi("TSProperty gui=none")
+        ex.hi("TSVariable gui=none")
+        ex.hi("TSFunction gui=bold")
+        ex.hi("TSFuncBuiltin gui=bold")
+        ex.hi("TSParameter gui=none")
+        -- ex.hi("TSNamespace gui=none")
+        ex.hi("Function gui=bold")
+        ex.hi("Todo guibg=none")
     end
 
     -- cmd [[colorscheme catppuccin]]

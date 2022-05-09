@@ -1357,6 +1357,8 @@ return packer.startup(
                 {
                     "tpope/vim-fugitive",
                     fn = "fugitive#*",
+                    event = "BufReadPre */.git/index",
+                    conf = "plugs.fugitive",
                     cmd = {
                         "0Git",
                         "G",
@@ -1385,8 +1387,6 @@ return packer.startup(
                         "Gwq",
                         "Gwrite"
                     },
-                    event = "BufReadPre */.git/index",
-                    conf = "plugs.fugitive",
                     keys = {
                         {"n", "<Leader>gg"},
                         {"n", "<Leader>ge"},
@@ -1398,7 +1398,8 @@ return packer.startup(
                         {"n", "<Leader>gC"},
                         {"n", "<Leader>gd"},
                         {"n", "<Leader>gt"}
-                    }
+                    },
+                    requires = {"tpope/vim-rhubarb"}
                 }
             )
 
@@ -1414,8 +1415,6 @@ return packer.startup(
                     conf = "plugs.flog"
                 }
             )
-
-            use({"tpope/vim-rhubarb"})
 
             use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
 

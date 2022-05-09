@@ -28,7 +28,7 @@ function M.diff_hist()
         local diff = ctx.items[idx].diff or {}
         if #diff == 1 then
             cmd("abo vert diffs " .. diff[1].filename)
-            cmd("winc p")
+            ex.winc("p")
         end
     end
 end
@@ -98,7 +98,7 @@ local function init()
         }
     )
 
-    cmd [[packadd vim-rhubarb]]
+    ex.packadd("vim-rhubarb")
 
     wk.register(
         {
