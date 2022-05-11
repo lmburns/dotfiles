@@ -35,7 +35,7 @@ end
 -- ============================== Print ===============================
 -- ====================================================================
 
-function M.inspect(v)
+M.inspect = function(v)
     local s
     local t = type(v)
     if t == "nil" then
@@ -51,7 +51,7 @@ function M.inspect(v)
 end
 
 -- Print text nicely (newline)
-function _G.pln(...)
+_G.pln = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
     for i = 1, argc do
@@ -63,7 +63,7 @@ function _G.pln(...)
 end
 
 -- Print text nicely
-function _G.p(...)
+_G.p = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
     for i = 1, argc do
@@ -92,8 +92,24 @@ end
 
 _G.pp = vim.pretty_print
 
-function M.round(value)
+M.round = function(value)
     return math.floor(value + 0.5)
+end
+
+---Split a string on a delimiter
+---@param input string
+---@param sep string
+---@return string
+M.split = function(input, sep)
+    vim.validate {
+        input = {input, {"s"}},
+        sep = {sep, {"s"}}
+    }
+    local t = {}
+    for str in string.gmatch(input, "([^" .. sep .. "]+)") do
+        table.insert(t, str)
+    end
+    return t
 end
 
 -- ============================== Table ===============================
@@ -103,7 +119,7 @@ end
 ---@param a 'table'
 ---@param b 'table'
 ---@return 'table'
-function M.merge(a, b)
+M.merge = function(a, b)
     if type(a) == "table" and type(b) == "table" then
         for k, v in pairs(b) do
             if type(v) == "table" and type(a[k] or false) == "table" then
@@ -116,11 +132,11 @@ function M.merge(a, b)
     return a
 end
 
-function M.tbl_pack(...)
+M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
 end
 
-function M.tbl_unpack(t, i, j)
+M.tbl_unpack = function(t, i, j)
     return unpack(t, i or 1, j or t.n or #t)
 end
 
@@ -128,7 +144,7 @@ end
 ---
 ---@param t table: Table to clone
 ---@return table
-function M.tbl_clone(t)
+M.tbl_clone = function(t)
     if not t then
         return
     end
@@ -144,7 +160,7 @@ end
 ---Deep clone a table (i.e., clone nested tables)
 ---@param t table
 ---@return table
-function M.tbl_deep_clone(t)
+M.tbl_deep_clone = function(t)
     if not t then
         return
     end
@@ -166,7 +182,7 @@ end
 ---@param first? integer First index, inclusive
 ---@param last? integer Last index, inclusive
 ---@return vector
-function M.vec_slice(t, first, last)
+M.vec_slice = function(t, first, last)
     local slice = {}
     for i = first or 1, last or #t do
         table.insert(slice, t[i])
@@ -178,7 +194,7 @@ end
 ---Join multiple vectors into one.
 ---@vararg vector
 ---@return vector
-function M.vec_join(...)
+M.vec_join = function(...)
     local result = {}
     local args = {...}
     local n = 0
@@ -315,7 +331,7 @@ M.find_buf_with_var = function(var, value)
     return nil
 end
 
-function M.find_buf_with_option(option, value)
+M.find_buf_with_option = function(option, value)
     for _, id in ipairs(api.nvim_list_bufs()) do
         local ok, v = pcall(api.nvim_buf_get_option, id, option)
         if ok and v == value then

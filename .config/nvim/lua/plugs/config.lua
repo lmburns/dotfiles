@@ -143,42 +143,6 @@ function M.package_info()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                       regexplainer                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.regexplainer()
-    require("regexplainer").setup {
-        -- 'narrative'
-        mode = "narrative", -- TODO: 'ascii', 'graphical'
-        -- automatically show the explainer when the cursor enters a regexp
-        auto = false,
-        -- filetypes (i.e. extensions) in which to run the autocommand
-        filetypes = {
-            "html",
-            "js",
-            "cjs",
-            "mjs",
-            "ts",
-            "jsx",
-            "tsx",
-            "cjsx",
-            "mjsx"
-        },
-        debug = false, -- Whether to log debug messages
-        display = "popup", -- 'split', 'popup', 'pasteboard'
-        mappings = {
-            toggle = "gR",
-            show = "gS"
-            -- hide = 'gH',
-            -- show_split = 'gP',
-            -- show_popup = 'gU',
-        },
-        narrative = {
-            separator = "\n"
-        }
-    }
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                       open-browser                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.open_browser()
@@ -1023,7 +987,6 @@ function M.lazygit()
     )
 
     require("telescope").load_extension("lazygit")
-
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
@@ -1320,8 +1283,8 @@ function M.urlview()
         }
     )
 
-    map("n", "gL", "UrlView", {cmd = true})
     require("telescope").load_extension("urlview")
+    map("n", "gL", "UrlView", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1454,6 +1417,53 @@ function M.crates()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                         Projects                         │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.project()
+    -- require("project_nvim").get_recent_projects()
+
+    -- Detection Methods
+    -- =src                => Specify root
+    -- plain name          => Has a certain directory or file (may be glob
+    -- ^fixtures           => Has certain directory as ancestory
+    -- >Latex              => Has a certain directory as direct ancestor
+    -- !=extras !^fixtures => Exclude pattern
+
+    require("project_nvim").setup(
+        {
+            -- Manual mode doesn't automatically change your root directory, so you have
+            -- the option to manually do so using `:ProjectRoot` command.
+            manual_mode = false,
+            -- Methods of detecting the root directory. **"lsp"** uses the native neovim
+            -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
+            -- order matters: if one is not detected, the other is used as fallback. You
+            -- can also delete or rearangne the detection methods.
+            detection_methods = {"lsp", "pattern"},
+            -- All the patterns used to detect root dir, when **"pattern"** is in
+            -- detection_methods
+            patterns = {".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json"},
+            -- Table of lsp clients to ignore by name
+            -- eg: { "efm", ... }
+            ignore_lsp = {},
+            -- Don't calculate root dir on specific directories
+            -- Ex: { "~/.cargo/*", ... }
+            exclude_dirs = {},
+            -- Show hidden files in telescope
+            show_hidden = false,
+            -- When set to false, you will get a message when project.nvim changes your
+            -- directory.
+            silent_chdir = true,
+            -- Path where project.nvim will store the project history for use in
+            -- telescope
+            datapath = fn.stdpath("data")
+        }
+    )
+
+    require("telescope").load_extension("projects")
+    map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                       VisualMulti                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.visualmulti()
@@ -1464,8 +1474,7 @@ function M.visualmulti()
     g.VM_default_mappings = 1
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
     g.VM_maps = {
-        -- Delete = "s",
-        Delete = "s",
+        Delete = "d",
         Undo = "u",
         Redo = "U",
         ["Select Operator"] = "v",
@@ -1478,6 +1487,8 @@ function M.visualmulti()
         ["Find Prev"] = "[",
         ["Goto Next"] = "}",
         ["Goto Prev"] = "{",
+        ["Seek Next"] = "<C-f>",
+        ["Seek Prev"] = "<C-b>",
         ["Skip Region"] = "q",
         ["Remove Region"] = "Q",
         ["Invert Direction"] = "o",
@@ -1532,6 +1543,48 @@ function M.visualmulti()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                       regexplainer                       │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.regexplainer()
+    require("regexplainer").setup {
+        mode = "narrative", -- TODO: 'ascii', 'graphical'
+        -- automatically show the explainer when the cursor enters a regexp
+        auto = false,
+        -- filetypes (i.e. extensions) in which to run the autocommand
+        filetypes = {
+            "html",
+            "js",
+            "cjs",
+            "mjs",
+            "ts",
+            "jsx",
+            "tsx",
+            "cjsx",
+            "mjsx",
+            -- "rs"
+        },
+        debug = false, -- Whether to log debug messages
+        display = "popup", -- 'split', 'popup', 'pasteboard'
+        popup = {
+            border = {
+                padding = {1, 2},
+                style = "solid"
+            }
+        },
+        mappings = {
+            toggle = "gR",
+            show = "gS"
+            -- hide = 'gH',
+            -- show_split = 'gP',
+            -- show_popup = 'gU',
+        },
+        narrative = {
+            separator = "\n"
+        }
+    }
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                        Neoscroll                         │
 -- ╰──────────────────────────────────────────────────────────╯
 -- function M.neoscroll()
@@ -1577,10 +1630,6 @@ end
 --
 --     require("neoscroll.config").set_mappings(t)
 -- end
-
--- ╒══════════════════════════════════════════════════════════╕
---                            Unused
--- ╘══════════════════════════════════════════════════════════╛
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Cutlass                          │
@@ -1752,6 +1801,25 @@ end
 -- function M.qf_reflector()
 --     g.qf_modifiable = 1
 --     g.qf_write_changes = 1
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Anywise                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.anywise()
+--     require("anywise_reg").setup(
+--         {
+--             operators = {"y", "d", "c"},
+--             textobjects = {
+--                 {"i", "a"},
+--                 {"w", "W", "f", "c"}
+--             },
+--             paste_keys = {
+--                 ["p"] = "p"
+--             },
+--             register_print_cmd = true
+--         }
+--     )
 -- end
 
 return M

@@ -134,6 +134,7 @@ _G.BLACKLIST_FT = {
     "startify",
     "telescope",
     "TelescopePrompt",
+    "TelescopeResults",
     "Trouble",
     "toggleterm",
     "undotree",

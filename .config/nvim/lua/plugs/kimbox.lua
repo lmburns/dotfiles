@@ -30,67 +30,71 @@ M.catppuccin = function()
     )
 
     local cp = require("catppuccin.api.colors").get_colors()
-    local inactive_bg = cp.black1
 
     catppuccin.after_loading = function()
-        -- This still needs fixed a little more
-        hl("BufferLineNumbers", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineNumbersVisible", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineNumbers", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineNumbersVisible", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineNumbersSelected", {guifg = cp.red, guibg = cp.black4})
 
-        hl("BufferLineModified", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineModifiedVisible", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLinePick", {guifg = cp.maroon, guibg = cp.black1})
+        hl("BufferLinePickVisible", {guifg = cp.maroon, guibg = cp.black4})
+        hl("BufferLinePickSelected", {guifg = cp.maroon, guibg = cp.black4})
+
+        hl("BufferLineModified", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineModifiedVisible", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineModifiedSelected", {guifg = cp.red, guibg = cp.black4})
 
-        hl("BufferLineDiagnostic", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineDiagnostic", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineDiagnosticVisible", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineDiagnosticSelected", {guifg = cp.rd, guibg = cp.black4})
 
-        hl("BufferLineHintDiagnostic", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineHintDiagnostic", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineHintDiagnosticVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineHintDiagnosticSelected", {guifg = cp.green, guibg = cp.black4})
 
-        hl("BufferLineInfoDiagnostic", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineInfoDiagnostic", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineInfoDiagnosticVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineInfoDiagnosticSelected", {guifg = cp.blue, guibg = cp.black4})
 
-        hl("BufferLineWarningDiagnostic", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineWarningDiagnostic", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineWarningDiagnosticVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineWarningDiagnosticSelected", {guifg = cp.yellow, guibg = cp.black4})
 
-        hl("BufferLineErrorDiagnostic", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineErrorDiagnosticVisible", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineErrorDiagnostic", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineErrorDiagnosticVisible", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineErrorDiagnosticSelected", {guifg = cp.red, guibg = cp.black4})
 
-        hl("BufferLineHint", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineHintSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineHint", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineHintVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineHintSelected", {guifg = cp.green, guibg = cp.black4})
 
-        hl("BufferLineInfo", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineInfoSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineInfo", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineInfoVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineInfoSelected", {guifg = cp.blue, guibg = cp.black4})
 
-        hl("BufferLineWarning", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningVisible", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineWarningSelected", {guifg = cp.red, guibg = cp.black4})
+        hl("BufferLineWarning", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineWarningVisible", {guifg = cp.white, guibg = cp.black4})
+        hl("BufferLineWarningSelected", {guifg = cp.yellow, guibg = cp.black4})
 
-        hl("BufferLineError", {guifg = cp.white, guibg = inactive_bg})
-        hl("BufferLineErrorVisible", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineError", {guifg = cp.white, guibg = cp.black1})
+        hl("BufferLineErrorVisible", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineErrorSelected", {guifg = cp.red, guibg = cp.black4})
 
-        hl("BufferLineFill", {guifg = inactive_bg})
-        hl("BufferLineBackground", {guifg = cp.white, guibg = inactive_bg})
+        hl("BufferLineFill", {guifg = cp.black1, guibg = cp.black1})
+        hl("BufferLineBackground", {guifg = cp.white, guibg = cp.black1})
+
+        hl("BufferLineBuffer", {guifg = cp.mauve, guibg = cp.black1})
         hl("BufferLineBufferVisible", {guifg = cp.mauve, guibg = cp.black4})
         hl("BufferLineBufferSelected", {guifg = cp.mauve, guibg = cp.black4, gui = "bold,italic"})
 
-        hl("BufferLineTab", {guifg = cp.mauve, guibg = inactive_bg})
+        hl("BufferLineTab", {guifg = cp.mauve, guibg = cp.black1})
         hl("BufferLineTabSelected", {guifg = cp.white, guibg = cp.black4})
         hl("BufferLineTabClose", {guifg = cp.white, guibg = cp.black4})
 
         hl("BufferLineIndicatorSelected", {guifg = cp.maroon, guibg = cp.black4})
-        hl("BufferLineSeparator", {guifg = inactive_bg, guibg = cp.black4})
-        hl("BufferLineSeparatorVisible", {guifg = inactive_bg, guibg = cp.black4})
-        hl("BufferLineSeparatorSelected", {guifg = inactive_bg, guibg = cp.black4})
+        hl("BufferLineSeparator", {guifg = cp.black1, guibg = cp.black1})
+        hl("BufferLineSeparatorVisible", {guifg = cp.black1, guibg = cp.black4})
+        hl("BufferLineSeparatorSelected", {guifg = cp.black1, guibg = cp.black4})
 
         ex.hi("TSMethod gui=bold")
         ex.hi("TSVariableBuiltin gui=none")
@@ -233,8 +237,8 @@ end
 
 -- === Gruvbox ===
 M.gruvbox = function()
-    g.gruvbox_material_background = "medium"
-    -- g.gruvbox_material_background = "hard"
+    -- g.gruvbox_material_background = "medium"
+    g.gruvbox_material_background = "hard"
     g.gruvbox_material_palette = "mix"
     g.gruvbox_material_palette = "material"
     g.gruvbox_material_enable_bold = 1
@@ -269,6 +273,12 @@ M.ocean_material = function()
     g.oceanic_material_allow_underline = 1
 
     -- cmd [[colorscheme oceanic_material]]
+end
+
+-- === TokyoDark ===
+M.tokyodark = function()
+    g.tokyodark_enable_italic_comment = false
+    g.tokyodark_enable_italic = false
 end
 
 -- === Everforest ===
@@ -477,6 +487,59 @@ end
 --     )
 -- end
 
+-- === RosePine ===
+M.rose_pine = function()
+    require("rose-pine").setup(
+        {
+            --- 'main'|'moon'
+            dark_variant = "main",
+            bold_vert_split = true,
+            dim_nc_background = false,
+            disable_background = false,
+            disable_float_background = false,
+            disable_italics = true,
+            ---@usage string hex value or named color from rosepinetheme.com/palette
+            groups = {
+                background = "base",
+                panel = "surface",
+                border = "highlight_med",
+                comment = "muted",
+                link = "iris",
+                punctuation = "subtle",
+                error = "love",
+                hint = "iris",
+                info = "foam",
+                warn = "gold",
+                headings = {
+                    h1 = "iris",
+                    h2 = "foam",
+                    h3 = "rose",
+                    h4 = "gold",
+                    h5 = "pine",
+                    h6 = "foam"
+                }
+                -- or set all headings at once
+                -- headings = 'subtle'
+            },
+            -- Change specific vim highlight groups
+            highlight_groups = {
+                TSFunction = {gui = "bold"}
+            }
+        }
+    )
+end
+
+-- === Calvera ===
+M.calvera = function()
+    g.calvera_italic_comments = false
+    g.calvera_italic_keywords = false
+    g.calvera_italic_functions = false
+    g.calvera_italic_variables = false
+    g.calvera_contrast = true
+    g.calvera_borders = false
+    g.calvera_disable_background = false
+end
+
 -- === Kimbox ===
 M.kimbox = function()
     ex.packadd("kimbox")
@@ -522,22 +585,32 @@ local function init()
     M.nightfox()
     M.edge()
     M.onenord()
+    M.tokyodark()
+    M.rose_pine()
+    -- M.calvera()
     -- M.leaf()
     -- M.vscode()
 
     -- require("kimbox").load()
-    --
+
     -- local theme = "jellybeans"
     -- local theme = "lmspacegray"
     -- local theme = "one"
-    --
+
+    -- local theme = "calvera"
+
     -- local theme = "gruvbox-material"
     -- local theme = "spaceduck"
     -- local theme = "everforest"
     -- local theme = "onenord"
     -- local theme = "material"
-    -- local theme = "catppuccin"
+    -- local theme = "tokyodark"
+    -- local theme = "night-owl"
+    -- local theme = "rose-pine"
+    -- local theme = "dusk-fox"
+
     -- local theme = "tokyonight"
+    -- local theme = "catppuccin"
     -- local theme = "kanagawa"
     local theme = "kimbox"
 

@@ -193,6 +193,13 @@ augroup(
     },
     {
         event = "FileType",
+        pattern = "c",
+        command = function()
+            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>", {buffer = bufnr})
+        end
+    },
+    {
+        event = "FileType",
         pattern = "javascript",
         command = function()
             map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")

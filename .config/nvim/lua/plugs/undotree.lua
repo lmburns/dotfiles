@@ -31,15 +31,37 @@ local function init()
     cmd(
         [[
         function! Undotree_CustomMap()
-            nmap <buffer> <C-u> <Plug>UndotreeUndo
             nunmap <buffer> u
+            nmap <buffer> J <Plug>UndotreePreviousState
+            nmap <buffer> K <Plug>UndotreeNextState
+            nmap <buffer> D <Plug>UndotreeDiffToggle
+            nmap <buffer> u <Plug>UndotreeUndo
+            nmap <buffer> U <Plug>UndotreeRedo
         endfunc
 
-        packadd undotree
+        pa undotree
     ]]
     )
 
-    require("which-key").register({["<Leader>ut"] = {":UndotreeToggle<CR>", "Toggle undotree"}})
+    -- <plug>UndotreeHelp
+    -- <plug>UndotreeClose
+    -- <plug>UndotreeFocusTarget
+    -- <plug>UndotreeClearHistory
+    -- <plug>UndotreeTimestampToggle
+    -- <plug>UndotreeDiffToggle
+    -- <plug>UndotreeNextState
+    -- <plug>UndotreePreviousState
+    -- <plug>UndotreeNextSavedState
+    -- <plug>UndotreePreviousSavedState
+    -- <plug>UndotreeRedo
+    -- <plug>UndotreeUndo
+    -- <plug>UndotreeEnter
+
+    require("which-key").register(
+        {
+            ["<Leader>ut"] = {":UndotreeToggle<CR>", "Toggle undotree"}
+        }
+    )
 
     command(
         "UndoTreeToggle",

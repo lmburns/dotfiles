@@ -19,19 +19,15 @@ local wk = require("which-key")
 --
 -- This is for returning them and sending them to a delayed function
 -- local function map2(modes, lhs, rhs, opts)
---     opts = opts or {}
---     opts.noremap = opts.noremap == nil and true or opts.noremap
---     if type(modes) == "string" then
---         modes = {modes}
---     end
+--      ...
 --     for _, mode in ipairs(modes) do
 --         table.insert(M.mappings, {mode, lhs, rhs, opts})
 --     end
 -- end
 
 -- ============== General mappings ============== [[[
--- map("i", "jk", "<ESC>")
--- map("i", "kj", "<ESC>")
+-- map("n", "<Space>", "<Nop>")
+-- map("x", "<Space>", "<Nop>")
 
 wk.register(
     {
@@ -40,15 +36,14 @@ wk.register(
     }
 )
 
+-- Map '-' to blackhole register
+map("n", "-", '"_')
+map("x", "-", '"_')
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
 
 command("Q", "q", {bang = true, nargs = "*"})
-
--- Replace command history with quit
--- map q: :MinimapToggle<CR> :q<CR>
--- map q: :q<CR>
 
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
@@ -85,7 +80,7 @@ wk.register(
     }
 )
 
-map("x", "<Leader>2;", "@:")
+map({"n", "x"}, "<Leader>2;", "@:")
 -- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
 -- Easier navigation in normal / visual / operator pending mode
@@ -141,14 +136,15 @@ wk.register(
     {
         ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
         ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
-        ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"}
-        -- ["gp"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
+        ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
+        ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
     },
     {expr = true}
 )
 
 wk.register(
     {
+        [",d"] = {[["_d]], "Delete (blackhole)"},
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
@@ -182,16 +178,11 @@ wk.register(
         -- ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"},
         ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
         ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+        -- ["oo"] = {"o<Esc>k", "Insert line below cursor"},
+        -- ["OO"] = {"O<Esc>j", "Insert line above cursor"}
     },
     {expr = true}
 )
-
--- wk.register(
---     {
---         ["oo"] = {"o<Esc>k", "Insert line below cursor"},
---         ["OO"] = {"O<Esc>j", "Insert line above cursor"}
---     }
--- )
 
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
@@ -354,7 +345,7 @@ map("n", "<Leader>jj", "Jumps", {cmd = true})
 wk.register(
     {
         ["<Leader>"] = {
-           e = {
+            e = {
                 name = "+edit",
                 c = {
                     ":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>",
@@ -371,14 +362,6 @@ wk.register(
 -- Show file info
 map("n", "<C-g>", "2<C-g>")
 -- ]]] === Other ===
-
-nvim.autocmd.lmb__LuaBindings = {
-    event = "FileType",
-    pattern = "lua",
-    command = function()
-        map("n", "<Leader>tt", "<Plug>PlenaryTestFile")
-    end
-}
 
 -- ============== Function Mappings ============= [[[
 -- Allow the use of extended function keys

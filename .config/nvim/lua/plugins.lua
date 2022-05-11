@@ -220,29 +220,30 @@ return packer.startup(
             use({"kevinhwang91/nvim-hclipboard"})
             use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
+            -- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
 
-            -- use(
-            --     {
-            --         "mg979/vim-visual-multi",
-            --         setup = [[vim.g.VM_leader = '<Space>']],
-            --         keys = {
-            --             {"n", "<C-n>"},
-            --             {"x", "<C-n>"},
-            --             {"n", [[<Leader>\]]},
-            --             {"n", "<Leader>A"},
-            --             {"x", "<Leader>A"},
-            --             {"n", "<M-S-i>"},
-            --             {"n", "<M-S-o>"},
-            --             {"n", "<C-Up>"},
-            --             {"n", "<C-Down>"},
-            --             {"n", "g/"}
-            --         },
-            --         cmd = {"VMSearch"},
-            --         conf = "visualmulti",
-            --         wants = {"nvim-hlslens", "nvim-autopairs"}
-            --     }
-            -- )
+            use(
+                {
+                    "mg979/vim-visual-multi",
+                    setup = [[vim.g.VM_leader = '<Space>']],
+                    keys = {
+                        {"n", "<C-n>"},
+                        {"x", "<C-n>"},
+                        {"n", [[<Leader>\]]},
+                        {"n", "<Leader>A"},
+                        {"x", "<Leader>A"},
+                        {"n", "<M-S-i>"},
+                        {"n", "<M-S-o>"},
+                        {"n", "<C-Up>"},
+                        {"n", "<C-Down>"},
+                        {"n", "g/"}
+                    },
+                    cmd = {"VMSearch"},
+                    conf = "visualmulti",
+                    wants = {"nvim-hlslens", "nvim-autopairs"}
+                }
+            )
             -- ]]] === Fixes ===
 
             -- ============================== WhichKey ============================ [[[
@@ -493,10 +494,16 @@ return packer.startup(
             use({"KeitaNakamura/neodark.vim"})
             use({"EdenEast/nightfox.nvim"})
             use({"catppuccin/nvim", as = "catppuccin"})
+            use({"rose-pine/neovim", as = "rose-pine"})
             use({"marko-cerovac/material.nvim"})
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
-            use({"andersevenrud/nordic.nvim"})
+            use({"levuaska/levuaska.nvim"})
+            -- use({"yashguptaz/calvera-dark.nvim"})
+            -- use({"andersevenrud/nordic.nvim"})
+            -- use({"aktersnurra/no-clown-fiesta.nvim"})
+            -- use({"pwntester/nautilus.nvim"})
+            -- use({"doums/darcula"})
             -- use({"ray-x/aurora"})
             -- use({"shaunsingh/nord.nvim"})
             -- use({"katawful/kat.nvim"})
@@ -541,13 +548,14 @@ return packer.startup(
             -- ]]] === Scrollbar ===
 
             -- ============================ Trouble =============================== [[[
-            -- use(
-            --     {
-            --       "folke/trouble.nvim",
-            --       requires = { "kyazdani42/nvim-web-devicons", opt = true },
-            --       conf = "plugs.trouble",
-            --     }
-            -- )
+            -- "folke/trouble.nvim",
+            use(
+                {
+                    "lmburns/trouble.nvim",
+                    requires = {"kyazdani42/nvim-web-devicons", opt = true},
+                    conf = "plugs.trouble"
+                }
+            )
             -- ]]] === Trouble ===
 
             -- =========================== Statusline ============================= [[[
@@ -582,8 +590,6 @@ return packer.startup(
             -- ]]] === Lualine ===
 
             -- =========================== Indentline ============================= [[[
-            -- use({ "yggdroot/indentline", conf = "plugs.indentline" })
-
             use(
                 {
                     "lukas-reineke/indent-blankline.nvim",
@@ -661,7 +667,9 @@ return packer.startup(
                         {"n", "<Leader><Leader>l"},
                         {"n", "<Leader><Leader>J"},
                         {"n", "<Leader><Leader>K"},
-                        {"n", "<Leader><Leader>/"}
+                        {"n", "<Leader><Leader>/"},
+                        {"n", "<C-S-:>"},
+                        {"n", "<C-S-<>"}
                     }
                 }
             )
@@ -810,7 +818,7 @@ return packer.startup(
             -- ]]] === Tags ===
 
             -- ============================= Startify ============================= [[[
-            use {"mhinz/vim-startify", conf = "plugs.startify"}
+            use({"mhinz/vim-startify", conf = "plugs.startify"})
             -- ]]] === Startify ===
 
             -- ============================= UndoTree ============================= [[[
@@ -818,7 +826,8 @@ return packer.startup(
                 {
                     "mbbill/undotree",
                     cmd = "UndoTreeToggle",
-                    conf = "plugs.undotree"
+                    conf = "plugs.undotree",
+                    keys = {{"n", "<Leader>ut"}}
                 }
             )
             -- ]]] === UndoTree ===
@@ -855,7 +864,7 @@ return packer.startup(
             use(
                 {
                     "Saecki/crates.nvim",
-                    event = {"BufRead Cargo.toml"},
+                    event = "BufRead Cargo.toml",
                     conf = "crates"
                 }
             )
@@ -1070,6 +1079,7 @@ return packer.startup(
                     conf = "colorizer"
                 }
             )
+
             use(
                 {
                     "Pocco81/HighStr.nvim",
@@ -1077,6 +1087,7 @@ return packer.startup(
                     conf = "plugs.HighStr"
                 }
             )
+
             use(
                 {
                     "folke/todo-comments.nvim",
@@ -1353,6 +1364,7 @@ return packer.startup(
             -- ]]] === Telescope ===
 
             -- ================================ Git =============================== [[[
+            use({"ahmedkhalf/project.nvim", conf = "project", after = "telescope.nvim"})
             use(
                 {
                     "tpope/vim-fugitive",
@@ -1506,93 +1518,3 @@ return packer.startup(
         end
     }
 )
-
--- ray-x/sad.nvim
-
--- ============================== Disabled ============================= [[[
--- ╭──────────────────────────────────────────────────────────╮
--- │                           LSP                            │
--- ╰──────────────────────────────────────────────────────────╯
--- ==== Completion ====
--- use(
---     {
---       "hrsh7th/nvim-cmp",
---       requires = {
---         "hrsh7th/cmp-buffer",
---         "hrsh7th/cmp-calc",
---         "hrsh7th/cmp-cmdline",
---         "hrsh7th/cmp-nvim-lsp",
---         "hrsh7th/cmp-path",
---         "hrsh7th/cmp-vsnip",
---         "hrsh7th/cmp-nvim-lsp-signature-help",
---         "petertriho/cmp-git",
---         "hrsh7th/cmp-copilot",
---         "lukas-reineke/cmp-rg",
---         { "hrsh7th/vim-vsnip", requires = { "hrsh7th/vim-vsnip-integ" } },
---       },
---       config = function()
---         -- See lspconfig comment on why this is in a function wrapper
---         require("plugins.cmp").setup()
---       end,
---     }
--- )
-
--- ==== Other ===
--- "RRethy/vim-illuminate" => Highlight word under cursor
--- "pechorin/any-jump.vim" => Definition jumping
--- "j-hui/fidget.nvim" => Standalone for LSP progress
--- "filipdutescu/renamer.nvim" => Like code action rename
--- "jubnzv/virtual-types.nvim" => Code lens
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Disabled                         │
--- ╰──────────────────────────────────────────────────────────╯
--- use(
---     {
---         "nvim-neorg/neorg",
---         conf = "plugs.norg",
---         after = "nvim-treesitter",
---         requires = {"plenary.nvim", "nvim-neorg/neorg-telescope"}
---     }
--- )
-
--- 'jbyuki/venn.nvim'          => Draw ASCII diagrams in Neovim
--- '0styx0/abbreinder.nvim'    => Abbreviation reminders
--- 'mvllow/modes.nvim'         => Highlight cursorline based on mode
--- 'GustavoKatel/sidebar.nvim' => Sidebar with information
-
--- use(
---     {
---         "windwp/nvim-spectre",
---         cmd = "SpectreOpen",
---         conf = "spectre"
---     }
--- )
-
--- use(
---     {
---       "cutlass/gbprod.nvim",
---       conf = "cutlass",
---       -- keys = {
---       --   { "n", "c" },
---       --   { "n", "cc" },
---       --   { "n", "C" },
---       --   { "n", "d" },
---       --   { "n", "dd" },
---       --   { "n", "D" },
---       --   { "n", "x" },
---       --   { "n", "X" },
---       -- },
---     }
--- )
-
--- use(
---     {
---         "tanvirtin/vgit.nvim",
---         requires = {"nvim-lua/plenary.nvim"},
---         conf = "plugs.vgit",
---         cmd = "VGit"
---     }
--- )
-
--- ]]] === Disabled ===

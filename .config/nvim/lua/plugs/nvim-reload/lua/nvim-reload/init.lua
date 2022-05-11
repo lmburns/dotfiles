@@ -194,7 +194,8 @@ function M.Restart()
 
     -- Manually run VimEnter autocmd to emulate a new run of Vim
     -- cmd("doautoall VimEnter")
-    -- cmd("doautocmd BufEnter")
+    cmd("doautocmd BufEnter")
+    ex.doautoall("VimEnter")
     -- cmd("doautocmd FileType")
 end
 

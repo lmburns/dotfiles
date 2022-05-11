@@ -9,7 +9,7 @@ local builtin = require("telescope.builtin")
 local actions = require("telescope.actions")
 local action_layout = require("telescope.actions.layout")
 local action_state = require("telescope.actions.state")
-local actions_generate = require("telescope.actions.generate")
+local action_generate = require("telescope.actions.generate")
 local sorters = require("telescope.sorters")
 local previewers = require("telescope.previewers")
 local make_entry = require("telescope.make_entry")
@@ -17,63 +17,77 @@ local conf = require("telescope.config").values
 
 local fb_utils = require "telescope._extensions.file_browser.utils"
 local z_utils = require("telescope._extensions.zoxide.utils")
+
+local P = R("plugs.telescope.pickers")
+
 local kutils = require("common.kutils")
-
-local Path = require("plenary.path")
-
 local b_utils = require("common.utils")
 local command = b_utils.command
 local map = b_utils.map
-require("dev")
 
+local Path = require("plenary.path")
 local wk = require("which-key")
 
--- local home = vim.loop.os_homedir()
--- local cwd = vim.fn.getcwd()
+-- Custom actions
+local c_actions = {
+    -- FIX: Anonymous function notification
+    which_key = function(opts)
+        opts = opts or {}
+        local inner = {
+            name_width = 20, -- typically leads to smaller floats
+            max_height = 0.5, -- increase potential maximum height
+            separator = "  ", -- change sep between mode, keybind, and name
+            close_with_action = true, -- do not close float on action
+            normal_hl = "TelescopePrompt",
+            border_hl = "Parameter"
+        }
 
-local set_prompt_to_entry_value = function(prompt_bufnr)
-    local entry = action_state.get_selected_entry()
-    if not entry or not type(entry) == "table" then
-        return
+        opts = vim.tbl_deep_extend("force", inner, opts)
+
+        return action_generate.which_key(opts)
+    end,
+    set_prompt_to_entry_value = function(prompt_bufnr)
+        local entry = action_state.get_selected_entry()
+        if not entry or not type(entry) == "table" then
+            return
+        end
+
+        action_state.get_current_picker(prompt_bufnr):reset_prompt(entry.ordinal)
+    end,
+    qf_multi_select = function(prompt_bufnr)
+        local picker = action_state.get_current_picker(prompt_bufnr)
+        local num_selections = table.getn(picker:get_multi_selection())
+
+        if num_selections > 1 then
+            actions.send_selected_to_qflist(prompt_bufnr)
+            actions.open_qflist(prompt_bufnr)
+        else
+            actions.file_edit(prompt_bufnr)
+        end
+    end,
+    -- FIX: Get this to work better
+    cd_parent = function(prompt_bufnr, opts)
+        -- local current_picker = action_state.get_current_picker(prompt_bufnr)
+        -- local finder = current_picker.finder
+        -- local parent_dir = Path:new(finder.path):parent()
+        --
+        -- finder.path = parent_dir:absolute()
+        -- finder.cwd = finder.path
+        -- cmd("lcd " .. finder.path)
+        -- current_picker:refresh(finder, {reset_prompt = true, multi = current_picker._multi})
+
+        local current_picker = action_state.get_current_picker(prompt_bufnr)
+        local finder = current_picker.finder
+        local parent_dir = Path:new(finder.path):parent()
+
+        opts.cwd = parent_dir:absolute()
+        -- Doesn't work cause it is overridden
+        current_picker.prompt_border:change_title(opts.cwd)
+
+        actions.close(prompt_bufnr)
+        builtin.live_grep(opts)
     end
-
-    action_state.get_current_picker(prompt_bufnr):reset_prompt(entry.ordinal)
-end
-
-local qf_multi_select = function(prompt_bufnr)
-    local picker = action_state.get_current_picker(prompt_bufnr)
-    local num_selections = table.getn(picker:get_multi_selection())
-
-    if num_selections > 1 then
-        actions.send_selected_to_qflist(prompt_bufnr)
-        actions.open_qflist(prompt_bufnr)
-    else
-        actions.file_edit(prompt_bufnr)
-    end
-end
-
--- TODO: Get this to work better
-local cd_parent = function(prompt_bufnr, opts)
-    -- local current_picker = action_state.get_current_picker(prompt_bufnr)
-    -- local finder = current_picker.finder
-    -- local parent_dir = Path:new(finder.path):parent()
-    --
-    -- finder.path = parent_dir:absolute()
-    -- finder.cwd = finder.path
-    -- cmd("lcd " .. finder.path)
-    -- current_picker:refresh(finder, {reset_prompt = true, multi = current_picker._multi})
-
-    local current_picker = action_state.get_current_picker(prompt_bufnr)
-    local finder = current_picker.finder
-    local parent_dir = Path:new(finder.path):parent()
-
-    opts.cwd = parent_dir:absolute()
-    -- Doesn't work cause it is overridden
-    current_picker.prompt_border:change_title(opts.cwd)
-
-    actions.close(prompt_bufnr)
-    builtin.live_grep(opts)
-end
+}
 
 -- ============================ Config ===========================
 
@@ -131,8 +145,8 @@ require("telescope").setup(
                     ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
                     ["<C-q>"] = actions.send_selected_to_qflist,
                     ["<M-,>"] = actions.smart_send_to_qflist,
-                    ["<M-q>"] = qf_multi_select,
-                    ["<C-o>"] = actions_generate.which_key(),
+                    ["<M-q>"] = c_actions.qf_multi_select,
+                    ["<C-o>"] = c_actions.which_key(),
                     -- Change once which-key can be disabled in filetypes
                     ["<Space>"] = function()
                         api.nvim_feedkeys(kutils.termcodes["<Space>"], "n", false)
@@ -169,16 +183,9 @@ require("telescope").setup(
                     ["<C-d>"] = actions.results_scrolling_down,
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-q>"] = qf_multi_select,
+                    ["<M-q>"] = c_actions.qf_multi_select,
                     ["<M-,>"] = actions.smart_send_to_qflist,
-                    ["<C-o>"] = actions_generate.which_key(
-                        {
-                            name_width = 20, -- typically leads to smaller floats
-                            max_height = 0.5, -- increase potential maximum height
-                            separator = " > ", -- change sep between mode, keybind, and name
-                            close_with_action = false -- do not close float on action
-                        }
-                    )
+                    ["<C-o>"] = c_actions.which_key()
                 }
             },
             vimgrep_arguments = {
@@ -678,14 +685,14 @@ M.cst_grep = function(opts)
             "n",
             "<M-i>",
             function(prompt_bufnr)
-                cd_parent(prompt_bufnr, default)
+                c_actions.cd_parent(prompt_bufnr, default)
             end
         )
         map(
             "i",
             "<M-i>",
             function(prompt_bufnr)
-                cd_parent(prompt_bufnr, default)
+                c_actions.cd_parent(prompt_bufnr, default)
             end
         )
 
@@ -957,7 +964,7 @@ builtin.edit_nvim = function()
             "--exclude=sessions"
         },
         attach_mappings = function(_, map)
-            map("i", "<C-y>", set_prompt_to_entry_value)
+            map("i", "<C-y>", c_actions.set_prompt_to_entry_value)
 
             -- TODO: Find something useful for this
             -- actions.select_default:replace_if(
@@ -1015,9 +1022,9 @@ end
 -- TODO: Fix and get a better list of file paths
 M.grep_tags = function()
     local search_dirs = {}
-    local files = fn.globpath(vim.o.runtimepath, 'doc/*', 1, 1)
+    local files = fn.globpath(vim.o.runtimepath, "doc/*", 1, 1)
     for _, file in ipairs(files) do
-        if file ~= 'tags' then
+        if file ~= "tags" then
             table.insert(search_dirs, file)
         end
     end
@@ -1045,6 +1052,12 @@ end
 
 builtin.tags = M.tags
 
+builtin.windows = P.windows
+-- FIX: Why doesn't changes work, but others do?
+builtin.changes = P.changes
+builtin.scriptnames = P.scriptnames
+builtin.live_grep_in_folder = P.live_grep_in_folder
+
 -- ========================= Extensions ==========================
 -- Builtin is modified to show a list of all extensions
 builtin.ultisnips = function(opts)
@@ -1057,6 +1070,10 @@ end
 
 builtin.ghq = function(opts)
     telescope.extensions.ghq.list(opts)
+end
+
+builtin.frecency = function(opts)
+    telescope.extensions.frecency.frecency(opts)
 end
 
 builtin.notify = function(opts)
@@ -1073,6 +1090,42 @@ end
 
 builtin.urlview = function(opts)
     telescope.extensions.urlview.urlview(opts)
+end
+
+builtin.todo = function(opts)
+    telescope.extensions.todo.todo(opts)
+end
+
+builtin.yanky = function(opts)
+    telescope.extensions.yank_history.yank_history(opts)
+end
+
+builtin.bookmarks = function(opts)
+    telescope.extensions.bookmarks.bookmarks(opts)
+end
+
+builtin.heading = function(opts)
+    telescope.extensions.heading.heading(opts)
+end
+
+builtin.lazygit = function(opts)
+    telescope.extensions.lazygit.lazygit(opts)
+end
+
+builtin.projects = function(opts)
+    telescope.extensions.projects.projects(opts)
+end
+
+builtin.gh_issues = function(opts)
+    telescope.extensions.gh.issues(opts)
+end
+
+builtin.gh_pull_request = function(opts)
+    telescope.extensions.gh.pull_request(opts)
+end
+
+builtin.gh_gist = function(opts)
+    telescope.extensions.gh.gist(opts)
 end
 
 -- builtin.aerial = function(opts)
@@ -1109,7 +1162,7 @@ wk.register(
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbols"},
         ["<LocalLeader>S"] = {"<Cmd>Telescope treesitter<CR>", "List treesitter symbols"},
-        ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Telescope resume"},
+        ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Telescope resume"}
     }
 )
 

@@ -3,6 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
+local color = require("common.color")
 
 function M.setup()
     -- Replace Netrw
@@ -18,7 +19,7 @@ function M.setup()
     -- Add a shadow window (100 hides it)
     g.rnvimr_shadow_winblend = 70
 
-    g.rnvimr_ranger_cmd = "ranger --cmd='set draw_borders both'"
+    -- g.rnvimr_ranger_cmd = "ranger --cmd='set draw_borders both'"
     -- g.rnvimr_ranger_cmd = "lf"
 
     g.rnvimr_action = {
@@ -77,7 +78,8 @@ end
 
 local function init()
     M.setup()
-    cmd [[highlight link RnvimrNormal CursorLine]]
+
+    color.link("RnvimrNormal", "CursorLine")
 
     -- map("t", "<C-i>", [[<C-\><C-n>:RnvimrToggle<CR>]], { silent = true })
     -- map("t", "<C-o>", [[<C-\><C-n>:RnvimrResize<CR>]], { silent = true })

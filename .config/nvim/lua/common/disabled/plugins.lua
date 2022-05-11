@@ -1,4 +1,3 @@
--- ========================== Changed ==========================
 -- ==> zen-mode; twilight
 -- use(
 --     {
@@ -9,6 +8,7 @@
 --       },
 --     }
 -- )
+
 -- ==> hop
 -- use(
 --     {
@@ -18,19 +18,104 @@
 --       config = conf("sneak"),
 --     }
 -- )
+
 -- ==> dial
 -- use({ "AndrewRadev/switch.vim" })
--- ========================== Other ==========================
+
 -- use({
 --   "ThePrimeagen/harpoon",
 --   after = { "telescope.nvim" },
 --   config = conf("plugs.harpoon"),
 -- })
+
 -- use(
 --     {
 --       "https://gitlab.com/yorickpeterse/nvim-pqf",
 --       ft = { "qf" },
 --       after = "nvim-bqf",
 --       config = [[require('pqf').setup()]],
+--     }
+-- )
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           LSP                            │
+-- ╰──────────────────────────────────────────────────────────╯
+-- ==== Completion ====
+-- use(
+--     {
+--       "hrsh7th/nvim-cmp",
+--       requires = {
+--         "hrsh7th/cmp-buffer",
+--         "hrsh7th/cmp-calc",
+--         "hrsh7th/cmp-cmdline",
+--         "hrsh7th/cmp-nvim-lsp",
+--         "hrsh7th/cmp-path",
+--         "hrsh7th/cmp-vsnip",
+--         "hrsh7th/cmp-nvim-lsp-signature-help",
+--         "petertriho/cmp-git",
+--         "hrsh7th/cmp-copilot",
+--         "lukas-reineke/cmp-rg",
+--         { "hrsh7th/vim-vsnip", requires = { "hrsh7th/vim-vsnip-integ" } },
+--       },
+--       config = function()
+--         -- See lspconfig comment on why this is in a function wrapper
+--         require("plugins.cmp").setup()
+--       end,
+--     }
+-- )
+
+-- ==== Other ===
+-- "RRethy/vim-illuminate"     => Highlight word under cursor
+-- "pechorin/any-jump.vim"     => Definition jumping
+-- "j-hui/fidget.nvim"         => Standalone for LSP progress
+-- "filipdutescu/renamer.nvim" => Like code action rename
+-- "jubnzv/virtual-types.nvim" => Code lens
+-- "ray-x/sad.nvim"            => Search and replace
+
+-- use(
+--     {
+--         "nvim-neorg/neorg",
+--         conf = "plugs.norg",
+--         after = "nvim-treesitter",
+--         requires = {"plenary.nvim", "nvim-neorg/neorg-telescope"}
+--     }
+-- )
+
+-- 'jbyuki/venn.nvim'          => Draw ASCII diagrams in Neovim
+-- '0styx0/abbreinder.nvim'    => Abbreviation reminders
+-- 'mvllow/modes.nvim'         => Highlight cursorline based on mode
+-- 'GustavoKatel/sidebar.nvim' => Sidebar with information
+
+-- use(
+--     {
+--         "windwp/nvim-spectre",
+--         cmd = "SpectreOpen",
+--         conf = "spectre"
+--     }
+-- )
+
+-- use(
+--     {
+--       "cutlass/gbprod.nvim",
+--       conf = "cutlass",
+--       -- keys = {
+--       --   { "n", "c" },
+--       --   { "n", "cc" },
+--       --   { "n", "C" },
+--       --   { "n", "d" },
+--       --   { "n", "dd" },
+--       --   { "n", "D" },
+--       --   { "n", "x" },
+--       --   { "n", "X" },
+--       -- },
+--     }
+-- )
+
+-- use(
+--     {
+--         "tanvirtin/vgit.nvim",
+--         requires = {"nvim-lua/plenary.nvim"},
+--         conf = "plugs.vgit",
+--         cmd = "VGit"
 --     }
 -- )

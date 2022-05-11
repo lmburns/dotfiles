@@ -25,11 +25,11 @@
   "diagnostic.hintSign": "•",
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
-  "diagnostic.refreshOnInsertMode": false,
+  "diagnostic.refreshOnInsertMode": true,
+  "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
   "diagnostic.signPriority": 20,
   "diagnostic.enableHighlightLineNumber": false,
-  "diagnostic.locationlistUpdate": false,
 
   // FloatBorder
   "diagnostic.floatConfig": {
@@ -306,11 +306,11 @@
         }
       }
     },
-    "R": {
-      "command": "/usr/bin/R",
-      "args": ["--slave", "-e", "languageserver::run()"],
-      "filetypes": ["r"]
-    },
+    // "R": {
+    //   "command": "/usr/bin/R",
+    //   "args": ["--slave", "-e", "languageserver::run()"],
+    //   "filetypes": ["r"]
+    // },
     "zls": {
       "command": "/usr/bin/zls",
       "filetypes": ["zig"]

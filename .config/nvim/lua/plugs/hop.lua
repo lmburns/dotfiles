@@ -18,11 +18,13 @@ local function init()
     map("n", "<Leader><Leader>k", ":HopLineStartBC<CR>")
     map("n", "<Leader><Leader>j", ":HopLineStartAC<CR>")
 
-    map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>")
-    map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>")
-    map("n", "<Leader><Leader>K", ":HopWordBC<CR>")
-    map("n", "<Leader><Leader>J", ":HopWordAC<CR>")
-    map("n", "<Leader><Leader>/", ":HopPattern<CR>")
+    map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>", {desc = "Hop current line AC"})
+    map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>", {desc = "Hop current line BC"})
+    map("n", "<Leader><Leader>K", ":HopWordBC<CR>", {desc = "Hop any word BC"})
+    map("n", "<Leader><Leader>J", ":HopWordAC<CR>", {desc = "Hop any word AC"})
+    map("n", "<Leader><Leader>/", ":HopPattern<CR>", {desc = "Hop pattern"})
+    map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
+    map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
 
     -- ========================== f-Mapping ==========================
 
@@ -93,7 +95,7 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = false
+                    inclusive_jump = true
                 }
             )
         end
@@ -108,7 +110,7 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = false
+                    inclusive_jump = true
                 }
             )
         end

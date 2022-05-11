@@ -35,14 +35,13 @@ reload.pre_reload_hook = function()
 end
 
 reload.post_reload_hook = function()
-    cmd [[nohl]]
+    ex.nohl()
 
     -- cmd("doautocmd ColorScheme")
-    cmd("doautocmd VimEnter")
     -- cmd("doautoall WinEnter")
 
     -- recompile packer
-    -- cmd [[pa packer.nvim]]
+    ex.pa("packer.nvim")
     require("plugins").compile()
 
     -- cmd [[pa coc-kvs]]
@@ -71,10 +70,13 @@ reload.post_reload_hook = function()
     )
 
     -- ex.PackerLoad("nvim-treesitter")
-    ex.pa("nvim-treesitter")
+    -- ex.pa("nvim-treesitter")
+    -- ex.pa("iswap.nvim")
     -- require("plugs.tree-sitter")
-
     ex.syntax("on")
+
+    -- ex.doautocmd("VimEnter")
+
     -- local tbl = require("impatient").modpaths.cache
     -- for k, v in pairs(tbl) do
     --     if k:match("^nvim%-treesitter*") then

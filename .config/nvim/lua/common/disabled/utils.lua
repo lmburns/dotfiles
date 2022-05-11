@@ -25,7 +25,7 @@ end
 ---Create an autocmd with vim commands
 ---
 ---This allows very easy transition from vim commands
-function M.autocmd(group, cmds, clear)
+M.autocmd = function(group, cmds, clear)
     clear = clear == nil and false or clear
     if type(cmds) == "string" then
         cmds = {cmds}
@@ -76,7 +76,7 @@ function M.cmd(name, action, flags)
 end
 
 -- Expand or minimize current buffer in a more natural direction (tmux-like)
-function M.resize(vertical, margin)
+M.resize = function(vertical, margin)
     local cur_win = api.nvim_get_current_win()
     -- go (possibly) right
     vim.cmd(string.format("wincmd %s", vertical and "l" or "j"))

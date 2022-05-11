@@ -88,10 +88,13 @@ augroup(
         event = "ColorScheme",
         pattern = "*",
         command = function()
+            -- ex.hi("TSConstBuiltin gui=none")
             ex.hi("TSVariableBuiltin gui=none")
             ex.hi("TSTypeBuiltin gui=none")
             ex.hi("TSProperty gui=none")
             ex.hi("TSVariable gui=none")
+            ex.hi("TSString gui=none")
+            ex.hi("TSKeywordFunction gui=none")
             ex.hi("Function gui=bold")
             ex.hi("Todo guibg=none")
             ex.hi("FloatermBorder guifg=#A06469 gui=none")

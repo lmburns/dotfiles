@@ -97,7 +97,7 @@ M.setup_hlargs = function()
     )
 end
 
-M.setup_iswap = function(ff, ffe, ee)
+M.setup_iswap = function()
     ex.packadd("iswap.nvim")
 
     color.set_hl("ISwapSwap", {guibg = "#957FB8"})
@@ -749,6 +749,23 @@ local function init()
     map("o", "ik", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
     map("o", "ak", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
 
+    map("o", "ie", [[:<C-u>normal! ggVG"<CR>]])
+    map("x", "ie", [[:normal! ggVG"<CR>]])
+    map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
+    map("x", "ae", [[:normal! HVL"<CR>]])
+
+    -- This doesn't work
+    -- map(
+    --     {"x", "o"},
+    --     "ae",
+    --     function()
+    --         local scrolloff = opt_local.scrolloff:get()
+    --         opt_local.scrolloff = 0
+    --         ex.normal_('HVL"')
+    --         opt_local.scrolloff = scrolloff
+    --     end
+    -- )
+
     wk.register(
         {
             ["<Leader>.f"] = "Swap next function",
@@ -760,6 +777,8 @@ local function init()
 
     wk.register(
         {
+            ["ie"] = "Entire buffer",
+            ["ae"] = "Entire visible buffer",
             ["ac"] = "Around call",
             ["ic"] = "Inner call",
             ["ao"] = "Around block",
@@ -825,6 +844,7 @@ local function init()
     map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("o", ",", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("n", "R", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
 
     queries = require("nvim-treesitter.query")
     local hl_disabled = conf.highlight.disable

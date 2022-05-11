@@ -887,14 +887,25 @@ key_bindings:
   - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
   - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
   - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
+  - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
+  - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
+  - { key: 0x34, mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
+  - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
+
+  # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
+  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
+  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
+  - { key: I, mods: Control|Shift, chars: "\x1b[73;6u" }
+
     # FIX: Tmux has to be recompiled
   - { key: I, mods: Control, chars: "\x1b[105;5u" }
   - { key: M, mods: Control, chars: "\x1b[77;5u" }
-  # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
-  # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
   - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
   - { key: Period, mods: Control, chars: "\x1b[46;5u" }
   - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
+  # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
+  # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
 
   # Vi Mode
   - { key: Space, mods: Control, mode: Vi, action: ScrollToBottom }

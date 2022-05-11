@@ -2,6 +2,7 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
+local augroup = utils.augroup
 
 local wilder = require("wilder")
 
@@ -179,7 +180,7 @@ function M.setup()
     -- │                        Vimscript                         │
     -- ╰──────────────────────────────────────────────────────────╯
 
-        cmd [[
+    cmd [[
 
       function! s:shouldDisable(x)
         let l:cmd = wilder#cmdline#parse(a:x).cmd
@@ -265,6 +266,42 @@ end
 
 local function init()
     M.setup()
+
+    -- nvim.autocmd.WilderDisabler = {
+    --     event = "FileType",
+    --     pattern = {"TelescopePrompt"},
+    --     command = function()
+    --         fn["wilder#disable"]()
+    --     end
+    -- }
+
+    --     nvim.autocmd.WilderDisabler = {
+    --         {
+    --             event = "BufEnter",
+    --             pattern = "*",
+    --             command = function()
+    --                 local bufnr = nvim.buf.nr()
+    --
+    --                 -- if _t({"TelescopePrompt", "TelescopeResults"}):contains(b[bufnr].ft) then
+    --                 if b[bufnr].bt == "nofile" then
+    --                     fn["wilder#disable"]()
+    --                 else
+    --                     fn["wilder#enable"]()
+    --                 end
+    --             end
+    --         },
+    -- {
+    --             event = "BufLeave",
+    --             pattern = "*",
+    --             command = function()
+    --                 local bufnr = nvim.buf.nr()
+    --
+    --                 if b[bufnr].bt ~= "" then
+    --                     fn["wilder#enable"]()
+    --                 end
+    --             end
+    --         }
+    -- }
 
     -- Allow both Tab/S-Tab and Ctrl{j,k} to rotate through completions
     map("c", "<C-j>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]], {noremap = false, expr = true})

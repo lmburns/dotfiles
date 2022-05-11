@@ -70,4 +70,47 @@ function M.hl(group, opts, ns_id)
     api.nvim_set_hl(F.if_nil(ns_id, 0), group, opts)
 end
 
+---Remove escape sequences of the following formats:
+---1. ^[[34m
+---2. ^[[0;34m
+---@param str string
+---@return string
+M.strip_ansi = function(str)
+    if not str then
+        return str
+    end
+    return str:gsub("%[[%d;]+m", "")
+end
+
+M.ansi_codes = {}
+M.ansi_colors = {
+    clear = "\x1b[0m",
+    bold = "\x1b[1m",
+    italic = "\x1b[3m",
+    underline = "\x1b[4m",
+    black = "\x1b[0;30m",
+    red = "\x1b[0;31m",
+    green = "\x1b[0;32m",
+    yellow = "\x1b[0;33m",
+    blue = "\x1b[0;34m",
+    magenta = "\x1b[0;35m",
+    cyan = "\x1b[0;36m",
+    white = "\x1b[0;37m",
+    grey = "\x1b[0;90m",
+    dark_grey = "\x1b[0;97m"
+}
+
+M.add_ansi_code = function(name, escseq)
+    M.ansi_codes[name] = function(string)
+        if string == nil or #string == 0 then
+            return ""
+        end
+        return escseq .. string .. M.ansi_colors.clear
+    end
+end
+
+for color, escseq in pairs(M.ansi_colors) do
+    M.add_ansi_code(color, escseq)
+end
+
 return M

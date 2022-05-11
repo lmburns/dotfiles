@@ -91,6 +91,7 @@ local function init()
 
     map("n", "<LocalLeader>T", ":TodoTelescope<CR>", {silent = true})
     map("n", ";t", ":TodoQuickFix<CR>", {silent = true})
+    map("n", ";T", ":TodoTrouble<CR>", {silent = true})
 end
 
 init()

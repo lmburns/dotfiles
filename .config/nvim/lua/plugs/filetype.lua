@@ -1,7 +1,6 @@
 local M = {}
 
 local utils = require("common.utils")
-local map = utils.map
 
 local nroff_ft = function()
     b.filetype = "nroff"
@@ -147,9 +146,6 @@ function M.setup()
                     ["me"] = nroff_ft,
                     ["mom"] = nroff_ft,
                     ["man"] = nroff_ft,
-                    ["c"] = function()
-                        map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
-                    end
                 },
                 function_literal = {},
                 function_complex = {

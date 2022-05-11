@@ -53,7 +53,7 @@ vim.tbl_map(
 o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
-vim.env.LANG = "en_US.UTF-8"
+env.LANG = "en_US.UTF-8"
 
 -- set_option_value / set_option
 
@@ -146,7 +146,10 @@ o.undolevels = 1000
 o.undoreload = 10000
 o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
-fn.mkdir(vim.o.undodir, "p")
+if not uv.fs_stat(vim.o.undodir) then
+    fn.mkdir(vim.o.undodir, "p")
+end
+
 o.shada =
     list {
     "!", -- save and restore global variables starting with uppercase
@@ -165,7 +168,7 @@ o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
 o.diffopt:append(",vertical,internal,algorithm:patience")
-o.inccommand = "nosplit"
+o.inccommand = "split" -- nosplit
 o.splitbelow = true
 o.splitright = true
 
@@ -245,12 +248,3 @@ end
 
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
-
--- =============== Commands ================ [[[
--- filetype on
--- filetype plugin on
--- filetype plugin indent on
--- cmd [[
---   syntax enable
--- ]]
--- ]]] === Commands ===
