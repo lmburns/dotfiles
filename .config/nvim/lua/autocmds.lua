@@ -4,6 +4,8 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
+local color = require("common.color")
+
 -- augroup(
 --     {"filetypedetect", false},
 --     {
@@ -65,7 +67,23 @@ do
             pattern = "*",
             command = function()
                 -- Buffer option here doesn't work like global
-                o.formatoptions:remove({"c", "r", "o"})
+                -- o.formatoptions:remove({"c", "r", "o"})
+                o.formatoptions = {
+                    ["1"] = true,
+                    ["2"] = true, -- Use indent from 2nd line of a paragraph
+                    q = true, -- Continue comments with gq"
+                    n = true, -- Recognize numbered lists
+                    j = true, -- Remove a comment leader when joining lines.
+                    -- Only break if the line was not longer than 'textwidth' when the insert
+                    -- started and only at a white character that has been entered during the
+                    -- current insert command.
+                    l = true,
+                    v = true, -- Only break line at blank line I've entered
+                    c = true, -- Auto-wrap comments using textwidth
+                    r = false, -- Continue comments when pressing Enter
+                    t = false, -- Autowrap lines using text width value
+                    o = false --- Automatically insert comment leader after <enter>
+                }
                 o.conceallevel = 2
                 o.concealcursor = "vc"
 
@@ -89,15 +107,29 @@ augroup(
         pattern = "*",
         command = function()
             -- ex.hi("TSConstBuiltin gui=none")
-            ex.hi("TSVariableBuiltin gui=none")
-            ex.hi("TSTypeBuiltin gui=none")
-            ex.hi("TSProperty gui=none")
-            ex.hi("TSVariable gui=none")
-            ex.hi("TSString gui=none")
-            ex.hi("TSKeywordFunction gui=none")
-            ex.hi("Function gui=bold")
-            ex.hi("Todo guibg=none")
-            ex.hi("FloatermBorder guifg=#A06469 gui=none")
+            -- ex.hi("TSVariableBuiltin gui=none")
+            -- ex.hi("TSTypeBuiltin gui=none")
+            -- ex.hi("TSProperty gui=none")
+            -- ex.hi("TSVariable gui=none")
+            -- ex.hi("TSString gui=none")
+            -- ex.hi("TSKeywordFunction gui=none")
+            -- ex.hi("Function gui=bold")
+            -- ex.hi("Todo guibg=none")
+            -- ex.hi("FloatermBorder guifg=#A06469 gui=none")
+
+            color.all(
+                {
+                    TSVariableBuiltin = {gui = "none"},
+                    TSTypeBuiltin = {gui = "none"},
+                    TSProperty = {gui = "none"},
+                    TSVariable = {gui = "none"},
+                    TSString = {gui = "none"},
+                    TSKeywordFunction = {gui = "none"},
+                    Function = {gui = "none"},
+                    Todo = {bg = "none"},
+                    FloatermBorder = {fg = "#A06469", gui = "none"}
+                }
+            )
         end
     }
 )

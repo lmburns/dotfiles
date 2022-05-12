@@ -44,14 +44,14 @@
     "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
-    "focusable": false
+    "focusable": true
   },
   "signature.floatConfig": {
     "border": true,
     "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
-    "focusable": false
+    "focusable": true
   },
   // "dialog.floatHighlight": "Normal",
   "dialog.floatBorderHighlight": "Normal",

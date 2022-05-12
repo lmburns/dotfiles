@@ -53,7 +53,8 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         "<Leader>pp",
         function()
             require("plugins").compile()
-        end
+        end,
+        {desc = "Packer compile"}
     )
 
     -- Is there a way to repeat these?

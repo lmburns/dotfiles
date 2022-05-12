@@ -93,6 +93,7 @@ end
 --- @field remap boolean
 --- @field callback function
 --- @field cmd boolean
+--- @field desc string
 
 -- FIXME: Why is the `ShowDocumentation` key needed to be pressed multiple times for this function?
 
@@ -189,10 +190,6 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         return b
     end)()
 
-    if opts.desc then
-        require("which-key").register({[lhs] = opts.desc})
-    end
-
     if bufnr ~= nil then
         for _, mode in ipairs(modes) do
             api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
@@ -200,6 +197,10 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
     else
         for _, mode in ipairs(modes) do
             api.nvim_set_keymap(mode, lhs, rhs, opts)
+
+            if opts.desc then
+                require("which-key").register({[lhs] = opts.desc}, {mode = mode})
+            end
         end
     end
 end
@@ -368,7 +369,7 @@ M.notify = function(options)
     end
 
     local forced =
-    vim.tbl_extend(
+        vim.tbl_extend(
         "force",
         {
             message = "This is a sample notification.",
@@ -433,7 +434,7 @@ end
 --- @param func function
 --- @return string VimFunctionString
 _G.myluafunc =
-setmetatable(
+    setmetatable(
     {},
     {
         __call = function(self, idx, args, count)
@@ -464,7 +465,7 @@ M.remap = function(modes, lhs, rhs, opts)
     end
 
     local _rhs =
-    (function()
+        (function()
         if type(rhs) == "function" then
             opts.noremap = true
             opts.cmd = true

@@ -100,7 +100,7 @@ M.colors = function(filter)
         end
     end
     utils.dump(defs)
-end   
+end
 
 ---Remove escape sequences of the following formats:
 ---1. ^[[34m
@@ -151,6 +151,166 @@ end
 
 for color, escseq in pairs(M.ansi_colors) do
     M.add_ansi_code(color, escseq)
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       From akinsho                       │
+-- ╰──────────────────────────────────────────────────────────╯
+
+---Convert a hex color to RGB
+---@param color string
+---@return number
+---@return number
+---@return number
+local function hex_to_rgb(color)
+    local hex = color:gsub("#", "")
+    return tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5), 16)
+end
+
+local function alter(attr, percent)
+    return math.floor(attr * (100 + percent) / 100)
+end
+
+---@source https://stackoverflow.com/q/5560248
+---@see: https://stackoverflow.com/a/37797380
+---Darken a specified hex color
+---@param color string
+---@param percent number
+---@return string
+function M.alter_color(color, percent)
+    local r, g, b = hex_to_rgb(color)
+    if not r or not g or not b then
+        return "NONE"
+    end
+    r, g, b = alter(r, percent), alter(g, percent), alter(b, percent)
+    r, g, b = math.min(r, 255), math.min(g, 255), math.min(b, 255)
+    return fmt("#%02x%02x%02x", r, g, b)
+end
+
+local function get_hl(group_name)
+    local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, true)
+    if ok then
+        hl.foreground = F.if_nil(hl.foreground, hl.fg) and "#" .. bit.tohex(F.if_nil(hl.foreground, hl.fg), 6)
+        hl.background = F.if_nil(hl.background, hl.bg) and "#" .. bit.tohex(F.if_nil(hl.background, hl.bg), 6)
+        hl[true] = nil -- BUG: API returns a true key which errors during the merge
+        return hl
+    end
+    return {}
+end
+
+---Create a highlight group
+---
+---Valid table keys:
+---   - background
+---   - foreground
+---   - inherit
+---   - link
+---   - sp
+---   - bold
+---   - underline
+---   - undercurl
+---   - italic
+---   - gui
+---
+---@param name string
+---@param opts table
+function M.hl_set(name, opts)
+    vim.validate {
+        name = {name, "string", false},
+        opts = {opts, "table", false}
+    }
+    assert(name and opts, "Both 'name' and 'opts' must be specified")
+
+    if opts.gui then
+        opts.gui = opts.gui:gsub(".*", string.lower)
+
+        if opts.gui:match("italic") then
+            opts.italic = true
+        end
+        if opts.gui:match("bold") then
+            opts.bold = true
+        end
+        if opts.gui:match("underline") then
+            opts.underline = true
+        end
+        if opts.gui:match("undercurl") then
+            opts.undercurl = true
+        end
+
+        if opts.gui:match("none") then
+            opts.italic = false
+            opts.bold = false
+            opts.underline = false
+            opts.undercurl = false
+        end
+
+        opts.gui = nil
+    end
+
+    local hl = get_hl(opts.inherit or name)
+    opts.inherit = nil
+    local ok, msg = pcall(api.nvim_set_hl, 0, name, vim.tbl_deep_extend("force", hl, opts))
+    if not ok then
+        vim.notify(fmt("Failed to set %s: %s", name, msg))
+    end
+end
+
+---Get the value a highlight group whilst handling errors, fallbacks as well as returning a gui value
+---in the right format
+---@param group string
+---@param attribute string
+---@param fallback string?
+---@return string
+function M.get_hl(group, attribute, fallback)
+    if not group then
+        vim.notify("Cannot get a highlight without specifying a group", log.levels.ERROR)
+        return "NONE"
+    end
+    local hl = get_hl(group)
+    attribute = ({fg = "foreground", bg = "background"})[attribute] or attribute
+    local color = hl[attribute] or fallback
+    if not color then
+        vim.schedule(
+            function()
+                vim.notify(fmt("%s %s does not exist", group, attribute), log.levels.INFO)
+            end
+        )
+        return "NONE"
+    end
+    -- convert the decimal RGBA value from the hl by name to a 6 character hex + padding if needed
+    return color
+end
+
+---Clear a highlight group
+---@param name string
+function M.clear_hl(name)
+    assert(name, "name is required to clear a highlight")
+    nvim.set_hl(0, name, {})
+end
+
+---Apply a list of highlights
+---@param hls table<string, table<string, boolean|string>>
+function M.all(hls)
+    for name, hl in pairs(hls) do
+        M.hl_set(name, hl)
+    end
+end
+
+---Apply highlights for a plugin and refresh on colorscheme change
+---@param name string plugin name
+---@vararg table list of highlights
+function M.plugin(name, hls)
+    name = name:gsub("^%l", string.upper) -- capitalise the name for autocommand convention sake
+    M.all(hls)
+    utils.augroup(
+        ("%sHighlightOverrides"):format(name),
+        {
+            event = "ColorScheme",
+            command = function()
+                M.all(hls)
+            end
+        }
+    )
 end
 
 return M

@@ -12,7 +12,8 @@ local opt = {
     disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
     disable_in_macro = false,
     disable_in_visualblock = false,
-    ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+    -- ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+    ignored_next_char = [==[[%w%%%'%[%"%.]]==], -- %.
     enable_moveright = true, -- ?? what is this
     enable_afterquote = true, -- add bracket pairs after quote
     enable_check_bracket_line = true, --- check bracket in same line
@@ -22,7 +23,7 @@ local opt = {
     map_c_h = true, -- Map the <C-h> key to delete a pair
     map_c_w = true, -- map <c-w> to delete a pair if possible
     fast_wrap = {
-        map = "<M-,>",
+        map = "<M-,>", -- (|foo -> (|foo)
         chars = {"{", "[", "(", '"', "'"},
         pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
         offset = -1, -- Offset from pattern match
@@ -144,6 +145,13 @@ function M.rules()
         }
     )
 
+    -- Allow () when a period proceeds in rust and others
+    autopairs.add_rules(
+        {
+            Rule("(", ")", {"rust"})
+        }
+    )
+
     autopairs.add_rule(
         Rule("=", "", {"-sh", "-bash", "-zsh"}):with_pair(cond.not_inside_quote()):with_pair(
             function(opts)
@@ -169,7 +177,9 @@ function M.rules()
                 end
                 return ""
             end
-        ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none())
+        ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none()):with_pair(
+            cond.not_filetypes({"sh", "bash", "zsh"})
+        )
     )
 
     -- Example: tab = b1234s => B1234S124S
@@ -208,19 +218,7 @@ local function init()
     M.setup()
     M.rules()
 
-    -- map(
-    --     "i", "<CR>", [[v:lua.require'plugs.autopairs'.CR()]],
-    --     { expr = true, noremap = true }
-    -- )
-
-    -- map(
-    --     "i", "<CR>",
-    --     ("pumvisible() ? %s : %s . v:lua.require'plugs.autopairs'.CR()"):format(
-    --         [["\<C-y>"]], [[(getline('.') =~ '^\s*$' ? '' : "\<C-g>u")]]
-    --     ), { noremap = true, expr = true }
-    -- )
-
-    -- map("i", "<CR>", [[v:lua.require'plugs.autopairs'.ap_coc()]], {expr = true, noremap = true})
+    -- map("i", "<CR>", [[v:lua.lua require'plugs.autopairs'.ap_coc()]], {expr = true})
 end
 
 init()

@@ -144,7 +144,7 @@ wk.register(
 
 wk.register(
     {
-        [",d"] = {[["_d]], "Delete (blackhole)"},
+        -- [",d"] = {[["_d]], "Delete (blackhole)"},
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},

@@ -96,7 +96,25 @@ o.foldlevelstart = 99
 -- o.foldlevel = 1
 
 -- This does not work globally for whatever reason (didn't in vim either)
-o.formatoptions:remove({"c", "r", "o"})
+-- o.formatoptions:remove({"c", "r", "o"})
+
+o.formatoptions = {
+    ["1"] = true,
+    ["2"] = true, -- Use indent from 2nd line of a paragraph
+    q = true, -- Continue comments with gq"
+    n = true, -- Recognize numbered lists
+    j = true, -- Remove a comment leader when joining lines.
+    -- Only break if the line was not longer than 'textwidth' when the insert
+    -- started and only at a white character that has been entered during the
+    -- current insert command.
+    l = true,
+    v = true, -- Only break line at blank line I've entered
+    c = true, -- Auto-wrap comments using textwidth
+    r = false, -- Continue comments when pressing Enter
+    t = false, -- Autowrap lines using text width value
+    o = false --- Automatically insert comment leader after <enter>
+}
+
 o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
@@ -119,7 +137,8 @@ o.incsearch = true -- incremental search highlight
 o.pumheight = 10 -- number of items in popup menu
 
 o.mouse = "a" -- enable mouse all modes
-o.linebreak = true
+o.breakindentopt = 'sbr'
+o.linebreak = true -- lines wrap at words rather than random characters
 o.history = 10000
 
 o.joinspaces = false -- prevent inserting two spaces with J
@@ -174,11 +193,11 @@ o.splitbelow = true
 o.splitright = true
 
 o.concealcursor = "vic" -- "-=n"
-o.conceallevel = 0
+o.conceallevel = 2
 o.fillchars:append("msgsep: ,vert:│") -- customize message separator
 -- g.cursorhold_updatetime = 1000
 o.updatetime = 100
-o.timeoutlen = 350
+o.timeoutlen = 150
 o.showmatch = true
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
@@ -198,9 +217,11 @@ o.cedit = "<C-x>"
 o.termguicolors = true
 -- o.guioptions:remove({ "m", "r", "l" })
 g.guitablabel = "%M %t"
-o.guicursor =
-    "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50" ..
-    ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor" .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+o.guicursor = {
+  [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
+  [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
+  [[sm:block-blinkwait175-blinkoff150-blinkon175]],
+}
 o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
 if fn.exists("g:neovide") then

@@ -1070,6 +1070,7 @@ function M.colorizer()
             "markdown",
             "tmux",
             "yaml",
+            "json",
             "xml",
             "css",
             "typescript",
@@ -1077,7 +1078,7 @@ function M.colorizer()
             lua = {names = false}
         },
         {
-            RGB = false,
+            RGB = true,
             RRGGBB = true,
             RRGGBBAA = true,
             names = false,

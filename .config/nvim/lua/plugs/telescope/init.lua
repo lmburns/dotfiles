@@ -1151,6 +1151,7 @@ wk.register(
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";he"] = {":Telescope heading<CR>", "Telescope heading"},
         [";fd"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
+        ["<LocalLeader>a"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
         [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},

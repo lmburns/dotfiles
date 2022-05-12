@@ -1,11 +1,13 @@
 local M = {}
 
 local map = require("common.utils").map
+local wk = require("which-key")
 
 function M.setup()
     require("todo-comments").setup(
         {
-            signs = true,
+            signs = true, -- show icons in the signs column
+            sign_priority = 8, -- sign priority
             keywords = {
                 -- #E46876
                 FIX = {
@@ -94,9 +96,21 @@ local function init()
     M.setup()
 
     require("telescope").load_extension("todo-comments")
-    map("n", "<LocalLeader>T", ":TodoTelescope<CR>", {silent = true})
-    map("n", ";t", ":TodoQuickFix<CR>", {silent = true})
-    map("n", ";T", ":TodoTrouble<CR>", {silent = true})
+
+    wk.register(
+        {
+            ["<LocalLeader>T"] = {":TodoTelescope<CR>", "Todo telescope (workspace)"},
+            [";t"] = {":TodoQuickFix<CR>", "Todo quickfix (workspace)"},
+            [";T"] = {":TodoTrouble<CR>", "Todo trouble (workspace)"},
+            ["<LocalLeader>t"] = {
+                function()
+                    require("todo-comments.search").setqflist({cwd = fn.expand("%")})
+                end,
+                "Todo quickfix (current file)"
+            }
+        },
+        {mode = "n", silent = true}
+    )
 end
 
 init()
