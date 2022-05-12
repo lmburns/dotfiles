@@ -388,7 +388,8 @@ local function init()
             "NvimTree",
             "coc-explorer",
             "NeogitStatus",
-            "Trouble"
+            "Trouble",
+            "TelescopePrompt"
         } -- aerial
     }
 

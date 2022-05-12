@@ -80,18 +80,18 @@ local function init()
         "n",
         "]V",
         function()
-            require("trouble").first({skip_groups = true, jump = true})
+            require("trouble").last({skip_groups = true, jump = true})
         end,
-        {desc = "Trouble first"}
+        {desc = "Trouble last"}
     )
 
     map(
         "n",
         "[V",
         function()
-            require("trouble").last({skip_groups = true, jump = true})
+            require("trouble").first({skip_groups = true, jump = true})
         end,
-        {desc = "Trouble last"}
+        {desc = "Trouble first"}
     )
 
     map("n", "<Leader>xd", "<cmd>TroubleToggle coc_definitions<cr>", {silent = true, desc = "Trouble definitions"})

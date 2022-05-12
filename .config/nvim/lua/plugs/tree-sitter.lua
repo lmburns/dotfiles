@@ -454,10 +454,11 @@ M.setup = function()
             "gomod",
             "html",
             "java",
-            -- "json",
+            "json",
             "kotlin",
             "lua",
             "make",
+            "markdown",
             "norg",
             -- Syntax isn't parsed the greatest
             "perl",
@@ -553,9 +554,9 @@ M.setup = function()
                 keymaps = {
                     goto_definition = ";d", -- mapping to go to definition of symbol under cursor
                     list_definitions = ";D", -- mapping to list all definitions in current file
-                    list_definitions_toc = "gO"
-                    -- goto_next_usage = "<a-*>",
-                    -- goto_previous_usage = "<a-#>"
+                    list_definitions_toc = "gO",
+                    goto_next_usage = "]x",
+                    goto_previous_usage = "[x"
                 }
             }
         },
@@ -811,6 +812,8 @@ local function init()
             [";d"] = "Go to definition under cursor",
             [";D"] = "List all definitions in file",
             ["gO"] = "List all definitions in TOC",
+            ["[x"] = "Previous usage",
+            ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",
             ["[["] = "Aerial prevous function",
             ["]]"] = "Aerial next function",

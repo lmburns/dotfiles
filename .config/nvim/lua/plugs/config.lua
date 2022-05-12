@@ -244,20 +244,20 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Pandoc                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.pandoc()
-    g["pandoc#filetypes#handled"] = {"pandoc", "markdown"}
-    g["pandoc#after#modules#enabled"] = {"vim-table-mode"}
-    g["pandoc#syntax#codeblocks#embeds#langs"] = {
-        "c",
-        "python",
-        "sh",
-        "html",
-        "css"
-    }
-    g["pandoc#formatting#mode"] = "h"
-    g["pandoc#modules#disabled"] = {"folding", "formatting"}
-    g["pandoc#syntax#conceal#cchar_overrides"] = {codelang = " "}
-end
+-- function M.pandoc()
+--     g["pandoc#filetypes#handled"] = {"pandoc", "markdown"}
+--     g["pandoc#after#modules#enabled"] = {"vim-table-mode"}
+--     g["pandoc#syntax#codeblocks#embeds#langs"] = {
+--         "c",
+--         "python",
+--         "sh",
+--         "html",
+--         "css"
+--     }
+--     g["pandoc#formatting#mode"] = "h"
+--     g["pandoc#modules#disabled"] = {"folding", "formatting"}
+--     g["pandoc#syntax#conceal#cchar_overrides"] = {codelang = " "}
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Markdown                         │
@@ -1433,7 +1433,7 @@ function M.project()
         {
             -- Manual mode doesn't automatically change your root directory, so you have
             -- the option to manually do so using `:ProjectRoot` command.
-            manual_mode = false,
+            manual_mode = true,
             -- Methods of detecting the root directory. **"lsp"** uses the native neovim
             -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
             -- order matters: if one is not detected, the other is used as fallback. You

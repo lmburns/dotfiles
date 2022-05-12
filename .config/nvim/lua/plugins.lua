@@ -941,13 +941,13 @@ return packer.startup(
             --     }
             -- )
 
-            use(
-                {
-                    "vim-pandoc/vim-pandoc-syntax",
-                    ft = {"pandoc", "markdown", "vimwiki"},
-                    conf = "pandoc"
-                }
-            )
+            -- use(
+            --     {
+            --         "vim-pandoc/vim-pandoc-syntax",
+            --         ft = {"pandoc", "markdown", "vimwiki"},
+            --         conf = "pandoc"
+            --     }
+            -- )
 
             use(
                 {
@@ -997,8 +997,8 @@ return packer.startup(
                     "sheerun/vim-polyglot",
                     setup = function()
                         g.polyglot_disabled = {
-                            -- "ftdetect",
-                            "sensible",
+                            "ftdetect",
+                            -- "sensible",
                             "markdown",
                             "rustpeg",
                             "lf",

@@ -73,7 +73,7 @@ do
                 if b.ft ~= "fzf" then
                     o.laststatus = 3
                 end
-            end,
+            end
         }
     )
 end
@@ -200,26 +200,28 @@ nvim.autocmd.lmb__Help = {
             end
         end
     },
-    -- {
-    --     -- This is ran more than once
-    --     -- Using help for this won't open vertical when opening the same thing twice in a row
-    --     event = "FileType",
-    --     pattern = {"man"},
-    --     once = false,
-    --     command = function()
-    --         local bufnr = nvim.buf.nr()
-    --         if split_should_return() then
-    --             return
-    --         end
-    --
-    --         local width = math.floor(vim.o.columns * 0.75)
-    --         ex.wincmd("L")
-    --         cmd("vertical resize " .. width)
-    --         map("n", "qq", "q", {cmd = true, buffer = bufnr})
-    --     end
-    -- },
     {
-        event = "BufHidden",
+        -- This is ran more than once
+        -- Using help for this won't open vertical when opening the same thing twice in a row
+        event = "FileType",
+        pattern = {"man"},
+        once = false,
+        command = function()
+            local bufnr = nvim.buf.nr()
+            if split_should_return() then
+                return
+            end
+
+            local width = math.floor(vim.o.columns * 0.75)
+            ex.wincmd("L")
+            cmd("vertical resize " .. width)
+            map("n", "qq", "q", {cmd = true, buffer = bufnr})
+        end
+    },
+    -- Works when opening man with ':Man' but not with telescope or fzf-lua
+    -- if the event is BufHidden. However, BufLeave fixes this problem
+    {
+        event = "BufLeave",
         pattern = "*",
         command = function()
             if b.ft == "man" then

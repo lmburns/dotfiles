@@ -19,8 +19,8 @@ local opt = {
     enable_bracket_in_quote = true, --
     map_cr = true,
     map_bs = true, -- map the <BS> key
-    map_c_h = false, -- Map the <C-h> key to delete a pair
-    map_c_w = false, -- map <c-w> to delete a pair if possible
+    map_c_h = true, -- Map the <C-h> key to delete a pair
+    map_c_w = true, -- map <c-w> to delete a pair if possible
     fast_wrap = {
         map = "<M-,>",
         chars = {"{", "[", "(", '"', "'"},
@@ -134,7 +134,7 @@ function M.rules()
             -- Allows matching '<' '>' in Rust or C++ or Typescript
             -- bracket("<", ">", { "rust", "cpp", "typescript" }),
 
-            Rule("<", ">", {"rust", "cpp", "typescript"}):with_pair(cond.not_before_regex_check(" ")):with_pair(
+            Rule("<", ">" --[[, {"rust", "cpp", "typescript"} ]]):with_pair(cond.not_before_regex_check(" ")):with_pair(
                 cond.not_after_regex(opt.ignored_next_char)
             ),
             -- Allows matching '' is strings
@@ -143,6 +143,57 @@ function M.rules()
             Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"}))
         }
     )
+
+    autopairs.add_rule(
+        Rule("=", "", {"-sh", "-bash", "-zsh"}):with_pair(cond.not_inside_quote()):with_pair(
+            function(opts)
+                local last_char = opts.line:sub(opts.col - 1, opts.col - 1)
+                if last_char:match("[%w%=%s]") then
+                    return true
+                end
+                return false
+            end
+        ):replace_endpair(
+            function(opts)
+                local prev_2char = opts.line:sub(opts.col - 2, opts.col - 1)
+                local next_char = opts.line:sub(opts.col, opts.col)
+                next_char = next_char == " " and "" or " "
+                if prev_2char:match("%w$") then
+                    return "<bs> =" .. next_char
+                end
+                if prev_2char:match("%=$") then
+                    return next_char
+                end
+                if prev_2char:match("=") then
+                    return "<bs><bs>=" .. next_char
+                end
+                return ""
+            end
+        ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none())
+    )
+
+    -- Example: tab = b1234s => B1234S124S
+    -- autopairs.add_rules(
+    --     {
+    --         Rule("b%d%d%d%d%w$", "", "vim"):use_regex(true, "<tab>"):replace_endpair(
+    --             function(opts)
+    --                 return opts.prev_char:sub(#opts.prev_char - 4, #opts.prev_char) .. "<esc>viwU"
+    --             end
+    --         )
+    --     }
+    -- )
+
+    -- local endwise = require("nvim-autopairs.ts-rule").endwise
+    -- -- TODO: Crystal
+    -- autopairs.add_rules(
+    --     {
+    --         -- 'then$' is a lua regex
+    --         -- 'end' is a match pair
+    --         -- 'lua' is a filetype
+    --         -- 'if_statement' is a treesitter name. set it = nil to skip check with treesitter
+    --         endwise("then$", "end", "teal", "if_statement")
+    --     }
+    -- )
 end
 
 function M.ap_coc()

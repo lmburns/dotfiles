@@ -102,12 +102,12 @@ function M.setup()
                     eslintrc = "json",
                     prettierrc = "json",
                     conf = "conf",
-                    mdx = "markdown",
                     mjml = "html",
                     sxhkdrc = "sxhkdrc",
                     ztst = "ztst",
                     tl = "teal",
-                    ["pre-commit"] = "sh"
+                    ["pre-commit"] = "sh",
+                    md = "vimwiki",
                 },
                 literal = {
                     MyBackupFile = "lua",
@@ -122,7 +122,8 @@ function M.setup()
                     [".*ignore"] = "conf",
                     ["calcurse-note.*"] = "markdown",
                     ["~/.local/share/calcurse/notes/.*"] = "markdown",
-                    [".*sxhkdrc"] = "sxhkdrc"
+                    [".*sxhkdrc"] = "sxhkdrc",
+                    [".*/vimwiki/.*"] = "vimwiki",
                 },
                 function_extensions = {
                     ["cpp"] = function()
@@ -145,7 +146,7 @@ function M.setup()
                     ["ms"] = nroff_ft,
                     ["me"] = nroff_ft,
                     ["mom"] = nroff_ft,
-                    ["man"] = nroff_ft,
+                    -- ["man"] = nroff_ft,
                 },
                 function_literal = {},
                 function_complex = {

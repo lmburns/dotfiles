@@ -7,6 +7,7 @@ function M.setup()
         {
             signs = true,
             keywords = {
+                -- #E46876
                 FIX = {
                     icon = " ",
                     color = "#ea6962",
@@ -14,9 +15,12 @@ function M.setup()
                 },
                 TODO = {icon = " ", color = "#d16d9e"},
                 TEST = {icon = " ", color = "#819c3b"},
-                HACK = {icon = " ", color = "#d8a657"},
+                HACK = {icon = " ", color = "#fe8019"},
                 WARN = {icon = " ", color = "#EC5f67", alt = {"WARNING", "XXX"}},
-                TIP = {icon = "", color = "#9a9a9a", alt = {"HINT"}},
+                TIP = {icon = " ", color = "#9a9a9a", alt = {"HINT"}},
+                FEATURE = {icon = " ", color = "#957FB8", alt = {"NEW"}},
+                MAYBE = {icon = " ", color = "#FF5D62", alt = {"POSSIBLE", "TODO_MAYBE"}},
+                DONE = {icon = " ", color = "#98BB6C", alt = {"FINISHED"}},
                 CHANGED = {
                     icon = " ",
                     color = "#89b482",
@@ -62,11 +66,11 @@ function M.setup()
             -- list of named colors where we try to extract the guifg from the
             -- list of hilight groups or use the hex color if hl not found as a fallback
             colors = {
-                error = {"DiagnosticError", "ErrorMsg", "#DC2626"},
-                warning = {"DiagnosticWarning", "WarningMsg", "#FBBF24"},
-                info = {"DiagnosticInfo", "#2563EB"},
+                error = {"DiagnosticError", "ErrorMsg", "#EF1D55"},
+                warning = {"DiagnosticWarning", "WarningMsg", "#FF9500"},
+                info = {"DiagnosticInfo", "#4C96A8"},
                 hint = {"DiagnosticHint", "#10B981"},
-                default = {"Identifier", "#7C3AED"}
+                default = {"Identifier", "#7E5053"}
             },
             search = {
                 command = "rg",
