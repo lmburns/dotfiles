@@ -262,6 +262,7 @@ nvim.reg =
     }
 )
 
+---Use nvim.command[...] to list all
 nvim.command =
     setmetatable(
     {

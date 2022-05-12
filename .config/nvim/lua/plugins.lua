@@ -8,6 +8,8 @@ local command = utils.command
 local autocmd = utils.autocmd
 local map = utils.map
 
+local disabled = require("common.control")
+
 -- Install Packer if it isn't already
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
 if not uv.fs_stat(install_path) then
@@ -55,6 +57,31 @@ local packer = require("packer")
 --   fp:close()
 -- end
 
+-- Plugin layout
+-- {
+-- "kevinhwang91/rnvimr",
+--   config = "require('plugs.rnvimr')",
+--   diff = <function 1>,
+--   disable = false,
+--   get_rev = <function 2>,
+--   install_path = "/home/lucas/.local/share/nvim/site/pack/packer/start/rnvimr",
+--   installer = <function 3>,
+--   keys = { "gxx", "gx", "<C-\\>" },
+--   manual_opt = true,
+--   name = "kevinhwang91/rnvimr",
+--   opt = false,
+--   patch = "~/.config/nvim/patches/",
+--   path = "kevinhwang91/rnvimr",
+--   remote_url = <function 4>,
+--   revert_last = <function 5>,
+--   revert_to = <function 6>,
+--   rocks = "mpack",
+--   short_name = "rnvimr",
+--   type = "git",
+--   updater = <function 7>,
+--   url = "https://github.com/kevinhwang91/rnvimr.git"
+-- }
+
 packer.init(
     {
         compile_path = fn.stdpath("config") .. "/plugin/packer_compiled.lua",
@@ -69,7 +96,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        -- log = {level = "debug"},
+        log = {level = "info"},
         profile = {enable = true}
     }
 )
@@ -87,27 +114,16 @@ packer.set_handler(
 
 PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
 
--- {
--- "kevinhwang91/rnvimr",
---   config = "require('plugs.rnvimr')",
---   diff = <function 1>,
---   get_rev = <function 2>,
---   install_path = "/home/lucas/.local/share/nvim/site/pack/packer/start/rnvimr",
---   installer = <function 3>,
---   name = "kevinhwang91/rnvimr",
---   opt = false,
---   patch = "~/.config/nvim/patches/",
---   path = "kevinhwang91/rnvimr",
---   remote_url = <function 4>,
---   revert_last = <function 5>,
---   revert_to = <function 6>,
---   short_name = "rnvimr",
---   type = "git",
---   updater = <function 7>,
---   url = "https://github.com/kevinhwang91/rnvimr.git"
--- }
+---Specify the disable marker for each plugin
+---Can be disabled easier in the `control.lua` file
+packer.set_handler(
+    1,
+    function(plugins, plugin, value)
+        plugin.disable = disabled[plugin.short_name]
+    end
+)
 
--- Apply a patch to the given plugin
+---Apply a patch to the given plugin
 packer.set_handler(
     "patch",
     function(plugins, plugin, value)
@@ -123,8 +139,7 @@ packer.set_handler(
         if type(value) == "string" then
             value = fn.expand(value)
         else
-            local plug_name = vim.split(plugin.name, "/")[2]
-            value = ("%s/%s.patch"):format(PATCH_DIR, plug_name)
+            value = ("%s/%s.patch"):format(PATCH_DIR, plugin.short_name)
         end
 
         plugin.run = function()
@@ -348,7 +363,7 @@ return packer.startup(
                     "akinsho/toggleterm.nvim",
                     conf = "plugs.neoterm",
                     keys = {"gxx", "gx", "<C-\\>"},
-                    cmd = {"T", "TE"}
+                    cmd = {"T", "TR"}
                 }
             )
             -- use({ "kassio/neoterm", conf = "neoterm" })
@@ -983,7 +998,7 @@ return packer.startup(
                     setup = function()
                         g.polyglot_disabled = {
                             -- "ftdetect",
-                            -- "sensible",
+                            "sensible",
                             "markdown",
                             "rustpeg",
                             "lf",
@@ -1092,7 +1107,8 @@ return packer.startup(
                 {
                     "folke/todo-comments.nvim",
                     conf = "plugs.todo-comments",
-                    wants = {"plenary.nvim"},
+                    wants = "plenary.nvim",
+                    after = "telescope.nvim",
                     opt = false
                 }
             )

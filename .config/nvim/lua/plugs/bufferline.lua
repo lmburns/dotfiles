@@ -99,7 +99,7 @@ end
 ---Bufdelete moves forward, I'm used to moving backwards
 function M.bufdelete()
     local bufnr = api.nvim_get_current_buf()
-    cmd("bp")
+    ex.bp()
     require("bufdelete").bufdelete(bufnr)
 end
 

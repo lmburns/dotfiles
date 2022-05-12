@@ -1,6 +1,6 @@
 local M = {}
 
-require("common.utils")
+local utils = require("common.utils")
 
 ---@alias Group string
 ---@alias Color string
@@ -70,6 +70,38 @@ function M.hl(group, opts, ns_id)
     api.nvim_set_hl(F.if_nil(ns_id, 0), group, opts)
 end
 
+---List all highlight groups, or ones matching `filter`
+---@param filter string
+M.colors = function(filter)
+    local defs = {}
+    local hl_defs = api.nvim__get_hl_defs(0)
+    for hl_name, hl in pairs(hl_defs) do
+        if filter then
+            if hl_name:find(filter) then
+                local def = {}
+                if hl.link then
+                    def.link = hl.link
+                end
+                for key, def_key in pairs({foreground = "fg", background = "bg", special = "sp"}) do
+                    if type(hl[key]) == "number" then
+                        local hex = string.format("#%06x", hl[key])
+                        def[def_key] = hex
+                    end
+                end
+                for _, style in pairs({"bold", "italic", "underline", "undercurl", "reverse"}) do
+                    if hl[style] then
+                        def.style = (def.style and (def.style .. ",") or "") .. style
+                    end
+                end
+                defs[hl_name] = def
+            end
+        else
+            defs = hl_defs
+        end
+    end
+    utils.dump(defs)
+end   
+
 ---Remove escape sequences of the following formats:
 ---1. ^[[34m
 ---2. ^[[0;34m
@@ -83,6 +115,8 @@ M.strip_ansi = function(str)
 end
 
 M.ansi_codes = {}
+
+---List of ansi escape sequences
 M.ansi_colors = {
     clear = "\x1b[0m",
     bold = "\x1b[1m",
@@ -100,6 +134,12 @@ M.ansi_colors = {
     dark_grey = "\x1b[0;97m"
 }
 
+---Add ansi functions
+---Can be called line color.ansi_codes.yellow("string")
+---
+---@param name string: Color
+---@param escseq string: Escape sequence
+---@return string
 M.add_ansi_code = function(name, escseq)
     M.ansi_codes[name] = function(string)
         if string == nil or #string == 0 then

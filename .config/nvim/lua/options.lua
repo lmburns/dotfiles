@@ -54,6 +54,7 @@ o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
 env.LANG = "en_US.UTF-8"
+o.shell = os.getenv("SHELL")
 
 -- set_option_value / set_option
 

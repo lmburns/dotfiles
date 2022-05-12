@@ -368,7 +368,7 @@ M.notify = function(options)
     end
 
     local forced =
-        vim.tbl_extend(
+    vim.tbl_extend(
         "force",
         {
             message = "This is a sample notification.",
@@ -381,9 +381,11 @@ M.notify = function(options)
     api.nvim_notify(forced.message, forced.level, {title = forced.title, icon = forced.icon})
 end
 
+---Preserve cursor position when executing command
 M.preserve = function(arguments)
+    local arguments = fmt("%q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
-    ex.keepj(ex.keepp(fn.execute(arguments)))
+    ex.keepjumps(ex.keeppatterns(ex.execute(arguments)))
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -392,10 +394,9 @@ M.preserve = function(arguments)
     api.nvim_win_set_cursor(0, {line, col})
 end
 
--- vim.cmd([[cnoreab cls Preserve]])
--- vim.cmd([[command! Preserve lua preserve('%s/\\s\\+$//ge')]])
+-- vim.cmd([[command! Preserve lua require("utils").preserve('%s/\\s\\+$//ge')]])
 -- vim.cmd([[command! Reindent lua preserve("sil keepj normal! gg=G")]])
--- vim.cmd([[command! BufOnly lua preserve("silent! %bd|e#
+-- vim.cmd([[command! BufOnly lua preserve("silent! %bd|e#)]])
 
 ---Remove duplicate blank lines (2 -> 1)
 M.squeeze_blank_lines = function()
@@ -406,42 +407,12 @@ M.squeeze_blank_lines = function()
         local line, col = unpack(api.nvim_win_get_cursor(0))
         M.preserve("sil! keepp keepj %s/^\\n\\{2,}/\\r/ge")
         M.preserve("sil! keepp keepj %s/\\v($\\n\\s*)+%$/\\r/e")
-        -- M.preserve([[sil! keepp keepj 0;/^\%(\n*.\)\@!/,$d]])
+        M.preserve([[sil! keepp keepj 0;/^\%(\n*.\)\@!/,$d]])
         if result > 0 then
             api.nvim_win_set_cursor(0, {(line - result), col})
         end
         fn.setreg("/", old_query) -- restore search register
     end
-end
-
-M.colors = function(filter)
-    local defs = {}
-    local hl_defs = api.nvim__get_hl_defs(0)
-    for hl_name, hl in pairs(hl_defs) do
-        if filter then
-            if hl_name:find(filter) then
-                local def = {}
-                if hl.link then
-                    def.link = hl.link
-                end
-                for key, def_key in pairs({foreground = "fg", background = "bg", special = "sp"}) do
-                    if type(hl[key]) == "number" then
-                        local hex = string.format("#%06x", hl[key])
-                        def[def_key] = hex
-                    end
-                end
-                for _, style in pairs({"bold", "italic", "underline", "undercurl", "reverse"}) do
-                    if hl[style] then
-                        def.style = (def.style and (def.style .. ",") or "") .. style
-                    end
-                end
-                defs[hl_name] = def
-            end
-        else
-            defs = hl_defs
-        end
-    end
-    M.dump(defs)
 end
 
 M.open_url_under_cursor = function()
@@ -462,7 +433,7 @@ end
 --- @param func function
 --- @return string VimFunctionString
 _G.myluafunc =
-    setmetatable(
+setmetatable(
     {},
     {
         __call = function(self, idx, args, count)
@@ -493,7 +464,7 @@ M.remap = function(modes, lhs, rhs, opts)
     end
 
     local _rhs =
-        (function()
+    (function()
         if type(rhs) == "function" then
             opts.noremap = true
             opts.cmd = true
@@ -539,7 +510,6 @@ M.remap = function(modes, lhs, rhs, opts)
         end
     end
 end
-
 
 ---Return a value based on two values
 ---@param condition boolean Statement to be tested

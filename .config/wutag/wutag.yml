@@ -7,6 +7,7 @@
 registry: "~/projects/github/wutag/my.db"
 show_duplicates: false
 only_create_tags_if_valid: true
+keep_dangling: false
 # Follow symlinks to the real files
 follow_symlinks: false
 # Max depth for glob/regex pattern to traverse when matching files

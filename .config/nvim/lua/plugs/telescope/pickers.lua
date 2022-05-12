@@ -68,6 +68,107 @@ P.live_grep_in_folder = function(opts)
     ):find()
 end
 
+---Use marks that are associated with the `marks` plugin
+---@param opts table
+P.marks = function(opts)
+    opts = opts or {}
+    local results = {}
+
+    -- opts.path_display = {"smart"}
+    -- opts.layout_config = {preview_width = 0.4}
+
+    local marks_output = api.nvim_command_output("marks")
+    local marks = vim.fn.split(marks_output, "\n")
+
+    -- Pop off the header.
+    table.remove(marks, 1)
+
+    for i = #marks - 1, 3, -1 do
+        local mark, line, col, filename = marks[i]:match([[([%w<>%."'%^%]%[]+)%s+(%d+)%s+(%d+)%s+(.*)]])
+        table.insert(
+            results,
+            {
+                mark = mark,
+                lnum = tonumber(line),
+                col = tonumber(col),
+                text = filename
+            }
+        )
+    end
+
+    local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
+    local builtin_marks = require("marks").mark_state.builtin_marks
+
+    results =
+        vim.tbl_filter(
+        function(line)
+            if _t(all_builtin):contains(line.mark) and not _t(builtin_marks):contains(line.mark) then
+                return false
+            end
+            return true
+        end,
+        results
+    )
+
+    local displayer =
+        entry_display.create {
+        separator = "▏",
+        items = {
+            {width = 3},
+            {width = 4},
+            {width = 3},
+            {remaining = true}
+        }
+    }
+
+    local make_display = function(entry)
+        local filename = utils.transform_path(opts, entry.filename)
+        return displayer {
+            {entry.mark, "WarningMsg"},
+            {entry.lnum, "SpellCap"},
+            {entry.col, "Comment"},
+            {filename, "ErrorMsg"}
+        }
+    end
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "Marks",
+            finder = finders.new_table {
+                results = results,
+                entry_maker = function(e)
+                    -- local bufnr, _, _, _ = unpack(fn.getpos(("'"):format(e.mark)))
+                    -- FIX: This, for whatever reason doesn't return the correct filename
+                    -- local filename = api.nvim_buf_get_name(bufnr)
+
+                    local filename = fn.expand(e.text)
+                    -- If the path doesn't exist, it means it's the current file
+                    if filename == "" or not Path:new(filename):exists() then
+                        filename = api.nvim_buf_get_name(0)
+                    end
+
+                    return {
+                        value = e,
+                        ordinal = e.mark,
+                        display = make_display,
+                        mark = e.mark,
+                        lnum = e.lnum,
+                        col = e.col,
+                        start = e.col,
+                        text = e.text,
+                        filename = filename
+
+                    }
+                end
+            },
+            previewer = conf.grep_previewer(opts),
+            sorter = conf.generic_sorter(opts),
+            push_cursor_on_edit = true
+        }
+    ):find()
+end
+
 ---List current windows
 ---@param opts table
 P.windows = function(opts)
@@ -121,6 +222,8 @@ P.scriptnames = function(opts)
 
     opts.path_display = {"smart"}
     opts.layout_config = {preview_width = 0.4}
+    opts.path_display = {"smart"}
+    opts.layout_config = {preview_width = 0.4}
 
     local snames = api.nvim_command_output("scriptnames")
     snames = vim.split(snames, "\n")
@@ -159,7 +262,6 @@ P.scriptnames = function(opts)
         opts,
         {
             prompt_title = "scriptnames",
-            path_display = "shorten",
             finder = finders.new_table {
                 results = results,
                 entry_maker = function(e)
@@ -174,7 +276,17 @@ P.scriptnames = function(opts)
                 end
             },
             sorter = conf.generic_sorter(opts),
-            previewer = conf.file_previewer(opts)
+            previewer = conf.file_previewer(opts),
+            attach_mappings = function(prompt_bufnr)
+                actions.select_default:replace(
+                    function()
+                        local sel = action_state.get_selected_entry()
+                        actions.close(prompt_bufnr)
+                        ex.e(sel.filename)
+                    end
+                )
+                return true
+            end
         }
     ):find()
 end
@@ -261,6 +373,46 @@ P.changes = function(opts)
                 )
                 return true
             end
+        }
+    ):find()
+end
+
+---Arguments to neovim
+---@param opts table
+P.args = function(opts)
+    opts = opts or {}
+
+    local arglist = vim.fn.argv()
+    if not next(arglist) then
+        return
+    end
+
+    local args = {}
+    for i, path in ipairs(arglist) do
+        local element = {
+            path = path,
+            index = i
+        }
+        table.insert(args, element)
+    end
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "Args",
+            finder = finders.new_table {
+                results = args,
+                entry_maker = function(entry)
+                    return {
+                        value = entry,
+                        display = string.format("%s\t%s", entry.index, entry.path),
+                        ordinal = string.format("%s\t%s", entry.index, entry.path),
+                        path = entry.path
+                    }
+                end
+            },
+            previewer = conf.grep_previewer(opts),
+            sorter = conf.generic_sorter(opts)
         }
     ):find()
 end

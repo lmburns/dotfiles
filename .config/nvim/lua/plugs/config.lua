@@ -976,15 +976,15 @@ function M.lazygit()
     g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
     g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
 
-    autocmd(
-        {
-            event = "BufEnter",
-            pattern = "*",
-            command = function()
-                require("lazygit.utils").project_root_dir()
-            end
-        }
-    )
+    -- autocmd(
+    --     {
+    --         event = "BufEnter",
+    --         pattern = "*",
+    --         command = function()
+    --             require("lazygit.utils").project_root_dir()
+    --         end
+    --     }
+    -- )
 
     require("telescope").load_extension("lazygit")
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})

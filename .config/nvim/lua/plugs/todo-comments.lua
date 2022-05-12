@@ -89,6 +89,7 @@ end
 local function init()
     M.setup()
 
+    require("telescope").load_extension("todo-comments")
     map("n", "<LocalLeader>T", ":TodoTelescope<CR>", {silent = true})
     map("n", ";t", ":TodoQuickFix<CR>", {silent = true})
     map("n", ";T", ":TodoTrouble<CR>", {silent = true})

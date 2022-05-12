@@ -17,9 +17,7 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
 local command = utils.command
-
--- local map = utils.map
--- local create_augroup = utils.create_augroup
+local map = utils.map
 
 -- Lua utilities
 require("common.nvim")
@@ -48,6 +46,14 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
             config,
             config
         )
+    )
+
+    map(
+        "n",
+        "<Leader>pp",
+        function()
+            require("plugins").compile()
+        end
     )
 
     -- Is there a way to repeat these?
@@ -217,7 +223,7 @@ vim.schedule(
                     "lmb__Packer",
                     {
                         event = "BufWritePost",
-                        pattern = "*/plugins.lua",
+                        pattern = {"*/plugins.lua", "*/common/control.lua"},
                         command = function()
                             ex.source("<afile>")
                             ex.PackerCompile()

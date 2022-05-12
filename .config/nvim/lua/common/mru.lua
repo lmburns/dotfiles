@@ -1,6 +1,5 @@
 local M = {}
 
-require("common.utils")
 local utils = require("common.kutils")
 local debounce = require("common.debounce")
 

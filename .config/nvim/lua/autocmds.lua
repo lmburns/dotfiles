@@ -200,24 +200,24 @@ nvim.autocmd.lmb__Help = {
             end
         end
     },
-    {
-        -- This is ran more than once
-        -- Using help for this won't open vertical when opening the same thing twice in a row
-        event = "FileType",
-        pattern = {"man"},
-        once = false,
-        command = function()
-            local bufnr = nvim.buf.nr()
-            if split_should_return() then
-                return
-            end
-
-            local width = math.floor(vim.o.columns * 0.75)
-            ex.wincmd("L")
-            cmd("vertical resize " .. width)
-            map("n", "qq", "q", {cmd = true, buffer = bufnr})
-        end
-    },
+    -- {
+    --     -- This is ran more than once
+    --     -- Using help for this won't open vertical when opening the same thing twice in a row
+    --     event = "FileType",
+    --     pattern = {"man"},
+    --     once = false,
+    --     command = function()
+    --         local bufnr = nvim.buf.nr()
+    --         if split_should_return() then
+    --             return
+    --         end
+    --
+    --         local width = math.floor(vim.o.columns * 0.75)
+    --         ex.wincmd("L")
+    --         cmd("vertical resize " .. width)
+    --         map("n", "qq", "q", {cmd = true, buffer = bufnr})
+    --     end
+    -- },
     {
         event = "BufHidden",
         pattern = "*",
@@ -372,8 +372,10 @@ a.async_void(
                     command = function()
                         -- Delete trailing spaces
                         require("common.utils").preserve("%s/\\s\\+$//ge")
+
                         -- Delete trailing blank lines
                         require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
+
                         -- Delete blank lines if more than 2 in a row
                         -- require("common.utils").squeeze_blank_lines()
                     end

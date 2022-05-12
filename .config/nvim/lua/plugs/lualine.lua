@@ -387,7 +387,8 @@ local function init()
             "vista",
             "NvimTree",
             "coc-explorer",
-            "NeogitStatus"
+            "NeogitStatus",
+            "Trouble"
         } -- aerial
     }
 

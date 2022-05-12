@@ -21,7 +21,7 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 local P = R("plugs.telescope.pickers")
 
 local kutils = require("common.kutils")
-local b_utils = require("common.utils")
+local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
 local map = b_utils.map
 
@@ -1056,6 +1056,7 @@ builtin.windows = P.windows
 -- FIX: Why doesn't changes work, but others do?
 builtin.changes = P.changes
 builtin.scriptnames = P.scriptnames
+builtin.args = P.args
 builtin.live_grep_in_folder = P.live_grep_in_folder
 
 -- ========================= Extensions ==========================
@@ -1093,7 +1094,7 @@ builtin.urlview = function(opts)
 end
 
 builtin.todo = function(opts)
-    telescope.extensions.todo.todo(opts)
+    telescope.extensions["todo-comments"].todo(opts)
 end
 
 builtin.yanky = function(opts)

@@ -30,8 +30,8 @@ function M.setup()
                 toggle_preview = "P", -- toggle auto_preview
                 hover = "K", -- opens a small popup with the full multiline message
                 preview = "p", -- preview the diagnostic location
-                close_folds = {"zM", "zm"}, -- close all folds
-                open_folds = {"zR", "zr"}, -- open all folds
+                close_folds = {"zC", "zc"}, -- close all folds
+                open_folds = {"zR", "zo"}, -- open all folds
                 toggle_fold = {"zA", "za"}, -- toggle fold of current file
                 previous = "k", -- preview item
                 next = "j" -- next item
@@ -57,6 +57,42 @@ end
 
 local function init()
     M.setup()
+
+    map(
+        "n",
+        "]v",
+        function()
+            require("trouble").next({skip_groups = true, jump = true})
+        end,
+        {desc = "Trouble next"}
+    )
+
+    map(
+        "n",
+        "[v",
+        function()
+            require("trouble").previous({skip_groups = true, jump = true})
+        end,
+        {desc = "Trouble previous"}
+    )
+
+    map(
+        "n",
+        "]V",
+        function()
+            require("trouble").first({skip_groups = true, jump = true})
+        end,
+        {desc = "Trouble first"}
+    )
+
+    map(
+        "n",
+        "[V",
+        function()
+            require("trouble").last({skip_groups = true, jump = true})
+        end,
+        {desc = "Trouble last"}
+    )
 
     map("n", "<Leader>xd", "<cmd>TroubleToggle coc_definitions<cr>", {silent = true, desc = "Trouble definitions"})
     map("n", "<Leader>xR", "<cmd>TroubleToggle coc_references<cr>", {silent = true, desc = "Trouble references"})
