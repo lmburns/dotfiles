@@ -71,17 +71,12 @@ o.cursorline = true
 o.cursorlineopt = list {"number", "screenline"}
 o.clipboard:append("unnamedplus")
 
-o.magic = true
-o.tabstop = 2
-o.shiftwidth = 0
-o.expandtab = true
-o.softtabstop = 2
-
 o.ignorecase = true
 o.smartcase = true
+o.wrapscan = true -- Searches wrap around the end of the file
 o.startofline = false
-o.backspace = list {"indent", "eol", "start"}
-o.synmaxcol = 1000 -- do not highlight long lines
+o.scrolloff = 5 -- cursor 5 lines from bottom of page
+o.sidescrolloff = 15
 
 o.foldenable = false
 -- o.foldmethod = "marker"
@@ -90,6 +85,7 @@ o.foldenable = false
 -- o.foldmethod = "expr"
 -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
+o.foldopen = o.foldopen:append("search")
 o.foldlevelstart = 99
 -- o.foldnestmax = 10 -- deepest fold is 10 levels
 -- o.foldenable = false -- don't fold by default
@@ -116,14 +112,16 @@ o.formatoptions = {
 }
 
 o.nrformats = list {"octal", "hex", "bin", "unsigned"}
-o.scrolloff = 5 -- cursor 5 lines from bottom of page
-o.sidescrolloff = 15
 
 o.title = true
 o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
+o.titlelen = 70
+o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
+
 o.list = true -- display tabs and trailing spaces visually
 o.listchars:append(
     {
+        eol = nil,
         tab = "‣ ",
         trail = "•",
         precedes = "«",
@@ -134,37 +132,62 @@ o.listchars:append(
 o.showbreak = [[↪ ]] -- "⏎"
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
-o.pumheight = 10 -- number of items in popup menu
 
 o.mouse = "a" -- enable mouse all modes
-o.breakindentopt = 'sbr'
-o.linebreak = true -- lines wrap at words rather than random characters
-o.history = 10000
+o.mousefocus = true
 
+o.backspace = list {"indent", "eol", "start"}
+o.breakindentopt = "sbr"
+o.smartindent = true
+o.cindent = true
+o.linebreak = true -- lines wrap at words rather than random characters
+-- o.autoindent = true
+
+o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
-o.whichwrap:append("<,>,h,l,[,]")
-o.wrap = true
 o.lazyredraw = true
+o.ruler = false
 o.cmdheight = 2
 o.matchtime = 2
 -- o.autoread = true
+o.autowriteall = true -- automatically :write before running commands and changing files
+
+o.whichwrap:append("<,>,h,l,[,]")
+o.wrap = true
+o.wrapmargin = 2
+
+o.tabstop = 2
+o.shiftwidth = 0
+o.expandtab = true
+o.softtabstop = 2
+-- o.textwidth = 80
+-- o.shiftround = true
 
 o.wildoptions:append("pum")
 o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
-o.wildmode = "full"
+o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true -- ignore case when completing file names and directories
-o.wildcharm = 26 -- equals set wildcharm=<C-Z>, used in the mapping section
+o.wildcharm = fn.char2nr(utils.t("<Tab>")) -- tab
 
-o.smartindent = true
-o.cindent = true
-o.sessionoptions = {"buffers", "curdir", "tabpages", "winsize"}
+o.pumheight = 10 -- number of items in popup menu
+o.pumblend = 3 -- Make popup window translucent
 
+-- o.secure = true -- Disable autocmd etc for project local vimrc files.
+-- o.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
+
+o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
+o.viewoptions = { 'cursor', 'folds' } -- save/restore just these (with `:{mk,load}view`)
+o.virtualedit = 'block' -- allow cursor to move where there is no text in visual block mode
 o.jumpoptions = "stack"
+
+o.history = 10000
+o.backup = false
+o.writebackup = false
 o.swapfile = false -- no swap files
+o.undofile = true
 o.undolevels = 1000
 o.undoreload = 10000
-o.undofile = true
 o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
 if not uv.fs_stat(vim.o.undodir) then
     fn.mkdir(vim.o.undodir, "p")
@@ -187,28 +210,56 @@ o.belloff = "all"
 o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
-o.diffopt:append(",vertical,internal,algorithm:patience")
-o.inccommand = "split" -- nosplit
-o.splitbelow = true
-o.splitright = true
 
-o.concealcursor = "vic" -- "-=n"
+-- o.diffopt:append(",vertical,internal,algorithm:patience")
+o.diffopt =
+    o.diffopt +
+    {
+        "vertical",
+        "iwhite",
+        "hiddenoff",
+        "foldcolumn:0",
+        "context:4",
+        "algorithm:histogram",
+        "indent-heuristic"
+    }
+
+o.inccommand = "split" -- nosplit
+o.splitright = true
+o.splitbelow = true
+o.eadirection = "hor" -- when equalsalways option applies
+-- exclude usetab as we do not want to jump to buffers in already open tabs
+-- do not use split or vsplit to ensure we don't open any new windows
+o.switchbuf = "useopen,uselast"
+
 o.conceallevel = 2
-o.fillchars:append("msgsep: ,vert:│") -- customize message separator
+o.concealcursor = "vic" -- "-=n"
+o.fillchars = {
+    fold = " ",
+    eob = " ", -- suppress ~ at EndOfBuffer
+    diff = "╱", -- alternatives = ⣿ ░ ─
+    msgsep = " ", -- alternatives: ‾ ─
+    foldopen = "▾",
+    foldsep = "│",
+    foldclose = "▸",
+    vert = "│"
+}
+
 -- g.cursorhold_updatetime = 1000
-o.updatetime = 100
-o.timeoutlen = 150
+o.updatetime = 200
+o.timeoutlen = 375
+o.ttimeoutlen = 10
 o.showmatch = true
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
 o.signcolumn = "yes:1"
+o.synmaxcol = 1000 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
-o.backup = false
-o.writebackup = false
 o.shortmess:append("acsIS") -- don't give 'ins-completion-menu' messages.
 
-o.grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never"
-o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+o.grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never --glob '!.git'"
+-- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+o.grepformat = o.grepformat:prepend({"%f:%l:%c:%m"})
 
 o.background = "dark"
 o.cedit = "<C-x>"
@@ -218,9 +269,9 @@ o.termguicolors = true
 -- o.guioptions:remove({ "m", "r", "l" })
 g.guitablabel = "%M %t"
 o.guicursor = {
-  [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
-  [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
-  [[sm:block-blinkwait175-blinkoff150-blinkon175]],
+    [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
+    [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
+    [[sm:block-blinkwait175-blinkoff150-blinkon175]]
 }
 o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
@@ -240,8 +291,10 @@ g.neovide_cursor_vfx_mode = "torpedo"
 o.completeopt:append({"menuone", "preview"})
 o.complete:append({"kspell"})
 o.complete:remove({"w", "b", "u", "t"})
-o.spelllang = "en_us"
--- o.spellsuggest = "10"
+o.spelllang:append({'programming', "en_us"})
+o.spelloptions = 'camel'
+o.spellcapcheck = '' -- don't check for capital letters at start of sentence
+o.spellsuggest = "12"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- ]]] === Spell Check ===
 
@@ -270,3 +323,8 @@ end
 
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
+
+-- if nvim.executable('nvr') then
+--   env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+--   env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+-- end

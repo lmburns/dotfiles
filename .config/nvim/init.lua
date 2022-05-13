@@ -4,8 +4,8 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
--- FIX: Sometimes on first buffer, formatoptions do not work properly
---
+-- FIX: Tab character hides part of the line
+
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
 if ok then

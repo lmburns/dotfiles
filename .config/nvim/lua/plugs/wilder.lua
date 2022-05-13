@@ -14,7 +14,7 @@ function M.wilderDisable()
 end
 
 function M.setup()
-    o.wildcharm = fn.char2nr("	") -- tab
+    -- o.wildcharm = fn.char2nr("	") -- tab
     -- wilder.enable_cmdline_enter()
     -- fn["wilder#enable_cmdline_enter"]()
 

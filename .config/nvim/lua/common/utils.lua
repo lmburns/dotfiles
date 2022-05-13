@@ -196,11 +196,12 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         end
     else
         for _, mode in ipairs(modes) do
-            api.nvim_set_keymap(mode, lhs, rhs, opts)
-
             if opts.desc then
                 require("which-key").register({[lhs] = opts.desc}, {mode = mode})
+                opts.desc = nil
             end
+
+            api.nvim_set_keymap(mode, lhs, rhs, opts)
         end
     end
 end
