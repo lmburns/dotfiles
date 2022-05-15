@@ -7,9 +7,9 @@ local plugin_dirs_lazyload = {
     fn.stdpath("data") .. "/site/pack/*/opt/fzf-lua",
     fn.stdpath("data") .. "/site/pack/*/opt/telescope.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/toggleterm.nvim",
-    fn.stdpath("data") .. "/site/pack/*/opt/which-key.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/indent-blankline.nvim",
     fn.stdpath("data") .. "/site/pack/*/opt/nvim-dap"
+    -- fn.stdpath("data") .. "/site/pack/*/opt/which-key.nvim",
 }
 
 reload.vim_reload_dirs = {
@@ -35,14 +35,18 @@ reload.pre_reload_hook = function()
 end
 
 reload.post_reload_hook = function()
+    require("common.global")
+    -- ex.packloadall()
     ex.nohl()
 
-    -- cmd("doautocmd ColorScheme")
-    -- cmd("doautoall WinEnter")
-
     -- recompile packer
+    require("plugins").loader("packer.nvim")
     ex.pa("packer.nvim")
     require("plugins").compile()
+
+    require("plugins").loader("nvim-treesitter")
+    require("plugins").loader("iswap.nvim")
+    ex.pa("nvim-treesitter")
 
     -- cmd [[pa coc-kvs]]
     -- cmd [[pa coc.nvim]]
@@ -87,10 +91,6 @@ reload.post_reload_hook = function()
 
     -- cmd("luafile " .. require('packer').config.compile_path)
 
-    -- cmd("doautocmd NvimTreesitter")
-    -- cmd("doautoall WinEnter")
-    -- cmd("doautocmd BufEnter")
-    -- cmd("doautocmd FileType")
 end
 
 return reload

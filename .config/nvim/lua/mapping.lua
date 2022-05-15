@@ -223,16 +223,16 @@ wk.register(
 map("n", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
 map("x", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
 
-map("n", "zf", [[<Cmd>lua require('common.fold').with_highlight('a')<CR>]], {silent = false})
-map("n", "zF", [[<Cmd>lua require('common.fold').with_highlight('A')<CR>]])
-map("n", "zo", [[<Cmd>lua require('common.fold').with_highlight('o')<CR>]])
-map("n", "zO", [[<Cmd>lua require('common.fold').with_highlight('O')<CR>]])
-map("n", "zv", [[<Cmd>lua require('common.fold').with_highlight('v')<CR>]])
+map("n", "zf", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
+map("n", "zF", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
+map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
+map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
+map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
 -- Recursively open whatever top level fold
-map("n", "zR", [[<Cmd>lua require('common.fold').with_highlight('CzO')<CR>]])
+map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 
-map("n", "z[", [[<Cmd>lua require('common.fold').nav_fold(false)<CR>]])
-map("n", "z]", [[<Cmd>lua require('common.fold').nav_fold(true)<CR>]])
+map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
+map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
 
 -- Using <ff> to fold or unfold
 map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})

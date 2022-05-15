@@ -8,8 +8,7 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
 
-local color = require("common.color")
-local hl = color.set_hl
+local C = require("common.color")
 
 -- General configurations for various themes
 
@@ -18,7 +17,7 @@ M.catppuccin = function()
     catppuccin.setup(
         {
             transparent_background = false,
-            term_colors = false,
+            term_colors = true,
             styles = {
                 comments = "italic",
                 functions = "bold",
@@ -32,81 +31,68 @@ M.catppuccin = function()
     local cp = require("catppuccin.api.colors").get_colors()
 
     catppuccin.after_loading = function()
-        hl("BufferLineNumbers", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineNumbersVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineNumbersSelected", {fg = cp.red, bg = cp.black4})
-
-        hl("BufferLinePick", {fg = cp.maroon, bg = cp.black1})
-        hl("BufferLinePickVisible", {fg = cp.maroon, bg = cp.black4})
-        hl("BufferLinePickSelected", {fg = cp.maroon, bg = cp.black4})
-
-        hl("BufferLineModified", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineModifiedVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineModifiedSelected", {fg = cp.red, bg = cp.black4})
-
-        hl("BufferLineDiagnostic", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineDiagnosticVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineDiagnosticSelected", {fg = cp.rd, bg = cp.black4})
-
-        hl("BufferLineHintDiagnostic", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineHintDiagnosticVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineHintDiagnosticSelected", {fg = cp.green, bg = cp.black4})
-
-        hl("BufferLineInfoDiagnostic", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineInfoDiagnosticVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineInfoDiagnosticSelected", {fg = cp.blue, bg = cp.black4})
-
-        hl("BufferLineWarningDiagnostic", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineWarningDiagnosticVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineWarningDiagnosticSelected", {fg = cp.yellow, bg = cp.black4})
-
-        hl("BufferLineErrorDiagnostic", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineErrorDiagnosticVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineErrorDiagnosticSelected", {fg = cp.red, bg = cp.black4})
-
-        hl("BufferLineHint", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineHintVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineHintSelected", {fg = cp.green, bg = cp.black4})
-
-        hl("BufferLineInfo", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineInfoVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineInfoSelected", {fg = cp.blue, bg = cp.black4})
-
-        hl("BufferLineWarning", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineWarningVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineWarningSelected", {fg = cp.yellow, bg = cp.black4})
-
-        hl("BufferLineError", {fg = cp.white, bg = cp.black1})
-        hl("BufferLineErrorVisible", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineErrorSelected", {fg = cp.red, bg = cp.black4})
-
-        hl("BufferLineFill", {fg = cp.black1, bg = cp.black1})
-        hl("BufferLineBackground", {fg = cp.white, bg = cp.black1})
-
-        hl("BufferLineBuffer", {fg = cp.mauve, bg = cp.black1})
-        hl("BufferLineBufferVisible", {fg = cp.mauve, bg = cp.black4})
-        hl("BufferLineBufferSelected", {fg = cp.mauve, bg = cp.black4, gui = "bold,italic"})
-
-        hl("BufferLineTab", {fg = cp.mauve, bg = cp.black1})
-        hl("BufferLineTabSelected", {fg = cp.white, bg = cp.black4})
-        hl("BufferLineTabClose", {fg = cp.white, bg = cp.black4})
-
-        hl("BufferLineIndicatorSelected", {fg = cp.maroon, bg = cp.black4})
-        hl("BufferLineSeparator", {fg = cp.black1, bg = cp.black1})
-        hl("BufferLineSeparatorVisible", {fg = cp.black1, bg = cp.black4})
-        hl("BufferLineSeparatorSelected", {fg = cp.black1, bg = cp.black4})
-
-        ex.hi("TSMethod gui=bold")
-        ex.hi("TSVariableBuiltin gui=none")
-        ex.hi("TSTypeBuiltin gui=none")
-        ex.hi("TSProperty gui=none")
-        ex.hi("TSVariable gui=none")
-        ex.hi("TSFunction gui=bold")
-        ex.hi("TSFuncBuiltin gui=bold")
-        ex.hi("TSParameter gui=none")
-        -- ex.hi("TSNamespace gui=none")
-        ex.hi("Function gui=bold")
-        ex.hi("Todo guibg=none")
+        C.all(
+            {
+                BufferLineNumbers = {fg = cp.white, bg = cp.black1},
+                BufferLineNumbersVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineNumbersSelected = {fg = cp.red, bg = cp.black4},
+                BufferLinePick = {fg = cp.maroon, bg = cp.black1},
+                BufferLinePickVisible = {fg = cp.maroon, bg = cp.black4},
+                BufferLinePickSelected = {fg = cp.maroon, bg = cp.black4},
+                BufferLineModified = {fg = cp.white, bg = cp.black1},
+                BufferLineModifiedVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineModifiedSelected = {fg = cp.red, bg = cp.black4},
+                BufferLineDiagnostic = {fg = cp.white, bg = cp.black1},
+                BufferLineDiagnosticVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineDiagnosticSelected = {fg = cp.rd, bg = cp.black4},
+                BufferLineHintDiagnostic = {fg = cp.white, bg = cp.black1},
+                BufferLineHintDiagnosticVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineHintDiagnosticSelected = {fg = cp.green, bg = cp.black4},
+                BufferLineInfoDiagnostic = {fg = cp.white, bg = cp.black1},
+                BufferLineInfoDiagnosticVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineInfoDiagnosticSelected = {fg = cp.blue, bg = cp.black4},
+                BufferLineWarningDiagnostic = {fg = cp.white, bg = cp.black1},
+                BufferLineWarningDiagnosticVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineWarningDiagnosticSelected = {fg = cp.yellow, bg = cp.black4},
+                BufferLineErrorDiagnostic = {fg = cp.white, bg = cp.black1},
+                BufferLineErrorDiagnosticVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineErrorDiagnosticSelected = {fg = cp.red, bg = cp.black4},
+                BufferLineHint = {fg = cp.white, bg = cp.black1},
+                BufferLineHintVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineHintSelected = {fg = cp.green, bg = cp.black4},
+                BufferLineInfo = {fg = cp.white, bg = cp.black1},
+                BufferLineInfoVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineInfoSelected = {fg = cp.blue, bg = cp.black4},
+                BufferLineWarning = {fg = cp.white, bg = cp.black1},
+                BufferLineWarningVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineWarningSelected = {fg = cp.yellow, bg = cp.black4},
+                BufferLineError = {fg = cp.white, bg = cp.black1},
+                BufferLineErrorVisible = {fg = cp.white, bg = cp.black4},
+                BufferLineErrorSelected = {fg = cp.red, bg = cp.black4},
+                BufferLineFill = {fg = cp.black1, bg = cp.black1},
+                BufferLineBackground = {fg = cp.white, bg = cp.black1},
+                BufferLineBuffer = {fg = cp.mauve, bg = cp.black1},
+                BufferLineBufferVisible = {fg = cp.mauve, bg = cp.black4},
+                BufferLineBufferSelected = {fg = cp.mauve, bg = cp.black4, gui = "bold,italic"},
+                BufferLineTab = {fg = cp.mauve, bg = cp.black1},
+                BufferLineTabSelected = {fg = cp.white, bg = cp.black4},
+                BufferLineTabClose = {fg = cp.white, bg = cp.black4},
+                BufferLineIndicatorSelected = {fg = cp.maroon, bg = cp.black4},
+                BufferLineSeparator = {fg = cp.black1, bg = cp.black1},
+                BufferLineSeparatorVisible = {fg = cp.black1, bg = cp.black4},
+                BufferLineSeparatorSelected = {fg = cp.black1, bg = cp.black4},
+                TSVariableBuiltin = {gui = "none"},
+                TSTypeBuiltin = {gui = "none"},
+                TSProperty = {gui = "none"},
+                TSVariable = {gui = "none"},
+                TSFuncBuiltin = {gui = "bold"},
+                TSParameter = {gui = "none"},
+                TSFunction = {gui = "bold"},
+                TSMethod = {gui = "bold"},
+                Function = {gui = "bold"},
+                -- TSNamespace = {gui="none"},
+            }
+        )
     end
 
     -- cmd [[colorscheme catppuccin]]

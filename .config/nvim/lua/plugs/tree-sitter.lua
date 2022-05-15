@@ -83,24 +83,13 @@ M.setup_hlargs = function()
             }
         }
     }
-
-    autocmd(
-        {
-            event = "ColorScheme",
-            pattern = "*",
-            command = function()
-                if g.colors_name ~= "kimbox" then
-                    color.link("Hlargs", "TSParameter")
-                end
-            end
-        }
-    )
 end
 
 M.setup_iswap = function()
-    ex.packadd("iswap.nvim")
+    -- ex.packadd("iswap.nvim")
+  cmd("packadd iswap.nvim")
 
-    color.set_hl("ISwapSwap", {bg = "#957FB8"})
+    color.set_hl("ISwapSwap", {background = "#957FB8"})
 
     require("iswap").setup {
         keys = "asdfghjkl;",
@@ -459,7 +448,7 @@ M.setup = function()
             "lua",
             "make",
             "markdown",
-            "norg",
+            -- "norg",
             -- Syntax isn't parsed the greatest
             "perl",
             "python",

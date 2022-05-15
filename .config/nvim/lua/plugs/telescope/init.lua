@@ -1014,7 +1014,7 @@ builtin.installed_plugins = function()
 end
 
 
-builtin.tags = P.tags
+-- builtin.tags = P.tags
 builtin.windows = P.windows
 -- FIX: Why doesn't changes work, but others do?
 builtin.changes = P.changes

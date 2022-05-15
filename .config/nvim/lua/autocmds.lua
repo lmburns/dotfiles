@@ -4,7 +4,7 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
-local color = require("common.color")
+local C = require("common.color")
 
 --[[
 Credit: github.com/akinsho
@@ -111,7 +111,19 @@ augroup(
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 nvim.win.set_cursor(0, {row, 0})
+                if fn.line("w$") ~= row then
+                    ex.normal_("zz")
+                end
             end
+        end
+    },
+    {
+        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
+        event = {"BufReadCmd"},
+        pattern = {"file:///*"},
+        nested = true,
+        command = function(args)
+            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
         end
     }
 )
@@ -182,19 +194,29 @@ augroup(
             -- ex.hi("Todo guibg=none")
             -- ex.hi("FloatermBorder guifg=#A06469 gui=none")
 
-            color.all(
+            C.all(
                 {
-                    TSVariableBuiltin = {gui = "none"},
+                    TSVariableBuiltin = {inherit = "TSVariableBuiltin", gui = "none"},
                     TSTypeBuiltin = {gui = "none"},
                     TSProperty = {gui = "none"},
                     TSVariable = {gui = "none"},
+                    TSKeyword = {gui = "none"},
+                    TSConditional = {gui = "none"},
                     TSString = {gui = "none"},
                     TSKeywordFunction = {gui = "none"},
+                    TSFunction = {bold = true},
+                    TSFuncBuiltin = {bold = true},
                     Function = {gui = "bold"},
                     Todo = {bg = "none"},
-                    FloatermBorder = {fg = "#A06469", gui = "none"}
+                    FloatermBorder = {fg = "#A06469", gui = "none"},
+                    -- TSMethod = {gui = "bold"},
+                    -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
                 }
             )
+
+            if g.colors_name ~= "kimbox" then
+                C.link("Hlargs", "TSParameter")
+            end
         end
     }
 )

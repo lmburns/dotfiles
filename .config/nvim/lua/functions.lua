@@ -11,8 +11,7 @@ command(
     "NvimRestart",
     function()
         if not pcall(require, "nvim-reload") then
-            -- require("packer").loader("nvim-reload")
-            ex.PackerLoad("nvim-reload")
+            require("plugins").loader("nvim-reload")
         end
         local reload = R("plugs.nvim-reload")
         reload.Restart()
@@ -25,10 +24,10 @@ command(
     "NvimReload",
     function()
         if not pcall(require, "nvim-reload") then
-            ex.PackerLoad("nvim-reload")
+            require("plugins").loader("nvim-reload")
         end
-        local reload = require("nvim-reload")
-        reload.Reload()
+
+        require("nvim-reload").Reload()
         ex.colorscheme("kimbox")
     end,
     {nargs = "*"}

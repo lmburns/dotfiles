@@ -133,7 +133,7 @@ vim.schedule(
 
         vim.defer_fn(
             function()
-                require("common.fold")
+                require("plugs.fold")
             end,
             50
         )
@@ -155,13 +155,6 @@ vim.schedule(
                 require("plugs.tree-sitter")
 
                 -- runtime! filetype.vim
-                -- cmd [[
-                --     au! syntaxset
-                --     au syntaxset FileType * lua require('plugs.tree-sitter').hijack_synset()
-                --     syntax on
-                --     filetype on
-                --     filetype plugin indent on
-                -- ]]
 
                 augroup(
                     "syntaxset",
@@ -174,8 +167,6 @@ vim.schedule(
                     }
                 )
 
-                -- Why is this sometimes needed?
-                -- A file like `zsh.vim` thinks it is a `zsh` filetype without it
                 -- augroup(
                 --     "lmb__FileType",
                 --     {
@@ -198,7 +189,7 @@ vim.schedule(
         vim.defer_fn(
             function()
                 g.loaded_clipboard_provider = nil
-                cmd("runtime autoload/provider/clipboard.vim")
+                ex.runtime("autoload/provider/clipboard.vim")
                 require("plugs.yanking") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
@@ -246,19 +237,6 @@ vim.schedule(
                         }
                     )
                 end
-
-                augroup(
-                    "lmb__Highlight",
-                    {
-                        event = "TextYankPost",
-                        pattern = "*",
-                        command = function()
-                            set_hl("HighlightedyankRegion", {bg = "#cc6666"})
-                            pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
-                        end,
-                        description = "Highlight a selection on yank"
-                    }
-                )
             end,
             200
         )
@@ -345,8 +323,8 @@ vim.schedule(
                 link("CocSemDefaultLibrary", "Special")
                 link("CocSemDocumentation", "Number")
 
-                cmd([[packadd coc-kvs]])
-                cmd([[packadd coc.nvim]])
+                ex.packadd("coc-kvs")
+                ex.packadd("coc.nvim")
             end,
             300
         )

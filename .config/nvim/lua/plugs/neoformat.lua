@@ -6,6 +6,8 @@ local augroup = utils.augroup
 local coc = require("plugs.coc")
 local gittool = require("common.gittool")
 
+local scan = require("plenary.scandir")
+
 local function save_doc(bufnr)
     vim.schedule(
         function()
@@ -20,7 +22,15 @@ local function save_doc(bufnr)
 end
 
 local function neoformat()
-    ex.Neoformat()
+    local bufnr = api.nvim_get_current_buf()
+    if
+        vim.bo[bufnr].ft == "lua" and
+            scan.scan_dir(gittool.root() or fn.expand("%:p:h"), {search_pattern = "%.stylua.toml$", hidden = true})
+     then
+        ex.Neoformat("stylua")
+    else
+        ex.Neoformat()
+    end
     cmd("sil! up")
 end
 

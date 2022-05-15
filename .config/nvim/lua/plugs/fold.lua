@@ -36,7 +36,7 @@ function M.use_anyfold(bufnr, force)
                 cmd(
                     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
                         bufnr,
-                        ([[lua require('common.fold').use_anyfold(%d)]]):format(bufnr)
+                        ([[lua require('plugs.fold').use_anyfold(%d)]]):format(bufnr)
                     )
                 )
             else
@@ -132,7 +132,7 @@ function M.attach(bufnr, force)
                         cmd(
                             ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
                                 bufnr,
-                                [[lua require('common.fold').update_fold()]]
+                                [[lua require('plugs.fold').update_fold()]]
                             )
                         )
                     else
@@ -144,13 +144,13 @@ function M.attach(bufnr, force)
                     cmd(
                         ("au FoldLoad BufWritePost <buffer=%d> %s"):format(
                             bufnr,
-                            [[lua require('common.fold').update_fold()]]
+                            [[lua require('plugs.fold').update_fold()]]
                         )
                     )
                     cmd(
                         ("au FoldLoad BufRead <buffer=%d> %s"):format(
                             bufnr,
-                            [[lua vim.defer_fn(require('common.fold').update_fold, 100)]]
+                            [[lua vim.defer_fn(require('plugs.fold').update_fold, 100)]]
                         )
                     )
                 else
@@ -164,7 +164,7 @@ function M.attach(bufnr, force)
     cmd(("au! FoldLoad * <buffer=%d>"):format(bufnr))
     vim.wo.foldenable = true
     vim.wo.foldlevel = 99
-    -- vim.wo.foldtext = [[v:lua.require'common.fold'.foldtext()]]
+    -- vim.wo.foldtext = [[v:lua.require'plugs.fold'.foldtext()]]
 end
 
 function M.defer_attach(bufnr)
@@ -293,7 +293,7 @@ local function init()
             event = "FileType",
             pattern = "*",
             command = function()
-                require("common.fold").defer_attach(tonumber(fn.expand("<abuf>")))
+                require("plugs.fold").defer_attach(tonumber(fn.expand("<abuf>")))
             end
         }
     )
@@ -301,7 +301,7 @@ local function init()
     command(
         "Fold",
         function()
-            require("common.fold").attach(nil, true)
+            require("plugs.fold").attach(nil, true)
         end,
         {nargs = 0}
     )

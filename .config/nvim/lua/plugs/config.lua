@@ -10,7 +10,7 @@ local utils = require("common.utils")
 local wk = require("which-key")
 local map = utils.map
 local command = utils.command
-local color = require("common.color")
+local C = require("common.color")
 
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -20,7 +20,7 @@ local autocmd = utils.autocmd
 -- ╰──────────────────────────────────────────────────────────╯
 function M.bqf()
     -- FIX: Sometimes preview window is transparent
-    color.link("BqfPreviewBorder", "Parameter")
+    C.link("BqfPreviewBorder", "Parameter")
 
     require("bqf").setup(
         {
@@ -338,17 +338,17 @@ function M.vimwiki()
     -- g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
     -- g.vimwiki_table_mappings = 0
 
-    color.all(
+    C.all(
         {
-            VimwikiBold = {fg = "#a25bc4", gui = "bold"},
+            VimwikiBold = {fg = "#a25bc4", bold = true},
             VimwikiCode = {fg = "#d3869b"},
-            VimwikiItalic = {fg = "#83a598", gui = "italic"},
-            VimwikiHeader1 = {fg = "#F14A68", gui = "bold"},
-            VimwikiHeader2 = {fg = "#F06431", gui = "bold"},
-            VimwikiHeader3 = {fg = "#689d6a", gui = "bold"},
-            VimwikiHeader4 = {fg = "#819C3B", gui = "bold"},
-            VimwikiHeader5 = {fg = "#98676A", gui = "bold"},
-            VimwikiHeader6 = {fg = "#458588", gui = "bold"}
+            VimwikiItalic = {fg = "#83a598", italic = true},
+            VimwikiHeader1 = {fg = "#F14A68", bold = true},
+            VimwikiHeader2 = {fg = "#F06431", bold = true},
+            VimwikiHeader3 = {fg = "#689d6a", bold = true},
+            VimwikiHeader4 = {fg = "#819C3B", bold = true},
+            VimwikiHeader5 = {fg = "#98676A", bold = true},
+            VimwikiHeader6 = {fg = "#458588", bold = true}
         }
     )
 
@@ -432,28 +432,48 @@ end
 -- │                          Notify                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.notify()
-    cmd [[
-    hi NotifyERRORBorder guifg=#8A1F1F
-    hi NotifyWARNBorder guifg=#79491D
-    hi NotifyINFOBorder guifg=#4F6752
-    hi NotifyDEBUGBorder guifg=#8B8B8B
-    hi NotifyTRACEBorder guifg=#4F3552
-    hi NotifyERRORIcon guifg=#F70067
-    hi NotifyWARNIcon guifg=#fe8019
-    hi NotifyINFOIcon guifg=#a3b95a
-    hi NotifyDEBUGIcon guifg=#8B8B8B
-    hi NotifyTRACEIcon guifg=#D484FF
-    hi NotifyERRORTitle  guifg=#F70067
-    hi NotifyWARNTitle guifg=#fe8019
-    hi NotifyINFOTitle guifg=#a3b95a
-    hi NotifyDEBUGTitle  guifg=#8B8B8B
-    hi NotifyTRACETitle  guifg=#D484FF
-    hi link NotifyERRORBody Normal
-    hi link NotifyWARNBody Normal
-    hi link NotifyINFOBody Normal
-    hi link NotifyDEBUGBody Normal
-    hi link NotifyTRACEBody Normal
-  ]]
+    -- if g.packer_compiled_loaded then
+    --     return
+    -- end
+
+    --   cmd [[
+    --   hi NotifyERRORBorder guifg=#8A1F1F
+    --   hi NotifyWARNBorder guifg=#79491D
+    --   hi NotifyINFOBorder guifg=#4F6752
+    --   hi NotifyDEBUGBorder guifg=#8B8B8B
+    --   hi NotifyTRACEBorder guifg=#4F3552
+    --   hi NotifyERRORIcon guifg=#F70067
+    --   hi NotifyWARNIcon guifg=#fe8019
+    --   hi NotifyINFOIcon guifg=#a3b95a
+    --   hi NotifyDEBUGIcon guifg=#8B8B8B
+    --   hi NotifyTRACEIcon guifg=#D484FF
+    --   hi NotifyERRORTitle  guifg=#F70067
+    --   hi NotifyWARNTitle guifg=#fe8019
+    --   hi NotifyINFOTitle guifg=#a3b95a
+    --   hi NotifyDEBUGTitle  guifg=#8B8B8B
+    --   hi NotifyTRACETitle  guifg=#D484FF
+    --   hi link NotifyERRORBody Normal
+    --   hi link NotifyWARNBody Normal
+    --   hi link NotifyINFOBody Normal
+    --   hi link NotifyDEBUGBody Normal
+    --   hi link NotifyTRACEBody Normal
+    -- ]]
+
+    C.plugin(
+        "notify",
+        {
+            NotifyERRORBorder = {bg = {from = "NormalFloat"}},
+            NotifyWARNBorder = {bg = {from = "NormalFloat"}},
+            NotifyINFOBorder = {bg = {from = "NormalFloat"}},
+            NotifyDEBUGBorder = {bg = {from = "NormalFloat"}},
+            NotifyTRACEBorder = {bg = {from = "NormalFloat"}},
+            NotifyERRORBody = {link = "NormalFloat"},
+            NotifyWARNBody = {link = "NormalFloat"},
+            NotifyINFOBody = {link = "NormalFloat"},
+            NotifyDEBUGBody = {link = "NormalFloat"},
+            NotifyTRACEBody = {link = "NormalFloat"}
+        }
+    )
 
     ---@type table<string, fun(bufnr: number, notif: table, highlights: table)>
     local renderer = require("notify.render")
@@ -461,11 +481,17 @@ function M.notify()
 
     notify.setup(
         {
-            stages = "slide",
+            stages = "fade_in_slide_out",
+            -- stages = "slide",
             timeout = 3000,
             minimum_width = 30,
+            background_color = "NormalFloat",
             -- on_close = function()
             -- -- Could create something to write to a file
+            -- end,
+            -- on_open = function(win)
+            --     if nvim.win.is_valid(win) then
+            --     end
             -- end,
             render = function(bufnr, notif, highlights)
                 local style = notif.title[1] == "" and "minimal" or "default"
@@ -900,60 +926,6 @@ function M.window_picker()
     )
 
     map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Yanky                           │
--- ╰──────────────────────────────────────────────────────────╯
-function M.yanky()
-    local mapping = require("yanky.telescope.mapping")
-
-    require("yanky").setup(
-        {
-            ring = {
-                history_length = 50,
-                storage = "shada",
-                sync_with_numbered_registers = true
-            },
-            picker = {
-                telescope = {
-                    mappings = {
-                        default = mapping.put("p"),
-                        i = {
-                            ["<C-j>"] = mapping.put("p"),
-                            ["<C-k>"] = mapping.put("P")
-                        },
-                        n = {
-                            ["p"] = mapping.put("p"),
-                            ["P"] = mapping.put("P")
-                        }
-                    }
-                }
-            },
-            system_clipboard = {
-                sync_with_ring = true
-            },
-            highlight = {
-                on_put = true,
-                on_yank = true,
-                timer = 300
-            },
-            preserve_cursor_position = {
-                enabled = true
-            }
-        }
-    )
-
-    color.set_hl("YankyPut", {bg = "#cc6666"})
-
-    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
-    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
-    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
-    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
-    map("n", "<C-r>", "<Plug>(YankyCycleForward)")
-    map("n", "<C-n>", "<Plug>(YankyCycleBackward)")
-
-    require("telescope").load_extension("yank_history")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1534,6 +1506,31 @@ function M.visualmulti()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                       Git Conflict                       │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.git_conflict()
+    require("git-conflict").setup(
+        {
+            {
+                default_mappings = true,
+                disable_diagnostics = false, -- This will disable the diagnostics in a buffer whilst it is conflicted
+                highlights = {
+                    -- They must have background color, otherwise the default color will be used
+                    incoming = "DiffText",
+                    current = "DiffAdd"
+                }
+            }
+        }
+    )
+    -- map("n", "co", "<Plug>(git-conflict-ours)")
+    -- map("n", "cb", "<Plug>(git-conflict-both)")
+    -- map("n", "c0", "<Plug>(git-conflict-none)")
+    -- map("n", "ct", "<Plug>(git-conflict-theirs)")
+    -- map("n", "[x", "<Plug>(git-conflict-next-conflict)")
+    -- map("n", "]x", "<Plug>(git-conflict-prev-conflict)")
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                       regexplainer                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.regexplainer()
@@ -1573,14 +1570,6 @@ function M.regexplainer()
             separator = "\n"
         }
     }
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Luadev                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.luadev()
-    map("n", "<Leader>x<CR>", "<Plug>(Luadev-RunLine)", {noremap = false})
-    map("n", "<Leader>x.", "<Plug>(Luadev-Run)", {noremap = false})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1832,6 +1821,14 @@ end
 --         "terminal",
 --         "prompt"
 --     }
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Luadev                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.luadev()
+--     map("n", "<Leader>x<CR>", "<Plug>(Luadev-RunLine)", {noremap = false})
+--     map("n", "<Leader>x.", "<Plug>(Luadev-Run)", {noremap = false})
 -- end
 
 return M

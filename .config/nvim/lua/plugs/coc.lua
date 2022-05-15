@@ -528,7 +528,7 @@ function M.init()
             event = "FileType",
             pattern = "list",
             command = function()
-                cmd("pa nvim-bqf")
+                ex.pa("nvim-bqf")
                 require("bqf.magicwin.handler").attach()
             end
         },
@@ -646,12 +646,14 @@ function M.init()
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
-            ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
+            ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"}
         }
     )
 
-    -- map("n", "<C-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
-    -- map("n", "<A-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('cursor')<CR>")
+    -- map("n", "<Leader>jo", "<cmd>lua require('code_action_menu').open_code_action_menu()<CR>")
+    map("n", "<Leader>je", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
+    map("n", "<Leader>jc", "<cmd>lua require('code_action_menu').open_code_action_menu('cursor')<CR>")
+    map("n", "<Leader>jl", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
 
     wk.register(
         {
@@ -761,9 +763,9 @@ function M.init()
         {
             ["<Leader>ab"] = {":CocCommand fzf-preview.AllBuffers<CR>", "All buffers (fzf)"},
             ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
+            ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"}
             -- ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
             -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
-            ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
             -- ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}
         }
     )

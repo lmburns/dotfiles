@@ -161,11 +161,11 @@ function M.Reload()
     end
 
     -- Clear highlights
-    cmd("highlight clear")
+    ex.highlight("clear")
 
     -- Stop LSP if it's configured
     if fn.exists(":LspStop") ~= 0 then
-        cmd("LspStop")
+        ex.LspStop()
     end
 
     -- Unload all already loaded modules
@@ -173,9 +173,11 @@ function M.Reload()
 
     -- Source init file
     if string.match(fn.expand("$VIMRC"), "%.lua$") then
-        ex.luafile("$VIMRC")
+        -- ex.luafile("$VIMRC")
+        vim.cmd("luafile $VIMRC")
     else
-        ex.source("$VIMRC")
+        -- ex.source("$VIMRC")
+        vim.cmd("source $VIMRC")
     end
 
     -- Reload start plugins
@@ -193,10 +195,12 @@ function M.Restart()
     M.Reload()
 
     -- Manually run VimEnter autocmd to emulate a new run of Vim
-    -- cmd("doautoall VimEnter")
-    cmd("doautocmd BufEnter")
-    ex.doautoall("VimEnter")
-    -- cmd("doautocmd FileType")
+    vim.cmd("doautoall BufEnter")
+    vim.cmd("doautoall FileType")
+    vim.cmd("doautoall VimEnter")
+    -- ex.doautoall("BufEnter")
+    -- ex.doautoall("FileType")
+    -- ex.doautoall("VimEnter")
 end
 
 return M

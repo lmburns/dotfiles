@@ -120,8 +120,8 @@ _delta() {
 '--show-themes[Show example diff for available delta themes]' \
 '-s[Display diffs in side-by-side layout]' \
 '--side-by-side[Display diffs in side-by-side layout]' \
-'::minus-file -- First file to be compared when delta is being used in diff mode:' \
-'::plus-file -- Second file to be compared when delta is being used in diff mode:' \
+'::minus-file:_files' \
+'::plus-file:_files' \
 && ret=0
 }
 

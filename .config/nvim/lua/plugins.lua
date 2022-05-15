@@ -96,7 +96,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "info"},
+        log = {level = "debug"},
         profile = {enable = true}
     }
 )
@@ -190,7 +190,21 @@ return packer.startup(
     {
         function(use)
             -- Package manager
-            use({"wbthomason/packer.nvim", opt = true})
+            use(
+                {
+                    "wbthomason/packer.nvim",
+                    opt = true,
+                    setup = function()
+                        if g.loaded_visual_multi == 1 then
+                            vim.schedule(
+                                function()
+                                    vim.fn["vm#plugs#permanent"]()
+                                end
+                            )
+                        end
+                    end
+                }
+            )
 
             -- Cache startup
             use({"lewis6991/impatient.nvim", rocks = "mpack"})
@@ -226,6 +240,7 @@ return packer.startup(
             -- ]]] === Lua Library ===
 
             -- ========================== Fixes / Addons ========================== [[[
+            use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             -- numToStr/Navigator.nvim
@@ -319,21 +334,16 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "bfredl/nvim-luadev",
-            --         conf = "luadev",
-            --         ft = "lua",
-            --         keys = {{"n", "<Leader>x<CR>"}, {"n", "<Leader>x."}},
-            --         cmd = "Luadev"
-            --     }
-            -- )
+            -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
             use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua"})
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua"})
+            -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup({}).settings]]})
+
+            -- This works if all references to `lspconfig` are removed
             use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- use(
@@ -348,7 +358,7 @@ return packer.startup(
 
             -- ============================ File Manager =========================== [[[
             use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            use({"ptzz/lf.vim", conf = "lf"}) -- Used for development purposes
+            use({"ptzz/lf.vim", conf = "lf"})
             use({prefer_local("lf.nvim"), conf = "lfnvim"})
             -- use({ "haorenW1025/floatLf-nvim" })
 
@@ -379,6 +389,7 @@ return packer.startup(
 
             -- FIX: cclose won't work
             -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, conf = "qf_reflector"})
+            -- use({"https://gitlab.com/yorickpeterse/nvim-pqf", config = [[require('pqf').setup()]]})
 
             use({"kevinhwang91/nvim-bqf", ft = {"qf"}, conf = "bqf"})
             use(
@@ -546,14 +557,6 @@ return packer.startup(
             -- ]]] === Colorscheme ===
 
             -- ============================ Scrollbar ============================= [[[
-            -- use(
-            --     {
-            --         "wfxr/minimap.vim",
-            --         conf = "minimap",
-            --         keys = {{"n", "<Leader>mi"}},
-            --         cmd = {"Minimap", "MinimapToggle", "MinimapClose"}
-            --     }
-            -- )
             use(
                 {
                     "petertriho/nvim-scrollbar",
@@ -831,7 +834,10 @@ return packer.startup(
             -- ]]] === Operator ===
 
             -- =============================== Tags =============================== [[[
-
+            -- config = function()
+            --     local config = fn.stdpath("config")
+            --     vim.cmd("source " .. config .. "/vimscript/plugins/vim-gutentags.vim")
+            -- end
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use(
                 {
@@ -1139,15 +1145,16 @@ return packer.startup(
                     requires = {
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
                         {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {"xiyaowong/coc-wxy", after = "coc.nvim"}
+                        {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                        {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
                         -- TODO: Once the error of cursor is fixed
-                        -- {"xiyaowong/coc-code-action-menu", after = "coc.nvim"}
                     }
                 }
             )
             -- ]]] === Coc ===
 
             -- ============================= Treesitter ============================ [[[
+            use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
                 {
                     -- conf = "plugs.tree-sitter"
@@ -1252,10 +1259,7 @@ return packer.startup(
                 }
             )
 
-            use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
-
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
-
             use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
             -- ]]] === Treesitter ===
 
@@ -1263,7 +1267,7 @@ return packer.startup(
             use(
                 {
                     "nvim-telescope/telescope.nvim",
-                    event = "VimEnter",
+                    opt = false,
                     conf = "plugs.telescope",
                     after = {"popup.nvim", "plenary.nvim", colorscheme},
                     requires = {
@@ -1501,7 +1505,12 @@ return packer.startup(
                 }
             )
 
-            -- akinsho/git-conflict.nvim
+            use(
+                {
+                    "akinsho/git-conflict.nvim",
+                    conf = "git_conflict"
+                }
+            )
 
             -- use(
             --     {
@@ -1537,10 +1546,7 @@ return packer.startup(
                     opt = true
                 }
             )
-
-            use({"rcarriga/nvim-notify", conf = "notify"})
         end
     }
 )
-
 -- use({"mhinz/vim-startify", conf = "plugs.startify"})

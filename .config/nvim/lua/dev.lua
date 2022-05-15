@@ -43,7 +43,7 @@ M.inspect = function(v)
     elseif t == "userdata" then
         s = ("Userdata:\n%s"):format(vim.inspect(getmetatable(v)))
     elseif t ~= "string" then
-        s = vim.inspect(v)
+        s = vim.inspect(v, {depth = math.huge})
     else
         s = tostring(v)
     end
@@ -346,9 +346,10 @@ end
 -- │                          Reload                          │
 -- ╰──────────────────────────────────────────────────────────╯
 ---Reload all lua modules
+---FIX: This fails in treesitter, where a module is loaded inside another module
 M.reload_config = function()
     -- Handle impatient.nvim automatically.
-    local luacache = (_G.__luacache or {}).cache
+    local luacache = (_G.__luacache or {}).modpaths.cache
 
     -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)
     -- require("plenary.reload").reload_module(dir)
@@ -363,7 +364,8 @@ M.reload_config = function()
         end
     end
 
-    dofile(env.MYVIMRC)
+    -- dofile(env.MYVIMRC)
+    require("plugins").compile()
 end
 
 ---Reload lua modules in a given path and reload the module
