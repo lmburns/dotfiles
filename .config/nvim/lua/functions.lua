@@ -150,15 +150,16 @@ cmd [[
   command! RUN :call s:execute_buffer()
 ]]
 
-cmd [[
-  function! LuaExecutor() abort
-    if &ft == 'lua'
-      call execute(printf(":lua %s", getline(".")))
-    elseif &ft == 'vim'
-      exe getline(">")
-    endif
-  endfunction
+function M.lua_executor()
+    local bufnr = api.nvim_get_current_buf()
+    if vim.bo[bufnr].ft == "lua" then
+        fn.execute((":lua %s"):format(api.nvim_get_current_line()))
+    elseif vim.bo[bufnr].ft == "vim" then
+        fn.execute(fn.getline("<"))
+    end
+end
 
+cmd [[
  if !exists('*SaveAndExec')
     function! SaveAndExec() abort
       if &filetype == 'vim'
@@ -207,10 +208,10 @@ augroup(
     },
     {
         event = "FileType",
-        pattern = "lua",
+        pattern = {"lua", "vim"},
         command = function()
             map("n", "<Leader>xl", ":luafile %<CR>")
-            map("n", "<Leader>xx", ":call LuaExecutor()<CR>")
+            map("n", "<Leader>xx", ":lua require('functions').lua_executor()<CR>")
             map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
             map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
         end
@@ -219,17 +220,21 @@ augroup(
 -- ]]] === Execute Buffer ===
 
 -- Show changes since last save
-cmd [[
-  function! s:DiffSaved()
-    let filetype=&filetype
-    diffthis
-    vnew | r # | normal! 1Gdd
-    diffthis
-    exe 'setl bt=nofile bh=wipe nobl noswf ro ft=' . filetype
-  endfunction
+function M.diffsaved()
+    local bufnr = api.nvim_get_current_buf()
+    local ft = vim.bo[bufnr].ft
+    ex.diffthis()
+    cmd("vnew | r # | normal! 1Gdd")
+    ex.diffthis()
+    fn.execute(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
+end
 
-  command! DS call s:DiffSaved()
-]]
+command(
+    "DS",
+    function()
+        M.diffsaved()
+    end
+)
 
 -- https://github.com
 
@@ -255,6 +260,65 @@ function M.go_github()
         fn["openbrowser#_keymap_open"]("n")
     end
 end
+
+---Generic open function used with other functions
+function M.open(path)
+    fn.jobstart({"handlr", "open", path}, {detach = true})
+    vim.notify(("Opening %s"):format(path))
+end
+
+---Open a directory or a link
+function M.open_link()
+    local file = fn.expand("<cfile>")
+    if fn.isdirectory(file) > 0 then
+        ex.edit("file")
+    else
+        M.open(file)
+    end
+end
+
+---Open a file or a link
+function M.open_path()
+    local path = fn.expand("<cfile>")
+    if path:match("https://") then
+        return vim.cmd("norm gx")
+    end
+
+    -- Any URI with a protocol segment
+    local protocol_uri_regex = "%a*:%/%/[%a%d%#%[%]%-%%+:;!$@/?&=_.,~*()]*"
+    if path:match(protocol_uri_regex) then
+        return vim.cmd("norm! gf")
+    end
+
+    -- consider anything that looks like string/string a github link
+    local plugin_url_regex = "[%a%d%-%.%_]*%/[%a%d%-%.%_]*"
+    local link = string.match(path, plugin_url_regex)
+    if link then
+        return M.open(("https://www.github.com/%s"):format(link))
+    end
+    return vim.cmd("norm! gf")
+end
+
+---Add a delimiter to the end of the line if the delimiter isn't already present
+---If the delimiter is present, remove it
+---@param character string
+function M.modify_line_end_delimiter(character)
+    local delimiters = {",", ";"}
+    return function()
+        local line = nvim.buf.line()
+        local last_char = line:sub(-1)
+        if last_char == character then
+            nvim.set_current_line(line:sub(1, #line - 1))
+        elseif vim.tbl_contains(delimiters, last_char) then
+            nvim.set_current_line(line:sub(1, #line - 1) .. character)
+        else
+            nvim.set_current_line(line .. character)
+        end
+    end
+end
+
+map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()

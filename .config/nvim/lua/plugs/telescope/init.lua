@@ -718,43 +718,6 @@ M.cst_grep_cword = function()
     }
 end
 
-M.tags = function()
-    -- local bufdir = fn.expand("%:p:h", 1)
-    -- local root = fn["gutentags#get_project_root"](bufdir)
-
-    local file = vim.b.gutentags_files
-
-    if not file then
-        b_utils.notify("no gutentags file found")
-        return
-    end
-
-    file = file["ctags"]
-
-    builtin.tags {
-        cwd = g.gutentags_cache_dir,
-        ctags_file = file
-    }
-end
-
-M.current_buffer_tags = function()
-    -- local bufdir = fn.expand("%:p:h", 1)
-    -- local root = fn["gutentags#get_project_root"](bufdir)
-
-    local file = vim.b.gutentags_files
-    if not file then
-        b_utils.notify("no gutentags file found")
-        return
-    end
-
-    file = file["ctags"]
-
-    builtin.current_buffer_tags {
-        cwd = g.gutentags_cache_dir,
-        ctags_file = file
-    }
-end
-
 -- Doesn't work
 M.cst_grep_cWORD = function()
     builtin.grep_string {
@@ -1050,13 +1013,14 @@ builtin.installed_plugins = function()
     builtin.find_files {cwd = fn.stdpath("data") .. "/site/pack/packer/"}
 end
 
-builtin.tags = M.tags
 
+builtin.tags = P.tags
 builtin.windows = P.windows
 -- FIX: Why doesn't changes work, but others do?
 builtin.changes = P.changes
 builtin.scriptnames = P.scriptnames
 builtin.args = P.args
+builtin.cmarks = P.marks
 builtin.live_grep_in_folder = P.live_grep_in_folder
 
 -- ========================= Extensions ==========================

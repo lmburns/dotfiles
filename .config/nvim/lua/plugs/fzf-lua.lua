@@ -7,7 +7,6 @@ local fzf_lua = require("fzf-lua")
 function M.setup()
     local actions = require "fzf-lua.actions"
 
-    ---@diagnostic disable-next-line: redundant-parameter
     fzf_lua.setup {
         fzf_bin = "fzf", -- use skim instead of fzf?
         global_resume = true, -- enable global `resume`?
@@ -178,7 +177,7 @@ function M.setup()
             ["--info"] = "inline",
             ["--height"] = "100%",
             ["--layout"] = "reverse",
-            ["--no-border"] = ""
+            ["--border"] = "none"
         },
         -- fzf '--color=' options (optional)
         --[[ fzf_colors = {
@@ -248,6 +247,7 @@ function M.setup()
             git_icons = true, -- show git icons?
             file_icons = true, -- show file icons?
             color_icons = true, -- colorize file|git icons
+            -- path_shorten   = 1,              -- 'true' or number, shorten path?
             -- executed command priority is 'cmd' (if exists)
             -- otherwise auto-detect prioritizes `fd`:`rg`:`find`
             -- default options are controlled by 'fd|rg|find|_opts'
@@ -318,6 +318,19 @@ function M.setup()
                 cmd = "git branch --all --color",
                 preview = "git log --graph --pretty=oneline --abbrev-commit --color {1}",
                 actions = {["default"] = actions.git_switch}
+            },
+            stash = {
+                prompt = "Stash> ",
+                cmd = "git --no-pager stash list",
+                preview = "git --no-pager stash show --patch --color {1}",
+                actions = {
+                    ["default"] = actions.git_stash_apply,
+                    ["ctrl-x"] = {actions.git_stash_drop, actions.resume}
+                },
+                fzf_opts = {
+                    ["--no-multi"] = "",
+                    ["--delimiter"] = "'[:]'"
+                }
             },
             icons = {
                 ["M"] = {icon = "M", color = "yellow"},
@@ -429,6 +442,11 @@ function M.setup()
                 ["--delimiter"] = "'[\\]:]'",
                 ["--nth"] = "2..",
                 ["--tiebreak"] = "index"
+            },
+            -- actions inherit from 'actions.buffers' and merge
+            actions = {
+                ["default"] = {actions.buf_edit_or_qf},
+                ["alt-q"] = {actions.buf_sel_to_qf}
             }
             -- actions inherit from 'actions.buffers'
         },

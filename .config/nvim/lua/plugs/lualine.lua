@@ -11,19 +11,17 @@ local colors = require("kimbox.lualine").colors()
 local conditions = {
     -- Show function in statusbar
     is_available_gps = function()
-        local ok, _ = pcall(require, "nvim-gps")
-        if not ok then
-            return false
+        if utils.prequire("nvim-gps") then
+            return require("nvim-gps").is_available()
         end
-        return require("nvim-gps").is_available()
+        return false
     end,
     hide_in_width = function()
         return vim.fn.winwidth(0) > 80
     end,
-    -- TODO: Make this better
     coc_status_width = function()
-        if fn.exists("g:coc_status") then
-            if fn.strwidth("g:coc_status") > 30 then
+        if fn.exists("g:coc_status") and g.coc_status then
+            if #g.coc_status > 28 then
                 return false
             end
         end

@@ -14,6 +14,35 @@ local wk = require("which-key")
 
 local default_preview_window
 
+-- M.f = {
+--     vim = setmetatable(
+--         {},
+--         {
+--             __index = function(self, k)
+--                 local mt = getmetatable(self)
+--                 local x = mt[k]
+--                 if x ~= nil then
+--                     return x
+--                 end
+--
+--                 local f
+--                 local fzf = fn[("fzf#vim#%s"):format(k)]
+--                 if type(fzf) == "function" and vim.is_callable(fzf) then
+--                     f = function(...)
+--                         return f(...)
+--                     end
+--                     mt[k] = f
+--                 else
+--                     vim.notify("Not an FZF function")
+--                     return
+--                 end
+--
+--                 return f
+--             end
+--         }
+--     )
+-- }
+
 function M.fzf(sources, sinkfunc)
     local fzf_run = fn["fzf#run"]
     local fzf_wrap = fn["fzf#wrap"]
@@ -424,7 +453,7 @@ end
 
 function M.fzf_statusline()
     local hl = require("common.color").hl
-    hl("fzf1", {ctermfg = 161, ctermbg = 251})
+    hl("fzf1", {fg = 161})
     -- hl("fzf2", {ctermfg = 23, ctermbg = 251})
     -- hl("fzf3", {ctermfg = 237, ctermbg = 251})
     -- opt_local.statusline = [[%#fzf1# > %#fzf2#fz%#fzf3#f]]
@@ -484,21 +513,33 @@ local function init()
     )
 
     -- Colors
-    cmd [[command! -bang Colors call fzf#vim#colors(g:fzf_vim_opts, <bang>0)]]
-
-    -- Files
-    cmd [[
-    command! -bang -nargs=? -complete=dir Files
-      \ call fzf#vim#files(<q-args>,
-      \ fzf#vim#with_preview(g:fzf_vim_opts, 'right:60%:default'), <bang>0)
-  ]]
+    command(
+        "Colors",
+        function()
+            fn["fzf#vim#colors"](g.fzf_vim_opts)
+        end,
+        {bang = true}
+    )
 
     -- Buffers
-    cmd [[
-  command! -bang Buffers
-    \ call fzf#vim#buffers(
-    \ fzf#vim#with_preview(g:fzf_vim_opts, 'right:60%:default'), <bang>0)
-  ]]
+    command(
+        "Buffers",
+        function()
+            local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
+            fn["fzf#vim#buffers"](preview)
+        end,
+        {bang = true}
+    )
+
+    -- Files
+    command(
+        "Files",
+        function(tbl)
+            local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
+            fn["fzf#vim#files"](tbl.args, preview)
+        end,
+        {nargs = "?", complete = "dir", bang = true}
+    )
 
     -- LS
     cmd [[
@@ -537,20 +578,6 @@ local function init()
     --       \ {'options':  '--delimiter : --nth 4..'},
     --       \ 0)
     -- ]]
-
-    -- Rgf
-    cmd [[
-    command! -bang -nargs=* Rgf call RGF()
-    function! RGF()
-      " . ' -F '.expand('%:t')"
-      let fixmestr =
-        \ '(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|HACK|BUG|BUGS):'
-      call fzf#vim#grep(
-        \ 'rg --column --no-heading --line-number --color=always '.shellescape(fixmestr),
-        \ 1,
-        \ {'options':  '--delimiter : --nth 4..'}, 0)
-    endfunction
-  ]]
 
     -- RipgrepFzf
     cmd [[
@@ -737,16 +764,13 @@ local function init()
         }
     )
 
-    -- Change directory to buffers dir
-    map("n", "<Leader>cd", ":lcd %:p:h<CR>")
-
     -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
     -- map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 
     -- Tags
     -- map("n", "<Leader>t", ":Tags<CR>", {silent = true})
-    map("n", "<A-t>", ":BTags<CR>", {silent = true})
+    -- map("n", "<A-t>", ":BTags<CR>", {silent = true})
 
     map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)", {noremap = false})
 
@@ -754,6 +778,29 @@ local function init()
     map("x", "<C-l>m", "<Plug>(fzf-maps-x)")
     map("i", "<C-l>m", "<Plug>(fzf-maps-i)")
     map("o", "<C-l>m", "<Plug>(fzf-maps-o)")
+
+    map(
+        "n",
+        "<Leader>fe",
+        function()
+            vim.ui.input(
+                {
+                    prompt = "Search: "
+                },
+                function(term)
+                    if term then
+                        vim.schedule(
+                            function()
+                                local preview = fn["fzf#vim#with_preview"]()
+                                fn["fzf#vim#locate"](term, preview)
+                            end
+                        )
+                    end
+                end
+            )
+        end,
+        {silent = true, desc = "Locate query (fzf)"}
+    )
 
     M.resize_preview_layout()
 end

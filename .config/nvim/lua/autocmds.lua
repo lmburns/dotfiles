@@ -6,6 +6,71 @@ local create_augroup = utils.create_augroup
 
 local color = require("common.color")
 
+--[[
+Credit: github.com/akinsho
+
+The mappings below are essentially faked user input this is because in order to automatically turn off
+the search highlight just changing the value of 'hlsearch' inside a function does not work
+read `:h nohlsearch`.
+
+To have this work, check that the current mouse position is not a search
+result, if it is we leave highlighting on, otherwise I turn it off on cursor moved by faking my input
+using the expr mappings below
+
+This is based on the implementation discussed here:
+https://github.com/neovim/neovim/issues/5581
+--]]
+map({"n", "v", "o", "i", "c"}, "<Plug>(StopHL)", 'execute("nohlsearch")[-1]', {expr = true})
+map("n", "<Esc><Esc>", "<Esc>:nohlsearch<CR>", {desc = "Disable hlsearch"})
+
+local function stop_hl()
+    if vim.v.hlsearch == 0 or api.nvim_get_mode().mode ~= "n" then
+        return
+    end
+    api.nvim_feedkeys(utils.t("<Plug>(StopHL)"), "m", false)
+end
+
+local function hl_search()
+    local col = nvim.win.get_cursor(0)[2]
+    local curr_line = nvim.buf.line()
+    local ok, match = pcall(fn.matchstrpos, curr_line, fn.getreg("/"), 0)
+    if not ok then
+        return vim.notify(match, "error", {title = "HL SEARCH"})
+    end
+    local _, p_start, p_end = unpack(match)
+    -- If the cursor is in a search result, leave highlighting on
+    if col < p_start or col > p_end then
+        stop_hl()
+    end
+end
+
+augroup(
+    "lmb__VimrcIncSearchHighlight",
+    {
+        event = {"CursorMoved"},
+        command = function()
+            hl_search()
+        end
+    },
+    {
+        event = {"InsertEnter"},
+        command = function()
+            stop_hl()
+        end
+    },
+    {
+        event = {"OptionSet"},
+        pattern = {"hlsearch"},
+        command = function()
+            vim.schedule(
+                function()
+                    ex.redrawstatus()
+                end
+            )
+        end
+    }
+)
+
 -- augroup(
 --     {"filetypedetect", false},
 --     {
@@ -125,7 +190,7 @@ augroup(
                     TSVariable = {gui = "none"},
                     TSString = {gui = "none"},
                     TSKeywordFunction = {gui = "none"},
-                    Function = {gui = "none"},
+                    Function = {gui = "bold"},
                     Todo = {bg = "none"},
                     FloatermBorder = {fg = "#A06469", gui = "none"}
                 }
@@ -234,7 +299,8 @@ nvim.autocmd.lmb__Help = {
     },
     {
         -- This is ran more than once
-        -- Using help for this won't open vertical when opening the same thing twice in a row
+        -- NOTE: Using help for this won't open vertical when opening the same thing twice in a row
+        --      since the FileType autocmd is only ran once
         event = "FileType",
         pattern = {"man"},
         once = false,
@@ -250,10 +316,11 @@ nvim.autocmd.lmb__Help = {
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end
     },
-    -- Works when opening man with ':Man' but not with telescope or fzf-lua
-    -- if the event is BufHidden. However, BufLeave fixes this problem
+    -- NOTE: Works when opening man with ':Man' but not with telescope or fzf-lua
+    --       if the event is BufHidden. However, BufLeave fixes this problem
     {
-        event = "BufLeave",
+        -- event = "BufLeave",
+        event = "BufHidden",
         pattern = "*",
         command = function()
             if b.ft == "man" then
@@ -271,6 +338,65 @@ nvim.autocmd.lmb__Help = {
     }
 }
 -- ]]] === Help ===
+
+-- === Smart Close === [[[
+local smart_close_filetypes = {
+    -- 'help',
+    -- 'qf',
+    "git-status",
+    "git-log",
+    "gitcommit",
+    "dbui",
+    "fugitive",
+    "fugitiveblame",
+    "LuaTree",
+    "log",
+    "tsplayground"
+}
+
+local function smart_close()
+    if fn.winnr("$") ~= 1 then
+        api.nvim_win_close(0, true)
+    end
+end
+
+nvim.autocmd.lmb__SmartClose = {
+    {
+        event = "FileType",
+        pattern = "*",
+        command = function()
+            local is_unmapped = fn.hasmapto("q", "n") == 0
+            local is_eligible =
+                is_unmapped or vim.wo.previewwindow or vim.tbl_contains(smart_close_filetypes, vim.bo.filetype)
+
+            if is_eligible then
+                map("n", "qq", smart_close, {buffer = 0, nowait = true})
+            end
+        end
+    },
+    {
+        -- Close quick fix window if the file containing it was closed
+        event = "BufEnter",
+        pattern = "*",
+        command = function()
+            if fn.winnr("$") == 1 and vim.bo.buftype == "quickfix" then
+                api.nvim_buf_delete(0, {force = true})
+            end
+        end
+    },
+    {
+        -- Automatically close corresponding loclist when quitting a window
+        event = "QuitPre",
+        pattern = "*",
+        nested = true,
+        command = function()
+            if vim.bo.filetype ~= "qf" then
+                ex.silent_("lclose")
+            end
+        end
+    }
+}
+-- ]]]
 
 -- === Tmux === [[[
 if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
@@ -341,7 +467,7 @@ do
             timer =
                 vim.defer_fn(
                 function()
-                    if fn.mode() == "n" then
+                    if api.nvim_get_mode().mode == "n" then
                         api.nvim_echo({}, false, {})
                     end
                 end,
@@ -354,14 +480,13 @@ end -- ]]]
 
 -- === Auto Resize on Resize Event === [[[
 do
-    local id = create_augroup("lmb__VimResize")
     local o = vim.o
 
-    api.nvim_create_autocmd(
-        "VimResized",
+    augroup(
+        {"lmb__VimResize", false},
         {
-            group = id,
-            callback = function()
+            event = "VimResized",
+            command = function()
                 local last_tab = api.nvim_get_current_tabpage()
                 ex.tabdo("wincmd =")
                 api.nvim_set_current_tabpage(last_tab)
@@ -370,11 +495,12 @@ do
         }
     )
 
-    api.nvim_create_autocmd(
-        {"VimEnter", "VimResized"},
+    augroup(
+        {"lmb__VimResize", false},
         {
+            event = {"VimEnter", "VimResized"},
             group = id,
-            callback = function()
+            command = function()
                 o.previewheight = math.floor(o.lines / 3)
             end,
             desc = "Update previewheight as per the new Vim size"
@@ -473,7 +599,6 @@ augroup(
         description = "Setup zig environment",
         command = function()
             map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
-            map("n", ";ff", ":Format<CR>")
         end
     }
 )
@@ -522,7 +647,7 @@ augroup(
 do
     local id = create_augroup("lmb__CursorLineControl")
     local set_cursorline = function(event, value, pattern)
-        api.nvim_create_autocmd(
+        nvim.create_autocmd(
             event,
             {
                 group = id,

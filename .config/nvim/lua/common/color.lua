@@ -49,7 +49,7 @@ end
 ---@param higroup string: Group that is being defined
 ---@param hi_info table: Table of options
 ---@param default? boolean: Whether `default` should be used
-function M.set_hl(higroup, hi_info, default)
+function M.hl_set(higroup, hi_info, default)
     local options = {}
     for k, v in pairs(hi_info) do
         table.insert(options, string.format("%s=%s", k, v))
@@ -58,7 +58,6 @@ function M.set_hl(higroup, hi_info, default)
 end
 
 ---Define a highilght group in pure lua
----Parameters accepted are ctermfg, ctermbg, cterm, default
 ---
 ---@param group string: Global highlight group
 ---@param opts table: Options for the highlight
@@ -101,6 +100,14 @@ M.colors = function(filter)
     end
     utils.dump(defs)
 end
+
+utils.command(
+    "Color",
+    function(tbl)
+        require("common.color").colors(tbl.args)
+    end,
+    {nargs = "?"}
+)
 
 ---Remove escape sequences of the following formats:
 ---1. ^[[34m
@@ -214,7 +221,7 @@ end
 ---
 ---@param name string
 ---@param opts table
-function M.hl_set(name, opts)
+function M.set_hl(name, opts)
     vim.validate {
         name = {name, "string", false},
         opts = {opts, "table", false}
@@ -292,7 +299,7 @@ end
 ---@param hls table<string, table<string, boolean|string>>
 function M.all(hls)
     for name, hl in pairs(hls) do
-        M.hl_set(name, hl)
+        M.set_hl(name, hl)
     end
 end
 

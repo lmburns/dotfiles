@@ -253,7 +253,7 @@ vim.schedule(
                         event = "TextYankPost",
                         pattern = "*",
                         command = function()
-                            set_hl("HighlightedyankRegion", {guibg = "#cc6666"})
+                            set_hl("HighlightedyankRegion", {bg = "#cc6666"})
                             pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
                         end,
                         description = "Highlight a selection on yank"
@@ -277,6 +277,7 @@ vim.schedule(
                     "coc-go",
                     "coc-html",
                     "coc-json",
+                    "coc-lightbulb",
                     "coc-marketplace",
                     "coc-perl",
                     "coc-prettier",
@@ -339,6 +340,7 @@ vim.schedule(
                 --   au User CocNvimInit ++once lua require('plugs.coc').init()
                 -- ]]
 
+                set_hl("CocUnderline", {gui = "none"})
                 set_hl("CocSemStatic", {gui = "bold"})
                 link("CocSemDefaultLibrary", "Special")
                 link("CocSemDocumentation", "Number")

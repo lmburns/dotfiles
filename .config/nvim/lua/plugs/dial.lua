@@ -147,10 +147,12 @@ end
 ---@param group table
 ---@param ft string
 local function inc_dec_augroup(ft)
+    -- Overwrite the default dial mappings that are set below
     augroup(
         "lmb__DialIncDec",
         {
             event = "FileType",
+            pattern = ft,
             command = function()
                 map("n", "+", dmap.inc_normal(ft))
                 map("n", "_", dmap.dec_normal(ft))
@@ -159,7 +161,6 @@ local function inc_dec_augroup(ft)
                 map("v", "g+", dmap.inc_gvisual(ft), {silent = true})
                 map("v", "g_", dmap.dec_gvisual(ft), {silent = true})
             end,
-            pattern = ft,
             desc = ("Increment decrement types with dial in %s"):format(ft)
         }
     )

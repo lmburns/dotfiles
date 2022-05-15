@@ -48,11 +48,11 @@ end
 local function init()
     M.setup()
 
-    color.set_hl("YankyYanked", {guibg = "#cc6666"})
+    color.set_hl("YankyYanked", {bg = "#cc6666"})
 
     -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
 
-    color.set_hl("YankyPut", {guibg = "#cc6666"})
+    color.set_hl("YankyPut", {bg = "#cc6666"})
 
     map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
     map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")

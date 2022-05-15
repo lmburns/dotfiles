@@ -12,12 +12,147 @@ local action_set = require "telescope.actions.set"
 local action_state = require("telescope.actions.state")
 local utils = require("telescope.utils")
 
+local Path = require("plenary.path")
 local Job = require("plenary.job")
-local scan = require "plenary.scandir"
+local scan = require("plenary.scandir")
 
 local color = require("common.color")
 
 P.use_highlighter = true
+
+-- FIX: The builtin tags doesn't pick up fn.tagfiles() for whatever reason
+--      So this is a clone of that. Even when using `bulitin.tags = P.tags`, it doesn't work
+P.tags = function(opts)
+    opts =
+        vim.tbl_deep_extend(
+        "force",
+        {
+            path_display = {"smart"},
+            bufnr = api.nvim_get_current_buf(),
+            preview = {
+                check_mime_type = true,
+                filesize_limit = 5,
+                hide_on_startup = false,
+                msg_bg_fillchar = "╱",
+                timeout = 150,
+                treesitter = true
+            }
+        },
+        opts or {}
+    )
+
+    local tagfiles = opts.ctags_file and {opts.ctags_file} or vim.fn.tagfiles()
+    if vim.tbl_isempty(tagfiles) then
+        utils.notify(
+            "builtin.tags",
+            {
+                msg = "No tags file found. Create one with ctags -R",
+                level = "ERROR"
+            }
+        )
+        return
+    end
+
+    local results = {}
+    for _, ctags_file in ipairs(tagfiles) do
+        for line in Path:new(vim.fn.expand(ctags_file, true)):iter() do
+            results[#results + 1] = line
+        end
+    end
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "Tags",
+            finder = finders.new_table {
+                results = results,
+                entry_maker = make_entry.gen_from_ctags(opts)
+            },
+            previewer = previewers.ctags.new(opts),
+            sorter = conf.generic_sorter(opts),
+            attach_mappings = function()
+                action_set.select:enhance {
+                    post = function()
+                        local selection = action_state.get_selected_entry()
+
+                        if selection.scode then
+                            -- un-escape / then escape required
+                            -- special chars for vim.fn.search()
+                            -- ] ~ *
+                            local scode =
+                                selection.scode:gsub([[\/]], "/"):gsub(
+                                "[%]~*]",
+                                function(x)
+                                    return "\\" .. x
+                                end
+                            )
+
+                            vim.cmd("norm! gg")
+                            fn.search(scode)
+                            vim.cmd("norm! zz")
+                        else
+                            api.nvim_win_set_cursor(0, {selection.lnum, 0})
+                        end
+                    end
+                }
+                return true
+            end
+        }
+    ):find()
+end
+
+---Only show tags for the current buffer
+---@param opts table
+P.current_buffer_tags = function(opts)
+    return P.tags(
+        vim.tbl_extend(
+            "force",
+            {
+                prompt_title = "Current Buffer Tags",
+                only_current_file = true,
+                path_display = "hidden"
+            },
+            opts or {}
+        )
+    )
+end
+
+P.gutentags = function()
+    -- local bufdir = fn.expand("%:p:h", 1)
+    -- local root = fn["gutentags#get_project_root"](bufdir)
+
+    local file = vim.b.gutentags_files
+
+    if not file then
+        b_utils.notify("no gutentags file found")
+        return
+    end
+
+    file = file["ctags"]
+
+    builtin.tags {
+        cwd = g.gutentags_cache_dir,
+        ctags_file = file
+    }
+end
+
+-- M.current_buffer_tags = function()
+--     -- local bufdir = fn.expand("%:p:h", 1)
+--     -- local root = fn["gutentags#get_project_root"](bufdir)
+--
+--     local file = vim.b.gutentags_files
+--     if not file then
+--         b_utils.notify("no gutentags file found")
+--         return
+--     end
+--
+--     file = file["ctags"]
+--
+--     builtin.current_buffer_tags {
+--         cwd = g.gutentags_cache_dir,
+--         ctags_file = file
+--     }
+-- end
 
 ---Choose a folder and then grep in it
 ---@param opts table
@@ -25,7 +160,7 @@ P.live_grep_in_folder = function(opts)
     opts = opts or {}
     local data = {}
     scan.scan_dir(
-        vim.loop.cwd(),
+        uv.cwd(),
         {
             hidden = opts.hidden,
             only_dirs = true,
@@ -68,13 +203,128 @@ P.live_grep_in_folder = function(opts)
     ):find()
 end
 
+---A better version of the builtin tags
+---@param opts table
+P.project_tags = function(opts)
+    opts = opts or {}
+
+    local bufnr = nvim.buf.nr()
+    opts.bufnr = bufnr
+    opts.path_display = {"smart"}
+
+    -- TODO: Current buffer only:
+    -- local result = fn["vista#executive#ctags#Run"](fn.expand('%:p'))
+
+    local result = fn["vista#executive#ctags#ProjectRun"]()
+    local results = {}
+
+    local buffers =
+        _t(fn.getbufinfo({buflisted = 1})):map(
+        function(buf)
+            return {bufnr = buf.bufnr, loaded = buf.loaded, name = buf.name}
+        end
+    )
+
+    local files =
+        scan.scan_dir(
+        uv.cwd(),
+        {
+            hidden = true
+        }
+    )
+
+    for kind, values in pairs(result) do
+        for _, value in pairs(values) do
+            local filename
+            for _, buf in pairs(buffers) do
+                if buf.name:match(value.tagfile) then
+                    filename = buf.name
+                    break
+                else
+                    for _, file in pairs(files) do
+                        if file:match(value.tagfile) then
+                            filename = file
+                            break
+                        end
+                    end
+                end
+            end
+
+            table.insert(
+                results,
+                {
+                    lnum = value.lnum,
+                    filename = filename or value.tagfile,
+                    kind = ("[%s]"):format(kind),
+                    tag = value.text,
+                    text = value.taginfo
+                }
+            )
+        end
+    end
+
+    local displayer =
+        entry_display.create {
+        separator = "▏",
+        items = {
+            {width = 30},
+            {width = 20},
+            {width = 12},
+            {remaining = true}
+        }
+    }
+
+    local make_display = function(entry)
+        local filename = utils.transform_path(opts, entry.filename)
+        return displayer {
+            {filename, "QuickFixLine"},
+            {entry.tag, "DiagnosticWarn"},
+            {entry.kind, "SpellCap"},
+            {entry.text, "Comment"}
+        }
+    end
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "Project Tags",
+            finder = finders.new_table {
+                results = results,
+                entry_maker = function(e)
+                    return {
+                        value = e,
+                        ordinal = e.filename,
+                        display = make_display,
+                        lnum = e.lnum,
+                        tag = e.tag,
+                        kind = e.kind,
+                        text = e.text,
+                        filename = e.filename
+                    }
+                end
+            },
+            previewer = conf.grep_previewer(opts),
+            sorter = conf.generic_sorter(opts),
+            attach_mappings = function()
+                action_set.select:enhance {
+                    post = function()
+                        local selection = action_state.get_selected_entry()
+                        nvim.win.set_cursor(0, {selection.lnum, 0})
+                    end
+                }
+                return true
+            end
+        }
+    ):find()
+end
+
 ---Use marks that are associated with the `marks` plugin
 ---@param opts table
 P.marks = function(opts)
     opts = opts or {}
     local results = {}
 
-    -- opts.path_display = {"smart"}
+    opts.path_display = {"smart"}
     -- opts.layout_config = {preview_width = 0.4}
 
     local marks_output = api.nvim_command_output("marks")
@@ -158,7 +408,6 @@ P.marks = function(opts)
                         start = e.col,
                         text = e.text,
                         filename = filename
-
                     }
                 end
             },

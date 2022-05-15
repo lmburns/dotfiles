@@ -319,16 +319,21 @@ return packer.startup(
                 }
             )
 
-            -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
+            -- use(
+            --     {
+            --         "bfredl/nvim-luadev",
+            --         conf = "luadev",
+            --         ft = "lua",
+            --         keys = {{"n", "<Leader>x<CR>"}, {"n", "<Leader>x."}},
+            --         cmd = "Luadev"
+            --     }
+            -- )
             use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua"})
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua"})
-            -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup({}).settings]]})
-
-            -- This works if all references to `lspconfig` are removed
             use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- use(
@@ -343,7 +348,7 @@ return packer.startup(
 
             -- ============================ File Manager =========================== [[[
             use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            use({"ptzz/lf.vim", conf = "lf"})
+            use({"ptzz/lf.vim", conf = "lf"}) -- Used for development purposes
             use({prefer_local("lf.nvim"), conf = "lfnvim"})
             -- use({ "haorenW1025/floatLf-nvim" })
 
@@ -440,7 +445,7 @@ return packer.startup(
             -- ]]] === VCooler ===
 
             -- =============================== Marks ============================== [[[
-            use({"chentau/marks.nvim", conf = "plugs.marks"})
+            use({"chentoast/marks.nvim", conf = "plugs.marks"})
             -- ]]] === Marks ===
 
             -- ============================== HlsLens ============================= [[[
@@ -541,6 +546,14 @@ return packer.startup(
             -- ]]] === Colorscheme ===
 
             -- ============================ Scrollbar ============================= [[[
+            -- use(
+            --     {
+            --         "wfxr/minimap.vim",
+            --         conf = "minimap",
+            --         keys = {{"n", "<Leader>mi"}},
+            --         cmd = {"Minimap", "MinimapToggle", "MinimapClose"}
+            --     }
+            -- )
             use(
                 {
                     "petertriho/nvim-scrollbar",
@@ -818,10 +831,7 @@ return packer.startup(
             -- ]]] === Operator ===
 
             -- =============================== Tags =============================== [[[
-            -- config = function()
-            --     local config = fn.stdpath("config")
-            --     vim.cmd("source " .. config .. "/vimscript/plugins/vim-gutentags.vim")
-            -- end
+
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use(
                 {
@@ -831,10 +841,6 @@ return packer.startup(
                 }
             )
             -- ]]] === Tags ===
-
-            -- ============================= Startify ============================= [[[
-            use({"mhinz/vim-startify", conf = "plugs.startify"})
-            -- ]]] === Startify ===
 
             -- ============================= UndoTree ============================= [[[
             use(
@@ -1067,10 +1073,6 @@ return packer.startup(
             use({"honza/vim-snippets"})
             -- ]]] === Snippets ===
 
-            -- ============================== Minimap ============================== [[[
-            use {"wfxr/minimap.vim", conf = "minimap"}
-            -- ]]] === Minimap ===
-
             -- ============================= Highlight ============================ [[[
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
             use(
@@ -1126,6 +1128,7 @@ return packer.startup(
             use({"jlcrochet/vim-crystal", ft = "crystal"})
             use({"vim-perl/vim-perl", ft = "perl"})
             use({"teal-language/vim-teal", ft = "teal"})
+            use({"ziglang/zig.vim", ft = "zig"})
 
             use(
                 {
@@ -1135,7 +1138,10 @@ return packer.startup(
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
-                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
+                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                        {"xiyaowong/coc-wxy", after = "coc.nvim"}
+                        -- TODO: Once the error of cursor is fixed
+                        -- {"xiyaowong/coc-code-action-menu", after = "coc.nvim"}
                     }
                 }
             )
@@ -1257,7 +1263,7 @@ return packer.startup(
             use(
                 {
                     "nvim-telescope/telescope.nvim",
-                    opt = false,
+                    event = "VimEnter",
                     conf = "plugs.telescope",
                     after = {"popup.nvim", "plenary.nvim", colorscheme},
                     requires = {
@@ -1495,6 +1501,8 @@ return packer.startup(
                 }
             )
 
+            -- akinsho/git-conflict.nvim
+
             -- use(
             --     {
             --         "christoomey/vim-conflicted",
@@ -1534,3 +1542,5 @@ return packer.startup(
         end
     }
 )
+
+-- use({"mhinz/vim-startify", conf = "plugs.startify"})

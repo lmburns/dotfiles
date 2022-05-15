@@ -417,16 +417,6 @@ M.squeeze_blank_lines = function()
     end
 end
 
-M.open_url_under_cursor = function()
-    if fn.has("mac") == 1 then
-        fn.jobstart(("open %s"):format(fn.expand("<cfile>")), {detach = true})
-    elseif fn.has("unix") == 1 then
-        fn.jobstart(("handlr open %s"):format(fn.expand("<cfile>")), {detach = true})
-    else
-        vim.notify("Error: gx is not supported on this OS!")
-    end
-end
-
 -- ========================== Mapping Implentation ==========================
 -- ======================== Credit: ibhagwan/nvim-lua =======================
 --

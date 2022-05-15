@@ -646,9 +646,12 @@ function M.init()
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
-            ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"}
+            ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
         }
     )
+
+    -- map("n", "<C-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
+    -- map("n", "<A-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('cursor')<CR>")
 
     wk.register(
         {

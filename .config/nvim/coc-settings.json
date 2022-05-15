@@ -64,6 +64,9 @@
     "sh": "shfmt"
     //   "zsh": "shfmt"
   },
+  "lightbulb.excludeFiletypes": [],
+  "lightbulb.enableVirtualText": true,
+  "lightbulb.virtualText": "💡",
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
@@ -311,14 +314,14 @@
     //   "args": ["--slave", "-e", "languageserver::run()"],
     //   "filetypes": ["r"]
     // },
-    "zls": {
-      "command": "/usr/bin/zls",
-      "filetypes": ["zig"]
-    },
-    "serve-d": {
-      "command": "/usr/bin/serve-d",
-      "filetypes": ["d"]
-    },
+    // "zls": {
+    //   "command": "/usr/bin/zls",
+    //   "filetypes": ["zig"]
+    // },
+    // "serve-d": {
+    //   "command": "/usr/bin/serve-d",
+    //   "filetypes": ["d"]
+    // },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
@@ -397,6 +400,8 @@
   "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
   "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
   "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
+
+  "zig.path": "/usr/bin/zls",
 
   "outline.keepWindow": true,
   "outline.sortBy": "position",

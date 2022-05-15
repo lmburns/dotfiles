@@ -134,7 +134,7 @@ local function init()
 
     map(
         "n",
-        "<Leader>xl",
+        "<Leader>xk",
         [[<Cmd>call coc#rpc#request('fillDiagnostics', [bufnr('%')])<CR><Cmd>Trouble loclist<CR>]],
         {silent = true, desc = "Trouble loclist"}
     )

@@ -1,5 +1,7 @@
 priority 100
 
+# https://www.sirver.net/blog/2012/01/08/second-episode-of-ultisnips-screencast/
+
 snippet main "fn main() ..." b
 fn main() {
 	$0
@@ -97,11 +99,18 @@ endsnippet
 
 # println!("$1"${2/..*/, /}$2);
 snippet pln "println!(..)" b
-println!("$1")
+println!("$1");
 endsnippet
 
 snippet pn "println!(...)"
 println!(${1:"$2\{\}", $3});
+endsnippet
+
+# FIX: Doesn't capitalize the whole string
+# println!("${1/\(\w+\)/\U\1/g}: {:#?}", $1);
+# println!("${1:`!v substitute('\(\w+\)', '\u\1', 'g')`}: {:#?}", $1);
+snippet deb "println!('{:#?}')" b
+println!("${1/\w+/\u$0/g}: {:#?}", $1);
 endsnippet
 
 snippet fmt "format!(..)"

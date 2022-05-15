@@ -29,11 +29,11 @@ version = "0.17.2"
 
 -- #####################################################################
 
-package.path = os.getenv("XDG_CONFIG_HOME") .. '/xplr/plugins/?/src/init.lua'
+-- package.path = os.getenv("XDG_CONFIG_HOME") .. '/xplr/plugins/?/src/init.lua'
 -- package.path = os.getenv("HOME") .. "/.config/xplr/plugins/?/src/init.lua"
 
-require("icons").setup {}
-require("completion").setup()
+-- require("icons").setup {}
+-- require("completion").setup()
 
 -- require("scroll").setup {}
 --

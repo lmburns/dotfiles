@@ -148,10 +148,18 @@ end
 function M.open_browser()
     wk.register(
         {
-            ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"}
+            -- ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"},
+            ["gX"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
+            ["gx"] = {":lua R('functions').open_link()<CR>", "Open link or file under cursor"},
+            ["gf"] = {":lua R('functions').open_path()<CR>", "Open path under cursor"},
+            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         }
     )
 end
+
+-- /home/lucas/.config/zsh
+-- /home/lucas/.config/zsh/.zshrc
+-- https://github.com/lmburns/dotfiles
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           Suda                           │
@@ -330,16 +338,19 @@ function M.vimwiki()
     -- g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
     -- g.vimwiki_table_mappings = 0
 
-    local hl = color.set_hl
-    hl("VimwikiBold", {guifg = "#a25bc4", gui = "bold"})
-    hl("VimwikiCode", {guifg = "#d3869b"})
-    hl("VimwikiItalic", {guifg = "#83a598", gui = "italic"})
-    hl("VimwikiHeader1", {guifg = "#F14A68", gui = "bold"})
-    hl("VimwikiHeader2", {guifg = "#F06431", gui = "bold"})
-    hl("VimwikiHeader3", {guifg = "#689d6a", gui = "bold"})
-    hl("VimwikiHeader4", {guifg = "#819C3B", gui = "bold"})
-    hl("VimwikiHeader5", {guifg = "#98676A", gui = "bold"})
-    hl("VimwikiHeader6", {guifg = "#458588", gui = "bold"})
+    color.all(
+        {
+            VimwikiBold = {fg = "#a25bc4", gui = "bold"},
+            VimwikiCode = {fg = "#d3869b"},
+            VimwikiItalic = {fg = "#83a598", gui = "italic"},
+            VimwikiHeader1 = {fg = "#F14A68", gui = "bold"},
+            VimwikiHeader2 = {fg = "#F06431", gui = "bold"},
+            VimwikiHeader3 = {fg = "#689d6a", gui = "bold"},
+            VimwikiHeader4 = {fg = "#819C3B", gui = "bold"},
+            VimwikiHeader5 = {fg = "#98676A", gui = "bold"},
+            VimwikiHeader6 = {fg = "#458588", gui = "bold"}
+        }
+    )
 
     -- highlight TabLineSel guifg=#37662b guibg=NONE
 
@@ -379,27 +390,6 @@ function M.info()
             end
         }
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Minimap                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.minimap()
-    map("n", "<Leader>mi", ":MinimapToggle<CR>")
-
-    g.minimap_width = 10
-    g.minimap_auto_start = 0
-    g.minimap_auto_start_win_enter = 1
-    g.minimap_highlight_range = 1
-    g.minimap_block_filetypes = {"fugitive", "nerdtree", "help", "vista"}
-    g.minimap_close_filetypes = {"startify", "netrw", "vim-plug", "floaterm"}
-    g.minimap_block_buftypes = {
-        "nofile",
-        "nowrite",
-        "quickfix",
-        "terminal",
-        "prompt"
-    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -954,7 +944,7 @@ function M.yanky()
         }
     )
 
-    color.set_hl("YankyPut", {guibg = "#cc6666"})
+    color.set_hl("YankyPut", {bg = "#cc6666"})
 
     map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
     map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
@@ -1561,7 +1551,7 @@ function M.regexplainer()
             "jsx",
             "tsx",
             "cjsx",
-            "mjsx",
+            "mjsx"
             -- "rs"
         },
         debug = false, -- Whether to log debug messages
@@ -1583,6 +1573,14 @@ function M.regexplainer()
             separator = "\n"
         }
     }
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Luadev                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.luadev()
+    map("n", "<Leader>x<CR>", "<Plug>(Luadev-RunLine)", {noremap = false})
+    map("n", "<Leader>x.", "<Plug>(Luadev-Run)", {noremap = false})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1695,14 +1693,6 @@ end
 --             wintypes = "special"
 --         }
 --     }
--- end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Luadev                          │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.luadev()
---   map("n", "<Leader>x,", "<Plug>(Luadev-RunLine)", { noremap = false })
---   map("n", "<Leader>x<CR>", "<Plug>(Luadev-Run)", { noremap = false })
 -- end
 
 -- function M.neoterm()
@@ -1821,6 +1811,27 @@ end
 --             register_print_cmd = true
 --         }
 --     )
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Minimap                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.minimap()
+--     map("n", "<Leader>mi", ":MinimapToggle<CR>")
+--
+--     g.minimap_width = 10
+--     g.minimap_auto_start = 0
+--     g.minimap_auto_start_win_enter = 1
+--     g.minimap_highlight_range = 1
+--     g.minimap_block_filetypes = {"fugitive", "nerdtree", "help", "vista"}
+--     g.minimap_close_filetypes = {"startify", "netrw", "vim-plug", "floaterm"}
+--     g.minimap_block_buftypes = {
+--         "nofile",
+--         "nowrite",
+--         "quickfix",
+--         "terminal",
+--         "prompt"
+--     }
 -- end
 
 return M

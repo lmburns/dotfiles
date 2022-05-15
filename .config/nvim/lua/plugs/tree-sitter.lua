@@ -100,7 +100,7 @@ end
 M.setup_iswap = function()
     ex.packadd("iswap.nvim")
 
-    color.set_hl("ISwapSwap", {guibg = "#957FB8"})
+    color.set_hl("ISwapSwap", {bg = "#957FB8"})
 
     require("iswap").setup {
         keys = "asdfghjkl;",
@@ -750,7 +750,8 @@ local function init()
     map("o", "ik", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
     map("o", "ak", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
 
-    map("o", "ie", [[:<C-u>normal! ggVG"<CR>]])
+    -- map("o", "ie", [[:<C-u>normal! ggVG"<CR>]])
+    map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
     map("x", "ie", [[:normal! ggVG"<CR>]])
     map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
     map("x", "ae", [[:normal! HVL"<CR>]])

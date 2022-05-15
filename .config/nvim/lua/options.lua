@@ -30,10 +30,6 @@ vim.tbl_map(
         "gzip",
         "logiPat", -- boolean logical pattern matcher
         "matchit",
-        "netrw",
-        "netrwFileHandlers",
-        "netrwPlugin",
-        "netrwSettings",
         "rrhelper",
         "tar",
         "tarPlugin",
@@ -45,6 +41,10 @@ vim.tbl_map(
         "ruby_provider",
         "perl_provider",
         "node_provider"
+        -- "netrw",
+        -- "netrwFileHandlers",
+        -- "netrwPlugin",
+        -- "netrwSettings",
     }
 )
 
@@ -177,8 +177,8 @@ o.pumblend = 3 -- Make popup window translucent
 -- o.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
 
 o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
-o.viewoptions = { 'cursor', 'folds' } -- save/restore just these (with `:{mk,load}view`)
-o.virtualedit = 'block' -- allow cursor to move where there is no text in visual block mode
+o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
+o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
 o.jumpoptions = "stack"
 
 o.history = 10000
@@ -246,9 +246,9 @@ o.fillchars = {
 }
 
 -- g.cursorhold_updatetime = 1000
-o.updatetime = 200
-o.timeoutlen = 375
-o.ttimeoutlen = 10
+o.updatetime = 200 -- cursorhold event time
+o.timeoutlen = 375 -- time to wait for mapping sequence to complete
+o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\-ctrl-g
 o.showmatch = true
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
@@ -291,9 +291,9 @@ g.neovide_cursor_vfx_mode = "torpedo"
 o.completeopt:append({"menuone", "preview"})
 o.complete:append({"kspell"})
 o.complete:remove({"w", "b", "u", "t"})
-o.spelllang:append({'programming', "en_us"})
-o.spelloptions = 'camel'
-o.spellcapcheck = '' -- don't check for capital letters at start of sentence
+o.spelllang:append("en_us")
+o.spelloptions = "camel"
+o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest = "12"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
 -- ]]] === Spell Check ===

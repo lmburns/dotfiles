@@ -73,20 +73,6 @@ local function init()
     }
     g.xremap = {s = "S", u = "<C-u>", ["-"] = "a", X = "x"}
 
-    -- api.nvim_create_autocmd(
-    --     { "User", "FugitiveIndex", "FugitiveCommit" }, {
-    --       callback = function() require("plugs.fugitive").map() end,
-    --       group = create_augroup("FugitiveCustom"),
-    --     }
-    -- )
-
-    -- cmd [[
-    --     aug FugitiveCustom
-    --         au!
-    --         au User FugitiveIndex,FugitiveCommit lua require('plugs.fugitive').map()
-    --     aug end
-    -- ]]
-
     augroup(
         "FugitiveCustom",
         {
@@ -95,6 +81,15 @@ local function init()
             command = function()
                 require("plugs.fugitive").map()
             end
+        }
+    )
+
+    augroup(
+        "Fugitive",
+        {
+            event = "BufReadPost,",
+            pattern = "fugitive://*",
+            command = "set bufhidden=delete"
         }
     )
 

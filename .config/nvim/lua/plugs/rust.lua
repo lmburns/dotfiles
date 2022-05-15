@@ -21,6 +21,9 @@ local function init()
             event = "FileType",
             pattern = "rust",
             command = function()
+                -- Rust analyzer really slows things down, so this needs more time
+                opt_local.timeoutlen = 425
+
                 local bufnr = nvim.get_current_buf()
 
                 map("n", "<Leader>t<CR>", "RustTest", {buffer = bufnr, cmd = true})

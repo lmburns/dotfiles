@@ -20,6 +20,23 @@ colors:
   bright_green: "a3b95a" # #a3b95a
   darker_red: "9B111E" # #d92944
 
+  dark_blue: "418292" #418292
+  dark_aqua: "719190" #719190
+  bright_purple: "a25bc4" #a25bc4
+  bright_violet: "7E9CD8" #7E9CD8
+  light_violet: "938AA9" #938AA9
+
+  salmon: "ea6962" #ea6962
+  wave_red: "E46876" #E46876
+  peach_red: "FF5D62" #FF5D62
+  surimi_orange: "FFA066" #FFA066
+  oni_violet: "957FB8" #957FB8
+
+  dorange: "fe8019" #fe8019
+  dyellow: "e78a4e" #e78a4e
+  bg_red: "DC3958" #DC3958
+  light_red: "cc6666" #cc6666
+
   base0: "D9AE80" # #D9AE80
   base1: "c2a383" # #c2a383
   grey0: "7E602C" # #7E602C
@@ -118,6 +135,7 @@ programming:
     foreground: yellow_orange
     python: { foreground: green }
     ruby: { foreground: darker_red }
+    lua: { foreground: salmon }
     javascript: { foreground: yellow }
     zsh: { foreground: dark_magenta }
     solidity: { foreground: magenta }

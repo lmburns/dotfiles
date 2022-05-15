@@ -474,9 +474,9 @@ zt 0c light-mode binary for \
 #  ]]] === wait'0c' - programs - sourced ===
 
 #  === wait'0c' - programs + man === [[[
+# @sharkdp/bat \
 zt 0c light-mode binary lbin lman from'gh-r' for \
   atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
-    @sharkdp/bat \
     @sharkdp/hyperfine \
     @sharkdp/fd \
     @sharkdp/diskus \

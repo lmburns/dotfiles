@@ -15,16 +15,6 @@ require("legendary").setup(
 )
 local wk = require("which-key")
 
--- M.mappings = {}
---
--- This is for returning them and sending them to a delayed function
--- local function map2(modes, lhs, rhs, opts)
---      ...
---     for _, mode in ipairs(modes) do
---         table.insert(M.mappings, {mode, lhs, rhs, opts})
---     end
--- end
-
 -- ============== General mappings ============== [[[
 -- map("n", "<Space>", "<Nop>")
 -- map("x", "<Space>", "<Nop>")
@@ -173,13 +163,12 @@ wk.register(
 
 wk.register(
     {
-        -- ["zl"] = {"i <Esc>l", "Insert space to left of cursor"},
-        -- ["zj"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
-        -- ["zk"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"},
         ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
         ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
         -- ["oo"] = {"o<Esc>k", "Insert line below cursor"},
-        -- ["OO"] = {"O<Esc>j", "Insert line above cursor"}
+        -- ["OO"] = {"O<Esc>j", "Insert line above cursor"},
+        -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
+        -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     },
     {expr = true}
 )
@@ -252,6 +241,8 @@ map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 map("n", "<LocalLeader>z", [[zMzvzz]])
 -- map("n", "<Space><CR>", "zi", { silent = true })
 
+map("n", "zz", [[(winline() == (winheight (0) + 1)/ 2) ?  'zt' : (winline() == 1)? 'zb' : 'zz']], {expr = true})
+
 -- Window/Buffer
 -- Grepping for keybindings is more difficult with this
 wk.register(
@@ -297,13 +288,14 @@ map("v", ".", ":normal .<CR>")
 -- Change tabs
 map("n", "<Leader>nt", ":setlocal noexpandtab<CR>")
 map("x", "<Leader>re", ":retab!<CR>")
+-- Change directory to buffers dir
+map("n", "<Leader>cd", ":lcd %:p:h<CR>")
 
 wk.register(
     {
         -- Change vertical to horizontal
         ["<Leader>w-"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
-        ["<Esc><Esc>"] = {"<Esc>:nohlsearch<CR>", "Disable hlsearch"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},

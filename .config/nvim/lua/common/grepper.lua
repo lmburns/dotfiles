@@ -1,6 +1,8 @@
 local M = {}
 
 -- local t = require("common.utils").t
+local utils = require("common.utils")
+local map = utils.map
 
 -- This is mean to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
@@ -9,9 +11,6 @@ local M = {}
 --      got| => works all the time
 --      gof| => works some of the time
 -- Fix the text that is grabbed when the operator is hit
-
-local utils = require("common.utils")
-local map = utils.map
 
 function M.vimgrep_qf(mode)
     local regions = M.get_regions(mode)
