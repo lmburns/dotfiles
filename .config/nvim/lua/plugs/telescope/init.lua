@@ -30,7 +30,6 @@ local wk = require("which-key")
 
 -- Custom actions
 local c_actions = {
-    -- FIX: Anonymous function notification
     which_key = function(opts)
         opts = opts or {}
         local inner = {
@@ -44,7 +43,28 @@ local c_actions = {
 
         opts = vim.tbl_deep_extend("force", inner, opts)
 
-        return action_generate.which_key(opts)
+        -- Doing this prevents anonymouse function notification
+        local function which_key(prompt_bufnr)
+            actions.which_key(prompt_bufnr, opts)
+        end
+
+        return which_key
+    end,
+    -- TODO: Change once which-key can be disabled in filetypes (needs nowait)
+    insert_space = function(_)
+        -- api.nvim_input(" ")
+        api.nvim_feedkeys(kutils.termcodes["<Space>"], "n", false)
+    end,
+    single_selection_hop = function(prompt_bufnr)
+        telescope.extensions.hop.hop(prompt_bufnr)
+    end,
+    -- custom hop loop to multi selects and sending selected entries to quickfix list
+    multi_selection_hop = function(prompt_bufnr)
+        local opts = {
+            callback = actions.toggle_selection,
+            loop_callback = actions.send_selected_to_qflist
+        }
+        telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
     end,
     set_prompt_to_entry_value = function(prompt_bufnr)
         local entry = action_state.get_selected_entry()
@@ -147,26 +167,10 @@ require("telescope").setup(
                     ["<M-,>"] = actions.smart_send_to_qflist,
                     ["<M-q>"] = c_actions.qf_multi_select,
                     ["<C-o>"] = c_actions.which_key(),
-                    -- Change once which-key can be disabled in filetypes
-                    ["<Space>"] = function()
-                        api.nvim_feedkeys(kutils.termcodes["<Space>"], "n", false)
-                    end,
-                    -- ["<C-w>"] = function()
-                    --     vim.api.nvim_input "<c-s-w>"
-                    -- end,
+                    -- ["<Space>"] = c_actions.insert_space,
 
-                    -- Single selection hop
-                    ["<C-h>"] = function(prompt_bufnr)
-                        telescope.extensions.hop.hop(prompt_bufnr)
-                    end,
-                    -- custom hop loop to multi selects and sending selected entries to quickfix list
-                    ["<M-;>"] = function(prompt_bufnr)
-                        local opts = {
-                            callback = actions.toggle_selection,
-                            loop_callback = actions.send_selected_to_qflist
-                        }
-                        telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
-                    end
+                    ["<C-h>"] = c_actions.single_selection_hop,
+                    ["<M-;>"] = c_actions.multi_selection_hop
                 },
                 n = {
                     ["j"] = actions.move_selection_next,
@@ -310,7 +314,7 @@ require("telescope").setup(
                                     for _, winid in ipairs(winids) do
                                         if vim.tbl_contains(tabwins, winid) then
                                             local new_buf =
-                                                vim.F.if_nil(
+                                                F.if_nil(
                                                 table.remove(replacement_buffers),
                                                 api.nvim_create_buf(false, true)
                                             )
@@ -358,19 +362,22 @@ require("telescope").setup(
                         ["<C-l>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
-                            cmd("DiffviewOpen " .. value .. "~1.." .. value)
+                            ex.DiffviewOpen(("%s~1.. %s"):format(value, value))
                         end,
                         ["<C-s>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
-                            cmd("DiffviewOpen " .. value)
+                            ex.DiffviewOpen(value)
                         end,
                         ["<C-u>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
                             local rev =
-                                utils.get_os_command_output({"git", "rev-parse", "upstream/master"}, uv.cwd())[1]
-                            cmd("DiffviewOpen " .. rev .. " " .. value)
+                                utils.get_os_command_output(
+                                {"git", "rev-parse", "upstream/master"},
+                                fn.expand("%:p:h") or uv.cwd()
+                            )[1]
+                            ex.DiffviewOpen(("%s %s"):format(rev, value))
                         end
                     }
                 }
@@ -389,6 +396,14 @@ require("telescope").setup(
                 override_generic_sorter = true,
                 override_file_sorter = true,
                 case_mode = "smart_case"
+            },
+            fzf_writer = {
+                minimum_grep_characters = 2,
+                minimum_files_characters = 2,
+                -- Disabled by default.
+                -- Will probably slow down some aspects of the sorter, but can make color highlights.
+                -- I will work on this more later.
+                use_highlighter = true
             },
             rualdi = {
                 prompt_title = "Rualdi",
@@ -513,9 +528,6 @@ require("telescope").setup(
                     return true
                 end
             },
-            ["ui-select"] = {
-                themes.get_dropdown {}
-            },
             heading = {
                 treesitter = true
             },
@@ -557,6 +569,9 @@ require("telescope").setup(
                     }
                 }
             }
+            -- ["ui-select"] = {
+            --     themes.get_dropdown {}
+            -- },
         }
     }
 )
@@ -1012,7 +1027,6 @@ end
 builtin.installed_plugins = function()
     builtin.find_files {cwd = fn.stdpath("data") .. "/site/pack/packer/"}
 end
-
 
 -- builtin.tags = P.tags
 builtin.windows = P.windows

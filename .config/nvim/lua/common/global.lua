@@ -93,6 +93,7 @@ _G.BLACKLIST_FT = {
     "bqfpreview",
     "bufferize",
     "coc-explorer",
+    "code-action-menu-menu",
     "commit",
     "conf",
     "dap-repl",

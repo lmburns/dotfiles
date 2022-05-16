@@ -364,7 +364,7 @@ M.reload_config = function()
         end
     end
 
-    -- dofile(env.MYVIMRC)
+    dofile(env.VIMRC)
     require("plugins").compile()
 end
 

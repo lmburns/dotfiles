@@ -18,8 +18,6 @@ g.maplocalleader = [[,]]
 --     filename = {}
 -- })
 
--- vim.g.loaded_getscriptPlugin = 1
--- vim.g.loaded_matchparen = 1
 vim.tbl_map(
     function(p)
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
@@ -27,9 +25,12 @@ vim.tbl_map(
     {
         "ftplugin",
         "2html_plugin",
+        "getscript",
+        "getscriptPlugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
         "matchit",
+        "matchparen",
         "rrhelper",
         "tar",
         "tarPlugin",
@@ -37,10 +38,10 @@ vim.tbl_map(
         "vimballPlugin",
         "zip",
         "zipPlugin",
-        -- "python_provider",
         "ruby_provider",
         "perl_provider",
         "node_provider"
+        -- "python_provider",
         -- "netrw",
         -- "netrwFileHandlers",
         -- "netrwPlugin",
@@ -280,10 +281,17 @@ if fn.exists("g:neovide") then
     map("i", "<C-p>", "<C-r>+")
 end
 
+g.neovide_refresh_rate = 60
 g.neovide_input_use_logo = true
 g.neovide_transparency = 0.9
+g.neovide_no_idle = true
+g.neovide_cursor_animation_length = 0.03
+g.neovide_cursor_trail_length = 0.05
+g.neovide_cursor_antialiasing = true
+g.neovide_cursor_vfx_opacity = 200.0
 g.neovide_cursor_vfx_particle_lifetime = 2.0
 g.neovide_cursor_vfx_particle_density = 12.0
+g.neovide_cursor_vfx_particle_speed = 20.0
 g.neovide_cursor_vfx_mode = "torpedo"
 -- ]]] === Gui ===
 

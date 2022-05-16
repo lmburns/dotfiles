@@ -497,8 +497,8 @@ local function init()
         ["--preview-window"] = "wrap"
     }
 
-    cmd("packadd fzf")
-    cmd("packadd fzf.vim")
+    ex.pa("fzf")
+    ex.pa("fzf.vim")
 
     -- Hide status and ruler for fzf
     api.nvim_create_autocmd(
@@ -765,14 +765,14 @@ local function init()
     )
 
     -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
-    -- map("n", "<Leader>cm", ":Commands<CR>", { silent = true })
+    map("n", "<Leader>cm", ":Commands<CR>", {silent = true, desc = "Commands (fzf)"})
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 
     -- Tags
     -- map("n", "<Leader>t", ":Tags<CR>", {silent = true})
     -- map("n", "<A-t>", ":BTags<CR>", {silent = true})
 
-    map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)", {noremap = false})
+    map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)")
 
     map("n", "<C-l>m", "<Plug>(fzf-maps-n)")
     map("x", "<C-l>m", "<Plug>(fzf-maps-x)")

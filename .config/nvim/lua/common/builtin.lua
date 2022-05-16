@@ -117,18 +117,19 @@ function M.changes2qf()
     end
 end
 
+-- TODO: Add a count to this
 ---Move to last buffer
 function M.switch_lastbuf()
     local alter_bufnr = fn.bufnr("#")
     local cur_bufnr = api.nvim_get_current_buf()
     if alter_bufnr ~= -1 and alter_bufnr ~= cur_bufnr then
-        cmd("b #")
+        ex.b("#")
     else
         local mru_list = require("common.mru").list()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
-                cmd(("e %s"):format(fn.fnameescape(f)))
+                ex.e(fn.fnameescape(f))
                 cmd('sil! norm! `"')
                 break
             end

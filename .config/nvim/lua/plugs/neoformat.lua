@@ -24,8 +24,15 @@ end
 local function neoformat()
     local bufnr = api.nvim_get_current_buf()
     if
+        -- This is a little dense
         vim.bo[bufnr].ft == "lua" and
-            scan.scan_dir(gittool.root() or fn.expand("%:p:h"), {search_pattern = "%.stylua.toml$", hidden = true})
+            #F.if_nil(
+                scan.scan_dir(
+                    gittool.root() or fn.expand("%:p:h"),
+                    {search_pattern = "%.?stylua.toml$", hidden = true, silent = true}
+                ),
+                {}
+            ) > 0
      then
         ex.Neoformat("stylua")
     else

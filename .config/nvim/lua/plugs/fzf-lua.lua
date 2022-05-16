@@ -670,6 +670,7 @@ function init()
 
     require("which-key").register(
         {
+            -- ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
             ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
             ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
             ["<Leader>tl"] = {":lua require('fzf-lua').tabs()<CR>", "Location list (fzf-lua)"},
@@ -677,7 +678,6 @@ function init()
             ["<LocalLeader>h"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
             ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes(j)<CR>", "Colorschemes (fzf-lua)"},
-            ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
             ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},
             ["<C-l>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},

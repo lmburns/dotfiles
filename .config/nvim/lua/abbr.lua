@@ -6,8 +6,9 @@ require("common.utils")
 ---@param input string: Thing to be replaced
 ---@param replace string: The abbreviation
 function M.cabbrev(input, replace)
-    local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
+    -- ex.cnoreabbrev(input, M.command(input, replace))
 
+    local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
     vim.cmd(cmd:format(input, input, replace))
 end
 

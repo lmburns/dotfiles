@@ -57,7 +57,6 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         {desc = "Packer compile"}
     )
 
-    -- Is there a way to repeat these?
     local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
     command(
         "PackerSnapshot",
@@ -155,6 +154,7 @@ vim.schedule(
                 require("plugs.tree-sitter")
 
                 -- runtime! filetype.vim
+                -- require("filetype").resolve()
 
                 augroup(
                     "syntaxset",
@@ -166,17 +166,6 @@ vim.schedule(
                         end
                     }
                 )
-
-                -- augroup(
-                --     "lmb__FileType",
-                --     {
-                --         event = "VimEnter",
-                --         pattern = "*",
-                --         command = function()
-                --             require("filetype").resolve()
-                --         end
-                --     }
-                -- )
 
                 ex.syntax("on")
                 ex.filetype("on")
@@ -314,16 +303,13 @@ vim.schedule(
 
                 local link = color.link
 
-                -- cmd [[
-                --   au User CocNvimInit ++once lua require('plugs.coc').init()
-                -- ]]
-
                 set_hl("CocUnderline", {gui = "none"})
                 set_hl("CocSemStatic", {gui = "bold"})
                 link("CocSemDefaultLibrary", "Special")
                 link("CocSemDocumentation", "Number")
 
                 ex.packadd("coc-kvs")
+                ex.packadd("coc-wxy")
                 ex.packadd("coc.nvim")
             end,
             300

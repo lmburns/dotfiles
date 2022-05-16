@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local funcs = require("functions")
 local map = utils.map
 local command = utils.command
 
@@ -84,7 +85,7 @@ map("n", "qC", [[:lua require("common.qfext").conflicts2qf()<CR>]])
 
 wk.register(
     {
-        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"}
+        ["S"] = {":%s//g<Left><Left>", "Global replace"}
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
@@ -161,21 +162,21 @@ wk.register(
 -- Paste after
 -- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
 
-wk.register(
-    {
-        ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
-        ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
-        -- ["oo"] = {"o<Esc>k", "Insert line below cursor"},
-        -- ["OO"] = {"O<Esc>j", "Insert line above cursor"},
-        -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
-        -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
-    },
-    {expr = true}
-)
-
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
 -- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
+
+-- wk.register(
+--     {
+--         -- ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+--         -- ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+--         -- ["oo"] = {"o<Esc>k", "Insert line below cursor"},
+--         -- ["OO"] = {"O<Esc>j", "Insert line above cursor"},
+--         -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
+--         -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
+--     },
+--     {expr = true}
+-- )
 
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})

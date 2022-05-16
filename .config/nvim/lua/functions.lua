@@ -235,8 +235,9 @@ command(
     end
 )
 
--- https://github.com
-
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Open Links/Files                     │
+-- ╰──────────────────────────────────────────────────────────╯
 -- FIX: Make better regex
 ---Open a github or regular link in the browser
 ---
@@ -298,6 +299,9 @@ function M.open_path()
     return vim.cmd("norm! gf")
 end
 
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Line Delimiter                      │
+-- ╰──────────────────────────────────────────────────────────╯
 ---Add a delimiter to the end of the line if the delimiter isn't already present
 ---If the delimiter is present, remove it
 ---@param character string
@@ -316,8 +320,59 @@ function M.modify_line_end_delimiter(character)
     end
 end
 
-map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
-map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+-- map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+-- map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+map("n", "<C-l>,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+map("n", "<C-l>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                    Insert empty lines                    │
+-- ╰──────────────────────────────────────────────────────────╯
+-- arsham/archer.nvim
+---Insert an empty line `count` lines above the cursor
+---@param count number
+---@param add number: Number to modify row
+function M.insert_empty_lines(count, add) --{{{2
+    -- ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
+    -- ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+    local lines = {}
+    for i = 1, F.if_nil(count, 1) < 1 and 1 or count do
+        lines[i] = ""
+    end
+
+    local row, _ = unpack(api.nvim_win_get_cursor(0))
+    local new = row + add
+    api.nvim_buf_set_lines(0, new, new, false, lines)
+end
+
+function M.empty_line_above()
+    M.insert_empty_lines(vim.v.count, -1)
+end
+
+function M.empty_line_below()
+    M.insert_empty_lines(vim.v.count, 0)
+end
+
+map(
+    "n",
+    "OO",
+    function()
+        vim.opt.opfunc = "v:lua.require'functions'.empty_line_above"
+        return "g@l"
+    end,
+    {expr = true, desc = "Insert empty line above"}
+)
+
+map(
+    "n",
+    "oo",
+    function()
+        -- M.insert_empty_lines(vim.v.count, 0)
+        vim.opt.opfunc = "v:lua.require'functions'.empty_line_below"
+        return "g@l"
+    end,
+    {expr = true, desc = "Insert empty line below"}
+)
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()
@@ -370,8 +425,7 @@ command(
 if fn.executable("xsel") then
     -- Doesn't call xsel. Vimscript version works
     function M.preserve_clipboard()
-        -- fn.jobstart(("xsel -ib %s"):format(fn.getreg("+")))
-        fn.system(("xsel -ib %s"):format(fn.getreg("+")))
+        fn.system("xsel -ib", fn.getreg("+"))
 
         -- Job:new(
         --     {
@@ -391,7 +445,9 @@ if fn.executable("xsel") then
         {
             event = "VimLeave",
             pattern = "*",
-            command = M.preserve_clipboard
+            command = function()
+                M.preserve_clipboard()
+            end
         }
     )
 

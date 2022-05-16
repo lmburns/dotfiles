@@ -185,7 +185,7 @@ local sections_1 = {
         plugins.debugger
     },
     lualine_z = {
-                {
+        {
             "branch",
             icon = "",
             cond = function()
@@ -379,7 +379,17 @@ local my_qf = {
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     local my_extension = {
-        sections = {lualine_b = {"filetype"}},
+        sections = {
+            lualine_a = {"mode"},
+            lualine_b = {"filetype"},
+            lualine_c = {},
+            lualine_x = {},
+            lualine_y = {},
+            lualine_z = {
+                "%l:%c",
+                "%p%%/%L"
+            }
+        },
         filetypes = {
             "packer",
             "vista",
@@ -387,7 +397,11 @@ local function init()
             "coc-explorer",
             "NeogitStatus",
             "Trouble",
-            "TelescopePrompt"
+            "TelescopePrompt",
+            "dapui_scopes",
+            "dapui_breakpoints",
+            "dapui_stacks",
+            "dapui_watches"
         } -- aerial
     }
 
@@ -395,21 +409,20 @@ local function init()
         {
             options = {
                 icons_enabled = true,
-                -- theme = 'kimbox',
                 theme = "auto",
+                globalstatus = true, -- enable global statusline (single SL for all windows)
+                always_divide_middle = true,
                 section_separators = {left = "", right = ""},
                 component_separators = {left = "", right = ""},
                 disabled_filetypes = {
+                    -- "help",
                     "NvimTree",
                     "coc-explorer",
-                    "help",
                     "quickmenu",
                     "undotree",
                     "neoterm",
                     "floaterm"
-                    -- "qf"
-                },
-                always_divide_middle = true
+                }
             },
             sections = sections_1,
             inactive_sections = {

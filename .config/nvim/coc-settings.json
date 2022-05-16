@@ -1,8 +1,9 @@
 {
+  // If false, CocFzf and Bqf-fzf open
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
-  "coc.preferences.listOfWorkspaceEdit": "location",
+  "coc.preferences.listOfWorkspaceEdit": "quickfix", // location
   "coc.preferences.formatOnSaveFiletypes": ["go"],
   "coc.preferences.formatOnType": true,
 
@@ -25,7 +26,7 @@
   "diagnostic.hintSign": "•",
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
-  "diagnostic.refreshOnInsertMode": true,
+  "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
   "diagnostic.signPriority": 20,
@@ -71,9 +72,8 @@
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
   "codeLens.position": "eol",
-  // "codeLens.position": "eol",
   "coc.source.file.triggerCharacters": ["/"],
-  "list.indicator": "➤",
+  "list.indicator": ">",
   "signature.enable": true,
   "sh.enable": true,
   // "python.jediEnabled": true,
@@ -85,9 +85,7 @@
   "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
   "coc.source.file.ignoreHidden": false,
   "coc.source.file.shortcut": "\uf414",
-  "coc.source.around.firstMatch": false,
   "coc.source.around.shortcut": "\uf667",
-  "coc.source.buffer.firstMatch": false,
   "coc.source.buffer.shortcut": "\uf719",
   "coc.source.syntax.firstMatch": false,
   "coc.source.syntax.shortcut": "\uf670",
@@ -105,84 +103,6 @@
   // "git.addGBlameToVirtualText": true,
   // "git.virtualTextPrefix": "     commit: ",
   // coc-explorer
-  "explorer.icon.enableNerdfont": true,
-  "explorer.icon.source": "vim-devicons",
-  // "explorer.icon.enableVimDevicons": false,
-  "explorer.git.enable": true,
-  "explorer.quitOnOpen": true,
-  "explorer.position": "left",
-  "explorer.file.showHiddenFiles": true,
-  "explorer.file.column.clip.copy": "",
-  "explorer.file.column.clip.cut": "",
-  "explorer.file.column.indent.indentLine": true,
-  "explorer.openAction.select.filter": {
-    "buftypes": ["terminal"],
-    "filetypes": ["vista_kind", "qf", "minimap"],
-    "floatingWindows": true,
-    "sources": {
-      "buffer": {
-        "buftypes": []
-      }
-    }
-  },
-  "explorer.keyMappingMode": "none",
-  "explorer.keyMappings.global": {
-    "i": false,
-    "gk": "expandablePrev",
-    "gj": "expandableNext",
-    "<space>": "toggleSelection",
-    "<tab>": "actionMenu",
-    "h": "collapse",
-    "l": ["expandable?", "expand", "open"],
-    "J": ["toggleSelection", "nodeNext"],
-    "K": ["toggleSelection", "nodePrev"],
-    "<2-LeftMouse>": [
-      "expandable?",
-      ["expanded?", "collapse", "expand"],
-      "open"
-    ],
-    "o": ["expanded?", "collapse", "expand"],
-    "<cr>": ["expandable?", "cd", "open"],
-    // "o": ["expandable?", ["expanded?", "collapse", "expand"], "open"],
-    // "<cr>": "open",
-    // "l": "indentNext",
-    // "h": "indentPrev",
-    "H": ["gotoParent"],
-    "s": "open:split",
-    "S": "open:split:plain",
-    "V": "open:vsplit",
-    "t": "open:tab",
-    "<bs>": "gotoParent",
-    "gp": "preview:labeling",
-    "yf": "copyFile",
-    "yy": "copyFilename",
-    "x": "cutFile",
-    "p": "pasteFile",
-    "dd": "delete",
-    "mf": "addFile",
-    "md": "addDirectory",
-    "r": "rename",
-    ".": "toggleHidden",
-    "R": "refresh",
-    "?": "help",
-    "q": "quit",
-    "<esc>": "esc",
-    "!": "systemExecute",
-    "gd": "listDrive",
-    "<C-p>": "preview",
-    "f": "search",
-    "F": "searchRecursive",
-    "gf": "gotoSource:file",
-    "gb": "gotoSource:buffer",
-    "[[": "sourcePrev",
-    "]]": "sourceNext",
-    "[d": "diagnosticPrev",
-    "]d": "diagnosticNext",
-    "[c": "gitPrev",
-    "]c": "gitNext",
-    "<<": "gitStage",
-    ">>": "gitUnstage"
-  },
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
   "snippets.extends": {
@@ -200,62 +120,36 @@
   "suggest.noselect": false,
   "suggest.selection": "none",
 
-  // "suggest.completionItemKindLabels": {
-  //   "keyword": "\uf1de",
-  //   "variable": "\uf169",
-  //   "value": "\uf89f",
-  //   "operator": "\u03a8",
-  //   "function": "\uf794",
-  //   "reference": "\uf838",
-  //   "constant": "\uf8ff",
-  //   "method": "\uf794",
-  //   "struct": "\ufb44",
-  //   "class": "\uf0e8",
-  //   "interface": "\ue60b",
-  //   "text": "\ue612",
-  //   "enum": "\uf435",
-  //   "enumMember": "\uf02b",
-  //   "module": "\ue79b",
-  //   "color": "\ue22b",
-  //   "property": "\ue624",
-  //   "field": "\uf02b",
-  //   "unit": "\uf475",
-  //   "event": "\ufacd",
-  //   "file": "\uf723",
-  //   "folder": "\uf114",
-  //   "snippet": "\uf672",
-  //   "typeParameter": "\uf728",
-  //   "default": "\uf29c"
-  // },
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
     "default": "",
-    "text": "",
-    "method": "",
-    "function": "ƒ",
-    "constructor": "",
-    "field": "料",
-    "variable": "",
-    "class": "",
-    "interface": "",
-    "module": "",
-    "property": "",
-    "unit": "",
+    "text": "", // 
+    "method": "", // 
+    "function": "", // ƒ
+    "constructor": "", // 
+    "field": "", // 料  
+    "variable": "", //  
+    "class": "", // ﴯ 
+    "interface": "", // 
+    "module": "", // 
+    "property": "", // ﰠ
+    "unit": "", //  塞
     "value": "",
-    "enum": "",
-    "keyword": "",
-    "snippet": "",
+    "enum": "", // 
+    "keyword": "", // 
+    "snippet": "", //    
     "color": "",
-    "file": "",
-    "reference": "渚",
-    "folder": "",
-    "enumMember": "",
-    "constant": "",
-    "struct": "פּ",
-    "event": "鬒",
-    "operator": "Ψ",
-    "typeParameter": ""
+    "file": "", // 
+    "reference": "", //  渚
+    "folder": "", // 
+    "enumMember": "", // 
+    "constant": "", // 
+    "struct": "פּ", // 
+    "event": "", // 鬒
+    "operator": "Ψ", // 
+    "typeParameter": "" //   
   },
+
   "snippets.shortcut": "\uf672",
   "clangd.enabled": true,
   "clangd.arguments": [
@@ -329,7 +223,7 @@
     },
     "teal": {
       "command": "teal-language-server",
-      "filetypes": ["teal"],
+      "filetypes": ["teal"]
     },
     "crystal": {
       "command": "crystalline",

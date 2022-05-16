@@ -9,7 +9,12 @@ M.prequire = function(check, opts)
     opts = opts or {silent = false}
     local ok, ret = pcall(require, check)
     if not ok and not opts.silent then
-        M.notify({message = ("%s was sourced but not installed"):format(check), level = log.levels.ERROR})
+        M.notify(
+            {
+                message = ("%s was sourced but not installed"):format(check),
+                level = log.levels.ERROR
+            }
+        )
         return nil
     end
     return ret
@@ -132,13 +137,15 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         bufnr = nil
     end
 
-    vim.validate {
-        bufnr = {bufnr, {"n", "nil"}, true},
-        mode = {modes, {"s", "t"}},
-        lhs = {lhs, "s"},
-        rhs = {rhs, {"s", "f"}},
-        opts = {opts, "t", true}
-    }
+    vim.validate(
+        {
+            bufnr = {bufnr, {"n", "nil"}, true},
+            mode = {modes, {"s", "t"}},
+            lhs = {lhs, "s"},
+            rhs = {rhs, {"s", "f"}},
+            opts = {opts, "t", true}
+        }
+    )
 
     opts = vim.deepcopy(opts) or {}
     modes = type(modes) == "string" and {modes} or modes
@@ -237,6 +244,17 @@ M.dump = function(...)
     print(unpack(objects))
 end
 
+M.get_option = function(option, default)
+    local ok, opt = pcall(nvim.buf.get_option, 0, option)
+    if not ok then
+        ok, opt = pcall(nvim.get_option, 0, option)
+        if not ok then
+            opt = default
+        end
+    end
+    return opt
+end
+
 --- @class CommandArgs
 --- @field args string
 --- @field fargs table
@@ -248,17 +266,19 @@ end
 ---@param rhs string|fun(args: CommandArgs)
 ---@param opts table
 M.command = function(name, rhs, opts)
-    vim.validate {
-        name = {name, "string"},
-        cmd = {
-            cmd,
-            function(c)
-                return type(c) == "string" or vim.is_callable(c)
-            end,
-            "a string or a lua function"
-        },
-        opts = {opts, "table", true}
-    }
+    vim.validate(
+        {
+            name = {name, "string"},
+            cmd = {
+                cmd,
+                function(c)
+                    return type(c) == "string" or vim.is_callable(c)
+                end,
+                "a string or a lua function"
+            },
+            opts = {opts, "table", true}
+        }
+    )
 
     opts = opts or {}
     if opts.buffer then
@@ -284,16 +304,18 @@ end
 ---@param name string Command to delete
 ---@param buffer? boolean|number Whether to delete buffer command
 M.del_command = function(name, buffer)
-    vim.validate {
-        name = {name, "string"},
-        buffer = {
-            buffer,
-            function(b)
-                return type(b) == "boolean" or type(b) == "number"
-            end,
-            "a boolean or a number"
+    vim.validate(
+        {
+            name = {name, "string"},
+            buffer = {
+                buffer,
+                function(b)
+                    return type(b) == "boolean" or type(b) == "number"
+                end,
+                "a boolean or a number"
+            }
         }
-    }
+    )
     if buffer then
         buffer = type(buffer) == "number" and buffer or 0
         api.nvim_buf_del_user_command(buffer, name)
@@ -519,8 +541,8 @@ end
 ---@param exec string
 ---@return boolean
 M.executable = function(exec)
-    vim.validate {exec = {exec, "string"}}
-    assert(exec ~= "", debug.traceback "Empty executable string")
+    vim.validate({exec = {exec, "string"}})
+    assert(exec ~= "", debug.traceback("Empty executable string"))
     return fn.executable(exec) == 1
 end
 

@@ -574,15 +574,15 @@ M.setup = function()
                     ["io"] = "@block.inner",
                     ["ad"] = "@comment.outer",
                     ["id"] = "@comment.inner",
-                    ["al"] = "@conditional.outer",
-                    ["il"] = "@conditional.inner",
+                    ["am"] = "@conditional.outer",
+                    ["im"] = "@conditional.inner",
                     -- targets.nvim does this good (with seeking)
                     -- Though it isn't specifically parameters
                     ["aj"] = "@parameter.outer",
                     ["ij"] = "@parameter.inner",
                     -- ["am"] = "@statement.outer"
-                    ["am"] = "@loop.outer",
-                    ["im"] = "@loop.inner"
+                    ["al"] = "@loop.outer",
+                    ["il"] = "@loop.inner"
 
                     -- @conditional.inner
                     -- @conditional.outer
@@ -776,12 +776,12 @@ local function init()
             ["io"] = "Inner block",
             ["ad"] = "Around comment",
             ["id"] = "Inner comment",
-            ["al"] = "Around conditional",
-            ["il"] = "Inner conditional",
+            ["am"] = "Around conditional",
+            ["im"] = "Inner conditional",
             ["aj"] = "Around parameter",
             ["ij"] = "Inner parameter",
-            ["am"] = "Around loop",
-            ["im"] = "Inner loop",
+            ["al"] = "Around loop",
+            ["il"] = "Inner loop",
             ["au"] = "Around unit",
             ["iu"] = "Inner unit",
             ["af"] = "Around function",

@@ -77,8 +77,12 @@ snippet modeline3 "Vim settings" b
 vim:${1:filetype=$2:}${3:foldmethod=${4:marker}:}${5:${7:tabstop=${6:4}:}${9:shiftwidth=${8:4}:}${11:softtabstop=${10:4}:}${12:noexpandtab:}}
 endsnippet
 
-snippet vims "Vim  Filetype"
+snippet vimsf "Vim modeline fdm=marker"
 `!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
+endsnippet
+
+snippet vims "Vim modeline"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'')`
 endsnippet
 
 snippet H "A header box" b

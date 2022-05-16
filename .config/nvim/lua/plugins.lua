@@ -240,7 +240,6 @@ return packer.startup(
             -- ]]] === Lua Library ===
 
             -- ========================== Fixes / Addons ========================== [[[
-            use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             -- numToStr/Navigator.nvim
@@ -405,7 +404,14 @@ return packer.startup(
             -- ]]] === BetterQuickFix ===
 
             -- ============================ EasyAlign ============================= [[[
-            use({"junegunn/vim-easy-align", conf = "plugs.easy-align"})
+            use(
+                {
+                    "junegunn/vim-easy-align",
+                    conf = "plugs.easy-align",
+                    keys = {{"x", "ga"}, {"x", "<Leader>ga"}, {"x", "<Leader>gi"}, {"x", "<Leader>ga"}},
+                    cmd = {"EasyAlign", "LiveEasyAlign"}
+                }
+            )
             -- ]]] === EasyAlign ===
 
             -- ============================ Open Browser =========================== [[[
@@ -511,7 +517,9 @@ return packer.startup(
             use({"glepnir/oceanic-material"})
             use({"franbach/miramare"})
             use({"pineapplegiant/spaceduck"})
+            -- Need to make a new theme for this
             use({"tyrannicaltoucan/vim-deep-space"})
+            -- Need to make a new theme for this
             use({"ackyshake/Spacegray.vim"})
             use({"vv9k/bogster"})
             use({"cocopon/iceberg.vim"})
@@ -796,8 +804,7 @@ return packer.startup(
             use(
                 {
                     "anuvyklack/pretty-fold.nvim",
-                    requires = "anuvyklack/nvim-keymap-amend",
-                    conf = "plugs.pretty-fold"
+                    requires = "anuvyklack/nvim-keymap-amend"
                 }
             )
 
@@ -1154,6 +1161,7 @@ return packer.startup(
             -- ]]] === Coc ===
 
             -- ============================= Treesitter ============================ [[[
+            -- use({ "vigoux/architext.nvim", after = { "nvim-treesitter" } })
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
                 {
@@ -1314,11 +1322,6 @@ return packer.startup(
                             config = [[require("telescope").load_extension("file_browser")]]
                         },
                         {
-                            "nvim-telescope/telescope-ui-select.nvim",
-                            after = {"telescope.nvim"},
-                            config = [[require("telescope").load_extension("ui-select")]]
-                        },
-                        {
                             "nvim-telescope/telescope-hop.nvim",
                             after = {"telescope.nvim"},
                             config = [[require("telescope").load_extension("hop")]]
@@ -1350,6 +1353,11 @@ return packer.startup(
                             after = {"telescope.nvim"},
                             config = [[require("telescope").load_extension("rualdi")]]
                         }
+                        -- {
+                        --     "nvim-telescope/telescope-ui-select.nvim",
+                        --     after = {"telescope.nvim"},
+                        --     config = [[require("telescope").load_extension("ui-select")]]
+                        -- },
                     }
                 }
             )
@@ -1546,6 +1554,8 @@ return packer.startup(
                     opt = true
                 }
             )
+
+            use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
         end
     }
 )

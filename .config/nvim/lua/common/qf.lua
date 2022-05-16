@@ -147,11 +147,11 @@ end
 function M.close()
     local loc_winid = fn.getloclist(0, {winid = 0}).winid
     if loc_winid == 0 then
-        cmd("ccl")
+        ex.ccl()
     else
         local qf_winid = fn.getqflist({winid = 0}).winid
         if qf_winid == 0 then
-            cmd("lcl")
+            ex.lcl()
         else
             local prompt = " [q]uickfix, [l]ocation ? "
             local bufnr = api.nvim_create_buf(false, true)

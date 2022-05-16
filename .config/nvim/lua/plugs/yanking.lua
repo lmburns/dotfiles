@@ -12,7 +12,7 @@ function M.setup()
     require("yanky").setup(
         {
             ring = {
-                history_length = 50,
+                history_length = 100,
                 storage = "shada",
                 sync_with_numbered_registers = true
             },
@@ -22,11 +22,13 @@ function M.setup()
                         default = mapping.put("p"),
                         i = {
                             ["<C-j>"] = mapping.put("p"),
-                            ["<C-k>"] = mapping.put("P")
+                            ["<C-k>"] = mapping.put("P"),
+                            ["<C-x>"] = mapping.delete()
                         },
                         n = {
-                            ["p"] = mapping.put("p"),
-                            ["P"] = mapping.put("P")
+                            p = mapping.put("p"),
+                            P = mapping.put("P"),
+                            d = mapping.delete()
                         }
                     }
                 }

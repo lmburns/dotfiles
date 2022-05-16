@@ -87,6 +87,7 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 
 export XINITRC="${HOME}/.xinitrc"
 export VIMRC="${XDG_CONFIG_HOME}/nvim/init.lua"
+export PACKDIR="${XDG_DATA_HOME}/nvim/site/pack/packer"
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME}/notmuch/notmuch-config"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
 export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"

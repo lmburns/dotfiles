@@ -129,6 +129,30 @@ augroup(
 )
 -- ]]] === Restore cursor ===
 
+-- === Telescope Fixes === [[[
+augroup(
+    "lmb__TelescopeFixes",
+    {
+        event = "FileType",
+        pattern = "Telescope*",
+        command = function()
+            map("i", "<Leader>", " ", {nowait = true})
+
+            autocmd(
+                {
+                    event = "CmdlineEnter",
+                    pattern = "*",
+                    once = true,
+                    command = function()
+                        require("wilder").disable()
+                    end
+                }
+            )
+        end
+    }
+)
+-- ]]] === Telescope Fixes ===
+
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them.
@@ -208,7 +232,7 @@ augroup(
                     TSFuncBuiltin = {bold = true},
                     Function = {gui = "bold"},
                     Todo = {bg = "none"},
-                    FloatermBorder = {fg = "#A06469", gui = "none"},
+                    FloatermBorder = {fg = "#A06469", gui = "none"}
                     -- TSMethod = {gui = "bold"},
                     -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
                 }

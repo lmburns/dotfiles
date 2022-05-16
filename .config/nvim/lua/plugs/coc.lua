@@ -646,14 +646,20 @@ function M.init()
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
-            ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"}
+            -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
+            -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
         }
     )
 
     -- map("n", "<Leader>jo", "<cmd>lua require('code_action_menu').open_code_action_menu()<CR>")
-    map("n", "<Leader>je", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
-    map("n", "<Leader>jc", "<cmd>lua require('code_action_menu').open_code_action_menu('cursor')<CR>")
-    map("n", "<Leader>jl", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
+    -- map("n", "<Leader>jl", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
+    -- map("n", "<Leader>jc", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
+    -- map("n", "<Leader>je", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
+
+    -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
+    -- map("n", "<C-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
+    map("n", "<A-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
+    map("n", "<C-A-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
 
     wk.register(
         {

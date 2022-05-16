@@ -1,0 +1,16 @@
+# Desc: edit packer files
+
+function pack() {
+    local dir
+    dir=$(\
+        fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
+            | fzf --delimiter / --with-nth 10..
+    )
+
+    [[ -n "$dir" ]] && builtin cd "$dir"
+}
+
+pack
+
+
+# vim: ft=zsh:et:sw=4:ts=2:sts=-1
