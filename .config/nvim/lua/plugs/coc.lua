@@ -1,11 +1,11 @@
 local M = {}
 
-require("dev")
-local kutils = require("common.kutils")
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
 local augroup = utils.augroup
+
+local kutils = require("common.kutils")
 
 local wk = require("which-key")
 

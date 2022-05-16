@@ -5,19 +5,49 @@ local utils = require("common.utils")
 ---@alias Group string
 ---@alias Color string
 
+---@class ColorFormat
+---@field background boolean
+---@field foreground boolean
+---@field bg boolean
+---@field fg boolean
+---@field bold boolean
+---@field underline boolean
+---@field undercurl boolean
+---@field italic boolean
+---@field inherit string
+---@field link string
+---@field sp string
+---@field gui string
+---@deprecated @field guifg string
+---@deprecated @field guisp string
+
 ---Define bg color
 ---@param group Group
 ---@param color Color
-function M.bg(group, col)
-    cmd(("hi %s guibg=%s"):format(group, col))
+---@param fmt ColorFormat
+function M.bg(group, color, fmt)
+    -- cmd(("hi %s guibg=%s"):format(group, col))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.bg = color
+    M.set_hl(group, opts)
 end
 
 ---Define fg color
 ---@param group Group
 ---@param color Color
-function M.fg(group, color, gui)
-    local g = gui == nil and "" or (" gui=%s"):format(gui)
-    cmd(("hi %s guifg=%s %s"):format(group, color, g))
+---@param fmt ColorFormat
+function M.fg(group, color, fmt)
+    -- local g = gui == nil and "" or (" gui=%s"):format(gui)
+    -- cmd(("hi %s guifg=%s %s"):format(group, color, g))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.fg = color
+    M.set_hl(group, opts)
 end
 
 ---Group to modify gui
@@ -31,8 +61,16 @@ end
 ---@param group Group
 ---@param fgcol Color
 ---@param bgcol Color
-function M.fg_bg(group, fgcol, bgcol)
-    cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
+---@param fmt ColorFormat
+function M.fg_bg(group, fgcol, bgcol, fmt)
+    -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.fg = fgcol
+    opts.bg = bgcol
+    M.set_hl(group, opts)
 end
 
 ---Highlight link one group to another
@@ -205,40 +243,59 @@ local function get_hl(group_name)
     return {}
 end
 
+---Convert a `gui=...` into valid arguments for `api.nvim_set_hl`
+---@param guistr string
+---@return table
+local function convert_gui(guistr)
+    local gui = {}
+    guistr = guistr:gsub(".*", string.lower)
+    local parts = vim.split(guistr, ",")
+
+    for _, part in ipairs(parts) do
+        if part:match("none") then
+            gui.italic = false
+            gui.bold = false
+            gui.underline = false
+            gui.undercurl = false
+        else
+            gui[part] = true
+        end
+    end
+    return gui
+end
+
+local keys = { guisp = "sp", guibg = "background", guifg = "foreground", default = "default" }
+
 ---This helper takes a table of highlights and converts any highlights
----specified as `highlight_prop = { from = 'group'}` into the underlying colour
----by querying the highlight property of the from group so it can be used when specifying highlights
----as a shorthand to derive the right color.
+---specified as `highlight_prop = { from = 'group'}` into the underlying
+---color by querying the highlight property of the `from` group so it can
+---be used when specifying highlights as a shorthand to derive the right color.
+---i
 ---For example:
 ---```lua
 ---  M.set_hl({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
 ---```
----This will take the foreground colour from ErrorMsg and set it to the foreground of MatchParen.
+---This will take the foreground color from ErrorMsg and set it to the foreground of MatchParen.
+---
+---This function will also convert legacy keys (i.e., `guisp`, `guibg`, `guibg`, and `default`)
+---into keys that `api.nvim_set_hl` will accept.
+---
 ---@param opts table<string, string|boolean|table<string,string>>
 local function convert_hl_to_val(opts)
     for name, value in pairs(opts) do
         if type(value) == "table" and value.from then
             opts[name] = M.get_hl(value.from, F.if_nil(value.attr, name))
+        elseif keys[name] then
+            opts[keys[name]] = value
+            opts[name] = nil
         end
     end
 end
 
 ---Create a highlight group
 ---
----Valid table keys:
----   - background
----   - foreground
----   - inherit
----   - link
----   - sp
----   - bold
----   - underline
----   - undercurl
----   - italic
----   - gui
----
 ---@param name string
----@param opts table
+---@param opts ColorFormat
 function M.set_hl(name, opts)
     vim.validate {
         name = {name, "string", false},
@@ -247,28 +304,7 @@ function M.set_hl(name, opts)
     assert(name and opts, "Both 'name' and 'opts' must be specified")
 
     if opts.gui then
-        opts.gui = opts.gui:gsub(".*", string.lower)
-
-        if opts.gui:match("italic") then
-            opts.italic = true
-        end
-        if opts.gui:match("bold") then
-            opts.bold = true
-        end
-        if opts.gui:match("underline") then
-            opts.underline = true
-        end
-        if opts.gui:match("undercurl") then
-            opts.undercurl = true
-        end
-
-        if opts.gui:match("none") then
-            opts.italic = false
-            opts.bold = false
-            opts.underline = false
-            opts.undercurl = false
-        end
-
+        opts = vim.tbl_extend("force", opts, convert_gui(opts.gui))
         opts.gui = nil
     end
 

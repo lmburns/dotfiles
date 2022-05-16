@@ -301,8 +301,9 @@ wk.register(
         ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
-        ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline(true)<CR>]], "Quickfix function outline"},
-        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline(false)<CR>]], "Quickfix function outline"}
+        ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},
+        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline(false)<CR>]], "Quickfix outline (coc)"},
+        ["<Leader>fa"] = {[[<Cmd>lua require('common.qfext').outline_aerial()<CR>]], "Quickfix outline (aerial)"},
     }
 )
 

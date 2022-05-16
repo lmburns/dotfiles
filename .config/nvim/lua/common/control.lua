@@ -1,33 +1,34 @@
 ---@class Plugin
--- @field after string | string[]: Specifies plugins to load before this plugin.
--- @field as string: Specifies an alias under which to install the plugin
--- @field branch string: Specifies a git branch to use
--- @field cmd string | string[]: Specifies commands which load this plugin.  Can be an autocmd pattern.
--- @field commit string: Specifies a git commit to use
--- @field cond string | function | string[]: Specifies a conditional test to load this plugin
--- @field config string | function: Specifies code to run after this plugin is loaded.
--- @field disable boolean: Mark a plugin as inactive
--- @field event string | string[]: Specifies autocommand events which load this plugin.
--- @field fn string | string[]: Specifies functions which load this plugin.
--- @field ft string | string[]: Specifies filetypes which load this plugin.
--- @field installer function: Specifies custom installer
--- @field keys string | string[]: Specifies maps which load this plugin
--- @field lock boolean: Skip updating this plugin in updates/syncs. Still cleans.
--- @field module string | string[]: Specifies Lua module names for require. When requiring a string which starts
--- @field module_pattern string | string[]: Specifies Lua pattern of Lua module names for require. When requiring a string
--- @field opt boolean: Manually marks a plugin as optional.
--- @field requires string string[]: Specifies plugin dependencies
--- @field rocks string | string[]: Specifies Luarocks dependencies for the plugin
--- @field rtp string: Specifies a subdirectory of the plugin to add to runtimepath.
--- @field run string | function | table: Post-update/install hook
--- @field setup string | function: Specifies code to run before this plugin is loaded.
--- @field tag string: Specifies a git tag to use. Supports '*' for "latest tag"
--- @field updater function: Specifies custom updater
+---@field after string | string[]: Specifies plugins to load before this plugin.
+---@field as string: Specifies an alias under which to install the plugin
+---@field branch string: Specifies a git branch to use
+---@field cmd string | string[]: Specifies commands which load this plugin.  Can be an autocmd pattern.
+---@field commit string: Specifies a git commit to use
+---@field cond string | function | string[]: Specifies a conditional test to load this plugin
+---@field config string | function: Specifies code to run after this plugin is loaded.
+---@field disable boolean: Mark a plugin as inactive
+---@field event string | string[]: Specifies autocommand events which load this plugin.
+---@field fn string | string[]: Specifies functions which load this plugin.
+---@field ft string | string[]: Specifies filetypes which load this plugin.
+---@field installer function: Specifies custom installer
+---@field keys string | string[]: Specifies maps which load this plugin
+---@field lock boolean: Skip updating this plugin in updates/syncs. Still cleans.
+---@field module string | string[]: Specifies Lua module names for require. When requiring a string which starts
+---@field module_pattern string | string[]: Specifies Lua pattern of Lua module names for require. When requiring a string
+---@field opt boolean: Manually marks a plugin as optional.
+---@field requires string string[]: Specifies plugin dependencies
+---@field rocks string | string[]: Specifies Luarocks dependencies for the plugin
+---@field rtp string: Specifies a subdirectory of the plugin to add to runtimepath.
+---@field run string | function | table: Post-update/install hook
+---@field setup string | function: Specifies code to run before this plugin is loaded.
+---@field tag string: Specifies a git tag to use. Supports '*' for "latest tag"
+---@field updater function: Specifies custom updater
 
 -- local control = {}
 -- for plugin, tbl in pairs(_G.packer_plugins) do
 --     control[plugin] = false
 -- end
+-- p(control)
 
 local M = {
     ["Comment.nvim"] = false,
@@ -44,6 +45,7 @@ local M = {
     ["bufferize.vim"] = false,
     ["bufferline.nvim"] = false,
     catppuccin = false,
+    ["coc-code-action-menu"] = false,
     ["coc-fzf"] = false,
     ["coc-kvs"] = false,
     ["coc-wxy"] = false,
@@ -62,6 +64,7 @@ local M = {
     ["fzf-lua"] = false,
     ["fzf.vim"] = false,
     ["fzy-lua-native"] = false,
+    ["git-conflict.nvim"] = false,
     ["gitsigns.nvim"] = false,
     ["gruvbox-flat.nvim"] = false,
     ["gruvbox-material"] = false,
@@ -173,7 +176,6 @@ local M = {
     ["telescope-packer.nvim"] = false,
     ["telescope-rualdi.nvim"] = false,
     ["telescope-smart-history.nvim"] = false,
-    ["telescope-ui-select.nvim"] = false,
     ["telescope-ultisnips.nvim"] = false,
     ["telescope-zoxide"] = false,
     ["telescope.nvim"] = false,

@@ -28,6 +28,11 @@ local map = b_utils.map
 local Path = require("plenary.path")
 local wk = require("which-key")
 
+-- require("plenary.strings").align_str(string: any, width: any, right_justify: any)
+-- require("plenary.strings").dedent(str: any, leave_indent: any)
+-- require("plenary.strings").truncate(str: string, len: any, dots: any, direction: any)
+-- require("plenary.strings").strdisplaywidth(string, col)
+
 -- Custom actions
 local c_actions = {
     which_key = function(opts)
@@ -1199,7 +1204,7 @@ local fg = color.fg
 -- local bg = require("common.color").bg
 -- local hl = color.set_hl
 
-fg("TelescopeSelection", colors.yellow, "bold")
+fg("TelescopeSelection", colors.yellow, {bold = true})
 fg("TelescopeSelectionCaret", colors.blue)
 fg("TelescopeMultiSelection", colors.aqua)
 -- bg("TelescopeNormal", colors.bg0)

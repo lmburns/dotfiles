@@ -130,27 +130,24 @@ augroup(
 -- ]]] === Restore cursor ===
 
 -- === Telescope Fixes === [[[
-augroup(
-    "lmb__TelescopeFixes",
-    {
-        event = "FileType",
-        pattern = "Telescope*",
-        command = function()
-            map("i", "<Leader>", " ", {nowait = true})
+nvim.autocmd.lmb__TelescopeFixes = {
+    event = "FileType",
+    pattern = "Telescope*",
+    command = function()
+        map("i", "<Leader>", " ", {nowait = true})
 
-            autocmd(
-                {
-                    event = "CmdlineEnter",
-                    pattern = "*",
-                    once = true,
-                    command = function()
-                        require("wilder").disable()
-                    end
-                }
-            )
-        end
-    }
-)
+        autocmd(
+            {
+                event = "CmdlineEnter",
+                pattern = "*",
+                once = true,
+                command = function()
+                    require("wilder").disable()
+                end
+            }
+        )
+    end
+}
 -- ]]] === Telescope Fixes ===
 
 -- === Format Options === [[[
@@ -161,103 +158,95 @@ augroup(
 do
     local o = vim.opt_local
 
-    augroup(
-        "lmb__FormatOptions",
-        {
-            event = {"BufEnter", "FileType"},
-            pattern = "*",
-            command = function()
-                -- Buffer option here doesn't work like global
-                -- o.formatoptions:remove({"c", "r", "o"})
-                o.formatoptions = {
-                    ["1"] = true,
-                    ["2"] = true, -- Use indent from 2nd line of a paragraph
-                    q = true, -- Continue comments with gq"
-                    n = true, -- Recognize numbered lists
-                    j = true, -- Remove a comment leader when joining lines.
-                    -- Only break if the line was not longer than 'textwidth' when the insert
-                    -- started and only at a white character that has been entered during the
-                    -- current insert command.
-                    l = true,
-                    v = true, -- Only break line at blank line I've entered
-                    c = true, -- Auto-wrap comments using textwidth
-                    r = false, -- Continue comments when pressing Enter
-                    t = false, -- Autowrap lines using text width value
-                    o = false --- Automatically insert comment leader after <enter>
-                }
-                o.conceallevel = 2
-                o.concealcursor = "vc"
+    nvim.autocmd.lmb__FormatOptions = {
+        event = {"BufEnter", "FileType"},
+        pattern = "*",
+        command = function()
+            -- Buffer option here doesn't work like global
+            -- o.formatoptions:remove({"c", "r", "o"})
+            o.formatoptions = {
+                ["1"] = true,
+                ["2"] = true, -- Use indent from 2nd line of a paragraph
+                q = true, -- Continue comments with gq"
+                n = true, -- Recognize numbered lists
+                j = true, -- Remove a comment leader when joining lines.
+                -- Only break if the line was not longer than 'textwidth' when the insert
+                -- started and only at a white character that has been entered during the
+                -- current insert command.
+                l = true,
+                v = true, -- Only break line at blank line I've entered
+                c = true, -- Auto-wrap comments using textwidth
+                r = false, -- Continue comments when pressing Enter
+                t = false, -- Autowrap lines using text width value
+                o = false --- Automatically insert comment leader after <enter>
+            }
+            o.conceallevel = 2
+            o.concealcursor = "vc"
 
-                -- Allows a shared statusline
-                if b.ft ~= "fzf" then
-                    o.laststatus = 3
-                end
+            -- Allows a shared statusline
+            if b.ft ~= "fzf" then
+                o.laststatus = 3
             end
-        }
-    )
+        end
+    }
 end
 -- ]]] === Format Options ===
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                Colorscheme Modifications                 │
 -- ╰──────────────────────────────────────────────────────────╯
-augroup(
-    "lmb__ColorschemeSetup",
-    {
-        event = "ColorScheme",
-        pattern = "*",
-        command = function()
-            -- ex.hi("TSConstBuiltin gui=none")
-            -- ex.hi("TSVariableBuiltin gui=none")
-            -- ex.hi("TSTypeBuiltin gui=none")
-            -- ex.hi("TSProperty gui=none")
-            -- ex.hi("TSVariable gui=none")
-            -- ex.hi("TSString gui=none")
-            -- ex.hi("TSKeywordFunction gui=none")
-            -- ex.hi("Function gui=bold")
-            -- ex.hi("Todo guibg=none")
-            -- ex.hi("FloatermBorder guifg=#A06469 gui=none")
+nvim.autocmd.lmb__ColorschemeSetup = {
+    event = "ColorScheme",
+    pattern = "*",
+    command = function()
+        -- ex.hi("TSConstBuiltin gui=none")
+        -- ex.hi("TSVariableBuiltin gui=none")
+        -- ex.hi("TSTypeBuiltin gui=none")
+        -- ex.hi("TSProperty gui=none")
+        -- ex.hi("TSVariable gui=none")
+        -- ex.hi("TSString gui=none")
+        -- ex.hi("TSKeywordFunction gui=none")
+        -- ex.hi("Function gui=bold")
+        -- ex.hi("Todo guibg=none")
+        -- ex.hi("FloatermBorder guifg=#A06469 gui=none")
 
-            C.all(
-                {
-                    TSVariableBuiltin = {inherit = "TSVariableBuiltin", gui = "none"},
-                    TSTypeBuiltin = {gui = "none"},
-                    TSProperty = {gui = "none"},
-                    TSVariable = {gui = "none"},
-                    TSKeyword = {gui = "none"},
-                    TSConditional = {gui = "none"},
-                    TSString = {gui = "none"},
-                    TSKeywordFunction = {gui = "none"},
-                    TSFunction = {bold = true},
-                    TSFuncBuiltin = {bold = true},
-                    Function = {gui = "bold"},
-                    Todo = {bg = "none"},
-                    FloatermBorder = {fg = "#A06469", gui = "none"}
-                    -- TSMethod = {gui = "bold"},
-                    -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
-                }
-            )
+        C.all(
+            {
+                TSVariableBuiltin = {inherit = "TSVariableBuiltin", gui = "none"},
+                TSTypeBuiltin = {gui = "none"},
+                TSProperty = {gui = "none"},
+                TSVariable = {gui = "none"},
+                TSKeyword = {gui = "none"},
+                TSConditional = {gui = "none"},
+                TSString = {gui = "none"},
+                TSKeywordFunction = {gui = "none"},
+                TSFunction = {bold = true},
+                TSFuncBuiltin = {bold = true},
+                Function = {gui = "bold"},
+                Todo = {bg = "none"},
+                FloatermBorder = {fg = "#A06469", gui = "none"}
+                -- TSMethod = {gui = "bold"},
+                -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
+            }
+        )
 
-            if g.colors_name ~= "kimbox" then
-                C.link("Hlargs", "TSParameter")
-            end
+        if g.colors_name ~= "kimbox" then
+            C.link("Hlargs", "TSParameter")
         end
-    }
-)
+    end,
+    desc = "Override highlight groups"
+}
 
 -- === Remove Empty Buffers === [[[
-augroup(
-    "lmb__FirstBuf",
-    {
-        event = "BufHidden",
-        command = function()
-            require("common.builtin").wipe_empty_buf()
-        end,
-        buffer = 0,
-        once = true,
-        desc = "Remove first empty buffer"
-    }
-)
+nvim.autocmd.lmb__FirstBuf = {
+    event = "BufHidden",
+    command = function()
+        require("common.builtin").wipe_empty_buf()
+    end,
+    buffer = 0,
+    once = true,
+    desc = "Remove first empty buffer"
+}
 -- ]]]
 
 -- === MRU === [[[
@@ -269,7 +258,7 @@ augroup(
         command = function()
             require("common.win").record()
         end,
-        description = "Add file to custom MRU list"
+        desc = "Add file to custom MRU list"
     }
 )
 -- ]]]

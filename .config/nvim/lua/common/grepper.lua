@@ -91,6 +91,6 @@ function M.get_regions(vmode)
     }
 end
 
-map("n", "go", ":lua R('common.grepper').vg_motion()<CR>")
+map("n", "go", ":lua R('common.grepper').vg_motion()<CR>", {desc = "Grep current file"})
 
 return M

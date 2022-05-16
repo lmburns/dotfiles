@@ -21,7 +21,7 @@ function M.setup()
         {
             modes = {":", "/", "?"},
             next_key = "<Tab>",
-            previous_key = "<S-Tab>",
+            previous_key = "<S-Tab>"
             -- accept_key = "<A-,>",
             -- reject_key = "<A-.>",
             -- enable_cmdline_enter = 1
@@ -57,8 +57,8 @@ function M.setup()
                     {
                         file_command = {"rg", "--files", "--hidden", "--color=never"},
                         dir_command = {"fd", "-td", "-H"},
-                        filters = {"cpsm_filter"}
-                        --  filters = {"fuzzy_filter", "difflib_sorter"}
+                        -- filters = {"cpsm_filter"},
+                        filters = {"fuzzy_filter", "difflib_sorter"}
                     }
                 ),
                 wilder.substitute_pipeline(
@@ -93,9 +93,9 @@ function M.setup()
                 },
                 wilder.python_search_pipeline(
                     {
-                        pattern = "fuzzy"
+                        pattern = "fuzzy",
                         -- pattern = wilder.python_fuzzy_pattern(),
-                        -- sorter = wilder.python_difflib_sorter(),
+                        sorter = wilder.python_difflib_sorter(),
                         -- engine = "re"
                     }
                 )
@@ -103,38 +103,39 @@ function M.setup()
         }
     )
 
-    local highlighters = {
-        wilder.pcre2_highlighter(),
-        wilder.lua_fzy_highlighter()
-    }
+    -- local highlighters = {
+    --     wilder.pcre2_highlighter(),
+    --     wilder.lua_fzy_highlighter()
+    -- }
 
     local popupmenu_renderer =
         wilder.popupmenu_renderer(
         wilder.popupmenu_border_theme(
             {
+                -- highlighter = highlighters,
+                highlighter = wilder.lua_fzy_highlighter(),
                 border = "rounded",
-                empty_message = wilder.popupmenu_empty_message_with_spinner(),
-                highlighter = highlighters,
                 max_height = 15,
                 pumblend = 10,
-                left = {
-                    " ",
-                    wilder.popupmenu_devicons(),
-                    wilder.popupmenu_buffer_flags(
-                        {
-                            flags = " a + ",
-                            icons = {["+"] = "", a = "", h = ""}
-                        }
-                    )
-                },
-                right = {
-                    " ",
-                    wilder.popupmenu_scrollbar()
-                },
+                empty_message = wilder.popupmenu_empty_message_with_spinner(),
                 highlights = {
                     border = "Normal",
                     default = "Normal",
                     accent = wilder.make_hl("PopupmenuAccent", "Normal", {{a = 1}, {a = 1}, {foreground = "#EF1D55"}})
+                },
+                left = {
+                    " ",
+                    wilder.popupmenu_devicons()
+                    -- wilder.popupmenu_buffer_flags(
+                    --     {
+                    --         flags = " a + ",
+                    --         icons = {["+"] = "", a = "", h = ""}
+                    --     }
+                    -- )
+                },
+                right = {
+                    " ",
+                    wilder.popupmenu_scrollbar()
                 }
             }
         )
@@ -143,7 +144,7 @@ function M.setup()
     local wildmenu_renderer =
         wilder.wildmenu_renderer(
         {
-            highlighter = highlighters,
+            highlighter = wilder.lua_fzy_highlighter(),
             separator = " · ",
             left = {" ", wilder.wildmenu_spinner(), " "},
             right = {" ", wilder.wildmenu_index()},
@@ -271,6 +272,7 @@ local function init()
     nvim.autocmd.lmb__WilderEnable = {
         event = "CmdlineEnter",
         pattern = "*",
+        once = false, -- Needed for coming back out of Telescope
         command = function()
             require("wilder").enable()
         end

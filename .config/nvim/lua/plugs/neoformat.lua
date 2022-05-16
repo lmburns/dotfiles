@@ -29,7 +29,7 @@ local function neoformat()
             #F.if_nil(
                 scan.scan_dir(
                     gittool.root() or fn.expand("%:p:h"),
-                    {search_pattern = "%.?stylua.toml$", hidden = true, silent = true}
+                    {search_pattern = "%.?stylua.toml$", hidden = true, silent = true, respect_gitignore = true}
                 ),
                 {}
             ) > 0

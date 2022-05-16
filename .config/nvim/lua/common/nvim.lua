@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local color = require("common.color")
 
 ---Get an autocmd
 ---@param opts table
@@ -107,6 +108,9 @@ nvim.plugins =
                 plugs = _G.packer_plugins
                 if plugs[k] and plugs[k].loaded then
                     return plugs[k]
+                else
+                    -- [...]
+                    return _G.packer_plugins
                 end
             end
 
@@ -410,7 +414,7 @@ nvim.colors =
     {},
     {
         __index = function(_, k)
-            utils.colors(k)
+            color.colors(k)
         end
     }
 )

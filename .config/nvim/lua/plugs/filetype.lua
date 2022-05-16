@@ -9,8 +9,13 @@ local nroff_ft = function()
     w.colorcolumn = "+1"
 end
 
+
+-- require('plenary.filetype').detect_from_extension(fn.expand('%:p'))
+-- require('plenary.filetype').detect_from_name(fn.expand('%:p'))
+-- require('plenary.filetype').detect_from_modeline(fn.expand('%:p'))
+-- require('plenary.filetype').detect_from_shebang(fn.expand('%:p'))
+
 function M.setup()
-    -- This can basically replace all `FileType` autocmds
     g.do_filetype_lua = 1
     -- 0 = Disable filetype.vim (but still load filetype.lua if enabled)
     -- 1 = Disable filetype.vim and filetype.lua

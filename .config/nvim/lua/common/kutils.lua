@@ -3,6 +3,8 @@ local M = {}
 local debounce = require("common.debounce")
 local utils = require("common.utils")
 
+local a = require("plenary.async")
+
 M.termcodes =
     setmetatable(
     {},
@@ -31,6 +33,30 @@ M.ansi =
         end
     }
 )
+
+-- This needs testing
+M.write_file_async = function(path, data, sync)
+    local path_ = path .. "_"
+    if sync then
+        local fd = assert(uv.fs_open(path_, "w", 438))
+        assert(uv.fs_write(fd, data))
+        assert(uv.fs_close(fd))
+        uv.fs_rename(path_, path)
+    else
+        local err_open, fd = a.uv.fs_open(path_, "w", 438)
+        assert(not err_open, err_open)
+
+        local err_write = a.uv.fs_write(fd, data, -1)
+        assert(not err_write, err_write)
+
+        local err_close, succ = a.uv.fs_close(fd)
+        assert(not err_close, err_close)
+
+        if succ then
+            a.uv.fs_rename(path_, path)
+        end
+    end
+end
 
 M.write_file = function(path, data, sync)
     local path_ = path .. "_"
