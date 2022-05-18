@@ -155,6 +155,13 @@ function M.open_browser()
             ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         }
     )
+
+    wk.register(
+        {
+            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
+        },
+        {mode = "x"}
+    )
 end
 
 -- /home/lucas/.config/zsh
@@ -245,6 +252,13 @@ function M.floaterm()
     g.floaterm_width = 0.9
     g.floaterm_borderchars = "─│─│╭╮╯╰"
 
+    C.plugin(
+        "floaterm",
+        {
+            FloatermBorder = {fg = "#A06469", gui = "none"}
+        }
+    )
+
     -- Stackoverflow helper
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
 end
@@ -319,6 +333,9 @@ function M.table_mode()
                 g.table_mode_corner = "|"
                 g.table_mode_fillchar = "-"
                 g.table_mode_separator = "|"
+
+                -- Expand snippets in VimWiki
+                map("i", "<right>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], {expr = true})
             end
         }
     )
@@ -737,8 +754,12 @@ function M.targets()
 
     wk.register(
         {
-            ["ir"] = "inner angle bracket",
-            ["ar"] = "around angle bracket"
+            ["ir"] = "Inner angle bracket",
+            ["ar"] = "Around angle bracket",
+            ["in"] = "Next object",
+            ["iN"] = "Previous object",
+            ["an"] = "Next object",
+            ["aN"] = "Previous object"
         },
         {mode = "o"}
     )
@@ -755,7 +776,7 @@ function M.targets()
     -- g.targets_aiAI = "aIAi"
     --
     -- -- Seeking next/last objects
-    g.targets_nl = "nl"
+    g.targets_nl = "nN"
 
     -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
     -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
@@ -1208,7 +1229,11 @@ function M.lfnvim()
     g.lf_netrw = 1
 
     require("lf").setup(
-        {border = "rounded", highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}}
+        {
+            escape_quit = false,
+            border = "rounded",
+            highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
+        }
     )
 
     -- map("n", "<A-o>", ":Lf<CR>")
@@ -1522,12 +1547,12 @@ function M.git_conflict()
             }
         }
     )
-    -- map("n", "co", "<Plug>(git-conflict-ours)")
-    -- map("n", "cb", "<Plug>(git-conflict-both)")
-    -- map("n", "c0", "<Plug>(git-conflict-none)")
-    -- map("n", "ct", "<Plug>(git-conflict-theirs)")
-    -- map("n", "[x", "<Plug>(git-conflict-next-conflict)")
-    -- map("n", "]x", "<Plug>(git-conflict-prev-conflict)")
+    map("n", "co", "<Plug>(git-conflict-ours)")
+    map("n", "cb", "<Plug>(git-conflict-both)")
+    map("n", "c0", "<Plug>(git-conflict-none)")
+    map("n", "ct", "<Plug>(git-conflict-theirs)")
+    map("n", "[c", "<Plug>(git-conflict-next-conflict)")
+    map("n", "]c", "<Plug>(git-conflict-prev-conflict)")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

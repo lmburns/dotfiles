@@ -1,15 +1,16 @@
 local P = {}
 
-local finders = require("telescope.finders")
-local pickers = require("telescope.pickers")
-local conf = require("telescope.config").values
-local sorters = require("telescope.sorters")
-local make_entry = require("telescope.make_entry")
-local entry_display = require("telescope.pickers.entry_display")
-local previewers = require("telescope.previewers")
-local actions = require("telescope.actions")
 local action_set = require "telescope.actions.set"
 local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local builtin = require("telescope.builtin")
+local conf = require("telescope.config").values
+local entry_display = require("telescope.pickers.entry_display")
+local finders = require("telescope.finders")
+local make_entry = require("telescope.make_entry")
+local pickers = require("telescope.pickers")
+local previewers = require("telescope.previewers")
+local sorters = require("telescope.sorters")
 local utils = require("telescope.utils")
 
 local Path = require("plenary.path")
@@ -20,7 +21,10 @@ local color = require("common.color")
 
 P.use_highlighter = true
 
--- FIX: The builtin tags doesn't pick up fn.tagfiles() for whatever reason
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Builtin Tags                       │
+-- ╰──────────────────────────────────────────────────────────╯
+-- FIX: The builtin tags doesn't pick up fn.tagfiles() for whatever reason. This doesn't either
 --      So this is a clone of that. Even when using `bulitin.tags = P.tags`, it doesn't work
 P.tags = function(opts)
     opts =
@@ -117,6 +121,166 @@ P.current_buffer_tags = function(opts)
     )
 end
 
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Vista                           │
+-- ╰──────────────────────────────────────────────────────────╯
+---A better version of the builtin tags
+---@param opts table
+P.project_vista = function(opts)
+    opts = opts or {}
+
+    local bufnr = nvim.buf.nr()
+    opts.bufnr = bufnr
+    opts.path_display = opts.path_display or {"smart"}
+
+    local result
+    if opts.only_current_file then
+        result = fn["vista#executive#ctags#Run"](fn.expand("%:p"))
+    else
+        result = fn["vista#executive#ctags#ProjectRun"]()
+    end
+
+    local results = {}
+
+    if opts.only_current_file then
+        for kind, values in pairs(result) do
+            for _, value in pairs(values) do
+                table.insert(
+                    results,
+                    {
+                        lnum = value.lnum,
+                        filename = fn.expand("%:p"),
+                        kind = ("[%s]"):format(kind),
+                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text),
+                    }
+                )
+            end
+        end
+    else
+        local buffers =
+            _t(fn.getbufinfo({buflisted = 1})):map(
+            function(buf)
+                return {bufnr = buf.bufnr, loaded = buf.loaded, name = buf.name}
+            end
+        )
+
+        local files =
+            scan.scan_dir(
+            fn.expand("%:p:h") or uv.cwd(),
+            {
+                hidden = true
+            }
+        )
+
+        for kind, values in pairs(result) do
+            for _, value in pairs(values) do
+                local filename
+                for _, buf in pairs(buffers) do
+                    if buf.name:match(value.tagfile) then
+                        filename = buf.name
+                        break
+                    else
+                        for _, file in pairs(files) do
+                            if file:match(value.tagfile) then
+                                filename = file
+                                break
+                            end
+                        end
+                    end
+                end
+
+                table.insert(
+                    results,
+                    {
+                        lnum = value.lnum,
+                        filename = filename or value.tagfile,
+                        kind = ("[%s]"):format(kind),
+                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text),
+                        text = vim.trim(value.taginfo)
+                    }
+                )
+            end
+        end
+    end
+
+    local displayer =
+        entry_display.create {
+        separator = "▏",
+        items = {
+            {width = 25},
+            {width = 12},
+            {width = 30},
+            {remaining = true}
+        }
+    }
+
+    local make_display = function(entry)
+        local filename = utils.transform_path(opts, entry.filename)
+        local tbl = {
+            {entry.tag, "DiagnosticWarn"},
+            {entry.kind, "SpellCap"},
+        }
+        if not opts.only_current_file then
+            table.insert(tbl, {entry.text, "Comment"})
+            table.insert(tbl, {filename, "QuickFixLine"})
+        else
+            table.insert(tbl, {entry.lnum, "Comment"})
+        end
+
+        return displayer(tbl)
+    end
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "Project Tags",
+            finder = finders.new_table {
+                results = results,
+                entry_maker = function(e)
+                    return {
+                        value = e,
+                        ordinal = e.filename,
+                        display = make_display,
+                        lnum = e.lnum,
+                        tag = e.tag,
+                        kind = e.kind,
+                        text = e.text,
+                        filename = e.filename
+                    }
+                end
+            },
+            previewer = conf.grep_previewer(opts),
+            sorter = conf.generic_sorter(opts),
+            attach_mappings = function()
+                action_set.select:enhance {
+                    post = function()
+                        local selection = action_state.get_selected_entry()
+                        nvim.win.set_cursor(0, {selection.lnum, 0})
+                    end
+                }
+                return true
+            end
+        }
+    ):find()
+end
+
+P.current_buffer_vista = function(opts)
+    return P.project_vista(
+        vim.tbl_extend(
+            "force",
+            {
+                prompt_title = "Current Buffer Tags",
+                only_current_file = true,
+                path_display = "hidden"
+            },
+            opts or {}
+        )
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Gutentags                         │
+-- ╰──────────────────────────────────────────────────────────╯
 P.gutentags = function()
     -- local bufdir = fn.expand("%:p:h", 1)
     -- local root = fn["gutentags#get_project_root"](bufdir)
@@ -197,121 +361,6 @@ P.live_grep_in_folder = function(opts)
                         require("telescope.builtin").live_grep {search_dirs = dirs, initial_mode = "insert"}
                     end
                 )
-                return true
-            end
-        }
-    ):find()
-end
-
----A better version of the builtin tags
----@param opts table
-P.project_tags = function(opts)
-    opts = opts or {}
-
-    local bufnr = nvim.buf.nr()
-    opts.bufnr = bufnr
-    opts.path_display = {"smart"}
-
-    -- TODO: Current buffer only:
-    -- local result = fn["vista#executive#ctags#Run"](fn.expand('%:p'))
-
-    local result = fn["vista#executive#ctags#ProjectRun"]()
-    local results = {}
-
-    local buffers =
-        _t(fn.getbufinfo({buflisted = 1})):map(
-        function(buf)
-            return {bufnr = buf.bufnr, loaded = buf.loaded, name = buf.name}
-        end
-    )
-
-    local files =
-        scan.scan_dir(
-        uv.cwd(),
-        {
-            hidden = true
-        }
-    )
-
-    for kind, values in pairs(result) do
-        for _, value in pairs(values) do
-            local filename
-            for _, buf in pairs(buffers) do
-                if buf.name:match(value.tagfile) then
-                    filename = buf.name
-                    break
-                else
-                    for _, file in pairs(files) do
-                        if file:match(value.tagfile) then
-                            filename = file
-                            break
-                        end
-                    end
-                end
-            end
-
-            table.insert(
-                results,
-                {
-                    lnum = value.lnum,
-                    filename = filename or value.tagfile,
-                    kind = ("[%s]"):format(kind),
-                    tag = value.text,
-                    text = value.taginfo
-                }
-            )
-        end
-    end
-
-    local displayer =
-        entry_display.create {
-        separator = "▏",
-        items = {
-            {width = 30},
-            {width = 20},
-            {width = 12},
-            {remaining = true}
-        }
-    }
-
-    local make_display = function(entry)
-        local filename = utils.transform_path(opts, entry.filename)
-        return displayer {
-            {filename, "QuickFixLine"},
-            {entry.tag, "DiagnosticWarn"},
-            {entry.kind, "SpellCap"},
-            {entry.text, "Comment"}
-        }
-    end
-
-    pickers.new(
-        opts,
-        {
-            prompt_title = "Project Tags",
-            finder = finders.new_table {
-                results = results,
-                entry_maker = function(e)
-                    return {
-                        value = e,
-                        ordinal = e.filename,
-                        display = make_display,
-                        lnum = e.lnum,
-                        tag = e.tag,
-                        kind = e.kind,
-                        text = e.text,
-                        filename = e.filename
-                    }
-                end
-            },
-            previewer = conf.grep_previewer(opts),
-            sorter = conf.generic_sorter(opts),
-            attach_mappings = function()
-                action_set.select:enhance {
-                    post = function()
-                        local selection = action_state.get_selected_entry()
-                        nvim.win.set_cursor(0, {selection.lnum, 0})
-                    end
-                }
                 return true
             end
         }

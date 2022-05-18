@@ -573,6 +573,21 @@ require("telescope").setup(
                         end
                     }
                 }
+            },
+            project = {
+                base_dirs = (function()
+                    local dirs = {}
+                    local f = "~/ghq"
+                    if uv.fs_stat(fn.expand(f)) then
+                        table.insert(dirs, {f, max_depth = 5})
+                    end
+                    f = "~/projects"
+                    if uv.fs_stat(fn.expand(f)) then
+                        table.insert(dirs, {f, max_depth = 3})
+                    end
+
+                    return #dirs == 0 and nil or dirs
+                end)()
             }
             -- ["ui-select"] = {
             --     themes.get_dropdown {}
@@ -628,10 +643,6 @@ local function filter_by_cwd_paths(tbl, cwd)
         end
     end
     return res
-end
-
-local function requiref(module)
-    require(module)
 end
 
 -- ========================== Builtin ==========================
@@ -782,9 +793,9 @@ map("o", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
 
 -- ========================== Builtin ============================
 builtin.cst_mru = function(opts)
+    opts = opts or {}
     local get_mru = function(opts)
-        local res = pcall(requiref, "telescope._extensions.frecency")
-        if not res then
+        if not pcall(require, "telescope._extensions.frecency") then
             return vim.tbl_filter(
                 function(val)
                     return 0 ~= fn.filereadable(val)
@@ -796,19 +807,19 @@ builtin.cst_mru = function(opts)
             db_client.init()
             -- too slow
             -- local tbl = db_client.get_file_scores(opts, vim.fn.getcwd())
+
             local tbl = db_client.get_file_scores(opts)
-            local get_filename_table = function(tbl)
-                local res = {}
-                for _, v in pairs(tbl) do
-                    res[#res + 1] = v["filename"]
-                end
-                return res
+            local res = {}
+            for _, v in pairs(tbl) do
+                table.insert(res, v["filename"])
             end
-            return get_filename_table(tbl)
+
+            return res
         end
     end
+
     local results_mru = get_mru(opts)
-    local results_mru_cur = filter_by_cwd_paths(results_mru, vim.loop.cwd())
+    local results_mru_cur = filter_by_cwd_paths(results_mru, fn.expand("%:p:h") or uv.cwd())
 
     local show_untracked = utils.get_default(opts.show_untracked, true)
     local recurse_submodules = utils.get_default(opts.recurse_submodules, false)
@@ -1145,8 +1156,18 @@ wk.register(
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
-        ["<LocalLeader>s"] = {"<Cmd>Telescope aerial<CR>", "List workspace symbols"},
-        ["<LocalLeader>S"] = {"<Cmd>Telescope treesitter<CR>", "List treesitter symbols"},
+        ["<LocalLeader>s"] = {
+            function()
+                require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})
+            end,
+            "List workspace symbols"
+        },
+        ["<LocalLeader>S"] = {
+            function()
+                require("telescope.builtin").treesitter({layout_config = {prompt_position = "top"}})
+            end,
+            "List treesitter symbols"
+        },
         ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Telescope resume"}
     }
 )

@@ -705,7 +705,7 @@ function M.init()
     -- map("n", "gs", "<Plug>(coc-git-chunkinfo)", { noremap = false })
 
     -- Refresh coc completions
-    map("i", "<A-r>", "coc#refresh()", {expr = true, silent = true})
+    map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
 
     -- CodeActions
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
@@ -715,6 +715,7 @@ function M.init()
 
     -- Popup
     map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
+    -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true, silent = true})
 
     -- map(
     --     "i",

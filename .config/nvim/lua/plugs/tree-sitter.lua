@@ -86,8 +86,7 @@ M.setup_hlargs = function()
 end
 
 M.setup_iswap = function()
-    -- ex.packadd("iswap.nvim")
-  cmd("packadd iswap.nvim")
+    ex.packadd("iswap.nvim")
 
     color.set_hl("ISwapSwap", {background = "#957FB8"})
 

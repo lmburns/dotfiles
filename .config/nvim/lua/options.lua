@@ -80,16 +80,15 @@ o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
 o.foldenable = false
+
 -- o.foldmethod = "marker"
 -- o.foldmarker = "[[[,]]]"
-
 -- o.foldmethod = "expr"
 -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
 o.foldopen = o.foldopen:append("search")
 o.foldlevelstart = 99
--- o.foldnestmax = 10 -- deepest fold is 10 levels
--- o.foldenable = false -- don't fold by default
+o.foldcolumn = "1"
 -- o.foldlevel = 1
 
 -- This does not work globally for whatever reason (didn't in vim either)
@@ -178,6 +177,7 @@ o.pumblend = 3 -- Make popup window translucent
 -- o.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
 
 o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
+o.viewdir = fn.stdpath("data") .. "views"
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
 o.jumpoptions = "stack"

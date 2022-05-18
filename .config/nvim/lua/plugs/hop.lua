@@ -7,7 +7,7 @@ local map = utils.map
 -- =============================== Hop ================================
 function M.setup()
     -- "etovxqpdygfblzhckisuran"
-    require("hop").setup({keys = "asdfjklhmnwertzxcvbuiop"})
+    require("hop").setup({keys = "asdfjklhmnwertzxcvbuio"})
 end
 
 local function init()

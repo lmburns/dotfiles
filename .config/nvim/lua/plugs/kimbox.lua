@@ -575,16 +575,17 @@ local function init()
     M.rose_pine()
     -- M.calvera()
     -- M.leaf()
-    -- M.vscode()
+    M.vscode()
 
     -- require("kimbox").load()
 
     -- local theme = "jellybeans"
     -- local theme = "lmspacegray"
     -- local theme = "one"
+    -- local theme = "icy"
+    -- local theme = "vscode"
 
-    -- local theme = "calvera"
-
+    -- local theme = "iceberg"
     -- local theme = "gruvbox-material"
     -- local theme = "spaceduck"
     -- local theme = "everforest"

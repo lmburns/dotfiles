@@ -62,38 +62,76 @@ set font "Fira Code Nerd Font"
 
 ########################################
 
-set default-bg "#1a1729" #00
-set default-fg "#F7F7F6" #01
+# set default-bg "#1a1729" #00
+# set default-fg "#F7F7F6" #01
+#
+# set statusbar-fg "#B0B0B0" #04
+# set statusbar-bg "#202020" #01
+#
+# set inputbar-bg "#151515" #00 currently not used
+# set inputbar-fg "#FFFFFF" #02
+#
+# set notification-error-bg "#AC4142" #08
+# set notification-error-fg "#151515" #00
+#
+# set notification-warning-bg "#AC4142" #08
+# set notification-warning-fg "#151515" #00
+#
+# set highlight-color "#F4BF75" #0A
+# set highlight-active-color "#6A9FB5" #0D
+#
+# set completion-highlight-fg "#151515" #02
+# set completion-highlight-bg "#90A959" #0C
+#
+# set completion-bg "#303030" #02
+# set completion-fg "#E0E0E0" #0C
+#
+# set notification-bg "#90A959" #0B
+# set notification-fg "#151515" #00
+#
+# set recolor "true"
+# #set recolor-lightcolor "#000000" #00
+# set recolor-lightcolor "#1a1729" #00
+# set recolor-darkcolor "#E0E0E0" #06
+# set recolor-reverse-video "true"
+# set recolor-keephue "false"
 
-set statusbar-fg "#B0B0B0" #04
-set statusbar-bg "#202020" #01
+set notification-error-bg       "#20202a"
+set notification-error-fg       "#63718b"
+set notification-warning-bg     "#20202a"
+set notification-warning-fg     "#c34864"
+set notification-bg             "#20202a"
+set notification-fg             "#cddbf9"
 
-set inputbar-bg "#151515" #00 currently not used
-set inputbar-fg "#FFFFFF" #02
+set completion-bg               "#20202a"
+set completion-fg               "#cddbf9"
+set completion-group-bg         "#313449"
+set completion-group-fg         "#cddbf9"
+set completion-highlight-bg     "#b8dceb"
+set completion-highlight-fg     "#313449"
 
-set notification-error-bg "#AC4142" #08
-set notification-error-fg "#151515" #00
+set index-bg                    "#20202a"
+set index-fg                    "#b1dba4"
+set index-active-bg             "#b1dba4"
+set index-active-fg             "#20202a"
 
-set notification-warning-bg "#AC4142" #08
-set notification-warning-fg "#151515" #00
+set inputbar-bg                 "#20202a"
+set inputbar-fg                 "#cddbf9"
 
-set highlight-color "#F4BF75" #0A
-set highlight-active-color "#6A9FB5" #0D
+set statusbar-bg                "#313449"
+set statusbar-fg                "#cddbf9"
 
-set completion-highlight-fg "#151515" #02
-set completion-highlight-bg "#90A959" #0C
+set highlight-color             "#c8cca7"
+set highlight-active-color      "#eac1c1"
 
-set completion-bg "#303030" #02
-set completion-fg "#E0E0E0" #0C
+set default-bg                  "#20202a"
+set default-fg                  "#cddbf9"
+set render-loading              "true"
+set render-loading-bg           "#20202a"
+set render-loading-fg           "#cddbf9"
 
-set notification-bg "#90A959" #0B
-set notification-fg "#151515" #00
-
-set recolor "true"
-#set recolor-lightcolor "#000000" #00
-set recolor-lightcolor "#1a1729" #00
-set recolor-darkcolor "#E0E0E0" #06
-set recolor-reverse-video "true"
-set recolor-keephue "false"
+set recolor-lightcolor          "#20202a"
+set recolor-darkcolor           "#cddbf9"
+set recolor                     "true"
 
 # vim:ft=zsh:

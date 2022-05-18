@@ -1,4 +1,5 @@
 local utils = require("common.utils")
+local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -127,6 +128,27 @@ augroup(
         end
     }
 )
+
+-- nvim.autocmd.lmb__RememberFolds = {
+--     {
+--         event = {"BufWritePre", "BufWinLeave"},
+--         pattern = "?*",
+--         command = function()
+--             if funcs.makeview() then
+--                 ex.silent_("mkview")
+--             end
+--         end
+--     },
+--     {
+--         event = "BufWinEnter",
+--         pattern = "?*",
+--         command = function()
+--             if funcs.makeview() then
+--                 ex.silent_("loadview")
+--             end
+--         end
+--     }
+-- }
 -- ]]] === Restore cursor ===
 
 -- === Telescope Fixes === [[[
@@ -199,20 +221,9 @@ nvim.autocmd.lmb__ColorschemeSetup = {
     event = "ColorScheme",
     pattern = "*",
     command = function()
-        -- ex.hi("TSConstBuiltin gui=none")
-        -- ex.hi("TSVariableBuiltin gui=none")
-        -- ex.hi("TSTypeBuiltin gui=none")
-        -- ex.hi("TSProperty gui=none")
-        -- ex.hi("TSVariable gui=none")
-        -- ex.hi("TSString gui=none")
-        -- ex.hi("TSKeywordFunction gui=none")
-        -- ex.hi("Function gui=bold")
-        -- ex.hi("Todo guibg=none")
-        -- ex.hi("FloatermBorder guifg=#A06469 gui=none")
-
         C.all(
             {
-                TSVariableBuiltin = {inherit = "TSVariableBuiltin", gui = "none"},
+                TSVariableBuiltin = {gui = "none"},
                 TSTypeBuiltin = {gui = "none"},
                 TSProperty = {gui = "none"},
                 TSVariable = {gui = "none"},
@@ -223,15 +234,20 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                 TSFunction = {bold = true},
                 TSFuncBuiltin = {bold = true},
                 Function = {gui = "bold"},
-                Todo = {bg = "none"},
-                FloatermBorder = {fg = "#A06469", gui = "none"}
+                Todo = {bg = "none"}
+                -- TSConstBuiltin = {gui = "none", default = true},
                 -- TSMethod = {gui = "bold"},
                 -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
             }
         )
 
         if g.colors_name ~= "kimbox" then
-            C.link("Hlargs", "TSParameter")
+            C.plugin(
+                "kimbox",
+                {
+                    Hlargs = {link = "TSParameter"}
+                }
+            )
         end
     end,
     desc = "Override highlight groups"
@@ -445,7 +461,7 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
 
     nvim.autocmd.lmb__RenameTmux = {
         {
-            event = {"FileType", "BufEnter"},
+            event = {"TermEnter", "BufEnter"},
             pattern = "*",
             once = false,
             description = "Automatic rename of tmux window",
@@ -457,20 +473,12 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
                 if vim.bo[bufnr].bt == "" then
                     o.titlestring = fn.expand("%:t")
                 elseif vim.bo[bufnr].bt == "terminal" then
-                    -- FIX: This block is never picked up
-                    -- if b.ft == "toggleterm" then
-                    --     o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
-                    -- else
-                    o.titlestring = "Terminal"
+                    if vim.bo[bufnr].ft == "toggleterm" then
+                        o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
+                    else
+                        o.titlestring = "Terminal"
+                    end
                 end
-            end
-        },
-        {
-            event = {"FileType"},
-            pattern = "toggleterm",
-            command = function()
-                -- Buffer variable is not set yet, so b.toggle_number isn't working
-                o.titlestring = ("ToggleTerm #%d"):format(F.if_nil(vim.b.toggle_number, 1))
             end
         },
         {
@@ -619,7 +627,8 @@ augroup(
     }
 )
 
-ex.hi("def link cmTitle vimCommentTitle")
+C.all({cmTitle = {link = "vimCommentTitle", default = true}})
+-- ex.hi("def link cmTitle vimCommentTitle")
 -- ex.hi("def link myTodo Todo")
 -- ex.hi("def link cmLineComment Comment")
 

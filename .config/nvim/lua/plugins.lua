@@ -424,10 +424,13 @@ return packer.startup(
                 {
                     "folke/zen-mode.nvim",
                     cmd = "ZenMode",
+                    keys = {{"n", "<Leader>zm"}},
                     {
                         "folke/twilight.nvim",
                         conf = "plugs.twilight",
-                        after = "zen-mode.nvim"
+                        after = "zen-mode.nvim",
+                        cmd = "Twilight",
+                        keys = {{"n", "<Leader>li"}, {"n", "<Leader>zm"}}
                     }
                 }
             )
@@ -538,6 +541,10 @@ return packer.startup(
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
             use({"levuaska/levuaska.nvim"})
+            use({"kyazdani42/blue-moon"})
+            -- Needs modified to change transparent background
+            use({"Mofiqul/vscode.nvim"})
+            -- use({"FrenzyExists/aquarium-vim"})
             -- use({"yashguptaz/calvera-dark.nvim"})
             -- use({"andersevenrud/nordic.nvim"})
             -- use({"aktersnurra/no-clown-fiesta.nvim"})
@@ -551,7 +558,6 @@ return packer.startup(
             -- use({"lewpoly/sherbet.nvim"})
             -- use({"projekt0n/github-nvim-theme"})
             -- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
-            -- use({"Mofiqul/vscode.nvim"})
             -- use({"kvrohit/substrata.nvim"})
             -- use({"numToStr/Sakura.nvim"})
             -- use({"fcpg/vim-farout"})
@@ -867,7 +873,6 @@ return packer.startup(
             -- ]]] === UndoTree ===
 
             -- ========================== NerdCommenter =========================== [[[
-            -- use({ "preservim/nerdcommenter", conf = "plugs.nerdcommenter" })
             use({"numToStr/Comment.nvim", conf = "plugs.comment", after = "nvim-treesitter"})
             use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
             -- ]]] === UndoTree ===
@@ -876,6 +881,7 @@ return packer.startup(
             -- kana/vim-textobj-user
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
+
             -- ]]] === Neoformat ===
 
             -- ============================== Nvim-R =============================== [[[
@@ -1318,12 +1324,12 @@ return packer.startup(
                         },
                         {
                             "nvim-telescope/telescope-file-browser.nvim",
-                            after = {"telescope.nvim"},
+                            after = "telescope.nvim",
                             config = [[require("telescope").load_extension("file_browser")]]
                         },
                         {
                             "nvim-telescope/telescope-hop.nvim",
-                            after = {"telescope.nvim"},
+                            after = "telescope.nvim",
                             config = [[require("telescope").load_extension("hop")]]
                         },
                         {
@@ -1345,12 +1351,12 @@ return packer.startup(
                         },
                         {
                             "jvgrootveld/telescope-zoxide",
-                            after = {"telescope.nvim"},
+                            after = "telescope.nvim",
                             config = [[require("telescope").load_extension("zoxide")]]
                         },
                         {
                             prefer_local("telescope-rualdi.nvim"),
-                            after = {"telescope.nvim"},
+                            after = "telescope.nvim",
                             config = [[require("telescope").load_extension("rualdi")]]
                         }
                         -- {
@@ -1376,6 +1382,7 @@ return packer.startup(
                     config = function()
                         require("telescope.builtin").packer = function(opts)
                             -- if not _G.packer_plugins["packer.nvim"].loaded then
+                            require("plugins").loader("packer.nvim")
                             ex.packadd("packer.nvim")
                             -- end
                             -- require("plugins").compile()

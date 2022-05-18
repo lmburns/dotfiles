@@ -6,19 +6,30 @@ local utils = require("common.utils")
 ---@alias Color string
 
 ---@class ColorFormat
----@field background boolean
----@field foreground boolean
----@field bg boolean
----@field fg boolean
+---@field default boolean Don't override existing definition
+---@field background string
+---@field foreground string
+---@field special string
+---@field bg string
+---@field fg string
+---@field sp string
+---@field blend number 0 to 100
 ---@field bold boolean
+---@field standout boolean
 ---@field underline boolean
 ---@field undercurl boolean
+---@field underdot boolean
+---@field underdash boolean
+---@field strikethrough boolean
 ---@field italic boolean
----@field inherit string
+---@field reverse boolean
+---@field nocombine boolean
 ---@field link string
----@field sp string
+---@field inherit string
+---@field from string
 ---@field gui string
 ---@deprecated @field guifg string
+---@deprecated @field guibg string
 ---@deprecated @field guisp string
 
 ---Define bg color
@@ -83,6 +94,7 @@ function M.link(from, to, bang)
     cmd(("hi%s link %s %s"):format(bang, from, to))
 end
 
+---@deprecated
 ---Create a highlight group
 ---@param higroup string: Group that is being defined
 ---@param hi_info table: Table of options
@@ -125,7 +137,19 @@ M.colors = function(filter)
                         def[def_key] = hex
                     end
                 end
-                for _, style in pairs({"bold", "italic", "underline", "undercurl", "reverse"}) do
+                for _, style in pairs(
+                    {
+                        "bold",
+                        "standout",
+                        "italic",
+                        "underline",
+                        "undercurl",
+                        "underdot",
+                        "underdash",
+                        "reverse",
+                        "strikethrough"
+                    }
+                ) do
                     if hl[style] then
                         def.style = (def.style and (def.style .. ",") or "") .. style
                     end
@@ -264,7 +288,7 @@ local function convert_gui(guistr)
     return gui
 end
 
-local keys = { guisp = "sp", guibg = "background", guifg = "foreground", default = "default" }
+local keys = {guisp = "sp", guibg = "background", guifg = "foreground", default = "default"}
 
 ---This helper takes a table of highlights and converts any highlights
 ---specified as `highlight_prop = { from = 'group'}` into the underlying
@@ -301,7 +325,6 @@ function M.set_hl(name, opts)
         name = {name, "string", false},
         opts = {opts, "table", false}
     }
-    assert(name and opts, "Both 'name' and 'opts' must be specified")
 
     if opts.gui then
         opts = vim.tbl_extend("force", opts, convert_gui(opts.gui))
@@ -360,9 +383,9 @@ end
 
 ---Apply highlights for a plugin and refresh on colorscheme change
 ---@param name string plugin name
----@vararg table list of highlights
+---@param hls table<ColorFormat, string|boolean|number> list of highlights
 function M.plugin(name, hls)
-    name = name:gsub("^%l", string.upper) -- capitalise the name for autocommand convention sake
+    name = name:gsub("^%l", string.upper) -- capitalize the name for autocommand convention sake
     M.all(hls)
     utils.augroup(
         ("%sHighlightOverrides"):format(name),

@@ -59,6 +59,16 @@ command(
 )
 
 command(
+    "LOC",
+    function(tbl)
+        local bufnr = api.nvim_get_current_buf()
+        local ft = vim.bo[bufnr].ft
+        ex.lcd(fn.expand("%:p:h"))
+        cmd(("!tokei -t %s %%"):format(ft))
+    end
+)
+
+command(
     "Jumps",
     function()
         require("common.builtin").jumps2qf()
@@ -373,6 +383,15 @@ map(
     end,
     {expr = true, desc = "Insert empty line below"}
 )
+
+---Reasons not to use the `mkview` command
+function M.makeview()
+    local bufnr = api.nvim_get_current_buf()
+    if vim.bo[bufnr].bt ~= "" or fn.empty(fn.expand("%:p")) == 1 or not vim.o.modifiable then
+        return false
+    end
+    return true
+end
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()

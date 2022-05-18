@@ -746,7 +746,6 @@ local function init()
 
     wk.register(
         {
-            ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "History (fzf)"},
             ["<Leader>fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
             ["<Leader>fg"] = {[[:lua require('common.gittool').root_exe('GFiles')<CR>]], "GFiles Git (fzf)"},
             ["<Leader>fi"] = {
@@ -757,9 +756,10 @@ local function init()
             ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
             ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
             -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
-            ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
+            -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
             ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
-            ["<Leader>hf"] = {":History<CR>", "History (fzf)"},
+            ["<Leader>hf"] = {":History<CR>", "File history (fzf)"},
+            ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "Command history (fzf)"},
             ["<Leader>ls"] = {":LS<CR>", "LS (fzf)"}
         }
     )

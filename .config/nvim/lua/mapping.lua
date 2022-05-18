@@ -221,6 +221,14 @@ wk.register(
 -- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 
 -- Folding
+map('n', '[z', '[z_')
+map('x', '[z', '[z_')
+map('n', ']z', ']z_')
+map('x', ']z', ']z_')
+map('n', 'zj', 'zj_')
+map('x', 'zj', 'zj_')
+map('n', 'zk', 'zk_')
+map('x', 'zk', 'zk_')
 map("n", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
 map("x", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
 
@@ -234,6 +242,9 @@ map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 
 map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
+
+map("x", "iz", [[:<C-u>keepj norm [zv]zg_<CR>]], {desc = "Previous opening brace"})
+map("o", "iz", [[:norm viz<CR>]])
 
 -- Using <ff> to fold or unfold
 map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
@@ -303,7 +314,7 @@ wk.register(
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
         ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},
         ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline(false)<CR>]], "Quickfix outline (coc)"},
-        ["<Leader>fa"] = {[[<Cmd>lua require('common.qfext').outline_aerial()<CR>]], "Quickfix outline (aerial)"},
+        ["<Leader>fa"] = {[[<Cmd>lua require('common.qfext').outline_aerial()<CR>]], "Quickfix outline (aerial)"}
     }
 )
 

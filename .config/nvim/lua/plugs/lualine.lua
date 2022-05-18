@@ -193,6 +193,7 @@ local sections_1 = {
             end
         },
         "%l:%c",
+        -- "%p%%" .. (("/%s"):format(require("common.builtin").tokei() or "")) .. "/%L",
         "%p%%/%L",
         plugins.search_result
     }
@@ -264,9 +265,9 @@ local terminal_status_color = function(status)
 end
 
 local get_exit_status = function()
-    local ln = vim.api.nvim_buf_line_count(0)
+    local ln = api.nvim_buf_line_count(0)
     while ln >= 1 do
-        local l = vim.api.nvim_buf_get_lines(0, ln - 1, ln, true)[1]
+        local l = api.nvim_buf_get_lines(0, ln - 1, ln, true)[1]
         ln = ln - 1
         local exit_code = string.match(l, "^%[Process exited ([0-9]+)%]$")
         if exit_code ~= nil then

@@ -39,6 +39,7 @@ local costa_del_sol = hsl("#556633")
 local biloba_flower = hsl("#c6b6ee")
 local morning_glory = hsl("#8fbfdc")
 local goldenrod = hsl("#fad07a")
+local orange = hsl("#ffa179")
 local ship_cove = hsl("#8197bf")
 local koromiko = hsl("#ffb964")
 local brandy = hsl("#dad085")
@@ -231,31 +232,31 @@ local theme =
             -- TSComment            { };    -- For comment blocks.
             -- TSConstructor        { };    -- For constructor calls and definitions: ` { }` in Lua, and Java constructors.
             -- TSConditional        { };    -- For keywords related to conditionnals.
-            -- TSConstant           { };    -- For constants
+            TSConstant {fg = ship_cove, gui = "bold"}, -- For constants
             -- TSConstBuiltin       { };    -- For constant that are built in the language: `nil` in Lua.
             -- TSConstMacro         { };    -- For constants that are defined by macros: `NULL` in C.
             -- TSError              { };    -- For syntax/parser errors.
             -- TSException          { };    -- For exception related keywords.
-            -- TSField              { };    -- For fields.
+            TSField {fg = green_smoke}, -- For fields.
             -- TSFloat              { };    -- For floats.
-            -- TSFunction           { };    -- For function (calls and definitions).
+            TSFunction {fg = goldenrod, gui = "bold"},
             -- TSFuncBuiltin        { };    -- For builtin functions: `table.insert` in Lua.
             -- TSFuncMacro          { };    -- For macro defined fuctions (calls and definitions): each `macro_rules` in Rust.
             -- TSInclude            { };    -- For includes: `#include` in C, `use` or `extern crate` in Rust, or `require` in Lua.
-            -- TSKeyword            { };    -- For keywords that don't fall in previous categories.
-            -- TSKeywordFunction    { };    -- For keywords used to define a fuction.
+            TSKeyword {fg = wewak}, -- For keywords that don't fall in previous categories.
+            TSKeywordFunction {fg = wewak}, -- For keywords used to define a fuction.
             -- TSLabel              { };    -- For labels: `label:` in C and `:label:` in Lua.
-            -- TSMethod             { };    -- For method calls and definitions.
+            TSMethod {fg = biloba_flower}, -- For method calls and definitions.
             TSNamespace {fg = wewak}, -- For identifiers referring to modules and namespaces.
             -- TSNone               { };    -- TODO: docs
-            -- TSNumber             { };    -- For all numbers
-            -- TSOperator           { };    -- For any operator: `+`, but also `->` and `*` in C.
+            TSNumber {fg = orange}, -- For all numbers
+            TSOperator {fg = raw_sienna}, -- For any operator: `+`, but also `->` and `*` in C.
             -- TSParameter          { };    -- For parameters of a function.
             -- TSParameterReference { };    -- For references to parameters of a function.
             -- TSProperty           { };    -- Same as `TSField`.
-            -- TSPunctDelimiter     { };    -- For delimiters ie: `.`
-            -- TSPunctBracket       { };    -- For brackets and parens.
-            -- TSPunctSpecial       { };    -- For special punctutation that does not fall in the catagories before.
+            TSPunctDelimiter {fg = casal}, -- For delimiters ie: `.`
+            TSPunctBracket {fg = casal}, -- For brackets and parens.
+            TSPunctSpecial {fg = casal}, -- For special punctutation that does not fall in the catagories before.
             -- TSRepeat             { };    -- For keywords related to loops.
             -- TSString             { };    -- For strings.
             -- TSStringRegex        { };    -- For regexes.

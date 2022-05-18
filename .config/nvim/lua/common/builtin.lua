@@ -178,4 +178,30 @@ function M.fix_quit()
     end
 end
 
+-- TODO: Add option for selection. Write visual selection to temporary file
+function M.tokei()
+    local bufnr = api.nvim_get_current_buf()
+    local ft = vim.bo[bufnr].ft
+    if ft == nil or #ft == 0 then
+        ft = fn.expand("%:p:e") or nil
+    end
+
+    if ft == nil then
+        vim.notify("Unable to determine filetype")
+        return api.nvim_buf_line_count(bufnr)
+    end
+
+    -- tokei -t lua --output=json | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'
+    local stdout =
+        fn.system(
+        ("tokei --type=%s --output=json %s | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'"):format(
+            ft,
+            fn.expand("%:p")
+        )
+    )
+
+    local _, count = unpack(vim.split(stdout:gsub("[\r\n]+", ""), ","))
+    return count
+end
+
 return M
