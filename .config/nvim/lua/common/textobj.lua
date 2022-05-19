@@ -1,7 +1,7 @@
 local M = {}
 local fn = vim.fn
 
-local utils = require("common.kutils")
+local utils = require("common.utils")
 local coc = require("plugs.coc")
 
 function M.select(obj, inner, visual)

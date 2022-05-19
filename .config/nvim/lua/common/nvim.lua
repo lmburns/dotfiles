@@ -231,7 +231,6 @@ nvim.tab =
     }
 )
 
--- Not implemented yet
 nvim.ui =
     setmetatable(
     {},
@@ -381,7 +380,7 @@ nvim.autocmd =
             vim.validate {
                 id = {id, "number"}
             }
-            pcall(vim.api.nvim_del_autocmd, id)
+            pcall(api.nvim_del_autocmd, id)
         end
     },
     -- Can do nvim.autocmd["User"] to list User autocmds
@@ -404,9 +403,8 @@ nvim.autocmd =
     }
 )
 
-nvim.executable = function(exe)
-    vim.validate {exe = {exe, "string"}}
-    return vim.fn.executable(exe) == 1
+nvim.executable = function(exec)
+    return utils.executable(exec)
 end
 
 nvim.colors =

@@ -1,27 +1,81 @@
----Create an autocmd; returns the group ID
----
----Used when all that is needed is the name, pattern, and command/callback
--- @param name: augroup name
--- @param commands: autocmd to execute
-M.au = function(name, commands)
-    local group = M.create_augroup(name)
-
-    for _, command in ipairs(commands) do
-        local event = command[1]
-        local patt = command[2]
-        local action = command[3]
-        local desc = command[4] or ""
-
-        if type(action) == "string" then
-            api.nvim_create_autocmd(event, {pattern = patt, command = action, group = group, desc = desc})
-        else
-            api.nvim_create_autocmd(event, {pattern = patt, callback = action, group = group, desc = desc})
+_G.myluafunc =
+    setmetatable(
+    {},
+    {
+        __call = function(self, idx, args, count)
+            return self[idx](args, count)
         end
-    end
+    }
+)
 
-    return group
+local func2str = function(func, args)
+    local idx = #_G.myluafunc + 1
+    _G.myluafunc[idx] = func
+    if not args then
+        return ("lua myluafunc(%s)"):format(idx)
+    else
+        -- return ("lua myluafunc(%s, <q-args>)"):format(idx)
+        return ("lua myluafunc(%s, <q-args>, <count>)"):format(idx)
+    end
 end
 
+---Remap keys (create a Vim function with Lua)
+M.remap = function(modes, lhs, rhs, opts)
+    modes = type(modes) == "string" and {modes} or modes
+    opts = opts or {}
+    opts = type(opts) == "string" and {opts} or opts
+
+    local fallback = function()
+        return api.nvim_feedkeys(M.t(lhs), "n", true)
+    end
+
+    local _rhs =
+        (function()
+        if type(rhs) == "function" then
+            opts.noremap = true
+            opts.cmd = true
+            return func2str(
+                function()
+                    rhs(fallback)
+                end
+            )
+        else
+            if rhs:lower():sub(1, #"<plug>") == "<plug>" then
+                opts.noremap = false
+            end
+            return rhs
+        end
+    end)()
+
+    for key, opt in ipairs(opts) do
+        opts[opt] = true
+        opts[key] = nil
+    end
+
+    local buffer = (function()
+        if opts.buffer then
+            opts.buffer = nil
+            return true
+        end
+    end)()
+
+    _rhs = (function()
+        if opts.cmd then
+            opts.cmd = nil
+            return ("<cmd>%s<cr>"):format(_rhs)
+        else
+            return _rhs
+        end
+    end)()
+
+    for _, mode in ipairs(modes) do
+        if buffer then
+            api.nvim_buf_set_keymap(0, mode, lhs, _rhs, opts)
+        else
+            api.nvim_set_keymap(mode, lhs, _rhs, opts)
+        end
+    end
+end
 ---Create an autocmd with vim commands
 ---
 ---This allows very easy transition from vim commands

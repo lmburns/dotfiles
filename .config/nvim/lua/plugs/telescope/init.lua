@@ -20,7 +20,6 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 
 local P = R("plugs.telescope.pickers")
 
-local kutils = require("common.kutils")
 local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
 local map = b_utils.map
@@ -58,7 +57,7 @@ local c_actions = {
     -- TODO: Change once which-key can be disabled in filetypes (needs nowait)
     insert_space = function(_)
         -- api.nvim_input(" ")
-        api.nvim_feedkeys(kutils.termcodes["<Space>"], "n", false)
+        api.nvim_feedkeys(utils.termcodes["<Space>"], "n", false)
     end,
     single_selection_hop = function(prompt_bufnr)
         telescope.extensions.hop.hop(prompt_bufnr)
@@ -1152,19 +1151,21 @@ wk.register(
         -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
         ["<Leader>;"] = {":Telescope current_buffer_fuzzy_find<CR>", "Telescope buffer lines"},
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
-        ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
+        -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
             function()
-                require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})
+                -- require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})
+                require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "bottom"}})
             end,
             "List workspace symbols"
         },
         ["<LocalLeader>S"] = {
             function()
-                require("telescope.builtin").treesitter({layout_config = {prompt_position = "top"}})
+                -- require("telescope.builtin").treesitter({layout_config = {prompt_position = "top"}})
+                require("telescope.builtin").treesitter({layout_config = {prompt_position = "bottom"}})
             end,
             "List treesitter symbols"
         },

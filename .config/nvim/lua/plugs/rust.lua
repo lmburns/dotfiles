@@ -31,7 +31,7 @@ local function init()
                 map("n", "<Leader>n<CR>", ":T cargo run -q<CR>", {buffer = bufnr})
                 map("n", "<Leader><Leader>n", ":T cargo run -q<space>", {buffer = bufnr})
                 map("n", "<Leader>b<CR>", ":T cargo build -q<CR>", {buffer = bufnr})
-                map("n", "<Leader>r<CR>", ":T cargo play %<CR>", {buffer = bufnr})
+                map("n", "<Leader>r<CR>", ":VT cargo play %<CR>", {buffer = bufnr})
                 map("n", "<Leader>v<CR>", ":T rust-script %<CR>", {buffer = bufnr})
                 map("n", "<Leader>e<CR>", ":T cargo eval %<CR>", {buffer = bufnr})
 

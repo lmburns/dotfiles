@@ -3,7 +3,6 @@ local M = {}
 require("dev")
 local mru = require("common.mru")
 local utils = require("common.utils")
-local kutils = require("common.kutils")
 local augroup = utils.augroup
 
 local coc = require("plugs.coc")
@@ -140,20 +139,20 @@ local function format_files(b_list, m_list)
             local modified = b.changed == 1
             local flag = ""
             if modified then
-                flag = kutils.ansi.Statement:format("+ ")
+                flag = utils.ansi.Statement:format("+ ")
             elseif readonly then
-                flag = kutils.ansi.Special:format("- ")
+                flag = utils.ansi.Special:format("- ")
             end
 
             local sname = name == "" and "[No name]" or fn.fnamemodify(name, ":~:.")
             if bufnr == cur_bufnr then
-                sname = kutils.ansi.Directory:format(sname)
+                sname = utils.ansi.Directory:format(sname)
             elseif bufnr == alt_bufnr then
-                sname = kutils.ansi.Constant:format(sname)
+                sname = utils.ansi.Constant:format(sname)
             end
 
             sname = flag .. sname
-            local bufnr_str = kutils.ansi.Number:format(tostring(bufnr))
+            local bufnr_str = utils.ansi.Number:format(tostring(bufnr))
             local digit = math.floor(math.log10(bufnr)) + 1
             local padding = (" "):rep(max_digit - digit)
             local o_str = fmt:format(name, lnum, lnum, padding, bufnr_str, sname)
@@ -242,9 +241,9 @@ local function format_outline(symbols)
         local k = s.kind
         local lnum = s.lnum
         local col = s.col
-        local kind = kutils.ansi[hl_map[k]]:format(("%-10s"):format(k))
+        local kind = utils.ansi[hl_map[k]]:format(("%-10s"):format(k))
         local text = s.text
-        local level = s.level > 0 and kutils.ansi.NonText:format(("| "):rep(s.level)) or ""
+        local level = s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
         local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
         table.insert(out, o_str)
     end
@@ -300,9 +299,9 @@ end
 --         cmdhist.store()
 --         if key == "ctrl-e" then
 --           cmd("redraw")
---           api.nvim_feedkeys(":" .. kutils.termcodes["<Up>"], "n", false)
+--           api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
 --         else
---           api.nvim_feedkeys((":" .. cmdl .. kutils.termcodes["<CR>"]), "", false)
+--           api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
 --         end
 --       end
 --     end,

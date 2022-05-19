@@ -34,8 +34,6 @@ map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
 
-command("Q", "q", {bang = true, nargs = "*"})
-
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
 -- ╙                                                          ╜
@@ -55,14 +53,14 @@ map(
 map("n", "q", "<Nop>", {silent = true})
 
 -- stoeffel/.dotfiles
--- vim.cmd [[
---   function! ExecuteMacroOverVisualRange()
---     echo "@".getcmdline()
---     execute ":'<,'>normal @".nr2char(getchar())
---   endfunction
--- ]]
---
--- map("x", "@", ":<C-u>call ExecuteMacroOverVisualRange()<CR>", {silent = false})
+vim.cmd [[
+  function! ExecuteMacroOverVisualRange()
+    echo "@".getcmdline()
+    execute ":'<,'>normal @".nr2char(getchar())
+  endfunction
+]]
+
+map("x", "@", ":<C-u>call ExecuteMacroOverVisualRange()<CR>", {silent = false})
 
 -- Repeat last command
 wk.register(
@@ -79,13 +77,13 @@ map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
 
 -- Navigate merge conflict markers
-map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
-map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
+-- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
+-- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 map("n", "qC", [[:lua require("common.qfext").conflicts2qf()<CR>]])
 
 wk.register(
     {
-        ["S"] = {":%s//g<Left><Left>", "Global replace"}
+        ["S"] = {":%S//g<Left><Left>", "Global replace"}
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
@@ -131,11 +129,12 @@ wk.register(
         ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
     },
     {expr = true}
+    --         -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
+    --         -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
 )
 
 wk.register(
     {
-        -- [",d"] = {[["_d]], "Delete (blackhole)"},
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
@@ -166,21 +165,12 @@ wk.register(
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
 -- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
 
--- wk.register(
---     {
---         -- ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
---         -- ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
---         -- ["oo"] = {"o<Esc>k", "Insert line below cursor"},
---         -- ["OO"] = {"O<Esc>j", "Insert line above cursor"},
---         -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
---         -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
---     },
---     {expr = true}
--- )
-
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
+
+-- map("n", "gj", ":norm! }<CR>")
+-- map("n", "gk", ":norm! {<CR>")
 
 -- Move selected text up down
 -- map("v", "J", ":m '>+1<CR>gv=gv")
@@ -221,16 +211,11 @@ wk.register(
 -- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 
 -- Folding
-map('n', '[z', '[z_')
-map('x', '[z', '[z_')
-map('n', ']z', ']z_')
-map('x', ']z', ']z_')
-map('n', 'zj', 'zj_')
-map('x', 'zj', 'zj_')
-map('n', 'zk', 'zk_')
-map('x', 'zk', 'zk_')
-map("n", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
-map("x", "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {noremap = true, expr = true})
+map({"n", "x"}, "[z", "[z_")
+map({"n", "x"}, "]z", "]z_")
+map({"n", "x"}, "zj", "zj_", {desc = "Next fold"})
+map({"n", "x"}, "zk", "zk_", {desc = "Previous fold"})
+map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
 
 map("n", "zf", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
 map("n", "zF", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
@@ -239,6 +224,7 @@ map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
 map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
 -- Recursively open whatever top level fold
 map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
+map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
 
 map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
@@ -309,7 +295,7 @@ wk.register(
         ["<Leader>w-"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
-        ["qd"] = {[[:lua require('common.kutils').close_diff()<CR>]], "Close diff"},
+        ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
         ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},

@@ -1,6 +1,6 @@
 local M = {}
 
-local utils = require("common.kutils")
+local utils = require("common.utils")
 local debounce = require("common.debounce")
 
 local db

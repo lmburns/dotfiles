@@ -1,7 +1,7 @@
 local M = {}
 
-require("common.utils")
-local utils = require("common.kutils")
+local utils = require("common.utils")
+local dev = require("dev")
 
 ---Set a timeout for a character-prefix in keybindings
 ---@param prefix string
@@ -179,7 +179,11 @@ function M.fix_quit()
 end
 
 -- TODO: Add option for selection. Write visual selection to temporary file
-function M.tokei()
+---Display tokei output similar to
+---@param path string
+---@param full? boolean whether to display full tokei output
+---@return string
+function M.tokei(path, full)
     local bufnr = api.nvim_get_current_buf()
     local ft = vim.bo[bufnr].ft
     if ft == nil or #ft == 0 then
@@ -191,17 +195,35 @@ function M.tokei()
         return api.nvim_buf_line_count(bufnr)
     end
 
-    -- tokei -t lua --output=json | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'
-    local stdout =
-        fn.system(
-        ("tokei --type=%s --output=json %s | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'"):format(
-            ft,
-            fn.expand("%:p")
+    if full then
+        local stdout =
+            fn.system(
+            ([==[
+            tokei --type=%s --output=json %s \
+            | jq -r '[to_entries[] | [.key, .value.code, .value.comments, .value.blanks]][0] | @csv'
+            ]==]):format(
+                ft,
+                path or fn.expand("%:p")
+            )
         )
-    )
 
-    local _, count = unpack(vim.split(stdout:gsub("[\r\n]+", ""), ","))
-    return count
+        local lang, code, comment, blanks = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
+        return {lang = lang, code = code, comment = comment, blanks = blanks}
+    else
+        local stdout =
+            fn.system(
+            ([==[
+            tokei --type=%s --output=json %s  \
+            | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'
+            ]==]):format(
+                ft,
+                path or fn.expand("%:p")
+            )
+        )
+
+        local lang, code = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
+        return {lang = lang, code = code}
+    end
 end
 
 return M

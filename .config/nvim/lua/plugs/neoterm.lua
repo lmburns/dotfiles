@@ -104,35 +104,6 @@ local function term_exec(cmd, id)
     return terminal.exec(cmd, id)
 end
 
-map(
-    "n",
-    "gxx",
-    function()
-        return term_exec(fn.getline("."))
-    end
-)
-
-map(
-    "v",
-    "gx",
-    function()
-        local mode = vim.fn.mode()
-        if mode == "v" or mode == "V" or mode == "" then
-            local text = utils.get_visual_selection()
-            term_exec(text)
-        end
-    end
-)
-
--- Terminal repl
-command(
-    "TR",
-    function(tbl)
-        term_exec(tbl.args, tbl.count)
-    end,
-    {nargs = "*", count = true}
-)
-
 -- ========================= Custom Terminals =========================
 -- ====================================================================
 
@@ -146,20 +117,10 @@ function M.set_terminal_keymaps()
     -- bmap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
 end
 
-api.nvim_create_autocmd(
-    "TermOpen",
-    {
-        pattern = "term://*toggleterm#*",
-        callback = function()
-            require("plugs.neoterm").set_terminal_keymaps()
-        end
-    }
-)
-
 -- Sample on how a command can be ran
 -- require'toggleterm'.exec("git push", <count>, 12)
 
-function neoterm(cmd, id)
+function M.neoterm(cmd, id)
     if not id or id < 1 then
         id = 1
     end
@@ -173,15 +134,60 @@ function neoterm(cmd, id)
     return terminal.exec(cmd, id)
 end
 
--- Equivalent to neoterms `T`
-command(
-    "T",
-    function(tbl)
-        neoterm(tbl.args, tbl.count)
-    end,
-    {nargs = "*", count = true}
-)
+local function init()
+    map(
+        "n",
+        "gxx",
+        function()
+            return term_exec(fn.getline("."))
+        end
+    )
 
-map("n", "gxo", "<Cmd>T<CR>")
+    map(
+        "v",
+        "gx",
+        function()
+            local mode = vim.fn.mode()
+            if mode == "v" or mode == "V" or mode == "" then
+                local text = utils.get_visual_selection()
+                term_exec(text)
+            end
+        end
+    )
+
+    -- Terminal repl
+    command(
+        "TR",
+        function(tbl)
+            term_exec(tbl.args, tbl.count)
+        end,
+        {nargs = "*", count = true}
+    )
+
+    command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*"})
+    command("VT", [[vsp | term <args>]], {nargs = "*"})
+
+    api.nvim_create_autocmd(
+        "TermOpen",
+        {
+            pattern = "term://*toggleterm#*",
+            callback = function()
+                require("plugs.neoterm").set_terminal_keymaps()
+            end
+        }
+    )
+
+    -- Equivalent to neoterms `T`
+    command(
+        "T",
+        function(tbl)
+            M.neoterm(tbl.args, tbl.count)
+        end,
+        {nargs = "*", count = true}
+    )
+    map("n", "gxo", "<Cmd>T<CR>")
+end
+
+init()
 
 return M

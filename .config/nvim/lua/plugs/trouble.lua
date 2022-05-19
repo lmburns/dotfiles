@@ -129,7 +129,7 @@ local function init()
         "n",
         "<Leader>x,",
         "<cmd>TroubleToggle coc_document_diagnostics<cr>",
-        {silent = true, desc = "Trouble workspace"}
+        {silent = true, desc = "Trouble document"}
     )
 
     map(

@@ -6,8 +6,7 @@ local M = {}
 local api = vim.api
 local fn = vim.fn
 
-local utils = require("common.kutils")
-local remap = require("common.utils")
+local utils = require("common.utils")
 
 local RegFloatWin =
     setmetatable(
@@ -299,7 +298,7 @@ local function init()
         {type = "delete", name = {"-"}, hl_group = "Identifier"}
     }
 
-    local map = remap.map
+    local map = utils.map
 
     map("n", 'X', [[v:lua.require'common.reg'.peek('"')]], {expr = true})
     map("x", '"', [[v:lua.require'common.reg'.peek('"')]], {expr = true})

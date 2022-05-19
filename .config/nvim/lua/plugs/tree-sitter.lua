@@ -482,6 +482,7 @@ M.setup = function()
         autotag = {enable = true},
         autopairs = {enable = false}, -- there's a plugin for this
         -- yati = {enable = true},
+        -- tree_docs = {enable = true},
         indent = {enable = true},
         fold = {enable = false},
         endwise = {enable = true},

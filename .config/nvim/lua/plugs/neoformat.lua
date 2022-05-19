@@ -6,6 +6,9 @@ local augroup = utils.augroup
 local coc = require("plugs.coc")
 local gittool = require("common.gittool")
 
+local g = vim.g
+local api = vim.api
+
 local scan = require("plenary.scandir")
 
 local function save_doc(bufnr)
@@ -120,6 +123,8 @@ function M.format_selected(mode, save)
     )
 end
 
+-- TODO: Get keepj keepp to prevent neoformat from modifying changes
+--       g; moves to last line after format
 local function init()
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1
@@ -131,6 +136,7 @@ local function init()
     -- g.neoformat_enabled_teal = {
     --     "luaformat"
     -- }
+
     g.neoformat_enabled_python = {
         "black"
     }
@@ -139,6 +145,10 @@ local function init()
     }
     g.neoformat_enabled_java = {
         "prettier"
+    }
+
+    g.neoformat_enabled_typescript = {
+        "clangformat", "prettier"
     }
 
     g.neoformat_enabled_yaml = {
@@ -179,8 +189,8 @@ local function init()
         stdin = 1
     }
 
-    map("n", ";ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
-    map("x", ";ff", [[:lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
+    map("n", ";ff", [[:keepj keepp lua require('plugs.neoformat').format_doc()<CR>]])
+    map("x", ";ff", [[:keepj keepp lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
 
     augroup(
         "lmb__Formatting",
@@ -189,6 +199,14 @@ local function init()
             pattern = "crystal",
             command = function()
                 map("n", ";ff", "<Cmd>CrystalFormat<CR>")
+            end
+        },
+        {
+            -- Why isn't the only one enabled selected by default?
+            event = "FileType",
+            pattern = "typescript",
+            command = function()
+                map("n", ";ff", "<Cmd>keepp keepj Neoformat! typescript clangformat<CR>")
             end
         }
         -- {

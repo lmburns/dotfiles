@@ -1,7 +1,6 @@
 local M = {}
 
 local utils = require("common.utils")
-local kutils = require("common.kutils")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
 local command = utils.command
@@ -43,7 +42,7 @@ function M.use_anyfold(bufnr, force)
                 api.nvim_buf_call(
                     bufnr,
                     function()
-                        kutils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
+                        utils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
                         ex.AnyFoldActivate()
                     end
                 )
@@ -204,7 +203,7 @@ function M.foldtext()
         end
     end
     local pad = " "
-    fs_line = kutils.expandtab(fs_line, vim.bo.ts)
+    fs_line = utils.expandtab(fs_line, vim.bo.ts)
     local winid = api.nvim_get_current_win()
     local textoff = fn.getwininfo(winid)[1].textoff
     local width = api.nvim_win_get_width(0) - textoff
@@ -258,7 +257,7 @@ function M.with_highlight(c)
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
         if fn.foldclosed(".") == -1 and fostart > 0 and foend > fostart then
-            kutils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
+            utils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
         end
     end
 end

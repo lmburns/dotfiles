@@ -121,12 +121,16 @@ end
 
 ---List all highlight groups, or ones matching `filter`
 ---@param filter string
-M.colors = function(filter)
+---@param exact boolean whether filter should be exact
+M.colors = function(filter, exact)
     local defs = {}
     local hl_defs = api.nvim__get_hl_defs(0)
     for hl_name, hl in pairs(hl_defs) do
         if filter then
             if hl_name:find(filter) then
+                if exact and hl_name ~= filter then
+                    goto continue
+                end
                 local def = {}
                 if hl.link then
                     def.link = hl.link
@@ -159,6 +163,7 @@ M.colors = function(filter)
         else
             defs = hl_defs
         end
+        ::continue::
     end
     utils.dump(defs)
 end

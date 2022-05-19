@@ -1,8 +1,7 @@
 local M = {}
 
-local cutils = require("common.utils")
+local utils = require("common.utils")
 local create_augroup = cutils.create_augroup
-local utils = require("common.kutils")
 local debounce = require("common.debounce")
 
 local db

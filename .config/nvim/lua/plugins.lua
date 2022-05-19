@@ -251,6 +251,34 @@ return packer.startup(
             use({"tversteeg/registers.nvim", conf = "registers"})
             -- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
+            use({"kevinhwang91/promise-async"})
+
+            -- :Subvert/child{,ren}/adult{,s}/g
+            use(
+                {
+                    "tpope/vim-abolish",
+                    conf = "abolish",
+                    cmd = {"Subvert", "Abolish"},
+                    keys = {
+                        {"n", "cr"}
+                    }
+                }
+            )
+
+            -- :E2v = (\d{1,3})(?=(\d\d\d)+($|\D))
+            -- Match = :M/<Items\s+attr="media">.+?<\/Items>/Im
+            -- Substitute = :'<,'>S/(\d{1,3})(?=(\d\d\d)+($|\D))/\1,/g
+            -- Global = :G/^begin$/+1;/^end$/-1:S/\l+/\U&/g
+            -- :V
+            use(
+                {
+                    "othree/eregex.vim",
+                    cmd = {"E2v", "S"},
+                    after = "vim-abolish",
+                    setup = [[vim.g.eregex_default_enable = 0]],
+                    desc = "Ruby/Perl style regex for Vim"
+                }
+            )
 
             use(
                 {
@@ -377,7 +405,7 @@ return packer.startup(
                     "akinsho/toggleterm.nvim",
                     conf = "plugs.neoterm",
                     keys = {"gxx", "gx", "<C-\\>"},
-                    cmd = {"T", "TR"}
+                    cmd = {"T", "TR", "TP", "VT"}
                 }
             )
             -- use({ "kassio/neoterm", conf = "neoterm" })
@@ -739,18 +767,6 @@ return packer.startup(
                 }
             )
 
-            -- :Subvert/child{,ren}/adult{,s}/g
-            use(
-                {
-                    "tpope/vim-abolish",
-                    conf = "abolish",
-                    cmd = {"S", "Subvert", "Abolish"},
-                    keys = {
-                        {"n", "cr"}
-                    }
-                }
-            )
-
             -- ur4ltz/surround.nvim
 
             -- b = (), B = {}, r = [], a = <>
@@ -881,8 +897,7 @@ return packer.startup(
             -- kana/vim-textobj-user
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
-
-            -- ]]] === Neoformat ===
+            -- ]]] === Targets ===
 
             -- ============================== Nvim-R =============================== [[[
             use(
@@ -1274,7 +1289,7 @@ return packer.startup(
             )
 
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
-            use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
+            -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
             -- ]]] === Treesitter ===
 
             -- ============================= Telescope ============================ [[[

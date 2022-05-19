@@ -242,8 +242,7 @@ nvim.autocmd.lmb__ColorschemeSetup = {
         )
 
         if g.colors_name ~= "kimbox" then
-            C.plugin(
-                "kimbox",
+            C.all(
                 {
                     Hlargs = {link = "TSParameter"}
                 }
@@ -394,8 +393,10 @@ nvim.autocmd.lmb__Help = {
 local smart_close_filetypes = {
     -- 'help',
     -- 'qf',
+    "git",
     "git-status",
     "git-log",
+    "bufferize",
     "gitcommit",
     "dbui",
     "fugitive",
@@ -574,10 +575,10 @@ a.async_void(
                     pattern = "*",
                     command = function()
                         -- Delete trailing spaces
-                        require("common.utils").preserve("%s/\\s\\+$//ge")
+                        require("common.utils").preserve("keepj keepp %s/\\s\\+$//ge")
 
                         -- Delete trailing blank lines
-                        require("common.utils").preserve([[%s#\($\n\s*\)\+\%$##e]])
+                        require("common.utils").preserve([[keepj keepp %s#\($\n\s*\)\+\%$##e]])
 
                         -- Delete blank lines if more than 2 in a row
                         -- require("common.utils").squeeze_blank_lines()

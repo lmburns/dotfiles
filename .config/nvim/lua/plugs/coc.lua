@@ -5,11 +5,13 @@ local command = utils.command
 local map = utils.map
 local augroup = utils.augroup
 
-local kutils = require("common.kutils")
+local C = require("common.color")
 
 local wk = require("which-key")
+local promise = require("promise")
 
 local diag_qfid
+local sign_icons
 
 function M.getsymbol()
     local ok, _ = pcall(require, "nvim-gps")
@@ -30,7 +32,7 @@ function M.go2def()
     local cur_bufnr = api.nvim_get_current_buf()
     local by
     if vim.bo.ft == "help" then
-        api.nvim_feedkeys(kutils.termcodes["<C-]>"], "n", false)
+        api.nvim_feedkeys(utils.termcodes["<C-]>"], "n", false)
         by = "tag"
     else
         local err, res = M.a2sync("jumpDefinition", {"drop"})
@@ -68,7 +70,7 @@ function M.go2def()
     end
 
     if by then
-        kutils.cool_echo("go2def: " .. by, "Special")
+        utils.cool_echo("go2def: " .. by, "Special")
     end
 end
 
@@ -132,6 +134,33 @@ function M.a2sync(action, args, time)
     return err, res
 end
 
+-- TODO: Learn how to use Promises
+---Run an asynchronous CocAction using a Javascript type framework of Promise
+---@param action string
+---@vararg table
+---@return function
+function M.action(action, ...)
+    local args = {...}
+    return promise(
+        function(resolve, reject)
+            table.insert(
+                args,
+                function(err, res)
+                    if err ~= vim.NIL then
+                        reject(err)
+                    else
+                        if res == vim.NIL then
+                            res = nil
+                        end
+                        resolve(res)
+                    end
+                end
+            )
+            fn.CocActionAsync(action, unpack(args))
+        end
+    )
+end
+
 -- Code actions
 function M.code_action(mode, only)
     if type(mode) == "string" then
@@ -176,7 +205,7 @@ end
 function M.accept_complete()
     local mode = api.nvim_get_mode().mode
     if mode == "i" then
-        return kutils.termcodes["<C-l>"]
+        return utils.termcodes["<C-l>"]
     elseif mode == "ic" then
         local ei_bak = vim.o.ei
         vim.o.ei = "CompleteDone"
@@ -186,9 +215,9 @@ function M.accept_complete()
                 fn.CocActionAsync("stopCompletion")
             end
         )
-        return kutils.termcodes["<C-y>"]
+        return utils.termcodes["<C-y>"]
     else
-        return kutils.termcodes["<Ignore>"]
+        return utils.termcodes["<Ignore>"]
     end
 end
 
@@ -287,6 +316,10 @@ function M.diagnostic(winid, nr, keep)
     )
 end
 
+---Run a Coc command
+---@param name string
+---@param args table
+---@param cb function
 function M.run_command(name, args, cb)
     local action_fn
     args = args or {}
@@ -371,6 +404,9 @@ function M.check_backspace()
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
 end
 
+---Check whether Coc has been initialized
+---@param silent boolean
+---@return boolean
 function M.did_init(silent)
     if g.coc_service_initialized == 0 then
         if silent then
@@ -381,11 +417,16 @@ function M.did_init(silent)
     return true
 end
 
-function M.skip_snippet()
-    fn.CocActionAsync("snippetNext")
-    return kutils.termcodes["<BS>"]
+function M.sign_icon(level)
+    return sign_icons[level]
 end
 
+function M.skip_snippet()
+    fn.CocActionAsync("snippetNext")
+    return utils.termcodes["<BS>"]
+end
+
+---Organize file imporst
 function M.organize_import()
     local err, ret = M.a2sync("organizeImport", {}, 1000)
     if err then
@@ -401,7 +442,7 @@ function M.scroll(down)
     if #fn["coc#float#get_float_win_list"]() > 0 then
         return fn["coc#float#scroll"](down)
     else
-        return down and kutils.termcodes["<C-f>"] or kutils.termcodes["<C-b>"]
+        return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
     end
 end
 
@@ -412,7 +453,7 @@ function M.scroll_insert(right)
      then
         return fn["coc#float#scroll"](right)
     else
-        return right and kutils.termcodes["<Right>"] or kutils.termcodes["<Left>"]
+        return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
     end
 end
 
@@ -475,6 +516,12 @@ function M.lua_langserver()
 
     -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = M.get_lua_runtime()})
     fn["coc#config"]("languageserver.lua", {settings = settings})
+
+    -- Add async library to Lua workspace library
+    local library = fn["coc#util#get_config"]("languageserver.lua").settings.Lua.workspace.library
+    local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
+    library = vim.tbl_deep_extend("force", library, {[promise] = true})
+    fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = library})
 end
 
 -- ========================== Init ==========================
@@ -489,6 +536,14 @@ function M.init()
 
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
+
+    local diag_config = fn["coc#util#get_config"]("diagnostic")
+    sign_icons = {
+        hint = diag_config.hintSign,
+        info = diag_config.infoSign,
+        warning = diag_config.warningSign,
+        error = diag_config.errorSign
+    }
 
     augroup(
         "CocNvimSetup",
@@ -554,13 +609,16 @@ function M.init()
         }
     )
 
-    cmd [[
-        hi link CocSemVariable TSVariable
-        hi link CocSemNamespace Namespace
-        hi link CocSemClass Type
-        hi link CocSemEnum Number
-        hi link CocSemEnumMember Enum
-    ]]
+    -- C.plugin(
+    --     "Coc",
+    --     {
+    --         CocSemVariable = {link = "TSVariable"},
+    --         CocSemNamespace = {link = "Namespace"},
+    --         CocSemClass = {link = "Type"},
+    --         CocSemEnum = {link = "Number"},
+    --         CocSemEnumMember = {link = "Enum"}
+    --     }
+    -- )
 
     -- use `:Fold` to fold current buffer
     -- command("Fold", [[:call CocAction('fold', <f-args>)]], {nargs = "?"})
@@ -645,12 +703,13 @@ function M.init()
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
+            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"}
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
         }
     )
 
+    -- === CodeActions ===
     -- map("n", "<Leader>jo", "<cmd>lua require('code_action_menu').open_code_action_menu()<CR>")
     -- map("n", "<Leader>jl", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
     -- map("n", "<Leader>jc", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
@@ -660,6 +719,11 @@ function M.init()
     -- map("n", "<C-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
     map("n", "<A-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
     map("n", "<C-A-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
+
+    map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
+    -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")
+    -- map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
+    -- map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 
     wk.register(
         {
@@ -680,16 +744,12 @@ function M.init()
     -- map("s", "<C-o>", "<Nop>")
     -- map("s", "<C-o>o", "<Esc>a<C-o>o")
 
-    -- Use `[g` and `]g` to navigate diagnostics
     -- map("n", "[g", "<Plug>(coc-diagnostic-prev)", { noremap = false })
     -- map("n", "]g", "<Plug>(coc-diagnostic-next)", { noremap = false })
-
     -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
     -- map("n", "gy", "<Plug>(coc-type-definition)", { noremap = false })
     -- map("n", "gi", "<Plug>(coc-implementation)", { noremap = false })
     -- map("n", "gr", "<Plug>(coc-references)", { noremap = false, silent = false })
-
-    -- Remap for rename current word
     -- map("n", "<Leader>rn", "<Plug>(coc-rename)", { noremap = false })
 
     -- Create mappings for function text object
@@ -698,20 +758,8 @@ function M.init()
     -- map("o", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
     -- map("o", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
 
-    -- map("n", "{g", "<Plug>(coc-git-prevchunk)")
-    -- map("n", "}g", "<Plug>(coc-git-nextchunk)")
-
-    -- Show chunk diff at current position
-    -- map("n", "gs", "<Plug>(coc-git-chunkinfo)", { noremap = false })
-
     -- Refresh coc completions
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
-
-    -- CodeActions
-    map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-    -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")
-    map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
-    map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 
     -- Popup
     map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
@@ -732,8 +780,6 @@ function M.init()
     --     [[pumvisible() ? "\<C-n>" : v:lua.check_back_space() ? "\<TAB>" : coc#refresh()]],
     --     { silent = true, expr = true }
     -- )
-
-    -- map("i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], { expr = true })
 
     map("i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
 
@@ -759,11 +805,15 @@ function M.init()
     -- nmap <silent> gs <Plug>(coc-git-chunkinfo)
     -- map("n", "<Leader>gll", "<Plug>(coc-git-commit)", {noremap = true, silent = true})
 
+    -- map("n", "{g", "<Plug>(coc-git-prevchunk)")
+    -- map("n", "}g", "<Plug>(coc-git-nextchunk)")
+
+    -- Show chunk diff at current position
+    -- map("n", "gs", "<Plug>(coc-git-chunkinfo)", { noremap = false })
+
     -- Snippet
     map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})
     map("s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]], {expr = true})
-
-    -- map("n", ";ff", ":Format<CR>")
 
     -- Fzf
     wk.register(

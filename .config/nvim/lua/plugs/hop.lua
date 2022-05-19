@@ -1,6 +1,5 @@
 local M = {}
 
-local kutils = require("common.kutils")
 local utils = require("common.utils")
 local map = utils.map
 
@@ -28,6 +27,9 @@ local function init()
 
     -- ========================== f-Mapping ==========================
 
+    -- f => |word here  :  Press 'fe'  =>  word h|re
+    -- t => |word here  :  Press 'te'  =>  word |ere
+
     -- Normal
     map(
         "n",
@@ -65,7 +67,6 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = true
                 }
             )
         end
@@ -80,7 +81,6 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = true
                 }
             )
         end
@@ -95,7 +95,6 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = true
                 }
             )
         end
@@ -110,7 +109,6 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = true
                 }
             )
         end
@@ -127,11 +125,11 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = false
+                    -- inclusive_jump = false
                 }
             )
             -- api.nvim_input("h")
-            api.nvim_feedkeys(kutils.termcodes["h"], "n", false)
+            api.nvim_feedkeys(utils.termcodes["h"], "n", false)
         end
     )
 
@@ -147,7 +145,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(kutils.termcodes["l"], "n", false)
+            api.nvim_feedkeys(utils.termcodes["l"], "n", false)
         end
     )
 
@@ -193,7 +191,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(kutils.termcodes["h"], "v", false)
+            api.nvim_feedkeys(utils.termcodes["h"], "v", false)
         end
     )
 
@@ -209,7 +207,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(kutils.termcodes["l"], "v", false)
+            api.nvim_feedkeys(utils.termcodes["l"], "v", false)
         end
     )
 end

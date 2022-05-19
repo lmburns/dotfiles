@@ -3,7 +3,7 @@ local M = {}
 PROFILE_LOAD = false
 
 if PROFILE_LOAD then
-  require("plenary.profile").start("/tmp/nvim_flame.log", { flame = true })
+    require("plenary.profile").start("/tmp/nvim_flame.log", {flame = true})
 end
 
 --- Usage:
@@ -15,7 +15,7 @@ M.profile = function(filename)
     fn.mkdir(base, "p")
     local success, profile = pcall(require, "plenary.profile.lua_profiler")
     if not success then
-        api.nvim_echo({{"Plenary is not installed.", "Title"}}, true, {})
+        require("common.utils").cool_echo("Plenary is not installed", "Title", true)
     end
     profile.start()
     return function()
@@ -24,7 +24,7 @@ M.profile = function(filename)
         profile.report(logfile)
         vim.defer_fn(
             function()
-                cmd("tabedit " .. logfile)
+                ex.tabedit(logfile)
             end,
             1000
         )

@@ -1,16 +1,22 @@
 local M = {}
 
-require("common.utils")
+local utils = require("common.utils")
 
 ---Execute a git command
 ---@param args table arguments to pass to git
 ---@param cb function(string)
 M.cmd = function(args, cb)
-    local stdout, _ret =
+    local root = M.root()
+    if #root == 0 then
+        utils.cool_echo("Not in a git directory", "SpellCap")
+        return
+    end
+    local stdout, _ =
         Job:new(
         {
             command = "git",
             args = args,
+            cwd = root,
             on_exit = function(j, ret)
                 if ret == 0 then
                     if cb and type(cb) == "function" then
@@ -19,7 +25,7 @@ M.cmd = function(args, cb)
                         return j:result()
                     end
                 else
-                    api.nvim_echo({{"Command returned non-zero exit code", "ErrorMsg"}}, true, {})
+                    utils.cool_echo("Command returned non-zero exit code", "ErrorMsg")
                 end
             end
         }

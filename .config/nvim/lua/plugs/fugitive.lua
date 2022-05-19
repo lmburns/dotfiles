@@ -101,11 +101,11 @@ local function init()
             ["<Leader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
             ["<Leader>gb"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
             ["<Leader>gw"] = {
-                [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+                [[<Cmd>lua require('utils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
                 "Fugitive Gwrite"
             },
             ["<Leader>gr"] = {
-                [[<Cmd>lua require('kutils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+                [[<Cmd>lua require('utils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
                 "Fugitive Gread"
             },
             ["<Leader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},

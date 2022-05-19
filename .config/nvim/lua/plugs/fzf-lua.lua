@@ -647,16 +647,16 @@ local function map_fzf(mode, key, f, opts, buffer)
         end
     end
 
-    require("common.utils").remap(mode, key, rhs, {noremap = true, silent = true, buffer = buffer})
+    require("common.utils").map(mode, key, rhs, {noremap = true, silent = true, buffer = buffer})
 end
 
 function init()
     M.setup()
 
-    -- -- map_fzf("n", "<A-f>", "files")
+    -- map_fzf("n", "<A-f>", "files")
     -- map_fzf("n", "<Leader>qo", "quickfix")
     -- map_fzf("n", "<Leader>ll", "loclist")
-    -- -- map_fzf("n", "<A-,>", "oldfiles")
+    -- map_fzf("n", "<A-,>", "oldfiles")
     -- map_fzf("n", "<LocalLeader>e", "live_grep")
     -- map_fzf("n", "<LocalLeader>h", "man_pages")
     -- map_fzf("n", "<Leader>ht", "help_tags")
@@ -677,6 +677,7 @@ function init()
             ["<LocalLeader>e"] = {":lua require('fzf-lua').live_grep()<CR>", "Live grep (fzf-lua)"},
             ["<LocalLeader>h"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
+            ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Help tags (fzf-lua)"},
             ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
             ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},
             ["<C-l>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},

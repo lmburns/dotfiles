@@ -10,163 +10,165 @@ local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
+local fn = vim.fn
+
 local nvim_server
 local nvim_chanID
 
 function M.setup()
     -- https://alpha2phi.medium.com/neovim-dap-enhanced-ebc730ff498b
-    -- command(
-    --     "BreakpointToggle",
-    --     function()
-    --         require("dap").toggle_breakpoint()
-    --     end
-    -- )
-    -- command(
-    --     "Debug",
-    --     function()
-    --         require("dap").continue()
-    --     end
-    -- )
-    -- command(
-    --     "DapREPL",
-    --     function()
-    --         require("dap").repl.open()
-    --     end
-    -- )
-    -- command(
-    --     "DapLaunch",
-    --     function()
-    --         require("osv").launch()
-    --     end
-    -- )
-    -- command(
-    --     "DapRun",
-    --     function()
-    --         require("osv").run_this()
-    --     end
-    -- )
-    --
-    -- local function repl_toggle()
-    --     require("dap").repl.toggle(nil, "botright split")
-    -- end
-    -- local function repl_open()
-    --     require("dap").repl.open()
-    -- end
-    -- -- Start the debug session and continue to next breakpoint
-    -- local function continue()
-    --     require("dap").continue()
-    -- end
-    -- local function step_out()
-    --     require("dap").step_out()
-    -- end
-    -- local function step_into()
-    --     require("dap").step_into()
-    -- end
-    -- local function step_over()
-    --     require("dap").step_over()
-    -- end
-    -- ---Run last again
-    -- local function run_last()
-    --     require("dap").run_last()
-    -- end
-    -- ---Run to cursor position
-    -- local function run_cursor()
-    --     require("dap").run_to_cursor()
-    -- end
-    -- ---Create and remove a breakpoint
-    -- local function toggle_breakpoint()
-    --     require("dap").toggle_breakpoint()
-    -- end
-    -- local function set_breakpoint()
-    --     require("dap").set_breakpoint(fn.input("Breakpoint condition: "))
-    -- end
-    -- ---Close the debug session
-    -- local function close()
-    --     require("dap").close()
-    -- end
-    -- ---Terminate the debug session
-    -- local function terminate()
-    --     require("dap").terminate()
-    -- end
-    -- ---Restart the execution
-    -- local function restart()
-    --     require("dap").restart()
-    -- end
-    -- ---Pause the execution
-    -- local function pause()
-    --     require("dap").pause()
-    -- end
-    -- ---Go up in the call stack
-    -- local function up()
-    --     require("dap").up()
-    -- end
-    -- ---Go down in the call stack
-    -- local function down()
-    --     require("dap").down()
-    -- end
-    --
-    -- local function hover()
-    --     widgets.hover()
-    -- end
-    -- -- Inspect all scope properties
-    -- local function inspect_scope()
-    --     widgets.centered_float(widgets.scopes).open()
-    -- end
-    --
-    -- local function ui_open()
-    --     require("dapui").toggle()
-    -- end
-    -- local function ui_eval()
-    --     require("dapui").eval()
-    -- end
-    -- local function ui_eval_input()
-    --     require("dapui").eval(fn.input "[Expression] > ")
-    -- end
-    --
-    -- local function osv_launch()
-    --     require("osv").launch()
-    -- end
-    --
-    -- wk.register(
-    --     {
-    --         d = {
-    --             name = "+debugger",
-    --             -- B = {set_breakpoint, "dap: set breakpoint"},
-    --             E = {ui_eval_input, "dapui: eval input"},
-    --             R = {restart, "dap: restart"},
-    --             T = {repl_open, "dap REPL: open"},
-    --             U = {ui_open, "dap UI: open"},
-    --             X = {terminate, "dap: terminate"},
-    --             b = {toggle_breakpoint, "dap: toggle breakpoint"},
-    --             c = {continue, "dap: continue or start debugging"},
-    --             d = {osv_launch, "dap: start osv"},
-    --             e = {step_out, "dap: step out"},
-    --             h = {hover, "dap widgets: hover"},
-    --             i = {step_into, "dap: step into"},
-    --             l = {run_last, "dap REPL: run last"},
-    --             m = {down, "dap: down"},
-    --             n = {up, "dap: up"},
-    --             o = {step_over, "dap: step over"},
-    --             p = {pause, "dap: pause"},
-    --             r = {run_cursor, "dap: run to cursor"},
-    --             s = {inspect_scope, "dap widgets: inspect scope"},
-    --             t = {repl_toggle, "dap REPL: toggle"},
-    --             v = {ui_eval, "dap UI: eval"},
-    --             x = {close, "dap: close"},
-    --             [","] = {
-    --                 name = "+telescope",
-    --                 c = {telescope.extensions.dap.commands, "dap: commands"},
-    --                 o = {telescope.extensions.dap.configurations, "dap: configurations"},
-    --                 b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
-    --                 v = {telescope.extensions.dap.variablesk, "dap: variables"},
-    --                 f = {telescope.extensions.dap.frames, "dap: frames"}
-    --             }
-    --         }
-    --     },
-    --     {
-    --         prefix = "<LocalLeader>"
-    --     }
-    -- )
+    command(
+        "BreakpointToggle",
+        function()
+            require("dap").toggle_breakpoint()
+        end
+    )
+    command(
+        "Debug",
+        function()
+            require("dap").continue()
+        end
+    )
+    command(
+        "DapREPL",
+        function()
+            require("dap").repl.open()
+        end
+    )
+    command(
+        "DapLaunch",
+        function()
+            require("osv").launch()
+        end
+    )
+    command(
+        "DapRun",
+        function()
+            require("osv").run_this()
+        end
+    )
+
+    local function repl_toggle()
+        require("dap").repl.toggle(nil, "botright split")
+    end
+    local function repl_open()
+        require("dap").repl.open()
+    end
+    -- Start the debug session and continue to next breakpoint
+    local function continue()
+        require("dap").continue()
+    end
+    local function step_out()
+        require("dap").step_out()
+    end
+    local function step_into()
+        require("dap").step_into()
+    end
+    local function step_over()
+        require("dap").step_over()
+    end
+    ---Run last again
+    local function run_last()
+        require("dap").run_last()
+    end
+    ---Run to cursor position
+    local function run_cursor()
+        require("dap").run_to_cursor()
+    end
+    ---Create and remove a breakpoint
+    local function toggle_breakpoint()
+        require("dap").toggle_breakpoint()
+    end
+    local function set_breakpoint()
+        require("dap").set_breakpoint(fn.input("Breakpoint condition: "))
+    end
+    ---Close the debug session
+    local function close()
+        require("dap").close()
+    end
+    ---Terminate the debug session
+    local function terminate()
+        require("dap").terminate()
+    end
+    ---Restart the execution
+    local function restart()
+        require("dap").restart()
+    end
+    ---Pause the execution
+    local function pause()
+        require("dap").pause()
+    end
+    ---Go up in the call stack
+    local function up()
+        require("dap").up()
+    end
+    ---Go down in the call stack
+    local function down()
+        require("dap").down()
+    end
+
+    local function hover()
+        widgets.hover()
+    end
+    -- Inspect all scope properties
+    local function inspect_scope()
+        widgets.centered_float(widgets.scopes).open()
+    end
+
+    local function ui_open()
+        require("dapui").toggle()
+    end
+    local function ui_eval()
+        require("dapui").eval()
+    end
+    local function ui_eval_input()
+        require("dapui").eval(fn.input "[Expression] > ")
+    end
+
+    local function osv_launch()
+        require("osv").launch()
+    end
+
+    wk.register(
+        {
+            d = {
+                name = "+debugger",
+                -- B = {set_breakpoint, "dap: set breakpoint"},
+                E = {ui_eval_input, "dapui: eval input"},
+                R = {restart, "dap: restart"},
+                T = {repl_open, "dap REPL: open"},
+                U = {ui_open, "dap UI: open"},
+                X = {terminate, "dap: terminate"},
+                b = {toggle_breakpoint, "dap: toggle breakpoint"},
+                c = {continue, "dap: continue or start debugging"},
+                d = {osv_launch, "dap: start osv"},
+                e = {step_out, "dap: step out"},
+                h = {hover, "dap widgets: hover"},
+                i = {step_into, "dap: step into"},
+                l = {run_last, "dap REPL: run last"},
+                m = {down, "dap: down"},
+                n = {up, "dap: up"},
+                o = {step_over, "dap: step over"},
+                p = {pause, "dap: pause"},
+                r = {run_cursor, "dap: run to cursor"},
+                s = {inspect_scope, "dap widgets: inspect scope"},
+                t = {repl_toggle, "dap REPL: toggle"},
+                v = {ui_eval, "dap UI: eval"},
+                x = {close, "dap: close"},
+                [","] = {
+                    name = "+telescope",
+                    c = {telescope.extensions.dap.commands, "dap: commands"},
+                    o = {telescope.extensions.dap.configurations, "dap: configurations"},
+                    b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
+                    v = {telescope.extensions.dap.variablesk, "dap: variables"},
+                    f = {telescope.extensions.dap.frames, "dap: frames"}
+                }
+            }
+        },
+        {
+            prefix = "<LocalLeader>"
+        }
+    )
 end
 
 function M.setup_dap_virtual()
@@ -221,6 +223,16 @@ function M.setup_dapui()
             floating = {border = "rounded", mappings = {close = {"q", "<esc>", "<c-o>"}}}
         }
     )
+
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+    end
+    dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+    end
+    dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+    end
 end
 
 local function dap_server(opts)
@@ -231,25 +243,25 @@ local function dap_server(opts)
 
     -- server already started?
     if nvim_chanID then
-        local pid = vim.fn.jobpid(nvim_chanID)
-        vim.fn.rpcnotify(nvim_chanID, "nvim_exec_lua", [[return require"osv".stop()]])
-        vim.fn.jobstop(nvim_chanID)
+        local pid = fn.jobpid(nvim_chanID)
+        fn.rpcnotify(nvim_chanID, "nvim_exec_lua", [[return require"osv".stop()]])
+        fn.jobstop(nvim_chanID)
         if type(uv.os_getpriority(pid)) == "number" then
             uv.kill(pid, 9)
         end
         nvim_chanID = nil
     end
 
-    nvim_chanID = vim.fn.jobstart({vim.v.progpath, "--embed", "--headless"}, {rpc = true})
+    nvim_chanID = fn.jobstart({vim.v.progpath, "--embed", "--headless"}, {rpc = true})
     assert(nvim_chanID, "Could not create neovim instance with jobstart!")
 
-    local mode = vim.fn.rpcrequest(nvim_chanID, "nvim_get_mode")
+    local mode = fn.rpcrequest(nvim_chanID, "nvim_get_mode")
     assert(not mode.blocking, "Neovim is waiting for input at startup. Aborting.")
 
     -- make sure OSV is loaded
-    vim.fn.rpcrequest(nvim_chanID, "nvim_command", "packadd one-small-step-for-vimkind")
+    fn.rpcrequest(nvim_chanID, "nvim_command", "packadd one-small-step-for-vimkind")
 
-    nvim_server = vim.fn.rpcrequest(nvim_chanID, "nvim_exec_lua", [[return require"osv".launch(...)]], {opts})
+    nvim_server = fn.rpcrequest(nvim_chanID, "nvim_exec_lua", [[return require"osv".launch(...)]], {opts})
 
     vim.wait(100)
 
@@ -315,7 +327,7 @@ local function init()
             post = function()
                 dap.listeners.after["setBreakpoints"]["osv"] = function(session, body)
                     assert(nvim_chanID, "Fatal: neovim RPC channel is nil!")
-                    vim.fn.rpcnotify(nvim_chanID, "nvim_command", "luafile " .. vim.fn.expand("%:p"))
+                    fn.rpcnotify(nvim_chanID, "nvim_command", "luafile " .. fn.expand("%:p"))
                     -- clear the lisener or we get called in any dap-config run
                     dap.listeners.after["setBreakpoints"]["osv"] = nil
                 end
@@ -358,7 +370,7 @@ local function init()
             type = "lldb",
             request = "launch",
             program = function()
-                return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+                return fn.input("Path to executable: ", fn.getcwd() .. "/", "file")
             end,
             cwd = "${workspaceFolder}",
             stopOnEntry = false,
@@ -369,13 +381,95 @@ local function init()
 
     dap.configurations.c = dap.configurations.cpp
     dap.configurations.rust = dap.configurations.cpp
+
+    dap.adapters.go = function(callback, config)
+        local stdout = uv.new_pipe(false)
+        local handle
+        local pid_or_err
+        local host = config.host or "127.0.0.1"
+        local port = config.port or "38697"
+        local addr = string.format("%s:%s", host, port)
+        local opts = {
+            stdio = {nil, stdout},
+            args = {"dap", "-l", addr},
+            detached = true
+        }
+        handle, pid_or_err =
+            uv.spawn(
+            "dlv",
+            opts,
+            function(code)
+                stdout:close()
+                handle:close()
+                if code ~= 0 then
+                    print("dlv exited with code", code)
+                end
+            end
+        )
+        assert(handle, "Error running dlv: " .. tostring(pid_or_err))
+        stdout:read_start(
+            function(err, chunk)
+                assert(not err, err)
+                if chunk then
+                    vim.schedule(
+                        function()
+                            require("dap.repl").append(chunk)
+                        end
+                    )
+                end
+            end
+        )
+        -- Wait for delve to start
+        vim.defer_fn(
+            function()
+                callback({type = "server", host = "127.0.0.1", port = port})
+            end,
+            100
+        )
+    end
+
+    dap.configurations.go = {
+        {
+            type = "go",
+            name = "Debug",
+            request = "launch",
+            program = "${file}"
+        },
+        {
+            type = "go",
+            name = "Debug Package",
+            request = "launch",
+            program = "${fileDirname}"
+        },
+        {
+            type = "go",
+            name = "Attach",
+            mode = "local",
+            request = "attach",
+            processId = require("dap.utils").pick_process
+        },
+        {
+            type = "go",
+            name = "Debug test",
+            request = "launch",
+            mode = "test",
+            program = "${file}"
+        },
+        {
+            type = "go",
+            name = "Debug test (go.mod)",
+            request = "launch",
+            mode = "test",
+            program = "./${relativeFileDirname}"
+        }
+    }
 end
 
 init()
 
 -- local function start_session()
 --     -- set session tab
---     dap.session().session_target_tab = vim.fn.tabpagenr()
+--     dap.session().session_target_tab = fn.tabpagenr()
 --
 --     setup_maps()
 --     dapui.open()

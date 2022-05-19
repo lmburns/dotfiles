@@ -32,6 +32,13 @@ function os.caplines(command)
     return lines
 end
 
+---Get the output of a system command in a table
+---@param cmd string|table
+---@return table
+M.get_system_output = function(cmd)
+    return vim.split(fn.system(cmd), "\n")
+end
+
 -- ============================== Print ===============================
 -- ====================================================================
 

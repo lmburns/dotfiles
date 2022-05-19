@@ -87,7 +87,7 @@ command(
 command(
     "CleanEmptyBuf",
     function()
-        require("common.kutils").clean_empty_bufs()
+        require("common.utils").clean_empty_bufs()
     end,
     {nargs = 0}
 )
@@ -95,7 +95,7 @@ command(
 command(
     "FollowSymlink",
     function(tbl)
-        require("common.kutils").follow_symlink(tbl.args)
+        require("common.utils").follow_symlink(tbl.args)
     end,
     {nargs = "?", complete = "buffer"}
 )
@@ -345,6 +345,8 @@ map("n", "<C-l>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to e
 function M.insert_empty_lines(count, add) --{{{2
     -- ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
     -- ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
+    -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
+    -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     local lines = {}
     for i = 1, F.if_nil(count, 1) < 1 and 1 or count do
         lines[i] = ""
@@ -384,7 +386,7 @@ map(
     {expr = true, desc = "Insert empty line below"}
 )
 
----Reasons not to use the `mkview` command
+---When not to use the `mkview` command for an autocmd
 function M.makeview()
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].bt ~= "" or fn.empty(fn.expand("%:p")) == 1 or not vim.o.modifiable then

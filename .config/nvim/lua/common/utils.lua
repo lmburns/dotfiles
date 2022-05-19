@@ -2,6 +2,8 @@
 
 local M = {}
 
+local debounce = require("common.debounce")
+
 ---Safely check if a plugin is installed
 ---@param check string Module to check if is installed
 ---@return table Module
@@ -38,7 +40,7 @@ end
 ---@field description string
 ---@field event  string[] list of autocommand events
 ---@field pattern string[] list of autocommand patterns
----@field command string | function
+---@field command string|function
 ---@field nested  boolean
 ---@field once    boolean
 ---@field buffer  number
@@ -220,13 +222,6 @@ M.bmap = function(bufnr, mode, lhs, rhs, opts)
     api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
 end
 
--- This allows for lua function mapping only
-M.fmap = function(mode, lhs, rhs, opts)
-    opts = opts or {}
-    opts.noremap = opts.noremap == nil and true or opts.noremap
-    vim.keymap.set(mode, lhs, rhs, opts)
-end
-
 -- Replace termcodes; e.g., t'<C-n>'
 ---@param str string: String to be converted
 ---@param from_part boolean: Legacy vim parameter. Usually true
@@ -244,6 +239,10 @@ M.dump = function(...)
     print(unpack(objects))
 end
 
+---Get a Vim option. If present in buffer, return that, else global
+---@param option string option to get
+---@param default string|number fallback option
+---@return string|number
 M.get_option = function(option, default)
     local ok, opt = pcall(nvim.buf.get_option, 0, option)
     if not ok then
@@ -255,16 +254,31 @@ M.get_option = function(option, default)
     return opt
 end
 
---- @class CommandArgs
---- @field args string
---- @field fargs table
---- @field bang boolean
---- @field count number
+---@class CommandArgs
+---@field args string args passed to command
+---@field fargs table args split by whitespace (more than one arg)
+---@field bang boolean true if executed with `!`
+---@field line1 number starting line of command range
+---@field line2 number final line of command range
+---@field range number 0|1|2 of items in command range
+---@field count number any count supplied
+---@field reg string optional register
+---@field mods string command modifiers
+
+---@class CommandOpts
+---@field nargs number|string 0|1|'*'|'?'|'+'
+---@field range number?|string? '%'|N
+---@field count number
+---@field bar boolean
+---@field bang boolean
+---@field complete string
+---@field desc string description of the command
+---@field force boolean override existing definition
 
 ---Create an nvim command
 ---@param name any
 ---@param rhs string|fun(args: CommandArgs)
----@param opts table
+---@param opts CommandOpts
 M.command = function(name, rhs, opts)
     vim.validate(
         {
@@ -309,9 +323,7 @@ M.del_command = function(name, buffer)
             name = {name, "string"},
             buffer = {
                 buffer,
-                function(b)
-                    return type(b) == "boolean" or type(b) == "number"
-                end,
+                {"boolean", "number"},
                 "a boolean or a number"
             }
         }
@@ -329,22 +341,14 @@ end
 ---@param prefix boolean?
 M.source = function(path, prefix)
     if not prefix then
-        cmd(fmt("source %s", path))
+        ex.source(path)
     else
-        cmd(("source %s/%s"):format(fn.stdpath("config"), path))
+        ex.source(("%s/%s"):format(fn.stdpath("config"), path))
     end
 end
 
--- Check whether the current buffer is empty
-M.is_buffer_empty = function()
-    return fn.empty(fn.expand("%:t")) == 1
-end
-
--- Check if the windows width is greater than a given number of columns
-M.has_width_gt = function(cols)
-    return fn.winwidth(0) / 2 > cols
-end
-
+---Get the current visual selection
+---@return table
 M.get_visual_selection = function()
     -- this will exit visual mode
     -- use 'gv' to reselect the text
@@ -359,7 +363,7 @@ M.get_visual_selection = function()
             cscol, cecol = 0, 999
         end
         -- exit visual mode
-        api.nvim_feedkeys(api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
+        api.nvim_feedkeys(M.t("<Esc>", true, false, true), "n", true)
     else
         -- otherwise, use the last known visual position
         _, csrow, cscol, _ = unpack(fn.getpos("'<"))
@@ -439,9 +443,6 @@ M.squeeze_blank_lines = function()
     end
 end
 
--- ========================== Mapping Implentation ==========================
--- ======================== Credit: ibhagwan/nvim-lua =======================
---
 --- Return a string for vim from a lua function.
 --- Functions are stored in _G.myluafunc.
 --- @param func function
@@ -456,72 +457,13 @@ _G.myluafunc =
     }
 )
 
-local func2str = function(func, args)
+M.func2str = function(func, args)
     local idx = #_G.myluafunc + 1
     _G.myluafunc[idx] = func
     if not args then
         return ("lua myluafunc(%s)"):format(idx)
     else
-        -- return ("lua myluafunc(%s, <q-args>)"):format(idx)
         return ("lua myluafunc(%s, <q-args>, <count>)"):format(idx)
-    end
-end
-
----Remap keys (create a Vim function with Lua)
-M.remap = function(modes, lhs, rhs, opts)
-    modes = type(modes) == "string" and {modes} or modes
-    opts = opts or {}
-    opts = type(opts) == "string" and {opts} or opts
-
-    local fallback = function()
-        return api.nvim_feedkeys(M.t(lhs), "n", true)
-    end
-
-    local _rhs =
-        (function()
-        if type(rhs) == "function" then
-            opts.noremap = true
-            opts.cmd = true
-            return func2str(
-                function()
-                    rhs(fallback)
-                end
-            )
-        else
-            if rhs:lower():sub(1, #"<plug>") == "<plug>" then
-                opts.noremap = false
-            end
-            return rhs
-        end
-    end)()
-
-    for key, opt in ipairs(opts) do
-        opts[opt] = true
-        opts[key] = nil
-    end
-
-    local buffer = (function()
-        if opts.buffer then
-            opts.buffer = nil
-            return true
-        end
-    end)()
-
-    _rhs = (function()
-        if opts.cmd then
-            opts.cmd = nil
-            return ("<cmd>%s<cr>"):format(_rhs)
-        else
-            return _rhs
-        end
-    end)()
-
-    for _, mode in ipairs(modes) do
-        if buffer then
-            api.nvim_buf_set_keymap(0, mode, lhs, _rhs, opts)
-        else
-            api.nvim_set_keymap(mode, lhs, _rhs, opts)
-        end
     end
 end
 
@@ -544,6 +486,358 @@ M.executable = function(exec)
     vim.validate({exec = {exec, "string"}})
     assert(exec ~= "", debug.traceback("Empty executable string"))
     return fn.executable(exec) == 1
+end
+
+---Table of escaped termcodes
+---@param tbl table self
+---@param k string termcode to retrieve
+---@return string
+M.termcodes =
+    setmetatable(
+    {},
+    {
+        __index = function(tbl, k)
+            local k_upper = k:upper()
+            local v_upper = rawget(tbl, k_upper)
+            local c = v_upper or utils.t(k, true, false, true)
+            rawset(tbl, k, c)
+            if not v_upper then
+                rawset(tbl, k_upper, c)
+            end
+            return c
+        end
+    }
+)
+
+---Escaped ansi sequence
+---@param t table
+---@param k string
+---@return string
+M.ansi =
+    setmetatable(
+    {},
+    {
+        __index = function(t, k)
+            local v = M.render_str("%s", k)
+            rawset(t, k, v)
+            return v
+        end
+    }
+)
+
+---Render an ANSI escape sequence
+---@param str string
+---@param group_name string
+---@param def_fg string
+---@param def_bg string
+M.render_str =
+    (function()
+    local ansi = {
+        black = 30,
+        red = 31,
+        green = 32,
+        yellow = 33,
+        blue = 34,
+        magenta = 35,
+        cyan = 36,
+        white = 37
+    }
+    local gui = vim.o.termguicolors
+
+    local function color2csi24b(color_num, fg)
+        local r = math.floor(color_num / 2 ^ 16)
+        local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
+        local b = math.floor(color_num % 2 ^ 8)
+        return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
+    end
+
+    local function color2csi8b(color_num, fg)
+        return ("%d;5;%d"):format(fg and 38 or 48, color_num)
+    end
+
+    local color2csi = gui and color2csi24b or color2csi8b
+
+    return function(str, group_name, def_fg, def_bg)
+        vim.validate(
+            {
+                str = {str, "string"},
+                group_name = {group_name, "string"},
+                def_fg = {def_fg, "string", true},
+                def_bg = {def_bg, "string", true}
+            }
+        )
+        local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
+        if not ok or not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
+            return str
+        end
+        local fg, bg
+        if hl.reverse then
+            fg = hl.background ~= nil and hl.background or nil
+            bg = hl.foreground ~= nil and hl.foreground or nil
+        else
+            fg = hl.foreground
+            bg = hl.background
+        end
+        local escape_prefix =
+            ("\x1b[%s%s%s"):format(hl.bold and ";1" or "", hl.italic and ";3" or "", hl.underline and ";4" or "")
+
+        local escape_fg, escape_bg = "", ""
+        if fg and type(fg) == "number" then
+            escape_fg = ";" .. color2csi(fg, true)
+        elseif def_fg and ansi[def_fg] then
+            escape_fg = ansi[def_fg]
+        end
+        if bg and type(bg) == "number" then
+            escape_fg = ";" .. color2csi(bg, false)
+        elseif def_bg and ansi[def_bg] then
+            escape_fg = ansi[def_bg]
+        end
+
+        return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg, str)
+    end
+end)()
+
+---Follow a symbolic link
+---@param fname string filename to follow
+M.follow_symlink = function(fname)
+    fname = fname and fn.fnamemodify(fname, ":p") or api.nvim_buf_get_name(0)
+    local linked_path = uv.fs_readlink(fname)
+    if linked_path then
+        cmd(("keepalt file %s"):format(linked_path))
+    end
+end
+
+---Bufwipe buffers that aren't modified and haven't been saved (i.e., don't have a titlestring)
+M.clean_empty_bufs = function()
+    local bufnrs = {}
+    for _, bufnr in ipairs(api.nvim_list_bufs()) do
+        if not vim.bo[bufnr].modified and api.nvim_buf_get_name(bufnr) == "" then
+            table.insert(bufnrs, bufnr)
+        end
+    end
+    if #bufnrs > 0 then
+        cmd("bw " .. table.concat(bufnrs, " "))
+    end
+end
+
+---Close a diff file
+M.close_diff = function()
+    local winids =
+        vim.tbl_filter(
+        function(winid)
+            return vim.wo[winid].diff
+        end,
+        api.nvim_tabpage_list_wins(0)
+    )
+
+    if #winids > 1 then
+        for _, winid in ipairs(winids) do
+            local ok, msg = pcall(api.nvim_win_close, winid, false)
+            if not ok and msg:match("^Vim:E444:") then
+                if api.nvim_buf_get_name(0):match("^fugitive://") then
+                    ex.Gedit()
+                end
+            end
+        end
+    end
+end
+
+---API around `nvim_echo`
+---@param msg string message to echo
+---@param hl string highlight group
+---@param history boolean whether it should be added to history
+---@param wait number time to wait before echoing
+M.cool_echo =
+    (function()
+    local lastmsg
+    local debounced
+    ---Echo a colored message
+    ---@param msg string message to echo
+    ---@param hl string highlight group to link
+    ---@param history boolean add message to history
+    ---@param wait number amount of time to wait
+    return function(msg, hl, history, wait)
+        -- TODO without schedule wrapper may echo prefix spaces
+        vim.schedule(
+            function()
+                api.nvim_echo({{msg, hl}}, history, {})
+                lastmsg = api.nvim_exec("5message", true)
+            end
+        )
+        if not debounced then
+            debounced =
+                debounce(
+                function()
+                    if lastmsg == api.nvim_exec("5message", true) then
+                        api.nvim_echo({{"", ""}}, false, {})
+                    end
+                end,
+                wait or 2500
+            )
+        end
+        debounced()
+    end
+end)()
+
+nvim.p = M.cool_echo
+
+---Expand a tab in a string
+---@param str string
+---@param ts string
+---@param start number
+---@return string
+M.expandtab = function(str, ts, start)
+    start = start or 1
+    local new = str:sub(1, start - 1)
+    -- without check type to improve performance
+    -- if str and type(str) == 'string' then
+    local pad = " "
+    local ti = start - 1
+    local i = start
+    while true do
+        i = str:find("\t", i, true)
+        if not i then
+            if ti == 0 then
+                new = str
+            else
+                new = new .. str:sub(ti + 1)
+            end
+            break
+        end
+        if ti + 1 == i then
+            new = new .. pad:rep(ts)
+        else
+            local append = str:sub(ti + 1, i - 1)
+            new = new .. append .. pad:rep(ts - api.nvim_strwidth(append) % ts)
+        end
+        ti = i
+        i = i + 1
+    end
+    -- end
+    return new
+end
+
+---Wrapper to deal with extmarks
+---@param bufnr number
+---@param hl_group string
+---@param start number
+---@param finish number
+---@param opt table
+---@param delay number
+M.highlight =
+    (function()
+    local ns = api.nvim_create_namespace("l-highlight")
+
+    local function do_unpack(pos)
+        vim.validate(
+            {
+                pos = {
+                    pos,
+                    {"table", "number"},
+                    "must be table or number type"
+                }
+            }
+        )
+        local row, col
+        if type(pos) == "table" then
+            row, col = unpack(pos)
+        else
+            row = pos
+        end
+        col = col or 0
+        return row, col
+    end
+
+    return function(bufnr, hl_group, start, finish, opt, delay)
+        local row, col = do_unpack(start)
+        local end_row, end_col = do_unpack(finish)
+        if end_col then
+            end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0), end_col)
+        end
+        local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
+        o = opt and vim.tbl_deep_extend("keep", o, opt) or o
+        local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
+        vim.defer_fn(
+            function()
+                pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
+            end,
+            delay or 300
+        )
+    end
+end)()
+
+-- This needs testing
+---Write a file asynchronously using plenary
+---@param path string
+---@param data string
+---@param sync boolean
+M.write_file_async = function(path, data, sync)
+    local path_ = path .. "_"
+    if sync then
+        local fd = assert(uv.fs_open(path_, "w", 438))
+        assert(uv.fs_write(fd, data))
+        assert(uv.fs_close(fd))
+        uv.fs_rename(path_, path)
+    else
+        local err_open, fd = a.uv.fs_open(path_, "w", 438)
+        assert(not err_open, err_open)
+
+        local err_write = a.uv.fs_write(fd, data, -1)
+        assert(not err_write, err_write)
+
+        local err_close, succ = a.uv.fs_close(fd)
+        assert(not err_close, err_close)
+
+        if succ then
+            a.uv.fs_rename(path_, path)
+        end
+    end
+end
+
+---Write a file using libuv
+---@param path string
+---@param data string
+---@param sync boolean
+M.write_file = function(path, data, sync)
+    local path_ = path .. "_"
+    if sync then
+        local fd = assert(uv.fs_open(path_, "w", 438))
+        assert(uv.fs_write(fd, data))
+        assert(uv.fs_close(fd))
+        uv.fs_rename(path_, path)
+    else
+        uv.fs_open(
+            path_,
+            "w",
+            438,
+            function(err_open, fd)
+                assert(not err_open, err_open)
+                uv.fs_write(
+                    fd,
+                    data,
+                    -1,
+                    function(err_write)
+                        assert(not err_write, err_write)
+                        uv.fs_close(
+                            fd,
+                            function(err_close, succ)
+                                assert(not err_close, err_close)
+                                if succ then
+                                    -- may rename by other syn write
+                                    uv.fs_rename(
+                                        path_,
+                                        path,
+                                        function()
+                                        end
+                                    )
+                                end
+                            end
+                        )
+                    end
+                )
+            end
+        )
+    end
 end
 
 -- ================= Tips ================== [[[

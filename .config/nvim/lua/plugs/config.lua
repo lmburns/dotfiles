@@ -4,7 +4,6 @@
 
 local M = {}
 
--- local kutils = require("common.kutils")
 local utils = require("common.utils")
 
 local wk = require("which-key")

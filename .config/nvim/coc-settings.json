@@ -322,7 +322,7 @@
 
   // I don't see these working
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true
   // "javascript.format.semicolons": "remove",

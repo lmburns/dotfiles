@@ -2,6 +2,7 @@ local M = {}
 
 local gittool = require("common.gittool")
 local coc = require("plugs.coc")
+local C = require("common.color")
 
 local backends = require("aerial.backends")
 local config = require("aerial.config")
@@ -65,7 +66,23 @@ function M.outline_aerial(opts)
     end
 
     local items = {}
-    local text_fmt = "%-1s %-32s│%5d:%-3d│%10s%s%s"
+    local text_fmt = "%-32s│%5d:%-3d│%10s%s%s"
+    local hl_defs = api.nvim__get_hl_defs(0)
+    local hl_def_keys = _t(hl_defs):keys()
+
+    local ns = api.nvim_create_namespace("aerial-sign")
+    for name, icon in pairs(config.icons) do
+        -- Choose a random highlight group
+        local rand = math.random(1, #hl_defs)
+
+        fn.sign_define(
+            "aerial-sign-" .. name,
+            {
+                text = icon,
+                texthl = hl_defs[name] and name or hl_def_keys[rand]
+            }
+        )
+    end
 
     for _, s in pairs(results) do
         local col = s.col + 1
@@ -79,7 +96,10 @@ function M.outline_aerial(opts)
                 col = col,
                 end_lnum = s.end_lnum,
                 end_col = s.end_col,
-                text = text_fmt:format(icon, s.kind, s.lnum, col, " ", ("| "):rep(s.level), s.name)
+                text = text_fmt:format(s.kind, s.lnum, col, " ", ("| "):rep(s.level), s.name),
+                -- type = s.kind, -- Not sure why this would be needed
+                icon = icon, -- Not needed
+                kind = s.kind
             }
         )
     end
@@ -90,6 +110,7 @@ function M.outline_aerial(opts)
         " ",
         {
             title = ("Outline Bufnr: %d"):format(bufnr),
+            id = "$",
             context = {
                 bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
             },
@@ -97,9 +118,37 @@ function M.outline_aerial(opts)
             quickfixtextfunc = function(qinfo)
                 local ret = {}
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
+                local bufnr = api.nvim_get_current_buf()
+
+                api.nvim_buf_clear_namespace(bufnr, ns, qinfo.start_idx, qinfo.end_idx + 1)
+
+                for _, sign in pairs(fn.sign_getplaced(bufnr, {group = "aerial-sign"})[1].signs) do
+                    if sign.lnum - 1 >= qinfo.start_idx and sign.lnum - 1 <= qinfo.end_idx then
+                        fn.sign_unplace("aerial-sign", {buffer = bufnr, id = sign.id})
+                    end
+                end
+
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
+
+                    for j = 1, #items do
+                        local item = items[j]
+                        if item.text == ele.text then
+                            if type(item.kind) == "string" then
+                                fn.sign_place(
+                                    0,
+                                    "aerial-sign",
+                                    "aerial-sign-" .. item.kind,
+                                    bufnr,
+                                    {
+                                        lnum = j,
+                                        priority = 90
+                                    }
+                                )
+                            end
+                        end
+                    end
                 end
                 return ret
             end
