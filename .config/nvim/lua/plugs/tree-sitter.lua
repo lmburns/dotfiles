@@ -442,6 +442,7 @@ M.setup = function()
             "gomod",
             "html",
             "java",
+            "javascript",
             "json",
             "kotlin",
             "lua",
@@ -472,10 +473,10 @@ M.setup = function()
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
-            -- use_languagetree = false,
+            use_languagetree = true,
             disable = {"html", "comment", "zsh"}, -- list of language that will be disabled
             -- I like the additional highlighting; however, when CocAction('highlight') is used
-            -- the regular syntax (not treesitter) is used as the foreground
+            -- the regular syntax (not treesitter) is used as the foreground some of the time
             additional_vim_regex_highlighting = true,
             custom_captures = {}
         },
@@ -574,8 +575,8 @@ M.setup = function()
                     ["io"] = "@block.inner",
                     ["ad"] = "@comment.outer",
                     ["id"] = "@comment.inner",
-                    ["am"] = "@conditional.outer",
-                    ["im"] = "@conditional.inner",
+                    ["ag"] = "@conditional.outer",
+                    ["ig"] = "@conditional.inner",
                     -- targets.nvim does this good (with seeking)
                     -- Though it isn't specifically parameters
                     ["aj"] = "@parameter.outer",
@@ -776,8 +777,8 @@ local function init()
             ["io"] = "Inner block",
             ["ad"] = "Around comment",
             ["id"] = "Inner comment",
-            ["am"] = "Around conditional",
-            ["im"] = "Inner conditional",
+            ["ag"] = "Around conditional",
+            ["ig"] = "Inner conditional",
             ["aj"] = "Around parameter",
             ["ij"] = "Inner parameter",
             ["al"] = "Around loop",

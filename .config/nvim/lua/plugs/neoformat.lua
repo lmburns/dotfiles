@@ -147,9 +147,9 @@ local function init()
         "prettier"
     }
 
-    g.neoformat_enabled_typescript = {
-        "clangformat", "prettier"
-    }
+    -- g.neoformat_enabled_typescript = {
+    --     "clangformat", "prettier"
+    -- }
 
     g.neoformat_enabled_yaml = {
         "prettier"
@@ -200,15 +200,15 @@ local function init()
             command = function()
                 map("n", ";ff", "<Cmd>CrystalFormat<CR>")
             end
-        },
-        {
-            -- Why isn't the only one enabled selected by default?
-            event = "FileType",
-            pattern = "typescript",
-            command = function()
-                map("n", ";ff", "<Cmd>keepp keepj Neoformat! typescript clangformat<CR>")
-            end
         }
+        -- {
+        --     -- Why isn't the only one enabled selected by default?
+        --     event = "FileType",
+        --     pattern = "typescript",
+        --     command = function()
+        --         map("n", ";ff", "<Cmd>keepp keepj Neoformat! typescript clangformat<CR>")
+        --     end
+        -- }
         -- {
         --     event = "FileType",
         --     pattern = "lua",

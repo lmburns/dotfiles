@@ -14,6 +14,11 @@ local C = require("common.color")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
 
+local ex = nvim.ex
+local fn = vim.fn
+local g = vim.g
+local b = vim.bo
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           bqf                            │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -68,16 +73,16 @@ function M.listish()
                 on_cursor = "qa", -- add current position to the list
                 add_note = "qn", -- add current position with your note to the list
                 clear = "qi", -- clear all items
-                close = "<leader>qc",
-                next = "]q",
-                prev = "[q"
+                close = "<Nop>",
+                next = "<Nop>",
+                prev = "<Nop>"
             },
             locallist = {
-                open = "<leader>wo",
-                on_cursor = "<leader>ww",
+                open = "<Leader>wo",
+                on_cursor = "<leader>wa",
                 add_note = "<leader>wn",
-                clear = "<leader>wd",
-                close = "<leader>wc",
+                clear = "<Leader>wi",
+                close = "<Nop>",
                 next = "]w",
                 prev = "[w"
             }
@@ -105,7 +110,7 @@ function M.listish()
         }
     )
 
-    cmd([[pa cfilter]])
+    ex.pa("cfilter")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -378,7 +383,9 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
-    g.UltiSnipsExpandTrigger = "<Leader><tab>"
+    -- g.UltiSnipsExpandTrigger = "<Leader><tab>"
+    g.UltiSnipsExpandTrigger = "<Nop>"
+
     -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"
     -- g.UltiSnipsListSnippets = "<C-u>"
@@ -637,36 +644,84 @@ function M.sandwhich()
     -- yS = to end of line
     -- yss = whole line
     -- yiss = inside nearest delimiter
-    -- ysiwf = funcname?
-    -- ysiwt = tag
     -- y{a,i}si = head - tail (select)
+    -- yaa = <here>
+    -- yar = [here]
+    -- ygs = (\n<line>\n)
+    -- ds<CR> = delete line above/below
+
+    -- === Visual ===
     -- Si = head - tail
-    -- yar = <here>
+    -- gS = (\n<line>\n)
+
+    -- --Old--                   ---Input---        ---Output---
+    -- "hello"                   ysiwtkey<cr>       "<key>hello</key>"
+    -- "hello"                   ysiwP<cr>          |("hello")
+    -- "hello"                   ysiwfprint<cr>     print("hello")
+    -- print("hello")            dsf                "hello"
+
+    -- TODO: These
+    -- "hello"                   ysWFprint<cr>     print( "hello" )
+    -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
     ex.runtime("macros/sandwich/keymap/surround.vim")
 
     cmd [[
+      let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
+
       let g:sandwich#recipes += [
-      \   {'buns': ['{ ', ' }'], 'nesting': 1, 'match_syntax': 1,
-      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['{']},
-      \
-      \   {'buns': ['[ ', ' ]'], 'nesting': 1, 'match_syntax': 1,
-      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['[']},
-      \
-      \   {'buns': ['( ', ' )'], 'nesting': 1, 'match_syntax': 1,
-      \    'kind': ['add', 'replace'], 'action': ['add'], 'input': ['(']},
-      \
-      \   {'buns': ['{\s*', '\s*}'],   'nesting': 1, 'regex': 1,
-      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
-      \    'action': ['delete'], 'input': ['{']},
-      \
-      \   {'buns': ['\[\s*', '\s*\]'], 'nesting': 1, 'regex': 1,
-      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
-      \    'action': ['delete'], 'input': ['[']},
-      \
-      \   {'buns': ['(\s*', '\s*)'],   'nesting': 1, 'regex': 1,
-      \    'match_syntax': 1, 'kind': ['delete', 'replace', 'textobj'],
-      \    'action': ['delete'], 'input': ['(']},
+      \   {
+      \     'buns': ['{ ', ' }'],
+      \     'nesting': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['add', 'replace'],
+      \     'action': ['add'],
+      \     'input': ['{']
+      \   },
+      \   {
+      \     'buns': ['[ ', ' ]'],
+      \     'nesting': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['add', 'replace'],
+      \     'action': ['add'],
+      \     'input': ['[']
+      \   },
+      \   {
+      \     'buns': ['( ', ' )'],
+      \     'nesting': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['add', 'replace'],
+      \     'action': ['add'],
+      \     'input': ['(']
+      \   },
+      \   {
+      \     'buns': ['{\s*', '\s*}'],
+      \     'nesting': 1,
+      \     'regex': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['delete', 'replace', 'textobj'],
+      \     'action': ['delete'],
+      \     'input': ['{']
+      \   },
+      \   {
+      \     'buns': ['\[\s*', '\s*\]'],
+      \     'nesting': 1,
+      \     'regex': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['delete', 'replace', 'textobj'],
+      \     'action': ['delete'],
+      \     'input': ['[']
+      \   },
+      \   {
+      \     'buns': ['(\s*', '\s*)'],
+      \     'nesting': 1,
+      \     'regex': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['delete',
+      \     'replace', 'textobj'],
+      \     'action': ['delete'],
+      \     'input': ['(']
+      \   },
       \   {
       \     'buns'        : ['{', '}'],
       \     'motionwise'  : ['line'],
@@ -680,10 +735,50 @@ function M.sandwhich()
       \     'kind'        : ['delete'],
       \     'linewise'    : 1,
       \     'command'     : ["'[,']normal! <<"],
+      \   },
+      \   {
+      \     'buns': ['(', ')'],
+      \     'cursor': 'head',
+      \     'command': ['startinsert'],
+      \     'kind': ['add', 'replace'],
+      \     'action': ['add'],
+      \     'input': ['P']
+      \   },
+      \   {
+      \     'buns': ['\s\+', '\s\+'],
+      \     'regex': 1,
+      \     'kind': ['delete', 'replace', 'query'],
+      \     'input': [' ']
+      \   },
+      \   {
+      \     'buns':         ['', ''],
+      \     'action':       ['add'],
+      \     'motionwise':   ['line'],
+      \     'linewise':     1,
+      \     'input':        ["\<CR>"]
+      \   },
+      \   {
+      \     'buns':         ['^$', '^$'],
+      \     'regex':        1,
+      \     'linewise':     1,
+      \     'input':        ["\<CR>"]
       \   }
       \ ]
     ]]
 
+    -- TODO
+    -- \   {
+    -- \     'buns': ['sandwich#magicchar#f#fname()' . '\<Space>', '" )"'],
+    -- \     'kind': ['add'],
+    -- \     'action': ['add'],
+    -- \     'expr': 1,
+    -- \     'input': ['J']
+    -- \   },
+    -- \   {
+    -- \     'buns':         ['<', '>'],
+    -- \     'expand_range': 0,
+    -- \     'input':        ['>', 'a'],
+    -- \   },
     -- \   {
     -- \     'buns'        : ["'", "'"],
     -- \     'motionwise'  : ['line'],
@@ -743,8 +838,54 @@ function M.targets()
             command = function()
                 fn["targets#mappings#extend"](
                     {
-                        a = {argument = {{o = "(", c = ")", s = ","}}},
-                        r = {pair = {{o = "<", c = ">"}}}
+                        -- a = {argument = {{o = "(", c = ")", s = ","}}},
+                        a = {pair = {{o = "<", c = ">"}}},
+                        r = {pair = {{o = "[", c = "]"}}},
+                        -- Closest separator
+                        -- g = {
+                        --     separator = {
+                        --         {d = ","},
+                        --         {d = "."},
+                        --         {d = ";"},
+                        --         {d = "="},
+                        --         {d = "+"},
+                        --         {d = "-"},
+                        --         {d = "="},
+                        --         {d = "~"},
+                        --         {d = "_"},
+                        --         {d = "*"},
+                        --         {d = "#"},
+                        --         {d = "/"},
+                        --         {d = [[\]]},
+                        --         {d = "|"},
+                        --         {d = "&"},
+                        --         {d = "$"}
+                        --     }
+                        -- },
+                        -- Closest text object
+                        ["@"] = {
+                            separator = {
+                                {d = ","},
+                                {d = "."},
+                                {d = ";"},
+                                {d = "="},
+                                {d = "+"},
+                                {d = "-"},
+                                {d = "="},
+                                {d = "~"},
+                                {d = "_"},
+                                {d = "*"},
+                                {d = "#"},
+                                {d = "/"},
+                                {d = [[\]]},
+                                {d = "|"},
+                                {d = "&"},
+                                {d = "$"}
+                            },
+                            pair = {{o = "(", c = ")"}, {o = "[", c = "]"}, {o = "{", c = "}"}, {o = "<", c = ">"}},
+                            quote = {{d = "'"}, {d = '"'}, {d = "`"}},
+                            tag = {{}}
+                        }
                     }
                 )
             end
@@ -753,12 +894,14 @@ function M.targets()
 
     wk.register(
         {
-            ["ir"] = "Inner angle bracket",
-            ["ar"] = "Around angle bracket",
+            ["ir"] = "Inner brace",
+            ["ar"] = "Around brace",
+            ["ia"] = "Inner angle bracket",
+            ["aa"] = "Around angle bracket",
             ["in"] = "Next object",
-            ["iN"] = "Previous object",
+            ["im"] = "Previous object",
             ["an"] = "Next object",
-            ["aN"] = "Previous object"
+            ["am"] = "Previous object"
         },
         {mode = "o"}
     )
@@ -775,7 +918,8 @@ function M.targets()
     -- g.targets_aiAI = "aIAi"
     --
     -- -- Seeking next/last objects
-    g.targets_nl = "nN"
+    -- g.targets_nl = "nN"
+    g.targets_nl = "nm"
 
     -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
     -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
@@ -955,7 +1099,7 @@ function M.lazygit()
     g.lazygit_floating_window_winblend = 0 -- transparency of floating window
     g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
     g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner characters
-    g.lazygit_floating_window_use_plenary = 0 -- use plenary.nvim to manage floating window if available
+    g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
     g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
 
     -- autocmd(
@@ -1090,15 +1234,18 @@ function M.grepper()
     map("n", "gs", "<Plug>(GrepperOperator)")
     map("x", "gs", "<Plug>(GrepperOperator)")
     map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]])
-    cmd(
-        ([[
-        aug Grepper
-            au!
-            au User Grepper ++nested %s
-        aug END
-    ]]):format(
-            [[call setqflist([], 'r', {'context': {'bqf': {'pattern_hl': '\%#' . getreg('/')}}})]]
-        )
+
+    augroup(
+        "Grepper",
+        {
+            event = "User",
+            pattern = "Grepper",
+            nested = true,
+            command = function()
+                -- \%# = cursor position
+                fn.setqflist({}, "r", {context = {bqf = {pattern_hl = [[\%#]] .. nvim.reg["/"]}}})
+            end
+        }
     )
 end
 
@@ -1420,7 +1567,7 @@ function M.project()
         {
             -- Manual mode doesn't automatically change your root directory, so you have
             -- the option to manually do so using `:ProjectRoot` command.
-            manual_mode = true,
+            manual_mode = false,
             -- Methods of detecting the root directory. **"lsp"** uses the native neovim
             -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
             -- order matters: if one is not detected, the other is used as fallback. You
@@ -1481,14 +1628,14 @@ function M.visualmulti()
         ["Invert Direction"] = "o",
         ["Surround"] = "S",
         ["Replace Pattern"] = "R",
-        ["Tools Menu"] = " `",
-        ["Show Regisers"] = ' "',
-        ["Case Setting"] = " c",
-        ["Toggle Whole Word"] = " w",
-        ["Transpose"] = " t",
-        ["Align"] = " a",
-        ["Duplicate"] = " d",
-        ["Merge Regions"] = " m"
+        ["Tools Menu"] = "<Leader>`",
+        ["Show Regisers"] = '<Leader>"',
+        ["Case Setting"] = "<Leader>c",
+        ["Toggle Whole Word"] = "<Leader>w",
+        ["Transpose"] = "<Leader>t",
+        ["Align"] = "<Leader>a",
+        ["Duplicate"] = "<Leader>d",
+        ["Merge Regions"] = "<Leader>m"
     }
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")

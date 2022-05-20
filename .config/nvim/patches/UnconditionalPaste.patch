@@ -1,0 +1,62 @@
+diff --git i/plugin/UnconditionalPaste.vim w/plugin/UnconditionalPaste.vim
+index d39c274..c1477fd 100644
+--- i/plugin/UnconditionalPaste.vim
++++ w/plugin/UnconditionalPaste.vim
+@@ -143,20 +143,26 @@ endif
+ "- mappings --------------------------------------------------------------------
+ 
+ function! s:CreateMappings()
++    " \       ['Jagged', 'B'],
++    " \       ['Delimited', 'qb'], ['RecallDelimited', 'QB'],
++    " \       ['Shifted', '>'],
++    " \       ['Commented', '#'],
++    " \       ['MoreIndent', 'm'], ['LessIndent', 'n'],
++    " \       ['Unjoin', 'u'], ['RecallUnjoin', 'U'],
++    " \       ['Plus', 'p'], ['PlusRepeat', '.p'],
++    " \       ['GPlus', 'P'], ['GPlusRepeat', '.P']
+     for [l:pasteName, l:pasteType] in
+     \   [
+-    \       ['Char', 'c'], ['Line', 'l'], ['Block', 'b'], ['Comma', ','], ['CommaSingleQuote', ",'"], ['CommaDoubleQuote', ',"'],
++    \       ['Char', 'c'],
++    \       ['Line', 'l'],
++    \       ['Block', 'b'],
++    \       ['Comma', ','],
++    \       ['CommaSingleQuote', ",'"],
++    \       ['CommaDoubleQuote', ',"'],
+     \       ['Indented', 'l'],
+-    \       ['MoreIndent', 'm'], ['LessIndent', 'n'],
+-    \       ['Shifted', '>'],
+-    \       ['Commented', '#'],
+     \       ['Spaced', 's'],
+-    \       ['Jagged', 'B'],
+-    \       ['Delimited', 'qb'], ['RecallDelimited', 'QB'],
+-    \       ['Queried', 'q'], ['RecallQueried', 'Q'],
+-    \       ['Unjoin', 'u'], ['RecallUnjoin', 'U'],
+-    \       ['Plus', 'p'], ['PlusRepeat', '.p'],
+-    \       ['GPlus', 'P'], ['GPlusRepeat', '.P']
++    \       ['Queried', 'q'],
++    \       ['RecallQueried', 'Q'],
+     \   ]
+ 	for [l:direction, l:pasteCmd] in [['After', 'p'], ['Before', 'P']]
+ 	    let l:mappingName = 'UnconditionalPaste' . l:pasteName . l:direction
+@@ -175,6 +181,7 @@ function! s:CreateMappings()
+ 			nmap g]P <Plug>UnconditionalPasteIndentedBefore
+ 			nmap g[P <Plug>UnconditionalPasteIndentedBefore
+ 			nmap g[p <Plug>UnconditionalPasteIndentedBefore
++			nmap gap <Plug>UnconditionalPasteIndentedAfter
+ 		    endif
+ 		elseif l:pasteName ==# 'MoreIndent'
+ 		    let l:pasteMappingDefaultKeys = ']]' . l:pasteCmd
+@@ -223,11 +230,11 @@ function! s:CreateMappings()
+ 	endfor
+     endfor
+ 
++    " \       ['Unjoin', 'u', '<C-u>'], ['RecallUnjoin', 'U', '<C-u><C-u>']
+     for [l:pasteName, l:pasteType, l:pasteKey] in
+     \   [
+     \       ['Char', 'c', '<C-c>'], ['Comma', ',', ','],
+     \       ['Queried', 'q', '<C-q>'], ['RecallQueried', 'Q', '<C-q><C-q>'],
+-    \       ['Unjoin', 'u', '<C-u>'], ['RecallUnjoin', 'U', '<C-u><C-u>']
+     \   ]
+ 	let l:plugMappingName = '<Plug>UnconditionalPaste' . l:pasteName
+ 	" XXX: Can only use i_CTRL-R here (though I want literal insertion, not

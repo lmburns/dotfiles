@@ -1,7 +1,9 @@
 local utils = require("common.utils")
-local opt = utils.opt
 local map = utils.map
 local list = require("dev").list
+
+local o = vim.opt
+local g = vim.g
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -79,13 +81,12 @@ o.startofline = false
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
-o.foldenable = false
-
 -- o.foldmethod = "marker"
 -- o.foldmarker = "[[[,]]]"
 -- o.foldmethod = "expr"
 -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
+o.foldenable = true
 o.foldopen = o.foldopen:append("search")
 o.foldlevelstart = 99
 o.foldcolumn = "1"
@@ -110,6 +111,14 @@ o.formatoptions = {
     t = false, -- Autowrap lines using text width value
     o = false --- Automatically insert comment leader after <enter>
 }
+
+-- A pattern that is used to recognize a list header. This is used for the "n"
+-- flag in 'formatoptions'.
+--                        ┌ recognize numbered lists (default)
+--                        ├─────────────┐
+o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\)\s*]]
+--                                          ├───┘
+--                                          └ recognize unordered lists
 
 o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 
@@ -139,9 +148,9 @@ o.mousefocus = true
 o.backspace = list {"indent", "eol", "start"}
 o.breakindentopt = "sbr"
 o.smartindent = true
-o.cindent = true
-o.linebreak = true -- lines wrap at words rather than random characters
+-- o.cindent = true
 -- o.autoindent = true
+o.linebreak = true -- lines wrap at words rather than random characters
 
 o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
@@ -168,7 +177,7 @@ o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
 o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true -- ignore case when completing file names and directories
-o.wildcharm = fn.char2nr(utils.t("<Tab>")) -- tab
+o.wildcharm = fn.char2nr(utils.termcodes["<Tab>"])
 
 o.pumheight = 10 -- number of items in popup menu
 o.pumblend = 3 -- Make popup window translucent
@@ -178,6 +187,9 @@ o.pumblend = 3 -- Make popup window translucent
 
 o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
 o.viewdir = fn.stdpath("data") .. "views"
+if not uv.fs_stat(vim.o.viewdir) then
+    fn.mkdir(vim.o.viewdir, "p")
+end
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
 o.jumpoptions = "stack"
@@ -243,7 +255,14 @@ o.fillchars = {
     foldopen = "▾",
     foldsep = "│",
     foldclose = "▸",
-    vert = "│"
+    -- Use thick lines for window separators
+    horiz = "━",
+    horizup = "┻",
+    horizdown = "┳",
+    vert = "┃",
+    vertleft = "┫",
+    vertright = "┣",
+    verthoriz = "╋"
 }
 
 -- g.cursorhold_updatetime = 1000
@@ -258,14 +277,15 @@ o.synmaxcol = 1000 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
 o.shortmess:append("acsIS") -- don't give 'ins-completion-menu' messages.
 
+o.cedit = "<C-c>" -- Key used to open command window on the CLI
+o.tagfunc = "CocTagFunc"
+
 o.grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never --glob '!.git'"
 -- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 o.grepformat = o.grepformat:prepend({"%f:%l:%c:%m"})
 
-o.background = "dark"
-o.cedit = "<C-x>"
-
 -- ================== Gui ================== [[[
+o.background = "dark"
 o.termguicolors = true
 -- o.guioptions:remove({ "m", "r", "l" })
 g.guitablabel = "%M %t"

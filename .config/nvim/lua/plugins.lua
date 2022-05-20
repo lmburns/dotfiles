@@ -96,7 +96,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "debug"},
+        log = {level = "INFO"},
         profile = {enable = true}
     }
 )
@@ -118,7 +118,7 @@ PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
 ---Can be disabled easier in the `control.lua` file
 packer.set_handler(
     1,
-    function(plugins, plugin, value)
+    function(_, plugin, _)
         plugin.disable = disabled[plugin.short_name]
     end
 )
@@ -252,6 +252,45 @@ return packer.startup(
             -- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"kevinhwang91/promise-async"})
+            use(
+                {
+                    "vim-scripts/UnconditionalPaste",
+                    patch = true,
+                    keys = {
+                        -- These have been removed from my patch
+                        -- {"n", "g]]p"}, -- Messes up packer compiled; Paste linewise with more indent
+                        -- {"n", "g]]P"},
+                        -- {"n", "g>p"}, -- Paste lines with count times 'shiftwidth indnt'
+                        -- {"n", "g>P"},
+                        -- {"n", "g#p"}, -- Paste linewise as commented text
+                        -- {"n", "g#P"},
+                        -- {"n", "gBp"}, -- Paste minimal fitting block
+                        -- {"n", "gBP"},
+                        -- {"n", "gqbp"}, -- Query for separator string, then paste minimal block
+                        -- {"n", "gBP"},
+
+                        {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
+                        {"n", "gcP"},
+                        {"n", "glp"}, -- Paste linewise (even if not complete)
+                        {"n", "glP"},
+                        {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
+                        {"n", "gbP"},
+                        {"n", "gap"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
+                        {"n", "g]p"}, -- Paste linewise above (like glp but adjust indent)
+                        {"n", "g]P"},
+                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
+                        {"n", "g[P"},
+                        {"n", "gsp"}, -- Paste with [count] spaces around lines
+                        {"n", "gsP"},
+                        {"n", "g,p"}, -- Paste charwise with each line delimited by ','
+                        {"n", "g,P"},
+                        {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
+                        {"n", "g,'P"},
+                        {"n", "gqp"}, -- Query for separator string, paste charwise
+                        {"n", "gqP"},
+                    }
+                }
+            )
 
             -- :Subvert/child{,ren}/adult{,s}/g
             use(
@@ -265,6 +304,7 @@ return packer.startup(
                 }
             )
 
+            -- TODO: Get completions to work just as regular S does
             -- :E2v = (\d{1,3})(?=(\d\d\d)+($|\D))
             -- Match = :M/<Items\s+attr="media">.+?<\/Items>/Im
             -- Substitute = :'<,'>S/(\d{1,3})(?=(\d\d\d)+($|\D))/\1,/g
@@ -741,6 +781,7 @@ return packer.startup(
                         {"n", "<Leader><Leader>J"},
                         {"n", "<Leader><Leader>K"},
                         {"n", "<Leader><Leader>/"},
+                        {"n", "<Leader><Leader>o"},
                         {"n", "<C-S-:>"},
                         {"n", "<C-S-<>"}
                     }

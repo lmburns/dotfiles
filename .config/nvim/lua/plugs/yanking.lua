@@ -5,7 +5,7 @@ local map = utils.map
 local color = require("common.color")
 local augroup = utils.augroup
 
-local wk = require("which-key")
+-- local wk = require("which-key")
 local mapping = require("yanky.telescope.mapping")
 
 function M.setup()
@@ -42,7 +42,7 @@ function M.setup()
                 timer = 300
             },
             preserve_cursor_position = {
-                enabled = true
+                enabled = false
             }
         }
     )

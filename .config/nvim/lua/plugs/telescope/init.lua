@@ -80,7 +80,7 @@ local c_actions = {
     end,
     qf_multi_select = function(prompt_bufnr)
         local picker = action_state.get_current_picker(prompt_bufnr)
-        local num_selections = table.getn(picker:get_multi_selection())
+        local num_selections = #picker:get_multi_selection()
 
         if num_selections > 1 then
             actions.send_selected_to_qflist(prompt_bufnr)
@@ -572,22 +572,22 @@ require("telescope").setup(
                         end
                     }
                 }
-            },
-            project = {
-                base_dirs = (function()
-                    local dirs = {}
-                    local f = "~/ghq"
-                    if uv.fs_stat(fn.expand(f)) then
-                        table.insert(dirs, {f, max_depth = 5})
-                    end
-                    f = "~/projects"
-                    if uv.fs_stat(fn.expand(f)) then
-                        table.insert(dirs, {f, max_depth = 3})
-                    end
-
-                    return #dirs == 0 and nil or dirs
-                end)()
             }
+            -- project = {
+            --     base_dirs = (function()
+            --         local dirs = {}
+            --         local f = "~/ghq"
+            --         if uv.fs_stat(fn.expand(f)) then
+            --             table.insert(dirs, {f, max_depth = 5})
+            --         end
+            --         f = "~/projects"
+            --         if uv.fs_stat(fn.expand(f)) then
+            --             table.insert(dirs, {f, max_depth = 3})
+            --         end
+            --
+            --         return #dirs == 0 and nil or dirs
+            --     end)()
+            -- }
             -- ["ui-select"] = {
             --     themes.get_dropdown {}
             -- },
@@ -646,10 +646,14 @@ end
 
 -- ========================== Builtin ==========================
 
+---Custom files function. If it is in a git directory, use that as root, else use CWD
+---Note that there should be no need for `lcd`. The `cwd` option should be enough
 M.cst_files = function()
-    local root = require("common.gittool").root()
+    local cwd = fn.expand("%:p:h")
+    local root = require("common.gittool").root(cwd)
+    ex.lcd(cwd)
     -- Override this so it gets ran on each file
-    options.cwd = fn.expand("%:p:h")
+    options.cwd = cwd
 
     if #root == 0 then
         -- Use the current filename instead of the directory
@@ -1142,7 +1146,7 @@ wk.register(
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
         [";B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
-        [";he"] = {":Telescope heading<CR>", "Telescope heading"},
+        [";H"] = {":Telescope heading<CR>", "Telescope heading"},
         [";fd"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
         ["<LocalLeader>a"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
@@ -1153,7 +1157,7 @@ wk.register(
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
-        ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
+        -- ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
             function()
@@ -1178,8 +1182,8 @@ wk.register(
     {
         ["<LocalLeader>c"] = {":Telescope coc<CR>", "Telescope coc menu"},
         ["<A-c>"] = {":Telescope coc commands<CR>", "Telescope coc commands"},
-        [";S"] = {":Telescope coc document_symbols<CR>", "Telescope coc doc symbols"},
-        [";s"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc workspace symbols"},
+        [";s"] = {":Telescope coc document_symbols<CR>", "Telescope coc doc symbols"},
+        [";S"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc workspace symbols"},
         ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Telescope coc diagnostics"},
         ["<C-x><C-r>"] = {":Telescope coc references<CR>", "Telescope coc references"},
         ["<C-[>"] = {":Telescope coc definitions<CR>", "Telescope coc definitions"},

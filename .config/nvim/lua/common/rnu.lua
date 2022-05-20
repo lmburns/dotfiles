@@ -1,6 +1,6 @@
 local M = {}
 
-require("common.utils")
+local C = require("common.color")
 
 local delay = 50
 local focus_lock = 1
@@ -24,11 +24,13 @@ end
 
 local function set_rnu()
     set_win_rnu(true)
+    -- C.set_hl("FoldColumn", {link = "LineNr"})
     cmd("hi! link FoldColumn NONE")
 end
 
 local function unset_rnu()
     set_win_rnu(false)
+    -- C.set_hl("FoldColumn", {fg = "NONE"})
     cmd("hi! link FoldColumn Ignore")
 end
 
@@ -55,7 +57,7 @@ end
 
 function M.scmd_enter()
     set_win_rnu(false)
-    cmd("redraws")
+    ex.redraws()
 end
 
 function M.scmd_leave()

@@ -45,7 +45,7 @@ local function init()
                     {buffer = bufnr,  desc = "Reload Rust workspace"}
                 )
 
-                map("n", ";ff", "RustFmt", {buffer = bufnr, cmd = true})
+                map("n", ";ff", "keepj keepp RustFmt", {buffer = bufnr, cmd = true})
                 map("v", ";ff", "RustFmtRange", {buffer = bufnr, cmd = true})
             end
         }

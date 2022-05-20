@@ -45,5 +45,7 @@ M.cabbrev("grep", "Grep")
 M.cabbrev("lgrep", "LGrep")
 M.cabbrev("buf", "Bufferize")
 M.cabbrev("req", "lua require('")
+M.cabbrev("cfilter", "Cfilter")
+M.cabbrev("cfi", "Cfilter")
 
 return M

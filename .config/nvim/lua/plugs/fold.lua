@@ -112,7 +112,7 @@ function M.attach(bufnr, force)
                 end
 
                 if e == vim.NIL and type(r) == "table" then
-                    -- language servers may need time to parser buffer
+                    -- language servers may need time to parse buffer
                     if #r == 0 then
                         local ft = vim.bo[bufnr].ft
                         local loaded = coc_loaded_ft[ft]

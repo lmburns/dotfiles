@@ -634,21 +634,34 @@ function M.edit_zsh(opts)
     fzf_lua.files(opts)
 end
 
-local function map_fzf(mode, key, f, opts, buffer)
-    local rhs = function()
-        if not pcall(require, "fzf-lua") then
-            R("packer").loader("fzf-lua")
-        end
+function M.cst_files(opts)
+    local cwd = fn.expand("%:p:h")
+    local root = require("common.gittool").root(cwd)
+    ex.lcd(cwd)
+    opts.cwd = cwd
 
-        if M[f] then
-            R("plugs.fzf-lua")[f](opts or {})
-        else
-            require("fzf-lua")[f](opts or {})
-        end
+    if #root == 0 then
+        fzf_lua.files(opts)
+    else
+        fzf_lua.git_files(opts)
     end
-
-    require("common.utils").map(mode, key, rhs, {noremap = true, silent = true, buffer = buffer})
 end
+
+-- local function map_fzf(mode, key, f, opts, buffer)
+--     local rhs = function()
+--         if not pcall(require, "fzf-lua") then
+--             R("packer").loader("fzf-lua")
+--         end
+--
+--         if M[f] then
+--             R("plugs.fzf-lua")[f](opts or {})
+--         else
+--             require("fzf-lua")[f](opts or {})
+--         end
+--     end
+--
+--     require("common.utils").map(mode, key, rhs, {noremap = true, silent = true, buffer = buffer})
+-- end
 
 function init()
     M.setup()
@@ -683,7 +696,8 @@ function init()
             ["<C-l>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
-            ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"}
+            ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
+            ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
         }
     )
 

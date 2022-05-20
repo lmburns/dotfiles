@@ -317,8 +317,8 @@ mod3 + {b,v,p,period,s}
 # prs-copy
 
 # Password manager dmenu script
-# ctrl + alt + p
-#     prs-dmenu
+ctrl + alt + super + p
+    prs-dmenu
 
 # Clipboard history
 ctrl + alt + y

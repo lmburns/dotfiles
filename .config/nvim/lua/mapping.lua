@@ -96,6 +96,10 @@ map("v", "<Tab>", ">><Esc>gv")
 map("v", "<S-Tab>", "<<<Esc>gv")
 map("i", "<S-Tab>", "<C-d>")
 
+map("n", "v", "m`v")
+map("n", "V", "m`V")
+map("n", "<C-v>", "m`<C-v>")
+
 -- Don't lose selection when shifting sidewards
 map("x", "<", "<gv")
 map("x", ">", ">gv")
@@ -296,10 +300,12 @@ wk.register(
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
+        ["qD"] = {[[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]], "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
         ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},
-        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline(false)<CR>]], "Quickfix outline (coc)"},
+        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline()<CR>]], "Quickfix outline (coc)"},
+        ["<Leader>fw"] = {[[<Cmd>lua require('common.qfext').outline_treesitter()<CR>]], "Quickfix outline (coc)"},
         ["<Leader>fa"] = {[[<Cmd>lua require('common.qfext').outline_aerial()<CR>]], "Quickfix outline (aerial)"}
     }
 )

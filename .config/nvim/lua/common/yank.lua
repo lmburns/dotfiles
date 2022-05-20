@@ -3,6 +3,9 @@ local M = {}
 local utils = require("common.utils")
 local augroup = utils.augroup
 
+local api = vim.api
+local fn = vim.fn
+
 local last_wv
 local winid
 local bufnr
@@ -17,6 +20,7 @@ function M.wrap(suffix)
     return type(suffix) == "string" and ("y" .. suffix) or "y"
 end
 
+---Set window view options
 function M.set_wv()
     last_wv = fn.winsaveview()
     winid = api.nvim_get_current_win()
@@ -26,6 +30,7 @@ function M.set_wv()
     vim.o.report = 65535
 end
 
+---Reset window view options
 function M.clear_wv()
     last_wv = nil
     winid = nil
@@ -36,6 +41,7 @@ function M.clear_wv()
     end
 end
 
+---Restore window view
 function M.restore()
     if
         vim.v.event.operator == "y" and last_wv and api.nvim_get_current_win() == winid and
@@ -46,6 +52,11 @@ function M.restore()
     M.clear_wv()
 end
 
+---Yank an item to a given register and notify
+---@param regname string register to copy to
+---@param context string text to copy
+---@param level number?
+---@param opts table?
 function M.yank_reg(regname, context, level, opts)
     fn.setreg(regname, context)
     vim.notify(context, level, opts)

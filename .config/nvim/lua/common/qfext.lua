@@ -2,11 +2,14 @@ local M = {}
 
 local gittool = require("common.gittool")
 local coc = require("plugs.coc")
-local C = require("common.color")
 
 local backends = require("aerial.backends")
 local config = require("aerial.config")
 local data = require("aerial.data")
+
+local api = vim.api
+local fn = vim.fn
+local ex = nvim.ex
 
 -- TODO: Reduce duplicate code here
 
@@ -18,6 +21,10 @@ local data = require("aerial.data")
 -- Field File    Function Interface Key         Method   Module     Namespace
 -- Null  Number  Object   Operator  Package     Property String     Struct
 -- TypeParameter Variable
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Aerial                          │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Fill a quickfix-list with symbols from Aerial
 ---@param opts Outline
@@ -37,7 +44,8 @@ function M.outline_aerial(opts)
                 "Method",
                 "Struct",
                 "Type"
-            }
+            },
+            fzf = false
         }
     )
     local results = {}
@@ -118,7 +126,7 @@ function M.outline_aerial(opts)
             quickfixtextfunc = function(qinfo)
                 local ret = {}
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
-                local bufnr = api.nvim_get_current_buf()
+                bufnr = api.nvim_get_current_buf()
 
                 api.nvim_buf_clear_namespace(bufnr, ns, qinfo.start_idx, qinfo.end_idx + 1)
 
@@ -165,7 +173,20 @@ function M.outline_aerial(opts)
     if vim.b.bqf_enabled and opts.fzf then
         api.nvim_feedkeys("zf", "m", false)
     end
+
+    -- TODO: How to clear sign column on close?
+    -- vim.defer_fn(
+    --     function()
+    --         fn.sign_unplace("aerial-sign")
+    --         api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+    --     end,
+    --     1000
+    -- )
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Coc                            │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Fill a quickfix-list with symbols from Coc
 ---@param opts Outline
@@ -262,6 +283,143 @@ function M.outline(opts)
             end
         end
     )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Treesitter                        │
+-- ╰──────────────────────────────────────────────────────────╯
+
+local function prepare_match(entry, kind)
+    local entries = {}
+
+    if entry.node then
+        table.insert(entries, entry)
+    else
+        for name, item in pairs(entry) do
+            vim.list_extend(entries, prepare_match(item, name))
+        end
+    end
+
+    return entries
+end
+
+local treesitter_type_highlight = {
+    ["associated"] = "TSConstant",
+    ["constant"] = "TSConstant",
+    ["field"] = "TSField",
+    ["function"] = "TSFunction",
+    ["method"] = "TSMethod",
+    ["parameter"] = "TSParameter",
+    ["property"] = "TSProperty",
+    ["struct"] = "Struct",
+    ["var"] = "TSVariableBuiltin"
+}
+
+---Create an outline using treesitter
+---@param opts table?
+function M.outline_treesitter(opts)
+    opts =
+        vim.tbl_extend(
+        "keep",
+        opts or {},
+        {
+            bufnr = api.nvim_get_current_buf(),
+            fzf = false
+        }
+    )
+    local parsers = require "nvim-treesitter.parsers"
+    if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
+        utils.notify(
+            {
+                title = "builtin.treesitter",
+                message = "No parser for the current buffer",
+                level = log.levels.ERROR
+            }
+        )
+        return
+    end
+
+    local ts_locals = require("nvim-treesitter.locals")
+    local results = {}
+    for _, definition in ipairs(ts_locals.get_definitions(opts.bufnr)) do
+        local entries = prepare_match(ts_locals.get_local_nodes(definition))
+        for _, entry in ipairs(entries) do
+            entry.kind = F.if_nil(entry.kind, "")
+            table.insert(results, entry)
+        end
+    end
+
+    if vim.tbl_isempty(results) then
+        return
+    end
+
+    local ns = api.nvim_create_namespace("treesitter-qf")
+    local ts_utils = require "nvim-treesitter.ts_utils"
+    local items = {}
+    local text_fmt = "%-32s│%5d:%-3d│%10s%s"
+
+    for _, entry in pairs(results) do
+        local start_row, start_col, end_row, end_col = ts_utils.get_node_range(entry.node)
+        local node_text = vim.treesitter.get_node_text(entry.node, opts.bufnr)
+
+        table.insert(
+            items,
+            {
+                bufnr = opts.bufnr,
+                lnum = start_row + 1,
+                col = start_col,
+                end_lnum = end_row,
+                end_col = end_col,
+                kind = entry.kind,
+                text = text_fmt:format(entry.kind, start_row, start_col, " ", vim.trim(node_text)),
+                hl_group = treesitter_type_highlight[entry.kind]
+            }
+        )
+    end
+
+    fn.setloclist(
+        0,
+        {},
+        " ",
+        {
+            title = ("Treesitter Bufnr: %d"):format(opts.bufnr),
+            id = "$",
+            context = {
+                bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
+            },
+            items = items,
+            quickfixtextfunc = function(qinfo)
+                local ret = {}
+                local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
+                local bufnr = api.nvim_get_current_buf()
+
+                for i = qinfo.start_idx, qinfo.end_idx do
+                    local ele = _items[i]
+                    table.insert(ret, ele.text)
+
+                    for j = 1, #items do
+                        local item = items[j]
+                        if item.text == ele.text then
+                            -- TODO: Get this to work
+                            api.nvim_buf_add_highlight(bufnr, ns, item.hl_group, i, 0, 1)
+                        end
+                    end
+                end
+                return ret
+            end
+        }
+    )
+
+    local winid = fn.getloclist(0, {winid = 0}).winid
+    if winid == 0 then
+        ex.bel("lw")
+    else
+        api.nvim_set_current_win(winid)
+    end
+
+    if vim.b.bqf_enabled and opts.fzf then
+        api.nvim_feedkeys("zf", "m", false)
+    end
 end
 
 ---Turn conflict markers into a quickfix list

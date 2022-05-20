@@ -13,35 +13,6 @@ local wk = require("which-key")
 
 local default_preview_window
 
--- M.f = {
---     vim = setmetatable(
---         {},
---         {
---             __index = function(self, k)
---                 local mt = getmetatable(self)
---                 local x = mt[k]
---                 if x ~= nil then
---                     return x
---                 end
---
---                 local f
---                 local fzf = fn[("fzf#vim#%s"):format(k)]
---                 if type(fzf) == "function" and vim.is_callable(fzf) then
---                     f = function(...)
---                         return f(...)
---                     end
---                     mt[k] = f
---                 else
---                     vim.notify("Not an FZF function")
---                     return
---                 end
---
---                 return f
---             end
---         }
---     )
--- }
-
 function M.fzf(sources, sinkfunc)
     local fzf_run = fn["fzf#run"]
     local fzf_wrap = fn["fzf#wrap"]
@@ -287,42 +258,38 @@ function M.outline()
 end
 
 -- function M.cmdhist()
---   local opts = {
---     name = "history-command",
---     source = cmdhist.list(),
---     ["sink*"] = function(ret)
---       local key, cmdl = unpack(ret)
---       if key == "ctrl-y" then
---         fn.setreg(vim.v.register, cmdl)
---       else
---         fn.histadd(":", cmdl)
---         cmdhist.store()
---         if key == "ctrl-e" then
---           cmd("redraw")
---           api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
---         else
---           api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
---         end
---       end
---     end,
---     options = {
---       "+m",
---       "--prompt",
---       "Hist: ",
---       "--tiebreak",
---       "index",
---       "--expect",
---       "ctrl-e,ctrl-y",
---     },
---   }
---   fn.FzfWrapper(opts)
+--     local opts = {
+--         name = "history-command",
+--         source = cmdhist.list(),
+--         ["sink*"] = function(ret)
+--             local key, cmdl = unpack(ret)
+--             if key == "ctrl-y" then
+--                 fn.setreg(vim.v.register, cmdl)
+--             else
+--                 fn.histadd(":", cmdl)
+--                 cmdhist.store()
+--                 if key == "ctrl-e" then
+--                     cmd("redraw")
+--                     api.nvim_feedkeys(":" .. utils.termcodes["<Up>"], "n", false)
+--                 else
+--                     api.nvim_feedkeys((":" .. cmdl .. utils.termcodes["<CR>"]), "", false)
+--                 end
+--             end
+--         end,
+--         options = {
+--             "+m",
+--             "--prompt",
+--             "Hist: ",
+--             "--tiebreak",
+--             "index",
+--             "--expect",
+--             "ctrl-e,ctrl-y"
+--         }
+--     }
+--     fn.FzfWrapper(opts)
 -- end
 
--- \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
--- \ 'options': '--no-border',
--- \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
--- \ 'window': 'call FloatingFZF()'})
-
+---TODO: Get this to work
 function M.copyq()
     -- inoremap <expr> <a-.> fzf#vim#complete({
     --   \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
@@ -374,37 +341,6 @@ function M.copyq()
 end
 
 -- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
-
--- function M.copyq_fzf()
---     local opts = {
---         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"}
---     }
---
---     opts.name = "copy-clipboard"
---     opts.source =
---         (function()
---         -- os.capture([[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");']])
---         local res = {}
---         local val =
---             Job:new(
---             {
---                 command = "copyq",
---                 args = {"eval", "--", [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]]},
---                 enable_recording = true
---             }
---         ):sync()
---
---         for _, item in pairs(val) do
---             if item ~= "" then
---                 table.insert(res, item)
---             end
---         end
---
---         return res
---     end)()
---
---     fn.FzfWrapper(opts)
--- end
 
 function M.resize_preview_layout()
     local layout = vim.g.fzf_layout.window
@@ -615,18 +551,18 @@ local function init()
 ]]
 
     -- Word completion popup
-    cmd [[
-    inoremap <expr> <C-x><C-w> fzf#vim#complete#word({
-      \ 'window': { 'width': 0.2, 'height': 0.9, 'xoffset': 1 }})
-  ]]
+    -- cmd [[
+    -- inoremap <expr> <C-x><C-w> fzf#vim#complete#word({
+    --   \ 'window': { 'width': 0.2, 'height': 0.9, 'xoffset': 1 }})
+    -- ]]
 
     -- Word completion window
-    cmd [[
-    inoremap <expr> <C-x><C-a> fzf#vim#complete({
-      \ 'source':  'cat /usr/share/dict/words',
-      \ 'options': '--multi --reverse --margin 15%,0',
-      \ 'left':    20})
-    ]]
+    -- cmd [[
+    -- inoremap <expr> <C-x><C-a> fzf#vim#complete({
+    --   \ 'source':  'cat /usr/share/dict/words',
+    --   \ 'options': '--multi --reverse --margin 15%,0',
+    --   \ 'left':    20})
+    -- ]]
 
     -- Clipboard manager
     --   cmd [[

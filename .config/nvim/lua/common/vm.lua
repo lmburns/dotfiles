@@ -40,8 +40,10 @@ function M.exit()
 end
 
 function M.mappings()
-    nvim.buf.set_keymap(0, "n", "n", "<C-n>", {silent = true})
-    nvim.buf.set_keymap(0, "i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true})
+    -- nvim.buf.set_keymap(0, "n", "n", "<C-n>", {silent = true})
+    -- nvim.buf.set_keymap(0, "i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true})
+    map(0, "n", "n", "<C-n>", {silent = true})
+    map(0, "i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true})
 end
 
 local function init()

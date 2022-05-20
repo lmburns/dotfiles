@@ -1,6 +1,7 @@
 local M = {}
 
-local map = require("common.utils").map
+local utils = require("common.utils")
+local map = utils.map
 
 local cmt_utils = require("Comment.utils")
 local ts_utils = require("ts_context_commentstring.utils")
@@ -8,7 +9,7 @@ local internal = require("ts_context_commentstring.internal")
 
 local wk = require("which-key")
 
-local state = {}
+-- local state = {}
 
 -- gcip = paragraph
 -- gcw = start next word
@@ -72,7 +73,6 @@ function M.setup()
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: Ctx):string
             pre_hook = function(ctx)
-                -- FIX: How to get nested vim comment trigger?
                 local U = require "Comment.utils"
 
                 -- Determine the location where to calculate commentstring from
@@ -123,14 +123,27 @@ end
 local function init()
     M.setup()
 
-    map("n", "gl", ":lua require('Comment.api').toggle_current_linewise()<CR>")
+    -- map("n", "gl", ":lua require('Comment.api').toggle_current_linewise()<CR>")
+    -- map("x", "gl", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
+
     map("n", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>j")
-    map("v", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>'>j")
+    -- map("v", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>'>j")
 
     map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle_current_linewise()<CR>]])
 
     map("x", "<C-.>", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
-    map("x", "gl", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
+
+    map(
+        "x",
+        "<C-A-.>",
+        function()
+            local selection = utils.get_visual_selection()
+            fn.setreg(vim.v.register, selection)
+            cmd("normal! gv")
+            require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())
+        end,
+        {desc = "Copy text and comment it out"}
+    )
 
     -- wk.register(
     --     {

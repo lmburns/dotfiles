@@ -149,7 +149,7 @@ function M.setup()
                 [9] = "₉",
                 ["+"] = "₊"
             },
-            signcolumn = true,
+            signcolumn = false,
             numhl = true,
             linehl = false,
             word_diff = false,
@@ -181,7 +181,7 @@ function M.setup()
                 col = 1
             },
             show_deleted = false,
-            trouble = false,
+            trouble = true,
             yadm = {enable = false}
 
             -- keymaps = {

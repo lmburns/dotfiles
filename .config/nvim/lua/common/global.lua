@@ -19,6 +19,8 @@ R = function(name)
     return require(name)
 end
 
+-- These may be specified in some files just to supress non-global warnings
+--
 _G.o = vim.opt -- vim options: behaves like `:set`
 _G.opt_local = vim.opt_local
 _G.opt_global = vim.opt_global

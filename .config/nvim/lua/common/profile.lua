@@ -1,5 +1,8 @@
 local M = {}
 
+local utils = require("common.utils")
+local map = utils.map
+
 PROFILE_LOAD = false
 
 if PROFILE_LOAD then
@@ -15,7 +18,7 @@ M.profile = function(filename)
     fn.mkdir(base, "p")
     local success, profile = pcall(require, "plenary.profile.lua_profiler")
     if not success then
-        require("common.utils").cool_echo("Plenary is not installed", "Title", true)
+        utils.cool_echo("Plenary is not installed", "Title", true)
     end
     profile.start()
     return function()
@@ -30,5 +33,8 @@ M.profile = function(filename)
         )
     end
 end
+
+map("n", "<F3>", [[<cmd>lua require'plenary.profile'.start("profile.log", {flame = true})<cr>]])
+map("n", "<F4>", [[<cmd>lua require'plenary.profile'.stop()<cr>]])
 
 return M

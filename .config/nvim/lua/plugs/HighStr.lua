@@ -23,8 +23,8 @@ end
 
 local function init()
   M.setup()
-  map("v", "<F3>", ":<C-u>HSHighlight 1<CR>", { silent = true })
-  map("v", "<F4>", ":<C-u>HSRmHighlight 1<CR>", { silent = true })
+  -- map("v", "<F3>", ":<C-u>HSHighlight 1<CR>", { silent = true })
+  -- map("v", "<F4>", ":<C-u>HSRmHighlight 1<CR>", { silent = true })
 end
 
 init()

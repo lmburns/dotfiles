@@ -1,6 +1,8 @@
 local M = {}
 
-require("common.utils")
+local api = vim.api
+local fn = vim.fn
+
 local mru_list
 
 function M.record()

@@ -11,7 +11,6 @@ local wk = require("which-key")
 local promise = require("promise")
 
 local diag_qfid
-local sign_icons
 
 function M.getsymbol()
     local ok, _ = pcall(require, "nvim-gps")
@@ -194,7 +193,7 @@ function M.jump2loc(locs, skip)
     if not skip then
         local winid = fn.getloclist(0, {winid = 0}).winid
         if winid == 0 then
-            cmd("abo lw")
+            ex.abo("lw")
         else
             api.nvim_set_current_win(winid)
         end
@@ -417,10 +416,6 @@ function M.did_init(silent)
     return true
 end
 
-function M.sign_icon(level)
-    return sign_icons[level]
-end
-
 function M.skip_snippet()
     fn.CocActionAsync("snippetNext")
     return utils.termcodes["<BS>"]
@@ -536,14 +531,6 @@ function M.init()
 
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
-
-    local diag_config = fn["coc#util#get_config"]("diagnostic")
-    sign_icons = {
-        hint = diag_config.hintSign,
-        info = diag_config.infoSign,
-        warning = diag_config.warningSign,
-        error = diag_config.errorSign
-    }
 
     augroup(
         "CocNvimSetup",
@@ -698,7 +685,7 @@ function M.init()
             ["<Leader>qf"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
             -- ["[c"] = {"<Plug>(coc-git-prevconflict)", "Goto previous conflict"},
             -- ["]c"] = {"<Plug>(coc-git-nextconflict)", "Goto next conflict"},
-            ["gC"] = {"<Plug>(coc-git-commit)", "Show commits in current position"},
+            -- ["gC"] = {"<Plug>(coc-git-commit)", "Show commits in current position"},
             ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
@@ -784,16 +771,16 @@ function M.init()
     map("i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
 
     -- Git
-    wk.register(
-        {
-            -- ["<Leader>gD"] = {":CocCommand git.diffCached<CR>", "Git diff cached"},
-            ["<LocalLeader>gg"] = {":CocCommand fzf-preview.GitActions<CR>", "Git actions (fzf)"},
-            ["<LocalLeader>gs"] = {":CocCommand fzf-preview.GitStatus<CR>", "Git status (fzf)"},
-            ["<LocalLeader>gr"] = {":CocCommand fzf-preview.GitLogs<CR>", "Git logs (fzf)"},
-            ["<LocalLeader>gp"] = {":<C-u>CocList --normal gstatus<CR>", "Git status"},
-            ["<LocalLeader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
-        }
-    )
+    -- wk.register(
+    --     {
+    --         -- ["<Leader>gD"] = {":CocCommand git.diffCached<CR>", "Git diff cached"},
+    --         ["<LocalLeader>gg"] = {":CocCommand fzf-preview.GitActions<CR>", "Git actions (fzf)"},
+    --         ["<LocalLeader>gs"] = {":CocCommand fzf-preview.GitStatus<CR>", "Git status (fzf)"},
+    --         ["<LocalLeader>gr"] = {":CocCommand fzf-preview.GitLogs<CR>", "Git logs (fzf)"},
+    --         ["<LocalLeader>gp"] = {":<C-u>CocList --normal gstatus<CR>", "Git status"},
+    --         ["<LocalLeader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
+    --     }
+    -- )
 
     -- Git
     -- map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", {silent = true})
