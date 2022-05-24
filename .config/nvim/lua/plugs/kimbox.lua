@@ -10,6 +10,8 @@ local autocmd = utils.autocmd
 
 local C = require("common.color")
 
+local g = vim.g
+
 -- General configurations for various themes
 
 M.catppuccin = function()
@@ -101,7 +103,7 @@ end
 M.kanagawa = function()
     local cp = require("kanagawa.colors").setup()
 
-    local bg = cp.waveBlue2
+    -- local bg = cp.waveBlue2
     local ibg = cp.sumiInk1
 
     local overrides = {

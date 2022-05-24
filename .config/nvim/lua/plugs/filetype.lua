@@ -103,6 +103,7 @@ function M.setup()
         {
             overrides = {
                 extensions = {
+                    task = "taskedit",
                     pn = "potion",
                     eslintrc = "json",
                     prettierrc = "json",
@@ -122,7 +123,7 @@ function M.setup()
                     ["Brewfile"] = "ruby"
                 },
                 complex = {
-                    [".*git/config"] = "gitconfig",
+                    -- [".*/git/config"] = "gitconfig",
                     [".*%.env.*"] = "sh",
                     [".*ignore"] = "conf",
                     ["calcurse-note.*"] = "markdown",

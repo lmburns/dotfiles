@@ -137,24 +137,14 @@ vim.schedule(
             50
         )
 
-        -- === Defer mappings
-        -- vim.defer_fn(
-        --     function()
-        --       local maps = require("mapping").mappings
-        --       local map = require("common.utils").map
-        --       for _, m in ipairs(maps) do
-        --         map(unpack(m))
-        --       end
-        --     end, 10
-        -- )
-
-        -- -- === Treesitter
+        -- === Treesitter
         vim.defer_fn(
             function()
                 require("plugs.tree-sitter")
 
-                -- runtime! filetype.vim
                 -- require("filetype").resolve()
+                -- g.did_load_filetypes = nil
+                -- cmd("runtime! filetype.vim")
 
                 augroup(
                     "syntaxset",
@@ -213,7 +203,7 @@ vim.schedule(
                     }
                 )
 
-                -- highlight syntax
+                -- Highlight syntax
                 if fn.exists("##SearchWrapped") == 1 then
                     augroup(
                         "SearchWrappedHighlight",
@@ -302,12 +292,11 @@ vim.schedule(
                     }
                 )
 
-                local link = color.link
-
                 set_hl("CocUnderline", {gui = "none"})
                 set_hl("CocSemStatic", {gui = "bold"})
-                link("CocSemDefaultLibrary", "Special")
-                link("CocSemDocumentation", "Number")
+                set_hl("CocSemDefaultLibrary", {link = "Constant"})
+                set_hl("CocSemDocumentation", {link = "Number"})
+                -- set_hl("CocSemDefaultLibraryNamespace", {link = "TSNamespace"})
 
                 ex.packadd("coc-kvs")
                 ex.packadd("coc-wxy")

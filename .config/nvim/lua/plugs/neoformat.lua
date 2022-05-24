@@ -5,6 +5,7 @@ local map = utils.map
 local augroup = utils.augroup
 local coc = require("plugs.coc")
 local gittool = require("common.gittool")
+local utils = require("common.utils")
 
 local g = vim.g
 local api = vim.api
@@ -189,8 +190,8 @@ local function init()
         stdin = 1
     }
 
-    map("n", ";ff", [[:keepj keepp lua require('plugs.neoformat').format_doc()<CR>]])
-    map("x", ";ff", [[:keepj keepp lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
+    map("n", ";ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
+    map("x", ";ff", [[:lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
 
     augroup(
         "lmb__Formatting",

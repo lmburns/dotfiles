@@ -62,7 +62,7 @@ end
 function M.listish()
     require("listish").config(
         {
-            theme_list = true,
+            theme_list = false,
             clearqflist = "Clearquickfix", -- command
             clearloclist = "Clearloclist", -- command
             clear_notes = "ClearListNotes", -- command
@@ -664,6 +664,22 @@ function M.sandwhich()
     -- "hello"                   ysWFprint<cr>     print( "hello" )
     -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
+    -- This allows for macros in Rust
+    vim.g["sandwich#magicchar#f#patterns"] = {
+        {
+            header = [[\<\h\k*]],
+            bra = "(",
+            ket = ")",
+            footer = ""
+        },
+        {
+            header = [[\<\h\k*!]],
+            bra = "(",
+            ket = ")",
+            footer = ""
+        },
+    }
+
     ex.runtime("macros/sandwich/keymap/surround.vim")
 
     cmd [[
@@ -762,7 +778,28 @@ function M.sandwhich()
       \     'regex':        1,
       \     'linewise':     1,
       \     'input':        ["\<CR>"]
-      \   }
+      \   },
+      \   {
+      \     'buns':         ['{', '}'],
+      \     'nesting':      1,
+      \     'skip_break':   1,
+      \     'input':        ['{', '}', 'B'],
+      \   },
+      \   {
+      \     'buns':         ['[', ']'],
+      \     'nesting':      1,
+      \     'input':        ['[', ']', 'r'],
+      \   },
+      \   {
+      \     'buns':         ['(', ')'],
+      \     'nesting':      1,
+      \     'input':        ['(', ')', 'b'],
+      \   },
+      \   {
+      \     'buns':         ['<', '>'],
+      \     'expand_range': 0,
+      \     'input':        ['>', 'a'],
+      \   },
       \ ]
     ]]
 
@@ -773,11 +810,6 @@ function M.sandwhich()
     -- \     'action': ['add'],
     -- \     'expr': 1,
     -- \     'input': ['J']
-    -- \   },
-    -- \   {
-    -- \     'buns':         ['<', '>'],
-    -- \     'expand_range': 0,
-    -- \     'input':        ['>', 'a'],
     -- \   },
     -- \   {
     -- \     'buns'        : ["'", "'"],
@@ -811,24 +843,13 @@ end
 -- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
 function M.targets()
     -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
-    -- r,b,B,q,p,f,k = <>, (), {}, '', paragraph, function, class
     -- vI) = contents inside pair
     -- in( an( In( An( il( al( Il( Al( ... next and last pair
     -- {a,I,A}{,.;+=...} = a/inside/around separator
-    -- ia = in argument
-    -- aa = an argument
     -- inb anb Inb Anb ilb alb Ilb Alb = any block
     -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
     -- cib = change in () or {}
-
-    -- cmd [[
-    --   augroup define_object
-    --     autocmd User targets#mappings#user call targets#mappings#extend({
-    --           \ 'a': {'argument': [{'o':'(', 'c':')', 's': ','}]}
-    --           \ })
-    --   augroup END
-    -- ]]
 
     augroup(
         "lmb__Targets",
@@ -838,6 +859,7 @@ function M.targets()
             command = function()
                 fn["targets#mappings#extend"](
                     {
+                        -- Parameter
                         -- a = {argument = {{o = "(", c = ")", s = ","}}},
                         a = {pair = {{o = "<", c = ">"}}},
                         r = {pair = {{o = "[", c = "]"}}},
@@ -1364,12 +1386,12 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                            LF                            │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.lf()
-    g.lf_map_keys = 0
-    g.lf_replace_netrw = 1
-
-    map("n", "<A-o>", ":Lf<CR>")
-end
+-- function M.lf()
+--     g.lf_map_keys = 0
+--     g.lf_replace_netrw = 1
+--
+--     map("n", "<A-o>", ":Lf<CR>")
+-- end
 
 function M.lfnvim()
     g.lf_netrw = 1
@@ -1382,8 +1404,7 @@ function M.lfnvim()
         }
     )
 
-    -- map("n", "<A-o>", ":Lf<CR>")
-    map("n", "<C-o>", ":Lfnvim<CR>")
+    map("n", "<C-o>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 
@@ -1741,6 +1762,13 @@ function M.regexplainer()
             separator = "\n"
         }
     }
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          eregex                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.eregex()
+    map("n", "<Leader>/", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

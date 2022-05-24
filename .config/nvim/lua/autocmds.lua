@@ -234,7 +234,8 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                 TSFunction = {bold = true},
                 TSFuncBuiltin = {bold = true},
                 Function = {gui = "bold"},
-                Todo = {bg = "none"}
+                Todo = {bg = "none"},
+                QuickFixLine = {fg = "none"}
                 -- TSConstBuiltin = {gui = "none", default = true},
                 -- TSMethod = {gui = "bold"},
                 -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter

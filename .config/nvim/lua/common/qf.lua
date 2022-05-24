@@ -187,7 +187,7 @@ function M.close()
                             cmd("lcl")
                         end
                     end
-                    cmd(("noa bw %d"):format(bufnr))
+                    ex.noa(("bw %d"):format(bufnr))
                 end
             )
         end
@@ -199,6 +199,7 @@ function M.syntax()
         return
     end
 
+    -- FIX: QuickFixLine HL group doesn't change
     local title = vim.w.quickfix_title
     if title:match("^%**[Oo]utline") then
         require("common.qfext").outline_syntax()
@@ -211,9 +212,9 @@ function M.syntax()
       syn match qfError / E .*$/ contained
       syn match qfWarning / W .*$/ contained
       syn match qfInfo / I .*$/ contained
-      syn match qfNote / [NH] .*$/ contained
+      syn match qfNote / [NHZ] .*$/ contained
 
-      hi def link qfFileName Directory
+      hi def link qfFileName Function
       hi def link qfSeparatorLeft Delimiter
       hi def link qfSeparatorRight Delimiter
       hi def link qfLineNr LineNr

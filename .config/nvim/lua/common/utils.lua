@@ -388,62 +388,62 @@ M.get_visual_selection = function()
 end
 
 M.get_visual_selection2 = function(mode)
-  if mode == nil then
-    local mode_info = vim.api.nvim_get_mode()
-    mode = mode_info.mode
-  end
-
-  local cursor = vim.api.nvim_win_get_cursor(0)
-  local cline, ccol = cursor[1], cursor[2]
-  local vline, vcol = vim.fn.line 'v', vim.fn.col 'v'
-
-  local sline, scol
-  local eline, ecol
-  if cline == vline then
-    if ccol <= vcol then
-      sline, scol = cline, ccol
-      eline, ecol = vline, vcol
-      scol = scol + 1
-    else
-      sline, scol = vline, vcol
-      eline, ecol = cline, ccol
-      ecol = ecol + 1
+    if mode == nil then
+        local mode_info = vim.api.nvim_get_mode()
+        mode = mode_info.mode
     end
-  elseif cline < vline then
-    sline, scol = cline, ccol
-    eline, ecol = vline, vcol
-    scol = scol + 1
-  else
-    sline, scol = vline, vcol
-    eline, ecol = cline, ccol
-    ecol = ecol + 1
-  end
 
-  if mode == 'V' or mode == 'CTRL-V' or mode == '\22' then
-    scol = 1
-    ecol = nil
-  end
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local cline, ccol = cursor[1], cursor[2]
+    local vline, vcol = vim.fn.line "v", vim.fn.col "v"
 
-  local lines = vim.api.nvim_buf_get_lines(0, sline - 1, eline, 0)
-  if #lines == 0 then
-    return
-  end
+    local sline, scol
+    local eline, ecol
+    if cline == vline then
+        if ccol <= vcol then
+            sline, scol = cline, ccol
+            eline, ecol = vline, vcol
+            scol = scol + 1
+        else
+            sline, scol = vline, vcol
+            eline, ecol = cline, ccol
+            ecol = ecol + 1
+        end
+    elseif cline < vline then
+        sline, scol = cline, ccol
+        eline, ecol = vline, vcol
+        scol = scol + 1
+    else
+        sline, scol = vline, vcol
+        eline, ecol = cline, ccol
+        ecol = ecol + 1
+    end
 
-  local start_text, end_text
-  if #lines == 1 then
-    start_text = string.sub(lines[1], scol, ecol)
-  else
-    start_text = string.sub(lines[1], scol)
-    end_text = string.sub(lines[#lines], 1, ecol)
-  end
+    if mode == "V" or mode == "CTRL-V" or mode == "\22" then
+        scol = 1
+        ecol = nil
+    end
 
-  local selection = { start_text }
-  if #lines > 2 then
-    vim.list_extend(selection, vim.list_slice(lines, 2, #lines - 1))
-  end
-  table.insert(selection, end_text)
+    local lines = vim.api.nvim_buf_get_lines(0, sline - 1, eline, 0)
+    if #lines == 0 then
+        return
+    end
 
-  return selection
+    local start_text, end_text
+    if #lines == 1 then
+        start_text = string.sub(lines[1], scol, ecol)
+    else
+        start_text = string.sub(lines[1], scol)
+        end_text = string.sub(lines[#lines], 1, ecol)
+    end
+
+    local selection = {start_text}
+    if #lines > 2 then
+        vim.list_extend(selection, vim.list_slice(lines, 2, #lines - 1))
+    end
+    table.insert(selection, end_text)
+
+    return selection
 end
 
 ---Wrapper to send a notification
@@ -516,6 +516,9 @@ _G.myluafunc =
     }
 )
 
+---Turn a function into a string
+---@param func function
+---@param args table
 M.func2str = function(func, args)
     local idx = #_G.myluafunc + 1
     _G.myluafunc[idx] = func
@@ -535,6 +538,43 @@ F.tern = function(condition, is_if, is_else)
         return is_if
     else
         return is_else
+    end
+end
+
+---Get specified builtin marks
+---
+---This is to be used when formatting a file. When formattinga a file, the last line
+---is shown to be the line that was last modified regardless of whether or not keepj,
+---keepp, lockmarks, or keepmarks is used.
+---However, this does not work! So, perhaps it can be used for something else
+---
+---@param marks table? builtin marks to be saved
+---@param bufnr number? buffer where marks should be saved
+M.get_marks = function(bufnr, marks)
+    -- local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
+    marks = marks or require("marks").mark_state.builtin_marks
+    bufnr = bufnr or api.nvim_get_current_buf()
+    local saved = {}
+
+    for _, mark in pairs(fn.getmarklist("%")) do
+        for _, builtin in pairs(marks) do
+            if mark.mark:sub(2, 2) == builtin then
+                table.insert(saved, mark)
+            end
+        end
+    end
+
+    return saved
+end
+
+---Set a list of marks
+---@param marks table builtin marks to be set
+---@param bufnr number? buffer where marks should be set
+M.set_marks = function(marks, bufnr)
+    bufnr = bufnr or api.nvim_get_current_buf()
+    for _, mark in pairs(marks) do
+        local _, lnum, col, _ = unpack(mark.pos)
+        api.nvim_buf_set_mark(bufnr, mark.mark:sub(2, 2), lnum, col, {})
     end
 end
 

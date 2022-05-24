@@ -10,8 +10,15 @@ local C = require("common.color")
 local wk = require("which-key")
 local promise = require("promise")
 
+local fn = vim.fn
+local g = vim.g
+local api = vim.api
+local ex = nvim.ex
+
 local diag_qfid
 
+---Get the nearest symbol in reference to the location of the cursor
+---@return string
 function M.getsymbol()
     local ok, _ = pcall(require, "nvim-gps")
 
@@ -99,8 +106,8 @@ end
 ---CocActionAsync
 ---@param action string: CocAction to run
 ---@param args table: Arguments to pass to that CocAction
----@param time number: Time to wait for action to be performed
----@return string, string: Error, result
+---@param time number?: Time to wait for action to be performed
+---@return string string: Error, result
 function M.a2sync(action, args, time)
     local done = false
     local err = false
@@ -596,16 +603,29 @@ function M.init()
         }
     )
 
-    -- C.plugin(
-    --     "Coc",
-    --     {
-    --         CocSemVariable = {link = "TSVariable"},
-    --         CocSemNamespace = {link = "Namespace"},
-    --         CocSemClass = {link = "Type"},
-    --         CocSemEnum = {link = "Number"},
-    --         CocSemEnumMember = {link = "Enum"}
-    --     }
-    -- )
+    C.plugin(
+        "Coc",
+        {
+            CocSemVariable = {link = "TSVariable"},
+            CocSemNamespace = {link = "Namespace"},
+            CocSemClass = {link = "Function"},
+            CocSemEnum = {link = "Number"},
+            CocSemEnumMember = {link = "Enum"}
+        }
+    )
+
+    -- CocCommand semanticTokens.inspect
+
+    --     CocSemNamespace              CocSemType                  CocSemClass                   CocSemEnum
+    --     CocSemInterface             CocSemStruct             CocSemTypeParameter             CocSemParameter
+    --      CocSemVariable            CocSemProperty             CocSemEnumMember                 CocSemEvent
+    --      CocSemFunction             CocSemMethod                 CocSemMacro                  CocSemKeyword
+    --      CocSemModifier            CocSemComment                CocSemString                  CocSemNumber
+    --      CocSemBoolean              CocSemRegexp               CocSemOperator                CocSemDecorator
+    --     CocSemDeprecated        CocSemDefaultLibrary      CocSemDefaultLibraryClass   CocSemDefaultLibraryInterface
+    -- CocSemDefaultLibraryEnum  CocSemDefaultLibraryType  CocSemDefaultLibraryNamespace       CocSemDeclaration
+    --  CocSemDeclarationClass  CocSemDeclarationInterface     CocSemDeclarationEnum         CocSemDeclarationType
+    -- CocSemDeclarationNamespace
 
     -- use `:Fold` to fold current buffer
     -- command("Fold", [[:call CocAction('fold', <f-args>)]], {nargs = "?"})

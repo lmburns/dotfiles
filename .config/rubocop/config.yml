@@ -1532,9 +1532,9 @@ Lint/UselessAssignment:
   StyleGuide: "#underscore-unused-vars"
   Enabled: true
 
-Lint/UselessElseWithoutRescue:
-  Description: "Checks for useless `else` in `begin..end` without `rescue`."
-  Enabled: true
+# Lint/UselessElseWithoutRescue:
+#   Description: "Checks for useless `else` in `begin..end` without `rescue`."
+#   Enabled: true
 
 Lint/UselessMethodDefinition:
   Description: "Checks for useless method definitions."

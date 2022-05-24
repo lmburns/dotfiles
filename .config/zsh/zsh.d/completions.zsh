@@ -71,7 +71,7 @@ function compctl() {
   # print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
 }
 
-defer_completion() {
+function defer_completion() {
 
 zstyle ':completion:*' use-compctl false
 

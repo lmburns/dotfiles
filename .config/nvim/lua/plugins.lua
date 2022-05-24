@@ -96,7 +96,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "INFO"},
+        log = {level = "DEBUG"},
         profile = {enable = true}
     }
 )
@@ -287,7 +287,7 @@ return packer.startup(
                         {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
                         {"n", "g,'P"},
                         {"n", "gqp"}, -- Query for separator string, paste charwise
-                        {"n", "gqP"},
+                        {"n", "gqP"}
                     }
                 }
             )
@@ -313,9 +313,11 @@ return packer.startup(
             use(
                 {
                     "othree/eregex.vim",
-                    cmd = {"E2v", "S"},
+                    cmd = {"E2v", "S", "M"},
                     after = "vim-abolish",
                     setup = [[vim.g.eregex_default_enable = 0]],
+                    keys = {{"n", "<Leader>/"}},
+                    conf = "eregex",
                     desc = "Ruby/Perl style regex for Vim"
                 }
             )
@@ -425,9 +427,8 @@ return packer.startup(
 
             -- ============================ File Manager =========================== [[[
             use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            use({"ptzz/lf.vim", conf = "lf"})
             use({prefer_local("lf.nvim"), conf = "lfnvim"})
-            -- use({ "haorenW1025/floatLf-nvim" })
+            -- use({"ptzz/lf.vim", conf = "lf"})
 
             -- ]]] === File Manager ===
 
@@ -834,7 +835,7 @@ return packer.startup(
             use(
                 {
                     "machakann/vim-sandwich",
-                    conf = "sandwhich"
+                    conf = "sandwhich",
                     -- keys = {
                     --     {"n", "ds"},
                     --     {"n", "cs"},
@@ -1086,6 +1087,7 @@ return packer.startup(
                             "ron",
                             "cmake",
                             "css",
+                            "cpp",
                             "d",
                             "dart",
                             "dockerfile",

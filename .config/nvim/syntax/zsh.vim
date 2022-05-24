@@ -176,6 +176,7 @@ syn match   zshOption /
       \ \%(\%(\<no_\?\)\?bsdecho\>\)\|\%(\%(no_\?\)\?bsd_echo\>\)\|
       \ \%(\%(\<no_\?\)\?caseglob\>\)\|\%(\%(no_\?\)\?case_glob\>\)\|
       \ \%(\%(\<no_\?\)\?casematch\>\)\|\%(\%(no_\?\)\?case_match\>\)\|
+      \ \%(\%(\<no_\?\)\?casepaths\>\)\|\%(\%(no_\?\)\?case_paths\>\)\|
       \ \%(\%(\<no_\?\)\?cbases\>\)\|\%(\%(no_\?\)\?c_bases\>\)\|
       \ \%(\%(\<no_\?\)\?cdablevars\>\)\|\%(\%(no_\?\)\?cdable_vars\>\)\|\%(\%(no_\?\)\?cd_able_vars\>\)\|
       \ \%(\%(\<no_\?\)\?cdsilent\>\)\|\%(\%(no_\?\)\?cd_silent\>\)\|\%(\%(no_\?\)\?cd_silent\>\)\|
@@ -336,6 +337,7 @@ syn match   zshOption /
       \ \%(\%(\<no_\?\)\?transientrprompt\>\)\|\%(\%(no_\?\)\?transient_rprompt\>\)\|
       \ \%(\%(\<no_\?\)\?trapsasync\>\)\|\%(\%(no_\?\)\?traps_async\>\)\|
       \ \%(\%(\<no_\?\)\?typesetsilent\>\)\|\%(\%(no_\?\)\?type_set_silent\>\)\|\%(\%(no_\?\)\?typeset_silent\>\)\|
+      \ \%(\%(\<no_\?\)\?typesettounset\>\)\|\%(\%(no_\?\)\?type_set_to_unset\>\)\|\%(\%(no_\?\)\?typeset_to_unset\>\)\|
       \ \%(\%(\<no_\?\)\?unset\>\)\|
       \ \%(\%(\<no_\?\)\?verbose\>\)\|
       \ \%(\%(\<no_\?\)\?vi\>\)\|

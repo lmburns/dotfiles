@@ -1,9 +1,11 @@
 local M = {}
 
+local colors = require("kimbox.lualine").colors()
+
 local utils = require("common.utils")
 local map = utils.map
 
-local colors = require("kimbox.lualine").colors()
+local fn = vim.fn
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Conditions
@@ -115,6 +117,19 @@ local plugins = {
     end,
     sep = function()
         return ""
+    end,
+    -- arsham/arshamiser
+    loclist_count = function()
+        local ll = fn.getloclist(fn.winnr(), {idx = 0, size = 0})
+        local count = ll.size
+        local current = ll.idx
+        return count == 0 and "" or (" %d/%d "):format(current, count)
+    end,
+    quickfix_count = function()
+        local qf = fn.getqflist({idx = 0, size = 0})
+        local count = qf.size
+        local current = qf.idx
+        return count == 0 and "" or (" %d/%d "):format(current, count)
     end
 }
 
@@ -156,9 +171,9 @@ local sections_1 = {
         }
     },
     lualine_c = {plugins.coc_status},
-    lualine_x = {
+    lualine_x = {},
+    lualine_y = {
         {
-            -- 'require("nvim-gps").get_location()',
             plugins.gps,
             cond = function()
                 return conditions.is_available_gps() and conditions.hide_in_width() and conditions.coc_status_width()
@@ -169,9 +184,7 @@ local sections_1 = {
             "diagnostics",
             sources = {"coc"},
             symbols = {error = " ", warn = " ", info = " ", hint = " "}
-        }
-    },
-    lualine_y = {
+        },
         {
             "diff",
             -- diff_color = {
@@ -192,6 +205,8 @@ local sections_1 = {
                 return conditions.check_git_workspace() and plugins.search_result() == ""
             end
         },
+        plugins.quickfix_count,
+        plugins.loclist_count,
         "%l:%c",
         -- "%p%%" .. (("/%s"):format(require("common.builtin").tokei() or "")) .. "/%L",
         "%p%%/%L",

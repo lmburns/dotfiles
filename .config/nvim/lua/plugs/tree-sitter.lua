@@ -473,12 +473,17 @@ M.setup = function()
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
-            use_languagetree = true,
+            use_languagetree = false,
             disable = {"html", "comment", "zsh"}, -- list of language that will be disabled
             -- I like the additional highlighting; however, when CocAction('highlight') is used
             -- the regular syntax (not treesitter) is used as the foreground some of the time
             additional_vim_regex_highlighting = true,
-            custom_captures = {}
+            -- custom_captures = {}
+            custom_captures = {
+                ["function.call"] = "TSFunction",
+                ["function.bracket"] = "Type",
+                ["namespace.type"] = "Namespace"
+            }
         },
         autotag = {enable = true},
         autopairs = {enable = false}, -- there's a plugin for this
@@ -565,10 +570,10 @@ M.setup = function()
                 lookahead = true,
                 disable = {"comment"},
                 keymaps = {
-                    -- ["af"] = "@function.outer",
-                    -- ["if"] = "@function.inner",
-                    -- ["ak"] = "@class.outer",
-                    -- ["ik"] = "@class.inner",
+                    ["af"] = "@function.outer",
+                    ["if"] = "@function.inner",
+                    ["ak"] = "@class.outer",
+                    ["ik"] = "@class.inner",
                     ["ac"] = "@call.outer",
                     ["ic"] = "@call.inner",
                     ["ao"] = "@block.outer",
@@ -581,7 +586,7 @@ M.setup = function()
                     -- Though it isn't specifically parameters
                     ["aj"] = "@parameter.outer",
                     ["ij"] = "@parameter.inner",
-                    -- ["am"] = "@statement.outer"
+                    ["aS"] = "@statement.outer",
                     ["al"] = "@loop.outer",
                     ["il"] = "@loop.inner"
 
@@ -622,7 +627,8 @@ M.setup = function()
                     ["]d"] = "@comment.outer",
                     ["]a"] = "@parameter.inner",
                     ["]z"] = "@call.inner",
-                    ["]l"] = "@statement.inner"
+                    ["]l"] = "@loop.inner"
+                    -- ["]l"] = "@statement.inner"
                     -- ["gnf"] = "@function.outer",
                     -- ["gnif"] = "@function.inner",
                     -- ["gnp"] = "@parameter.inner",
@@ -730,15 +736,15 @@ local function init()
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]])
     map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]])
 
-    map("x", "if", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
-    map("x", "af", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
-    map("o", "if", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
-    map("o", "af", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
+    map("x", "iF", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
+    map("x", "aF", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
+    map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
+    map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
 
-    map("x", "ik", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
-    map("x", "ak", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
-    map("o", "ik", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
-    map("o", "ak", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
+    map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
+    map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
+    map("o", "iK", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
+    map("o", "aK", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
 
     -- map("o", "ie", [[:<C-u>normal! ggVG"<CR>]])
     map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
@@ -792,7 +798,8 @@ local function init()
             ["ai"] = "Indentation level and line above",
             ["ii"] = "Inner Indentation level (no line above)",
             ["aI"] = "Indention level and lines above/below",
-            ["iI"] = "Inner Indentation level (no lines above/below)"
+            ["iI"] = "Inner Indentation level (no lines above/below)",
+            ["aS"] = "Around statement"
         },
         {mode = "o"}
     )

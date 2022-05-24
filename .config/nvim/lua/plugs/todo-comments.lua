@@ -23,6 +23,7 @@ function M.setup()
                 FEATURE = {icon = " ", color = "#957FB8", alt = {"NEW"}},
                 MAYBE = {icon = " ", color = "#FF5D62", alt = {"POSSIBLE", "TODO_MAYBE"}},
                 DONE = {icon = " ", color = "#98BB6C", alt = {"FINISHED"}},
+                -- ["???"] = {icon = "", color = "#38A89D"},
                 CHANGED = {
                     icon = " ",
                     color = "#89b482",

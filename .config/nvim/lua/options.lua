@@ -92,6 +92,8 @@ o.foldlevelstart = 99
 o.foldcolumn = "1"
 -- o.foldlevel = 1
 
+o.indentexpr = "nvim_treesitter#indent()"
+
 -- This does not work globally for whatever reason (didn't in vim either)
 -- o.formatoptions:remove({"c", "r", "o"})
 

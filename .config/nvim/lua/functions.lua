@@ -139,6 +139,7 @@ g.term_win = 0
 -- Terminal go back to normal mode
 map("t", "<Esc>", [[<C-\><C-n>]])
 map("t", ":q!", [[<C-\><C-n>:q!<CR>]])
+
 -- ]]] === Terminal ===
 
 -- ========================== Execute Buffer ========================== [[[

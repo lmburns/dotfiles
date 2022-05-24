@@ -663,6 +663,16 @@ M.cst_files = function()
     end
 end
 
+M.cst_fd = function()
+    local cwd = fn.expand("%:p:h")
+    ex.lcd(cwd)
+    -- Override this so it gets ran on each file
+    options.cwd = cwd
+    options.sorting_strategy = "descending"
+
+    builtin.find_files(options)
+end
+
 M.cst_buffers = function()
     builtin.buffers(
         themes.get_dropdown {
@@ -692,7 +702,7 @@ M.cst_grep = function(opts)
     local default = {
         prompt_title = "Grep",
         mappings = conf.mappings,
-        opts = opts,
+        opts = opts or {},
         path_display = {"smart"},
         grep_open_files = false,
         on_input_filter_cb = function(prompt)
@@ -1147,8 +1157,7 @@ wk.register(
         [";B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
-        [";fd"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
-        ["<LocalLeader>a"] = {":Telescope fd<CR>", "Telescope find files (builtin)"},
+        ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
         [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},

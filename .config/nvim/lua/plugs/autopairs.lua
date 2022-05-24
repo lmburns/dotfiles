@@ -135,9 +135,11 @@ function M.rules()
             -- Allows matching '<' '>' in Rust or C++ or Typescript
             -- bracket("<", ">", { "rust", "cpp", "typescript" }),
 
-            Rule("<", ">" --[[, {"rust", "cpp", "typescript"} ]]):with_pair(cond.not_before_regex_check(" ")):with_pair(
-                cond.not_after_regex(opt.ignored_next_char)
-            ),
+            --[[, {"rust", "cpp", "typescript"} ]]
+            Rule("<", ">")
+                :with_pair(cond.not_before_regex(" ", 1))
+                :with_pair(cond.not_after_regex(opt.ignored_next_char))
+                :with_pair(cond.not_before_regex("<")),
             -- Allows matching '' is strings
             Rule("'", "'", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
             -- Allows matching () is strings

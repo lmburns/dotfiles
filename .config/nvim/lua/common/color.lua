@@ -87,7 +87,7 @@ end
 ---Highlight link one group to another
 ---@param from string group that is going to be linked
 ---@param to string group that is linked to
----@param bang boolean whether or not to force highlight (default is true)
+---@param bang boolean? whether or not to force highlight (default is true)
 function M.link(from, to, bang)
     -- I think force is more preferred
     bang = bang ~= false and "!" or " default"

@@ -243,7 +243,7 @@
   ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
   ; lhist = log --pretty=format:"%Cred%h %Cgreen%d | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
   lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-  ll = log --graph --abbrev-commit --decorate --date=relative -10 --format=format:'%C(bold blue)%h%C(reset) %C(bold yellow)%d%C(reset) %C(white)%s%C(reset) %C(green)(%ar)%C(reset) %C(dim white)- %an%C(reset)'
+  ll = log --graph --abbrev-commit --decorate --date=relative -10 --format=format:'%C(bold magenta)%h%C(reset) %C(auto)%d%C(reset) %C(white)%s%C(reset) %C(green)(%ar)%C(reset) %C(dim white)- %an%C(reset)'
   # ll   = lp --numstat
   lpa  = lp --patch
   # preferred git log view

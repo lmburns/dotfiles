@@ -93,7 +93,9 @@ setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '
 
 setopt prompt_subst # allow substitution in prompt (p10k?)
 
+
 setopt numeric_glob_sort # sort globs numerically
+setopt case_paths        # nocaseglob + casepaths treats only path components containing glob chars as insensitive
 setopt no_case_glob      # case insensitive globbing
 setopt extended_glob     # extension of glob patterns
 setopt glob_complete     # generate glob matches as completions

@@ -490,28 +490,7 @@ hoards:
   neofetch:
     unix|neofetch: "${XDG_CONFIG_HOME}/neofetch/config.conf"
   nvim:
-    init:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/init.lua"
-    coc:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/coc-settings.json"
-    snippets:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/UltiSnips"
-    lua:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/lua"
-    vimscript:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/vimscript"
-    ftplugin:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/ftplugin"
-    autoload:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/autoload"
-    after:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/after"
-    spell:
-      unix|neovim: "${XDG_CONFIG_HOME}/nvim/spell"
-    syntax:
-      unix|neovim: "${HOME}/backup/vim"
-  # pacaptr:
-  #   unix: "${XDG_CONFIG_HOME}/pacaptr/pacaptr.toml"
+    unix: "${XDG_CONFIG_HOME}/nvim"
   packages:
     unix: "${XDG_CONFIG_HOME}/packages"
   pass:

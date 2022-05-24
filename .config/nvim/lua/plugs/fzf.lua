@@ -66,7 +66,7 @@ local function do_action(expect, path, bufnr, lnum, col)
                     local winids = bi[1].windows
                     if #winids > 0 then
                         fn.win_gotoid(winids[1])
-                        cmd(("keepalt b %d"):format(tmp_bufnr))
+                        ex.keepalt(("b %d"):format(tmp_bufnr))
                     else
                         jump_path(tmpfile)
                     end
@@ -74,8 +74,8 @@ local function do_action(expect, path, bufnr, lnum, col)
             else
                 jump_path(tmpfile)
             end
-            cmd(("keepalt b %d"):format(bufnr))
-            cmd(("noa bw %d"):format(tmp_bufnr))
+            ex.keepalt(("b %d"):format(bufnr))
+            ex.noa(("bw %d"):format(tmp_bufnr))
         end
     else
         jump_path(path)
@@ -147,16 +147,17 @@ end
 function M.files()
     local cur_bufnr = api.nvim_get_current_buf()
 
-    local expr =
-        [[{"bufnr": v:val.bufnr, "name": v:val.name, "lnum": v:val.lnum, ]] ..
-        [["lastused": v:val.lastused, "changed": v:val.changed}]]
-    local b_list = api.nvim_eval(([[map(getbufinfo({'buflisted':1}), %q)]]):format(expr))
-    table.sort(
-        b_list,
+    local b_list =
+        _t(fn.getbufinfo({buflisted = 1})):map(
+        function(b)
+            return {bufnr = b.bufnr, name = b.name, lnum = b.lnum, lastused = b.lastused, changed = b.changed}
+        end
+    ):sort(
         function(a, b)
             return a.lastused > b.lastused
         end
     )
+
     local m_list = mru.list()
     local header = #b_list > 0 and b_list[1].bufnr == cur_bufnr and "1" or "0"
     local opts = {
@@ -291,53 +292,23 @@ end
 
 ---TODO: Get this to work
 function M.copyq()
-    -- inoremap <expr> <a-.> fzf#vim#complete({
-    --   \ 'source': 'copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac',
-    --   \ 'options': '--no-border',
-    --   \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
-    --   \ 'window': 'call FloatingFZF()'})
+    local source =
+        fn.systemlist(
+        [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\n");' | tac]]
+    )
 
     local fzf_complete = fn["fzf#vim#complete"]
     local opts = {
-        -- source = [[copyq eval -- "tab(\"&clipboard\"); for(i=size(); i>0; --i) print(str(read(i-1)) + \"\n\");" \| tac]],
-        source = (function()
-            local ret = {}
-            local j =
-                Job:new(
-                {
-                    command = "copyq",
-                    args = {
-                        "eval",
-                        "--",
-                        [[tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\0");]],
-                        "| tac"
-                    },
-                    enable_recording = true,
-                    on_stdout = vim.schedule_wrap(
-                        function(_, data)
-                            table.insert(ret, data)
-                        end
-                    )
-                }
-            )
-
-            j:sync()
-
-            -- for _, line in pairs(j) do
-            --     line = line:gsub("\0", "")
-            --     table.insert(ret, line)
-            -- end
-
-            return table.concat(j:result(), " ")
-        end)(),
+        source = source,
         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"},
+        -- Get the reducer to work as well
         reducer = function(line)
-            p(line)
-            -- return fn.substitute(line[0], [[^ *[0-9]\+ ]], '', '')
+            -- return fn.substitute(line, [[^ *[0-9]\+ ]], "", "")
+            return fn.substitute(line[0], [[s]], "XXX", "g")
         end
     }
 
-    fzf_complete(opts)
+    fn.FzfWrapper(opts)
 end
 
 -- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
