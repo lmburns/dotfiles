@@ -684,6 +684,7 @@ function M.init()
             ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
             ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
             ["<C-x><C-d>"] = {":CocCommand fzf-preview.CocTypeDefinition<CR>", "List coc definitions"},
+            -- ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},
             ["<C-x><C-]>"] = {":CocCommand fzf-preview.CocImplementations<CR>", "List coc implementations"},
             ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
             ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},

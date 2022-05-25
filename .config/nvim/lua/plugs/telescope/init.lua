@@ -878,16 +878,7 @@ end
 -- end
 
 builtin.cst_grep = function(opts)
-    -- opts.search_dirs = {}
-    -- opts.search_dirs[1] = fn.expand("%:p:h")
-
-    -- builtin.grep_string(
-    --     {
-    --         opts = opts,
-    --         search = opts.search,
-    --         search_dirs = opts.search_dirs
-    --     }
-    -- )
+    opts.search_dirs = {fn.expand("%:p:h")}
 
     builtin.live_grep(
         {

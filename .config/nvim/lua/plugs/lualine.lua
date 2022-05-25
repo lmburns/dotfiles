@@ -1,6 +1,7 @@
 local M = {}
 
-local colors = require("kimbox.lualine").colors()
+local C = require("common.color")
+local colors = require("kimbox.colors")
 
 local utils = require("common.utils")
 local map = utils.map
@@ -73,6 +74,8 @@ local plugins = {
         if not package.loaded["dap"] then
             return ""
         end
+        -- local session = require('dap').session()
+        -- return session ~= nil and session.config ~= nil and session.config.type or ''
         return require("dap").status()
     end,
     file_encoding = function()
@@ -249,8 +252,8 @@ local sections_2 = {
 --                           Mapping
 -- ╘══════════════════════════════════════════════════════════╛
 function M.toggle_mode()
-    local lualine_require = require("lualine_require")
-    local modules = lualine_require.lazy_require({config_module = "lualine.config"})
+    local ll_req = require("lualine_require")
+    local modules = ll_req.lazy_require({config_module = "lualine.config"})
     local utils = require("lualine.utils.utils")
 
     local current_config = modules.config_module.get_config()
@@ -292,11 +295,11 @@ local get_exit_status = function()
 end
 
 local terminal_status = function()
+    -- vim.trim(ex.filter(("/%s/ ls! uaF"):format(fn.escape(api.nvim_buf_get_name(api.nvim_get_current_buf()), "~/"))))
+
     if
-        vim.api.nvim_exec(
-            [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaF"))]],
-            true
-        ) ~= ""
+        api.nvim_exec([[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaF"))]], true) ~=
+            ""
      then
         local result = get_exit_status()
         if result == nil then
@@ -309,10 +312,8 @@ local terminal_status = function()
         return "Finished"
     end
     if
-        vim.api.nvim_exec(
-            [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaR"))]],
-            true
-        ) ~= ""
+        api.nvim_exec([[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaR"))]], true) ~=
+            ""
      then
         return "Running"
     end
@@ -324,9 +325,7 @@ local function get_terminal_status()
         return ""
     end
     local status = terminal_status()
-    vim.api.nvim_command(
-        "hi LualineToggleTermStatus guifg=" .. colors.background .. " guibg=" .. terminal_status_color(status)
-    )
+    C.set_hl("LualineToggleTermStatus", {fg = terminal_status_color(status), bg = colors.bg0, bold = true})
     return status
 end
 
@@ -334,9 +333,16 @@ local function toggleterm_statusline()
     return "ToggleTerm #" .. vim.b.toggle_number
 end
 
+local function term_title()
+    local title = vim.b.term_title
+    title = title:gsub("%d+:[^%s]+%s.*", "")
+    return title
+end
+
 local my_toggleterm = {
     sections = {
         lualine_a = {toggleterm_statusline},
+        -- lualine_b = {{term_title, color = {fg = colors.green}}},
         lualine_z = {{get_terminal_status, color = "LualineToggleTermStatus"}}
     },
     filetypes = {"toggleterm"}
@@ -414,6 +420,7 @@ local function init()
             "NeogitStatus",
             "Trouble",
             "TelescopePrompt",
+            "tsplayground",
             "dapui_scopes",
             "dapui_breakpoints",
             "dapui_stacks",

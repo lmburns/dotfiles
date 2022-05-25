@@ -7,6 +7,7 @@ local create_augroup = utils.create_augroup
 
 local C = require("common.color")
 
+-- === Highlight Disable === [[[
 --[[
 Credit: github.com/akinsho
 
@@ -71,17 +72,7 @@ augroup(
         end
     }
 )
-
--- augroup(
---     {"filetypedetect", false},
---     {
---         event = {"BufRead", "BufNewFile"},
---         pattern = "*",
---         command = function()
---             vim.filetype.match(vim.fn.expand("<afile>"))
---         end
---     }
--- )
+-- === Highlight Disable ===
 
 -- === Restore Cursor Position === [[[
 -- FIX: This autocmd prevents wilder from having a right border
@@ -137,7 +128,8 @@ augroup(
 --             if funcs.makeview() then
 --                 ex.silent_("mkview")
 --             end
---         end
+--         end,
+--         desc = "Save folds"
 --     },
 --     {
 --         event = "BufWinEnter",
@@ -146,17 +138,39 @@ augroup(
 --             if funcs.makeview() then
 --                 ex.silent_("loadview")
 --             end
---         end
+--         end,
+--         desc = "Restore folds from previous session"
 --     }
 -- }
 -- ]]] === Restore cursor ===
+
+-- === Set winbar === [[[
+-- nvim.autocmd.lmb__WinbarSplit = {
+--     event = "FileType",
+--     pattern = "*",
+--     command = function()
+--         local bufnr = api.nvim_get_current_buf()
+--         local tp = api.nvim_get_current_tabpage()
+--         local wins = #api.nvim_tabpage_list_wins(tp)
+--
+--         if vim.bo[bufnr].bt == "" then
+--             if wins > 1 then
+--                 o.winbar = [[%m %F]]
+--             else
+--                 o.winbar = nil
+--             end
+--         end
+--     end,
+--     desc = "Enable winbar when window is split"
+-- }
+--- ]]]
 
 -- === Telescope Fixes === [[[
 nvim.autocmd.lmb__TelescopeFixes = {
     event = "FileType",
     pattern = "Telescope*",
     command = function()
-        map("i", "<Leader>", " ", {nowait = true})
+        -- map("i", "<Leader>", " ", {nowait = true})
 
         autocmd(
             {
@@ -168,7 +182,8 @@ nvim.autocmd.lmb__TelescopeFixes = {
                 end
             }
         )
-    end
+    end,
+    desc = "Disable Wilder in Telescope"
 }
 -- ]]] === Telescope Fixes ===
 
@@ -209,7 +224,8 @@ do
             if b.ft ~= "fzf" then
                 o.laststatus = 3
             end
-        end
+        end,
+        desc = "Setup format options"
     }
 end
 -- ]]] === Format Options ===
@@ -265,6 +281,16 @@ nvim.autocmd.lmb__FirstBuf = {
 }
 -- ]]]
 
+-- === Disable Undofile === [[[
+nvim.autocmd.lmb__DisableUndofile = {
+    event = "BufWritePre",
+    pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log"},
+    command = function()
+        vim.bo.undofile = false
+    end
+}
+-- ]]]
+
 -- === MRU === [[[
 augroup(
     "lmb__MruWin",
@@ -284,38 +310,63 @@ augroup(
     "lmb__Spellcheck",
     {
         event = "FileType",
+        pattern = {"gitcommit", "markdown", "text", "mail"},
         command = "setlocal spell",
-        pattern = {"gitcommit", "markdown", "text", "mail"}
+        desc = "Automatically enable spelling"
     },
     {
         event = {"BufRead", "BufNewFile"},
+        pattern = "neomutt-archbox*",
         command = "setlocal spell",
-        pattern = "neomutt-archbox*"
+        desc = "Automatically enable spelling"
     }
 )
 -- ]]] === Spelling ===
 
--- === Fix terminal highlights ===
-augroup(
-    "lmb__TermFix",
-    {
-        event = "TermEnter",
-        command = function()
-            vim.schedule(
-                function()
-                    cmd("nohlsearch")
-                    fn.clearmatches()
-                end
-            )
-        end,
-        pattern = "*",
-        desc = "Clear matches and highlights when entering a terminal"
-    }
-)
+-- === Terminal === [[[
+nvim.autocmd.lmb__TermFix = {
+    event = "TermEnter",
+    pattern = "*",
+    command = function()
+        vim.schedule(
+            function()
+                ex.nohlsearch()
+                fn.clearmatches()
+            end
+        )
+    end,
+    desc = "Clear matches and highlights when entering a terminal"
+}
+
+nvim.autocmd.lmb__TermMappings = {
+    -- pattern = "term://*toggleterm#*",
+    event = "TermOpen",
+    pattern = "term://*",
+    command = function()
+        -- vim.wo.statusline = "%{b:term_title}"
+        require("plugs.neoterm").set_terminal_keymaps()
+        vim.wo.number = false
+        vim.wo.relativenumber = false
+    end,
+    desc = "Set terminal mappings"
+}
+
+nvim.autocmd.lmb__AutocloseTerminal = {
+    event = "TermClose",
+    pattern = "*",
+    command = function()
+        if vim.v.event.status == 0 then
+            local info = api.nvim_get_chan_info(vim.opt.channel._value)
+            if info and info.argv[1] == vim.env.SHELL then
+                pcall(api.nvim_buf_delete, 0, {})
+            end
+        end
+    end,
+    desc = "Auto close shell buffers"
+}
 -- ]]] === Terminal ===
 
 -- === Help/Man pages in vertical ===
-
 local split_should_return = function()
     -- do nothing for floating windows
     local cfg = api.nvim_win_get_config(0)
@@ -451,6 +502,23 @@ nvim.autocmd.lmb__SmartClose = {
 }
 -- ]]]
 
+-- === Filetype Detection === [[[
+-- Used for something like a file named 'x' and then #!/usr/bin/env zsh is written as a shebang
+nvim.autocmd.lmb__FiletypeDetect = {
+    event = {"BufWritePost"},
+    pattern = {"*"},
+    nested = true,
+    command = function()
+        if utils.empty(vim.bo.filetype) or fn.exists("b:ftdetect") == 1 then
+            vim.b.ftdetect = nil
+            ex.filetype("detect")
+            utils.cool_echo(("Filetype set to %s"):format(vim.bo.ft), "Macro")
+        end
+    end,
+    desc = "Set filetype after modification"
+}
+-- ]]]
+
 -- === Tmux === [[[
 if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
     -- vim.cmd [[
@@ -466,7 +534,6 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
             event = {"TermEnter", "BufEnter"},
             pattern = "*",
             once = false,
-            description = "Automatic rename of tmux window",
             command = function()
                 local bufnr = nvim.buf.nr()
 
@@ -481,15 +548,16 @@ if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
                         o.titlestring = "Terminal"
                     end
                 end
-            end
+            end,
+            desc = "Automatic rename of tmux window"
         },
         {
             event = "VimLeave",
             pattern = "*",
-            description = "Turn back on Tmux auto-rename",
             command = function()
                 os.execute("tmux set-window automatic-rename on")
-            end
+            end,
+            desc = "Turn back on Tmux auto-rename"
         }
     }
 end
@@ -527,8 +595,7 @@ end -- ]]]
 do
     local o = vim.o
 
-    augroup(
-        {"lmb__VimResize", false},
+    nvim.autocmd.lmb__VimResize = {
         {
             event = "VimResized",
             command = function()
@@ -537,20 +604,15 @@ do
                 api.nvim_set_current_tabpage(last_tab)
             end,
             desc = "Equalize windows across tabs"
-        }
-    )
-
-    augroup(
-        {"lmb__VimResize", false},
+        },
         {
             event = {"VimEnter", "VimResized"},
-            group = id,
             command = function()
                 o.previewheight = math.floor(o.lines / 3)
             end,
             desc = "Update previewheight as per the new Vim size"
         }
-    )
+    }
 end -- ]]]
 
 -- === Custom file type settings === [[[
@@ -736,7 +798,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
 
             cmd(bufnr .. "checktime")
         end,
-        description = "Reload file when modified outside of the instance"
+        desc = "Reload file when modified outside of the instance"
     },
     {
         event = "FileChangedShellPost",
@@ -744,7 +806,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
         command = function()
             api.nvim_echo({{"File changed on disk. Buffer reloaded!", "WarningMsg"}}, true, {})
         end,
-        description = "Display a message if the buffer is changed outside of instance"
+        desc = "Display a message if the buffer is changed outside of instance"
     }
 }
 -- ]]] === Buffer Reload ===
@@ -814,5 +876,14 @@ autocmd(
 )
 
 -- ============================== Unused ============================== [[[
-
+-- augroup(
+--     {"filetypedetect", false},
+--     {
+--         event = {"BufRead", "BufNewFile"},
+--         pattern = "*",
+--         command = function()
+--             vim.filetype.match(vim.fn.expand("<afile>"))
+--         end
+--     }
+-- )
 -- ]]] === Unused ===

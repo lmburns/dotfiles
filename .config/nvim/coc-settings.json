@@ -266,7 +266,7 @@
               "before_each",
               "after_each"
             ],
-            "disable": ["lowercase-global", "redundant-parameter"],
+            "disable": ["lowercase-global", "redundant-parameter", "missing-parameter"],
             "neededFileStatus": {
               "different-requires": "None"
             }

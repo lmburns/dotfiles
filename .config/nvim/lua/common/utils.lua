@@ -587,6 +587,22 @@ M.executable = function(exec)
     return fn.executable(exec) == 1
 end
 
+---Determine if a value of any type is empty
+---@param item any
+---@return boolean
+M.empty = function(item)
+    if not item then
+        return true
+    end
+
+    local item_type = type(item)
+    if item_type == "string" then
+        return item == ""
+    elseif item_type == "table" then
+        return vim.tbl_isempty(item)
+    end
+end
+
 ---Table of escaped termcodes
 ---@param tbl table self
 ---@param k string termcode to retrieve
@@ -643,6 +659,7 @@ M.render_str =
     }
     local gui = vim.o.termguicolors
 
+    ---Return a 24 byte colored string
     local function color2csi24b(color_num, fg)
         local r = math.floor(color_num / 2 ^ 16)
         local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
@@ -650,6 +667,7 @@ M.render_str =
         return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
     end
 
+    ---Return a 8 byte colored string
     local function color2csi8b(color_num, fg)
         return ("%d;5;%d"):format(fg and 38 or 48, color_num)
     end
@@ -693,6 +711,48 @@ M.render_str =
         end
 
         return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg, str)
+    end
+end)()
+
+---Render a string in Neovim with the following format:
+---   title: message
+---Where title is a different highlight group than message
+---Usage:     cmd(utils.hl.WarningMsg:format("title", "message"))
+M.hl =
+    setmetatable(
+    {},
+    {
+        __index = function(t, k)
+            local v = M.render_hl_msg("%s", "%s", k, false)
+            rawset(t, k, v)
+            return v
+        end
+    }
+)
+
+---Render a string in Neovim with a colored title and uncolored message
+---(on the same line)
+M.render_hl_msg =
+    (function()
+    return function(title, str, group_name, newline)
+        vim.validate(
+            {
+                title = {title, "string"},
+                str = {str, "string"},
+                group_name = {group_name, "string"},
+                newline = {newline, "boolean", true}
+            }
+        )
+
+        local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, true)
+        if not ok or not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
+            return str
+        end
+
+        local ret = ("echohl %s | echo '%s' | echohl None "):format(group_name, title)
+        ret = ret .. ("| echo%s ': %s'"):format(newline and "" or "n", str)
+
+        return ret
     end
 end)()
 
@@ -744,8 +804,8 @@ end
 ---API around `nvim_echo`
 ---@param msg string message to echo
 ---@param hl string highlight group
----@param history boolean whether it should be added to history
----@param wait number time to wait before echoing
+---@param history boolean? whether it should be added to history
+---@param wait number? time to wait before echoing
 M.cool_echo =
     (function()
     local lastmsg
@@ -753,10 +813,11 @@ M.cool_echo =
     ---Echo a colored message
     ---@param msg string message to echo
     ---@param hl string highlight group to link
-    ---@param history boolean add message to history
-    ---@param wait number amount of time to wait
+    ---@param history boolean? add message to history
+    ---@param wait number? amount of time to wait
     return function(msg, hl, history, wait)
-        -- TODO without schedule wrapper may echo prefix spaces
+        -- TODO: without schedule wrapper may echo prefix spaces
+        history = history == nil and true or history
         vim.schedule(
             function()
                 api.nvim_echo({{msg, hl}}, history, {})

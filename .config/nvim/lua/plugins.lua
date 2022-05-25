@@ -268,6 +268,12 @@ return packer.startup(
                         -- {"n", "gBP"},
                         -- {"n", "gqbp"}, -- Query for separator string, then paste minimal block
                         -- {"n", "gBP"},
+                        -- {"n", "g,p"}, -- Paste charwise with each line delimited by ','
+                        -- {"n", "g,P"},
+                        -- {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
+                        -- {"n", "g,'P"},
+                        -- {"n", "gqp"}, -- Query for separator string, paste charwise
+                        -- {"n", "gqP"}
 
                         {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
                         {"n", "gcP"},
@@ -282,12 +288,6 @@ return packer.startup(
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
                         {"n", "gsP"},
-                        {"n", "g,p"}, -- Paste charwise with each line delimited by ','
-                        {"n", "g,P"},
-                        {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
-                        {"n", "g,'P"},
-                        {"n", "gqp"}, -- Query for separator string, paste charwise
-                        {"n", "gqP"}
                     }
                 }
             )
@@ -344,6 +344,69 @@ return packer.startup(
                 }
             )
             -- ]]] === Fixes ===
+
+            -- =========================== Colorscheme ============================ [[[
+            local colorscheme = "kimbox"
+            -- Needed for some themes
+            use({"rktjmp/lush.nvim"})
+
+            use({"eddyekofo94/gruvbox-flat.nvim"})
+            use({"sainnhe/gruvbox-material"})
+            use({"sainnhe/edge"})
+            use({"sainnhe/everforest"})
+            use({"sainnhe/sonokai"})
+            use({"glepnir/oceanic-material"})
+            use({"franbach/miramare"})
+            use({"pineapplegiant/spaceduck"})
+            -- Need to make a new theme for this
+            use({"tyrannicaltoucan/vim-deep-space"})
+            -- Need to make a new theme for this
+            use({"ackyshake/Spacegray.vim"})
+            use({"vv9k/bogster"})
+            use({"cocopon/iceberg.vim"})
+            use({"wadackel/vim-dogrun"})
+            use({"savq/melange"})
+            use({"folke/tokyonight.nvim"})
+            use({"tiagovla/tokyodark.nvim"})
+            use({"bluz71/vim-nightfly-guicolors"})
+            use({"haishanh/night-owl.vim"})
+            use({"rebelot/kanagawa.nvim"})
+            use({"KeitaNakamura/neodark.vim"})
+            use({"EdenEast/nightfox.nvim"})
+            use({"catppuccin/nvim", as = "catppuccin"})
+            use({"rose-pine/neovim", as = "rose-pine"})
+            use({"marko-cerovac/material.nvim"})
+            use({"ghifarit53/daycula-vim"})
+            use({"rmehri01/onenord.nvim"})
+            use({"levuaska/levuaska.nvim"})
+            use({"kyazdani42/blue-moon"})
+            -- Needs modified to change transparent background
+            -- use({"Mofiqul/vscode.nvim"})
+            -- use({"FrenzyExists/aquarium-vim"})
+            -- use({"yashguptaz/calvera-dark.nvim"})
+            -- use({"andersevenrud/nordic.nvim"})
+            -- use({"aktersnurra/no-clown-fiesta.nvim"})
+            -- use({"pwntester/nautilus.nvim"})
+            -- use({"doums/darcula"})
+            -- use({"ray-x/aurora"})
+            -- use({"shaunsingh/nord.nvim"})
+            -- use({"katawful/kat.nvim"})
+            -- use({"daschw/leaf.nvim"})
+            -- use({"Domeee/mosel.nvim"})
+            -- use({"lewpoly/sherbet.nvim"})
+            -- use({"projekt0n/github-nvim-theme"})
+            -- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
+            -- use({"kvrohit/substrata.nvim"})
+            -- use({"numToStr/Sakura.nvim"})
+            -- use({"fcpg/vim-farout"})
+            -- use({"tyrannicaltoucan/vim-quantum"})
+            -- use({"b4skyx/serenade"})
+            -- use({"AlessandroYorba/Alduin"})
+            -- use({ "olimorris/onedarkpro.nvim" })
+            -- use({ "kaicataldo/material.vim" })
+
+            use({"lmburns/kimbox", conf = "plugs.kimbox"})
+            -- ]]] === Colorscheme ===
 
             -- ============================== WhichKey ============================ [[[
             use({"folke/which-key.nvim", conf = "plugs.which-key"})
@@ -427,7 +490,17 @@ return packer.startup(
 
             -- ============================ File Manager =========================== [[[
             use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            use({prefer_local("lf.nvim"), conf = "lfnvim"})
+            use(
+                {
+                    prefer_local("lf.nvim"),
+                    conf = "lfnvim",
+                    after = colorscheme,
+                    requires = {
+                        "plenary.nvim",
+                        "toggleterm.nvim"
+                    }
+                }
+            )
             -- use({"ptzz/lf.vim", conf = "lf"})
 
             -- ]]] === File Manager ===
@@ -575,69 +648,6 @@ return packer.startup(
                 }
             )
             -- ]]] === Grepper ===
-
-            -- =========================== Colorscheme ============================ [[[
-            local colorscheme = "kimbox"
-            -- Needed for some themes
-            use({"rktjmp/lush.nvim"})
-
-            use({"eddyekofo94/gruvbox-flat.nvim"})
-            use({"sainnhe/gruvbox-material"})
-            use({"sainnhe/edge"})
-            use({"sainnhe/everforest"})
-            use({"sainnhe/sonokai"})
-            use({"glepnir/oceanic-material"})
-            use({"franbach/miramare"})
-            use({"pineapplegiant/spaceduck"})
-            -- Need to make a new theme for this
-            use({"tyrannicaltoucan/vim-deep-space"})
-            -- Need to make a new theme for this
-            use({"ackyshake/Spacegray.vim"})
-            use({"vv9k/bogster"})
-            use({"cocopon/iceberg.vim"})
-            use({"wadackel/vim-dogrun"})
-            use({"savq/melange"})
-            use({"folke/tokyonight.nvim"})
-            use({"tiagovla/tokyodark.nvim"})
-            use({"bluz71/vim-nightfly-guicolors"})
-            use({"haishanh/night-owl.vim"})
-            use({"rebelot/kanagawa.nvim"})
-            use({"KeitaNakamura/neodark.vim"})
-            use({"EdenEast/nightfox.nvim"})
-            use({"catppuccin/nvim", as = "catppuccin"})
-            use({"rose-pine/neovim", as = "rose-pine"})
-            use({"marko-cerovac/material.nvim"})
-            use({"ghifarit53/daycula-vim"})
-            use({"rmehri01/onenord.nvim"})
-            use({"levuaska/levuaska.nvim"})
-            use({"kyazdani42/blue-moon"})
-            -- Needs modified to change transparent background
-            use({"Mofiqul/vscode.nvim"})
-            -- use({"FrenzyExists/aquarium-vim"})
-            -- use({"yashguptaz/calvera-dark.nvim"})
-            -- use({"andersevenrud/nordic.nvim"})
-            -- use({"aktersnurra/no-clown-fiesta.nvim"})
-            -- use({"pwntester/nautilus.nvim"})
-            -- use({"doums/darcula"})
-            -- use({"ray-x/aurora"})
-            -- use({"shaunsingh/nord.nvim"})
-            -- use({"katawful/kat.nvim"})
-            -- use({"daschw/leaf.nvim"})
-            -- use({"Domeee/mosel.nvim"})
-            -- use({"lewpoly/sherbet.nvim"})
-            -- use({"projekt0n/github-nvim-theme"})
-            -- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
-            -- use({"kvrohit/substrata.nvim"})
-            -- use({"numToStr/Sakura.nvim"})
-            -- use({"fcpg/vim-farout"})
-            -- use({"tyrannicaltoucan/vim-quantum"})
-            -- use({"b4skyx/serenade"})
-            -- use({"AlessandroYorba/Alduin"})
-            -- use({ "olimorris/onedarkpro.nvim" })
-            -- use({ "kaicataldo/material.vim" })
-
-            use({"lmburns/kimbox", conf = "plugs.kimbox"})
-            -- ]]] === Colorscheme ===
 
             -- ============================ Scrollbar ============================= [[[
             use(
@@ -835,7 +845,7 @@ return packer.startup(
             use(
                 {
                     "machakann/vim-sandwich",
-                    conf = "sandwhich",
+                    conf = "sandwhich"
                     -- keys = {
                     --     {"n", "ds"},
                     --     {"n", "cs"},

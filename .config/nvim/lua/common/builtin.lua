@@ -142,7 +142,13 @@ end
 function M.split_lastbuf(vertical)
     local sp = vertical and "vert" or ""
     -- local binfo = nvim.eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
-    local binfo = fn.map(fn.getbufinfo({buflisted = 1}), '{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')
+    -- local binfo = fn.map(fn.getbufinfo({buflisted = 1}), '{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')
+    local binfo =
+        _t(fn.getbufinfo({buflisted = 1})):map(
+        function(b)
+            return {bufnr = b.bufnr, lastused = b.lastused}
+        end
+    )
     local last_buf_info
     for _, bi in ipairs(binfo) do
         if fn.bufwinnr(bi.bufnr) == -1 then

@@ -1380,7 +1380,7 @@ function M.registers()
     g.registers_show_empty_registers = 0
     -- g.registers_hide_only_whitespace = 1
     g.registers_window_border = "rounded"
-    g.registers_insert_modes = false -- removes <C-R> insert mapping
+    g.registers_insert_mode = false -- removes <C-R> insert mapping
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

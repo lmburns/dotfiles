@@ -1,5 +1,5 @@
 diff --git i/plugin/UnconditionalPaste.vim w/plugin/UnconditionalPaste.vim
-index d39c274..c1477fd 100644
+index d39c274..72992b0 100644
 --- i/plugin/UnconditionalPaste.vim
 +++ w/plugin/UnconditionalPaste.vim
 @@ -143,20 +143,26 @@ endif
@@ -14,15 +14,15 @@ index d39c274..c1477fd 100644
 +    " \       ['Unjoin', 'u'], ['RecallUnjoin', 'U'],
 +    " \       ['Plus', 'p'], ['PlusRepeat', '.p'],
 +    " \       ['GPlus', 'P'], ['GPlusRepeat', '.P']
++    " \       ['Comma', ','],
++    " \       ['CommaSingleQuote', ",'"],
++    " \       ['CommaDoubleQuote', ',"'],
      for [l:pasteName, l:pasteType] in
      \   [
 -    \       ['Char', 'c'], ['Line', 'l'], ['Block', 'b'], ['Comma', ','], ['CommaSingleQuote', ",'"], ['CommaDoubleQuote', ',"'],
 +    \       ['Char', 'c'],
 +    \       ['Line', 'l'],
 +    \       ['Block', 'b'],
-+    \       ['Comma', ','],
-+    \       ['CommaSingleQuote', ",'"],
-+    \       ['CommaDoubleQuote', ',"'],
      \       ['Indented', 'l'],
 -    \       ['MoreIndent', 'm'], ['LessIndent', 'n'],
 -    \       ['Shifted', '>'],

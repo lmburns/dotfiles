@@ -85,7 +85,6 @@ local function del_augroup(name_id)
     pcall(api_call, name_id)
 end
 
--- Mike325/nvim
 nvim.plugins =
     setmetatable(
     {},

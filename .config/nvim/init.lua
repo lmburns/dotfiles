@@ -177,12 +177,16 @@ vim.schedule(
                         {
                             event = "ModeChanged",
                             pattern = "*:s",
-                            command = [[set clipboard=]]
+                            command = function()
+                                ex.set("clipboard=")
+                            end
                         },
                         {
                             event = "ModeChanged",
                             pattern = "s:*",
-                            command = [[set clipboard=unnamedplus]]
+                            command = function()
+                                ex.set("clipboard=unnamedplus")
+                            end
                         }
                     )
                 else
@@ -269,11 +273,12 @@ vim.schedule(
                 vim.schedule(
                     function()
                         -- augroup(
-                        --     {"CocFzfLocation", false},
+                        --     "CocFzfLocation",
                         --     {
                         --         event = "User",
+                        --         pattern = "CocLocationsChange",
                         --         nested = true,
-                        --         pattern = "CocLocationsChange"
+                        --         command = [[]]
                         --     }
                         -- )
 

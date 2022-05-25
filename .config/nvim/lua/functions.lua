@@ -105,31 +105,42 @@ command("RmAnsi", [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]], {nargs = 0, range 
 
 -- ============================ Functions ============================= [[[
 -- ============================== Syntax ============================== [[[
--- Show syntax group
-cmd [[
-  function! SynStack() abort
-    if !exists("*synstack")
-      return
-    endif
-    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-  endfunction
-
-  command! Synstack call SynStack()
-]]
-
--- Display the syntax stack at current cursor position
-cmd [[
-  function! SyntaxQuery() abort
-    for id in synstack(line("."), col("."))
-      execute 'hi' synIDattr(id, "name")
-    endfor
-  endfunction
-
-  command! SQ call SyntaxQuery()
-]]
-
 map("n", "<Leader>sll", ":syn list")
 map("n", "<Leader>slo", ":verbose hi")
+
+---Display the syntax stack at current cursor position
+function M.name_syn_stack()
+    local stack = fn.synstack(fn.line("."), fn.col("."))
+    stack =
+        vim.tbl_map(
+        function(v)
+            return fn.synIDattr(v, "name")
+        end,
+        stack
+    )
+    return stack
+end
+
+---Display the syntax group at current cursor position
+function M.print_syn_group()
+    local id = fn.synID(fn.line("."), fn.col("."), 1)
+    cmd(utils.hl.WarningMsg:format("synstack", vim.inspect(M.name_syn_stack())))
+    print(fn.synIDattr(id, "name") .. " -> " .. fn.synIDattr(fn.synIDtrans(id), "name"))
+end
+
+---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
+function M.print_hi_group()
+    for _, id in pairs(M.name_syn_stack()) do
+        ex.hi(id)
+    end
+end
+
+command(
+    "SQ",
+    function()
+        require("functions").print_hi_group()
+    end
+)
 -- ]]] === Syntax ===
 
 -- ========================= Builtin Terminal ========================= [[[
@@ -228,6 +239,11 @@ augroup(
     }
 )
 -- ]]] === Execute Buffer ===
+
+function M.execute_macro_over_visual_range()
+    print("@" .. fn.getcmdline())
+    fn.execute(":'<,'>normal @" .. fn.nr2char(vim.fn.getchar()))
+end
 
 -- Show changes since last save
 function M.diffsaved()

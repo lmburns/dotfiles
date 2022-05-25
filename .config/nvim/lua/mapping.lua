@@ -51,16 +51,7 @@ map(
     {expr = true, desc = "Record macro"}
 )
 map("n", "q", "<Nop>", {silent = true})
-
--- stoeffel/.dotfiles
-vim.cmd [[
-  function! ExecuteMacroOverVisualRange()
-    echo "@".getcmdline()
-    execute ":'<,'>normal @".nr2char(getchar())
-  endfunction
-]]
-
-map("x", "@", ":<C-u>call ExecuteMacroOverVisualRange()<CR>", {silent = false})
+map("x", "@", ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>", {silent = false})
 
 -- Repeat last command
 wk.register(
@@ -259,6 +250,14 @@ wk.register(
                 [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
                 "Split last buffer (vertically)"
             },
+            H = {
+                "<C-w>t<C-w>K",
+                "Change vertical to horizontal",
+            },
+            V = {
+                "<C-w>t<C-w>H",
+                "Change horizontal to vertical"
+            },
             [";"] = {
                 [[<Cmd>lua require('common.win').go2recent()<CR>]],
                 "Focus last buffer"
@@ -300,7 +299,10 @@ wk.register(
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
-        ["qD"] = {[[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]], "Close diff"},
+        ["qD"] = {
+            [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
+            "Close diff"
+        },
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
         ["<Leader>ft"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},

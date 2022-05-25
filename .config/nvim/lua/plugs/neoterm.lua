@@ -109,12 +109,15 @@ end
 
 function M.set_terminal_keymaps()
     map(0, "t", "<Esc>", [[<C-\><C-n>]])
-    -- bmap(0, "t", "jk", [[<C-\><C-n>]])
-    -- bmap(0, "t", "kj", [[<C-\><C-n>]])
-    -- bmap(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
-    -- bmap(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]])
-    -- bmap(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]])
-    -- bmap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
+    -- Why does this need to be remapped to work?
+    map(0, "t", ":", ":")
+
+    -- map(0, "t", "jk", [[<C-\><C-n>]])
+    -- map(0, "t", "kj", [[<C-\><C-n>]])
+    -- map(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
+    -- map(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]])
+    -- map(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]])
+    -- map(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
 end
 
 -- Sample on how a command can be ran
@@ -166,16 +169,6 @@ local function init()
 
     command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*"})
     command("VT", [[vsp | term <args>]], {nargs = "*"})
-
-    api.nvim_create_autocmd(
-        "TermOpen",
-        {
-            pattern = "term://*toggleterm#*",
-            callback = function()
-                require("plugs.neoterm").set_terminal_keymaps()
-            end
-        }
-    )
 
     -- Equivalent to neoterms `T`
     command(

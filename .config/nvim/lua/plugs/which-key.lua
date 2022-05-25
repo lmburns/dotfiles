@@ -1,11 +1,21 @@
 local M = {}
 
 local wk = require("which-key")
-local map = require("common.utils").map
+local utils = require("common.utils")
+local map = utils.map
 
 function M.setup()
     -- TODO: Get '?' to map to popup for current operator
     -- FIX: gc operator
+
+    -- Workaround until WhichKey has autocmds to disable it for certain filetypes
+    local show = wk.show
+    wk.show = function(keys, opts)
+        if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" then
+            return
+        end
+        show(keys, opts)
+    end
 
     local presets = require("which-key.plugins.presets")
     presets.operators["gc"] = "Commenter"
