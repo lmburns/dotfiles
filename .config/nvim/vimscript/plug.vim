@@ -352,7 +352,7 @@ set guioptions-=L
 
 " }}} === Theme Settings ===
 
-" lua require('plugs/tree-sitter')
+" lua require('plugs/treesitter')
 
 " augroup jump_last_position
 "   autocmd!

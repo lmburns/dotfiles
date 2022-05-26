@@ -210,7 +210,7 @@ return packer.startup(
             use({"lewis6991/impatient.nvim", rocks = "mpack"})
 
             -- Faster version of filetype.vim
-            use({"nathom/filetype.nvim", conf = "plugs.filetype"})
+            -- use({"nathom/filetype.nvim", conf = "plugs.filetype"})
 
             -- Have more than one configuration
             -- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
@@ -1239,7 +1239,7 @@ return packer.startup(
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
                 {
-                    -- conf = "plugs.tree-sitter"
+                    -- conf = "plugs.treesitter"
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
                     requires = {

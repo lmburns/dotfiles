@@ -27,7 +27,7 @@ function M.select(obj, inner, visual)
     if obj == "func" then
         obj = "function"
     end
-    require("plugs.tree-sitter").do_textobj(obj, inner, visual)
+    require("plugs.treesitter").do_textobj(obj, inner, visual)
     utils.cool_echo("textobjects: treesitter", "WarningMsg")
 end
 

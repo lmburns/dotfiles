@@ -236,6 +236,7 @@ local sections_2 = {
     lualine_c = {},
     lualine_x = {
         {
+            -- "aerial"
             'require("nvim-gps").get_location()',
             cond = conditions.is_available_gps,
             color = {fg = colors.red}
@@ -450,8 +451,25 @@ local function init()
             sections = sections_1,
             inactive_sections = {
                 lualine_a = {},
-                lualine_b = {},
-                lualine_c = {"filename"},
+                lualine_b = {
+                    {"filetype", icon_only = false},
+                    {
+                        "filesize",
+                        cond = conditions.hide_in_width,
+                        color = {fg = colors.green}
+                    },
+                    plugins.file_encoding,
+                    {
+                        "filename",
+                        path = 0,
+                        symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40},
+                        color = function(section)
+                            -- return { fg = vim.bo.modified and colors.purple or colors.fg }
+                            return {gui = vim.bo.modified and "bold" or "none"}
+                        end
+                    }
+                },
+                lualine_c = {},
                 lualine_x = {"location"},
                 lualine_y = {},
                 lualine_z = {}
@@ -476,8 +494,8 @@ local function init()
                 my_toggleterm,
                 "symbols-outline",
                 my_extension,
-                "fzf",
                 "aerial",
+                "fzf",
                 "fugitive"
             }
         }

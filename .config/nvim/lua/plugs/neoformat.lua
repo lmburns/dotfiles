@@ -7,8 +7,10 @@ local coc = require("plugs.coc")
 local gittool = require("common.gittool")
 local utils = require("common.utils")
 
+local ex = nvim.ex
 local g = vim.g
 local api = vim.api
+local fn = vim.fn
 
 local scan = require("plenary.scandir")
 
@@ -18,7 +20,7 @@ local function save_doc(bufnr)
             api.nvim_buf_call(
                 bufnr,
                 function()
-                    cmd("sil! up")
+                    ex.sil_("up")
                 end
             )
         end
@@ -42,11 +44,17 @@ local function neoformat()
     else
         ex.Neoformat()
     end
-    cmd("sil! up")
+
+    ex.sil_("up")
 end
 
+---Format the document using `Neoformat`
+---@param save boolean whether to save the document
 function M.format_doc(save)
     save = save == nil and true or save
+
+    local restore = utils.save_win_positions(nvim.buf.nr())
+
     gittool.root_exe(
         function()
             if coc.did_init() then
@@ -86,8 +94,13 @@ function M.format_doc(save)
             end
         end
     )
+
+    restore()
 end
 
+---Format selected text
+---@param mode boolean
+---@param save boolean whether to save file
 function M.format_selected(mode, save)
     save = save == nil and true or save
     if not coc.did_init() then

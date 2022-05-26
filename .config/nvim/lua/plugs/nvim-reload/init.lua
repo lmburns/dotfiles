@@ -76,7 +76,7 @@ reload.post_reload_hook = function()
     -- ex.PackerLoad("nvim-treesitter")
     -- ex.pa("nvim-treesitter")
     -- ex.pa("iswap.nvim")
-    -- require("plugs.tree-sitter")
+    -- require("plugs.treesitter")
     ex.syntax("on")
 
     -- ex.doautocmd("VimEnter")

@@ -690,8 +690,8 @@ cmd fd_edit ${{
 }}
 
 # -- Miscellaneous:
-cmd rsyncto ${{ rsync -uvrP $fx root@burnsac.xyz:"$1" }}
-cmd rsyncfrom ${{ rsync -uvrP root@burnsac.xyz:"$1" "$2" }}
+cmd rsyncto ${{ rsync -uvrP $fx root@lmburns.com:"$1" }}
+cmd rsyncfrom ${{ rsync -uvrP root@lmburns.com:"$1" "$2" }}
 cmd fzf_cd ${{
   clear
   lf -remote "send $id cd '$(fd . -d1 -td -HiL | fzf --no-height --pointer="cd")'"

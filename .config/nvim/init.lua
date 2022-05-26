@@ -118,12 +118,13 @@ a.async_void(
 -- ]]]
 
 -- ========================= Defer Loading ============================ [[[
+-- ex.filetype("off")
 g.loaded_clipboard_provider = 1
+
 g.do_filetype_lua = 1
 g.did_load_filetypes = 0
 
--- ex.filetype("off")
--- g.did_load_filetypes = 0 -- this messes up NvimRestart
+require("plugs.filetype")
 
 vim.schedule(
     function()
@@ -140,7 +141,7 @@ vim.schedule(
         -- === Treesitter
         vim.defer_fn(
             function()
-                require("plugs.tree-sitter")
+                require("plugs.treesitter")
 
                 -- require("filetype").resolve()
                 -- g.did_load_filetypes = nil
@@ -152,14 +153,14 @@ vim.schedule(
                         event = "FileType",
                         pattern = "*",
                         command = function()
-                            require("plugs.tree-sitter").hijack_synset()
+                            require("plugs.treesitter").hijack_synset()
                         end
                     }
                 )
 
                 ex.syntax("on")
                 ex.filetype("on")
-                ex.doautoall("filetypedetect BufRead") -- Runs filetype.resolve()
+                ex.doautoall("filetypedetect BufRead")
             end,
             15
         )
@@ -231,6 +232,7 @@ vim.schedule(
                     -- "coc-lua",
                     -- "coc-git",
                     -- "coc-lists",
+                    -- "coc-sh",
                     "coc-clangd",
                     "coc-css",
                     "coc-diagnostic",
@@ -247,7 +249,6 @@ vim.schedule(
                     "coc-rls",
                     "coc-r-lsp",
                     "coc-rust-analyzer",
-                    "coc-sh",
                     "coc-snippets",
                     "coc-solargraph",
                     "coc-solidity",

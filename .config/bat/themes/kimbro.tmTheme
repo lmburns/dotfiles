@@ -95,7 +95,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: = == => & -->
-                    <!-- #FF5813 -->
                     <key>foreground</key>
                     <string>#FF5813</string>
                 </dict>
@@ -108,7 +107,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: if else for use -->
-                    <!-- #A06469 -->
                     <key>foreground</key>
                     <string>#A06469</string>
                 </dict>
@@ -121,7 +119,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: ?? -->
-                    <!-- #8ab1b0 -->
                     <key>foreground</key>
                     <string>#8ab1b0</string>
                 </dict>
@@ -146,7 +143,6 @@
                 <string>string.other.link</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #dc3958 -->
                     <key>foreground</key>
                     <string>#dc3958</string>
                 </dict>
@@ -158,7 +154,6 @@
                 <string>meta.link</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #f79a32 -->
                     <key>foreground</key>
                     <string>#f79a32</string>
                 </dict>
@@ -170,7 +165,6 @@
                 <string>meta.selector</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #4c96a8 -->
                     <key>foreground</key>
                     <string>#4c96a8</string>
                 </dict>
@@ -182,10 +176,8 @@
                 <string>meta.separator</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #84613d -->
                     <key>background</key>
                     <string>#84613d</string>
-                    <!-- #d3af86 -->
                     <key>foreground</key>
                     <string>#d3af86</string>
                 </dict>
@@ -198,7 +190,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: function names -->
-                    <!-- ##98676A-->
                     <key>foreground</key>
                     <string>#98676A</string>
                     <key>fontStyle</key>
@@ -213,7 +204,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: ?? -->
-                    <!-- #f06431 -->
                     <key>foreground</key>
                     <string>#f06431</string>
                 </dict>
@@ -226,7 +216,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: macro_rules -->
-                    <!-- #8ab1b0 -->
                     <key>foreground</key>
                     <string>#8ab1b0</string>
                 </dict>
@@ -238,7 +227,6 @@
                 <string>constant, support.constant</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #4c96a8 -->
                     <key>foreground</key>
                     <string>#4c96a8</string>
                 </dict>
@@ -250,7 +238,6 @@
                 <string>constant.language</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #FF5813 -->
                     <key>foreground</key>
                     <string>#FF5813</string>
                 </dict>
@@ -262,7 +249,6 @@
                 <string>variable.language</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #4c96a8 -->
                     <key>foreground</key>
                     <string>#4c96a8</string>
                 </dict>
@@ -274,7 +260,6 @@
                 <string>meta.annotation.parameters</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #819C3B -->
                     <key>foreground</key>
                     <string>#819c3b</string>
                     <key>fontStyle</key>
@@ -288,7 +273,6 @@
             <!--     <string>meta.function-call</string> -->
             <!--     <key>settings</key> -->
             <!--     <dict> -->
-            <!--         [> #819C3B <] -->
             <!--         <key>foreground</key> -->
             <!--         <string>#aaaaaa</string> -->
             <!--     </dict> -->
@@ -300,7 +284,6 @@
                 <string>punctuation.definition.annotation</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #A06469-->
                     <key>foreground</key>
                     <string>#A06469</string>
                 </dict>
@@ -312,7 +295,6 @@
                 <string>none</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #f06431 -->
                     <key>foreground</key>
                     <string>#f06431</string>
                 </dict>
@@ -324,7 +306,6 @@
                 <string>none</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #7E5053 -->
                     <key>foreground</key>
                     <string>#7e5053</string>
                 </dict>
@@ -336,7 +317,6 @@
                 <string>constant.numeric</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #7E5053 -->
                     <key>foreground</key>
                     <string>#7E5053</string>
                 </dict>
@@ -362,7 +342,6 @@
                 <string>entity.other.attribute-name</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #733e8b -->
                     <key>foreground</key>
                     <string>#733e8b</string>
                 </dict>
@@ -375,7 +354,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: ?? -->
-                    <!-- #d3af86 -->
                     <key>foreground</key>
                     <string>#d3af86</string>
                 </dict>
@@ -388,7 +366,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: // # etc -->
-                    <!-- #a57a4c -->
                     <key>foreground</key>
                     <string>#a57a4c</string>
                 </dict>
@@ -401,7 +378,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: quotes -->
-                    <!-- #d3af86 -->
                     <key>foreground</key>
                     <string>#d3af86</string>
                 </dict>
@@ -413,7 +389,6 @@
                 <string>entity.other.attribute-name.id, punctuation.definition.entity</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #8ab1b0 -->
                     <key>foreground</key>
                     <string>#8ab1b0</string>
                 </dict>
@@ -426,7 +401,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: impl pub fn -->
-                    <!-- #EF1D55-->
                     <key>foreground</key>
                     <string>#EF1D55</string>
                 </dict>
@@ -449,7 +423,6 @@
                 <string>string.regexp</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #889b4a -->
                     <key>foreground</key>
                     <string>#889b4a</string>
                     <key>fontStyle</key>
@@ -480,7 +453,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- TODO: separate these -->
-                    <!-- #889b4a -->
                     <!-- IS: Ok() Some() eprintln -->
                     <key>foreground</key>
                     <string>#889b4a</string>
@@ -496,7 +468,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: variable names to functions -->
-                    <!-- #FF5813 -->
                     <key>foreground</key>
                     <string>#FF5813</string>
                 </dict>
@@ -509,7 +480,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: variable names in structs -->
-                    <!-- #D9AE80 -->
                     <key>foreground</key>
                     <string>#D9ae80</string>
                 </dict>
@@ -522,7 +492,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: derive macro -->
-                    <!-- #8ab1b0 -->
                     <key>foreground</key>
                     <string>#8ab1b0</string>
                 </dict>
@@ -538,7 +507,6 @@
                     <!-- IS: function parameter after colon e.g., name: HERE -->
                     <!-- IS: Result<()> (the <()>) -->
                     <!-- meta.generic is also <()> -->
-                    <!-- #819C3B -->
                     <key>foreground</key>
                     <string>#819C3B</string>
                     <key>fontStyle</key>
@@ -553,7 +521,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: ::path::here -->
-                    <!-- #FF5813 -->
                     <key>foreground</key>
                     <string>#FF5813</string>
                 </dict>
@@ -567,7 +534,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: .methods() -->
-                    <!-- #A06469 -->
                     <key>foreground</key>
                     <string>#A06469</string>
                     <key>fontStyle</key>
@@ -581,7 +547,6 @@
                 <string>markup.raw.inline</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #889b4a -->
                     <key>foreground</key>
                     <string>#889b4a</string>
                 </dict>
@@ -593,7 +558,6 @@
                 <string>markup.inserted</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #98676A -->
                     <key>foreground</key>
                     <string>#98676A</string>
                 </dict>
@@ -605,7 +569,6 @@
                 <string>markup.deleted</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #EF1D55 -->
                     <key>foreground</key>
                     <string>#EF1D55</string>
                 </dict>
@@ -617,7 +580,6 @@
                 <string>markup.changed</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #f06431 -->
                     <key>foreground</key>
                     <string>#f06431</string>
                 </dict>
@@ -629,7 +591,6 @@
                 <string>markup.ignored</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #222222 -->
                     <key>foreground</key>
                     <string>#222222</string>
                 </dict>
@@ -652,7 +613,6 @@
                 <string>markup.heading</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #889b4a -->
                     <key>foreground</key>
                     <string>#889b4a</string>
                 </dict>
@@ -678,7 +638,6 @@
                 <key>settings</key>
                 <dict>
                     <!-- IS: ?? -->
-                    <!-- #f79a32 -->
                     <key>foreground</key>
                     <string>#f79a32</string>
                 </dict>
@@ -690,7 +649,6 @@
                 <string>markup.bold</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #8ab1b0 -->
                     <key>foreground</key>
                     <string>#8ab1b0</string>
                     <key>fontStyle</key>
@@ -783,7 +741,6 @@
                 <string>string, constant.other.symbol, entity.other.inherited-class</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #f79a32 -->
                     <key>foreground</key>
                     <string>#f79a32</string>
                 </dict>
@@ -795,7 +752,6 @@
                 <string>constant.other.color</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #7e602c -->
                     <key>foreground</key>
                     <string>#7e602c</string>
                 </dict>
@@ -807,7 +763,6 @@
                 <string>constant.character.escape</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #4c96a8 -->
                     <key>foreground</key>
                     <string>#4c96a8</string>
                 </dict>
@@ -819,7 +774,6 @@
                 <string>punctuation.accessor</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #D9AE80 -->
                     <key>foreground</key>
                     <string>#D9AE80</string>
                 </dict>
@@ -831,7 +785,6 @@
                 <string>punctuation.section.embedded, variable.interpolation</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #088649 -->
                     <key>foreground</key>
                     <string>#088649</string>
                 </dict>
@@ -843,7 +796,6 @@
                 <string>entity.name</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #A06469 -->
                     <key>foreground</key>
                     <string>#A06469</string>
                     <key>fontStyle</key>
@@ -857,7 +809,6 @@
                 <string>entity.name.tag</string>
                 <key>settings</key>
                 <dict>
-                    <!-- [> #FF5813 <] -->
                     <key>foreground</key>
                     <string>#FF5813</string>
                 </dict>
@@ -869,7 +820,6 @@
                 <string>entity.other.attribute-name.pseudo-element</string>
                 <key>settings</key>
                 <dict>
-                    <!-- #FF9500 -->
                     <key>foreground</key>
                     <string>#FF9500</string>
                 </dict>

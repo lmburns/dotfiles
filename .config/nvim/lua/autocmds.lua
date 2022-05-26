@@ -350,20 +350,6 @@ nvim.autocmd.lmb__TermMappings = {
     end,
     desc = "Set terminal mappings"
 }
-
-nvim.autocmd.lmb__AutocloseTerminal = {
-    event = "TermClose",
-    pattern = "*",
-    command = function()
-        if vim.v.event.status == 0 then
-            local info = api.nvim_get_chan_info(vim.opt.channel._value)
-            if info and info.argv[1] == vim.env.SHELL then
-                pcall(api.nvim_buf_delete, 0, {})
-            end
-        end
-    end,
-    desc = "Auto close shell buffers"
-}
 -- ]]] === Terminal ===
 
 -- === Help/Man pages in vertical ===

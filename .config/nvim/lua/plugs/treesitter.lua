@@ -7,15 +7,27 @@ local color = require("common.color")
 
 local wk = require("which-key")
 
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
+
 local ft_enabled
 local queries
 local parsers
 local configs
 
+---Check whether there are text-objects available
+---@param ft string
+---@return boolean
 function M.has_textobj(ft)
     return queries.get_query(parsers.ft_to_lang(ft), "textobjects") ~= nil and true or false
 end
 
+---Perform an action on a text object (i.e., select or operator pending)
+---@param obj string text object to act on
+---@param inner boolean act on inner or outer object
+---@param visual boolean visual mode or operator pending
+---@return boolean
 function M.do_textobj(obj, inner, visual)
     local ret = false
     if queries.has_query_files(vim.bo.ft, "textobjects") then
@@ -105,6 +117,7 @@ M.setup_iswap = function()
     )
 end
 
+---Setup `aerial`
 M.setup_aerial = function()
     ex.packadd("aerial.nvim")
 
@@ -218,7 +231,8 @@ M.setup_aerial = function()
             nerd_font = "auto",
             -- Call this function when aerial attaches to a buffer.
             -- Useful for setting keymaps. Takes a single `bufnr` argument.
-            on_attach = nil,
+            on_attach = function()
+            end,
             -- Automatically open aerial when entering supported buffers.
             -- This can be a function (see :help aerial-open-automatic)
             open_automatic = false,
@@ -280,33 +294,33 @@ M.setup_aerial = function()
     require("telescope").load_extension("aerial")
 
     -- Use 'o' to open to the function, not <CR>
-    local keys = require("aerial.bindings").keys
-    local dev = require("dev")
+    -- local keys = require("aerial.bindings").keys
+    -- local dev = require("dev")
 
-    local cr_idx =
-        dev.vec_indexof(
-        dev.map(
-            keys,
-            function(val)
-                return val[1]
-            end
-        ),
-        "<CR>"
-    )
-
-    local o_idx =
-        dev.vec_indexof(
-        dev.map(
-            keys,
-            function(val)
-                return F.if_nil(val[1][1], val[1])
-            end
-        ),
-        "o"
-    )
-
-    keys[cr_idx][1] = "o"
-    keys[o_idx][1][1] = "<CR>"
+    -- local cr_idx =
+    --     dev.vec_indexof(
+    --     dev.map(
+    --         keys,
+    --         function(val)
+    --             return val[1]
+    --         end
+    --     ),
+    --     "<CR>"
+    -- )
+    --
+    -- local o_idx =
+    --     dev.vec_indexof(
+    --     dev.map(
+    --         keys,
+    --         function(val)
+    --             return F.if_nil(val[1][1], val[1])
+    --         end
+    --     ),
+    --     "o"
+    -- )
+    --
+    -- keys[cr_idx][1] = "o"
+    -- keys[o_idx][1][1] = "<CR>"
 
     wk.register(
         {
@@ -340,7 +354,10 @@ M.setup_aerial = function()
     -- hi AerialGuide2 guifg=Blue
 end
 
+---Setup `nvim_context_vt`
 M.setup_context_vt = function()
+    ex.packadd("nvim_context_vt")
+
     require("nvim_context_vt").setup(
         {
             -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
@@ -392,6 +409,7 @@ M.setup_context_vt = function()
             -- end,
             -- Custom node virtual text resolver callback
             -- Default: nil
+            ---@diagnostic disable-next-line: unused-local
             custom_resolver = function(nodes, ft, opts)
                 -- By default the last node is used
                 return nodes[#nodes]
@@ -430,6 +448,8 @@ end
 --     )
 -- end
 
+---Setup treesitter
+---@return table
 M.setup = function()
     return {
         ensure_installed = {
@@ -438,6 +458,7 @@ M.setup = function()
             "d",
             "dart",
             "dockerfile",
+            "gitignore",
             "go",
             "gomod",
             "html",
@@ -461,11 +482,13 @@ M.setup = function()
             "scheme",
             "scss",
             "solidity",
+            "sql",
             "teal",
             "typescript",
             -- "tsx",
             -- "vue",
             "vim",
+            -- "yaml",
             "zig",
             "help"
         },
@@ -692,18 +715,56 @@ M.setup = function()
     }
 end
 
-local function init()
-    local conf = M.setup()
+---Install extra Treesitter parsers
+function M.install_extra_parsers()
+    local parser_config = parsers.get_parser_configs()
 
-    -- ex.packadd("nvim-treesitter")
-    -- ex.packadd("nvim-treesitter-textobjects")
+    -- gitignore
+    parser_config.gitignore = {
+        install_info = {
+            url = "https://github.com/shunsambongi/tree-sitter-gitignore",
+            files = {"src/parser.c"},
+            branch = "main"
+        },
+        filetype = "gitignore"
+    }
+
+    -- SQL
+    parser_config.sql = {
+        install_info = {
+            url = "https://github.com/DerekStride/tree-sitter-sql",
+            files = {"src/parser.c"},
+            branch = "main"
+        },
+        filetype = "sql"
+    }
+
+    -- Solidity
+    parser_config.solidity = {
+        install_info = {
+            url = "https://github.com/JoranHonig/tree-sitter-solidity",
+            files = {"src/parser.c"},
+            requires_generate_from_grammar = true
+        },
+        filetype = "solidity"
+    }
+end
+
+local function init()
+    ex.packadd("nvim-treesitter")
+    ex.packadd("nvim-treesitter-textobjects")
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
+
+    M.install_extra_parsers()
+    local conf = M.setup()
+
     configs.setup(conf)
 
     -- cmd("au! NvimTreesitter FileType *")
     -- M.setup_comment_frame()
+
     M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()

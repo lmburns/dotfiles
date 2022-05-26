@@ -12,14 +12,6 @@ g.maplocalleader = [[,]]
 -- map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
 -- map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
--- Lua filetype detection
--- g.do_filetype_lua = 1
--- g.did_load_filetypes = 1
--- vim.filetype.add({
---     extension = {},
---     filename = {}
--- })
-
 vim.tbl_map(
     function(p)
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1

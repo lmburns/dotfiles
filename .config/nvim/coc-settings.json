@@ -21,14 +21,10 @@
     // "typescript"
   ],
 
-  // "diagnostic.errorSign": "••",
-  // "diagnostic.warningSign": "•",
-  // "diagnostic.infoSign": "•",
-  // "diagnostic.hintSign": "•",
-  "diagnostic.errorSign": "",
-  "diagnostic.warningSign": "",
-  "diagnostic.hintSign": "",
-  "diagnostic.infoSign": "",
+  "diagnostic.errorSign": "", //  ••
+  "diagnostic.warningSign": "", //  •
+  "diagnostic.hintSign": "", // •
+  "diagnostic.infoSign": "", // •
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
   "diagnostic.refreshOnInsertMode": false,
@@ -221,6 +217,11 @@
     //   "command": "/usr/bin/serve-d",
     //   "filetypes": ["d"]
     // },
+    "bash": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh"]
+    },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
@@ -266,7 +267,11 @@
               "before_each",
               "after_each"
             ],
-            "disable": ["lowercase-global", "redundant-parameter", "missing-parameter"],
+            "disable": [
+              "lowercase-global",
+              "redundant-parameter",
+              "missing-parameter"
+            ],
             "neededFileStatus": {
               "different-requires": "None"
             }

@@ -37,6 +37,10 @@ local function mappings(bufnr)
                     gs.blame_line({full = true})
                 end,
                 "Blame line virt (git)"
+            },
+            ["<Leader>hB"] = {
+                "<cmd>Gitsigns toggle_current_line_blame<CR>",
+                "Toggle blame line virt (git)"
             }
         },
         {buffer = bufnr}

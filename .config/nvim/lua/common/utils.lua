@@ -578,6 +578,37 @@ M.set_marks = function(marks, bufnr)
     end
 end
 
+---Save a window's positions
+---@param bufnr number? buffer to save position
+---@return function
+M.save_win_positions = function(bufnr)
+    bufnr = (bufnr == nil or bufnr == 0) and api.nvim_get_current_buf() or bufnr
+    local win_positions = {}
+    for _, winid in pairs(api.nvim_list_wins()) do
+        if api.nvim_win_get_buf(winid) == bufnr then
+            api.nvim_win_call(
+                winid,
+                function()
+                    local view = fn.winsaveview()
+                    table.insert(win_positions, {winid, view})
+                end
+            )
+        end
+    end
+
+    return function()
+        for _, pair in pairs(win_positions) do
+            local winid, view = unpack(pair)
+            api.nvim_win_call(
+                winid,
+                function()
+                    pcall(fn.winrestview, view)
+                end
+            )
+        end
+    end
+end
+
 ---Program to check if executable
 ---@param exec string
 ---@return boolean
