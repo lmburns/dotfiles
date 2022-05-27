@@ -29,8 +29,8 @@ end
 
 local function neoformat()
     local bufnr = api.nvim_get_current_buf()
+    -- This is a little dense
     if
-        -- This is a little dense
         vim.bo[bufnr].ft == "lua" and
             #F.if_nil(
                 scan.scan_dir(
@@ -71,8 +71,11 @@ function M.format_doc(save)
                     fn.CocActionAsync(
                         "format",
                         "",
-                        function(e, _)
-                            if e ~= vim.NIL then
+                        function(e, res)
+                            -- This is only needed if Sumneko-Coc is used
+                            -- Otherwise, formatting can be disabled, and hasProvider returns false
+                            -- Now, result has to be checked as false here
+                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
@@ -126,6 +129,10 @@ function M.format_selected(mode, save)
                         if e ~= vim.NIL then
                             vim.notify(e, vim.log.levels.WARN)
                         else
+                            if vim.bo[bufnr].ft == "lua" then
+                                neoformat()
+                            end
+
                             if save then
                                 save_doc(bufnr)
                             end

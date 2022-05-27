@@ -418,6 +418,7 @@ local function init()
             "vista",
             "NvimTree",
             "coc-explorer",
+            "coctree",
             "NeogitStatus",
             "Trouble",
             "TelescopePrompt",

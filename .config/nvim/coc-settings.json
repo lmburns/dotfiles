@@ -3,9 +3,21 @@
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
-  "coc.preferences.listOfWorkspaceEdit": "quickfix", // location
   "coc.preferences.formatOnSaveFiletypes": ["go"],
   "coc.preferences.formatOnType": true,
+
+  "outline.keepWindow": true,
+  "outline.sortBy": "position",
+  "outline.splitCommand": "botright 40vs",
+  "outline.showLineNumber": true,
+  "outline.followCursor": true,
+  "outline.switchSortKey": "<C-s>",
+
+  "tree.key.activeFilter": "zf",
+  "tree.key.close": "qq",
+  "tree.key.toggle": "t",
+  "tree.key.selectNext": "<C-j>",
+  "tree.key.selectPrevious": "<C-k>",
 
   // Filetypes that enable semanticTokens highlighting
   // "coc.preferences.semanticTokensHighlights": true,
@@ -27,6 +39,7 @@
   "diagnostic.infoSign": "", // •
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
+  "diagnostic.autoRefresh": true,
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
@@ -76,7 +89,7 @@
   "coc.source.file.triggerCharacters": ["/"],
   "list.indicator": ">",
   "signature.enable": true,
-  "sh.enable": true,
+  // "sh.enable": true,
   // "python.jediEnabled": true,
   "python.formatting.provider": "black",
   "python.linting.enabled": true,
@@ -182,6 +195,101 @@
   // "rust-analyzer.lens.methodReferences": true,
   // "rust.show_warnings": false,
   // "rust.clippy_preference": "on",
+
+  // ╭──────────────────────────────────────────────────────────╮
+  // │                           Lua                            │
+  // ╰──────────────────────────────────────────────────────────╯
+  // https://github.com/xiyaowong/coc-sumneko-lua/blob/main/settings.md
+  //
+  // The Coc package for Lua provides inline hints, which is better
+  // than a manual setup (can be found below)
+  // "sumneko-lua.enableNvimLuaDev": true,
+  "sumneko-lua.checkUpdate": true,
+  "sumneko-lua.inlayHints.refreshOnInsertMode": false,
+  "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
+  "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
+
+  "Lua.telemetry.enable": false,
+  "Lua.runtime.version": "LuaJIT",
+  "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  // "Lua.workspace.checkThirdParty": false,
+  "Lua.workspace.maxPreload": 10000,
+  "Lua.workspace.preloadFileSize": 10000,
+  "Lua.workspace.library": [],
+  "Lua.format.enable": false,
+  "Lua.completion.autoRequire": true,
+  "Lua.IntelliSense.traceReturn": true,
+  "Lua.IntelliSense.traceBeSetted": true,
+  "Lua.IntelliSense.traceLocalSet": true,
+  "Lua.IntelliSense.traceFieldInject": true,
+  "Lua.completion.callSnippet": "Replace",
+  "Lua.completion.postfix": ".",
+  "Lua.hint.enable": true,
+  "Lua.hint.paramName": "All",
+  "Lua.hint.arrayIndex": "Enable",
+  "Lua.hint.setType": true,
+  "Lua.hint.paramType": true,
+  "Lua.hover.enable": true,
+  "Lua.hover.enumsLimit": 5,
+  "Lua.hover.viewString": true,
+  "Lua.hover.viewNumber": true,
+  "Lua.window.statusBar": false,
+  "Lua.window.progressBar": true,
+  "Lua.diagnostics.enable": true,
+  "Lua.diagnostics.libraryFiles": "Opened",
+  "Lua.diagnostics.neededFileStatus": { "different-requires": "None" },
+  "Lua.diagnostics.disable": [
+    "lowercase-global",
+    "redundant-parameter",
+    "missing-parameter"
+  ],
+
+  "Lua.diagnostics.globals": [
+    "hs",
+    "vim",
+    "nvim",
+    "it",
+    "describe",
+    "before_each",
+    "after_each"
+  ],
+
+  "yank.highlight.duration": 100,
+  "solargraph.diagnostics": true,
+  "solargraph.autoformat": true,
+  "solargraph.formatting": true,
+
+  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+  "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
+  "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
+
+  "zig.path": "/usr/bin/zls",
+
+  "clangd.trace.server": "off",
+  "vimlsp.trace.server": "off",
+  "xml.trace.server": "off",
+  "html.trace.server": "off",
+  "css.trace.server": "off",
+  "tsserver.trace.server": "off",
+  "go.trace.server": "off",
+  "json.trace.server": "off",
+
+  "yaml.trace.server": "off",
+  "yaml.validate": true,
+  "yaml.format.singleQuote": true,
+  "yaml.completion": true,
+
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  // "javascript.format.semicolons": "remove",
+  // "typescript.format.semicolons": "remove"
+
+  "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+
   "languageserver": {
     "golang": {
       "command": "gopls",
@@ -296,50 +404,5 @@
       },
       "disabledFeatures": ["documentFormatting", "documentRangeFormatting"]
     }
-  },
-  "yank.highlight.duration": 100,
-  "solargraph.diagnostics": true,
-  "solargraph.autoformat": true,
-  "solargraph.formatting": true,
-
-  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
-  "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
-  "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
-
-  "zig.path": "/usr/bin/zls",
-
-  "outline.keepWindow": true,
-  "outline.sortBy": "position",
-  "outline.splitCommand": "botright 40vs",
-  "outline.showLineNumber": true,
-
-  "tree.key.activeFilter": "zf",
-  "tree.key.close": "qq",
-  "tree.key.toggle": "t",
-
-  "clangd.trace.server": "off",
-  "vimlsp.trace.server": "off",
-  "xml.trace.server": "off",
-  "html.trace.server": "off",
-  "css.trace.server": "off",
-  "tsserver.trace.server": "off",
-  "go.trace.server": "off",
-  "json.trace.server": "off",
-
-  "yaml.trace.server": "off",
-  "yaml.validate": true,
-  "yaml.format.singleQuote": true,
-  "yaml.completion": true,
-
-  // I don't see these working
-  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true
-  // "javascript.format.semicolons": "remove",
-  // "typescript.format.semicolons": "remove"
-
-  // "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
-  // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
-  // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true
+  }
 }

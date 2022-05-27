@@ -634,7 +634,8 @@ function M.edit_zsh(opts)
     fzf_lua.files(opts)
 end
 
-function M.cst_files(opts)
+M.cst_files = function(opts)
+    opts = opts or {}
     local cwd = fn.expand("%:p:h")
     local root = require("common.gittool").root(cwd)
     ex.lcd(cwd)
@@ -645,6 +646,16 @@ function M.cst_files(opts)
     else
         fzf_lua.git_files(opts)
     end
+end
+
+M.cst_fd = function()
+    local opts = {}
+    local cwd = fn.expand("%:p:h")
+    ex.lcd(cwd)
+    -- Override this so it gets ran on each file
+    opts.cwd = cwd
+
+    fzf_lua.files(opts)
 end
 
 -- local function map_fzf(mode, key, f, opts, buffer)
@@ -698,6 +709,8 @@ function init()
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
             ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
+            ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Files (fzf-lua)"},
+            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files (fzf-lua)"},
         }
     )
 

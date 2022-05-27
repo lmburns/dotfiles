@@ -4,6 +4,8 @@ local M = {}
 
 local debounce = require("common.debounce")
 
+local api = vim.api
+
 ---Safely check if a plugin is installed
 ---@param check string Module to check if is installed
 ---@return table Module
@@ -36,11 +38,20 @@ M.create_augroup = function(name, clear)
     return api.nvim_create_augroup(name, {clear = clear})
 end
 
+---@class AutocommandOpts
+---@field id number autocommand id
+---@field event string name of event that triggered the autocommand
+---@field group number|nil autocommand group id if exists
+---@field match string expanded value of `<amatch>`
+---@field buf number expanded value of `<abuf>`
+---@field file string expanded value of `<afile>`
+---@field data any any arbitrary data passed to `nvim_exec_autocmds`
+
 ---@class Autocommand
 ---@field description string
 ---@field event  string[] list of autocommand events
 ---@field pattern string[] list of autocommand patterns
----@field command string|function
+---@field command string|fun(args: AutocommandOpts)
 ---@field nested  boolean
 ---@field once    boolean
 ---@field buffer  number
@@ -207,7 +218,6 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
         for _, mode in ipairs(modes) do
             if opts.desc then
                 require("which-key").register({[lhs] = opts.desc}, {mode = mode})
-                opts.desc = nil
             end
 
             api.nvim_set_keymap(mode, lhs, rhs, opts)
@@ -550,7 +560,7 @@ end
 ---
 ---@param marks table? builtin marks to be saved
 ---@param bufnr number? buffer where marks should be saved
-M.get_marks = function(bufnr, marks)
+M.get_marks = function(bufnr, marks, tbl)
     -- local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
     marks = marks or require("marks").mark_state.builtin_marks
     bufnr = bufnr or api.nvim_get_current_buf()
@@ -564,7 +574,12 @@ M.get_marks = function(bufnr, marks)
         end
     end
 
-    return saved
+    return function()
+        for _, mark in pairs(marks) do
+            local _, lnum, col, _ = unpack(mark.pos)
+            api.nvim_buf_set_mark(bufnr, mark.mark:sub(2, 2), lnum, col, {})
+        end
+    end
 end
 
 ---Set a list of marks

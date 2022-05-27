@@ -1,7 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
-local dev = require("dev")
+-- local dev = require("dev")
 
 ---Set a timeout for a character-prefix in keybindings
 ---@param prefix string
@@ -80,6 +80,35 @@ function M.jumps2qf()
     else
         api.nvim_set_current_win(winid)
     end
+end
+
+function M.spellcheck()
+    ex.SpellCheck()
+    if #fn.getqflist() > 0 then
+        ex.copen()
+    end
+end
+
+---TODO: Finish this
+---Translate spelling mistakes to quickfix
+function M.spell2qf()
+    vim.opt_local.spell = true
+    cmd("norm! gg")
+
+    local bufnr = api.nvim_get_current_buf()
+    local mistakes = {}
+
+    local line = 0
+    -- Why is this nil?
+    while api.nvim_win_get_cursor(0)[1] or 1 > line do
+        cmd("norm! ]syw")
+        local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
+        -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))
+        line = iline
+        table.insert(mistakes, {bufnr = bufnr, lnum = ilnum, col = icol, text = fn.getreg('"')})
+    end
+
+    p(mistakes)
 end
 
 ---Set location list to changes

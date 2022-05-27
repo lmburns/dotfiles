@@ -38,8 +38,10 @@ function M.bqf()
                 tabdrop = "<C-t>",
                 pscrollup = "<C-u>",
                 pscrolldown = "<C-d>",
+                ptogglemode = "z,",
                 fzffilter = "zf",
-                ptogglemode = "z,"
+                filter = "zn",
+                filterr = "zN"
             },
             filter = {
                 fzf = {
@@ -677,7 +679,7 @@ function M.sandwhich()
             bra = "(",
             ket = ")",
             footer = ""
-        },
+        }
     }
 
     ex.runtime("macros/sandwich/keymap/surround.vim")
@@ -1239,6 +1241,7 @@ end
 -- │                         Grepper                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.grepper()
+    -- TODO: Figure out a way to change dir for GrepperOperator
     g.grepper = {
         dir = "repo,file",
         simple_prompt = 1,
@@ -1316,32 +1319,36 @@ function M.comment_box()
     -- accbox  C     A      C
 
     -- 21 20 19 18 7
-    map({"n", "v"}, "<Leader>bb", cb.cbox)
+    map({"n", "v"}, "<Leader>bb", cb.cbox, {desc = "Left fixed box, center text (round)"})
+
     map(
         {"n", "v"},
         "<Leader>bh",
         function()
             cb.cbox(19)
-        end
+        end,
+        {desc = "Left fixed box, center text (sides)"}
     )
     map(
         {"n", "v"},
         "<Leader>cc",
         function()
             cb.cbox(21)
-        end
+        end,
+        {desc = "Left fixed box, center text (top)"}
     )
     map(
         {"n", "v"},
         "<Leader>bi",
         function()
             cb.cbox(13)
-        end
+        end,
+        {desc = "Left fixed box, center text (side)"}
     )
 
-    map({"n", "v"}, "<Leader>be", cb.lbox)
-    map({"n", "v"}, "<Leader>ba", cb.acbox)
-    map({"n", "v"}, "<Leader>bc", cb.accbox)
+    map({"n", "v"}, "<Leader>be", cb.lbox, {desc = "Left fixed box, left text (round)"})
+    map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
+    map({"n", "v"}, "<Leader>bc", cb.accbox, {desc = "Center center box, center text (round)"})
 
     -- cline
     map(
@@ -1350,25 +1357,11 @@ function M.comment_box()
         function()
             -- 2 6 7
             cb.line(6)
-        end
+        end,
+        {desc = "Insert thick line"}
     )
 
-    map("n", "<Leader>b?", cb.catalog)
-
-    wk.register(
-        {
-            ["<Leader>bb"] = "Left fixed box, center text (round)",
-            -- ["<Leader>bs"] = "Left fixed box, center text (side)",
-            ["<Leader>bh"] = "Left fixed box, center text (sides)",
-            ["<Leader>cc"] = "Left fixed box, center text (top)",
-            ["<Leader>bi"] = "Left fixed box, center text (side)",
-            ["<Leader>bc"] = "Center center box, center text (round)",
-            ["<Leader>ba"] = "Left center box, center text (round)",
-            ["<Leader>be"] = "Left fixed box, left text (round)",
-            ["<M-w>"] = "Insert thick line",
-            ["<Leader>b?"] = "Comment box catalog"
-        }
-    )
+    map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1468,7 +1461,7 @@ function M.trevj()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                        -- Abolish                        │
+-- │                           Abolish                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.abolish()
     wk.register(

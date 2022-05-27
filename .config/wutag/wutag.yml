@@ -13,6 +13,8 @@ follow_symlinks: false
 max_depth: 10
 # File path color
 # base_color: "#FF5813"
+
+tag_effect: ["underline", "bold"]
 # Border color when using -tfb
 border_color: "#A06469"
 # Random selection of colors to use as tags

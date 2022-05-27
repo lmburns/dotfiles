@@ -70,7 +70,6 @@ map({"n", "x", "o"}, "L", "g_")
 -- Navigate merge conflict markers
 -- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 -- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
-map("n", "qC", [[:lua require("common.qfext").conflicts2qf()<CR>]])
 
 wk.register(
     {
@@ -252,7 +251,7 @@ wk.register(
             },
             H = {
                 "<C-w>t<C-w>K",
-                "Change vertical to horizontal",
+                "Change vertical to horizontal"
             },
             V = {
                 "<C-w>t<C-w>H",
@@ -299,6 +298,8 @@ wk.register(
         ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
+        ["qC"] = {[[:lua require("common.qfext").conflicts2qf()<CR>]], "Conflicts to quickfix"},
+        ["qs"] = {[[:lua require("common.builtin").spellcheck()<CR>]], "Spelling mistakes to quickfix"},
         ["qD"] = {
             [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
             "Close diff"

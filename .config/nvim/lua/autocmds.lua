@@ -692,7 +692,7 @@ augroup(
         pattern = "zig",
         description = "Setup zig environment",
         command = function()
-            map("n", "<Leader>r<CR>", "<cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
+            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
         end
     }
 )
@@ -711,16 +711,16 @@ cmd [[
   command! Fcman :call s:FullCppMan()
 ]]
 
--- augroup(
---     "lmb__CEnv",
---     {
---         event = "FileType",
---         pattern = "c",
---         command = function()
---             map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
---         end
---     }
--- )
+augroup(
+    "lmb__CEnv",
+    {
+        event = "FileType",
+        pattern = "c",
+        command = function()
+            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+        end
+    }
+)
 
 augroup(
     "lmb__CppEnv",
@@ -728,7 +728,7 @@ augroup(
         event = "FileType",
         pattern = "cpp",
         command = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
+            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
             map("n", "<Leader>kk", ":Fcman<CR>")
         end
     }

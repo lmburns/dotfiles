@@ -136,7 +136,7 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true
+                    current_line_only = true,
                 }
             )
         end
@@ -150,7 +150,7 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true
+                    current_line_only = true,
                 }
             )
         end
@@ -164,7 +164,8 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true
+                    current_line_only = true,
+                    inclusive_jump = true -- Why is this only needed here, not for F?
                 }
             )
         end
@@ -178,7 +179,8 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true
+                    current_line_only = true,
+                    -- inclusive_jump = true
                 }
             )
         end

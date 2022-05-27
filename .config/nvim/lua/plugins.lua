@@ -252,6 +252,7 @@ return packer.startup(
             -- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"kevinhwang91/promise-async"})
+            use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
             use(
                 {
                     "vim-scripts/UnconditionalPaste",
@@ -287,7 +288,7 @@ return packer.startup(
                         {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
-                        {"n", "gsP"},
+                        {"n", "gsP"}
                     }
                 }
             )
@@ -494,7 +495,6 @@ return packer.startup(
                 {
                     prefer_local("lf.nvim"),
                     conf = "lfnvim",
-                    after = colorscheme,
                     requires = {
                         "plenary.nvim",
                         "toggleterm.nvim"

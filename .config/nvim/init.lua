@@ -131,13 +131,6 @@ vim.schedule(
         local color = require("common.color")
         local set_hl = color.set_hl
 
-        vim.defer_fn(
-            function()
-                require("plugs.fold")
-            end,
-            50
-        )
-
         -- === Treesitter
         vim.defer_fn(
             function()
@@ -163,6 +156,14 @@ vim.schedule(
                 ex.doautoall("filetypedetect BufRead")
             end,
             15
+        )
+
+        -- === Folding
+        vim.defer_fn(
+            function()
+                require("plugs.fold")
+            end,
+            50
         )
 
         -- === Clipboard
@@ -233,6 +234,7 @@ vim.schedule(
                     -- "coc-git",
                     -- "coc-lists",
                     -- "coc-sh",
+                    "coc-sumneko-lua",
                     "coc-clangd",
                     "coc-css",
                     "coc-diagnostic",

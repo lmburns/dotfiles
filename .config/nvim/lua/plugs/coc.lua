@@ -17,6 +17,9 @@ local ex = nvim.ex
 
 local diag_qfid
 
+-- FIX: Diagnostic signs don't disappear as quick as they used to
+--      Sometimes needing file to be saved. Other times that not working either
+
 ---Get the nearest symbol in reference to the location of the cursor
 ---@return string
 function M.getsymbol()
@@ -486,19 +489,35 @@ function M.tag_cmd()
     )
 end
 
---- Adds all lua runtime paths to coc
---- Taken from tjdevries/nlua
-function M.get_lua_runtime()
+---Adds all lua runtime paths to coc
+---@param sumneko boolean?
+---@return table
+function M.get_lua_runtime(sumneko)
     local result = {}
-    for _, path in pairs(api.nvim_list_runtime_paths()) do
-        local lua_path = path .. "/lua/"
-        if fn.isdirectory(lua_path) then
-            result[lua_path] = true
+
+    local function add(lib)
+        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+            path = uv.fs_realpath(path)
+            if path and fn.isdirectory(path) then
+                result[path] = true
+            end
         end
     end
 
-    result[fn.expand("$VIMRUNTIME/lua")] = true
-    result[fn.expand("~/ghq/github.com/neovim/neovim/src/nvim/lua")] = true
+    add("$VIMRUNTIME")
+
+    for _, site in pairs(vim.split(vim.o.packpath, ",")) do
+        add(site .. "/pack/*/opt/*")
+        add(site .. "/pack/*/start/*")
+    end
+
+    for _, run in pairs(api.nvim_list_runtime_paths()) do
+        add(run)
+    end
+
+    if sumneko then
+        add(require("lua-dev.sumneko").types())
+    end
 
     return result
 end
@@ -526,12 +545,29 @@ function M.lua_langserver()
     fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = library})
 end
 
+---Setup the Sumneko-Coc Lua language-server
+---Note that the runtime paths here are placed into an array, not a table
+function M.sumneko_ls()
+    local library = fn["coc#util#get_config"]("Lua").workspace.library
+    local runtime = _t(M.get_lua_runtime(true)):keys()
+    library = vim.tbl_deep_extend("force", library, runtime)
+
+    local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
+    library = vim.tbl_deep_extend("force", library, {promise})
+
+    fn["coc#config"]("Lua.workspace", {library = library})
+end
+
 -- ========================== Init ==========================
 
 M.value = 100
 
 function M.init()
     diag_qfid = -1
+
+    -- TODO: Prevent having to setup both
+    -- An error for lua.filetypes is shown
+    M.sumneko_ls()
     M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
@@ -679,6 +715,7 @@ function M.init()
 
     wk.register(
         {
+            ["<C-A-'>"] = {":CocOutline<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
             ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},

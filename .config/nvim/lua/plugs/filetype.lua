@@ -70,13 +70,16 @@ function M.setup()
                 [".ignore"] = "gitignore",
                 [".fdignore"] = "gitignore",
                 [".rgignore"] = "gitignore",
-                [".npmignore"] = "gitignore"
+                [".npmignore"] = "gitignore",
+                [".clang-format"] = "yaml",
+                [".lua-format"] = "yaml"
             },
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
                 ["calcurse-note.*"] = "markdown",
                 ["~/.local/share/calcurse/notes/.*"] = "markdown",
                 [".*sxhkdrc"] = "sxhkdrc",
+                ["/tmp/neomutt.*"] = "vimwiki",
                 ["README.(%a+)$"] = function(_path, bufnr, ext)
                     if ext == "md" then
                         return "vimwiki"

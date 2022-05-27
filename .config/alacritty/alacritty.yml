@@ -912,9 +912,12 @@ key_bindings:
     # FIX: Tmux has to be recompiled
   - { key: I, mods: Control, chars: "\x1b[105;5u" }
   - { key: M, mods: Control, chars: "\x1b[77;5u" }
+
   - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
   - { key: Period, mods: Control, chars: "\x1b[46;5u" }
   - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
+  - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
+  - { key: 0x28, mods: Control|Shift|Alt, chars: "\x1b[34;8u" } # Double quote
   # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
   # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
 

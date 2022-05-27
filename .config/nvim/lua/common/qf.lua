@@ -200,7 +200,7 @@ function M.syntax()
     end
 
     -- FIX: QuickFixLine HL group doesn't change
-    local title = vim.w.quickfix_title
+    local title = F.if_nil(vim.w.quickfix_title, "")
     if title:match("^%**[Oo]utline") then
         require("common.qfext").outline_syntax()
     else

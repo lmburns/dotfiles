@@ -6,6 +6,12 @@ local augroup = utils.augroup
 local command = utils.command
 local map = utils.map
 
+local ex = nvim.ex
+local api = vim.api
+local fn = vim.fn
+local uv = vim.loop
+local cmd = vim.cmd
+
 local bl_ft
 local coc_loaded_ft
 local anyfold_prefer_ft
@@ -32,11 +38,22 @@ function M.use_anyfold(bufnr, force)
         local fsize = st.size
         if force or 0 < fsize and fsize < 131072 then
             if fn.bufwinid(bufnr) == -1 then
-                cmd(
-                    ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
-                        bufnr,
-                        ([[lua require('plugs.fold').use_anyfold(%d)]]):format(bufnr)
-                    )
+                -- cmd(
+                --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
+                --         bufnr,
+                --         ([[lua require('plugs.fold').use_anyfold(%d)]]):format(bufnr)
+                --     )
+                -- )
+                augroup(
+                    {"FoldLoad", false},
+                    {
+                        event = "BufEnter",
+                        buffer = bufnr,
+                        once = true,
+                        command = function()
+                            require("plugs.fold").use_anyfold(bufnr)
+                        end
+                    }
                 )
             else
                 api.nvim_buf_call(
@@ -64,9 +81,8 @@ local function apply_fold(bufnr, ranges)
             --       1 second of opening the file
 
             -- if mode:match("[ic]+") then
-            --     -- cmd("norm! l")
-            --     --     vim.notify("INIT")
-            --     --     cmd("norm! <C-o>zE")
+            --     cmd("norm! l")
+            --     -- cmd("norm! <C-o>zE")
             cmd("norm! zE")
             -- else
             --     cmd("norm! <C-o>zE")
@@ -129,29 +145,45 @@ function M.attach(bufnr, force)
                     end
                     local winid = fn.bufwinid(bufnr)
                     if winid == -1 then
-                        cmd(
-                            ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
-                                bufnr,
-                                [[lua require('plugs.fold').update_fold()]]
-                            )
+                        augroup(
+                            {"FoldLoad", false},
+                            {
+                                event = "BufEnter",
+                                buffer = bufnr,
+                                once = true,
+                                command = function()
+                                    require("plugs.fold").update_fold()
+                                end
+                            }
                         )
+                        -- cmd(
+                        --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
+                        --         bufnr,
+                        --         [[lua require('plugs.fold').update_fold()]]
+                        --     )
+                        -- )
                     else
                         apply_fold(bufnr, r)
                     end
 
                     vim.b[bufnr].loaded_fold = "coc"
 
-                    cmd(
-                        ("au FoldLoad BufWritePost <buffer=%d> %s"):format(
-                            bufnr,
-                            [[lua require('plugs.fold').update_fold()]]
-                        )
-                    )
-                    cmd(
-                        ("au FoldLoad BufRead <buffer=%d> %s"):format(
-                            bufnr,
-                            [[lua vim.defer_fn(require('plugs.fold').update_fold, 100)]]
-                        )
+                    augroup(
+                        {"FoldLoad", false},
+                        {
+                            event = "BufWritePost",
+                            buffer = bufnr,
+                            command = function()
+                                require("plugs.fold").update_fold()
+                            end
+                        },
+                        {
+                            event = "BufRead",
+                            buffer = bufnr,
+                            command = function()
+                                vim.defer_fn(require("plugs.fold").update_fold, 100)
+                            end
+                        }
                     )
                 else
                     M.use_anyfold(bufnr, force)
@@ -359,6 +391,29 @@ local function init()
     }
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}
+
+    -- local parsers = require("nvim-treesitter.parsers")
+    -- local configs = parsers.get_parser_configs()
+    --
+    -- augroup(
+    --     "lmb__TreesitterFold",
+    --     {
+    --         event = "FileType",
+    --         pattern = table.concat(
+    --             vim.tbl_map(
+    --                 function(ft)
+    --                     return configs[ft].filetype or ft
+    --                 end,
+    --                 parsers.available_parsers()
+    --             ),
+    --             ","
+    --         ),
+    --         command = function()
+    --             vim.opt_local.foldmethod = "expr"
+    --             vim.opt_local.foldexpr = "nvim_treesitter#foldexpr()"
+    --         end
+    --     }
+    -- )
 
     augroup(
         "FoldLoad",

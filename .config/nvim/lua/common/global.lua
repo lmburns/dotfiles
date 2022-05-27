@@ -95,6 +95,7 @@ _G.BLACKLIST_FT = {
     "bqfpreview",
     "bufferize",
     "coc-explorer",
+    "coctree",
     "code-action-menu-menu",
     "commit",
     "conf",
