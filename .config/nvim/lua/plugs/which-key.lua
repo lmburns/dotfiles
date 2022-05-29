@@ -79,12 +79,10 @@ function M.setup()
         show_help = true, -- show help message on the command line when the popup is visible
         triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers = "auto",
-        -- triggers = {"z=", "auto"} -- automatically setup triggers
-        -- triggers = {"<leader>"} -- or specify a list manually
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            n = {"o", "O"}
+            n = {"o", "O", "ga"}, -- Would be nice if two letter worked
         }
     }
 

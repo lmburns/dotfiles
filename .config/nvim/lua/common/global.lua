@@ -56,37 +56,6 @@ _G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 -- Makes `_t` global
 require("arshlib")
 
--- _G.__FILE__ = function() return debug.getinfo(3, 'S').source end
--- _G.__LINE__ = function() return debug.getinfo(3, 'l').currentline end
--- _G.__FUNC__ = function() return debug.getinfo(3, 'n').name end
-
--- api.nvim_err_writeln()
-_G.log = {
-    info = function(msg, notify)
-        if notify then
-            vim.notify(msg, vim.log.levels.INFO)
-        else
-            api.nvim_echo({{msg, "SpellCap"}}, true, {})
-        end
-    end,
-    warn = function(msg, notify)
-        if notify then
-            vim.notify(msg, vim.log.levels.WARN)
-        else
-            api.nvim_echo({{msg, "WarningMsg"}}, true, {})
-        end
-    end,
-    err = function(msg, notify)
-        if notify then
-            vim.notify(msg, vim.log.levels.ERROR)
-        else
-            api.nvim_echo({{msg, "ErrorMsg"}}, true, {})
-        end
-    end,
-    levels = vim.log.levels,
-    logger = require("common.log").logger
-}
-
 _G.BLACKLIST_FT = {
     "",
     "nofile",

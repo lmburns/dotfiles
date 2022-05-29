@@ -7,6 +7,7 @@ local api = vim.api
 local fn = vim.fn
 
 local utils = require("common.utils")
+    local map = utils.map
 
 local RegFloatWin =
     setmetatable(
@@ -143,27 +144,26 @@ function RegFloatWin:mappings()
     local bufnr = self.bufnr
     local opts = {nowait = true, noremap = true, silent = true}
     local fmt = [[<Cmd>lua require('common.reg').%s<CR>]]
-    local bmap = remap.bmap
     for lhs, func in pairs(actions) do
         local rhs = fmt:format(func)
-        bmap(bufnr, "n", lhs, rhs, opts)
-        bmap(bufnr, "i", lhs, rhs, opts)
+        map(bufnr, "n", lhs, rhs, opts)
+        map(bufnr, "i", lhs, rhs, opts)
     end
 
-    bmap(bufnr, "n", "<C-k>", "<Up>", opts)
-    bmap(bufnr, "i", "<C-k>", "<Up>", opts)
-    bmap(bufnr, "n", "<C-j>", "<Down>", opts)
-    bmap(bufnr, "i", "<C-j>", "<Down>", opts)
+    map(bufnr, "n", "<C-k>", "<Up>", opts)
+    map(bufnr, "i", "<C-k>", "<Up>", opts)
+    map(bufnr, "n", "<C-j>", "<Down>", opts)
+    map(bufnr, "i", "<C-j>", "<Down>", opts)
 
-    bmap(bufnr, "n", "<C-p>", "<Up>", opts)
-    bmap(bufnr, "i", "<C-p>", "<Up>", opts)
-    bmap(bufnr, "n", "<C-n>", "<Down>", opts)
-    bmap(bufnr, "i", "<C-n>", "<Down>", opts)
+    map(bufnr, "n", "<C-p>", "<Up>", opts)
+    map(bufnr, "i", "<C-p>", "<Up>", opts)
+    map(bufnr, "n", "<C-n>", "<Down>", opts)
+    map(bufnr, "i", "<C-n>", "<Down>", opts)
 
     opts.noremap = false
     for m, t in pairs(self.bremap) do
         for lhs, rhs in pairs(t) do
-            bmap(bufnr, m, lhs, rhs, opts)
+            map(bufnr, m, lhs, rhs, opts)
         end
     end
 end
@@ -297,8 +297,6 @@ local function init()
         {type = "expression", name = {"="}, hl_group = "Directory"},
         {type = "delete", name = {"-"}, hl_group = "Identifier"}
     }
-
-    local map = utils.map
 
     map("n", 'X', [[v:lua.require'common.reg'.peek('"')]], {expr = true})
     map("x", '"', [[v:lua.require'common.reg'.peek('"')]], {expr = true})

@@ -32,11 +32,55 @@ function os.caplines(command)
     return lines
 end
 
+-- function string.startswith(s, n)
+--     return s:sub(1, #n) == n
+-- end
+--
+-- function string.endswith(self, str)
+--     return self:sub(-(#str)) == str
+-- end
+
 ---Get the output of a system command in a table
 ---@param cmd string|table
 ---@return table
 M.get_system_output = function(cmd)
     return vim.split(fn.system(cmd), "\n")
+end
+
+---@class JobOpts
+---@field on_stdout function function to run on stdout
+---@field input string input for stdin
+---@field on_exit function function to run on exit
+
+---@param cmd string
+---@param opts JobOpts
+---@return number the job id
+M.start_job = function(cmd, opts)
+    opts = opts or {}
+    local id =
+        fn.jobstart(
+        cmd,
+        {
+            stdout_buffered = true,
+            on_stdout = function(_, data, _)
+                if data and type(opts.on_stdout) == "function" then
+                    opts.on_stdout(data)
+                end
+            end,
+            on_exit = function(_, data, _)
+                if type(opts.on_exit) == "function" then
+                    opts.on_exit(data)
+                end
+            end
+        }
+    )
+
+    if opts.input then
+        fn.chansend(id, opts.input)
+        fn.chanclose(id, "stdin")
+    end
+
+    return id
 end
 
 -- ============================== Print ===============================
@@ -122,6 +166,21 @@ end
 -- ============================== Table ===============================
 -- ====================================================================
 
+---Create table whose keys are now the values, and the values are now the keys
+---Similar to vim.tbl_add_reverse_lookup
+---
+---Assumes that the values in tbl are unique and hashable (no nil/NaN)
+---@generic K,V
+---@param tbl table<K,V>
+---@return table<V,K>
+M.tbl_reverse_kv = function(tbl)
+    local ret = {}
+    for k, v in pairs(tbl) do
+        ret[v] = k
+    end
+    return ret
+end
+
 ---Merge two tables
 ---@param a 'table'
 ---@param b 'table'
@@ -139,10 +198,34 @@ M.merge = function(a, b)
     return a
 end
 
+---Return a table with duplicates filtered out
+---@param array table
+---@return table
+M.filter_duplicates = function(array)
+    local seen = {}
+    local res = {}
+
+    for _, v in ipairs(array) do
+        if not seen[v] then
+            res[#res + 1] = v
+            seen[v] = true
+        end
+    end
+    return res
+end
+
+---Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
+---@vararg any any number of items to pack
+---@return table
 M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
 end
 
+---Unpack a table into arguments. Similar to `table.unpack`
+---@param t table table to unpack
+---@param i number
+---@param j number
+---@return any
 M.tbl_unpack = function(t, i, j)
     return unpack(t, i or 1, j or t.n or #t)
 end
@@ -307,9 +390,30 @@ end
 -- ============================== Buffers =============================
 -- ====================================================================
 
----Return a table of the id's of loaded buffers
+---`vim.api.nvim_is_buf_loaded` filters out all hidden buffers
+M.buf_is_valid = function(bufnr)
+    if not bufnr or bufnr < 1 then
+        return false
+    end
+    local exists = api.nvim_buf_is_valid(bufnr)
+    return vim.bo[bufnr].buflisted and exists
+end
+
+---Get the number of buffers
+---@return number
+M.get_buf_count = function()
+    return #fn.getbufinfo({buflisted = 1})
+end
+
+---Get valid buffers
+---@return number[]
+M.get_valid_buffers = function()
+    return vim.tbl_filter(M.buf_is_valid, api.nvim_list_bufs())
+end
+
+---Return a table of the id's of loaded buffers (hidden are removed)
 ---@return table
-M.list_loaded_bufs = function()
+M.get_loaded_bufs = function()
     return vim.tbl_filter(
         function(id)
             return api.nvim_buf_is_loaded(id)
@@ -318,15 +422,10 @@ M.list_loaded_bufs = function()
     )
 end
 
-M.list_listed_bufs = function()
-    return vim.tbl_filter(
-        function(id)
-            return vim.bo[id].buflisted
-        end,
-        api.nvim_list_bufs()
-    )
-end
-
+---Find a buffer that has a given variable with a value
+---@param var string variable to search for
+---@param value string|number value the variable should have
+---@return any
 M.find_buf_with_var = function(var, value)
     for _, id in ipairs(api.nvim_list_bufs()) do
         local ok, v = pcall(api.nvim_buf_get_var, id, var)
@@ -338,6 +437,10 @@ M.find_buf_with_var = function(var, value)
     return nil
 end
 
+---Find a buffer that has an option set at a value
+---@param option string option to search for
+---@param value string|number value the option should have
+---@return any
 M.find_buf_with_option = function(option, value)
     for _, id in ipairs(api.nvim_list_bufs()) do
         local ok, v = pcall(api.nvim_buf_get_option, id, option)
@@ -347,6 +450,12 @@ M.find_buf_with_option = function(option, value)
     end
 
     return nil
+end
+
+---Get the nubmer of tabs
+---@return number
+M.get_tab_count = function()
+    return #fn.gettabinfo()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -496,7 +605,7 @@ end
 ---</code>
 ---@param c table
 ---@return table
-function M.switch(c)
+M.switch = function(c)
     local swtbl = {
         casevar = c,
         caseof = function(self, code)

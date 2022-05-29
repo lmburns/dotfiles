@@ -22,7 +22,7 @@
   // Filetypes that enable semanticTokens highlighting
   // "coc.preferences.semanticTokensHighlights": true,
   "semanticTokens.filetypes": [
-    "c",
+    // "c",
     // "cpp",
     "go",
     "html",
@@ -175,26 +175,15 @@
   ],
   "rust-analyzer.server.path": "rust-analyzer",
   "rust-analyzer.updates.channel": "nightly",
-  "rust-analyzer.cargo.allFeatures": true,
-  "rust-analyzer.checkOnSave.allFeatures": true,
   "rust-analyzer.updates.checkOnStartup": true,
   "rust-analyzer.procMacro.enable": true,
   "rust-analyzer.updates.prompt": true,
   "rust-analyzer.trace.server": "verbose",
   "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.completion.postfix.enable": true,
-  "rust-analyzer.completion.addCallArgumentSnippets": true,
-  "rust-analyzer.completion.addCallParenthesis": true,
-  "rust-analyzer.inlayHints.chainingHints": true,
-  "rust-analyzer.inlayHints.typeHints": true,
   "rust-analyzer.inlayHints.enable": true,
   "rust-analyzer.diagnostics.enable": true,
-  "rust-analyzer.diagnostics.enableExperimental": true,
   "rust-analyzer.lens.enable": true,
-  "rust-analyzer.lens.implementations": true,
-  // "rust-analyzer.lens.methodReferences": true,
-  // "rust.show_warnings": false,
-  // "rust.clippy_preference": "on",
 
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Lua                            │

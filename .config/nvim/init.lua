@@ -275,17 +275,19 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        -- augroup(
-                        --     "CocFzfLocation",
-                        --     {
-                        --         event = "User",
-                        --         pattern = "CocLocationsChange",
-                        --         nested = true,
-                        --         command = [[]]
-                        --     }
-                        -- )
+                        augroup(
+                            "CocFzfLocation",
+                            {
+                                event = "User",
+                                pattern = "CocLocationsChange",
+                                nested = true,
+                                command = function()
+                                    return true
+                                end
+                            }
+                        )
 
-                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                        -- cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )
 

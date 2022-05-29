@@ -4,8 +4,8 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 local coc = require("plugs.coc")
+local log = require("common.log")
 local gittool = require("common.gittool")
-local utils = require("common.utils")
 
 local ex = nvim.ex
 local g = vim.g
@@ -127,7 +127,7 @@ function M.format_selected(mode, save)
                     mode,
                     function(e, _)
                         if e ~= vim.NIL then
-                            vim.notify(e, vim.log.levels.WARN)
+                            log.warn(e, true)
                         else
                             if vim.bo[bufnr].ft == "lua" then
                                 neoformat()

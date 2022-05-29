@@ -265,6 +265,8 @@ command(
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Open Links/Files                     │
 -- ╰──────────────────────────────────────────────────────────╯
+--CocAction('openLink')
+--
 -- FIX: Make better regex
 ---Open a github or regular link in the browser
 ---

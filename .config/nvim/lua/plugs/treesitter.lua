@@ -458,6 +458,7 @@ M.setup = function()
             "d",
             "dart",
             "dockerfile",
+            "fennel",
             "gitignore",
             "go",
             "gomod",
@@ -471,7 +472,7 @@ M.setup = function()
             "markdown",
             -- "norg",
             -- Syntax isn't parsed the greatest
-            "perl",
+            -- "perl",
             "python",
             "query",
             "rasi",

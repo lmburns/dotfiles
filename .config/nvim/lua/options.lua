@@ -66,9 +66,10 @@ o.cursorline = true
 o.cursorlineopt = list {"number", "screenline"}
 o.clipboard:append("unnamedplus")
 
+o.infercase = true -- change case inference with completions
 o.ignorecase = true
 o.smartcase = true
-o.wrapscan = true -- Searches wrap around the end of the file
+o.wrapscan = true -- searches wrap around the end of the file
 o.startofline = false
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
@@ -122,6 +123,7 @@ o.titlelen = 70
 o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
 
 o.list = true -- display tabs and trailing spaces visually
+-- FIX: For some reason tab hides actual text
 o.listchars:append(
     {
         eol = nil,
@@ -133,6 +135,7 @@ o.listchars:append(
     }
 )
 o.showbreak = [[↪ ]] -- "⏎"
+o.cpoptions:append('n') -- cursorcolumn used for wraptext
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
 
@@ -140,29 +143,32 @@ o.mouse = "a" -- enable mouse all modes
 o.mousefocus = true
 
 o.backspace = list {"indent", "eol", "start"}
-o.breakindentopt = "sbr"
+o.breakindentopt = "shift:2,min:20" -- "sbr"
 o.smartindent = true
--- o.cindent = true
+o.cindent = true
 -- o.autoindent = true
 o.linebreak = true -- lines wrap at words rather than random characters
 
 o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
 o.lazyredraw = true
+o.redrawtime = 1500
 o.ruler = false
 o.cmdheight = 2
-o.matchtime = 2
--- o.autoread = true
+o.equalalways = false -- don't always make windows equal size
+o.autoread = true
 o.autowriteall = true -- automatically :write before running commands and changing files
 
 o.whichwrap:append("<,>,h,l,[,]")
 o.wrap = true
 o.wrapmargin = 2
 
+o.smarttab = true -- insert blanks spaces for tabs
 o.tabstop = 2
-o.shiftwidth = 0
 o.expandtab = true
 o.softtabstop = 2
+o.shiftwidth = 0
+-- o.shiftround = true -- round </> indenting
 -- o.textwidth = 80
 -- o.shiftround = true
 
@@ -234,13 +240,14 @@ o.diffopt =
 o.inccommand = "split" -- nosplit
 o.splitright = true
 o.splitbelow = true
-o.eadirection = "hor" -- when equalsalways option applies
+-- o.eadirection = "hor" -- when equalsalways option applies
+
 -- exclude usetab as we do not want to jump to buffers in already open tabs
 -- do not use split or vsplit to ensure we don't open any new windows
 o.switchbuf = "useopen,uselast"
 
 o.conceallevel = 2
-o.concealcursor = "vic" -- "-=n"
+o.concealcursor = "c"
 o.fillchars = {
     fold = " ",
     eob = " ", -- suppress ~ at EndOfBuffer
@@ -262,14 +269,15 @@ o.fillchars = {
 -- g.cursorhold_updatetime = 1000
 o.updatetime = 200 -- cursorhold event time
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
-o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\-ctrl-g
-o.showmatch = true
+o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
+o.showmatch = true -- show matching brackets when text indicator is over them
+o.matchtime = 2 -- ms to blink when matching brackets
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
 o.signcolumn = "yes:1"
 o.synmaxcol = 1000 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
-o.shortmess:append("acsIS") -- don't give 'ins-completion-menu' messages.
+o.shortmess:append("acsIS") -- aoOTIcF don't give 'ins-completion-menu' messages.
 
 o.cedit = "<C-c>" -- Key used to open command window on the CLI
 o.tagfunc = "CocTagFunc"

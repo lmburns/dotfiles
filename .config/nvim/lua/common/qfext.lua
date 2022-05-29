@@ -2,6 +2,7 @@ local M = {}
 
 local gittool = require("common.gittool")
 local coc = require("plugs.coc")
+local log = require("common.log")
 
 local backends = require("aerial.backends")
 local config = require("aerial.config")

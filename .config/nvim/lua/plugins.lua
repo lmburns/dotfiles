@@ -3,14 +3,11 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-26 15:02
 -- ==========================================================================
-local utils = require("common/utils")
-local command = utils.command
-local autocmd = utils.autocmd
-local map = utils.map
+-- local utils = require("common/utils")
+-- local command = utils.command
+-- local autocmd = utils.autocmd
+-- local map = utils.map
 
-local disabled = require("common.control")
-
--- Install Packer if it isn't already
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
 if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
@@ -19,43 +16,41 @@ end
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
--- packer.on_compile_done = function()
---   local fp = assert(io.open(packer.config.compile_path, "rw+"))
---   local wbuf = {}
---   local key_state = 0
---   for line in fp:lines() do
---     if key_state == 0 then
---       table.insert(wbuf, line)
---       if line:find("Keymap lazy%-loads") then
---         key_state = 1
---         table.insert(wbuf, [[vim.defer_fn(function()]])
---       end
---     elseif key_state == 1 then
---       if line == "" then
---         key_state = 2
---         table.insert(wbuf, ("end, %d)"):format(15))
---       end
---       local _, e1 = line:find("vim%.cmd")
---       if line:find("vim%.cmd") then
---         local s2, e2 = line:find("%S+%s", e1 + 1)
---         local map_mode = line:sub(s2, e2)
---         line = ("pcall(vim.cmd, %s<unique>%s)"):format(
---             map_mode, line:sub(e2 + 1)
---         )
---       end
---       table.insert(wbuf, line)
---     else
---       table.insert(wbuf, line)
---     end
---   end
---
---   if key_state == 2 then
---     fp:seek("set")
---     fp:write(table.concat(wbuf, "\n"))
---   end
---
---   fp:close()
--- end
+packer.on_compile_done = function()
+    local fp = assert(io.open(packer.config.compile_path, "rw+"))
+    local wbuf = {}
+    local key_state = 0
+    for line in fp:lines() do
+        if key_state == 0 then
+            table.insert(wbuf, line)
+            if line:find("Keymap lazy%-loads") then
+                key_state = 1
+                table.insert(wbuf, [[vim.defer_fn(function()]])
+            end
+        elseif key_state == 1 then
+            if line == "" then
+                key_state = 2
+                table.insert(wbuf, ("end, %d)"):format(15))
+            end
+            local _, e1 = line:find("vim%.cmd")
+            if line:find("vim%.cmd") then
+                local s2, e2 = line:find("%S+%s", e1 + 1)
+                local map_mode = line:sub(s2, e2)
+                line = ("pcall(vim.cmd, %s<unique>%s)"):format(map_mode, line:sub(e2 + 1))
+            end
+            table.insert(wbuf, line)
+        else
+            table.insert(wbuf, line)
+        end
+    end
+
+    if key_state == 2 then
+        fp:seek("set")
+        fp:write(table.concat(wbuf, "\n"))
+    end
+
+    fp:close()
+end
 
 -- Plugin layout
 -- {
@@ -84,56 +79,64 @@ local packer = require("packer")
 
 packer.init(
     {
-        compile_path = fn.stdpath("config") .. "/plugin/packer_compiled.lua",
-        snapshot_path = fn.stdpath("cache") .. "/packer.nvim",
+        compile_path = ("%s/plugin/packer_compiled.lua"):format(fn.stdpath("config")),
+        snapshot_path = ("%s/snapshot/packer.nvim"):format(fn.stdpath("config")),
+        -- snapshot_path = ("%s/snapshot/packer.nvim"):format(fn.stdpath("cache")),
+        -- opt_default = false,
         auto_clean = true,
+        auto_reload_compiled = true,
+        autoremove = false,
+        ensure_dependencies = true,
         compile_on_sync = true,
         display = {
+            non_interactive = false,
+            header_lines = 2,
+            title = " packer.nvim",
+            working_sym = " ",
+            error_sym = "",
+            done_sym = "",
+            removed_sym = "",
+            moved_sym = " ",
+            show_all_info = true,
             prompt_border = "rounded",
-            open_cmd = "tabedit",
-            keybindings = {prompt_revert = "R", diff = "D"},
+            open_cmd = [[tabedit]],
+            keybindings = {prompt_revert = "R", diff = "D", retry = "r", quit = "q", toggle_info = "<CR>"},
             open_fn = function()
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "DEBUG"},
+        log = {level = "debug"},
         profile = {enable = true}
     }
 )
 
-packer.set_handler(
-    "conf",
-    function(plugins, plugin, value)
+PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
+
+local handlers = {
+    conf = function(plugins, plugin, value)
         if value:match("^plugs%.") then
             plugin.config = ([[require('%s')]]):format(value)
         else
             plugin.config = ([[require('plugs.config').%s()]]):format(value)
         end
-    end
-)
-
-PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
-
----Specify the disable marker for each plugin
----Can be disabled easier in the `control.lua` file
-packer.set_handler(
-    1,
-    function(_, plugin, _)
-        plugin.disable = disabled[plugin.short_name]
-    end
-)
-
----Apply a patch to the given plugin
-packer.set_handler(
-    "patch",
-    function(plugins, plugin, value)
+    end,
+    disable = function(_, plugin, _)
+        plugin.disable = require("common.control")[plugin.short_name]
+    end,
+    patch = function(plugins, plugin, value)
         -- local await = require("packer.async").wait
         -- local async = require("packer.async").sync
         -- local plugin_utils = require("packer.plugin_utils")
         -- local run_hook = plugin_utils.post_update_hook
 
         vim.validate {
-            value = {value, {"b", "s"}}
+            value = {
+                value,
+                function(n)
+                    return type(n) == "string" or type(n) == "boolean"
+                end,
+                ("%s: must be a string or boolean"):format(plugin.short_name)
+            }
         }
 
         if type(value) == "string" then
@@ -144,7 +147,7 @@ packer.set_handler(
 
         plugin.run = function()
             if uv.fs_stat(value) then
-                nvim.p("Applying patch", "WarningMsg")
+                nvim.p(("Applying patch: %s"):format(plugin.short_name), "WarningMsg")
                 ex.lcd(plugin.install_path)
                 Job:new(
                     {
@@ -176,8 +179,22 @@ packer.set_handler(
         -- )
         -- )
     end
-)
+}
 
+---Specify a configuration in `common.config` or its own file
+packer.set_handler("conf", handlers.conf)
+
+---Specify the disable marker for each plugin
+---Can be disabled easier in the `control.lua` file
+packer.set_handler(1, handlers.disable)
+
+---Apply a patch to the given plugin
+packer.set_handler("patch", handlers.patch)
+
+---Use a local plugin found on the filesystem
+---@param url string link to repo
+---@param path string path to repo
+---@return string
 local function prefer_local(url, path)
     if not path then
         local name = url:match("[^/]*$")
@@ -230,13 +247,7 @@ return packer.startup(
             use({"tami5/sqlite.lua"})
             use({"kyazdani42/nvim-web-devicons"})
 
-            use(
-                {
-                    "stevearc/dressing.nvim",
-                    event = "BufWinEnter",
-                    conf = "plugs.dressing"
-                }
-            )
+            use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
             -- ]]] === Lua Library ===
 
             -- ========================== Fixes / Addons ========================== [[[
@@ -506,13 +517,7 @@ return packer.startup(
             -- ]]] === File Manager ===
 
             -- ============================ Neo/Floaterm =========================== [[[
-            use(
-                {
-                    "voldikss/fzf-floaterm",
-                    requires = {"voldikss/vim-floaterm"},
-                    conf = "floaterm"
-                }
-            )
+            use({"voldikss/fzf-floaterm", requires = {"voldikss/vim-floaterm"}, conf = "floaterm"})
 
             use(
                 {
@@ -1110,7 +1115,7 @@ return packer.startup(
                             -- "kotlin",
                             -- "lua",
                             "make",
-                            "perl",
+                            -- "perl",
                             "python",
                             "query",
                             "ruby",
@@ -1215,7 +1220,7 @@ return packer.startup(
             use({"jlcrochet/vim-crystal", ft = "crystal"})
             use({"vim-perl/vim-perl", ft = "perl"})
             use({"teal-language/vim-teal", ft = "teal"})
-            use({"ziglang/zig.vim", ft = "zig"})
+            use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
 
             use(
                 {

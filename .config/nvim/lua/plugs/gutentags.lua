@@ -2,6 +2,7 @@ local M = {}
 
 local augroup = require("common.utils").augroup
 
+local fn = vim.fn
 local o = vim.opt
 local g = vim.g
 
@@ -17,6 +18,7 @@ function M.setup()
     g.gutentags_generate_on_write = 1
     g.gutentags_generate_on_new = 1
     g.gutentags_generate_on_missing = 1
+    g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
     -- g.gutentags_file_list_command = "rg --files --hidden"
     g.gutentags_file_list_command = "fd --hidden --strip-cwd-prefix --type f -E .git"
@@ -27,13 +29,25 @@ function M.setup()
     --     }
     -- }
 
-    -- Tips: If we need the tags for a project not managed by vcs, we can touch a .root file under the project root folder
-    g.gutentags_project_root = {".git", ".root", ".project"}
+    -- Tips: If we need the tags for a project not managed by vcs, we can touch a .root file
+    g.gutentags_project_root = {".git", ".root", ".project", "package.json"}
+    g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local"}
 
+    -- g.gutentags_auto_add_gtags_cscope = 0
+    g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
+
+    if nvim.executable("gtags-cscope") then
+        table.insert(g.gutentags_modules, "gtags_cscope")
+    end
+
+    -- if nvim.executable("cscope") then
+    --     table.insert(g.gutentags_modules, "cscope")
+    -- end
 
     -- g.gutentags_ctags_extra_args = {"--fields=+niazS", "--extras=+q", "--c++-kinds=+px", "--c-kinds=+px"}
 
+    -- --tag-relative=yes
     g.gutentags_ctags_extra_args = {
         "--append",
         "--c-kinds=+px",
@@ -59,6 +73,10 @@ function M.setup()
         "markdown",
         "help",
         "man",
+        "gitcommit",
+        "gitconfig",
+        "gitrebase",
+        "gitsendemail",
         "git",
         "log",
         "Telescope",
@@ -78,6 +96,9 @@ function M.setup()
         "node_modules",
         "bower_components",
         "target",
+        "venv",
+        "virtualenv",
+        "__pycache__",
         "*-lock.json",
         "*.lock",
         "*.min.*",
@@ -149,7 +170,7 @@ function M.setup_perltags()
         vim.list_extend(
         g.gutentags_ctags_extra_args,
         {"/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4"}
-        )
+    )
 end
 
 function M.setup_luatags()

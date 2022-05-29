@@ -893,7 +893,7 @@ map Yp yank-path              # yank file path
 map Yn yank-name              # yank name of file path
 map Yd yank-dir               # yank name of directory
 map Yj copytojump             # copy to directory with zoxide
-map Yp copytopath             # copy to directory with path entered
+# map Yp copytopath             # copy to directory with path entered
 map Mj movetojump             # move to directory with zoxide
 map Mp movetopath             # move to directory with path
 

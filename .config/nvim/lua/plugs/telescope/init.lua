@@ -1157,7 +1157,7 @@ wk.register(
         ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
-        -- ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
+        ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
         ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
             function()

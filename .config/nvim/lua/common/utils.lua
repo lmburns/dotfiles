@@ -2,7 +2,12 @@
 
 local M = {}
 
+local log = require("common.log")
 local debounce = require("common.debounce")
+
+local a = require("plenary.async_lib")
+local async = a.async
+local await = a.await
 
 local api = vim.api
 
@@ -397,65 +402,6 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
-M.get_visual_selection2 = function(mode)
-    if mode == nil then
-        local mode_info = vim.api.nvim_get_mode()
-        mode = mode_info.mode
-    end
-
-    local cursor = vim.api.nvim_win_get_cursor(0)
-    local cline, ccol = cursor[1], cursor[2]
-    local vline, vcol = vim.fn.line "v", vim.fn.col "v"
-
-    local sline, scol
-    local eline, ecol
-    if cline == vline then
-        if ccol <= vcol then
-            sline, scol = cline, ccol
-            eline, ecol = vline, vcol
-            scol = scol + 1
-        else
-            sline, scol = vline, vcol
-            eline, ecol = cline, ccol
-            ecol = ecol + 1
-        end
-    elseif cline < vline then
-        sline, scol = cline, ccol
-        eline, ecol = vline, vcol
-        scol = scol + 1
-    else
-        sline, scol = vline, vcol
-        eline, ecol = cline, ccol
-        ecol = ecol + 1
-    end
-
-    if mode == "V" or mode == "CTRL-V" or mode == "\22" then
-        scol = 1
-        ecol = nil
-    end
-
-    local lines = vim.api.nvim_buf_get_lines(0, sline - 1, eline, 0)
-    if #lines == 0 then
-        return
-    end
-
-    local start_text, end_text
-    if #lines == 1 then
-        start_text = string.sub(lines[1], scol, ecol)
-    else
-        start_text = string.sub(lines[1], scol)
-        end_text = string.sub(lines[#lines], 1, ecol)
-    end
-
-    local selection = {start_text}
-    if #lines > 2 then
-        vim.list_extend(selection, vim.list_slice(lines, 2, #lines - 1))
-    end
-    table.insert(selection, end_text)
-
-    return selection
-end
-
 ---Wrapper to send a notification
 ---@param options table same options as `nvim_notify`
 M.notify = function(options)
@@ -669,6 +615,8 @@ M.termcodes =
         end
     }
 )
+
+nvim.termcodes = M.termcodes
 
 ---Escaped ansi sequence
 ---@param t table
@@ -999,6 +947,20 @@ M.write_file_async = function(path, data, sync)
         end
     end
 end
+
+M.readfile =
+    async(
+    function(path)
+        local _, fd = await(a.uv.fs_open(path, "r", 438))
+        if fd == nil then
+            return nil
+        end
+        local _, stat = await(a.uv.fs_fstat(fd))
+        local _, data = await(a.uv.fs_read(fd, stat.size, 0))
+        await(a.uv.fs_close(fd))
+        return data
+    end
+)
 
 ---Write a file using libuv
 ---@param path string

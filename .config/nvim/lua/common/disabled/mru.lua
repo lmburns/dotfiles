@@ -3,10 +3,17 @@ local M = {}
 local utils = require("common.utils")
 local debounce = require("common.debounce")
 
-local db
-local max
-local bufs
-local tmp_prefix
+local a = require("plenary.async_lib")
+
+local mru = {
+    max = 1024,
+    mtime = 0,
+    cache = "",
+    bufs = {},
+    tmp_prefix = uv.os_tmpdir(),
+    lock = false,
+    db = ("%s/%s"):format(fn.stdpath("data"), "/mru_file")
+}
 
 local function list(file)
     local mru_list = {}
@@ -16,7 +23,7 @@ local function list(file)
         if not fname_set[name] then
             fname_set[name] = true
             if uv.fs_stat(name) then
-                if #mru_list < max then
+                if #mru_list < mru.max then
                     table.insert(mru_list, name)
                 else
                     return false
@@ -26,11 +33,11 @@ local function list(file)
         return true
     end
 
-    while #bufs > 0 do
-        local bufnr = table.remove(bufs)
+    while #mru.bufs > 0 do
+        local bufnr = table.remove(mru.bufs)
         if api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].bt == "" then
             local fname = api.nvim_buf_get_name(bufnr)
-            if not fname:match(tmp_prefix) then
+            if not fname:match(mru.tmp_prefix) then
                 if not add_list(fname) then
                     break
                 end
@@ -50,9 +57,9 @@ local function list(file)
     return mru_list
 end
 
-function M.list()
-    local mru_list = list(db)
-    utils.write_file(db, table.concat(mru_list, "\n"))
+M.list = function()
+    local mru_list = list(mru.db)
+    utils.write_file(mru.db, table.concat(mru_list, "\n"))
     return mru_list
 end
 
@@ -61,13 +68,13 @@ M.flush =
     local debounced
     return function(force)
         if force then
-            utils.write_file(db, table.concat(list(db), "\n"), force)
+            utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
         else
             if not debounced then
                 debounced =
                     debounce(
                     function()
-                        utils.write_file(db, table.concat(list(db), "\n"))
+                        utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
                     end,
                     50
                 )
@@ -77,25 +84,23 @@ M.flush =
     end
 end)()
 
-M.store_buf = (function()
+M.store_buf =
+    (function()
     local count = 0
-    return function()
-        local bufnr = fn.expand("<abuf>", 1)
-        bufnr = bufnr and tonumber(bufnr) or api.nvim_get_current_buf()
-        table.insert(bufs, bufnr)
-        count = (count + 1) % 10
-        if count == 0 then
-            M.list()
+    return a.async_void(
+        function()
+            local bufnr = fn.expand("<abuf>", 1)
+            bufnr = bufnr and tonumber(bufnr) or api.nvim_get_current_buf()
+            table.insert(mru.bufs, bufnr)
+            count = (count + 1) % 10
+            if count == 0 then
+                M.list()
+            end
         end
-    end
+    )
 end)()
 
 local function init()
-    db = fn.stdpath("data") .. "/mru_file"
-    max = 1000
-    bufs = {}
-    tmp_prefix = uv.os_tmpdir()
-
     M.store_buf()
     -- nvim.autocmd.Mru = {
     --     {

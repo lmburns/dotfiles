@@ -1,7 +1,7 @@
 local M = {}
 
 local command = require("common.utils").command
-local nvim = require("nvim")
+local log = require("common.log")
 
 -- WIP
 function M.batch_sub(is_loc, pat_rep)
@@ -97,7 +97,7 @@ function M.batch_sub(is_loc, pat_rep)
     silent_setqf(old)
 
     if not ok then
-        vim.notify(res, vim.log.levels.ERROR)
+        log.err(res, true)
     end
 end
 

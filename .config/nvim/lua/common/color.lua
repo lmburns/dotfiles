@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local log = require("common.log")
 
 ---@alias Group string
 ---@alias Color string
@@ -65,7 +66,7 @@ end
 ---@param group string
 ---@param gui string
 function M.gui(group, gui)
-    cmd(("hi %s gui=%s"):format(group, g))
+    cmd(("hi %s gui=%s"):format(group, gui))
 end
 
 ---Define bg and fg color

@@ -35,7 +35,7 @@ end
 local function hl_search()
     local col = nvim.win.get_cursor(0)[2]
     local curr_line = nvim.buf.line()
-    local ok, match = pcall(fn.matchstrpos, curr_line, fn.getreg("/"), 0)
+    local ok, match = pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
     if not ok then
         return vim.notify(match, "error", {title = "HL SEARCH"})
     end
@@ -310,7 +310,7 @@ augroup(
     "lmb__Spellcheck",
     {
         event = "FileType",
-        pattern = {"gitcommit", "markdown", "text", "mail"},
+        pattern = {"gitcommit", "markdown", "text", "mail", "vimwiki"},
         command = "setlocal spell",
         desc = "Automatically enable spelling"
     },
@@ -383,7 +383,8 @@ nvim.autocmd.lmb__Help = {
                 cmd("vertical resize " .. width)
                 map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
-        end
+        end,
+        desc = "Equalize and create mapping for help pages"
     },
     {
         -- This is ran more than once
@@ -402,7 +403,8 @@ nvim.autocmd.lmb__Help = {
             ex.wincmd("L")
             cmd("vertical resize " .. width)
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
-        end
+        end,
+        desc = "Equalize and create mapping for manpages"
     },
     -- NOTE: Works when opening man with ':Man' but not with telescope or fzf-lua
     --       if the event is BufHidden. However, BufLeave fixes this problem
@@ -422,7 +424,8 @@ nvim.autocmd.lmb__Help = {
                     0
                 )
             end
-        end
+        end,
+        desc = "Delete hidden man buffers"
     }
 }
 -- ]]] === Help ===
@@ -462,7 +465,8 @@ nvim.autocmd.lmb__SmartClose = {
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = 0, nowait = true})
             end
-        end
+        end,
+        desc = "Create qq mapping"
     },
     {
         -- Close quick fix window if the file containing it was closed
@@ -472,7 +476,8 @@ nvim.autocmd.lmb__SmartClose = {
             if fn.winnr("$") == 1 and vim.bo.buftype == "quickfix" then
                 api.nvim_buf_delete(0, {force = true})
             end
-        end
+        end,
+        desc = "Close QuickFix if last window"
     },
     {
         -- Automatically close corresponding loclist when quitting a window
@@ -483,7 +488,8 @@ nvim.autocmd.lmb__SmartClose = {
             if vim.bo.filetype ~= "qf" then
                 ex.silent_("lclose")
             end
-        end
+        end,
+        desc = "Close loclist when quitting window"
     }
 }
 -- ]]]
@@ -582,15 +588,15 @@ do
     local o = vim.o
 
     nvim.autocmd.lmb__VimResize = {
-        {
-            event = "VimResized",
-            command = function()
-                local last_tab = api.nvim_get_current_tabpage()
-                ex.tabdo("wincmd =")
-                api.nvim_set_current_tabpage(last_tab)
-            end,
-            desc = "Equalize windows across tabs"
-        },
+        -- {
+        --     event = "VimResized",
+        --     command = function()
+        --         local last_tab = api.nvim_get_current_tabpage()
+        --         ex.tabdo("wincmd =")
+        --         api.nvim_set_current_tabpage(last_tab)
+        --     end,
+        --     desc = "Equalize windows across tabs"
+        -- },
         {
             event = {"VimEnter", "VimResized"},
             command = function()

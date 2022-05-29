@@ -52,6 +52,7 @@ local function init()
         pattern = {"r", "rmd", "rnoweb"},
         command = function()
             local bufnr = nvim.buf.nr()
+            map("n", "<Leader>xx", ":call SendLineToR('stay')<CR><Esc><Home><Down>")
             --       \ nnoremap <silent> ✠ :call SendLineToR("stay")<CR><Esc><Home><Down>|
             --       \ inoremap <silent> ✠ <Esc>:call SendLineToR("stay")<CR><Esc>A|
             --       \ vnoremap <silent> ✠ :call SendSelectionToR("silent", "stay")<CR><Esc><Esc>|

@@ -4,3 +4,4 @@
 /.config/rclone/rclone.conf filter=git-crypt diff=git-crypt
 /.config/redshift/redshift.conf filter=git-crypt diff=git-crypt
 /.config/zsh/zsh.d/git-token.zsh filter=git-crypt diff=git-crypt
+/.config/nvim/spell/** filter=git-crypt diff=git-crypt

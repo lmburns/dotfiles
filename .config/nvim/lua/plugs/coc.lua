@@ -1,5 +1,6 @@
 local M = {}
 
+local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
@@ -48,22 +49,22 @@ function M.go2def()
         if not err then
             by = "coc"
         elseif res == "timeout" then
-            vim.notify("Go to reference Timeout", vim.log.levels.WARN)
+            log.warn("Go to reference Timeout", true)
         else
             local cword = fn.expand("<cword>")
             if
                 not pcall(
                     function()
                         local wv = fn.winsaveview()
-                        cmd("ltag " .. cword)
+                        ex.ltag(cword)
                         local def_size = fn.getloclist(0, {size = 0}).size
                         by = "ltag"
                         if def_size > 1 then
                             api.nvim_set_current_buf(cur_bufnr)
                             fn.winrestview(wv)
-                            cmd("abo lw")
+                            ex.abo("lw")
                         elseif def_size == 1 then
-                            cmd("lcl")
+                            ex.lcl()
                             fn.search(cword, "cs")
                         end
                     end
@@ -89,7 +90,7 @@ function M.show_documentation()
     if _t({"help", "vim"}):contains(ft) then
         cmd(("sil! h %s"):format(fn.expand("<cword>")))
     elseif ft == "man" then
-        cmd(("Man %s"):format(fn.expand("<cword>")))
+        ex.Man(("%s"):format(fn.expand("<cword>")))
     elseif fn.expand("%:t") == "Cargo.toml" then
         require("crates").show_popup()
     elseif fn["coc#rpc#ready"]() then
@@ -97,7 +98,7 @@ function M.show_documentation()
         local err, res = M.a2sync("definitionHover")
         if err then
             if res == "timeout" then
-                vim.notify("Show documentation Timeout", vim.log.levels.WARN)
+                log.warn("Show documentation Timeout", true)
             end
             cmd("norm! K")
         end
@@ -180,7 +181,7 @@ function M.code_action(mode, only)
         local err, ret = M.a2sync("codeActions", {m, only}, 1000)
         if err then
             if ret == "timeout" then
-                vim.notify("codeAction timeout", vim.log.levels.WARN)
+                log.warn("codeAction timeout", true)
                 break
             end
         else
@@ -192,7 +193,7 @@ function M.code_action(mode, only)
         end
     end
     if no_actions then
-        vim.notify("No code Action available", vim.log.levels.WARN)
+        log.warn("No code Action available", true)
     end
 end
 
@@ -314,11 +315,11 @@ function M.diagnostic(winid, nr, keep)
 
                 if not keep then
                     if winid == 0 then
-                        cmd("bo cope")
+                        ex.bo("cope")
                     else
                         api.nvim_set_current_win(winid)
                     end
-                    cmd(("sil %dchi"):format(nr))
+                    ex.sil(("%dchi"):format(nr))
                 end
             end
         end
@@ -419,7 +420,7 @@ end
 function M.did_init(silent)
     if g.coc_service_initialized == 0 then
         if silent then
-            vim.notify([[coc.nvim hasn't initialized]], vim.log.levels.WARN)
+            log.warn([[coc.nvim hasn't initialized]], true)
         end
         return false
     end
@@ -436,9 +437,9 @@ function M.organize_import()
     local err, ret = M.a2sync("organizeImport", {}, 1000)
     if err then
         if ret == "timeout" then
-            vim.notify("organizeImport timeout", vim.log.levels.WARN)
+            log.warn("organizeImport timeout", true)
         else
-            vim.notify("No action for organizeImport", vim.log.levels.WARN)
+            log.warn("No action for organizeImport", true)
         end
     end
 end
@@ -731,13 +732,15 @@ function M.init()
             ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},
+            ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
             ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-            ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
+            ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics (current buffer)"},
+            -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
             ["<Leader>qf"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},

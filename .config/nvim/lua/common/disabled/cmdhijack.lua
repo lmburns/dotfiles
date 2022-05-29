@@ -2,6 +2,8 @@ local M = {}
 local fn = vim.fn
 local cmd = vim.cmd
 
+local log = require("common.log")
+
 local mods_action
 
 function M.do_action()
@@ -19,7 +21,7 @@ function M.do_action()
                 if not ok then
                     local _
                     _, _, res = res:find([[Vim%(.*%):(.*)$]])
-                    vim.notify(res, vim.log.levels.ERROR)
+                    log.err(res, true)
                 end
             end)
             break

@@ -8,6 +8,8 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
 
+local log = require("common.log")
+
 local C = require("common.color")
 
 local g = vim.g

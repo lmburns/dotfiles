@@ -1392,6 +1392,7 @@ function M.lfnvim()
     require("lf").setup(
         {
             escape_quit = false,
+            -- open_on = true,
             border = "rounded",
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
         }

@@ -707,7 +707,7 @@ function init()
             ["<C-l>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
-            ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
+            -- ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
             ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Files (fzf-lua)"},
             ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files (fzf-lua)"},
