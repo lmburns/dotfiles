@@ -174,7 +174,7 @@ local theme =
             -- Ignore         { }, -- (preferred) left blank, hidden  |hl-Ignore|
 
             Error {bg = old_brick}, -- (preferred) any erroneous construct
-            Todo {fg = silver}, -- (preferred) anything that needs extra attention; mostly the keywords TODO FIXME and XXX
+            Todo {fg = silver}, -- (preferred) anything that needs extra attention; mostly the keywords
             -- These groups are for the native LSP client. Some other LSP clients may
             -- use these groups, or use their own. Consult your LSP client's
             -- documentation.
@@ -226,7 +226,7 @@ local theme =
             -- you explicitly want to support Treesitter's improved syntax awareness.
 
             -- TSAnnotation         { };    -- For C++/Dart attributes, annotations that can be attached to the code to denote some kind of meta information.
-            -- TSAttribute          { };    -- (unstable) TODO: docs
+            -- TSAttribute          { };    -- (unstable)
             -- TSBoolean            { };    -- For booleans.
             -- TSCharacter          { };    -- For characters.
             -- TSComment            { };    -- For comment blocks.
@@ -248,7 +248,7 @@ local theme =
             -- TSLabel              { };    -- For labels: `label:` in C and `:label:` in Lua.
             TSMethod {fg = biloba_flower}, -- For method calls and definitions.
             TSNamespace {fg = wewak}, -- For identifiers referring to modules and namespaces.
-            -- TSNone               { };    -- TODO: docs
+            -- TSNone               { };
             TSNumber {fg = orange}, -- For all numbers
             TSOperator {fg = raw_sienna}, -- For any operator: `+`, but also `->` and `*` in C.
             -- TSParameter          { };    -- For parameters of a function.

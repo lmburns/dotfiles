@@ -211,7 +211,7 @@ function M.defer_attach(bufnr)
         return
     end
     local wo = vim.wo[winid]
-    if wo.foldmethod == "diff" then
+    if wo.foldmethod == "diff" or wo.foldmethod == "expr" then
         return
     end
 
@@ -392,28 +392,28 @@ local function init()
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"vim"}
 
-    -- local parsers = require("nvim-treesitter.parsers")
-    -- local configs = parsers.get_parser_configs()
-    --
-    -- augroup(
-    --     "lmb__TreesitterFold",
-    --     {
-    --         event = "FileType",
-    --         pattern = table.concat(
-    --             vim.tbl_map(
-    --                 function(ft)
-    --                     return configs[ft].filetype or ft
-    --                 end,
-    --                 parsers.available_parsers()
-    --             ),
-    --             ","
-    --         ),
-    --         command = function()
-    --             vim.opt_local.foldmethod = "expr"
-    --             vim.opt_local.foldexpr = "nvim_treesitter#foldexpr()"
-    --         end
-    --     }
-    -- )
+    local parsers = require("nvim-treesitter.parsers")
+    local configs = parsers.get_parser_configs()
+
+    augroup(
+        "lmb__TreesitterFold",
+        {
+            event = "FileType",
+            pattern = table.concat(
+                vim.tbl_map(
+                    function(ft)
+                        return configs[ft].filetype or ft
+                    end,
+                    parsers.available_parsers()
+                ),
+                ","
+            ),
+            command = function()
+                vim.opt_local.foldmethod = "expr"
+                vim.opt_local.foldexpr = "nvim_treesitter#foldexpr()"
+            end
+        }
+    )
 
     augroup(
         "FoldLoad",

@@ -444,7 +444,9 @@ local smart_close_filetypes = {
     "fugitiveblame",
     "LuaTree",
     "log",
-    "tsplayground"
+    "tsplayground",
+    "vista",
+    "aerial" -- has its own mapping but is slow
 }
 
 local function smart_close()
@@ -705,18 +707,6 @@ augroup(
 -- ]]] === Zig ===
 
 -- ============================== C/Cpp =============================== [[[
-cmd [[
-  function! s:FullCppMan()
-      let old_isk = &iskeyword
-      setl iskeyword+=:
-      let str = expand("<cword>")
-      let &l:iskeyword = old_isk
-      execute 'Man ' . str
-  endfunction
-
-  command! Fcman :call s:FullCppMan()
-]]
-
 augroup(
     "lmb__CEnv",
     {
@@ -724,6 +714,7 @@ augroup(
         pattern = "c",
         command = function()
             map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
+            map("n", "M", [[<cmd>lua vim.cmd(("%s %s"):format(vim.o.keywordprg, vim.fn.expand("<cword>")))<CR>]])
         end
     }
 )
@@ -735,7 +726,7 @@ augroup(
         pattern = "cpp",
         command = function()
             map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
-            map("n", "<Leader>kk", ":Fcman<CR>")
+            map("n", "M", [[<cmd>lua vim.cmd(("%s %s"):format(vim.o.keywordprg, vim.fn.expand("<cword>")))<CR>]])
         end
     }
 )
@@ -859,13 +850,13 @@ nvim.autocmd.RnuColumn = {
 }
 -- ]]] === RNU Column ===
 
-autocmd(
-    {
-        event = "VimEnter",
-        pattern = "*",
-        command = [[call vista#RunForNearestMethodOrFunction()]]
-    }
-)
+-- autocmd(
+--     {
+--         event = "VimEnter",
+--         pattern = "*",
+--         command = [[call vista#RunForNearestMethodOrFunction()]]
+--     }
+-- )
 
 -- ============================== Unused ============================== [[[
 -- augroup(

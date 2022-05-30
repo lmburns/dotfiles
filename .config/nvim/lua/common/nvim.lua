@@ -3,6 +3,8 @@ local M = {}
 local utils = require("common.utils")
 local color = require("common.color")
 
+local api = vim.api
+
 ---Get an autocmd
 ---@param opts table
 ---@return table
@@ -173,6 +175,8 @@ nvim.exists =
 ---Has access to `line` and `nr`
 nvim.buffer = nvim.buf
 nvim.cmd = nvim.command
+nvim.cursor = api.nvim_win_get_cursor
+nvim.mode = api.nvim_get_mode
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 
@@ -192,13 +196,18 @@ nvim.buf =
             local f = api["nvim_buf_" .. k]
             mt[k] = f
             return f
+        end,
+        __call = function(_, ...)
+            return api.nvim_get_current_buf(...)
         end
     }
 )
 
 nvim.win =
     setmetatable(
-    {},
+    {
+        nr = api.nvim_get_current_win,
+    },
     {
         __index = function(self, k)
             local mt = getmetatable(self)
@@ -209,13 +218,18 @@ nvim.win =
             local f = api["nvim_win_" .. k]
             mt[k] = f
             return f
+        end,
+        __call = function(_, ...)
+            return api.nvim_get_current_win(...)
         end
     }
 )
 
 nvim.tab =
     setmetatable(
-    {},
+    {
+        nr = api.nvim_get_current_tabpage,
+    },
     {
         __index = function(self, k)
             local mt = getmetatable(self)
@@ -226,6 +240,9 @@ nvim.tab =
             local f = api["nvim_tabpage_" .. k]
             mt[k] = f
             return f
+        end,
+        __call = function(_, ...)
+            return api.nvim_get_current_tabpage(...)
         end
     }
 )

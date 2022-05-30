@@ -62,20 +62,6 @@ local function init()
   ]]
 
     augroup(
-        "lmb__GoRun",
-        {
-            event = "FileType",
-            pattern = "go",
-            command = function()
-                -- nmap <Leader>rp <Plug>(go-run)
-                -- nmap <Leader>rv <Plug>(go-run-vertical)
-                map("n", "<Leader>rp", ":GORUNS<CR>")
-                map("n", "<Leader>ru", ":GORUN<CR>")
-            end
-        }
-    )
-
-    augroup(
         "GoEnv",
         {
             event = "FileType",
@@ -83,6 +69,10 @@ local function init()
             command = function()
                 local bufnr = api.nvim_get_current_buf()
                 opt_local.list = false
+
+                map(bufnr, "n", "<Leader>rp", ":GORUNS<CR>")
+                map(bufnr, "n", "<Leader>ru", ":GORUN<CR>")
+
                 map(bufnr, "n", "M", "<Plug>(go-doc)")
                 map(bufnr, "n", "<Leader>b<CR>", ":lua require('plugs.go').build_go_files()<CR>")
                 map(bufnr, "n", "<Leader>r<CR>", "<Plug>(go-run)")
@@ -93,7 +83,28 @@ local function init()
                 map(bufnr, "n", "<Leader>gae", "<Plug>(go-alternate-edit)")
                 map(bufnr, "n", "<Leader>i", "<Plug>(go-info)")
                 map(bufnr, "n", "<Leader>sm", ":GoSameIdsToggle<CR>")
-                map(bufnr, "n", "<Leader>f", ":GoDeclsDir<CR>")
+
+                -- map(bufnr, "n", "gd", ":GoDef<CR>")
+                -- map(bufnr, "n", "gy", ":GoDefType<CR>")
+                -- map(bufnr, "n", "gi", ":GoImplements<CR>")
+                -- map(bufnr, "n", "gC", ":GoCallees<CR>")
+                -- map(bufnr, "n", "gc", ":GoCallers<CR>")
+                -- map(bufnr, "n", "gr", ":GoReferrers<CR>")
+                map(bufnr, "n", "gd", "<Plug>(go-def)")
+                map(bufnr, "n", "gy", "<Plug>(go-def-type)")
+                map(bufnr, "n", "gi", "<Plug>(go-implements)")
+                map(bufnr, "n", "gC", "<Plug>(go-callees)")
+                map(bufnr, "n", "gc", "<Plug>(go-callers)")
+                map(bufnr, "n", "gr", "<Plug>(go-referrers)")
+                map(bufnr, "n", "gS", "<Plug>(go-callstack)")
+
+                map(bufnr, "n", "<Leader>jg", "<Plug>(go-diagnostics)")
+
+                map(bufnr, "n", "<Leader>if", "<Plug>(go-iferr)")
+
+                map(bufnr, "n", "<Leader>fd", ":GoDeclsDir<CR>")
+                map(bufnr, "n", "<Leader>fj", ":GoDecls<CR>")
+
                 -- map(bufnr, "n", ";ff", ":GoFmt<CR>")
 
                 command("A", [[call go#alternate#Switch(<bang>0, 'edit')]], {bang = true})

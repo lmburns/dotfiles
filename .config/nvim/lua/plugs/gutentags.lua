@@ -45,24 +45,24 @@ function M.setup()
     --     table.insert(g.gutentags_modules, "cscope")
     -- end
 
-    -- g.gutentags_ctags_extra_args = {"--fields=+niazS", "--extras=+q", "--c++-kinds=+px", "--c-kinds=+px"}
+    g.gutentags_ctags_extra_args = {"--fields=+niazS", "--extras=+q", "--c++-kinds=+px", "--c-kinds=+px"}
 
     -- --tag-relative=yes
-    g.gutentags_ctags_extra_args = {
-        "--append",
-        "--c-kinds=+px",
-        "--c++-kinds=+plx",
-        "--recurse=yes",
-        "--fields=+n",
-        "--fields=+i",
-        "--fields=+a",
-        "--fields=+z",
-        "--fields=+S",
-        "--fields=+m",
-        "--fields=+l",
-        "--fields=+t",
-        "--extras=+q"
-    }
+    -- g.gutentags_ctags_extra_args = {
+    --     "--append",
+    --     "--recurse=yes",
+    --     "--c-kinds=+px",
+    --     "--c++-kinds=+plx",
+    --     "--fields=+n",
+    --     "--fields=+i",
+    --     "--fields=+a",
+    --     "--fields=+z",
+    --     "--fields=+S",
+    --     "--fields=+m",
+    --     "--fields=+l",
+    --     "--fields=+t",
+    --     "--extras=+q"
+    -- }
 
     -- Tag file name for ctags
     g.gutentags_ctags_tagfile = ".tags"

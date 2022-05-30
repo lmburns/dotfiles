@@ -1,3 +1,4 @@
+local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
@@ -134,8 +135,8 @@ o.listchars:append(
         nbsp = "␣"
     }
 )
-o.showbreak = [[↪ ]] -- "⏎"
-o.cpoptions:append('n') -- cursorcolumn used for wraptext
+o.showbreak = [[↳ ]] -- ↪
+o.cpoptions:append("n") -- cursorcolumn used for wraptext
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
 
@@ -143,7 +144,7 @@ o.mouse = "a" -- enable mouse all modes
 o.mousefocus = true
 
 o.backspace = list {"indent", "eol", "start"}
-o.breakindentopt = "shift:2,min:20" -- "sbr"
+o.breakindentopt = "sbr" -- shift:2,min:20
 o.smartindent = true
 o.cindent = true
 -- o.autoindent = true
@@ -159,7 +160,7 @@ o.equalalways = false -- don't always make windows equal size
 o.autoread = true
 o.autowriteall = true -- automatically :write before running commands and changing files
 
-o.whichwrap:append("<,>,h,l,[,]")
+o.whichwrap:append(list {"<", ">", "h", "l", "[", "]"})
 o.wrap = true
 o.wrapmargin = 2
 
@@ -354,7 +355,38 @@ end
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
+-- o.winbar = "%{%v:lua.require'options'.winbar()%}"
+
+M.winbar_filetype_exclude = {
+    "help",
+    "startify",
+    "dashboard",
+    "packer",
+    "neogitstatus",
+    "NvimTree",
+    "Trouble",
+    "alpha",
+    "lir",
+    "Outline",
+    "spectre_panel",
+    "toggleterm"
+}
+
+M.winbar = function()
+    if
+        api.nvim_eval_statusline("%f", {}).str == "[No Name]" or
+            vim.tbl_contains(M.winbar_filetype_exclude, vim.bo.filetype)
+     then
+        return ""
+    end
+
+    return "%#WinBarSeparator#" ..
+        "%*" .. "%#WinBarContent#" .. "%m" .. " " .. "%F" .. "%*" .. "%#WinBarSeparator#" .. "%*"
+end
+
 -- if nvim.executable('nvr') then
 --   env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 --   env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 -- end
+
+return M

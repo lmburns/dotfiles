@@ -37,7 +37,7 @@ httr                     httr    1.4.2
 ini                       ini    0.3.1
 jsonlite             jsonlite    1.7.3
 knitr                   knitr     1.37
-languageserver languageserver   0.3.12
+languageserver languageserver   0.3.13
 lazyeval             lazyeval    0.2.2
 lifecycle           lifecycle    1.0.1
 lintr                   lintr    2.0.1

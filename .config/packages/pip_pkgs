@@ -30,6 +30,7 @@ gruvbox-factory==1.0.0
 hangups==0.4.17
 html2text==2020.1.16
 inotify==0.2.10
+installer==0.5.1
 isort==5.9.3
 jupyter==1.0.0
 jupyterlab==3.2.8

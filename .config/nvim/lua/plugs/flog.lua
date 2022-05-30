@@ -3,6 +3,9 @@ local M = {}
 local wk = require("which-key")
 local map = require("common.utils").map
 
+local g = vim.g
+local fn = vim.fn
+
 function M.cur_file()
     local has_forest = fn.executable("git-forest") == 1
     if has_forest then

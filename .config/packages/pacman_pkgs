@@ -83,6 +83,7 @@ crabz
 croc
 crystal
 crystalline-bin
+cscope
 ctags
 daemonize
 dash
@@ -161,6 +162,7 @@ gifski
 gimp
 git
 git-crypt
+git-dude-git
 git-lfs
 global
 glow-bin
@@ -345,6 +347,7 @@ logkeys-git
 lokalize
 lowdown
 lsd
+lshw
 lsix-git
 lsof
 ltrace
@@ -514,8 +517,8 @@ pyenv
 python-pip
 python-xattr
 qeh-git
-qemu
-qemu-arch-extra
+qemu-desktop
+qemu-emulators-full
 qimgv
 qt5-base
 qt5-styleplugins
@@ -528,6 +531,7 @@ rbenv
 rclone
 rclone-browser
 rdrview-git
+rebuild-detector
 redshift
 redshiftgui-bin
 reptyr
@@ -545,6 +549,7 @@ ruby
 ruby-build
 ruby-docs
 ruby-install
+ruby-ripper-tags
 run-or-raise
 rust-analyzer
 rust-musl
@@ -574,6 +579,7 @@ songrec
 sops
 spacefm
 spectacle
+speedtest-cli
 spotify-tui
 spotifyd
 sqlite-tcl
@@ -624,7 +630,6 @@ telepathy-kde-send-file
 telepathy-kde-text-ui
 telescope
 termite
-texlive-bin
 texlive-core
 texlive-installer
 threadwatcher
@@ -639,7 +644,6 @@ timeshift
 timew
 timg
 timidity++
-tllocalmgr-git
 tmate
 tmsu-bin
 tmux
@@ -673,6 +677,7 @@ veracrypt
 vi
 vifm
 vim
+vint
 virt-manager
 viu
 vivid

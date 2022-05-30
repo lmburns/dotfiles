@@ -5,6 +5,8 @@
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
 -- FIX: Tab character hides part of the line
+-- FIX: Changelist is overridden somewhat when re-opening a file
+-- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
 
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -104,6 +106,7 @@ require("common.qf")
 require("common.mru")
 -- require("common.reg")
 require("common.grepper")
+require("plugs.fold")
 
 -- ============================ Notify ================================ [[[
 a.async_void(
@@ -159,12 +162,12 @@ vim.schedule(
         )
 
         -- === Folding
-        vim.defer_fn(
-            function()
-                require("plugs.fold")
-            end,
-            50
-        )
+        -- vim.defer_fn(
+        --     function()
+        --         require("plugs.fold")
+        --     end,
+        --     50
+        -- )
 
         -- === Clipboard
         vim.defer_fn(

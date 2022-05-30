@@ -38,6 +38,7 @@ function M.getsymbol()
     return require("nvim-gps").get_location()
 end
 
+---Go to symbol definition
 function M.go2def()
     local cur_bufnr = api.nvim_get_current_buf()
     local by
@@ -49,7 +50,7 @@ function M.go2def()
         if not err then
             by = "coc"
         elseif res == "timeout" then
-            log.warn("Go to reference Timeout", true)
+            log.warn("Go to reference timeout", true)
         else
             local cword = fn.expand("<cword>")
             if
@@ -98,7 +99,7 @@ function M.show_documentation()
         local err, res = M.a2sync("definitionHover")
         if err then
             if res == "timeout" then
-                log.warn("Show documentation Timeout", true)
+                log.warn("Show documentation timeout", true)
             end
             cmd("norm! K")
         end
@@ -197,7 +198,7 @@ function M.code_action(mode, only)
     end
 end
 
--- Jump to location list
+---Jump to location list. Ran on `CocLocationsChange`
 function M.jump2loc(locs, skip)
     locs = locs or g.coc_jump_locations
     fn.setloclist(0, {}, " ", {title = "CocLocationList", items = locs})
@@ -211,7 +212,7 @@ function M.jump2loc(locs, skip)
     end
 end
 
--- Accept the completion
+---Accept the completion
 function M.accept_complete()
     local mode = api.nvim_get_mode().mode
     if mode == "i" then
@@ -231,7 +232,7 @@ function M.accept_complete()
     end
 end
 
--- Coc rename
+---Coc rename
 function M.rename()
     g.coc_jump_locations = nil
     fn.CocActionAsync(
@@ -256,6 +257,7 @@ function M.rename()
     )
 end
 
+---Function to run on `CocDiagnosticChange`
 function M.diagnostic_change()
     if vim.v.exiting == vim.NIL then
         local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
@@ -265,6 +267,10 @@ function M.diagnostic_change()
     end
 end
 
+---Fill quickfix with CocDiagnostics
+---@param winid number
+---@param nr boolean
+---@param keep boolean
 function M.diagnostic(winid, nr, keep)
     fn.CocActionAsync(
         "diagnosticList",
@@ -342,6 +348,8 @@ function M.run_command(name, args, cb)
     return action_fn("runCommand", name, unpack(args))
 end
 
+---Provide a higlighting fallback on cursor hold
+---i.e., this will show non-treesitter highlighting on cursor hold
 M.hl_fallback =
     (function()
     local fb_bl_ft = {
@@ -366,8 +374,8 @@ M.hl_fallback =
     local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
 
     local function cur_word_pat()
-        local lnum, col = unpack(api.nvim_win_get_cursor(0))
-        local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
+        local lnum, col = unpack(nvim.cursor(0))
+        local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
         local _, e_off = re_e:match_str(line:sub(col + 1, -1))
         local pat = ""
         if e_off ~= 0 then
@@ -380,7 +388,7 @@ M.hl_fallback =
 
     return function()
         local ft = vim.bo.ft
-        if vim.tbl_contains(fb_bl_ft, ft) or api.nvim_get_mode().mode == "t" then
+        if vim.tbl_contains(fb_bl_ft, ft) or nvim.mode().mode == "t" then
             return
         end
 
@@ -393,6 +401,7 @@ M.hl_fallback =
     end
 end)()
 
+---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
     local winid = g.coc_last_float_win
     if winid and api.nvim_win_is_valid(winid) then
@@ -406,6 +415,8 @@ function M.post_open_float()
     end
 end
 
+---Used with popup completions
+---@return boolean
 function M.check_backspace()
     -- local col = fn.col(".") - 1
     -- return col or (fn.getline(".")[col - 1]):match([[\s]])
@@ -463,8 +474,24 @@ function M.scroll_insert(right)
     end
 end
 
+---Toggle `:CocOutline`
+function M.toggle_outline()
+    local winid = fn["coc#window#find"]("cocViewId", "OUTLINE")
+    if winid == -1 then
+        local err, res = M.a2sync("showOutline", {1})
+        if not err then
+            if res == "timeout" then
+                log.warn("Show outline timeout", true)
+            end
+            ex.wincmd("l")
+        end
+    else
+        fn["coc#window#close"](winid)
+    end
+end
+
 -- If this is ran in `init.lua` the command is not overwritten
-function M.tag_cmd()
+M.tag_cmd = function()
     augroup(
         "MyCocDef",
         {
@@ -493,7 +520,7 @@ end
 ---Adds all lua runtime paths to coc
 ---@param sumneko boolean?
 ---@return table
-function M.get_lua_runtime(sumneko)
+M.get_lua_runtime = function(sumneko)
     local result = {}
 
     local function add(lib)
@@ -609,7 +636,6 @@ function M.init()
             pattern = "CocJumpPlaceholder",
             command = [[call CocActionAsync('showSignatureHelp')]]
         },
-        -- [[FileType list lua vim.cmd('pa nvim-bqf') require('bqf.magicwin.handler').attach()]],
         {
             event = "FileType",
             pattern = "list",
@@ -621,7 +647,12 @@ function M.init()
         {
             event = "VimLeavePre",
             pattern = "*",
-            command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
+            -- command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
+            command = function()
+                if api.nvim_get_var("coc_process_pid") ~= nil then
+                    os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
+                end
+            end
         },
         {
             event = "FileType",
@@ -630,7 +661,16 @@ function M.init()
                 vim.b.coc_enabled = 0
             end
         },
-        -- [[User CocOpenFloat lua require('plugs.coc').post_open_float()]]
+        {
+            event = "BufReadPost",
+            pattern = "*",
+            command = function()
+                local bufnr = api.nvim_get_current_buf()
+                if vim.bo[bufnr].readonly then
+                    vim.b.coc_diagnostic_disable = 1
+                end
+            end
+        },
         {
             event = "User",
             pattern = "CocOpenFloat",
@@ -716,7 +756,7 @@ function M.init()
 
     wk.register(
         {
-            ["<C-A-'>"] = {":CocOutline<CR>", "Coc outline"},
+            ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
             ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
@@ -739,7 +779,10 @@ function M.init()
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-            ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics (current buffer)"},
+            ["<Leader>jr"] = {
+                ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
+                "Coc diagnostics (current buffer)"
+            },
             -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
