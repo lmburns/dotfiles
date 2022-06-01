@@ -228,8 +228,8 @@ mod3 + bracket{left,right}
     bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
 
 # Toggle between fullscreen and tiled
-super + f
-    bspc node -t tiled || bspc node -t fullscreen
+# super + f
+#     bspc node -t tiled || bspc node -t fullscreen
 
 mod3 + f
     bspc node -t tiled || bspc node -t fullscreen

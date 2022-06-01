@@ -101,6 +101,38 @@ command(
 )
 
 command("RmAnsi", [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]], {nargs = 0, range = "%"})
+
+-- command(
+--     "CargoBuild",
+--     function(tbl)
+--         local args = tbl.fargs
+--         local default_config = {}
+--         local config = {}
+--
+--         for _, val in ipairs(args) do
+--             local tokens = vim.split(val, "=")
+--             if #tokens == 2 then
+--                 config[tokens[1]] = tokens[2]
+--             end
+--         end
+--
+--         config = vim.tbl_extend("force", default_config, config)
+--
+--         if args[1] == "debug" then
+--             require("dev").inspect(config)
+--         end
+--
+--         local arg = ""
+--
+--         for key, val in pairs(config) do
+--             arg = arg .. " -" .. key .. "=" .. val
+--         end
+--
+--         vim.cmd(("cexpr system('cargo build --message-format=short %s'"):format(arg))
+--         ex.copen()
+--     end,
+--     {nargs = "*"}
+-- )
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[
@@ -144,9 +176,6 @@ command(
 -- ]]] === Syntax ===
 
 -- ========================= Builtin Terminal ========================= [[[
-g.term_buf = 0
-g.term_win = 0
-
 -- Terminal go back to normal mode
 map("t", "<Esc>", [[<C-\><C-n>]])
 map("t", ":q!", [[<C-\><C-n>:q!<CR>]])
@@ -170,6 +199,9 @@ cmd [[
 
   command! RUN :call s:execute_buffer()
 ]]
+
+-- function M.execute_buffer()
+-- end
 
 function M.lua_executor()
     local bufnr = api.nvim_get_current_buf()
@@ -203,28 +235,6 @@ augroup(
         command = function()
             map("n", "<Leader>r<CR>", ":RUN<CR>")
             map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
-        end
-    },
-    {
-        event = "FileType",
-        pattern = "typescript",
-        command = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
-            -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
-        end
-    },
-    {
-        event = "FileType",
-        pattern = "c",
-        command = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>", {buffer = bufnr})
-        end
-    },
-    {
-        event = "FileType",
-        pattern = "javascript",
-        command = function()
-            map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
         end
     },
     {

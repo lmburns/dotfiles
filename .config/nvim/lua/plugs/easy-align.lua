@@ -65,6 +65,12 @@ function M.setup()
             left_margin = 0,
             right_margin = 0
         },
+        t = {
+            pattern = [==[\t]==],
+            left_margin = 0,
+            right_margin = 0,
+            ignore_groups = {"!Comment"}
+        },
         s = {
             pattern = table.concat(equal_sign:merge(lt_sign:merge(gt_sign)), "\\|"),
             left_margin = 1,

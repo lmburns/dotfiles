@@ -26,11 +26,11 @@
     // "cpp",
     "go",
     "html",
-    "java"
+    "java",
     // "javascript",
     // "lua",
     // "rust",
-    // "typescript"
+    "typescript"
   ],
 
   "diagnostic.errorSign": "", //  ••

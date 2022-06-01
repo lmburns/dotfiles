@@ -37,9 +37,9 @@ function M.setup()
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
 
-    if nvim.executable("gtags-cscope") then
-        table.insert(g.gutentags_modules, "gtags_cscope")
-    end
+    -- if nvim.executable("gtags-cscope") then
+    --     table.insert(g.gutentags_modules, "gtags_cscope")
+    -- end
 
     -- if nvim.executable("cscope") then
     --     table.insert(g.gutentags_modules, "cscope")
@@ -194,20 +194,20 @@ local function init()
             pattern = "vim-gutentags",
             command = [[call gutentags#setup_gutentags()]]
         },
-        {
-            event = "FileType",
-            pattern = "cpp",
-            command = function()
-                require("plugs.gutentags").setup_cpptags()
-            end
-        },
-        {
-            event = "FileType",
-            pattern = "c",
-            command = function()
-                require("plugs.gutentags").setup_ctags()
-            end
-        },
+        -- {
+        --     event = "FileType",
+        --     pattern = "cpp",
+        --     command = function()
+        --         require("plugs.gutentags").setup_cpptags()
+        --     end
+        -- },
+        -- {
+        --     event = "FileType",
+        --     pattern = "c",
+        --     command = function()
+        --         require("plugs.gutentags").setup_ctags()
+        --     end
+        -- },
         {
             event = "FileType",
             pattern = "perl",

@@ -15,7 +15,7 @@ local api = vim.api
 ---@param check string Module to check if is installed
 ---@return table Module
 M.prequire = function(check, opts)
-    opts = opts or {silent = false}
+    opts = opts or {silent = false, ok = false}
     local ok, ret = pcall(require, check)
     if not ok and not opts.silent then
         M.notify(
@@ -26,6 +26,7 @@ M.prequire = function(check, opts)
         )
         return nil
     end
+
     return ret
 end
 
@@ -298,13 +299,7 @@ M.command = function(name, rhs, opts)
     vim.validate(
         {
             name = {name, "string"},
-            cmd = {
-                cmd,
-                function(c)
-                    return type(c) == "string" or vim.is_callable(c)
-                end,
-                "a string or a lua function"
-            },
+            cmd = {cmd, {"f", "s"}},
             opts = {opts, "table", true}
         }
     )
@@ -360,6 +355,14 @@ M.source = function(path, prefix)
     else
         ex.source(("%s/%s"):format(fn.stdpath("config"), path))
     end
+end
+
+---Determine whether user in in visual mode
+---@return boolean, string
+M.is_visual_mode = function()
+    local mode = api.nvim_get_mode().mode
+    -- return mode == 'v' or mode == 'V' or mode == '', mode
+    return mode:match("[vV\x16]"), mode
 end
 
 ---Get the current visual selection

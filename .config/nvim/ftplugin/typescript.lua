@@ -2,6 +2,9 @@ local coc = require("plugs.coc")
 local utils = require("common.utils")
 local map = utils.map
 
+map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es6 % && node %:r.js<CR>")
+-- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
+
 map(
     "n",
     "<Leader>re",

@@ -350,6 +350,22 @@ nvim.autocmd.lmb__TermMappings = {
     end,
     desc = "Set terminal mappings"
 }
+
+-- TODO: Get to work
+-- nvim.autocmd.lmb__TermClose = {
+--     event = {"TermClose"},
+--     pattern = "*",
+--     command = function()
+--         if vim.v.event.status == 0 then
+--             local info = api.nvim_get_chan_info(vim.opt.channel._value)
+--             if info and info.argv[1] == vim.env.SHELL then
+--                 pcall(api.nvim_buf_delete, 0, {})
+--                 -- vim.cmd("bdelete! " .. fn.expand("<abuf>"))
+--             end
+--         end
+--     end,
+--     desc = "Automatically close a terminal buffer"
+-- }
 -- ]]] === Terminal ===
 
 -- === Help/Man pages in vertical ===
@@ -446,7 +462,8 @@ local smart_close_filetypes = {
     "log",
     "tsplayground",
     "vista",
-    "aerial" -- has its own mapping but is slow
+    "aerial", -- has its own mapping but is slow
+    "scratchpad"
 }
 
 local function smart_close()
@@ -461,8 +478,7 @@ nvim.autocmd.lmb__SmartClose = {
         pattern = "*",
         command = function()
             local is_unmapped = fn.hasmapto("q", "n") == 0
-            local is_eligible =
-                is_unmapped or vim.wo.previewwindow or vim.tbl_contains(smart_close_filetypes, vim.bo.filetype)
+            local is_eligible = is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo.ft)
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = 0, nowait = true})
@@ -612,7 +628,6 @@ end -- ]]]
 -- === Custom file type settings === [[[
 augroup(
     "lmb__CustomFileType",
-    {event = "FileType", pattern = "qf", command = [[set nobuflisted]]},
     {event = "BufWritePre", pattern = {"*.odt", "*.rtf"}, command = [[silent set ro]]},
     {
         event = "BufWritePre",
@@ -691,46 +706,6 @@ C.all({cmTitle = {link = "vimCommentTitle", default = true}})
 -- ex.hi("def link cmLineComment Comment")
 
 -- ]]] === Custom syntax groups ===
-
--- ================================ Zig =============================== [[[
-augroup(
-    "lmb__ZigEnv",
-    {
-        event = "FileType",
-        pattern = "zig",
-        description = "Setup zig environment",
-        command = function()
-            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 zig run ./%<CR>")
-        end
-    }
-)
--- ]]] === Zig ===
-
--- ============================== C/Cpp =============================== [[[
-augroup(
-    "lmb__CEnv",
-    {
-        event = "FileType",
-        pattern = "c",
-        command = function()
-            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>")
-            map("n", "M", [[<cmd>lua vim.cmd(("%s %s"):format(vim.o.keywordprg, vim.fn.expand("<cword>")))<CR>]])
-        end
-    }
-)
-
-augroup(
-    "lmb__CppEnv",
-    {
-        event = "FileType",
-        pattern = "cpp",
-        command = function()
-            map("n", "<Leader>r<CR>", "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>")
-            map("n", "M", [[<cmd>lua vim.cmd(("%s %s"):format(vim.o.keywordprg, vim.fn.expand("<cword>")))<CR>]])
-        end
-    }
-)
--- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
 -- Cursorline highlighting control

@@ -479,6 +479,7 @@ zt 0c light-mode binary for \
 # @sharkdp/bat \
 zt 0c light-mode binary lbin lman from'gh-r' for \
   atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
+    @sharkdp/bat \
     @sharkdp/hyperfine \
     @sharkdp/fd \
     @sharkdp/diskus \
@@ -705,8 +706,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   atload'alias touch="feel"' \
     lmburns/feel \
-  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-  atload"alias par='parallel'" \
+  lbin'parallel -> par' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     lmburns/parallel \
   lbin atclone'cargo br --features=backend-gpgme' atpull'%atclone' \
   atclone"$(mv_clean)" atclone'./prs internal completions zsh' \
@@ -807,7 +807,7 @@ zt 0c light-mode null for \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; mv -f **/**.zsh _tig' \
   make'install' atpull'%atclone' mv"_tig -> $ZINIT[COMPLETIONS_DIR]" \
     jonas/tig \
-  lbin'**/delta;git-dsf -> dsf' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
+  lbin'**/delta' from'gh-r' patch"${pchf}/%PLUGIN%.patch" \
     dandavison/delta \
   lbin from'gh-r' \
     extrawurst/gitui \

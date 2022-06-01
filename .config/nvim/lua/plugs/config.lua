@@ -300,6 +300,7 @@ function M.markdown()
         "go",
         "rust",
         "rs=rust",
+        "js=javascript",
         "sh",
         "shell=sh",
         "bash=sh",

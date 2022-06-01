@@ -191,6 +191,7 @@ programming:
     solidity: [.sol]
     teal: [.tl]
     moon: [.moon]
+    fennel: [.fnl]
 
   tooling:
     vcs:

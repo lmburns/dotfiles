@@ -913,6 +913,7 @@ map K half-up
 map R reload
 map C clear
 map U unselect
+map , :{{ clear; unselect; }}
 
 map sF $for f ($(print -ln -- *(ND) | fzf)) { lf -remote "send $id toggle $f" } # select  files fzf
 map sg push :glob-select<space>                  # select files matching pattern

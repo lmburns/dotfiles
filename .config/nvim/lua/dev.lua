@@ -86,6 +86,9 @@ end
 -- ============================== Print ===============================
 -- ====================================================================
 
+---Print a value in lua
+---@param v
+---@return
 M.inspect = function(v)
     local s
     local t = type(v)
@@ -99,6 +102,40 @@ M.inspect = function(v)
         s = tostring(v)
     end
     return s
+end
+
+M.inspect2 = function(...)
+    local args = {...}
+    local ret = {}
+
+    vim.schedule(
+        function()
+            for _, v in pairs(args) do
+                local t = type(v)
+                if t == "nil" then
+                    table.insert("nil")
+                elseif t == "userdata" then
+                    table.insert(("Userdata:\n%s"):format(vim.inspect(getmetatable(v))))
+                elseif t ~= "string" then
+                    table.insert(vim.inspect(v, {depth = math.huge}))
+                else
+                    table.insert(tostring(v))
+                end
+            end
+        end
+    )
+
+    return ret
+end
+
+function M.inspect2(...)
+  local args = {...}
+  -- need to wrap this in a vim.schedule else you will encounter a segment fault when using the function inside a coroutine
+  vim.schedule(function()
+    for _, x in ipairs(args) do
+      print(vim.inspect(x))
+    end
+  end)
 end
 
 -- Print text nicely (newline)

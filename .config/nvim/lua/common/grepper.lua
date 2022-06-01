@@ -4,6 +4,10 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
+
 -- This is mean to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
 --
@@ -24,6 +28,8 @@ function M.vg_motion(motion)
     vim.o.operatorfunc = "v:lua.require'common.grepper'.vimgrep_qf"
     api.nvim_feedkeys("g@" .. (motion or ""), "i", false)
 end
+
+map("n", "go", ":lua R('common.grepper').vg_motion()<CR>", {desc = "Grep current file"})
 
 -- Credit: gbprod/substitute.nvim
 ---Turn region markers into text
@@ -91,6 +97,64 @@ function M.get_regions(vmode)
     }
 end
 
-map("n", "go", ":lua R('common.grepper').vg_motion()<CR>", {desc = "Grep current file"})
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Telescope Grep                      │
+-- ╰──────────────────────────────────────────────────────────╯
+
+---Cool and all but it doesn't show any results
+-- M.telescope_grep = function(type)
+--     local saved_unnamed_register = fn.getreg("@@")
+--     if type:match("v") then
+--         vim.cmd([[normal! `<v`>y]])
+--     elseif type:match("char") then
+--         vim.cmd([[normal! `[v`]y']])
+--     else
+--         return
+--     end
+--
+--     require("telescope.builtin").grep_string(
+--         {
+--             layout_strategy = "vertical",
+--             layout_config = {prompt_position = "top"},
+--             sorting_strategy = "ascending",
+--             search_dirs = {fn.expand("%:p:h")},
+--             search = fn.getreg("@@")
+--         }
+--     )
+--
+--     -- nvim.reg["@@"] = saved_unnamed_register
+--     fn.setreg("@@", saved_unnamed_register)
+-- end
+--
+-- map("n", "gt", [[:silent! set operatorfunc=v:lua.require'common.grepper'.telescope_grep<cr>g@]])
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Alternative Grep                     │
+-- ╰──────────────────────────────────────────────────────────╯
+
+---An alternative to the above functions
+---@param type string
+-- function M.grep_operator(type)
+--     local saved_unnamed_register = fn.getreg("@@")
+--     if type:match("v") then
+--         vim.cmd([[normal! `<v`>y]])
+--     elseif type:match("char") then
+--         vim.cmd([[normal! `[v`]y']])
+--     else
+--         return
+--     end
+--
+--     -- Use Winnr to check if the cursor has moved it if has restore it
+--     local winnr = fn.winnr()
+--     vim.cmd([[silent execute 'grep! ' . shellescape(@@) . ' .']])
+--     fn.setreg("@@", saved_unnamed_register)
+--     if fn.winnr() ~= winnr then
+--         vim.cmd([[wincmd p]])
+--     end
+-- end
+--
+-- map("n", "gt", [[:silent! set operatorfunc=v:lua.require'common.grepper'.grep_operator<cr>g@]])
+-- map("x", "gt", [[:call v:lua.require'common.grepper'.grep_operator(visualmode())<cr>]])
+
 
 return M

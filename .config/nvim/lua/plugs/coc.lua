@@ -158,8 +158,10 @@ function M.action(action, ...)
                 args,
                 function(err, res)
                     if err ~= vim.NIL then
+                        vim.notify("ERR")
                         reject(err)
                     else
+                        vim.notify("NORM")
                         if res == vim.NIL then
                             res = nil
                         end
@@ -170,6 +172,10 @@ function M.action(action, ...)
             fn.CocActionAsync(action, unpack(args))
         end
     )
+end
+
+function M.runCommand(name, ...)
+    return M.action("runCommand", name, ...)
 end
 
 -- Code actions

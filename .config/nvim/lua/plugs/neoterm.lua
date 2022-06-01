@@ -1,5 +1,5 @@
 local utils = require("common.utils")
-local terminal = utils.prequire("toggleterm")
+local terminal = require("toggleterm")
 
 local M = {}
 

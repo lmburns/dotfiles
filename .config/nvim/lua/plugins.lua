@@ -920,10 +920,6 @@ return packer.startup(
             -- ]]] === Operator ===
 
             -- =============================== Tags =============================== [[[
-            -- config = function()
-            --     local config = fn.stdpath("config")
-            --     vim.cmd("source " .. config .. "/vimscript/plugins/vim-gutentags.vim")
-            -- end
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use(
                 {
@@ -957,29 +953,17 @@ return packer.startup(
             -- ]]] === Targets ===
 
             -- ============================== Nvim-R =============================== [[[
-            use(
-                {
-                    "jalvesaq/Nvim-R",
-                    branch = "stable",
-                    conf = "plugs.nvim-r"
-                }
-            )
+            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r"})
             -- ]]] === Nvim-R ===
 
-            -- ========================= VimSlime - Python ========================= [[[
+            -- =============================== Python ============================== [[[
             use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
-            -- ]]] === VimSlime - Python ===
+            -- ]]] === Python ===
 
-            -- ============================= Vim - Rust ============================ [[[
+            -- ================================ Rust =============================== [[[
             use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
 
-            use(
-                {
-                    "Saecki/crates.nvim",
-                    event = "BufRead Cargo.toml",
-                    conf = "crates"
-                }
-            )
+            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "crates"})
             -- use(
             --     {
             --       "simrat39/rust-tools.nvim",
@@ -1167,6 +1151,8 @@ return packer.startup(
 
             -- ============================= Highlight ============================ [[[
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
+            use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+            -- The following plugin really needs to support ansi sequences
             use(
                 {
                     "norcalli/nvim-colorizer.lua",

@@ -12,19 +12,22 @@ export HINT_TELEMETRY="off"
 export LANGUAGE="en_US.UTF-8"
 export LANG="$LANGUAGE"
 export LC_ALL="$LANGUAGE"
+export LC_CTYPE="$LANGUAGE"
+
 export TMP=${TMP:-${TMPDIR:-/tmp}}
 export TMPDIR=$TMP
+
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CACHE_HOME="$HOME/.cache"
-# export XDG_MUSIC_DIR="$HOME/Music"
-# export XDG_DESKTOP_DIR="$HOME/Desktop"
-# export XDG_DOCUMENTS_DIR="$HOME/Documents"
-# export XDG_DOWNLOAD_DIR="$HOME/Downloads"
-# export XDG_PICTURES_DIR="$HOME/Pictures"
-# export XDG_PUBLICSHARE_DIR="$HOME/Public"
-# export XDG_VIDEOS_DIR="$HOME/Videos"
-# export XDG_TEMPLATES_DIR="$HOME/Templates"
+export XDG_MUSIC_DIR="$HOME/Music"
+export XDG_DESKTOP_DIR="$HOME/Desktop"
+export XDG_DOCUMENTS_DIR="$HOME/Documents"
+export XDG_DOWNLOAD_DIR="$HOME/Downloads"
+export XDG_PICTURES_DIR="$HOME/Pictures"
+export XDG_PUBLICSHARE_DIR="$HOME/Public"
+export XDG_VIDEOS_DIR="$HOME/Videos"
+export XDG_TEMPLATES_DIR="$HOME/Templates"
 
 export XDG_BIN_HOME="$HOME/bin"
 export XDG_MBIN_HOME="$HOME/mybin"
@@ -73,8 +76,8 @@ export LESS="\
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
-export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbie'" \
-export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbie'" \
+export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
+export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"

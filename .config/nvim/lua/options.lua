@@ -44,6 +44,10 @@ vim.tbl_map(
     }
 )
 
+g.c_syntax_for_h = 1
+g.c_comment_strings = 1
+g.c_no_if0 = 0
+
 -- We do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
 o.rtp:remove("/usr/share/vim/vimfiles")
@@ -136,7 +140,11 @@ o.listchars:append(
     }
 )
 o.showbreak = [[↳ ]] -- ↪
-o.cpoptions:append("n") -- cursorcolumn used for wraptext
+-- o.cpoptions = 'aAceFs_B'
+-- o.cpoptions:append("n") -- cursorcolumn used for wraptext
+o.cpoptions:append("_") -- do not include whitespace with 'cw'
+o.cpoptions:append("a") -- ":read" sets alternate file name
+o.cpoptions:append("A") -- ":write" sets alternate file name
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
 
@@ -146,6 +154,7 @@ o.mousefocus = true
 o.backspace = list {"indent", "eol", "start"}
 o.breakindentopt = "sbr" -- shift:2,min:20
 o.smartindent = true
+-- o.copyindent = true
 o.cindent = true
 -- o.autoindent = true
 o.linebreak = true -- lines wrap at words rather than random characters

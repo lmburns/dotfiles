@@ -17,6 +17,7 @@ local g = vim.g
 -- General configurations for various themes
 
 M.catppuccin = function()
+    g.catppuccin_flavour = "mocha" -- latte, frappe, macchiato, mocha
     local catppuccin = require("catppuccin")
     catppuccin.setup(
         {

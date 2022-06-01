@@ -4,7 +4,7 @@ function M.setup()
     require("legendary").setup(
         {
             -- Include builtins by default, set to false to disable
-            include_builtin = false,
+            include_builtin = true,
             -- Include the commands that legendary.nvim creates itself
             -- in the legend by default, set to false to disable
             include_legendary_cmds = false,

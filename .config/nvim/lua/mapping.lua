@@ -99,7 +99,10 @@ wk.register(
     {
         ["U"] = {"<C-r>", "Redo action"},
         [";u"] = {":execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
-        [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"}
+        [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
+        ["gI"] = {":norm! gi<CR>", "Goto last insert spot"},
+        ["g;"] = {":norm! g;<CR>", "Goto previous change"},
+        ["g,"] = {":norm! g,<CR>", "Goto next change"},
     }
 )
 
