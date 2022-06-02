@@ -929,6 +929,7 @@ key_bindings:
   - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
   - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
   - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  # - { key: I, mods: Control, chars: "\x1b[105;5u" }
   - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
   - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
   - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
@@ -936,6 +937,9 @@ key_bindings:
   - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
   - { key: Return, mods: Control|Alt, chars: "\x1b[13;7u" }
   - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
+  - { key: O, mods: Control|Alt, chars: "\x1b[111;7u" }
+  - { key: I, mods: Control|Alt, chars: "\x1b[105;7u" }
+  - { key: I, mods: Control, chars: "\x1b[105;5u" }
 
   # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
   # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }

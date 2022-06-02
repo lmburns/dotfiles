@@ -6,6 +6,7 @@ local M = {}
 local color = require("common.color")
 local groups = require("bufferline.groups")
 
+local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 
@@ -70,7 +71,7 @@ local function diagnostics_indicator(_count, _level, diagnostics, _context)
 end
 
 ---Can be used to change the buffer's label in the bufferline.
----@param: buf contains a "name", "path" and "bufnr"
+---@param buf table contains a "name", "path" and "bufnr"
 local function name_formatter(buf)
     -- Remove extension from markdown files for example
     if buf.name:match("%.md") then

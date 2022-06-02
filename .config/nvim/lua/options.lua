@@ -179,7 +179,7 @@ o.expandtab = true
 o.softtabstop = 2
 o.shiftwidth = 0
 -- o.shiftround = true -- round </> indenting
--- o.textwidth = 80
+o.textwidth = 100
 -- o.shiftround = true
 
 o.wildoptions:append("pum")
@@ -189,6 +189,7 @@ o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous l
 o.wildignorecase = true -- ignore case when completing file names and directories
 o.wildcharm = fn.char2nr(utils.termcodes["<Tab>"])
 
+o.winminwidth = 10
 o.pumheight = 10 -- number of items in popup menu
 o.pumblend = 3 -- Make popup window translucent
 
@@ -285,7 +286,7 @@ o.matchtime = 2 -- ms to blink when matching brackets
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = false
 o.signcolumn = "yes:1"
-o.synmaxcol = 1000 -- do not highlight long lines
+o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
 o.shortmess:append("acsIS") -- aoOTIcF don't give 'ins-completion-menu' messages.
 

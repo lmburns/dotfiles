@@ -153,6 +153,11 @@ function M.switch_lastbuf()
     local cur_bufnr = api.nvim_get_current_buf()
     if alter_bufnr ~= -1 and alter_bufnr ~= cur_bufnr then
         ex.b("#")
+        -- If a buffer was closed with 'bq', then reopened
+        local new_bufnr = api.nvim_get_current_buf()
+        if not vim.bo[new_bufnr].buflisted then
+            ex.set("buflisted")
+        end
     else
         local mru_list = require("common.mru").list()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)

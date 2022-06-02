@@ -32,16 +32,34 @@ function M.bqf()
             auto_resize_height = true,
             preview = {auto_preview = true, delay_syntax = 50},
             func_map = {
-                split = "<C-s>",
-                drop = "o",
+                open = "<CR>",
                 openc = "O",
+                drop = "o",
+                split = "<C-s>",
+                vsplit = "<C-v>",
+                tab = "t",
+                tabb = "T",
+                tabc = "",
                 tabdrop = "<C-t>",
+                ptogglemode = "z,",
+                ptoggleitem = "p",
+                ptoggleauto = "P",
                 pscrollup = "<C-u>",
                 pscrolldown = "<C-d>",
-                ptogglemode = "z,",
-                fzffilter = "zf",
+                pscrollorig = "zo",
+                prevfile = "<C-p>",
+                nextfile = "<C-n>",
+                prevhist = "<",
+                nexthist = ">",
+                lastleave = [['"]],
+                stoggleup = "<S-Tab>",
+                stoggledown = "<Tab>",
+                stogglevm = "<Tab>",
+                stogglebuf = [['<Tab>]],
+                sclear = "z<Tab>",
                 filter = "zn",
-                filterr = "zN"
+                filterr = "zN",
+                fzffilter = "zf"
             },
             filter = {
                 fzf = {
@@ -1201,8 +1219,9 @@ function M.paperplanes()
     require("paperplanes").setup(
         {
             register = "+",
-            provider = "0x0.st",
+            provider = "paste.rs",
             provider_options = {},
+            notifier = vim.notify,
             cmd = "curl"
         }
     )
@@ -1399,7 +1418,7 @@ function M.lfnvim()
         }
     )
 
-    map("n", "<C-o>", ":Lf<CR>")
+    map("n", "<A-o>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 

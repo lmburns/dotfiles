@@ -109,13 +109,13 @@ nvim.plugins =
                 plugs = _G.packer_plugins
                 if plugs[k] and plugs[k].loaded then
                     return plugs[k]
-                else
-                    -- [...]
-                    return _G.packer_plugins
                 end
             end
 
             return nil
+        end,
+        __call = function(_, _)
+            return _G.packer_plugins
         end
     }
 )

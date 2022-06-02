@@ -1,15 +1,19 @@
 local M = {}
 
-require("dev")
-local mru = require("common.mru")
 local utils = require("common.utils")
 local augroup = utils.augroup
-
-local coc = require("plugs.coc")
 local map = utils.map
 local command = utils.command
 
+local mru = require("common.mru")
+local coc = require("plugs.coc")
+
 local wk = require("which-key")
+
+local ex = nvim.ex
+local api = vim.api
+local fn = vim.fn
+local cmd = vim.cmd
 
 local default_preview_window
 

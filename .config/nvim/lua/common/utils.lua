@@ -573,6 +573,16 @@ M.save_win_positions = function(bufnr)
     end
 end
 
+---Close all floating windows
+M.close_all_floating_wins = function()
+    for _, win in ipairs(api.nvim_list_wins()) do
+        local config = api.nvim_win_get_config(win)
+        if config.relative ~= "" then
+            api.nvim_win_close(win, false)
+        end
+    end
+end
+
 ---Program to check if executable
 ---@param exec string
 ---@return boolean

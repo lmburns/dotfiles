@@ -1,5 +1,10 @@
 local M = {}
 
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
+local cmd = vim.cmd
+
 local themes = require("telescope.themes")
 local utils = require("telescope.utils")
 local pickers = require("telescope.pickers")
@@ -1185,8 +1190,13 @@ wk.register(
         [";s"] = {":Telescope coc document_symbols<CR>", "Telescope coc doc symbols"},
         [";S"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc workspace symbols"},
         ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Telescope coc diagnostics"},
-        ["<C-x><C-r>"] = {":Telescope coc references<CR>", "Telescope coc references"},
-        ["<C-[>"] = {":Telescope coc definitions<CR>", "Telescope coc definitions"},
+        ["<C-x><C-h>"] = {":Telescope coc workspace_diagnostics<CR>", "Telescope workspace coc diagnostics"},
+        ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Telescope coc definitions"},
+        ["<Leader>ky"] = {":Telescope coc type_definitions<CR>", "Telescope coc type_definitions"},
+        ["<Leader>kD"] = {":Telescope coc declarations<CR>", "Telescope coc declarations"},
+        ["<Leader>ki"] = {":Telescope coc implementations<CR>", "Telescope coc implementations"},
+        ["<Leader>kr"] = {":Telescope coc references_used<CR>", "Telescope coc references_used"},
+        ["<Leader>kR"] = {":Telescope coc references<CR>", "Telescope coc references"},
         [";l"] = {":Telescope coc locations<CR>", "Telescope coc locations"}
     }
 )
@@ -1215,6 +1225,7 @@ wk.register(
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
         ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
         ["<Leader>rr"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
+        -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
     }
 )
 

@@ -295,7 +295,7 @@ super + alt + Return
     tdrop -ma -w 1916 -y 0 alacritty
 
 # Open URL in clipboard
-ctrl + alt + o
+ctrl + alt + 0
     handlr open "$(xsel -b)"
 
 # Launch rofi application

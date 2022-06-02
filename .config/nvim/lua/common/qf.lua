@@ -183,11 +183,14 @@ function M.close()
                         char = fn.nr2char(char)
                         if char == "q" then
                             ex.ccl()
+                            -- cmd("ccl")
                         elseif char == "l" then
                             ex.lcl()
+                            -- cmd("lcl")
                         end
                     end
                     ex.noa(("bw %d"):format(bufnr))
+                    -- cmd(("noa bw %d"):format(bufnr))
                 end
             )
         end

@@ -328,7 +328,7 @@ function M.outline_treesitter(opts)
             fzf = false
         }
     )
-    local parsers = require "nvim-treesitter.parsers"
+    local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
         utils.notify(
             {

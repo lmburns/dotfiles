@@ -169,12 +169,31 @@ function M.rules()
             Rule("'", "'", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
             -- Allows matching () in strings
             Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
+            -- Allow matching bold in markdown
+            Rule("**", "**", {"markdown", "vimwiki"}),
+            -- Allow matching r#""# in rust
+            Rule('r#"', '"#', {"rust"}),
+            -- Allow () when a period proceeds in rust and others
+            Rule("(", ")", {"rust"}),
+            -- Allow matching closure pipes in rust
+            -- Rule("|", "|", {"rust"}),
             -- Allows matching {} in strings
             Rule("{", "}", {"rust", "javascript", "typescript", "php", "python"}):with_pair(
                 ts_conds.is_ts_node({"string"})
             )
         }
     )
+
+    -- Add a semicolon to the bracket pair
+    -- autopairs.add_rule(
+    --     Rule("{", "};"):with_pair(
+    --         function(opts)
+    --             local struct = string.match(opts.line, "struct%s*%S*%s*$")
+    --             local class = string.match(opts.line, "class%s*%S*%s*$")
+    --             return struct ~= nil or class ~= nil
+    --         end
+    --     )
+    -- )
 
     -- Add <> pair
     -- autopairs.add_rule(
@@ -184,6 +203,12 @@ function M.rules()
     -- )
 
     autopairs.add_rule(Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(cond.not_before_regex("<")))
+
+    -- autopairs.add_rule(
+    --     Rule("<", ">", "rust"):with_pair(cond.before_regex("%a+")):with_pair(cond.not_after_regex("%a")):with_move(
+    --         ts_conds.is_ts_node {"type_arguments", "type_parameters", "string"}
+    --     )
+    -- )
 
     -- Alternative to the above
     -- autopairs.add_rule(
@@ -218,74 +243,41 @@ function M.rules()
     --     )
     -- )
 
-    -- Allow () when a period proceeds in rust and others
-    autopairs.add_rule(Rule("(", ")", {"rust"}))
-
-    autopairs.add_rules(
-        {
-            -- Auto add space on =
-            Rule("=", ""):with_pair(cond.not_inside_quote()):with_pair(
-                function(opts)
-                    local excluded = {"rust", "sh", "bash", "zsh"}
-                    if vim.tbl_contains(excluded, vim.o.filetype) then
-                        return false
-                    end
-
-                    local last_char = opts.line:sub(opts.col - 1, opts.col - 1)
-
-                    if last_char:match("[%w%=%s]") then
-                        return true
-                    end
-                    return false
-                end
-            ):replace_endpair(
-                function(opts)
-                    local prev_2char = opts.line:sub(opts.col - 2, opts.col - 1)
-                    local next_char = opts.line:sub(opts.col, opts.col)
-                    next_char = next_char == " " and "" or " "
-                    if prev_2char:match("%w$") then
-                        return "<bs> =" .. next_char
-                    end
-                    if prev_2char:match("%=$") then
-                        return next_char
-                    end
-                    if prev_2char:match("=") then
-                        return "<bs><bs>=" .. next_char
-                    end
-                    return ""
-                end
-            ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none())
-        }
-    )
-
-    -- autopairs.add_rule(
-    --     Rule("=", "", {"-sh", "-bash", "-zsh"}):with_pair(cond.not_inside_quote()):with_pair(
-    --         function(opts)
-    --             local last_char = opts.line:sub(opts.col - 1, opts.col - 1)
-    --             if last_char:match("[%w%=%s]") then
-    --                 return true
+    -- autopairs.add_rules(
+    --     {
+    --         -- Auto add space on =
+    --         Rule("=", ""):with_pair(cond.not_inside_quote()):with_pair(
+    --             function(opts)
+    --                 local excluded = {"rust", "sh", "bash", "zsh"}
+    --                 if vim.tbl_contains(excluded, vim.o.filetype) then
+    --                     return false
+    --                 end
+    --
+    --                 local last_char = opts.line:sub(opts.col - 1, opts.col - 1)
+    --
+    --                 if last_char:match("[%w%=%s]") then
+    --                     return true
+    --                 end
+    --                 return false
     --             end
-    --             return false
-    --         end
-    --     ):replace_endpair(
-    --         function(opts)
-    --             local prev_2char = opts.line:sub(opts.col - 2, opts.col - 1)
-    --             local next_char = opts.line:sub(opts.col, opts.col)
-    --             next_char = next_char == " " and "" or " "
-    --             if prev_2char:match("%w$") then
-    --                 return "<bs> =" .. next_char
+    --         ):replace_endpair(
+    --             function(opts)
+    --                 local prev_2char = opts.line:sub(opts.col - 2, opts.col - 1)
+    --                 local next_char = opts.line:sub(opts.col, opts.col)
+    --                 next_char = next_char == " " and "" or " "
+    --                 if prev_2char:match("%w$") then
+    --                     return "<bs> =" .. next_char
+    --                 end
+    --                 if prev_2char:match("%=$") then
+    --                     return next_char
+    --                 end
+    --                 if prev_2char:match("=") then
+    --                     return "<bs><bs>=" .. next_char
+    --                 end
+    --                 return ""
     --             end
-    --             if prev_2char:match("%=$") then
-    --                 return next_char
-    --             end
-    --             if prev_2char:match("=") then
-    --                 return "<bs><bs>=" .. next_char
-    --             end
-    --             return ""
-    --         end
-    --     ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none()):with_pair(
-    --         cond.not_filetypes({"sh", "bash", "zsh"})
-    --     )
+    --         ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none())
+    --     }
     -- )
 
     -- Example: tab = b1234s => B1234S124S

@@ -485,9 +485,6 @@ return packer.startup(
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua"})
-            -- use({"folke/lua-dev.nvim", ft = "lua", config = [[require("lua-dev").setup({}).settings]]})
-
-            -- This works if all references to `lspconfig` are removed
             use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- use(
@@ -652,6 +649,8 @@ return packer.startup(
                     conf = "grepper"
                 }
             )
+
+            -- use({"nvim-pack/nvim-spectre"})
             -- ]]] === Grepper ===
 
             -- ============================ Scrollbar ============================= [[[

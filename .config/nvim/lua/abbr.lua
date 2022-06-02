@@ -1,6 +1,7 @@
 local M = {}
 
-require("common.utils")
+local utils = require("common.utils")
+local log = require("common.log")
 
 ---Create a `cnoreabbrev`
 ---@param input string: Thing to be replaced
@@ -20,8 +21,73 @@ function M.command(cmd, match)
     end
 end
 
-M.cabbrev("W!", "w!")
-M.cabbrev("Q!", "q!")
+---Create an abbreviation, until an API command is created
+---@param abbr table
+function M.abbr(abbr)
+    vim.validate {abbrevation = {abbr, "table"}}
+    if not abbr.mode or not abbr.lhs then
+        log.err("need a mode and LHS", true, {title = "Abbrs"})
+        return false
+    end
+
+    local command = {}
+    local mods = {}
+
+    local modes = {
+        insert = "i",
+        command = "c"
+    }
+
+    local lhs = abbr.lhs
+    local rhs = abbr.rhs
+    local args = type(abbr.args) == "table" and abbr.args or {abbr.args}
+    local mode = modes[abbr.mode] or abbr.mode
+
+    if args.buffer ~= nil then
+        table.insert(mods, "<buffer>")
+    end
+
+    if args.expr ~= nil and rhs ~= nil then
+        table.insert(mods, "<expr>")
+    end
+
+    for _, v in pairs(mods) do
+        table.insert(command, v)
+    end
+
+    if mode == "i" or mode == "insert" then
+        if rhs == nil then
+            table.insert(command, 1, "iunabbrev")
+            table.insert(command, lhs)
+        else
+            table.insert(command, 1, "iabbrev")
+            table.insert(command, lhs)
+            table.insert(command, rhs)
+        end
+    elseif mode == "c" or mode == "command" then
+        if rhs == nil then
+            table.insert(command, 1, "cunabbrev")
+            table.insert(command, lhs)
+        else
+            table.insert(command, 1, "cabbrev")
+            table.insert(command, lhs)
+            table.insert(command, rhs)
+        end
+    else
+        log.err(("Invalid mode: %s"):format(vim.inspect(mode)), true, {title = "Abbrs"})
+        return false
+    end
+
+    if args.silent ~= nil then
+        table.insert(command, 1, "silent!")
+    end
+
+    vim.cmd(table.concat(command, " "))
+end
+
+M.abbr({mode = "c", lhs = "W!", rhs = "w!"})
+M.abbr({mode = "c", lhs = "Q!", rhs = "q!"})
+
 M.cabbrev("Qall!", "qll!")
 M.cabbrev("Qall", "qll")
 M.cabbrev("Wq", "wq")

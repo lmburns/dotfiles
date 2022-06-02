@@ -82,6 +82,12 @@ export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
 
+export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
+# export CCACHE_COMPRESS=1
+# export CCACHE_SLOPPINESS=time_macros,file_macro
+# export CCACHE_BASEDIR="$TRAVIS_BUILD_DIR"
+# export CCACHE_CPP2=1
+
 export GTK_USE_PORTAL=1
 export GTK_THEME_VARIANT=dark
 export QT_QPA_PLATFORMTHEME=qt5ct

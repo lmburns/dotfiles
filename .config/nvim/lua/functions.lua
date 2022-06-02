@@ -396,7 +396,7 @@ end
 
 map(
     "n",
-    "OO",
+    "OO", -- "z,",
     function()
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_above"
         return "g@l"
@@ -406,7 +406,7 @@ map(
 
 map(
     "n",
-    "oo",
+    "oo", -- "z.",
     function()
         -- M.insert_empty_lines(vim.v.count, 0)
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_below"
@@ -414,6 +414,10 @@ map(
     end,
     {expr = true, desc = "Insert empty line below"}
 )
+
+-- Not have to wait for normal o/O command
+map("n", "oa", "<cmd>norm! O<CR>i")
+map("n", "os", "<cmd>norm! o<CR>i")
 
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()

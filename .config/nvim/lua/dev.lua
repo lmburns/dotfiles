@@ -2,6 +2,9 @@
 
 local M = {}
 
+local fn = vim.fn
+local api = vim.api
+
 -- Capture output of command as a string
 function os.capture(cmd, raw)
     local f = assert(io.popen(cmd, "r"))
@@ -83,8 +86,33 @@ M.start_job = function(cmd, opts)
     return id
 end
 
--- ============================== Print ===============================
--- ====================================================================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Escape                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- Fzf-lua
+--   * don't double-escape '\' (#340)
+--   * if possible, replace surrounding single quote with double
+M.shellescape = function(s)
+    local shell = vim.o.shell
+    if not shell or not shell:match("fish$") then
+        return fn.shellescape(s)
+    else
+        local ret = nil
+        vim.o.shell = "sh"
+        if not s:match([["]]) and not s:match([[\]]) then
+            ret = fn.shellescape(s:gsub([[']], [["]]))
+            ret = [["]] .. ret:gsub([["]], [[']]):sub(2, #ret - 1) .. [["]]
+        else
+            ret = fn.shellescape(s)
+        end
+        vim.o.shell = shell
+        return ret
+    end
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Print                           │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Print a value in lua
 ---@param v
@@ -129,13 +157,15 @@ M.inspect2 = function(...)
 end
 
 function M.inspect2(...)
-  local args = {...}
-  -- need to wrap this in a vim.schedule else you will encounter a segment fault when using the function inside a coroutine
-  vim.schedule(function()
-    for _, x in ipairs(args) do
-      print(vim.inspect(x))
-    end
-  end)
+    local args = {...}
+    -- need to wrap this in a vim.schedule else you will encounter a segment fault when using the function inside a coroutine
+    vim.schedule(
+        function()
+            for _, x in ipairs(args) do
+                print(vim.inspect(x))
+            end
+        end
+    )
 end
 
 -- Print text nicely (newline)
@@ -436,6 +466,23 @@ M.buf_is_valid = function(bufnr)
     return vim.bo[bufnr].buflisted and exists
 end
 
+---Check whether the current buffer is modified
+---@param bufnr number?
+---@return boolean
+M.buf_is_modified = function(bufnr)
+    vim.validate {
+        buffer = {
+            bufnr,
+            function(b)
+                return (type(b) == "number" and b > 1) or type(b) == "nil"
+            end
+        }
+    }
+
+    bufnr = bufnr or api.nvim_get_current_buf()
+    return vim.bo[bufnr].modified
+end
+
 ---Get the number of buffers
 ---@return number
 M.get_buf_count = function()
@@ -487,6 +534,44 @@ M.find_buf_with_option = function(option, value)
     end
 
     return nil
+end
+
+---Return the buffer lines
+---@param bufnr number?
+---@return string
+M.buf_lines = function(bufnr)
+    bufnr = bufnr or api.nvim_get_current_buf()
+    local buftext = api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    if vim.bo[bufnr].ff == "dos" then
+        for i = 1, #buftext do
+            buftext[i] = buftext[i] .. "\r"
+        end
+    end
+    return buftext
+end
+
+---Check if the buffer name matches a terminal buffer name
+---@param bufname string
+---@return boolean
+M.is_term_bufname = function(bufname)
+    if bufname and bufname:match("term://") then
+        return true
+    end
+    return false
+end
+
+---Check if the given buffer is a terminal buffer
+---@param bufnr number?
+---@return boolean
+M.is_term_buffer = function(bufnr)
+    bufnr = tonumber(bufnr) or 0
+    bufnr = bufnr == 0 and api.nvim_get_current_buf() or bufnr
+    local winid = fn.bufwinid(bufnr)
+    if tonumber(winid) > 0 and api.nvim_win_is_valid(winid) then
+        return fn.getwininfo(winid)[1].terminal == 1
+    end
+    local bufname = M.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr)
+    return M.is_term_bufname(bufname)
 end
 
 ---Get the nubmer of tabs

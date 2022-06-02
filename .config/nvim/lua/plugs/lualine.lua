@@ -7,6 +7,8 @@ local utils = require("common.utils")
 local map = utils.map
 
 local fn = vim.fn
+local api = vim.api
+local g = vim.g
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Conditions
@@ -46,12 +48,21 @@ local conditions = {
 local plugins = {
     -- Show function is statusbar with vista
     vista_nearest_method = function()
+        if not nvim.plugins["vista.vim"].loaded then
+            return ""
+        end
         return vim.b.vista_nearest_method_or_function
     end,
     gutentags_progress = function()
+        if not nvim.plugins["vim-gutentags"].loaded then
+            return ""
+        end
         return fn["gutentags#statusline"]("[", "]")
     end,
     gps = function()
+        if not nvim.plugins["nvim-gps"].loaded then
+            return ""
+        end
         local opts = {
             disable_icons = false,
             separator = " > ",
@@ -61,6 +72,10 @@ local plugins = {
         return require("nvim-gps").get_location(opts)
     end,
     luapad = function()
+        if not nvim.plugins["nvim-luapad"].loaded then
+            return ""
+        end
+
         local status = fn["luapad#lightline_status"]()
         local msg = fn["luapad#lightline_msg"]
 
@@ -71,7 +86,7 @@ local plugins = {
         end
     end,
     debugger = function()
-        if not package.loaded["dap"] then
+        if not nvim.plugins["dap"].loaded then
             return ""
         end
         -- local session = require('dap').session()
@@ -255,13 +270,13 @@ local sections_2 = {
 function M.toggle_mode()
     local ll_req = require("lualine_require")
     local modules = ll_req.lazy_require({config_module = "lualine.config"})
-    local utils = require("lualine.utils.utils")
+    local lutils = require("lualine.utils.utils")
 
     local current_config = modules.config_module.get_config()
     if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
-        current_config.sections = utils.deepcopy(sections_2)
+        current_config.sections = lutils.deepcopy(sections_2)
     else
-        current_config.sections = utils.deepcopy(sections_1)
+        current_config.sections = lutils.deepcopy(sections_1)
     end
     require("lualine").setup(current_config)
 end

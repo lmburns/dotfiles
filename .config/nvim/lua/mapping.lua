@@ -33,6 +33,7 @@ map("x", "-", '"_')
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
+map("n", "<Backspace>", "<C-^>")
 
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
@@ -79,20 +80,23 @@ wk.register(
     {silent = false}
 )
 
+-- Jump back and forth jumplist
+map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
+map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
+
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")
 map("n", "<S-Tab>", "<<")
 map("v", "<Tab>", ">><Esc>gv")
 map("v", "<S-Tab>", "<<<Esc>gv")
 map("i", "<S-Tab>", "<C-d>")
+-- Don't lose selection when shifting sidewards
+map("x", "<", "<gv")
+map("x", ">", ">gv")
 
 map("n", "v", "m`v")
 map("n", "V", "m`V")
 map("n", "<C-v>", "m`<C-v>")
-
--- Don't lose selection when shifting sidewards
-map("x", "<", "<gv")
-map("x", ">", ">gv")
 
 -- TIP: Use g- and g+
 wk.register(
@@ -102,7 +106,7 @@ wk.register(
         [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
         ["gI"] = {":norm! gi<CR>", "Goto last insert spot"},
         ["g;"] = {":norm! g;<CR>", "Goto previous change"},
-        ["g,"] = {":norm! g,<CR>", "Goto next change"},
+        ["g,"] = {":norm! g,<CR>", "Goto next change"}
     }
 )
 
@@ -136,7 +140,9 @@ wk.register(
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
-        ["vv"] = {[[^vg_]], "Select entire line (without newline)"}
+        ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
+        -- ["ghp"] = {[[m`o<Esc>p``]], "Paste line below (linewise)"},
+        -- ["ghP"] = {[[m`O<Esc>p``]], "Paste line above (linewise)"},
     }
 )
 
@@ -289,8 +295,8 @@ wk.register(
 map("v", ".", ":normal .<CR>")
 
 -- Change tabs
-map("n", "<Leader>nt", ":setlocal noexpandtab<CR>")
-map("x", "<Leader>re", ":retab!<CR>")
+map("n", "<Leader>rt", "<cmd>setl et<CR>")
+map("x", "<Leader>re", "<cmd>retab!<CR>")
 -- Change directory to buffers dir
 map("n", "<Leader>cd", ":lcd %:p:h<CR>")
 

@@ -42,25 +42,38 @@ local built = log.new(default_config, true)
 M.logger = built
 
 -- api.nvim_err_writeln()
-M.info = function(msg, notify)
+
+---INFO message
+---@param msg string
+---@param notify boolean?
+---@param opts table?
+M.info = function(msg, notify, opts)
     if notify then
-        vim.notify(msg, M.levels.INFO)
+        vim.notify(msg, M.levels.INFO, opts)
     else
         api.nvim_echo({{msg, "SpellCap"}}, true, {})
     end
 end
 
-M.warn = function(msg, notify)
+---WARN message
+---@param msg string
+---@param notify boolean?
+---@param opts table?
+M.warn = function(msg, notify, opts)
     if notify then
-        vim.notify(msg, M.levels.WARN)
+        vim.notify(msg, M.levels.WARN, opts)
     else
         api.nvim_echo({{msg, "WarningMsg"}}, true, {})
     end
 end
 
-M.err = function(msg, notify)
+---ERROR message
+---@param msg string
+---@param notify boolean?
+---@param opts table?
+M.err = function(msg, notify, opts)
     if notify then
-        vim.notify(msg, M.levels.ERROR)
+        vim.notify(msg, M.levels.ERROR, opts)
     else
         api.nvim_echo({{msg, "ErrorMsg"}}, true, {})
     end

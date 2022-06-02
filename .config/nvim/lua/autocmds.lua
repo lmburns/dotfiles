@@ -66,7 +66,8 @@ augroup(
         command = function()
             vim.schedule(
                 function()
-                    ex.redrawstatus()
+                    cmd("redrawstatus")
+                    -- ex.redrawstatus()
                 end
             )
         end
@@ -104,7 +105,8 @@ augroup(
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
-                    ex.normal_("zz")
+                    cmd("norm! zz")
+                    -- ex.normal_("zz")
                 end
             end
         end
@@ -395,7 +397,7 @@ nvim.autocmd.lmb__Help = {
                 end
 
                 local width = math.floor(vim.o.columns * 0.75)
-                ex.wincmd("L")
+                cmd("wincmd L")
                 cmd("vertical resize " .. width)
                 map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
@@ -416,7 +418,7 @@ nvim.autocmd.lmb__Help = {
             end
 
             local width = math.floor(vim.o.columns * 0.75)
-            ex.wincmd("L")
+            cmd("wincmd L")
             cmd("vertical resize " .. width)
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,
@@ -504,7 +506,8 @@ nvim.autocmd.lmb__SmartClose = {
         nested = true,
         command = function()
             if vim.bo.filetype ~= "qf" then
-                ex.silent_("lclose")
+                cmd("sil! lcl")
+                -- ex.silent_("lclose")
             end
         end,
         desc = "Close loclist when quitting window"

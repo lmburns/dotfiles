@@ -92,8 +92,8 @@ local function init()
             event = "FileType",
             pattern = "rnvimr",
             command = function()
-                map("t", "<M-i>", "<Cmd>RnvimrResize<CR>", {silent = true})
-                map("t", "<C-o>", "<Cmd>RnvimrToggle<CR>", {silent = true})
+                map("t", "<M-o>", "<Cmd>RnvimrResize<CR>", {silent = true})
+                map("t", "<M-i>", "<Cmd>RnvimrToggle<CR>", {silent = true})
             end
         }
     )
