@@ -144,7 +144,7 @@ rclone-mount:
     -vv \
     --log-file $LOCAL_OPT/local/rclone/logs/rclone.log \
     --umask 002 \
-    google-drive:/ /home/lucas/.mount/google-drive
+    google-drive:/ $HOME/.mount/google-drive
 
 # rclone to drive
 rclg SRC DEST:

@@ -1,0 +1,24 @@
+-- Plugin layout
+-- {
+-- "kevinhwang91/rnvimr",
+--   config = "require('plugs.rnvimr')",
+--   diff = <function 1>,
+--   disable = false,
+--   get_rev = <function 2>,
+--   install_path = "/home/lucas/.local/share/nvim/site/pack/packer/start/rnvimr",
+--   installer = <function 3>,
+--   keys = { "gxx", "gx", "<C-\\>" },
+--   manual_opt = true,
+--   name = "kevinhwang91/rnvimr",
+--   opt = false,
+--   patch = "~/.config/nvim/patches/",
+--   path = "kevinhwang91/rnvimr",
+--   remote_url = <function 4>,
+--   revert_last = <function 5>,
+--   revert_to = <function 6>,
+--   rocks = "mpack",
+--   short_name = "rnvimr",
+--   type = "git",
+--   updater = <function 7>,
+--   url = "https://github.com/kevinhwang91/rnvimr.git"
+-- }

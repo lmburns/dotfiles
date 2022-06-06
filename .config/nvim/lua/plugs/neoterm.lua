@@ -140,7 +140,7 @@ end
 local function init()
     map(
         "n",
-        "gxx",
+        "gzz",
         function()
             return term_exec(fn.getline("."))
         end
@@ -148,7 +148,7 @@ local function init()
 
     map(
         "v",
-        "gx",
+        "gz",
         function()
             local mode = vim.fn.mode()
             if mode == "v" or mode == "V" or mode == "" then
@@ -178,7 +178,7 @@ local function init()
         end,
         {nargs = "*", count = true}
     )
-    map("n", "gxo", "<Cmd>T<CR>")
+    map("n", "gzo", "<Cmd>T<CR>")
 end
 
 init()

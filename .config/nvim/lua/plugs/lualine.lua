@@ -16,7 +16,7 @@ local g = vim.g
 local conditions = {
     -- Show function in statusbar
     is_available_gps = function()
-        if utils.prequire("nvim-gps") then
+        if require("nvim-gps") then
             return require("nvim-gps").is_available()
         end
         return false
@@ -46,6 +46,14 @@ local conditions = {
 --                           Plugins
 -- ╘══════════════════════════════════════════════════════════╛
 local plugins = {
+    -- FIX: Runs way to often
+    -- Show number of TODO comments in buffer
+    todo_comment_count = function()
+        if not nvim.plugins["todo-comments.nvim"].loaded then
+            return ""
+        end
+        return require("plugs.todo-comments").get_todo_count()
+    end,
     -- Show function is statusbar with vista
     vista_nearest_method = function()
         if not nvim.plugins["vista.vim"].loaded then
@@ -228,7 +236,7 @@ local sections_1 = {
         "%l:%c",
         -- "%p%%" .. (("/%s"):format(require("common.builtin").tokei() or "")) .. "/%L",
         "%p%%/%L",
-        plugins.search_result
+        plugins.search_result,
     }
 }
 

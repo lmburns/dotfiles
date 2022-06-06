@@ -5,6 +5,11 @@ local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 
+local log = require("common.log")
+local b_utils = require("common.utils") -- "builtin" utils
+local command = b_utils.command
+local map = b_utils.map
+
 local themes = require("telescope.themes")
 local utils = require("telescope.utils")
 local pickers = require("telescope.pickers")
@@ -25,17 +30,9 @@ local z_utils = require("telescope._extensions.zoxide.utils")
 
 local P = R("plugs.telescope.pickers")
 
-local b_utils = require("common.utils") -- "builtin" utils
-local command = b_utils.command
-local map = b_utils.map
-
+local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
-
--- require("plenary.strings").align_str(string: any, width: any, right_justify: any)
--- require("plenary.strings").dedent(str: any, leave_indent: any)
--- require("plenary.strings").truncate(str: string, len: any, dots: any, direction: any)
--- require("plenary.strings").strdisplaywidth(string, col)
 
 -- Custom actions
 local c_actions = {
@@ -118,6 +115,28 @@ local c_actions = {
     end
 }
 
+local new_maker = function(filepath, bufnr, opts)
+    filepath = fn.expand(filepath)
+    Job:new(
+        {
+            command = "file",
+            args = {"--mime-type", "-b", filepath},
+            on_exit = function(j)
+                local mime_class = vim.split(j:result()[1], "/")[1]
+                local mime_type = j:result()[1]
+                if mime_class == "text" or (mime_class == "application" and mime_type ~= "application/x-pie-executable") then
+                    previewers.buffer_previewer_maker(filepath, bufnr, opts)
+                else
+                    vim.schedule(
+                        function()
+                            api.nvim_buf_set_lines(bufnr, 0, -1, false, {"BINARY"})
+                        end
+                    )
+                end
+            end
+        }
+    ):sync()
+end
 -- ============================ Config ===========================
 
 require("telescope").setup(
@@ -177,7 +196,12 @@ require("telescope").setup(
                     ["<M-q>"] = c_actions.qf_multi_select,
                     ["<C-o>"] = c_actions.which_key(),
                     -- ["<Space>"] = c_actions.insert_space,
-
+                    -- ["<Space>"] = {
+                    --     actions.toggle_selection,
+                    --     type = "action",
+                    --     -- See https://github.com/nvim-telescope/telescope.nvim/pull/890
+                    --     keymap_opts = {nowait = true}
+                    -- },
                     ["<C-h>"] = c_actions.single_selection_hop,
                     ["<M-;>"] = c_actions.multi_selection_hop
                 },
@@ -249,6 +273,7 @@ require("telescope").setup(
             file_previewer = previewers.vim_buffer_cat.new,
             grep_previewer = previewers.vim_buffer_vimgrep.new,
             qflist_previewer = previewers.vim_buffer_qflist.new,
+            buffer_previewer_maker = new_maker,
             layout_config = {
                 width = 0.95,
                 height = 0.85,
@@ -751,6 +776,14 @@ M.cst_grep = function(opts)
     builtin.live_grep(default)
 end
 
+M.cst_buffer_fuzzy_find = function()
+    builtin.current_buffer_fuzzy_find {
+        layout_config = {prompt_position = "top", preview_width = 0},
+        sorting_strategy = "ascending",
+        layout_strategy = "horizontal"
+    }
+end
+
 M.cst_commits = function()
     builtin.git_commits {
         layout_strategy = "horizontal",
@@ -1022,6 +1055,32 @@ builtin.edit_zsh = function()
     }
 end
 
+-- TODO: Finish this function
+M.find_dotfiles = function(opts)
+  -- opts = opts or {}
+  --
+  -- opts.cwd = require("core.global").home
+  -- -- By creating the entry maker after the cwd options,
+  -- -- we ensure the maker uses the cwd options when being created.
+  -- opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
+  --
+  -- pickers.new(opts, {
+  --   prompt_title = "~~ Dotfiles ~~",
+  --   finder = finders.new_oneshot_job({
+  --     "git",
+  --     "--git-dir=" .. require("core.global").home .. "/.dots/",
+  --     "--work-tree=" .. require("core.global").home,
+  --     "ls-tree",
+  --     "--full-tree",
+  --     "-r",
+  --     "--name-only",
+  --     "HEAD",
+  --   }, opts),
+  --   previewer = previewers.cat.new(opts),
+  --   sorter = conf.file_sorter(opts),
+  -- }):find()
+end
+
 -- TODO: Fix and get a better list of file paths
 M.grep_tags = function()
     local search_dirs = {}
@@ -1158,8 +1217,8 @@ wk.register(
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
         [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},
         -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
-        ["<Leader>;"] = {":Telescope current_buffer_fuzzy_find<CR>", "Telescope buffer lines"},
-        ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
+        ["<Leader>;"] = {":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>", "Telescope buffer lines"},
+        -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},

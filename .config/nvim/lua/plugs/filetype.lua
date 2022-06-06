@@ -59,6 +59,7 @@ function M.setup()
                 end
             },
             filename = {
+                ["tsconfig.json"] = "jsonc",
                 ["yup.lock"] = "yaml",
                 ["yarn.lock"] = "yaml",
                 ["poetry.lock"] = "toml",
@@ -67,6 +68,7 @@ function M.setup()
                 latexmkrc = "perl",
                 [".latexmkrc"] = "perl",
                 [".gitignore"] = "gitignore",
+                [".eslintignore"] = "gitignore",
                 [".ignore"] = "gitignore",
                 [".fdignore"] = "gitignore",
                 [".rgignore"] = "gitignore",

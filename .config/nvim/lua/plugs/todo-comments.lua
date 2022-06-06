@@ -3,6 +3,8 @@ local M = {}
 local map = require("common.utils").map
 local wk = require("which-key")
 
+local Search = require("todo-comments.search")
+
 function M.setup()
     require("todo-comments").setup(
         {
@@ -93,6 +95,28 @@ function M.setup()
     )
 end
 
+-- FIX: Why is this not inserting into table?
+---Get the number of `TODO` comments in the current buffer
+---@param cwd string?
+---@return table
+function M.get_todo_count(cwd)
+    local result = {}
+    Search.search(
+        function(r)
+            for _, item in pairs(r) do
+                table.insert(result, item.message)
+            end
+            -- table.insert(count, r)
+        end,
+        {cwd = fn.expand("%"), open = false}
+    )
+
+    return #result
+end
+
+-- p(R("plugs.todo-comments").get_todo_count())
+
+-- TODO: testing
 local function init()
     M.setup()
 
@@ -105,7 +129,7 @@ local function init()
             [";T"] = {":TodoTrouble<CR>", "Todo trouble (workspace)"},
             ["<LocalLeader>t"] = {
                 function()
-                    require("todo-comments.search").setqflist({cwd = fn.expand("%")})
+                    Search.setqflist({cwd = fn.expand("%")})
                 end,
                 "Todo quickfix (current file)"
             }

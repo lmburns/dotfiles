@@ -1,6 +1,6 @@
 local M = {}
 
--- local utils = require("common.utils")
+local utils = require("common.utils")
 -- local map = utils.map
 
 local color = require("common.color")
@@ -80,105 +80,109 @@ local function name_formatter(buf)
 end
 
 function M.setup()
-    require("bufferline").setup(
-        {
-            options = {
-                mode = "buffers",
-                numbers = function(opts)
-                    return ("%s"):format(opts.raise(opts.ordinal))
-                end,
-                close_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
-                right_mouse_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
-                left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
-                middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
-                indicator_icon = "▎",
-                buffer_close_icon = "",
-                modified_icon = "●",
-                close_icon = "",
-                left_trunc_marker = "",
-                right_trunc_marker = "",
-                max_name_length = 20,
-                max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
-                tab_size = 20,
-                name_formatter = name_formatter,
-                diagnostics = "coc", -- false
-                diagnostics_indicator = diagnostics_indicator,
-                diagnostics_update_in_insert = false,
-                custom_filter = custom_filter,
-                -- offsets = {
-                --   {filetype = "NvimTree", text = "File Explorer", text_align = "left" | "center" | "right"}
-                -- },
-                offsets = {
-                    {
-                        filetype = "undotree",
-                        text = "Undotree",
-                        highlight = "PanelHeading"
-                    },
-                    {
-                        filetype = "DiffviewFiles",
-                        text = "Diff View",
-                        highlight = "PanelHeading"
-                    },
-                    {
-                        filetype = "Outline",
-                        text = "Symbols",
-                        highlight = "PanelHeading"
-                    },
-                    {
-                        filetype = "packer",
-                        text = "Packer",
-                        highlight = "PanelHeading"
-                    }
-                },
-                show_buffer_icons = true,
-                show_buffer_close_icons = false,
-                show_close_icon = false,
-                show_tab_indicators = true,
-                -- persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
-
-                -- can also be a table containing 2 custom separators
-                -- [focused and unfocused]. eg: { '|', '|' }
-                separator_style = "slant",
-                enforce_regular_tabs = true,
-                groups = {
+    utils.prequire("bufferline"):map_ok(
+        function(bufferline)
+            bufferline.setup(
+                {
                     options = {
-                        toggle_hidden_on_enter = true
-                    },
-                    items = {
-                        groups.builtin.ungrouped,
-                        {
-                            name = "Terraform",
-                            matcher = function(buf)
-                                return buf.name:match("%.tf") ~= nil
-                            end
+                        mode = "buffers",
+                        numbers = function(opts)
+                            return ("%s"):format(opts.raise(opts.ordinal))
+                        end,
+                        close_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
+                        right_mouse_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
+                        left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
+                        middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
+                        indicator_icon = "▎",
+                        buffer_close_icon = "",
+                        modified_icon = "●",
+                        close_icon = "",
+                        left_trunc_marker = "",
+                        right_trunc_marker = "",
+                        max_name_length = 20,
+                        max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+                        tab_size = 20,
+                        name_formatter = name_formatter,
+                        diagnostics = "coc", -- false
+                        diagnostics_indicator = diagnostics_indicator,
+                        diagnostics_update_in_insert = false,
+                        custom_filter = custom_filter,
+                        -- offsets = {
+                        --   {filetype = "NvimTree", text = "File Explorer", text_align = "left" | "center" | "right"}
+                        -- },
+                        offsets = {
+                            {
+                                filetype = "undotree",
+                                text = "Undotree",
+                                highlight = "PanelHeading"
+                            },
+                            {
+                                filetype = "DiffviewFiles",
+                                text = "Diff View",
+                                highlight = "PanelHeading"
+                            },
+                            {
+                                filetype = "Outline",
+                                text = "Symbols",
+                                highlight = "PanelHeading"
+                            },
+                            {
+                                filetype = "packer",
+                                text = "Packer",
+                                highlight = "PanelHeading"
+                            }
                         },
-                        {
-                            highlight = {guisp = "#51AFEF", gui = "underline"},
-                            name = "tests",
-                            icon = "",
-                            matcher = function(buf)
-                                return buf.filename:match("_spec") or buf.filename:match("_test")
-                            end
-                        },
-                        {
-                            name = "docs",
-                            icon = "",
-                            matcher = function(buf)
-                                for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
-                                    if ext == fn.fnamemodify(buf.path, ":e") then
-                                        return true
-                                    end
-                                end
-                            end
-                        }
-                    }
-                }
+                        show_buffer_icons = true,
+                        show_buffer_close_icons = false,
+                        show_close_icon = false,
+                        show_tab_indicators = true,
+                        -- persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
 
-                -- always_show_bufferline = true
-                -- sort_by = 'relative_directory'
-            },
-            highlights = require("kimbox.bufferline").theme()
-        }
+                        -- can also be a table containing 2 custom separators
+                        -- [focused and unfocused]. eg: { '|', '|' }
+                        separator_style = "slant",
+                        enforce_regular_tabs = true,
+                        groups = {
+                            options = {
+                                toggle_hidden_on_enter = true
+                            },
+                            items = {
+                                groups.builtin.ungrouped,
+                                {
+                                    name = "Terraform",
+                                    matcher = function(buf)
+                                        return buf.name:match("%.tf") ~= nil
+                                    end
+                                },
+                                {
+                                    highlight = {guisp = "#418292", gui = "underline"},
+                                    name = "tests",
+                                    icon = "",
+                                    matcher = function(buf)
+                                        return buf.filename:match("_spec") or buf.filename:match("_test")
+                                    end
+                                },
+                                {
+                                    name = "docs",
+                                    icon = "",
+                                    matcher = function(buf)
+                                        for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
+                                            if ext == fn.fnamemodify(buf.path, ":e") then
+                                                return true
+                                            end
+                                        end
+                                    end
+                                }
+                            }
+                        }
+
+                        -- always_show_bufferline = true
+                        -- sort_by = 'relative_directory'
+                    },
+                    highlights = require("kimbox.bufferline").theme()
+                }
+            )
+        end
     )
 end
 
@@ -186,7 +190,17 @@ end
 function M.bufdelete()
     local bufnr = api.nvim_get_current_buf()
     ex.bp()
-    require("bufdelete").bufdelete(bufnr)
+    utils.prequire("bufdelete"):map_ok(
+        function(bd)
+            bd.bufdelete(bufnr)
+        end
+    ):unwrap_or(
+        function()
+            vim.cmd(("bp | bd %s"):format(bufnr))
+        end
+    )
+
+    -- require("bufdelete").bufdelete(bufnr)
 end
 
 local function init_hl()

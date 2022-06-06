@@ -5,7 +5,7 @@ local map = utils.map
 
 local api = vim.api
 
-local autopairs = utils.prequire("nvim-autopairs")
+local autopairs = require("nvim-autopairs")
 local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
@@ -39,7 +39,7 @@ local opt = {
     check_ts = true,
     ts_config = {
         lua = {"string", "source"},
-        javascript = {"string", "template_string"}
+        -- javascript = {"string", "template_string"}
     }
 }
 
@@ -138,11 +138,11 @@ function M.rules()
         ):with_cr(cond.none()):with_del(cond.none()):use_key("]")
     }
 
-    autopairs.add_rule(
-        Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(true):set_end_pair_length(
-            2
-        )
-    )
+    -- autopairs.add_rule(
+    --     Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(true):set_end_pair_length(
+    --         2
+    --     )
+    -- )
 
     autopairs.add_rule(Rule("$", "$", "tex"))
 
@@ -177,10 +177,6 @@ function M.rules()
             Rule("(", ")", {"rust"}),
             -- Allow matching closure pipes in rust
             -- Rule("|", "|", {"rust"}),
-            -- Allows matching {} in strings
-            Rule("{", "}", {"rust", "javascript", "typescript", "php", "python"}):with_pair(
-                ts_conds.is_ts_node({"string"})
-            )
         }
     )
 

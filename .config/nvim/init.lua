@@ -263,14 +263,15 @@ vim.schedule(
                     "coc-tabnine",
                     "coc-tag",
                     "coc-toml",
-                    "coc-tsserver",
-                    "coc-eslint",
                     "coc-vimlsp",
                     "coc-vimtex",
                     "coc-xml",
                     "coc-yaml",
                     "coc-yank",
-                    "coc-zig"
+                    "coc-zig",
+                    "coc-tsserver",
+                    "coc-eslint",
+                    -- "coc-tslint",
                 }
 
                 g.coc_enable_locationlist = 0
@@ -279,19 +280,19 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        augroup(
-                            "CocFzfLocation",
-                            {
-                                event = "User",
-                                pattern = "CocLocationsChange",
-                                nested = true,
-                                command = function()
-                                    return true
-                                end
-                            }
-                        )
+                        -- augroup(
+                        --     "CocFzfLocation",
+                        --     {
+                        --         event = "User",
+                        --         pattern = "CocLocationsChange",
+                        --         nested = true,
+                        --         command = function()
+                        --             return true
+                        --         end
+                        --     }
+                        -- )
 
-                        -- cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )
 

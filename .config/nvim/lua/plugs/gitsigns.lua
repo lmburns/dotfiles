@@ -67,7 +67,7 @@ local function mappings(bufnr)
         function()
             gs.stage_hunk {fn.line("."), fn.line("v")}
         end,
-        {buffer = bufnr}
+        {buffer = bufnr, desc = "Stage hunk"}
     )
 
     map(
@@ -76,7 +76,7 @@ local function mappings(bufnr)
         function()
             gs.reset_hunk {fn.line("."), fn.line("v")}
         end,
-        {buffer = bufnr}
+        {buffer = bufnr, desc = "Reset hunk"}
     )
 
     -- bmap(bufnr, "x", "<Leader>hu", ":Gitsigns reset_hunk<CR>")
@@ -85,22 +85,8 @@ local function mappings(bufnr)
     -- map(bufnr, "n", "<Leader>hQ", "<Cmd>Gitsigns setqflist all<CR>")
     -- map(bufnr, "n", "<Leader>hq", "<Cmd>Gitsigns setqflist<CR>")
 
-    map(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>")
-    map(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>")
-
-    wk.register(
-        {
-            ["ih"] = "Git hunk"
-        },
-        {mode = "o"}
-    )
-
-    wk.register(
-        {
-            ["ih"] = "Git hunk"
-        },
-        {mode = "x"}
-    )
+    map(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
+    map(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
 end
 
 function M.setup()

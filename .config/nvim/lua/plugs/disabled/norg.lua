@@ -1,6 +1,6 @@
 local M = {}
 
-local neorg = require("common.utils").prequire("neorg")
+local neorg = require("neorg")
 local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
 
 function M.setup()

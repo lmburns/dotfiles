@@ -134,6 +134,91 @@ function M.listish()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                          Crates                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.crates()
+    local crates = require("crates")
+
+    crates.setup(
+        {
+            smart_insert = true,
+            insert_closing_quote = true,
+            avoid_prerelease = true,
+            autoload = true,
+            autoupdate = true,
+            loading_indicator = true,
+            date_format = "%Y-%m-%d",
+            disable_invalid_feature_diagnostic = false
+        }
+    )
+
+    augroup(
+        "lmb__CratesBindings",
+        {
+            event = "BufEnter",
+            pattern = "Cargo.toml",
+            command = function()
+                local bufnr = nvim.get_current_buf()
+                map(
+                    "n",
+                    "<Leader>ca",
+                    function()
+                        crates.upgrade_all_crates()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cu",
+                    function()
+                        crates.upgrade_crate()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>ch",
+                    function()
+                        crates.open_homepage()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cr",
+                    function()
+                        crates.open_repository()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cd",
+                    function()
+                        crates.open_documentation()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["<Leader>ca"] = "Upgrade all crates",
+                        ["<Leader>cu"] = "Upgrade crate",
+                        ["<Leader>ch"] = "Open homepage",
+                        ["<Leader>cr"] = "Open repository",
+                        ["<Leader>cd"] = "Open documentation"
+                    }
+                )
+            end
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                       PackageInfo                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.package_info()
@@ -158,11 +243,68 @@ function M.package_info()
         }
     )
 
+    local pi = require("package-info")
+
     command(
         "PackageInfo",
         function()
             require("package-info").show()
         end
+    )
+
+    augroup(
+        "lmb__PackageInfoBindings",
+        {
+            event = "BufEnter",
+            pattern = "package.json",
+            command = function()
+                local bufnr = nvim.get_current_buf()
+                map(
+                    "n",
+                    "<Leader>cu",
+                    function()
+                        pi.update()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>ci",
+                    function()
+                        pi.install()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>ch",
+                    function()
+                        pi.change_version()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                map(
+                    "n",
+                    "<Leader>cr",
+                    function()
+                        pi.reinstall()
+                    end,
+                    {buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["<Leader>cu"] = "Update package",
+                        ["<Leader>ci"] = "Install package",
+                        ["<Leader>ch"] = "Change version",
+                        ["<Leader>cr"] = "Reinstall package"
+                    }
+                )
+            end
+        }
     )
 end
 
@@ -222,6 +364,21 @@ function M.persistence()
             dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
             options = {"buffers", "curdir", "tabpages", "winsize"}
         }
+    )
+
+    command(
+        "RestoreSessionCWD",
+        function()
+            require("persistence").load()
+        end,
+        {nargs = 0}
+    )
+    command(
+        "RestoreSession",
+        function()
+            require("persistence").load({last = true})
+        end,
+        {nargs = 0}
     )
 end
 
@@ -626,6 +783,7 @@ function M.hlslens()
         [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]] ..
             [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
     )
+    -- plug
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
     map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
@@ -701,7 +859,8 @@ function M.sandwhich()
         }
     }
 
-    ex.runtime("macros/sandwich/keymap/surround.vim")
+    cmd("runtime macros/sandwich/keymap/surround.vim")
+    -- ex.runtime("macros/sandwich/keymap/surround.vim")
 
     cmd [[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
@@ -854,8 +1013,6 @@ function M.sandwhich()
             ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"}
         }
     )
-
-    -- map("n", "mlw", "yss`", {noremap = false})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -944,7 +1101,8 @@ function M.targets()
             ["in"] = "Next object",
             ["im"] = "Previous object",
             ["an"] = "Next object",
-            ["am"] = "Previous object"
+            ["am"] = "Previous object",
+            ["@"] = "Closest object"
         },
         {mode = "o"}
     )
@@ -997,6 +1155,7 @@ function M.matchup()
     -- g.matchup_matchparen_hi_surround_always = 1
     -- g.matchup_override_vimtex = 1
     -- g.matchup_delim_start_plaintext = 0
+
     map("o", "%", "]%")
     -- map("o", "%", "<Plug>(matchup-%)")
 end
@@ -1497,91 +1656,6 @@ function M.abolish()
             ["rt"] = "Title case"
         },
         {mode = "o"}
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Crates                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.crates()
-    local crates = require("crates")
-
-    crates.setup(
-        {
-            smart_insert = true,
-            insert_closing_quote = true,
-            avoid_prerelease = true,
-            autoload = true,
-            autoupdate = true,
-            loading_indicator = true,
-            date_format = "%Y-%m-%d",
-            disable_invalid_feature_diagnostic = false
-        }
-    )
-
-    augroup(
-        "lmb__CratesBindings",
-        {
-            event = "BufEnter",
-            pattern = "Cargo.toml",
-            command = function()
-                local bufnr = nvim.get_current_buf()
-                map(
-                    "n",
-                    "<Leader>ca",
-                    function()
-                        crates.upgrade_all_crates()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cu",
-                    function()
-                        crates.upgrade_crate()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>ch",
-                    function()
-                        crates.open_homepage()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cr",
-                    function()
-                        crates.open_repository()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cd",
-                    function()
-                        crates.open_documentation()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                wk.register(
-                    {
-                        ["<Leader>ca"] = "Upgrade all crates",
-                        ["<Leader>cu"] = "Upgrade crate",
-                        ["<Leader>ch"] = "Open homepage",
-                        ["<Leader>cr"] = "Open repository",
-                        ["<Leader>cd"] = "Open documentation"
-                    }
-                )
-            end
-        }
     )
 end
 

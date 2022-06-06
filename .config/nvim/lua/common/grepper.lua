@@ -35,7 +35,7 @@ function M.vg_motion(motion)
 end
 
 map("n", "go", [[:lua R('common.grepper').vg_motion()<CR>]], {desc = "Grep current file"})
-map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<cr>]], {desc = "Grep current file"})
+map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<CR>]], {desc = "Grep current file"})
 
 -- Credit: gbprod/substitute.nvim
 ---Turn region markers into text
@@ -62,8 +62,10 @@ end
 ---@return table
 function M.get_regions(vmode)
     if vmode == utils.termcodes["<c-v>"] then
-        local start = api.nvim_buf_get_mark(0, "<")
-        local finish = api.nvim_buf_get_mark(0, ">")
+        local start = nvim.buf.get_mark(0, "<")
+        local finish = nvim.buf.get_mark(0, ">")
+        -- local start = api.nvim_buf_get_mark(0, "<")
+        -- local finish = api.nvim_buf_get_mark(0, ">")
 
         local regions = {}
 
@@ -89,8 +91,8 @@ function M.get_regions(vmode)
         start_mark, end_mark = "<", ">"
     end
 
-    local start = api.nvim_buf_get_mark(0, start_mark)
-    local finish = api.nvim_buf_get_mark(0, end_mark)
+    local start = nvim.buf.get_mark(0, start_mark)
+    local finish = nvim.buf.get_mark(0, end_mark)
     local end_row_len = fn.getline(finish[1]):len() - 1
 
     return {
@@ -109,7 +111,8 @@ end
 
 ---Show grep results in telescope
 ---@param type string
-M.telescope_grep = function(type)
+---@param only_curr boolean grep only current buffer
+M.telescope_grep = function(type, only_curr)
     -- local saved_unnamed_register = fn.getreg("@@")
     if type:match("v") then
         vim.cmd([[normal! `<v`>y]])
@@ -119,22 +122,36 @@ M.telescope_grep = function(type)
         return
     end
 
-    require("telescope.builtin").grep_string(
-        {
-            layout_strategy = "vertical",
-            layout_config = {prompt_position = "top"},
-            sorting_strategy = "ascending",
-            search_dirs = {fn.expand("%:p:h")},
-            search = fn.getreg("@@")
-        }
-    )
+    local curr = fn.expand("%:p")
+    local cwd = fn.expand("%:p:h")
+    local root = require("common.gittool").root(cwd)
+    ex.lcd(cwd)
+
+    local opts = {
+        layout_strategy = "vertical",
+        layout_config = {prompt_position = "top"},
+        sorting_strategy = "ascending",
+        search_dirs = {only_curr and curr or (#root == 0 and cwd or root)},
+        search = fn.getreg("@@")
+    }
+
+    require("telescope.builtin").grep_string(opts)
 
     -- nvim.reg["@@"] = saved_unnamed_register
     -- fn.setreg("@@", saved_unnamed_register)
 end
 
+---Show grep results of the current buffer in telescope
+---@param type string
+M.telescope_grep_current_buffer = function(type)
+    M.telescope_grep(type, true)
+end
+
 map("n", "gt", [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep<cr>g@]])
 map("x", "gt", [[:call v:lua.R'common.grepper'.telescope_grep(visualmode())<cr>]])
+
+map("n", "gT", [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep_current_buffer<cr>g@]])
+map("x", "gT", [[:call v:lua.R'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]])
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Alternative Grep                     │

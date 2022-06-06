@@ -62,6 +62,25 @@ function M.hijack_synset()
     end
 end
 
+-- function M.get_current_node(node_name, linenr)
+--     vim.validate {
+--         node_name = { node_name, 'string' },
+--         linenr = { linenr, 'number', true },
+--     }
+--     local cursor = nvim.win.get_cursor(0)
+--     linenr = linenr or cursor[1]
+--
+--     local func_list = M.list_nodes(node_name)
+--
+--     for idx, func in ipairs(func_list) do
+--         if is_in_range(linenr, { func[2], func[3] }) then
+--             return func_list[idx]
+--         end
+--     end
+--
+--     return nil
+-- end
+
 M.setup_hlargs = function()
     ex.packadd("hlargs.nvim")
 

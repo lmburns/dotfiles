@@ -1,7 +1,5 @@
 local M = {}
 
-require("dev")
-require("common.utils")
 local fzf_lua = require("fzf-lua")
 
 function M.setup()
@@ -699,7 +697,7 @@ function init()
             ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
             ["<Leader>tl"] = {":lua require('fzf-lua').tabs()<CR>", "Location list (fzf-lua)"},
             ["<LocalLeader>e"] = {":lua require('fzf-lua').live_grep()<CR>", "Live grep (fzf-lua)"},
-            ["<LocalLeader>h"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
+            ["<Leader>hh"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
             ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Help tags (fzf-lua)"},
             ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
@@ -707,10 +705,12 @@ function init()
             ["<C-l>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
+            -- I prefer oldfiles with FZF, but buffers aren't added immediately
             -- ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
-            ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Files (fzf-lua)"},
-            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files (fzf-lua)"},
+            ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
+            ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Git/Files (fzf-lua)"},
+            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
         }
     )
 

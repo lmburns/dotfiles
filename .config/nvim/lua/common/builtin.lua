@@ -1,5 +1,8 @@
 local M = {}
 
+-- TODO: Create a statusline changelist showing current change/total
+-- TODO: Create a statusline jumplist showing current jump/total
+
 local utils = require("common.utils")
 -- local dev = require("dev")
 
@@ -104,7 +107,7 @@ function M.spell2qf()
         cmd("norm! ]syw")
         local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
         -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))
-        line = iline
+        line = ilnum
         table.insert(mistakes, {bufnr = bufnr, lnum = ilnum, col = icol, text = fn.getreg('"')})
     end
 

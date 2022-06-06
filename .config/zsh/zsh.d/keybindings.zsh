@@ -191,7 +191,7 @@ declare -gA keybindings; keybindings=(
   'Esc-f'                 list-keys             # list keybindings in mode
   'M-r'                   per-dir-fzf
   'M-S-R'                 fzf-history-widget
-  'M-o'                   clipboard-fzf            # greenclip fzf
+  'C-o'                   clipboard-fzf            # greenclip fzf
   'M-p'                   pw                    # fzf pueue
   'M-u'                   __unicode_translate   # translate 0000 to unicode
   'M-x'                   cd-fzf-ghqlist-widget # cd ghq fzf
@@ -236,7 +236,7 @@ declare -gA keybindings; keybindings=(
   'mode=viins jk'         vi-cmd-mode
   'mode=viins kj'         vi-cmd-mode
   'mode=visual S'         add-surround
-  'mode=str C-o'          lc                 # lf change dir
+  'mode=str M-o'          lc                 # lf change dir
   'mode=str M-S-O'        lfub               # lf ueberzug
   'mode=str C-u'          lf                 # regular lf
   'mode=str ;o'           noptions           # edit zsh options

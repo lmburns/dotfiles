@@ -1,0 +1,37 @@
+#compdef tsc
+
+# zsh completions for 'tsc'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--help,-h}'[print this message.]'
+  {--watch,-w}'[watch input files.]'
+  '--all[show all compiler options.]'
+  {--version,-v}'[print the compilers version.]'
+  '--init[initializes a TypeScript project and creates a tsconfig.json file.]'
+  {--project,-p}'[compile the project given the path to its configuration file, or to a folder with a tsconfig.json.]'
+  {--build,-b}'[build one or more projects and their dependencies, if out of date]'
+  '--showConfig[print the final configuration instead of building.]'
+  '--pretty[enable color and formatting in TypeScripts output to make compiler errors easier to read]'
+  {--target,-t}'[set the JavaScript language version for emitted JavaScript and include compatible library declarations.]'
+  {--module,-m}'[specify what module code is generated.]'
+  '--lib[specify a set of bundled library declaration files that describe the target runtime environment.]'
+  '--allowJs[allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files.]'
+  '--checkJs[enable error reporting in type-checked JavaScript files.]'
+  '--jsx[specify what JSX code is generated.]'
+  {--declaration,-d}'[generate .d.ts files from TypeScript and JavaScript files in your project.]'
+  '--declarationMap[create sourcemaps for d.ts files.]'
+  '--emitDeclarationOnly[only output d.ts files and not JavaScript files.]'
+  '--sourceMap[create source map files for emitted JavaScript files.]'
+  '--outFile[specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output.]'
+  '--outDir[specify an output folder for all emitted files.]'
+  '--removeComments[disable emitting comments.]'
+  '--noEmit[disable emitting files from a compilation.]'
+  '--strict[enable all strict type-checking options.]'
+  '--types[specify type package names to be included without being referenced in a source file.]'
+  '--esModuleInterop[emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

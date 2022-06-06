@@ -79,7 +79,8 @@ M.start_job = function(cmd, opts)
     )
 
     if opts.input then
-        fn.chansend(id, opts.input)
+        api.nvim_chan_send(id, opts.input)
+        -- fn.chansend(id, opts.input)
         fn.chanclose(id, "stdin")
     end
 
@@ -115,8 +116,6 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Print a value in lua
----@param v
----@return
 M.inspect = function(v)
     local s
     local t = type(v)
@@ -156,19 +155,6 @@ M.inspect2 = function(...)
     return ret
 end
 
-function M.inspect2(...)
-    local args = {...}
-    -- need to wrap this in a vim.schedule else you will encounter a segment fault when using the function inside a coroutine
-    vim.schedule(
-        function()
-            for _, x in ipairs(args) do
-                print(vim.inspect(x))
-            end
-        end
-    )
-end
-
--- Print text nicely (newline)
 _G.pln = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}

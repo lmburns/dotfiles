@@ -418,7 +418,6 @@ map(
 -- Not have to wait for normal o/O command
 map("n", "oa", "<cmd>norm! O<CR>i")
 map("n", "os", "<cmd>norm! o<CR>i")
-
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()
     local bufnr = api.nvim_get_current_buf()

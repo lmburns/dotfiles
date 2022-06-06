@@ -75,3 +75,7 @@ PS1+='\[\e[31m\]$(propmt_dirt)'   # git status red
 PS1+='\[\e[33m\]$(prompt_closingBracket)\n'   # git closing bracket brown
 PS1+='\[\e[32m\]└─>' # next line indicator green
 PS1+='\[\e[m\] ' # end of prompt clear the color
+
+export NVM_DIR="$HOME/.config/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

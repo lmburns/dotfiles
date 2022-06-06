@@ -3,21 +3,21 @@
 --    Email: burnsac@me.com
 --  Created: 2022-03-26 15:02
 -- ==========================================================================
--- local utils = require("common/utils")
--- local command = utils.command
--- local autocmd = utils.autocmd
--- local map = utils.map
+local fn = vim.fn
+local uv = vim.loop
 
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
 if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
+local ex = nvim.ex
+
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
 packer.on_compile_done = function()
-    local fp = assert(io.open(packer.config.compile_path, "rw+"))
+    local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
     local key_state = 0
     for line in fp:lines() do
@@ -51,31 +51,6 @@ packer.on_compile_done = function()
 
     fp:close()
 end
-
--- Plugin layout
--- {
--- "kevinhwang91/rnvimr",
---   config = "require('plugs.rnvimr')",
---   diff = <function 1>,
---   disable = false,
---   get_rev = <function 2>,
---   install_path = "/home/lucas/.local/share/nvim/site/pack/packer/start/rnvimr",
---   installer = <function 3>,
---   keys = { "gxx", "gx", "<C-\\>" },
---   manual_opt = true,
---   name = "kevinhwang91/rnvimr",
---   opt = false,
---   patch = "~/.config/nvim/patches/",
---   path = "kevinhwang91/rnvimr",
---   remote_url = <function 4>,
---   revert_last = <function 5>,
---   revert_to = <function 6>,
---   rocks = "mpack",
---   short_name = "rnvimr",
---   type = "git",
---   updater = <function 7>,
---   url = "https://github.com/kevinhwang91/rnvimr.git"
--- }
 
 packer.init(
     {
@@ -264,6 +239,7 @@ return packer.startup(
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use(
                 {
                     "vim-scripts/UnconditionalPaste",
@@ -272,7 +248,7 @@ return packer.startup(
                         -- These have been removed from my patch
                         -- {"n", "g]]p"}, -- Messes up packer compiled; Paste linewise with more indent
                         -- {"n", "g]]P"},
-                        -- {"n", "g>p"}, -- Paste lines with count times 'shiftwidth indnt'
+                        -- {"n", "g>p"}, -- Paste lines with count times 'shiftwidth indent'
                         -- {"n", "g>P"},
                         -- {"n", "g#p"}, -- Paste linewise as commented text
                         -- {"n", "g#P"},
@@ -441,6 +417,7 @@ return packer.startup(
                 }
             )
 
+            -- rmagatti/auto-session
             -- use({"Shatur/neovim-session-manager", event = "BufReadPre", conf = "session_manager"})
             -- ]]] === Session ===
 
@@ -520,7 +497,7 @@ return packer.startup(
                 {
                     "akinsho/toggleterm.nvim",
                     conf = "plugs.neoterm",
-                    keys = {"gxx", "gx", "<C-\\>"},
+                    keys = {"gzo", "gzz", "<C-\\>"},
                     cmd = {"T", "TR", "TP", "VT"}
                 }
             )
@@ -1046,15 +1023,15 @@ return packer.startup(
             )
 
             -- FIX: TOC is written each time
-            use(
-                {
-                    "SidOfc/mkdx",
-                    ft = {"markdown", "vimwiki"},
-                    config = function()
-                        vim.cmd("source " .. fn.stdpath("config") .. "/vimscript/plugins/mkdx.vim")
-                    end
-                }
-            )
+            -- use(
+            --     {
+            --         "SidOfc/mkdx",
+            --         ft = {"markdown", "vimwiki"},
+            --         config = function()
+            --             vim.cmd("source " .. fn.stdpath("config") .. "/vimscript/plugins/mkdx.vim")
+            --         end
+            --     }
+            -- )
 
             use({"vimwiki/vimwiki", conf = "vimwiki", after = colorscheme})
             use({"FraserLee/ScratchPad", conf = "scratchpad"})
@@ -1187,8 +1164,7 @@ return packer.startup(
                     "folke/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
-                    after = "telescope.nvim",
-                    opt = false
+                    after = "telescope.nvim"
                 }
             )
             -- ]]] === Highlight ===
@@ -1520,7 +1496,7 @@ return packer.startup(
                     cmd = {"Flog", "Flogsplit"},
                     keys = {
                         {"n", "<Leader>gl"},
-                        {"n", "<Leader>gf"}
+                        {"n", "<Leader>gi"}
                     },
                     requires = "tpope/vim-fugitive",
                     conf = "plugs.flog"
@@ -1549,9 +1525,8 @@ return packer.startup(
                 {
                     "ruanyl/vim-gh-line",
                     keys = {
-                        {"n", "<Leader>gO"},
-                        {"n", "<Leader>gL"},
-                        {"x", "<Leader>gL"}
+                        {"n", "<Leader>go"},
+                        {"n", "<Leader>gL"}
                     },
                     setup = [[vim.g.gh_line_blame_map_default = 0]],
                     conf = "ghline"

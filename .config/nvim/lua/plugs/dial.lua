@@ -1,7 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
-local augend = utils.prequire("dial.augend")
+local augend = require("dial.augend")
 local dmap = require("dial.map")
 
 local augroup = utils.augroup

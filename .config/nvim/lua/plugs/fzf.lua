@@ -669,7 +669,8 @@ local function init()
             -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
             ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
             ["<Leader>hf"] = {":History<CR>", "File history (fzf)"},
-            ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "Command history (fzf)"},
+            ["<Leader>hc"] = {":History:<CR>", "File history (fzf)"},
+            -- ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "Command history (fzf)"},
             ["<Leader>ls"] = {":LS<CR>", "LS (fzf)"}
         }
     )

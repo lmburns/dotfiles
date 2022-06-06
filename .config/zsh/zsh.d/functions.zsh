@@ -235,13 +235,23 @@ function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
 function rmspace() { f2 -f '\s' -r '_' -RF $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 
+# ============================= Typescript ===========================
+# ====================================================================
+# Hardlink relevant files to a Rust project
+function linkts() {
+  command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
+  command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
+  command ln -v $XDG_CONFIG_HOME/typescript/tsconfig.json $PWD/tsconfig.json
+  # command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
+}
+
 # ================================ Rust ==============================
 # ====================================================================
 # Hardlink relevant files to a Rust project
 function linkrust() {
   command ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
-  command ln -v $HOME/projects/rust/rustfmt.toml $PWD/rustfmt.toml
-  command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
+  command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
+  command cp -v $XDG_CONFIG_HOME/rust/pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }
 
 function cargo-bin() {

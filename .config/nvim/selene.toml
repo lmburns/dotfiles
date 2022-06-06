@@ -1,0 +1,4 @@
+std = "lua52+vim"
+
+[rules]
+multiple_statements = "allow"

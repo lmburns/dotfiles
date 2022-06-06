@@ -106,7 +106,7 @@ augroup(
                 nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
                     cmd("norm! zz")
-                    -- ex.normal_("zz")
+                -- ex.normal_("zz")
                 end
             end
         end
@@ -463,6 +463,7 @@ local smart_close_filetypes = {
     "LuaTree",
     "log",
     "tsplayground",
+    "floggraph",
     "vista",
     "aerial", -- has its own mapping but is slow
     "scratchpad"
@@ -472,6 +473,10 @@ local function smart_close()
     if fn.winnr("$") ~= 1 then
         api.nvim_win_close(0, true)
     end
+    -- For floggraph
+    -- if fn.tabpagewinnr("$") ~= 1 then
+    --     ex.tabc()
+    -- end
 end
 
 nvim.autocmd.lmb__SmartClose = {
@@ -507,7 +512,7 @@ nvim.autocmd.lmb__SmartClose = {
         command = function()
             if vim.bo.filetype ~= "qf" then
                 cmd("sil! lcl")
-                -- ex.silent_("lclose")
+            -- ex.silent_("lclose")
             end
         end,
         desc = "Close loclist when quitting window"
@@ -654,6 +659,9 @@ a.async_void(
 
                         -- Delete trailing blank lines
                         require("common.utils").preserve([[keepj keepp %s#\($\n\s*\)\+\%$##e]])
+
+                        -- Delete trailing blank lines at end of file
+                        -- require("common.utils").preserve([[keepj keepp 0;/^\%(\n*.\)\@!/,$d]])
 
                         -- Delete blank lines if more than 2 in a row
                         -- require("common.utils").squeeze_blank_lines()

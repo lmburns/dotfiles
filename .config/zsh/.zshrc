@@ -456,9 +456,6 @@ zt 0c light-mode binary for \
   wait"$(has tmux)" lbin atclone'./autogen.sh && ./configure --prefix=$ZPFX' \
   make"install PREFIX=$ZPFX" atpull'%atclone' lman \
     tmux/tmux \
-  atclone'local d="$XDG_CONFIG_HOME/tmux/plugins";
-  [[ ! -d "$d" ]] && mkdir -p "$d"; ln -sf %DIR% "$d/tpm"' \
-  atpull'%atclone' \
     tmux-plugins/tpm \
   lbin lman \
     sdushantha/tmpmail \
@@ -472,6 +469,11 @@ zt 0c light-mode binary for \
     molovo/zunit \
   lbin mv"*.*completion -> _revolver" \
     molovo/revolver
+
+# atclone'local d="$XDG_CONFIG_HOME/tmux/plugins";
+# [[ ! -d "$d" ]] && mkdir -p "$d"; ln -sf %DIR% "$d/tpm"' \
+# atpull'%atclone' \
+#   tmux-plugins/tpm \
 
 #  ]]] === wait'0c' - programs - sourced ===
 
@@ -1230,6 +1232,11 @@ zt 0b light-mode null id-as for \
   export PERLBREW_HOME="${XDG_DATA_HOME}/perl5/perlbrew-h";
   export PERL_CPANM_HOME="${XDG_DATA_HOME}/perl5/cpanm"' \
   atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -f "$x" ] && source "$x"' \
+    zdharma-continuum/null \
+  atinit'
+  export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+  export NVM_COMPLETION=true' \
+  atload'local x="$NVM_DIR/nvm.sh"; [ -s "$x" ] && source "$x"' \
     zdharma-continuum/null \
   atload'export FAST_WORK_DIR=XDG;
   fast-theme XDG:kimbox.ini &>/dev/null' \

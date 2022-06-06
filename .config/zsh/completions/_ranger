@@ -1,0 +1,29 @@
+#compdef ranger
+
+# zsh completions for 'ranger'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--version[show programs version number and exit]'
+  {-h,--help}'[show this help message and exit]'
+  {-d,--debug}'[activate debug mode]'
+  {-c,--clean}'[dont touch/require any config files.]'
+  '--logfile[log file to use, - for stderr]'
+  '--cachedir[change the cache directory.]'
+  {-r,--confdir}'[change the configuration directory.]'
+  '--datadir[change the data directory.]'
+  '--copy-config[copy the default configs to the local config]'
+  '--choosefile[makes ranger act like a file chooser. When opening a]'
+  '--choosefiles[makes ranger act like a file chooser for multiple]'
+  '--choosedir[makes ranger act like a directory chooser. When ranger]'
+  '--selectfile[open ranger with supplied file selected.]'
+  '--show-only-dirs[show only directories, no files or links]'
+  '--list-unused-keys[list common keys which are not bound to any action.]'
+  '--list-tagged-files[list all files which are tagged with the given tag]'
+  '--profile[print statistics of CPU usage on exit.]'
+  '--cmd[execute COMMAND after the configuration has been read.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,10 +1,11 @@
 local M = {}
 
 local wk = require("which-key")
-local map = require("common.utils").map
+-- local map = require("common.utils").map
 
 local g = vim.g
 local fn = vim.fn
+local cmd = vim.cmd
 
 function M.cur_file()
     local has_forest = fn.executable("git-forest") == 1

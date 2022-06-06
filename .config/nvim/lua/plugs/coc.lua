@@ -158,10 +158,8 @@ function M.action(action, ...)
                 args,
                 function(err, res)
                     if err ~= vim.NIL then
-                        vim.notify("ERR")
                         reject(err)
                     else
-                        vim.notify("NORM")
                         if res == vim.NIL then
                             res = nil
                         end
@@ -173,6 +171,8 @@ function M.action(action, ...)
         end
     )
 end
+
+-- R("plugs.coc").runCommand("fzf-preview.Lines"):thenCall(function(value) p(value) end)
 
 function M.runCommand(name, ...)
     return M.action("runCommand", name, ...)
@@ -601,7 +601,7 @@ function M.init()
 
     -- TODO: Prevent having to setup both
     -- An error for lua.filetypes is shown
-    M.sumneko_ls()
+    -- M.sumneko_ls()
     M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
@@ -785,10 +785,7 @@ function M.init()
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-            ["<Leader>jr"] = {
-                ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
-                "Coc diagnostics (current buffer)"
-            },
+            ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics refresh"},
             -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},

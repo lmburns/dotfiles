@@ -18,10 +18,10 @@ function M.setup()
     end
 
     local presets = require("which-key.plugins.presets")
-    presets.operators["gc"] = "Commenter"
+    -- presets.operators["gc"] = "Commenter"
     -- presets.operators["d"] = nil
-    presets.operators['"_d'] = "Delete blackhole"
-    presets.operators["s"] = "Substitute"
+    -- presets.operators['"_d'] = "Delete blackhole"
+    -- presets.operators["s"] = "Substitute"
 
     wk.setup {
         plugins = {
@@ -45,11 +45,12 @@ function M.setup()
         -- NOTE: These are not added
         operators = {
             -- add operators that will trigger motion and text object completion
-            -- gc = "Comments",
+            y = "Yank",
+            gc = "Comments",
             -- ['"_'] = "Blackhole",
-            -- s = "Substitute",
+            s = "Substitute",
             -- ['"_d'] = "Delete (blackhole)",
-            ["d"] = "Delete Me"
+            ["d"] = "Delete"
         },
         key_labels = {},
         icons = {

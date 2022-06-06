@@ -63,8 +63,9 @@
     go_version
     rbenv                   # ruby version from rbenv (https://github.com/rbenv/rbenv)
     perlbrew
-    nvm
-    nodenv
+    # nvm
+    # nodenv
+    nodeenv
     # ${rust_version//(#b)(*)-(*)/$match[1]-${(C)${${match[2]}:0:1}}}
     rust_version            # rustc version (https://www.rust-lang.org)
     # load                  # CPU load
@@ -974,7 +975,7 @@
   # $(nodenv version-name) == $(nodenv global).
   typeset -g POWERLEVEL9K_NODENV_PROMPT_ALWAYS_SHOW=false
   # If set to false, hide node version if it's equal to "system".
-  typeset -g POWERLEVEL9K_NODENV_SHOW_SYSTEM=true
+  typeset -g POWERLEVEL9K_NODENV_SHOW_SYSTEM=false
   # Custom icon.
   # typeset -g POWERLEVEL9K_NODENV_VISUAL_IDENTIFIER_EXPANSION='⭐'
 

@@ -2,6 +2,7 @@
 
 local M = {}
 
+local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
 
@@ -11,23 +12,80 @@ local await = a.await
 
 local api = vim.api
 
+-- require("plenary.strings").align_str(string: any, width: any, right_justify: any)
+-- require("plenary.strings").dedent(str: any, leave_indent: any)
+-- require("plenary.strings").truncate(str: string, len: any, dots: any, direction: any)
+-- require("plenary.strings").strdisplaywidth(string, col)
+
 ---Safely check if a plugin is installed
 ---@param check string Module to check if is installed
----@return table Module
-M.prequire = function(check, opts)
-    opts = opts or {silent = false, ok = false}
+---@return table Result<T, E>
+M.prequire = function(check)
+    opts = opts or {silent = false}
     local ok, ret = pcall(require, check)
-    if not ok and not opts.silent then
-        M.notify(
-            {
-                message = ("%s was sourced but not installed"):format(check),
-                level = log.levels.ERROR
-            }
-        )
-        return nil
+    if ok then
+        return Result.ok(ret)
     end
 
-    return ret
+    -- R("common.utils").prequire("kimbox"):or_else(function(v) p(v) end)
+
+    local dummy = {}
+    setmetatable(
+        dummy,
+        {
+            -- Error has to be unwrapped to be notified
+            __call = function()
+                M.notify(
+                    {
+                        message = "Module is not installed",
+                        title = ("require('%s')"):format(check),
+                        level = log.levels.ERROR
+                    }
+                )
+                return dummy
+            end,
+            __index = function()
+                return dummy
+            end
+        }
+    )
+    return Result.err(dummy)
+end
+
+---Safely check if a plugin is installed
+---@param name string Module to check if is installed
+---@param cb function
+---@return table Module
+M.safe_require = function(name, cb)
+    local ok, ret = pcall(require, name)
+    if ok then
+        if cb and type(cb) == "function" then
+            cb(ret)
+        end
+        return ret
+    else
+        M.notify(
+            {
+                message = ("Invalid module %s"):format(name),
+                level = log.levels.WARN
+            }
+        )
+        -- Return a dummy item that returns functions, so we can do things like
+        -- safe_require("module").setup()
+        local dummy = {}
+        setmetatable(
+            dummy,
+            {
+                __call = function()
+                    return dummy
+                end,
+                __index = function()
+                    return dummy
+                end
+            }
+        )
+        return dummy
+    end
 end
 
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`

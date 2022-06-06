@@ -5,6 +5,9 @@ local funcs = require("functions")
 local map = utils.map
 local command = utils.command
 
+local fn = vim.fn
+local api = vim.api
+
 -- Legendary needs to be called again in this file for the keybindings to register
 -- Not sure why these options only work from here
 require("legendary").setup(
@@ -28,19 +31,25 @@ wk.register(
 )
 
 -- Map '-' to blackhole register
-map("n", "-", '"_')
-map("x", "-", '"_')
+map("n", "-", '"_', {desc = "Black hole register"})
+map("x", "-", '"_', {desc = "Black hole register"})
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
-map("n", "<Backspace>", "<C-^>")
+map("n", "<Backspace>", "<C-^>", {desc = "Alternate file"})
 
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
 -- ╙                                                          ╜
 -- Use qq to record, q to stop, Q to play a macro
 map("n", "Q", "@q")
-map("v", "Q", ":normal @q")
+-- map("v", "Q", ":normal @q")
+map(
+    "x",
+    "@",
+    ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>",
+    {silent = false, desc = "Execute amcro visually"}
+)
 
 -- Use qq to record and stop (only records q)
 map(
@@ -52,7 +61,6 @@ map(
     {expr = true, desc = "Record macro"}
 )
 map("n", "q", "<Nop>", {silent = true})
-map("x", "@", ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>", {silent = false})
 
 -- Repeat last command
 wk.register(
@@ -61,10 +69,9 @@ wk.register(
     }
 )
 
-map({"n", "x"}, "<Leader>2;", "@:")
+map({"n", "x"}, "<Leader>2;", "@:", {desc = "Repeat last command"})
 -- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
--- Easier navigation in normal / visual / operator pending mode
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
 
@@ -104,19 +111,16 @@ wk.register(
         ["U"] = {"<C-r>", "Redo action"},
         [";u"] = {":execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
-        ["gI"] = {":norm! gi<CR>", "Goto last insert spot"},
-        ["g;"] = {":norm! g;<CR>", "Goto previous change"},
-        ["g,"] = {":norm! g,<CR>", "Goto next change"}
+        ["gI"] = {":norm! gi<CR>", "Goto last insert spot"}
+        -- ["g;"] = {":norm! g;<CR>", "Goto previous change"},
+        -- ["g,"] = {":norm! g,<CR>", "Goto next change"}
     }
 )
 
 -- Yank mappings
 wk.register(
     {
-        ["yd"] = {
-            ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>",
-            "Copy directory name"
-        },
+        ["yd"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>", "Copy directory"},
         ["yn"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>", "Copy file name"},
         ["yp"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>", "Copy full path"}
     }
@@ -140,7 +144,7 @@ wk.register(
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
-        ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
+        ["vv"] = {[[^vg_]], "Select entire line (without newline)"}
         -- ["ghp"] = {[[m`o<Esc>p``]], "Paste line below (linewise)"},
         -- ["ghP"] = {[[m`O<Esc>p``]], "Paste line above (linewise)"},
     }
@@ -270,6 +274,10 @@ wk.register(
                 [[<Cmd>lua require('common.win').go2recent()<CR>]],
                 "Focus last buffer"
             },
+            ["X"] = {
+                utils.close_all_floating_wins,
+                "Close all floating windows"
+            },
             ["<C-w>"] = {
                 function()
                     if api.nvim_win_get_config(fn.win_getid()).relative ~= "" then
@@ -309,6 +317,7 @@ wk.register(
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
         ["qC"] = {[[:lua require("common.qfext").conflicts2qf()<CR>]], "Conflicts to quickfix"},
         ["qs"] = {[[:lua require("common.builtin").spellcheck()<CR>]], "Spelling mistakes to quickfix"},
+        ["qz"] = {[[:lua require("common.builtin").changes2qf()<CR>]], "Changes to quickfix"},
         ["qD"] = {
             [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
             "Close diff"
