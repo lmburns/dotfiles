@@ -39,12 +39,18 @@ function M.setup()
         ["f"] = {pattern = [[ \(\S\+(\)\@=]], left_margin = 0, right_margin = 0},
         [">"] = {pattern = table.concat(gt_sign, "\\|")},
         ["<"] = {pattern = table.concat(lt_sign, "\\|")},
-        ["\\"] = {pattern = [[\]]},
-        ["/"] = {
-            pattern = [[//\+\|/\*\|\*/]],
-            delimiter_align = "l",
-            ignore_groups = {"!Comment"}
-        },
+        -- ["\\"] = {pattern = [[\\]]},
+        ["\\"] = {pattern = "\\", left_margin = 1, right_margin = 0},
+        ["/"] = {pattern = [[//\+\|/\*\|\*/]], delimiter_align = "l", ignore_groups = {"!Comment"}},
+        [";"] = {pattern = ";", left_margin = 0},
+        [","] = {pattern = ",", left_margin = 0, right_margin = 1},
+        ["="] = {pattern = [[<\?=>\?]], left_margin = 1, right_margin = 1},
+        ["|"] = {pattern = [[|\?|]], left_margin = 1, right_margin = 1},
+        ["&"] = {pattern = [[&\?&]], left_margin = 1, right_margin = 1},
+        [":"] = {pattern = ":", left_margin = 1, right_margin = 1},
+        ["?"] = {pattern = "?", left_margin = 1, right_margin = 1},
+        ["+"] = {pattern = "+", left_margin = 1, right_margin = 1},
+        ["["] = {pattern = "[", left_margin = 1, right_margin = 0},
         ["]"] = {
             -- pattern = "[[\\]]",
             pattern = [[\]\zs]],
@@ -52,6 +58,7 @@ function M.setup()
             right_margin = 0,
             stick_to_left = 0
         },
+        ["("] = {pattern = "(", left_margin = 0, right_margin = 0},
         [")"] = {
             -- pattern = "[()]",
             pattern = [[)\zs]],

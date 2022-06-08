@@ -10,4 +10,4 @@ endfunction
 nnoremap <buffer> H <Cmd>colder<CR>
 nnoremap <buffer> L <Cmd>cnewer<CR>
 
-setlocal nobuflisted " qf buffers should not pop up when doing :bn or :bp
+" setlocal nobuflisted " qf buffers should not pop up when doing :bn or :bp

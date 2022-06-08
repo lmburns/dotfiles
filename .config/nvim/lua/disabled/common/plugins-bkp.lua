@@ -8,7 +8,6 @@
 --       },
 --     }
 -- )
-
 -- ==> hop
 -- use(
 --     {
@@ -18,16 +17,13 @@
 --       config = conf("sneak"),
 --     }
 -- )
-
 -- ==> dial
 -- use({ "AndrewRadev/switch.vim" })
-
 -- use({
 --   "ThePrimeagen/harpoon",
 --   after = { "telescope.nvim" },
 --   config = conf("plugs.harpoon"),
 -- })
-
 -- use(
 --     {
 --       "https://gitlab.com/yorickpeterse/nvim-pqf",
@@ -36,7 +32,6 @@
 --       config = [[require('pqf').setup()]],
 --     }
 -- )
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           LSP                            │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -63,7 +58,6 @@
 --       end,
 --     }
 -- )
-
 -- ==== Other ===
 -- "RRethy/vim-illuminate"     => Highlight word under cursor
 -- "pechorin/any-jump.vim"     => Definition jumping
@@ -71,7 +65,7 @@
 -- "filipdutescu/renamer.nvim" => Like code action rename
 -- "jubnzv/virtual-types.nvim" => Code lens
 -- "ray-x/sad.nvim"            => Search and replace
-
+-- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
 -- use(
 --     {
 --         "nvim-neorg/neorg",
@@ -80,12 +74,10 @@
 --         requires = {"plenary.nvim", "nvim-neorg/neorg-telescope"}
 --     }
 -- )
-
 -- 'jbyuki/venn.nvim'          => Draw ASCII diagrams in Neovim
 -- '0styx0/abbreinder.nvim'    => Abbreviation reminders
 -- 'mvllow/modes.nvim'         => Highlight cursorline based on mode
 -- 'GustavoKatel/sidebar.nvim' => Sidebar with information
-
 -- use(
 --     {
 --         "windwp/nvim-spectre",
@@ -93,7 +85,6 @@
 --         conf = "spectre"
 --     }
 -- )
-
 -- use(
 --     {
 --       "cutlass/gbprod.nvim",
@@ -110,12 +101,90 @@
 --       -- },
 --     }
 -- )
-
 -- use(
 --     {
 --         "tanvirtin/vgit.nvim",
 --         requires = {"nvim-lua/plenary.nvim"},
 --         conf = "plugs.vgit",
 --         cmd = "VGit"
+--     }
+-- )
+-- use(
+--     {
+--         "vim-scripts/UnconditionalPaste",
+--         patch = true,
+--         keys = {
+--             -- These have been removed from my patch
+--             -- {"n", "g]]p"}, -- Messes up packer compiled; Paste linewise with more indent
+--             -- {"n", "g]]P"},
+--             -- {"n", "g>p"}, -- Paste lines with count times 'shiftwidth indent'
+--             -- {"n", "g>P"},
+--             -- {"n", "g#p"}, -- Paste linewise as commented text
+--             -- {"n", "g#P"},
+--             -- {"n", "gBp"}, -- Paste minimal fitting block
+--             -- {"n", "gBP"},
+--             -- {"n", "gqbp"}, -- Query for separator string, then paste minimal block
+--             -- {"n", "gBP"},
+--             -- {"n", "g,p"}, -- Paste charwise with each line delimited by ','
+--             -- {"n", "g,P"},
+--             -- {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
+--             -- {"n", "g,'P"},
+--             -- {"n", "gqp"}, -- Query for separator string, paste charwise
+--             -- {"n", "gqP"}
+--
+--             {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
+--             {"n", "gcP"},
+--             {"n", "glp"}, -- Paste linewise (even if not complete)
+--             {"n", "glP"},
+--             {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
+--             {"n", "gbP"},
+--             {"n", "gap"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
+--             {"n", "g]p"}, -- Paste linewise above (like glp but adjust indent)
+--             {"n", "g]P"},
+--             {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
+--             {"n", "g[P"},
+--             {"n", "gsp"}, -- Paste with [count] spaces around lines
+--             {"n", "gsP"}
+--         }
+--     }
+-- )
+-- Needs modified to change transparent background
+-- use({"Mofiqul/vscode.nvim"})
+-- use({"FrenzyExists/aquarium-vim"})
+-- use({"yashguptaz/calvera-dark.nvim"})
+-- use({"andersevenrud/nordic.nvim"})
+-- use({"aktersnurra/no-clown-fiesta.nvim"})
+-- use({"pwntester/nautilus.nvim"})
+-- use({"doums/darcula"})
+-- use({"ray-x/aurora"})
+-- use({"shaunsingh/nord.nvim"})
+-- use({"katawful/kat.nvim"})
+-- use({"daschw/leaf.nvim"})
+-- use({"Domeee/mosel.nvim"})
+-- use({"lewpoly/sherbet.nvim"})
+-- use({"projekt0n/github-nvim-theme"})
+-- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
+-- use({"kvrohit/substrata.nvim"})
+-- use({"numToStr/Sakura.nvim"})
+-- use({"fcpg/vim-farout"})
+-- use({"tyrannicaltoucan/vim-quantum"})
+-- use({"b4skyx/serenade"})
+-- use({"AlessandroYorba/Alduin"})
+-- use({ "olimorris/onedarkpro.nvim" })
+-- use({ "kaicataldo/material.vim" })
+-- use(
+--     {
+--       "puremourning/vimspector",
+--       setup = [[vim.g.vimspector_enable_mappings = 'HUMAN']],
+--       disable = true,
+--     }
+-- )
+
+-- use(
+--     {
+--         "AckslD/nvim-neoclip.lua",
+--         requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
+--         after = {"telescope.nvim", "sqlite.lua"},
+--         conf = "plugs.nvim-neoclip"
 --     }
 -- )

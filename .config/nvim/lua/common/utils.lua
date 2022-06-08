@@ -10,6 +10,7 @@ local a = require("plenary.async_lib")
 local async = a.async
 local await = a.await
 
+local ex = nvim.ex
 local api = vim.api
 
 -- require("plenary.strings").align_str(string: any, width: any, right_justify: any)

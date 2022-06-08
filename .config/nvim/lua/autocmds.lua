@@ -5,6 +5,8 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
+local ex = nvim.ex
+
 local C = require("common.color")
 
 -- === Highlight Disable === [[[
@@ -396,10 +398,18 @@ nvim.autocmd.lmb__Help = {
                     return
                 end
 
-                local width = math.floor(vim.o.columns * 0.75)
-                cmd("wincmd L")
-                cmd("vertical resize " .. width)
-                map("n", "qq", "q", {cmd = true, buffer = bufnr})
+                -- FIX: Quickfix opening in help and then closing it causes error
+                -- This doesn't work, but it is a start and something to come back to
+                local previous = fn.bufnr("$")
+                local bufinfo = fn.getbufinfo(previous)
+                -- p(bufinfo)
+
+                if not bufinfo.bqf_enabled then
+                    local width = math.floor(vim.o.columns * 0.75)
+                    cmd("wincmd L")
+                    cmd("vertical resize " .. width)
+                    map("n", "qq", "q", {cmd = true, buffer = bufnr})
+                end
             end
         end,
         desc = "Equalize and create mapping for help pages"

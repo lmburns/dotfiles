@@ -144,7 +144,7 @@ M.setup_aerial = function()
         {
             -- Priority list of preferred backends for aerial.
             -- This can be a filetype map (see :help aerial-filetype-map)
-            backends = {"treesitter", "markdown"},
+            backends = {"treesitter", "lsp", "markdown"},
             -- Enum: persist, close, auto, global
             --   persist - aerial window will stay open until closed
             --   close   - aerial window will close when original file is no longer visible

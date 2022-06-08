@@ -859,35 +859,7 @@ function M.init()
     map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
     -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true, silent = true})
 
-    -- map(
-    --     "i",
-    --     "<Tab>",
-    --     [[pumvisible() ? coc#_select_confirm() : ]] ..
-    --         [[coc#expandableOrJumpable() ? ]] ..
-    --             [["\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" : ]] ..
-    --                 [[v:lua.require'plugs.coc'.check_backspace() ? "\<TAB>" : ]] .. [[coc#refresh()]],
-    --     {expr = true, silent = true}
-    -- )
-
-    -- map(
-    --     "i", "<Tab>",
-    --     [[pumvisible() ? "\<C-n>" : v:lua.check_back_space() ? "\<TAB>" : coc#refresh()]],
-    --     { silent = true, expr = true }
-    -- )
-
     map("i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
-
-    -- Git
-    -- wk.register(
-    --     {
-    --         -- ["<Leader>gD"] = {":CocCommand git.diffCached<CR>", "Git diff cached"},
-    --         ["<LocalLeader>gg"] = {":CocCommand fzf-preview.GitActions<CR>", "Git actions (fzf)"},
-    --         ["<LocalLeader>gs"] = {":CocCommand fzf-preview.GitStatus<CR>", "Git status (fzf)"},
-    --         ["<LocalLeader>gr"] = {":CocCommand fzf-preview.GitLogs<CR>", "Git logs (fzf)"},
-    --         ["<LocalLeader>gp"] = {":<C-u>CocList --normal gstatus<CR>", "Git status"},
-    --         ["<LocalLeader>gu"] = {":<C-u>CocCommand git.chunkUndo<CR>", "Git chunk undo"}
-    --     }
-    -- )
 
     -- Git
     -- map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", {silent = true})

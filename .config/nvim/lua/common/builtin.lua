@@ -4,7 +4,10 @@ local M = {}
 -- TODO: Create a statusline jumplist showing current jump/total
 
 local utils = require("common.utils")
--- local dev = require("dev")
+
+local ex = nvim.ex
+local api = vim.api
+local fn = vim.fn
 
 ---Set a timeout for a character-prefix in keybindings
 ---@param prefix string

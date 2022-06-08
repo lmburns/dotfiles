@@ -21,6 +21,12 @@ local autocmd = utils.autocmd
 local command = utils.command
 local map = utils.map
 
+local ex = nvim.ex
+local g = vim.g
+local fn = vim.fn
+local uv = vim.loop
+local cmd = vim.cmd
+
 -- Lua utilities
 require("common.nvim")
 require("dev")
@@ -125,6 +131,7 @@ a.async_void(
 g.loaded_clipboard_provider = 1
 
 g.do_filetype_lua = 1
+-- FIX: I noticed that filetype.vim is still being ran
 g.did_load_filetypes = 0
 
 require("plugs.filetype")
@@ -138,10 +145,6 @@ vim.schedule(
         vim.defer_fn(
             function()
                 require("plugs.treesitter")
-
-                -- require("filetype").resolve()
-                -- g.did_load_filetypes = nil
-                -- cmd("runtime! filetype.vim")
 
                 augroup(
                     "syntaxset",
@@ -238,6 +241,8 @@ vim.schedule(
                     -- "coc-git",
                     -- "coc-lists",
                     -- "coc-sh",
+                    -- "coc-tslint",
+                    "coc-json",
                     "coc-sumneko-lua",
                     "coc-clangd",
                     "coc-css",
@@ -246,7 +251,6 @@ vim.schedule(
                     "coc-fzf-preview",
                     "coc-go",
                     "coc-html",
-                    "coc-json",
                     "coc-lightbulb",
                     "coc-marketplace",
                     "coc-perl",
@@ -271,7 +275,6 @@ vim.schedule(
                     "coc-zig",
                     "coc-tsserver",
                     "coc-eslint",
-                    -- "coc-tslint",
                 }
 
                 g.coc_enable_locationlist = 0

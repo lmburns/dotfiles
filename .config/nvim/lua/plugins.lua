@@ -207,78 +207,33 @@ return packer.startup(
             -- Have more than one configuration
             -- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
 
-            -- ============================ Vim Library =========================== [[[
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                         Library                          │
+            -- ╰──────────────────────────────────────────────────────────╯
             use({"tpope/vim-repeat"})
             use({"ryanoasis/vim-devicons"})
-            -- ]]] === Vim Library ===
 
-            -- ============================ Lua Library =========================== [[[
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
-            -- Allows ex commands as functions
-            -- vim.api.nvim_<func> => nvim.<func>
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
             use({"kyazdani42/nvim-web-devicons"})
-
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
-            -- ]]] === Lua Library ===
 
             -- ========================== Fixes / Addons ========================== [[[
+            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             -- numToStr/Navigator.nvim
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits"})
             use({"fedepujol/move.nvim", conf = "move"})
-            -- Prevent clipboard from being hijacked by snippets and such
-            use({"kevinhwang91/nvim-hclipboard"})
+            use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
             use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
-            -- use({"AckslD/nvim-anywise-reg.lua", conf = "anywise"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
-            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
-            use(
-                {
-                    "vim-scripts/UnconditionalPaste",
-                    patch = true,
-                    keys = {
-                        -- These have been removed from my patch
-                        -- {"n", "g]]p"}, -- Messes up packer compiled; Paste linewise with more indent
-                        -- {"n", "g]]P"},
-                        -- {"n", "g>p"}, -- Paste lines with count times 'shiftwidth indent'
-                        -- {"n", "g>P"},
-                        -- {"n", "g#p"}, -- Paste linewise as commented text
-                        -- {"n", "g#P"},
-                        -- {"n", "gBp"}, -- Paste minimal fitting block
-                        -- {"n", "gBP"},
-                        -- {"n", "gqbp"}, -- Query for separator string, then paste minimal block
-                        -- {"n", "gBP"},
-                        -- {"n", "g,p"}, -- Paste charwise with each line delimited by ','
-                        -- {"n", "g,P"},
-                        -- {"n", "g,'p"}, -- Paste charwise with each line delimited by "'"
-                        -- {"n", "g,'P"},
-                        -- {"n", "gqp"}, -- Query for separator string, paste charwise
-                        -- {"n", "gqP"}
-
-                        {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
-                        {"n", "gcP"},
-                        {"n", "glp"}, -- Paste linewise (even if not complete)
-                        {"n", "glP"},
-                        {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
-                        {"n", "gbP"},
-                        {"n", "gap"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
-                        {"n", "g]p"}, -- Paste linewise above (like glp but adjust indent)
-                        {"n", "g]P"},
-                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
-                        {"n", "g[P"},
-                        {"n", "gsp"}, -- Paste with [count] spaces around lines
-                        {"n", "gsP"}
-                    }
-                }
-            )
 
             -- :Subvert/child{,ren}/adult{,s}/g
             use(
@@ -286,9 +241,7 @@ return packer.startup(
                     "tpope/vim-abolish",
                     conf = "abolish",
                     cmd = {"Subvert", "Abolish"},
-                    keys = {
-                        {"n", "cr"}
-                    }
+                    keys = {{"n", "cr"}}
                 }
             )
 
@@ -331,6 +284,15 @@ return packer.startup(
                     wants = {"nvim-hlslens", "nvim-autopairs"}
                 }
             )
+
+            use(
+                {
+                    "kevinhwang91/suda.vim",
+                    keys = {{"n", "<Leader>W"}},
+                    cmd = {"SudaRead", "SudaWrite"},
+                    conf = "suda"
+                }
+            )
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -368,30 +330,6 @@ return packer.startup(
             use({"rmehri01/onenord.nvim"})
             use({"levuaska/levuaska.nvim"})
             use({"kyazdani42/blue-moon"})
-            -- Needs modified to change transparent background
-            -- use({"Mofiqul/vscode.nvim"})
-            -- use({"FrenzyExists/aquarium-vim"})
-            -- use({"yashguptaz/calvera-dark.nvim"})
-            -- use({"andersevenrud/nordic.nvim"})
-            -- use({"aktersnurra/no-clown-fiesta.nvim"})
-            -- use({"pwntester/nautilus.nvim"})
-            -- use({"doums/darcula"})
-            -- use({"ray-x/aurora"})
-            -- use({"shaunsingh/nord.nvim"})
-            -- use({"katawful/kat.nvim"})
-            -- use({"daschw/leaf.nvim"})
-            -- use({"Domeee/mosel.nvim"})
-            -- use({"lewpoly/sherbet.nvim"})
-            -- use({"projekt0n/github-nvim-theme"})
-            -- use({"metalelf0/jellybeans-nvim", requires = "rktjmp/lush.nvim"})
-            -- use({"kvrohit/substrata.nvim"})
-            -- use({"numToStr/Sakura.nvim"})
-            -- use({"fcpg/vim-farout"})
-            -- use({"tyrannicaltoucan/vim-quantum"})
-            -- use({"b4skyx/serenade"})
-            -- use({"AlessandroYorba/Alduin"})
-            -- use({ "olimorris/onedarkpro.nvim" })
-            -- use({ "kaicataldo/material.vim" })
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
             -- ]]] === Colorscheme ===
@@ -463,14 +401,6 @@ return packer.startup(
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua"})
             use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
-
-            -- use(
-            --     {
-            --       "puremourning/vimspector",
-            --       setup = [[vim.g.vimspector_enable_mappings = 'HUMAN']],
-            --       disable = true,
-            --     }
-            -- )
 
             -- ]]] === Debugging ===
 
@@ -561,30 +491,6 @@ return packer.startup(
             use({"lervag/vimtex", conf = "plugs.vimtex"})
             -- ]]] === Vimtex ===
 
-            use(
-                {
-                    "kevinhwang91/suda.vim",
-                    keys = {{"n", "<Leader>W"}},
-                    cmd = {"SudaRead", "SudaWrite"},
-                    conf = "suda"
-                }
-            )
-
-            -- ============================== VCooler ============================== [[[
-            use(
-                {
-                    "KabbAmine/vCoolor.vim",
-                    keys = {
-                        {"n", "<Leader>pc"},
-                        {"n", "<Leader>yb"},
-                        {"n", "<Leader>yr"}
-                    },
-                    setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
-                    conf = "vcoolor"
-                }
-            )
-            -- ]]] === VCooler ===
-
             -- =============================== Marks ============================== [[[
             use({"chentoast/marks.nvim", conf = "plugs.marks"})
             -- ]]] === Marks ===
@@ -665,7 +571,7 @@ return packer.startup(
 
             -- =========================== Statusline ============================= [[[
 
-            -- use ({ 'b0o/incline.nvim', conf = "incline" })
+            use({"b0o/incline.nvim", conf = "incline"})
             use(
                 {
                     "nvim-lualine/lualine.nvim",
@@ -938,18 +844,7 @@ return packer.startup(
 
             -- ================================ Rust =============================== [[[
             use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
-
             use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "crates"})
-            -- use(
-            --     {
-            --       "simrat39/rust-tools.nvim",
-            --       ft = "rust",
-            --       config = function()
-            --         require("rust-tools").setup {}
-            --       end,
-            --       requires = { "plenary.nvim", "nvim-lspconfig" },
-            --     }
-            -- )
             -- ]]] === VimSlime - Python ===
 
             -- ============================= Javascript ============================ [[[
@@ -1107,13 +1002,7 @@ return packer.startup(
 
             -- ============================= File-Viewer =========================== [[[
             use({"mattn/vim-xxdcursor"})
-            use(
-                {
-                    "fidian/hexmode",
-                    config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]
-                }
-            )
-
+            use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
             use({"jamessan/vim-gnupg"})
             use({"AndrewRadev/id3.vim"})
             use({"alx741/vinfo"})
@@ -1167,13 +1056,155 @@ return packer.startup(
                     after = "telescope.nvim"
                 }
             )
+
+            use(
+                {
+                    "KabbAmine/vCoolor.vim",
+                    keys = {
+                        {"n", "<Leader>pc"},
+                        {"n", "<Leader>yb"},
+                        {"n", "<Leader>yr"}
+                    },
+                    setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
+                    conf = "vcoolor"
+                }
+            )
             -- ]]] === Highlight ===
 
             -- ============================= Neoformat ============================= [[[
             use({"sbdchd/neoformat", conf = "plugs.neoformat"})
             -- ]]] === Neoformat ===
 
-            -- =============================== Coc ================================ [[[
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                           LSP                            │
+            -- ╰──────────────────────────────────────────────────────────╯
+
+            -- "tami5/lspsaga.nvim",
+            -- 'folke/lsp-colors.nvim'
+            -- 'neovim/nvim-lspconfig'
+            -- 'nvim-lua/lsp-status.nvim'
+            -- 'onsails/lspkind-nvim'
+            -- 'ray-x/lsp_signature.nvim', module = 'lsp_signature'
+            -- "RRethy/vim-illuminate"     => Highlight word under cursor
+            -- "pechorin/any-jump.vim"     => Definition jumping
+            -- "j-hui/fidget.nvim"         => Standalone for LSP progress
+            -- "filipdutescu/renamer.nvim" => Like code action rename
+            -- "jubnzv/virtual-types.nvim" => Code lens
+            -- "b0o/SchemaStore.nvim",
+            -- "EthanJWright/toolwindow.nvim",
+            -- "kosayoda/nvim-lightbulb",
+            -- "ericpubu/lsp_codelens_extensions.nvim",
+            -- "jose-elias-alvarez/nvim-lsp-ts-utils"
+            -- "folke/lsp-trouble.nvim",
+            -- "tamago324/nlsp-settings.nvim"
+            -- "lukas-reineke/lsp-format.nvim"
+            -- "theHamsta/nvim-semantic-tokens"
+
+            -- use "simrat39/rust-tools.nvim"
+            -- "jose-elias-alvarez/typescript.nvim",
+            -- use "ray-x/go.nvim"
+
+            -- use(
+            --     {
+            --         "williamboman/nvim-lsp-installer",
+            --         {
+            --             "neovim/nvim-lspconfig",
+            --             config = function()
+            --                 require("plugs.lsp.installer")
+            --                 require("plugs.lsp")
+            --             end,
+            --             wants = {"nvim-cmp", "lua-dev.nvim", "null-ls.nvim"}
+            --         },
+            --         after = {
+            --             "nvim-lspconfig",
+            --             "nvim-cmp",
+            --             "cmp-nvim-lsp",
+            --             "null-ls.nvim",
+            --             "lspsaga.nvim"
+            --         }
+            --     }
+            -- )
+            --
+            -- use(
+            --     {
+            --         "jose-elias-alvarez/null-ls.nvim",
+            --         requires = {"plenary.nvim", "nvim-lspconfig"}
+            --     }
+            -- )
+            --
+            -- use({"RRethy/vim-illuminate", conf = "illuminate"})
+            -- use({"tami5/lspsaga.nvim"})
+            -- use({"b0o/SchemaStore.nvim", module = "schemastore"})
+            -- use({"ray-x/lsp_signature.nvim", after = "nvim-lspconfig"})
+            -- use({"j-hui/fidget.nvim", after = {"nvim-lspconfig"}, conf = "fidget"})
+            --
+            -- -- use({"kosayoda/nvim-lightbulb", conf = "plugs.lsp.config.lightbulb"})
+            --
+            -- use(
+            --     {
+            --         "simrat39/symbols-outline.nvim",
+            --         cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+            --         conf = "outline"
+            --     }
+            -- )
+            --
+            -- use(
+            --     {
+            --         "simrat39/rust-tools.nvim",
+            --         -- ft = "rust",
+            --         wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
+            --         after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
+            --     }
+            -- )
+            --
+            -- use(
+            --     {
+            --         "p00f/clangd_extensions.nvim",
+            --         wants = {"nvim-lspconfig", "nvim-dap"},
+            --         after = {"nvim-cmp"}
+            --     }
+            -- )
+            --
+            -- -- -----------------------------------------
+            --
+            -- -- ╭──────────────────────────────────────────────────────────╮
+            -- -- │                        Completion                        │
+            -- -- ╰──────────────────────────────────────────────────────────╯
+            -- -- use "tamago324/cmp-zsh"
+            -- -- use { 'andersevenrud/cmp-tmux', after = 'nvim-cmp' }
+            -- -- xuse { 'f3fora/cmp-spell', after = 'nvim-cmp' }
+            --
+            -- use(
+            --     {
+            --         "hrsh7th/nvim-cmp",
+            --         requires = {
+            --             {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-nvim-lua", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-path", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-cmdline", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-calc", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-nvim-lsp-signature-help", after = "nvim-cmp"},
+            --             {"hrsh7th/cmp-nvim-lsp-document-symbol", after = "nvim-cmp"},
+            --             {"lukas-reineke/cmp-rg", after = "nvim-cmp"},
+            --             {"lukas-reineke/cmp-under-comparator", after = "nvim-cmp"},
+            --             {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
+            --             {"ray-x/cmp-treesitter", after = "nvim-cmp"},
+            --             {"petertriho/cmp-git", after = "nvim-cmp"},
+            --             {"tzachar/cmp-tabnine", run = "./install.sh", after = "nvim-cmp"},
+            --             {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"}
+            --         },
+            --         after = {"nvim-treesitter", "lspkind-nvim"},
+            --         conf = "plugs.cmp"
+            --     }
+            -- )
+            --
+            -- use({"onsails/lspkind-nvim", module = "lspkind"})
+
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                           Coc                            │
+            -- ╰──────────────────────────────────────────────────────────╯
+
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
 
@@ -1198,9 +1229,11 @@ return packer.startup(
                     }
                 }
             )
-            -- ]]] === Coc ===
 
-            -- ============================= Treesitter ============================ [[[
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                        Treesitter                        │
+            -- ╰──────────────────────────────────────────────────────────╯
+
             -- use({ "vigoux/architext.nvim", after = { "nvim-treesitter" } })
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
@@ -1309,9 +1342,11 @@ return packer.startup(
 
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
-            -- ]]] === Treesitter ===
 
-            -- ============================= Telescope ============================ [[[
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                        Telescope                         │
+            -- ╰──────────────────────────────────────────────────────────╯
+
             use(
                 {
                     "nvim-telescope/telescope.nvim",
@@ -1428,17 +1463,9 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "AckslD/nvim-neoclip.lua",
-            --         requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
-            --         after = {"telescope.nvim", "sqlite.lua"},
-            --         conf = "plugs.nvim-neoclip"
-            --     }
-            -- )
-            -- ]]] === Telescope ===
-
-            -- ================================ Git =============================== [[[
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                           Git                            │
+            -- ╰──────────────────────────────────────────────────────────╯
             use({"ahmedkhalf/project.nvim", conf = "project", after = "telescope.nvim"})
             use(
                 {
@@ -1573,8 +1600,6 @@ return packer.startup(
             --     }
             -- )
 
-            -- ]]] === Git ===
-
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                          Fennel                          │
             -- ╰──────────────────────────────────────────────────────────╯
@@ -1596,6 +1621,7 @@ return packer.startup(
             )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
+            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
         end
     }
 )

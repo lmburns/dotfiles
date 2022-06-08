@@ -316,11 +316,11 @@
     //   "command": "/usr/bin/serve-d",
     //   "filetypes": ["d"]
     // },
-    "bash": {
-      "command": "bash-language-server",
-      "args": ["start"],
-      "filetypes": ["sh"]
-    },
+    // "bash": {
+    //   "command": "bash-language-server",
+    //   "args": ["start"],
+    //   "filetypes": ["sh"]
+    // },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],

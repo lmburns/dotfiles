@@ -5,6 +5,7 @@ local funcs = require("functions")
 local map = utils.map
 local command = utils.command
 
+local ex = nvim.ex
 local fn = vim.fn
 local api = vim.api
 

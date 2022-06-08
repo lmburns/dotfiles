@@ -1,6 +1,7 @@
 local M = {}
 
-local C = require("common.color")
+local ex = nvim.ex
+local cmd = vim.cmd
 
 local delay = 50
 local focus_lock = 1

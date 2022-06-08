@@ -1570,7 +1570,7 @@ function M.lfnvim()
 
     require("lf").setup(
         {
-            escape_quit = false,
+            escape_quit = true,
             -- open_on = true,
             border = "rounded",
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
@@ -1860,6 +1860,167 @@ function M.eregex()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                         incline                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.incline()
+    require("incline").setup(
+        {
+            render = function(props)
+                local bufname = api.nvim_buf_get_name(props.buf)
+                if bufname == "" then
+                    return "[No name]"
+                else
+                    bufname = fn.fnamemodify(bufname, ":h")
+                    bufname = Path:new(bufname):shorten(3, {-2, -1})
+                    bufname = bufname:gsub("^/hom/luc/.co/nvi", "$NVIM")
+                    bufname = bufname:gsub("^/hom/luc/.lo/sha", "$DATA")
+                    bufname = bufname:gsub("^/hom/luc/.co", "$CONFIG")
+                    bufname = bufname:gsub("^/hom/luc", "~")
+                end
+                return bufname
+            end,
+            debounce_threshold = 30,
+            window = {
+                width = "fit",
+                placement = {horizontal = "right", vertical = "top"},
+                margin = {
+                    horizontal = {left = 1, right = 1},
+                    vertical = {bottom = 0, top = 1}
+                },
+                padding = {left = 1, right = 1},
+                padding_char = " ",
+                zindex = 100
+            },
+            ignore = {
+                floating_wins = true,
+                unlisted_buffers = true,
+                filetypes = {},
+                buftypes = "special",
+                wintypes = "special"
+            },
+            highlight = {
+                groups = {
+                    InclineNormal = "WinBar",
+                    InclineNormalNC = "InclineNormal"
+                }
+            }
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Outline                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.outline()
+    vim.g.symbols_outline = {
+        highlight_hovered_item = true,
+        show_guides = true,
+        auto_preview = true,
+        position = "right",
+        relative_width = true,
+        width = 25,
+        show_numbers = false,
+        show_relative_numbers = false,
+        show_symbol_details = true,
+        preview_bg_highlight = "Pmenu",
+        keymaps = {
+            -- These keymaps can be a string or a table for multiple keys
+            close = {"<Esc>", "q"},
+            goto_location = "<Cr>",
+            focus_location = "o",
+            hover_symbol = "<C-space>",
+            toggle_preview = "K",
+            rename_symbol = "r",
+            code_actions = "a"
+        },
+        lsp_blacklist = {},
+        symbol_blacklist = {},
+        symbols = {
+            File = {icon = "", hl = "TSURI"},
+            Module = {icon = "", hl = "TSNamespace"},
+            Namespace = {icon = "", hl = "TSNamespace"},
+            Package = {icon = "", hl = "TSNamespace"},
+            Class = {icon = "𝓒", hl = "TSType"},
+            Method = {icon = "ƒ", hl = "TSMethod"},
+            Property = {icon = "", hl = "TSMethod"},
+            Field = {icon = "", hl = "TSField"},
+            Constructor = {icon = "", hl = "TSConstructor"},
+            Enum = {icon = "ℰ", hl = "TSType"},
+            Interface = {icon = "ﰮ", hl = "TSType"},
+            Function = {icon = "", hl = "TSFunction"},
+            Variable = {icon = "", hl = "TSConstant"},
+            Constant = {icon = "", hl = "TSConstant"},
+            String = {icon = "𝓐", hl = "TSString"},
+            Number = {icon = "#", hl = "TSNumber"},
+            Boolean = {icon = "⊨", hl = "TSBoolean"},
+            Array = {icon = "", hl = "TSConstant"},
+            Object = {icon = "⦿", hl = "TSType"},
+            Key = {icon = "🔐", hl = "TSType"},
+            Null = {icon = "NULL", hl = "TSType"},
+            EnumMember = {icon = "", hl = "TSField"},
+            Struct = {icon = "𝓢", hl = "TSType"},
+            Event = {icon = "🗲", hl = "TSType"},
+            Operator = {icon = "+", hl = "TSOperator"},
+            TypeParameter = {icon = "𝙏", hl = "TSParameter"}
+        }
+    }
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Illuminate                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.illuminate()
+    vim.g.Illuminate_delay = 300
+
+    map("n", "]i", "<cmd>lua require'illuminate'.next_reference{wrap=true}<cr>", {desc = "Next word under cursor"})
+    map(
+        "n",
+        "[i",
+        "<cmd>lua require'illuminate'.next_reference{reverse=true,wrap=true}<cr>",
+        {desc = "Previous word under cursor"}
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Fidget                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.fidget()
+    require("fidget").setup(
+        {
+            text = {
+                spinner = {
+                    "⏺∙∙∙∙",
+                    "∙⏺∙∙∙",
+                    "∙∙⏺∙∙",
+                    "∙∙∙⏺∙",
+                    "∙∙∙∙⏺",
+                    "∙∙∙⏺∙",
+                    "∙∙⏺∙∙",
+                    "∙⏺∙∙∙"
+                },
+                done = "✔",
+                commenced = "Started",
+                completed = "Completed"
+            },
+            window = {
+                relative = "editor",
+                blend = 0
+            },
+            fmt = {
+                stack_upwards = false,
+                fidget = function(fidget_name, spinner)
+                    return ("%s %s"):format(spinner, fidget_name)
+                end,
+                -- function to format each task line
+                task = function(task_name, message, percentage)
+                    return ("%s%s [%s]"):format(message, percentage and (" (%s%%)"):format(percentage) or "", task_name)
+                end
+            }
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                        Neoscroll                         │
 -- ╰──────────────────────────────────────────────────────────╯
 -- function M.neoscroll()
@@ -1936,41 +2097,8 @@ end
 -- end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                         incline                          │
+-- │                         Neoterm                          │
 -- ╰──────────────────────────────────────────────────────────╯
--- function M.incline()
---     require("incline").setup {
---         render = function(props)
---             local bufname = vim.api.nvim_buf_get_name(props.buf)
---             if bufname == "" then
---                 return "[No name]"
---             else
---                 bufname = vim.fn.fnamemodify(bufname, ":t")
---             end
---             return bufname
---         end,
---         debounce_threshold = 30,
---         window = {
---             width = "fit",
---             placement = {horizontal = "right", vertical = "top"},
---             margin = {
---                 horizontal = {left = 1, right = 1},
---                 vertical = {bottom = 0, top = 1}
---             },
---             padding = {left = 1, right = 1},
---             padding_char = " ",
---             zindex = 100
---         },
---         ignore = {
---             floating_wins = true,
---             unlisted_buffers = true,
---             filetypes = {},
---             buftypes = "special",
---             wintypes = "special"
---         }
---     }
--- end
-
 -- function M.neoterm()
 --   g.neoterm_default_mod = "belowright" -- open terminal in bottom split
 --   g.neoterm_size = 14 -- terminal split size
