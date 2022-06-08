@@ -208,7 +208,7 @@ local sections_1 = {
         },
         {
             "diagnostics",
-            sources = {"coc"},
+            sources = {"nvim_diagnostic", "coc"},
             symbols = {error = " ", warn = " ", info = " ", hint = " "}
         },
         {

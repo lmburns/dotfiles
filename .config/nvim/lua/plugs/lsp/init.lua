@@ -11,10 +11,13 @@ local augroup = utils.augroup
 
 local fn = vim.fn
 
+-- FIX: After installation, not all global variables are recognized
+-- FIX: Get greyed out unused code
+-- FIX: Better completion: For example: Coc lua has type(v) == "completion"
 vim.diagnostic.config(
     {
         virtual_text = {
-            -- prefix = "👈",
+            prefix = "👈",
             severity = {min = vim.diagnostic.severity.W},
             source = "if_many"
         },
@@ -24,9 +27,9 @@ vim.diagnostic.config(
         severity_sort = true,
         float = {
             focusable = true,
-            source = "always",
+            source = "if_many",
             border = require("style").current.border,
-            header = {" Diagnostics:", "DiagnosticHeader"}
+            header = {"", "DiagnosticHeader"}
         }
     }
 )
@@ -92,10 +95,10 @@ local function location_handler(_, result, ctx, _)
     end
 end
 
-vim.lsp.handlers["textDocument/declaration"] = location_handler
-vim.lsp.handlers["textDocument/definition"] = location_handler
-vim.lsp.handlers["textDocument/typeDefinition"] = location_handler
-vim.lsp.handlers["textDocument/implementation"] = location_handler
+-- vim.lsp.handlers["textDocument/declaration"] = location_handler
+-- vim.lsp.handlers["textDocument/definition"] = location_handler
+-- vim.lsp.handlers["textDocument/typeDefinition"] = location_handler
+-- vim.lsp.handlers["textDocument/implementation"] = location_handler
 
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {border = "rounded"})
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {border = "rounded"})
@@ -116,25 +119,6 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = function(err, result, cont
         diagnostics_handler(err, result, context, config)
     end
 end
-
--- Make diagnostic popup like Coc does
-augroup(
-    "LspPopupDiagnostics",
-    {
-        event = "CursorHold",
-        pattern = "*",
-        command = function()
-            vim.diagnostic.open_float(0, {scope = "cursor", border = "rounded"})
-        end
-    },
-    {
-        event = "CursorHoldI",
-        pattern = "*",
-        command = function()
-            vim.lsp.buf.signature_help()
-        end
-    }
-)
 
 saga.init_lsp_saga(
     {
@@ -171,9 +155,9 @@ saga.init_lsp_saga(
     }
 )
 
-local runtime_path = vim.split(package.path, ";")
-table.insert(runtime_path, "lua/?.lua")
-table.insert(runtime_path, "lua/?/init.lua")
+-- local runtime_path = vim.split(package.path, ";")
+-- table.insert(runtime_path, "lua/?.lua")
+-- table.insert(runtime_path, "lua/?/init.lua")
 
 local servers = {
     -- gopls = {
@@ -230,6 +214,10 @@ local servers = {
                                 runtime = {
                                     version = "LuaJIT"
                                 },
+                                completion = {
+                                    callSnippet = "Replace",
+                                    postfix = "."
+                                },
                                 diagnostics = {
                                     globals = {
                                         "vim",
@@ -252,6 +240,12 @@ local servers = {
                                     neededFileStatus = {
                                         ["different-requires"] = "None"
                                     }
+                                },
+                                IntelliSense = {
+                                    traceLocalSet = true,
+                                    traceReturn = true,
+                                    traceBeSetted = true,
+                                    traceFieldInject = true
                                 },
                                 workspace = {
                                     maxPreload = 10000,
@@ -362,10 +356,9 @@ local lsp_util = require("plugs.lsp.util")
 ---The function to pass to the LSP's on_attach callback.
 ---@param client lsp_client
 ---@param bufnr number
--- stylua: ignore start
-local function on_attach(client, bufnr) --{{{
+local function on_attach(client, bufnr)
     vim.bo.omnifunc = "v:lua.vim.lsp.omnifunc"
-    -- vim.bo.tagfunc = "v:lua.vim.lsp.tagfunc"
+    vim.bo.tagfunc = "v:lua.vim.lsp.tagfunc"
 
     require("lsp_signature").on_attach(
         {
@@ -381,8 +374,12 @@ local function on_attach(client, bufnr) --{{{
     require("aerial").on_attach(client)
     require("illuminate").on_attach(client)
 
+    if client.name == "typescript" or client.name == "tsserver" then
+        require("plugs.lsp.typescript").setup(client)
+    end
+
     -- TODO: find out how to disable the statuline badges as well.
-    if vim.bo[bufnr].buftype ~= "" or vim.bo[bufnr].filetype == "helm" then
+    if vim.bo[bufnr].buftype ~= "" or vim.bo[bufnr].readonly then
         vim.diagnostic.disable(bufnr)
     end
 
@@ -390,90 +387,79 @@ local function on_attach(client, bufnr) --{{{
     vim.api.nvim_buf_call(
         bufnr,
         function()
-            --{{{
-            -- Contains functions to be run before writing the buffer. The format
-            -- function will format the while buffer, and the imports function will
-            -- organise imports.
             local imports_hook = function()
             end
             local format_hook = function()
             end
             local caps = client.server_capabilities
 
-            -- if caps.codeActionProvider then
-            --     lsp_util.code_action()
-            --
-            --     -- Either is it set to true, or there is a specified set of
-            --     -- capabilities. Sumneko doesn't support it, but the
-            --     -- client.supports_method returns true.
-            --     local can_organise_imports =
-            --         type(caps.codeActionProvider) == "table" and
-            --         _t(caps.codeActionProvider.codeActionKinds):contains("source.organizeImports")
-            --     if can_organise_imports then
-            --         lsp_util.setup_organise_imports()
-            --         imports_hook = lsp_util.lsp_organise_imports
-            --     end
-            -- end
-            --
             -- if caps.documentFormattingProvider then
             --     lsp_util.document_formatting()
             --     format_hook = function()
             --         vim.lsp.buf.format({async = false})
             --     end
             -- end
-            --
-            -- local workspace_folder_supported = caps.workspace and caps.workspace.workspaceFolders.supported
-            -- if workspace_folder_supported then
-            --     lsp_util.workspace_folder_properties()
-            -- end
-            -- if caps.workspaceSymbolProvider then
-            --     lsp_util.workspace_symbol()
-            -- end
 
-            if caps.hoverProvider then
-                lsp_util.hover()
+            if caps.workspace and caps.workspace.workspaceFolders.supported then
+                lsp_util.workspace_folder_properties()
             end
 
-            -- if caps.renameProvider then
-            --     lsp_util.rename()
-            -- end
-            -- if caps.codeLensProvider then
-            --     lsp_util.code_lens()
-            -- end
+            local mappings = {
+                {
+                    capability = "codeActionProvider",
+                    func = function()
+                        lsp_util.code_action()
 
-            -- if caps.definitionProvider then
-            --     lsp_util.goto_definition()
-            -- end
+                        -- Either is it set to true, or there is a specified set of
+                        -- capabilities. Sumneko doesn't support it, but the
+                        -- client.supports_method returns true.
 
-            -- if caps.referencesProvider then
-            --     lsp_util.find_references()
-            -- end
-            -- if caps.declarationProvider then
-            --     lsp_util.declaration()
-            -- end
-            -- if caps.signatureHelpProvider then
-            --     lsp_util.signature_help()
-            -- end
-            -- if caps.implementationProvider then
-            --     lsp_util.implementation()
-            -- end
-            -- if caps.typeDefinitionProvider then
-            --     lsp_util.type_definition()
-            -- end
-            -- if caps.documentSymbolProvider then
-            --     lsp_util.document_symbol()
-            -- end
+                        -- local can_organise_imports =
+                        --     type(caps.codeActionProvider) == "table" and
+                        --     _t(caps.codeActionProvider.codeActionKinds):contains("source.organizeImports")
+                        -- if can_organise_imports then
+                        --     lsp_util.setup_organise_imports()
+                        --     imports_hook = lsp_util.lsp_organise_imports
+                        -- end
+                    end
+                },
+                {capability = "documentSymbolProvider", func = lsp_util.document_symbol},
+                {capability = "workspaceSymbolProvider", func = lsp_util.workspace_symbol},
+                {capability = "hoverProvider", func = lsp_util.hover},
+                {capability = "renameProvider", func = lsp_util.rename},
+                {capability = "codeLensProvider", func = lsp_util.code_lens},
+                {capability = "definitionProvider", func = lsp_util.goto_definition},
+                {capability = "referencesProvider", func = lsp_util.find_references},
+                {capability = "declarationProvider", func = lsp_util.declaration},
+                {capability = "implementationProvider", func = lsp_util.implementation},
+                {capability = "typeDefinitionProvider", func = lsp_util.type_definition},
+                {capability = "signatureHelpProvider", func = lsp_util.signature_help},
+                {capability = "callHierarchyProvider", func = lsp_util.call_hierarchy}
+            }
+
+            for mapping, val in pairs(mappings) do
+                if not val.capability or client.server_capabilities[val.capability] then
+                    if type(val.func) == "string" then
+                        lsp_util[val.func]()
+                    elseif type(val.func) == "function" then
+                        val.func()
+                    end
+                end
+            end
+
+            if client.server_capabilities.semantic_tokens_full then
+                vim.lsp.buf.semantic_tokens_full()
+                vim.cmd [[autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.buf.semantic_tokens_full()]]
+            end
+
             -- if caps.documentRangeFormattingProvider then
             --     lsp_util.document_range_formatting()
             -- end
-            -- if caps.callHierarchyProvider then
-            --     lsp_util.call_hierarchy()
-            -- end
-            --
-            -- lsp_util.setup_diagnostics()
+
+            lsp_util.setup_diagnostics()
+            lsp_util.support_commands()
+            lsp_util.setup_events(imports_hook, format_hook)
             -- lsp_util.setup_completions()
-            -- lsp_util.support_commands()
-            -- lsp_util.setup_events(imports_hook, format_hook)
             -- lsp_util.fix_null_ls_errors()
         end
     )
@@ -486,7 +472,7 @@ end
 -- -- Enable (broadcasting) snippet capability for completion.
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-local null_ls = require("null-ls") -- NULL LS Setup {{{
+local null_ls = require("null-ls")
 null_ls.setup(
     {
         sources = {
@@ -518,7 +504,7 @@ null_ls.setup(
         },
         on_attach = attach_wrap
     }
-) --}}}
+)
 
 for name, server in pairs(servers) do
     local opts =

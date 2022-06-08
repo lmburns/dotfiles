@@ -1967,6 +1967,33 @@ function M.outline()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                        Lightbulb                         │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.lightbulb()
+    require("nvim-lightbulb").setup(
+        {
+            ignore = {"null-ls"},
+            sign = {enabled = false},
+            float = {enabled = true, win_opts = {border = "none"}},
+            autocmd = {
+                enabled = true
+            }
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Semantic Tokens                      │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.semantic_tokens()
+    require "nvim-semantic-tokens".setup(
+        {
+            preset = "default"
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                        Illuminate                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.illuminate()

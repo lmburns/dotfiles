@@ -197,7 +197,7 @@
   "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
   "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
 
-  "Lua.telemetry.enable": false,
+  "Lua.telemetry.enable": true,
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
   // "Lua.workspace.checkThirdParty": false,

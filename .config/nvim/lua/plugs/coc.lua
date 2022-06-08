@@ -762,6 +762,13 @@ function M.init()
 
     wk.register(
         {
+            ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
+            ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
+            ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},
+            ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
+            ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
+            ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
+
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
@@ -776,12 +783,6 @@ function M.init()
             ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
             ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
             ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
-            ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
-            ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},
-            ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
-            ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
-            ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
-            ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},

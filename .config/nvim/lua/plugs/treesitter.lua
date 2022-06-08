@@ -487,6 +487,7 @@ M.setup = function()
             "json",
             "kotlin",
             "lua",
+            "luap", -- lua regex
             "make",
             "markdown",
             -- "norg",
@@ -767,6 +768,18 @@ function M.install_extra_parsers()
             requires_generate_from_grammar = true
         },
         filetype = "solidity"
+    }
+
+    -- Lua regex
+    parser_config.luap = {
+        install_info = {
+            url = "https://github.com/vhyrro/tree-sitter-luap.git", -- local path or git repo
+            files = {"src/parser.c"},
+            -- optional entries:
+            branch = "main", -- default branch in case of git repo if different from master
+            generate_requires_npm = false -- if stand-alone parser without npm dependencies
+        },
+        filetype = "luap" -- if filetype does not match the parser name
     }
 end
 

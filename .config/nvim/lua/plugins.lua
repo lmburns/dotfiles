@@ -1104,6 +1104,14 @@ return packer.startup(
             -- "jose-elias-alvarez/typescript.nvim",
             -- use "ray-x/go.nvim"
 
+            use(
+                {
+                    "simrat39/symbols-outline.nvim",
+                    cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+                    conf = "outline"
+                }
+            )
+
             -- use(
             --     {
             --         "williamboman/nvim-lsp-installer",
@@ -1128,7 +1136,7 @@ return packer.startup(
             -- use(
             --     {
             --         "jose-elias-alvarez/null-ls.nvim",
-            --         requires = {"plenary.nvim", "nvim-lspconfig"}
+            --         requires = {"plenary.nvim"}
             --     }
             -- )
             --
@@ -1137,35 +1145,9 @@ return packer.startup(
             -- use({"b0o/SchemaStore.nvim", module = "schemastore"})
             -- use({"ray-x/lsp_signature.nvim", after = "nvim-lspconfig"})
             -- use({"j-hui/fidget.nvim", after = {"nvim-lspconfig"}, conf = "fidget"})
-            --
-            -- -- use({"kosayoda/nvim-lightbulb", conf = "plugs.lsp.config.lightbulb"})
-            --
-            -- use(
-            --     {
-            --         "simrat39/symbols-outline.nvim",
-            --         cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
-            --         conf = "outline"
-            --     }
-            -- )
-            --
-            -- use(
-            --     {
-            --         "simrat39/rust-tools.nvim",
-            --         -- ft = "rust",
-            --         wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
-            --         after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
-            --     }
-            -- )
-            --
-            -- use(
-            --     {
-            --         "p00f/clangd_extensions.nvim",
-            --         wants = {"nvim-lspconfig", "nvim-dap"},
-            --         after = {"nvim-cmp"}
-            --     }
-            -- )
-            --
-            -- -- -----------------------------------------
+            -- use({"weilbith/nvim-code-action-menu", cmd = "CodeActionMenu", keys = {{"n", "<A-CR>"}}})
+            -- use({"kosayoda/nvim-lightbulb", conf = "lightbulb"})
+            -- use({"theHamsta/nvim-semantic-tokens", conf = "semantic_tokens"})
             --
             -- -- ╭──────────────────────────────────────────────────────────╮
             -- -- │                        Completion                        │
@@ -1187,12 +1169,12 @@ return packer.startup(
             --             {"hrsh7th/cmp-nvim-lsp-signature-help", after = "nvim-cmp"},
             --             {"hrsh7th/cmp-nvim-lsp-document-symbol", after = "nvim-cmp"},
             --             {"lukas-reineke/cmp-rg", after = "nvim-cmp"},
-            --             {"lukas-reineke/cmp-under-comparator", after = "nvim-cmp"},
             --             {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
             --             {"ray-x/cmp-treesitter", after = "nvim-cmp"},
             --             {"petertriho/cmp-git", after = "nvim-cmp"},
             --             {"tzachar/cmp-tabnine", run = "./install.sh", after = "nvim-cmp"},
-            --             {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"}
+            --             {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"},
+            --             {"lukas-reineke/cmp-under-comparator", after = "nvim-lspconfig"}
             --         },
             --         after = {"nvim-treesitter", "lspkind-nvim"},
             --         conf = "plugs.cmp"
@@ -1200,6 +1182,34 @@ return packer.startup(
             -- )
             --
             -- use({"onsails/lspkind-nvim", module = "lspkind"})
+            --
+            -- -- Rust
+            -- use(
+            --     {
+            --         "simrat39/rust-tools.nvim",
+            --         -- ft = "rust",
+            --         wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
+            --         after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
+            --     }
+            -- )
+            --
+            -- -- Clangd
+            -- use(
+            --     {
+            --         "p00f/clangd_extensions.nvim",
+            --         wants = {"nvim-lspconfig", "nvim-dap"},
+            --         after = {"nvim-lspconfig"}
+            --     }
+            -- )
+            --
+            -- -- Typescript
+            -- use(
+            --     {
+            --         "jose-elias-alvarez/nvim-lsp-ts-utils",
+            --         wants = {"nvim-lspconfig"},
+            --         after = {"nvim-lspconfig"}
+            --     }
+            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Coc                            │
@@ -1223,9 +1233,8 @@ return packer.startup(
                     requires = {
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
                         {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
-                        -- TODO: Once the error of cursor is fixed
+                        {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
+                        -- {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
                     }
                 }
             )

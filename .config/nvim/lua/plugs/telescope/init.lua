@@ -1228,7 +1228,7 @@ wk.register(
                 -- require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})
                 require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "bottom"}})
             end,
-            "List workspace symbols"
+            "List aerial symbols"
         },
         ["<LocalLeader>S"] = {
             function()

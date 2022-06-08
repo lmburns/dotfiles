@@ -377,10 +377,10 @@ end
 ---@param name string
 ---@param rhs string|function
 ---@param opts table
-M.bcommand = function(name, rhs, opts, bufnr)
+M.bcommand = function(name, rhs, opts)
     opts = opts or {}
-    -- opts.force = true
-    api.nvim_buf_create_user_command(bufnr or 0, name, rhs, opts)
+    opts.buffer = true
+    M.command(name, rhs, opts)
 end
 
 ---Delete a command

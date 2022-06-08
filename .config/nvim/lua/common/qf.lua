@@ -1,5 +1,6 @@
 local M = {}
 
+local ex = nvim.ex
 local command = require("common.utils").command
 local log = require("common.log")
 
