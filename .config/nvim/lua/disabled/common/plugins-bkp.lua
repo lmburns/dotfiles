@@ -188,3 +188,16 @@
 --         conf = "plugs.nvim-neoclip"
 --     }
 -- )
+
+-- use(
+--     {
+--         "christoomey/vim-conflicted",
+--         cmd = {"Conflicted", "Merger", "GitNextConflict"},
+--         keys = {
+--             "<Plug>DiffgetLocal",
+--             "<Plug>DiffgetUpstream",
+--             "<Plug>DiffgetLocal",
+--             "<Plug>DiffgetUpstream"
+--         }
+--     }
+-- )

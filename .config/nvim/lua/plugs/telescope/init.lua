@@ -115,6 +115,10 @@ local c_actions = {
     end
 }
 
+---Create a previewer based off of the file's mimetype
+---@param filepath string
+---@param bufnr number
+---@param opts table
 local new_maker = function(filepath, bufnr, opts)
     filepath = fn.expand(filepath)
     Job:new(
@@ -124,9 +128,13 @@ local new_maker = function(filepath, bufnr, opts)
             on_exit = function(j)
                 local mime_class = vim.split(j:result()[1], "/")[1]
                 local mime_type = j:result()[1]
-                if mime_class == "text" or (mime_class == "application" and mime_type ~= "application/x-pie-executable") then
+                if
+                    mime_type == "inode/directory" or mime_class == "text" or
+                        (mime_class == "application" and mime_type ~= "application/x-pie-executable")
+                 then
                     previewers.buffer_previewer_maker(filepath, bufnr, opts)
                 else
+                    -- This might be a little quicker than the binary-buffer previewer
                     vim.schedule(
                         function()
                             api.nvim_buf_set_lines(bufnr, 0, -1, false, {"BINARY"})
@@ -1057,28 +1065,28 @@ end
 
 -- TODO: Finish this function
 M.find_dotfiles = function(opts)
-  -- opts = opts or {}
-  --
-  -- opts.cwd = require("core.global").home
-  -- -- By creating the entry maker after the cwd options,
-  -- -- we ensure the maker uses the cwd options when being created.
-  -- opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
-  --
-  -- pickers.new(opts, {
-  --   prompt_title = "~~ Dotfiles ~~",
-  --   finder = finders.new_oneshot_job({
-  --     "git",
-  --     "--git-dir=" .. require("core.global").home .. "/.dots/",
-  --     "--work-tree=" .. require("core.global").home,
-  --     "ls-tree",
-  --     "--full-tree",
-  --     "-r",
-  --     "--name-only",
-  --     "HEAD",
-  --   }, opts),
-  --   previewer = previewers.cat.new(opts),
-  --   sorter = conf.file_sorter(opts),
-  -- }):find()
+    -- opts = opts or {}
+    --
+    -- opts.cwd = require("core.global").home
+    -- -- By creating the entry maker after the cwd options,
+    -- -- we ensure the maker uses the cwd options when being created.
+    -- opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
+    --
+    -- pickers.new(opts, {
+    --   prompt_title = "~~ Dotfiles ~~",
+    --   finder = finders.new_oneshot_job({
+    --     "git",
+    --     "--git-dir=" .. require("core.global").home .. "/.dots/",
+    --     "--work-tree=" .. require("core.global").home,
+    --     "ls-tree",
+    --     "--full-tree",
+    --     "-r",
+    --     "--name-only",
+    --     "HEAD",
+    --   }, opts),
+    --   previewer = previewers.cat.new(opts),
+    --   sorter = conf.file_sorter(opts),
+    -- }):find()
 end
 
 -- TODO: Fix and get a better list of file paths

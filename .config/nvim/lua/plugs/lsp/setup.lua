@@ -6,37 +6,15 @@ local cmd = vim.cmd
 
 local dev = require("dev")
 local log = require("common.log")
+local lsp_utils = require("plugs.lsp.utils")
 local utils = require("common.utils")
 local bcommand = utils.bcommand
 local augroup = utils.augroup
-
-local diagnotic_icons = require("style").icons.lsp
 
 local fzf = require("fzf-lua")
 local fzflsp = require("fzf-lua.providers.lsp")
 local builtin = require("telescope.builtin")
 local themes = require("telescope.themes")
-
----Get the diagnostic icon and highlight group based on severity
----@param severity number
----@return string, string
-M.diagnostic_icon_by_severity = function(severity)
-    local icon, highlight
-    if severity == 1 then
-        icon = diagnotic_icons.error
-        highlight = "DiagnosticError"
-    elseif severity == 2 then
-        icon = diagnotic_icons.warn
-        highlight = "DiagnosticWarn"
-    elseif severity == 3 then
-        icon = diagnotic_icons.info
-        highlight = "DiagnosticInfo"
-    elseif severity == 4 then
-        icon = diagnotic_icons.hint
-        highlight = "DiagnosticHint"
-    end
-    return icon, highlight
-end
 
 ---Wrapper to create an easier mapping
 local function map(mode, lhs, rhs, desc, ...)
@@ -72,45 +50,6 @@ end
 --   end
 -- end
 --
----Returns the name of the struct, method or function.
----@return string
-function M.get_current_node_name()
-    local ts_utils = require("nvim-treesitter.ts_utils")
-    local cur_node = ts_utils.get_node_at_cursor()
-    local type_patterns = {
-        method_declaration = 2,
-        function_declaration = 1,
-        type_spec = 0
-    }
-    local stop = false
-    local index = 1
-    while cur_node do
-        for rgx, k in pairs(type_patterns) do
-            if cur_node:type() == rgx then
-                stop = true
-                index = k
-                break
-            end
-        end
-        if stop then
-            break
-        end
-        cur_node = cur_node:parent()
-    end
-
-    if not cur_node then
-        vim.notify(
-            "Test not found",
-            vim.lsp.log_levels.WARN,
-            {
-                title = "User Command",
-                timeout = 1000
-            }
-        )
-        return ""
-    end
-    return (vim.treesitter.query.get_node_text(cur_node:child(index)))[1]
-end
 
 ---Formats a range if given.
 ---@param range_given boolean
@@ -240,18 +179,19 @@ function M.signature_help()
     -- map("n", "<Leader>kk", vim.lsp.buf.signature_help, "Show signature help")
     map("i", "<M-o>", vim.lsp.buf.signature_help, "Show signature help")
 
-    augroup(
-        "LspSignatureHelp",
-        {
-            -- This one might get annoying
-            event = "CursorHoldI",
-            pattern = "*",
-            command = function()
-                vim.lsp.buf.signature_help()
-            end,
-            desc = "Show signature help when completing function"
-        }
-    )
+    -- NOTE: LSPSignature takes care of this
+    -- augroup(
+    --     "LspSignatureHelp",
+    --     {
+    --         -- This one might get annoying
+    --         event = "CursorHoldI",
+    --         pattern = "*",
+    --         command = function()
+    --             vim.lsp.buf.signature_help()
+    --         end,
+    --         desc = "Show signature help when completing function"
+    --     }
+    -- )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -276,7 +216,7 @@ function M.goto_definition()
         "Goto definition (fzf)"
     )
 
-    -- vim.bo.tagfunc = "v:lua.vim.lsp.tagfunc"
+    vim.bo.tagfunc = "v:lua.vim.lsp.tagfunc"
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -444,58 +384,66 @@ function M.code_lens()
         "LspCodeLens",
         {
             event = {"CursorHold", "CursorHoldI", "InsertLeave"},
-            command = vim.lsp.codelens.refresh,
+            command = function()
+                vim.lsp.codelens.refresh()
+            end,
             buffer = 0
         }
     )
 end
---
--- function M.setup_completions()
---   inoremap("<C-j>", "<C-n>", "next completion items")
---   inoremap("<C-k>", "<C-p>", "previous completion items")
--- end
---
--- local lsp_events_group = vim.api.nvim_create_augroup("LSP_EVENTS", { clear = true })
--- vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
---   group = lsp_events_group,
---   pattern = "go.mod",
---   callback = function()
---     vim.opt_local.filetype = "gomod"
---   end,
--- })
+
+---Show the popup diagnostics window for the cursor location
+---Check whether the word under the cursor has changed.
+local function diagnostic_popup()
+    local cword = fn.expand("<cword>")
+    if cword ~= vim.w.lsp_diagnostics_cword then
+        vim.w.lsp_diagnostics_cword = cword
+        vim.diagnostic.open_float(0, {scope = "cursor", focus = false, border = "rounded", source = "if_many"})
+    end
+end
 
 ---Setup events for the LSP
----@param imports function
----@param format function
-function M.setup_events(imports, format)
-    augroup(
-        "LspPopupDiagnostics",
-        {
-            event = "CursorHold",
-            buffer = 0,
-            command = function()
-                vim.diagnostic.open_float(0, {scope = "cursor", border = "rounded"})
-            end,
-            desc = "Make diagnostics popup under cursor"
-        }
-    )
+---@param client table
+---@param bufnr number
+---@param hooks table
+function M.setup_events(client, bufnr, hooks)
+    if client then
+        local caps = client.server_capabilities
+
+        if caps.documentHighlightProvider then
+            augroup(
+                "LspPopupDiagnostics",
+                {
+                    event = "CursorHold",
+                    buffer = bufnr,
+                    desc = "LSP: Diagnostic popup under cursor",
+                    command = function()
+                        diagnostic_popup()
+                    end
+                },
+                -- NOTE: vim-illuminate can take care of this
+                {
+                    event = {"CursorHold", "CursorHoldI"},
+                    buffer = bufnr,
+                    desc = "LSP: Document Highlight",
+                    command = function()
+                        pcall(vim.lsp.buf.document_highlight)
+                    end
+                },
+                {
+                    event = "CursorMoved",
+                    desc = "LSP: Document Highlight (Clear)",
+                    buffer = bufnr,
+                    command = function()
+                        vim.lsp.buf.clear_references()
+                    end
+                }
+            )
+        end
+    end
 
     augroup(
         "LspSetupEvents",
-        {
-            event = "BufWritePre",
-            buffer = 0,
-            command = function()
-                imports()
-                format()
-            end,
-            desc = "Format and imports"
-        },
-        {
-            event = {"BufReadPost", "BufNewFile"},
-            pattern = {"*/templates/*.yaml", "*/templates/*.tpl"},
-            command = "silent LspStop"
-        },
         {
             event = "InsertEnter",
             pattern = "go.mod",
@@ -507,6 +455,20 @@ function M.setup_events(imports, format)
         }
         -- {
         --     event = "BufWritePre",
+        --     buffer = bufnr,
+        --     command = function()
+        --         hooks.imports()
+        --         hooks.format()
+        --     end,
+        --     desc = "Format and imports"
+        -- },
+        -- {
+        --     event = {"BufReadPost", "BufNewFile"},
+        --     pattern = {"*/templates/*.yaml", "*/templates/*.tpl"},
+        --     command = "silent LspStop"
+        -- },
+        -- {
+        --     event = "BufWritePre",
         --     pattern = "go.mod",
         --     command = function(args)
         --         local filename = vim.fn.expand("%:p")
@@ -515,33 +477,7 @@ function M.setup_events(imports, format)
         --     desc = "run go mod tidy on save"
         -- }
     )
-
-    -- local function go_mod_check(args)
-    --     lsp.go_mod_check_upgrades(args.match)
-    -- end
-    --
-    -- vim.api.nvim_create_autocmd(
-    --     "BufRead",
-    --     {
-    --         group = lsp_events_group,
-    --         pattern = "go.mod",
-    --         callback = go_mod_check,
-    --         desc = "check for updates"
-    --     }
-    -- )
 end
---
--- function M.fix_null_ls_errors()
---   local default_exe_handler = vim.lsp.handlers["workspace/executeCommand"]
---   vim.lsp.handlers["workspace/executeCommand"] = function(err, ...)
---     -- supress NULL_LS error msg
---     local prefix = "NULL_LS"
---     if err and err.message:sub(1, #prefix) == prefix then
---       return
---     end
---     return default_exe_handler(err, ...)
---   end
--- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Support Commands                     │
@@ -558,7 +494,7 @@ function M.support_commands()
     bcommand(
         "Test",
         function()
-            local name = M.get_current_node_name()
+            local name = lsp_utils.get_current_node_name()
             if name == "" then
                 return nil
             end
@@ -616,8 +552,19 @@ function M.setup_diagnostics()
         "Next error"
     )
 
-    map("n", "<Leader>j,", vim.diagnostic.setloclist, "Diagnostics (document)")
-    map("n", "<Leader>j;", vim.diagnostic.setqflist, "Diagnostics (workspace)")
+    -- map("n", "<Leader>j,", vim.diagnostic.setloclist, "Diagnostics (document)")
+    -- map("n", "<Leader>j;", vim.diagnostic.setqflist, "Diagnostics (workspace)")
+    map("n", "<Leader>j,", require("diaglist").open_buffer_diagnostics, "Diagnostics (document)")
+    map("n", "<Leader>j;", require("diaglist").open_all_diagnostics, "Diagnostics (workspace)")
+
+    map(
+        "n",
+        "ge",
+        function()
+            vim.diagnostic.open_float(0, {scope = "line"})
+        end,
+        "Show diagnostics for current line"
+    )
 
     map(
         "n",
@@ -647,6 +594,26 @@ function M.setup_diagnostics()
         function()
             fzflsp.workspace_diagnostics({})
         end
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Other Mappings                      │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.other_mappings()
+    utils.map("n", "<C-A-'>", "SymbolsOutline", {cmd = true, desc = "Symbol outline"})
+    utils.map("n", "<Leader>kp", "Lspsaga preview_definitions", {cmd = true, desc = "Preview definition"})
+    utils.map(
+        "n",
+        "<C-b>",
+        "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>",
+        {desc = "Scroll back (saga)"}
+    )
+    utils.map(
+        "n",
+        "<C-f>",
+        "<cmd>lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>",
+        {desc = "Scroll forward (saga)"}
     )
 end
 

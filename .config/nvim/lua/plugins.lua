@@ -225,7 +225,7 @@ return packer.startup(
             use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
-            -- numToStr/Navigator.nvim
+            -- use({"numToStr/Navigator.nvim"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits"})
             use({"fedepujol/move.nvim", conf = "move"})
             use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
@@ -355,7 +355,7 @@ return packer.startup(
                 }
             )
 
-            -- rmagatti/auto-session
+            -- use({"rmagatti/auto-session", event = "BufReadPre"})
             -- use({"Shatur/neovim-session-manager", event = "BufReadPre", conf = "session_manager"})
             -- ]]] === Session ===
 
@@ -996,10 +996,6 @@ return packer.startup(
             use({"ron-rs/ron.vim", ft = "ron"})
             -- ]]] === Syntax-Highlighting ===
 
-            -- =========================== Keymaps - Nest ========================== [[[
-            -- use({ "LionC/nest.nvim", conf = "plugs.keymaps" })
-            -- ]]] === Keymaps ===
-
             -- ============================= File-Viewer =========================== [[[
             use({"mattn/vim-xxdcursor"})
             use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
@@ -1099,117 +1095,124 @@ return packer.startup(
             -- "tamago324/nlsp-settings.nvim"
             -- "lukas-reineke/lsp-format.nvim"
             -- "theHamsta/nvim-semantic-tokens"
+            -- "onsails/diaglist.nvim" => Show errors in quickfix
 
-            -- use "simrat39/rust-tools.nvim"
+            -- === Languages ===
+            -- "simrat39/rust-tools.nvim"
             -- "jose-elias-alvarez/typescript.nvim",
-            -- use "ray-x/go.nvim"
+            -- "ray-x/go.nvim"
 
+            use(
+                {
+                    "williamboman/nvim-lsp-installer",
+                    {
+                        "neovim/nvim-lspconfig",
+                        config = function()
+                            require("plugs.lsp.installer")
+                            require("plugs.lsp")
+                        end,
+                        wants = {"nvim-cmp", "lua-dev.nvim", "null-ls.nvim"},
+                        requires = {"onsails/diaglist.nvim"}
+                    },
+                    after = {
+                        "nvim-lspconfig",
+                        "nvim-cmp",
+                        "cmp-nvim-lsp",
+                        "null-ls.nvim",
+                        "lspsaga.nvim",
+                        "symbols-outline.nvim"
+                    }
+                }
+            )
+
+            use( { "jose-elias-alvarez/null-ls.nvim", requires = {"plenary.nvim"} })
             use(
                 {
                     "simrat39/symbols-outline.nvim",
                     cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+                    keys = {{"n", "<C-A-'>"}},
                     conf = "outline"
                 }
             )
 
-            -- use(
-            --     {
-            --         "williamboman/nvim-lsp-installer",
-            --         {
-            --             "neovim/nvim-lspconfig",
-            --             config = function()
-            --                 require("plugs.lsp.installer")
-            --                 require("plugs.lsp")
-            --             end,
-            --             wants = {"nvim-cmp", "lua-dev.nvim", "null-ls.nvim"}
-            --         },
-            --         after = {
-            --             "nvim-lspconfig",
-            --             "nvim-cmp",
-            --             "cmp-nvim-lsp",
-            --             "null-ls.nvim",
-            --             "lspsaga.nvim"
-            --         }
-            --     }
-            -- )
-            --
-            -- use(
-            --     {
-            --         "jose-elias-alvarez/null-ls.nvim",
-            --         requires = {"plenary.nvim"}
-            --     }
-            -- )
-            --
-            -- use({"RRethy/vim-illuminate", conf = "illuminate"})
-            -- use({"tami5/lspsaga.nvim"})
-            -- use({"b0o/SchemaStore.nvim", module = "schemastore"})
-            -- use({"ray-x/lsp_signature.nvim", after = "nvim-lspconfig"})
-            -- use({"j-hui/fidget.nvim", after = {"nvim-lspconfig"}, conf = "fidget"})
-            -- use({"weilbith/nvim-code-action-menu", cmd = "CodeActionMenu", keys = {{"n", "<A-CR>"}}})
-            -- use({"kosayoda/nvim-lightbulb", conf = "lightbulb"})
+
+            use({"tami5/lspsaga.nvim"})
+            use({"b0o/SchemaStore.nvim", module = "schemastore"})
+            -- use({"RRethy/vim-illuminate", conf = "illuminate", desc = "Highlight other uses of same word"})
+            use({"ray-x/lsp_signature.nvim", after = "nvim-lspconfig"})
+            use(
+                {
+                    "j-hui/fidget.nvim",
+                    after = {"nvim-lspconfig"},
+                    conf = "fidget",
+                    desc = "Standalone UI for nvim-lsp progress"
+                }
+            )
+            use({"weilbith/nvim-code-action-menu", cmd = "CodeActionMenu", keys = {{"n", "<A-CR>"}}})
+            use({"kosayoda/nvim-lightbulb", conf = "lightbulb"})
             -- use({"theHamsta/nvim-semantic-tokens", conf = "semantic_tokens"})
-            --
-            -- -- ╭──────────────────────────────────────────────────────────╮
-            -- -- │                        Completion                        │
-            -- -- ╰──────────────────────────────────────────────────────────╯
-            -- -- use "tamago324/cmp-zsh"
-            -- -- use { 'andersevenrud/cmp-tmux', after = 'nvim-cmp' }
-            -- -- xuse { 'f3fora/cmp-spell', after = 'nvim-cmp' }
-            --
-            -- use(
-            --     {
-            --         "hrsh7th/nvim-cmp",
-            --         requires = {
-            --             {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lua", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-path", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-cmdline", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-calc", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lsp-signature-help", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lsp-document-symbol", after = "nvim-cmp"},
-            --             {"lukas-reineke/cmp-rg", after = "nvim-cmp"},
-            --             {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
-            --             {"ray-x/cmp-treesitter", after = "nvim-cmp"},
-            --             {"petertriho/cmp-git", after = "nvim-cmp"},
-            --             {"tzachar/cmp-tabnine", run = "./install.sh", after = "nvim-cmp"},
-            --             {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"},
-            --             {"lukas-reineke/cmp-under-comparator", after = "nvim-lspconfig"}
-            --         },
-            --         after = {"nvim-treesitter", "lspkind-nvim"},
-            --         conf = "plugs.cmp"
-            --     }
-            -- )
-            --
-            -- use({"onsails/lspkind-nvim", module = "lspkind"})
-            --
-            -- -- Rust
-            -- use(
-            --     {
-            --         "simrat39/rust-tools.nvim",
-            --         -- ft = "rust",
-            --         wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
-            --         after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
-            --     }
-            -- )
-            --
-            -- -- Clangd
-            -- use(
-            --     {
-            --         "p00f/clangd_extensions.nvim",
-            --         wants = {"nvim-lspconfig", "nvim-dap"},
-            --         after = {"nvim-lspconfig"}
-            --     }
-            -- )
-            --
-            -- -- Typescript
-            -- use(
-            --     {
-            --         "jose-elias-alvarez/nvim-lsp-ts-utils",
-            --         wants = {"nvim-lspconfig"},
-            --         after = {"nvim-lspconfig"}
-            --     }
-            -- )
+
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                        Completion                        │
+            -- ╰──────────────────────────────────────────────────────────╯
+            -- use "tamago324/cmp-zsh"
+            -- use { 'andersevenrud/cmp-tmux', after = 'nvim-cmp' }
+            -- xuse { 'f3fora/cmp-spell', after = 'nvim-cmp' }
+
+            use(
+                {
+                    "hrsh7th/nvim-cmp",
+                    requires = {
+                        {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-nvim-lua", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-path", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-cmdline", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-calc", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-nvim-lsp-signature-help", after = "nvim-cmp"},
+                        {"hrsh7th/cmp-nvim-lsp-document-symbol", after = "nvim-cmp"},
+                        {"lukas-reineke/cmp-rg", after = "nvim-cmp"},
+                        {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
+                        {"ray-x/cmp-treesitter", after = "nvim-cmp"},
+                        {"petertriho/cmp-git", after = "nvim-cmp"},
+                        {"tzachar/cmp-tabnine", run = "./install.sh", after = "nvim-cmp"},
+                        {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"},
+                        {"lukas-reineke/cmp-under-comparator", after = "nvim-lspconfig"}
+                    },
+                    after = {"nvim-treesitter", "lspkind-nvim"},
+                    conf = "plugs.cmp"
+                }
+            )
+
+            use({"onsails/lspkind-nvim", module = "lspkind", desc = "Pictograms for completion"})
+
+            -- Rust
+            use(
+                {
+                    "simrat39/rust-tools.nvim",
+                    -- ft = "rust",
+                    wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
+                    after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
+                }
+            )
+
+            -- Clangd
+            use(
+                {
+                    "p00f/clangd_extensions.nvim",
+                    wants = {"nvim-lspconfig", "nvim-dap"},
+                    after = {"nvim-lspconfig"}
+                }
+            )
+
+            -- Typescript
+            use(
+                {
+                    "jose-elias-alvarez/nvim-lsp-ts-utils",
+                    wants = {"nvim-lspconfig"},
+                    after = {"nvim-lspconfig"}
+                }
+            )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Coc                            │
@@ -1231,10 +1234,10 @@ return packer.startup(
                     run = "yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
+                        -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
                         {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
-                        -- {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
+                        {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
                     }
                 }
             )
@@ -1475,7 +1478,6 @@ return packer.startup(
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Git                            │
             -- ╰──────────────────────────────────────────────────────────╯
-            use({"ahmedkhalf/project.nvim", conf = "project", after = "telescope.nvim"})
             use(
                 {
                     "tpope/vim-fugitive",
@@ -1539,6 +1541,8 @@ return packer.startup(
                 }
             )
 
+            use({"ahmedkhalf/project.nvim", conf = "project", after = "telescope.nvim"})
+            use({"akinsho/git-conflict.nvim", conf = "git_conflict"})
             use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
 
             use(
@@ -1589,26 +1593,6 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "akinsho/git-conflict.nvim",
-                    conf = "git_conflict"
-                }
-            )
-
-            -- use(
-            --     {
-            --         "christoomey/vim-conflicted",
-            --         cmd = {"Conflicted", "Merger", "GitNextConflict"},
-            --         keys = {
-            --             "<Plug>DiffgetLocal",
-            --             "<Plug>DiffgetUpstream",
-            --             "<Plug>DiffgetLocal",
-            --             "<Plug>DiffgetUpstream"
-            --         }
-            --     }
-            -- )
-
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                          Fennel                          │
             -- ╰──────────────────────────────────────────────────────────╯
@@ -1634,4 +1618,5 @@ return packer.startup(
         end
     }
 )
--- use({"mhinz/vim-startify", conf = "plugs.startify"})
+
+-- rcarriga/neotest

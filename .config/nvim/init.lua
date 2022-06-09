@@ -242,8 +242,9 @@ vim.schedule(
                     -- "coc-lists",
                     -- "coc-sh",
                     -- "coc-tslint",
+                    -- "coc-rls",
+                    -- "coc-sumneko-lua",
                     "coc-json",
-                    "coc-sumneko-lua",
                     "coc-clangd",
                     "coc-css",
                     "coc-diagnostic",
@@ -256,7 +257,6 @@ vim.schedule(
                     "coc-perl",
                     "coc-prettier",
                     "coc-pyright",
-                    "coc-rls",
                     "coc-r-lsp",
                     "coc-rust-analyzer",
                     "coc-snippets",
@@ -317,8 +317,8 @@ vim.schedule(
                 -- set_hl("CocSemDefaultLibraryNamespace", {link = "TSNamespace"})
 
                 ex.packadd("coc-kvs")
-                ex.packadd("coc-wxy")
                 ex.packadd("coc.nvim")
+                -- ex.packadd("coc-wxy")
             end,
             300
         )

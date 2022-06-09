@@ -11,10 +11,11 @@ local C = require("common.color")
 local wk = require("which-key")
 local promise = require("promise")
 
+local ex = nvim.ex
+local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
 local api = vim.api
-local ex = nvim.ex
 
 local diag_qfid
 
@@ -602,7 +603,7 @@ function M.init()
     -- TODO: Prevent having to setup both
     -- An error for lua.filetypes is shown
     -- M.sumneko_ls()
-    M.lua_langserver()
+    -- M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
 
@@ -805,15 +806,10 @@ function M.init()
     )
 
     -- === CodeActions ===
-    -- map("n", "<Leader>jo", "<cmd>lua require('code_action_menu').open_code_action_menu()<CR>")
-    -- map("n", "<Leader>jl", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
-    -- map("n", "<Leader>jc", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
-    -- map("n", "<Leader>je", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
-
     -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
     -- map("n", "<C-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
-    map("n", "<A-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('cursor')<CR>")
-    map("n", "<C-A-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('line')<CR>")
+    map("n", "<A-CR>", "<cmd>lua R('coc_code_action_menu').open_code_action_menu('cursor')<CR>")
+    map("n", "<C-A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>")
 
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
     -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")

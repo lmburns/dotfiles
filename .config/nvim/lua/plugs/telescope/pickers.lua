@@ -17,6 +17,7 @@ local Path = require("plenary.path")
 local Job = require("plenary.job")
 local scan = require("plenary.scandir")
 
+local b_utils = require("common.utils") -- "builtin" utils
 local color = require("common.color")
 
 P.use_highlighter = true

@@ -10,7 +10,7 @@ M.icons = {
     lsp = {
         error = "", -- ✗  ••
         warn = "", -- 
-        info = "", -- 
+        info = "", --  
         hint = ""
     },
     git = {

@@ -141,6 +141,58 @@ local plugins = {
     coc_status = function()
         return vim.trim(g.coc_status or "")
     end,
+    lsp_status = function()
+        local spinner_frames = {"⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"}
+        local success, lsp_status = pcall(require, "lsp-status")
+        if not success then
+            return ""
+        end
+        local buf_messages = lsp_status.messages()
+        if vim.tbl_isempty(buf_messages) then
+            return ""
+        end
+        local msgs = {}
+        for _, msg in ipairs(buf_messages) do
+            local name = msg.name
+            local client_name = name
+            local contents = ""
+            if msg.progress then
+                contents = msg.title
+                if msg.message then
+                    contents = contents .. " " .. msg.message
+                end
+
+                if msg.percentage then
+                    contents = contents .. "(" .. msg.percentage .. ")"
+                end
+
+                if msg.spinner then
+                    contents = contents .. " " .. spinner_frames[(msg.spinner % #spinner_frames) + 1]
+                end
+            elseif msg.status then
+                contents = msg.content
+                if msg.uri then
+                    local filename = vim.uri_to_fname(msg.uri)
+                    filename = vim.fn.fnamemodify(filename, ":~:.")
+                    local space = math.min(60, math.floor(0.6 * vim.opt.columns:get()))
+                    if #filename > space then
+                        filename = vim.fn.pathshorten(filename)
+                    end
+
+                    contents = "(" .. filename .. ") " .. contents
+                end
+            else
+                contents = msg.content
+            end
+
+            table.insert(msgs, client_name .. ":" .. contents)
+        end
+        status = ""
+        for index, msg in ipairs(msgs) do
+            status = status .. (index > 1 and " | " or "") .. msg
+        end
+        return status .. " "
+    end,
     sep = function()
         return ""
     end,
@@ -236,7 +288,7 @@ local sections_1 = {
         "%l:%c",
         -- "%p%%" .. (("/%s"):format(require("common.builtin").tokei() or "")) .. "/%L",
         "%p%%/%L",
-        plugins.search_result,
+        plugins.search_result
     }
 }
 
