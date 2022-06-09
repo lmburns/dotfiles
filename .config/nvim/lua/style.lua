@@ -22,9 +22,9 @@ M.icons = {
         }
     },
     git = {
-        add = "", -- '',
-        mod = "",
-        remove = "", -- '',
+        add = " ", -- + '',
+        mod = " ", -- ~
+        remove = " ", -- - '',
         ignore = "",
         rename = "",
         diff = "",
@@ -86,7 +86,42 @@ M.icons = {
         readonly = "[]",
         unnamed = "[No Name]",
         quickfix = "",
-        loclist = ""
+        loclist = "",
+        spell = ""
+    },
+    ui = {
+        ArrowClosed = "",
+        ArrowOpen = "",
+        Lock = "",
+        Circle = "",
+        BigCircle = "",
+        BigUnfilledCircle = "",
+        Close = "",
+        NewFile = "",
+        Search = "",
+        Lightbulb = "",
+        Project = "",
+        Dashboard = "",
+        History = "",
+        Comment = "",
+        Bug = "",
+        Code = "",
+        Telescope = "",
+        Gear = "",
+        Package = "",
+        List = "",
+        SignIn = "",
+        SignOut = "",
+        Check = "",
+        Fire = "",
+        Note = "",
+        BookMark = "",
+        Pencil = "",
+        -- ChevronRight = "",
+        ChevronRight = ">",
+        Table = "",
+        Calendar = "",
+        CloudDownload = ""
     }
 }
 
@@ -142,41 +177,6 @@ M.lsp = {
         Operator = "Ψ", -- 
         TypeParameter = "" --   
     }
-}
-
-M.ui = {
-    ArrowClosed = "",
-    ArrowOpen = "",
-    Lock = "",
-    Circle = "",
-    BigCircle = "",
-    BigUnfilledCircle = "",
-    Close = "",
-    NewFile = "",
-    Search = "",
-    Lightbulb = "",
-    Project = "",
-    Dashboard = "",
-    History = "",
-    Comment = "",
-    Bug = "",
-    Code = "",
-    Telescope = "",
-    Gear = "",
-    Package = "",
-    List = "",
-    SignIn = "",
-    SignOut = "",
-    Check = "",
-    Fire = "",
-    Note = "",
-    BookMark = "",
-    Pencil = "",
-    -- ChevronRight = "",
-    ChevronRight = ">",
-    Table = "",
-    Calendar = "",
-    CloudDownload = ""
 }
 
 M.current = {

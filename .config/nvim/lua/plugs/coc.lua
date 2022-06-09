@@ -12,6 +12,7 @@ local wk = require("which-key")
 local promise = require("promise")
 
 local ex = nvim.ex
+local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
@@ -105,7 +106,7 @@ function M.show_documentation()
             cmd("norm! K")
         end
     else
-        cmd(("!%s %s"):format(o.keywordprg, fn.expand("<cword>")))
+        cmd(("!%s %s"):format(vim.o.keywordprg, fn.expand("<cword>")))
     end
 end
 

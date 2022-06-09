@@ -243,6 +243,8 @@
   ],
 
   "Lua.diagnostics.globals": [
+    "packer_plugins",
+    "_t",
     "hs",
     "vim",
     "nvim",
@@ -368,6 +370,8 @@
           "diagnostics": {
             "enable": true,
             "globals": [
+              "packer_plugins",
+              "_t",
               "hs",
               "vim",
               "nvim",

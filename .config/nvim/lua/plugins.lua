@@ -1305,7 +1305,7 @@ return packer.startup(
                         },
                         {
                             "stevearc/aerial.nvim",
-                            after = "nvim-treesitter"
+                            requires = "nvim-treesitter",
                         },
                         {
                             "danymat/neogen",
