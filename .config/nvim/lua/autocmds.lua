@@ -462,6 +462,7 @@ nvim.autocmd.lmb__Help = {
 local smart_close_filetypes = {
     -- 'help',
     -- 'qf',
+    "godoc",
     "git",
     "git-status",
     "git-log",

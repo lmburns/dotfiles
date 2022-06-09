@@ -231,7 +231,8 @@ cmp.setup(
                 {name = "treesitter"},
                 {name = "luasnip"},
                 {name = "buffer", keyword_length = 5},
-                {name = "path"}
+                {name = "path"},
+                {name = "crates"}
             },
             {
                 {name = "buffer"},
@@ -260,7 +261,7 @@ cmp.setup(
                 compare.kind,
                 compare.sort_text,
                 compare.length,
-                compare.order,
+                compare.order
             }
         }
     }

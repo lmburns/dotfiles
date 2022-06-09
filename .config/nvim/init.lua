@@ -91,28 +91,20 @@ else
     require("plugins").compile()
 end
 
-require("mapping")
-require("abbr")
-
--- =========================== Markdown =============================== [[[
-g.vimwiki_ext2syntax = {
-    [".Rmd"] = "markdown",
-    [".rmd"] = "markdown",
-    [".md"] = "markdown",
-    [".markdown"] = "markdown",
-    [".mdown"] = "markdown"
-}
-g.vimwiki_list = {{path = "~/vimwiki", syntax = "markdown", ext = ".md"}}
-g.vimwiki_table_mappings = 0
--- ]]] === Markdown ===
-
-require("functions")
-require("autocmds")
-require("common.qf")
-require("common.mru")
--- require("common.reg")
-require("common.grepper")
--- require("plugs.fold")
+a.async_void(
+    function()
+        ex.packadd("cfilter")
+        require("mapping")
+        require("abbr")
+        require("functions")
+        require("autocmds")
+        require("common.qf")
+        require("common.mru")
+        require("common.grepper")
+        -- require("common.reg")
+        -- require("plugs.fold")
+    end
+)()
 
 -- ============================ Notify ================================ [[[
 a.async_void(
@@ -274,7 +266,7 @@ vim.schedule(
                     "coc-yank",
                     "coc-zig",
                     "coc-tsserver",
-                    "coc-eslint",
+                    "coc-eslint"
                 }
 
                 g.coc_enable_locationlist = 0

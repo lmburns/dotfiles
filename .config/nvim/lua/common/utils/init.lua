@@ -89,6 +89,17 @@ M.safe_require = function(name, cb)
     end
 end
 
+---Load a module, returning only one parameter
+---@param name string module to check
+---@return table|nil
+M.load_module = function(name)
+    local ok, module = pcall(require, name)
+    if not ok then
+        return nil
+    end
+    return module
+end
+
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
 ---@param mode string
 ---@param motion string

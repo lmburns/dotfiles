@@ -116,7 +116,6 @@ end
 
 -- p(R("plugs.todo-comments").get_todo_count())
 
--- TODO: testing
 local function init()
     M.setup()
 

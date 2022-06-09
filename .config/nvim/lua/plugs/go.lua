@@ -1,5 +1,6 @@
 local M = {}
 
+local dev = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -39,6 +40,16 @@ function M.setup()
     -- g.go_play_open_browser = 1
 end
 
+local function wrap_qf(fname, ...)
+    local args = dev.tbl_pack(...)
+    return function()
+        if type(fname) == "string" then
+            fn[fname](dev.tbl_unpack(args))
+        end
+        ex.copen()
+    end
+end
+
 local function init()
     M.setup()
 
@@ -68,7 +79,7 @@ local function init()
             pattern = "go",
             command = function()
                 local bufnr = api.nvim_get_current_buf()
-                opt_local.list = false
+                vim.opt_local.list = false
 
                 map(bufnr, "n", "<Leader>rp", ":GORUNS<CR>")
                 map(bufnr, "n", "<Leader>ru", ":GORUN<CR>")
@@ -90,16 +101,16 @@ local function init()
                 -- map(bufnr, "n", "gC", ":GoCallees<CR>")
                 -- map(bufnr, "n", "gc", ":GoCallers<CR>")
                 -- map(bufnr, "n", "gr", ":GoReferrers<CR>")
-                map(bufnr, "n", "gd", "<Plug>(go-def)")
-                map(bufnr, "n", "gy", "<Plug>(go-def-type)")
-                map(bufnr, "n", "gi", "<Plug>(go-implements)")
-                map(bufnr, "n", "gC", "<Plug>(go-callees)")
-                map(bufnr, "n", "gc", "<Plug>(go-callers)")
-                map(bufnr, "n", "gr", "<Plug>(go-referrers)")
-                map(bufnr, "n", "gS", "<Plug>(go-callstack)")
+                map(bufnr, "n", "gd", wrap_qf("go#def#Jump", '', 0)) -- "<Plug>(go-def)"
+                map(bufnr, "n", "gy", wrap_qf("go#def#Jump", '', 1)) -- "<Plug>(go-def-type)"
+                map(bufnr, "n", "gi", wrap_qf("go#implements#Implements", -1)) -- "<Plug>(go-implements)"
+                map(bufnr, "n", "gC", wrap_qf("go#guru#Callees", -1)) -- "<Plug>(go-callees)"
+                map(bufnr, "n", "gc", wrap_qf("go#calls#Callers")) -- "<Plug>(go-callers)"
+                map(bufnr, "n", "gr", wrap_qf("go#referrers#Referrers", -1)) -- "<Plug>(go-referrers)"
+                map(bufnr, "n", "gS", wrap_qf("go#guru#Callstack", -1)) -- "<Plug>(go-callstack)"
 
+                map(bufnr, "n", "<Leader>rn", "<Plug>(go-rename)")
                 map(bufnr, "n", "<Leader>jg", "<Plug>(go-diagnostics)")
-
                 map(bufnr, "n", "<Leader>if", "<Plug>(go-iferr)")
 
                 map(bufnr, "n", "<Leader>fd", ":GoDeclsDir<CR>")

@@ -928,7 +928,14 @@ return packer.startup(
             --     }
             -- )
 
-            use({"vimwiki/vimwiki", conf = "vimwiki", after = colorscheme})
+            use(
+                {
+                    "vimwiki/vimwiki",
+                    setup = [[require("plugs.config").vimwiki_setup()]],
+                    conf = "vimwiki",
+                    after = colorscheme
+                }
+            )
             use({"FraserLee/ScratchPad", conf = "scratchpad"})
             -- ]]] === Markdown ===
 
@@ -1231,7 +1238,7 @@ return packer.startup(
                 {
                     "neoclide/coc.nvim",
                     branch = "master",
-                    run = "yarn install --frozen-lockfile",
+                    run = "gh pr checkout 3862 && yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
@@ -1305,7 +1312,7 @@ return packer.startup(
                         },
                         {
                             "stevearc/aerial.nvim",
-                            requires = "nvim-treesitter",
+                            requires = "nvim-treesitter"
                         },
                         {
                             "danymat/neogen",

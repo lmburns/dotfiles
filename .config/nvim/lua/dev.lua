@@ -274,6 +274,17 @@ M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
 end
 
+-- M.format_args = function(...)
+--   local args = M.tbl_pack(...)
+--   if args.n == 0 then
+--     return nil
+--   elseif args.n == 1 and type(args[1]) == 'table' then
+--     return sanitize(args[1])
+--   else
+--     return sanitize(args)
+--   end
+-- end
+
 ---Unpack a table into arguments. Similar to `table.unpack`
 ---@param t table table to unpack
 ---@param i number

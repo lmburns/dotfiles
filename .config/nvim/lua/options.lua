@@ -1,4 +1,5 @@
 local M = {}
+
 local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
@@ -9,9 +10,6 @@ local g = vim.g
 -- Leader/local leader
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
-
--- map({ "n", "x" }, "<SubLeader>", "<Nop>", { noremap = true, silent = true })
--- map({ "n", "x" }, ";", "<SubLeader>", { noremap = false })
 
 vim.tbl_map(
     function(p)
@@ -264,9 +262,9 @@ o.fillchars = {
     eob = " ", -- suppress ~ at EndOfBuffer
     diff = "╱", -- alternatives = ⣿ ░ ─
     msgsep = " ", -- alternatives: ‾ ─
-    foldopen = "▾",
+    foldopen = "▾", -- 
     foldsep = "│",
-    foldclose = "▸",
+    foldclose = "▸", -- 
     -- Use thick lines for window separators
     horiz = "━",
     horizup = "┻",

@@ -129,8 +129,6 @@ function M.listish()
             }
         }
     )
-
-    ex.pa("cfilter")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -148,7 +146,31 @@ function M.crates()
             autoupdate = true,
             loading_indicator = true,
             date_format = "%Y-%m-%d",
-            disable_invalid_feature_diagnostic = false
+            thousands_separator = ".",
+            notification_title = "Crates",
+            disable_invalid_feature_diagnostic = false,
+            popup = {
+                autofocus = false,
+                copy_register = '"',
+                style = "minimal",
+                border = "none",
+                show_version_date = false,
+                show_dependency_version = true,
+                max_height = 30,
+                min_width = 20,
+                padding = 1,
+                keys = {
+                    hide = {"q", "<esc>"},
+                    open_url = {"<cr>"},
+                    select = {"<cr>"},
+                    select_alt = {"s"},
+                    toggle_feature = {"<cr>"},
+                    copy_value = {"yy"},
+                    goto_item = {"gd", "K", "<C-LeftMouse>"},
+                    jump_forward = {"<c-i>"},
+                    jump_back = {"<c-o>", "<C-RightMouse>"}
+                }
+            }
         }
     )
 
@@ -159,50 +181,19 @@ function M.crates()
             pattern = "Cargo.toml",
             command = function()
                 local bufnr = nvim.get_current_buf()
-                map(
-                    "n",
-                    "<Leader>ca",
-                    function()
-                        crates.upgrade_all_crates()
-                    end,
-                    {buffer = bufnr}
-                )
+                map("n", "<Leader>ca", crates.upgrade_all_crates, {buffer = bufnr})
+                map("n", "<Leader>cu", crates.upgrade_crate, {buffer = bufnr})
+                map("n", "<Leader>ch", crates.open_homepage, {buffer = bufnr})
+                map("n", "<Leader>cr", crates.open_repository, {buffer = bufnr})
+                map("n", "<Leader>cd", crates.open_documentation, {buffer = bufnr})
+                map("n", "<Leader>co", crates.open_crates_io, {buffer = bufnr})
 
-                map(
-                    "n",
-                    "<Leader>cu",
-                    function()
-                        crates.upgrade_crate()
-                    end,
-                    {buffer = bufnr}
-                )
+                map("n", "vd", crates.show_dependencies_popup, {buffer = bufnr})
+                map("n", "vv", crates.show_versions_popup, {buffer = bufnr})
+                map("n", "vf", crates.show_features_popup, {buffer = bufnr})
 
-                map(
-                    "n",
-                    "<Leader>ch",
-                    function()
-                        crates.open_homepage()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cr",
-                    function()
-                        crates.open_repository()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cd",
-                    function()
-                        crates.open_documentation()
-                    end,
-                    {buffer = bufnr}
-                )
+                map("n", "[g", vim.diagnostic.goto_prev, {buffer = bufnr})
+                map("n", "]g", vim.diagnostic.goto_next, {buffer = bufnr})
 
                 wk.register(
                     {
@@ -210,7 +201,10 @@ function M.crates()
                         ["<Leader>cu"] = "Upgrade crate",
                         ["<Leader>ch"] = "Open homepage",
                         ["<Leader>cr"] = "Open repository",
-                        ["<Leader>cd"] = "Open documentation"
+                        ["<Leader>cd"] = "Open documentation",
+                        ["<Leader>co"] = "Open crates.io",
+                        ["vd"] = "Dependencies popup",
+                        ["vv"] = "Version popup", ["vf"] = "Show features"
                     }
                 )
             end
@@ -330,10 +324,6 @@ function M.open_browser()
     )
 end
 
--- /home/lucas/.config/zsh
--- /home/lucas/.config/zsh/.zshrc
--- https://github.com/lmburns/dotfiles
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           Suda                           │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -345,8 +335,6 @@ end
 -- │                          GHLine                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.ghline()
-    -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
-
     wk.register(
         {
             ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
@@ -554,6 +542,18 @@ function M.vimwiki()
     -- highlight TabLineSel guifg=#37662b guibg=NONE
 
     map("n", "<Leader>vw", ":VimwikiIndex<CR>")
+end
+
+function M.vimwiki_setup()
+    g.vimwiki_ext2syntax = {
+        [".Rmd"] = "markdown",
+        [".rmd"] = "markdown",
+        [".md"] = "markdown",
+        [".markdown"] = "markdown",
+        [".mdown"] = "markdown"
+    }
+    g.vimwiki_list = {{path = "~/vimwiki", syntax = "markdown", ext = ".md"}}
+    g.vimwiki_table_mappings = 0
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

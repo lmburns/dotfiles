@@ -20,8 +20,9 @@ local api = vim.api
 
 local diag_qfid
 
--- FIX: Diagnostic signs don't disappear as quick as they used to
---      Sometimes needing file to be saved. Other times that not working either
+-- FIX: Diagnostic are not refreshing properly
+--      When using [g/]g to naviagte there aren't any
+--      However vim.b.coc_diagnostic_info still shows errors
 
 ---Get the nearest symbol in reference to the location of the cursor
 ---@return string
@@ -147,7 +148,6 @@ function M.a2sync(action, args, time)
     return err, res
 end
 
--- TODO: Learn how to use Promises
 ---Run an asynchronous CocAction using a Javascript type framework of Promise
 ---@param action string
 ---@vararg table

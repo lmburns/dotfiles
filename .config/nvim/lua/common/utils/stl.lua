@@ -164,7 +164,7 @@ M.plugins.spell = {
     toggle = function()
         return api.nvim_win_get_option(0, "spell")
     end,
-    fn = ([[%%"%s]]):format(icons.spell)
+    fn = ([[%%"%s]]):format(icons.misc.spell)
 }
 
 M.plugins.wrap = {

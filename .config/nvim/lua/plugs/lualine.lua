@@ -89,6 +89,7 @@ local sections_1 = {
                 hint = icons.lsp.sb.hint
             }
         },
+        -- FIX: When gps isn't show there's a white seprator shown
         {
             "diff",
             colored = true,
@@ -97,7 +98,8 @@ local sections_1 = {
                 modified = "GitSignsChange", --  "DiffChange",
                 removed = "GitSignsDelete" -- "DiffDelete"
             },
-            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove}
+            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
+            separator = {left = ""}
         },
         {plugs.luapad.fn, cond = plugs.luapad.toggle},
         {plugs.debugger.fn, cond = plugs.debugger.toggle}
@@ -146,7 +148,7 @@ local sections_2 = {
         {
             "branch",
             icon = icons.git.branch,
-            cond = conditions.check_git_workspace,
+            cond = conditions.check_git_workspace
         }
         -- "b:gitsigns_head"
         -- "Fugitivehead"

@@ -82,6 +82,7 @@ _G.BLACKLIST_FT = {
     "git",
     "gitcommit",
     "gitrebase",
+    "godoc",
     "help",
     "log",
     "luapad",

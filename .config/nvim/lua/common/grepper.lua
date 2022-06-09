@@ -113,11 +113,14 @@ end
 ---@param type string
 ---@param only_curr boolean grep only current buffer
 M.telescope_grep = function(type, only_curr)
-    -- local saved_unnamed_register = fn.getreg("@@")
+    local select_save = vim.o.selection
+    vim.o.selection = 'inclusive'
+    local reg_save = nvim.reg['@']
+
     if type:match("v") then
-        vim.cmd([[normal! `<v`>y]])
+        ex.normal_('`<v`>y')
     elseif type:match("char") then
-        vim.cmd([[normal! `[v`]y']])
+        ex.normal_('`[v`]y')
     else
         return
     end
@@ -132,13 +135,14 @@ M.telescope_grep = function(type, only_curr)
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
         search_dirs = {only_curr and curr or (#root == 0 and cwd or root)},
-        search = fn.getreg("@@")
+        search = nvim.reg["@"]
     }
 
     require("telescope.builtin").grep_string(opts)
 
-    -- nvim.reg["@@"] = saved_unnamed_register
-    -- fn.setreg("@@", saved_unnamed_register)
+    -- This sets the register to what is queried
+    vim.o.selection = select_save
+    nvim.reg['@'] = reg_save
 end
 
 ---Show grep results of the current buffer in telescope
