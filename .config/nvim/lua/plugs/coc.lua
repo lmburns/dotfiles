@@ -230,7 +230,8 @@ function M.accept_complete()
         vim.schedule(
             function()
                 vim.o.ei = ei_bak
-                fn.CocActionAsync("stopCompletion")
+                -- fn.CocActionAsync("stopCompletion")
+                fn["coc#pum#close"]()
             end
         )
         return utils.termcodes["<C-y>"]
@@ -424,12 +425,21 @@ end
 
 ---Used with popup completions
 ---@return boolean
-function M.check_backspace()
+function _G.check_backspace()
     -- local col = fn.col(".") - 1
     -- return col or (fn.getline(".")[col - 1]):match([[\s]])
 
     local _, col = unpack(api.nvim_win_get_cursor(0))
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
+end
+
+---Used to map <CR> with both autoparis and coc
+function _G.map_cr()
+    if fn["coc#pum#visible"]() ~= 0 then
+        return fn["coc#pum#confirm"]()
+    else
+        return require("nvim-autopairs").autopairs_cr()
+    end
 end
 
 ---Check whether Coc has been initialized
@@ -601,9 +611,10 @@ function M.init()
     diag_qfid = -1
 
     -- TODO: Prevent having to setup both
-    -- An error for lua.filetypes is shown
+
+    -- local client = vim.lsp.get_active_clients()
     -- M.sumneko_ls()
-    -- M.lua_langserver()
+    M.lua_langserver()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
 
@@ -769,7 +780,6 @@ function M.init()
             ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
-
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
@@ -853,26 +863,30 @@ function M.init()
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
 
     -- Popup
-    map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
+    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], {expr = true, silent = true})
+    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], {expr = true, silent = true})
+    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true, silent = true})
+    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true, silent = true})
+
+    -- map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
     -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true, silent = true})
 
-    map("i", "<C-m>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
+    -- FIX: This mapping
+    -- map("i", "<C-'>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
 
-    -- Git
-    -- map("n", ",ga", ":<C-u>CocCommand git.chunkStage<CR>", {silent = true})
-    -- map("n", "<Leader>go", ":<C-u>CocCommand git.browserOpen<CR>", {silent = true})
-    -- map("n", "<Leader>gla", ":<C-u>CocFzfList commits<cr>", {silent = true})
-    -- map("n", "<Leader>glc", ":<C-u>CocFzfList bcommits<cr>", {silent = true})
-    -- map("n", "<Leader>gF", ":<C-u>CocCommand git.foldUnchanged<CR>", {silent = true})
+    map("i", "<CR>", "v:lua.map_cr()", {expr = true})
 
-    -- nmap <silent> gs <Plug>(coc-git-chunkinfo)
-    -- map("n", "<Leader>gll", "<Plug>(coc-git-commit)", {noremap = true, silent = true})
+    map(
+        "i",
+        "<Tab>",
+        ("coc#pum#visible() ? %s : %s"):format(
+            [[coc#pum#next(1)]],
+            [[v:lua.check_backspace() ? "\<Tab>" : coc#refresh()]]
+        ),
+        {expr = true}
+    )
 
-    -- map("n", "{g", "<Plug>(coc-git-prevchunk)")
-    -- map("n", "}g", "<Plug>(coc-git-nextchunk)")
-
-    -- Show chunk diff at current position
-    -- map("n", "gs", "<Plug>(coc-git-chunkinfo)", { noremap = false })
+    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], {expr = true})
 
     -- Snippet
     map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})

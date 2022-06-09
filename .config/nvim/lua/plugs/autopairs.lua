@@ -21,7 +21,7 @@ local opt = {
     enable_afterquote = true, -- add bracket pairs after quote
     enable_check_bracket_line = true, --- check bracket in same line
     enable_bracket_in_quote = true, --
-    map_cr = true,
+    map_cr = false,
     map_bs = true, -- map the <BS> key
     map_c_h = true, -- Map the <C-h> key to delete a pair
     map_c_w = true, -- map <c-w> to delete a pair if possible
@@ -300,19 +300,9 @@ function M.rules()
     -- )
 end
 
-function M.ap_coc()
-    if fn.pumvisible() ~= 0 then
-        return vim.fn["coc#_select_confirm"]()
-    else
-        return autopairs.autopairs_cr()
-    end
-end
-
 local function init()
     M.setup()
     M.rules()
-
-    -- map("i", "<CR>", [[v:lua.lua require'plugs.autopairs'.ap_coc()]], {expr = true})
 end
 
 init()

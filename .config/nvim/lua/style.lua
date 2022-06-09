@@ -3,15 +3,23 @@ local M = {}
 M.border = {
     line = {"🭽", "▔", "🭾", "▕", "🭿", "▁", "🭼", "▏"},
     rectangle = {"┌", "─", "┐", "│", "┘", "─", "└", "│"},
-    rounded = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"}
+    rounded = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"},
+    double = {"╔", "═", "╗", "║", "╝", "═", "╚", "║"}
 }
 
 M.icons = {
     lsp = {
-        error = "", -- ✗  ••
+        error = "", -- ✗   ••
         warn = "", -- 
         info = "", --  
-        hint = ""
+        hint = "",
+        -- I like differing icons in the statusbar
+        sb = {
+            error = " ",
+            warn = " ",
+            info = " ", --  
+            hint = " " -- 
+        }
     },
     git = {
         add = "", -- '',
@@ -21,7 +29,8 @@ M.icons = {
         rename = "",
         diff = "",
         repo = "",
-        logo = ""
+        logo = "",
+        branch = "" --
     },
     documents = {
         file = "",
@@ -70,7 +79,14 @@ M.icons = {
         double_chevron_right = "»",
         table = "",
         calendar = "",
-        block = "▌"
+        block = "▌",
+        Tag = "",
+        Watch = "",
+        modified = "[+]",
+        readonly = "[]",
+        unnamed = "[No Name]",
+        quickfix = "",
+        loclist = ""
     }
 }
 
@@ -162,8 +178,6 @@ M.ui = {
     Calendar = "",
     CloudDownload = ""
 }
-
-M.misc = {Tag = "", Watch = ""}
 
 M.current = {
     border = M.border.rounded

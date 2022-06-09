@@ -2,6 +2,8 @@ local M = {}
 
 local C = require("common.color")
 local colors = require("kimbox.colors")
+local style = require("style")
+local icons = style.icons
 
 local utils = require("common.utils")
 local map = utils.map
@@ -201,13 +203,13 @@ local plugins = {
         local ll = fn.getloclist(fn.winnr(), {idx = 0, size = 0})
         local count = ll.size
         local current = ll.idx
-        return count == 0 and "" or (" %d/%d "):format(current, count)
+        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.loclist, current, count)
     end,
     quickfix_count = function()
         local qf = fn.getqflist({idx = 0, size = 0})
         local count = qf.size
         local current = qf.idx
-        return count == 0 and "" or (" %d/%d "):format(current, count)
+        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.quickfix, current, count)
     end
 }
 
@@ -235,7 +237,12 @@ local sections_1 = {
         {
             "filename",
             path = 0,
-            symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40},
+            symbols = {
+                modified = icons.misc.modified,
+                readonly = icons.misc.readonly,
+                unnamed = icons.misc.unnamed,
+                shorting_target = 40
+            },
             color = function(section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                 return {gui = vim.bo.modified and "bold" or "none"}
@@ -261,7 +268,12 @@ local sections_1 = {
         {
             "diagnostics",
             sources = {"nvim_diagnostic", "coc"},
-            symbols = {error = " ", warn = " ", info = " ", hint = " "}
+            symbols = {
+                error = icons.lsp.sb.error,
+                warn = icons.lsp.sb.warn,
+                info = icons.lsp.sb.info,
+                hint = icons.lsp.sb.hint
+            }
         },
         {
             "diff",
@@ -270,7 +282,7 @@ local sections_1 = {
             --     modified = "DiffChange",
             --     removed = "DiffDelete"
             -- },
-            symbols = {added = "+", modified = "~", removed = "-"} -- Changes the symb
+            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove}
         },
         plugins.luapad,
         plugins.debugger
@@ -278,7 +290,7 @@ local sections_1 = {
     lualine_z = {
         {
             "branch",
-            icon = "",
+            icon = icons.git.branch,
             cond = function()
                 return conditions.check_git_workspace() and plugins.search_result() == ""
             end
@@ -305,7 +317,7 @@ local sections_2 = {
         {
             "filename",
             path = 1,
-            symbols = {modified = "[+]", readonly = " ", unnamed = "[No name]"}
+            symbols = {modified = icons.misc.modified, readonly = icons.misc.readonly, unnamed = icons.misc.unnamed}
         }
     },
     lualine_c = {},
@@ -316,7 +328,7 @@ local sections_2 = {
             cond = conditions.is_available_gps,
             color = {fg = colors.red}
         },
-        {"branch", icon = "", cond = conditions.check_git_workspace}
+        {"branch", icon = icons.git.branch, cond = conditions.check_git_workspace}
         -- "b:gitsigns_head"
         -- "Fugitivehead"
     },
@@ -538,7 +550,11 @@ local function init()
                     {
                         "filename",
                         path = 0,
-                        symbols = {modified = "[+]", readonly = "[] ", unnamed = "[No name]", shorting_target = 40},
+                        symbols = {
+                            modified = icons.misc.modified,
+                            readonly = icons.misc.readonly,
+                            unnamed = icons.misc.unnamed
+                        },
                         color = function(section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                             return {gui = vim.bo.modified and "bold" or "none"}

@@ -243,7 +243,7 @@ vim.schedule(
                     -- "coc-sh",
                     -- "coc-tslint",
                     -- "coc-rls",
-                    -- "coc-sumneko-lua",
+                    "coc-sumneko-lua",
                     "coc-json",
                     "coc-clangd",
                     "coc-css",
@@ -318,7 +318,7 @@ vim.schedule(
 
                 ex.packadd("coc-kvs")
                 ex.packadd("coc.nvim")
-                -- ex.packadd("coc-wxy")
+                ex.packadd("nvim-autopairs")
             end,
             300
         )

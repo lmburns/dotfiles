@@ -7,6 +7,8 @@ local dmap = require("dial.map")
 local augroup = utils.augroup
 local map = utils.map
 
+M.filetypes = {}
+
 ---Define an augend constant
 ---@param elements table
 ---@param word boolean
@@ -25,13 +27,29 @@ local function aug(elements, word, cyclic)
     )
 end
 
+---Extend an array of augments
+---@param ft string
+---@param dst table
+---@param src table
+---@return table
+local function extend(ft, dst, src)
+    table.insert(M.filetypes, ft)
+    return vim.list_extend(dst, src)
+end
+
 function M.setup()
     local default = {
-        augend.integer.alias.decimal, -- nonnegative decimal number (0, 1, 2, 3, ...)
-        augend.integer.alias.hex, -- nonnegative hex number  (0x01, 0x1a1f, etc.)
+        -- augend.integer.alias.decimal, -- nonnegative decimal number (0, 1, 2, 3, ...)
+        augend.integer.alias.decimal_int, -- any decimal number (0, 1, 2, 3, ...)
+        augend.integer.alias.hex, -- nonnegative hex number  (0x01, 0x1a20, etc.)
+        augend.integer.alias.octal, -- 0o00, 0o11, 0o24,
+        augend.integer.alias.binary, -- 0b0101, 0b11000111
+        augend.date.alias["%m/%d"],
+        augend.date.alias["%H:%M"], -- hour/minute
         augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
         augend.constant.alias.bool, -- boolean value (true <-> false)
-        augend.semver.alias.semver,
+        augend.semver.alias.semver, -- 4.3.0
+        augend.hexcolor.new {case = "lower"}, -- color #b4c900
         aug({"above", "below"}),
         aug({"and", "or"}),
         aug({"True", "False"}),
@@ -79,27 +97,29 @@ function M.setup()
 
     -- Extend the default table
     -- Is there a better way to extend the default?
-    local lua = {
-        aug({"true", "false", "nil"}),
-        aug({"elseif", "if"}),
-        aug({"==", "~="}, true),
-        aug({"pairs", "ipairs"})
-    }
-    vim.list_extend(lua, default)
+    local lua =
+        extend(
+        "lua",
+        default,
+        {
+            aug({"true", "false", "nil"}),
+            aug({"elseif", "if"}),
+            aug({"==", "~="}, false),
+            aug({"pairs", "ipairs"})
+        }
+    )
 
-    local python = vim.list_extend(default, aug({"elif", "if"}))
-
-    local sh = vim.list_extend(default, aug({"elif", "if"}))
-
-    local zsh = vim.list_extend(default, {aug({"elif", "if"}), aug({"((:))", "[[:]]"}, false)})
-
-    local typescript = vim.list_extend(default, {aug({"let", "const", "var"}), aug({"===", "!=="})})
-
-    local javascript = vim.list_extend(typescript, {aug({"public", "private", "protected"})})
+    local python = extend("python", default, aug({"elif", "if"}))
+    local sh = extend("sh", default, aug({"elif", "if"}))
+    local zsh = extend("zsh", default, {aug({"elif", "if"}), aug({"((:))", "[[:]]"}, false)})
+    local typescript = extend("typescript", default, {aug({"let", "const", "var"}), aug({"===", "!=="})})
+    local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
+    local vim_ = extend("vim", default, {aug({"elseif", "if"})})
 
     local go =
-        vim.list_extend(
-        go,
+        extend(
+        "go",
+        default,
         {
             aug({":=", "="}),
             aug({"interface", "struct"}),
@@ -109,8 +129,6 @@ function M.setup()
             aug({"complex64", "complex128"})
         }
     )
-
-    local vim_ = vim.list_extend(default, {aug({"elseif", "if"})})
 
     require("dial.config").augends:register_group(
         {
@@ -144,22 +162,21 @@ function M.setup()
 end
 
 ---Create an autocmd for a given filetype
----@param group table
 ---@param ft string
 local function inc_dec_augroup(ft)
     -- Overwrite the default dial mappings that are set below
     augroup(
-        "lmb__DialIncDec",
+        {"lmb__DialIncDec", false},
         {
             event = "FileType",
-            pattern = ft,
+            pattern = {ft},
             command = function()
                 map("n", "+", dmap.inc_normal(ft))
                 map("n", "_", dmap.dec_normal(ft))
-                map("v", "+", dmap.inc_visual(ft), {silent = true})
-                map("v", "_", dmap.dec_visual(ft), {silent = true})
-                map("v", "g+", dmap.inc_gvisual(ft), {silent = true})
-                map("v", "g_", dmap.dec_gvisual(ft), {silent = true})
+                map("v", "+", dmap.inc_visual(ft))
+                map("v", "_", dmap.dec_visual(ft))
+                map("v", "g+", dmap.inc_gvisual(ft))
+                map("v", "g_", dmap.dec_gvisual(ft))
             end,
             desc = ("Increment decrement types with dial in %s"):format(ft)
         }
@@ -169,21 +186,22 @@ end
 local function init()
     M.setup()
 
-    map("n", "+", dmap.inc_normal(), {silent = true})
-    map("n", "_", dmap.dec_normal(), {silent = true})
-    map("v", "+", dmap.inc_visual(), {silent = true})
-    map("v", "_", dmap.dec_visual(), {silent = true})
-    map("v", "g+", dmap.inc_gvisual(), {silent = true})
-    map("v", "g_", dmap.dec_gvisual(), {silent = true})
+    map("n", "+", dmap.inc_normal())
+    map("n", "_", dmap.dec_normal())
+    map("v", "+", dmap.inc_visual())
+    map("v", "_", dmap.dec_visual())
+    map("v", "g+", dmap.inc_gvisual())
+    map("v", "g_", dmap.dec_gvisual())
 
-    inc_dec_augroup("lua")
-    inc_dec_augroup("python")
-    inc_dec_augroup("sh")
-    inc_dec_augroup("zsh")
-    inc_dec_augroup("typescript")
-    inc_dec_augroup("javascript")
-    inc_dec_augroup("go")
-    inc_dec_augroup("vim")
+    for _, ft in pairs(M.filetypes) do
+        inc_dec_augroup(ft)
+    end
+
+    -- _t(M.filetypes):map(
+    --     function(ft)
+    --         inc_dec_augroup(ft)
+    --     end
+    -- )
 end
 
 init()

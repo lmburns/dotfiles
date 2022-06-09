@@ -154,7 +154,8 @@ wk.register(
 wk.register(
     {
         ["d"] = {[["_d]], "Delete (blackhole)"},
-        ["y"] = {[[ygv<Esc>]], "Place the cursor back where started on yank"}
+        ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"}
+        -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },

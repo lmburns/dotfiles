@@ -1553,6 +1553,7 @@ function M.registers()
     -- g.registers_hide_only_whitespace = 1
     g.registers_window_border = "rounded"
     g.registers_insert_mode = false -- removes <C-R> insert mapping
+    g.registers_visual_mode = false -- removes <C-R> insert mapping
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1870,12 +1871,12 @@ function M.incline()
                 if bufname == "" then
                     return "[No name]"
                 else
-                    bufname = fn.fnamemodify(bufname, ":h")
+                    -- bufname = fn.fnamemodify(bufname, ":h")
                     bufname = Path:new(bufname):shorten(3, {-2, -1})
-                    bufname = bufname:gsub("^/hom/luc/.co/nvi", "$NVIM")
-                    bufname = bufname:gsub("^/hom/luc/.lo/sha", "$DATA")
-                    bufname = bufname:gsub("^/hom/luc/.co", "$CONFIG")
-                    bufname = bufname:gsub("^/hom/luc", "~")
+                    bufname = bufname:gsub("^/hom/luc/.co/nvi/", "$NVIM/")
+                    bufname = bufname:gsub("^/hom/luc/.lo/sha/", "$DATA/")
+                    bufname = bufname:gsub("^/hom/luc/.co/", "$CONFIG/")
+                    bufname = bufname:gsub("^/hom/luc/", "~/")
                 end
                 return bufname
             end,

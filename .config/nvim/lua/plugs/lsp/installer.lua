@@ -43,6 +43,7 @@ lsp_installer.setup(
             -- "yamlls",
             -- "zls"
         },
+        automatic_installation = true,
         install_root_dir = vim.env.HOME .. "/.cache/lsp-servers",
         ui = {
             icons = {

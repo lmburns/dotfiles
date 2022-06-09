@@ -437,6 +437,63 @@ M.setup_context_vt = function()
     )
 end
 
+M.setup_treesurfer = function()
+    ex.packadd("syntax-tree-surfer")
+
+    require("syntax-tree-surfer").setup(
+        {
+            highlight_group = "STS_highlight",
+            disable_no_instance_found_report = false,
+            default_desired_types = {
+                "function",
+                "if_statement",
+                "else_clause",
+                "else_statement",
+                "elseif_statement",
+                "for_statement",
+                "while_statement",
+                "switch_statement"
+            },
+            left_hand_side = "fdsawervcxqtzb",
+            right_hand_side = "jkl;oiu.,mpy/n",
+            icon_dictionary = {
+                ["if_statement"] = "",
+                ["else_clause"] = "",
+                ["else_statement"] = "",
+                ["elseif_statement"] = "",
+                ["for_statement"] = "ﭜ",
+                ["while_statement"] = "ﯩ",
+                ["switch_statement"] = "ﳟ",
+                ["function"] = "",
+                ["variable_declaration"] = ""
+            }
+        }
+    )
+
+    map("n", "vd", '<cmd>lua require("syntax-tree-surfer").move("n", false)<cr>', {desc = "Swap next node"})
+    map("n", "vu", '<cmd>lua require("syntax-tree-surfer").move("n", true)<cr>', {desc = "Swap previous node"})
+    map("n", "vn", '<cmd>lua require("syntax-tree-surfer").select()<cr>', {desc = "Select node"})
+    map("n", "vm", '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>', {desc = "Select current node"})
+
+    map("x", "<M-]>", '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>', {desc = "Next node"})
+    map("x", "<M-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Previous node"})
+    map("x", "'", '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>', {desc = "Parent node"})
+    map("x", '"', '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>', {desc = "Child node"})
+
+    map(
+        "x",
+        "<C-l>l",
+        '<cmd>lua require("syntax-tree-surfer").surf("next", "visual", true)<cr>',
+        {desc = "Swap next node"}
+    )
+    map(
+        "x",
+        '<C-l>h',
+        '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
+        {desc = "Swap previous node"}
+    )
+end
+
 -- M.setup_comment_frame = function()
 --     ex.packadd("nvim-comment-frame")
 --
@@ -487,7 +544,7 @@ M.setup = function()
             "json",
             "kotlin",
             "lua",
-            "luap", -- lua regex
+            "luap", -- lua regex?
             "make",
             "markdown",
             -- "norg",
@@ -519,8 +576,6 @@ M.setup = function()
             enable = true, -- false will disable the whole extension
             use_languagetree = false,
             disable = {"html", "comment", "zsh"}, -- list of language that will be disabled
-            -- I like the additional highlighting; however, when CocAction('highlight') is used
-            -- the regular syntax (not treesitter) is used as the foreground some of the time
             additional_vim_regex_highlighting = true,
             -- custom_captures = {}
             custom_captures = {
@@ -802,6 +857,7 @@ local function init()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
+    M.setup_treesurfer()
 
     -- 'r = Smart rename
     -- ;d = Go to definition of symbol under cursor
@@ -938,7 +994,7 @@ local function init()
     require("tsht").config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
     map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("o", ",", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("n", "R", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("n", "vx", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
 
     queries = require("nvim-treesitter.query")

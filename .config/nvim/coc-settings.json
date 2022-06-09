@@ -26,7 +26,7 @@
     // "cpp",
     "go",
     "html",
-    "java",
+    "java"
     // "javascript",
     // "lua",
     // "rust",
@@ -46,16 +46,25 @@
   "diagnostic.signPriority": 20,
   "diagnostic.enableHighlightLineNumber": false,
 
-  // FloatBorder
+  "suggest.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "FloatBorder"
+    // "borderhighlight": "#D9AE80",
+    // "highlight": "Normal",
+  },
   "diagnostic.floatConfig": {
     "border": true,
-    "borderhighlight": "#D9AE80",
+    "rounded": true,
+    "borderhighlight": "FloatBorder",
+    // "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
     "focusable": true
   },
   "hover.floatConfig": {
     "border": true,
+    "rounded": true,
     "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
@@ -63,6 +72,7 @@
   },
   "signature.floatConfig": {
     "border": true,
+    "rounded": true,
     "borderhighlight": "#D9AE80",
     // "highlight": "Normal",
     "maxWidth": 120,
@@ -70,6 +80,8 @@
   },
   // "dialog.floatHighlight": "Normal",
   "dialog.floatBorderHighlight": "Normal",
+  "dialog.rounded": true,
+  "notification.border": true,
 
   "diagnostic-languageserver.filetypes": {
     "sh": "shellcheck"
@@ -124,15 +136,13 @@
     "typescript": ["javascript"]
   },
   "coc.preferences.snippetHighlight": false,
-  "suggest.disableMenu": false,
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 100,
-  "suggest.enablePreview": true,
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
   "suggest.detailMaxLength": 100,
-  "suggest.noselect": false,
-  "suggest.selection": "none",
+  "suggest.selection": "none", // recentlyUsed
+  "suggest.virtualText": false,
 
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
@@ -334,6 +344,66 @@
       "command": "crystalline",
       "args": ["--stdio"],
       "filetypes": ["crystal"]
+    },
+    "lua": {
+      "command": "/usr/bin/lua-language-server",
+      // "command": "/home/lucas/.config/coc/extensions/coc-lua-data/sumneko-lua-ls/bin/Linux/lua-language-server",
+      "filetypes": ["lua"],
+      "rootPatterns": [".git/"],
+      "settings": {
+        "Lua": {
+          "workspace": {
+            "maxPreload": 10000,
+            "preloadFileSize": 10000
+            // "checkThirdParty": false,
+            // "library": { "/usr/share/nvim/runtime/lua": true }
+          },
+          "runtime": {
+            "version": "LuaJIT"
+          },
+          "completion": {
+            "callSnippet": "Replace",
+            "postfix": "."
+          },
+          "diagnostics": {
+            "enable": true,
+            "globals": [
+              "hs",
+              "vim",
+              "nvim",
+              "it",
+              "describe",
+              "before_each",
+              "after_each"
+            ],
+            "disable": [
+              "lowercase-global",
+              "redundant-parameter",
+              "missing-parameter"
+            ],
+            "neededFileStatus": {
+              "different-requires": "None"
+            }
+          },
+          "IntelliSense": {
+            "traceLocalSet": true,
+            "traceReturn": true,
+            "traceBeSetted": true,
+            "traceFieldInject": true
+          },
+          "semantic": {
+            "enable": true
+          },
+          "telemetry": {
+            "enable": false
+          },
+          "window": {
+            "progressBar": false,
+            "statusBar": false
+          }
+        }
+      },
+      "disabledFeatures": ["documentFormatting", "documentRangeFormatting"]
     }
   }
 }

@@ -45,7 +45,7 @@ vim.diagnostic.config(
         severity_sort = true,
         float = {
             focusable = true,
-            source = "if_many",
+            source = "always",
             border = style.current.border,
             header = {"", "DiagnosticHeader"}
         }
