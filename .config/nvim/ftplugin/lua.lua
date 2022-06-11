@@ -2,8 +2,8 @@ local coc = require("plugs.coc")
 local utils = require("common.utils")
 local map = utils.map
 
-map("n", "<Leader>tt", "<Plug>PlenaryTestFile")
-vim.cmd([[let &l:include = '\v<((do|load)file|require)[^''"]*[''"]\zs[^''"]+']])
+vim.bo.include = [[\v<((do|load)file|require)[^''"]*[''"]\zs[^''"]+]]
+map("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
 
 map(
     "n",
@@ -11,5 +11,5 @@ map(
     function()
         coc.run_command("sumneko-lua.restart", {})
     end,
-    {buffer = bufnr, desc = "Reload Luaorkspace"}
+    {buffer = true, desc = "Reload Lua workspace"}
 )

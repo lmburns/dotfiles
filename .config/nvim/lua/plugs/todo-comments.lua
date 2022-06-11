@@ -1,7 +1,10 @@
 local M = {}
 
-local map = require("common.utils").map
+local utils = require("common.utils")
+local augroup = utils.augroup
 local wk = require("which-key")
+
+local api = vim.api
 
 local Search = require("todo-comments.search")
 
@@ -135,6 +138,34 @@ local function init()
         },
         {mode = "n", silent = true}
     )
+
+    -- vim.defer_fn(
+    --     function()
+    --         vim.cmd("au! Todo BufWinEnter")
+
+    --         -- TODO: Figure this out
+    --         augroup(
+    --             {"Todo", false},
+    --             {
+    --                 event = "BufWinEnter",
+    --                 pattern = "*",
+    --                 command = function()
+    --                     local bufnr = api.nvim_get_current_buf()
+    --                     local bufname = api.nvim_buf_get_name(bufnr)
+    --                     if
+    --                         not bufname:match("%[Command Line%]") or not bufname:match("%[Wilder Float %d%]") or
+    --                             bufname ~= "" or
+    --                             vim.bo[bufnr].bt ~= "nofile"
+    --                      then
+    --                         vim.notify(bufname)
+    --                         require("todo-comments.highlight").attach()
+    --                     end
+    --                 end
+    --             }
+    --         )
+    --     end,
+    --     1000
+    -- )
 end
 
 init()

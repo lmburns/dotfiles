@@ -512,8 +512,14 @@ nvim.autocmd.lmb__SmartClose = {
             if fn.winnr("$") == 1 and vim.bo.buftype == "quickfix" then
                 api.nvim_buf_delete(0, {force = true})
             end
+
+            -- TODO: Hide cursorline on popup
+            -- local bufnr = api.nvim_get_current_buf()
+            -- if fn.bufname(bufnr) == "[No Name]" then
+            --     vim.opt_local.cursorline = false
+            -- end
         end,
-        desc = "Close QuickFix if last window"
+        desc = "Close QuickFix if last window, disable cursorline on [No Name]"
     },
     {
         -- Automatically close corresponding loclist when quitting a window

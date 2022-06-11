@@ -22,7 +22,7 @@ local function init()
             pattern = "rust",
             command = function()
                 -- Rust analyzer really slows things down, so this needs more time
-               opt_local.timeoutlen = 500
+               vim.opt_local.timeoutlen = 500
 
                 local bufnr = nvim.get_current_buf()
 

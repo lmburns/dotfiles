@@ -1,5 +1,6 @@
 local M = {}
 
+local dev = require("dev")
 local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
@@ -584,11 +585,13 @@ function M.lua_langserver()
     -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = M.get_lua_runtime()})
     fn["coc#config"]("languageserver.lua", {settings = settings})
 
-    -- Add async library to Lua workspace library
-    local library = fn["coc#util#get_config"]("languageserver.lua").settings.Lua.workspace.library
-    local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
-    library = vim.tbl_deep_extend("force", library, {[promise] = true})
-    fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = library})
+    -- Add async library to Lua workspace library0
+    if dev.plugin_loaded("promise-async") then
+        local library = fn["coc#util#get_config"]("languageserver.lua").settings.Lua.workspace.library
+        local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
+        library = vim.tbl_deep_extend("force", library, {[promise] = true})
+        fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = library})
+    end
 end
 
 ---Setup the Sumneko-Coc Lua language-server
@@ -596,12 +599,34 @@ end
 function M.sumneko_ls()
     local library = fn["coc#util#get_config"]("Lua").workspace.library
     local runtime = _t(M.get_lua_runtime(true)):keys()
-    library = vim.tbl_deep_extend("force", library, runtime)
+    library = vim.list_extend(library, runtime)
 
-    local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
-    library = vim.tbl_deep_extend("force", library, {promise})
+    local luadev = require("lua-dev.sumneko").types()
+    library = vim.list_extend(library, {luadev})
+
+    if dev.plugin_loaded("promise-async") then
+        local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
+        library = vim.list_extend(library, {promise})
+    end
 
     fn["coc#config"]("Lua.workspace", {library = library})
+end
+
+-- FIX: Style is not found when required
+---Set the icons for Coc
+function M.set_icons()
+    -- vim.defer_fn(
+    --     function()
+    --         local icons = require("style.icons")
+    --         local diag_config = fn["coc#util#get_config"]("diagnostic")
+    --         diag_config.errorSign = icons.lsp.error
+    --         diag_config.warningSign = icons.lsp.warn
+    --         diag_config.hintSign = icons.lsp.hint
+    --         diag_config.infoSign = icons.lsp.info
+    --         fn["coc#config"]("diagnostic", {diagnostic = diag_config})
+    --     end,
+    --     1000
+    -- )
 end
 
 -- ========================== Init ==========================
@@ -611,14 +636,11 @@ M.value = 100
 function M.init()
     diag_qfid = -1
 
-    -- TODO: Prevent having to setup both
-
     -- local client = vim.lsp.get_active_clients()
-    -- M.sumneko_ls()
-    M.lua_langserver()
+    -- M.lua_langserver()
+    M.sumneko_ls()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
-
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 
@@ -723,7 +745,6 @@ function M.init()
     --  CocSemDeclarationClass  CocSemDeclarationInterface     CocSemDeclarationEnum         CocSemDeclarationType
     -- CocSemDeclarationNamespace
 
-    -- use `:Fold` to fold current buffer
     -- command("Fold", [[:call CocAction('fold', <f-args>)]], {nargs = "?"})
     -- command("CocMarket", [[:CocFzfList marketplace]], {nargs = 0})
     -- command("Prettier", [[:CocCommand prettier.formatFile]], {nargs = 0})
@@ -827,12 +848,7 @@ function M.init()
     -- map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
     -- map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 
-    wk.register(
-        {
-            ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected"}
-        },
-        {mode = "x"}
-    )
+    map("x", "<Leader>fm", "<Plug>(coc-format-selected)", {desc = "Format selected"})
 
     -- map("n", "<A-c>", ":CocFzfList commands<CR>")
     -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
@@ -906,7 +922,6 @@ function M.init()
     )
 
     -- map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
-
     map({"n", "s"}, "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], {expr = true, silent = true})
     map({"n", "s"}, "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], {expr = true, silent = true})
     map("i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]], {expr = true, silent = true})

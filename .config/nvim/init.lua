@@ -4,9 +4,10 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
--- FIX: Tab character hides part of the line
+-- FIX: Tab character hides part of the line when file doesn't have tabs on
 -- FIX: Changelist is overridden somewhat when re-opening a file (I think coc?)
 -- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
+-- FIX: When opening command line window (i.e., <C-c>) todo-comments autocmd error
 
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -206,6 +207,14 @@ vim.schedule(
                         end,
                         description = "Source plugins file"
                     }
+                    -- {
+                    --     event = "User",
+                    --     pattern = "PackerCompileDone",
+                    --     command = function()
+                    --         vim.notify("Finished compiling")
+                    --     end,
+                    --     desc = "Send compilation done notification"
+                    -- }
                 )
 
                 -- Highlight syntax
@@ -234,7 +243,10 @@ vim.schedule(
                     -- "coc-lists",
                     -- "coc-sh",
                     -- "coc-tslint",
-                    -- "coc-rls",
+                    --
+                    -- RLS is not needed with rust-analyzer
+                    -- However, I've noticed that diagnostics are better and quicker
+                    "coc-rls",
                     "coc-sumneko-lua",
                     "coc-json",
                     "coc-clangd",

@@ -2,6 +2,8 @@ local M = {}
 
 local map = require("common.utils").map
 
+local g = vim.g
+
 --[[
 | Key       | Option             | Values                                                     |
 | --------- | ------------------ | --------------------------------------------------         |
@@ -95,19 +97,18 @@ end
 local function init()
     M.setup()
 
-    map("x", "ga", "<Plug>(EasyAlign)", {noremap = false})
-    map("x", "<Leader>ga", "<Plug>(LiveEasyAlign)", {noremap = false})
+    map("n", "ga", "<Plug>(EasyAlign)")
+    map("x", "ga", "<Plug>(EasyAlign)")
+    map("x", "<Leader>ga", "<Plug>(LiveEasyAlign)")
     map(
         "x",
         "<Leader>gi",
-        [[:EasyAlign//ig['Comment']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]],
-        {noremap = false}
+        [[:EasyAlign//ig['Comment']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]]
     )
     map(
         "x",
         "<Leader>gs",
-        [[:EasyAlign//ig['String']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]],
-        {noremap = false}
+        [[:EasyAlign//ig['String']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]]
     )
 end
 

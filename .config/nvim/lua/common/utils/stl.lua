@@ -4,6 +4,7 @@ M.plugins = {}
 M.extensions = {}
 M.conditions = {}
 
+local dev = require("dev")
 local C = require("common.color")
 local colors = require("kimbox.colors")
 local icons = require("style").icons
@@ -183,8 +184,7 @@ end
 ---Show number of TODO comments in buffer
 M.plugins.todo_comment_count = {
     toggle = function()
-        local plug = nvim.plugins["todo-comments.nvim"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("todo-comments.nvim")
     end,
     fn = function()
         return require("plugs.todo-comments").get_todo_count()
@@ -194,8 +194,7 @@ M.plugins.todo_comment_count = {
 ---Show function is statusbar with vista
 M.plugins.vista_nearest_method = {
     toggle = function()
-        local plug = nvim.plugins["vista.vim"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("vista.vim")
     end,
     fn = function()
         return vim.b.vista_nearest_method_or_function
@@ -204,8 +203,7 @@ M.plugins.vista_nearest_method = {
 
 M.plugins.gutentags_progress = {
     toggle = function()
-        local plug = nvim.plugins["vim-gutentags"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("vim-gutentags")
     end,
     fn = function()
         return fn["gutentags#statusline"]("[", "]")
@@ -214,8 +212,7 @@ M.plugins.gutentags_progress = {
 
 M.plugins.gps = {
     toggle = function()
-        local plug = nvim.plugins["nvim-gps"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("nvim-gps")
     end,
     fn = function()
         local opts = {
@@ -230,8 +227,7 @@ M.plugins.gps = {
 
 M.plugins.luapad = {
     toggle = function()
-        local plug = nvim.plugins["nvim-luapad"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("nvim-luapad")
     end,
     fn = function()
         local status = fn["luapad#lightline_status"]()
@@ -247,8 +243,7 @@ M.plugins.luapad = {
 
 M.plugins.debugger = {
     toggle = function()
-        local plug = nvim.plugins["dap"]
-        return plug and plug.loaded
+        return dev.plugin_loaded("dap")
     end,
     fn = function()
         -- local session = require('dap').session()

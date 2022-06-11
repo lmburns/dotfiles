@@ -30,7 +30,7 @@ M.icons = {
         diff = "",
         repo = "",
         logo = "",
-        branch = "" --
+        branch = "" -- 
     },
     documents = {
         file = "",

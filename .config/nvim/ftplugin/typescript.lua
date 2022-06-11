@@ -2,7 +2,7 @@ local coc = require("plugs.coc")
 local utils = require("common.utils")
 local map = utils.map
 
-map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 tsc --target es2020 % && node %:r.js<CR>")
+map("n", "<Leader>r<CR>", "<cmd>w<CR><cmd>FloatermNew --autoclose=0 tsc --target es2020 % && node %:r.js<CR>")
 -- map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 npx ts-node %<CR>")
 
 map(

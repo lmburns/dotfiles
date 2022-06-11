@@ -1,5 +1,5 @@
 diff --git i/plugin/UnconditionalPaste.vim w/plugin/UnconditionalPaste.vim
-index d39c274..72992b0 100644
+index d39c274..3a5a86b 100644
 --- i/plugin/UnconditionalPaste.vim
 +++ w/plugin/UnconditionalPaste.vim
 @@ -143,20 +143,26 @@ endif
@@ -43,7 +43,7 @@ index d39c274..72992b0 100644
  			nmap g]P <Plug>UnconditionalPasteIndentedBefore
  			nmap g[P <Plug>UnconditionalPasteIndentedBefore
  			nmap g[p <Plug>UnconditionalPasteIndentedBefore
-+			nmap gap <Plug>UnconditionalPasteIndentedAfter
++			nmap ghp <Plug>UnconditionalPasteIndentedAfter
  		    endif
  		elseif l:pasteName ==# 'MoreIndent'
  		    let l:pasteMappingDefaultKeys = ']]' . l:pasteCmd

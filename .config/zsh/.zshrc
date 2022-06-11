@@ -720,11 +720,11 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     evansmurithi/cloak \
   lbin from'gh-r' \
     lotabout/rargs
-
+  # lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   # atclone"emplace init zsh | tail -n +20 > _emplace" \
   # eval'emplace init zsh | head -n 20' atload"alias em='emplace'" \
   # atload'export EMPLACE_CONFIG="$XDG_CONFIG_HOME/emplace/emplace.toml"' \
-  #   lmburns/emplace
+  #   tversteeg/emplace
 
 # === rust extensions === [[[
 zt 0c light-mode null lbin \

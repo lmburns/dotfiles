@@ -819,9 +819,9 @@ function M.sandwhich()
     -- Sandwhich
     -- dss = automatic deletion
     -- css = automatic changing
-    -- ySi = ask head and tail (Add)
+    -- ySi = ask head and tail (add)
     -- yS = to end of line
-    -- yss = whole line
+    -- yss = whole line (add)
     -- yiss = inside nearest delimiter
     -- y{a,i}si = head - tail (select)
     -- yaa = <here>
@@ -1010,7 +1010,8 @@ function M.sandwhich()
 
     wk.register(
         {
-            ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"}
+            ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
+            ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
         }
     )
 end
@@ -1404,14 +1405,22 @@ function M.colorizer()
             "css",
             "typescript",
             "javascript",
+            "conf",
             lua = {names = false}
         },
         {
-            RGB = true,
-            RRGGBB = true,
-            RRGGBBAA = true,
-            names = false,
-            mode = "background"
+            RGB         = true,         -- #RGB hex codes
+            RRGGBB      = true,         -- #RRGGBB hex codes
+            RRGGBBAA    = true,         -- #RRGGBBAA hex codes
+            names       = true,         -- "Name" codes like Blue
+            rgb_0x      = false,        -- 0xAARRGGBB hex codes
+            rgb_fn      = false,        -- CSS rgb() and rgba() functions
+            hsl_fn      = false,        -- CSS hsl() and hsla() functions
+            css         = false,        -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+            css_fn      = false,        -- Enable all CSS *functions*: rgb_fn, hsl_fn
+            -- Available modes: foreground, background, virtualtext
+            mode        = 'background'; -- Set the display mode.
+            virtualtext =               '■',
         }
     )
 end
@@ -1510,11 +1519,27 @@ function M.comment_box()
     )
     map(
         {"n", "v"},
+        "<Leader>bd",
+        function()
+            cb.cbox(7)
+        end,
+        {desc = "Left fixed box, center text (double)"}
+    )
+    map(
+        {"n", "v"},
         "<Leader>cc",
         function()
             cb.cbox(21)
         end,
-        {desc = "Left fixed box, center text (top)"}
+        {desc = "Left fixed box, center text (top/bottom)"}
+    )
+    map(
+        {"n", "v"},
+        "<Leader>ca",
+        function()
+            cb.acbox(21)
+        end,
+        {desc = "Left center box, center text (top/bottom)"}
     )
     map(
         {"n", "v"},

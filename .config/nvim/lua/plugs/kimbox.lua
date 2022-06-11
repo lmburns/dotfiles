@@ -94,7 +94,7 @@ M.catppuccin = function()
                 TSParameter = {gui = "none"},
                 TSFunction = {gui = "bold"},
                 TSMethod = {gui = "bold"},
-                Function = {gui = "bold"},
+                Function = {gui = "bold"}
                 -- TSNamespace = {gui="none"},
             }
         )
@@ -113,7 +113,7 @@ M.kanagawa = function()
         BufferLineFill = {bg = ibg},
         BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
         BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
-        BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, style = "bold,italic"}, -- current
+        BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, bold = true, italic = true}, -- current
         --
         BufferLineTab = {fg = cp.sumiInk0, bg = cp.ibg},
         BufferLineTabSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
@@ -172,12 +172,12 @@ M.kanagawa = function()
     require("kanagawa").setup(
         {
             undercurl = true, -- enable undercurls
-            commentStyle = "italic",
-            functionStyle = "bold",
-            keywordStyle = "NONE",
-            statementStyle = "NONE",
-            typeStyle = "bold",
-            variablebuiltinStyle = "italic",
+            commentStyle = {italic = true},
+            functionStyle = {bold = true},
+            keywordStyle = {},
+            statementStyle = {},
+            typeStyle = {bold = true},
+            variablebuiltinStyle = {italic = true},
             specialReturn = true, -- special highlight for the return keyword
             specialException = true, -- special highlight for exception handling keywords
             transparent = false, -- do not set background color

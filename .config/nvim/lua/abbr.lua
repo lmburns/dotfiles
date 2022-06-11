@@ -32,11 +32,7 @@ function M.abbr(abbr)
 
     local command = {}
     local mods = {}
-
-    local modes = {
-        insert = "i",
-        command = "c"
-    }
+    local modes = {insert = "i", command = "c"}
 
     local lhs = abbr.lhs
     local rhs = abbr.rhs

@@ -3,27 +3,12 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 
+local ft = require("Comment.ft")
 local cmt_utils = require("Comment.utils")
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
 local wk = require("which-key")
-
--- local state = {}
-
--- gcip = paragraph
--- gcw = start next word
--- gc5j = 5 lines down
--- gca} = around curly braces
--- gc} = next blank line
-
--- gco = start comment next line
--- gcO = previous line
--- gcA = end of line
-
--- Visual
--- gc = linewise
--- gb = [[ blockwise ]]
 
 function M.setup()
     require("Comment").setup(
@@ -39,7 +24,7 @@ function M.setup()
             -- Could be a regex string or a function that returns a regex string.
             -- Example: Use '^$' to ignore empty lines
             -- @type string|function
-            ignore = nil,
+            ignore = "^$",
             -- LHS of toggle mappings in NORMAL + VISUAL mode
             -- @type table
             toggler = {
@@ -61,7 +46,6 @@ function M.setup()
             mappings = {
                 -- operator-pending mapping
                 -- Includes `gcc`, `gcb`, `gc[count]{motion}` and `gb[count]{motion}`
-                -- NOTE: These mappings can be changed individually by `opleader` and `toggler` config
                 basic = true,
                 -- extra mapping
                 -- Includes `gco`, `gcO`, `gcA`
@@ -73,7 +57,7 @@ function M.setup()
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: Ctx):string
             pre_hook = function(ctx)
-                local U = require "Comment.utils"
+                local U = require("Comment.utils")
 
                 -- Determine the location where to calculate commentstring from
                 local location = nil
@@ -116,21 +100,17 @@ function M.setup()
         }
     )
 
-    -- Can set the type of comment
-    require("Comment.ft").set("rescript", {"//%s", "/*%s*/"})
+    ft.set("rescript", {"//%s", "/*%s*/"})
+    ft.set("javascript", {"//%s", "/*%s*/"})
+    ft.set("conf", "#%s")
+    ft({'go', 'rust'}, {'//%s', '/*%s*/'})
 end
 
 local function init()
     M.setup()
 
-    -- map("n", "gl", ":lua require('Comment.api').toggle_current_linewise()<CR>")
-    -- map("x", "gl", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
-
     map("n", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>j")
-    -- map("v", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>'>j")
-
     map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle_current_linewise()<CR>]])
-
     map("x", "<C-.>", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
 
     map(
@@ -145,12 +125,18 @@ local function init()
         {desc = "Copy text and comment it out"}
     )
 
-    -- wk.register(
-    --     {
-    --         ["gc"] = "Toggle comment prefix"
-    --     },
-    --     {mode = "n"}
-    -- )
+    wk.register(
+        {
+            ["gc"] = "Toggle comment prefix",
+            ["gb"] = "Toggle block comment prefix",
+            ["gcc"] = "Toggle comment",
+            ["gbc"] = "Toggle block comment",
+            ["gco"] = "Start comment on line below",
+            ["gcO"] = "Start comment on line above",
+            ["gcA"] = "Start comment at end of line"
+        },
+        {mode = "n"}
+    )
 end
 
 init()

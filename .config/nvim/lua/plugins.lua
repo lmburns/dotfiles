@@ -235,6 +235,29 @@ return packer.startup(
             use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
 
+            use(
+                {
+                    "vim-scripts/UnconditionalPaste",
+                    patch = true,
+                    keys = {
+                        -- These have been removed from my patch
+                        {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
+                        {"n", "gcP"},
+                        {"n", "glp"}, -- Paste linewise (even if not complete)
+                        {"n", "glP"},
+                        {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
+                        {"n", "gbP"},
+                        {"n", "ghp"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
+                        {"n", "g]p"}, -- Paste linewise above (like glp but adjust indent)
+                        {"n", "g]P"},
+                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
+                        {"n", "g[P"},
+                        {"n", "gsp"}, -- Paste with [count] spaces around lines
+                        {"n", "gsP"}
+                    }
+                }
+            )
+
             -- :Subvert/child{,ren}/adult{,s}/g
             use(
                 {
@@ -459,7 +482,13 @@ return packer.startup(
                 {
                     "junegunn/vim-easy-align",
                     conf = "plugs.easy-align",
-                    keys = {{"x", "ga"}, {"x", "<Leader>ga"}, {"x", "<Leader>gi"}, {"x", "<Leader>ga"}},
+                    keys = {
+                        {"n", "ga"},
+                        {"x", "ga"},
+                        {"x", "<Leader>ga"},
+                        {"x", "<Leader>gi"},
+                        {"x", "<Leader>gs"}
+                    },
                     cmd = {"EasyAlign", "LiveEasyAlign"}
                 }
             )
@@ -1023,7 +1052,8 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use(
                 {
-                    "norcalli/nvim-colorizer.lua",
+                    -- "norcalli/nvim-colorizer.lua",
+                    "xiyaowong/nvim-colorizer.lua",
                     cmd = "ColorizerToggle",
                     ft = {
                         "gitconfig",
@@ -1072,6 +1102,15 @@ return packer.startup(
                     conf = "vcoolor"
                 }
             )
+
+            use(
+                {
+                    "max397574/colortils.nvim",
+                    cmd = "Colortils",
+                    config = [[require("colortils").setup({})]]
+                }
+            )
+
             -- ]]] === Highlight ===
 
             -- ============================= Neoformat ============================= [[[
@@ -1239,6 +1278,7 @@ return packer.startup(
                     "neoclide/coc.nvim",
                     branch = "master",
                     run = "gh pr checkout 3862 && yarn install --frozen-lockfile",
+                    -- run = "yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
@@ -1631,3 +1671,4 @@ return packer.startup(
 )
 
 -- rcarriga/neotest
+-- smjonas/inc-rename.nvim

@@ -17,7 +17,7 @@ function M.setup()
         show(keys, opts)
     end
 
-    local presets = require("which-key.plugins.presets")
+    -- local presets = require("which-key.plugins.presets")
     -- presets.operators["gc"] = "Commenter"
     -- presets.operators["d"] = nil
     -- presets.operators['"_d'] = "Delete blackhole"
@@ -42,11 +42,12 @@ function M.setup()
                 g = true -- bindings for prefixed with g
             }
         },
-        -- NOTE: These are not added
+        -- NOTE: These do not trigger the window to show
         operators = {
             -- add operators that will trigger motion and text object completion
             y = "Yank",
             gc = "Comments",
+            ga = "Easy align",
             -- ['"_'] = "Blackhole",
             s = "Substitute",
             -- ['"_d'] = "Delete (blackhole)",
@@ -76,14 +77,14 @@ function M.setup()
             align = "left" -- align columns left, center or right
         },
         -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
-        hidden = {"lua", "^ ", "<silent>"}, -- hide mapping boilerplate
+        hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"}, -- hide mapping boilerplate
         show_help = true, -- show help message on the command line when the popup is visible
         triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers = "auto",
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            n = {"o", "O", "ga"}, -- Would be nice if two letter worked
+            n = {"o", "O"}, -- Would be nice if two letter worked
         }
     }
 

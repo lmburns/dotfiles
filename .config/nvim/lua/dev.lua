@@ -5,6 +5,8 @@ local M = {}
 local fn = vim.fn
 local api = vim.api
 
+---@alias vector table
+
 -- Capture output of command as a string
 function os.capture(cmd, raw)
     local f = assert(io.popen(cmd, "r"))
@@ -24,7 +26,7 @@ end
 ---@return table
 function os.caplines(command)
     local lines = {}
-    local file = io.popen(command)
+    local file = assert(io.popen(command))
 
     for line in file:lines() do
         table.insert(lines, line)
@@ -443,7 +445,7 @@ M.filter = function(tbl, func)
 end
 
 ---Apply function to each element of table
----@param tbl Table A list of elements
+---@param tbl table A list of elements
 ---@param func function to be applied
 M.each = function(tbl, func)
     for _, item in ipairs(tbl) do
@@ -575,6 +577,25 @@ end
 ---@return number
 M.get_tab_count = function()
     return #fn.gettabinfo()
+end
+
+---Determine if the window is the only open one
+---@param win_id number?
+---@return boolean
+M.is_last_win = function(win_id)
+    win_id = win_id or api.nvim_get_current_win()
+    local n = 0
+    for _, tab in ipairs(api.nvim_list_tabpages()) do
+        for _, win in ipairs(api.nvim_tabpage_list_wins(tab)) do
+            if win_id == win then
+                n = n + 1
+            end
+            if n > 1 then
+                return false
+            end
+        end
+    end
+    return true
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
