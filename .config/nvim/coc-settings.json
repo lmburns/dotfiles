@@ -3,31 +3,31 @@
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
-  "coc.preferences.formatOnSaveFiletypes": ["go"],
+  // "coc.preferences.formatOnSaveFiletypes": [
+  //   "go"
+  // ],
   "coc.preferences.formatOnType": true,
   "coc.preferences.snippetHighlight": false,
-
-  "coc.source.file.triggerCharacters": ["/"],
+  "coc.source.file.triggerCharacters": [
+    "/"
+  ],
   "coc.source.file.ignoreHidden": false,
   "coc.source.file.shortcut": "\uf414",
   "coc.source.around.shortcut": "\uf667",
   "coc.source.buffer.shortcut": "\uf719",
   "coc.source.syntax.firstMatch": false,
   "coc.source.syntax.shortcut": "\uf670",
-
   "outline.keepWindow": true,
   "outline.sortBy": "position",
   "outline.splitCommand": "botright 40vs",
   "outline.showLineNumber": true,
   "outline.followCursor": true,
   "outline.switchSortKey": "<C-s>",
-
   "tree.key.activeFilter": "zf",
   "tree.key.close": "qq",
   "tree.key.toggle": "t",
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
-
   // Filetypes that enable semanticTokens highlighting
   // "coc.preferences.semanticTokensHighlights": true,
   "semanticTokens.filetypes": [
@@ -41,7 +41,6 @@
     // "rust",
     // "typescript"
   ],
-
   "diagnostic.errorSign": "", //  ••
   "diagnostic.warningSign": "", //  •
   "diagnostic.hintSign": "", // •
@@ -55,7 +54,6 @@
   "diagnostic.signPriority": 20,
   "diagnostic.enableHighlightLineNumber": false,
   "diagnostic.messageTarget": "float",
-
   "suggest.floatConfig": {
     "border": true,
     "rounded": true,
@@ -91,10 +89,17 @@
   "dialog.floatBorderHighlight": "Normal",
   "dialog.rounded": true,
   "notification.border": true,
-
   "diagnostic-languageserver.filetypes": {
-    "sh": "shellcheck"
     // "zsh": "shellcheck"
+    "sh": "shellcheck",
+    "yaml": [
+      "yamllint"
+    ],
+    "lua": "selene",
+    "cmake": [
+      "cmake-lint"
+    ],
+    "systemd": "systemd-analyze"
   },
   "diagnostic-languageserver.formatFiletypes": {
     "sh": "shfmt"
@@ -103,20 +108,25 @@
   "lightbulb.excludeFiletypes": [],
   "lightbulb.enableVirtualText": true,
   "lightbulb.virtualText": "💡",
-
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
   "codeLens.position": "eol",
   "list.indicator": ">",
   "signature.enable": true,
-
   "tabnine.priority": 99,
-  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.ultisnips.directories": [
+    "UltiSnips",
+    "gosnippets/UltiSnips"
+  ],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
   "snippets.extends": {
-    "cpp": ["c"],
-    "typescript": ["javascript"]
+    "cpp": [
+      "c"
+    ],
+    "typescript": [
+      "javascript"
+    ]
   },
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 100,
@@ -125,7 +135,6 @@
   "suggest.detailMaxLength": 100,
   "suggest.selection": "none", // recentlyUsed
   "suggest.virtualText": false,
-
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
     "default": "",
@@ -155,9 +164,7 @@
     "operator": "Ψ", // 
     "typeParameter": "" //   
   },
-
   "snippets.shortcut": "\uf672",
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Clangd                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -170,7 +177,6 @@
     "--suggest-missing-includes"
   ],
   "clangd.trace.server": "off",
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Rust                           │
   // ╰──────────────────────────────────────────────────────────╯
@@ -185,7 +191,6 @@
   "rust-analyzer.diagnostics.enable": true,
   "rust-analyzer.lens.enable": true,
   "rust-analyzer.trace.server": "off",
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Golang                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -196,7 +201,6 @@
     "usePlaceholders": true,
     "semanticTokens": true
   },
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Lua                            │
   // ╰──────────────────────────────────────────────────────────╯
@@ -209,10 +213,12 @@
   "sumneko-lua.inlayHints.refreshOnInsertMode": false,
   "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
   "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
-
   "Lua.telemetry.enable": true,
   "Lua.runtime.version": "LuaJIT",
-  "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  "Lua.runtime.path": [
+    "?.lua",
+    "?/init.lua"
+  ],
   // "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 10000,
   "Lua.workspace.preloadFileSize": 10000,
@@ -238,13 +244,14 @@
   "Lua.window.progressBar": true,
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
-  "Lua.diagnostics.neededFileStatus": { "different-requires": "None" },
+  "Lua.diagnostics.neededFileStatus": {
+    "different-requires": "None"
+  },
   "Lua.diagnostics.disable": [
     "lowercase-global",
     "redundant-parameter",
     "missing-parameter"
   ],
-
   "Lua.diagnostics.globals": [
     "dev",
     "a",
@@ -276,7 +283,6 @@
     "before_each",
     "after_each"
   ],
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Ruby                           │
   // ╰──────────────────────────────────────────────────────────╯
@@ -284,49 +290,55 @@
   "solargraph.autoformat": true,
   "solargraph.formatting": true,
   "solargraph.trace.server": "off",
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Python                          │
   // ╰──────────────────────────────────────────────────────────╯
   // "python.jediEnabled": true,
   "python.formatting.provider": "black",
   "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintPath": "pylint",
-  "python.linting.flake8Enabled": true,
   "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
   "python.analysis.diagnosticMode": "openFilesOnly",
-
+  // ╭──────────────────────────────────────────────────────────╮
+  // │                           Java                           │
+  // ╰──────────────────────────────────────────────────────────╯
+  "java.trace.server": "off",
+  "java.enabled": true,
+  "java.codeGeneration.useBlocks": true,
+  "java.import.maven.enabled": true,
+  "java.maven.downloadSources": false,
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Dlang                           │
   // ╰──────────────────────────────────────────────────────────╯
-  "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
-  "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
-  "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
-
+  "d.enabled": true,
+  // "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+  // "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
+  // "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
   // ╭──────────────────────────────────────────────────────────╮
   // │                           SQL                            │
   // ╰──────────────────────────────────────────────────────────╯
   "sql.formatOptions": {
     "indent": "    "
   },
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                    Config file types                     │
   // ╰──────────────────────────────────────────────────────────╯
   "json.trace.server": "off",
   "json.schemas": [
     {
-      "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
+      "fileMatch": [
+        "*/nvim/snippets/*.json",
+        "!*/nvim/snippets/snippets.json"
+      ],
       "url": "https://raw.githubusercontent.com/kevinhwang91/dotfiles/main/nvim/snippets/snippets.json"
     }
   ],
-
   "yaml.trace.server": "off",
   "yaml.validate": true,
   "yaml.format.singleQuote": true,
   "yaml.completion": true,
-
   // ╭──────────────────────────────────────────────────────────╮
   // │                  Typescript/Javascript                   │
   // ╰──────────────────────────────────────────────────────────╯
@@ -334,29 +346,23 @@
   "eslint.run": "onSave",
   "eslint.trace.server": "off",
   "tsserver.trace.server": "off",
-
   "typescript.preferences.quoteStyle": "double",
   "typescript.format.semicolons": "insert",
-
   // "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   // "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
   // "typescript.format.semicolons": "remove"
-
   // "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
   // "javascript.format.semicolons": "remove",
-
   "vimlsp.trace.server": "off",
   "xml.trace.server": "off",
   "html.trace.server": "off",
   "css.trace.server": "off",
-
   "zig.path": "/usr/bin/zls",
   // "sh.enable": true,
   "yank.highlight.duration": 100,
-
   "languageserver": {
     // "golang": {
     //   "command": "gopls",
@@ -399,17 +405,27 @@
     // },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": ["dockerfile"],
-      "args": ["--stdio"]
+      "filetypes": [
+        "dockerfile"
+      ],
+      "args": [
+        "--stdio"
+      ]
     },
     "teal": {
       "command": "teal-language-server",
-      "filetypes": ["teal"]
+      "filetypes": [
+        "teal"
+      ]
     },
     "crystal": {
       "command": "crystalline",
-      "args": ["--stdio"],
-      "filetypes": ["crystal"]
+      "args": [
+        "--stdio"
+      ],
+      "filetypes": [
+        "crystal"
+      ]
     }
     // "lua": {
     //   "command": "/usr/bin/lua-language-server",

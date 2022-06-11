@@ -106,6 +106,7 @@ local function init()
 
     M.setup()
 
+    map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 
     wk.register(

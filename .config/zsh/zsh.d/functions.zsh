@@ -72,8 +72,8 @@ function ffunc() {
 function lszle() {
   # print -rl -- \
   #   ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
-  print -rl -- ${${(@f):-"$(zle -la)"}//*(autosuggest|orig-s)*/} | \
-    bat
+  print -rl -- ${${(@f):-"$(zle -la)"}//*(autosuggest|orig-s)*/} \
+    | bat
 }
 
 # List zstyle modules

@@ -378,7 +378,7 @@ P.marks = function(opts)
     -- opts.layout_config = {preview_width = 0.4}
 
     local marks_output = api.nvim_command_output("marks")
-    local marks = vim.fn.split(marks_output, "\n")
+    local marks = fn.split(marks_output, "\n")
 
     -- Pop off the header.
     table.remove(marks, 1)

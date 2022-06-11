@@ -163,7 +163,7 @@ vim.schedule(
             function()
                 require("plugs.fold")
             end,
-            50
+            200
         )
 
         -- === Clipboard
@@ -243,6 +243,9 @@ vim.schedule(
                     -- "coc-lists",
                     -- "coc-sh",
                     -- "coc-tslint",
+                    -- "coc-syntax",
+                    -- "coc-vimtex",
+                    -- "coc-prettier",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
@@ -251,34 +254,35 @@ vim.schedule(
                     "coc-json",
                     "coc-clangd",
                     "coc-css",
-                    "coc-diagnostic",
                     "coc-dlang",
-                    "coc-fzf-preview",
                     "coc-go",
                     "coc-html",
-                    "coc-lightbulb",
-                    "coc-marketplace",
+                    "coc-markdownlint",
+                    "coc-java",
                     "coc-perl",
-                    "coc-prettier",
                     "coc-pyright",
                     "coc-r-lsp",
                     "coc-rust-analyzer",
-                    "coc-snippets",
                     "coc-solargraph",
                     "coc-solidity",
                     "coc-sql",
-                    "coc-syntax",
-                    "coc-tabnine",
-                    "coc-tag",
                     "coc-toml",
                     "coc-vimlsp",
-                    "coc-vimtex",
                     "coc-xml",
                     "coc-yaml",
-                    "coc-yank",
                     "coc-zig",
                     "coc-tsserver",
-                    "coc-eslint"
+                    "coc-eslint",
+                    --
+                    "coc-snippets",
+                    "coc-yank",
+                    "coc-diagnostic",
+                    "coc-fzf-preview",
+                    "coc-lightbulb",
+                    "coc-marketplace",
+                    "coc-tabnine",
+                    "coc-tag",
+                    "coc-word"
                 }
 
                 g.coc_enable_locationlist = 0

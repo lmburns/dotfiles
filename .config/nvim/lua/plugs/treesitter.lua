@@ -166,6 +166,7 @@ M.setup_aerial = function()
             -- A list of all symbols to display. Set to false to display all symbols.
             -- This can be a filetype map (see :help aerial-filetype-map)
             -- To see all available values, see :help SymbolKind
+            -- FIX: Why are only functions shown?
             filter_kind = {
                 "Class",
                 "Constructor",
@@ -175,7 +176,10 @@ M.setup_aerial = function()
                 "Module",
                 "Method",
                 "Struct",
-                "Type"
+                "Type",
+                "Field",
+                "Variable",
+                "Array"
             },
             -- Enum: split_width, full_width, last, none
             -- Determines line highlighting mode when multiple splits are visible.

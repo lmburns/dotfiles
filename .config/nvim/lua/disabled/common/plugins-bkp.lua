@@ -179,7 +179,6 @@
 --       disable = true,
 --     }
 -- )
-
 -- use(
 --     {
 --         "AckslD/nvim-neoclip.lua",
@@ -188,7 +187,6 @@
 --         conf = "plugs.nvim-neoclip"
 --     }
 -- )
-
 -- use(
 --     {
 --         "christoomey/vim-conflicted",
@@ -199,5 +197,27 @@
 --             "<Plug>DiffgetLocal",
 --             "<Plug>DiffgetUpstream"
 --         }
+--     }
+--
+-- )
+-- ur4ltz/surround.nvim
+-- b = (), B = {}, r = [], a = <>
+-- use(
+--     {
+--         "tpope/vim-surround",
+--         setup = [[vim.g.surround_no_mappings = 1]],
+--         keys = {
+--             {"n", "ds"},
+--             {"n", "cs"},
+--             {"n", "cS"},
+--             {"n", "ys"},
+--             {"n", "ysW"},
+--             {"n", "yS"},
+--             {"n", "yss"},
+--             {"n", "ygs"},
+--             {"x", "S"},
+--             {"x", "gS"}
+--         },
+--         conf = "surround"
 --     }
 -- )

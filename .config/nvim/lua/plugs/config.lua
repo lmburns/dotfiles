@@ -562,7 +562,7 @@ end
 function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
     -- g.UltiSnipsExpandTrigger = "<Leader><tab>"
-    g.UltiSnipsExpandTrigger = "<Nop>"
+    g.UltiSnipsExpandTrigger = "<C-S-G>"
 
     -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"

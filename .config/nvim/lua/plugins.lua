@@ -735,29 +735,6 @@ return packer.startup(
                 }
             )
 
-            -- ur4ltz/surround.nvim
-
-            -- b = (), B = {}, r = [], a = <>
-            -- use(
-            --     {
-            --         "tpope/vim-surround",
-            --         setup = [[vim.g.surround_no_mappings = 1]],
-            --         keys = {
-            --             {"n", "ds"},
-            --             {"n", "cs"},
-            --             {"n", "cS"},
-            --             {"n", "ys"},
-            --             {"n", "ysW"},
-            --             {"n", "yS"},
-            --             {"n", "yss"},
-            --             {"n", "ygs"},
-            --             {"x", "S"},
-            --             {"x", "gS"}
-            --         },
-            --         conf = "surround"
-            --     }
-            -- )
-
             use(
                 {
                     "machakann/vim-sandwich",
@@ -801,6 +778,7 @@ return packer.startup(
             use(
                 {
                     "windwp/nvim-autopairs",
+                    -- wants = "nvim-treesitter",
                     conf = "plugs.autopairs",
                     event = "InsertEnter"
                 }
@@ -1641,6 +1619,14 @@ return packer.startup(
                         {"n", "<Leader>g;"},
                         {"n", "<Leader>g."}
                     }
+                }
+            )
+
+            use(
+                {
+                    "ldelossa/gh.nvim",
+                    requires = {"ldelossa/litee.nvim"},
+                    conf = "plugs.gh"
                 }
             )
 
