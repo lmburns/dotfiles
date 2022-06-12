@@ -52,6 +52,8 @@ map(
     {silent = false, desc = "Execute amcro visually"}
 )
 
+map("v", ".", ":normal .<CR>", {desc = "Perform dot commands over visual blocks"})
+
 -- Use qq to record and stop (only records q)
 map(
     "n",
@@ -76,6 +78,23 @@ map({"n", "x"}, "<Leader>2;", "@:", {desc = "Repeat last command"})
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
 
+-- map(
+--     "n",
+--     "i",
+--     function()
+--         return vim.fn.len(vim.fn.getline(".")) ~= 0 and "i" or '"_cc'
+--     end,
+--     {expr = true, desc = "Automatically indent blank line"}
+-- )
+-- map(
+--     "n",
+--     "A",
+--     function()
+--         return vim.fn.len(vim.fn.getline(".")) ~= 0 and "A" or '"_cc'
+--     end,
+--     {expr = true, desc = "Automatically indent blank line"}
+-- )
+
 -- Navigate merge conflict markers
 -- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 -- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
@@ -83,6 +102,7 @@ map({"n", "x", "o"}, "L", "g_")
 wk.register(
     {
         ["S"] = {":%S//g<Left><Left>", "Global replace"}
+
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
@@ -135,8 +155,6 @@ wk.register(
         ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
     },
     {expr = true}
-    --         -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
-    --         -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
 )
 
 wk.register(
@@ -145,30 +163,29 @@ wk.register(
         ["E"] = {[[^"_D]], "Delete line (blackhole)"},
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
-        ["vv"] = {[[^vg_]], "Select entire line (without newline)"}
+        ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
+        ["cn"] = {[[*``cgn]], "Change text selection"},
+        ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"}
         -- ["ghp"] = {[[m`o<Esc>p``]], "Paste line below (linewise)"},
         -- ["ghP"] = {[[m`O<Esc>p``]], "Paste line above (linewise)"},
     }
 )
+
+map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 
 wk.register(
     {
         ["d"] = {[["_d]], "Delete (blackhole)"},
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"}
         -- ["c"] = {[["_c]], "Change (blackhole)"},
-        -- ["y"] = {[==[ygv<Esc>']]==], "Place the cursor back where started on yank"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
     {mode = "v"}
 )
 
--- Paste over selected text
--- map("x", "p", "_c<Esc>p")
-
--- Paste before
--- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
--- Paste after
--- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]])
+-- map("x", "p", "_c<Esc>p", {desc = "Paste over selected text"})
+-- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste before})
+-- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste after"})
 
 -- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
@@ -178,8 +195,8 @@ wk.register(
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
 
--- map("n", "gj", ":norm! }<CR>")
--- map("n", "gk", ":norm! {<CR>")
+map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
+map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})
 
 -- Move selected text up down
 -- map("v", "J", ":m '>+1<CR>gv=gv")
@@ -193,13 +210,7 @@ map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {e
 map({"n", "x", "o"}, "'", "`")
 map({"n", "x", "o"}, "`", "'")
 
--- Buffer switching
--- map("n", "gt", ":bnext<CR>")
--- map("n", "gT", ":bprevious<CR>")
-
-map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
-
 map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
 map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
 
@@ -220,10 +231,10 @@ wk.register(
 -- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 
 -- Folding
-map({"n", "x"}, "[z", "[z_")
-map({"n", "x"}, "]z", "]z_")
-map({"n", "x"}, "zj", "zj_", {desc = "Next fold"})
-map({"n", "x"}, "zk", "zk_", {desc = "Previous fold"})
+map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
+map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
+map({"n", "x"}, "zj", "zj_", {desc = "Top next fold"})
+map({"n", "x"}, "zk", "zk_", {desc = "Bottom previous fold"})
 map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
 
 map("n", "zf", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
@@ -234,21 +245,28 @@ map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
 -- Recursively open whatever top level fold
 map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
+map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 
 map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
 
-map("x", "iz", [[:<C-u>keepj norm [zv]zg_<CR>]], {desc = "Previous opening brace"})
-map("o", "iz", [[:norm viz<CR>]])
+map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
+map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
+map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
+map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
 
 -- Using <ff> to fold or unfold
 map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
 map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 -- Refocus folds
 map("n", "<LocalLeader>z", [[zMzvzz]])
--- map("n", "<Space><CR>", "zi", { silent = true })
 
-map("n", "zz", [[(winline() == (winheight (0) + 1)/ 2) ?  'zt' : (winline() == 1)? 'zb' : 'zz']], {expr = true})
+map(
+    "n",
+    "zz",
+    ([[(winline() == (winheight (0) + 1)/ 2) ?  %s : %s]]):format([['zt' : (winline() == 1) ? 'zb']], [['zz']]),
+    {expr = true, desc = "Center or top current line"}
+)
 
 -- Window/Buffer
 -- Grepping for keybindings is more difficult with this
@@ -301,20 +319,12 @@ wk.register(
     }
 )
 
--- perform dot commands over visual blocks
-map("v", ".", ":normal .<CR>")
-
--- Change tabs
-map("n", "<Leader>rt", "<cmd>setl et<CR>")
-map("x", "<Leader>re", "<cmd>retab!<CR>")
--- Change directory to buffers dir
-map("n", "<Leader>cd", ":lcd %:p:h<CR>")
+map("n", "<Leader>rt", "<cmd>setl et<CR>", {desc = "Set extendedtab"})
+map("x", "<Leader>re", "<cmd>retab!<CR>", {desc = "Retab selection"})
+map("n", "<Leader>cd", "<cmd>lcd %:p:h<CR><cmd>pwd<CR>", {desc = "lcd to filename directory"})
 
 wk.register(
     {
-        -- Change vertical to horizontal
-        ["<Leader>w-"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
-        ["<Leader>w\\"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
         ["qC"] = {[[:lua require("common.qfext").conflicts2qf()<CR>]], "Conflicts to quickfix"},
@@ -368,7 +378,7 @@ wk.register(
             e = {
                 name = "+edit",
                 c = {
-                    ":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>",
+                    "<cmd>CocConfig<CR>",
                     "Edit coc-settings"
                 },
                 v = {":e $VIMRC<CR>", "Edit neovim config"},
@@ -379,8 +389,7 @@ wk.register(
     }
 )
 
--- Show file info
-map("n", "<C-g>", "2<C-g>")
+map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 -- ]]] === Other ===
 
 -- ============== Function Mappings ============= [[[

@@ -234,6 +234,7 @@ return packer.startup(
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+            use({"AndrewRadev/linediff.vim", cmd = "Linediff"})
 
             use(
                 {
@@ -855,6 +856,7 @@ return packer.startup(
             -- ]]] === VimSlime - Python ===
 
             -- ============================= Javascript ============================ [[[
+            use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
             use(
                 {
                     "vuki656/package-info.nvim",
@@ -991,6 +993,7 @@ return packer.startup(
                             "rust",
                             "scss",
                             "vim",
+                            -- "solidity",
                             -- "teal",
                             -- "tsx",
                             -- "vue",
@@ -1002,7 +1005,8 @@ return packer.startup(
                 }
             )
 
-            -- use({ "wfxr/dockerfile.vim" })
+            -- use({"wfxr/dockerfile.vim"})
+            -- use({"thesis/vim-solidity"})
             use({"rhysd/vim-rustpeg", ft = "rustpeg"})
             use({"nastevens/vim-cargo-make"})
             use({"NoahTheDuke/vim-just", ft = "just"})
@@ -1026,7 +1030,8 @@ return packer.startup(
 
             -- ============================= Highlight ============================ [[[
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
-            use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+            -- use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+
             -- The following plugin really needs to support ansi sequences
             use(
                 {

@@ -289,7 +289,7 @@ alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
   alias mwa='mw -Y'
 }
 
-alias nm="notmuch"
+alias nmm="notmuch"
 alias nmls="nm search --output=tags '*'"
 
 # === locations ==================================================================

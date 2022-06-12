@@ -37,6 +37,18 @@
 --regex-sh=/^[ \t]*(local|export|private|typeset|declare|integer|float)?[ \t]*([A-Za-z0-9_-]+)=/\2/v,variable,variables/
 --languages=+sh
 
+# === Solidity ===
+--langdef=Solidity
+--langmap=Solidity:.sol
+--regex-Solidity=/^contract[ \t]+([a-zA-Z0-9_]+)/\1/n,contract/
+--regex-Solidity=/[ \t]*constructor\(/Constructor/c,constructor/
+--regex-Solidity=/[ \t]*function[ \t]+([a-zA-Z0-9_]+)*\(/\1/f,function/
+--regex-Solidity=/[ \t]*(emit|event)[ \t]+([a-zA-Z0-9_]+)*\(/\2/e,events/
+--regex-Solidity=/[ \t]*(error|revert)[ \t]+([a-zA-Z0-9_]+)*\(/\2/r,error/
+--regex-Solidity=/[ \t]*(struct[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
+--regex-Solidity=/[ \t]*(enum[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
+--regex-Solidity=/[ \t]*mapping[ \t]+\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mappin
+
 # === Typescript ===
 # --langmap=typescript:.ts
 # --regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/

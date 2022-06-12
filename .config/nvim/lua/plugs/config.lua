@@ -204,7 +204,8 @@ function M.crates()
                         ["<Leader>cd"] = "Open documentation",
                         ["<Leader>co"] = "Open crates.io",
                         ["vd"] = "Dependencies popup",
-                        ["vv"] = "Version popup", ["vf"] = "Show features"
+                        ["vv"] = "Version popup",
+                        ["vf"] = "Show features"
                     }
                 )
             end
@@ -774,16 +775,22 @@ function M.hlslens()
     map(
         "n",
         "n",
-        [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]] ..
-            [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
+        ("%s%s%s"):format(
+            [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
+            [[<Cmd>lua require('hlslens').start()<CR>]],
+            [[<Cmd>lua require("specs").show_specs()<CR>]]
+        )
     )
     map(
         "n",
         "N",
-        [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]] ..
-            [[<Cmd>lua require('hlslens').start()<CR>]] .. [[<Cmd>lua require("specs").show_specs()<CR>]]
+        ("%s%s%s"):format(
+            [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]],
+            [[<Cmd>lua require('hlslens').start()<CR>]],
+            [[<Cmd>lua require("specs").show_specs()<CR>]]
+        )
     )
-    -- plug
+
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
     map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
@@ -999,19 +1006,25 @@ function M.sandwhich()
     -- \     'command'     : ["'[+1,']-1normal! >>"],
     -- \   },
 
+    -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
+    -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
     map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
     map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
     map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
     map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
-    -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
-    -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
+
     map("n", "ygs", "<Plug>(sandwich-add):normal! V<CR>")
     map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)")
+
+    -- map("o", "if", "<Plug>(textobj-sandwich-function-ip)")
+    -- map("n", "X", "<Plug>(sandwich-delete-auto)")
+    -- map("n", "X", "<Plug>(sandwich-replace-auto)")
 
     wk.register(
         {
             ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
+            ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a word with function"},
         }
     )
 end
@@ -1409,18 +1422,18 @@ function M.colorizer()
             lua = {names = false}
         },
         {
-            RGB         = true,         -- #RGB hex codes
-            RRGGBB      = true,         -- #RRGGBB hex codes
-            RRGGBBAA    = true,         -- #RRGGBBAA hex codes
-            names       = true,         -- "Name" codes like Blue
-            rgb_0x      = false,        -- 0xAARRGGBB hex codes
-            rgb_fn      = false,        -- CSS rgb() and rgba() functions
-            hsl_fn      = false,        -- CSS hsl() and hsla() functions
-            css         = false,        -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-            css_fn      = false,        -- Enable all CSS *functions*: rgb_fn, hsl_fn
+            RGB = true, -- #RGB hex codes
+            RRGGBB = true, -- #RRGGBB hex codes
+            RRGGBBAA = true, -- #RRGGBBAA hex codes
+            names = true, -- "Name" codes like Blue
+            rgb_0x = false, -- 0xAARRGGBB hex codes
+            rgb_fn = false, -- CSS rgb() and rgba() functions
+            hsl_fn = false, -- CSS hsl() and hsla() functions
+            css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+            css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
             -- Available modes: foreground, background, virtualtext
-            mode        = 'background'; -- Set the display mode.
-            virtualtext =               '■',
+            mode = "background", -- Set the display mode.
+            virtualtext = "■"
         }
     )
 end
@@ -1832,8 +1845,8 @@ function M.git_conflict()
     map("n", "cb", "<Plug>(git-conflict-both)")
     map("n", "c0", "<Plug>(git-conflict-none)")
     map("n", "ct", "<Plug>(git-conflict-theirs)")
-    map("n", "[c", "<Plug>(git-conflict-next-conflict)")
-    map("n", "]c", "<Plug>(git-conflict-prev-conflict)")
+    map("n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
+    map("n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1933,6 +1946,10 @@ function M.incline()
         }
     )
 end
+
+-- ╒══════════════════════════════════════════════════════════╕
+--                         LSP Specific
+-- ╘══════════════════════════════════════════════════════════╛
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Outline                          │

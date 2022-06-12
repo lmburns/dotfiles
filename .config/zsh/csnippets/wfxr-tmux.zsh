@@ -121,15 +121,6 @@ function unicode-map() {
 # FZF
 ##################################################################################
 
-FZF_ALT_E_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_E_COMMAND
-FZF_ALT_E_OPTS="
---preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind 'alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---preview-window default:right:60%
-"
-export FZF_ALT_E_OPTS
-
 # ALT-E - Edit selected file
 function wfxr::fzf-file-edit-widget() {
   setopt localoptions pipefail

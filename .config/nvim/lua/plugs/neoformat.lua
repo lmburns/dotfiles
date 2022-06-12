@@ -167,6 +167,9 @@ local function init()
     g.neoformat_enabled_java = {
         "prettier"
     }
+    g.neoformat_enabled_solidity = {
+        "prettier"
+    }
 
     -- g.neoformat_enabled_typescript = {
     --     "clangformat", "prettier"

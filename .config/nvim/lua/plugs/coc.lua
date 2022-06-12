@@ -484,7 +484,7 @@ end
 
 function M.scroll_insert(right)
     if
-        #fn["coc#float#get_float_win_list"]() > 0 and fn.pumvisible() == 0 and
+        #fn["coc#float#get_float_win_list"]() > 0 and fn["coc#pum#visible"]() == 0 and
             api.nvim_get_current_win() ~= g.coc_last_float_win
      then
         return fn["coc#float#scroll"](right)
@@ -815,6 +815,8 @@ function M.init()
             -- ["<LocalLeader>t"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
             ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
             ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
+            ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
+            ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
             ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
             ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},

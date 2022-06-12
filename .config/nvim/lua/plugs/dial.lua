@@ -27,6 +27,17 @@ local function aug(elements, word, cyclic)
     )
 end
 
+---Returns a list of all characters in the given string.
+-- @param str The string to get the characters from.
+-- @return table
+local function generate_list(str)
+    local ret = {}
+    for i = 1, #str, 1 do
+        table.insert(ret, str:sub(i, i))
+    end
+    return ret
+end
+
 ---Extend an array of augments
 ---@param ft string
 ---@param dst table
@@ -46,7 +57,10 @@ function M.setup()
         augend.integer.alias.binary, -- 0b0101, 0b11000111
         augend.date.alias["%m/%d"],
         augend.date.alias["%H:%M"], -- hour/minute
+        augend.date.alias["%H:%M:%S"],
         augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
+        augend.date.alias["%Y-%m-%d"],
+        augend.date.alias["%m/%d"],
         augend.constant.alias.bool, -- boolean value (true <-> false)
         augend.semver.alias.semver, -- 4.3.0
         augend.hexcolor.new {case = "lower"}, -- color #b4c900
@@ -92,7 +106,9 @@ function M.setup()
         aug({"==", "!="}, false),
         aug({">=", "<="}, false),
         aug({">>", "<<"}, false),
-        aug({"++", "--"}, false)
+        aug({"++", "--"}, false),
+        aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
+        aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false)
     }
 
     -- Extend the default table
@@ -130,6 +146,35 @@ function M.setup()
         }
     )
 
+    local markdown =
+        extend(
+        "markdown",
+        augend.user.new(
+            {
+                desc = "Markdown Header (# Title)",
+                find = function(line)
+                    local from, to = line:find("^#+")
+                    if from == nil or to > 7 then
+                        return nil
+                    end
+                    return {from = from, to = to}
+                end,
+                add = function(text, addend)
+                    local n = #text
+                    n = n + addend
+                    if n < 1 then
+                        n = 1
+                    end
+                    if n > 6 then
+                        n = 6
+                    end
+                    text = ("#"):rep(n)
+                    return {text = text, cursor = 1}
+                end
+            }
+        )
+    )
+
     require("dial.config").augends:register_group(
         {
             -- default augends used when no group name is specified
@@ -149,6 +194,7 @@ function M.setup()
             zsh = zsh,
             vim = vim_,
             go = go,
+            markdown = markdown,
             -- Maybe use a group for something?
             mygroup = {
                 augend.date.alias["%m/%d/%Y"], -- date (02/19/2022, etc.)

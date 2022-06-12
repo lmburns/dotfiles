@@ -85,6 +85,7 @@ _G.BLACKLIST_FT = {
     "godoc",
     "help",
     "log",
+    "lsp-installer",
     "luapad",
     "man",
     "minimap",
@@ -113,5 +114,7 @@ _G.BLACKLIST_FT = {
     "toggleterm",
     "undotree",
     "vimwiki",
-    "vista"
+    "vista",
+    "VistaFloatingWin",
+    "WhichKey"
 }

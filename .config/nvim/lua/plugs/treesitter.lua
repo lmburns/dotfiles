@@ -492,7 +492,7 @@ M.setup_treesurfer = function()
     )
     map(
         "x",
-        '<C-l>h',
+        "<C-l>h",
         '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
         {desc = "Swap previous node"}
     )
@@ -563,7 +563,7 @@ M.setup = function()
             "rust",
             "scheme",
             "scss",
-            "solidity",
+            -- "solidity",
             "sql",
             "teal",
             "typescript",
@@ -578,8 +578,11 @@ M.setup = function()
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
-            use_languagetree = false,
             disable = {"html", "comment", "zsh"}, -- list of language that will be disabled
+            -- disable = function(_, bufnr)
+            --     return vim.api.nvim_buf_line_count(bufnr or 0) > vim.g.treesitter_highlight_maxlines
+            -- end,
+            use_languagetree = true,
             additional_vim_regex_highlighting = true,
             -- custom_captures = {}
             custom_captures = {
@@ -661,7 +664,7 @@ M.setup = function()
         rainbow = {
             enable = true,
             extended_mode = true,
-            max_file_lines = 1200,
+            max_file_lines = 1200
             -- disable = {"cpp"},
             -- colors = {}
         },
@@ -728,9 +731,10 @@ M.setup = function()
                     ["]m"] = "@class.outer",
                     ["]r"] = "@block.outer",
                     ["]d"] = "@comment.outer",
-                    ["]a"] = "@parameter.inner",
-                    ["]z"] = "@call.inner",
-                    ["]l"] = "@loop.inner"
+                    ["]j"] = "@parameter.inner",
+                    ["]a"] = "@call.inner",
+                    ["]l"] = "@loop.inner",
+                    ["]C"] = "@conditional.inner"
                     -- ["]l"] = "@statement.inner"
                     -- ["gnf"] = "@function.outer",
                     -- ["gnif"] = "@function.inner",
@@ -743,7 +747,7 @@ M.setup = function()
                     ["]F"] = "@function.outer",
                     ["]M"] = "@class.outer",
                     ["]R"] = "@block.outer",
-                    ["]Z"] = "@call.outer"
+                    ["]A"] = "@call.outer"
                     -- ["gnF"] = "@function.outer",
                     -- ["gniF"] = "@function.inner",
                     -- ["gnP"] = "@parameter.inner",
@@ -756,9 +760,10 @@ M.setup = function()
                     ["[m"] = "@class.outer",
                     ["[r"] = "@block.outer",
                     ["[d"] = "@comment.outer",
-                    ["[a"] = "@parameter.inner",
-                    ["[z"] = "@call.inner",
-                    ["[l"] = "@loop.inner"
+                    ["[j"] = "@parameter.inner",
+                    ["[a"] = "@call.inner",
+                    ["[l"] = "@loop.inner",
+                    ["[C"] = "@conditional.inner",
                     -- ["gpf"] = "@function.outer",
                     -- ["gpif"] = "@function.inner",
                     -- ["gpp"] = "@parameter.inner",
@@ -770,7 +775,7 @@ M.setup = function()
                     ["[F"] = "@function.outer",
                     ["[R"] = "@block.outer",
                     ["[M"] = "@class.outer",
-                    ["[Z"] = "@call.outer"
+                    ["[A"] = "@call.outer"
                     -- ["gpF"] = "@function.outer",
                     -- ["gpiF"] = "@function.inner",
                     -- ["gpP"] = "@parameter.inner",
@@ -819,6 +824,7 @@ function M.install_extra_parsers()
         filetype = "sql"
     }
 
+    -- Using this parsers own queries does not work
     -- Solidity
     parser_config.solidity = {
         install_info = {
@@ -973,24 +979,26 @@ local function init()
             ["]m"] = "Next class start",
             ["]r"] = "Next block start",
             ["]d"] = "Next comment start",
-            ["]a"] = "Next parameter start",
-            ["]z"] = "Next call start",
+            ["]j"] = "Next parameter start",
+            ["]a"] = "Next call start",
             ["]l"] = "Next loop start",
+            ["]C"] = "Next conditional start",
             ["]F"] = "Next function end",
             ["]M"] = "Next class end",
             ["]R"] = "Next block end",
-            ["]Z"] = "Next call end",
+            ["]A"] = "Next call end",
             ["[f"] = "Previous function start",
             ["[m"] = "Previous class start",
             ["[r"] = "Previous block start",
             ["[d"] = "Previous comment start",
-            ["[a"] = "Previous parameter start",
-            ["[z"] = "Previous call start",
+            ["[j"] = "Previous parameter start",
+            ["[a"] = "Previous call start",
             ["[l"] = "Previous loop start",
+            ["[C"] = "Previous conditional start",
             ["[F"] = "Previous function end",
             ["[R"] = "Previous block end",
             ["[M"] = "Previous class end",
-            ["[Z"] = "Previous call end"
+            ["[A"] = "Previous call end",
         },
         {mode = "n"}
     )

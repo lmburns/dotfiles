@@ -7,6 +7,8 @@ local augroup = utils.augroup
 
 -- ============================ Commands ============================== [[[
 
+-- These both need to be redone.
+-- I've only got them working once and they require a lot of modifications to the config
 command(
     "NvimRestart",
     function()
@@ -396,7 +398,7 @@ end
 
 map(
     "n",
-    "OO", -- "z,",
+    "z,",
     function()
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_above"
         return "g@l"
@@ -406,7 +408,7 @@ map(
 
 map(
     "n",
-    "oo", -- "z.",
+    "z.",
     function()
         -- M.insert_empty_lines(vim.v.count, 0)
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_below"
@@ -416,8 +418,9 @@ map(
 )
 
 -- Not have to wait for normal o/O command
-map("n", "oa", "<cmd>norm! O<CR>i")
-map("n", "os", "<cmd>norm! o<CR>i")
+-- map("n", "oa", "<cmd>norm! O<CR>i")
+-- map("n", "os", "<cmd>norm! o<CR>i")
+
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()
     local bufnr = api.nvim_get_current_buf()

@@ -15,8 +15,8 @@
   "coc.source.file.shortcut": "\uf414",
   "coc.source.around.shortcut": "\uf667",
   "coc.source.buffer.shortcut": "\uf719",
-  "coc.source.syntax.firstMatch": false,
-  "coc.source.syntax.shortcut": "\uf670",
+  // "coc.source.syntax.firstMatch": false,
+  // "coc.source.syntax.shortcut": "\uf670",
   "outline.keepWindow": true,
   "outline.sortBy": "position",
   "outline.splitCommand": "botright 40vs",
@@ -364,6 +364,11 @@
   // "sh.enable": true,
   "yank.highlight.duration": 100,
   "languageserver": {
+    // "selene": {
+    //   "command": "selene",
+    //   "rootPatterns": [".git/", ".luacheckrc", "selene.toml", ".luarc.json"],
+    //   "filetypes": ["lua"]
+    // },
     // "golang": {
     //   "command": "gopls",
     //   "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],

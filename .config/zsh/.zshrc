@@ -1189,7 +1189,9 @@ export SKIM_CTRL_R_OPTS="\
 --expect=ctrl-x
 "
 export SKIM_DEFAULT_COMMAND='fd --no-ignore --hidden --follow --exclude ".git"'
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*"'
+export FZF_DEFAULT_COMMAND="(git ls-tree -r --name-only HEAD | lscolors ||
+         rg --files --no-ignore --hidden -g '!{.git,node_modules,target}/*') 2> /dev/null"
+#          find . -path "*/\.*" -prune -o -type f -print -o -type l -print | sed s/^..//) 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 export SKIM_COMPLETION_TRIGGER='~~'
@@ -1199,8 +1201,13 @@ export FZF_COMPLETION_TRIGGER='**'
     _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
 }
 
-export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --strip-cwd-prefix --exclude ".git" --type d -d 1 | lscolors"
+export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --strip-cwd-prefix --exclude '.git' --type d -d 1 | lscolors"
 export SKIM_ALT_C_COMMAND="$FZF_ALT_C_COMMAND"
+export FZF_ALT_C_OPTS="
+--preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
+--bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
+--preview-window default:right:60%
+"
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:execute(echo {2} | xargs -o nvim)'"
 export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview \"(exa -T {2} | less) 2>/dev/null | head -200\""
 
