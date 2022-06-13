@@ -131,6 +131,8 @@ alias __='doas'
   alias ls='exa -Fhb --git --icons'
   alias lsd='ls -d'
   alias lse='exa -Flhb --git --sort=extension --icons'
+  # Reverse
+  alias llr='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions --reverse'
 
   alias lsm='exa -Flhb --git --sort=modified --modified --icons'
   # 10 oldest files

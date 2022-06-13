@@ -65,8 +65,8 @@ alt + shift + x
     bspc node -c
 
 # Kill window
-alt + ctrl + shift + x
-    bspc node -k
+# alt + ctrl + shift + x
+#     bspc node -k
 
 ### Map or unmap windows (functional equivalent of "minimize")
 super + m
@@ -295,7 +295,7 @@ super + alt + Return
     tdrop -ma -w 1916 -y 0 alacritty
 
 # Open URL in clipboard
-ctrl + alt + 0
+ctrl + alt + super + o
     handlr open "$(xsel -b)"
 
 # Launch rofi application

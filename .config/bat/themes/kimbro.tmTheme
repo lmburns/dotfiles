@@ -1608,17 +1608,30 @@
                     <string></string>
                 </dict>
             </dict>
+            <!-- <dict> -->
+            <!--     <key>name</key> -->
+            <!--     <string>Lua constructor (field)</string> -->
+            <!--     <key>scope</key> -->
+            <!--     <string>entity.name.tag.documentation.lua</string> -->
+            <!--     <key>settings</key> -->
+            <!--     <dict> -->
+            <!--         <key>foreground</key> -->
+            <!--         <string>#FFFFFF</string> -->
+            <!--         <key>fontStyle</key> -->
+            <!--         <string></string> -->
+            <!--     </dict> -->
+            <!-- </dict> -->
             <dict>
                 <key>name</key>
                 <string>Lua constructor (field)</string>
                 <key>scope</key>
-                <string>entity.name.tag.documentation.lua</string>
+                <string>punctuation.section.block.begin.lua, punctuation.section.block.end.lua</string>
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>#FFFFFF</string>
+                    <string>#819C3B</string>
                     <key>fontStyle</key>
-                    <string></string>
+                    <string>bold</string>
                 </dict>
             </dict>
             <!-- ╭──────────────────────────────────────────────────────────╮ -->

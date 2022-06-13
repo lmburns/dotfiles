@@ -48,9 +48,8 @@ function M.setup()
             y = "Yank",
             gc = "Comments",
             ga = "Easy align",
-            -- ['"_'] = "Blackhole",
+            ys = "Surround",
             s = "Substitute",
-            -- ['"_d'] = "Delete (blackhole)",
             ["d"] = "Delete"
         },
         key_labels = {},
@@ -84,7 +83,7 @@ function M.setup()
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            n = {"o", "O"}, -- Would be nice if two letter worked
+            n = {"o", "O"} -- Would be nice if two letter worked
         }
     }
 
@@ -130,19 +129,20 @@ local function init()
     -- XXX: Workaround until custom operator gets fixed
     wk.register(
         {
-            ["?"] = {"<Cmd>WhichKey d<CR>", "WhichKey operator"}
+            ["?"] = {"<Cmd>WhichKey '' o<CR>", "WhichKey operator"}
         },
         {mode = "o"}
     )
 
-    -- map(
-    --     "n",
-    --     "gc",
-    --     function()
-    --         require("which-key").show("d", {mode = "gc", prefix = "", auto = true})
-    --         -- cmd [["_d]]
-    --     end
-    -- )
+    wk.register(
+        {
+            ["zuw"] = "Remove from spellfile",
+            ["zuW"] = "Remove from internal wordlist",
+            ["zug"] = "Remove from spellfile",
+            ["zuG"] = "Remove from internal wordlist",
+            ["zQ"] = "Equivalent to ':q!'"
+        }
+    )
 end
 
 init()

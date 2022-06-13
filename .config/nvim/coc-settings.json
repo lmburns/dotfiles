@@ -12,11 +12,13 @@
     "/"
   ],
   "coc.source.file.ignoreHidden": false,
-  "coc.source.file.shortcut": "\uf414",
-  "coc.source.around.shortcut": "\uf667",
-  "coc.source.buffer.shortcut": "\uf719",
-  // "coc.source.syntax.firstMatch": false,
-  // "coc.source.syntax.shortcut": "\uf670",
+  "coc.source.file.shortcut": "FIL", // "",
+  "coc.source.around.shortcut": "ARO", // "",
+  "coc.source.buffer.shortcut": "BUF", // "",
+  "coc.source.tag.shortcut": "TAG", // "",
+  "coc.source.word.shortcut": "WRD",
+  "coc.source.syntax.shortcut": "SYN",
+  // "coc.source.word.priority": 0,
   "outline.keepWindow": true,
   "outline.sortBy": "position",
   "outline.splitCommand": "botright 40vs",
@@ -29,7 +31,6 @@
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
   // Filetypes that enable semanticTokens highlighting
-  // "coc.preferences.semanticTokensHighlights": true,
   "semanticTokens.filetypes": [
     // "c",
     // "cpp",
@@ -51,9 +52,11 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
+  // "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.signPriority": 20,
   "diagnostic.enableHighlightLineNumber": false,
   "diagnostic.messageTarget": "float",
+  // Float
   "suggest.floatConfig": {
     "border": true,
     "rounded": true,
@@ -64,7 +67,7 @@
     "border": true,
     "rounded": true,
     "borderhighlight": "FloatBorder",
-    // "highlight": "Normal",
+    "highlight": "CocFloating",
     "maxWidth": 120,
     "focusable": true
   },
@@ -73,7 +76,6 @@
     "rounded": true,
     "borderhighlight": "SpellCap",
     "highlight": "CocFloating",
-    // "shadow": true,
     "maxWidth": 120,
     "focusable": true
   },
@@ -81,7 +83,7 @@
     "border": true,
     "rounded": true,
     "borderhighlight": "Normal",
-    // "highlight": "Normal",
+    "highlight": "CocFloating",
     "maxWidth": 120,
     "focusable": true
   },
@@ -115,6 +117,9 @@
   "list.indicator": ">",
   "signature.enable": true,
   "tabnine.priority": 99,
+  "tabnine.shortcut": "TN",
+  "snippets.priority": 90,
+  "snippets.shortcut": "",
   "snippets.ultisnips.directories": [
     "UltiSnips",
     "gosnippets/UltiSnips"
@@ -129,11 +134,11 @@
     ]
   },
   "suggest.snippetIndicator": "",
-  "suggest.languageSourcePriority": 100,
+  "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
   "suggest.detailMaxLength": 100,
-  "suggest.selection": "none", // recentlyUsed
+  "suggest.selection": "recentlyUsed", // recentlyUsed
   "suggest.virtualText": false,
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
@@ -164,11 +169,12 @@
     "operator": "Ψ", // 
     "typeParameter": "" //   
   },
-  "snippets.shortcut": "\uf672",
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Clangd                          │
   // ╰──────────────────────────────────────────────────────────╯
   "clangd.enabled": true,
+  "clangd.inlayHints.enable": true,
+  "clangd.inlayHints.sep": "‣",
   "clangd.arguments": [
     "--clang-tidy",
     "--completion-style=detailed",
@@ -180,6 +186,8 @@
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Rust                           │
   // ╰──────────────────────────────────────────────────────────╯
+  "rust-analyzer.enable": true,
+  "rust-analyzer.trace.server": "off",
   "rust-analyzer.server.path": "rust-analyzer",
   "rust-analyzer.updates.channel": "nightly",
   "rust-analyzer.updates.checkOnStartup": true,
@@ -187,10 +195,28 @@
   "rust-analyzer.updates.prompt": true,
   "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.completion.postfix.enable": true,
-  "rust-analyzer.inlayHints.enable": true,
   "rust-analyzer.diagnostics.enable": true,
   "rust-analyzer.lens.enable": true,
-  "rust-analyzer.trace.server": "off",
+  "rust-analyzer.lens.debug.enable": true,
+  "rust-analyzer.debug.vimspector.configuration.name": "launch",
+  "rust-analyzer.inlayHints.enable": true,
+  "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
+  "rust-analyzer.inlayHints.chainingHints.enable": true,
+  "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
+  "rust-analyzer.inlayHints.closingBraceHints.enable": true,
+  "rust-analyzer.inlayHints.closingBraceHints.minLines": 25,
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
+  "rust-analyzer.inlayHints.lifetimeElisionHints.enable": "skip_trivial",
+  "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": false,
+  "rust-analyzer.inlayHints.maxLength": 30,
+  "rust-analyzer.inlayHints.parameterHints.enable": true,
+  "rust-analyzer.inlayHints.reborrowHints.enable": "always",
+  "rust-analyzer.inlayHints.refreshOnInsertMode": false,
+  "rust-analyzer.inlayHints.renderColons": true,
+  "rust-analyzer.inlayHints.typeHints.enable": true,
+  "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
+  "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
+  "rust-analyzer.inlayHints.typeHintsSeparator": "‣",
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Golang                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -290,6 +316,10 @@
   "solargraph.autoformat": true,
   "solargraph.formatting": true,
   "solargraph.trace.server": "off",
+  "solargraph.folding": true,
+  "solargraph.symbols": true,
+  "solargraph.references": true,
+  "solargraph.definitions": true,
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Python                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -345,24 +375,53 @@
   "eslint.packageManager": "yarn",
   "eslint.run": "onSave",
   "eslint.trace.server": "off",
+  "eslint.autoFixOnSave": false,
+  "eslint.format.enable": true,
   "tsserver.trace.server": "off",
+  // Typescript
+  "typescript.format.enabled": true,
   "typescript.preferences.quoteStyle": "double",
   "typescript.format.semicolons": "insert",
-  // "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  // "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  // "typescript.format.insertSpaceBeforeFunctionParenthesis": true,
-  // "typescript.format.semicolons": "remove"
-  // "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  // "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
-  // "javascript.format.semicolons": "remove",
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  // Javascript
+  "javascript.format.enabled": true,
+  "javascript.preferences.quoteStyle": "double",
+  "javascript.format.semicolons": "insert",
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+  "javascript.inlayHints.variableTypes.enabled": true,
+  "javascript.inlayHints.parameterTypes.enabled": true,
+  "javascript.inlayHints.enumMemberValues.enabled": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  "vimlsp.diagnostic.enable": true,
   "vimlsp.trace.server": "off",
   "xml.trace.server": "off",
+  "xml.format.quotations": "doubleQuotes",
+  "xml.format.enabled": true,
+  "xml.symbols.enabled": true,
+  "xml.codeLens.enabled": true,
   "html.trace.server": "off",
   "css.trace.server": "off",
   "zig.path": "/usr/bin/zls",
   // "sh.enable": true,
   "yank.highlight.duration": 100,
+  "yank.enableCompletion": false,
+  // ╭──────────────────────────────────────────────────────────╮
+  // │                      Language Server                     │
+  // ╰──────────────────────────────────────────────────────────╯
   "languageserver": {
     // "selene": {
     //   "command": "selene",

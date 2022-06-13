@@ -83,6 +83,7 @@ end
 
 M.abbr({mode = "c", lhs = "W!", rhs = "w!"})
 M.abbr({mode = "c", lhs = "Q!", rhs = "q!"})
+M.abbr({mode = "i", lhs = "funciton", rhs = "function"})
 
 M.cabbrev("Qall!", "qll!")
 M.cabbrev("Qall", "qll")

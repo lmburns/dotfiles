@@ -92,7 +92,7 @@ end
 -- Use K to show documentation in preview window
 function M.show_documentation()
     local ft = vim.bo.ft
-    if _t({"help", "vim"}):contains(ft) then
+    if _t({"help"}):contains(ft) then
         cmd(("sil! h %s"):format(fn.expand("<cword>")))
     elseif ft == "man" then
         ex.Man(("%s"):format(fn.expand("<cword>")))
@@ -747,7 +747,6 @@ function M.init()
 
     -- command("Fold", [[:call CocAction('fold', <f-args>)]], {nargs = "?"})
     -- command("CocMarket", [[:CocFzfList marketplace]], {nargs = 0})
-    -- command("Prettier", [[:CocCommand prettier.formatFile]], {nargs = 0})
     -- command("Format", [[:call CocAction('format')]], {nargs = 0})
     -- command("OR", [[:call CocAction('runCommand', 'editor.action.organizeImport')]], {nargs = 0})
     -- command("CocOutput", [[CocCommand workspace.showOutput]], {nargs = 0})
@@ -759,12 +758,6 @@ function M.init()
                 ":CocMarket",
                 [[:CocFzfList marketplace]],
                 description = "Fzf Marketplace",
-                opts = {nargs = 0}
-            },
-            {
-                ":Prettier",
-                [[:CocCommand prettier.formatFile]],
-                description = "Format file with prettier",
                 opts = {nargs = 0}
             },
             {

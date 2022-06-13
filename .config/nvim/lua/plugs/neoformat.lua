@@ -1,5 +1,7 @@
 local M = {}
 
+-- FIX: The coc formatter provided doesn't read configs
+
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -45,7 +47,7 @@ local function neoformat()
         ex.Neoformat()
     end
 
-    ex.sil_("up")
+    -- ex.sil_("up")
 end
 
 ---Format the document using `Neoformat`
@@ -59,6 +61,12 @@ function M.format_doc(save)
         function()
             if coc.did_init() then
                 local bufnr = nvim.buf.nr()
+
+                -- if _t({"typescript", "javascript"}):contains(vim.bo[bufnr].ft) then
+                --     neoformat()
+                --     return
+                -- end
+
                 local err, res =
                     coc.a2sync(
                     "hasProvider",
@@ -170,10 +178,12 @@ local function init()
     g.neoformat_enabled_solidity = {
         "prettier"
     }
-
-    -- g.neoformat_enabled_typescript = {
-    --     "clangformat", "prettier"
-    -- }
+    g.neoformat_enabled_typescript = {
+        "prettier"
+    }
+    g.neoformat_enabled_javascript = {
+        "prettier"
+    }
 
     g.neoformat_enabled_yaml = {
         "prettier"
@@ -222,15 +232,21 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function()
-                map("n", ";ff", "<Cmd>CrystalFormat<CR>")
+                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
             end
         }
         -- {
-        --     -- Why isn't the only one enabled selected by default?
         --     event = "FileType",
         --     pattern = "typescript",
         --     command = function()
-        --         map("n", ";ff", "<Cmd>keepp keepj Neoformat! typescript clangformat<CR>")
+        --         map("n", ";ff", "<Cmd>Neoformat! typescript prettier<CR>", {buffer = true})
+        --     end
+        -- },
+        -- {
+        --     event = "FileType",
+        --     pattern = "javascript",
+        --     command = function()
+        --         map("n", ";ff", "<Cmd>Neoformat! javascript prettier<CR>", {buffer = true})
         --     end
         -- }
         -- {

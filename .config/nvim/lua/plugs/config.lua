@@ -562,8 +562,7 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
-    -- g.UltiSnipsExpandTrigger = "<Leader><tab>"
-    g.UltiSnipsExpandTrigger = "<C-S-G>"
+    g.UltiSnipsExpandTrigger = "<C-y>"
 
     -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"
@@ -716,6 +715,12 @@ function M.notify()
     )
 
     require("telescope").load_extension("notify")
+
+    vim.notify = function(...)
+        require("plugins").loader("nvim-notify")
+        vim.notify = require("notify")
+        vim.notify(...)
+    end
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1008,13 +1013,13 @@ function M.sandwhich()
 
     -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
     -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
-    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)")
-    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)")
-    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)")
-    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)")
+    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)", {desc = "Query inner delimiter"})
+    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)", {desc = "Query around delimiter"})
+    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)", {desc = "Auto delimiter"})
+    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)", {desc = "Auto delimiter"})
 
-    map("n", "ygs", "<Plug>(sandwich-add):normal! V<CR>")
-    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)")
+    map("n", "ygs", "<Plug>(sandwich-add):normal! V<CR>", {desc = "Surround entire line"})
+    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
 
     -- map("o", "if", "<Plug>(textobj-sandwich-function-ip)")
     -- map("n", "X", "<Plug>(sandwich-delete-auto)")
@@ -1025,6 +1030,7 @@ function M.sandwhich()
             ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a word with function"},
+            ["yss"] = "Surround text on line"
         }
     )
 end
@@ -1112,6 +1118,8 @@ function M.targets()
             ["ar"] = "Around brace",
             ["ia"] = "Inner angle bracket",
             ["aa"] = "Around angle bracket",
+            ["iq"] = "Inner quote",
+            ["aq"] = "Around quote",
             ["in"] = "Next object",
             ["im"] = "Previous object",
             ["an"] = "Next object",

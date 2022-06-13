@@ -166,21 +166,22 @@ M.setup_aerial = function()
             -- A list of all symbols to display. Set to false to display all symbols.
             -- This can be a filetype map (see :help aerial-filetype-map)
             -- To see all available values, see :help SymbolKind
-            -- FIX: Why are only functions shown?
-            filter_kind = {
-                "Class",
-                "Constructor",
-                "Enum",
-                "Function",
-                "Interface",
-                "Module",
-                "Method",
-                "Struct",
-                "Type",
-                "Field",
-                "Variable",
-                "Array"
-            },
+            -- FIX: Why are only functions, classes, and impls shown?
+            filter_kind = false,
+            -- filter_kind = {
+            --     "Class",
+            --     "Constructor",
+            --     "Enum",
+            --     "Function",
+            --     "Interface",
+            --     "Module",
+            --     "Method",
+            --     "Struct",
+            --     "Type",
+            --     "Field",
+            --     "Variable",
+            --     "Array"
+            -- },
             -- Enum: split_width, full_width, last, none
             -- Determines line highlighting mode when multiple splits are visible.
             -- split_width   Each open window will have its cursor location marked in the

@@ -200,8 +200,8 @@ require("telescope").setup(
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
                     ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-,>"] = actions.smart_send_to_qflist,
-                    ["<M-q>"] = c_actions.qf_multi_select,
+                    ["<M-q>"] = actions.smart_send_to_qflist,
+                    ["<M-,>"] = c_actions.qf_multi_select,
                     ["<C-o>"] = c_actions.which_key(),
                     -- ["<Space>"] = c_actions.insert_space,
                     -- ["<Space>"] = {
@@ -684,6 +684,7 @@ end
 
 -- ========================== Builtin ==========================
 
+-- TODO: prevent showing currently open file
 ---Custom files function. If it is in a git directory, use that as root, else use CWD
 ---Note that there should be no need for `lcd`. The `cwd` option should be enough
 M.cst_files = function()
@@ -1063,30 +1064,35 @@ builtin.edit_zsh = function()
     }
 end
 
--- TODO: Finish this function
-M.find_dotfiles = function(opts)
-    -- opts = opts or {}
-    --
-    -- opts.cwd = require("core.global").home
-    -- -- By creating the entry maker after the cwd options,
-    -- -- we ensure the maker uses the cwd options when being created.
-    -- opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
-    --
-    -- pickers.new(opts, {
-    --   prompt_title = "~~ Dotfiles ~~",
-    --   finder = finders.new_oneshot_job({
-    --     "git",
-    --     "--git-dir=" .. require("core.global").home .. "/.dots/",
-    --     "--work-tree=" .. require("core.global").home,
-    --     "ls-tree",
-    --     "--full-tree",
-    --     "-r",
-    --     "--name-only",
-    --     "HEAD",
-    --   }, opts),
-    --   previewer = previewers.cat.new(opts),
-    --   sorter = conf.file_sorter(opts),
-    -- }):find()
+---Find all dotfiles in my git repository
+---@param opts table?
+M.edit_dotfiles = function(opts)
+    opts = opts or {}
+    local home = require("common.global").home
+
+    opts.cwd = home
+    opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
+
+    pickers.new(
+        opts,
+        {
+            prompt_title = "~~ Dotfiles ~~",
+            finder = finders.new_oneshot_job(
+                {
+                    "dotbare",
+                    "ls-tree",
+                    "--full-tree",
+                    "-r",
+                    "--name-only",
+                    "HEAD"
+                },
+                opts
+            ),
+            -- previewer = previewers.cat.new(opts),
+            previewer = conf.file_previewer(opts),
+            sorter = conf.file_sorter(opts)
+        }
+    ):find()
 end
 
 -- TODO: Fix and get a better list of file paths
@@ -1217,7 +1223,7 @@ wk.register(
     {
         [";b"] = {":Telescope builtin<CR>", "Telescope builtins"},
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
-        [";B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
+        ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
         ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
@@ -1289,6 +1295,7 @@ wk.register(
         ["<LocalLeader>b"] = {":lua require('plugs.telescope').cst_buffers()<CR>", "Telescope buffers (cst)"},
         ["<LocalLeader>f"] = {":lua require('plugs.telescope').cst_files()<CR>", "Telescope files (cst)"},
         [";e"] = {":lua R('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
+        ["<Leader>e."] = {"<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>", "Telescope dotfiles (cst)"},
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
         ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
         ["<Leader>rr"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
@@ -1302,26 +1309,28 @@ wk.register(
 -- map("n", "<Leader>e,", ":lua require('plugs.telescope').cst_grep_cWORD<CR>")
 
 -- ========================== Highlight ==========================
-local colors = require("kimbox.colors")
+local c = require("kimbox.colors")
 local color = require("common.color")
-local fg = color.fg
--- local bg = require("common.color").bg
--- local hl = color.set_hl
 
-fg("TelescopeSelection", colors.yellow, {bold = true})
-fg("TelescopeSelectionCaret", colors.blue)
-fg("TelescopeMultiSelection", colors.aqua)
+color.plugin(
+    "Telescope",
+    {
+        TelescopeSelection = {fg = c.yellow, bold = true},
+        TelescopeSelectionCaret = {fg = c.blue},
+        TelescopeMultiSelection = {fg = c.aqua},
+        TelescopeBorder = {fg = c.magenta},
+        TelescopePromptBorder = {fg = c.magenta},
+        TelescopeResultsBorder = {fg = c.magenta},
+        TelescopePreviewBorder = {fg = c.magenta},
+        TelescopeMatching = {fg = c.orange},
+        TelescopePromptPrefix = {fg = c.red},
+        TelescopePathSeparator = {fg = c.magenta},
+        TelescopeFrecencyScores = {fg = c.green},
+        TelescopeBufferLoaded = {fg = c.red}
+    }
+)
+
 -- bg("TelescopeNormal", colors.bg0)
-fg("TelescopeBorder", colors.magenta)
-fg("TelescopePromptBorder", colors.magenta)
-fg("TelescopeResultsBorder", colors.magenta)
-fg("TelescopePreviewBorder", colors.magenta)
-fg("TelescopeMatching", colors.orange)
-fg("TelescopePromptPrefix", colors.red)
-
-fg("TelescopePathSeparator", colors.magenta)
-fg("TelescopeFrecencyScores", colors.green)
-fg("TelescopeBufferLoaded", colors.red)
 
 -- telescope.load_extension("notify")
 -- telescope.load_extension("ultisnips")

@@ -78,9 +78,13 @@ function M.setup()
             },
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
+                -- [".*/completions/_.*"] = "zsh",
+                [".*/fd/ignore"] = "gitignore",
                 ["calcurse-note.*"] = "markdown",
                 ["~/.local/share/calcurse/notes/.*"] = "markdown",
+                [("%s/calcurse/notes/.*"):format(os.getenv("XDG_DATA_HOME"))] = "markdown",
                 [".*sxhkdrc"] = "sxhkdrc",
+                ["/tmp/buku%-edit.*"] = "conf",
                 ["/tmp/neomutt.*"] = "vimwiki",
                 ["README.(%a+)$"] = function(_path, bufnr, ext)
                     if ext == "md" then

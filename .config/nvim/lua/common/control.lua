@@ -31,7 +31,6 @@
 -- p(control)
 
 local M = {
-  Colorizer = false,
   ["Comment.nvim"] = false,
   ["FixCursorHold.nvim"] = false,
   ["HighStr.nvim"] = false,
@@ -61,6 +60,7 @@ local M = {
   ["diffview.nvim"] = false,
   ["dressing.nvim"] = false,
   edge = false,
+  ["editorconfig-vim"] = false,
   ["eregex.vim"] = false,
   everforest = false,
   fzf = false,
@@ -68,6 +68,7 @@ local M = {
   ["fzf-lua"] = false,
   ["fzf.vim"] = false,
   ["fzy-lua-native"] = false,
+  ["gh.nvim"] = false,
   ["git-conflict.nvim"] = false,
   ["gitsigns.nvim"] = false,
   ["gruvbox-flat.nvim"] = false,
@@ -90,7 +91,9 @@ local M = {
   ["levuaska.nvim"] = false,
   ["lf-vim"] = false,
   ["lf.nvim"] = false,
+  ["linediff.vim"] = false,
   ["listish.nvim"] = false,
+  ["litee.nvim"] = false,
   ["lua-dev.nvim"] = false,
   ["lualine.nvim"] = false,
   ["lush.nvim"] = false,

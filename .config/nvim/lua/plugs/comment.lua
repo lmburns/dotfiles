@@ -4,11 +4,18 @@ local utils = require("common.utils")
 local map = utils.map
 
 local ft = require("Comment.ft")
-local cmt_utils = require("Comment.utils")
+local U = require("Comment.utils")
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
 local wk = require("which-key")
+
+local api = vim.api
+local fn = vim.fn
+
+-- TODO: Maybe create an issue
+-- Would like to ignore certain lines on comment
+-- And ignore others on uncomment
 
 function M.setup()
     require("Comment").setup(
@@ -24,7 +31,8 @@ function M.setup()
             -- Could be a regex string or a function that returns a regex string.
             -- Example: Use '^$' to ignore empty lines
             -- @type string|function
-            ignore = "^$",
+            -- ignore = "^$",
+            ignore = nil,
             -- LHS of toggle mappings in NORMAL + VISUAL mode
             -- @type table
             toggler = {
@@ -57,8 +65,6 @@ function M.setup()
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: Ctx):string
             pre_hook = function(ctx)
-                local U = require("Comment.utils")
-
                 -- Determine the location where to calculate commentstring from
                 local location = nil
                 if ctx.ctype == U.ctype.block then
@@ -68,7 +74,7 @@ function M.setup()
                 end
 
                 -- Detemine whether to use linewise or blockwise commentstring
-                local type = ctx.ctype == cmt_utils.ctype.line and "__default" or "__multiline"
+                local type = ctx.ctype == U.ctype.line and "__default" or "__multiline"
 
                 return internal.calculate_commentstring(
                     {
@@ -103,15 +109,68 @@ function M.setup()
     ft.set("rescript", {"//%s", "/*%s*/"})
     ft.set("javascript", {"//%s", "/*%s*/"})
     ft.set("conf", "#%s")
-    ft({'go', 'rust'}, {'//%s', '/*%s*/'})
+    ft({"go", "rust"}, {"//%s", "/*%s*/"})
+end
+
+---Flip the comment modes:
+---Example:
+--      print("first")               # print("first")
+--      print("second")      ==>     # print("second")
+--      # print("third")             print("third")
+--      # print("fourth")            print("fourth")
+---@param opmode string
+function M.flip_flop_comment(opmode)
+    local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
+    local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
+
+    local range = U.get_region(opmode)
+    local lines = U.get_lines(range)
+    local ctx = {
+        ctype = U.ctype.line,
+        range = range
+    }
+    local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
+    local lcs, rcs = U.unwrap_cstr(cstr)
+    local ll, rr = U.escape(lcs), U.escape(rcs)
+    local padding, pp = U.get_padding(true)
+
+    local min_indent = nil
+    for _, line in ipairs(lines) do
+        if not U.is_empty(line) and not U.is_commented(ll, rr, pp)(line) then
+            local cur_indent = U.grab_indent(line)
+            if not min_indent or #min_indent > #cur_indent then
+                min_indent = cur_indent
+            end
+        end
+    end
+
+    for i, line in ipairs(lines) do
+        local is_commented = U.is_commented(ll, rr, pp)(line)
+        if line == "" then
+        elseif is_commented then
+            lines[i] = U.uncomment_str(line, ll, rr, pp)
+        else
+            lines[i] = U.comment_str(line, lcs, rcs, padding, min_indent)
+        end
+    end
+    api.nvim_buf_set_lines(0, range.srow - 1, range.erow, false, lines)
+
+    api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
+    api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
 end
 
 local function init()
     M.setup()
 
-    map("n", "<C-.>", ":lua require('Comment.api').toggle_current_linewise()<CR>j")
+    map(
+        {"n", "x"},
+        "gC",
+        [[<Cmd>set operatorfunc=v:lua.require'plugs.comment'.flip_flop_comment<CR>g@]],
+        {desc = "Flip comment order"}
+    )
+    map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle_current_linewise()<CR>j")
     map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle_current_linewise()<CR>]])
-    map("x", "<C-.>", [[<ESC><CMD>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
+    map("x", "<C-.>", [[<ESC><Cmd>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
 
     map(
         "x",
@@ -120,7 +179,7 @@ local function init()
             local selection = utils.get_visual_selection()
             fn.setreg(vim.v.register, selection)
             cmd("normal! gv")
-            require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())
+            require("Comment.api").locked.toggle_linewise_op(fn.visualmode())
         end,
         {desc = "Copy text and comment it out"}
     )

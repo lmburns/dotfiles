@@ -498,6 +498,7 @@ return packer.startup(
             -- ============================ Open Browser =========================== [[[
             use({"tyru/open-browser.vim", conf = "open_browser"})
             use({"axieax/urlview.nvim", conf = "urlview", after = "telescope.nvim"})
+            -- use({"itchyny/vim-highlighturl"})
             -- ]]] === Open Browser ===
 
             -- ============================ Limelight ============================= [[[

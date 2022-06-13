@@ -97,39 +97,39 @@ local function init()
     tmp_prefix = uv.os_tmpdir()
 
     M.store_buf()
-    -- nvim.autocmd.Mru = {
-    --     {
-    --         event = {"BufEnter", "BufAdd", "FocusGained"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").store_buf()
-    --         end
-    --     },
-    --     {
-    --         event = {"VimLeavePre"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").flush(true)
-    --         end
-    --     },
-    --     {
-    --         event = {"VimSuspend", "FocusLost"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").flush()
-    --         end
-    --     }
-    -- }
+    nvim.autocmd.Mru = {
+        {
+            event = {"BufEnter", "BufAdd", "FocusGained"},
+            pattern = "*",
+            command = function()
+                require("common.mru").store_buf()
+            end
+        },
+        {
+            event = {"VimLeavePre"},
+            pattern = "*",
+            command = function()
+                require("common.mru").flush(true)
+            end
+        },
+        {
+            event = {"VimSuspend", "FocusLost"},
+            pattern = "*",
+            command = function()
+                require("common.mru").flush()
+            end
+        }
+    }
 
-    cmd [[
-      aug Mru
-          au!
-          au BufEnter,BufAdd,FocusGained * lua require('common.mru').store_buf()
-          au VimLeavePre * lua require('common.mru').flush(true)
-          au VimSuspend * lua require('common.mru').flush()
-          au FocusLost * lua require('common.mru').flush()
-      aug END
-  ]]
+  --   cmd [[
+  --     aug Mru
+  --         au!
+  --         au BufEnter,BufAdd,FocusGained * lua require('common.mru').store_buf()
+  --         au VimLeavePre * lua require('common.mru').flush(true)
+  --         au VimSuspend * lua require('common.mru').flush()
+  --         au FocusLost * lua require('common.mru').flush()
+  --     aug END
+  --   ]]
 end
 
 init()

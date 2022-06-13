@@ -189,8 +189,6 @@ end
 --- @field cmd boolean
 --- @field desc string
 
--- FIXME: Why is the `ShowDocumentation` key needed to be pressed multiple times for this function?
-
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---

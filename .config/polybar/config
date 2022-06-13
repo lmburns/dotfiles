@@ -118,8 +118,9 @@ font-2 = JetBrainsMonoMedium:pixelsize=10;
 
 modules-left = bspwm xwindow bsplayout bspmode
 modules-center = mpd mpv
-modules-right = dunst mail services miniwindow torrents pacman-packages cpu_custom cpu-temperature memory_custom pulseaudio weather time
+modules-right = dunst mail services miniwindow pacman-packages cpu_custom cpu-temperature memory_custom pulseaudio weather time
 
+; torrents
 ; powermenu
 
 ;; _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

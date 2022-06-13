@@ -39,7 +39,8 @@ local function hl_search()
     local curr_line = nvim.buf.line()
     local ok, match = pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
     if not ok then
-        return vim.notify(match, "error", {title = "HL SEARCH"})
+        vim.notify(match, "error", {title = "hl_search"})
+        return
     end
     local _, p_start, p_end = unpack(match)
     -- If the cursor is in a search result, leave highlighting on

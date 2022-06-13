@@ -1,13 +1,49 @@
 local M = {}
 
+local C = require("common.color")
+
 local ex = nvim.ex
-local cmd = vim.cmd
+local fn = vim.fn
+-- local cmd = vim.cmd
 
 local delay = 50
 local focus_lock = 1
+local ignore = {
+    ft = {
+        "NeogitCommitMessage",
+        "NvimTree",
+        "Trouble",
+        "coc-explorer",
+        "coc-list",
+        "dap-repl",
+        "fugitive",
+        "gitcommit",
+        "help",
+        "list",
+        "log",
+        "man",
+        "markdown",
+        "netrw",
+        "org",
+        "orgagenda",
+        "startify",
+        "toggleterm",
+        "undotree",
+        "vim-plug",
+        "vimwiki"
+    }
+}
 
+---Set the windows relative line number
+---@param val boolean
 local function set_win_rnu(val)
-    if fn.win_gettype() == "popup" then
+    local bufnr = api.nvim_get_current_buf()
+    local wintype = fn.win_gettype()
+    if _t({"popup", "command"}):contains(wintype) then
+        return
+    end
+
+    if _t(ignore.ft):contains(vim.bo[bufnr].ft) then
         return
     end
 
@@ -17,24 +53,28 @@ local function set_win_rnu(val)
             if b.bt ~= "quickfix" then
                 vim.wo[cur_winid].rnu = val
             end
-        elseif fn.win_gettype() ~= "popup" and vim.wo[winid].nu then
+        elseif not _t({"popup", "command"}):contains(wintype) and vim.wo[winid].nu then
             vim.wo[winid].rnu = false
         end
     end
 end
 
+---Show the relative line number
 local function set_rnu()
     set_win_rnu(true)
-    -- C.set_hl("FoldColumn", {link = "LineNr"})
-    cmd("hi! link FoldColumn NONE")
+    C.set_hl("FoldColumn", {link = "LineNr"})
+    -- cmd("hi! link FoldColumn NONE")
 end
 
+---Hide the relative line number
 local function unset_rnu()
     set_win_rnu(false)
-    -- C.set_hl("FoldColumn", {fg = "NONE"})
-    cmd("hi! link FoldColumn Ignore")
+    C.set_hl("FoldColumn", {link = "Ignore"})
+    -- cmd("hi! link FoldColumn Ignore")
 end
 
+---Function to be ran on `WinFocus` event
+---@param gained boolean
 function M.focus(gained)
     focus_lock = focus_lock - 1
     vim.defer_fn(
@@ -52,15 +92,18 @@ function M.focus(gained)
     )
 end
 
+---Function to be ran on `WinEnter`
 function M.win_enter()
     set_rnu()
 end
 
+---Function to be ran on `CmdlineEnter` when searching (i.e., `/`,`?`)
 function M.scmd_enter()
     set_win_rnu(false)
     ex.redraws()
 end
 
+---Function to be ran on `CmdlineLeave` when searching (i.e., `/`,`?`)
 function M.scmd_leave()
     set_win_rnu(true)
 end

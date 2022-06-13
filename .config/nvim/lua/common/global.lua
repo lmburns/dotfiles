@@ -1,3 +1,4 @@
+local M = {}
 -- ╓                                                          ╖
 -- ║                          Global                          ║
 -- ╙                                                          ╜
@@ -64,6 +65,7 @@ _G.BLACKLIST_FT = {
     "bqfpreview",
     "bufferize",
     "coc-explorer",
+    "coc-list",
     "coctree",
     "code-action-menu-menu",
     "commit",
@@ -84,6 +86,7 @@ _G.BLACKLIST_FT = {
     "gitrebase",
     "godoc",
     "help",
+    "list",
     "log",
     "lsp-installer",
     "luapad",
@@ -100,7 +103,10 @@ _G.BLACKLIST_FT = {
     "NeogitStatus",
     "NeogitStatusNew",
     "nerdtree",
+    "netrw",
     "NvimTree",
+    "org",
+    "orgagenda",
     "prompt",
     "qf",
     "quickmenu",
@@ -113,8 +119,31 @@ _G.BLACKLIST_FT = {
     "Trouble",
     "toggleterm",
     "undotree",
+    "vim-plug",
     "vimwiki",
     "vista",
     "VistaFloatingWin",
     "WhichKey"
 }
+
+-- ╓                                                          ╖
+-- ║       Global variables referenced from this module       ║
+-- ╙                                                          ╜
+
+M.user = uv.os_get_passwd()
+M.username = M.user.username
+M.home = os.getenv("HOME") -- vim.loop.os_homedir()
+M.name = uv.os_uname().sysname -- jit.os:lower()
+M.luajit = vim.split(jit.version, " ")[2]
+M.version = {
+    vim.version().major,
+    vim.version().minor,
+    vim.version().patch
+}
+M.dirs = {
+    config = fn.stdpath("config"),
+    cache = fn.stdpath("cache"),
+    data = fn.stdpath("data")
+}
+
+return M

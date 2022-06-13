@@ -14,8 +14,9 @@ local opt = {
     disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
     disable_in_macro = false,
     disable_in_visualblock = false,
-    ignored_next_char = string.gsub([[ [%w%%%'%[%"%.] ]], "%s+", ""),
+    ignored_next_char = ([[ [%w%%%'%[%"%.] ]]):gsub("%s+", ""),
     -- ignored_next_char = [==[[%w%%%'%[%"%.]]==], -- %.
+    close_triple_quotes = true,
     enable_moveright = true, -- ?? what is this
     enable_afterquote = true, -- add bracket pairs after quote
     enable_check_bracket_line = true, --- check bracket in same line
@@ -27,7 +28,7 @@ local opt = {
     fast_wrap = {
         map = "<M-,>", -- (|foo -> (|foo)
         chars = {"{", "[", "(", '"', "'"},
-        pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+        pattern = ([[ [%'%"%)%>%]%)%}%,] ]]):gsub("%s+", ""),
         offset = -1, -- Offset from pattern match
         end_key = "$",
         keys = "qwertyuiopzxcvbnmasdfghjkl",
@@ -37,7 +38,7 @@ local opt = {
     },
     check_ts = true,
     ts_config = {
-        lua = {"string", "source"},
+        lua = {"string", "source"}
         -- javascript = {"string", "template_string"}
     }
 }
@@ -173,7 +174,7 @@ function M.rules()
             -- Allow matching r#""# in rust
             Rule('r#"', '"#', {"rust"}),
             -- Allow () when a period proceeds in rust and others
-            Rule("(", ")", {"rust"}),
+            Rule("(", ")", {"rust"})
             -- Allow matching closure pipes in rust
             -- Rule("|", "|", {"rust"}),
         }

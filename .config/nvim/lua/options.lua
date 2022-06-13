@@ -164,8 +164,8 @@ o.redrawtime = 1500
 o.ruler = false
 o.cmdheight = 2
 o.equalalways = false -- don't always make windows equal size
-o.autoread = true
-o.autowriteall = true -- automatically :write before running commands and changing files
+-- o.autoread = true
+-- o.autowriteall = true -- automatically :write before running commands and changing files
 
 o.whichwrap:append(list {"<", ">", "h", "l", "[", "]"})
 o.wrap = true
@@ -282,7 +282,7 @@ o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\ -
 o.showmatch = true -- show matching brackets when text indicator is over them
 o.matchtime = 2 -- ms to blink when matching brackets
 o.showmode = false -- hide file, it's in lightline
-o.showcmd = false
+o.showcmd = false -- show command
 o.signcolumn = "yes:1"
 o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background

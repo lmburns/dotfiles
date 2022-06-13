@@ -4,10 +4,11 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
--- FIX: Tab character hides part of the line when file doesn't have tabs on
 -- FIX: Changelist is overridden somewhat when re-opening a file (I think coc?)
 -- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
 -- FIX: When opening command line window (i.e., <C-c>) todo-comments autocmd error
+
+-- Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -108,15 +109,11 @@ a.async_void(
 )()
 
 -- ============================ Notify ================================ [[[
-a.async_void(
-    function()
-        vim.notify = function(...)
-            ex.PackerLoad("nvim-notify")
-            vim.notify = require("notify")
-            vim.notify(...)
-        end
-    end
-)()
+-- vim.notify = function(...)
+--     ex.PackerLoad("nvim-notify")
+--     vim.notify = require("notify")
+--     vim.notify(...)
+-- end
 -- ]]]
 
 -- ========================= Defer Loading ============================ [[[
@@ -273,7 +270,7 @@ vim.schedule(
                     "coc-tsserver",
                     "coc-eslint",
                     --
-                    -- "coc-syntax",
+                    "coc-syntax",
                     "coc-snippets",
                     "coc-yank",
                     "coc-diagnostic",
