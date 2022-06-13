@@ -115,6 +115,20 @@
             </dict>
             <dict>
                 <key>name</key>
+                <string>Range operator</string>
+                <key>scope</key>
+                <string>keyword.operator.range</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: = == => & -->
+                    <key>foreground</key>
+                    <string>#819C3B</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>Operator</string>
                 <key>scope</key>
                 <string>keyword.operator, punctuation.accessor</string>
@@ -275,6 +289,20 @@
                     <string></string>
                 </dict>
             </dict>
+            <!-- <dict> -->
+            <!--     <key>name</key> -->
+            <!--     <string>Other keywords</string> -->
+            <!--     <key>scope</key> -->
+            <!--     <string>keyword.other</string> -->
+            <!--     <key>settings</key> -->
+            <!--     <dict> -->
+            <!-- IS: where/for keyword (rust) -->
+            <!--         <key>foreground</key> -->
+            <!--         <string>#EF1D55</string> -->
+            <!--         <key>fontStyle</key> -->
+            <!--         <string></string> -->
+            <!--     </dict> -->
+            <!-- </dict> -->
             <dict>
                 <key>name</key>
                 <string>Comments</string>
@@ -356,6 +384,20 @@
             <!-- </dict> -->
             <dict>
                 <key>name</key>
+                <string>Macro name</string>
+                <key>scope</key>
+                <string>support.macro</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: format!() -->
+                    <key>foreground</key>
+                    <string>#7EB2B1</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>Function name</string>
                 <key>scope</key>
                 <string>entity.name.function</string>
@@ -368,7 +410,6 @@
                     <string>bold</string>
                 </dict>
             </dict>
-            <!-- meta.struct enum trait interface type union class -->
             <dict>
                 <key>name</key>
                 <string>Methods</string>
@@ -716,6 +757,20 @@
             </dict>
             <dict>
                 <key>name</key>
+                <string>Comments</string>
+                <key>scope</key>
+                <string>punctuation.definition.generic</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: <T> generic -->
+                    <key>foreground</key>
+                    <string>#FF5813</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>Tag delimiter</string>
                 <key>scope</key>
                 <string>punctuation.definition.tag</string>
@@ -785,6 +840,20 @@
             </dict>
             <dict>
                 <key>name</key>
+                <string>Storage module</string>
+                <key>scope</key>
+                <string>storage.type.modules</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: mod (rust)-->
+                    <key>foreground</key>
+                    <string>#EF1D55</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>Storage type class</string>
                 <key>scope</key>
                 <string>storage.type.class</string>
@@ -807,6 +876,20 @@
                     <!-- IS: pub async const -->
                     <key>foreground</key>
                     <string>#EF1D55</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
+                <string>Storage modifier lifetime</string>
+                <key>scope</key>
+                <string>storage.modifier.lifetime</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: 'a -->
+                    <key>foreground</key>
+                    <string>#819C3B</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>
@@ -925,6 +1008,51 @@
             </dict>
             <dict>
                 <key>name</key>
+                <string>Enum names</string>
+                <key>scope</key>
+                <string>entity.name.enum</string>
+                <key>settings</key>
+                <dict>
+                    <!-- meta.enum storage.type.enum -->
+                    <!-- IS: variable names in structs -->
+                    <key>foreground</key>
+                    <string>#819C3B</string>
+                    <key>fontStyle</key>
+                    <string>bold</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
+                <string>Struct names</string>
+                <key>scope</key>
+                <string>entity.name.struct</string>
+                <key>settings</key>
+                <dict>
+                    <!-- meta.enum storage.type.enum -->
+                    <!-- IS: variable names in structs -->
+                    <key>foreground</key>
+                    <string>#819C3B</string>
+                    <key>fontStyle</key>
+                    <string>bold</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
+                <string>Impl names</string>
+                <key>scope</key>
+                <string>entity.name.impl</string>
+                <key>settings</key>
+                <dict>
+                    <!-- meta.enum storage.type.enum -->
+                    <!-- IS: variable names in structs -->
+                    <key>foreground</key>
+                    <string>#819C3B</string>
+                    <key>fontStyle</key>
+                    <string>bold</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>User-defined constant</string>
                 <key>scope</key>
                 <string>variable.other.constant</string>
@@ -981,6 +1109,20 @@
                     <string>bold</string>
                 </dict>
             </dict>
+            <!-- <dict> -->
+            <!--     <key>name</key> -->
+            <!--     <string>Closure pipes</string> -->
+            <!--     <key>scope</key> -->
+            <!--     <string>punctuation.section.parameters.begin, punctuation.section.parameters.end</string> -->
+            <!--     <key>settings</key> -->
+            <!--     <dict> -->
+            <!-- IS: |pipes: String| -->
+            <!--         <key>foreground</key> -->
+            <!--         <string>#FF5813</string> -->
+            <!--         <key>fontStyle</key> -->
+            <!--         <string></string> -->
+            <!--     </dict> -->
+            <!-- </dict> -->
             <dict>
                 <key>name</key>
                 <string>Module path</string>
@@ -1024,6 +1166,19 @@
             </dict>
             <dict>
                 <key>name</key>
+                <string>String placeholder</string>
+                <key>scope</key>
+                <string>constant.other.placeholder</string>
+                <key>settings</key>
+                <dict>
+                    <key>foreground</key>
+                    <string>#819C3B</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
                 <string>Inherited class</string>
                 <key>scope</key>
                 <string>entity.other.inherited-class</string>
@@ -1057,7 +1212,7 @@
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>#4c96a8</string>
+                    <string>#819C3B</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>
@@ -1122,9 +1277,9 @@
                 <string>entity.name.label</string>
                 <key>settings</key>
                 <dict>
-                    <!-- IS: ?? -->
+                    <!-- IS: 'break label -->
                     <key>foreground</key>
-                    <string>#EF1D55</string>
+                    <string>#819C3B</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>
@@ -1431,7 +1586,7 @@
                 <key>name</key>
                 <string>Lua (nested) field</string>
                 <key>scope</key>
-                <string>source.lua meta.function.lua meta.block.lua meta.mapping.value.lua meta.mapping.key.lua string.unquoted.key.lua</string>
+                <string>source.lua, meta.function.lua, meta.block.lua, meta.mapping.value.lua, meta.mapping.key.lua, string.unquoted.key.lua</string>
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
@@ -1444,11 +1599,24 @@
                 <key>name</key>
                 <string>Lua constructor (field)</string>
                 <key>scope</key>
-                <string>source.lua meta.function.lua meta.block.lua meta.mapping.key.lua string.unquoted.key.lua</string>
+                <string>source.lua, meta.function.lua, meta.block.lua, meta.mapping.key.lua, string.unquoted.key.lua</string>
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
                     <string>#7EB2B1</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
+                <string>Lua constructor (field)</string>
+                <key>scope</key>
+                <string>entity.name.tag.documentation.lua</string>
+                <key>settings</key>
+                <dict>
+                    <key>foreground</key>
+                    <string>#FFFFFF</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>
