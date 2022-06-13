@@ -243,7 +243,6 @@ vim.schedule(
                     -- "coc-lists",
                     -- "coc-sh",
                     -- "coc-tslint",
-                    -- "coc-syntax",
                     -- "coc-vimtex",
                     -- "coc-prettier",
                     --
@@ -274,6 +273,7 @@ vim.schedule(
                     "coc-tsserver",
                     "coc-eslint",
                     --
+                    -- "coc-syntax",
                     "coc-snippets",
                     "coc-yank",
                     "coc-diagnostic",
