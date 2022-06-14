@@ -79,7 +79,6 @@ augroup(
 -- === Highlight Disable ===
 
 -- === Restore Cursor Position === [[[
--- FIX: This autocmd prevents wilder from having a right border
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 
@@ -356,21 +355,22 @@ nvim.autocmd.lmb__TermMappings = {
     desc = "Set terminal mappings"
 }
 
--- TODO: Get to work
--- nvim.autocmd.lmb__TermClose = {
---     event = {"TermClose"},
---     pattern = "*",
---     command = function()
---         if vim.v.event.status == 0 then
---             local info = api.nvim_get_chan_info(vim.opt.channel._value)
---             if info and info.argv[1] == vim.env.SHELL then
---                 pcall(api.nvim_buf_delete, 0, {})
---                 -- vim.cmd("bdelete! " .. fn.expand("<abuf>"))
---             end
---         end
---     end,
---     desc = "Automatically close a terminal buffer"
--- }
+nvim.autocmd.lmb__TermClose = {
+    event = {"TermClose"},
+    pattern = "*",
+    command = function()
+        if vim.v.event.status == 0 then
+            local info = api.nvim_get_chan_info(vim.opt.channel._value)
+            if not info or not info.argv then
+                return
+            end
+            if info.argv[1] == vim.env.SHELL then
+                pcall(api.nvim_buf_delete, 0, {})
+            end
+        end
+    end,
+    desc = "Automatically close a terminal buffer"
+}
 -- ]]] === Terminal ===
 
 -- === Help/Man pages in vertical ===
@@ -399,18 +399,10 @@ nvim.autocmd.lmb__Help = {
                     return
                 end
 
-                -- FIX: Quickfix opening in help and then closing it causes error
-                -- This doesn't work, but it is a start and something to come back to
-                local previous = fn.bufnr("$")
-                local bufinfo = fn.getbufinfo(previous)
-                -- p(bufinfo)
-
-                if not bufinfo.bqf_enabled then
-                    local width = math.floor(vim.o.columns * 0.75)
-                    cmd("wincmd L")
-                    cmd("vertical resize " .. width)
-                    map("n", "qq", "q", {cmd = true, buffer = bufnr})
-                end
+                local width = math.floor(vim.o.columns * 0.75)
+                pcall(ex.wincmd, "L")
+                cmd("vertical resize " .. width)
+                map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
         end,
         desc = "Equalize and create mapping for help pages"

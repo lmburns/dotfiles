@@ -1181,6 +1181,10 @@ builtin.bookmarks = function(opts)
     telescope.extensions.bookmarks.bookmarks(opts)
 end
 
+builtin.possession = function(opts)
+    telescope.extensions.possession.list(opts)
+end
+
 builtin.heading = function(opts)
     telescope.extensions.heading.heading(opts)
 end

@@ -185,7 +185,6 @@ function Err:unwrap()
     return self
 end
 
--- TODO: make this better
 ---Execute a function if the underlying value is an error
 ---@param f function Function to execute (no parameters)
 ---@return Err

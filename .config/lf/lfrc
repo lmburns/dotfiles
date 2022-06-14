@@ -581,10 +581,8 @@ cmd jumpi ${{
 # -- Symlink: cd follow
 cmd cd-followlink &{{
     origin="$(realpath -s -- "$(readlink -- "$f")")"
-    lf -remote "send $id select '$origin'"
+    lf -remote "send $id toggle '$origin'"
 }}
-
-map L cd-followlink
 
 # === TAGS === [[[
 # -- Tag: tmsu set
@@ -780,6 +778,9 @@ map gh
 map .
 map r
 map t
+map <C-l>
+map H
+map L
 
 # == File Openers == [[[
 map ee $$EDITOR "$f"                            # open file in editor
@@ -911,8 +912,12 @@ map G bottom -- []
 map J half-down
 map K half-up
 map R reload
+map <C-n> redraw
 map C clear
 map U unselect
+map <C-l> cd-followlink
+map H jump-prev
+map L jump-next
 map , :{{ clear; unselect; }}
 
 map sF $for f ($(print -ln -- *(ND) | fzf)) { lf -remote "send $id toggle $f" } # select  files fzf

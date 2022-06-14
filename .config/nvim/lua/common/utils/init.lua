@@ -711,8 +711,6 @@ M.termcodes =
     }
 )
 
-nvim.termcodes = M.termcodes
-
 ---Escaped ansi sequence
 ---@param t table
 ---@param k string
@@ -803,65 +801,6 @@ M.render_str =
     end
 end)()
 
----Render a string in Neovim with the following format:
----   title: message
----Where title is a different highlight group than message
----Usage:     cmd(utils.hl.WarningMsg:format("title", "message"))
-M.hl =
-    setmetatable(
-    {},
-    {
-        __index = function(t, k)
-            local v = M.render_hl_msg("%s", "%s", k, false)
-            rawset(t, k, v)
-            return v
-        end
-    }
-)
--- FIX: newline doesn't work with vim.cmd for some reason
-M.hl2 =
-    setmetatable(
-    {},
-    {
-        __index = function(t, k)
-            local v = M.render_hl_msg("%s", "%s", k, true)
-            rawset(t, k, v)
-            return v
-        end
-    }
-)
-
----Render a string in Neovim with a colored title and uncolored message
----(on the same line)
-M.render_hl_msg =
-    (function()
-    return function(title, str, group_name, newline)
-        vim.validate(
-            {
-                title = {title, "string"},
-                str = {str, "string"},
-                group_name = {group_name, "string"},
-                newline = {newline, "boolean", true}
-            }
-        )
-
-        local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, true)
-        if not ok or not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
-            return str
-        end
-
-        local ret =
-            ("echohl %s | echo '%s' | echohl None | echon ': ' | echo%s '%s'"):format(
-            group_name,
-            title,
-            newline and "" or "n",
-            str
-        )
-
-        return ret
-    end
-end)()
-
 ---Follow a symbolic link
 ---@param fname string filename to follow
 M.follow_symlink = function(fname)
@@ -922,7 +861,6 @@ M.cool_echo =
     ---@param history boolean? add message to history
     ---@param wait number? amount of time to wait
     return function(msg, hl, history, wait)
-        -- TODO: without schedule wrapper may echo prefix spaces
         history = history == nil and true or history
         vim.schedule(
             function()
@@ -944,18 +882,6 @@ M.cool_echo =
         debounced()
     end
 end)()
-
-nvim.builtin_echo = nvim.echo
-nvim.p = M.cool_echo
-nvim.echo = function(chunks, history)
-    vim.validate(
-        {
-            chunks = {chunks, "t"},
-            history = {history, "b", true}
-        }
-    )
-    api.nvim_echo(chunks, history or true, {})
-end
 
 ---Expand a tab in a string
 ---@param str string

@@ -12,8 +12,6 @@ local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 
--- TODO: Reduce duplicate code here
-
 ---@class Outline
 ---@field filter_kind table<number, "Array"|"Boolean"|"Class"|"Constant"|"Constructor"|"Enum"|"EnumMember"|"Event"|"Field"|"...">
 ---@field fzf boolean

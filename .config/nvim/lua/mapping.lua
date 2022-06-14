@@ -233,8 +233,8 @@ wk.register(
 -- Folding
 map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
 map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
-map({"n", "x"}, "zj", "zj_", {desc = "Top next fold"})
-map({"n", "x"}, "zk", "zk_", {desc = "Bottom previous fold"})
+map({"n", "x"}, "zh", "zj_", {desc = "Top next fold"})
+map({"n", "x"}, "zl", "zk_", {desc = "Bottom previous fold"})
 map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
 
 map("n", "zf", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})

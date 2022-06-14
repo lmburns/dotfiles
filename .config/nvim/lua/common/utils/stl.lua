@@ -13,6 +13,9 @@ local api = vim.api
 local fn = vim.fn
 local g = vim.g
 
+-- TODO: Create a statusline changelist showing current change/total
+-- TODO: Create a statusline jumplist showing current jump/total
+
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Conditions
 -- ╘══════════════════════════════════════════════════════════╛

@@ -124,7 +124,14 @@ function M.format_doc(save)
                         end
                     )
                 else
-                    neoformat()
+                    local output = M.promisify()
+                    -- utils.hl2.WarningMsg:format("Coc unsuccessfully formatted buffer", "hi")
+                    nvim.echo(
+                        {
+                            {"Coc doesn't support format", "ErrorMsg"},
+                            {("\n%s"):format(output), "TSNote"}
+                        }
+                    )
                 end
             else
                 neoformat()

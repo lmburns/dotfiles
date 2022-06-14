@@ -370,15 +370,15 @@ return packer.startup(
             -- ]]] === WhichKey ===
 
             -- ======================== Session Management ======================== [[[
+
             use(
                 {
-                    "folke/persistence.nvim",
-                    event = "BufReadPre", -- this will only start session saving when an actual file was opened
-                    module = "persistence",
-                    conf = "persistence"
+                    "jedrzejboczar/possession.nvim",
+                    conf = "plugs.possession",
+                    after = "telescope.nvim"
                 }
             )
-
+            -- use({"folke/persistence.nvim"})
             -- use({"rmagatti/auto-session", event = "BufReadPre"})
             -- use({"Shatur/neovim-session-manager", event = "BufReadPre", conf = "session_manager"})
             -- ]]] === Session ===
@@ -461,7 +461,7 @@ return packer.startup(
             -- =========================== BetterQuickFix ========================== [[[
             -- romainl/vim-qf
 
-            -- FIX: cclose won't work
+            -- cclose won't work
             -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, conf = "qf_reflector"})
             -- use({"https://gitlab.com/yorickpeterse/nvim-pqf", config = [[require('pqf').setup()]]})
 
@@ -822,6 +822,7 @@ return packer.startup(
             -- ]]] === Tags ===
 
             -- ============================= UndoTree ============================= [[[
+            -- "simnalamburt/vim-mundo",
             use(
                 {
                     "mbbill/undotree",

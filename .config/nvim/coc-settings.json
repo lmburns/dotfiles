@@ -8,9 +8,7 @@
   // ],
   "coc.preferences.formatOnType": true,
   "coc.preferences.snippetHighlight": false,
-  "coc.source.file.triggerCharacters": [
-    "/"
-  ],
+  "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
   "coc.source.file.shortcut": "FIL", // "",
   "coc.source.around.shortcut": "ARO", // "",
@@ -53,9 +51,11 @@
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
   // "diagnostic.virtualTextCurrentLineOnly": true,
+  "diagnostic.format": "%message [%source:%code]", // %source code severity message
   "diagnostic.signPriority": 20,
-  "diagnostic.enableHighlightLineNumber": false,
+  "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.messageTarget": "float",
+  "diagnostic.separateRelatedInformationAsDiagnostics": true,
   // Float
   "suggest.floatConfig": {
     "border": true,
@@ -94,13 +94,9 @@
   "diagnostic-languageserver.filetypes": {
     // "zsh": "shellcheck"
     "sh": "shellcheck",
-    "yaml": [
-      "yamllint"
-    ],
+    "yaml": ["yamllint"],
     "lua": "selene",
-    "cmake": [
-      "cmake-lint"
-    ],
+    "cmake": ["cmake-lint"],
     "systemd": "systemd-analyze"
   },
   "diagnostic-languageserver.formatFiletypes": {
@@ -116,29 +112,24 @@
   "codeLens.position": "eol",
   "list.indicator": ">",
   "signature.enable": true,
+  "signature.target": "echo",
   "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
   "snippets.priority": 95,
   "snippets.shortcut": "",
-  "snippets.ultisnips.directories": [
-    "UltiSnips",
-    "gosnippets/UltiSnips"
-  ],
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
   "snippets.extends": {
-    "cpp": [
-      "c"
-    ],
-    "typescript": [
-      "javascript"
-    ]
+    "cpp": ["c"],
+    "typescript": ["javascript"]
   },
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
   "suggest.detailMaxLength": 100,
-  "suggest.selection": "recentlyUsed", // recentlyUsed
+  "suggest.selection": "recentlyUsedByPrefix", // recentlyUsed
+  "suggest.defaultSortMethod": "none",
   "suggest.virtualText": false,
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
@@ -225,7 +216,9 @@
   "go.goplsUseDaemon": false,
   "go.goplsOptions": {
     "usePlaceholders": true,
-    "semanticTokens": true
+    "semanticTokens": true,
+    "experimentalPostfixCompletions": true,
+    "staticcheck": true
   },
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Lua                            │
@@ -241,10 +234,7 @@
   "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
   "Lua.telemetry.enable": true,
   "Lua.runtime.version": "LuaJIT",
-  "Lua.runtime.path": [
-    "?.lua",
-    "?/init.lua"
-  ],
+  "Lua.runtime.path": ["?.lua", "?/init.lua"],
   // "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 10000,
   "Lua.workspace.preloadFileSize": 10000,
@@ -330,7 +320,8 @@
   "python.linting.pylintEnabled": true,
   "python.linting.pylintPath": "pylint",
   "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
-  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.diagnosticMode": "workspace",
+  // "python.analysis.diagnosticMode": "openFilesOnly",
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Java                           │
   // ╰──────────────────────────────────────────────────────────╯
@@ -358,10 +349,7 @@
   "json.trace.server": "off",
   "json.schemas": [
     {
-      "fileMatch": [
-        "*/nvim/snippets/*.json",
-        "!*/nvim/snippets/snippets.json"
-      ],
+      "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
       "url": "https://raw.githubusercontent.com/kevinhwang91/dotfiles/main/nvim/snippets/snippets.json"
     }
   ],
@@ -381,11 +369,13 @@
   // Typescript
   "typescript.format.enabled": true,
   "typescript.preferences.quoteStyle": "double",
+  "typescript.preferences.useAliasesForRenames": false,
   "typescript.format.semicolons": "insert",
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
-  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  // "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,
@@ -419,6 +409,10 @@
   // "sh.enable": true,
   "yank.highlight.duration": 100,
   "yank.enableCompletion": false,
+  "markdownlint.config": {
+    "default": true,
+    "line-length": false
+  },
   // ╭──────────────────────────────────────────────────────────╮
   // │                      Language Server                     │
   // ╰──────────────────────────────────────────────────────────╯
@@ -469,18 +463,12 @@
     // },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": [
-        "dockerfile"
-      ],
-      "args": [
-        "--stdio"
-      ]
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
     },
     "teal": {
       "command": "teal-language-server",
-      "filetypes": [
-        "teal"
-      ]
+      "filetypes": ["teal"]
     },
     // "rescript": {
     //   "enable": true,
@@ -497,12 +485,8 @@
     // },
     "crystal": {
       "command": "crystalline",
-      "args": [
-        "--stdio"
-      ],
-      "filetypes": [
-        "crystal"
-      ]
+      "args": ["--stdio"],
+      "filetypes": ["crystal"]
     }
     // "lua": {
     //   "command": "/usr/bin/lua-language-server",

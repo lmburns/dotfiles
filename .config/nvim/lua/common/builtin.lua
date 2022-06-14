@@ -1,8 +1,5 @@
 local M = {}
 
--- TODO: Create a statusline changelist showing current change/total
--- TODO: Create a statusline jumplist showing current jump/total
-
 local utils = require("common.utils")
 
 local ex = nvim.ex
@@ -48,8 +45,6 @@ function M.jump0()
     end
     return expr
 end
-
--- TODO: Oldfiles
 
 -- function M.oldf2qf()
 --   local current_buffer = api.nvim_get_current_buf()
@@ -152,7 +147,7 @@ function M.changes2qf()
     end
 end
 
--- TODO: Add a count to this
+-- TODO: Add a count operator to this
 ---Move to last buffer
 function M.switch_lastbuf()
     local alter_bufnr = fn.bufnr("#")

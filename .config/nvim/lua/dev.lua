@@ -4,6 +4,7 @@ local M = {}
 
 local fn = vim.fn
 local api = vim.api
+local uv = vim.loop
 
 ---@alias vector table
 
@@ -469,6 +470,14 @@ end
 
 -- ============================== Buffers =============================
 -- ====================================================================
+
+---Determine whether the buffer is empty
+---@param bufnr number
+---@return boolean
+M.buf_is_empty = function(bufnr)
+  local lines = api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  return #lines == 1 and lines[1] == ''
+end
 
 ---`vim.api.nvim_is_buf_loaded` filters out all hidden buffers
 M.buf_is_valid = function(bufnr)

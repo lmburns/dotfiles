@@ -329,7 +329,7 @@ end
 -- │                           Suda                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.suda()
-    map("n", "<Leader>W", ":SudaWrite<CR>")
+    map("c", "w!!", ":SudaWrite<CR>")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -341,33 +341,6 @@ function M.ghline()
             ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
             ["<Leader>gL"] = {"<Plug>(gh-line)", "Open git line"}
         }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       Persistence                        │
--- ╰──────────────────────────────────────────────────────────╯
-function M.persistence()
-    require("persistence").setup(
-        {
-            dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
-            options = {"buffers", "curdir", "tabpages", "winsize"}
-        }
-    )
-
-    command(
-        "RestoreSessionCWD",
-        function()
-            require("persistence").load()
-        end,
-        {nargs = 0}
-    )
-    command(
-        "RestoreSession",
-        function()
-            require("persistence").load({last = true})
-        end,
-        {nargs = 0}
     )
 end
 
@@ -1954,6 +1927,33 @@ function M.incline()
         }
     )
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Persistence                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.persistence()
+--     require("persistence").setup(
+--         {
+--             dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
+--             options = {"buffers", "curdir", "tabpages", "winsize"}
+--         }
+--     )
+--
+--     command(
+--         "RestoreSessionCWD",
+--         function()
+--             require("persistence").load()
+--         end,
+--         {nargs = 0}
+--     )
+--     command(
+--         "RestoreSession",
+--         function()
+--             require("persistence").load({last = true})
+--         end,
+--         {nargs = 0}
+--     )
+-- end
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                         LSP Specific

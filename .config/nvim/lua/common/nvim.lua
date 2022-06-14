@@ -177,6 +177,25 @@ nvim.buffer = nvim.buf
 nvim.cmd = nvim.command
 nvim.cursor = api.nvim_win_get_cursor
 nvim.mode = api.nvim_get_mode
+nvim.termcodes = utils.termcodes
+
+nvim.builtin_echo = nvim.echo
+nvim.p = utils.cool_echo
+nvim.echo =
+    setmetatable(
+    {},
+    {
+        __call = function(_, chunks, history)
+            vim.validate(
+                {
+                    chunks = {chunks, "t"},
+                    history = {history, "b", true}
+                }
+            )
+            api.nvim_echo(chunks, history or true, {})
+        end
+    }
+)
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 

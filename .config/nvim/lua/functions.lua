@@ -158,8 +158,8 @@ end
 ---Display the syntax group at current cursor position
 function M.print_syn_group()
     local id = fn.synID(fn.line("."), fn.col("."), 1)
-    cmd(utils.hl.WarningMsg:format("synstack", vim.inspect(M.name_syn_stack())))
-    print(fn.synIDattr(id, "name") .. " -> " .. fn.synIDattr(fn.synIDtrans(id), "name"))
+    nvim.echo({{"Synstack: ", "WarningMsg"}, {vim.inspect(M.name_syn_stack())}})
+    nvim.echo({{fn.synIDattr(id, "name"), "WarningMsg"}, {" => "}, {fn.synIDattr(fn.synIDtrans(id), "name")}})
 end
 
 ---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
@@ -277,31 +277,8 @@ command(
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Open Links/Files                     │
 -- ╰──────────────────────────────────────────────────────────╯
---CocAction('openLink')
---
--- FIX: Make better regex
----Open a github or regular link in the browser
----
 ---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
 ---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
-function M.go_github()
-    local repo = fn.matchstr(fn.expand("<cWORD>"), [[\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+]])
-    local url =
-        fn.matchstr(
-        fn.expand("<cWORD>"),
-        [[\v(https?:\/\/)?(www\.)?[a-zA-Z0-9\+\~\%]{1,256}\.[a-zA-Z0-9()]{1,6}([a-zA-Z0-9()\@:\%\_\+\.\~#?&\/=\-]*)]]
-    )
-
-    if #repo > 0 and #vim.split(repo, "/") == 2 then
-        local new = ("https://github.com/%s"):format(repo)
-        fn["openbrowser#open"](new)
-    elseif #url > 0 then
-        fn["openbrowser#open"](url)
-    else
-        fn["openbrowser#_keymap_open"]("n")
-    end
-end
-
 ---Generic open function used with other functions
 function M.open(path)
     fn.jobstart({"handlr", "open", path}, {detach = true})
@@ -398,7 +375,7 @@ end
 
 map(
     "n",
-    "z,",
+    "zk",
     function()
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_above"
         return "g@l"
@@ -408,7 +385,7 @@ map(
 
 map(
     "n",
-    "z.",
+    "zj",
     function()
         -- M.insert_empty_lines(vim.v.count, 0)
         vim.opt.opfunc = "v:lua.require'functions'.empty_line_below"
