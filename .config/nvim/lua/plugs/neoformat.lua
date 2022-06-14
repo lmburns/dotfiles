@@ -9,6 +9,11 @@ local coc = require("plugs.coc")
 local log = require("common.log")
 local gittool = require("common.gittool")
 
+local dev = require("dev")
+-- local promise = require("promise")
+-- local async = require("async")
+-- local a = require("plenary.async_lib")
+
 local ex = nvim.ex
 local g = vim.g
 local api = vim.api
@@ -29,6 +34,7 @@ local function save_doc(bufnr)
     )
 end
 
+---Run `Neoformat` on the buffer
 local function neoformat()
     local bufnr = api.nvim_get_current_buf()
     -- This is a little dense
@@ -37,7 +43,12 @@ local function neoformat()
             #F.if_nil(
                 scan.scan_dir(
                     gittool.root() or fn.expand("%:p:h"),
-                    {search_pattern = "%.?stylua.toml$", hidden = true, silent = true, respect_gitignore = true}
+                    {
+                        search_pattern = "%.?stylua.toml$",
+                        hidden = true,
+                        silent = true,
+                        respect_gitignore = true
+                    }
                 ),
                 {}
             ) > 0
@@ -48,6 +59,13 @@ local function neoformat()
     end
 
     -- ex.sil_("up")
+end
+
+---TODO: Use a promise here
+---@return string
+function M.promisify()
+    -- api.nvim_command_output("messages"),
+    return unpack(dev.get_vim_output("Neoformat"))
 end
 
 ---Format the document using `Neoformat`
@@ -80,14 +98,22 @@ function M.format_doc(save)
                         "format",
                         "",
                         function(e, res)
+                            -- FIX: Why are some results false? (i.e., TS, JS, Python)
                             -- This is only needed if Sumneko-Coc is used
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
-                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) then
+                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
-                                        neoformat()
+                                        local output = M.promisify()
+                                        -- utils.hl2.WarningMsg:format("Coc unsuccessfully formatted buffer", "hi")
+                                        nvim.echo(
+                                            {
+                                                {"Coc unsuccessfully formatted buffer", "ErrorMsg"},
+                                                {("\n%s"):format(output), "WarningMsg"}
+                                            }
+                                        )
                                     end
                                 )
                             else
@@ -223,7 +249,7 @@ local function init()
         stdin = 1
     }
 
-    map("n", ";ff", [[:lua require('plugs.neoformat').format_doc()<CR>]])
+    map("n", ";ff", [[:lua R('plugs.neoformat').format_doc()<CR>]])
     map("x", ";ff", [[:lua require('plugs.neoformat').format_selected(vim.fn.visualmode())<CR>]])
 
     augroup(
@@ -232,7 +258,14 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function()
-                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
+                map(
+                    "n",
+                    ";ff",
+                    "<Cmd>CrystalFormat<CR>",
+                    {
+                        buffer = true
+                    }
+                )
             end
         }
         -- {

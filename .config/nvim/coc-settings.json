@@ -118,7 +118,7 @@
   "signature.enable": true,
   "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
-  "snippets.priority": 90,
+  "snippets.priority": 95,
   "snippets.shortcut": "",
   "snippets.ultisnips.directories": [
     "UltiSnips",
@@ -482,6 +482,19 @@
         "teal"
       ]
     },
+    // "rescript": {
+    //   "enable": true,
+    //   "module": "~/.local/share/nvim/site/pack/packer/start/vim-rescript/server/out/server.js",
+    //   "args": [
+    //     "--node-ipc"
+    //   ],
+    //   "filetypes": [
+    //     "rescript"
+    //   ],
+    //   "rootPatterns": [
+    //     "bsconfig.json"
+    //   ]
+    // },
     "crystal": {
       "command": "crystalline",
       "args": [

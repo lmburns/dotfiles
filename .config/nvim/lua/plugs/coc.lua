@@ -644,6 +644,7 @@ function M.init()
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 
+    -- autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
     augroup(
         "CocNvimSetup",
         {
@@ -764,6 +765,12 @@ function M.init()
                 ":Format",
                 [[:call CocAction('format')]],
                 description = "Format file with coc",
+                opts = {nargs = 0}
+            },
+            {
+                ":Prettier",
+                [[:call CocAction('runCommand', 'prettier.formatFile')]],
+                description = "Format file with prettier",
                 opts = {nargs = 0}
             },
             {

@@ -560,6 +560,7 @@ M.setup = function()
             "rasi",
             -- Injections are sent into various filetypes
             "regex",
+            "rescript",
             "ruby",
             "rust",
             "scheme",

@@ -241,7 +241,7 @@ vim.schedule(
                     -- "coc-sh",
                     -- "coc-tslint",
                     -- "coc-vimtex",
-                    -- "coc-prettier",
+                    -- "coc-rescript",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
@@ -271,6 +271,7 @@ vim.schedule(
                     "coc-eslint",
                     --
                     "coc-syntax",
+                    "coc-prettier",
                     "coc-snippets",
                     "coc-yank",
                     "coc-diagnostic",

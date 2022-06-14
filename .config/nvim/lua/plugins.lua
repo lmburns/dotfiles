@@ -1253,6 +1253,7 @@ return packer.startup(
 
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
+            use({"rescript-lang/vim-rescript"})
             use({"vim-perl/vim-perl", ft = "perl"})
             use({"teal-language/vim-teal", ft = "teal"})
             use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
@@ -1387,6 +1388,7 @@ return packer.startup(
                 }
             )
 
+            use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
 

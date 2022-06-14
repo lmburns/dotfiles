@@ -818,6 +818,18 @@ M.hl =
         end
     }
 )
+-- FIX: newline doesn't work with vim.cmd for some reason
+M.hl2 =
+    setmetatable(
+    {},
+    {
+        __index = function(t, k)
+            local v = M.render_hl_msg("%s", "%s", k, true)
+            rawset(t, k, v)
+            return v
+        end
+    }
+)
 
 ---Render a string in Neovim with a colored title and uncolored message
 ---(on the same line)
@@ -838,8 +850,13 @@ M.render_hl_msg =
             return str
         end
 
-        local ret = ("echohl %s | echo '%s' | echohl None "):format(group_name, title)
-        ret = ret .. ("| echo%s ': %s'"):format(newline and "" or "n", str)
+        local ret =
+            ("echohl %s | echo '%s' | echohl None | echon ': ' | echo%s '%s'"):format(
+            group_name,
+            title,
+            newline and "" or "n",
+            str
+        )
 
         return ret
     end
@@ -928,7 +945,17 @@ M.cool_echo =
     end
 end)()
 
+nvim.builtin_echo = nvim.echo
 nvim.p = M.cool_echo
+nvim.echo = function(chunks, history)
+    vim.validate(
+        {
+            chunks = {chunks, "t"},
+            history = {history, "b", true}
+        }
+    )
+    api.nvim_echo(chunks, history or true, {})
+end
 
 ---Expand a tab in a string
 ---@param str string

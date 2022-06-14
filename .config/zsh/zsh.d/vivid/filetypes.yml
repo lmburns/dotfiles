@@ -173,6 +173,7 @@ programming:
     python: [.py]
     r: [.r]
     rasi: [.rasi]
+    rescript: [.res]
     ruby: [.rb, .rbs]
     rust: [.rs]
     scala: [.scala, .sbt]

@@ -52,6 +52,20 @@ M.get_system_output = function(cmd)
     return vim.split(fn.system(cmd), "\n")
 end
 
+---Get the output of a vim command in a table
+---@param cmd string|table
+---@return table
+M.get_vim_output = function(cmd)
+    local out = api.nvim_exec(cmd, true)
+    local res = vim.split(out, "\n", {trimempty = true})
+    return M.map(
+        res,
+        function(val)
+            return vim.trim(val)
+        end
+    )
+end
+
 ---@class JobOpts
 ---@field on_stdout function function to run on stdout
 ---@field input string input for stdin
@@ -765,6 +779,22 @@ M.switch = function(c)
         end
     }
     return swtbl
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Async                           │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.setTimeout(callback, ms)
+    local timer = uv.new_timer()
+    timer:start(
+        ms,
+        0,
+        function()
+            timer:close()
+            callback()
+        end
+    )
+    return timer
 end
 
 -- Examples:  https://github.com/luvit/luv/tree/master/examples
