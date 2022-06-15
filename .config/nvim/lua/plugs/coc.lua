@@ -21,6 +21,98 @@ local api = vim.api
 
 local diag_qfid
 
+M.get_config = fn["coc#util#get_config"]
+M.set_config = fn["coc#config"]
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Notifications                       │
+-- ╰──────────────────────────────────────────────────────────╯
+local status_record = {}
+local diag_record = {}
+
+function coc_status_notify(msg, level)
+    local notify_opts = {
+        title = "LSP Status",
+        timeout = 500,
+        hide_from_history = true,
+        on_close = reset_status_record
+    }
+    -- if status_record is not {} then add it to notify_opts to key called "replace"
+    if status_record ~= {} then
+        notify_opts["replace"] = status_record.id
+    end
+    status_record = vim.notify(msg, level, notify_opts)
+end
+
+function reset_status_record(window)
+    status_record = {}
+end
+
+function coc_diag_notify(msg, level)
+  local notify_opts = { title = "LSP Diagnostics", timeout = 500, on_close = reset_diag_record }
+  -- if diag_record is not {} then add it to notify_opts to key called "replace"
+  if diag_record ~= {} then
+    notify_opts["replace"] = diag_record.id
+  end
+  diag_record = vim.notify(msg, level, notify_opts)
+end
+
+function reset_diag_record(window)
+  diag_record = {}
+end
+
+vim.cmd [[
+function! CocDiagnosticNotify() abort
+  let l:info = get(b:, 'coc_diagnostic_info', {})
+  if empty(l:info) | return '' | endif
+  let l:msgs = []
+  let l:level = 'info'
+   if get(l:info, 'warning', 0)
+    let l:level = 'warn'
+  endif
+  if get(l:info, 'error', 0)
+    let l:level = 'error'
+  endif
+
+  if get(l:info, 'error', 0)
+    call add(l:msgs, ' Errors: ' . l:info['error'])
+  endif
+  if get(l:info, 'warning', 0)
+    call add(l:msgs, ' Warnings: ' . l:info['warning'])
+  endif
+  if get(l:info, 'information', 0)
+    call add(l:msgs, ' Infos: ' . l:info['information'])
+  endif
+  if get(l:info, 'hint', 0)
+    call add(l:msgs, ' Hints: ' . l:info['hint'])
+  endif
+  let l:msg = join(l:msgs, "\n")
+  if empty(l:msg) | let l:msg = ' All OK' | endif
+  call v:lua.coc_diag_notify(l:msg, l:level)
+endfunction
+
+function! CocStatusNotify() abort
+  let l:status = get(g:, 'coc_status', '')
+  let l:level = 'info'
+  if empty(l:status) | return '' | endif
+  call v:lua.coc_status_notify(l:status, l:level)
+endfunction
+]]
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Other                           │
+-- ╰──────────────────────────────────────────────────────────╯
+
+---Change the diagnostic target
+---Can get hard to read sometimes if there are many errors
+function M.toggle_diagnostic_target()
+    if M.get_config("diagnostic").messageTarget == "float" then
+        M.set_config("diagnostic", {messageTarget = "echo"})
+    else
+        M.set_config("diagnostic", {messageTarget = "float"})
+    end
+end
+
 -- FIX: Diagnostic are not refreshing properly
 --      When using [g/]g to naviagte there aren't any
 --      However vim.b.coc_diagnostic_info still shows errors
@@ -155,7 +247,7 @@ end
 ---@return function
 function M.action(action, ...)
     local args = {...}
-    return promise(
+    return promise.new(
         function(resolve, reject)
             table.insert(
                 args,
@@ -174,8 +266,6 @@ function M.action(action, ...)
         end
     )
 end
-
--- R("plugs.coc").runCommand("fzf-preview.Lines"):thenCall(function(value) p(value) end)
 
 function M.runCommand(name, ...)
     return M.action("runCommand", name, ...)
@@ -661,6 +751,14 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
+                fn["CocDiagnosticNotify"]()
+            end
+        },
+        {
+            event = "User",
+            pattern = "CocStatusChange",
+            command = function()
+                fn["CocStatusNotify"]()
             end
         },
         {
@@ -790,6 +888,18 @@ function M.init()
                 [[call CocAction('diagnosticToggleBuffer')]],
                 description = "Turn off diagnostics for buffer",
                 opts = {nargs = 0}
+            },
+            {
+                ":Tsc",
+                [[:call CocAction('runCommand', 'tsserver.watchBuild')]],
+                description = "Typescript watch build",
+                opts = {}
+            },
+            {
+                ":Tslint",
+                [[:call CocAction('runCommand', 'tslint.lintProject')]],
+                description = "Typescript ESLint",
+                opts = {}
             }
         }
     )
@@ -822,6 +932,10 @@ function M.init()
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics refresh"},
+            ["<Leader>jt"] = {
+                ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
+                "Coc toggle diagnostic target"
+            },
             -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},

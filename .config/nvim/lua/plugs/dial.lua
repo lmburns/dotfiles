@@ -128,8 +128,13 @@ function M.setup()
     local python = extend("python", default, aug({"elif", "if"}))
     local sh = extend("sh", default, aug({"elif", "if"}))
     local zsh = extend("zsh", default, {aug({"elif", "if"}), aug({"((:))", "[[:]]"}, false)})
-    local typescript = extend("typescript", default, {aug({"let", "const", "var"}), aug({"===", "!=="})})
-    local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
+    local typescript =
+        extend(
+        "typescript",
+        default,
+        {aug({"let", "const", "var"}), aug({"===", "!=="}), aug({"public", "private", "protected"})}
+    )
+    -- local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
     local vim_ = extend("vim", default, {aug({"elseif", "if"})})
 
     local go =
@@ -146,9 +151,31 @@ function M.setup()
         }
     )
 
+    local zig = extend("zig", default, augend.user.new({
+        desc = "Zig/Rust octal integers",
+        find = require("dial.augend.common").find_pattern("0o[0-7]+"),
+        add = function(text, addend, cursor)
+            local wid = #text
+            local n = tonumber(string.sub(text, 3), 8)
+            n = n + addend
+            if n < 0 then
+                n = 0
+            end
+            text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
+            cursor = #text
+            return {
+                text = text,
+                cursor = cursor,
+            }
+        end,
+    }))
+
+    local rust = zig
+
     local markdown =
         extend(
         "markdown",
+        default,
         augend.user.new(
             {
                 desc = "Markdown Header (# Title)",
@@ -187,7 +214,7 @@ function M.setup()
                 augend.constant.alias.Alpha
             },
             typescript = typescript,
-            javascript = javascript,
+            javascript = typescript,
             lua = lua,
             python = python,
             sh = sh,
@@ -195,6 +222,8 @@ function M.setup()
             vim = vim_,
             go = go,
             markdown = markdown,
+            rust = rust,
+            zig = zig,
             -- Maybe use a group for something?
             mygroup = {
                 augend.date.alias["%m/%d/%Y"], -- date (02/19/2022, etc.)
@@ -242,12 +271,6 @@ local function init()
     for _, ft in pairs(M.filetypes) do
         inc_dec_augroup(ft)
     end
-
-    -- _t(M.filetypes):map(
-    --     function(ft)
-    --         inc_dec_augroup(ft)
-    --     end
-    -- )
 end
 
 init()

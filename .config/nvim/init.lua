@@ -4,9 +4,10 @@
 --  Created: 2022-03-24 19:39
 -- ==========================================================================
 -- FIX: Folding causing cursor to move one left on startup
--- FIX: Changelist is overridden somewhat when re-opening a file (I think coc?)
+-- FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 -- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
 -- FIX: When opening command line window (i.e., <C-c>) todo-comments autocmd error
+-- FIX: Focus events fire occasionally (they work outside of tmux)
 
 -- Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 
@@ -108,14 +109,15 @@ a.async_void(
     end
 )()
 
--- ============================ Notify ================================ [[[
--- vim.notify = function(...)
---     ex.PackerLoad("nvim-notify")
---     vim.notify = require("notify")
---     vim.notify(...)
--- end
--- ]]]
-
+a.async_void(
+    function()
+        vim.notify = function(...)
+            require("plugins").loader("nvim-notify")
+            vim.notify = require("notify")
+            vim.notify(...)
+        end
+    end
+)()
 -- ========================= Defer Loading ============================ [[[
 -- ex.filetype("off")
 g.loaded_clipboard_provider = 1

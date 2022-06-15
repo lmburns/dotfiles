@@ -4,11 +4,11 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
+local fn = vim.fn
+
 local wilder = require("wilder")
 
--- FIX: Right border doesn't always appear on the first opening of the buffer
-
-function M.wilderDisable()
+function M.wilder_disable(e)
     local cmd = fn["wilder#cmdline#parse"](e).cmd
     return (cmd == "Man" or cmd:match("Git fetch origin.*")) and true or false
 end
@@ -37,22 +37,17 @@ function M.setup()
         "pipeline",
         {
             wilder.debounce(10),
-            --  \    [
-            --  \      wilder#check({-> getcmdtype() ==# ':'}),
-            --  \      {ctx, x -> s:shouldDisable(x) ? v:true : v:false},
-            --  \    ],
-            -- {
-            --     wilder.check(
-            --         function()
-            --             return fn.getcmdtype() == ":"
-            --         end
-            --     ),
-            --     function(ctx, x)
-            --         local cmd = fn["wilder#cmdline#parse"](e).cmd
-            --         return (cmd == "Man") and true or false
-            --     end
-            -- },
             wilder.branch(
+                {
+                    wilder.check(
+                        function(ctx, x)
+                            return fn.getcmdtype() == ":"
+                        end
+                    ),
+                    function(ctx, x)
+                        return M.wilder_disable(x)
+                    end
+                },
                 wilder.python_file_finder_pipeline(
                     {
                         file_command = {"rg", "--files", "--hidden", "--color=never"},
@@ -95,7 +90,7 @@ function M.setup()
                     {
                         pattern = "fuzzy",
                         -- pattern = wilder.python_fuzzy_pattern(),
-                        sorter = wilder.python_difflib_sorter(),
+                        sorter = wilder.python_difflib_sorter()
                         -- engine = "re"
                     }
                 )
@@ -117,7 +112,7 @@ function M.setup()
                 border = "rounded",
                 max_height = 15,
                 pumblend = 10,
-                empty_message = wilder.popupmenu_empty_message_with_spinner(),
+                -- empty_message = wilder.popupmenu_empty_message_with_spinner(),
                 highlights = {
                     border = "Normal",
                     default = "Normal",

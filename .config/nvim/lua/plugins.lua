@@ -16,41 +16,41 @@ local ex = nvim.ex
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
--- packer.on_compile_done = function()
---     local fp = assert(io.open(packer.config.compile_path, "r+"))
---     local wbuf = {}
---     local key_state = 0
---     for line in fp:lines() do
---         if key_state == 0 then
---             table.insert(wbuf, line)
---             if line:find("Keymap lazy%-loads") then
---                 key_state = 1
---                 table.insert(wbuf, [[vim.defer_fn(function()]])
---             end
---         elseif key_state == 1 then
---             if line == "" then
---                 key_state = 2
---                 table.insert(wbuf, ("end, %d)"):format(15))
---             end
---             local _, e1 = line:find("vim%.cmd")
---             if line:find("vim%.cmd") then
---                 local s2, e2 = line:find("%S+%s", e1 + 1)
---                 local map_mode = line:sub(s2, e2)
---                 line = ("pcall(vim.cmd, %s<unique>%s)"):format(map_mode, line:sub(e2 + 1))
---             end
---             table.insert(wbuf, line)
---         else
---             table.insert(wbuf, line)
---         end
---     end
---
---     if key_state == 2 then
---         fp:seek("set")
---         fp:write(table.concat(wbuf, "\n"))
---     end
---
---     fp:close()
--- end
+packer.on_compile_done = function()
+    local fp = assert(io.open(packer.config.compile_path, "r+"))
+    local wbuf = {}
+    local key_state = 0
+    for line in fp:lines() do
+        if key_state == 0 then
+            table.insert(wbuf, line)
+            if line:find("Keymap lazy%-loads") then
+                key_state = 1
+                table.insert(wbuf, [[vim.defer_fn(function()]])
+            end
+        elseif key_state == 1 then
+            if line == "" then
+                key_state = 2
+                table.insert(wbuf, ("end, %d)"):format(15))
+            end
+            local _, e1 = line:find("vim%.cmd")
+            if line:find("vim%.cmd") then
+                local s2, e2 = line:find("%S+%s", e1 + 1)
+                local map_mode = line:sub(s2, e2)
+                line = ("pcall(vim.cmd, %s<unique>%s)"):format(map_mode, line:sub(e2 + 1))
+            end
+            table.insert(wbuf, line)
+        else
+            table.insert(wbuf, line)
+        end
+    end
+
+    if key_state == 2 then
+        fp:seek("set")
+        fp:write(table.concat(wbuf, "\n"))
+    end
+
+    fp:close()
+end
 
 packer.init(
     {
@@ -235,6 +235,7 @@ return packer.startup(
             use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
             use({"AndrewRadev/linediff.vim", cmd = "Linediff"})
+            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
 
             use(
                 {
@@ -374,6 +375,7 @@ return packer.startup(
             use(
                 {
                     "jedrzejboczar/possession.nvim",
+                    event = "BufReadPre",
                     conf = "plugs.possession",
                     after = "telescope.nvim"
                 }
@@ -665,13 +667,13 @@ return packer.startup(
             -- ====================== Window Picker ======================= [[[
             -- sindrets/winshift.nvim
             -- t9md/vim-choosewin
-            use(
-                {
-                    "https://gitlab.com/yorickpeterse/nvim-window",
-                    conf = "window_picker",
-                    keys = {{"n", "<M-->"}}
-                }
-            )
+            -- use(
+            --     {
+            --         "https://gitlab.com/yorickpeterse/nvim-window",
+            --         conf = "window_picker",
+            --         keys = {{"n", "<M-->"}}
+            --     }
+            -- )
             -- ]]] === Window Picker ===
 
             -- ============================= Operator ============================== [[[
@@ -833,13 +835,12 @@ return packer.startup(
             )
             -- ]]] === UndoTree ===
 
-            -- ========================== NerdCommenter =========================== [[[
+            -- ============================ Commenter ============================= [[[
             use({"numToStr/Comment.nvim", conf = "plugs.comment", after = "nvim-treesitter"})
             use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
-            -- ]]] === UndoTree ===
+            -- ]]] === Commenter ===
 
             -- ============================== Targets ============================== [[[
-            -- kana/vim-textobj-user
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
             -- ]]] === Targets ===
@@ -883,7 +884,7 @@ return packer.startup(
 
             -- ============================== Vim - Go ============================= [[[
             use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
-            -- ]]] === VimSlime - Python ===
+            -- ]]] === Vim - Go ===
 
             -- ============================== Markdown ============================= [[[
             -- use(
@@ -1344,6 +1345,7 @@ return packer.startup(
                             "danymat/neogen",
                             conf = "neogen",
                             after = "nvim-treesitter",
+                            cmd = "Neogen",
                             keys = {
                                 {"n", "<Leader>dg"},
                                 {"n", "<Leader>df"},
@@ -1495,8 +1497,9 @@ return packer.startup(
                         "nvim-telescope/telescope.nvim",
                         "wbthomason/packer.nvim"
                     },
+                    event = "VimEnter",
                     wants = {"telescope.nvim", "packer.nvim"},
-                    -- FIX: Doesn't work all the time and is hard to configure
+                    -- FIX: Doesn't work all the time
                     -- config = [[require("telescope").load_extension("packer")]],
                     config = function()
                         require("telescope.builtin").packer = function(opts)
@@ -1660,7 +1663,6 @@ return packer.startup(
             )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
-            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
         end
     }
 )

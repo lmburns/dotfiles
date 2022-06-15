@@ -142,7 +142,7 @@ local function init()
     -- vim.defer_fn(
     --     function()
     --         vim.cmd("au! Todo BufWinEnter")
-
+    --
     --         -- TODO: Figure this out
     --         augroup(
     --             {"Todo", false},
@@ -150,17 +150,23 @@ local function init()
     --                 event = "BufWinEnter",
     --                 pattern = "*",
     --                 command = function()
-    --                     local bufnr = api.nvim_get_current_buf()
-    --                     local bufname = api.nvim_buf_get_name(bufnr)
-    --                     if
-    --                         not bufname:match("%[Command Line%]") or not bufname:match("%[Wilder Float %d%]") or
-    --                             bufname ~= "" or
-    --                             vim.bo[bufnr].bt ~= "nofile"
-    --                      then
-    --                         vim.notify(bufname)
+    --                     -- local bufnr = api.nvim_get_current_buf()
+    --                     -- local bufname = api.nvim_buf_get_name(bufnr)
+    --                     local mode = api.nvim_get_mode().mode
+    --
+    --                     -- if
+    --                     --     not bufname:match(".*%[Command Line%]") or not bufname:match(".*%[Wilder Float %d%]") or
+    --                     --         bufname ~= "" or
+    --                     --         vim.bo[bufnr].bt ~= "nofile"
+    --                     --  then
+    --                     -- end
+    --
+    --                     if mode ~= "c" then
+    --                         -- vim.notify(("'%s'"):format(bufname))
     --                         require("todo-comments.highlight").attach()
     --                     end
-    --                 end
+    --                 end,
+    --                 desc = "Override todo-comments attach"
     --             }
     --         )
     --     end,

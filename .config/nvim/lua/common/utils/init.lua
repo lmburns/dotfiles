@@ -5,6 +5,7 @@ local M = {}
 local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
+local dev = require("dev")
 
 local a = require("plenary.async_lib")
 local async = a.async
@@ -86,6 +87,38 @@ M.safe_require = function(name, cb)
             }
         )
         return dummy
+    end
+end
+
+---Return a default value if `x` is nil
+---@param x any
+---@param default any
+---@return any
+M.get_default = function(x, default)
+  return M.if_nil(x, default, x)
+end
+
+---Similar to `vim.F.nil` except that an alternate default value can be given
+---@param x any
+---@param is_nil any
+---@param is_not_nil any?
+M.if_nil = function(x, is_nil, is_not_nil)
+  if x == nil then
+    return is_nil
+  else
+    return is_not_nil
+  end
+end
+
+---Return a value based on two values
+---@param condition boolean Statement to be tested
+---@param is_if any Return if condition is truthy
+---@param is_else any Return if condition is not truthy
+F.tern = function(condition, is_if, is_else)
+    if condition then
+        return is_if
+    else
+        return is_else
     end
 end
 
@@ -319,7 +352,7 @@ end
 ---Debug helper
 ---@vararg table | string | number: Anything to dump
 M.dump = function(...)
-    local objects = vim.tbl_map(require("dev").inspect, {...})
+    local objects = vim.tbl_map(dev.inspect, {...})
     print(unpack(objects))
 end
 
@@ -556,18 +589,6 @@ M.func2str = function(func, args)
     end
 end
 
----Return a value based on two values
----@param condition boolean Statement to be tested
----@param is_if any Return if condition is truthy
----@param is_else any Return if condition is not truthy
-F.tern = function(condition, is_if, is_else)
-    if condition then
-        return is_if
-    else
-        return is_else
-    end
-end
-
 ---Get specified builtin marks
 ---
 ---This is to be used when formatting a file. When formattinga a file, the last line
@@ -658,8 +679,7 @@ end
 ---Close all floating windows
 M.close_all_floating_wins = function()
     for _, win in ipairs(api.nvim_list_wins()) do
-        local config = api.nvim_win_get_config(win)
-        if config.relative ~= "" then
+        if dev.is_floating_window(win) then
             api.nvim_win_close(win, false)
         end
     end

@@ -6,7 +6,7 @@ local dev = require("dev")
 local utils = require("common.utils")
 local command = utils.command
 
-local ex = nvim.ex
+-- local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 local uv = vim.loop

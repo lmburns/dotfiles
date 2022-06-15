@@ -34,9 +34,6 @@ wk.register(
 -- Map '-' to blackhole register
 map("n", "-", '"_', {desc = "Black hole register"})
 map("x", "-", '"_', {desc = "Black hole register"})
-map("n", "q:", "<Nop>")
-map("n", "q/", "<Nop>")
-map("n", "q?", "<Nop>")
 map("n", "<Backspace>", "<C-^>", {desc = "Alternate file"})
 
 -- ╓                                                          ╖
@@ -63,6 +60,9 @@ map(
     end,
     {expr = true, desc = "Record macro"}
 )
+map("n", "q:", "<Nop>")
+map("n", "q/", "<Nop>")
+map("n", "q?", "<Nop>")
 map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
@@ -233,8 +233,8 @@ wk.register(
 -- Folding
 map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
 map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
-map({"n", "x"}, "zh", "zj_", {desc = "Top next fold"})
-map({"n", "x"}, "zl", "zk_", {desc = "Bottom previous fold"})
+map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
+map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
 map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
 
 map("n", "zf", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
@@ -246,6 +246,8 @@ map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
 map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
 map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
+-- map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
+-- map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 
 map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
@@ -255,9 +257,6 @@ map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
 map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
 map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
 
--- Using <ff> to fold or unfold
-map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
-map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 -- Refocus folds
 map("n", "<LocalLeader>z", [[zMzvzz]])
 

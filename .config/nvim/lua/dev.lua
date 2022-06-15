@@ -195,27 +195,15 @@ _G.p = function(...)
     print(table.concat(msg_tbl, " "))
 end
 
--- Dump table
--- function M.dump(o)
---   if type(o) == "table" then
---     local s = "{ "
---     for k, v in pairs(o) do
---       if type(k) ~= "number" then
---         k = "\"" .. k .. "\""
---       end
---       s = s .. "[" .. k .. "] = " .. dump(v) .. ","
---     end
---     return s .. "} "
---   else
---     return tostring(o)
---   end
--- end
-
 _G.pp = vim.pretty_print
 
 M.round = function(value)
     return math.floor(value + 0.5)
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          String                          │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Split a string on a delimiter
 ---@param input string
@@ -233,8 +221,15 @@ M.split = function(input, sep)
     return t
 end
 
--- ============================== Table ===============================
--- ====================================================================
+---Check if `string` is empty or `nil`
+---@return boolean
+M.is_empty = function(str)
+    return str == "" or str == nil
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Table                           │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Create table whose keys are now the values, and the values are now the keys
 ---Similar to vim.tbl_add_reverse_lookup
@@ -282,6 +277,18 @@ M.filter_duplicates = function(array)
         end
     end
     return res
+end
+
+---Execute a function across a table, keeping an accumulation of results
+---@param tbl table
+---@param fn fun(table, any, any)
+---@param acc table
+---@return table
+M.tbl_reduce = function(tbl, func, acc)
+    for k, v in pairs(tbl) do
+        acc = func(acc, v, k)
+    end
+    return acc
 end
 
 ---Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
@@ -403,6 +410,20 @@ M.find = function(haystack, matcher)
     return found
 end
 
+---Search for a value in a table
+---@param tbl table Table/List to search through
+---@param val any Value to find
+---@return boolean
+M.has_value = function(tbl, val)
+    for _, value in ipairs(tbl) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
 ---Return the first index a given object can be found in a vector, or -1 if
 ---it's not present.
 ---
@@ -475,8 +496,8 @@ end
 ---@param bufnr number
 ---@return boolean
 M.buf_is_empty = function(bufnr)
-  local lines = api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  return #lines == 1 and lines[1] == ''
+    local lines = api.nvim_buf_get_lines(bufnr, 0, -1, false)
+    return #lines == 1 and lines[1] == ""
 end
 
 ---`vim.api.nvim_is_buf_loaded` filters out all hidden buffers
@@ -602,6 +623,10 @@ M.get_tab_count = function()
     return #fn.gettabinfo()
 end
 
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Window                          │
+-- ╰──────────────────────────────────────────────────────────╯
+
 ---Determine if the window is the only open one
 ---@param win_id number?
 ---@return boolean
@@ -619,6 +644,31 @@ M.is_last_win = function(win_id)
         end
     end
     return true
+end
+
+---Determine whether the window is floating
+---@param winid number
+---@return boolean
+M.is_floating_window = function(winid)
+    return api.nvim_win_get_config(winid).relative ~= ""
+end
+
+---Get windows of a given type
+---@param wintype string
+---@return table
+M.get_wins_of_type = function(wintype)
+    return M.filter(
+        api.nvim_list_wins(),
+        function(winid)
+            return fn.win_gettype(winid) == wintype
+        end
+    )
+end
+
+---Return a table of window ID's for quickfix windows
+---@return table<number>
+M.get_qfwin = function()
+    return M.get_wins_of_type("quickfix")[1]
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

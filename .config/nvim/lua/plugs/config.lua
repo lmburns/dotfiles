@@ -479,7 +479,7 @@ function M.table_mode()
                 g.table_mode_separator = "|"
 
                 -- Expand snippets in VimWiki
-                map("i", "<right>", [[pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"]], {expr = true})
+                map("i", "<right>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"]], {expr = true})
             end
         }
     )
@@ -606,10 +606,6 @@ end
 -- │                          Notify                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.notify()
-    -- if g.packer_compiled_loaded then
-    --     return
-    -- end
-
     --   cmd [[
     --   hi NotifyERRORBorder guifg=#8A1F1F
     --   hi NotifyWARNBorder guifg=#79491D
@@ -655,8 +651,8 @@ function M.notify()
 
     notify.setup(
         {
-            stages = "fade_in_slide_out",
-            -- stages = "slide",
+            stages = "fade_in_slide_out", -- slide
+            fps = 60,
             timeout = 3000,
             minimum_width = 30,
             background_color = "NormalFloat",
@@ -667,9 +663,9 @@ function M.notify()
             --     if nvim.win.is_valid(win) then
             --     end
             -- end,
-            render = function(bufnr, notif, highlights)
+            render = function(bufnr, notif, highlights, config)
                 local style = notif.title[1] == "" and "minimal" or "default"
-                renderer[style](bufnr, notif, highlights)
+                renderer[style](bufnr, notif, highlights, config)
             end,
             icons = {
                 ERROR = " ",
@@ -683,17 +679,11 @@ function M.notify()
 
     wk.register(
         {
-            ["<Leader>nd"] = {notify.dismiss, "Dismiss notification"}
+            ["<C-S-N>"] = {notify.dismiss, "Dismiss notification"}
         }
     )
 
     require("telescope").load_extension("notify")
-
-    vim.notify = function(...)
-        require("plugins").loader("nvim-notify")
-        vim.notify = require("notify")
-        vim.notify(...)
-    end
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -708,8 +698,8 @@ function M.neogen()
             languages = {lua = {template = {annotation_convention = "emmylua"}}}
         }
     )
-    map("i", "<C-.>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
-    map("i", "<C-,>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
+    map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
+    map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
     map("n", "<Leader>dg", [[:Neogen<Space>]])
     map("n", "<Leader>df", [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]])
     map("n", "<Leader>dc", [[<cmd>lua require("neogen").generate({ type = "class" })<CR>]])
@@ -1251,42 +1241,6 @@ function M.move()
         },
         {mode = "n"}
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                      Window Picker                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.window_picker()
-    require("nvim-window").setup(
-        {
-            -- The characters available for hinting windows.
-            chars = {
-                "a",
-                "s",
-                "d",
-                "f",
-                "q",
-                "w",
-                "e",
-                "r",
-                "t",
-                "z",
-                "g",
-                ";",
-                ","
-            },
-            -- A group to use for overwriting the Normal highlight group in the floating
-            -- window. This can be used to change the background color.
-            normal_hl = "Normal",
-            -- The highlight group to apply to the line that contains the hint characters.
-            -- This is used to make them stand out more.
-            hint_hl = "Bold",
-            -- The border style to use for the floating window.
-            border = "single"
-        }
-    )
-
-    map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -2097,6 +2051,42 @@ function M.fidget()
         }
     )
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                      Window Picker                       │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.window_picker()
+--     require("nvim-window").setup(
+--         {
+--             -- The characters available for hinting windows.
+--             chars = {
+--                 "a",
+--                 "s",
+--                 "d",
+--                 "f",
+--                 "q",
+--                 "w",
+--                 "e",
+--                 "r",
+--                 "t",
+--                 "z",
+--                 "g",
+--                 ";",
+--                 ","
+--             },
+--             -- A group to use for overwriting the Normal highlight group in the floating
+--             -- window. This can be used to change the background color.
+--             normal_hl = "Normal",
+--             -- The highlight group to apply to the line that contains the hint characters.
+--             -- This is used to make them stand out more.
+--             hint_hl = "Bold",
+--             -- The border style to use for the floating window.
+--             border = "single"
+--         }
+--     )
+--
+--     map("n", "<M-->", "<cmd>lua require('nvim-window').pick()<CR>")
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                        Neoscroll                         │

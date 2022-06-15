@@ -421,7 +421,7 @@ nvim.autocmd.lmb__Help = {
             end
 
             local width = math.floor(vim.o.columns * 0.75)
-            cmd("wincmd L")
+            pcall(ex.wincmd, "L")
             cmd("vertical resize " .. width)
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,
@@ -506,10 +506,15 @@ nvim.autocmd.lmb__SmartClose = {
                 api.nvim_buf_delete(0, {force = true})
             end
 
-            -- TODO: Hide cursorline on popup
-            -- local bufnr = api.nvim_get_current_buf()
-            -- if fn.bufname(bufnr) == "[No Name]" then
-            --     vim.opt_local.cursorline = false
+            -- Hide cursorline on popup
+            local bufnr = api.nvim_get_current_buf()
+            local bufname = api.nvim_buf_get_name(bufnr)
+            if bufname == "[No Name]" then
+                vim.opt_local.cursorline = false
+            end
+
+            -- if bufname:match("%[Wilder Float %d%]") then
+            --     vim.opt_local.buflisted = false
             -- end
         end,
         desc = "Close QuickFix if last window, disable cursorline on [No Name]"
@@ -731,35 +736,28 @@ C.all({cmTitle = {link = "vimCommentTitle", default = true}})
 -- ======================= CursorLine Control ========================= [[[
 -- Cursorline highlighting control
 --  Only have it on in the active buffer
-do
-    local id = create_augroup("lmb__CursorLineControl")
-    local set_cursorline = function(event, value, pattern)
-        nvim.create_autocmd(
-            event,
-            {
-                group = id,
-                pattern = pattern,
-                callback = function()
-                    opt_local.cursorline = value
-                end
-            }
-        )
-    end
-
-    set_cursorline("WinLeave", false)
-    set_cursorline("WinEnter", true)
-    set_cursorline("FileType", false, "TelescopePrompt")
-end
+-- do
+--     local id = create_augroup("lmb__CursorLineControl")
+--     local set_cursorline = function(event, value, pattern)
+--         nvim.create_autocmd(
+--             event,
+--             {
+--                 group = id,
+--                 pattern = pattern,
+--                 callback = function()
+--                     opt_local.cursorline = value
+--                 end
+--             }
+--         )
+--     end
+--
+--     set_cursorline("WinLeave", false)
+--     set_cursorline("WinEnter", true)
+--     set_cursorline("FileType", false, "TelescopePrompt")
+-- end
 -- ]]]
 
 -- ========================== Buffer Reload =========================== [[[
--- autocmd(
---     "auto_read", {
---       [[FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() == 'n' && getcmdwintype() == '' | checktime | endif]],
---       [[FileChangedShellPost * echohl WarningMsg | echo "File changed on disk. Buffer reloaded!" | echohl None]],
---     }, true
--- )
-
 nvim.autocmd.lmb__AutoReloadFile = {
     {
         event = {"BufEnter", "CursorHold", "FocusGained"},
@@ -783,7 +781,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
         event = "FileChangedShellPost",
         pattern = "*",
         command = function()
-            api.nvim_echo({{"File changed on disk. Buffer reloaded!", "WarningMsg"}}, true, {})
+            nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
         end,
         desc = "Display a message if the buffer is changed outside of instance"
     }

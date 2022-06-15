@@ -103,6 +103,10 @@
     "sh": "shfmt"
     //   "zsh": "shfmt"
   },
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": false,
+  "prettier.semi": true,
+  "prettier.trailingComma": "es5",
   "lightbulb.excludeFiletypes": [],
   "lightbulb.enableVirtualText": true,
   "lightbulb.virtualText": "💡",
@@ -112,7 +116,7 @@
   "codeLens.position": "eol",
   "list.indicator": ">",
   "signature.enable": true,
-  "signature.target": "echo",
+  "signature.target": "float",
   "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
   "snippets.priority": 95,
@@ -374,7 +378,8 @@
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
-  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  // The codelens and inlayhints swap places when typing
+  "typescript.referencesCodeLens.showOnAllFunctions": false,
   // "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,

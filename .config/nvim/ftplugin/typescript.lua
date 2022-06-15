@@ -14,3 +14,12 @@ map(
     end,
     {buffer = true, desc = "Restart TSServer"}
 )
+
+map(
+    "n",
+    ";fa",
+    function()
+        coc.run_command("eslint.executeAutofix")
+    end,
+    {buffer = true, desc = "ESLint autofix"}
+)
