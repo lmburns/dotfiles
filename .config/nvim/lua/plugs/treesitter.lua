@@ -457,6 +457,7 @@ M.setup_treesurfer = function()
             disable_no_instance_found_report = false,
             default_desired_types = {
                 "function",
+                "function_definition",
                 "if_statement",
                 "else_clause",
                 "else_statement",
@@ -476,13 +477,71 @@ M.setup_treesurfer = function()
                 ["while_statement"] = "ﯩ",
                 ["switch_statement"] = "ﳟ",
                 ["function"] = "",
+                ["function_definition"] = "",
                 ["variable_declaration"] = ""
             }
         }
     )
 
-    map("n", "vd", '<cmd>lua require("syntax-tree-surfer").move("n", false)<cr>', {desc = "Swap next node"})
-    map("n", "vu", '<cmd>lua require("syntax-tree-surfer").move("n", true)<cr>', {desc = "Swap previous node"})
+    local sts = require("syntax-tree-surfer")
+    map(
+        "n",
+        ")",
+        function()
+            sts.filtered_jump("default", true)
+        end,
+        {desc = "Jump forward node"}
+    )
+    map(
+        "n",
+        "(",
+        function()
+            sts.filtered_jump("default", false) --> false means jump backwards
+        end,
+        {desc = "Jump backwards node"}
+    )
+
+    map(
+        "n",
+        "vU",
+        function()
+            vim.opt.opfunc = "v:lua.STSSwapUpNormal_Dot"
+            return "g@l"
+        end,
+        {silent = true, expr = true, desc = "Swap node up"}
+    )
+    map(
+        "n",
+        "vD",
+        function()
+            vim.opt.opfunc = "v:lua.STSSwapDownNormal_Dot"
+            return "g@l"
+        end,
+        {silent = true, expr = true, desc = "Swap node down"}
+    )
+
+    map(
+        "n",
+        "vd",
+        function()
+            vim.opt.opfunc = "v:lua.STSSwapCurrentNodeNextNormal_Dot"
+            return "g@l"
+        end,
+        {silent = true, expr = true, desc = "Swap cursor node w/ next sibling"}
+    )
+    map(
+        "n",
+        "vu",
+        function()
+            vim.opt.opfunc = "v:lua.STSSwapCurrentNodePrevNormal_Dot"
+            return "g@l"
+        end,
+        {silent = true, expr = true, desc = "Swap cursor node w/ prev sibling"}
+    )
+
+    -- map("n", "vd", '<cmd>lua require("syntax-tree-surfer").move("n", false)<cr>', {desc = "Swap next node"})
+    -- map("n", "vu", '<cmd>lua require("syntax-tree-surfer").move("n", true)<cr>', {desc = "Swap previous node"})
+
     map("n", "vn", '<cmd>lua require("syntax-tree-surfer").select()<cr>', {desc = "Select node"})
     map("n", "vm", '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>', {desc = "Select current node"})
 

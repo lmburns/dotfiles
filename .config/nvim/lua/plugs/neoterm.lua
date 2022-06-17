@@ -19,9 +19,10 @@ terminal.setup(
         hide_numbers = true,
         shade_filetypes = {},
         shade_terminals = true,
-        shading_factor = "1",
+        shading_factor = "1", -- the degree by which to darken to terminal colour, default: 1 for dark
         start_in_insert = true,
-        insert_mappings = true,
+        insert_mappings = true, -- whether or not the open mapping applies in insert mode
+        terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
         persist_size = true,
         shell = vim.o.shell,
         direction = "float",

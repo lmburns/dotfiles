@@ -1240,7 +1240,7 @@ wk.register(
         -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
         ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
-        ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
+        -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
             function()
                 -- require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})

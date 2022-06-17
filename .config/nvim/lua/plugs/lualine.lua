@@ -4,15 +4,14 @@ local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
 
+local dev = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
 local stl = require("common.utils.stl")
-local conditions = stl.conditions
+local conds = stl.conditions
 local plugs = stl.plugins
-
-local lutils = require("lualine.utils.utils")
 
 local only_pad_right = {left = 1, right = 0}
 
@@ -46,7 +45,7 @@ local sections_1 = {
         },
         {
             "filesize",
-            cond = conditions.hide_in_width,
+            cond = conds.hide_in_width,
             color = {fg = colors.green}
         },
         {
@@ -86,7 +85,7 @@ local sections_1 = {
         {
             plugs.gps.fn,
             cond = function()
-                return conditions.is_available_gps() and conditions.hide_in_width() and conditions.coc_status_width()
+                return conds.is_available_gps() and conds.hide_in_width() and conds.coc_status_width()
             end,
             color = {fg = colors.red}
         },
@@ -120,7 +119,7 @@ local sections_1 = {
             "branch",
             icon = icons.git.branch,
             cond = function()
-                return conditions.check_git_workspace() and plugs.search_result.fn() == ""
+                return conds.check_git_workspace() and plugs.search_result.fn() == ""
             end
         },
         {plugs.quickfix_count.fn, separator = {left = plugs.sep()}},
@@ -140,7 +139,7 @@ local sections_2 = {
     lualine_b = {
         {"filetype", icon_only = true},
         "fileformat",
-        {"filesize", cond = conditions.hide_in_width},
+        {"filesize", cond = conds.hide_in_width},
         {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
         {
             "filename",
@@ -153,13 +152,13 @@ local sections_2 = {
         {
             -- "aerial"
             'require("nvim-gps").get_location()',
-            cond = conditions.is_available_gps,
+            cond = conds.is_available_gps,
             color = {fg = colors.red}
         },
         {
             "branch",
             icon = icons.git.branch,
-            cond = conditions.check_git_workspace
+            cond = conds.check_git_workspace
         }
         -- "b:gitsigns_head"
         -- "Fugitivehead"
@@ -174,12 +173,15 @@ local sections_2 = {
 -- ╒══════════════════════════════════════════════════════════╕
 --                           Mapping
 -- ╘══════════════════════════════════════════════════════════╛
+-- FIX: This stopped working once items were moved out of this file
+-- It has to do with the added padding
 function M.toggle_mode()
     local ll_req = require("lualine_require")
     local modules = ll_req.lazy_require({config_module = "lualine.config"})
-
     local current_config = modules.config_module.get_config()
-    if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
+    local lutils = require("lualine.utils.utils")
+
+    if dev.tbl_equivalent(current_config.sections, sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)
@@ -274,13 +276,14 @@ local function init()
                 }
             },
             sections = sections_1,
+            -- Inactive sections don't change with FocusLost
             inactive_sections = {
                 lualine_a = {},
                 lualine_b = {
                     {"filetype", icon_only = false},
                     {
                         "filesize",
-                        cond = conditions.hide_in_width,
+                        cond = conds.hide_in_width,
                         color = {fg = colors.green}
                     },
                     {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
@@ -313,7 +316,7 @@ local function init()
             --   lualine_z = {
             --     {
             --       'require("nvim-gps").get_location()',
-            --       cond = conditions.is_available_gps,
+            --       cond = conds.is_available_gps,
             --     },
             --   },
             -- },

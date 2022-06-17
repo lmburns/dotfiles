@@ -669,8 +669,8 @@ local function init()
             -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
             ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
             ["<Leader>hf"] = {":History<CR>", "File history (fzf)"},
-            ["<Leader>hc"] = {":History:<CR>", "File history (fzf)"},
-            -- ["<Leader>f;"] = {[[<Cmd>:History:<CR>]], "Command history (fzf)"},
+            ["<Leader>hc"] = {":History:<CR>", "Command history (fzf)"},
+            ["q:"] = {":History:<CR>", "Command history (fzf)"},
             ["<Leader>ls"] = {":LS<CR>", "LS (fzf)"}
         }
     )
@@ -695,9 +695,7 @@ local function init()
         "<Leader>fe",
         function()
             vim.ui.input(
-                {
-                    prompt = "Search: "
-                },
+                {prompt = "Search: "},
                 function(term)
                     if term then
                         vim.schedule(

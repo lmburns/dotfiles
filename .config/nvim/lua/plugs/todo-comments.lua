@@ -9,6 +9,12 @@ local api = vim.api
 local Search = require("todo-comments.search")
 
 function M.setup()
+    local hl = require("todo-comments.highlight")
+    local highlight_win = hl.highlight_win
+    hl.highlight_win = function(win, force)
+        pcall(highlight_win, win, force)
+    end
+
     require("todo-comments").setup(
         {
             signs = true, -- show icons in the signs column
@@ -138,40 +144,6 @@ local function init()
         },
         {mode = "n", silent = true}
     )
-
-    -- vim.defer_fn(
-    --     function()
-    --         vim.cmd("au! Todo BufWinEnter")
-    --
-    --         -- TODO: Figure this out
-    --         augroup(
-    --             {"Todo", false},
-    --             {
-    --                 event = "BufWinEnter",
-    --                 pattern = "*",
-    --                 command = function()
-    --                     -- local bufnr = api.nvim_get_current_buf()
-    --                     -- local bufname = api.nvim_buf_get_name(bufnr)
-    --                     local mode = api.nvim_get_mode().mode
-    --
-    --                     -- if
-    --                     --     not bufname:match(".*%[Command Line%]") or not bufname:match(".*%[Wilder Float %d%]") or
-    --                     --         bufname ~= "" or
-    --                     --         vim.bo[bufnr].bt ~= "nofile"
-    --                     --  then
-    --                     -- end
-    --
-    --                     if mode ~= "c" then
-    --                         -- vim.notify(("'%s'"):format(bufname))
-    --                         require("todo-comments.highlight").attach()
-    --                     end
-    --                 end,
-    --                 desc = "Override todo-comments attach"
-    --             }
-    --         )
-    --     end,
-    --     1000
-    -- )
 end
 
 init()

@@ -3,6 +3,7 @@ local M = {}
 local dev = require("dev")
 local utils = require("common.utils")
 local C = require("common.color")
+local palette = require("kimbox.palette")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
 local command = utils.command
@@ -384,8 +385,10 @@ local handler = function(virt_text, lnum, end_lnum, width)
         pos = next_pos
     end
 
-    local filler = ("•"):rep(limited_width - str_width - 1)
+    local foldlvl = ("•"):rep(v.foldlevel)
+    local filler = ("•"):rep(limited_width - str_width - api.nvim_strwidth(foldlvl) - 1)
     table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
+    table.insert(new_virt_text, {foldlvl, "UFOFoldLevel"})
     table.insert(new_virt_text, {percentage, "ErrorMsg"})
     table.insert(new_virt_text, {end_text, "MoreMsg"})
     return new_virt_text
@@ -412,6 +415,7 @@ function M.percentage(startl, endl)
     return pnum .. "%"
 end
 
+---Setup 'ultra-fold'
 M.setup_ufo = function()
     require("ufo").setup(
         {
@@ -428,6 +432,7 @@ local function init()
 
     vim.defer_fn(
         function()
+            C.set_hl("UFOFoldLevel", {fg = palette.blue, bold = true})
             M.setup_ufo()
             -- M.setup_prettyfold()
         end,

@@ -355,22 +355,22 @@ nvim.autocmd.lmb__TermMappings = {
     desc = "Set terminal mappings"
 }
 
-nvim.autocmd.lmb__TermClose = {
-    event = {"TermClose"},
-    pattern = "*",
-    command = function()
-        if vim.v.event.status == 0 then
-            local info = api.nvim_get_chan_info(vim.opt.channel._value)
-            if not info or not info.argv then
-                return
-            end
-            if info.argv[1] == vim.env.SHELL then
-                pcall(api.nvim_buf_delete, 0, {})
-            end
-        end
-    end,
-    desc = "Automatically close a terminal buffer"
-}
+-- nvim.autocmd.lmb__TermClose = {
+--     event = {"TermClose"},
+--     pattern = "*",
+--     command = function()
+--         if vim.v.event.status == 0 then
+--             local info = api.nvim_get_chan_info(vim.opt.channel._value)
+--             if not info or not info.argv then
+--                 return
+--             end
+--             if info.argv[1] == vim.env.SHELL then
+--                 pcall(api.nvim_buf_delete, 0, {})
+--             end
+--         end
+--     end,
+--     desc = "Automatically close a terminal buffer"
+-- }
 -- ]]] === Terminal ===
 
 -- === Help/Man pages in vertical ===

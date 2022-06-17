@@ -307,11 +307,11 @@ zt 0a light-mode for \
     agkozak/zhooks \
   trigger-load'!ugit' \
     Bhupesh-V/ugit \
-  trigger-load'!ga;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
-  atinit'forgit_ignore="/dev/null"' \
+  trigger-load'!ga;!gi;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
     wfxr/forgit \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist
+# atinit'forgit_ignore="/dev/null"' \
 
 zt 0a light-mode for \
   trigger-load'!gcomp' blockf \
@@ -430,7 +430,7 @@ zt 0c light-mode binary for \
   lbin"$ZPFX/bin/git-*" atclone'rm -f **/*ignore' \
   src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX" \
     tj/git-extras \
-  lbin atload'alias gi="git-ignore"'\
+  lbin atload'alias giti="git-ignore"'\
     laggardkernel/git-ignore \
   lbin'f*~*.zsh' pick'*.zsh' atinit'alias fs="fstat"' \
     lmburns/fzfgit \

@@ -7,7 +7,7 @@ local api = vim.api
 local fn = vim.fn
 
 ---Set a timeout for a character-prefix in keybindings
----@param prefix string
+---@param prefix string a prefix for other mappings
 ---@return string
 function M.prefix_timeout(prefix)
     local char = fn.getcharstr(0)
@@ -34,6 +34,7 @@ end
 ---These could be the same if there is no whitespace prefix
 ---@return string jump position in a mapping
 function M.jump0()
+    -- map("n", "0", "getline('.')[0 : col('.') - 2] =~# '^\\s\\+$' ? '0' : '^'", {expr = true})
     local lnum, col = unpack(api.nvim_win_get_cursor(0))
     local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]
     local expr

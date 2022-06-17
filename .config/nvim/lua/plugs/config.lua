@@ -240,13 +240,6 @@ function M.package_info()
 
     local pi = require("package-info")
 
-    command(
-        "PackageInfo",
-        function()
-            require("package-info").show()
-        end
-    )
-
     augroup(
         "lmb__PackageInfoBindings",
         {
@@ -1115,6 +1108,24 @@ function M.targets()
     -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
     -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
     -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Caser                           │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.caser()
+    -- crm|crp  => MixedCase, PascalCase
+    -- crc      => camelCase
+    -- cr_      => snake_case
+    -- cru|crU  => UPPER_CASE
+    -- crt      => Title case
+    -- crs      => Sentence case
+    -- cr<spce> => space case
+    -- cr-|crk  => dash-case, kebab-case
+    -- crK      => Title-Dash-Case, Title-Kebab-Case
+    -- cr.      => dot.case
+
+    -- g.caser_prefix = "cr"
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

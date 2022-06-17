@@ -23,7 +23,6 @@ local api = vim.api
 ---@param check string Module to check if is installed
 ---@return table Result<T, E>
 M.prequire = function(check)
-    opts = opts or {silent = false}
     local ok, ret = pcall(require, check)
     if ok then
         return Result.ok(ret)

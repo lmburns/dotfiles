@@ -47,6 +47,7 @@ function M.setup()
             -- add operators that will trigger motion and text object completion
             y = "Yank",
             gc = "Comments",
+            -- cr = "Change case",
             ga = "Easy align",
             ys = "Surround",
             s = "Substitute",
@@ -124,7 +125,10 @@ local function init()
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
             ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
             ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-            ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"}
+            ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
+            ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
+            ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
+            ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
         }
     )
 

@@ -164,7 +164,8 @@ wk.register(
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
         ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
-        ["cn"] = {[[*``cgn]], "Change text selection"},
+        ["cn"] = {[[*``cgn]], "Change text, start search forward"},
+        ["cN"] = {[[*``cgN]], "Change text, start search backward"},
         ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"}
         -- ["ghp"] = {[[m`o<Esc>p``]], "Paste line below (linewise)"},
         -- ["ghP"] = {[[m`O<Esc>p``]], "Paste line above (linewise)"},

@@ -261,7 +261,8 @@ return packer.startup(
                         {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
                         {"n", "gbP"},
                         {"n", "ghp"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
-                        {"n", "g]p"}, -- Paste linewise above (like glp but adjust indent)
+                        {"n", "ghP"}, -- Paste linewise below (like glp but adjust indent) (MODIFIED)
+                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
                         {"n", "g]P"},
                         {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
                         {"n", "g[P"},
@@ -272,14 +273,16 @@ return packer.startup(
             )
 
             -- :Subvert/child{,ren}/adult{,s}/g
-            use(
-                {
-                    "tpope/vim-abolish",
-                    conf = "abolish",
-                    cmd = {"Subvert", "Abolish"},
-                    keys = {{"n", "cr"}}
-                }
-            )
+            -- use(
+            --     {
+            --         "tpope/vim-abolish",
+            --         conf = "abolish",
+            --         cmd = {"Subvert", "Abolish"},
+            --         keys = {{"n", "cr"}}
+            --     }
+            -- )
+
+            use({"arthurxavierx/vim-caser", setup = [[vim.g.caser_prefix = "cr"]], conf = "caser"})
 
             -- TODO: Get completions to work just as regular S does
             -- :E2v = (\d{1,3})(?=(\d\d\d)+($|\D))
@@ -291,7 +294,7 @@ return packer.startup(
                 {
                     "othree/eregex.vim",
                     cmd = {"E2v", "S", "M"},
-                    after = "vim-abolish",
+                    -- after = "vim-abolish",
                     setup = [[vim.g.eregex_default_enable = 0]],
                     keys = {{"n", "<Leader>/"}},
                     conf = "eregex",
@@ -676,6 +679,11 @@ return packer.startup(
             -- )
             -- ]]] === Window Picker ===
 
+            -- ============================== Targets ============================== [[[
+            use({"wellle/targets.vim", conf = "targets"})
+            use({"andymass/vim-matchup", conf = "matchup"})
+            -- ]]] === Targets ===
+
             -- ============================= Operator ============================== [[[
             use(
                 {
@@ -825,11 +833,6 @@ return packer.startup(
             use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
             -- ]]] === Commenter ===
 
-            -- ============================== Targets ============================== [[[
-            use({"wellle/targets.vim", conf = "targets"})
-            use({"andymass/vim-matchup", conf = "matchup"})
-            -- ]]] === Targets ===
-
             -- ============================== Nvim-R =============================== [[[
             use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r"})
             -- ]]] === Nvim-R ===
@@ -849,6 +852,7 @@ return packer.startup(
                 {
                     "vuki656/package-info.nvim",
                     requires = "MunifTanjim/nui.nvim",
+                    event = "BufRead package.json",
                     conf = "package_info"
                 }
             )

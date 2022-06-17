@@ -79,11 +79,7 @@ end
 local function init()
     M.setup()
 
-    color.link("RnvimrNormal", "CursorLine")
-
-    -- map("t", "<C-i>", [[<C-\><C-n>:RnvimrToggle<CR>]], { silent = true })
-    -- map("t", "<C-o>", [[<C-\><C-n>:RnvimrResize<CR>]], { silent = true })
-
+    color.set_hl("RnvimrNormal", {link = "CursorLine"})
     map("n", "<M-i>", ":RnvimrToggle<CR>", {silent = true})
 
     augroup(
