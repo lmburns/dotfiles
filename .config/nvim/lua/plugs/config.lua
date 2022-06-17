@@ -1360,7 +1360,7 @@ function M.colorizer()
             RGB = true, -- #RGB hex codes
             RRGGBB = true, -- #RRGGBB hex codes
             RRGGBBAA = true, -- #RRGGBBAA hex codes
-            names = true, -- "Name" codes like Blue
+            names = false, -- "Name" codes like Blue
             rgb_0x = false, -- 0xAARRGGBB hex codes
             rgb_fn = false, -- CSS rgb() and rgba() functions
             hsl_fn = false, -- CSS hsl() and hsla() functions
@@ -1880,6 +1880,8 @@ function M.incline()
             }
         }
     )
+
+    map("n", "<Leader>wb", "<Cmd>lua require('incline').toggle()<CR>", {desc = "Toggle winbar"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

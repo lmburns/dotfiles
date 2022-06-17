@@ -15,6 +15,7 @@ local fn = vim.fn
 ---@class Outline
 ---@field filter_kind table<number, "Array"|"Boolean"|"Class"|"Constant"|"Constructor"|"Enum"|"EnumMember"|"Event"|"Field"|"...">
 ---@field fzf boolean
+---@field bufnr number?
 
 -- Array Boolean Class    Constant  Constructor Enum     EnumMember Event
 -- Field File    Function Interface Key         Method   Module     Namespace
@@ -77,19 +78,19 @@ function M.outline_aerial(opts)
     local hl_defs = api.nvim__get_hl_defs(0)
     local hl_def_keys = _t(hl_defs):keys()
 
-    local ns = api.nvim_create_namespace("aerial-sign")
-    for name, icon in pairs(config.icons) do
-        -- Choose a random highlight group
-        local rand = math.random(1, #hl_defs)
-
-        fn.sign_define(
-            "aerial-sign-" .. name,
-            {
-                text = icon,
-                texthl = hl_defs[name] and name or hl_def_keys[rand]
-            }
-        )
-    end
+    -- local ns = api.nvim_create_namespace("aerial-sign")
+    -- for name, icon in pairs(config.icons) do
+    --     -- Choose a random highlight group
+    --     local rand = math.random(1, #hl_defs)
+    --
+    --     fn.sign_define(
+    --         "aerial-sign-" .. name,
+    --         {
+    --             text = icon,
+    --             texthl = hl_defs[name] and name or hl_def_keys[rand]
+    --         }
+    --     )
+    -- end
 
     for _, s in pairs(results) do
         local col = s.col + 1
@@ -127,35 +128,35 @@ function M.outline_aerial(opts)
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
                 bufnr = api.nvim_get_current_buf()
 
-                api.nvim_buf_clear_namespace(bufnr, ns, qinfo.start_idx, qinfo.end_idx + 1)
+                -- api.nvim_buf_clear_namespace(bufnr, ns, qinfo.start_idx, qinfo.end_idx + 1)
 
-                for _, sign in pairs(fn.sign_getplaced(bufnr, {group = "aerial-sign"})[1].signs) do
-                    if sign.lnum - 1 >= qinfo.start_idx and sign.lnum - 1 <= qinfo.end_idx then
-                        fn.sign_unplace("aerial-sign", {buffer = bufnr, id = sign.id})
-                    end
-                end
+                -- for _, sign in pairs(fn.sign_getplaced(bufnr, {group = "aerial-sign"})[1].signs) do
+                --     if sign.lnum - 1 >= qinfo.start_idx and sign.lnum - 1 <= qinfo.end_idx then
+                --         fn.sign_unplace("aerial-sign", {buffer = bufnr, id = sign.id})
+                --     end
+                -- end
 
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
 
-                    for j = 1, #items do
-                        local item = items[j]
-                        if item.text == ele.text then
-                            if type(item.kind) == "string" then
-                                fn.sign_place(
-                                    0,
-                                    "aerial-sign",
-                                    "aerial-sign-" .. item.kind,
-                                    bufnr,
-                                    {
-                                        lnum = j,
-                                        priority = 90
-                                    }
-                                )
-                            end
-                        end
-                    end
+                    -- for j = 1, #items do
+                    --     local item = items[j]
+                    --     if item.text == ele.text then
+                    --         if type(item.kind) == "string" then
+                    --             fn.sign_place(
+                    --                 0,
+                    --                 "aerial-sign",
+                    --                 "aerial-sign-" .. item.kind,
+                    --                 bufnr,
+                    --                 {
+                    --                     lnum = j,
+                    --                     priority = 90
+                    --                 }
+                    --             )
+                    --         end
+                    --     end
+                    -- end
                 end
                 return ret
             end
@@ -195,12 +196,45 @@ function M.outline(opts)
         return
     end
 
+    opts = opts or {}
+
+    if opts.filter_kind and opts.filter_kind == false then
+        opts.filter_kind = {
+            "Array",
+            "Boolean",
+            "Class",
+            "Constant",
+            "Constructor",
+            "Enum",
+            "EnumMember",
+            "Event",
+            "Field",
+            "File",
+            "Function",
+            "Interface",
+            "Key",
+            "Method",
+            "Module",
+            "Namespace",
+            "Null",
+            "Number",
+            "Object",
+            "Operator",
+            "Package",
+            "Property",
+            "String",
+            "Struct",
+            "TypeParameter",
+            "Variable"
+        }
+    end
+
     opts =
         vim.tbl_extend(
         "keep",
-        opts or {},
+        opts,
         {
-            filter_kinds = {
+            filter_kind = {
                 "Class",
                 "Constructor",
                 "Enum",
@@ -221,7 +255,7 @@ function M.outline(opts)
     end
     coc.run_command(
         "kvs.symbol.docSymbols",
-        {bufnr, opts.filter_kinds},
+        {bufnr, opts.filter_kind},
         function(e, r)
             if e ~= vim.NIL or type(r) ~= "table" or #r == 0 then
                 return
@@ -315,7 +349,7 @@ local treesitter_type_highlight = {
 }
 
 ---Create an outline using treesitter
----@param opts table?
+---@param opts Outline?
 function M.outline_treesitter(opts)
     opts =
         vim.tbl_extend(
@@ -352,7 +386,7 @@ function M.outline_treesitter(opts)
         return
     end
 
-    local ns = api.nvim_create_namespace("treesitter-qf")
+    -- local ns = api.nvim_create_namespace("treesitter-qf")
     local ts_utils = require "nvim-treesitter.ts_utils"
     local items = {}
     local text_fmt = "%-32s│%5d:%-3d│%10s%s"
@@ -390,19 +424,19 @@ function M.outline_treesitter(opts)
             quickfixtextfunc = function(qinfo)
                 local ret = {}
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
-                local bufnr = api.nvim_get_current_buf()
+                -- local bufnr = api.nvim_get_current_buf()
 
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
 
-                    for j = 1, #items do
-                        local item = items[j]
-                        if item.text == ele.text then
-                            -- TODO: Get this to work
-                            api.nvim_buf_add_highlight(bufnr, ns, item.hl_group, i, 0, 1)
-                        end
-                    end
+                    -- for j = 1, #items do
+                    --     local item = items[j]
+                    --     if item.text == ele.text then
+                    --         -- TODO: Get this to work
+                    --         api.nvim_buf_add_highlight(bufnr, ns, item.hl_group, i, 0, 1)
+                    --     end
+                    -- end
                 end
                 return ret
             end

@@ -27,15 +27,19 @@ M.set_config = fn["coc#config"]
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Notifications                       │
 -- ╰──────────────────────────────────────────────────────────╯
+-- https://github.com/rcarriga/nvim-notify/wiki/Usage-Recipes
 local status_record = {}
 local diag_record = {}
 
-function coc_status_notify(msg, level)
+---Use nvim-notify to send an alert for Coc
+---@param msg string
+---@param level string
+function M.coc_status_notify(msg, level)
     local notify_opts = {
         title = "LSP Status",
         timeout = 500,
         hide_from_history = true,
-        on_close = reset_status_record
+        on_close = M.reset_status_record
     }
     -- if status_record is not {} then add it to notify_opts to key called "replace"
     if status_record ~= {} then
@@ -44,21 +48,26 @@ function coc_status_notify(msg, level)
     status_record = vim.notify(msg, level, notify_opts)
 end
 
-function reset_status_record(window)
+---Reset the status record
+---@param window number
+function M.reset_status_record(window)
     status_record = {}
 end
 
+---Set a notification to be sent for CocDiagnostics
+---@param msg string
+---@param level string
 function coc_diag_notify(msg, level)
-  local notify_opts = { title = "LSP Diagnostics", timeout = 500, on_close = reset_diag_record }
-  -- if diag_record is not {} then add it to notify_opts to key called "replace"
-  if diag_record ~= {} then
-    notify_opts["replace"] = diag_record.id
-  end
-  diag_record = vim.notify(msg, level, notify_opts)
+    local notify_opts = {title = "LSP Diagnostics", timeout = 500, on_close = reset_diag_record}
+    -- if diag_record is not {} then add it to notify_opts to key called "replace"
+    if diag_record ~= {} then
+        notify_opts["replace"] = diag_record.id
+    end
+    diag_record = vim.notify(msg, level, notify_opts)
 end
 
 function reset_diag_record(window)
-  diag_record = {}
+    diag_record = {}
 end
 
 vim.cmd [[
@@ -90,14 +99,16 @@ function! CocDiagnosticNotify() abort
   if empty(l:msg) | let l:msg = ' All OK' | endif
   call v:lua.coc_diag_notify(l:msg, l:level)
 endfunction
-
-function! CocStatusNotify() abort
-  let l:status = get(g:, 'coc_status', '')
-  let l:level = 'info'
-  if empty(l:status) | return '' | endif
-  call v:lua.coc_status_notify(l:status, l:level)
-endfunction
 ]]
+
+---Send a notification for the value of `vim.g.coc_status`
+function M.coc_status_notification()
+    local status = vim.trim(vim.g.coc_status or "")
+    if status == "" then
+        return ""
+    end
+    M.coc_status_notify(status, "info")
+end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Other                           │
@@ -751,16 +762,17 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
-                fn["CocDiagnosticNotify"]()
+                -- fn["CocDiagnosticNotify"]()
             end
         },
-        {
-            event = "User",
-            pattern = "CocStatusChange",
-            command = function()
-                fn["CocStatusNotify"]()
-            end
-        },
+        -- {
+        --     event = "User",
+        --     pattern = "CocStatusChange",
+        --     command = function()
+        --         -- fn["CocStatusNotify"]()
+        --         require("plugs.coc").coc_status_notification()
+        --     end
+        -- },
         {
             event = "CursorHold",
             pattern = "*",

@@ -120,7 +120,7 @@ programming:
     clojure: [.clj]
     crystal: [.cr]
     csharp: [.cs, .csx]
-    css: [css]
+    css: [.css]
     cxx:
       [
         .c,
@@ -177,6 +177,7 @@ programming:
     ruby: [.rb, .rbs]
     rust: [.rs]
     scala: [.scala, .sbt]
+    scss: [.scss]
     shell: [.sh, .bash, .fish]
     sql: [.sql]
     swift: [.swift]

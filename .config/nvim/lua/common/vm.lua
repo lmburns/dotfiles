@@ -18,7 +18,7 @@ local override_lens = function(render, plist, nearest, idx, r_idx)
         text = ("[%d]"):format(idx)
         chunks = {{" ", "Ignore"}, {text, "HlSearchLens"}}
     end
-    render.set_virt(0, lnum - 1, col - 1, chunks, nearest)
+    render.setVirt(0, lnum - 1, col - 1, chunks, nearest)
 end
 
 function M.start()

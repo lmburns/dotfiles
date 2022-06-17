@@ -221,6 +221,17 @@ return packer.startup(
             use({"kyazdani42/nvim-web-devicons"})
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
+            -- ============================== WhichKey ============================ [[[
+            use({"folke/which-key.nvim", conf = "plugs.which-key"})
+            use(
+                {
+                    "mrjones2014/legendary.nvim",
+                    conf = "plugs.legendary",
+                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
+                }
+            )
+            -- ]]] === WhichKey ===
+
             -- ========================== Fixes / Addons ========================== [[[
             use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
@@ -358,17 +369,6 @@ return packer.startup(
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
             -- ]]] === Colorscheme ===
-
-            -- ============================== WhichKey ============================ [[[
-            use({"folke/which-key.nvim", conf = "plugs.which-key"})
-            use(
-                {
-                    "mrjones2014/legendary.nvim",
-                    conf = "plugs.legendary",
-                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
-                }
-            )
-            -- ]]] === WhichKey ===
 
             -- ======================== Session Management ======================== [[[
 
@@ -560,7 +560,7 @@ return packer.startup(
             use(
                 {
                     "mhinz/vim-grepper",
-                    cmd = "Grepper",
+                    cmd = {"Grepper", "GrepperRg"},
                     keys = {{"n", "gs"}, {"x", "gs"}, {"n", "<Leader>rg"}},
                     conf = "grepper"
                 }
@@ -771,30 +771,21 @@ return packer.startup(
                     setup = [[vim.g.anyfold_fold_display = 0]]
                 }
             )
+            -- Combining both of these really isn't necessary
+            -- UFO provides Coc folding ranges and highlights fold line as normal text
+            -- PrettyFold adds fold text to right while keeping highlight
+            use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
+            use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
 
-            use(
-                {
-                    "anuvyklack/pretty-fold.nvim",
-                    requires = "anuvyklack/nvim-keymap-amend"
-                }
-            )
-
+            -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
             use(
                 {
                     "windwp/nvim-autopairs",
-                    -- wants = "nvim-treesitter",
+                    wants = "nvim-treesitter",
                     conf = "plugs.autopairs",
                     event = "InsertEnter"
                 }
             )
-
-            -- use(
-            --     {
-            --       "Raimondi/delimitMate",
-            --       event = "InsertEnter",
-            --       conf = "delimitmate",
-            --     }
-            -- )
 
             use(
                 {
@@ -814,13 +805,7 @@ return packer.startup(
 
             -- =============================== Tags =============================== [[[
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
-            use(
-                {
-                    "liuchengxu/vista.vim",
-                    after = "vim-gutentags",
-                    conf = "plugs.vista"
-                }
-            )
+            use({"liuchengxu/vista.vim", after = "vim-gutentags", conf = "plugs.vista"})
             -- ]]] === Tags ===
 
             -- ============================= UndoTree ============================= [[[
@@ -1183,6 +1168,7 @@ return packer.startup(
             -- use({"weilbith/nvim-code-action-menu", cmd = "CodeActionMenu", keys = {{"n", "<A-CR>"}}})
             -- use({"kosayoda/nvim-lightbulb", conf = "lightbulb"})
             -- -- use({"theHamsta/nvim-semantic-tokens", conf = "semantic_tokens"})
+            -- use({"zbirenbaum/neodim"})
             --
             -- -- ╭──────────────────────────────────────────────────────────╮
             -- -- │                        Completion                        │
@@ -1392,6 +1378,7 @@ return packer.startup(
             )
 
             use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
+            -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
 

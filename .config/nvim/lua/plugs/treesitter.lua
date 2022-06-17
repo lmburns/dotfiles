@@ -16,6 +16,8 @@ local queries
 local parsers
 local configs
 
+local context_vt_max_lines = 2000
+
 ---Check whether there are text-objects available
 ---@param ft string
 ---@return boolean
@@ -402,11 +404,15 @@ M.setup_context_vt = function()
             -- Default: {}
             disable_virtual_lines_ft = {"yaml"},
             -- How many lines required after starting position to show virtual text
-            min_rows = fn.winheight("%"),
+            min_rows = fn.winheight("%") / 3,
             -- Same as above but only for spesific filetypes
             min_rows_ft = {},
             -- Custom virtual text node parser callback
             custom_parser = function(node, ft, opts)
+                if api.nvim_buf_line_count(0) >= context_vt_max_lines then
+                    return nil
+                end
+
                 local nvim_utils = require("nvim_context_vt.utils")
 
                 -- If you return `nil`, no virtual text will be displayed.
@@ -594,7 +600,7 @@ M.setup = function()
             }
         },
         autotag = {enable = true},
-        autopairs = {enable = false}, -- there's a plugin for this
+        autopairs = {enable = true},
         -- yati = {enable = true},
         -- tree_docs = {enable = true},
         indent = {enable = true},
@@ -649,14 +655,14 @@ M.setup = function()
             smart_rename = {
                 enable = true,
                 keymaps = {
-                    smart_rename = "'r" -- mapping to rename reference under cursor
+                    smart_rename = "<A-r>" -- mapping to rename reference under cursor
                 }
             },
             navigation = {
                 enable = true,
                 keymaps = {
                     goto_definition = ";d", -- mapping to go to definition of symbol under cursor
-                    list_definitions = ";D", -- mapping to list all definitions in current file
+                    list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
                     list_definitions_toc = "gO",
                     goto_next_usage = "]x",
                     goto_previous_usage = "[x"
@@ -765,7 +771,7 @@ M.setup = function()
                     ["[j"] = "@parameter.inner",
                     ["[a"] = "@call.inner",
                     ["[l"] = "@loop.inner",
-                    ["[C"] = "@conditional.inner",
+                    ["[C"] = "@conditional.inner"
                     -- ["gpf"] = "@function.outer",
                     -- ["gpif"] = "@function.inner",
                     -- ["gpp"] = "@parameter.inner",
@@ -1000,7 +1006,7 @@ local function init()
             ["[F"] = "Previous function end",
             ["[R"] = "Previous block end",
             ["[M"] = "Previous class end",
-            ["[A"] = "Previous call end",
+            ["[A"] = "Previous call end"
         },
         {mode = "n"}
     )

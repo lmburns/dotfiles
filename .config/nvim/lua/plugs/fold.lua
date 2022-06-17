@@ -1,6 +1,8 @@
 local M = {}
 
+local dev = require("dev")
 local utils = require("common.utils")
+local C = require("common.color")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
 local command = utils.command
@@ -11,25 +13,11 @@ local api = vim.api
 local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
+local v = vim.v
 
 local bl_ft
 local coc_loaded_ft
 local anyfold_prefer_ft
-
-local function find_win_except_float(bufnr)
-    local winid = fn.bufwinid(bufnr)
-    if fn.win_gettype(winid) == "popup" then
-        local f_winid = winid
-        winid = 0
-        for _, wid in ipairs(api.nvim_list_wins()) do
-            if f_winid ~= wid and api.nvim_win_get_buf(wid) == bufnr then
-                winid = wid
-                break
-            end
-        end
-    end
-    return winid
-end
 
 function M.use_anyfold(bufnr, force)
     local filename = api.nvim_buf_get_name(bufnr)
@@ -102,7 +90,8 @@ end
 function M.update_fold(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     coc.run_command(
-        "kvs.fold.foldingRange",
+        -- "kvs.fold.foldingRange",
+        "ufo.foldingRange",
         {bufnr},
         function(e, r)
             if e == vim.NIL and type(r) == "table" then
@@ -120,7 +109,8 @@ function M.attach(bufnr, force)
 
     if vim.g.coc_service_initialized == 1 and not vim.tbl_contains(anyfold_prefer_ft, vim.bo.ft) then
         coc.run_command(
-            "kvs.fold.foldingRange",
+            -- "kvs.fold.foldingRange",
+            "ufo.foldingRange",
             {bufnr},
             function(e, r)
                 if not force and vim.b[bufnr].loaded_fold then
@@ -145,6 +135,12 @@ function M.attach(bufnr, force)
                     end
                     local winid = fn.bufwinid(bufnr)
                     if winid == -1 then
+                        -- cmd(
+                        --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
+                        --         bufnr,
+                        --         [[lua require('plugs.fold').update_fold()]]
+                        --     )
+                        -- )
                         augroup(
                             {"FoldLoad", false},
                             {
@@ -156,12 +152,6 @@ function M.attach(bufnr, force)
                                 end
                             }
                         )
-                        -- cmd(
-                        --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
-                        --         bufnr,
-                        --         [[lua require('plugs.fold').update_fold()]]
-                        --     )
-                        -- )
                     else
                         apply_fold(bufnr, r)
                     end
@@ -206,7 +196,7 @@ function M.defer_attach(bufnr)
         return
     end
 
-    local winid = find_win_except_float(bufnr)
+    local winid = dev.find_win_except_float(bufnr)
     if winid == 0 or not api.nvim_win_is_valid(winid) then
         return
     end
@@ -226,7 +216,7 @@ function M.defer_attach(bufnr)
 end
 
 function M.foldtext()
-    local fs, fe = vim.v.foldstart, vim.v.foldend
+    local fs, fe = v.foldstart, v.foldend
     local fs_lines = api.nvim_buf_get_lines(0, fs - 1, fe - 1, false)
     local fs_line = fs_lines[1]
     for _, line in ipairs(fs_lines) do
@@ -240,13 +230,13 @@ function M.foldtext()
     local winid = api.nvim_get_current_win()
     local textoff = fn.getwininfo(winid)[1].textoff
     local width = api.nvim_win_get_width(0) - textoff
-    local fold_info = (" %d lines %s +- "):format(1 + fe - fs, vim.v.foldlevel)
+    local fold_info = (" %d lines %s +- "):format(1 + fe - fs, v.foldlevel)
     local padding = pad:rep(width - #fold_info - api.nvim_strwidth(fs_line))
     return fs_line .. padding .. fold_info
 end
 
 function M.nav_fold(forward)
-    local cnt = vim.v.count1
+    local cnt = v.count1
     local wv = fn.winsaveview()
     cmd([[norm! m`]])
     local cur_l, cur_c
@@ -278,14 +268,15 @@ function M.nav_fold(forward)
 end
 
 function M.with_highlight(c)
-    local cnt = vim.v.count1
+    local cnt = v.count1
     local fostart = fn.foldclosed(".")
     local foend
     if fostart > 0 then
         foend = fn.foldclosedend(".")
     end
 
-    ex.hi("MyFoldHighlight guibg=#5e452b")
+    C.set_hl("MyFoldHighlight", {bg = "#5e452b"})
+    -- ex.hi("MyFoldHighlight guibg=#5e452b")
 
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
@@ -296,6 +287,10 @@ function M.with_highlight(c)
 end
 
 function M.setup_prettyfold()
+    if not pcall(require, "pretty-fold") then
+        return
+    end
+
     require("pretty-fold").setup(
         {
             fill_char = "•",
@@ -307,7 +302,7 @@ function M.setup_prettyfold()
                 right = {
                     "+",
                     function()
-                        return string.rep("-", vim.v.foldlevel)
+                        return string.rep("-", v.foldlevel)
                     end,
                     " ",
                     "number_of_folded_lines",
@@ -360,6 +355,71 @@ function M.setup_prettyfold()
     keymap_amend("n", "l", mapping.show_close_preview_open_fold)
 end
 
+---Customize the handler to display virtual text for UFO
+---@param virt_text table
+---@param lnum number
+---@param end_lnum number
+---@param width number
+---@return table
+local handler = function(virt_text, lnum, end_lnum, width)
+    local new_virt_text = {}
+    local percentage = M.percentage(lnum, end_lnum)
+    local end_text = ("  %d "):format(end_lnum - lnum)
+    local limited_width = width - api.nvim_strwidth(end_text) - api.nvim_strwidth(percentage)
+    local pos = 0
+    local str_width = 0
+
+    for _, chunk in ipairs(virt_text) do
+        local chunk_text = chunk[1]
+        local next_pos = pos + #chunk_text
+        str_width = str_width + #chunk_text
+        if limited_width > next_pos then
+            table.insert(new_virt_text, chunk)
+        else
+            chunk_text = chunk_text:sub(1, limited_width - pos)
+            local hlGroup = chunk[2]
+            table.insert(new_virt_text, {chunk_text, hlGroup})
+            break
+        end
+        pos = next_pos
+    end
+
+    local filler = ("•"):rep(limited_width - str_width - 1)
+    table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
+    table.insert(new_virt_text, {percentage, "ErrorMsg"})
+    table.insert(new_virt_text, {end_text, "MoreMsg"})
+    return new_virt_text
+end
+
+---Return the number of lines that are folded
+---@return string
+function M.number_of_folded_lines()
+    return ("%d lines"):format(v.foldend - v.foldstart + 1)
+end
+
+---Get the percentage of the file that the fold takes up
+---@return string
+function M.percentage(startl, endl)
+    -- local folded_lines = v.foldend - v.foldstart + 1
+    local folded_lines = endl - startl + 1
+    local total_lines = api.nvim_buf_line_count(0)
+    local pnum = math.floor(100 * folded_lines / total_lines)
+    if pnum == 0 then
+        pnum = tostring(100 * folded_lines / total_lines):sub(2, 3)
+    elseif pnum < 10 then
+        pnum = " " .. pnum
+    end
+    return pnum .. "%"
+end
+
+M.setup_ufo = function()
+    require("ufo").setup(
+        {
+            fold_virt_text_handler = handler
+        }
+    )
+end
+
 local function init()
     vim.opt.fillchars:append("fold:•")
     g.anyfold_fold_display = 0
@@ -368,7 +428,8 @@ local function init()
 
     vim.defer_fn(
         function()
-            M.setup_prettyfold()
+            M.setup_ufo()
+            -- M.setup_prettyfold()
         end,
         50
     )
@@ -435,7 +496,7 @@ local function init()
         {nargs = 0}
     )
 
-    map("n", "<Leader>fo", "Fold", {cmd = true, desc = "Manually fold"})
+    map("n", ";fo", "Fold", {cmd = true, desc = "Manually fold"})
 
     for _, bufnr in ipairs(api.nvim_list_bufs()) do
         M.defer_attach(bufnr)

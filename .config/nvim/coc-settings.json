@@ -10,7 +10,7 @@
   "coc.preferences.snippetHighlight": false,
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
-  "coc.source.file.shortcut": "FIL", // "",
+  "coc.source.file.shortcut": "", // "", "FIL"
   "coc.source.around.shortcut": "ARO", // "",
   "coc.source.buffer.shortcut": "BUF", // "",
   "coc.source.tag.shortcut": "TAG", // "",
@@ -378,9 +378,11 @@
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
-  // The codelens and inlayhints swap places when typing
-  "typescript.referencesCodeLens.showOnAllFunctions": false,
-  // "typescript.inlayHints.parameterNames.enabled": "literals",
+  // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.implementationsCodeLens.enable": true,
+  "typescript.referencesCodeLens.enable": false,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,

@@ -108,6 +108,7 @@ local function init()
     map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 
+    -- The reason why some of these are here is because they don't always trigger (some never do)
     wk.register(
         {
             ["<Leader>wh"] = {"<Cmd>WhichKey '' n<CR>", "WhichKey normal mode"},
@@ -122,6 +123,7 @@ local function init()
             ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
             ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
+            ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
             ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"}
         }
     )
@@ -140,7 +142,8 @@ local function init()
             ["zuW"] = "Remove from internal wordlist",
             ["zug"] = "Remove from spellfile",
             ["zuG"] = "Remove from internal wordlist",
-            ["zQ"] = "Equivalent to ':q!'"
+            ["zQ"] = "Equivalent to ':q!'",
+            ["zG"] = "Add word to internal spell-list",
         }
     )
 end

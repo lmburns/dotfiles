@@ -400,6 +400,7 @@ nvim.autocmd.lmb__Help = {
                 end
 
                 local width = math.floor(vim.o.columns * 0.75)
+                -- pcall needed when opening a TOC inside a help page and returning to help page
                 pcall(ex.wincmd, "L")
                 cmd("vertical resize " .. width)
                 map("n", "qq", "q", {cmd = true, buffer = bufnr})

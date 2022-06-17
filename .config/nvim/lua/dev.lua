@@ -651,6 +651,7 @@ end
 ---@return boolean
 M.is_floating_window = function(winid)
     return api.nvim_win_get_config(winid).relative ~= ""
+    -- return fn.win_gettype() == 'popup'
 end
 
 ---Get windows of a given type
@@ -669,6 +670,24 @@ end
 ---@return table<number>
 M.get_qfwin = function()
     return M.get_wins_of_type("quickfix")[1]
+end
+
+---Find a window that is not floating
+---@param bufnr number
+---@return number
+M.find_win_except_float = function(bufnr)
+    local winid = fn.bufwinid(bufnr)
+    if M.is_floating_window(winid) then
+        local f_winid = winid
+        winid = 0
+        for _, wid in ipairs(api.nvim_list_wins()) do
+            if f_winid ~= wid and api.nvim_win_get_buf(wid) == bufnr then
+                winid = wid
+                break
+            end
+        end
+    end
+    return winid
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
