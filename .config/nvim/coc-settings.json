@@ -51,7 +51,7 @@
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
   // "diagnostic.virtualTextCurrentLineOnly": true,
-  "diagnostic.format": "%message [%source:%code]", // %source code severity message
+  // "diagnostic.format": "%message [%source:%code]", // %source code severity message
   "diagnostic.signPriority": 20,
   "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.messageTarget": "float",
@@ -245,10 +245,6 @@
   "Lua.workspace.library": [],
   "Lua.format.enable": false,
   "Lua.completion.autoRequire": true,
-  "Lua.IntelliSense.traceReturn": true,
-  "Lua.IntelliSense.traceBeSetted": true,
-  "Lua.IntelliSense.traceLocalSet": true,
-  "Lua.IntelliSense.traceFieldInject": true,
   "Lua.completion.callSnippet": "Replace",
   "Lua.completion.postfix": ".",
   "Lua.hint.enable": true,
@@ -468,6 +464,36 @@
     //   "args": ["start"],
     //   "filetypes": ["sh"]
     // },
+    "efm": {
+      "initializationOptions": {
+        "documentFormatting": true
+      },
+      "command": "efm-langserver",
+      "args": [],
+      "filetypes": ["sh", "teal"],
+      "settings": {
+        "rootMarkers": [".git/"],
+        "languages": {
+          "sh": [
+            {
+              "lintCommand": "shellcheck -f gcc -x",
+              "lintSource": "shellcheck",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tarning: %m"
+              ]
+            }
+          ],
+          "teal": [
+            {
+              "formatCommand": "lua-format -i",
+              "formatStdin": true
+            }
+          ]
+        }
+      }
+    },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
@@ -475,7 +501,8 @@
     },
     "teal": {
       "command": "teal-language-server",
-      "filetypes": ["teal"]
+      "filetypes": ["teal"],
+      "rootPatterns": [".git/", "tlconfig.lua"]
     },
     // "rescript": {
     //   "enable": true,

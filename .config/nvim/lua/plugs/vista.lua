@@ -4,6 +4,8 @@ local utils = require("common.utils")
 local map = utils.map
 local autocmd = utils.autocmd
 
+local g = vim.g
+
 function M.setup()
   g.vista_fzf_preview = { "down:50%" }
   g.vista_fzf_opt = { "--no-border" }

@@ -435,7 +435,7 @@ alias zath='zathura'
 alias n='man'
 
 alias tn='tmux new-session -s'
-alias tl='tmux list-sessions'
+alias tll='tmux list-sessions'
 
 alias mycli='LESS="-S $LESS" mycli'
 alias litecli='LESS="-S $LESS" litecli'

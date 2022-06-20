@@ -124,7 +124,7 @@ setopt octal_zeroes         # 077 instead of 8#77
 # setopt list_types          # show type of file with indicator at end
 
 setopt no_flow_control # don't output flow control chars (^S/^Q)
-setopt no_hup          # don't set HUP to jobs when shell exits
+setopt no_hup          # don't send HUP to jobs when shell exits
 setopt no_nomatch      # don't print an error if pattern doesn't match
 setopt no_beep         # don't beep on error
 setopt no_mail_warning # don't print mail warning

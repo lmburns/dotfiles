@@ -2,6 +2,8 @@ local M = {}
 
 local augroup = require("common.utils").augroup
 
+local g = vim.g
+
 function M.setup()
     g.vimtex_view_method = "zathura"
     g.tex_flavor = "latex"

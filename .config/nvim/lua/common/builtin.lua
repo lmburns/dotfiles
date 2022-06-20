@@ -212,14 +212,6 @@ function M.search_wrap()
     )
 end
 
--- https://github.com/neovim/neovim/issues/11440
-function M.fix_quit()
-    local ok, msg = pcall(cmd, "q")
-    if not ok and msg:match(":E5601:") then
-        cmd("1only | q")
-    end
-end
-
 -- TODO: Add option for selection. Write visual selection to temporary file
 ---Display tokei output similar to
 ---@param path string

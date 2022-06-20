@@ -561,33 +561,6 @@ M.squeeze_blank_lines = function()
     end
 end
 
---- Return a string for vim from a lua function.
---- Functions are stored in _G.myluafunc.
---- @param func function
---- @return string VimFunctionString
-_G.myluafunc =
-    setmetatable(
-    {},
-    {
-        __call = function(self, idx, args, count)
-            return self[idx](args, count)
-        end
-    }
-)
-
----Turn a function into a string
----@param func function
----@param args table
-M.func2str = function(func, args)
-    local idx = #_G.myluafunc + 1
-    _G.myluafunc[idx] = func
-    if not args then
-        return ("lua myluafunc(%s)"):format(idx)
-    else
-        return ("lua myluafunc(%s, <q-args>, <count>)"):format(idx)
-    end
-end
-
 ---Get specified builtin marks
 ---
 ---This is to be used when formatting a file. When formattinga a file, the last line

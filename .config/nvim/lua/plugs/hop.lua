@@ -228,7 +228,6 @@ local function init()
                     -- inclusive_jump = false
                 }
             )
-            -- api.nvim_input("h")
             api.nvim_feedkeys(utils.termcodes["h"], "n", false)
         end
     )

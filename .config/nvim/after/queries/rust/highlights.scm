@@ -19,6 +19,11 @@
 (("return" @keyword) (#set! conceal ""))
 (("break" @keyword) (#set! conceal ""))
 
+; (type_arguments ("<" @punctuation.bracket (#set! conceal "⟨")))
+; (type_arguments (">" @punctuation.bracket (#set! conceal "⟩")))
+; (type_parameters ("<" @punctuation.bracket (#set! conceal "⟨")))
+; (type_parameters (">" @punctuation.bracket (#set! conceal "⟩")))
+
 ;; Bolden constants starting with an underscore
 ;; ((identifier) @type
 ;;  (#lua-match? @type "^_*[A-Z]"))

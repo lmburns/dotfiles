@@ -26,7 +26,7 @@ local wk = require("which-key")
 
 wk.register(
     {
-        [";q"] = {[[:lua require('common.builtin').fix_quit()<CR>]], "Quit"},
+        [";q"] = {[[:q<CR>]], "Quit"},
         [";w"] = {[[:update<CR>]], "Update file"}
     }
 )

@@ -665,7 +665,7 @@ M.setup = function()
         indent = {enable = true},
         fold = {enable = false},
         endwise = {enable = true},
-        matchup = {enable = false},
+        matchup = {enable = true, disable_virtual_text = true},
         playground = {
             enable = true,
             disable = {},

@@ -210,16 +210,25 @@ function M.setup_dapui()
                 repl = "r",
                 toggle = "t"
             },
-            sidebar = {
-                elements = {
-                    {id = "scopes", size = 0.5},
-                    {id = "breakpoints", size = 0.25},
-                    {id = "stacks", size = 0.25}
+            layouts = {
+                {
+                    elements = {
+                        {id = "scopes", size = 0.5},
+                        {id = "breakpoints", size = 0.25},
+                        {id = "stacks", size = 0.25}
+                    },
+                    size = 40,
+                    position = "left"
                 },
-                size = 40,
-                position = "right"
+                {
+                    elements = {
+                        "repl",
+                        "console"
+                    },
+                    size = 10,
+                    position = "bottom"
+                }
             },
-            tray = {elements = {"repl", "watches"}, size = 10, position = "bottom"},
             floating = {border = "rounded", mappings = {close = {"q", "<esc>", "<c-o>"}}}
         }
     )

@@ -1,9 +1,9 @@
 local M = {}
 
 local dev = require("dev")
+local palette = require("kimbox.palette").colors
 local utils = require("common.utils")
 local C = require("common.color")
-local palette = require("kimbox.palette")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
 local command = utils.command
@@ -64,18 +64,8 @@ local function apply_fold(bufnr, ranges)
         function()
             vim.wo.foldmethod = "manual"
 
-            -- local mode = api.nvim_get_mode().mode
-
             -- FIXME: This moves the cursor one place to the left if typing starts within
-            --       1 second of opening the file
-
-            -- if mode:match("[ic]+") then
-            --     cmd("norm! l")
-            --     -- cmd("norm! <C-o>zE")
             cmd("norm! zE")
-            -- else
-            --     cmd("norm! <C-o>zE")
-            -- end
 
             local fold_cmd = {}
             for _, f in ipairs(ranges) do
@@ -362,35 +352,42 @@ end
 ---@param end_lnum number
 ---@param width number
 ---@return table
-local handler = function(virt_text, lnum, end_lnum, width)
+local handler = function(virt_text, lnum, end_lnum, width, truncate)
     local new_virt_text = {}
-    local percentage = M.percentage(lnum, end_lnum)
-    local end_text = ("  %d "):format(end_lnum - lnum)
-    local limited_width = width - api.nvim_strwidth(end_text) - api.nvim_strwidth(percentage)
-    local pos = 0
-    local str_width = 0
+    local percentage = (" %s"):format(M.percentage(lnum, end_lnum))
+    local suffix = ("  %d "):format(end_lnum - lnum)
+    local target_width = width - api.nvim_strwidth(suffix) - api.nvim_strwidth(percentage)
+    local curr_width = 0
 
     for _, chunk in ipairs(virt_text) do
         local chunk_text = chunk[1]
-        local next_pos = pos + #chunk_text
-        str_width = str_width + #chunk_text
-        if limited_width > next_pos then
+        local chunk_width = api.nvim_strwidth(chunk_text)
+        if target_width > curr_width + chunk_width then
             table.insert(new_virt_text, chunk)
         else
-            chunk_text = chunk_text:sub(1, limited_width - pos)
-            local hlGroup = chunk[2]
-            table.insert(new_virt_text, {chunk_text, hlGroup})
+            chunk_text = truncate(chunk_text, target_width - curr_width)
+            local hl_group = chunk[2]
+            table.insert(new_virt_text, {chunk_text, hl_group})
+            chunk_width = api.nvim_strwidth(chunk_text)
+            -- str width returned from truncate() may less than 2nd argument, need padding
+            if curr_width + chunk_width < target_width then
+                suffix = suffix .. (" "):rep(target_width - curr_width - chunk_width)
+            end
             break
         end
-        pos = next_pos
+        curr_width = curr_width + chunk_width
     end
 
-    local foldlvl = ("•"):rep(v.foldlevel)
-    local filler = ("•"):rep(limited_width - str_width - api.nvim_strwidth(foldlvl) - 1)
+    local foldlvl = ("+"):rep(v.foldlevel)
+    local filler_right = ("•"):rep(3)
+    -- This extra 1 comes from the space added on the line below the following
+    local filler =
+        ("•"):rep(target_width - curr_width - api.nvim_strwidth(foldlvl) - api.nvim_strwidth(filler_right) - 1)
     table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
     table.insert(new_virt_text, {foldlvl, "UFOFoldLevel"})
     table.insert(new_virt_text, {percentage, "ErrorMsg"})
-    table.insert(new_virt_text, {end_text, "MoreMsg"})
+    table.insert(new_virt_text, {suffix, "MoreMsg"})
+    table.insert(new_virt_text, {("%s"):format(filler_right), "Comment"})
     return new_virt_text
 end
 
@@ -409,8 +406,9 @@ function M.percentage(startl, endl)
     local pnum = math.floor(100 * folded_lines / total_lines)
     if pnum == 0 then
         pnum = tostring(100 * folded_lines / total_lines):sub(2, 3)
-    elseif pnum < 10 then
-        pnum = " " .. pnum
+    -- elseif pnum < 10 then
+    --     pnum = " " .. pnum
+    --     pnum = pnum
     end
     return pnum .. "%"
 end
@@ -419,6 +417,7 @@ end
 M.setup_ufo = function()
     require("ufo").setup(
         {
+            open_fold_hl_timeout = 360,
             fold_virt_text_handler = handler
         }
     )

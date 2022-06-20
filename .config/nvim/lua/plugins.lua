@@ -779,11 +779,8 @@ return packer.startup(
                     setup = [[vim.g.anyfold_fold_display = 0]]
                 }
             )
-            -- Combining both of these really isn't necessary
-            -- UFO provides Coc folding ranges and highlights fold line as normal text
-            -- PrettyFold adds fold text to right while keeping highlight
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
-            use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
+            -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
 
             -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
             use(

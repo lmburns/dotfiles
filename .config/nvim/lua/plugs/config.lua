@@ -759,8 +759,8 @@ function M.hlslens()
 
     map("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    map("x", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {})
-    map("x", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {})
+    map("x", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]])
+    map("x", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]])
 
     g["asterisk#keeppos"] = 1
 end
@@ -1039,7 +1039,7 @@ function M.targets()
                         --     }
                         -- },
                         -- Closest text object
-                        ["@"] = {
+                        ["2"] = {
                             separator = {
                                 {d = ","},
                                 {d = "."},
@@ -1080,7 +1080,8 @@ function M.targets()
             ["im"] = "Previous object",
             ["an"] = "Next object",
             ["am"] = "Previous object",
-            ["@"] = "Closest object"
+            ["i2"] = "Inner nearest object",
+            ["a2"] = "Around nearest object"
         },
         {mode = "o"}
     )
@@ -1125,35 +1126,59 @@ function M.caser()
     -- crK      => Title-Dash-Case, Title-Kebab-Case
     -- cr.      => dot.case
 
-    -- g.caser_prefix = "cr"
+    g.caser_prefix = "cr"
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         MatchUp                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.matchup()
-    -- hi MatchParenCur cterm=underline gui=underline
-    -- hi MatchWordCur cterm=underline gui=underline
-
     g.loaded_matchit = 1
     g.matchup_enabled = 1
+    g.matchup_mappings_enabled = 0
     g.matchup_motion_enabled = 1
     g.matchup_text_obj_enabled = 1
     g.matchup_matchparen_enabled = 1
     g.matchup_surround_enabled = 0
-    -- g.matchup_transmute_enabled = 0
-    -- g.matchup_matchparen_offscreen = {method = "status_manual"}
-    g.matchup_matchparen_offscreen = {method = "popup"}
+    g.matchup_motion_cursor_end = 0
 
-    -- g.matchup_text_obj_linewise_operators = {"d", "y"}
-    -- g.matchup_matchparen_deferred = 1
-    -- g.matchup_matchparen_deferred_show_delay = 100
-    -- g.matchup_matchparen_hi_surround_always = 1
-    -- g.matchup_override_vimtex = 1
-    -- g.matchup_delim_start_plaintext = 0
+    g.matchup_matchparen_timeout = 100
+    g.matchup_matchparen_deferred = 1
+    g.matchup_matchparen_hi_surround_always = 1
+    g.matchup_matchparen_deferred_show_delay = 50
+    g.matchup_matchparen_deferred_hide_delay = 300
+    g.matchup_matchparen_offscreen = {method = "popup", highlight = "CurrentWord"}
+    g.matchup_delim_start_plaintext = 1
+    g.matchup_motion_override_Npercent = 0
 
-    map("o", "%", "]%")
-    -- map("o", "%", "<Plug>(matchup-%)")
+    C.plugin("Matchup", {MatchWord = {link = "Underlined"}})
+
+    map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
+    map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
+    map({"n", "x", "o"}, "]5", "<Plug>(matchup-]%)")
+    map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)")
+    map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
+    map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
+
+    augroup(
+        "lmb__Matchup",
+        {
+            event = "TermOpen",
+            pattern = "*",
+            command = function()
+                vim.b.matchup_matchparen_enabled = 0
+                vim.b.matchup_matchparen_fallback = 0
+            end
+        },
+        {
+            event = "FileType",
+            pattern = "qf",
+            command = function()
+                vim.b.matchup_matchparen_enabled = 0
+                vim.b.matchup_matchparen_fallback = 0
+            end
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1241,8 +1266,6 @@ function M.move()
         {mode = "i"}
     )
 
-    -- https://www.reddit.com/r/neovim/comments/mbj8m5/how_to_setup_ctrlshiftkey_mappings_in_neovim_and/
-    -- https://www.eso.org/~ndelmott/ascii.html
     wk.register(
         {
             ["<C-S-l>"] = {":MoveHChar(1)<CR>", "Move character one left"},
@@ -1405,6 +1428,7 @@ function M.grepper()
     -- $+ = currently opened files
     map("n", "gs", "<Plug>(GrepperOperator)")
     map("x", "gs", "<Plug>(GrepperOperator)")
+    map("n", "gsw", "<Plug>(GrepperOperator)iw")
     map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]])
 
     augroup(
