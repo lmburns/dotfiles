@@ -5,7 +5,7 @@
 local M = {}
 
 local utils = require("common.utils")
-
+local log = require("common.log")
 local wk = require("which-key")
 local map = utils.map
 local command = utils.command
@@ -1801,7 +1801,7 @@ function M.git_conflict()
     require("git-conflict").setup(
         {
             {
-                default_mappings = true,
+                default_mappings = false,
                 disable_diagnostics = false, -- This will disable the diagnostics in a buffer whilst it is conflicted
                 highlights = {
                     -- They must have background color, otherwise the default color will be used
@@ -1811,12 +1811,46 @@ function M.git_conflict()
             }
         }
     )
-    map("n", "co", "<Plug>(git-conflict-ours)")
-    map("n", "cb", "<Plug>(git-conflict-both)")
-    map("n", "c0", "<Plug>(git-conflict-none)")
-    map("n", "ct", "<Plug>(git-conflict-theirs)")
-    map("n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
-    map("n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
+
+    -- C.plugin(
+    --     "GitConflict",
+    --     {
+    --         GitConflictCurrent = {link = "DiffAdd"},
+    --         GitConflictIncoming = {link = "DiffText"},
+    --         GitConflictAncestor = {link = "DiffChange"}
+    --     }
+    -- )
+
+    augroup(
+        "lmb__GitConflict",
+        {
+            event = "User",
+            pattern = "GitConflictDetected",
+            command = function()
+                local bufnr = api.nvim_get_current_buf()
+                local bufname = api.nvim_buf_get_name(bufnr)
+
+                -- Why does this need to be deferred? There is an error otherwise
+                vim.defer_fn(
+                    function()
+                        log.warn(
+                            ("Conflict detected in %s"):format(fn.fnamemodify(bufname, ":t")),
+                            true,
+                            {title = "GitConflict"}
+                        )
+                    end,
+                    100
+                )
+
+                map(bufnr, "n", "co", "<Plug>(git-conflict-ours)")
+                map(bufnr, "n", "cb", "<Plug>(git-conflict-both)")
+                map(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
+                map(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)")
+                map(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
+                map(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
+            end
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

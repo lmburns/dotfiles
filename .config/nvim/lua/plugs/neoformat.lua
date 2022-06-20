@@ -35,7 +35,7 @@ local function save_doc(bufnr)
 end
 
 ---Run `Neoformat` on the buffer
-local function neoformat()
+function M.neoformat()
     local bufnr = api.nvim_get_current_buf()
     -- This is a little dense
     if
@@ -47,7 +47,7 @@ local function neoformat()
                         search_pattern = "%.?stylua.toml$",
                         hidden = true,
                         silent = true,
-                        respect_gitignore = true
+                        respect_gitignore = false
                     }
                 ),
                 {}
@@ -65,7 +65,7 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(dev.get_vim_output("Neoformat"))
+    return unpack(dev.get_vim_output("lua require('plugs.neoformat').neoformat()"))
 end
 
 ---Format the document using `Neoformat`
@@ -134,7 +134,7 @@ function M.format_doc(save)
                     )
                 end
             else
-                neoformat()
+                M.neoformat()
             end
         end
     )
@@ -171,7 +171,7 @@ function M.format_selected(mode, save)
                             log.warn(e, true)
                         else
                             if vim.bo[bufnr].ft == "lua" then
-                                neoformat()
+                                M.neoformat()
                             end
 
                             if save then

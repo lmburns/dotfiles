@@ -605,7 +605,7 @@ require("telescope").setup(
                     },
                     ["<A-x>"] = {
                         keepinsert = true,
-                        action = function()
+                        action = function(selection)
                             builtin.live_grep {search_dirs = selection.path, initial_mode = "insert"}
                         end
                     }

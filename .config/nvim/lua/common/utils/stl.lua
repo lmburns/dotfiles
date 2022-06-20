@@ -204,6 +204,15 @@ M.plugins.vista_nearest_method = {
     end
 }
 
+M.plugins.coc_function = {
+    toggle = function()
+        return g.coc_current_function ~= nil
+    end,
+    fn = function()
+        return g.coc_current_function
+    end
+}
+
 M.plugins.gutentags_progress = {
     toggle = function()
         return dev.plugin_loaded("vim-gutentags")

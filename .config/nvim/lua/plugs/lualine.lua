@@ -45,7 +45,9 @@ local sections_1 = {
         },
         {
             "filesize",
-            cond = conds.hide_in_width,
+            cond = function()
+                return conds.hide_in_width() and conds.buffer_not_empty()
+            end,
             color = {fg = colors.green}
         },
         {
@@ -143,6 +145,7 @@ local sections_2 = {
         {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
         {
             "filename",
+            file_status = 1,
             path = 1,
             symbols = {modified = icons.misc.modified, readonly = icons.misc.readonly, unnamed = icons.misc.unnamed}
         }
@@ -229,7 +232,15 @@ local function init()
     M.autocmds()
     local my_extension = {
         sections = {
-            lualine_a = {"mode"},
+            lualine_a = {
+                {
+                    "mode",
+                    fmt = function(str)
+                        return ("%s %s"):format(str, "")
+                    end,
+                    padding = only_pad_right
+                }
+            },
             lualine_b = {"filetype"},
             lualine_c = {},
             lualine_x = {},
@@ -246,6 +257,7 @@ local function init()
             "coc-explorer",
             "coctree",
             "NeogitStatus",
+            "undotree",
             "Trouble",
             "TelescopePrompt",
             "tsplayground",
@@ -267,10 +279,10 @@ local function init()
                 component_separators = {left = "", right = ""},
                 disabled_filetypes = {
                     -- "help",
+                    -- "undotree",
                     "NvimTree",
                     "coc-explorer",
                     "quickmenu",
-                    "undotree",
                     "neoterm",
                     "floaterm"
                 }
@@ -283,7 +295,9 @@ local function init()
                     {"filetype", icon_only = false},
                     {
                         "filesize",
-                        cond = conds.hide_in_width,
+                        cond = function()
+                            return conds.hide_in_width() and conds.buffer_not_empty()
+                        end,
                         color = {fg = colors.green}
                     },
                     {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},

@@ -3,6 +3,7 @@
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   // "coc.preferences.formatOnSaveFiletypes": [
   //   "go"
   // ],

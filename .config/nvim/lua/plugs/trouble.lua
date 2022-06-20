@@ -1,10 +1,12 @@
 local M = {}
 
 local map = require("common.utils").map
+local icon = require("style").icons
 
 function M.setup()
     require("trouble").setup(
         {
+            debug = false,
             position = "bottom", -- position of the list can be: bottom, top, left, right
             height = 15, -- height of the trouble list when position is top or bottom
             width = 50, -- width of the list when position is left or right
@@ -39,18 +41,19 @@ function M.setup()
             indent_lines = true, -- add an indent guide below the fold icons
             auto_open = false, -- automatically open the list when you have diagnostics
             auto_close = false, -- automatically close the list when you have no diagnostics
-            auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
+            auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview
             auto_fold = false, -- automatically fold a file trouble list at creation
-            -- auto_jump = { "lsp_definitions" }, -- for the given modes, automatically jump if there is only a single result
+            auto_jump = { "lsp_definitions" }, -- for the given modes, automatically jump if there is only a single result
             signs = {
                 -- icons / text used for a diagnostic
-                error = "",
-                warning = "",
-                hint = "",
-                information = "",
+                error = icon.lsp.error,
+                warning = icon.lsp.warn,
+                hint = icon.lsp.hint,
+                information = icon.lsp.info,
                 other = "﫠"
             },
-            use_diagnostic_signs = true -- enabling this will use the signs defined in your lsp client
+            use_diagnostic_signs = true, -- enabling this will use the signs defined in your lsp client
+            track_cursor = true -- automatically track the cursor and update the selected item
         }
     )
 end
