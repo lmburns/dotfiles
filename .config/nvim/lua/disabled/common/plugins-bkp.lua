@@ -221,3 +221,42 @@
 --         conf = "surround"
 --     }
 -- )
+--
+-- ====================== Window Picker ======================= [[[
+-- sindrets/winshift.nvim
+-- t9md/vim-choosewin
+-- use(
+--     {
+--         "https://gitlab.com/yorickpeterse/nvim-window",
+--         conf = "window_picker",
+--         keys = {{"n", "<M-->"}}
+--     }
+-- )
+-- ]]] === Window Picker ===
+--
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Markdow                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- use(
+--     {
+--       "renerocksai/telekasten.nvim",
+--       after = { "telescope.nvim" },
+--       require = { "renerocksai/calendar-vim" },
+--       conf = "plugs.telekasten"
+--     }
+-- )
+-- use(
+--     {
+--         "lukas-reineke/headlines.nvim",
+--         config = function()
+--             require("headlines").setup()
+--         end
+--     }
+-- )
+-- use(
+--     {
+--         "vim-pandoc/vim-pandoc-syntax",
+--         ft = {"pandoc", "markdown", "vimwiki"},
+--         conf = "pandoc"
+--     }
+-- )

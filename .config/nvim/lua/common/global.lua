@@ -114,6 +114,7 @@ _G.BLACKLIST_FT = {
     "rebase",
     "scratchpad",
     "startify",
+    "startuptime",
     "telescope",
     "TelescopePrompt",
     "TelescopeResults",

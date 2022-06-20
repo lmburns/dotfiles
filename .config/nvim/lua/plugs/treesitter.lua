@@ -133,7 +133,7 @@ M.setup_iswap = function()
 
     wk.register(
         {
-            ["<Leader>sp"] = {"<Cmd>ISwap<CR>", "Swap parameters"}
+            ["vs"] = {"<Cmd>ISwap<CR>", "Swap parameters"}
         }
     )
 end
@@ -453,7 +453,7 @@ M.setup_treesurfer = function()
 
     require("syntax-tree-surfer").setup(
         {
-            highlight_group = "STS_highlight",
+            highlight_group = "STS_highlight", -- HopNextKey
             disable_no_instance_found_report = false,
             default_desired_types = {
                 "function",
@@ -486,6 +486,26 @@ M.setup_treesurfer = function()
     local sts = require("syntax-tree-surfer")
     map(
         "n",
+        "<C-A-.>",
+        function()
+            sts.targeted_jump(
+                {
+                    "function",
+                    "if_statement",
+                    "else_clause",
+                    "else_statement",
+                    "elseif_statement",
+                    "for_statement",
+                    "while_statement",
+                    "switch_statement"
+                }
+            )
+        end,
+        {desc = "Jump to node"}
+    )
+
+    map(
+        "n",
         ")",
         function()
             sts.filtered_jump("default", true)
@@ -503,7 +523,7 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vU",
+        "vu",
         function()
             vim.opt.opfunc = "v:lua.STSSwapUpNormal_Dot"
             return "g@l"
@@ -512,7 +532,7 @@ M.setup_treesurfer = function()
     )
     map(
         "n",
-        "vD",
+        "vd",
         function()
             vim.opt.opfunc = "v:lua.STSSwapDownNormal_Dot"
             return "g@l"
@@ -522,7 +542,7 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vd",
+        "vD",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodeNextNormal_Dot"
             return "g@l"
@@ -531,7 +551,7 @@ M.setup_treesurfer = function()
     )
     map(
         "n",
-        "vu",
+        "vU",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodePrevNormal_Dot"
             return "g@l"
@@ -945,18 +965,6 @@ local function init()
     -- <M-n> = increment upper scope
     -- <C-j> = increment upper named parent
     -- <C-k> = decrement to previous node
-    --
-    -- ai = An Indentation level and line above
-    -- ii = Inner Indentation level (no line above)
-    -- aI = An Indention level and lines above/below
-    -- iI = Inner Indentation level (no lines above/below)
-    -- if = Inner Function
-    -- af = Around Function
-    -- ik = Inner Class
-    -- ak = Around Class
-    --
-    -- iu = Inner Unit
-    -- au = Around Unit
 
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]])
     map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]])

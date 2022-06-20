@@ -385,10 +385,10 @@ wk.register(
                     "<cmd>CocConfig<CR>",
                     "Edit coc-settings"
                 },
-                v = {":e $VIMRC<CR>", "Edit neovim config"},
+                v = {":e $NVIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"}
             },
-            ["sv"] = {":luafile $VIMRC<CR>", "Source neovim config"}
+            ["sv"] = {":luafile $NVIMRC<CR>", "Source neovim config"}
         }
     }
 )

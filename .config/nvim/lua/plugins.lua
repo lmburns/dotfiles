@@ -667,24 +667,10 @@ return packer.startup(
             -- use({ "lotabout/skim", run = "./install --bin" })
             -- ]]] === Fzf ===
 
-            -- ====================== Window Picker ======================= [[[
-            -- sindrets/winshift.nvim
-            -- t9md/vim-choosewin
-            -- use(
-            --     {
-            --         "https://gitlab.com/yorickpeterse/nvim-window",
-            --         conf = "window_picker",
-            --         keys = {{"n", "<M-->"}}
-            --     }
-            -- )
-            -- ]]] === Window Picker ===
-
-            -- ============================== Targets ============================== [[[
+            -- ============================= Operator ============================== [[[
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
-            -- ]]] === Targets ===
 
-            -- ============================= Operator ============================== [[[
             use(
                 {
                     "AckslD/nvim-trevJ.lua",
@@ -771,6 +757,8 @@ return packer.startup(
                 }
             )
 
+            -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
+            -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
             -- use({ "lambdalisue/readablefold.vim", event = "VimEnter" })
             use(
                 {
@@ -780,9 +768,7 @@ return packer.startup(
                 }
             )
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
-            -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
 
-            -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
             use(
                 {
                     "windwp/nvim-autopairs",
@@ -831,7 +817,7 @@ return packer.startup(
             -- ]]] === Commenter ===
 
             -- ============================== Nvim-R =============================== [[[
-            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r"})
+            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r", ft = {"r"}})
             -- ]]] === Nvim-R ===
 
             -- =============================== Python ============================== [[[
@@ -873,32 +859,6 @@ return packer.startup(
             -- ]]] === Vim - Go ===
 
             -- ============================== Markdown ============================= [[[
-            -- use(
-            --     {
-            --       "renerocksai/telekasten.nvim",
-            --       after = { "telescope.nvim" },
-            --       require = { "renerocksai/calendar-vim" },
-            --       conf = "plugs.telekasten"
-            --     }
-            -- )
-
-            -- use(
-            --     {
-            --         "lukas-reineke/headlines.nvim",
-            --         config = function()
-            --             require("headlines").setup()
-            --         end
-            --     }
-            -- )
-
-            -- use(
-            --     {
-            --         "vim-pandoc/vim-pandoc-syntax",
-            --         ft = {"pandoc", "markdown", "vimwiki"},
-            --         conf = "pandoc"
-            --     }
-            -- )
-
             use(
                 {
                     "plasticboy/vim-markdown",
@@ -930,11 +890,19 @@ return packer.startup(
                 {
                     "vimwiki/vimwiki",
                     setup = [[require("plugs.config").vimwiki_setup()]],
+                    ft = {"markdown", "vimwiki"},
                     conf = "vimwiki",
                     after = colorscheme
                 }
             )
-            use({"FraserLee/ScratchPad", conf = "scratchpad"})
+            use(
+                {
+                    "FraserLee/ScratchPad",
+                    conf = "scratchpad",
+                    keys = {{"n", "<Leader>sc"}},
+                    cmd = "ScratchPad"
+                }
+            )
             -- ]]] === Markdown ===
 
             -- ================================ Wilder ============================= [[[
@@ -1008,8 +976,8 @@ return packer.startup(
             use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
             use({"jamessan/vim-gnupg"})
             use({"AndrewRadev/id3.vim"})
-            use({"alx741/vinfo"})
-            use({"HiPhish/info.vim", conf = "info"})
+            use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
+            use({"HiPhish/info.vim", conf = "info", cmd = "Info"})
             -- ]]] === File Viewer ===
 
             -- ============================== Snippets ============================= [[[
@@ -1021,10 +989,10 @@ return packer.startup(
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
             -- use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
 
+            -- "norcalli/nvim-colorizer.lua",
             -- The following plugin really needs to support ansi sequences
             use(
                 {
-                    -- "norcalli/nvim-colorizer.lua",
                     "xiyaowong/nvim-colorizer.lua",
                     cmd = "ColorizerToggle",
                     ft = {
@@ -1114,6 +1082,21 @@ return packer.startup(
             -- "lukas-reineke/lsp-format.nvim"
             -- "theHamsta/nvim-semantic-tokens"
             -- "onsails/diaglist.nvim" => Show errors in quickfix
+
+            -- use({"github/copilot.vim", cmd = {"Copilot"}})
+            -- use(
+            --     {
+            --         "zbirenbaum/copilot.lua",
+            --         after = "copilot.vim",
+            --         config = function()
+            --             vim.schedule(
+            --                 function()
+            --                     require("copilot")
+            --                 end
+            --             )
+            --         end
+            --     }
+            -- )
 
             -- === Languages ===
             -- "simrat39/rust-tools.nvim"

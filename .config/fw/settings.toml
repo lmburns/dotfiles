@@ -4,7 +4,7 @@ shell = [
     '-cu',
 ]
 
-default_after_workon = 'echo default after workon'
+# default_after_workon = 'echo default after workon'
 # default_after_clone = 'echo default after clone'
 # github_token = 'githubtokensecret'
 # [gitlab]

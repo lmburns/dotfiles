@@ -172,12 +172,12 @@ function M.Reload()
     unload_lua_modules()
 
     -- Source init file
-    if string.match(fn.expand("$VIMRC"), "%.lua$") then
+    if string.match(fn.expand("$NVIMRC"), "%.lua$") then
         -- ex.luafile("$VIMRC")
-        vim.cmd("luafile $VIMRC")
+        vim.cmd("luafile $NVIMRC")
     else
-        -- ex.source("$VIMRC")
-        vim.cmd("source $VIMRC")
+        -- ex.source("$NVIMRC")
+        vim.cmd("source $NVIMRC")
     end
 
     -- Reload start plugins

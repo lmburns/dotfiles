@@ -35,13 +35,11 @@ local function stop_hl()
 end
 
 local function hl_search()
+    local debounce
     local col = nvim.win.get_cursor(0)[2]
     local curr_line = nvim.buf.line()
     local ok, match = pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
-    if not ok then
-        vim.notify(match, "error", {title = "hl_search"})
-        return
-    end
+
     local _, p_start, p_end = unpack(match)
     -- If the cursor is in a search result, leave highlighting on
     if col < p_start or col > p_end then
@@ -471,7 +469,8 @@ local smart_close_filetypes = {
     "floggraph",
     "vista",
     "aerial", -- has its own mapping but is slow
-    "scratchpad"
+    "scratchpad",
+    "startuptime"
 }
 
 local function smart_close()

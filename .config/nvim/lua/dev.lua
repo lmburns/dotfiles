@@ -746,7 +746,7 @@ M.reload_config = function()
         end
     end
 
-    dofile(env.VIMRC)
+    dofile(env.NVIMRC)
     require("plugins").compile()
 end
 

@@ -173,6 +173,7 @@ require("telescope").setup(
             -- cache_picker = { num_pickers = 20 },
             initial_mode = "insert",
             winblend = 3,
+            wrap_results = false,
             set_env = {["COLORTERM"] = "truecolor"},
             selection_strategy = "reset",
             sorting_strategy = "descending",

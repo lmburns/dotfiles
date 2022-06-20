@@ -95,8 +95,8 @@
   "diagnostic-languageserver.filetypes": {
     // "zsh": "shellcheck"
     "sh": "shellcheck",
-    "yaml": ["yamllint"],
-    "lua": "selene",
+    // "yaml": ["yamllint"],
+    // "lua": "selene",
     "cmake": ["cmake-lint"],
     "systemd": "systemd-analyze"
   },

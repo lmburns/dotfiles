@@ -41,6 +41,12 @@ M.conditions = {
     buffer_not_empty = function()
         return fn.empty(fn.expand("%:t")) ~= 1
     end,
+    has_file_type = function()
+        return vim.bo.ft or not vim.bo.ft == ""
+    end,
+    is_lsp_attached = function()
+        return not vim.tbl_isempty(vim.lsp.buf_get_clients())
+    end,
     check_git_workspace = function()
         local filepath = fn.expand("%:p:h")
         local gitdir = fn.finddir(".git", filepath .. ";")

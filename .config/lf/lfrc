@@ -141,7 +141,8 @@ map @ :terminal
 cmd nvim-tmux ${{
   nvim-tmux "$fx"
 }}
-map E :nvim-tmux
+map Et :nvim-tmux
+map Ev !vim "$fx"
 
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Commands / Functions                                                      │
@@ -786,7 +787,7 @@ map L
 map ee $$EDITOR "$f"                            # open file in editor
 map ec edit_config                              # edit & source lfrc
 map es edit_scope                               # edit lfrc scope
-map ev $$EDITOR $VIMRC                          # open nvim config
+map ev $$EDITOR $NVIMRC                          # open nvim config
 map ew $$EDITOR $HOME/vimwiki/index.md          # open vimwiki
 map ez $$EDITOR $ZDOTDIR/.zshrc                 # edit zshrc
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh      # edit zsh aliases
