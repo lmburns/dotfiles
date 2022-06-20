@@ -267,7 +267,8 @@
   "Lua.diagnostics.disable": [
     "lowercase-global",
     "redundant-parameter",
-    "missing-parameter"
+    "missing-parameter",
+    "redefined-local"
   ],
   "Lua.diagnostics.globals": [
     "dev",

@@ -287,11 +287,19 @@ M.plugins.search_result = {
         if vim.v.hlsearch == 0 then
             return ""
         end
-        local last_search = fn.getreg("/")
+        local last_search = nvim.reg["/"]
         if not last_search or last_search == "" then
             return ""
         end
-        local searchcount = fn.searchcount {maxcount = 9999}
+
+        -- FIX: This pcall does nothing for Lualine
+        -- This needs to be protected for something like the following:
+        -- If the user searches for ',\)', and 'unmatched' error occurs
+        local ok, searchcount = pcall(fn.searchcount({maxcount = 9999}))
+        if not ok then
+            return ""
+        end
+
         return last_search .. "[" .. searchcount.current .. "/" .. searchcount.total .. "]"
     end
 }

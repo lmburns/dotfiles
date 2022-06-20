@@ -121,7 +121,11 @@ local sections_1 = {
             "branch",
             icon = icons.git.branch,
             cond = function()
-                return conds.check_git_workspace() and plugs.search_result.fn() == ""
+                local ok, ret = pcall(plugs.search_result.fn)
+                if not ok then
+                    return conds.check_git_workspace()
+                end
+                return conds.check_git_workspace() and ret == ""
             end
         },
         {plugs.quickfix_count.fn, separator = {left = plugs.sep()}},

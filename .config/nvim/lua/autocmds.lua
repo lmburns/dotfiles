@@ -1,4 +1,7 @@
 local utils = require("common.utils")
+local C = require("common.color")
+local debounce = require("common.debounce")
+local log = require("common.log")
 local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
@@ -7,7 +10,7 @@ local create_augroup = utils.create_augroup
 
 local ex = nvim.ex
 
-local C = require("common.color")
+local debounced
 
 -- === Highlight Disable === [[[
 --[[
@@ -20,6 +23,8 @@ read `:h nohlsearch`.
 To have this work, check that the current mouse position is not a search
 result, if it is we leave highlighting on, otherwise I turn it off on cursor moved by faking my input
 using the expr mappings below
+
+This has been modified to only display the error message once
 
 This is based on the implementation discussed here:
 https://github.com/neovim/neovim/issues/5581
@@ -34,11 +39,23 @@ local function stop_hl()
     api.nvim_feedkeys(utils.t("<Plug>(StopHL)"), "m", false)
 end
 
-local function hl_search()
-    local debounce
+---Check whether or not the current line matches the search string
+---@return number, boolean, table|string
+local function hl_search_ret()
     local col = nvim.win.get_cursor(0)[2]
     local curr_line = nvim.buf.line()
-    local ok, match = pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
+    return col, pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
+end
+
+---Determine when the highlighting is supposed to stop
+---@param col number
+---@param match table|string Can be: `Vim:E55:` or `{ "str", 20, 23 }`
+local function hl_search_match(col, match)
+    -- This shouldn't ever be called here
+    if type(match) == "string" and match:match(":E55:") then
+        stop_hl()
+        return
+    end
 
     local _, p_start, p_end = unpack(match)
     -- If the cursor is in a search result, leave highlighting on
@@ -47,12 +64,42 @@ local function hl_search()
     end
 end
 
+---Execute the highlight search
+---@param overwrite boolean should the register be overwritten
+local function hl_search(overwrite)
+    -- 0 false Vim:E55: Unmatched \)
+    -- 20 true { "deb", 20, 23 }
+
+    local col, ok, match = hl_search_ret()
+    if not ok then
+
+        if overwrite then
+            nvim.reg["/"] = fn.histget("/", -2)
+            log.warn("Register has been overwritten", true, {title = "HLSearch"})
+        end
+
+        if not debounced then
+            debounced =
+                debounce(
+                function()
+                    vim.notify(match, "error", {title = "HLSearch"})
+                end,
+                10
+            )
+            debounced()
+        end
+        return
+    end
+
+    hl_search_match(col, match)
+end
+
 augroup(
     "lmb__VimrcIncSearchHighlight",
     {
         event = {"CursorMoved"},
         command = function()
-            hl_search()
+            hl_search(true)
         end
     },
     {

@@ -35,3 +35,6 @@ function setsid_notify() {
     pgrep -x autokey-gtk || setsid_notify autokey-gtk
     pgrep -x pcmanfm || setsid_notify pcmanfm -d
 ) 1>/dev/null
+
+dbus-launch
+dunstify "Dbus has restarted"
