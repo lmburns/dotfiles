@@ -2,6 +2,7 @@ local M = {}
 
 -- FIX: The coc formatter provided doesn't read configs
 
+local dev = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -24,7 +25,7 @@ local scan = require("plenary.scandir")
 local function save_doc(bufnr)
     vim.schedule(
         function()
-            api.nvim_buf_call(
+            dev.buf_call(
                 bufnr,
                 function()
                     ex.sil_("up")
@@ -103,7 +104,7 @@ function M.format_doc(save)
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
                             if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
-                                api.nvim_buf_call(
+                                dev.buf_call(
                                     bufnr,
                                     function()
                                         local output = M.promisify()
@@ -212,7 +213,7 @@ local function init()
         "prettier"
     }
     g.neoformat_enabled_typescript = {
-        "prettier"
+        "prettier", "clang-format"
     }
     g.neoformat_enabled_javascript = {
         "prettier"

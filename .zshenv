@@ -48,8 +48,15 @@ export BROWSER="librewolf"
 export BROWSERCLI="w3m"
 export SR_BROWSER="$BROWSERCLI"
 export RTV_BROWSER="$BROWSERCLI"
-export EDITOR='nvim'
-# export VISUAL="${EDITOR}"
+
+if [[ -n "$NVIM_LISTEN_ADDRESS" ]]; then
+  export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+  export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+else
+  export VISUAL="nvim"
+  export EDITOR="nvim"
+fi
+
 export GIT_EDITOR="${EDITOR}"
 export RTV_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"

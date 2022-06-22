@@ -152,7 +152,7 @@ P.project_vista = function(opts)
                         lnum = value.lnum,
                         filename = fn.expand("%:p"),
                         kind = ("[%s]"):format(kind),
-                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text),
+                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text)
                     }
                 )
             end
@@ -219,7 +219,7 @@ P.project_vista = function(opts)
         local filename = utils.transform_path(opts, entry.filename)
         local tbl = {
             {entry.tag, "DiagnosticWarn"},
-            {entry.kind, "SpellCap"},
+            {entry.kind, "SpellCap"}
         }
         if not opts.only_current_file then
             table.insert(tbl, {entry.text, "Comment"})
@@ -289,7 +289,13 @@ P.gutentags = function()
     local file = vim.b.gutentags_files
 
     if not file then
-        b_utils.notify("no gutentags file found")
+        b_utils.notify(
+            "No gutentags file found",
+            vim.log.levels.ERROR,
+            {
+                title = "Telescope"
+            }
+        )
         return
     end
 

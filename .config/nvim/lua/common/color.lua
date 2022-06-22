@@ -353,6 +353,8 @@ end
 ---@param fallback string?
 ---@return string
 function M.get_hl(group, attribute, fallback)
+    -- local ret = api.nvim_get_hl_by_name("SpellCap", true)
+    -- local directory_color = ("#%06x"):format(ret["foreground"])
     if not group then
         vim.notify("Cannot get a highlight without specifying a group", log.levels.ERROR)
         return "NONE"
@@ -376,7 +378,7 @@ end
 ---@param name string
 function M.clear_hl(name)
     assert(name, "name is required to clear a highlight")
-    nvim.set_hl(0, name, {})
+    M.set_hl(name, {})
 end
 
 ---Apply a list of highlights
@@ -403,5 +405,23 @@ function M.plugin(name, hls)
         }
     )
 end
+
+---Syntactic sugar to set a highlight group
+---@param hlgroup string
+---@param opts ColorFormat
+-- M.hl =
+setmetatable(
+    M,
+    {
+        __newindex = function(_, hlgroup, opts)
+            if type(opts) == "string" then
+                M.set_hl(hlgroup, {link = opts})
+                return
+            end
+
+            M.set_hl(hlgroup, opts)
+        end
+    }
+)
 
 return M

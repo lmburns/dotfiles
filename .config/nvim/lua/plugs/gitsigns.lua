@@ -4,6 +4,7 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 local wk = require("which-key")
+local C = require("common.color")
 local config
 
 function M.toggle_deleted()
@@ -32,16 +33,14 @@ local function mappings(bufnr)
             ["<Leader>hQ"] = {"<Cmd>Gitsigns setqflist all<CR>", "Set qflist all (git)"},
             ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
             ["<Leader>hl"] = {"<Cmd>Gitsigns toggle_linehl<CR>", "Toggle line highlight (git)"},
+            ["<Leader>hw"] = {"<Cmd>Gitsigns toggle_word_diff<CR>", "Toggle word diff (git)"},
+            ["<Leader>hB"] = {"<cmd>Gitsigns toggle_current_line_blame<CR>", "Toggle blame line virt (git)"},
             ["<Leader>hb"] = {
                 function()
                     gs.blame_line({full = true})
                 end,
                 "Blame line virt (git)"
             },
-            ["<Leader>hB"] = {
-                "<cmd>Gitsigns toggle_current_line_blame<CR>",
-                "Toggle blame line virt (git)"
-            }
         },
         {buffer = bufnr}
     )
@@ -90,40 +89,50 @@ local function mappings(bufnr)
 end
 
 function M.setup()
+    -- C.plugin(
+    --     "GitSigns",
+    --     {
+    --         GitSignsAddNr = {link = "Constant"},
+    --         GitSignsChangeNr = {link = "Type"},
+    --         GitSignsDeleteNr = {link = "Identifier"},
+    --     }
+    -- )
     require("gitsigns").setup(
         {
             signs = {
                 add = {
                     hl = "GitSignsAdd",
                     text = "▍",
-                    numhl = "GitSignsAddNr",
+                    numhl = "Constant",
                     linehl = "GitSignsAddLn"
                 },
                 change = {
                     hl = "GitSignsChange",
                     text = "▍",
-                    numhl = "GitSignsChangeNr",
+                    numhl = "Type",
                     linehl = "GitSignsChangeLn"
                 },
                 delete = {
                     hl = "GitSignsDelete",
-                    text = "↗",
+                    -- text = "↗",
+                    text = "_",
                     show_count = true,
-                    numhl = "GitSignsDeleteNr",
+                    numhl = "Identifier",
                     linehl = "GitSignsDeleteLn"
                 },
                 topdelete = {
                     hl = "GitSignsDelete",
-                    text = "↘",
+                    -- text = "↘",
+                    text = "‾",
                     show_count = true,
-                    numhl = "GitSignsDeleteNr",
+                    numhl = "ErrorMsg",
                     linehl = "GitSignsDeleteLn"
                 },
                 changedelete = {
                     hl = "GitSignsChange",
-                    text = "▍",
+                    text = "~",
                     show_count = true,
-                    numhl = "GitSignsChangeNr",
+                    numhl = "Number",
                     linehl = "GitSignsChangeLn"
                 }
             },

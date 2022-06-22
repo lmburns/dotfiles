@@ -3,6 +3,8 @@ local M = {}
 -- https://editorconfig-specification.readthedocs.io/
 -- https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties
 
+local dev = require("dev")
+
 local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
@@ -20,7 +22,7 @@ function M.hook(config)
                         ex.PackerLoad("indent-blankline.nvim")
                         indentLine_loaded = true
                     end
-                    api.nvim_buf_call(
+                    dev.buf_call(
                         bufnr,
                         function()
                             ex.IndentBlanklineEnable()

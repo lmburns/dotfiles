@@ -1,3 +1,5 @@
+-- Have more than one configuration
+-- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
 -- ==> zen-mode; twilight
 -- use(
 --     {
@@ -223,6 +225,7 @@
 -- )
 --
 -- ====================== Window Picker ======================= [[[
+-- use({"numToStr/Navigator.nvim"})
 -- sindrets/winshift.nvim
 -- t9md/vim-choosewin
 -- use(

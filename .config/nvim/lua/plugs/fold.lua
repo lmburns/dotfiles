@@ -20,19 +20,13 @@ local bl_ft
 local coc_loaded_ft
 local anyfold_prefer_ft
 
-function M.use_anyfold(bufnr, force)
+M.use_anyfold = function(bufnr, force)
     local filename = api.nvim_buf_get_name(bufnr)
     local st = uv.fs_stat(filename)
     if st then
         local fsize = st.size
         if force or 0 < fsize and fsize < 131072 then
             if fn.bufwinid(bufnr) == -1 then
-                -- cmd(
-                --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
-                --         bufnr,
-                --         ([[lua require('plugs.fold').use_anyfold(%d)]]):format(bufnr)
-                --     )
-                -- )
                 augroup(
                     {"FoldLoad", false},
                     {
@@ -45,7 +39,7 @@ function M.use_anyfold(bufnr, force)
                     }
                 )
             else
-                api.nvim_buf_call(
+                dev.buf_call(
                     bufnr,
                     function()
                         utils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
@@ -59,13 +53,14 @@ function M.use_anyfold(bufnr, force)
 end
 
 local function apply_fold(bufnr, ranges)
-    api.nvim_buf_call(
+    dev.buf_call(
         bufnr,
         function()
             vim.wo.foldmethod = "manual"
 
-            -- FIXME: This moves the cursor one place to the left if typing starts within
+            local win_view = fn.winsaveview()
             cmd("norm! zE")
+            fn.winrestview(win_view)
 
             local fold_cmd = {}
             for _, f in ipairs(ranges) do
@@ -74,11 +69,13 @@ local function apply_fold(bufnr, ranges)
             cmd(table.concat(fold_cmd, "|"))
             vim.wo.foldenable = true
             vim.wo.foldlevel = 99
+
+            -- require("ufo").enableFold(bufnr)
         end
     )
 end
 
-function M.update_fold(bufnr)
+M.update_fold = function(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     coc.run_command(
         -- "kvs.fold.foldingRange",
@@ -92,7 +89,7 @@ function M.update_fold(bufnr)
     )
 end
 
-function M.attach(bufnr, force)
+M.attach = function(bufnr, force)
     bufnr = bufnr or api.nvim_get_current_buf()
     if not api.nvim_buf_is_valid(bufnr) or not force and vim.b[bufnr].loaded_fold then
         return
@@ -124,14 +121,9 @@ function M.attach(bufnr, force)
                             return
                         end
                     end
+
                     local winid = fn.bufwinid(bufnr)
                     if winid == -1 then
-                        -- cmd(
-                        --     ("au FoldLoad BufEnter <buffer=%d> ++once %s"):format(
-                        --         bufnr,
-                        --         [[lua require('plugs.fold').update_fold()]]
-                        --     )
-                        -- )
                         augroup(
                             {"FoldLoad", false},
                             {
@@ -180,7 +172,7 @@ function M.attach(bufnr, force)
     -- vim.wo.foldtext = [[v:lua.require'plugs.fold'.foldtext()]]
 end
 
-function M.defer_attach(bufnr)
+M.defer_attach = function(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     local bo = vim.bo[bufnr]
     if vim.b[bufnr].loaded_fold or vim.tbl_contains(bl_ft, bo.ft) or bo.bt ~= "" then
@@ -206,7 +198,9 @@ function M.defer_attach(bufnr)
     )
 end
 
-function M.foldtext()
+---Set the `foldtext` (i.e., the text displayed for a fold)
+---@return string
+M.foldtext = function()
     local fs, fe = v.foldstart, v.foldend
     local fs_lines = api.nvim_buf_get_lines(0, fs - 1, fe - 1, false)
     local fs_line = fs_lines[1]
@@ -226,7 +220,9 @@ function M.foldtext()
     return fs_line .. padding .. fold_info
 end
 
-function M.nav_fold(forward)
+---Navigate folds
+---@param forward boolean should move forward?
+M.nav_fold = function(forward)
     local cnt = v.count1
     local wv = fn.winsaveview()
     cmd([[norm! m`]])
@@ -258,7 +254,9 @@ function M.nav_fold(forward)
     end
 end
 
-function M.with_highlight(c)
+---Wrap a fold command to highlight the text when opened
+---@param c string the suffix to the 'z' in the fold command (e.g., 'c' for `zc`)
+M.with_highlight = function(c)
     local cnt = v.count1
     local fostart = fn.foldclosed(".")
     local foend
@@ -267,7 +265,6 @@ function M.with_highlight(c)
     end
 
     C.set_hl("MyFoldHighlight", {bg = "#5e452b"})
-    -- ex.hi("MyFoldHighlight guibg=#5e452b")
 
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
@@ -277,73 +274,39 @@ function M.with_highlight(c)
     end
 end
 
-function M.setup_prettyfold()
-    if not pcall(require, "pretty-fold") then
-        return
+---Return the number of lines that are folded
+---@return string
+M.number_of_folded_lines = function()
+    return ("%d lines"):format(v.foldend - v.foldstart + 1)
+end
+
+---Get the percentage of the file that the fold takes up
+---@return string
+M.percentage = function(startl, endl)
+    -- local folded_lines = v.foldend - v.foldstart + 1
+    local folded_lines = endl - startl + 1
+    local total_lines = api.nvim_buf_line_count(0)
+    local pnum = math.floor(100 * folded_lines / total_lines)
+    if pnum == 0 then
+        pnum = tostring(100 * folded_lines / total_lines):sub(2, 3)
+    -- elseif pnum < 10 then
+    --     pnum = " " .. pnum
+    --     pnum = pnum
     end
+    return pnum .. "%"
+end
 
-    require("pretty-fold").setup(
-        {
-            fill_char = "•",
-            keep_indentation = true,
-            remove_fold_markers = true,
-            process_comment_signs = "delete",
-            sections = {
-                left = {"content"},
-                right = {
-                    "+",
-                    function()
-                        return string.rep("-", v.foldlevel)
-                    end,
-                    " ",
-                    "number_of_folded_lines",
-                    ": ",
-                    "percentage",
-                    " ",
-                    function(config)
-                        return config.fill_char:rep(3)
-                    end
-                }
-            },
-            -- List of patterns that will be removed from content foldtext section.
-            stop_words = {
-                "@brief%s*" -- (for C++) Remove '@brief' and all spaces after.
-            },
-            add_close_pattern = true, -- true, 'last_line' or false
-            matchup_patterns = {
-                {"{", "}"},
-                {"%(", ")"}, -- % to escape lua pattern char
-                {"%[", "]"} -- % to escape lua pattern char
-            },
-            ft_ignore = {"neorg"}
-        }
-    )
-
-    require("pretty-fold").ft_setup(
-        "lua",
-        {
-            matchup_patterns = {
-                {"^%s*do$", "end"}, -- do ... end blocks
-                {"^%s*if", "end"}, -- if ... end
-                {"^%s*for", "end"}, -- for
-                {"function%s*%(", "end"}, -- 'function( or 'function (''
-                {"{", "}"},
-                {"%(", ")"}, -- % to escape lua pattern char
-                {"%[", "]"} -- % to escape lua pattern char
-            }
-        }
-    )
-
-    require("pretty-fold.preview").setup(
-        {
-            default_keybindings = false,
-            border = "rounded"
-        }
-    )
-
-    local keymap_amend = require("keymap-amend")
-    local mapping = require("pretty-fold.preview").mapping
-    keymap_amend("n", "l", mapping.show_close_preview_open_fold)
+---Force the fold on the current line to immediately open or close.
+---Unlike za and zo it only takes one command to open any fold.
+---Unlike zO it does not open recursively, it only opens the current fold.
+M.open_fold = function()
+    if fn.foldclosed(".") == -1 then
+        ex.foldclose()
+    else
+        while fn.foldclosed(".") ~= -1 do
+            ex.foldopen()
+        end
+    end
 end
 
 ---Customize the handler to display virtual text for UFO
@@ -391,28 +354,6 @@ local handler = function(virt_text, lnum, end_lnum, width, truncate)
     return new_virt_text
 end
 
----Return the number of lines that are folded
----@return string
-function M.number_of_folded_lines()
-    return ("%d lines"):format(v.foldend - v.foldstart + 1)
-end
-
----Get the percentage of the file that the fold takes up
----@return string
-function M.percentage(startl, endl)
-    -- local folded_lines = v.foldend - v.foldstart + 1
-    local folded_lines = endl - startl + 1
-    local total_lines = api.nvim_buf_line_count(0)
-    local pnum = math.floor(100 * folded_lines / total_lines)
-    if pnum == 0 then
-        pnum = tostring(100 * folded_lines / total_lines):sub(2, 3)
-    -- elseif pnum < 10 then
-    --     pnum = " " .. pnum
-    --     pnum = pnum
-    end
-    return pnum .. "%"
-end
-
 ---Setup 'ultra-fold'
 M.setup_ufo = function()
     require("ufo").setup(
@@ -424,16 +365,19 @@ M.setup_ufo = function()
 end
 
 local function init()
-    vim.opt.fillchars:append("fold:•")
+    -- vim.opt.fillchars:append("fold:•")
+
     g.anyfold_fold_display = 0
     g.anyfold_identify_comments = 0
     g.anyfold_motion = 0
 
     vim.defer_fn(
         function()
-            C.set_hl("UFOFoldLevel", {fg = palette.blue, bold = true})
+            C.UFOFoldLevel = {fg = palette.blue, bold = true}
             M.setup_ufo()
-            -- M.setup_prettyfold()
+
+            vim.wo.foldenable = true
+            vim.wo.foldlevel = 99
         end,
         50
     )
@@ -481,30 +425,31 @@ local function init()
     --     }
     -- )
 
-    augroup(
-        "FoldLoad",
-        {
-            event = "FileType",
-            pattern = "*",
-            command = function()
-                require("plugs.fold").defer_attach(tonumber(fn.expand("<abuf>")))
-            end
-        }
-    )
+    -- Augroup is created here
+    -- augroup(
+    --     "FoldLoad",
+    --     {
+    --         event = "FileType",
+    --         pattern = "*",
+    --         command = function()
+    --             require("plugs.fold").defer_attach(tonumber(fn.expand("<abuf>")))
+    --         end
+    --     }
+    -- )
+    --
+    -- command(
+    --     "Fold",
+    --     function()
+    --         require("plugs.fold").attach(nil, true)
+    --     end,
+    --     {nargs = 0}
+    -- )
 
-    command(
-        "Fold",
-        function()
-            require("plugs.fold").attach(nil, true)
-        end,
-        {nargs = 0}
-    )
+    map("n", ";fo", "AnyFoldActivate", {cmd = true, desc = "Manually fold"})
 
-    map("n", ";fo", "Fold", {cmd = true, desc = "Manually fold"})
-
-    for _, bufnr in ipairs(api.nvim_list_bufs()) do
-        M.defer_attach(bufnr)
-    end
+    -- for _, bufnr in ipairs(api.nvim_list_bufs()) do
+    --     M.defer_attach(bufnr)
+    -- end
 end
 
 init()

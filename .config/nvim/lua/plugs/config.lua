@@ -4,6 +4,7 @@
 
 local M = {}
 
+local dev = require("dev")
 local utils = require("common.utils")
 local log = require("common.log")
 local wk = require("which-key")
@@ -13,68 +14,6 @@ local C = require("common.color")
 
 local augroup = utils.augroup
 local autocmd = utils.autocmd
-
-local ex = nvim.ex
-local fn = vim.fn
-local g = vim.g
-local b = vim.bo
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                           bqf                            │
--- ╰──────────────────────────────────────────────────────────╯
-function M.bqf()
-    -- FIX: Sometimes preview window is transparent
-    C.link("BqfPreviewBorder", "Parameter")
-
-    require("bqf").setup(
-        {
-            auto_enable = true,
-            auto_resize_height = true,
-            preview = {auto_preview = true, delay_syntax = 50},
-            func_map = {
-                open = "<CR>",
-                openc = "O",
-                drop = "o",
-                split = "<C-s>",
-                vsplit = "<C-v>",
-                tab = "t",
-                tabb = "T",
-                tabc = "",
-                tabdrop = "<C-t>",
-                ptogglemode = "z,",
-                ptoggleitem = "p",
-                ptoggleauto = "P",
-                pscrollup = "<C-u>",
-                pscrolldown = "<C-d>",
-                pscrollorig = "zo",
-                prevfile = "<C-p>",
-                nextfile = "<C-n>",
-                prevhist = "<",
-                nexthist = ">",
-                lastleave = [['"]],
-                stoggleup = "<S-Tab>",
-                stoggledown = "<Tab>",
-                stogglevm = "<Tab>",
-                stogglebuf = [['<Tab>]],
-                sclear = "z<Tab>",
-                filter = "zn",
-                filterr = "zN",
-                fzffilter = "zf"
-            },
-            filter = {
-                fzf = {
-                    action_for = {
-                        ["enter"] = "drop",
-                        ["ctrl-s"] = "split",
-                        ["ctrl-t"] = "tab drop",
-                        ["ctrl-x"] = ""
-                    },
-                    extra_opts = {"--delimiter", "│"}
-                }
-            }
-        }
-    )
-end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Listish                          │
@@ -656,6 +595,9 @@ function M.notify()
             --     if nvim.win.is_valid(win) then
             --     end
             -- end,
+            on_open = function(win)
+                api.nvim_win_set_config(win, {zindex = 500})
+            end,
             render = function(bufnr, notif, highlights, config)
                 local style = notif.title[1] == "" and "minimal" or "default"
                 renderer[style](bufnr, notif, highlights, config)
@@ -1226,14 +1168,14 @@ function M.smartsplits()
     -- Move between windows
     wk.register(
         {
-            ["<C-j>"] = {ss.move_cursor_down, "Move to below window"},
-            ["<C-k>"] = {ss.move_cursor_up, "Move to above window"},
-            ["<C-h>"] = {ss.move_cursor_left, "Move to left window"},
-            ["<C-l>"] = {ss.move_cursor_right, "Move to right window"},
-            ["<C-Up>"] = {ss.resize_up, "Resize window up"},
-            ["<C-Down>"] = {ss.resize_down, "Resize window down"},
-            ["<C-Right>"] = {ss.resize_right, "Resize window right"},
-            ["<C-Left>"] = {ss.resize_left, "Resize window left"}
+            ["<C-j>"] = {dev.ithunk(ss.move_cursor_down), "Move to below window"},
+            ["<C-k>"] = {dev.ithunk(ss.move_cursor_up), "Move to above window"},
+            ["<C-h>"] = {dev.ithunk(ss.move_cursor_left), "Move to left window"},
+            ["<C-l>"] = {dev.ithunk(ss.move_cursor_right), "Move to right window"},
+            ["<C-Up>"] = {dev.ithunk(ss.resize_up), "Resize window up"},
+            ["<C-Down>"] = {dev.ithunk(ss.resize_down), "Resize window down"},
+            ["<C-Right>"] = {dev.ithunk(ss.resize_right), "Resize window right"},
+            ["<C-Left>"] = {dev.ithunk(ss.resize_left), "Resize window left"}
         }
     )
 end
@@ -1899,58 +1841,7 @@ end
 -- │                          eregex                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.eregex()
-    map("n", "<Leader>/", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         incline                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.incline()
-    require("incline").setup(
-        {
-            render = function(props)
-                local bufname = api.nvim_buf_get_name(props.buf)
-                if bufname == "" then
-                    return "[No name]"
-                else
-                    -- bufname = fn.fnamemodify(bufname, ":h")
-                    bufname = Path:new(bufname):shorten(3, {-2, -1})
-                    bufname = bufname:gsub("^/hom/luc/.co/nvi/", "$NVIM/")
-                    bufname = bufname:gsub("^/hom/luc/.lo/sha/", "$DATA/")
-                    bufname = bufname:gsub("^/hom/luc/.co/", "$CONFIG/")
-                    bufname = bufname:gsub("^/hom/luc/", "~/")
-                end
-                return bufname
-            end,
-            debounce_threshold = 30,
-            window = {
-                width = "fit",
-                placement = {horizontal = "right", vertical = "top"},
-                margin = {
-                    horizontal = {left = 1, right = 1},
-                    vertical = {bottom = 0, top = 1}
-                },
-                padding = {left = 1, right = 1},
-                padding_char = " ",
-                zindex = 100
-            },
-            ignore = {
-                floating_wins = true,
-                unlisted_buffers = true,
-                filetypes = {},
-                buftypes = "special",
-                wintypes = "special"
-            },
-            highlight = {
-                groups = {
-                    InclineNormal = "WinBar",
-                    InclineNormalNC = "InclineNormal"
-                }
-            }
-        }
-    )
-
-    map("n", "<Leader>wb", "<Cmd>lua require('incline').toggle()<CR>", {desc = "Toggle winbar"})
+    map("n", "<Leader>es", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1991,7 +1882,7 @@ function M.outline()
     vim.g.symbols_outline = {
         highlight_hovered_item = true,
         show_guides = true,
-        auto_preview = true,
+        auto_preview = false,
         position = "right",
         relative_width = true,
         width = 25,
@@ -2004,7 +1895,7 @@ function M.outline()
             close = {"<Esc>", "q"},
             goto_location = "<Cr>",
             focus_location = "o",
-            hover_symbol = "<C-space>",
+            hover_symbol = "M",
             toggle_preview = "K",
             rename_symbol = "r",
             code_actions = "a"
@@ -2040,6 +1931,8 @@ function M.outline()
             TypeParameter = {icon = "𝙏", hl = "TSParameter"}
         }
     }
+
+    map("n", '<A-S-">', "<Cmd>SymbolsOutline<CR>", {desc = "Open symbols"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

@@ -7,6 +7,10 @@ local list = require("dev").list
 local o = vim.opt
 local g = vim.g
 
+---Notify with nvim-notify if nvim is focused,
+---Otherwise send a desktop notification.
+g.nvim_focused = true
+
 -- Leader/local leader
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]

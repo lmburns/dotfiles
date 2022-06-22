@@ -4,6 +4,12 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local wk = require("which-key")
 
+local ex = nvim.ex
+local cmd = vim.cmd
+local fn = vim.fn
+local g = vim.g
+local api = vim.api
+
 local bmap = function(...)
     utils.bmap(0, ...)
 end
@@ -11,9 +17,9 @@ end
 function M.index()
     local bufname = api.nvim_buf_get_name(0)
     if fn.winnr("$") == 1 and bufname == "" then
-        cmd("Git")
+        ex.Git()
     else
-        cmd("tab Git")
+        ex.tab("Git")
     end
     if bufname == "" then
         cmd("sil! noa bw #")
@@ -44,7 +50,7 @@ local function init()
     if bufname:find("/.git/index$") then
         vim.schedule(
             function()
-                cmd(("do fugitive BufReadCmd %s"):format(bufname))
+                ex.doau(("fugitive BufReadCmd %s"):format(bufname))
             end
         )
     end
@@ -99,7 +105,7 @@ local function init()
         {
             ["<Leader>gg"] = {[[<Cmd>lua require('plugs.fugitive').index()<CR>]], "Fugitive index"},
             ["<Leader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
-            ["<Leader>gb"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
+            ["<Leader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
             ["<Leader>gw"] = {
                 [[<Cmd>lua require('utils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
                 "Fugitive Gwrite"

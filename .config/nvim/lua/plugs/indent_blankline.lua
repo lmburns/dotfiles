@@ -10,6 +10,7 @@ function M.setup()
             debug = true,
             viewport_buffer = 20,
             use_treesitter = true,
+            indent_blankline_show_foldtext = false,
             show_first_indent_level = false,
             show_trailing_blankline_indent = false,
             show_current_context = true,
@@ -18,6 +19,7 @@ function M.setup()
             show_end_of_line = false,
             char = "|",
             char_list = {"|", "¦", "┆", "┊"},
+            -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
             context_char = "▏",
             context_patterns = {
                 "^do",

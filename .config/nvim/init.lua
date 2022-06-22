@@ -113,7 +113,8 @@ a.async_void(
     function()
         vim.notify = function(...)
             require("plugins").loader("nvim-notify")
-            vim.notify = require("notify")
+            require("plugins").loader("desktop-notify.nvim")
+            vim.notify = require("common.utils").notify
             vim.notify(...)
         end
     end

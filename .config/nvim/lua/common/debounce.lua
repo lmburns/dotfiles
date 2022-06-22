@@ -1,51 +1,11 @@
 local uv = vim.loop
 local Debounce = {}
 
---- Debounces a function on the trailing edge. Automatically
---- `schedule_wrap()`s.
----
--- @param fn (function) Function to debounce
--- @param timeout (number) Timeout in ms
--- @param first (boolean, optional) Whether to use the arguments of the first
----call to `fn` within the timeframe. Default: Use arguments of the last call.
--- @returns (function, timer) Debounced function and timer. Remember to call
----`timer:close()` at the end or you will leak memory!
-function Debounce.trailing(fn, ms, first)
-    local timer = uv.new_timer()
-    local wrapped_fn
-
-    if not first then
-        function wrapped_fn(...)
-            local argv = {...}
-            local argc = select("#", ...)
-
-            timer:start(
-                ms,
-                0,
-                function()
-                    pcall(vim.schedule_wrap(fn), unpack(argv, 1, argc))
-                end
-            )
-        end
-    else
-        local argv, argc
-        function wrapped_fn(...)
-            argv = argv or {...}
-            argc = argc or select("#", ...)
-
-            timer:start(
-                ms,
-                0,
-                function()
-                    pcall(vim.schedule_wrap(fn), unpack(argv, 1, argc))
-                end
-            )
-        end
-    end
-    return wrapped_fn, timer
-end
-
-function Debounce:call()
+---Execute the function to debounce.
+--- This is called when the returned function from this module is called
+---@vararg any
+function Debounce:call(...)
+    local args = {...}
     local timer = self.timer
     if not timer then
         timer = uv.new_timer()
@@ -55,7 +15,7 @@ function Debounce:call()
             wait,
             wait,
             function()
-                self:flush()
+                self:flush(unpack(args))
             end
         )
     else
@@ -76,9 +36,18 @@ function Debounce:clear()
     end
 end
 
-function Debounce:flush()
+function Debounce:flush(...)
     self:clear()
-    self.fn()
+    self.fn(...)
+end
+
+---ref() returns a normal function which, when called, calls Debounce:call()
+---bound to the original instance.
+---Useful for using Debounce with an API that doesn't accept callable tables.
+function Debounce:ref()
+    return function(...)
+        self:call(...)
+    end
 end
 
 Debounce.__index = Debounce

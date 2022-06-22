@@ -9,6 +9,9 @@ local autocmd = utils.autocmd
 local create_augroup = utils.create_augroup
 
 local ex = nvim.ex
+local api = vim.api
+local fn = vim.fn
+local g = vim.g
 
 local debounced
 
@@ -72,7 +75,6 @@ local function hl_search(overwrite)
 
     local col, ok, match = hl_search_ret()
     if not ok then
-
         if overwrite then
             nvim.reg["/"] = fn.histget("/", -2)
             log.warn("Register has been overwritten", true, {title = "HLSearch"})
@@ -512,6 +514,7 @@ local smart_close_filetypes = {
     "fugitiveblame",
     "LuaTree",
     "log",
+    "Outline",
     "tsplayground",
     "floggraph",
     "vista",
@@ -891,6 +894,23 @@ nvim.autocmd.RnuColumn = {
 }
 -- ]]] === RNU Column ===
 
+augroup(
+    "lmb__SetFocus",
+    {
+        event = "FocusGained",
+        desc = "Set `nvim_focused` to true",
+        command = function()
+            g.nvim_focused = true
+        end
+    },
+    {
+        event = "FocusLost",
+        desc = "Set `nvim_focused` to false",
+        command = function()
+            g.nvim_focused = false
+        end
+    }
+)
 -- autocmd(
 --     {
 --         event = "VimEnter",

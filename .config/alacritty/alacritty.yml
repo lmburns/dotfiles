@@ -932,6 +932,7 @@ key_bindings:
   # - { key: I, mods: Control, chars: "\x1b[105;5u" }
   - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
   - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
+  - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
   - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
   - { key: 0x34, mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
   - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark

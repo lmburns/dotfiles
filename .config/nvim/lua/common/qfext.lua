@@ -363,10 +363,10 @@ function M.outline_treesitter(opts)
     local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
         utils.notify(
+            "No parser for the current buffer",
+            log.levels.ERROR,
             {
-                title = "builtin.treesitter",
-                message = "No parser for the current buffer",
-                level = log.levels.ERROR
+                title = "builtin.treesitter"
             }
         )
         return

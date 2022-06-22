@@ -2,6 +2,7 @@ local M = {}
 
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 
+local dev = require("dev")
 local lspconfig = require("lspconfig")
 local lsp_installer = require("nvim-lsp-installer")
 
@@ -362,7 +363,7 @@ local function on_attach(client, bufnr)
     end
 
     -- TODO: turn these into: client.supports_method("textDocument/codeAction")
-    vim.api.nvim_buf_call(
+    dev.buf_call(
         bufnr,
         function()
             -- Function to run for imports

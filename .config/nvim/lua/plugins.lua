@@ -16,6 +16,8 @@ local ex = nvim.ex
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
+_G.telescope_ext = {}
+
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -88,6 +90,7 @@ packer.init(
 PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
 
 local handlers = {
+    ---@diagnostic disable-next-line: unused-local
     conf = function(plugins, plugin, value)
         if value:match("^plugs%.") then
             plugin.config = ([[require('%s')]]):format(value)
@@ -98,6 +101,15 @@ local handlers = {
     disable = function(_, plugin, _)
         plugin.disable = require("common.control")[plugin.short_name]
     end,
+    -- TODO: Finish this
+    ---@diagnostic disable-next-line: unused-local
+    telescope_ext = function(plugins, plugin, value)
+        value = type(value) == "table" and value or {value}
+        for _, ext in pairs(value) do
+            table.insert(_G.telescope_ext, ext)
+        end
+    end,
+    ---@diagnostic disable-next-line: unused-local
     patch = function(plugins, plugin, value)
         -- local await = require("packer.async").wait
         -- local async = require("packer.async").sync
@@ -166,6 +178,9 @@ packer.set_handler(1, handlers.disable)
 ---Apply a patch to the given plugin
 packer.set_handler("patch", handlers.patch)
 
+---Collect telescope extensions
+packer.set_handler("telescope_ext", handlers.telescope_ext)
+
 ---Use a local plugin found on the filesystem
 ---@param url string link to repo
 ---@param path string path to repo
@@ -204,9 +219,6 @@ return packer.startup(
             -- Faster version of filetype.vim
             -- use({"nathom/filetype.nvim", conf = "plugs.filetype"})
 
-            -- Have more than one configuration
-            -- use({"NTBBloodbath/cheovim", config = [[require("cheovim").setup({})]]})
-
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                         Library                          │
             -- ╰──────────────────────────────────────────────────────────╯
@@ -221,7 +233,7 @@ return packer.startup(
             use({"kyazdani42/nvim-web-devicons"})
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
-            -- ============================== WhichKey ============================ [[[
+            -- ============================= Keybinding =========================== [[[
             use({"folke/which-key.nvim", conf = "plugs.which-key"})
             use(
                 {
@@ -230,15 +242,22 @@ return packer.startup(
                     requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
                 }
             )
-            -- ]]] === WhichKey ===
+            -- use(
+            --     {
+            --         "anuvyklack/hydra.nvim",
+            --         requires = {"anuvyklack/keymap-layer.nvim", opt = true},
+            --         after = "gitsigns.nvim",
+            --         conf = "plugs.hydra"
+            --     }
+            -- )
+            -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
             use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
-            -- use({"numToStr/Navigator.nvim"})
-            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits"})
-            use({"fedepujol/move.nvim", conf = "move"})
+            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
+            use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
             use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
             use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
@@ -296,7 +315,7 @@ return packer.startup(
                     cmd = {"E2v", "S", "M"},
                     -- after = "vim-abolish",
                     setup = [[vim.g.eregex_default_enable = 0]],
-                    keys = {{"n", "<Leader>/"}},
+                    keys = {{"n", "<Leader>es"}},
                     conf = "eregex",
                     desc = "Ruby/Perl style regex for Vim"
                 }
@@ -401,7 +420,8 @@ return packer.startup(
                         {
                             "nvim-telescope/telescope-dap.nvim",
                             after = "nvim-dap",
-                            config = [[require("telescope").load_extension("dap")]]
+                            config = [[require("telescope").load_extension("dap")]],
+                            telescope_ext = "dap"
                         },
                         {
                             "rcarriga/nvim-dap-ui",
@@ -470,7 +490,7 @@ return packer.startup(
             -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, conf = "qf_reflector"})
             -- use({"https://gitlab.com/yorickpeterse/nvim-pqf", config = [[require('pqf').setup()]]})
 
-            use({"kevinhwang91/nvim-bqf", ft = {"qf"}, conf = "bqf"})
+            use({"kevinhwang91/nvim-bqf", ft = {"qf"}, conf = "plugs.bqf"})
             use(
                 {
                     "arsham/listish.nvim",
@@ -607,7 +627,7 @@ return packer.startup(
 
             -- =========================== Statusline ============================= [[[
 
-            use({"b0o/incline.nvim", conf = "incline"})
+            use({"b0o/incline.nvim", conf = "plugs.incline"})
             use(
                 {
                     "nvim-lualine/lualine.nvim",
@@ -764,6 +784,7 @@ return packer.startup(
                 {
                     "pseewald/vim-anyfold",
                     cmd = "AnyFoldActivate",
+                    keys = {{"n", ";fo"}},
                     setup = [[vim.g.anyfold_fold_display = 0]]
                 }
             )
@@ -797,6 +818,16 @@ return packer.startup(
             -- =============================== Tags =============================== [[[
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use({"liuchengxu/vista.vim", after = "vim-gutentags", conf = "plugs.vista"})
+
+            use(
+                {
+                    prefer_local("symbols-outline.nvim"),
+                    -- cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+                    -- keys = {{"n", '<A-S-">'}},
+                    -- setup = [[require('plugs.config').outline()]],
+                    conf = "outline"
+                }
+            )
             -- ]]] === Tags ===
 
             -- ============================= UndoTree ============================= [[[
@@ -987,7 +1018,7 @@ return packer.startup(
 
             -- ============================= Highlight ============================ [[[
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
-            -- use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+            use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
 
             -- "norcalli/nvim-colorizer.lua",
             -- The following plugin really needs to support ansi sequences
@@ -1127,15 +1158,6 @@ return packer.startup(
             -- )
             --
             -- use( { "jose-elias-alvarez/null-ls.nvim", requires = {"plenary.nvim"} })
-            -- use(
-            --     {
-            --         "simrat39/symbols-outline.nvim",
-            --         cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
-            --         keys = {{"n", "<C-A-'>"}},
-            --         conf = "outline"
-            --     }
-            -- )
-            --
             --
             -- use({"tami5/lspsaga.nvim"})
             -- use({"b0o/SchemaStore.nvim", module = "schemastore"})
@@ -1543,11 +1565,13 @@ return packer.startup(
             use(
                 {
                     "rbong/vim-flog",
+                    run = "gh pr checkout 79",
                     cmd = {"Flog", "Flogsplit"},
                     keys = {
                         {"n", "<Leader>gl"},
                         {"n", "<Leader>gi"}
                     },
+                    wants = "vim-fugitive",
                     requires = "tpope/vim-fugitive",
                     conf = "plugs.flog"
                 }
@@ -1634,6 +1658,13 @@ return packer.startup(
             )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
+            use(
+                {
+                    "simrat39/desktop-notify.nvim",
+                    setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
+                    config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
+                }
+            )
         end
     }
 )

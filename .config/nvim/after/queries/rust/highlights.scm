@@ -32,6 +32,8 @@
 
 ;; Things that have been modified upstream
 ;;
+;; Change continue to red
+("continue" @keyword)
 ;; Change macro_rules! back to red
 ("macro_rules!" @keyword)
 ;; Change ! in macros back to orange

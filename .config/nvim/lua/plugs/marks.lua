@@ -1,10 +1,13 @@
 local M = {}
 
--- local map = require("common.utils").map
+local marks = require("marks")
+local map = require("common.utils").map
+local wk = require("which-key")
+
+local api = vim.api
 
 function M.setup()
-    ---@diagnostic disable-next-line: redundant-parameter
-    require("marks").setup {
+    marks.setup {
         -- whether to map keybinds or not. default true
         default_mappings = true,
         -- which builtin marks to show. default {}
@@ -46,7 +49,6 @@ function M.setup()
 end
 
 local function init()
-    local wk = require("which-key")
     wk.register(
         {
             m = {
@@ -55,7 +57,7 @@ local function init()
                 ["m"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
                 ["lg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
                 ["fD"] = {"<Cmd>delm a-zA-Z0-9<CR>", "Delete all marks in buffer"},
-                ["fd"] = {"<Cmd>delm A-Z<CR><Cmd>wshada!<CR>", "Delete all capital marks"},
+                ["fd"] = {"<Cmd>delm A-Z<CR><Cmd>wshada!<CR>", "Delete all capital marks"}
             }
         },
         {prefix = "<Leader>"}
@@ -65,7 +67,7 @@ local function init()
         {
             ["qm"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
             ["qM"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
-            ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
+            ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"}
         }
     )
 

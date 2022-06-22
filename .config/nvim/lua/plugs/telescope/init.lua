@@ -34,6 +34,22 @@ local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
+-- local extensions_loaded = false
+-- local function load_extensions()
+--     if extensions_loaded then
+--         return
+--     end
+--     for _, ext in ipairs(_G.telescope_exts) do
+--         if not rawget(telescope.extensions, ext) then
+--             p(ext)
+--             telescope.load_extension(ext)
+--         end
+--     end
+--     extensions_loaded = true
+-- end
+--
+-- load_extensions()
+
 -- Custom actions
 local c_actions = {
     which_key = function(opts)

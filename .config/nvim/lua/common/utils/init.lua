@@ -37,10 +37,10 @@ M.prequire = function(check)
             -- Error has to be unwrapped to be notified
             __call = function()
                 M.notify(
+                    "Module is not installed",
+                    log.levels.ERROR,
                     {
-                        message = "Module is not installed",
-                        title = ("require('%s')"):format(check),
-                        level = log.levels.ERROR
+                        title = ("require('%s')"):format(check)
                     }
                 )
                 return dummy
@@ -65,12 +65,7 @@ M.safe_require = function(name, cb)
         end
         return ret
     else
-        M.notify(
-            {
-                message = ("Invalid module %s"):format(name),
-                level = log.levels.WARN
-            }
-        )
+        M.notify(("Invalid module %s"):format(name), log.levels.WARN)
         -- Return a dummy item that returns functions, so we can do things like
         -- safe_require("module").setup()
         local dummy = {}
@@ -94,7 +89,7 @@ end
 ---@param default any
 ---@return any
 M.get_default = function(x, default)
-  return M.if_nil(x, default, x)
+    return M.if_nil(x, default, x)
 end
 
 ---Similar to `vim.F.nil` except that an alternate default value can be given
@@ -102,11 +97,11 @@ end
 ---@param is_nil any
 ---@param is_not_nil any?
 M.if_nil = function(x, is_nil, is_not_nil)
-  if x == nil then
-    return is_nil
-  else
-    return is_not_nil
-  end
+    if x == nil then
+        return is_nil
+    else
+        return is_not_nil
+    end
 end
 
 ---Return a value based on two values
@@ -457,6 +452,27 @@ M.source = function(path, prefix)
     end
 end
 
+---Get the latest messages from `messages` command
+---@param count number of messages to get
+---@param str boolean whether to return as a string or table
+---@return string
+M.get_latest_messages = function(count, str)
+    -- local messages = api.nvim_exec("messages", true)
+    local messages = fn.execute("messages")
+    local lines = vim.split(messages, "\n")
+    lines =
+        vim.tbl_filter(
+        function(line)
+            return line ~= ""
+        end,
+        lines
+    )
+    count = count and tonumber(count) or nil
+    count = (count ~= nil and count >= 0) and count - 1 or #lines
+    local slice = vim.list_slice(lines, #lines - count)
+    return str and table.concat(slice, "\n") or slice
+end
+
 ---Determine whether user in in visual mode
 ---@return boolean, string
 M.is_visual_mode = function()
@@ -505,26 +521,45 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
+---@class NotifyOpts
+---@field icon? string Icon to add to notification
+---@field title? string Title to add
+
 ---Wrapper to send a notification
----@param options table same options as `nvim_notify`
-M.notify = function(options)
-    if type(options) == "string" then
-        api.nvim_notify(options, log.levels.INFO, {icon = ""})
-        return
+---@param msg string Message to notify
+---@param level number
+---@param opts NotifyOpts
+M.notify = function(msg, level, opts)
+    level = F.if_nil(level, log.levels.INFO)
+    local keep = function()
+        return true
     end
 
-    local forced =
-        vim.tbl_extend(
-        "force",
-        {
-            message = "This is a sample notification.",
-            icon = "",
-            title = "Notification",
-            level = log.levels.INFO
-        },
-        options or {}
-    )
-    api.nvim_notify(forced.message, forced.level, {title = forced.title, icon = forced.icon})
+    local _opts =
+        ({
+        [log.levels.TRACE] = {timeout = 500},
+        [log.levels.DEBUG] = {timeout = 500},
+        [log.levels.INFO] = {timeout = 1000},
+        [log.levels.WARN] = {timeout = 10000},
+        [log.levels.ERROR] = {timeout = 10000, keep = keep}
+    })[level]
+
+    opts = vim.tbl_extend("force", _opts or {}, opts or {})
+    if g.nvim_focused then
+        local ok, notify = pcall(require, "notify")
+        if not ok then
+            vim.defer_fn(
+                function()
+                    vim.notify(msg, level, opts)
+                end,
+                100
+            )
+            return
+        end
+        return notify.notify(msg, level, opts)
+    else
+        return require("desktop-notify").notify(msg, level, opts)
+    end
 end
 
 ---Preserve cursor position when executing command

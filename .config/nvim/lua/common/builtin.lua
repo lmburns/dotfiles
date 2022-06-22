@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local C = require("common.color")
 
 local ex = nvim.ex
 local api = vim.api
@@ -200,13 +201,14 @@ function M.search_wrap()
     if api.nvim_get_mode().mode ~= "n" then
         return
     end
-    local bufnr = nvim.get_current_buf()
+    C.set_hl("SearchWrapReverse", {bg = "#5e452b"})
+    local bufnr = nvim.buf.nr()
     local topline = fn.line("w0")
     vim.schedule(
         function()
             if bufnr == nvim.buf.nr() and topline ~= fn.line("w0") then
                 local lnum = fn.line(".") - 1
-                utils.highlight(bufnr, "Reverse", {lnum}, {lnum + 1}, {hl_eol = true}, 350)
+                utils.highlight(bufnr, "SearchWrapReverse", {lnum}, {lnum + 1}, {hl_eol = true}, 350)
             end
         end
     )

@@ -215,6 +215,7 @@ alias wa="whence -va" # where
 alias wm="whence -vm"
 alias info='info --vi-keys'
 
+[[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
 alias svi="sudo $EDITOR"

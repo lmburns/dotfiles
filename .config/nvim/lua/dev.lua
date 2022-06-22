@@ -38,13 +38,43 @@ function os.caplines(command)
     return lines
 end
 
--- function string.startswith(s, n)
---     return s:sub(1, #n) == n
--- end
---
--- function string.endswith(self, str)
---     return self:sub(-(#str)) == str
--- end
+---Bind a function to some arguments and return a new function (the thunk) that can be called later
+---Useful for setting up callbacks without anonymous functions
+---
+--- ### Example 1: Only string
+---```lua
+--- map("n", "yd", ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>")
+---```
+---
+--- ### Example 2: Anonymous functions
+---```lua
+--- map(
+---     "n",
+---     "yd",
+---     function()
+---         require("common.yank").yank_reg(vim.v.register, fn.expand("%:p:h"))
+---     end
+--- )
+---```
+---
+--- ### Example 3: Thunk
+---```lua
+---  map("n", "yd", dev.ithunk(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")))
+---```
+M.thunk = function(fun, ...)
+    local bound = {...}
+    return function(...)
+        return fun(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
+    end
+end
+
+---Like thunk(), but arguments passed to the thunk are ignored
+M.ithunk = function(fun, ...)
+    local bound = {...}
+    return function()
+        return fun(unpack(bound))
+    end
+end
 
 ---Get the output of a system command in a table
 ---@param cmd string|table
@@ -651,6 +681,18 @@ M.is_term_buffer = function(bufnr)
     return M.is_term_bufname(bufname)
 end
 
+---Execute a function with a buffer
+---@param bufnr number
+---@param f fun(): any
+---@return any
+M.buf_call = function(bufnr, f)
+    if bufnr == 0 or bufnr == api.nvim_get_current_buf() then
+        return f()
+    else
+        return api.nvim_buf_call(bufnr, f)
+    end
+end
+
 ---Get the nubmer of tabs
 ---@return number
 M.get_tab_count = function()
@@ -701,7 +743,7 @@ M.get_wins_of_type = function(wintype)
 end
 
 ---Return a table of window ID's for quickfix windows
----@return table<number>
+---@return table<number, boolean>
 M.get_qfwin = function()
     return M.get_wins_of_type("quickfix")[1]
 end
@@ -722,6 +764,18 @@ M.find_win_except_float = function(bufnr)
         end
     end
     return winid
+end
+
+---Execute a function with a window
+---@param winid number
+---@param f fun(): any
+---@return any
+M.win_call = function(winid, f)
+    if winid == 0 or winid == api.nvim_get_current_win() then
+        return f()
+    else
+        return api.nvim_win_call(winid, f)
+    end
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

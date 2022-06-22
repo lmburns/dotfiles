@@ -7,6 +7,7 @@
 [core]
   autocrlf = input
   excludesfile = ~/.config/git/gitignore_global
+  editor = "nvr --remote-wait-silent" # or nvim
   pager = delta
   commitGraph = true
   # Set attributes on files. Used for general diff improvements.

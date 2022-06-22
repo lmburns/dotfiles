@@ -517,7 +517,7 @@ function M.post_open_float()
     local winid = g.coc_last_float_win
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
-        api.nvim_buf_call(
+        dev.buf_call(
             bufnr,
             function()
                 vim.wo[winid].showbreak = "NONE"
