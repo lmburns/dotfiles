@@ -1,11 +1,16 @@
 local M = {}
 
+local D = require("dev")
+local diffview = D.npcall(require, "diffview")
+if not diffview then
+    return
+end
+
 local actions = require("diffview.actions")
-local cb = require("diffview.config").diffview_callback
 local map = require("common.utils").map
 
 M.setup = function()
-    require("diffview").setup {
+    diffview.setup {
         enhanced_diff_hl = false, -- See ':h diffview-config-enhanced_diff_hl'
         diff_binaries = false, -- Show diffs for binaries
         use_icons = true, -- Requires nvim-web-devicons

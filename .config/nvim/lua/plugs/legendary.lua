@@ -1,7 +1,13 @@
 local M = {}
 
+local D = require("dev")
+local legend = D.npcall(require, "legendary")
+if not legend then
+    return
+end
+
 function M.setup()
-    require("legendary").setup(
+    legend.setup(
         {
             -- Include builtins by default, set to false to disable
             include_builtin = true,
@@ -84,7 +90,7 @@ local function init()
     M.setup()
     -- local wk = require("which-key")
 
-    require("legendary").bind_keymaps(
+    legend.bind_keymaps(
         {
             {
                 "<C-,>",

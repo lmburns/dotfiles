@@ -2,7 +2,8 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
--- local augroup = utils.augrop
+
+local g = vim.g
 
 M.setup = function()
     g.R_auto_start = 1 -- Autostart R when opening .R

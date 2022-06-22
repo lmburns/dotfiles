@@ -1,6 +1,11 @@
 local M = {}
 
-local wk = require("which-key")
+local D = require("dev")
+local wk = D.npcall(require, "which-key")
+if not wk then
+    return
+end
+
 local utils = require("common.utils")
 local map = utils.map
 
@@ -143,12 +148,22 @@ local function init()
 
     wk.register(
         {
+            ["zW"] = "Mark word as bad internal wordlist",
             ["zuw"] = "Remove from spellfile",
             ["zuW"] = "Remove from internal wordlist",
             ["zug"] = "Remove from spellfile",
             ["zuG"] = "Remove from internal wordlist",
             ["zQ"] = "Equivalent to ':q!'",
             ["zG"] = "Add word to internal spell-list",
+            ["zd"] = "Delete one fold at the cursor",
+            ["zD"] = "Delete folds recursively",
+            ["zE"] = "Eliminate all folds",
+            ["zf"] = "Operator to create fold",
+            ["zF"] = "Create fold for [count] lines",
+            ["zX"] = "Undo manual folds, reapply foldlevel",
+            ["zn"] = "Fold none, open all folds",
+            ["zN"] = "Fold normal, all folds remain",
+            ["zi"] = "Invert 'foldenable'",
         }
     )
 end

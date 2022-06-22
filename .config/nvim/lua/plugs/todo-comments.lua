@@ -1,12 +1,15 @@
 local M = {}
 
-local utils = require("common.utils")
-local augroup = utils.augroup
+local D = require("dev")
+local todo = D.npcall(require, "todo-comments")
+if not todo then
+    return
+end
+
 local wk = require("which-key")
-
-local api = vim.api
-
 local Search = require("todo-comments.search")
+
+local fn = vim.fn
 
 function M.setup()
     local hl = require("todo-comments.highlight")
@@ -15,7 +18,7 @@ function M.setup()
         pcall(highlight_win, win, force)
     end
 
-    require("todo-comments").setup(
+    todo.setup(
         {
             signs = true, -- show icons in the signs column
             sign_priority = 8, -- sign priority

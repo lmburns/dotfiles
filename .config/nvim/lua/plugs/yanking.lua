@@ -1,15 +1,21 @@
 local M = {}
 
+local D = require("dev")
+local yanky = D.npcall(require, "yanky")
+if not yanky then
+    return
+end
+
 local utils = require("common.utils")
 local map = utils.map
-local color = require("common.color")
+local C = require("common.color")
 local augroup = utils.augroup
 
 -- local wk = require("which-key")
 local mapping = require("yanky.telescope.mapping")
 
 function M.setup()
-    require("yanky").setup(
+    yanky.setup(
         {
             ring = {
                 history_length = 100,
@@ -57,17 +63,17 @@ local function init()
             event = "TextYankPost",
             pattern = "*",
             command = function()
-                color.set_hl("HighlightedyankRegion", {bg = "#cc6666"})
+                C.set_hl("HighlightedyankRegion", {bg = "#cc6666"})
                 if not vim.b.visual_multi then
                     pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
                 end
             end,
-            description = "Highlight a selection on yank"
+            desc = "Highlight a selection on yank"
         }
     )
 
     -- color.set_hl("YankyYanked", {background = "#cc6666"})
-    color.set_hl("YankyPut", {background = "#cc6666"})
+    C.set_hl("YankyPut", {background = "#cc6666"})
 
     -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
 

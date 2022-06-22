@@ -1,9 +1,14 @@
 local M = {}
 
-local utils = require("common.utils")
-local augend = require("dial.augend")
+local D = require("dev")
+local augend = D.npcall(require, "dial.augend")
+if not augend then
+    return
+end
+
 local dmap = require("dial.map")
 
+local utils = require("common.utils")
 local augroup = utils.augroup
 local map = utils.map
 
@@ -151,24 +156,31 @@ function M.setup()
         }
     )
 
-    local zig = extend("zig", default, augend.user.new({
-        desc = "Zig/Rust octal integers",
-        find = require("dial.augend.common").find_pattern("0o[0-7]+"),
-        add = function(text, addend, cursor)
-            local wid = #text
-            local n = tonumber(string.sub(text, 3), 8)
-            n = n + addend
-            if n < 0 then
-                n = 0
-            end
-            text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
-            cursor = #text
-            return {
-                text = text,
-                cursor = cursor,
+    local zig =
+        extend(
+        "zig",
+        default,
+        augend.user.new(
+            {
+                desc = "Zig/Rust octal integers",
+                find = require("dial.augend.common").find_pattern("0o[0-7]+"),
+                add = function(text, addend, cursor)
+                    local wid = #text
+                    local n = tonumber(string.sub(text, 3), 8)
+                    n = n + addend
+                    if n < 0 then
+                        n = 0
+                    end
+                    text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
+                    cursor = #text
+                    return {
+                        text = text,
+                        cursor = cursor
+                    }
+                end
             }
-        end,
-    }))
+        )
+    )
 
     local rust = zig
 

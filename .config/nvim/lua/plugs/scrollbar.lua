@@ -1,9 +1,15 @@
 local M = {}
 
+local D = require("dev")
+local scrollbar = D.npcall(require, "scrollbar")
+if not scrollbar then
+    return
+end
+
 function M.setup()
     local colors = require("kimbox.colors")
 
-    require("scrollbar").setup(
+    scrollbar.setup(
         {
             show = true,
             set_highlights = true,

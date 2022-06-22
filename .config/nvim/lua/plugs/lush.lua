@@ -1,6 +1,16 @@
 local M = {}
 
-local lush
+local D = require("dev")
+local lush = D.npcall(require, "lush")
+if not lush then
+    return
+end
+
+local log = require("common.log")
+
+local ex = nvim.ex
+local fn = vim.fn
+
 local colors_path
 
 function M.reload_module(m_name)
@@ -68,7 +78,6 @@ end
 
 local function init()
     ex.pa("lush.nvim")
-    lush = require("lush")
     colors_path = ("%s/colors"):format(fn.stdpath("config"))
     fn.mkdir(colors_path, "p")
 end

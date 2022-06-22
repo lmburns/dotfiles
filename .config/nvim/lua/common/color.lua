@@ -3,6 +3,9 @@ local M = {}
 local utils = require("common.utils")
 local log = require("common.log")
 
+local cmd = vim.cmd
+local api = vim.api
+
 ---@alias Group string
 ---@alias Color string
 
@@ -63,7 +66,7 @@ function M.fg(group, color, fmt)
 end
 
 ---Group to modify gui
----@param group string
+---@param group Group
 ---@param gui string
 function M.gui(group, gui)
     cmd(("hi %s gui=%s"):format(group, gui))
@@ -97,20 +100,20 @@ end
 
 ---@deprecated
 ---Create a highlight group
----@param higroup string: Group that is being defined
+---@param higroup Group: Group that is being defined
 ---@param hi_info table: Table of options
 ---@param default? boolean: Whether `default` should be used
 function M.hl_set(higroup, hi_info, default)
     local options = {}
     for k, v in pairs(hi_info) do
-        table.insert(options, string.format("%s=%s", k, v))
+        table.insert(options, ("%s=%s"):format(k, v))
     end
     cmd(("hi %s %s %s"):format(default and "default" or "", higroup, table.concat(options, " ")))
 end
 
 ---Define a highilght group in pure lua
 ---
----@param group string: Global highlight group
+---@param group Group: Global highlight group
 ---@param opts table: Options for the highlight
 ---@param ns_id? number: Optional namespace ID
 function M.hl(group, opts, ns_id)
@@ -138,7 +141,7 @@ M.colors = function(filter, exact)
                 end
                 for key, def_key in pairs({foreground = "fg", background = "bg", special = "sp"}) do
                     if type(hl[key]) == "number" then
-                        local hex = string.format("#%06x", hl[key])
+                        local hex = ("#%06x"):format(hl[key])
                         def[def_key] = hex
                     end
                 end
@@ -166,7 +169,8 @@ M.colors = function(filter, exact)
         end
         ::continue::
     end
-    utils.dump(defs)
+    -- utils.dump(defs)
+    return defs
 end
 
 utils.command(
@@ -174,7 +178,7 @@ utils.command(
     function(tbl)
         require("common.color").colors(tbl.args)
     end,
-    {nargs = "?"}
+    {nargs = "?", desc = "Search for a color"}
 )
 
 ---Remove escape sequences of the following formats:
@@ -259,7 +263,7 @@ function M.alter_color(color, percent)
     end
     r, g, b = alter(r, percent), alter(g, percent), alter(b, percent)
     r, g, b = math.min(r, 255), math.min(g, 255), math.min(b, 255)
-    return fmt("#%02x%02x%02x", r, g, b)
+    return ("#%02x%02x%02x"):format(r, g, b)
 end
 
 local function get_hl(group_name)
@@ -326,7 +330,7 @@ end
 ---
 ---@param name string
 ---@param opts ColorFormat
-function M.set_hl(name, opts)
+M.set_hl = function(name, opts)
     vim.validate {
         name = {name, "string", false},
         opts = {opts, "table", false}
@@ -342,17 +346,17 @@ function M.set_hl(name, opts)
     opts.inherit = nil
     local ok, msg = pcall(api.nvim_set_hl, 0, name, vim.tbl_deep_extend("force", hl, opts))
     if not ok then
-        vim.notify(fmt("Failed to set %s: %s", name, msg))
+        vim.notify(("Failed to set %s: %s"):format(name, msg))
     end
 end
 
 ---Get the value a highlight group whilst handling errors, fallbacks as well as returning a gui value
 ---in the right format
----@param group string
+---@param group Group
 ---@param attribute string
 ---@param fallback string?
 ---@return string
-function M.get_hl(group, attribute, fallback)
+M.get_hl = function(group, attribute, fallback)
     -- local ret = api.nvim_get_hl_by_name("SpellCap", true)
     -- local directory_color = ("#%06x"):format(ret["foreground"])
     if not group then
@@ -365,7 +369,7 @@ function M.get_hl(group, attribute, fallback)
     if not color then
         vim.schedule(
             function()
-                vim.notify(fmt("%s %s does not exist", group, attribute), log.levels.INFO)
+                vim.notify(("%s %s does not exist"):format(group, attribute), log.levels.INFO)
             end
         )
         return "NONE"
@@ -376,14 +380,14 @@ end
 
 ---Clear a highlight group
 ---@param name string
-function M.clear_hl(name)
+M.clear_hl = function(name)
     assert(name, "name is required to clear a highlight")
     M.set_hl(name, {})
 end
 
 ---Apply a list of highlights
 ---@param hls table<string, table<string, boolean|string>>
-function M.all(hls)
+M.all = function(hls)
     for name, hl in pairs(hls) do
         M.set_hl(name, hl)
     end
@@ -392,7 +396,7 @@ end
 ---Apply highlights for a plugin and refresh on colorscheme change
 ---@param name string plugin name
 ---@param hls table<ColorFormat, string|boolean|number> list of highlights
-function M.plugin(name, hls)
+M.plugin = function(name, hls)
     name = name:gsub("^%l", string.upper) -- capitalize the name for autocommand convention sake
     M.all(hls)
     utils.augroup(
@@ -406,13 +410,12 @@ function M.plugin(name, hls)
     )
 end
 
----Syntactic sugar to set a highlight group
----@param hlgroup string
----@param opts ColorFormat
--- M.hl =
 setmetatable(
     M,
     {
+        ---Syntactic sugar to set a highlight group
+        ---@param hlgroup Group
+        ---@param opts ColorFormat
         __newindex = function(_, hlgroup, opts)
             if type(opts) == "string" then
                 M.set_hl(hlgroup, {link = opts})
@@ -420,6 +423,28 @@ setmetatable(
             end
 
             M.set_hl(hlgroup, opts)
+        end,
+        ---Syntactic sugar retrieve a highlight group
+        ---@param k ColorFormat
+        __index = function(self, k)
+            local color = rawget(self, k)
+            local group = get_hl(color or k)
+            if group then
+                for long, short in pairs({foreground = "fg", background = "bg"}) do
+                    if group[long] then
+                        group[short] = group[long]
+                        group[long] = nil
+                    end
+                end
+            end
+            return group
+        end,
+        ---Search for a color.
+        ---@param self table
+        ---@param k Group
+        ---@return table
+        __call = function(self, k)
+            return self.colors(k)
         end
     }
 )

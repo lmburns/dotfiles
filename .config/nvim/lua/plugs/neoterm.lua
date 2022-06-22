@@ -1,10 +1,16 @@
-local utils = require("common.utils")
-local terminal = require("toggleterm")
-
 local M = {}
 
+local D = require("dev")
+local terminal = D.npcall(require, "toggleterm")
+if not terminal then
+    return
+end
+
+local utils = require("common.utils")
 local map = utils.map
 local command = utils.command
+
+local fn = vim.fn
 
 terminal.setup(
     {
@@ -165,11 +171,11 @@ local function init()
         function(tbl)
             term_exec(tbl.args, tbl.count)
         end,
-        {nargs = "*", count = true}
+        {nargs = "*", count = true, desc = "Terminal REPL"}
     )
 
-    command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*"})
-    command("VT", [[vsp | term <args>]], {nargs = "*"})
+    command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*", desc = "Terminal split"})
+    command("VT", [[vsp | term <args>]], {nargs = "*", desc = "Terminal vertical split"})
 
     -- Equivalent to neoterms `T`
     command(
@@ -177,9 +183,10 @@ local function init()
         function(tbl)
             M.neoterm(tbl.args, tbl.count)
         end,
-        {nargs = "*", count = true}
+        {nargs = "*", count = true, desc = "Neoterm"}
     )
-    map("n", "gzo", "<Cmd>T<CR>")
+
+    map("n", "gzo", "<Cmd>T<CR>", {desc = "Open terminal"})
 end
 
 init()

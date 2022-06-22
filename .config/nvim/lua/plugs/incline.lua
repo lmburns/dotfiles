@@ -1,11 +1,17 @@
 local M = {}
 
+local D = require("dev")
+local incline = D.npcall(require, "incline")
+if not incline then
+    return
+end
+
 local C = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
 
-local api = vim.api
 local fn = vim.fn
+local api = vim.api
 
 local function truncate(str, max_len)
     assert(str and max_len, "string and max_len must be provided")
@@ -18,8 +24,8 @@ local function render(props)
     if bufname == "" then
         return "[No name]"
     end
-    -- FIX: Sometimes the directory is cut off
-    local directory_color = C.get_hl("Comment", "fg")
+    -- FIX: Sometimes the beginning directory is cut off
+    local directory_color = C.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
     fname = fname:gsub("^/home/lucas/.config/nvim/", "$NVIM/")
     fname = fname:gsub("^/home/lucas/.local/share/", "$DATA/")
@@ -38,7 +44,7 @@ local function render(props)
             vim.list_extend(
                 result,
                 {
-                    {truncate(part, 20), guifg = C.get_hl(guifg, "fg")},
+                    {truncate(part, 20), guifg = C.get_hl(guifg, "fg"), gui = "bold"},
                     {("%s"):format("/"), guifg = directory_color}
                 }
             )
@@ -48,12 +54,13 @@ local function render(props)
         end
     end
     local icon, color = devicons.get_icon_color(bufname, nil, {default = true})
-    table.insert(result, #result, {icon .. " ", guifg = color})
+    -- table.insert(result, #result, {icon .. " ", guifg = color}) -- $NVIM/lua/plugs/ incline
+    table.insert(result, #result + 1, {" " .. icon, guifg = color}) -- $NVIM/lua/plugs/incline 
     return result
 end
 
 function M.setup()
-    require("incline").setup(
+    incline.setup(
         {
             -- render = function(props)
             --     local bufname = api.nvim_buf_get_name(props.buf)

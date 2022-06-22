@@ -1,114 +1,26 @@
 local M = {}
 
-local dev = require("dev")
+local D = require("dev")
 local log = require("common.log")
+local C = require("common.color")
 local utils = require("common.utils")
-local command = utils.command
 local map = utils.map
 local augroup = utils.augroup
-
-local C = require("common.color")
 
 local wk = require("which-key")
 local promise = require("promise")
 
 local ex = nvim.ex
-local uv = vim.loop
-local cmd = vim.cmd
 local fn = vim.fn
-local g = vim.g
 local api = vim.api
+local g = vim.g
+local cmd = vim.cmd
+local uv = vim.loop
 
 local diag_qfid
 
 M.get_config = fn["coc#util#get_config"]
 M.set_config = fn["coc#config"]
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                      Notifications                       │
--- ╰──────────────────────────────────────────────────────────╯
--- https://github.com/rcarriga/nvim-notify/wiki/Usage-Recipes
-local status_record = {}
-local diag_record = {}
-
----Use nvim-notify to send an alert for Coc
----@param msg string
----@param level string
-function M.coc_status_notify(msg, level)
-    local notify_opts = {
-        title = "LSP Status",
-        timeout = 500,
-        hide_from_history = true,
-        on_close = M.reset_status_record
-    }
-    -- if status_record is not {} then add it to notify_opts to key called "replace"
-    if status_record ~= {} then
-        notify_opts["replace"] = status_record.id
-    end
-    status_record = vim.notify(msg, level, notify_opts)
-end
-
----Reset the status record
----@param window number
-function M.reset_status_record(window)
-    status_record = {}
-end
-
----Set a notification to be sent for CocDiagnostics
----@param msg string
----@param level string
-function coc_diag_notify(msg, level)
-    local notify_opts = {title = "LSP Diagnostics", timeout = 500, on_close = reset_diag_record}
-    -- if diag_record is not {} then add it to notify_opts to key called "replace"
-    if diag_record ~= {} then
-        notify_opts["replace"] = diag_record.id
-    end
-    diag_record = vim.notify(msg, level, notify_opts)
-end
-
-function reset_diag_record(window)
-    diag_record = {}
-end
-
-vim.cmd [[
-function! CocDiagnosticNotify() abort
-  let l:info = get(b:, 'coc_diagnostic_info', {})
-  if empty(l:info) | return '' | endif
-  let l:msgs = []
-  let l:level = 'info'
-   if get(l:info, 'warning', 0)
-    let l:level = 'warn'
-  endif
-  if get(l:info, 'error', 0)
-    let l:level = 'error'
-  endif
-
-  if get(l:info, 'error', 0)
-    call add(l:msgs, ' Errors: ' . l:info['error'])
-  endif
-  if get(l:info, 'warning', 0)
-    call add(l:msgs, ' Warnings: ' . l:info['warning'])
-  endif
-  if get(l:info, 'information', 0)
-    call add(l:msgs, ' Infos: ' . l:info['information'])
-  endif
-  if get(l:info, 'hint', 0)
-    call add(l:msgs, ' Hints: ' . l:info['hint'])
-  endif
-  let l:msg = join(l:msgs, "\n")
-  if empty(l:msg) | let l:msg = ' All OK' | endif
-  call v:lua.coc_diag_notify(l:msg, l:level)
-endfunction
-]]
-
----Send a notification for the value of `vim.g.coc_status`
-function M.coc_status_notification()
-    local status = vim.trim(vim.g.coc_status or "")
-    if status == "" then
-        return ""
-    end
-    M.coc_status_notify(status, "info")
-end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Other                           │
@@ -150,7 +62,7 @@ function M.go2def()
     local cur_bufnr = api.nvim_get_current_buf()
     local by
     if vim.bo.ft == "help" then
-        api.nvim_feedkeys(utils.termcodes["<C-]>"], "n", false)
+        utils.normal("n", "<C-]>")
         by = "tag"
     else
         local err, res = M.a2sync("jumpDefinition", {"drop"})
@@ -512,12 +424,13 @@ M.hl_fallback =
     end
 end)()
 
+-- This doesn't seem to set value locally anymore. But also doesn't seem needed
 ---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
     local winid = g.coc_last_float_win
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
-        dev.buf_call(
+        api.nvim_buf_call(
             bufnr,
             function()
                 vim.wo[winid].showbreak = "NONE"
@@ -671,51 +584,53 @@ M.get_lua_runtime = function(sumneko)
 end
 
 --- Setup the Lua language-server
-function M.lua_langserver()
-    local bin = fn["coc#util#get_config"]("languageserver.lua").command
+M.lua_langserver = function()
+    local bin = M.get_config("languageserver.lua").command
     local main = fn.fnamemodify(bin, ":h") .. "/main.lua"
 
-    fn["coc#config"]("languageserver.lua", {args = {"-E", main}})
+    M.set_config("languageserver.lua", {args = {"-E", main}})
 
-    local settings = fn["coc#util#get_config"]("languageserver.lua").settings
+    local settings = M.get_config("languageserver.lua").settings
 
     -- This only works with max397574's fork
     local luadev = require("lua-dev").setup({}).settings
     settings = vim.tbl_deep_extend("force", settings, luadev)
 
     -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = M.get_lua_runtime()})
-    fn["coc#config"]("languageserver.lua", {settings = settings})
+    M.set_config("languageserver.lua", {settings = settings})
 
     -- Add async library to Lua workspace library0
-    if dev.plugin_loaded("promise-async") then
-        local library = fn["coc#util#get_config"]("languageserver.lua").settings.Lua.workspace.library
+    if D.plugin_loaded("promise-async") then
+        local library = M.get_config("languageserver.lua").settings.Lua.workspace.library
+        ---@diagnostic disable-next-line: undefined-field
         local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
         library = vim.tbl_deep_extend("force", library, {[promise] = true})
-        fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = library})
+        M.set_config("languageserver.lua.settings.Lua.workspace", {library = library})
     end
 end
 
 ---Setup the Sumneko-Coc Lua language-server
 ---Note that the runtime paths here are placed into an array, not a table
-function M.sumneko_ls()
-    local library = fn["coc#util#get_config"]("Lua").workspace.library
+M.sumneko_ls = function()
+    local library = M.get_config("Lua").workspace.library
     local runtime = _t(M.get_lua_runtime(true)):keys()
     library = vim.list_extend(library, runtime)
 
     local luadev = require("lua-dev.sumneko").types()
     library = vim.list_extend(library, {luadev})
 
-    if dev.plugin_loaded("promise-async") then
+    if D.plugin_loaded("promise-async") then
+        ---@diagnostic disable-next-line: undefined-field
         local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
         library = vim.list_extend(library, {promise})
     end
 
-    fn["coc#config"]("Lua.workspace", {library = library})
+    M.set_config("Lua.workspace", {library = library})
 end
 
 -- FIX: Style is not found when required
 ---Set the icons for Coc
-function M.set_icons()
+M.set_icons = function()
     -- vim.defer_fn(
     --     function()
     --         local icons = require("style.icons")
@@ -731,8 +646,6 @@ function M.set_icons()
 end
 
 -- ========================== Init ==========================
-
-M.value = 100
 
 function M.init()
     diag_qfid = -1
@@ -822,14 +735,14 @@ function M.init()
                     vim.b.coc_diagnostic_disable = 1
                 end
             end
-        },
-        {
-            event = "User",
-            pattern = "CocOpenFloat",
-            command = function()
-                require("plugs.coc").post_open_float()
-            end
         }
+        -- {
+        --     event = "User",
+        --     pattern = "CocOpenFloat",
+        --     command = function()
+        --         require("plugs.coc").post_open_float()
+        --     end
+        -- }
     )
 
     C.plugin(
@@ -940,7 +853,10 @@ function M.init()
             ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
             ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
             ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
-            ["<A-q>"] = {":lua vim.notify(require'plugs.coc'.getsymbol())<CR>", "Get current symbol"},
+            ["<A-q>"] = {
+                ":lua vim.notify(require'plugs.coc'.getsymbol(), vim.log.levels.WARN)<CR>",
+                "Get current symbol"
+            },
             ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics refresh"},
@@ -982,10 +898,9 @@ function M.init()
     -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
     -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
 
-    -- map("s", "<BS>", '<C-g>"_c')
-    map("s", "<Del>", '<C-g>"_c')
-    map("s", "<C-h>", '<C-g>"_c')
-    map("s", "<C-w>", "<Esc>a")
+    -- map("s", "<Del>", '<C-g>"_c')
+    -- map("s", "<C-h>", '<C-g>"_c')
+    -- map("s", "<C-w>", "<Esc>a")
 
     -- map("s", "<C-o>", "<Nop>")
     -- map("s", "<C-o>o", "<Esc>a<C-o>o")

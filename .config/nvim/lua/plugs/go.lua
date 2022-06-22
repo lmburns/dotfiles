@@ -1,12 +1,16 @@
 local M = {}
 
-local dev = require("dev")
+local D = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 local command = utils.command
 
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
 local g = vim.g
+local cmd = vim.cmd
 
 function M.build_go_files()
     local file = fn.expand("%")
@@ -43,10 +47,10 @@ function M.setup()
 end
 
 local function wrap_qf(fname, ...)
-    local args = dev.tbl_pack(...)
+    local args = D.tbl_pack(...)
     return function()
         if type(fname) == "string" then
-            fn[fname](dev.tbl_unpack(args))
+            fn[fname](D.tbl_unpack(args))
         end
         if #fn.getqflist() > 0 then
             ex.copen()
@@ -85,55 +89,71 @@ local function init()
                 local bufnr = api.nvim_get_current_buf()
                 vim.opt_local.list = false
 
-                map(bufnr, "n", "<Leader>rp", ":GORUNS<CR>")
-                map(bufnr, "n", "<Leader>ru", ":GORUN<CR>")
+                local bmap = function(...)
+                    map(bufnr, ...)
+                end
 
-                map(bufnr, "n", "M", "<Plug>(go-doc)")
-                map(bufnr, "n", "<Leader>b<CR>", ":lua require('plugs.go').build_go_files()<CR>")
-                map(bufnr, "n", "<Leader>r<CR>", "<Plug>(go-run)")
-                map(bufnr, "n", "<Leader>rr", ":GoRun %<CR>")
-                map(bufnr, "n", "<Leader>ri", ":GoRun %<space>")
-                map(bufnr, "n", "<Leader>t<CR>", "<Plug>(go-test)")
-                map(bufnr, "n", "<Leader>c<CR>", "<Plug>(go-coverage-toggle)")
-                map(bufnr, "n", "<Leader>gae", "<Plug>(go-alternate-edit)")
-                map(bufnr, "n", "<Leader>i", "<Plug>(go-info)")
-                map(bufnr, "n", "<Leader>sm", ":GoSameIdsToggle<CR>")
+                bmap("n", "<Leader>rp", ":GORUNS<CR>")
+                bmap("n", "<Leader>ru", ":GORUN<CR>")
 
-                -- map(bufnr, "n", "gd", ":GoDef<CR>")
-                -- map(bufnr, "n", "gy", ":GoDefType<CR>")
-                -- map(bufnr, "n", "gi", ":GoImplements<CR>")
-                -- map(bufnr, "n", "gC", ":GoCallees<CR>")
-                -- map(bufnr, "n", "gc", ":GoCallers<CR>")
-                -- map(bufnr, "n", "gr", ":GoReferrers<CR>")
+                bmap("n", "M", "<Plug>(go-doc)")
+                bmap("n", "<Leader>b<CR>", ":lua require('plugs.go').build_go_files()<CR>")
+                bmap("n", "<Leader>r<CR>", "<Plug>(go-run)")
+                bmap("n", "<Leader>rr", ":GoRun %<CR>")
+                bmap("n", "<Leader>ri", ":GoRun %<space>")
+                bmap("n", "<Leader>t<CR>", "<Plug>(go-test)")
+                bmap("n", "<Leader>c<CR>", "<Plug>(go-coverage-toggle)")
+                bmap("n", "<Leader>gae", "<Plug>(go-alternate-edit)")
+                bmap("n", "<Leader>i", "<Plug>(go-info)")
+                bmap("n", "<Leader>sm", ":GoSameIdsToggle<CR>")
 
-                -- map(bufnr, "n", "gd", wrap_qf("go#def#Jump", "", 0)) -- "<Plug>(go-def)"
-                -- map(bufnr, "n", "gy", wrap_qf("go#def#Jump", "", 1)) -- "<Plug>(go-def-type)"
-                -- map(bufnr, "n", "gi", wrap_qf("go#implements#Implements", -1)) -- "<Plug>(go-implements)"
-                -- map(bufnr, "n", "gC", wrap_qf("go#guru#Callees", -1)) -- "<Plug>(go-callees)"
-                -- map(bufnr, "n", "gc", wrap_qf("go#calls#Callers")) -- "<Plug>(go-callers)"
-                -- map(bufnr, "n", "gr", wrap_qf("go#referrers#Referrers", -1)) -- "<Plug>(go-referrers)"
-                -- map(bufnr, "n", "gS", wrap_qf("go#guru#Callstack", -1)) -- "<Plug>(go-callstack)"
+                -- bmap("n", "gd", ":GoDef<CR>")
+                -- bmap("n", "gy", ":GoDefType<CR>")
+                -- bmap("n", "gi", ":GoImplements<CR>")
+                -- bmap("n", "gC", ":GoCallees<CR>")
+                -- bmap("n", "gc", ":GoCallers<CR>")
+                -- bmap("n", "gr", ":GoReferrers<CR>")
 
-                map(bufnr, "n", "gd", "<Plug>(go-def)")
-                map(bufnr, "n", "gy", "<Plug>(go-def-type)")
-                map(bufnr, "n", "gi", "<Plug>(go-implements)")
-                map(bufnr, "n", "gK", "<Plug>(go-callees)")
-                map(bufnr, "n", "gk", "<Plug>(go-callers)")
-                map(bufnr, "n", "gr", "<Plug>(go-referrers)")
-                map(bufnr, "n", "gS", "<Plug>(go-callstack)")
+                -- bmap("n", "gd", wrap_qf("go#def#Jump", "", 0)) -- "<Plug>(go-def)"
+                -- bmap("n", "gy", wrap_qf("go#def#Jump", "", 1)) -- "<Plug>(go-def-type)"
+                -- bmap("n", "gi", wrap_qf("go#implements#Implements", -1)) -- "<Plug>(go-implements)"
+                -- bmap("n", "gC", wrap_qf("go#guru#Callees", -1)) -- "<Plug>(go-callees)"
+                -- bmap("n", "gc", wrap_qf("go#calls#Callers")) -- "<Plug>(go-callers)"
+                -- bmap("n", "gr", wrap_qf("go#referrers#Referrers", -1)) -- "<Plug>(go-referrers)"
+                -- bmap("n", "gS", wrap_qf("go#guru#Callstack", -1)) -- "<Plug>(go-callstack)"
 
-                map(bufnr, "n", "<Leader>rn", "<Plug>(go-rename)")
-                map(bufnr, "n", "<Leader>jg", "<Plug>(go-diagnostics)")
-                map(bufnr, "n", "<Leader>if", "<Plug>(go-iferr)")
+                bmap("n", "gd", "<Plug>(go-def)")
+                bmap("n", "gy", "<Plug>(go-def-type)")
+                bmap("n", "gi", "<Plug>(go-implements)")
+                bmap("n", "gK", "<Plug>(go-callees)")
+                bmap("n", "gk", "<Plug>(go-callers)")
+                bmap("n", "gr", "<Plug>(go-referrers)")
+                bmap("n", "gS", "<Plug>(go-callstack)")
 
-                map(bufnr, "n", "<Leader>fd", ":GoDeclsDir<CR>")
-                map(bufnr, "n", "<Leader>fj", ":GoDecls<CR>")
+                bmap("n", "<Leader>rn", "<Plug>(go-rename)")
+                bmap("n", "<Leader>jg", "<Plug>(go-diagnostics)")
+                bmap("n", "<Leader>if", "<Plug>(go-iferr)")
+
+                bmap("n", "<Leader>fd", ":GoDeclsDir<CR>")
+                bmap("n", "<Leader>fj", ":GoDecls<CR>")
 
                 -- map(bufnr, "n", ";ff", ":GoFmt<CR>")
 
-                command("A", [[call go#alternate#Switch(<bang>0, 'edit')]], {bang = true})
-                command("AV", [[call go#alternate#Switch(<bang>0, 'vsplit')]], {bang = true})
-                command("AS", [[call go#alternate#Switch(<bang>0, 'split')]], {bang = true})
+                command(
+                    "A",
+                    [[call go#alternate#Switch(<bang>0, 'edit')]],
+                    {bang = true, desc = "Go switch in new tab"}
+                )
+                command(
+                    "AV",
+                    [[call go#alternate#Switch(<bang>0, 'vsplit')]],
+                    {bang = true, desc = "Go switch vertical"}
+                )
+                command(
+                    "AS",
+                    [[call go#alternate#Switch(<bang>0, 'split')]],
+                    {bang = true, desc = "Go switch horizontal"}
+                )
             end
         }
     )

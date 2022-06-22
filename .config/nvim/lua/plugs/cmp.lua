@@ -1,16 +1,23 @@
 local M = {}
 
-local api = vim.api
-local fn = vim.fn
+local D = require("dev")
+local lspkind = D.npcall(require, "lspkind")
+if not lspkind then
+    return
+end
+
+local ls = D.npcall(require, "luasnip")
+if not ls then
+    return
+end
 
 local utils = require("common.utils")
+local compare = require("cmp.config.compare")
 
 local ultisnips = nvim.plugins.ultisnips
 
-local lspkind = require("lspkind")
-local cmp = require("cmp")
-local compare = require("cmp.config.compare")
-local ls = require("luasnip")
+local api = vim.api
+local fn = vim.fn
 
 ---Check if there are words before where the snippet expansion is to take place
 ---@return boolean
@@ -113,7 +120,7 @@ local mapping =
                 if cmp.visible() then
                     cmp.select_prev_item({behavior = cmp.SelectBehavior.Select})
                 else
-                    vim.api.nvim_feedkeys(utils.t("<Up>"), "n", true)
+                    api.nvim_feedkeys(utils.t("<Up>"), "n", true)
                 end
             end,
             {"i"}

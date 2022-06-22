@@ -5,6 +5,8 @@ local augroup = utils.augroup
 local map = utils.map
 local coc = require("plugs.coc")
 
+local g = vim.g
+
 function M.setup()
     -- g.rustfmt_autosave = 1
     -- g.rustfmt_autosave_if_config_present = 1

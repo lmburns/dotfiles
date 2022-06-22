@@ -18,7 +18,12 @@ local Job = require("plenary.job")
 local scan = require("plenary.scandir")
 
 local b_utils = require("common.utils") -- "builtin" utils
-local color = require("common.color")
+
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
+local cmd = vim.cmd
+local uv = vim.loop
 
 P.use_highlighter = true
 
@@ -46,7 +51,7 @@ P.tags = function(opts)
         opts or {}
     )
 
-    local tagfiles = opts.ctags_file and {opts.ctags_file} or vim.fn.tagfiles()
+    local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
     if vim.tbl_isempty(tagfiles) then
         utils.notify(
             "builtin.tags",
@@ -60,7 +65,7 @@ P.tags = function(opts)
 
     local results = {}
     for _, ctags_file in ipairs(tagfiles) do
-        for line in Path:new(vim.fn.expand(ctags_file, true)):iter() do
+        for line in Path:new(fn.expand(ctags_file, true)):iter() do
             results[#results + 1] = line
         end
     end
@@ -82,7 +87,7 @@ P.tags = function(opts)
 
                         if selection.scode then
                             -- un-escape / then escape required
-                            -- special chars for vim.fn.search()
+                            -- special chars for fn.search()
                             -- ] ~ *
                             local scode =
                                 selection.scode:gsub([[\/]], "/"):gsub(
@@ -92,9 +97,9 @@ P.tags = function(opts)
                                 end
                             )
 
-                            vim.cmd("norm! gg")
+                            cmd("norm! gg")
                             fn.search(scode)
-                            vim.cmd("norm! zz")
+                            cmd("norm! zz")
                         else
                             api.nvim_win_set_cursor(0, {selection.lnum, 0})
                         end
@@ -480,9 +485,9 @@ P.windows = function(opts)
     opts = opts or {}
     local results = {}
 
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        local name = vim.api.nvim_buf_get_name(buf)
+    for _, win in ipairs(api.nvim_list_wins()) do
+        local buf = api.nvim_win_get_buf(win)
+        local name = api.nvim_buf_get_name(buf)
         if name and name ~= "" then
             table.insert(results, {win, name})
         end
@@ -510,7 +515,7 @@ P.windows = function(opts)
                     function()
                         local selection = action_state.get_selected_entry()
                         actions.close(prompt_bufnr)
-                        vim.api.nvim_set_current_win(selection.value)
+                        api.nvim_set_current_win(selection.value)
                     end
                 )
                 return true
@@ -687,7 +692,7 @@ end
 P.args = function(opts)
     opts = opts or {}
 
-    local arglist = vim.fn.argv()
+    local arglist = fn.argv()
     if not next(arglist) then
         return
     end
@@ -739,7 +744,7 @@ P.XXX = function(opts)
                         actions.close(prompt_bufnr)
                         local selection = action_state.get_selected_entry()
                         -- print(vim.inspect(selection))
-                        vim.api.nvim_put({selection[1]}, "", false, true)
+                        api.nvim_put({selection[1]}, "", false, true)
                     end
                 )
                 return true
@@ -759,9 +764,9 @@ P.find = function(opts)
         finders._new {
         fn_command = function(_, prompt)
             if opts.cwd then
-                vim.cmd("cd " .. opts.cwd)
+                cmd("cd " .. opts.cwd)
             end
-            local prefix = (vim.fn.getcwd()) .. ".*"
+            local prefix = (fn.getcwd()) .. ".*"
 
             local args = {
                 "-ptf",
@@ -792,37 +797,6 @@ P.find = function(opts)
             -- previewer = previewers.cat.new(opts),
             previewer = R("telescope.previewers").cat.new(opts),
             sorter = P.use_highlighter and sorters.highlighter_only(opts)
-        }
-    ):find()
-end
-
-P.fzf = function(opts)
-    opts = opts or {}
-    pickers.new(
-        opts,
-        {
-            prompt_title = "Telefzf",
-            finder = finders.new_job(
-                function(prompt)
-                    return {"telefzf", prompt}
-                    -- end, make_entry.gen_from_vimgrep(opts), 1000, vim.loop.cwd()),
-                    -- end, make_entry.gen_from_string(), 1000, vim.loop.cwd()),
-                end,
-                function(x)
-                    return setmetatable(
-                        {},
-                        {
-                            __index = function()
-                                return x
-                            end
-                        }
-                    )
-                end,
-                1000,
-                vim.loop.cwd()
-            ),
-            previewer = conf.file_previewer(opts),
-            sorter = sorters.highlighter_only(opts)
         }
     ):find()
 end

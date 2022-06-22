@@ -1,11 +1,17 @@
 local M = {}
 
+local D = require("dev")
+local indent = D.npcall(require, "indent_blankline")
+if not indent then
+    return
+end
+
 local C = require("common.color")
 
 -- #A06469 #d3869b #4C96A8
 
 function M.setup()
-    require("indent_blankline").setup(
+    indent.setup(
         {
             debug = true,
             viewport_buffer = 20,
@@ -60,7 +66,7 @@ function M.setup()
 end
 
 local function init()
-    C.plugin("indent_blankline", {IndentBlanklineContextChar = {fg = "#DC3958", gui = "nocombine"}})
+    C.plugin("Indent_Blankline", {IndentBlanklineContextChar = {fg = "#DC3958", gui = "nocombine"}})
     M.setup()
 end
 

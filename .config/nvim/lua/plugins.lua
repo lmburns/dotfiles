@@ -16,8 +16,6 @@ local ex = nvim.ex
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
-_G.telescope_ext = {}
-
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -1048,7 +1046,7 @@ return packer.startup(
                 {
                     "Pocco81/HighStr.nvim",
                     event = "VimEnter",
-                    conf = "plugs.HighStr"
+                    conf = "plugs.highstr"
                 }
             )
 

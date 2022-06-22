@@ -1,15 +1,27 @@
 local M = {}
 
+local D = require("dev")
+local gitsigns = D.npcall(require, "gitsigns")
+if not gitsigns then
+    return
+end
+
+local log = require("common.log")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
-local wk = require("which-key")
+
 local C = require("common.color")
+local wk = require("which-key")
+
+local ex = nvim.ex
+local fn = vim.fn
+
 local config
 
 function M.toggle_deleted()
     require("gitsigns").toggle_deleted()
-    vim.notify(("Gitsigns %s show_deleted"):format(config.show_deleted and "enable" or "disable"))
+    log.info(("Gitsigns %s show_deleted"):format(config.show_deleted and "enable" or "disable"))
 end
 
 local function mappings(bufnr)
@@ -40,7 +52,7 @@ local function mappings(bufnr)
                     gs.blame_line({full = true})
                 end,
                 "Blame line virt (git)"
-            },
+            }
         },
         {buffer = bufnr}
     )
@@ -89,15 +101,7 @@ local function mappings(bufnr)
 end
 
 function M.setup()
-    -- C.plugin(
-    --     "GitSigns",
-    --     {
-    --         GitSignsAddNr = {link = "Constant"},
-    --         GitSignsChangeNr = {link = "Type"},
-    --         GitSignsDeleteNr = {link = "Identifier"},
-    --     }
-    -- )
-    require("gitsigns").setup(
+    gitsigns.setup(
         {
             signs = {
                 add = {
@@ -220,12 +224,16 @@ end
 local function init()
     M.setup()
     ex.packadd("plenary.nvim")
-    cmd [[
-        hi link GitSignsChangeLn DiffText
-        hi link GitSignsAddInline GitSignsAddLn
-        hi link GitSignsDeleteInline GitSignsDeleteLn
-        hi link GitSignsChangeInline GitSignsChangeLn
-    ]]
+
+    C.plugin(
+        "GitSigns",
+        {
+            GitSignsChangeLn = {link = "DiffText"},
+            GitSignsAddInline = {link = "GitSignsAddLn"},
+            GitSignsDeleteInline = {link = "GitSignsDeleteLn"},
+            GitSignsChangeInline = {link = "GitSignsChangeLn"}
+        }
+    )
 
     augroup(
         "lmb__GitSignsBlameToggle",

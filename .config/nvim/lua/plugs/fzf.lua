@@ -7,13 +7,13 @@ local command = utils.command
 
 local mru = require("common.mru")
 local coc = require("plugs.coc")
-
 local wk = require("which-key")
 
 local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
+local g = vim.g
 
 local default_preview_window
 
@@ -651,8 +651,8 @@ local function init()
         }
     )
 
-    command("Helptags", [[call fzf#vim#helptags(<bang>0)]], {bang = true, bar = true})
-    command("Maps", [[call fzf#vim#maps(<q-args>, <bang>0)]], {nargs = "*", bang = true, bar = true})
+    command("Helptags", [[call fzf#vim#helptags(<bang>0)]], {bang = true, bar = true, desc = "Help pages"})
+    command("Maps", [[call fzf#vim#maps(<q-args>, <bang>0)]], {nargs = "*", bang = true, bar = true, desc = "Mappings"})
 
     wk.register(
         {

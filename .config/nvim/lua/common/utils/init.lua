@@ -96,7 +96,7 @@ end
 ---@param x any
 ---@param is_nil any
 ---@param is_not_nil any?
-M.if_nil = function(x, is_nil, is_not_nil)
+M.ife_nil = function(x, is_nil, is_not_nil)
     if x == nil then
         return is_nil
     else
@@ -131,8 +131,9 @@ end
 ---@param mode string
 ---@param motion string
 M.normal = function(mode, motion)
-    local sequence = M.t(motion, true, false, false)
-    nvim.feedkeys(sequence, mode, true)
+    -- local sequence = M.t(motion, true, false, false)
+    -- nvim.feedkeys(sequence, mode, true)
+    api.nvim_feedkeys(M.termcodes[motion], mode, false)
 end
 
 -- Create an augroup with the lua api
@@ -375,6 +376,7 @@ end
 ---@field count number any count supplied
 ---@field reg string optional register
 ---@field mods string command modifiers
+---@field smods table command modifiers in structured format
 
 ---@class CommandOpts
 ---@field nargs number|string 0|1|'*'|'?'|'+'
@@ -385,6 +387,7 @@ end
 ---@field complete string
 ---@field desc string description of the command
 ---@field force boolean override existing definition
+---@field preview function perview callback for inccomand
 
 ---Create an nvim command
 ---@param name any
@@ -399,13 +402,24 @@ M.command = function(name, rhs, opts)
         }
     )
 
+    local is_buffer = false
     opts = opts or {}
     if opts.buffer then
         local buffer = type(opts.buffer) == "number" and opts.buffer or 0
         opts.buffer = nil
+        is_buffer = true
         api.nvim_buf_create_user_command(buffer, name, rhs, opts)
     else
         api.nvim_create_user_command(name, rhs, opts)
+    end
+
+    if opts.desc then
+        M.safe_require(
+            "legendary",
+            function(lgnd)
+                lgnd.bind_command({(":%s"):format(name), opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}})
+            end
+        )
     end
 end
 
@@ -496,8 +510,9 @@ M.get_visual_selection = function()
             -- visual line doesn't provide columns
             cscol, cecol = 0, 999
         end
-        -- exit visual mode
-        api.nvim_feedkeys(M.t("<Esc>", true, false, true), "n", true)
+        -- Exit visual mode
+        -- api.nvim_feedkeys(M.termcodes["<Esc>"], "n", true)
+        M.normal("n", "<Esc>")
     else
         -- otherwise, use the last known visual position
         _, csrow, cscol, _ = unpack(fn.getpos("'<"))

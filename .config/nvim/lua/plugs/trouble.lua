@@ -1,10 +1,17 @@
 local M = {}
 
+local lazy = require("common.lazy")
+local D = require("dev")
+local trouble = D.npcall(lazy.require_on_call_rec, "trouble")
+if not trouble then
+    return
+end
+
 local map = require("common.utils").map
 local icon = require("style").icons
 
 function M.setup()
-    require("trouble").setup(
+    trouble.setup(
         {
             debug = false,
             position = "bottom", -- position of the list can be: bottom, top, left, right
@@ -43,7 +50,7 @@ function M.setup()
             auto_close = false, -- automatically close the list when you have no diagnostics
             auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview
             auto_fold = false, -- automatically fold a file trouble list at creation
-            auto_jump = { "lsp_definitions" }, -- for the given modes, automatically jump if there is only a single result
+            auto_jump = {"lsp_definitions"}, -- for the given modes, automatically jump if there is only a single result
             signs = {
                 -- icons / text used for a diagnostic
                 error = icon.lsp.error,

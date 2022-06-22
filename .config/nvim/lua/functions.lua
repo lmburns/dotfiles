@@ -1,5 +1,6 @@
 local M = {}
 
+local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
@@ -282,7 +283,7 @@ command(
 ---Generic open function used with other functions
 function M.open(path)
     fn.jobstart({"handlr", "open", path}, {detach = true})
-    vim.notify(("Opening %s"):format(path))
+    vim.notify(("Opening %s"):format(path), log.levels.WARN)
 end
 
 ---Open a directory or a link

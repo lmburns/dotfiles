@@ -1,9 +1,16 @@
 local M = {}
 
-local fzf_lua = require("fzf-lua")
+local D = require("dev")
+local fzf_lua = D.npcall(require, "fzf-lua")
+if not fzf_lua then
+    return
+end
+
+local ex = nvim.ex
+local fn = vim.fn
 
 function M.setup()
-    local actions = require "fzf-lua.actions"
+    local actions = require("fzf-lua.actions")
 
     fzf_lua.setup {
         fzf_bin = "fzf", -- use skim instead of fzf?
@@ -78,7 +85,7 @@ function M.setup()
             on_create = function()
                 -- called once upon creation of the fzf main window
                 -- can be used to add custom fzf-lua mappings, e.g:
-                --   vim.api.nvim_buf_set_keymap(0, "t", "<C-j>", "<Down>",
+                --   api.nvim_buf_set_keymap(0, "t", "<C-j>", "<Down>",
                 --     { silent = true, noremap = true })
             end
         },
@@ -87,7 +94,7 @@ function M.setup()
             local border = "Normal"
             local hls = {"TelescopeBorder", "FloatermBorder", "FloatBorder"}
             for _, hl in ipairs(hls) do
-                if #vim.fn.synIDattr(vim.fn.hlID(hl), "fg") > 0 then
+                if #fn.synIDattr(fn.hlID(hl), "fg") > 0 then
                     border = hl
                     break
                 end
@@ -96,7 +103,7 @@ function M.setup()
                 hl = {border = border}
                 -- preview = {
                 --   -- conditionally override the layout paramter thus overriding the 'flex' layout
-                --   layout = vim.api.nvim_win_get_width(0)<100 and 'vertical' or 'horizontal'
+                --   layout = api.nvim_win_get_width(0)<100 and 'vertical' or 'horizontal'
                 -- }
             }
         end,
@@ -559,7 +566,7 @@ function M.setup()
     -- )
 end
 
-function M.branch_compare(opts)
+M.branch_compare = function(opts)
     if not opts then
         opts = {}
     end
@@ -605,7 +612,7 @@ function M.branch_compare(opts)
     require "fzf-lua".git_branches(opts)
 end
 
-function M.installed_plugins(opts)
+M.installed_plugins = function(opts)
     if not opts then
         opts = {}
     end
@@ -614,7 +621,7 @@ function M.installed_plugins(opts)
     fzf_lua.files(opts)
 end
 
-function M.edit_neovim(opts)
+M.edit_neovim = function(opts)
     if not opts then
         opts = {}
     end
@@ -623,7 +630,7 @@ function M.edit_neovim(opts)
     fzf_lua.files(opts)
 end
 
-function M.edit_zsh(opts)
+M.edit_zsh = function(opts)
     if not opts then
         opts = {}
     end
@@ -713,7 +720,7 @@ function init()
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
             ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
             ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Git/Files (fzf-lua)"},
-            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
+            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"}
         }
     )
 

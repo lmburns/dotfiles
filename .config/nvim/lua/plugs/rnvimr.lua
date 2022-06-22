@@ -3,7 +3,10 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
-local color = require("common.color")
+local C = require("common.color")
+
+local fn = vim.fn
+local g = vim.g
 
 function M.setup()
     -- Replace Netrw
@@ -79,8 +82,8 @@ end
 local function init()
     M.setup()
 
-    color.set_hl("RnvimrNormal", {link = "CursorLine"})
-    map("n", "<M-i>", ":RnvimrToggle<CR>", {silent = true})
+    C.set_hl("RnvimrNormal", {link = "CursorLine"})
+    map("n", "<M-i>", ":RnvimrToggle<CR>", {silent = true, desc = "Open Rnvimr"})
 
     augroup(
         "RnvimrKeymap",

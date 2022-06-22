@@ -7,7 +7,6 @@ local map = utils.map
 local ex = nvim.ex
 local fn = vim.fn
 local api = vim.api
--- local cmd = vim.cmd
 
 -- This is meant to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer

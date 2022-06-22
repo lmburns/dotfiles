@@ -1,10 +1,12 @@
 local M = {}
 
-local marks = require("marks")
-local map = require("common.utils").map
-local wk = require("which-key")
+local D = require("dev")
+local marks = D.npcall(require, "marks")
+if not marks then
+    return
+end
 
-local api = vim.api
+local wk = require("which-key")
 
 function M.setup()
     marks.setup {
@@ -49,6 +51,8 @@ function M.setup()
 end
 
 local function init()
+    M.setup()
+
     wk.register(
         {
             m = {
@@ -72,8 +76,6 @@ local function init()
     )
 
     -- map("n", "<Leader>mld", ":delmarks a-z<CR>")
-
-    M.setup()
 end
 
 init()

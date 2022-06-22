@@ -363,7 +363,7 @@ local function on_attach(client, bufnr)
     end
 
     -- TODO: turn these into: client.supports_method("textDocument/codeAction")
-    dev.buf_call(
+    api.nvim_buf_call(
         bufnr,
         function()
             -- Function to run for imports

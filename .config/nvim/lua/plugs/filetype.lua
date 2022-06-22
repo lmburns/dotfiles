@@ -1,6 +1,9 @@
 local M = {}
 
-local utils = require("common.utils")
+local fn = vim.fn
+local g = vim.g
+local b = vim.bo
+local w = vim.wo
 
 local nroff_ft = function()
     b.filetype = "nroff"
@@ -86,6 +89,7 @@ function M.setup()
                 [".*sxhkdrc"] = "sxhkdrc",
                 ["/tmp/buku%-edit.*"] = "conf",
                 ["/tmp/neomutt.*"] = "vimwiki",
+                ---@diagnostic disable-next-line: unused-local
                 ["README.(%a+)$"] = function(_path, bufnr, ext)
                     if ext == "md" then
                         return "vimwiki"

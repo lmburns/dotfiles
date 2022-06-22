@@ -77,7 +77,8 @@ zle -N list-keys
 # Show per-directory-history with fzf
 function per-dir-fzf() {
   per-directory-history-toggle-history
-  skim-history-widget
+  fzf-history-widget
+  # skim-history-widget
 }
 zle -N per-dir-fzf       # fzf history
 
@@ -186,9 +187,9 @@ declare -gA keybindings; keybindings=(
   'End'                   end-of-line
   'Delete'                delete-char
   ';z'                    zbrowse
-  'Esc-e'                 wfxr::fzf-file-edit-widget
+  'Esc-f'                 wfxr::fzf-file-edit-widget
   'Esc-i'                 fe
-  'Esc-f'                 list-keys             # list keybindings in mode
+  'M-\'                   list-keys             # list keybindings in mode
   'M-r'                   per-dir-fzf
   'M-S-R'                 fzf-history-widget
   'C-o'                   clipboard-fzf            # greenclip fzf
@@ -222,11 +223,11 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd ;v'         clipboard-fzf         # greenclip fzf
   'mode=vicmd ;e'         edit-command-line-as-zsh
   'mode=vicmd ;x'         vi-backward-kill-word
-  'mode=vicmd c.'         vi-change-whole-line
+  'mode=vicmd cc'         vi-change-whole-line
   'mode=vicmd ds'         delete-surround
   'mode=vicmd cs'         change-surround
   'mode=vicmd K'          run-help
-  'mode=vicmd Esc-f'      list-keys          # list keybindings in mode
+  'mode=vicmd M-\'        list-keys          # list keybindings in mode
   'mode=vicmd /'          history-incremental-pattern-search-backward
   'mode=vicmd \$'         expand-all         # expand alias etc under keyboard
   'mode=vicmd \-'         zvm_switch_keyword # decrement item under keyboard

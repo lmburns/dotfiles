@@ -1,17 +1,15 @@
 local M = {}
 
 local utils = require("common.utils")
-local color = require("common.color")
 
 local api = vim.api
+local fn = vim.fn
 
 ---Get an autocmd
 ---@param opts table
 ---@return table
 local function get_autocmd(opts)
-    vim.validate {
-        opts = {opts, "table", true}
-    }
+    vim.validate {opts = {opts, "table", true}}
     opts = opts or {}
 
     local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
@@ -58,18 +56,16 @@ local function add_augroup(name, clear)
 
     local groups = get_augroup(name)
     if #groups == 0 or clear then
-        return api.nvim_create_augroup(name, {clear = clear == true})
+        return utils.create_augroup(name, clear == true)
     end
     return groups[1].group
 end
 
----Clear an augroup
+---Clear an `augroup`
 ---@param name string
 local function clear_augroup(name)
-    vim.validate {
-        name = {name, "string"}
-    }
-    api.nvim_create_augroup(name, {clear = true})
+    vim.validate {name = {name, "string"}}
+    utils.create_augroup(name, true)
 end
 
 ---Delete an augroup
@@ -120,25 +116,28 @@ nvim.plugins =
     }
 )
 
+local exists_tbl = {
+    cmd = function(cmd)
+        return api.nvim_call_function("exists", {":" .. cmd}) == 2
+    end,
+    event = function(event)
+        return api.nvim_call_function("exists", {"##" .. event}) == 2
+    end,
+    augroup = function(augroup)
+        return api.nvim_call_function("exists", {"#" .. augroup}) == 1
+    end,
+    option = function(option)
+        return api.nvim_call_function("exists", {"+" .. option}) == 1
+    end,
+    func = function(func)
+        return api.nvim_call_function("exists", {"*" .. func}) == 1
+    end
+}
+
+---Shortcut for `fn.has()`
 nvim.has =
     setmetatable(
-    {
-        cmd = function(cmd)
-            return api.nvim_call_function("exists", {":" .. cmd}) == 2
-        end,
-        event = function(command)
-            return api.nvim_call_function("exists", {"##" .. command}) == 2
-        end,
-        augroup = function(augroup)
-            return api.nvim_call_function("exists", {"#" .. augroup}) == 1
-        end,
-        option = function(option)
-            return api.nvim_call_function("exists", {"+" .. option}) == 1
-        end,
-        func = function(func)
-            return api.nvim_call_function("exists", {"*" .. func}) == 1
-        end
-    },
+    exists_tbl,
     {
         __call = function(_, feature)
             return api.nvim_call_function("has", {feature}) == 1
@@ -146,25 +145,10 @@ nvim.has =
     }
 )
 
+---Shortcut for `fn.exists()`
 nvim.exists =
     setmetatable(
-    {
-        cmd = function(cmd)
-            return api.nvim_call_function("exists", {":" .. cmd}) == 2
-        end,
-        event = function(command)
-            return api.nvim_call_function("exists", {"##" .. command}) == 2
-        end,
-        augroup = function(augroup)
-            return api.nvim_call_function("exists", {"#" .. augroup}) == 1
-        end,
-        option = function(option)
-            return api.nvim_call_function("exists", {"+" .. option}) == 1
-        end,
-        func = function(func)
-            return api.nvim_call_function("exists", {"*" .. func}) == 1
-        end
-    },
+    exists_tbl,
     {
         __call = function(_, feature)
             return api.nvim_call_function("exists", {feature}) == 1
@@ -175,12 +159,27 @@ nvim.exists =
 ---Has access to `line` and `nr`
 nvim.buffer = nvim.buf
 nvim.cmd = nvim.command
+
+---Equivalent to `api.nvim_win_get_cursor`
 nvim.cursor = api.nvim_win_get_cursor
+
+---Equivalent to `api.nvim_get_mode`
 nvim.mode = api.nvim_get_mode
+
+---Access to all `termcodes`
 nvim.termcodes = utils.termcodes
 
+---Equivalent to `echo` EX command
 nvim.builtin_echo = nvim.echo
+
+---Echo a single colored message
+---@param msg string message to echo
+---@param hl string highlight group to link
+---@param history boolean? add message to history
+---@param wait number? amount of time to wait
 nvim.p = utils.cool_echo
+
+---Equivalent to `api.nvim_echo`. Allows multiple commands
 nvim.echo =
     setmetatable(
     {},
@@ -199,6 +198,7 @@ nvim.echo =
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 
+---Access to `api.nvim_buf_.*`
 nvim.buf =
     setmetatable(
     {
@@ -222,10 +222,11 @@ nvim.buf =
     }
 )
 
+---Access to `api.nvim_win_.*`
 nvim.win =
     setmetatable(
     {
-        nr = api.nvim_get_current_win,
+        nr = api.nvim_get_current_win
     },
     {
         __index = function(self, k)
@@ -244,10 +245,11 @@ nvim.win =
     }
 )
 
+---Access to `api.nvim_tabpage_.*`
 nvim.tab =
     setmetatable(
     {
-        nr = api.nvim_get_current_tabpage,
+        nr = api.nvim_get_current_tabpage
     },
     {
         __index = function(self, k)
@@ -266,6 +268,7 @@ nvim.tab =
     }
 )
 
+---Access to `api.nvim_ui_.*`
 nvim.ui =
     setmetatable(
     {},
@@ -283,6 +286,7 @@ nvim.ui =
     }
 )
 
+---Access to registers
 nvim.reg =
     setmetatable(
     {},
@@ -300,12 +304,20 @@ nvim.reg =
     }
 )
 
----Use nvim.command[...] to list all
+---Use `nvim.command[...]` or `nvim.command.get()` to list all
 nvim.command =
     setmetatable(
     {
         set = utils.command,
-        del = utils.del_command
+        del = utils.del_command,
+        get = function(k)
+            local cmds = api.nvim_get_commands({})
+            if k == nil then
+                return cmds
+            end
+
+            return F.if_nil(cmds[k], {})
+        end
     },
     {
         __index = function(self, k)
@@ -315,8 +327,7 @@ nvim.command =
                 return x
             end
 
-            local cmds = api.nvim_get_commands({})
-            return k and cmds[k] or cmds
+            return self.get(k)
         end
     }
 )
@@ -331,9 +342,7 @@ nvim.keymap =
     },
     {
         __index = function(self, mode)
-            vim.validate {
-                mode = {mode, "s"}
-            }
+            vim.validate {mode = {mode, "s"}}
 
             local modes =
                 _t(
@@ -360,6 +369,7 @@ nvim.keymap =
     }
 )
 
+---Modify `augroup`s
 nvim.augroup =
     setmetatable(
     {
@@ -406,15 +416,14 @@ nvim.augroup =
     }
 )
 
+---Modify `autocmd`s
 nvim.autocmd =
     setmetatable(
     {
         add = utils.autocmd,
         get = get_autocmd,
         del = function(id)
-            vim.validate {
-                id = {id, "number"}
-            }
+            vim.validate {id = {id, "number"}}
             pcall(api.nvim_del_autocmd, id)
         end
     },
@@ -438,16 +447,111 @@ nvim.autocmd =
     }
 )
 
+---Global access to check whether something is executable
+---@param exec string
+---@return boolean
 nvim.executable = function(exec)
     return utils.executable(exec)
 end
 
+---Access highlight groups
 nvim.colors =
     setmetatable(
     {},
     {
         __index = function(_, k)
-            color.colors(k)
+            -- Why is this an error without a return?
+            return R("common.color")[k]
+        end,
+        __newindex = function(_, hlgroup, opts)
+            R("common.color")[hlgroup] = opts
+        end,
+        __call = function(_, k)
+            return R("common.color")(k)
+        end
+    }
+)
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                        Variables                         │
+-- ╰──────────────────────────────────────────────────────────╯
+
+---Access environment variables
+nvim.env =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            local ok, value = pcall(api.nvim_call_function, "getenv", {k})
+            if not ok then
+                value = api.nvim_call_function("expand", {"$" .. k})
+                value = value == k and nil or value
+            end
+            if not value then
+                value = os.getenv(k)
+            end
+            return value or nil
+        end,
+        __newindex = function(_, k, v)
+            local ok, _ = pcall(api.nvim_call_function, "setenv", {k, v})
+            if not ok then
+                v = type(v) == "string" and ('"%s"'):format(v) or v
+                local _ = api.nvim_eval(("let $%s = %s"):format(k, v))
+            end
+        end
+    }
+)
+
+---Access to `tabpage` variables (i.e., `t:var`)
+nvim.t =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            local ok, value = pcall(api.nvim_tabpage_get_var, 0, k)
+            return ok and value or nil
+        end,
+        __newindex = function(_, k, v)
+            if v == nil then
+                return api.nvim_tabpage_del_var(0, k)
+            else
+                return api.nvim_tabpage_set_var(0, k, v)
+            end
+        end
+    }
+)
+
+nvim.opt =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            local ok, opt = pcall(api.nvim_get_option, k)
+            -- These bring up an error for indexing it
+            -- local loc = nvim.bo[k] or nvim.wo[k] or nil
+            -- local loc = utils.ife_nil(nvim.bo[k], nvim.wo[k], nil)
+
+            if nvim.bo[k] ~= nil then
+                return nvim.bo[k]
+            end
+            if nvim.wo[k] ~= nil then
+                return nvim.wo[k]
+            end
+
+            -- local loc = F.if_nil(nvim.bo[k])
+
+            return ok and opt or nil
+        end,
+        __newindex = function(_, k, v)
+            if nvim.o[k] then
+                nvim.o[k] = v
+            end
+            if nvim.bo[k] ~= nil then
+                nvim.bo[k] = v
+            elseif nvim.wo[k] ~= nil then
+                nvim.wo[k] = v
+            end
+            return nvim.o[k] ~= nil and nvim.o[k] or (nvim.bo[k] ~= nil and nvim.bo[k] or nvim.wo[k])
         end
     }
 )

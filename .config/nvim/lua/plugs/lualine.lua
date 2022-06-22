@@ -1,10 +1,15 @@
 local M = {}
 
+local D = require("dev")
+local lualine = D.npcall(require, "lualine")
+if not lualine then
+    return
+end
+
 local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
 
-local dev = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -188,7 +193,7 @@ function M.toggle_mode()
     local current_config = modules.config_module.get_config()
     local lutils = require("lualine.utils.utils")
 
-    if dev.tbl_equivalent(current_config.sections, sections_1) then
+    if D.tbl_equivalent(current_config.sections, sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)
@@ -272,7 +277,7 @@ local function init()
         } -- aerial
     }
 
-    require("lualine").setup(
+    lualine.setup(
         {
             options = {
                 icons_enabled = true,

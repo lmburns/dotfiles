@@ -1,13 +1,25 @@
 local M = {}
 
-local command = require("common.utils").command
+-- if not _G.packer_plugins["undotree"] then
+--     return
+-- end
+
+local utils = require("common.utils")
+local map = utils.map
+local command = utils.command
+
+local ex = nvim.ex
+local g = vim.g
+
+local bmap = function(...)
+    utils.bmap(0, ...)
+end
 
 function M.toggle()
     fn["undotree#UndotreeToggle"]()
     require("plugs.undotree").clean_undo()
 end
 
--- TODO: always clean filename with '%'
 function M.clean_undo()
     local u_dir = vim.o.undodir
     local pre_len = u_dir:len(vim.o.undodir) + 2
@@ -19,6 +31,17 @@ function M.clean_undo()
         end
     end
 end
+
+-- This doesn't translate to global vim space
+-- function Undotree_CustomMap()
+--     ex.nunmap("<buffer> u")
+--     ex.nunmap("<buffer> U")
+--     bmap("n", "J", "<Plug>UndotreePreviousState")
+--     bmap("n", "K", "<Plug>UndotreeNextState")
+--     bmap("n", "D", "<Plug>UndotreeDiffToggle")
+--     bmap("n", "u", "<Plug>UndotreeUndo")
+--     bmap("n", "U", "<Plug>UndotreeRedo")
+-- end
 
 local function init()
     g.undotree_SplitWidth = 45
@@ -38,10 +61,10 @@ local function init()
             nmap <buffer> u <Plug>UndotreeUndo
             nmap <buffer> U <Plug>UndotreeRedo
         endfunc
-
-        pa undotree
     ]]
     )
+
+    ex.packadd("undotree")
 
     -- <plug>UndotreeHelp
     -- <plug>UndotreeClose

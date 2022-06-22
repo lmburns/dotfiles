@@ -2,7 +2,7 @@ local M = {}
 
 -- FIX: The coc formatter provided doesn't read configs
 
-local dev = require("dev")
+local D = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -10,7 +10,6 @@ local coc = require("plugs.coc")
 local log = require("common.log")
 local gittool = require("common.gittool")
 
-local dev = require("dev")
 -- local promise = require("promise")
 -- local async = require("async")
 -- local a = require("plenary.async_lib")
@@ -25,7 +24,7 @@ local scan = require("plenary.scandir")
 local function save_doc(bufnr)
     vim.schedule(
         function()
-            dev.buf_call(
+            api.nvim_buf_call(
                 bufnr,
                 function()
                     ex.sil_("up")
@@ -66,7 +65,7 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(dev.get_vim_output("lua require('plugs.neoformat').neoformat()"))
+    return unpack(D.get_vim_output("lua require('plugs.neoformat').neoformat()"))
 end
 
 ---Format the document using `Neoformat`
@@ -104,7 +103,7 @@ function M.format_doc(save)
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
                             if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
-                                dev.buf_call(
+                                api.nvim_buf_call(
                                     bufnr,
                                     function()
                                         local output = M.promisify()
@@ -213,7 +212,8 @@ local function init()
         "prettier"
     }
     g.neoformat_enabled_typescript = {
-        "prettier", "clang-format"
+        "prettier",
+        "clang-format"
     }
     g.neoformat_enabled_javascript = {
         "prettier"

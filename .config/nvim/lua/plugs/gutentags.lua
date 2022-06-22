@@ -1,6 +1,7 @@
 local M = {}
 
-local augroup = require("common.utils").augroup
+local utils = require("common.utils")
+local augroup = utils.augroup
 
 local fn = vim.fn
 local o = vim.opt

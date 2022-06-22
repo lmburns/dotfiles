@@ -1,38 +1,43 @@
 local M = {}
 
-local ex = nvim.ex
-local fn = vim.fn
-local api = vim.api
-local cmd = vim.cmd
+local lazy = require("common.lazy")
+local D = require("dev")
+local telescope = D.npcall(lazy.require_on_call_rec, "telescope")
+if not telescope then
+    return
+end
+
+-- local action_generate = require("telescope.actions.generate")
+local action_layout = require("telescope.actions.layout")
+local action_state = require("telescope.actions.state")
+local actions = require("telescope.actions")
+local builtin = require("telescope.builtin")
+local conf = require("telescope.config").values
+local finders = require("telescope.finders")
+local make_entry = require("telescope.make_entry")
+local pickers = require("telescope.pickers")
+local previewers = require("telescope.previewers")
+local sorters = require("telescope.sorters")
+local utils = require("telescope.utils")
+
+-- local fb_utils = require "telescope._extensions.file_browser.utils"
+local z_utils = require("telescope._extensions.zoxide.utils")
+
+local P = R("plugs.telescope.pickers")
+local Job = require("plenary.job")
+local Path = require("plenary.path")
+local wk = require("which-key")
 
 local log = require("common.log")
 local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
+
 local map = b_utils.map
-
-local themes = require("telescope.themes")
-local utils = require("telescope.utils")
-local pickers = require("telescope.pickers")
-local finders = require("telescope.finders")
-local telescope = require("telescope")
-local builtin = require("telescope.builtin")
-local actions = require("telescope.actions")
-local action_layout = require("telescope.actions.layout")
-local action_state = require("telescope.actions.state")
-local action_generate = require("telescope.actions.generate")
-local sorters = require("telescope.sorters")
-local previewers = require("telescope.previewers")
-local make_entry = require("telescope.make_entry")
-local conf = require("telescope.config").values
-
-local fb_utils = require "telescope._extensions.file_browser.utils"
-local z_utils = require("telescope._extensions.zoxide.utils")
-
-local P = R("plugs.telescope.pickers")
-
-local Job = require("plenary.job")
-local Path = require("plenary.path")
-local wk = require("which-key")
+local ex = nvim.ex
+local fn = vim.fn
+local api = vim.api
+local cmd = vim.cmd
+local uv = vim.loop
 
 -- local extensions_loaded = false
 -- local function load_extensions()
@@ -1235,7 +1240,7 @@ command(
     function()
         telescope.extensions.ghq.list()
     end,
-    {nargs = 0}
+    {nargs = 0, desc = "GHQ (github)"}
 )
 
 -- ========================== Mappings ===========================

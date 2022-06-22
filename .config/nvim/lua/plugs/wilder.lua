@@ -1,12 +1,15 @@
 local M = {}
 
+local D = require("dev")
+local wilder = D.npcall(require, "wilder")
+if not wilder then
+    return
+end
+
 local utils = require("common.utils")
 local map = utils.map
-local augroup = utils.augroup
 
 local fn = vim.fn
-
-local wilder = require("wilder")
 
 function M.wilder_disable(e)
     local cmd = fn["wilder#cmdline#parse"](e).cmd

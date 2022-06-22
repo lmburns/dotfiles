@@ -1,12 +1,11 @@
 local M = {}
 
-local dev = require("dev")
+local D = require("dev")
 local palette = require("kimbox.palette").colors
 local utils = require("common.utils")
 local C = require("common.color")
 local coc = require("plugs.coc")
 local augroup = utils.augroup
-local command = utils.command
 local map = utils.map
 
 local ex = nvim.ex
@@ -14,6 +13,7 @@ local api = vim.api
 local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
+local g = vim.g
 local v = vim.v
 
 local bl_ft
@@ -39,7 +39,7 @@ M.use_anyfold = function(bufnr, force)
                     }
                 )
             else
-                dev.buf_call(
+                api.nvim_buf_call(
                     bufnr,
                     function()
                         utils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
@@ -53,7 +53,7 @@ M.use_anyfold = function(bufnr, force)
 end
 
 local function apply_fold(bufnr, ranges)
-    dev.buf_call(
+    api.nvim_buf_call(
         bufnr,
         function()
             vim.wo.foldmethod = "manual"
@@ -179,7 +179,7 @@ M.defer_attach = function(bufnr)
         return
     end
 
-    local winid = dev.find_win_except_float(bufnr)
+    local winid = D.find_win_except_float(bufnr)
     if winid == 0 or not api.nvim_win_is_valid(winid) then
         return
     end
@@ -356,7 +356,12 @@ end
 
 ---Setup 'ultra-fold'
 M.setup_ufo = function()
-    require("ufo").setup(
+    local ufo = D.npcall(require, "ufo")
+    if not ufo then
+        return
+    end
+
+    ufo.setup(
         {
             open_fold_hl_timeout = 360,
             fold_virt_text_handler = handler

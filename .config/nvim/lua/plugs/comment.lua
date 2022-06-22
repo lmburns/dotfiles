@@ -1,5 +1,12 @@
 local M = {}
 
+local D = require("dev")
+local comment = D.npcall(require, "Comment")
+if not comment then
+    return
+end
+
+local wk = require("which-key")
 local utils = require("common.utils")
 local map = utils.map
 
@@ -8,17 +15,16 @@ local U = require("Comment.utils")
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
-local wk = require("which-key")
-
-local api = vim.api
+local cmd = vim.cmd
 local fn = vim.fn
+local api = vim.api
 
 -- TODO: Maybe create an issue
 -- Would like to ignore certain lines on comment
 -- And ignore others on uncomment
 
 function M.setup()
-    require("Comment").setup(
+    comment.setup(
         {
             -- Add a space b/w comment and the line
             -- @type boolean

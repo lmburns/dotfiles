@@ -1,10 +1,15 @@
 local M = {}
 
+local D = require("dev")
+local ng = D.npcall(require, "neogit")
+if not ng then
+    return
+end
+
 local wk = require("which-key")
-local map = require("common.utils").map
 local C = require("common.color")
 
-local ng = require("neogit")
+local fn = vim.fn
 
 function M.setup()
     ng.setup(
@@ -66,7 +71,7 @@ end
 
 local function init()
     C.plugin(
-        "neogit",
+        "Neogit",
         {
             NeogitNotificationInfo = {fg = "#4C96A8"},
             NeogitNotificationWarning = {fg = "#FF9500"},
@@ -78,11 +83,6 @@ local function init()
             NeogitHunkHeaderHighlight = {fg = "#FF5813"}
         }
     )
-    --     hi def NeogitDiffAddHighlight guifg=#819C3B
-    --     hi def NeogitDiffDeleteHighlight guifg=#DC3958
-    --     hi def NeogitDiffContextHighlight guifg=#b2b2b2
-    --     hi def NeogitHunkHeader guifg=#A06469
-    --     hi def NeogitHunkHeaderHighlight guifg=#FF5813
 
     M.setup()
 

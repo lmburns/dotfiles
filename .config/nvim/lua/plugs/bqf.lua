@@ -1,17 +1,20 @@
 local M = {}
 
+local D = require("dev")
+local bqf = D.npcall(require, "bqf")
+
+if not bqf then
+    return
+end
+
 local debounce = require("common.debounce")
 local C = require("common.color")
 local utils = require("common.utils")
-local dev = require("dev")
-
 local autocmd = utils.autocmd
 
 local ex = nvim.ex
 local fn = vim.fn
-local cmd = vim.cmd
-local g = vim.g
-local b = vim.bo
+local api = vim.api
 
 local loaded_preview_bufs = {}
 
@@ -59,7 +62,7 @@ local function preview_fugitive(bufnr, ...)
             debounce(
             function(bufnr, qwinid, bufname)
                 if not api.nvim_buf_is_loaded(bufnr) then
-                    dev.buf_call(
+                    api.nvim_buf_call(
                         bufnr,
                         function()
                             ex.doau(("fugitive BufReadCmd %s"):format(bufname))
@@ -91,7 +94,7 @@ function M.setup()
     -- FIX: Sometimes preview window is transparent
     C.link("BqfPreviewBorder", "Parameter")
 
-    require("bqf").setup(
+    bqf.setup(
         {
             auto_enable = true,
             auto_resize_height = true,

@@ -1,9 +1,15 @@
 local M = {}
-local map = require("common.utils").map
+
+local D = require("dev")
+local substitute = D.npcall(require, "substitute")
+if not substitute then
+    return
+end
+
 local wk = require("which-key")
 
 function M.setup()
-    require("substitute").setup(
+    substitute.setup(
         {
             yank_substitued_text = false,
             range = {
@@ -62,7 +68,7 @@ local function init()
     wk.register(
         {
             ["s"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
-            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"},
+            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"}
             -- [";s"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
         },
         {mode = "x"}

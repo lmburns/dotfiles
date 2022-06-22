@@ -55,6 +55,8 @@ _G.a = require("plenary.async_lib")
 _G.nvim = require("nvim")
 _G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
+_G.telescope_ext = {}
+
 -- Makes `_t` global
 require("arshlib")
 

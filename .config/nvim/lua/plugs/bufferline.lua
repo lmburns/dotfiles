@@ -1,21 +1,25 @@
 local M = {}
 
-local utils = require("common.utils")
--- local map = utils.map
+local D = require("dev")
+local bufferline = D.npcall(require, "bufferline")
 
+if not bufferline then
+    return
+end
+
+local utils = require("common.utils")
+local icons = require("style").icons
 local color = require("common.color")
-local bufferline = require("bufferline")
 local groups = require("bufferline.groups")
 
-local ex = nvim.ex
-local api = vim.api
 local fn = vim.fn
+local api = vim.api
 
 local diagnostics_signs = {
-    error = "",
-    warning = "",
-    hint = "",
-    info = ""
+    error = icons.lsp.sb.error,
+    warning = icons.lsp.sb.warn,
+    hint = icons.lsp.sb.hint,
+    info = icons.lsp.sb.info
 }
 
 ---Filter out filetypes you don't want to see

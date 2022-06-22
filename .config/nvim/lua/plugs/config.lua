@@ -4,26 +4,37 @@
 
 local M = {}
 
-local dev = require("dev")
-local utils = require("common.utils")
+local D = require("dev")
+local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
-local map = utils.map
-local command = utils.command
 local C = require("common.color")
 
+local utils = require("common.utils")
+local map = utils.map
+local command = utils.command
 local augroup = utils.augroup
-local autocmd = utils.autocmd
+-- local autocmd = utils.autocmd
+
+local cmd = vim.cmd
+local fn = vim.fn
+local g = vim.g
+local api = vim.api
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Listish                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.listish()
-    require("listish").config(
+    local listish = D.npcall(require, "listish")
+    if not listish then
+        return
+    end
+
+    listish.config(
         {
             theme_list = false,
-            clearqflist = "Clearquickfix", -- command
-            clearloclist = "Clearloclist", -- command
+            clearqflist = "ClearQuickfix", -- command
+            clearloclist = "ClearLoclist", -- command
             clear_notes = "ClearListNotes", -- command
             lists_close = "<Nop>", -- closes both qf/local lists
             in_list_dd = "dd", -- delete current item in the list
@@ -45,6 +56,14 @@ function M.listish()
                 next = "]w",
                 prev = "[w"
             }
+        }
+    )
+
+    require("legendary").bind_commands(
+        {
+            {":ClearQuickfix", description = "Clear quickfix list"},
+            {":ClearLoclist", description = "Clear location list"},
+            {":ClearListNotes", description = "Clear quickfix notes"}
         }
     )
 
@@ -74,7 +93,10 @@ end
 -- │                          Crates                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.crates()
-    local crates = require("crates")
+    local crates = D.npcall(require, "crates")
+    if not crates then
+        return
+    end
 
     crates.setup(
         {
@@ -156,7 +178,12 @@ end
 -- │                       PackageInfo                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.package_info()
-    require("package-info").setup(
+    local pi = D.npcall(require, "package-info")
+    if not pi then
+        return
+    end
+
+    pi.setup(
         {
             colors = {
                 up_to_date = "#3C4048", -- Text color for up to date package virtual text
@@ -176,8 +203,6 @@ function M.package_info()
             package_manager = "yarn"
         }
     )
-
-    local pi = require("package-info")
 
     augroup(
         "lmb__PackageInfoBindings",
@@ -337,24 +362,6 @@ function M.floaterm()
     -- Stackoverflow helper
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
 end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Pandoc                          │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.pandoc()
---     g["pandoc#filetypes#handled"] = {"pandoc", "markdown"}
---     g["pandoc#after#modules#enabled"] = {"vim-table-mode"}
---     g["pandoc#syntax#codeblocks#embeds#langs"] = {
---         "c",
---         "python",
---         "sh",
---         "html",
---         "css"
---     }
---     g["pandoc#formatting#mode"] = "h"
---     g["pandoc#modules#disabled"] = {"folding", "formatting"}
---     g["pandoc#syntax#conceal#cchar_overrides"] = {codelang = " "}
--- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Markdown                         │
@@ -538,6 +545,10 @@ end
 -- │                          Notify                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.notify()
+    local notify = D.npcall(lazy.require_on_exported_call, "notify")
+    if not notify then
+        return
+    end
     --   cmd [[
     --   hi NotifyERRORBorder guifg=#8A1F1F
     --   hi NotifyWARNBorder guifg=#79491D
@@ -579,7 +590,6 @@ function M.notify()
 
     ---@type table<string, fun(bufnr: number, notif: table, highlights: table)>
     local renderer = require("notify.render")
-    local notify = require("notify")
 
     notify.setup(
         {
@@ -625,7 +635,11 @@ end
 -- │                          Neogen                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.neogen()
-    local neogen = require("neogen")
+    local neogen = D.npcall(require, "neogen")
+    if not neogen then
+        return
+    end
+
     neogen.setup(
         {
             enabled = true,
@@ -653,7 +667,12 @@ end
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
-    require("hlslens").setup(
+    local hlslens = D.npcall(require, "hlslens")
+    if not hlslens then
+        return
+    end
+
+    hlslens.setup(
         {
             auto_enable = true,
             enable_incsearch = true,
@@ -672,7 +691,8 @@ function M.hlslens()
         "HlSearchLensToggle",
         function()
             require("hlslens").toggle()
-        end
+        end,
+        {desc = "Togggle HLSLens"}
     )
 
     map(
@@ -695,7 +715,7 @@ function M.hlslens()
     )
 
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {})
+    map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]])
     map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
 
@@ -754,7 +774,7 @@ function M.sandwhich()
     -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
     -- This allows for macros in Rust
-    vim.g["sandwich#magicchar#f#patterns"] = {
+    g["sandwich#magicchar#f#patterns"] = {
         {
             header = [[\<\h\k*]],
             bra = "(",
@@ -769,8 +789,7 @@ function M.sandwhich()
         }
     }
 
-    cmd("runtime macros/sandwich/keymap/surround.vim")
-    -- ex.runtime("macros/sandwich/keymap/surround.vim")
+    ex.runtime("macros/sandwich/keymap/surround.vim")
 
     cmd [[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
@@ -1127,7 +1146,12 @@ end
 -- │                       BetterEscape                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.better_esc()
-    require("better_escape").setup {
+    local esc = D.npcall(require, "better_escape")
+    if not esc then
+        return
+    end
+
+    esc.setup {
         mapping = {"jk", "kj"}, -- a table with mappings to use
         timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
         clear_empty_lines = false, -- clear line after escaping if there is only whitespace
@@ -1142,7 +1166,12 @@ end
 -- │                       SmartSplits                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.smartsplits()
-    require("smart-splits").setup(
+    local ss = D.npcall(lazy.require_on_exported_call, "smart-splits")
+    if not ss then
+        return
+    end
+
+    ss.setup(
         {
             -- Ignored filetypes (only while resizing)
             ignored_filetypes = {"nofile", "quickfix", "prompt"},
@@ -1163,19 +1192,17 @@ function M.smartsplits()
     -- map("n", "<C-Right>", [[:lua require('common.utils').resize(true, 1)<CR>]])
     -- map("n", "<C-Left>", [[:lua require('common.utils').resize(true, -1)<CR>]])
 
-    local ss = require("smart-splits")
-
     -- Move between windows
     wk.register(
         {
-            ["<C-j>"] = {dev.ithunk(ss.move_cursor_down), "Move to below window"},
-            ["<C-k>"] = {dev.ithunk(ss.move_cursor_up), "Move to above window"},
-            ["<C-h>"] = {dev.ithunk(ss.move_cursor_left), "Move to left window"},
-            ["<C-l>"] = {dev.ithunk(ss.move_cursor_right), "Move to right window"},
-            ["<C-Up>"] = {dev.ithunk(ss.resize_up), "Resize window up"},
-            ["<C-Down>"] = {dev.ithunk(ss.resize_down), "Resize window down"},
-            ["<C-Right>"] = {dev.ithunk(ss.resize_right), "Resize window right"},
-            ["<C-Left>"] = {dev.ithunk(ss.resize_left), "Resize window left"}
+            ["<C-j>"] = {D.ithunk(ss.move_cursor_down), "Move to below window"},
+            ["<C-k>"] = {D.ithunk(ss.move_cursor_up), "Move to above window"},
+            ["<C-h>"] = {D.ithunk(ss.move_cursor_left), "Move to left window"},
+            ["<C-l>"] = {D.ithunk(ss.move_cursor_right), "Move to right window"},
+            ["<C-Up>"] = {D.ithunk(ss.resize_up), "Resize window up"},
+            ["<C-Down>"] = {D.ithunk(ss.resize_down), "Resize window down"},
+            ["<C-Right>"] = {D.ithunk(ss.resize_right), "Resize window right"},
+            ["<C-Left>"] = {D.ithunk(ss.resize_left), "Resize window left"}
         }
     )
 end
@@ -1247,7 +1274,12 @@ end
 -- │                          Specs                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.specs()
-    require("specs").setup(
+    local specs = D.npcall(require, "specs")
+    if not specs then
+        return
+    end
+
+    specs.setup(
         {
             show_jumps = true,
             min_jump = fn.winheight("%"),
@@ -1300,7 +1332,13 @@ function M.paperplanes()
     -- post_range(buffer, start, end, cb)
     -- post_selection(cb)
     -- post_buffer(buffer, cb)
-    require("paperplanes").setup(
+
+    local paperplanes = D.npcall(require, "paperplanes")
+    if not paperplanes then
+        return
+    end
+
+    paperplanes.setup(
         {
             register = "+",
             provider = "paste.rs",
@@ -1315,7 +1353,12 @@ end
 -- │                        Colorizer                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.colorizer()
-    require("colorizer").setup(
+    local colorizer = D.npcall(require, "colorizer")
+    if not colorizer then
+        return
+    end
+
+    colorizer.setup(
         {
             "gitconfig",
             "vim",
@@ -1391,7 +1434,11 @@ end
 -- ║                        CommentBox                        ║
 -- ╙                                                          ╜
 function M.comment_box()
-    local cb = require("comment-box")
+    local cb = D.npcall(require, "comment-box")
+    if not cb then
+        return
+    end
+
     cb.setup(
         {
             doc_width = 80, -- width of the document
@@ -1517,9 +1564,14 @@ end
 -- end
 
 function M.lfnvim()
+    local lf = D.npcall(require, "lf")
+    if not lf then
+        return
+    end
+
     g.lf_netrw = 1
 
-    require("lf").setup(
+    lf.setup(
         {
             escape_quit = true,
             -- open_on = true,
@@ -1536,7 +1588,12 @@ end
 -- │                         urlview                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.urlview()
-    require("urlview").setup(
+    local urlview = D.npcall(require, "urlview")
+    if not urlview then
+        return
+    end
+
+    urlview.setup(
         {
             -- Prompt title (`<context> <default_title>`, e.g. `Buffer Links:`)
             default_title = "Links:",
@@ -1570,7 +1627,12 @@ end
 -- │                          trevj                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.trevj()
-    require("trevj").setup(
+    local trevj = D.npcall(require, "trevj")
+    if not trevj then
+        return
+    end
+
+    trevj.setup(
         {
             containers = {
                 lua = {
@@ -1592,25 +1654,6 @@ function M.trevj()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                           Abolish                        │
--- ╰──────────────────────────────────────────────────────────╯
-function M.abolish()
-    wk.register(
-        {
-            ["rs"] = "Snake case",
-            ["rm"] = "Mixed case",
-            ["rc"] = "Camel case",
-            ["ru"] = "Upper case",
-            ["r-"] = "Dash case",
-            ["r."] = "Dot case",
-            ["r<Space>"] = "Space case",
-            ["rt"] = "Title case"
-        },
-        {mode = "o"}
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                         Projects                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.project()
@@ -1623,7 +1666,12 @@ function M.project()
     -- >Latex              => Has a certain directory as direct ancestor
     -- !=extras !^fixtures => Exclude pattern
 
-    require("project_nvim").setup(
+    local project = D.npcall(require, "project_nvim")
+    if not project then
+        return
+    end
+
+    project.setup(
         {
             -- Manual mode doesn't automatically change your root directory, so you have
             -- the option to manually do so using `:ProjectRoot` command.
@@ -1740,7 +1788,12 @@ end
 -- │                       Git Conflict                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.git_conflict()
-    require("git-conflict").setup(
+    local conflict = D.npcall(require, "git-conflict")
+    if not conflict then
+        return
+    end
+
+    conflict.setup(
         {
             {
                 default_mappings = false,
@@ -1799,42 +1852,49 @@ end
 -- │                       regexplainer                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.regexplainer()
-    require("regexplainer").setup {
-        mode = "narrative", -- TODO: 'ascii', 'graphical'
-        -- automatically show the explainer when the cursor enters a regexp
-        auto = false,
-        -- filetypes (i.e. extensions) in which to run the autocommand
-        filetypes = {
-            "html",
-            "js",
-            "cjs",
-            "mjs",
-            "ts",
-            "jsx",
-            "tsx",
-            "cjsx",
-            "mjsx"
-            -- "rs"
-        },
-        debug = false, -- Whether to log debug messages
-        display = "popup", -- 'split', 'popup', 'pasteboard'
-        popup = {
-            border = {
-                padding = {1, 2},
-                style = "solid"
+    local regexplainer = D.npcall(require, "regexplainer")
+    if not regexplainer then
+        return
+    end
+
+    regexplainer.setup(
+        {
+            mode = "narrative", -- TODO: 'ascii', 'graphical'
+            -- automatically show the explainer when the cursor enters a regexp
+            auto = false,
+            -- filetypes (i.e. extensions) in which to run the autocommand
+            filetypes = {
+                "html",
+                "js",
+                "cjs",
+                "mjs",
+                "ts",
+                "jsx",
+                "tsx",
+                "cjsx",
+                "mjsx"
+                -- "rs"
+            },
+            debug = false, -- Whether to log debug messages
+            display = "popup", -- 'split', 'popup', 'pasteboard'
+            popup = {
+                border = {
+                    padding = {1, 2},
+                    style = "solid"
+                }
+            },
+            mappings = {
+                toggle = "gR",
+                show = "gS"
+                -- hide = 'gH',
+                -- show_split = 'gP',
+                -- show_popup = 'gU',
+            },
+            narrative = {
+                separator = "\n"
             }
-        },
-        mappings = {
-            toggle = "gR",
-            show = "gS"
-            -- hide = 'gH',
-            -- show_split = 'gP',
-            -- show_popup = 'gU',
-        },
-        narrative = {
-            separator = "\n"
         }
-    }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1843,33 +1903,6 @@ end
 function M.eregex()
     map("n", "<Leader>es", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
 end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       Persistence                        │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.persistence()
---     require("persistence").setup(
---         {
---             dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
---             options = {"buffers", "curdir", "tabpages", "winsize"}
---         }
---     )
---
---     command(
---         "RestoreSessionCWD",
---         function()
---             require("persistence").load()
---         end,
---         {nargs = 0}
---     )
---     command(
---         "RestoreSession",
---         function()
---             require("persistence").load({last = true})
---         end,
---         {nargs = 0}
---     )
--- end
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                         LSP Specific
@@ -1939,7 +1972,12 @@ end
 -- │                        Lightbulb                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.lightbulb()
-    require("nvim-lightbulb").setup(
+    local lightbulb = D.npcall(require, "nvim-lightbulb")
+    if not lightbulb then
+        return
+    end
+
+    lightbulb.setup(
         {
             ignore = {"null-ls"},
             sign = {enabled = false},
@@ -1955,7 +1993,12 @@ end
 -- │                     Semantic Tokens                      │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.semantic_tokens()
-    require "nvim-semantic-tokens".setup(
+    local semantic = D.npcall(require, "nvim-semantic-tokens")
+    if not semantic then
+        return
+    end
+
+    semantic.setup(
         {
             preset = "default"
         }
@@ -1981,7 +2024,12 @@ end
 -- │                          Fidget                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.fidget()
-    require("fidget").setup(
+    local fidget = D.npcall(require, "fidget")
+    if not fidget then
+        return
+    end
+
+    fidget.setup(
         {
             text = {
                 spinner = {

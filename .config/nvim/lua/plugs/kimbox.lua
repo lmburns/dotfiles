@@ -4,21 +4,23 @@
 
 local M = {}
 
-local utils = require("common.utils")
-local augroup = utils.augroup
-local autocmd = utils.autocmd
-
-local log = require("common.log")
-
+local D = require("dev")
 local C = require("common.color")
 
+local ex = nvim.ex
 local g = vim.g
+local fn = vim.fn
+local uv = vim.loop
 
 -- General configurations for various themes
 
 M.catppuccin = function()
+    local catppuccin = D.npcall(require, "catppuccin")
+    if not catppuccin then
+        return
+    end
+
     g.catppuccin_flavour = "mocha" -- latte, frappe, macchiato, mocha
-    local catppuccin = require("catppuccin")
     catppuccin.setup(
         {
             transparent_background = false,
@@ -104,6 +106,10 @@ M.catppuccin = function()
 end
 
 M.kanagawa = function()
+    local kanagawa = D.npcall(require, "kanagawa")
+    if not kanagawa then
+        return
+    end
     local cp = require("kanagawa.colors").setup()
 
     -- local bg = cp.waveBlue2
@@ -169,7 +175,7 @@ M.kanagawa = function()
         BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4}
     }
 
-    require("kanagawa").setup(
+    kanagawa.setup(
         {
             undercurl = true, -- enable undercurls
             commentStyle = {italic = true},
@@ -192,7 +198,12 @@ M.kanagawa = function()
 end
 
 M.nightfox = function()
-    require("nightfox").setup(
+    local nightfox = D.npcall(require, "nightfox")
+    if not nightfox then
+        return
+    end
+
+    nightfox.setup(
         {
             options = {
                 -- Compiled file's destination location
@@ -321,10 +332,15 @@ end
 
 -- === Material ===
 M.material = function()
+    local material = D.npcall(require, "material")
+    if not material then
+        return
+    end
+
     g.material_style = "deep ocean"
     -- g.material_style = "palenight"
     -- g.material_style = "darker"
-    require("material").setup(
+    material.setup(
         {
             contrast = {
                 sidebars = false, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
@@ -389,7 +405,11 @@ end
 
 -- === OneDark ===
 M.onedark = function()
-    local od = require("onedarkpro")
+    local od = D.npcall(require, "onedark")
+    if not od then
+        return
+    end
+
     od.setup(
         {
             -- Theme can be overwritten with 'onedark' or 'onelight' as a string
@@ -430,7 +450,12 @@ end
 
 -- === OneNord ===
 M.onenord = function()
-    require("onenord").setup(
+    local onenord = D.npcall(require, "onenord")
+    if not onenord then
+        return
+    end
+
+    onenord.setup(
         {
             theme = "dark", -- "dark" or "light". Alternatively, remove the option and set vim.o.background instead
             borders = true, -- Split window borders
@@ -480,7 +505,12 @@ end
 
 -- === RosePine ===
 M.rose_pine = function()
-    require("rose-pine").setup(
+    local rose = D.npcall(require, "rose-pine")
+    if not rose then
+        return
+    end
+
+    rose.setup(
         {
             --- 'main'|'moon'
             dark_variant = "main",
@@ -533,8 +563,13 @@ end
 
 -- === Kimbox ===
 M.kimbox = function()
+    local kimbox = D.npcall(require, "kimbox")
+    if not kimbox then
+        return
+    end
+
     ex.packadd("kimbox")
-    require("kimbox").setup(
+    kimbox.setup(
         {
             style = "ocean",
             allow_bold = true,

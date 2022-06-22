@@ -126,7 +126,7 @@ map("n", "v", "m`v")
 map("n", "V", "m`V")
 map("n", "<C-v>", "m`<C-v>")
 
--- TIP: Use g- and g+
+-- Use g- and g+
 wk.register(
     {
         ["U"] = {"<C-r>", "Redo action"},
@@ -235,7 +235,7 @@ wk.register(
 -- Folding
 map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
 map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
-map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
+-- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
 map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
 map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
 
@@ -266,8 +266,8 @@ map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close
 
 map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
-map("n", "z-", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
-map("n", "z=", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
+-- map("n", "z-", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
+-- map("n", "z+", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
 
 map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
 map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})

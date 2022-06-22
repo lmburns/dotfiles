@@ -1,14 +1,17 @@
 local M = {}
 
-local utils = require("common.utils")
-local map = utils.map
+local D = require("dev")
+local autopairs = D.npcall(require, "nvim-autopairs")
 
-local api = vim.api
+if not autopairs then
+    return
+end
 
-local autopairs = require("nvim-autopairs")
 local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
+
+local api = vim.api
 
 local opt = {
     disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},

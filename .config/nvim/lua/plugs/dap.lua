@@ -1,16 +1,25 @@
 local M = {}
 
-local utils = require("common.utils")
-local map = utils.map
-local command = utils.command
-local dap = require("dap")
-local dapui = require("dapui")
-local widgets = require("dap.ui.widgets")
+local D = require("dev")
+local dap = D.npcall(require, "dap")
+if not dap then
+    return
+end
 
+local dapui = D.npcall(require, "dapui")
+if not dapui then
+    return
+end
+
+local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
+local utils = require("common.utils")
+local command = utils.command
+
 local fn = vim.fn
+local uv = vim.loop
 
 local nvim_server
 local nvim_chanID
@@ -21,31 +30,36 @@ function M.setup()
         "BreakpointToggle",
         function()
             require("dap").toggle_breakpoint()
-        end
+        end,
+        {desc = "[dap]: Toggle breakpoint"}
     )
     command(
         "Debug",
         function()
             require("dap").continue()
-        end
+        end,
+        {desc = "[dap]: Continue"}
     )
     command(
         "DapREPL",
         function()
             require("dap").repl.open()
-        end
+        end,
+        {desc = "[dap]: Open REPL"}
     )
     command(
         "DapLaunch",
         function()
             require("osv").launch()
-        end
+        end,
+        {desc = "[osv]: Launch"}
     )
     command(
         "DapRun",
         function()
             require("osv").run_this()
-        end
+        end,
+        {desc = "[osv]: Run this"}
     )
 
     local function repl_toggle()

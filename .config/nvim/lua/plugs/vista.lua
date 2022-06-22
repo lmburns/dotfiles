@@ -2,7 +2,6 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
-local autocmd = utils.autocmd
 
 local g = vim.g
 

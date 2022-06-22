@@ -1,7 +1,7 @@
 local M = {}
 
-local map = require("common.utils").map
-
+local utils = require("common.utils")
+local map = utils.map
 local g = vim.g
 
 --[[

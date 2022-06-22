@@ -1,8 +1,19 @@
 local M = {}
 
+local D = require("dev")
+local llib = D.npcall(require, "litee.lib")
+if not llib then
+    return
+end
+
+local gh = D.npcall(require, "litee.gh")
+if not gh then
+    return
+end
+
 function M.setup()
-    require("litee.lib").setup()
-    require("litee.gh").setup(
+    llib.setup()
+    gh.setup(
         {
             -- deprecated, around for compatability for now.
             jump_mode = "invoking",

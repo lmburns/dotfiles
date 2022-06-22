@@ -1,5 +1,11 @@
 local M = {}
 
+local D = require("dev")
+local hop = D.npcall(require, "hop")
+if not hop then
+    return
+end
+
 local utils = require("common.utils")
 local map = utils.map
 
@@ -10,7 +16,7 @@ local jump_target = require("hop.jump_target")
 -- =============================== Hop ================================
 function M.setup()
     -- "etovxqpdygfblzhckisuran"
-    require("hop").setup({keys = "asdfjklhmnwertzxcvbuio"})
+    hop.setup({keys = "asdfjklhmnwertzxcvbuio"})
 end
 
 local function wrap_targets(targets)
@@ -49,6 +55,7 @@ local treesitter_queries = function(query, inners, outers, queryfile)
     if outers == nil then
         outers = true
     end
+
     return function(hint_opts)
         local context = window.get_window_context()
         local queries = require("nvim-treesitter.query")
@@ -136,7 +143,7 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true,
+                    current_line_only = true
                 }
             )
         end
@@ -150,7 +157,7 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
+                    current_line_only = true
                 }
             )
         end
@@ -179,7 +186,7 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
-                    current_line_only = true,
+                    current_line_only = true
                     -- inclusive_jump = true
                 }
             )
@@ -228,7 +235,7 @@ local function init()
                     -- inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(utils.termcodes["h"], "n", false)
+            utils.normal("n", "h")
         end
     )
 
@@ -244,7 +251,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(utils.termcodes["l"], "n", false)
+            utils.normal("n", "l")
         end
     )
 
@@ -290,7 +297,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(utils.termcodes["h"], "v", false)
+            utils.normal("v", "h")
         end
     )
 
@@ -306,7 +313,7 @@ local function init()
                     inclusive_jump = false
                 }
             )
-            api.nvim_feedkeys(utils.termcodes["l"], "v", false)
+            utils.normal("v", "l")
         end
     )
 end

@@ -32,7 +32,7 @@
   // Filetypes that enable semanticTokens highlighting
   "semanticTokens.filetypes": [
     // "c",
-    // "cpp",
+    "cpp",
     "go",
     "html",
     "java"
@@ -171,13 +171,13 @@
   "clangd.enabled": true,
   "clangd.inlayHints.enable": true,
   "clangd.inlayHints.sep": "‣",
-  "clangd.arguments": [
-    "--clang-tidy",
-    "--completion-style=detailed",
-    "--fallback-style=google",
-    "--header-insertion=iwyu",
-    "--suggest-missing-includes"
-  ],
+  // "clangd.arguments": [
+  //   "--clang-tidy",
+  //   "--completion-style=detailed",
+  //   "--fallback-style=google",
+  //   "--header-insertion=iwyu",
+  //   "--suggest-missing-includes"
+  // ],
   "clangd.trace.server": "off",
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Rust                           │
@@ -271,22 +271,22 @@
     "redefined-local"
   ],
   "Lua.diagnostics.globals": [
-    "dev",
-    "a",
-    "async",
-    "Path",
-    "Job",
-    "List",
-    "ex",
-    "F",
-    "uv",
-    "api",
-    "fn",
-    "cmd",
-    "env",
-    "o",
-    "b",
-    "w",
+    // "dev",
+    // "a",
+    // "async",
+    // "Path",
+    // "Job",
+    // "List",
+    // "ex",
+    // "F",
+    // "uv",
+    // "api",
+    // "fn",
+    // "cmd",
+    // "env",
+    // "o",
+    // "b",
+    // "w",
     "R",
     "P",
     "RELOAD",

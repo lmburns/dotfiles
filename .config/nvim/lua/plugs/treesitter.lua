@@ -1,8 +1,12 @@
 local M = {}
 
+local D = require("dev")
+if not D.npcall(require, "nvim-treesitter") then
+    return
+end
+
 local utils = require("common.utils")
 local map = utils.map
-local autocmd = utils.autocmd
 local color = require("common.color")
 
 local wk = require("which-key")
@@ -85,8 +89,12 @@ end
 
 M.setup_hlargs = function()
     ex.packadd("hlargs.nvim")
+    local hlargs = D.npcall(require, "hlargs")
+    if not hlargs then
+        return
+    end
 
-    require("hlargs").setup {
+    hlargs.setup {
         -- color = "#ef9062",
         -- color = "#cc6666",
         -- color = "#5F875F",
@@ -120,10 +128,14 @@ end
 
 M.setup_iswap = function()
     ex.packadd("iswap.nvim")
+    local iswap = D.npcall(require, "iswap")
+    if not iswap then
+        return
+    end
 
-    color.set_hl("ISwapSwap", {background = "#957FB8"})
+    color.set_hl("ISwapSwap", {bg = "#957FB8"})
 
-    require("iswap").setup {
+    iswap.setup {
         keys = "asdfghjkl;",
         grey = "disable",
         hl_snipe = "ISwapSwap",
@@ -141,8 +153,12 @@ end
 ---Setup `aerial`
 M.setup_aerial = function()
     ex.packadd("aerial.nvim")
+    local aerial = D.npcall(require, "aerial")
+    if not aerial then
+        return
+    end
 
-    require("aerial").setup(
+    aerial.setup(
         {
             -- Priority list of preferred backends for aerial.
             -- This can be a filetype map (see :help aerial-filetype-map)
@@ -383,8 +399,12 @@ end
 ---Setup `nvim_context_vt`
 M.setup_context_vt = function()
     ex.packadd("nvim_context_vt")
+    local ctx = D.npcall(require, "nvim_context_vt")
+    if not ctx then
+        return
+    end
 
-    require("nvim_context_vt").setup(
+    ctx.setup(
         {
             -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
             -- Default: true
@@ -450,8 +470,12 @@ end
 
 M.setup_treesurfer = function()
     ex.packadd("syntax-tree-surfer")
+    local sts = D.npcall(require, "syntax-tree-surfer")
+    if not sts then
+        return
+    end
 
-    require("syntax-tree-surfer").setup(
+    sts.setup(
         {
             highlight_group = "STS_highlight", -- HopNextKey
             disable_no_instance_found_report = false,
@@ -483,7 +507,6 @@ M.setup_treesurfer = function()
         }
     )
 
-    local sts = require("syntax-tree-surfer")
     map(
         "n",
         "<C-A-.>",
@@ -501,7 +524,30 @@ M.setup_treesurfer = function()
                 }
             )
         end,
-        {desc = "Jump to node"}
+        {desc = "Jump to a main node"}
+    )
+
+    map(
+        "n",
+        "<C-A-,>",
+        function()
+            sts.targeted_jump(
+                {
+                    "function",
+                    "function_definition",
+                    "function_call",
+                    "if_statement",
+                    "else_clause",
+                    "else_statement",
+                    "elseif_statement",
+                    "for_statement",
+                    "while_statement",
+                    "switch_statement",
+                    "variable_declaration"
+                }
+            )
+        end,
+        {desc = "Jump to any node"}
     )
 
     map(
@@ -817,11 +863,11 @@ M.setup = function()
                     ["]f"] = "@function.outer",
                     ["]m"] = "@class.outer",
                     ["]r"] = "@block.outer",
-                    ["]d"] = "@comment.outer",
+                    ["]C"] = "@comment.outer",
                     ["]j"] = "@parameter.inner",
                     ["]a"] = "@call.inner",
                     ["]l"] = "@loop.inner",
-                    ["]C"] = "@conditional.inner"
+                    ["]d"] = "@conditional.inner"
                     -- ["]l"] = "@statement.inner"
                     -- ["gnf"] = "@function.outer",
                     -- ["gnif"] = "@function.inner",
@@ -846,11 +892,11 @@ M.setup = function()
                     ["[f"] = "@function.outer",
                     ["[m"] = "@class.outer",
                     ["[r"] = "@block.outer",
-                    ["[d"] = "@comment.outer",
+                    ["[C"] = "@comment.outer",
                     ["[j"] = "@parameter.inner",
                     ["[a"] = "@call.inner",
                     ["[l"] = "@loop.inner",
-                    ["[C"] = "@conditional.inner"
+                    ["[d"] = "@conditional.inner"
                     -- ["gpf"] = "@function.outer",
                     -- ["gpif"] = "@function.inner",
                     -- ["gpp"] = "@parameter.inner",
@@ -1053,11 +1099,11 @@ local function init()
             ["]f"] = "Next function start",
             ["]m"] = "Next class start",
             ["]r"] = "Next block start",
-            ["]d"] = "Next comment start",
+            ["]C"] = "Next comment start",
             ["]j"] = "Next parameter start",
             ["]a"] = "Next call start",
             ["]l"] = "Next loop start",
-            ["]C"] = "Next conditional start",
+            ["]d"] = "Next conditional start",
             ["]F"] = "Next function end",
             ["]M"] = "Next class end",
             ["]R"] = "Next block end",

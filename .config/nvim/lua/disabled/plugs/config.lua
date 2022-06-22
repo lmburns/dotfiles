@@ -1,0 +1,65 @@
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Pandoc                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.pandoc()
+--     g["pandoc#filetypes#handled"] = {"pandoc", "markdown"}
+--     g["pandoc#after#modules#enabled"] = {"vim-table-mode"}
+--     g["pandoc#syntax#codeblocks#embeds#langs"] = {
+--         "c",
+--         "python",
+--         "sh",
+--         "html",
+--         "css"
+--     }
+--     g["pandoc#formatting#mode"] = "h"
+--     g["pandoc#modules#disabled"] = {"folding", "formatting"}
+--     g["pandoc#syntax#conceal#cchar_overrides"] = {codelang = " "}
+-- end
+
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Abolish                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.abolish()
+--     wk.register(
+--         {
+--             ["rs"] = "Snake case",
+--             ["rm"] = "Mixed case",
+--             ["rc"] = "Camel case",
+--             ["ru"] = "Upper case",
+--             ["r-"] = "Dash case",
+--             ["r."] = "Dot case",
+--             ["r<Space>"] = "Space case",
+--             ["rt"] = "Title case"
+--         },
+--         {mode = "o"}
+--     )
+-- end
+
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Persistence                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.persistence()
+--     require("persistence").setup(
+--         {
+--             dir = ("%s/%s"):format(fn.stdpath("data"), "/sessions/"),
+--             options = {"buffers", "curdir", "tabpages", "winsize"}
+--         }
+--     )
+--
+--     command(
+--         "RestoreSessionCWD",
+--         function()
+--             require("persistence").load()
+--         end,
+--         {nargs = 0}
+--     )
+--     command(
+--         "RestoreSession",
+--         function()
+--             require("persistence").load({last = true})
+--         end,
+--         {nargs = 0}
+--     )
+-- end

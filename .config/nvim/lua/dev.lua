@@ -2,6 +2,7 @@
 
 local M = {}
 
+local log = require("common.log")
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
@@ -36,6 +37,23 @@ function os.caplines(command)
     file:close()
 
     return lines
+end
+
+---Use in combination with pcall
+function M.ok_or_nil(status, ...)
+    if not status then
+        local args = {...}
+        local msg = vim.split(table.concat(args, "\n"), "\n")
+        local mod = msg[1]:match("module '(%w.*)'")
+        log.err(msg, true, {title = ('Failed to require("%s")'):format(mod)})
+        return
+    end
+    return ...
+end
+
+---Nil pcall.
+function M.npcall(fn, ...)
+    return M.ok_or_nil(pcall(fn, ...))
 end
 
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later
@@ -362,17 +380,6 @@ M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
 end
 
--- M.format_args = function(...)
---   local args = M.tbl_pack(...)
---   if args.n == 0 then
---     return nil
---   elseif args.n == 1 and type(args[1]) == 'table' then
---     return sanitize(args[1])
---   else
---     return sanitize(args)
---   end
--- end
-
 ---Unpack a table into arguments. Similar to `table.unpack`
 ---@param t table table to unpack
 ---@param i number
@@ -681,18 +688,6 @@ M.is_term_buffer = function(bufnr)
     return M.is_term_bufname(bufname)
 end
 
----Execute a function with a buffer
----@param bufnr number
----@param f fun(): any
----@return any
-M.buf_call = function(bufnr, f)
-    if bufnr == 0 or bufnr == api.nvim_get_current_buf() then
-        return f()
-    else
-        return api.nvim_buf_call(bufnr, f)
-    end
-end
-
 ---Get the nubmer of tabs
 ---@return number
 M.get_tab_count = function()
@@ -764,18 +759,6 @@ M.find_win_except_float = function(bufnr)
         end
     end
     return winid
-end
-
----Execute a function with a window
----@param winid number
----@param f fun(): any
----@return any
-M.win_call = function(winid, f)
-    if winid == 0 or winid == api.nvim_get_current_win() then
-        return f()
-    else
-        return api.nvim_win_call(winid, f)
-    end
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
