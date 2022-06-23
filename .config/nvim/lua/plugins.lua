@@ -177,7 +177,7 @@ packer.set_handler(1, handlers.disable)
 packer.set_handler("patch", handlers.patch)
 
 ---Collect telescope extensions
-packer.set_handler("telescope_ext", handlers.telescope_ext)
+-- packer.set_handler("telescope_ext", handlers.telescope_ext)
 
 ---Use a local plugin found on the filesystem
 ---@param url string link to repo
@@ -225,6 +225,7 @@ return packer.startup(
 
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
+            use({"kevinhwang91/promise-async"})
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
@@ -257,10 +258,9 @@ return packer.startup(
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
             use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
             use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
-            use({"gbprod/yanky.nvim"})
+            -- use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
-            use({"kevinhwang91/promise-async"})
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
             use({"AndrewRadev/linediff.vim", cmd = "Linediff"})
             use({"dstein64/vim-startuptime", cmd = "StartupTime"})
@@ -591,14 +591,14 @@ return packer.startup(
             -- ]]] === Grepper ===
 
             -- ============================ Scrollbar ============================= [[[
-            use(
-                {
-                    "petertriho/nvim-scrollbar",
-                    requires = "kevinhwang91/nvim-hlslens",
-                    after = colorscheme,
-                    conf = "plugs.scrollbar"
-                }
-            )
+            -- use(
+            --     {
+            --         "petertriho/nvim-scrollbar",
+            --         requires = "kevinhwang91/nvim-hlslens",
+            --         after = colorscheme,
+            --         conf = "plugs.scrollbar"
+            --     }
+            -- )
 
             -- use({"karb94/neoscroll.nvim", conf = "neoscroll", desc = "Smooth scrolling"})
 
@@ -649,7 +649,9 @@ return packer.startup(
                     "akinsho/bufferline.nvim",
                     after = {colorscheme, "lualine.nvim"},
                     conf = "plugs.bufferline",
-                    requires = "famiu/bufdelete.nvim"
+                    requires = "kazhala/close-buffers.nvim",
+                    -- requires = "famiu/bufdelete.nvim"
+
                 }
             )
             -- ]]] === Lualine ===
@@ -1482,6 +1484,15 @@ return packer.startup(
 
             use(
                 {
+                    "AckslD/nvim-neoclip.lua",
+                    requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
+                    after = {"telescope.nvim", "sqlite.lua"},
+                    -- conf = "plugs.neoclip"
+                }
+            )
+
+            use(
+                {
                     "nvim-telescope/telescope-packer.nvim",
                     after = {"telescope.nvim"},
                     requires = {
@@ -1656,13 +1667,13 @@ return packer.startup(
             )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
-            use(
-                {
-                    "simrat39/desktop-notify.nvim",
-                    setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-                    config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
-                }
-            )
+            -- use(
+            --     {
+            --         "simrat39/desktop-notify.nvim",
+            --         setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
+            --         config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
+            --     }
+            -- )
         end
     }
 )

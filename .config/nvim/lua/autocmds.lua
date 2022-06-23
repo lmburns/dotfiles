@@ -2,11 +2,11 @@ local utils = require("common.utils")
 local C = require("common.color")
 local debounce = require("common.debounce")
 local log = require("common.log")
-local funcs = require("functions")
+-- local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
 local autocmd = utils.autocmd
-local create_augroup = utils.create_augroup
+-- local create_augroup = utils.create_augroup
 
 local ex = nvim.ex
 local api = vim.api
@@ -290,21 +290,21 @@ nvim.autocmd.lmb__ColorschemeSetup = {
     command = function()
         C.all(
             {
-                TSVariableBuiltin = {gui = "none"},
-                TSTypeBuiltin = {gui = "none"},
-                TSProperty = {gui = "none"},
-                TSVariable = {gui = "none"},
-                TSKeyword = {gui = "none"},
-                TSConditional = {gui = "none"},
-                TSString = {gui = "none"},
-                TSKeywordFunction = {gui = "none"},
-                TSFunction = {bold = true},
-                TSFuncBuiltin = {bold = true},
-                Function = {gui = "bold"},
-                Todo = {bg = "none"},
-                QuickFixLine = {fg = "none"}
-                -- TSConstBuiltin = {gui = "none", default = true},
-                -- TSMethod = {gui = "bold"},
+                TSVariableBuiltin = {default = true, gui = "none"},
+                TSTypeBuiltin = {default = true, gui = "none"},
+                TSProperty = {default = true, gui = "none"},
+                TSVariable = {default = true, gui = "none"},
+                TSKeyword = {default = true, gui = "none"},
+                TSConditional = {default = true, gui = "none"},
+                TSString = {default = true, gui = "none"},
+                TSKeywordFunction = {default = true, gui = "none"},
+                TSFunction = {default = true, bold = true},
+                TSFuncBuiltin = {default = true, bold = true},
+                Function = {default = true, gui = "bold"},
+                Todo = {default = true, bg = "none"},
+                QuickFixLine = {default = true, fg = "none"}
+                -- TSConstBuiltin = {default = true, gui = "none"},
+                -- TSMethod = {default = true, gui = "bold"},
                 -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
             }
         )
@@ -602,6 +602,47 @@ nvim.autocmd.lmb__FiletypeDetect = {
 }
 -- ]]]
 
+-- === File Enhancements === [[[
+nvim.autocmd.lmb__LargeFileEnhancement = {
+    event = "BufRead",
+    desc = "Optimize the viewing of larger files",
+    command = function()
+        if vim.bo.ft == "help" then
+            return
+        end
+
+        local size = fn.getfsize(fn.expand("%"))
+        if size > 1024 * 1024 * 5 then
+            local hlsearch = vim.opt.hlsearch
+            local lazyredraw = vim.opt.lazyredraw
+            local showmatch = vim.opt.showmatch
+
+            vim.bo.undofile = false
+            vim.wo.colorcolumn = ""
+            vim.wo.relativenumber = false
+            vim.wo.foldmethod = "manual"
+            vim.wo.spell = false
+            vim.opt.hlsearch = false
+            vim.opt.lazyredraw = true
+            vim.opt.showmatch = false
+
+            autocmd(
+                {
+                    event = "BufDelete",
+                    buffer = 0,
+                    callback = function()
+                        vim.opt.hlsearch = hlsearch
+                        vim.opt.lazyredraw = lazyredraw
+                        vim.opt.showmatch = showmatch
+                    end,
+                    desc = "Restore settings from optimizing large files"
+                }
+            )
+        end
+    end
+}
+-- ]]]
+
 -- === Tmux === [[[
 if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
     -- vim.cmd [[
@@ -894,23 +935,23 @@ nvim.autocmd.RnuColumn = {
 }
 -- ]]] === RNU Column ===
 
-augroup(
-    "lmb__SetFocus",
-    {
-        event = "FocusGained",
-        desc = "Set `nvim_focused` to true",
-        command = function()
-            g.nvim_focused = true
-        end
-    },
-    {
-        event = "FocusLost",
-        desc = "Set `nvim_focused` to false",
-        command = function()
-            g.nvim_focused = false
-        end
-    }
-)
+-- augroup(
+--     "lmb__SetFocus",
+--     {
+--         event = "FocusGained",
+--         desc = "Set `nvim_focused` to true",
+--         command = function()
+--             g.nvim_focused = true
+--         end
+--     },
+--     {
+--         event = "FocusLost",
+--         desc = "Set `nvim_focused` to false",
+--         command = function()
+--             g.nvim_focused = false
+--         end
+--     }
+-- )
 
 -- autocmd(
 --     {

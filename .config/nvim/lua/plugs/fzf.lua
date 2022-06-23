@@ -548,13 +548,33 @@ local function init()
     --     \ 'window': 'call FloatingFZF()'})
     -- ]]
 
-    cmd [[
-    inoremap <expr> <a-.> fzf#complete({
-        \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
-        \ 'options': '--no-border',
-        \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
-        \ 'window': 'call FloatingFZF()'})
-  ]]
+    --   cmd [[
+    --   inoremap <expr> <a-.> fzf#complete({
+    --       \ 'source': 'greenclip print 2>/dev/null \| grep -v "^\s*$" \| nl -w2 -s" "',
+    --       \ 'options': '--no-border',
+    --       \ 'reducer': { line -> substitute(line[0], '^ *[0-9]\+ ', '', '') },
+    --       \ 'window': 'call FloatingFZF()'})
+    -- ]]
+
+    map(
+        "i",
+        "<A-.>",
+        function()
+            fn["fzf#complete"](
+                {
+                    source = [[greenclip print 2>/dev/null | grep -v "^\s*$" | nl -w2 -s" "]],
+                    options = "--no-border",
+                    reducer = function(line)
+                        local mod = line[1]:gsub("^%s*[0-9]+%s", "")
+                        mod = mod:gsub(" ", "\n") -- Replace non-breakable space
+                        return mod
+                    end,
+                    window = "call FloatingFZF()"
+                }
+            )
+        end,
+        {expr = true}
+    )
 
     -- Floating window
     cmd [[
@@ -575,13 +595,13 @@ local function init()
       let col = float2nr((&columns - width) / 2)
 
       " Border
-      let top = '┏━' . repeat('─', width - 4) . '━┓'
+      let top = '╭─' . repeat('─', width - 4) . '─╮'
       let mid = '│'  . repeat(' ', width - 2) .  '│'
-      let bot = '┗━' . repeat('─', width - 4) . '━┛'
+      let bot = '╰─' . repeat('─', width - 4) . '─╯'
       let border = [top] + repeat([mid], height - 2) + [bot]
 
       " Draw frame
-      let s:frame = s:create_float('Comment',
+      let s:frame = s:create_float('FloatBorder',
         \ {'row': row, 'col': col, 'width': width, 'height': height})
       call nvim_buf_set_lines(s:frame, 0, -1, v:true, border)
 

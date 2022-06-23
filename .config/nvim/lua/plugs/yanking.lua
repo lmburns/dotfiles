@@ -57,21 +57,6 @@ end
 local function init()
     M.setup()
 
-    augroup(
-        "lmb__Highlight",
-        {
-            event = "TextYankPost",
-            pattern = "*",
-            command = function()
-                C.set_hl("HighlightedyankRegion", {bg = "#cc6666"})
-                if not vim.b.visual_multi then
-                    pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
-                end
-            end,
-            desc = "Highlight a selection on yank"
-        }
-    )
-
     -- color.set_hl("YankyYanked", {background = "#cc6666"})
     C.set_hl("YankyPut", {background = "#cc6666"})
 

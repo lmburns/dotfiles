@@ -1,15 +1,18 @@
--- ==========================================================================
---   Author: Lucas Burns
---    Email: burnsac@me.com
---  Created: 2022-03-24 19:39
--- ==========================================================================
--- FIX: Folding causing cursor to move one left on startup
 -- FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 -- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
--- FIX: When opening command line window (i.e., <C-c>) todo-comments autocmd error
 -- FIX: Focus events fire occasionally (they work outside of tmux)
 
+-- FIX: Cursor blinking is very fast on text operators which don't trigger which-key
+--      This happens with COC (e.g., Lua and Rust, but not toml or yaml)
+--      If lazyredraw is disabled then it stops
+--      When reverting back to older configurations, this persists (maybe a Neovim update?)
+--      This just started yesterday (i.e., June 22)
+
+-- Notes:
+-- When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)
 -- Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
+--
+-- Folding causing cursor to move one left on startup (UFO fixed this)
 
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -17,7 +20,7 @@ if ok then
     impatient.enable_profile()
 end
 
-require("common.global")
+local _ = require("common.global")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -94,27 +97,36 @@ else
     require("plugins").compile()
 end
 
-a.async_void(
-    function()
-        ex.packadd("cfilter")
-        require("mapping")
-        require("abbr")
-        require("functions")
-        require("autocmds")
-        require("common.qf")
-        require("common.mru")
-        require("common.grepper")
-        -- require("common.reg")
-        -- require("plugs.fold")
-    end
-)()
+-- a.async_void(
+--     function()
+--         ex.packadd("cfilter")
+--         require("mapping")
+--         require("abbr")
+--         require("functions")
+--         require("autocmds")
+--         require("common.qf")
+--         require("common.mru")
+--         require("common.grepper")
+--         -- require("common.reg")
+--         -- require("plugs.fold")
+--     end
+-- )()
+ex.packadd("cfilter")
+require("mapping")
+require("abbr")
+require("functions")
+require("autocmds")
+require("common.qf")
+require("common.mru")
+require("common.grepper")
 
 a.async_void(
     function()
         vim.notify = function(...)
             require("plugins").loader("nvim-notify")
-            require("plugins").loader("desktop-notify.nvim")
-            vim.notify = require("common.utils").notify
+            vim.notify = require("notify")
+            --             require("plugins").loader("desktop-notify.nvim")
+            --             vim.notify = require("common.utils").notify
             vim.notify(...)
         end
     end
@@ -171,7 +183,8 @@ vim.schedule(
             function()
                 g.loaded_clipboard_provider = nil
                 ex.runtime("autoload/provider/clipboard.vim")
-                require("plugs.yanking") -- Needs to be loaded after clipboard is set
+                -- require("plugs.yanking") -- Needs to be loaded after clipboard is set
+                require("plugs.neoclip") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
                     augroup(
@@ -245,6 +258,7 @@ vim.schedule(
                     -- "coc-tslint",
                     -- "coc-vimtex",
                     -- "coc-rescript",
+                    -- "coc-dlang",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
@@ -253,7 +267,6 @@ vim.schedule(
                     "coc-json",
                     "coc-clangd",
                     "coc-css",
-                    "coc-dlang",
                     "coc-go",
                     "coc-html",
                     "coc-markdownlint",

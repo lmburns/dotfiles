@@ -521,13 +521,14 @@ nvim.t =
     }
 )
 
+---Shortcut allows access to both buffer and window variables
 nvim.opt =
     setmetatable(
     {},
     {
         __index = function(_, k)
             local ok, opt = pcall(api.nvim_get_option, k)
-            -- These bring up an error for indexing it
+            -- FIX: These bring up an error for indexing it
             -- local loc = nvim.bo[k] or nvim.wo[k] or nil
             -- local loc = utils.ife_nil(nvim.bo[k], nvim.wo[k], nil)
 
@@ -537,8 +538,6 @@ nvim.opt =
             if nvim.wo[k] ~= nil then
                 return nvim.wo[k]
             end
-
-            -- local loc = F.if_nil(nvim.bo[k])
 
             return ok and opt or nil
         end,
@@ -552,6 +551,40 @@ nvim.opt =
                 nvim.wo[k] = v
             end
             return nvim.o[k] ~= nil and nvim.o[k] or (nvim.bo[k] ~= nil and nvim.bo[k] or nvim.wo[k])
+        end
+    }
+)
+
+---Access to local variables
+nvim.opt_local =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            return nvim.bo[k] or nvim.wo[k]
+        end,
+        __newindex = function(_, k, v)
+            if nvim.bo[k] ~= nil then
+                nvim.bo[k] = v
+            elseif nvim.wo[k] ~= nil then
+                nvim.wo[k] = v
+            end
+            return nvim.bo[k] ~= nil and nvim.bo[k] or nvim.wo[k]
+        end
+    }
+)
+
+---Access to global variables
+nvim.opt_global =
+    setmetatable(
+    {},
+    {
+        __index = function(_, k)
+            return nvim.o[k]
+        end,
+        __newindex = function(_, k, v)
+            nvim.o[k] = v
+            return nvim.o[k]
         end
     }
 )

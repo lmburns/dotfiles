@@ -17,8 +17,7 @@ local augroup = utils.augroup
 local stl = require("common.utils.stl")
 local conds = stl.conditions
 local plugs = stl.plugins
-
-local only_pad_right = {left = 1, right = 0}
+local only_pad_right = stl.other.only_pad_right
 
 -- map("", "J", function()
 --     api.nvim_echo({{vim.inspect(api.nvim_get_mode()), "WarningMsg"}}, true, {})
@@ -267,7 +266,6 @@ local function init()
             "coctree",
             "NeogitStatus",
             "undotree",
-            "Trouble",
             "TelescopePrompt",
             "tsplayground",
             "dapui_scopes",
@@ -347,6 +345,7 @@ local function init()
                 -- "quickfix",
                 stl.extensions.qf,
                 stl.extensions.toggleterm,
+                stl.extensions.trouble,
                 "symbols-outline",
                 my_extension,
                 "aerial",

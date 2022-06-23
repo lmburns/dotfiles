@@ -94,11 +94,11 @@ function M.setup()
                 padding_char = " ",
                 zindex = 100
             },
-            -- hide = {
-            --     cursorline = true,
-            --     focused_win = false,
-            --     only_win = false
-            -- },
+            hide = {
+                cursorline = true,
+                focused_win = false,
+                only_win = false
+            },
             ignore = {
                 floating_wins = true,
                 unlisted_buffers = true,

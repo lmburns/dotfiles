@@ -23,9 +23,9 @@ function M.setup()
             -- exchange = {
             --     motion = false
             -- },
-            on_substitute = function(event)
-                require("yanky").init_ring("p", event.register, event.count, event.vmode:match("[vV�]"))
-            end
+            -- on_substitute = function(event)
+            --     require("yanky").init_ring("p", event.register, event.count, event.vmode:match("[vV]"))
+            -- end
         }
     )
 end

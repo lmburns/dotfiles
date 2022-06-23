@@ -23,6 +23,7 @@ alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 alias %= \$=
 
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
+alias sane='stty sane'
 alias nd='neovide'
 alias tm='tmsu'
 alias mail='/usr/bin/mail'

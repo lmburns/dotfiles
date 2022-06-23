@@ -56,7 +56,7 @@ function M.setup()
             ga = "Easy align",
             ys = "Surround",
             s = "Substitute",
-            ["d"] = "Delete"
+            d = "Delete"
         },
         key_labels = {},
         icons = {
@@ -89,16 +89,9 @@ function M.setup()
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            n = {"o", "O"} -- Would be nice if two letter worked
+            -- n = {"o", "O"} -- Would be nice if two letter worked
         }
     }
-
-    wk.register(
-        {
-            ["d"] = {[["_d]], "Delete"}
-        },
-        {auto = true, mode = "n"}
-    )
 end
 
 local function init()
@@ -111,6 +104,7 @@ local function init()
 
     M.setup()
 
+    map("n", "d", '"_d')
     map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 

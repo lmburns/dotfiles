@@ -2,24 +2,29 @@ local M = {}
 
 local D = require("dev")
 local bufferline = D.npcall(require, "bufferline")
-
 if not bufferline then
     return
 end
 
 local utils = require("common.utils")
-local icons = require("style").icons
+-- local icons = require("style").icons
 local color = require("common.color")
 local groups = require("bufferline.groups")
 
 local fn = vim.fn
 local api = vim.api
 
+-- local diagnostics_signs = {
+--     error = icons.lsp.sb.error,
+--     warning = icons.lsp.sb.warn,
+--     hint = icons.lsp.sb.hint,
+--     info = icons.lsp.sb.info
+-- }
 local diagnostics_signs = {
-    error = icons.lsp.sb.error,
-    warning = icons.lsp.sb.warn,
-    hint = icons.lsp.sb.hint,
-    info = icons.lsp.sb.info
+    error = "",
+    warning = "",
+    hint = "",
+    info = ""
 }
 
 ---Filter out filetypes you don't want to see
@@ -85,15 +90,19 @@ local function name_formatter(buf)
 end
 
 function M.setup()
-    require("bufferline").setup(
+    bufferline.setup(
         {
             options = {
                 mode = "buffers",
                 numbers = function(opts)
                     return ("%s"):format(opts.raise(opts.ordinal))
                 end,
-                close_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
-                right_mouse_command = "Bdelete %d", -- can be a string | function, see "Mouse actions"
+                close_command = function(bufnr)
+                    require("close_buffers").delete({type = bufnr})
+                end, -- can be a string | function, see "Mouse actions"
+                right_mouse_command = function(bufnr)
+                    require("close_buffers").delete({type = bufnr})
+                end, -- can be a string | function, see "Mouse actions"
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
                 middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
                 indicator_icon = "▎",
@@ -139,8 +148,7 @@ function M.setup()
                 show_buffer_close_icons = false,
                 show_close_icon = false,
                 show_tab_indicators = true,
-                -- persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
-
+                persist_buffer_sort = false, -- whether or not custom sorted buffers should persist
                 -- can also be a table containing 2 custom separators
                 -- [focused and unfocused]. eg: { '|', '|' }
                 separator_style = "slant",
@@ -187,22 +195,59 @@ function M.setup()
     )
 end
 
+---@deprecated
 ---Bufdelete moves forward, I'm used to moving backwards
-function M.bufdelete()
-    local bufnr = api.nvim_get_current_buf()
+-- function M.bufdelete()
+--     local bufnr = api.nvim_get_current_buf()
+--
+--     utils.prequire("bufdelete"):map_ok(
+--         function(bd)
+--             bufferline.cycle(-1)
+--             pcall(bd.bufdelete, bufnr)
+--         end
+--     ):unwrap_or(
+--         function()
+--             vim.cmd(("bp | bd %s"):format(bufnr))
+--         end
+--     )
+--
+--     -- require("bufdelete").bufdelete(bufnr)
+-- end
 
-    utils.prequire("bufdelete"):map_ok(
-        function(bd)
-            bufferline.cycle(-1)
-            pcall(bd.bufdelete, bufnr)
-        end
-    ):unwrap_or(
-        function()
-            vim.cmd(("bp | bd %s"):format(bufnr))
-        end
+function M.setup_close_buffers()
+    local close = D.npcall(require, "close_buffers")
+    if not close then
+        return
+    end
+
+    close.setup(
+        {
+            filetype_ignore = {}, -- Filetype to ignore when running deletions
+            file_glob_ignore = {}, -- File name glob pattern to ignore when running deletions (e.g. '*.md')
+            file_regex_ignore = {}, -- File name regex pattern to ignore when running deletions (e.g. '.*[.]md')
+            preserve_window_layout = {"this"},
+            next_buffer_cmd = function(windows)
+                bufferline.cycle(-1)
+                local bufnr = api.nvim_get_current_buf()
+
+                for _, window in ipairs(windows) do
+                    api.nvim_win_set_buf(window, bufnr)
+                end
+            end
+        }
     )
 
-    -- require("bufdelete").bufdelete(bufnr)
+    -- -- bdelete
+    -- require('close_buffers').delete({ type = 'hidden', force = true }) -- Delete all non-visible buffers
+    -- require('close_buffers').delete({ type = 'nameless' }) -- Delete all buffers without name
+    -- require('close_buffers').delete({ type = 'this' }) -- Delete the current buffer
+    -- require('close_buffers').delete({ type = 1 }) -- Delete the specified buffer number
+    -- require('close_buffers').delete({ regex = '.*[.]md' }) -- Delete all buffers matching the regex
+    --
+    -- -- bwipeout
+    -- require('close_buffers').wipe({ type = 'all', force = true }) -- Wipe all buffers
+    -- require('close_buffers').wipe({ type = 'other' }) -- Wipe all buffers except the current focused
+    -- require('close_buffers').wipe({ type = 'hidden', glob = '*.lua' }) -- Wipe all buffers matching the glob
 end
 
 local function init_hl()
@@ -220,6 +265,9 @@ local function init()
     local wk = require("which-key")
 
     init_hl()
+
+    M.setup()
+    M.setup_close_buffers()
 
     wk.register(
         {
@@ -239,7 +287,10 @@ local function init()
             ["<Leader>b"] = {
                 n = {":enew<CR>", "New buffer"},
                 -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
-                q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
+                -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
+                -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
+                q = {"<Cmd>BDelete this<cr>", "Delete this buffer"},
+                w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
                 Q = {":bufdo bd! #<CR>", "Close all buffers"}
             }
         }
@@ -261,8 +312,6 @@ local function init()
 
         -- map("n", "<Leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>", {silent = true})
     end
-
-    M.setup()
 end
 
 init()

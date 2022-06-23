@@ -1027,6 +1027,7 @@ builtin.edit_nvim = function()
             "--hidden",
             "--follow",
             "--exclude=.git",
+            "--exclude=disabled",
             "--exclude=_backup",
             "--exclude=sessions"
         },
@@ -1195,10 +1196,6 @@ builtin.todo = function(opts)
     telescope.extensions["todo-comments"].todo(opts)
 end
 
-builtin.yanky = function(opts)
-    telescope.extensions.yank_history.yank_history(opts)
-end
-
 builtin.bookmarks = function(opts)
     telescope.extensions.bookmarks.bookmarks(opts)
 end
@@ -1230,6 +1227,18 @@ end
 builtin.gh_gist = function(opts)
     telescope.extensions.gh.gist(opts)
 end
+
+builtin.neoclip = function(opts)
+    telescope.extensions.neoclip.default(opts)
+end
+
+builtin.macroclip = function(opts)
+    telescope.extensions.macroscope.default(opts)
+end
+
+-- builtin.yanky = function(opts)
+--     telescope.extensions.yank_history.yank_history(opts)
+-- end
 
 -- builtin.aerial = function(opts)
 --     telescope.extensions.aerial.aerial(opts)
@@ -1303,14 +1312,16 @@ wk.register(
 -- Plugins
 wk.register(
     {
-        ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
+        -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
 )
 
 wk.register(
     {
-        ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
+        -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
+        ["<A-;>"] = {"<cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
     },
     {mode = "i"}
 )

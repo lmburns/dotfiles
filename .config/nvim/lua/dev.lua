@@ -7,6 +7,31 @@ local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
 
+_G.pln = function(...)
+    local argc = select("#", ...)
+    local msg_tbl = {}
+    for i = 1, argc do
+        local arg = select(i, ...)
+        table.insert(msg_tbl, M.inspect(arg))
+    end
+
+    print(table.concat(msg_tbl, "\n\n"))
+end
+
+---Print text nicely
+_G.p = function(...)
+    local argc = select("#", ...)
+    local msg_tbl = {}
+    for i = 1, argc do
+        local arg = select(i, ...)
+        table.insert(msg_tbl, M.inspect(arg))
+    end
+
+    print(table.concat(msg_tbl, " "))
+end
+
+_G.pp = vim.pretty_print
+
 ---@alias vector table
 
 -- Capture output of command as a string
@@ -23,24 +48,8 @@ function os.capture(cmd, raw)
     return s
 end
 
----Capture output of a command in a table
----@param command string: shell command to run
----@return table
-function os.caplines(command)
-    local lines = {}
-    local file = assert(io.popen(command))
-
-    for line in file:lines() do
-        table.insert(lines, line)
-    end
-
-    file:close()
-
-    return lines
-end
-
 ---Use in combination with pcall
-function M.ok_or_nil(status, ...)
+M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
         local msg = vim.split(table.concat(args, "\n"), "\n")
@@ -52,7 +61,7 @@ function M.ok_or_nil(status, ...)
 end
 
 ---Nil pcall.
-function M.npcall(fn, ...)
+M.npcall = function(fn, ...)
     return M.ok_or_nil(pcall(fn, ...))
 end
 
@@ -153,30 +162,6 @@ M.start_job = function(cmd, opts)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                          Escape                          │
--- ╰──────────────────────────────────────────────────────────╯
--- Fzf-lua
---   * don't double-escape '\' (#340)
---   * if possible, replace surrounding single quote with double
-M.shellescape = function(s)
-    local shell = vim.o.shell
-    if not shell or not shell:match("fish$") then
-        return fn.shellescape(s)
-    else
-        local ret = nil
-        vim.o.shell = "sh"
-        if not s:match([["]]) and not s:match([[\]]) then
-            ret = fn.shellescape(s:gsub([[']], [["]]))
-            ret = [["]] .. ret:gsub([["]], [[']]):sub(2, #ret - 1) .. [["]]
-        else
-            ret = fn.shellescape(s)
-        end
-        vim.o.shell = shell
-        return ret
-    end
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                          Print                           │
 -- ╰──────────────────────────────────────────────────────────╯
 
@@ -195,55 +180,6 @@ M.inspect = function(v)
     end
     return s
 end
-
-M.inspect2 = function(...)
-    local args = {...}
-    local ret = {}
-
-    vim.schedule(
-        function()
-            for _, v in pairs(args) do
-                local t = type(v)
-                if t == "nil" then
-                    table.insert("nil")
-                elseif t == "userdata" then
-                    table.insert(("Userdata:\n%s"):format(vim.inspect(getmetatable(v))))
-                elseif t ~= "string" then
-                    table.insert(vim.inspect(v, {depth = math.huge}))
-                else
-                    table.insert(tostring(v))
-                end
-            end
-        end
-    )
-
-    return ret
-end
-
-_G.pln = function(...)
-    local argc = select("#", ...)
-    local msg_tbl = {}
-    for i = 1, argc do
-        local arg = select(i, ...)
-        table.insert(msg_tbl, M.inspect(arg))
-    end
-
-    print(table.concat(msg_tbl, "\n\n"))
-end
-
----Print text nicely
-_G.p = function(...)
-    local argc = select("#", ...)
-    local msg_tbl = {}
-    for i = 1, argc do
-        local arg = select(i, ...)
-        table.insert(msg_tbl, M.inspect(arg))
-    end
-
-    print(table.concat(msg_tbl, " "))
-end
-
-_G.pp = vim.pretty_print
 
 M.round = function(value)
     return math.floor(value + 0.5)
@@ -560,8 +496,9 @@ M.each = function(tbl, func)
     end
 end
 
--- ============================== Buffers =============================
--- ====================================================================
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Buffers                          │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Determine whether the buffer is empty
 ---@param bufnr number
@@ -933,7 +870,7 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Async                           │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.setTimeout(callback, ms)
+M.set_timeout = function(callback, ms)
     local timer = uv.new_timer()
     timer:start(
         ms,

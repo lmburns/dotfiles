@@ -3,7 +3,9 @@ local M = {}
 M.plugins = {}
 M.extensions = {}
 M.conditions = {}
+M.other = {}
 
+local devicons = require("nvim-web-devicons")
 local dev = require("dev")
 local C = require("common.color")
 local colors = require("kimbox.colors")
@@ -15,6 +17,11 @@ local g = vim.g
 
 -- TODO: Create a statusline changelist showing current change/total
 -- TODO: Create a statusline jumplist showing current jump/total
+
+-- ╒══════════════════════════════════════════════════════════╕
+--                            Other
+-- ╘══════════════════════════════════════════════════════════╛
+M.other.only_pad_right = {left = 1, right = 0}
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Conditions
@@ -410,7 +417,8 @@ local function get_terminal_status()
 end
 
 local function toggleterm_statusline()
-    return "ToggleTerm #" .. vim.b.toggle_number
+    local icon = devicons.get_icon_by_filetype("terminal")
+    return ("%s ToggleTerm #%d"):format(icon, vim.b.toggle_number)
 end
 
 local function term_title()
@@ -474,6 +482,117 @@ M.extensions.qf = {
         }
     },
     filetypes = {"qf"}
+}
+
+-- ╒══════════════════════════════════════════════════════════╕
+--                           Trouble
+-- ╘══════════════════════════════════════════════════════════╛
+
+local severity_name = {
+    [1] = "error",
+    [2] = "warning",
+    [3] = "info",
+    [4] = "hint",
+    [5] = "other"
+}
+
+function M.document_diagnostics()
+    local diagnostics = {}
+    -- Maybe a better way to get previous buffer
+    -- Would also be nice to distinguish between workspace and document
+    local bufnr = fn.bufnr("#")
+    local coc = require("plugs.coc")
+
+    if not coc.did_init() then
+        return diagnostics
+    end
+
+    local data = vim.b[bufnr].coc_diagnostic_info
+    if data then
+        return {
+            error = data.error,
+            warn = data.warning,
+            info = data.information,
+            hint = data.hint
+        }
+    else
+        return {
+            error = 0,
+            warn = 0,
+            info = 0,
+            hint = 0
+        }
+    end
+
+    -- fn.CocActionAsync(
+    --     "diagnosticList",
+    --     function(err, res)
+    --         if err ~= vim.NIL then
+    --             return
+    --         end
+    --
+    --         res = type(res) == "table" and res or {}
+    --         local result = {}
+    --         local bufname2bufnr = {}
+    --         for _, diagnostic in ipairs(res) do
+    --             local bufname = diagnostic.file
+    --             local bufnr = bufname2bufnr[bufname]
+    --             if not bufnr then
+    --                 bufnr = fn.bufnr(bufname)
+    --                 bufname2bufnr[bufname] = bufnr
+    --             end
+    --             if bufnr ~= -1 then
+    --                 result[bufnr] = result[bufnr] or {}
+    --                 table.insert(result[bufnr], {severity = diagnostic.level})
+    --             end
+    --         end
+    --         diagnostics = result
+    --     end
+    -- )
+    --
+    -- return diagnostics
+end
+
+M.extensions.trouble = {
+    sections = {
+        lualine_a = {
+            {
+                "mode",
+                fmt = function(str)
+                    return ("%s %s"):format(str, "")
+                end,
+                padding = M.other.only_pad_right
+            }
+        },
+        lualine_b = {
+            {
+                "filetype",
+                fmt = function(str)
+                    return ("[%s] %s"):format(icons.misc.list, str)
+                end,
+                color = {fg = colors.red, gui = "bold"}
+            }
+        },
+        lualine_c = {
+            {
+                "diagnostics",
+                sources = {M.document_diagnostics},
+                symbols = {
+                    error = icons.lsp.sb.error,
+                    warn = icons.lsp.sb.warn,
+                    info = icons.lsp.sb.info,
+                    hint = icons.lsp.sb.hint
+                }
+            }
+        },
+        lualine_x = {},
+        lualine_y = {},
+        lualine_z = {
+            "%l:%c",
+            "%p%%/%L"
+        }
+    },
+    filetypes = {"Trouble"}
 }
 
 return M

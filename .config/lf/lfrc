@@ -56,19 +56,19 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # │ Builtins                                                                  │
 # └───────────────────────────────────────────────────────────────────────────┘
 
-cmd recol ${{
-  w=$(tput cols)
-  if [[ $w -le 80 ]]; then
-    lf -remote "send $id set ratios 1:2"
-  elif [[ $w -le 160 ]]; then
-    lf -remote "send $id set ratios 1:2:3"
-  else
-    lf -remote "send $id set ratios 1:2:3:5"
-  fi
-}}
-recol
-map 0
-map 0 recol
+# cmd recol ${{
+#   w=$(tput cols)
+#   if [[ $w -le 80 ]]; then
+#     lf -remote "send $id set ratios 1:2"
+#   elif [[ $w -le 160 ]]; then
+#     lf -remote "send $id set ratios 1:2:3"
+#   else
+#     lf -remote "send $id set ratios 1:2:3:5"
+#   fi
+# }}
+# recol
+# map 0
+# map 0 recol
 
 cmd on-cd &{{
   emulate -L zsh

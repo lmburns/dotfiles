@@ -4,12 +4,13 @@ local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
 
+local env = vim.env
 local o = vim.opt
 local g = vim.g
 
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.
-g.nvim_focused = true
+-- g.nvim_focused = true
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -130,7 +131,7 @@ o.titlelen = 70
 o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
 
 o.list = true -- display tabs and trailing spaces visually
--- FIX: For some reason tab hides actual text
+-- Tab hides actual text when used with indent blankline
 o.listchars:append(
     {
         eol = nil,
@@ -163,11 +164,13 @@ o.linebreak = true -- lines wrap at words rather than random characters
 
 o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
-o.lazyredraw = true
+-- o.lazyredraw = true
 o.redrawtime = 1500
-o.ruler = false
-o.cmdheight = 2
-o.equalalways = false -- don't always make windows equal size
+-- g.cursorhold_updatetime = 1000
+o.updatetime = 200 -- cursorhold event time
+o.timeoutlen = 375 -- time to wait for mapping sequence to complete
+o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
+o.matchtime = 2 -- ms to blink when matching brackets
 -- o.autoread = true
 -- o.autowriteall = true -- automatically :write before running commands and changing files
 
@@ -184,7 +187,8 @@ o.shiftwidth = 0
 o.textwidth = 100
 -- o.shiftround = true
 
-o.wildoptions:append("pum")
+-- o.wildoptions:append("pum")
+o.wildoptions = "pum"
 o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
 o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
@@ -279,18 +283,31 @@ o.fillchars = {
     verthoriz = "╋"
 }
 
--- g.cursorhold_updatetime = 1000
-o.updatetime = 200 -- cursorhold event time
-o.timeoutlen = 375 -- time to wait for mapping sequence to complete
-o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
+o.cmdheight = 2
+o.ruler = false
+o.equalalways = false -- don't always make windows equal size
 o.showmatch = true -- show matching brackets when text indicator is over them
-o.matchtime = 2 -- ms to blink when matching brackets
 o.showmode = false -- hide file, it's in lightline
-o.showcmd = false -- show command
+o.showcmd = true -- show command
 o.signcolumn = "yes:1"
 o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
-o.shortmess:append("acsIS") -- aoOTIcF don't give 'ins-completion-menu' messages.
+-- shorten message in prompt window
+
+-- Weird because it doesn't show F as default
+-- o.shortmess:append("acsIS") -- aoOTIcF don't give 'ins-completion-menu' messages.
+
+o.shortmess = {
+    A = true, -- don't give the "ATTENTION" message when an existing swap file
+    a = true, -- enable 'filmnrwx' flag
+    c = true, -- don't give ins-completion-menu messages
+    s = true, -- don't give "search hit BOTTOM
+    I = true, -- don't give the intro message when starting Vim
+    S = true, -- do not show search count message when searching (HLSLens)
+    -- t = true, -- truncate file message at the start
+    -- T = true, -- truncate other messages in the middle
+    F = true, -- don't give the file info when editing a file
+}
 
 o.cedit = "<C-c>" -- Key used to open command window on the CLI
 o.tagfunc = "CocTagFunc"
@@ -367,38 +384,9 @@ end
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
--- o.winbar = "%{%v:lua.require'options'.winbar()%}"
-
-M.winbar_filetype_exclude = {
-    "help",
-    "startify",
-    "dashboard",
-    "packer",
-    "neogitstatus",
-    "NvimTree",
-    "Trouble",
-    "alpha",
-    "lir",
-    "Outline",
-    "spectre_panel",
-    "toggleterm"
-}
-
-M.winbar = function()
-    if
-        api.nvim_eval_statusline("%f", {}).str == "[No Name]" or
-            vim.tbl_contains(M.winbar_filetype_exclude, vim.bo.filetype)
-     then
-        return ""
-    end
-
-    return "%#WinBarSeparator#" ..
-        "%*" .. "%#WinBarContent#" .. "%m" .. " " .. "%F" .. "%*" .. "%#WinBarSeparator#" .. "%*"
+if nvim.executable("nvr") then
+    env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+    env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 end
-
--- if nvim.executable('nvr') then
---   env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
---   env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
--- end
 
 return M

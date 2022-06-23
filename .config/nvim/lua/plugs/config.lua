@@ -5,7 +5,7 @@
 local M = {}
 
 local D = require("dev")
-local lazy = require("common.lazy")
+-- local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
 local C = require("common.color")
@@ -545,7 +545,8 @@ end
 -- │                          Notify                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.notify()
-    local notify = D.npcall(lazy.require_on_exported_call, "notify")
+    -- local notify = D.npcall(lazy.require_on_exported_call, "notify")
+    local notify = D.npcall(require, "notify")
     if not notify then
         return
     end
@@ -1166,7 +1167,8 @@ end
 -- │                       SmartSplits                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.smartsplits()
-    local ss = D.npcall(lazy.require_on_exported_call, "smart-splits")
+    -- local ss = D.npcall(lazy.require_on_exported_call, "smart-splits")
+    local ss = D.npcall(require, "smart-splits")
     if not ss then
         return
     end

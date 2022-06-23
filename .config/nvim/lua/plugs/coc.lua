@@ -63,6 +63,7 @@ function M.go2def()
     local by
     if vim.bo.ft == "help" then
         utils.normal("n", "<C-]>")
+        -- api.nvim_feedkeys(utils.termcodes["<C-]>"], "n", false)
         by = "tag"
     else
         local err, res = M.a2sync("jumpDefinition", {"drop"})
@@ -712,7 +713,6 @@ function M.init()
         {
             event = "VimLeavePre",
             pattern = "*",
-            -- command = [[if get(g:, 'coc_process_pid', 0) | call system('kill -9 -- -' . g:coc_process_pid) | endif]]
             command = function()
                 if api.nvim_get_var("coc_process_pid") ~= nil then
                     os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))

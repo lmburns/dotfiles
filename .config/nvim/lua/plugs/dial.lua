@@ -61,11 +61,15 @@ function M.setup()
         augend.integer.alias.octal, -- 0o00, 0o11, 0o24,
         augend.integer.alias.binary, -- 0b0101, 0b11000111
         augend.date.alias["%m/%d"],
+        augend.date.alias["%-m/%-d"],
         augend.date.alias["%H:%M"], -- hour/minute
         augend.date.alias["%H:%M:%S"],
-        augend.date.alias["%Y/%m/%d"], -- date (2022/02/19, etc.)
         augend.date.alias["%Y-%m-%d"],
-        augend.date.alias["%m/%d"],
+        augend.date.alias["%m/%d/%y"],
+        augend.date.alias["%d/%m/%y"],
+        augend.date.alias["%Y/%m/%d"],
+        augend.date.alias["%m/%d/%Y"],
+        augend.date.alias["%d/%m/%Y"],
         augend.constant.alias.bool, -- boolean value (true <-> false)
         augend.semver.alias.semver, -- 4.3.0
         augend.hexcolor.new {case = "lower"}, -- color #b4c900
@@ -107,6 +111,7 @@ function M.setup()
                 "December"
             }
         ),
+        aug({"+", "-", "*", "/", "%"}, false),
         aug({"&&", "||"}, false),
         aug({"==", "!="}, false),
         aug({">=", "<="}, false),
