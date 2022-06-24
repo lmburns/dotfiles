@@ -158,11 +158,13 @@ M.setup_aerial = function()
         return
     end
 
+    local update_delay = 450
+
     aerial.setup(
         {
             -- Priority list of preferred backends for aerial.
             -- This can be a filetype map (see :help aerial-filetype-map)
-            backends = {"treesitter", "lsp", "markdown"},
+            backends = {"treesitter", "markdown" --[[ "lsp" ]]},
             -- Enum: persist, close, auto, global
             --   persist - aerial window will stay open until closed
             --   close   - aerial window will close when original file is no longer visible
@@ -230,7 +232,7 @@ M.setup_aerial = function()
                 -- Ignore unlisted buffers. See :help buflisted
                 unlisted_buffers = true,
                 -- List of filetypes to ignore.
-                filetypes = {},
+                filetypes = _t(BLACKLIST_FT):merge({"gomod"}),
                 -- Ignored buftypes.
                 -- Can be one of the following:
                 -- false or nil - No buftypes are ignored.
@@ -322,18 +324,21 @@ M.setup_aerial = function()
                     return conf
                 end
             },
+            -- lsp = {
+            --     update_when_errors = true,
+            --     diagnostics_trigger_update = true,
+            --     update_delay = update_delay
+            -- },
             treesitter = {
-                update_delay = 300
+                update_delay = update_delay
             },
             markdown = {
-                update_delay = 300
+                update_delay = update_delay
             }
             -- on_attach = function(bufnr)
             -- end
         }
     )
-
-    require("telescope").load_extension("aerial")
 
     -- Use 'o' to open to the function, not <CR>
     -- local keys = require("aerial.bindings").keys
@@ -364,6 +369,17 @@ M.setup_aerial = function()
     -- keys[cr_idx][1] = "o"
     -- keys[o_idx][1][1] = "<CR>"
 
+    -- This is here more for a proof of concept. I don't use rescript
+    local ts_langs = require("aerial.backends.treesitter.language_kind_map")
+
+    ts_langs.rescript = {
+        ["function"] = "Function",
+        module_declaration = "Module",
+        type_declaration = "Type",
+        type_annotation = "Interface",
+        external_declaration = "Interface"
+    }
+
     wk.register(
         {
             ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
@@ -384,16 +400,7 @@ M.setup_aerial = function()
         {mode = "v"}
     )
 
-    -- hi link AerialClass Type
-    -- hi link AerialClassIcon Special
-    -- hi link AerialFunction Special
-    -- hi AerialFunctionIcon guifg=#cb4b16 guibg=NONE guisp=NONE gui=NONE cterm=NONE
-    --
-    -- hi link AerialLine QuickFixLine
-    -- hi AerialLineNC guibg=Gray
-    -- hi link AerialGuide Comment
-    -- hi AerialGuide1 guifg=Red
-    -- hi AerialGuide2 guifg=Blue
+    require("telescope").load_extension("aerial")
 end
 
 ---Setup `nvim_context_vt`
@@ -475,97 +482,74 @@ M.setup_treesurfer = function()
         return
     end
 
+    local default =
+        _t(
+        {
+            "function",
+            "function_definition",
+            "function_item",
+            "if_statement",
+            "if_expression",
+            "if_let_expression",
+            "else_clause",
+            "else_statement",
+            "elseif_statement",
+            "for_statement",
+            "for_expression",
+            "while_statement",
+            "switch_statement",
+            "match_expression",
+            "struct_item",
+            "enum_item"
+        }
+    )
+
+    local filter =
+        default:merge(
+        {
+            -- "function_call",
+            "field_declaration", -- rust struct
+            "enum_variant" -- rust enum
+        }
+    )
+
     sts.setup(
         {
             highlight_group = "STS_highlight", -- HopNextKey
             disable_no_instance_found_report = false,
-            default_desired_types = {
-                "function",
-                "function_definition",
-                "if_statement",
-                "else_clause",
-                "else_statement",
-                "elseif_statement",
-                "for_statement",
-                "while_statement",
-                "switch_statement"
-            },
+            default_desired_types = default,
             left_hand_side = "fdsawervcxqtzb",
             right_hand_side = "jkl;oiu.,mpy/n",
             icon_dictionary = {
-                ["if_statement"] = "",
-                ["else_clause"] = "",
-                ["else_statement"] = "",
-                ["elseif_statement"] = "",
-                ["for_statement"] = "ﭜ",
-                ["while_statement"] = "ﯩ",
-                ["switch_statement"] = "ﳟ",
+                ["if_statement"] = "",
+                ["if_expression"] = "",
+                ["if_let_expression"] = "",
+                ["else_clause"] = "",
+                ["else_statement"] = "",
+                ["elseif_statement"] = "",
+                ["for_statement"] = "",
+                ["for_expression"] = "",
+                ["while_statement"] = "菱",
+                ["switch_statement"] = "",
+                ["match_expression"] = "",
                 ["function"] = "",
+                ["function_item"] = "",
                 ["function_definition"] = "",
-                ["variable_declaration"] = ""
+                ["variable_declaration"] = "",
+                ["struct_item"] = "פּ",
+                ["enum_item"] = "",
+                ["field_declaration"] = "",
+                ["enum_variant"] = ""
             }
         }
     )
 
-    map(
-        "n",
-        "<C-A-.>",
-        function()
-            sts.targeted_jump(
-                {
-                    "function",
-                    "if_statement",
-                    "else_clause",
-                    "else_statement",
-                    "elseif_statement",
-                    "for_statement",
-                    "while_statement",
-                    "switch_statement"
-                }
-            )
-        end,
-        {desc = "Jump to a main node"}
-    )
-
-    map(
-        "n",
-        "<C-A-,>",
-        function()
-            sts.targeted_jump(
-                {
-                    "function",
-                    "function_definition",
-                    "function_call",
-                    "if_statement",
-                    "else_clause",
-                    "else_statement",
-                    "elseif_statement",
-                    "for_statement",
-                    "while_statement",
-                    "switch_statement",
-                    "variable_declaration"
-                }
-            )
-        end,
-        {desc = "Jump to any node"}
-    )
-
-    map(
-        "n",
-        ")",
-        function()
-            sts.filtered_jump("default", true)
-        end,
-        {desc = "Jump forward node"}
-    )
-    map(
-        "n",
-        "(",
-        function()
-            sts.filtered_jump("default", false) --> false means jump backwards
-        end,
-        {desc = "Jump backwards node"}
-    )
+    -- map("n", "<C-A-.>", D.ithunk(sts.targeted_jump, filter), {desc = "Jump to a main node"})
+    map("n", "<C-A-,>", D.ithunk(sts.targeted_jump, filter), {desc = "Jump to any node"})
+    map("n", "<C-A-[>", D.ithunk(sts.filtered_jump, filter, false), {desc = "Jump to previous important node"})
+    map("n", "<C-A-]>", D.ithunk(sts.filtered_jump, filter, true), {desc = "Jump to next important node"})
+    map("n", "(", D.ithunk(sts.filtered_jump, "default", false), {desc = "Jump previous main node"})
+    map("n", ")", D.ithunk(sts.filtered_jump, "default", true), {desc = "Jump next main node"})
 
     map(
         "n",
@@ -731,7 +715,7 @@ M.setup = function()
         indent = {enable = true},
         fold = {enable = false},
         endwise = {enable = true},
-        matchup = {enable = true, disable_virtual_text = true},
+        matchup = {enable = false, disable_virtual_text = true},
         playground = {
             enable = true,
             disable = {},

@@ -36,7 +36,7 @@ local function render(props)
     -- 
     for idx, part in ipairs(parts) do
         if next(parts, idx) then
-            local guifg = "WinBar"
+            local guifg = "InclineNormal"
             if part:match("^%$") then
                 guifg = "WarningMsg"
             end
@@ -105,13 +105,21 @@ function M.setup()
                 filetypes = {},
                 buftypes = "special",
                 wintypes = "special"
-            },
-            highlight = {
-                groups = {
-                    InclineNormal = "WinBar",
-                    InclineNormalNC = "InclineNormal"
-                }
             }
+            -- highlight = {
+            --     groups = {
+            --         InclineNormal = "WinBar",
+            --         InclineNormalNC = "InclineNormal"
+            --     }
+            -- }
+        }
+    )
+
+    C.plugin(
+        "Incline",
+        {
+            InclineNormal = {default = true, bold = true},
+            InclineNormalNC = {default = true, bold = true}
         }
     )
 

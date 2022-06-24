@@ -31,6 +31,11 @@ M.catppuccin = function()
                 keywords = "none",
                 strings = "none",
                 variables = "none"
+            },
+            integrations = {
+                gitgutter = true,
+                ts_rainbow = true,
+                hop = true
             }
         }
     )

@@ -166,8 +166,12 @@ function M.switch_lastbuf()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
-                ex.e(fn.fnameescape(f))
-                cmd('sil! norm! `"')
+                -- pcall(ex.e, fn.fnameescape(f))
+                cmd(("e %s"):format(fn.fnameescape(f)))
+
+                -- Cursor position when last exiting
+                -- I already have an autocmd for this
+                -- cmd('sil! norm! `"')
                 break
             end
         end

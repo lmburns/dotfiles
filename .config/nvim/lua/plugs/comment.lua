@@ -19,6 +19,8 @@ local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
+local state = {}
+
 -- TODO: Maybe create an issue
 -- Would like to ignore certain lines on comment
 -- And ignore others on uncomment
@@ -71,7 +73,25 @@ function M.setup()
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: Ctx):string
             pre_hook = function(ctx)
+                -- Track comments, keep text highlighted
+                -- if ctx.cmotion >= 3 and ctx.cmotion <= 5 then
+                --     local c = vim.api.nvim_win_get_cursor(0)
+                --     local m = {
+                --         vim.api.nvim_buf_get_mark(0, "<"),
+                --         vim.api.nvim_buf_get_mark(0, ">")
+                --     }
+                --     if c[1] == m[1][1] then
+                --         m = {m[2], m[1]}
+                --     end
+                --     state.marks = m
+                --     state.cursor = c
+                --     state.cursor_line_len = #(vim.api.nvim_buf_get_lines(0, c[1] - 1, c[1], true))[1]
+                -- else
+                --     state = {}
+                -- end
+
                 -- Determine the location where to calculate commentstring from
+                -- Comment out nested languages using correct comment character
                 local location = nil
                 if ctx.ctype == U.ctype.block then
                     location = ts_utils.get_cursor_location()
@@ -89,9 +109,28 @@ function M.setup()
                     }
                 )
             end,
+
             -- Post-hook, called after commenting is done
             -- @type fun(ctx: Ctx)
             post_hook = nil
+
+            -- post_hook = function(ctx)
+            --     -- lprint(ctx)
+            --     if ctx.range.scol == -1 then
+            --         -- do something with the current line
+            --     else
+            --         -- print(vim.inspect(ctx), ctx.range.srow, ctx.range.erow, ctx.range.scol, ctx.range.ecol)
+            --         if ctx.range.ecol > 400 then
+            --             ctx.range.ecol = 1
+            --         end
+            --         if ctx.cmotion > 1 then
+            --             -- 322 324 0 2147483647
+            --             vim.fn.setpos("'<", {0, ctx.range.srow, ctx.range.scol})
+            --             vim.fn.setpos("'>", {0, ctx.range.erow, ctx.range.ecol})
+            --             vim.cmd([[exe "norm! gv"]])
+            --         end
+            --     end
+            -- end
 
             -- post_hook = function(ctx)
             --     vim.schedule(

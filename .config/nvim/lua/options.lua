@@ -379,7 +379,7 @@ g.clipboard = clipboard
 
 if nvim.executable("nvr") then
     env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-    env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+--     env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
 end
 
 env.MANWIDTH = 80

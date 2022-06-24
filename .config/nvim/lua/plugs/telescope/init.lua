@@ -868,10 +868,10 @@ M.keymaps = function(mode)
     }
 end
 
-map("n", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
-map("i", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('i')<CR>")
-map("x", "<C-l>i", ":lua require('plugs.telescope').keymaps({'x', 'v', 's'})<CR>")
-map("o", "<C-l>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
+map("n", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
+map("i", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('i')<CR>")
+map("x", "<C-,>i", ":lua require('plugs.telescope').keymaps({'x', 'v', 's'})<CR>")
+map("o", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
 
 -- ========================== Builtin ============================
 builtin.cst_mru = function(opts)

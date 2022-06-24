@@ -345,8 +345,8 @@ end
 
 -- map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
 -- map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
-map("n", "<C-l>,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
-map("n", "<C-l>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+map("n", "<C-,>,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+map("n", "<C-,>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                    Insert empty lines                    │

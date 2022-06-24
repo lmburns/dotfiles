@@ -705,10 +705,10 @@ local function init()
 
     map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)")
 
-    map("n", "<C-l>m", "<Plug>(fzf-maps-n)")
-    map("x", "<C-l>m", "<Plug>(fzf-maps-x)")
-    map("i", "<C-l>m", "<Plug>(fzf-maps-i)")
-    map("o", "<C-l>m", "<Plug>(fzf-maps-o)")
+    map("n", "<C-,>m", "<Plug>(fzf-maps-n)")
+    map("x", "<C-,>m", "<Plug>(fzf-maps-x)")
+    map("i", "<C-,>m", "<Plug>(fzf-maps-i)")
+    map("o", "<C-,>m", "<Plug>(fzf-maps-o)")
 
     map(
         "n",

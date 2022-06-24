@@ -81,8 +81,10 @@ function M.abbr(abbr)
     vim.cmd(table.concat(command, " "))
 end
 
+M.abbr({mode = "c", lhs = "ld", rhs = "Linediff"})
 M.abbr({mode = "c", lhs = "W!", rhs = "w!"})
 M.abbr({mode = "c", lhs = "Q!", rhs = "q!"})
+-- I can't get this to work
 M.abbr({mode = "i", lhs = "funciton", rhs = "function"})
 
 M.cabbrev("Qall!", "qll!")

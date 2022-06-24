@@ -63,7 +63,6 @@ function M.go2def()
     local by
     if vim.bo.ft == "help" then
         utils.normal("n", "<C-]>")
-        -- api.nvim_feedkeys(utils.termcodes["<C-]>"], "n", false)
         by = "tag"
     else
         local err, res = M.a2sync("jumpDefinition", {"drop"})

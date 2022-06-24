@@ -872,11 +872,11 @@ end
 ---Close a diff file
 M.close_diff = function()
     local winids =
-        vim.tbl_filter(
+        dev.filter(
+        api.nvim_tabpage_list_wins(0),
         function(winid)
             return vim.wo[winid].diff
-        end,
-        api.nvim_tabpage_list_wins(0)
+        end
     )
 
     if #winids > 1 then

@@ -1,4 +1,6 @@
+local D = require("dev")
 local utils = require("common.utils")
+local global = require("common.global")
 local C = require("common.color")
 local debounce = require("common.debounce")
 local log = require("common.log")
@@ -12,31 +14,65 @@ local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 local g = vim.g
+local env = vim.env
 
 local debounced
 local has_sourced
 
-augroup(
-    "lmb__Testing",
-    {
-        event = "BufRead",
-        pattern = ("%s*"):format(fn.stdpath("config")),
-        desc = "Set git environment variables for nvim bare repo",
-        command = function()
-            if not has_sourced then
-                has_sourced =
-                    debounce(
-                    function()
-                        vim.env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                        vim.env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                        log.info("Sourced git variables")
-                    end,
-                    10
-                )
-                has_sourced()
+-- local xx =
+--     _t(dev.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
+--     function(path)
+--         return ("%s/%s"):format(os.getenv("HOME"), path)
+--     end
+-- )
+--
+-- p(xx:concat(","))
+
+vim.defer_fn(
+    function()
+        local git_pattern =
+            _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
+            function(path)
+                return ("%s/%s"):format(global.home, path)
             end
-        end
-    }
+        )
+
+        local _ = git_pattern:remove(1)
+
+        augroup(
+            "lmb__GitEnv",
+            {
+                event = {"BufRead", "BufEnter", "BufNewFile"},
+                pattern = ("%s*"):format(fn.stdpath("config")),
+                -- pattern = git_pattern,
+                desc = "Set git environment variables for dotfiles bare repo",
+                command = function()
+                    local curr_file = fn.expand("%")
+                    if not fn.filereadable(curr_file) then
+                        return
+                    end
+
+                    -- dotbare ls-files --error-unmatch
+                    -- dotbare ls-tree --full-tree -r --name-only HEAD
+                    -- local ret = dev.start_job(("dotbare ls-files --error-unmatch %s"):format(curr_file))
+
+                    if not has_sourced then
+                        has_sourced =
+                            debounce(
+                            function()
+                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                                log.info("Sourced git variables")
+                            end,
+                            10
+                        )
+                        has_sourced()
+                    end
+                end
+            }
+        )
+    end,
+    20
 )
 
 -- === Highlight Disable === [[[
@@ -435,7 +471,7 @@ nvim.autocmd.lmb__TermMappings = {
 --             if not info or not info.argv then
 --                 return
 --             end
---             if info.argv[1] == vim.env.SHELL then
+--             if info.argv[1] == env.SHELL then
 --                 pcall(api.nvim_buf_delete, 0, {})
 --             end
 --         end
@@ -470,6 +506,7 @@ nvim.autocmd.lmb__Help = {
                     return
                 end
 
+                -- Fix, somwhere this is not allowing me to resize window
                 local width = math.floor(vim.o.columns * 0.75)
                 -- pcall needed when opening a TOC inside a help page and returning to help page
                 pcall(ex.wincmd, "L")
@@ -668,7 +705,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- ]]]
 
 -- === Tmux === [[[
-if vim.env.TMUX ~= nil and vim.env.NORENAME == nil then
+if env.TMUX ~= nil and env.NORENAME == nil then
     -- vim.cmd [[
     --   augroup rename_tmux
     --     au!

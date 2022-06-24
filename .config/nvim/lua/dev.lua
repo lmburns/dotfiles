@@ -3,6 +3,8 @@
 local M = {}
 
 local log = require("common.log")
+local Path = require("plenary.path")
+
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
@@ -10,7 +12,6 @@ local uv = vim.loop
 ---@alias vector table
 
 -- Addition to `os` module
-
 ---Capture output of command as a string
 function os.capture(cmd, raw)
     local f = assert(io.popen(cmd, "r"))
@@ -351,6 +352,14 @@ M.tbl_unpack = function(t, i, j)
     return unpack(t, i or 1, j or t.n or #t)
 end
 
+---Clear a table's values
+---@param t table
+M.tbl_clear = function(t)
+    for k, _ in pairs(t) do
+        t[k] = nil
+    end
+end
+
 ---Clone a table
 ---
 ---@param t table: Table to clone
@@ -457,6 +466,92 @@ M.has_value = function(tbl, val)
     return false
 end
 
+---Get the result of the union of the given vectors.
+---@vararg vector
+---@return vector
+M.vec_union = function(...)
+    local result = {}
+    local args = {...}
+    local seen = {}
+
+    for i = 1, select("#", ...) do
+        if type(args[i]) ~= "nil" then
+            if type(args[i]) ~= "table" and not seen[args[i]] then
+                seen[args[i]] = true
+                result[#result + 1] = args[i]
+            else
+                for _, v in ipairs(args[i]) do
+                    if not seen[v] then
+                        seen[v] = true
+                        result[#result + 1] = v
+                    end
+                end
+            end
+        end
+    end
+
+    return result
+end
+
+---Get the result of the difference of the given vectors.
+---@vararg vector
+---@return vector
+M.vec_diff = function(...)
+    local args = {...}
+    local seen = {}
+
+    for i = 1, select("#", ...) do
+        if type(args[i]) ~= "nil" then
+            if type(args[i]) ~= "table" then
+                if i == 1 then
+                    seen[args[i]] = true
+                elseif seen[args[i]] then
+                    seen[args[i]] = nil
+                end
+            else
+                for _, v in ipairs(args[i]) do
+                    if i == 1 then
+                        seen[v] = true
+                    elseif seen[v] then
+                        seen[v] = nil
+                    end
+                end
+            end
+        end
+    end
+
+    return vim.tbl_keys(seen)
+end
+
+---Get the result of the symmetric difference of the given vectors.
+---@vararg vector
+---@return vector
+M.vec_symdiff = function(...)
+    local result = {}
+    local args = {...}
+    local seen = {}
+
+    for i = 1, select("#", ...) do
+        if type(args[i]) ~= "nil" then
+            if type(args[i]) ~= "table" then
+                seen[args[i]] = seen[args[i]] == 1 and 0 or 1
+            else
+                for _, v in ipairs(args[i]) do
+                    seen[v] = seen[v] == 1 and 0 or 1
+                end
+            end
+        end
+    end
+
+    for v, state in pairs(seen) do
+        if state == 1 then
+            result[#result + 1] = v
+        end
+    end
+
+    return result
+end
+
 ---Return the first index a given object can be found in a vector, or -1 if
 ---it's not present.
 ---
@@ -472,8 +567,8 @@ M.vec_indexof = function(t, v)
     return -1
 end
 
----Append any number of objects to the end of a vector. Pushing `nil`
----effectively does nothing.
+---Append any number of objects to the end of a vector.
+---Pushing `nil` effectively does nothing.
 ---
 ---@param t vector
 ---@return vector t
@@ -486,9 +581,9 @@ end
 
 ---Checks if a list-like (vector) table contains `value`.
 ---
----@param t table Table to check
+---@param t vector Table to check
 ---@param value any Value to compare
----@returns true if `t` contains `value`
+---@returns boolean true if `t` contains `value`
 M.contains = function(t, value)
     return vim.tbl_contains(t, value)
 end
@@ -513,9 +608,9 @@ M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
 end
 
----Apply function to each element of table
----@param tbl table A list of elements
----@param func function to be applied
+---Apply function to each element of vector
+---@param tbl vector A list of elements
+---@param func fun(v: any) to be applied
 M.each = function(tbl, func)
     for _, item in ipairs(tbl) do
         func(item)
@@ -569,26 +664,74 @@ end
 ---Get valid buffers
 ---@return number[]
 M.get_valid_buffers = function()
-    return vim.tbl_filter(M.buf_is_valid, api.nvim_list_bufs())
+    return M.filter(api.nvim_list_bufs(), M.buf_is_valid)
 end
 
 ---Return a table of the id's of loaded buffers (hidden are removed)
 ---@return table
 M.get_loaded_bufs = function()
-    return vim.tbl_filter(
+    return M.filter(
+        api.nvim_list_bufs(),
         function(id)
             return api.nvim_buf_is_loaded(id)
-        end,
-        api.nvim_list_bufs()
+        end
+    )
+end
+
+---@class ListBufsSpec
+---@field loaded boolean Filter out buffers that aren't loaded.
+---@field listed boolean Filter out buffers that aren't listed.
+---@field no_hidden boolean Filter out buffers that are hidden.
+---@field tabpage integer Filter out buffers that are not displayed in a given tabpage.
+
+---@param opt? ListBufsSpec
+M.list_bufs = function(opt)
+    -- vim.validate {
+    --     loaded = {opt.loaded, {"b"}, true},
+    --     listed = {opt.listed, {"b"}, true},
+    --     no_hidden = {opt.listed, {"b"}, true},
+    --     tabpage = {opt.listed, {"n"}, true}
+    -- }
+    opt = opt or {}
+    local bufs
+
+    if opt.no_hidden or opt.tabpage then
+        local wins = opt.tabpage and api.nvim_tabpage_list_wins(opt.tabpage) or api.nvim_list_wins()
+        local bufnr
+        local seen = {}
+        bufs = {}
+        for _, winid in ipairs(wins) do
+            bufnr = api.nvim_win_get_buf(winid)
+            if not seen[bufnr] then
+                table.insert(bufs, bufnr)
+            end
+            seen[bufnr] = true
+        end
+    else
+        bufs = api.nvim_list_bufs()
+    end
+
+    return M.filter(
+        bufs,
+        function(v)
+            if opt.loaded and not api.nvim_buf_is_loaded(v) then
+                return false
+            end
+            if opt.listed and not vim.bo[v].buflisted then
+                return false
+            end
+            return true
+        end
     )
 end
 
 ---Find a buffer that has a given variable with a value
 ---@param var string variable to search for
 ---@param value string|number value the variable should have
+---@param opts? ListBufsSpec
 ---@return any
-M.find_buf_with_var = function(var, value)
-    for _, id in ipairs(api.nvim_list_bufs()) do
+M.find_buf_with_var = function(var, value, opts)
+    for _, id in ipairs(M.list_bufs(opts or {})) do
         local ok, v = pcall(api.nvim_buf_get_var, id, var)
         if ok and v == value then
             return id
@@ -601,9 +744,10 @@ end
 ---Find a buffer that has an option set at a value
 ---@param option string option to search for
 ---@param value string|number value the option should have
+---@param opts? ListBufsSpec
 ---@return any
-M.find_buf_with_option = function(option, value)
-    for _, id in ipairs(api.nvim_list_bufs()) do
+M.find_buf_with_option = function(option, value, opts)
+    for _, id in ipairs(opts or {}) do
         local ok, v = pcall(api.nvim_buf_get_option, id, option)
         if ok and v == value then
             return id
@@ -611,6 +755,46 @@ M.find_buf_with_option = function(option, value)
     end
 
     return nil
+end
+
+---Find a buffer whose full path matches a pattern
+---@param pattern string Lua pattern mathed against buffer name
+---@param opt? ListBufsSpec
+---@return integer?
+M.find_buf_with_pattern = function(pattern, opt)
+    for _, id in ipairs(M.list_bufs(opt or {})) do
+        -- local m = fn.bufname(id):match(pattern)
+        local m = api.nvim_buf_get_name(id):match(pattern)
+        if m then
+            return id
+        end
+    end
+
+    return nil
+end
+
+---Fina a buffer that has a given name
+---@param name string
+---@param opt? ListBufsSpec
+M.find_named_buffer = function(name, opt)
+    for _, v in ipairs(M.list_bufs(opt or {})) do
+        if fn.bufname(v) == name then
+            return v
+        end
+    end
+    return nil
+end
+
+---@param path string
+---@param opt? ListBufsSpec
+---@return integer? bufnr
+M.find_file_buffer = function(path, opt)
+    local p = Path:new(path):absolute()
+    for _, id in ipairs(M.list_bufs(opt or {})) do
+        if p == api.nvim_buf_get_name(id) then
+            return id
+        end
+    end
 end
 
 ---Return the buffer lines
@@ -685,7 +869,30 @@ end
 ---@return boolean
 M.is_floating_window = function(winid)
     return api.nvim_win_get_config(winid).relative ~= ""
+    --
+    -- This two commands here are not equivalent as the docs might suggest
+    -- In the function below `M.find_win_except_float`,
+    -- they act the same about 200ms into starting Neovim
+    --
     -- return fn.win_gettype() == 'popup'
+end
+
+---Find a window that is not floating
+---@param bufnr number
+---@return number
+M.find_win_except_float = function(bufnr)
+    local winid = fn.bufwinid(bufnr)
+    if fn.win_gettype(winid) == "popup" then
+        local f_winid = winid
+        winid = 0
+        for _, wid in ipairs(api.nvim_list_wins()) do
+            if f_winid ~= wid and api.nvim_win_get_buf(wid) == bufnr then
+                winid = wid
+                break
+            end
+        end
+    end
+    return winid
 end
 
 ---Get windows of a given type
@@ -704,24 +911,6 @@ end
 ---@return table<number, boolean>
 M.get_qfwin = function()
     return M.get_wins_of_type("quickfix")[1]
-end
-
----Find a window that is not floating
----@param bufnr number
----@return number
-M.find_win_except_float = function(bufnr)
-    local winid = fn.bufwinid(bufnr)
-    if M.is_floating_window(winid) then
-        local f_winid = winid
-        winid = 0
-        for _, wid in ipairs(api.nvim_list_wins()) do
-            if f_winid ~= wid and api.nvim_win_get_buf(wid) == bufnr then
-                winid = wid
-                break
-            end
-        end
-    end
-    return winid
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -800,7 +989,9 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           List                           │
 -- ╰──────────────────────────────────────────────────────────╯
----Return a concatenated table as as string
+---Return a concatenated table as as string.
+---Really only useful for setting options
+---
 ---@param value table: Table to concatenate
 ---@param str string: String to concatenate to the table
 ---@param sep string: Separator to concatenate the table

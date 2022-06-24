@@ -256,13 +256,21 @@ return packer.startup(
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
+            use({"aserowy/tmux.nvim", conf = "tmux"})
             use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
             use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
             -- use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
-            use({"AndrewRadev/linediff.vim", cmd = "Linediff"})
+            use(
+                {
+                    "AndrewRadev/linediff.vim",
+                    conf = "linediff",
+                    cmd = "Linediff",
+                    keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}}
+                }
+            )
             use({"dstein64/vim-startuptime", cmd = "StartupTime"})
 
             use(
@@ -370,7 +378,6 @@ return packer.startup(
             use({"ackyshake/Spacegray.vim"})
             use({"vv9k/bogster"})
             use({"cocopon/iceberg.vim"})
-            use({"wadackel/vim-dogrun"})
             use({"savq/melange"})
             use({"folke/tokyonight.nvim"})
             use({"tiagovla/tokyodark.nvim"})
@@ -386,6 +393,7 @@ return packer.startup(
             use({"rmehri01/onenord.nvim"})
             use({"levuaska/levuaska.nvim"})
             use({"kyazdani42/blue-moon"})
+            -- use({"wadackel/vim-dogrun"})
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
             -- ]]] === Colorscheme ===
@@ -590,14 +598,14 @@ return packer.startup(
             -- ]]] === Grepper ===
 
             -- ============================ Scrollbar ============================= [[[
-            -- use(
-            --     {
-            --         "petertriho/nvim-scrollbar",
-            --         requires = "kevinhwang91/nvim-hlslens",
-            --         after = colorscheme,
-            --         conf = "plugs.scrollbar"
-            --     }
-            -- )
+            use(
+                {
+                    "petertriho/nvim-scrollbar",
+                    requires = "kevinhwang91/nvim-hlslens",
+                    after = colorscheme,
+                    conf = "plugs.scrollbar"
+                }
+            )
 
             -- use({"karb94/neoscroll.nvim", conf = "neoscroll", desc = "Smooth scrolling"})
 
@@ -648,9 +656,8 @@ return packer.startup(
                     "akinsho/bufferline.nvim",
                     after = {colorscheme, "lualine.nvim"},
                     conf = "plugs.bufferline",
-                    requires = "kazhala/close-buffers.nvim",
+                    requires = "kazhala/close-buffers.nvim"
                     -- requires = "famiu/bufdelete.nvim"
-
                 }
             )
             -- ]]] === Lualine ===
@@ -1485,7 +1492,7 @@ return packer.startup(
                 {
                     "AckslD/nvim-neoclip.lua",
                     requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
-                    after = {"telescope.nvim", "sqlite.lua"},
+                    after = {"telescope.nvim", "sqlite.lua"}
                     -- conf = "plugs.neoclip"
                 }
             )

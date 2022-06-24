@@ -225,15 +225,19 @@ local function init()
     M.setup()
     ex.packadd("plenary.nvim")
 
-    C.plugin(
-        "GitSigns",
-        {
-            GitSignsChangeLn = {link = "DiffText"},
-            GitSignsAddInline = {link = "GitSignsAddLn"},
-            GitSignsDeleteInline = {link = "GitSignsDeleteLn"},
-            GitSignsChangeInline = {link = "GitSignsChangeLn"}
-        }
-    )
+    local gitsigns_hlights = {
+        GitSignsChangeLn = {link = "DiffText"},
+        GitSignsAddInline = {link = "GitSignsAddLn"},
+        GitSignsDeleteInline = {link = "GitSignsDeleteLn"},
+        GitSignsChangeInline = {link = "GitSignsChangeLn"}
+    }
+
+    if vim.g.colors_name == "kimbox" then
+        local colors = require("kimbox.colors")
+        gitsigns_hlights["GitSignsChange"] = {fg = colors.yellow}
+    end
+
+    C.plugin("GitSigns", gitsigns_hlights)
 
     augroup(
         "lmb__GitSignsBlameToggle",

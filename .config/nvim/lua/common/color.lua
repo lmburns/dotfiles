@@ -470,6 +470,7 @@ function M.all(hls)
     end
 end
 
+---TODO: Add a field `cond`
 ---Apply highlights for a plugin and refresh on colorscheme change
 ---@param name string plugin name
 ---@param hls table<ColorFormat, string|boolean|number> list of highlights
