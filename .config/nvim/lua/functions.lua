@@ -448,7 +448,7 @@ command(
 if fn.executable("xsel") then
     -- Doesn't call xsel. Vimscript version works
     function M.preserve_clipboard()
-        fn.system("xsel -ib", nvim.reg["+"] .. " HIIIIII")
+        fn.system("xsel -ib", nvim.reg["+"])
     end
 
     function M.preserve_clipboard_and_suspend()

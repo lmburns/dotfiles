@@ -1,9 +1,10 @@
-local D = require("dev")
+-- local D = require("dev")
+-- local global = require("common.global")
 local utils = require("common.utils")
-local global = require("common.global")
 local C = require("common.color")
 local debounce = require("common.debounce")
 local log = require("common.log")
+local Job = require("plenary.job")
 -- local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
@@ -23,19 +24,20 @@ local has_sourced
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                 Setting git environment                  │
 -- ╰──────────────────────────────────────────────────────────╯
-local git_pattern =
-    _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
-    function(path)
-        return ("%s/%s"):format(global.home, path)
-    end
-)
-
--- The first item contains an error because dotbare uses `stty` for a command
-local _ = git_pattern:remove(1)
+-- local git_pattern =
+--     _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
+--     function(path)
+--         return ("%s/%s"):format(global.home, path)
+--     end
+-- )
+--
+-- -- The first item contains an error because dotbare uses `stty` for a command
+-- local _ = git_pattern:remove(1)
 
 nvim.autocmd.lmb__GitEnv = {
     event = {"BufRead", "BufEnter", "BufNewFile"},
-    pattern = git_pattern,
+    -- pattern = git_pattern,
+    pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
     command = function()
         local curr_file = fn.expand("%")
@@ -43,19 +45,31 @@ nvim.autocmd.lmb__GitEnv = {
             return
         end
 
-        -- local ret = dev.start_job(("dotbare ls-files --error-unmatch %s"):format(curr_file))
+        local _, ret =
+            Job:new(
+            {
+                command = "dotbare",
+                args = {"ls-files", "--error-unmatch", curr_file},
+                on_exit = function(_, ret)
+                    return ret
+                end
+            }
+        ):sync()
 
-        if not has_sourced then
-            has_sourced =
-                debounce(
-                function()
-                    env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                    env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                    log.info("Sourced git variables")
-                end,
-                10
-            )
-            has_sourced()
+        local bufnr = api.nvim_get_current_buf()
+        if ret == 0 then
+            if not has_sourced then
+                has_sourced =
+                    debounce(
+                    function()
+                        env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                        env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                        utils.cool_echo(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
+                    end,
+                    10
+                )
+                has_sourced()
+            end
         end
     end
 }
