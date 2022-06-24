@@ -294,20 +294,13 @@ o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
 -- shorten message in prompt window
 
--- Weird because it doesn't show F as default
--- o.shortmess:append("acsIS") -- aoOTIcF don't give 'ins-completion-menu' messages.
-
-o.shortmess = {
-    A = true, -- don't give the "ATTENTION" message when an existing swap file
-    a = true, -- enable 'filmnrwx' flag
-    c = true, -- don't give ins-completion-menu messages
-    s = true, -- don't give "search hit BOTTOM
-    I = true, -- don't give the intro message when starting Vim
-    S = true, -- do not show search count message when searching (HLSLens)
-    -- t = true, -- truncate file message at the start
-    -- T = true, -- truncate other messages in the middle
-    F = true, -- don't give the file info when editing a file
-}
+-- xOlcTstfoiISanFA
+o.shortmess:append("a") -- enable shorter flags ('filmnrwx')
+o.shortmess:append("c") -- don't give ins-completion-menu messages
+o.shortmess:append("s") -- don't give "search hit BOTTOM
+o.shortmess:append("I") -- don't give the intro message when starting Vim
+o.shortmess:append("S") -- do not show search count message when searching (HLSLens)
+-- A = true, -- don't give the "ATTENTION" message when an existing swap file
 
 o.cedit = "<C-c>" -- Key used to open command window on the CLI
 o.tagfunc = "CocTagFunc"
@@ -384,9 +377,9 @@ end
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
-if nvim.executable("nvr") then
-    env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-    env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-end
+-- if nvim.executable("nvr") then
+--     env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+--     env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+-- end
 
 return M

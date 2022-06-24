@@ -3,7 +3,7 @@ local M = {}
 local utils = require("common.utils")
 
 local api = vim.api
-local fn = vim.fn
+-- local fn = vim.fn
 
 ---Get an autocmd
 ---@param opts table

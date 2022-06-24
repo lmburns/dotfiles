@@ -136,7 +136,10 @@ M.normal = function(mode, motion)
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
 end
 
--- Create an augroup with the lua api
+---Create an augroup with the lua api
+---@param name string
+---@param clear boolean
+---@return number
 M.create_augroup = function(name, clear)
     clear = clear == nil and true or clear
     return api.nvim_create_augroup(name, {clear = clear})
@@ -190,7 +193,7 @@ M.autocmd = function(autocmd, id)
     api.nvim_create_autocmd(
         autocmd.event,
         {
-            group = F.if_nil(id, nil),
+            group = F.if_nil(id, autocmd.group) or nil,
             pattern = autocmd.pattern,
             desc = autocmd.description or autocmd.desc,
             callback = F.tern(is_callback, autocmd.command, nil),

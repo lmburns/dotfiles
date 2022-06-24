@@ -486,7 +486,6 @@ return packer.startup(
 
             -- cclose won't work
             -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, conf = "qf_reflector"})
-            -- use({"https://gitlab.com/yorickpeterse/nvim-pqf", config = [[require('pqf').setup()]]})
 
             use({"kevinhwang91/nvim-bqf", ft = {"qf"}, conf = "plugs.bqf"})
             use(

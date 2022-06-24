@@ -6,6 +6,10 @@ local command = utils.command
 local map = utils.map
 local augroup = utils.augroup
 
+local cmd = vim.cmd
+local fn = vim.fn
+local api = vim.api
+
 -- ============================ Commands ============================== [[[
 
 -- These both need to be redone.
@@ -41,7 +45,7 @@ command(
     function(tbl)
         ex.noautocmd(("grep! %s | redraw! | copen"):format(tbl.args))
     end,
-    {nargs = "+", complete = "file"}
+    {nargs = "+", complete = "file", desc = "Grep current file"}
 )
 
 command(
@@ -49,7 +53,7 @@ command(
     function(tbl)
         ex.noautocmd(("lgrep! %s | redraw! | lcopen"):format(tbl.args))
     end,
-    {nargs = "+", complete = "file"}
+    {nargs = "+", complete = "file", desc = "Grep location list"}
 )
 
 -- `Grepper` is used for multiple buffers, this is for one
@@ -58,7 +62,7 @@ command(
     function(tbl)
         cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1], tbl.fargs[2] or "%"))
     end,
-    {nargs = "+"}
+    {nargs = "+", desc = "Vimgrep"}
 )
 
 command(
@@ -68,7 +72,8 @@ command(
         local ft = vim.bo[bufnr].ft
         ex.lcd(fn.expand("%:p:h"))
         cmd(("!tokei -t %s %%"):format(ft))
-    end
+    end,
+    {desc = "Tokei current file"}
 )
 
 command(
@@ -76,7 +81,7 @@ command(
     function()
         require("common.builtin").jumps2qf()
     end,
-    {nargs = 0}
+    {nargs = 0, desc = "Show jumps in quickfix"}
 )
 
 command(
@@ -84,7 +89,7 @@ command(
     function()
         require("common.builtin").changes2qf()
     end,
-    {nargs = 0}
+    {nargs = 0, desc = "Show changes in quickfix"}
 )
 
 command(
@@ -92,7 +97,7 @@ command(
     function()
         require("common.utils").clean_empty_bufs()
     end,
-    {nargs = 0}
+    {nargs = 0, desc = "Remove empty buffers from stack"}
 )
 
 command(
@@ -100,10 +105,14 @@ command(
     function(tbl)
         require("common.utils").follow_symlink(tbl.args)
     end,
-    {nargs = "?", complete = "buffer"}
+    {nargs = "?", complete = "buffer", desc = "Follow buffer's symlink"}
 )
 
-command("RmAnsi", [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]], {nargs = 0, range = "%"})
+command(
+    "RmAnsi",
+    [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
+    {nargs = 0, range = "%", desc = "Remove ANSI escape sequences"}
+)
 
 -- command(
 --     "CargoBuild",
@@ -174,16 +183,10 @@ command(
     "SQ",
     function()
         require("functions").print_hi_group()
-    end
+    end,
+    {desc = "Show highlight group (non-treesitter)"}
 )
 -- ]]] === Syntax ===
-
--- ========================= Builtin Terminal ========================= [[[
--- Terminal go back to normal mode
-map("t", "<Esc>", [[<C-\><C-n>]])
-map("t", ":q!", [[<C-\><C-n>:q!<CR>]])
-
--- ]]] === Terminal ===
 
 -- ========================== Execute Buffer ========================== [[[
 cmd [[
@@ -272,7 +275,8 @@ command(
     "DS",
     function()
         M.diffsaved()
-    end
+    end,
+    {desc = "Show diff of saved file"}
 )
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -426,7 +430,7 @@ command(
     function()
         require("functions").tmux_copy_mode_toggle()
     end,
-    {nargs = 0}
+    {nargs = 0, desc = "Toggle line numbers to copy with tmux"}
 )
 
 -- map(

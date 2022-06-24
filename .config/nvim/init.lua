@@ -20,7 +20,7 @@ if ok then
     impatient.enable_profile()
 end
 
-local _ = require("common.global")
+require("common.global")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -97,40 +97,28 @@ else
     require("plugins").compile()
 end
 
--- a.async_void(
---     function()
---         ex.packadd("cfilter")
---         require("mapping")
---         require("abbr")
---         require("functions")
---         require("autocmds")
---         require("common.qf")
---         require("common.mru")
---         require("common.grepper")
---         -- require("common.reg")
---         -- require("plugs.fold")
---     end
--- )()
-ex.packadd("cfilter")
-require("mapping")
-require("abbr")
-require("functions")
-require("autocmds")
-require("common.qf")
-require("common.mru")
-require("common.grepper")
-
 a.async_void(
     function()
-        vim.notify = function(...)
-            require("plugins").loader("nvim-notify")
-            vim.notify = require("notify")
-            --             require("plugins").loader("desktop-notify.nvim")
-            --             vim.notify = require("common.utils").notify
-            vim.notify(...)
-        end
+        ex.packadd("cfilter")
+        require("mapping")
+        require("abbr")
+        require("functions")
+        require("autocmds")
+        require("common.qf")
+        require("common.mru")
+        require("common.grepper")
+        -- require("common.reg")
+        -- require("plugs.fold")
     end
 )()
+
+vim.notify = function(...)
+    require("plugins").loader("nvim-notify")
+    vim.notify = require("notify")
+    --             require("plugins").loader("desktop-notify.nvim")
+    --             vim.notify = require("common.utils").notify
+    vim.notify(...)
+end
 -- ========================= Defer Loading ============================ [[[
 -- ex.filetype("off")
 g.loaded_clipboard_provider = 1
@@ -143,8 +131,7 @@ require("plugs.filetype")
 
 vim.schedule(
     function()
-        local color = require("common.color")
-        local set_hl = color.set_hl
+        local C = require("common.color")
 
         -- === Treesitter
         vim.defer_fn(
@@ -220,14 +207,6 @@ vim.schedule(
                         end,
                         description = "Source plugins file"
                     }
-                    -- {
-                    --     event = "User",
-                    --     pattern = "PackerCompileDone",
-                    --     command = function()
-                    --         vim.notify("Finished compiling")
-                    --     end,
-                    --     desc = "Send compilation done notification"
-                    -- }
                 )
 
                 -- Highlight syntax
@@ -332,10 +311,10 @@ vim.schedule(
                     }
                 )
 
-                set_hl("CocUnderline", {gui = "none"})
-                set_hl("CocSemStatic", {gui = "bold"})
-                set_hl("CocSemDefaultLibrary", {link = "Constant"})
-                set_hl("CocSemDocumentation", {link = "Number"})
+                C.set_hl("CocUnderline", {gui = "none"})
+                C.set_hl("CocSemStatic", {gui = "bold"})
+                C.set_hl("CocSemDefaultLibrary", {link = "Constant"})
+                C.set_hl("CocSemDocumentation", {link = "Number"})
                 -- set_hl("CocSemDefaultLibraryNamespace", {link = "TSNamespace"})
 
                 ex.packadd("coc-kvs")

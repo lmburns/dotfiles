@@ -93,7 +93,7 @@ local sections_1 = {
             cond = function()
                 return conds.is_available_gps() and conds.hide_in_width() and conds.coc_status_width()
             end,
-            color = {fg = colors.red}
+            color = {fg = colors.morning_blue}
         },
         {
             "diagnostics",
@@ -215,21 +215,23 @@ function M.autocmds()
                 "NeogitCommitComplete",
                 "NeogitStatusRefresh"
             },
+            desc = "Update branch and diff statusline components",
             command = function()
                 require("lualine.components.diff.git_diff").update_diff_args()
                 require("lualine.components.diff.git_diff").update_git_diff()
             end
+        },
+        {
+            event = "ModeChanged",
+            pattern = "*",
+            desc = "Update statusline to show operator pending mode",
+            command = function()
+                -- Lazy redraw just now started causing me problems
+                if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) and not vim.opt.lazyredraw:get() then
+                    ex.redraws()
+                end
+            end
         }
-        -- FIX: This helps with operator pending mode but something is changing the statusline
-        -- {
-        --     event = "ModeChanged",
-        --     pattern = "*",
-        --     command = function()
-        --         if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
-        --             ex.redraws()
-        --         end
-        --     end
-        -- }
     )
 end
 

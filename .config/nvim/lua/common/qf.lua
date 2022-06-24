@@ -190,11 +190,11 @@ function M.close()
                     if type(char) == "number" then
                         char = fn.nr2char(char)
                         if char == "q" then
-                            ex.ccl()
                             -- cmd("ccl")
+                            ex.ccl()
                         elseif char == "l" then
                             ex.lcl()
-                            -- cmd("lcl")
+                        -- cmd("lcl")
                         end
                     end
                     ex.noa(("bw %d"):format(bufnr))
@@ -216,24 +216,25 @@ function M.syntax()
         require("common.qfext").outline_syntax()
     else
         cmd [[
-      syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft
-      syn match qfSeparatorLeft /│/ contained nextgroup=qfLineNr
-      syn match qfLineNr /[^│]*/ contained nextgroup=qfSeparatorRight
-      syn match qfSeparatorRight '│' contained nextgroup=qfError,qfWarning,qfInfo,qfNote
-      syn match qfError / E .*$/ contained
-      syn match qfWarning / W .*$/ contained
-      syn match qfInfo / I .*$/ contained
-      syn match qfNote / [NHZ] .*$/ contained
+          syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft
+          syn match qfSeparatorLeft /│/ contained nextgroup=qfLineNr
+          syn match qfLineNr /[^│]*/ contained nextgroup=qfSeparatorRight
+          syn match qfSeparatorRight '│' contained nextgroup=qfError,qfWarning,qfInfo,qfNote
+          syn match qfError / E .*$/ contained
+          syn match qfWarning / W .*$/ contained
+          syn match qfInfo / I .*$/ contained
+          syn match qfNote / [NHZ] .*$/ contained
 
-      hi def link qfFileName Function
-      hi def link qfSeparatorLeft Delimiter
-      hi def link qfSeparatorRight Delimiter
-      hi def link qfLineNr LineNr
-      hi def link qfError CocErrorSign
-      hi def link qfWarning CocWarningSign
-      hi def link qfInfo CocInfoSign
-      hi def link qfNote CocHintSign
-    ]]
+
+          hi def link qfFileName Function
+          hi def link qfSeparatorLeft Delimiter
+          hi def link qfSeparatorRight Delimiter
+          hi def link qfLineNr LineNr
+          hi def link qfError CocErrorSign
+          hi def link qfWarning CocWarningSign
+          hi def link qfInfo CocInfoSign
+          hi def link qfNote CocHintSign
+        ]]
     end
     vim.b.current_syntax = "qf"
 end
@@ -250,7 +251,7 @@ local function init()
         function(tbl)
             require("common.qf").batch_sub(false, tbl.args)
         end,
-        {nargs = 1}
+        {nargs = 1, desc = "Execute a command on quickfix list, writing to file"}
     )
 
     command(
@@ -258,7 +259,7 @@ local function init()
         function(tbl)
             require("common.qf").batch_sub(true, tbl.args)
         end,
-        {nargs = 1}
+        {nargs = 1, desc = "Execute a command on location list, writing to file"}
     )
 end
 

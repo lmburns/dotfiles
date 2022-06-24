@@ -1413,10 +1413,11 @@ function M.grepper()
 
     -- $. = current file
     -- $+ = currently opened files
-    map("n", "gs", "<Plug>(GrepperOperator)")
-    map("x", "gs", "<Plug>(GrepperOperator)")
-    map("n", "gsw", "<Plug>(GrepperOperator)iw")
-    map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]])
+    map("n", "gs", "<Plug>(GrepperOperator)", {desc = "Grep project: operator"})
+    map("x", "gs", "<Plug>(GrepperOperator)", {desc = "Grep project: operator"})
+    map("n", "gsw", "<Plug>(GrepperOperator)iw", {desc = "Grep project: word"})
+    map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]], {desc = "Grep project: command"})
+    -- map("n", "<Leader>rl", [[:GrepperRg ]], {silent = false}) -- This allows scrolling back in history
 
     augroup(
         "Grepper",
@@ -1575,7 +1576,7 @@ function M.lfnvim()
 
     lf.setup(
         {
-            escape_quit = true,
+            escape_quit = false,
             -- open_on = true,
             border = "rounded",
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
@@ -2275,10 +2276,10 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                       QFReflector                        │
 -- ╰──────────────────────────────────────────────────────────╯
--- function M.qf_reflector()
---     g.qf_modifiable = 1
---     g.qf_write_changes = 1
--- end
+function M.qf_reflector()
+    g.qf_modifiable = 1
+    g.qf_write_changes = 1
+end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Anywise                          │

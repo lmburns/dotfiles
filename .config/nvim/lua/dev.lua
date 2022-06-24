@@ -7,6 +7,28 @@ local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
 
+---@alias vector table
+
+-- Addition to `os` module
+
+---Capture output of command as a string
+function os.capture(cmd, raw)
+    local f = assert(io.popen(cmd, "r"))
+    local s = assert(f:read("*a"))
+    f:close()
+    if raw then
+        return s
+    end
+    s = string.gsub(s, "^%s+", "")
+    s = string.gsub(s, "%s+$", "")
+    s = string.gsub(s, "[\n\r]+", " ")
+    return s
+end
+
+-- ╒══════════════════════════════════════════════════════════╕
+--                            Global
+-- ╘══════════════════════════════════════════════════════════╛
+
 _G.pln = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
@@ -32,23 +54,14 @@ end
 
 _G.pp = vim.pretty_print
 
----@alias vector table
-
--- Capture output of command as a string
-function os.capture(cmd, raw)
-    local f = assert(io.popen(cmd, "r"))
-    local s = assert(f:read("*a"))
-    f:close()
-    if raw then
-        return s
-    end
-    s = string.gsub(s, "^%s+", "")
-    s = string.gsub(s, "%s+$", "")
-    s = string.gsub(s, "[\n\r]+", " ")
-    return s
-end
+-- ╒══════════════════════════════════════════════════════════╕
+--                      Development tools
+-- ╘══════════════════════════════════════════════════════════╛
 
 ---Use in combination with pcall
+---@param status boolean
+---@param ... any
+---@return any
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
@@ -60,9 +73,22 @@ M.ok_or_nil = function(status, ...)
     return ...
 end
 
----Nil pcall.
+---Nil `pcall`.
+---If `pcall` succeeds, return result of `fn`, else `nil`
+---@param fn fun(args: ...)
+---@param ... any
+---@return any
 M.npcall = function(fn, ...)
     return M.ok_or_nil(pcall(fn, ...))
+end
+
+---Wrap a function to return `nil` if it fails, otherwise the value
+---@param fn fun(args: ...)
+---@return fun(args: ...)
+M.nil_wrap = function(fn)
+    return function(...)
+        return M.npcall(fn, ...)
+    end
 end
 
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later

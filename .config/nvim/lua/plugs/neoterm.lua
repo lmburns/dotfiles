@@ -118,6 +118,7 @@ function M.set_terminal_keymaps()
     map(0, "t", "<Esc>", [[<C-\><C-n>]])
     -- Why does this need to be remapped to work?
     map(0, "t", ":", ":")
+    map(0, "t", ":q!", [[<C-\><C-n>:q!<CR>]])
 
     -- map(0, "t", "jk", [[<C-\><C-n>]])
     -- map(0, "t", "kj", [[<C-\><C-n>]])
@@ -150,7 +151,8 @@ local function init()
         "gzz",
         function()
             return term_exec(fn.getline("."))
-        end
+        end,
+        {desc = "REPL current line"}
     )
 
     map(
@@ -162,7 +164,8 @@ local function init()
                 local text = utils.get_visual_selection()
                 term_exec(text)
             end
-        end
+        end,
+        {desc = "REPL current selection"}
     )
 
     -- Terminal repl

@@ -630,7 +630,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                 {
                     event = "BufDelete",
                     buffer = 0,
-                    callback = function()
+                    command = function()
                         vim.opt.hlsearch = hlsearch
                         vim.opt.lazyredraw = lazyredraw
                         vim.opt.showmatch = showmatch
@@ -782,7 +782,7 @@ a.async_void(
 --     {"BufNewFile", "BufRead"},
 --     {
 --         pattern = "*",
---         callback = function()
+--         command = function()
 --             require("filetype").resolve()
 --         end
 --     }
@@ -825,27 +825,27 @@ C.all({cmTitle = {link = "vimCommentTitle", default = true}})
 -- ]]] === Custom syntax groups ===
 
 -- ======================= CursorLine Control ========================= [[[
--- Cursorline highlighting control
---  Only have it on in the active buffer
--- do
---     local id = create_augroup("lmb__CursorLineControl")
---     local set_cursorline = function(event, value, pattern)
---         nvim.create_autocmd(
---             event,
---             {
---                 group = id,
---                 pattern = pattern,
---                 callback = function()
---                     opt_local.cursorline = value
---                 end
---             }
---         )
---     end
---
---     set_cursorline("WinLeave", false)
---     set_cursorline("WinEnter", true)
---     set_cursorline("FileType", false, "TelescopePrompt")
--- end
+---Cursorline highlighting control
+--- Only have it on in the active buffer
+do
+    local id = utils.create_augroup("lmb__CursorLineControl")
+    local set_cursorline = function(event, value, pattern)
+        nvim.autocmd.add(
+            {
+                event = event,
+                group = id,
+                pattern = pattern,
+                command = function()
+                    opt_local.cursorline = value
+                end
+            }
+        )
+    end
+
+    set_cursorline("WinLeave", false)
+    set_cursorline("WinEnter", true)
+    set_cursorline("FileType", false, "TelescopePrompt")
+end
 -- ]]]
 
 -- ========================== Buffer Reload =========================== [[[
@@ -880,10 +880,10 @@ nvim.autocmd.lmb__AutoReloadFile = {
 -- ]]] === Buffer Reload ===
 
 -- =========================== RNU Column ============================= [[[
--- Toggle relative/non-relative nubmers:
---   - Only in the active window
---   - Ignore quickfix window
---   - Only when searching in cmdline or in insert mode
+---Toggle relative/non-relative nubmers:
+---  - Only in the active window
+---  - Ignore quickfix window
+---  - Only when searching in cmdline or in insert mode
 
 -- FIX: Rnu not working on startup until insert mode (focus not working either)
 --      It has worked before

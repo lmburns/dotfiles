@@ -488,14 +488,6 @@ M.extensions.qf = {
 --                           Trouble
 -- ╘══════════════════════════════════════════════════════════╛
 
-local severity_name = {
-    [1] = "error",
-    [2] = "warning",
-    [3] = "info",
-    [4] = "hint",
-    [5] = "other"
-}
-
 function M.document_diagnostics()
     local diagnostics = {}
     -- Maybe a better way to get previous buffer
