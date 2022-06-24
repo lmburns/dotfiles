@@ -490,10 +490,16 @@ M.get_latest_messages = function(count, str)
     return str and table.concat(slice, "\n") or slice
 end
 
+---Wrapper to make getting the current mode easier
+---@return string
+M.mode = function()
+    return api.nvim_get_mode().mode
+end
+
 ---Determine whether user in in visual mode
 ---@return boolean, string
 M.is_visual_mode = function()
-    local mode = api.nvim_get_mode().mode
+    local mode = M.mode()
     -- return mode == 'v' or mode == 'V' or mode == '', mode
     return mode:match("[vV\x16]"), mode
 end
@@ -584,7 +590,8 @@ end
 M.preserve = function(arguments)
     local arguments = fmt("%q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
-    ex.keepjumps(ex.keeppatterns(ex.execute(arguments)))
+    cmd(("keepj keepp execute %s"):format(arguments))
+    -- ex.keepjumps(ex.keeppatterns(ex.execute(arguments)))
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -610,7 +617,7 @@ M.squeeze_blank_lines = function()
         if result > 0 then
             api.nvim_win_set_cursor(0, {(line - result), col})
         end
-        fn.setreg("/", old_query) -- restore search register
+        nvim.reg["/"] = old_query
     end
 end
 

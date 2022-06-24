@@ -1,5 +1,6 @@
 local M = {}
 
+local D = require("dev")
 local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
@@ -370,10 +371,12 @@ function M.insert_empty_lines(count, add) --{{{2
     api.nvim_buf_set_lines(0, new, new, false, lines)
 end
 
+---Add an empty line above the cursor
 function M.empty_line_above()
     M.insert_empty_lines(vim.v.count, -1)
 end
 
+---Add an empty line below the cursor
 function M.empty_line_below()
     M.insert_empty_lines(vim.v.count, 0)
 end
@@ -418,6 +421,9 @@ function M.tmux_copy_mode_toggle()
         setlocal number!
         setlocal rnu!
     ]]
+    -- opt_local.number = not opt_local.number
+    -- opt_local.rnu = not opt_local.rnu
+
     if o.signcolumn:get() == "no" then
         opt_local.signcolumn = "yes:1"
     else
@@ -439,57 +445,27 @@ command(
 -- )
 
 -- Prevent vim clearing the system clipboard
--- cmd [[
---   if executable('xsel')
---       function! PreserveClipboard()
---           call system('xsel -ib', getreg('+'))
---       endfunction
---
---       function! PreserveClipboadAndSuspend()
---           call PreserveClipboard()
---           suspend
---       endfunction
---
---       augroup preserve_clipboard
---         au!
---         au VimLeave * call PreserveClipboard()
---       augroup END
---
---       nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
---       vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
---   endif
--- ]]
-
 if fn.executable("xsel") then
     -- Doesn't call xsel. Vimscript version works
     function M.preserve_clipboard()
-        fn.system("xsel -ib", fn.getreg("+"))
-
-        -- Job:new(
-        --     {
-        --         command = "xsel",
-        --         args = {"-ib", fn.getreg("+").." NOPE"}
-        --     }
-        -- ):start()
+        fn.system("xsel -ib", nvim.reg["+"] .. " HIIIIII")
     end
 
     function M.preserve_clipboard_and_suspend()
         M.preserve_clipboard()
-        ex.suspend()
+        vim.cmd("suspend")
+        -- ex.suspend()
     end
 
-    augroup(
-        "lmb__PreserveClipboard",
-        {
-            event = "VimLeave",
-            pattern = "*",
-            command = function()
-                M.preserve_clipboard()
-            end
-        }
-    )
+    nvim.autocmd.lmb__PreserveClipboard = {
+        event = "VimLeave",
+        pattern = "*",
+        command = function()
+            M.preserve_clipboard()
+        end
+    }
 
-    map({"n", "v"}, "<C-z>", M.preserve_clipboard_and_suspend)
+    map({"n", "v"}, "<C-z>", dev.ithunk(M.preserve_clipboard_and_suspend))
 end
 -- ]]] === Functions ===
 

@@ -14,66 +14,51 @@ local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 local g = vim.g
+local v = vim.v
 local env = vim.env
 
 local debounced
 local has_sourced
 
--- local xx =
---     _t(dev.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
---     function(path)
---         return ("%s/%s"):format(os.getenv("HOME"), path)
---     end
--- )
---
--- p(xx:concat(","))
-
-vim.defer_fn(
-    function()
-        local git_pattern =
-            _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
-            function(path)
-                return ("%s/%s"):format(global.home, path)
-            end
-        )
-
-        local _ = git_pattern:remove(1)
-
-        augroup(
-            "lmb__GitEnv",
-            {
-                event = {"BufRead", "BufEnter", "BufNewFile"},
-                pattern = ("%s*"):format(fn.stdpath("config")),
-                -- pattern = git_pattern,
-                desc = "Set git environment variables for dotfiles bare repo",
-                command = function()
-                    local curr_file = fn.expand("%")
-                    if not fn.filereadable(curr_file) then
-                        return
-                    end
-
-                    -- dotbare ls-files --error-unmatch
-                    -- dotbare ls-tree --full-tree -r --name-only HEAD
-                    -- local ret = dev.start_job(("dotbare ls-files --error-unmatch %s"):format(curr_file))
-
-                    if not has_sourced then
-                        has_sourced =
-                            debounce(
-                            function()
-                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                                log.info("Sourced git variables")
-                            end,
-                            10
-                        )
-                        has_sourced()
-                    end
-                end
-            }
-        )
-    end,
-    20
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                 Setting git environment                  │
+-- ╰──────────────────────────────────────────────────────────╯
+local git_pattern =
+    _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
+    function(path)
+        return ("%s/%s"):format(global.home, path)
+    end
 )
+
+-- The first item contains an error because dotbare uses `stty` for a command
+local _ = git_pattern:remove(1)
+
+nvim.autocmd.lmb__GitEnv = {
+    event = {"BufRead", "BufEnter", "BufNewFile"},
+    pattern = git_pattern,
+    desc = "Set git environment variables for dotfiles bare repo",
+    command = function()
+        local curr_file = fn.expand("%")
+        if not fn.filereadable(curr_file) then
+            return
+        end
+
+        -- local ret = dev.start_job(("dotbare ls-files --error-unmatch %s"):format(curr_file))
+
+        if not has_sourced then
+            has_sourced =
+                debounce(
+                function()
+                    env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                    env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                    log.info("Sourced git variables")
+                end,
+                10
+            )
+            has_sourced()
+        end
+    end
+}
 
 -- === Highlight Disable === [[[
 --[[
@@ -96,10 +81,10 @@ map({"n", "v", "o", "i", "c"}, "<Plug>(StopHL)", 'execute("nohlsearch")[-1]', {e
 map("n", "<Esc><Esc>", "<Esc>:nohlsearch<CR>", {desc = "Disable hlsearch"})
 
 local function stop_hl()
-    if vim.v.hlsearch == 0 or api.nvim_get_mode().mode ~= "n" then
+    if v.hlsearch == 0 or utils.mode() ~= "n" then
         return
     end
-    api.nvim_feedkeys(utils.t("<Plug>(StopHL)"), "m", false)
+    utils.normal("m", "<Plug>(StopHL)")
 end
 
 ---Check whether or not the current line matches the search string
@@ -156,8 +141,7 @@ local function hl_search(overwrite)
     hl_search_match(col, match)
 end
 
-augroup(
-    "lmb__VimrcIncSearchHighlight",
+nvim.autocmd.lmb__VimrcIncSearchHighlight = {
     {
         event = {"CursorMoved"},
         command = function()
@@ -176,21 +160,20 @@ augroup(
         command = function()
             vim.schedule(
                 function()
-                    cmd("redrawstatus")
-                    -- ex.redrawstatus()
+                    -- cmd("redrawstatus")
+                    ex.redrawstatus()
                 end
             )
         end
     }
-)
+}
 -- === Highlight Disable ===
 
 -- === Restore Cursor Position === [[[
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 
-augroup(
-    "lmb__RestoreCursor",
+nvim.autocmd.lmb__RestoreCursor = {
     {
         event = "BufReadPost",
         pattern = "*",
@@ -229,7 +212,7 @@ augroup(
             cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
         end
     }
-)
+}
 
 -- nvim.autocmd.lmb__RememberFolds = {
 --     {
@@ -403,22 +386,18 @@ nvim.autocmd.lmb__DisableUndofile = {
 -- ]]]
 
 -- === MRU === [[[
-augroup(
-    "lmb__MruWin",
-    {
-        event = "WinLeave",
-        pattern = "*",
-        command = function()
-            require("common.win").record()
-        end,
-        desc = "Add file to custom MRU list"
-    }
-)
+nvim.autocmd.lmb__MruWin = {
+    event = "WinLeave",
+    pattern = "*",
+    command = function()
+        require("common.win").record()
+    end,
+    desc = "Add file to custom MRU list"
+}
 -- ]]]
 
 -- === Spelling === [[[
-augroup(
-    "lmb__Spellcheck",
+nvim.autocmd.lmb__Spellcheck = {
     {
         event = "FileType",
         pattern = {"gitcommit", "markdown", "text", "mail", "vimwiki"},
@@ -431,7 +410,7 @@ augroup(
         command = "setlocal spell",
         desc = "Automatically enable spelling"
     }
-)
+}
 -- ]]] === Spelling ===
 
 -- === Terminal === [[[
@@ -466,7 +445,7 @@ nvim.autocmd.lmb__TermMappings = {
 --     event = {"TermClose"},
 --     pattern = "*",
 --     command = function()
---         if vim.v.event.status == 0 then
+--         if v.event.status == 0 then
 --             local info = api.nvim_get_chan_info(vim.opt.channel._value)
 --             if not info or not info.argv then
 --                 return
@@ -765,7 +744,7 @@ do
             timer =
                 vim.defer_fn(
                 function()
-                    if api.nvim_get_mode().mode == "n" then
+                    if utils.mode() == "n" then
                         api.nvim_echo({}, false, {})
                     end
                 end,
@@ -801,16 +780,23 @@ do
 end -- ]]]
 
 -- === Custom file type settings === [[[
-augroup(
-    "lmb__CustomFileType",
-    {event = "BufWritePre", pattern = {"*.odt", "*.rtf"}, command = [[silent set ro]]},
+nvim.autocmd.lmb__CustomFileType = {
+    {
+        event = "BufWritePre",
+        pattern = {"*.odt", "*.rtf"},
+        command = [[silent set ro]]
+    },
     {
         event = "BufWritePre",
         pattern = "*.odt",
         command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
     },
-    {event = "BufWritePre", pattern = "*.rt", command = [[silent %!unrtf --text]]}
-)
+    {
+        event = "BufWritePre",
+        pattern = "*.rt",
+        command = [[silent %!unrtf --text]]
+    }
+}
 
 a.async_void(
     vim.schedule_wrap(
@@ -851,8 +837,7 @@ a.async_void(
 -- ]]] === Custom file type ===
 
 -- === Custom syntax groups === [[[
-augroup(
-    "lmb__CommentTitle",
+nvim.autocmd.lmb__CommentTitle = {
     {
         event = "Syntax",
         pattern = "*",
@@ -876,7 +861,7 @@ augroup(
         pattern = "*",
         command = [[syn keyword myTodo contained=Comment]]
     }
-)
+}
 
 C.all({cmTitle = {link = "vimCommentTitle", default = true}})
 -- ex.hi("def link cmTitle vimCommentTitle")
