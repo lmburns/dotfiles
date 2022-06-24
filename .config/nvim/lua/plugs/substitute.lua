@@ -49,7 +49,7 @@ local function init()
             ["sr"] = {"<Cmd>lua require('substitute.range').word()<CR>", "Substitute range word"},
             -- line word line line
             ["sS"] = {
-                "<Cmd>lua require('substitute.range').operator()<CR>",
+                "<Cmd>lua require('substitute.range').operator({confirm = true})<CR>",
                 "Substitute <motion><motion> confirm"
             }
         }
@@ -67,9 +67,9 @@ local function init()
 
     wk.register(
         {
-            ["s"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
-            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"}
-            -- [";s"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
+            ["ss"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
+            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"},
+            ["sr"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
         },
         {mode = "x"}
     )

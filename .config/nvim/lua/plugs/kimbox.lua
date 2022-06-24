@@ -389,11 +389,13 @@ M.tokyonight = function()
     g.tokyonight_italic_keywords = false
     g.tokyonight_italic_functions = false
     g.tokyonight_sidebars = {"qf", "vista_kind", "terminal", "packer"}
-
-    -- hl("Function", {gui=bold})
-    -- cmd("hi Function gui=bold")
-
-    -- cmd [[colorscheme tokyonight]]
+    g.tokyonight_colors = {
+        ["bg_dark"] = "#16161F",
+        ["bg_popup"] = "#16161F",
+        ["bg_statusline"] = "#16161F",
+        ["bg_sidebar"] = "#16161F",
+        ["bg_float"] = "#16161F"
+    }
 end
 
 -- === VSCode ===

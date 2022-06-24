@@ -216,7 +216,7 @@ local function init()
         "clang-format"
     }
     g.neoformat_enabled_javascript = {
-        "prettier"
+        "prettier",
     }
 
     g.neoformat_enabled_yaml = {

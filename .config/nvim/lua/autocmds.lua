@@ -14,6 +14,30 @@ local fn = vim.fn
 local g = vim.g
 
 local debounced
+local has_sourced
+
+augroup(
+    "lmb__Testing",
+    {
+        event = "BufRead",
+        pattern = ("%s*"):format(fn.stdpath("config")),
+        desc = "Set git environment variables for nvim bare repo",
+        command = function()
+            if not has_sourced then
+                has_sourced =
+                    debounce(
+                    function()
+                        vim.env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                        vim.env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                        log.info("Sourced git variables")
+                    end,
+                    10
+                )
+                has_sourced()
+            end
+        end
+    }
+)
 
 -- === Highlight Disable === [[[
 --[[

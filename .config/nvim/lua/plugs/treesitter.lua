@@ -569,7 +569,7 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vu",
+        "vU",
         function()
             vim.opt.opfunc = "v:lua.STSSwapUpNormal_Dot"
             return "g@l"
@@ -578,7 +578,7 @@ M.setup_treesurfer = function()
     )
     map(
         "n",
-        "vd",
+        "vD",
         function()
             vim.opt.opfunc = "v:lua.STSSwapDownNormal_Dot"
             return "g@l"
@@ -588,7 +588,7 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vD",
+        "vd",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodeNextNormal_Dot"
             return "g@l"
@@ -597,7 +597,7 @@ M.setup_treesurfer = function()
     )
     map(
         "n",
-        "vU",
+        "vu",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodePrevNormal_Dot"
             return "g@l"

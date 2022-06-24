@@ -101,7 +101,7 @@ map({"n", "x", "o"}, "L", "g_")
 
 wk.register(
     {
-        ["S"] = {":%S//g<Left><Left>", "Global replace"}
+        ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"}
 
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
