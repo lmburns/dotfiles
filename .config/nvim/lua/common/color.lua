@@ -1,8 +1,10 @@
 local M = {}
 
+-- local D = require("dev")
 local utils = require("common.utils")
 local log = require("common.log")
 
+-- local fn = vim.fn
 local cmd = vim.cmd
 local api = {
     set = vim.api.nvim_set_hl,
@@ -167,6 +169,9 @@ local function get_hl(group, fallbacks)
     if ok then
         return stringify_attrs(hl)
     end
+
+    -- fn.synIDtrans()
+    -- fn.synIDattr()
 
     return fallback(fallbacks)
 end

@@ -630,6 +630,7 @@ end
 ---
 ---@param marks table? builtin marks to be saved
 ---@param bufnr number? buffer where marks should be saved
+---@diagnostic disable-next-line:unused-local
 M.get_marks = function(bufnr, marks, tbl)
     -- local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
     marks = marks or require("marks").mark_state.builtin_marks
@@ -1111,6 +1112,9 @@ end
 -- ================= Tips ================== [[[
 -- Search global variables:
 --    filter <pattern> let g:
+
+-- EmmyLua
+--    https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations#Comments
 
 -- Patterns
 --   http://lua-users.org/wiki/PatternsTutorial

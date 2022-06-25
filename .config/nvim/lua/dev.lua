@@ -212,6 +212,16 @@ M.round = function(value)
     return math.floor(value + 0.5)
 end
 
+M.clamp = function(value, min, max)
+    if value < min then
+        return min
+    end
+    if value > max then
+        return max
+    end
+    return value
+end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          String                          │
 -- ╰──────────────────────────────────────────────────────────╯

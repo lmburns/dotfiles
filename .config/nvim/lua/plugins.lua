@@ -1032,20 +1032,6 @@ return packer.startup(
                 {
                     "xiyaowong/nvim-colorizer.lua",
                     cmd = "ColorizerToggle",
-                    ft = {
-                        "gitconfig",
-                        "vim",
-                        "sh",
-                        "zsh",
-                        "markdown",
-                        "tmux",
-                        "yaml",
-                        "xml",
-                        "css",
-                        "typescript",
-                        "javascript",
-                        "lua"
-                    },
                     conf = "colorizer"
                 }
             )
@@ -1664,13 +1650,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
-                    conf = "plugs.nvim-reload",
-                    opt = true
-                }
-            )
+            -- use(
+            --     {
+            --         ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
+            --         conf = "plugs.nvim-reload",
+            --         opt = true
+            --     }
+            -- )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
             -- use(

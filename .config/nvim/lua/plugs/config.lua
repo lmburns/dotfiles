@@ -1384,6 +1384,14 @@ function M.scratchpad()
     -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
     -- g.scratchpad_daily_format = '%Y-%m-%d'
 
+    nvim.autocmd.lmb__ScratchpadFix = {
+        event = "FileType",
+        pattern = "scratchpad",
+        command = function()
+            vim.opt_local.filetype = "markdown.scratchpad"
+        end
+    }
+
     map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
 
@@ -1445,6 +1453,7 @@ function M.colorizer()
             "typescript",
             "javascript",
             "conf",
+            "toml",
             lua = {names = false}
         },
         {

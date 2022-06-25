@@ -59,7 +59,7 @@ local function apply_fold(bufnr, ranges)
             vim.wo.foldmethod = "manual"
 
             local win_view = fn.winsaveview()
-            cmd("norm! zE")
+            ex.norm_("zE")
             fn.winrestview(win_view)
 
             local fold_cmd = {}
@@ -454,7 +454,7 @@ local function init()
 
     -- for _, bufnr in ipairs(api.nvim_list_bufs()) do
     --     M.defer_attach(bufnr)
-    -- end
+
 end
 
 init()

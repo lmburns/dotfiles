@@ -192,7 +192,7 @@ end
 ---@param opts Outline
 function M.outline(opts)
     if not coc.did_init() then
-        vim.notify("Coc not ready yet ...")
+        log.err("Coc not ready yet ...", true)
         return
     end
 

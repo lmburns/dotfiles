@@ -1,6 +1,6 @@
 -- FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 -- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
--- FIX: Focus events fire occasionally (they work outside of tmux)
+-- FIX: Focus events stop firing in Tmux after a bit
 
 -- FIX: Cursor blinking is very fast on text operators which don't trigger which-key
 --      This happens with COC (e.g., Lua and Rust, but not toml or yaml)
@@ -115,17 +115,12 @@ a.async_void(
 vim.notify = function(...)
     require("plugins").loader("nvim-notify")
     vim.notify = require("notify")
-    --             require("plugins").loader("desktop-notify.nvim")
-    --             vim.notify = require("common.utils").notify
+    -- require("plugins").loader("desktop-notify.nvim")
+    -- vim.notify = require("common.utils").notify
     vim.notify(...)
 end
 -- ========================= Defer Loading ============================ [[[
--- ex.filetype("off")
 g.loaded_clipboard_provider = 1
-
-g.do_filetype_lua = 1
--- FIX: I noticed that filetype.vim is still being ran
-g.did_load_filetypes = 0
 
 require("plugs.filetype")
 
