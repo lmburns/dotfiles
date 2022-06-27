@@ -496,9 +496,6 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
     casey/just \
   atclone'./imdl completions zsh > _imdl' atpull'%atclone' \
     casey/intermodal \
-  lbin'**/gh' atclone'./**/gh completion --shell zsh > _gh' atpull'%atclone' \
-  bpick'*linux_amd64.tar.gz' \
-    cli/cli \
   lbin'**/hub' extract'!' atclone'mv -f **/**.zsh* _hub' atpull'%atclone' \
     @github/hub \
   lbin'rclone/rclone' mv'rclone* -> rclone' \
@@ -508,6 +505,10 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
   lman'*/**.1' atinit'export _ZO_DATA_DIR="${XDG_DATA_HOME}/zoxide"' \
     ajeetdsouza/zoxide
 #  ]]] === wait'0c' - programs + man ===
+
+  # lbin'**/gh' atclone'./**/gh completion --shell zsh > _gh' atpull'%atclone' \
+  # bpick'*linux_amd64.tar.gz' \
+  #   cli/cli \
 
 #  === wait'0c' - programs === [[[
 zt 0c light-mode null for \

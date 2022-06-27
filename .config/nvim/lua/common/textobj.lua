@@ -1,8 +1,9 @@
 local M = {}
-local fn = vim.fn
 
 local utils = require("common.utils")
 local coc = require("plugs.coc")
+
+local fn = vim.fn
 
 function M.select(obj, inner, visual)
     if coc.did_init() then

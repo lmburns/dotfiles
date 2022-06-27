@@ -1,10 +1,16 @@
 local M = {}
 
-local map = require("common.utils").map
+local utils = require("common.utils")
+-- local map = utils.map
 
 local hlslens
 local config
 local lens_backup
+local n_keymap
+
+local bmap = function(...)
+    utils.bmap(0, ...)
+end
 
 local override_lens = function(render, plist, nearest, idx, r_idx)
     local _ = r_idx
@@ -36,14 +42,15 @@ function M.exit()
         hlslens.start(true)
     end
 
-    nvim.buf.set_keymap(0, "n", "n", "n", {silent = true})
+    -- Reset the mapping on exit
+    bmap("n", "n", n_keymap, {silent = true})
 end
 
 function M.mappings()
-    -- nvim.buf.set_keymap(0, "n", "n", "<C-n>", {silent = true})
-    -- nvim.buf.set_keymap(0, "i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true})
-    map(0, "n", "n", "<C-n>", {silent = true})
-    map(0, "i", "<CR>", [[pumvisible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true})
+    n_keymap = utils.get_keymap("n", "n").rhs
+    bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+    bmap("n", "<Esc>", "<Plug>(VM-Exit)")
+    bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})
 end
 
 local function init()

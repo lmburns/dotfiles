@@ -1,19 +1,23 @@
--- FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
--- FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
--- FIX: Focus events stop firing in Tmux after a bit
+--[[
+FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
+FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
+FIX: Focus events stop firing in Tmux after a bit
 
--- FIX: Cursor blinking is very fast on text operators which don't trigger which-key
---      This happens with COC (e.g., Lua and Rust, but not toml or yaml)
---      If lazyredraw is disabled then it stops
---      When reverting back to older configurations, this persists (maybe a Neovim update?)
---      This just started yesterday (i.e., June 22)
+FIX: Cursor blinking is very fast on text operators which don't trigger which-key (gq)
+     * This just started yesterday (i.e., June 22)
+     * Stopped without lazyredraw. Started again with and without lazyredraw
+     * It is the Bufferline plugin
+     * Is not present in telescope prompt
+     * Happens with coc (e.g., Lua and Rust, but not toml or yaml)
+     * With "showtabline=2" it happens. Not with any other setting
+     * With a timeoutlen over 800 it stops
 
--- Notes:
--- When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)
--- Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
---
--- Folding causing cursor to move one left on startup (UFO fixed this)
+Notes:
+    * When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)
+    * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 
+    * Folding causing cursor to move one left on startup (UFO fixed this)
+--]]
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
 if ok then
@@ -97,26 +101,23 @@ else
     require("plugins").compile()
 end
 
-a.async_void(
-    function()
-        ex.packadd("cfilter")
-        require("mapping")
-        require("abbr")
-        require("functions")
-        require("autocmds")
-        require("common.qf")
-        require("common.mru")
-        require("common.grepper")
-        -- require("common.reg")
-        -- require("plugs.fold")
-    end
-)()
+ex.packadd("cfilter")
+require("mapping")
+require("abbr")
+require("functions")
+require("autocmds")
+require("common.qf")
+require("common.mru")
+require("common.grepper")
+-- require("common.stl")
+-- require("common.reg")
+-- require("plugs.fold")
 
 vim.notify = function(...)
     require("plugins").loader("nvim-notify")
     vim.notify = require("notify")
-    -- require("plugins").loader("desktop-notify.nvim")
-    -- vim.notify = require("common.utils").notify
+    require("plugins").loader("desktop-notify.nvim")
+    vim.notify = require("common.utils").notify
     vim.notify(...)
 end
 -- ========================= Defer Loading ============================ [[[

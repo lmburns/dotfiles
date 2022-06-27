@@ -5,6 +5,8 @@ M.extensions = {}
 M.conditions = {}
 M.other = {}
 
+local utils = require("common.utils")
+local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
 local dev = require("dev")
 local C = require("common.color")
@@ -55,9 +57,10 @@ M.conditions = {
         return not vim.tbl_isempty(vim.lsp.buf_get_clients())
     end,
     check_git_workspace = function()
-        local filepath = fn.expand("%:p:h")
-        local gitdir = fn.finddir(".git", filepath .. ";")
-        return gitdir and #gitdir > 0 and #gitdir < #filepath
+        -- local filepath = fn.expand("%:p:h")
+        -- local gitdir = fn.finddir(".git", filepath .. ";")
+        -- return gitdir and #gitdir > 0 and #gitdir < #filepath
+        return #gittool.root() > 0
     end
 }
 
@@ -299,11 +302,9 @@ M.plugins.search_result = {
             return ""
         end
 
-        -- FIX: This pcall does nothing for Lualine
-        -- This needs to be protected for something like the following:
         -- If the user searches for ',\)', and 'unmatched' error occurs
-        local ok, searchcount = pcall(fn.searchcount({maxcount = 9999}))
-        if not ok then
+        local searchcount = fn.searchcount({maxcount = 9999})
+        if vim.tbl_isempty(searchcount) then
             return ""
         end
 
@@ -500,21 +501,12 @@ function M.document_diagnostics()
     end
 
     local data = vim.b[bufnr].coc_diagnostic_info
-    if data then
-        return {
-            error = data.error,
-            warn = data.warning,
-            info = data.information,
-            hint = data.hint
-        }
-    else
-        return {
-            error = 0,
-            warn = 0,
-            info = 0,
-            hint = 0
-        }
-    end
+    return {
+        error = utils.ife_nil(data, 0, data.error),
+        warn = utils.ife_nil(data, 0, data.warning),
+        info = utils.ife_nil(data, 0, data.information),
+        hint = utils.ife_nil(data, 0, data.hint)
+    }
 
     -- fn.CocActionAsync(
     --     "diagnosticList",

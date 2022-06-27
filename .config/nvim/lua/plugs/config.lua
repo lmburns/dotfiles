@@ -676,6 +676,19 @@ function M.vcoolor()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                       ColorPicker                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.colortils()
+    require("colortils").setup(
+        {
+            register = "+", -- register in which color codes will be copied: any register
+            color_preview = "█ %s",
+            border = "rounded" -- border for the float
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
@@ -860,6 +873,12 @@ function M.sandwhich()
       \     'input': ['(']
       \   },
       \   {
+      \     'buns': ['\s\+', '\s\+'],
+      \     'regex': 1,
+      \     'kind': ['delete', 'replace', 'query'],
+      \     'input': [' ']
+      \   },
+      \   {
       \     'buns'        : ['{', '}'],
       \     'motionwise'  : ['line'],
       \     'kind'        : ['add'],
@@ -872,20 +891,6 @@ function M.sandwhich()
       \     'kind'        : ['delete'],
       \     'linewise'    : 1,
       \     'command'     : ["'[,']normal! <<"],
-      \   },
-      \   {
-      \     'buns': ['(', ')'],
-      \     'cursor': 'head',
-      \     'command': ['startinsert'],
-      \     'kind': ['add', 'replace'],
-      \     'action': ['add'],
-      \     'input': ['P']
-      \   },
-      \   {
-      \     'buns': ['\s\+', '\s\+'],
-      \     'regex': 1,
-      \     'kind': ['delete', 'replace', 'query'],
-      \     'input': [' ']
       \   },
       \   {
       \     'buns':         ['', ''],
@@ -1351,6 +1356,7 @@ function M.specs()
         return
     end
 
+    --This is pretty cool, but it causes a BufEnter to happen on each call
     specs.setup(
         {
             show_jumps = true,
@@ -1364,7 +1370,7 @@ function M.specs()
                 fader = require("specs").linear_fader,
                 resizer = require("specs").shrink_resizer
             },
-            ignore_filetypes = {["TelescopePrompt"] = true},
+            ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
             ignore_buftypes = {nofile = true}
         }
     )
@@ -1384,13 +1390,13 @@ function M.scratchpad()
     -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
     -- g.scratchpad_daily_format = '%Y-%m-%d'
 
-    nvim.autocmd.lmb__ScratchpadFix = {
-        event = "FileType",
-        pattern = "scratchpad",
-        command = function()
-            vim.opt_local.filetype = "markdown.scratchpad"
-        end
-    }
+    -- nvim.autocmd.lmb__ScratchpadFix = {
+    --     event = "FileType",
+    --     pattern = "scratchpad",
+    --     command = function()
+    --         vim.opt_local.filetype = "markdown.scratchpad"
+    --     end
+    -- }
 
     map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
 end
@@ -1655,7 +1661,7 @@ function M.lfnvim()
 
     lf.setup(
         {
-            escape_quit = false,
+            escape_quit = true,
             -- open_on = true,
             border = "rounded",
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
@@ -1796,36 +1802,65 @@ function M.visualmulti()
     g.VM_show_warnings = 0
     g.VM_silent_exit = 1
     g.VM_default_mappings = 1
+
+    g.VM_Mono_hl = "DiffText" -- ErrorMsg DiffText
+    g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
+    g.VM_Cursor_hl = "Visual"
+    g.VM_Insert_hl = "DiffChange"
+
+    -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
     g.VM_maps = {
         Delete = "d",
         Undo = "u",
         Redo = "U",
+        ["Switch Mode"] = ",",
         ["Select Operator"] = "v",
         ["Find Operator"] = "m",
-        ["Select Cursor Up"] = "<M-C-Up>",
-        ["Select Cursor Down"] = "<M-C-Down>",
+        ["Surround"] = "S",
+        ["Replace Pattern"] = "R",
+        ["Select Cursor Up"] = "<M-C-Up>", -- start selecting up
+        ["Select Cursor Down"] = "<M-C-Down>", -- start selecting down
         ["Move Left"] = "<M-C-Left>",
         ["Move Right"] = "<M-C-Right>",
         ["Find Next"] = "]",
         ["Find Prev"] = "[",
-        ["Goto Next"] = "}",
-        ["Goto Prev"] = "{",
+        ["Goto Next"] = "}", -- already selected
+        ["Goto Prev"] = "{", -- already selected
         ["Seek Next"] = "<C-f>",
         ["Seek Prev"] = "<C-b>",
         ["Skip Region"] = "q",
         ["Remove Region"] = "Q",
-        ["Invert Direction"] = "o",
-        ["Surround"] = "S",
-        ["Replace Pattern"] = "R",
+        ["Remove Last Region"] = "<Leader>q",
+        ["Merge Regions"] = "<Leader>m",
+        ["Split Regions"] = "<Leader>s",
         ["Tools Menu"] = "<Leader>`",
-        ["Show Regisers"] = '<Leader>"',
+        ["Search Menu"] = "<Leader>S",
+        ["Case Conversion Menu"] = "<Leader>C",
+        ["Invert Direction"] = "o",
+        ["Show Registers"] = '<Leader>"',
+        ["Visual Subtract"] = "<Leader>s",
         ["Case Setting"] = "<Leader>c",
         ["Toggle Whole Word"] = "<Leader>w",
         ["Transpose"] = "<Leader>t",
         ["Align"] = "<Leader>a",
+        ["Align Char"] = "<Leader><",
+        ["Align Regex"] = "<Leader>>",
+        ["Numbers"] = "<Leader>n",
+        ["Numbers Append"] = "<Leader>N",
         ["Duplicate"] = "<Leader>d",
-        ["Merge Regions"] = "<Leader>m"
+        ["Shrink"] = "-",
+        ["Enlarge"] = "+",
+        ["Run Normal"] = "<Leader>z",
+        ["Run Last Normal"] = "<Leader>Z",
+        ["Run Visual"] = "<Leader>v",
+        ["Run Last Visual"] = "<Leader>V",
+        ["Run Ex"] = "<Leader>x",
+        ["Run Last Ex"] = "<Leader>X",
+        ["Run Macro"] = "<Leader>@",
+        ["Toggle Block"] = "<Leader><BS>",
+        ["Toggle Single Region"] = "<Leader><CR>",
+        ["Toggle Multiline"] = "<Leader>M"
     }
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
@@ -1839,6 +1874,14 @@ function M.visualmulti()
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
     map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
     map("n", "g/", "<Cmd>VMSearch<CR>")
+
+    command(
+        "VMFixStl",
+        function()
+            ex.VMClear()
+            vim.o.statusline = "%{%v:lua.require'lualine'.statusline()%}"
+        end
+    )
 
     augroup(
         "VisualMulti",
@@ -2355,10 +2398,10 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                       QFReflector                        │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.qf_reflector()
-    g.qf_modifiable = 1
-    g.qf_write_changes = 1
-end
+-- function M.qf_reflector()
+--     g.qf_modifiable = 1
+--     g.qf_write_changes = 1
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Anywise                          │

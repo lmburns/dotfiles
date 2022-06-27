@@ -252,7 +252,7 @@ map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
 -- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
 map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
-map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
+-- map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
 
 -- map(
 --     "n",
@@ -264,10 +264,12 @@ map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close
 -- map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
 -- map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
 
-map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
+-- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
+map("n", "z[", [[<Cmd>lua require('ufo').goPreviousStartFold()<CR>]])
 map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
--- map("n", "z-", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
--- map("n", "z+", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
+
+map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
+map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
 
 map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
 map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})

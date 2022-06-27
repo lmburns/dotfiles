@@ -1,5 +1,6 @@
 local M = {}
 
+local log = require("common.log")
 local utils = require("common.utils")
 
 ---Execute a git command

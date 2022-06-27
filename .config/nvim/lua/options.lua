@@ -16,7 +16,7 @@ g.do_filetype_lua = 1
 
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.
--- g.nvim_focused = true
+g.nvim_focused = true
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -36,30 +36,42 @@ vim.tbl_map(
         "matchit",
         "matchparen",
         "rrhelper",
+        "spec",
         "tar",
         "tarPlugin",
+        "tutor_mode_plugin",
         "vimball",
         "vimballPlugin",
         "zip",
         "zipPlugin",
         "ruby_provider",
         "perl_provider",
-        "node_provider"
-        -- "python_provider",
-        -- "netrw",
-        -- "netrwFileHandlers",
-        -- "netrwPlugin",
+        "node_provider",
+        "python_provider",
+        -- "python3_provider",
+        -- "rplugin",
+        -- "remote_plugins",
+        "netrw",
+        "netrwFileHandlers",
+        "netrwPlugin",
         -- "netrwSettings",
     }
 )
+
+-- g.loaded_fzf = 1
+-- g.loaded_gtags = 1
+-- g.loaded_gtags_cscope = 1
+g.load_black = 1
 
 g.c_syntax_for_h = 1
 g.c_comment_strings = 1
 g.c_no_if0 = 0
 
--- We do this to prevent the loading of the system fzf.vim plugin. This is
+-- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
 o.rtp:remove("/usr/share/vim/vimfiles")
+o.rtp:remove("/etc/xdg/nvim/after")
+o.rtp:remove("/etc/xdg/nvim")
 
 -- Base
 env.LANG = "en_US.UTF-8"
@@ -107,8 +119,8 @@ o.foldcolumn = "1"
 o.formatoptions = {
     ["1"] = true,
     ["2"] = true, -- Use indent from 2nd line of a paragraph
-    q = true, -- Continue comments with gq"
-    n = true, -- Recognize numbered lists
+    q = true, -- Format comments with gq"
+    n = true, -- Recognize numbered lists. Indent past formatlistpat not under
     j = true, -- Remove a comment leader when joining lines.
     -- Only break if the line was not longer than 'textwidth' when the insert
     -- started and only at a white character that has been entered during the
@@ -132,7 +144,7 @@ o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\)\s*]]
 o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 
 o.title = true
-o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
+-- o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
 o.titlelen = 70
 o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
 
@@ -148,7 +160,8 @@ o.listchars:append(
         nbsp = "␣"
     }
 )
-o.showbreak = [[↳ ]] -- ↪
+o.showbreak = [[↳ ]] -- ↪  ⌐
+
 -- o.cpoptions = 'aAceFs_B'
 -- o.cpoptions:append("n") -- cursorcolumn used for wraptext
 o.cpoptions:append("_") -- do not include whitespace with 'cw'
@@ -171,12 +184,12 @@ o.linebreak = true -- lines wrap at words rather than random characters
 o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
 -- o.lazyredraw = true
-o.redrawtime = 1500
--- g.cursorhold_updatetime = 1000
+o.redrawtime = 2000
+g.cursorhold_updatetime = 250
 o.updatetime = 200 -- cursorhold event time
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
-o.ttimeoutlen = 10 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
-o.matchtime = 2 -- ms to blink when matching brackets
+o.ttimeoutlen = 50 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
+o.matchtime = 5 -- ms to blink when matching brackets
 -- o.autoread = true
 -- o.autowriteall = true -- automatically :write before running commands and changing files
 

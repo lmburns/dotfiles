@@ -17,6 +17,7 @@ local finders = require("telescope.finders")
 local make_entry = require("telescope.make_entry")
 local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
+local themes = require("telescope.themes")
 local sorters = require("telescope.sorters")
 local utils = require("telescope.utils")
 
@@ -296,7 +297,8 @@ require("telescope").setup(
                 "lua-language-server",
                 "cache",
                 "node_modules",
-                "parser.c"
+                "parser.c",
+                "_disabled"
             },
             file_sorter = sorters.get_fuzzy_file,
             generic_sorter = sorters.get_generic_fuzzy_sorter,
@@ -515,7 +517,7 @@ require("telescope").setup(
                 reset_selection = true
             },
             frecency = {
-                ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*"},
+                ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
                 persistent_filter = false,
                 show_scores = true,
                 show_unindexed = true,
@@ -1027,7 +1029,7 @@ builtin.edit_nvim = function()
             "--hidden",
             "--follow",
             "--exclude=.git",
-            "--exclude=disabled",
+            "--exclude=_disabled",
             "--exclude=_backup",
             "--exclude=sessions"
         },
@@ -1340,11 +1342,6 @@ wk.register(
     }
 )
 
--- map("n", "<Leader>cs", ":Telescope colorscheme<CR>")
--- map("n", "<LocalLeader>f", ":Telescope find_files<CR>")
--- map("n", ";e", ":Telescope live_grep theme=get_ivy<CR>")
--- map("n", "<Leader>e,", ":lua require('plugs.telescope').cst_grep_cWORD<CR>")
-
 -- ========================== Highlight ==========================
 local c = require("kimbox.colors")
 local color = require("common.color")
@@ -1366,16 +1363,5 @@ color.plugin(
         TelescopeBufferLoaded = {fg = c.red}
     }
 )
-
--- bg("TelescopeNormal", colors.bg0)
-
--- telescope.load_extension("notify")
--- telescope.load_extension("ultisnips")
--- telescope.load_extension("coc")
--- telescope.load_extension("bookmarks")
--- telescope.load_extension("fzf")
--- telescope.load_extension("neoclip")
--- telescope.load_extension("frecency")
--- telescope.load_extension("packer")
 
 return M

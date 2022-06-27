@@ -21,23 +21,23 @@ function M.command(cmd, match)
     end
 end
 
----Create an abbreviation, until an API command is created
----@param abbr table
-function M.abbr(abbr)
-    vim.validate {abbrevation = {abbr, "table"}}
-    if not abbr.mode or not abbr.lhs then
-        log.err("need a mode and LHS", true, {title = "Abbrs"})
-        return false
-    end
+---@class AbbrOpts
+---@field expr boolean
+---@field buffer boolean
+---@field silent boolean
+---@field only_start boolean
 
+---Create an abbreviation, until an API command is created
+---@param mode string mode commands is to be mapped
+---@param lhs string text that is converted
+---@param rhs string what the abbreviation stands for
+---@param args AbbrOpts
+function M.abbr(mode, lhs, rhs, args)
+    args = args or {}
     local command = {}
     local mods = {}
     local modes = {insert = "i", command = "c"}
-
-    local lhs = abbr.lhs
-    local rhs = abbr.rhs
-    local args = type(abbr.args) == "table" and abbr.args or {abbr.args}
-    local mode = modes[abbr.mode] or abbr.mode
+    local mode = modes[mode] or mode
 
     if args.buffer ~= nil then
         table.insert(mods, "<buffer>")
@@ -81,11 +81,10 @@ function M.abbr(abbr)
     vim.cmd(table.concat(command, " "))
 end
 
-M.abbr({mode = "c", lhs = "ld", rhs = "Linediff"})
-M.abbr({mode = "c", lhs = "W!", rhs = "w!"})
-M.abbr({mode = "c", lhs = "Q!", rhs = "q!"})
--- I can't get this to work
-M.abbr({mode = "i", lhs = "funciton", rhs = "function"})
+M.abbr("c", "ld", "Linediff")
+M.abbr("c", "W!", "w!")
+-- -- I can't get this to work
+-- M.abbr("i", "funciton", "function")
 
 M.cabbrev("Qall!", "qll!")
 M.cabbrev("Qall", "qll")

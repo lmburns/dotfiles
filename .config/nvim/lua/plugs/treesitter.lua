@@ -369,16 +369,27 @@ M.setup_aerial = function()
     -- keys[cr_idx][1] = "o"
     -- keys[o_idx][1][1] = "<CR>"
 
-    -- This is here more for a proof of concept. I don't use rescript
     local ts_langs = require("aerial.backends.treesitter.language_kind_map")
 
-    ts_langs.rescript = {
-        ["function"] = "Function",
-        module_declaration = "Module",
-        type_declaration = "Type",
-        type_annotation = "Interface",
-        external_declaration = "Interface"
+    -- Would be nice to get this to work
+    ts_langs.rust = {
+        enum_item = "Enum",
+        function_item = "Function",
+        ["closure_expression"] = "Function",
+        function_signature_item = "Function",
+        impl_item = "Class",
+        mod_item = "Module",
+        struct_item = "Struct",
+        trait_item = "Interface"
     }
+
+    -- ts_langs.rescript = {
+    --     ["function"] = "Function",
+    --     module_declaration = "Module",
+    --     type_declaration = "Type",
+    --     type_annotation = "Interface",
+    --     external_declaration = "Interface"
+    -- }
 
     wk.register(
         {
@@ -488,6 +499,7 @@ M.setup_treesurfer = function()
             "function",
             "function_definition",
             "function_item",
+            "closure_expression",
             "if_statement",
             "if_expression",
             "if_let_expression",
@@ -532,9 +544,10 @@ M.setup_treesurfer = function()
                 ["while_statement"] = "菱",
                 ["switch_statement"] = "",
                 ["match_expression"] = "",
-                ["function"] = "",
+                ["closure_expression"] = "",
                 ["function_item"] = "",
                 ["function_definition"] = "",
+                ["function"] = "",
                 ["variable_declaration"] = "",
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
@@ -614,36 +627,6 @@ M.setup_treesurfer = function()
     )
 end
 
--- M.setup_comment_frame = function()
---     ex.packadd("nvim-comment-frame")
---
---     require("nvim-comment-frame").setup(
---         {
---             -- if true, <leader>cf keymap will be disabled
---             disable_default_keymap = false,
---             -- adds custom keymap
---             keymap = "<leader>cc",
---             multiline_keymap = "<leader>C",
---             -- start the comment with this string
---             start_str = "//",
---             -- end the comment line with this string
---             end_str = "//",
---             -- fill the comment frame border with this character
---             fill_char = "-",
---             -- width of the comment frame
---             frame_width = 70,
---             -- wrap the line after 'n' characters
---             line_wrap_len = 50,
---             -- automatically indent the comment frame based on the line
---             auto_indent = true,
---             -- add comment above the current line
---             add_comment_above = true,
---             -- configurations for individual language goes here
---             languages = {}
---         }
---     )
--- end
-
 ---Setup treesitter
 ---@return table
 M.setup = function()
@@ -675,7 +658,7 @@ M.setup = function()
             "rasi",
             -- Injections are sent into various filetypes
             "regex",
-            "rescript",
+            -- "rescript",
             "ruby",
             "rust",
             "scheme",

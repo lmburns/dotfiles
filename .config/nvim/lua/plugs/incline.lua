@@ -24,7 +24,7 @@ local function render(props)
     if bufname == "" then
         return "[No name]"
     end
-    -- FIX: Sometimes the beginning directory is cut off
+
     local directory_color = C.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
     fname = fname:gsub("^/home/lucas/.config/nvim/", "$NVIM/")
@@ -102,7 +102,7 @@ function M.setup()
             ignore = {
                 floating_wins = true,
                 unlisted_buffers = true,
-                filetypes = {},
+                filetypes = {"scratchpad"},
                 buftypes = "special",
                 wintypes = "special"
             }

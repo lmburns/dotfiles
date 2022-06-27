@@ -48,67 +48,6 @@ local api = {
 ---@deprecated @field guibg string
 ---@deprecated @field guisp string
 
----Define bg color
----@param group Group
----@param color Color
----@param fmt ColorFormat
-function M.bg(group, color, fmt)
-    -- cmd(("hi %s guibg=%s"):format(group, col))
-    local opts = {}
-    if fmt then
-        vim.tbl_extend("keep", opts, fmt)
-    end
-    opts.bg = color
-    M.set_hl(group, opts)
-end
-
----Define fg color
----@param group Group
----@param color Color
----@param fmt ColorFormat
-function M.fg(group, color, fmt)
-    -- local g = gui == nil and "" or (" gui=%s"):format(gui)
-    -- cmd(("hi %s guifg=%s %s"):format(group, color, g))
-    local opts = {}
-    if fmt then
-        vim.tbl_extend("keep", opts, fmt)
-    end
-    opts.fg = color
-    M.set_hl(group, opts)
-end
-
----Group to modify gui
----@param group Group
----@param gui string
-function M.gui(group, gui)
-    cmd(("hi %s gui=%s"):format(group, gui))
-end
-
----Define bg and fg color
----@param group Group
----@param fgcol Color
----@param bgcol Color
----@param fmt ColorFormat
-function M.fg_bg(group, fgcol, bgcol, fmt)
-    -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
-    local opts = {}
-    if fmt then
-        vim.tbl_extend("keep", opts, fmt)
-    end
-    opts.fg = fgcol
-    opts.bg = bgcol
-    M.set_hl(group, opts)
-end
-
----Highlight link one group to another
----@param from string group that is going to be linked
----@param to string group that is linked to
-function M.link(from, to)
-    -- bang = bang ~= false and "!" or " default"
-    -- cmd(("hi%s link %s %s"):format(bang, from, to))
-    M.set_hl(from, {link = to})
-end
-
 ---Convert a hex color (#RRGGBB) to (#RRGGBB) RGB
 ---@param color Color
 ---@return table<number, number, number>
@@ -493,6 +432,67 @@ function M.plugin(name, hls)
     )
 end
 
+---Define bg color
+---@param group Group
+---@param color Color
+---@param fmt ColorFormat
+function M.bg(group, color, fmt)
+    -- cmd(("hi %s guibg=%s"):format(group, col))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.bg = color
+    M.set_hl(group, opts)
+end
+
+---Define fg color
+---@param group Group
+---@param color Color
+---@param fmt ColorFormat
+function M.fg(group, color, fmt)
+    -- local g = gui == nil and "" or (" gui=%s"):format(gui)
+    -- cmd(("hi %s guifg=%s %s"):format(group, color, g))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.fg = color
+    M.set_hl(group, opts)
+end
+
+---Group to modify gui
+---@param group Group
+---@param gui string
+function M.gui(group, gui)
+    cmd(("hi %s gui=%s"):format(group, gui))
+end
+
+---Define bg and fg color
+---@param group Group
+---@param fgcol Color
+---@param bgcol Color
+---@param fmt ColorFormat
+function M.fg_bg(group, fgcol, bgcol, fmt)
+    -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
+    local opts = {}
+    if fmt then
+        vim.tbl_extend("keep", opts, fmt)
+    end
+    opts.fg = fgcol
+    opts.bg = bgcol
+    M.set_hl(group, opts)
+end
+
+---Highlight link one group to another
+---@param from string group that is going to be linked
+---@param to string group that is linked to
+function M.link(from, to)
+    -- bang = bang ~= false and "!" or " default"
+    -- cmd(("hi%s link %s %s"):format(bang, from, to))
+    M.set_hl(from, {link = to})
+end
+
 ---List all highlight groups, or ones matching `filter`
 ---@param filter string
 ---@param exact boolean whether filter should be exact
@@ -541,62 +541,6 @@ M.colors = function(filter, exact)
     end
     -- utils.dump(defs)
     return defs
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                           ANSI                           │
--- ╰──────────────────────────────────────────────────────────╯
-
-M.ansi = {}
-M.ansi.codes = {}
-
----List of ansi escape sequences
-M.ansi.colors = {
-    clear = "\x1b[0m",
-    bold = "\x1b[1m",
-    italic = "\x1b[3m",
-    underline = "\x1b[4m",
-    black = "\x1b[0;30m",
-    red = "\x1b[0;31m",
-    green = "\x1b[0;32m",
-    yellow = "\x1b[0;33m",
-    blue = "\x1b[0;34m",
-    magenta = "\x1b[0;35m",
-    cyan = "\x1b[0;36m",
-    white = "\x1b[0;37m",
-    grey = "\x1b[0;90m",
-    dark_grey = "\x1b[0;97m"
-}
-
----Remove escape sequences of the following formats:
----1. ^[[34m
----2. ^[[0;34m
----@param str string
----@return string
-M.ansi.strip = function(str)
-    if not str then
-        return str
-    end
-    return str:gsub("%[[%d;]+m", "")
-end
-
----Add ansi functions
----Can be called line color.ansi_codes.yellow("string")
----
----@param name string: Color
----@param escseq string: Escape sequence
----@return string
-M.ansi.add_code = function(name, escseq)
-    M.ansi.codes[name] = function(string)
-        if string == nil or #string == 0 then
-            return ""
-        end
-        return escseq .. string .. M.ansi.colors.clear
-    end
-end
-
-for color, escseq in pairs(M.ansi.colors) do
-    M.ansi.add_code(color, escseq)
 end
 
 utils.command(

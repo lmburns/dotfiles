@@ -1,5 +1,7 @@
 local M = {}
 
+local D = require("dev")
+
 local api = vim.api
 local fn = vim.fn
 
@@ -30,8 +32,7 @@ function M.go2recent()
     local cur_winid = api.nvim_get_current_win()
     for _, winid in ipairs(mru_list) do
         if cur_winid ~= winid and api.nvim_win_is_valid(winid) then
-            local win_type = fn.win_gettype(winid)
-            if win_type ~= "popup" then
+            if not D.is_floating_window(winid) then
                 fn.win_gotoid(winid)
                 break
             end

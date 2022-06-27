@@ -264,6 +264,8 @@
   pom = push origin master
   psf = push --force
 
+  mkshallow = gc --prune=all
+
   rao = remote add origin
   remotes = remote -v
   rmc = rm --cached

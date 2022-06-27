@@ -16,6 +16,8 @@ local ex = nvim.ex
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
+-- This does run on require("packer").on_complete()
+-- This does run on require("plugins").on_complete()
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -50,6 +52,12 @@ packer.on_compile_done = function()
     end
 
     fp:close()
+    -- vim.cmd [[doautocmd User PackerCompileDone]]
+end
+
+packer.on_complete = function()
+    ex.doau("User PackerComplete")
+    nvim.p("Packer completed")
 end
 
 packer.init(
@@ -252,7 +260,7 @@ return packer.startup(
             -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
-            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
+            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
@@ -335,7 +343,9 @@ return packer.startup(
                         {"n", "<C-n>"},
                         {"x", "<C-n>"},
                         {"n", [[<Leader>\]]},
+                        {"n", [[<Leader>/]]},
                         {"n", "<Leader>A"},
+                        {"n", "<Leader>gs"},
                         {"x", "<Leader>A"},
                         {"n", "<M-S-i>"},
                         {"n", "<M-S-o>"},
@@ -825,19 +835,18 @@ return packer.startup(
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use({"liuchengxu/vista.vim", after = "vim-gutentags", conf = "plugs.vista"})
 
-            use(
-                {
-                    prefer_local("symbols-outline.nvim"),
-                    -- cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
-                    -- keys = {{"n", '<A-S-">'}},
-                    -- setup = [[require('plugs.config').outline()]],
-                    conf = "outline"
-                }
-            )
+            -- use(
+            --     {
+            --         prefer_local("symbols-outline.nvim"),
+            --         -- cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+            --         -- keys = {{"n", '<A-S-">'}},
+            --         -- setup = [[require('plugs.config').outline()]],
+            --         conf = "outline"
+            --     }
+            -- )
             -- ]]] === Tags ===
 
             -- ============================= UndoTree ============================= [[[
-            -- "simnalamburt/vim-mundo",
             use(
                 {
                     "mbbill/undotree",
@@ -958,7 +967,7 @@ return packer.startup(
                 {
                     "sheerun/vim-polyglot",
                     setup = function()
-                        g.polyglot_disabled = {
+                        vim.g.polyglot_disabled = {
                             "ftdetect",
                             -- "sensible",
                             "markdown",
@@ -1028,21 +1037,8 @@ return packer.startup(
 
             -- "norcalli/nvim-colorizer.lua",
             -- The following plugin really needs to support ansi sequences
-            use(
-                {
-                    "xiyaowong/nvim-colorizer.lua",
-                    cmd = "ColorizerToggle",
-                    conf = "colorizer"
-                }
-            )
-
-            use(
-                {
-                    "Pocco81/HighStr.nvim",
-                    event = "VimEnter",
-                    conf = "plugs.highstr"
-                }
-            )
+            use({"xiyaowong/nvim-colorizer.lua", cmd = "ColorizerToggle", conf = "colorizer"})
+            use({"Pocco81/HighStr.nvim", event = "VimEnter", conf = "plugs.highstr"})
 
             use(
                 {
@@ -1069,8 +1065,8 @@ return packer.startup(
             use(
                 {
                     "max397574/colortils.nvim",
-                    cmd = "Colortils",
-                    config = [[require("colortils").setup({})]]
+                    cmd = {"Colortils"},
+                    conf = "colortils"
                 }
             )
 
@@ -1081,165 +1077,15 @@ return packer.startup(
             -- ]]] === Neoformat ===
 
             -- ╭──────────────────────────────────────────────────────────╮
-            -- │                           LSP                            │
-            -- ╰──────────────────────────────────────────────────────────╯
-
-            -- "tami5/lspsaga.nvim",
-            -- 'folke/lsp-colors.nvim'
-            -- 'neovim/nvim-lspconfig'
-            -- 'nvim-lua/lsp-status.nvim'
-            -- 'onsails/lspkind-nvim'
-            -- 'ray-x/lsp_signature.nvim', module = 'lsp_signature'
-            -- "RRethy/vim-illuminate"     => Highlight word under cursor
-            -- "pechorin/any-jump.vim"     => Definition jumping
-            -- "j-hui/fidget.nvim"         => Standalone for LSP progress
-            -- "filipdutescu/renamer.nvim" => Like code action rename
-            -- "jubnzv/virtual-types.nvim" => Code lens
-            -- "b0o/SchemaStore.nvim",
-            -- "EthanJWright/toolwindow.nvim",
-            -- "kosayoda/nvim-lightbulb",
-            -- "ericpubu/lsp_codelens_extensions.nvim",
-            -- "jose-elias-alvarez/nvim-lsp-ts-utils"
-            -- "folke/lsp-trouble.nvim",
-            -- "tamago324/nlsp-settings.nvim"
-            -- "lukas-reineke/lsp-format.nvim"
-            -- "theHamsta/nvim-semantic-tokens"
-            -- "onsails/diaglist.nvim" => Show errors in quickfix
-
-            -- use({"github/copilot.vim", cmd = {"Copilot"}})
-            -- use(
-            --     {
-            --         "zbirenbaum/copilot.lua",
-            --         after = "copilot.vim",
-            --         config = function()
-            --             vim.schedule(
-            --                 function()
-            --                     require("copilot")
-            --                 end
-            --             )
-            --         end
-            --     }
-            -- )
-
-            -- === Languages ===
-            -- "simrat39/rust-tools.nvim"
-            -- "jose-elias-alvarez/typescript.nvim",
-            -- "ray-x/go.nvim"
-
-            -- use(
-            --     {
-            --         "williamboman/nvim-lsp-installer",
-            --         {
-            --             "neovim/nvim-lspconfig",
-            --             config = function()
-            --                 require("plugs.lsp.installer")
-            --                 require("plugs.lsp")
-            --             end,
-            --             wants = {"nvim-cmp", "lua-dev.nvim", "null-ls.nvim"},
-            --             requires = {"onsails/diaglist.nvim"}
-            --         },
-            --         after = {
-            --             "nvim-lspconfig",
-            --             "nvim-cmp",
-            --             "cmp-nvim-lsp",
-            --             "null-ls.nvim",
-            --             "lspsaga.nvim",
-            --             "symbols-outline.nvim"
-            --         }
-            --     }
-            -- )
-            --
-            -- use( { "jose-elias-alvarez/null-ls.nvim", requires = {"plenary.nvim"} })
-            --
-            -- use({"tami5/lspsaga.nvim"})
-            -- use({"b0o/SchemaStore.nvim", module = "schemastore"})
-            -- -- use({"RRethy/vim-illuminate", conf = "illuminate", desc = "Highlight other uses of same word"})
-            -- use({"ray-x/lsp_signature.nvim", after = "nvim-lspconfig"})
-            -- use(
-            --     {
-            --         "j-hui/fidget.nvim",
-            --         after = {"nvim-lspconfig"},
-            --         conf = "fidget",
-            --         desc = "Standalone UI for nvim-lsp progress"
-            --     }
-            -- )
-            -- use({"weilbith/nvim-code-action-menu", cmd = "CodeActionMenu", keys = {{"n", "<A-CR>"}}})
-            -- use({"kosayoda/nvim-lightbulb", conf = "lightbulb"})
-            -- -- use({"theHamsta/nvim-semantic-tokens", conf = "semantic_tokens"})
-            -- use({"zbirenbaum/neodim"})
-            --
-            -- -- ╭──────────────────────────────────────────────────────────╮
-            -- -- │                        Completion                        │
-            -- -- ╰──────────────────────────────────────────────────────────╯
-            -- -- use "tamago324/cmp-zsh"
-            -- -- use { 'andersevenrud/cmp-tmux', after = 'nvim-cmp' }
-            -- -- xuse { 'f3fora/cmp-spell', after = 'nvim-cmp' }
-            --
-            -- use(
-            --     {
-            --         "hrsh7th/nvim-cmp",
-            --         requires = {
-            --             {"hrsh7th/cmp-nvim-lsp", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lua", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-buffer", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-path", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-cmdline", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-calc", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lsp-signature-help", after = "nvim-cmp"},
-            --             {"hrsh7th/cmp-nvim-lsp-document-symbol", after = "nvim-cmp"},
-            --             {"lukas-reineke/cmp-rg", after = "nvim-cmp"},
-            --             {"saadparwaiz1/cmp_luasnip", after = "nvim-cmp"},
-            --             {"ray-x/cmp-treesitter", after = "nvim-cmp"},
-            --             {"petertriho/cmp-git", after = "nvim-cmp"},
-            --             {"tzachar/cmp-tabnine", run = "./install.sh", after = "nvim-cmp"},
-            --             {"L3MON4D3/LuaSnip", requires = "rafamadriz/friendly-snippets"},
-            --             {"lukas-reineke/cmp-under-comparator", after = "nvim-lspconfig"}
-            --         },
-            --         after = {"nvim-treesitter", "lspkind-nvim"},
-            --         conf = "plugs.cmp"
-            --     }
-            -- )
-            --
-            -- use({"onsails/lspkind-nvim", module = "lspkind", desc = "Pictograms for completion"})
-            --
-            -- -- Rust
-            -- use(
-            --     {
-            --         "simrat39/rust-tools.nvim",
-            --         -- ft = "rust",
-            --         wants = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"},
-            --         after = {"nvim-lspconfig", "nvim-dap", "plenary.nvim"}
-            --     }
-            -- )
-            --
-            -- -- Clangd
-            -- use(
-            --     {
-            --         "p00f/clangd_extensions.nvim",
-            --         wants = {"nvim-lspconfig", "nvim-dap"},
-            --         after = {"nvim-lspconfig"}
-            --     }
-            -- )
-            --
-            -- -- Typescript
-            -- use(
-            --     {
-            --         "jose-elias-alvarez/nvim-lsp-ts-utils",
-            --         wants = {"nvim-lspconfig"},
-            --         after = {"nvim-lspconfig"}
-            --     }
-            -- )
-
-            -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Coc                            │
             -- ╰──────────────────────────────────────────────────────────╯
 
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
-
+            -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
+
             use({"jlcrochet/vim-crystal", ft = "crystal"})
-            use({"rescript-lang/vim-rescript"})
             use({"vim-perl/vim-perl", ft = "perl"})
             use({"teal-language/vim-teal", ft = "teal"})
             use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
@@ -1247,8 +1093,14 @@ return packer.startup(
             use(
                 {
                     "neoclide/coc.nvim",
-                    branch = "master",
-                    run = "gh pr checkout 3862 && yarn install --frozen-lockfile",
+                    branch = "pum",
+                    -- run = {
+                    --     "git fetch origin pum:pum",
+                    --     "git checkout pum",
+                    --     "gh pr checkout 3862",
+                    --     "yarn install --frozen-lockfile"
+                    -- },
+                    run = {"git fetch origin pull/3862/head:pum", "git checkout pum", "yarn install --frozen-lockfile"},
                     -- run = "yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
@@ -1375,7 +1227,7 @@ return packer.startup(
                 }
             )
 
-            use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
+            -- use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
             -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
             -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
@@ -1497,12 +1349,9 @@ return packer.startup(
                     -- config = [[require("telescope").load_extension("packer")]],
                     config = function()
                         require("telescope.builtin").packer = function(opts)
-                            -- if not _G.packer_plugins["packer.nvim"].loaded then
                             require("plugins").loader("packer.nvim")
-                            ex.packadd("packer.nvim")
-                            -- end
-                            -- require("plugins").compile()
-
+                            opts = opts or {}
+                            opts.previewer = false
                             require("telescope").load_extension("packer")
                             require("telescope").extensions.packer.packer(opts)
                         end
@@ -1516,7 +1365,7 @@ return packer.startup(
             use(
                 {
                     "tpope/vim-fugitive",
-                    fn = "fugitive#*",
+                    fn = {"fugitive#*", "Fugitive*"},
                     event = "BufReadPre */.git/index",
                     conf = "plugs.fugitive",
                     cmd = {
@@ -1566,7 +1415,6 @@ return packer.startup(
             use(
                 {
                     "rbong/vim-flog",
-                    run = "gh pr checkout 79",
                     cmd = {"Flog", "Flogsplit"},
                     keys = {
                         {"n", "<Leader>gl"},
@@ -1582,21 +1430,8 @@ return packer.startup(
             use({"akinsho/git-conflict.nvim", conf = "git_conflict"})
             use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
 
-            use(
-                {
-                    "lewis6991/gitsigns.nvim",
-                    conf = "plugs.gitsigns",
-                    requires = {"nvim-lua/plenary.nvim"}
-                }
-            )
-
-            use(
-                {
-                    "TimUntersberger/neogit",
-                    conf = "plugs.neogit",
-                    requires = {"nvim-lua/plenary.nvim"}
-                }
-            )
+            use({"lewis6991/gitsigns.nvim", conf = "plugs.gitsigns", requires = {"nvim-lua/plenary.nvim"}})
+            use({"TimUntersberger/neogit", conf = "plugs.neogit", requires = {"nvim-lua/plenary.nvim"}})
 
             use(
                 {
@@ -1630,13 +1465,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "ldelossa/gh.nvim",
-                    requires = {"ldelossa/litee.nvim"},
-                    conf = "plugs.gh"
-                }
-            )
+            -- use(
+            --     {
+            --         "ldelossa/gh.nvim",
+            --         requires = {"ldelossa/litee.nvim"},
+            --         conf = "plugs.gh"
+            --     }
+            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                          Fennel                          │
@@ -1659,13 +1494,13 @@ return packer.startup(
             -- )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
-            -- use(
-            --     {
-            --         "simrat39/desktop-notify.nvim",
-            --         setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-            --         config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
-            --     }
-            -- )
+            use(
+                {
+                    "simrat39/desktop-notify.nvim",
+                    setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
+                    config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
+                }
+            )
         end
     }
 )

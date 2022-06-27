@@ -405,7 +405,7 @@ local function init()
         "aerial"
     }
     coc_loaded_ft = {}
-    anyfold_prefer_ft = {"vim", "zsh"}
+    anyfold_prefer_ft = {"vim"}
 
     -- local parsers = require("nvim-treesitter.parsers")
     -- local configs = parsers.get_parser_configs()

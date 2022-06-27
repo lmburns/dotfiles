@@ -1,5 +1,5 @@
--- local D = require("dev")
--- local global = require("common.global")
+local D = require("dev")
+local global = require("common.global")
 local utils = require("common.utils")
 local C = require("common.color")
 local debounce = require("common.debounce")
@@ -24,6 +24,8 @@ local has_sourced
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                 Setting git environment                  │
 -- ╰──────────────────────────────────────────────────────────╯
+-- This version uses a pre-built pattern.
+-- This also floods autocmds with an additional 1000+
 -- local git_pattern =
 --     _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
 --     function(path)
@@ -33,44 +35,100 @@ local has_sourced
 --
 -- -- The first item contains an error because dotbare uses `stty` for a command
 -- local _ = git_pattern:remove(1)
+--
+-- nvim.autocmd.lmb__GitEnv = {
+--     event = {"BufRead", "BufEnter"},
+--     pattern = git_pattern,
+--     desc = "Set git environment variables for dotfiles bare repo",
+--     command = function()
+--         local curr_file = fn.expand("%")
+--         local bufnr = api.nvim_get_current_buf()
+--
+--         vim.defer_fn(
+--             function()
+--                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
+--                 if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
+--                     return
+--                 end
+--
+--                 if not has_sourced then
+--                     has_sourced =
+--                         debounce(
+--                         function()
+--                             env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+--                             env.GIT_DIR = os.getenv("DOTBARE_DIR")
+--                             nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
+--                         end,
+--                         10
+--                     )
+--                     has_sourced()
+--                 end
+--             end,
+--             1
+--         )
+--     end
+-- }
 
+-- This version runs a command on every event
+-- Wilder doesn't trigger a BufWinEnter when coming back like telescope does
 nvim.autocmd.lmb__GitEnv = {
-    event = {"BufRead", "BufEnter", "BufNewFile"},
-    -- pattern = git_pattern,
+    event = {"BufRead", "BufEnter"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
     command = function()
-        local curr_file = fn.expand("%")
-        if not fn.filereadable(curr_file) then
-            return
-        end
-
-        local _, ret =
-            Job:new(
-            {
-                command = "dotbare",
-                args = {"ls-files", "--error-unmatch", curr_file},
-                on_exit = function(_, ret)
-                    return ret
+        -- Has to be deferred otherwise something like a terminal buffer doesn't show
+        -- Also, I think the API call instead of vim.bo[bufnr].bt is needed
+        vim.defer_fn(
+            function()
+                local curr_file = fn.expand("%")
+                local bufnr = api.nvim_get_current_buf()
+                local ft = api.nvim_buf_get_option(bufnr, "filetype")
+                if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
+                    return
                 end
-            }
-        ):sync()
 
-        local bufnr = api.nvim_get_current_buf()
-        if ret == 0 then
-            if not has_sourced then
-                has_sourced =
-                    debounce(
-                    function()
-                        env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                        env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                        utils.cool_echo(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
-                    end,
-                    10
-                )
-                has_sourced()
-            end
-        end
+                local _, ret =
+                    Job:new(
+                    {
+                        command = "dotbare",
+                        args = {"ls-files", "--error-unmatch", curr_file},
+                        on_exit = function(_, ret)
+                            return ret
+                        end
+                    }
+                ):sync()
+
+                if ret == 0 then
+                    if not has_sourced then
+                        has_sourced =
+                            debounce(
+                            function()
+                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                            end,
+                            10
+                        )
+                    end
+
+                    -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
+                    has_sourced()
+                -- else
+                -- vim.notify("RET 1")
+
+                -- if env.GIT_WORK_TREE == os.getenv("DOTBARE_TREE") and env.GIT_DIR == os.getenv("DOTBARE_DIR") then
+                --             local bt = api.nvim_buf_get_option(bufnr, "buftype")
+                --             if bt == "" then
+                --                 nvim.p(("bufnr: %d has unset DOTBARE"):format(bufnr), "TSNote")
+                --             end
+                --
+                --             env.GIT_WORK_TREE = nil
+                --             env.GIT_DIR = nil
+                --         end,
+                -- end
+                end
+            end,
+            1
+        )
     end
 }
 
@@ -141,7 +199,7 @@ local function hl_search(overwrite)
 
         if not debounced then
             debounced =
-                debounce(
+                debounce:new(
                 function()
                     vim.notify(match, "error", {title = "HLSearch"})
                 end,
@@ -212,7 +270,6 @@ nvim.autocmd.lmb__RestoreCursor = {
                 nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
                     cmd("norm! zz")
-                -- ex.normal_("zz")
                 end
             end
         end
@@ -251,49 +308,6 @@ nvim.autocmd.lmb__RestoreCursor = {
 --     }
 -- }
 -- ]]] === Restore cursor ===
-
--- === Set winbar === [[[
--- nvim.autocmd.lmb__WinbarSplit = {
---     event = "FileType",
---     pattern = "*",
---     command = function()
---         local bufnr = api.nvim_get_current_buf()
---         local tp = api.nvim_get_current_tabpage()
---         local wins = #api.nvim_tabpage_list_wins(tp)
---
---         if vim.bo[bufnr].bt == "" then
---             if wins > 1 then
---                 o.winbar = [[%m %F]]
---             else
---                 o.winbar = nil
---             end
---         end
---     end,
---     desc = "Enable winbar when window is split"
--- }
---- ]]]
-
--- === Telescope Fixes === [[[
-nvim.autocmd.lmb__TelescopeFixes = {
-    event = "FileType",
-    pattern = "Telescope*",
-    command = function()
-        -- map("i", "<Leader>", " ", {nowait = true})
-
-        autocmd(
-            {
-                event = "CmdlineEnter",
-                pattern = "*",
-                once = true,
-                command = function()
-                    require("wilder").disable()
-                end
-            }
-        )
-    end,
-    desc = "Disable Wilder in Telescope"
-}
--- ]]] === Telescope Fixes ===
 
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
@@ -414,7 +428,7 @@ nvim.autocmd.lmb__MruWin = {
 nvim.autocmd.lmb__Spellcheck = {
     {
         event = "FileType",
-        pattern = {"gitcommit", "markdown", "text", "mail", "vimwiki"},
+        pattern = {"markdown", "text", "mail", "vimwiki"},
         command = "setlocal spell",
         desc = "Automatically enable spelling"
     },
@@ -767,7 +781,8 @@ do
         end,
         desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
     }
-end -- ]]]
+end
+-- ]]]
 
 -- === Auto Resize on Resize Event === [[[
 do
@@ -909,34 +924,34 @@ end
 -- ]]]
 
 -- ========================== Buffer Reload =========================== [[[
-nvim.autocmd.lmb__AutoReloadFile = {
-    {
-        event = {"BufEnter", "CursorHold", "FocusGained"},
-        command = function()
-            -- local bufnr = tonumber(fn.expand "<abuf>")
-            local bufnr = nvim.buf.nr()
-            local name = nvim.buf.get_name(bufnr)
-            if
-                name == "" or -- Only check for normal files
-                    vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
-                    not fn.filereadable(name)
-             then
-                return
-            end
-
-            cmd(bufnr .. "checktime")
-        end,
-        desc = "Reload file when modified outside of the instance"
-    },
-    {
-        event = "FileChangedShellPost",
-        pattern = "*",
-        command = function()
-            nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
-        end,
-        desc = "Display a message if the buffer is changed outside of instance"
-    }
-}
+-- nvim.autocmd.lmb__AutoReloadFile = {
+--     {
+--         event = {"BufEnter", "CursorHold", "FocusGained"},
+--         command = function()
+--             -- local bufnr = tonumber(fn.expand "<abuf>")
+--             local bufnr = nvim.buf.nr()
+--             local name = nvim.buf.get_name(bufnr)
+--             if
+--                 name == "" or -- Only check for normal files
+--                     vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
+--                     not fn.filereadable(name)
+--              then
+--                 return
+--             end
+--
+--             cmd(bufnr .. "checktime")
+--         end,
+--         desc = "Reload file when modified outside of the instance"
+--     },
+--     {
+--         event = "FileChangedShellPost",
+--         pattern = "*",
+--         command = function()
+--             nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
+--         end,
+--         desc = "Display a message if the buffer is changed outside of instance"
+--     }
+-- }
 -- ]]] === Buffer Reload ===
 
 -- =========================== RNU Column ============================= [[[
@@ -995,23 +1010,23 @@ nvim.autocmd.RnuColumn = {
 }
 -- ]]] === RNU Column ===
 
--- augroup(
---     "lmb__SetFocus",
---     {
---         event = "FocusGained",
---         desc = "Set `nvim_focused` to true",
---         command = function()
---             g.nvim_focused = true
---         end
---     },
---     {
---         event = "FocusLost",
---         desc = "Set `nvim_focused` to false",
---         command = function()
---             g.nvim_focused = false
---         end
---     }
--- )
+augroup(
+    "lmb__SetFocus",
+    {
+        event = "FocusGained",
+        desc = "Set `nvim_focused` to true",
+        command = function()
+            g.nvim_focused = true
+        end
+    },
+    {
+        event = "FocusLost",
+        desc = "Set `nvim_focused` to false",
+        command = function()
+            g.nvim_focused = false
+        end
+    }
+)
 
 -- autocmd(
 --     {

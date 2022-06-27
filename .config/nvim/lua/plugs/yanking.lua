@@ -1,10 +1,6 @@
 local M = {}
 
 local D = require("dev")
-local yanky = D.npcall(require, "yanky")
-if not yanky then
-    return
-end
 
 local utils = require("common.utils")
 local map = utils.map
@@ -14,7 +10,11 @@ local augroup = utils.augroup
 -- local wk = require("which-key")
 local mapping = require("yanky.telescope.mapping")
 
-function M.setup()
+function M.setup_yanky()
+    local yanky = D.npcall(require, "yanky")
+    if not yanky then
+        return
+    end
     yanky.setup(
         {
             ring = {
@@ -52,10 +52,6 @@ function M.setup()
             }
         }
     )
-end
-
-local function init()
-    M.setup()
 
     -- color.set_hl("YankyYanked", {background = "#cc6666"})
     C.set_hl("YankyPut", {background = "#cc6666"})
@@ -68,6 +64,10 @@ local function init()
     map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
     map("n", "<M-p>", "<Plug>(YankyCycleForward)")
     map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
+end
+
+local function init()
+    M.setup_yanky()
 
     require("telescope").load_extension("yank_history")
 end

@@ -10,9 +10,6 @@ local utils = require("common.utils")
 local map = utils.map
 
 function M.setup()
-    -- TODO: Get '?' to map to popup for current operator
-    -- FIX: gc operator
-
     -- Workaround until WhichKey has autocmds to disable it for certain filetypes
     local show = wk.show
     wk.show = function(keys, opts)
@@ -56,7 +53,7 @@ function M.setup()
             ga = "Easy align",
             ys = "Surround",
             s = "Substitute",
-            d = "Delete"
+            ['"_d'] = "Delete"
         },
         key_labels = {},
         icons = {
@@ -104,7 +101,7 @@ local function init()
 
     M.setup()
 
-    map("n", "d", '"_d')
+    map("n", "d", '"_d', {desc = "Delete blackhole"})
     map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 
@@ -132,7 +129,7 @@ local function init()
         }
     )
 
-    -- XXX: Workaround until custom operator gets fixed
+    -- Workaround until custom operator gets fixed
     wk.register(
         {
             ["?"] = {"<Cmd>WhichKey '' o<CR>", "WhichKey operator"}

@@ -6,25 +6,19 @@ if not bufferline then
     return
 end
 
-local utils = require("common.utils")
--- local icons = require("style").icons
+-- local utils = require("common.utils")
+local icons = require("style").icons
 local color = require("common.color")
 local groups = require("bufferline.groups")
 
 local fn = vim.fn
 local api = vim.api
 
--- local diagnostics_signs = {
---     error = icons.lsp.sb.error,
---     warning = icons.lsp.sb.warn,
---     hint = icons.lsp.sb.hint,
---     info = icons.lsp.sb.info
--- }
 local diagnostics_signs = {
-    error = "",
-    warning = "",
-    hint = "",
-    info = ""
+    error = icons.lsp.sb.error,
+    warning = icons.lsp.sb.warn,
+    hint = icons.lsp.sb.hint,
+    info = icons.lsp.sb.info
 }
 
 ---Filter out filetypes you don't want to see
@@ -73,7 +67,7 @@ local function diagnostics_indicator(_count, _level, diagnostics, _context)
     local result = {}
     for name, count in pairs(diagnostics) do
         if diagnostics_signs[name] and count > 0 then
-            table.insert(result, ("%s %d"):format(diagnostics_signs[name], count))
+            table.insert(result, ("%s%d"):format(diagnostics_signs[name], count))
         end
     end
     result = table.concat(result, " ")
@@ -90,6 +84,7 @@ local function name_formatter(buf)
 end
 
 function M.setup()
+    -- __TEST = true
     bufferline.setup(
         {
             options = {
@@ -111,10 +106,15 @@ function M.setup()
                 close_icon = "",
                 left_trunc_marker = "",
                 right_trunc_marker = "",
+                -- can also be a table containing 2 custom separators
+                -- [focused and unfocused]. eg: { '|', '|' }
+                separator_style = "slant",
                 max_name_length = 20,
                 max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
                 tab_size = 20,
+                -- name_formatter = nil,
                 name_formatter = name_formatter,
+                -- diagnostics = false,
                 diagnostics = "coc", -- false
                 diagnostics_indicator = diagnostics_indicator,
                 diagnostics_update_in_insert = false,
@@ -142,17 +142,33 @@ function M.setup()
                         filetype = "packer",
                         text = "Packer",
                         highlight = "PanelHeading"
+                    },
+                    {
+                        filetype = "aerial",
+                        text = "Aerial",
+                        text_align = "center",
+                        highlight = "PanelHeading"
+                    },
+                    {
+                        filetype = "coctree",
+                        text = "CocTree",
+                        highlight = "PanelHeading"
+                    },
+                    {
+                        filetype = "vista",
+                        text = "Vista",
+                        highlight = "PanelHeading"
                     }
                 },
                 show_buffer_icons = true,
                 show_buffer_close_icons = false,
                 show_close_icon = false,
                 show_tab_indicators = true,
-                persist_buffer_sort = false, -- whether or not custom sorted buffers should persist
-                -- can also be a table containing 2 custom separators
-                -- [focused and unfocused]. eg: { '|', '|' }
-                separator_style = "slant",
                 enforce_regular_tabs = true,
+                show_buffer_default_icon = true,
+                always_show_bufferline = true,
+                persist_buffer_sort = true,
+                sort_by = "id", -- 'relative_directory'
                 groups = {
                     options = {
                         toggle_hidden_on_enter = true
@@ -186,9 +202,6 @@ function M.setup()
                         }
                     }
                 }
-
-                -- always_show_bufferline = true
-                -- sort_by = 'relative_directory'
             },
             highlights = require("kimbox.bufferline").theme()
         }
@@ -231,7 +244,7 @@ function M.setup_close_buffers()
                 local bufnr = api.nvim_get_current_buf()
 
                 for _, window in ipairs(windows) do
-                    api.nvim_win_set_buf(window, bufnr)
+                    pcall(api.nvim_win_set_buf, window, bufnr)
                 end
             end
         }

@@ -267,6 +267,16 @@ M.tbl_reverse_kv = function(tbl)
     return ret
 end
 
+---Shift a table `n` elements
+---@param tbl table table to shift
+---@param n number number of elements to shift
+M.shift = function(tbl, n)
+    ---@diagnostic disable-next-line:unused-local
+    for i = 1, n do
+        table.insert(tbl, 1, table.remove(tbl, #tbl))
+    end
+end
+
 ---Determine whether two tables are equivalent
 ---@param t1 table
 ---@param t2 table
@@ -405,6 +415,17 @@ M.tbl_deep_clone = function(t)
     end
 
     return clone
+end
+
+---Turn a vector into a new table
+---@param v vector
+M.vec2tbl = function(v)
+    local ret = {}
+    for _, val in ipairs(v) do
+        ret[val] = true
+    end
+
+    return ret
 end
 
 ---Create a shallow copy of a portion of a vector.
@@ -878,7 +899,7 @@ end
 ---@param winid number
 ---@return boolean
 M.is_floating_window = function(winid)
-    return api.nvim_win_get_config(winid).relative ~= ""
+    return fn.win_gettype() == "popup" or api.nvim_win_get_config(winid).relative ~= ""
     --
     -- This two commands here are not equivalent as the docs might suggest
     -- In the function below `M.find_win_except_float`,
@@ -892,7 +913,7 @@ end
 ---@return number
 M.find_win_except_float = function(bufnr)
     local winid = fn.bufwinid(bufnr)
-    if fn.win_gettype(winid) == "popup" then
+    if M.is_floating_window(winid) then
         local f_winid = winid
         winid = 0
         for _, wid in ipairs(api.nvim_list_wins()) do

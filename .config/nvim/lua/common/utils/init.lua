@@ -89,7 +89,7 @@ end
 ---@param default any
 ---@return any
 M.get_default = function(x, default)
-    return M.if_nil(x, default, x)
+    return M.ife_nil(x, default, x)
 end
 
 ---Similar to `vim.F.nil` except that an alternate default value can be given
@@ -330,11 +330,35 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
     end
 end
 
--- Create a buffer key mapping
+---Create a buffer key mapping
 M.bmap = function(bufnr, mode, lhs, rhs, opts)
     opts = opts or {}
-    opts.noremap = opts.noremap == nil and true or opts.noremap
+    opts.noremap = M.get_default(opts.noremap, true)
     api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+end
+
+---Get a given keymapping
+---@param mode string mode to search for keymapping
+---@param search? string lhs or rhs to search for
+---@param lhs? boolean search left-hand side or not
+---@param buffer? boolean buffer-local keymaps
+M.get_keymap = function(mode, search, lhs, buffer)
+    lhs = M.get_default(lhs, true)
+    local res = {}
+    local keymaps = F.tern(buffer, api.nvim_buf_get_keymap(0, mode), api.nvim_get_keymap(mode))
+    if search == nil then
+        return keymaps
+    end
+
+    for _, keymap in ipairs(keymaps) do
+        if lhs and keymap.lhs == search then
+            table.insert(res, keymap)
+        elseif not lhs and keymap.rhs == search then
+            table.insert(res, keymap)
+        end
+    end
+
+    return F.tern(#res == 1, res[1], res)
 end
 
 -- Replace termcodes; e.g., t'<C-n>'

@@ -32,6 +32,8 @@ end
 
 local function init()
     M.setup()
+    -- siw
+    -- sxiw
 
     wk.register(
         {
