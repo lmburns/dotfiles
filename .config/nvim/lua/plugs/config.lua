@@ -439,16 +439,6 @@ end
 -- │                         VimWiki                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.vimwiki()
-    -- g.vimwiki_ext2syntax = {
-    --   [".Rmd"] = "markdown",
-    --   [".rmd"] = "markdown",
-    --   [".md"] = "markdown",
-    --   [".markdown"] = "markdown",
-    --   [".mdown"] = "markdown",
-    -- }
-    -- g.vimwiki_list = { { path = "~/vimwiki", syntax = "markdown", ext = ".md" } }
-    -- g.vimwiki_table_mappings = 0
-
     C.all(
         {
             VimwikiBold = {fg = "#a25bc4", bold = true},
@@ -463,9 +453,17 @@ function M.vimwiki()
         }
     )
 
-    -- highlight TabLineSel guifg=#37662b guibg=NONE
-
-    map("n", "<Leader>vw", ":VimwikiIndex<CR>")
+    augroup(
+        "VimwikiMarkdownFix",
+        {
+            event = "FileType",
+            pattern = {"markdown", "vimwiki"},
+            command = function()
+                map("i", "<S-CR>", "<Plug>VimwikiFollowLink")
+                map("n", "<Leader>vw", ":VimwikiIndex<CR>")
+            end
+        }
+    )
 end
 
 function M.vimwiki_setup()
@@ -477,7 +475,9 @@ function M.vimwiki_setup()
         [".mdown"] = "markdown"
     }
     g.vimwiki_list = {{path = "~/vimwiki", syntax = "markdown", ext = ".md"}}
-    g.vimwiki_table_mappings = 0
+    g.vimwiki_key_mappings = {
+        table_mappings = 0
+    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -494,62 +494,21 @@ function M.ultisnips()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                           Info                           │
--- ╰──────────────────────────────────────────────────────────╯
-function M.info()
-    -- Anonymous
-    nvim.create_autocmd(
-        "BufEnter",
-        {
-            pattern = "*",
-            callback = function()
-                local bufnr = nvim.get_current_buf()
-                if b[bufnr].ft == "info" then
-                    map("n", "gu", "<Plug>(InfoUp)", {buffer = bufnr})
-                    map("n", "gn", "<Plug>(InfoNext)", {buffer = bufnr})
-                    map("n", "gp", "<Plug>(InfoPrev)", {buffer = bufnr})
-                    map("n", "gm", "<Plug>(InfoMenu)", {buffer = bufnr})
-                    map("n", "gf", "<Plug>(InfoFollow)", {buffer = bufnr})
-                end
-            end
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                          Slime                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.slime()
     g.slime_target = "neovim"
-    g.syntastic_python_pylint_post_args = "--max-line-length=120"
+    g.syntastic_python_pylint_post_args = "--max-line-length=100"
 
-    cmd [[
-    if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
-      let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
-    endif
-
-    augroup repl
-      autocmd!
-      autocmd FileType python
-        \ xmap <buffer> ,l <Plug>SlimeRegionSend|
-        \ nmap <buffer> ,l <Plug>SlimeLineSend|
-        \ nmap <buffer> ,p <Plug>SlimeParagraphSend|
-        \ nnoremap <silent> <S-CR> :TREPLSendLine<CR><Esc><Home><Down>|
-        \ inoremap <silent> <S-CR> <Esc>:TREPLSendLine<CR><Esc>A|
-        \ xnoremap <silent> <S-CR> :TREPLSendSelection<CR><Esc><Esc>
-        \ nnoremap <Leader>rF :T ptpython<CR>|
-        \ nnoremap <Leader>rf :T ipython --no-autoindent --colors=Linux --matplotlib<CR>|
-        \ nmap <buffer> <Leader>r<CR> :VT python %<CR>|
-        \ nnoremap ,rp :SlimeSend1 <C-r><C-w><CR>|
-        \ nnoremap ,rP :SlimeSend1 print(<C-r><C-w>)<CR>|
-        \ nnoremap ,rs :SlimeSend1 print(len(<C-r><C-w>), type(<C-r><C-w>))<CR>|
-        \ nnoremap ,rt :SlimeSend1 <C-r><C-w>.dtype<CR>|
-        \ nnoremap 223 ::%s/^\(\s*print\)\s\+\(.*\)/\1(\2)<CR>|
-        \ nnoremap ,rr :FloatermNew --autoclose=0 python %<space>
-
-      autocmd FileType perl nmap <buffer> ,l <Plug>SlimeLineSend
-    augroup END
-  ]]
+    nvim.autocmd.lmb__SlimeRepl = {
+        {
+            event = "FileType",
+            pattern = "perl",
+            command = function()
+                map("n", "<LocalLeader>l", "<Plug>SlimeLineSend", {buffer = true, desc = "Slime send"})
+            end
+        }
+    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -561,28 +520,6 @@ function M.notify()
     if not notify then
         return
     end
-    --   cmd [[
-    --   hi NotifyERRORBorder guifg=#8A1F1F
-    --   hi NotifyWARNBorder guifg=#79491D
-    --   hi NotifyINFOBorder guifg=#4F6752
-    --   hi NotifyDEBUGBorder guifg=#8B8B8B
-    --   hi NotifyTRACEBorder guifg=#4F3552
-    --   hi NotifyERRORIcon guifg=#F70067
-    --   hi NotifyWARNIcon guifg=#fe8019
-    --   hi NotifyINFOIcon guifg=#a3b95a
-    --   hi NotifyDEBUGIcon guifg=#8B8B8B
-    --   hi NotifyTRACEIcon guifg=#D484FF
-    --   hi NotifyERRORTitle  guifg=#F70067
-    --   hi NotifyWARNTitle guifg=#fe8019
-    --   hi NotifyINFOTitle guifg=#a3b95a
-    --   hi NotifyDEBUGTitle  guifg=#8B8B8B
-    --   hi NotifyTRACETitle  guifg=#D484FF
-    --   hi link NotifyERRORBody Normal
-    --   hi link NotifyWARNBody Normal
-    --   hi link NotifyINFOBody Normal
-    --   hi link NotifyDEBUGBody Normal
-    --   hi link NotifyTRACEBody Normal
-    -- ]]
 
     C.plugin(
         "notify",

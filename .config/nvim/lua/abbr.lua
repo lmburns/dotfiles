@@ -1,18 +1,17 @@
 local M = {}
 
-local utils = require("common.utils")
 local log = require("common.log")
+local fn = vim.fn
 
----Create a `cnoreabbrev`
----@param input string: Thing to be replaced
----@param replace string: The abbreviation
-function M.cabbrev(input, replace)
-    -- ex.cnoreabbrev(input, M.command(input, replace))
+M.modes = {
+    insert = "i",
+    command = "c"
+}
 
-    local cmd = [[cnoreabbrev <expr> %s v:lua.require'abbr'.command("%s", "%s")]]
-    vim.cmd(cmd:format(input, input, replace))
-end
-
+---Only execute the given command if the abbreviation is in `command` mode
+---and the command is at the start.
+---@param cmd string
+---@param match string
 function M.command(cmd, match)
     if fn.getcmdtype() == ":" and fn.getcmdline():match("^" .. cmd) then
         return match
@@ -30,20 +29,19 @@ end
 ---Create an abbreviation, until an API command is created
 ---@param mode string mode commands is to be mapped
 ---@param lhs string text that is converted
----@param rhs string what the abbreviation stands for
----@param args AbbrOpts
+---@param rhs string? what the abbreviation stands for
+---@param args AbbrOpts?
 function M.abbr(mode, lhs, rhs, args)
     args = args or {}
     local command = {}
     local mods = {}
-    local modes = {insert = "i", command = "c"}
-    local mode = modes[mode] or mode
+    local mode = M.modes[mode] or mode
 
     if args.buffer ~= nil then
         table.insert(mods, "<buffer>")
     end
 
-    if args.expr ~= nil and rhs ~= nil then
+    if (args.expr ~= nil and rhs ~= nil) or ((mode == "c" or mode == "command") and args.only_start ~= false) then
         table.insert(mods, "<expr>")
     end
 
@@ -67,6 +65,11 @@ function M.abbr(mode, lhs, rhs, args)
         else
             table.insert(command, 1, "cabbrev")
             table.insert(command, lhs)
+
+            if args.only_start ~= false then
+                rhs = ("v:lua.require'abbr'.command('%s', '%s')"):format(lhs, rhs)
+            end
+
             table.insert(command, rhs)
         end
     else
@@ -81,35 +84,69 @@ function M.abbr(mode, lhs, rhs, args)
     vim.cmd(table.concat(command, " "))
 end
 
-M.abbr("c", "ld", "Linediff")
-M.abbr("c", "W!", "w!")
--- -- I can't get this to work
--- M.abbr("i", "funciton", "function")
+M =
+    setmetatable(
+    M,
+    {
+        __index = function(super, k)
+            local mode = rawget(super.modes, k)
+            mode = mode or k
+            return setmetatable(
+                {
+                    mode = mode
+                },
+                {
+                    __call = function(self, lhs, rhs, opts)
+                        super.abbr(self.mode, lhs, rhs, opts)
+                    end
+                }
+            )
+        end,
+        __newindex = function(_, k, _)
+            log.err(("invalid mode given: %s"):format(k), true, {title = "Abbrs"})
+        end,
+        ---Can be used like so: `require("abbr").c(lhs, rhs, opts)`
+        ---@param self table
+        ---@param mode string
+        ---@param lhs string
+        ---@param rhs string?
+        ---@param opts AbbrOpts?
+        __call = function(self, mode, lhs, rhs, opts)
+            self.abbr(mode, lhs, rhs, opts)
+        end
+    }
+)
 
-M.cabbrev("Qall!", "qll!")
-M.cabbrev("Qall", "qll")
-M.cabbrev("Wq", "wq")
-M.cabbrev("Wa", "wa")
-M.cabbrev("wQ", "wq")
-M.cabbrev("WQ", "wq")
-M.cabbrev("W", "w")
+-- I can't get insert mode to work
+M.i("funciton", "function")
 
-M.cabbrev("tel", "Telescope")
-M.cabbrev("Review", "DiffviewOpen")
+M.c("Qall!", "qll!")
+M.c("Qall", "qll")
+M.c("Wq", "wq")
+M.c("Wa", "wa")
+M.c("wQ", "wq")
+M.c("WQ", "wq")
+M.c("W", "w")
+M.c("W!", "w!")
 
-M.cabbrev("PI", "PackerInstall")
-M.cabbrev("PU", "PackerUpdate")
-M.cabbrev("PS", "PackerSync")
-M.cabbrev("PC", "PackerCompile")
+M.c("tel", "Telescope")
+M.c("Review", "DiffviewOpen")
+M.c("ld", "Linediff")
 
-g.no_man_maps = 1
-M.cabbrev("man", "Man")
-M.cabbrev("vg", "vimgrep")
-M.cabbrev("grep", "Grep")
-M.cabbrev("lgrep", "LGrep")
-M.cabbrev("buf", "Bufferize")
-M.cabbrev("req", "lua require('")
-M.cabbrev("cfilter", "Cfilter")
-M.cabbrev("cfi", "Cfilter")
+M.c("PI", "PackerInstall")
+M.c("PU", "PackerUpdate")
+M.c("PS", "PackerSync")
+M.c("PC", "PackerCompile")
+
+M.c("man", "Man")
+M.c("vg", "vimgrep", {only_start = false})
+M.c("grep", "Grep", {only_start = false})
+M.c("lgrep", "LGrep", {only_start = false})
+M.c("buf", "Bufferize")
+M.c("req", "lua require('")
+M.c("cfilter", "Cfilter")
+M.c("cfi", "Cfilter")
+M.c("lfilter", "Lfilter")
+M.c("lfi", "Cfilter")
 
 return M

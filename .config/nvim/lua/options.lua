@@ -53,7 +53,7 @@ vim.tbl_map(
         -- "remote_plugins",
         "netrw",
         "netrwFileHandlers",
-        "netrwPlugin",
+        "netrwPlugin"
         -- "netrwSettings",
     }
 )
@@ -63,9 +63,15 @@ vim.tbl_map(
 -- g.loaded_gtags_cscope = 1
 g.load_black = 1
 
+if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
+    g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
+end
+
 g.c_syntax_for_h = 1
 g.c_comment_strings = 1
 g.c_no_if0 = 0
+
+g.no_man_maps = 1
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -144,7 +150,7 @@ o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\)\s*]]
 o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 
 o.title = true
--- o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
+o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
 o.titlelen = 70
 o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
 

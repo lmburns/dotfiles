@@ -34,6 +34,9 @@ function M.setup()
 
     -- wilder.set_option("use_python_remote_plugin", 0)
 
+    -- FIX: Doing this in Lua will sometimes randomly closes neovim
+    -- Also causes coredumps on some commands like 'gD'
+
     wilder.set_option(
         "pipeline",
         {
@@ -268,7 +271,6 @@ local function init()
         event = "FileType",
         pattern = "Telescope*",
         command = function()
-            -- map("i", "<Leader>", " ", {nowait = true})
 
             autocmd(
                 {
@@ -280,6 +282,9 @@ local function init()
                     end
                 }
             )
+
+            -- map("i", "<Leader>", " ", {nowait = true})
+            utils.reset_keymap("i", "<C-r>", {buffer = true})
         end,
         desc = "Disable Wilder in Telescope"
     }

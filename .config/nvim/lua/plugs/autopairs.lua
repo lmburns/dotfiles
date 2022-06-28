@@ -173,7 +173,7 @@ function M.rules()
             -- Allows matching () in strings
             Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
             -- Allow matching bold in markdown
-            Rule("**", "**", {"markdown", "vimwiki"}),
+            -- Rule("**", "**", {"markdown", "vimwiki"}),
             -- Allow matching r#""# in rust
             Rule('r#"', '"#', {"rust"}),
             -- Allow () when a period proceeds in rust and others

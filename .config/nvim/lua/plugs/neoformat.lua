@@ -106,14 +106,14 @@ function M.format_doc(save)
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
-                                        local output = M.promisify()
-                                        -- utils.hl2.WarningMsg:format("Coc unsuccessfully formatted buffer", "hi")
-                                        nvim.echo(
-                                            {
-                                                {"Coc unsuccessfully formatted buffer", "ErrorMsg"},
-                                                {("\n%s"):format(output), "WarningMsg"}
-                                            }
-                                        )
+                                        -- local output = M.promisify()
+                                        -- nvim.echo(
+                                        --     {
+                                        --         {"Coc unsuccessfully formatted buffer", "ErrorMsg"},
+                                        --         {("\n%s"):format(output), "WarningMsg"}
+                                        --     }
+                                        -- )
+                                        M.neoformat()
                                     end
                                 )
                             else
@@ -124,14 +124,14 @@ function M.format_doc(save)
                         end
                     )
                 else
-                    local output = M.promisify()
-                    -- utils.hl2.WarningMsg:format("Coc unsuccessfully formatted buffer", "hi")
-                    nvim.echo(
-                        {
-                            {"Coc doesn't support format", "ErrorMsg"},
-                            {("\n%s"):format(output), "TSNote"}
-                        }
-                    )
+                    -- local output = M.promisify()
+                    -- nvim.echo(
+                    --     {
+                    --         {"Coc doesn't support format", "ErrorMsg"},
+                    --         {("\n%s"):format(output), "TSNote"}
+                    --     }
+                    -- )
+                    M.neoformat()
                 end
             else
                 M.neoformat()
@@ -216,7 +216,7 @@ local function init()
         "clang-format"
     }
     g.neoformat_enabled_javascript = {
-        "prettier",
+        "prettier"
     }
 
     g.neoformat_enabled_yaml = {

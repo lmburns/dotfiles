@@ -1,5 +1,5 @@
-local D = require("dev")
-local global = require("common.global")
+-- local D = require("dev")
+-- local global = require("common.global")
 local utils = require("common.utils")
 local C = require("common.color")
 local debounce = require("common.debounce")

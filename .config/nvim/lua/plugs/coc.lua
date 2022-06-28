@@ -830,6 +830,7 @@ function M.init()
 
     wk.register(
         {
+            -- ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
             ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},
@@ -839,7 +840,6 @@ function M.init()
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
-            ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
             ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
             ["<C-x><C-d>"] = {":CocCommand fzf-preview.CocTypeDefinition<CR>", "List coc definitions"},
             ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},

@@ -1,5 +1,5 @@
 diff --git i/plugin/UnconditionalPaste.vim w/plugin/UnconditionalPaste.vim
-index d39c274..1bd6bdb 100644
+index d39c274..cb7f2b1 100644
 --- i/plugin/UnconditionalPaste.vim
 +++ w/plugin/UnconditionalPaste.vim
 @@ -143,20 +143,26 @@ endif
@@ -17,6 +17,8 @@ index d39c274..1bd6bdb 100644
 +    " \       ['Comma', ','],
 +    " \       ['CommaSingleQuote', ",'"],
 +    " \       ['CommaDoubleQuote', ',"'],
++    " \       ['Queried', 'q'],
++    " \       ['RecallQueried', 'Q'],
      for [l:pasteName, l:pasteType] in
      \   [
 -    \       ['Char', 'c'], ['Line', 'l'], ['Block', 'b'], ['Comma', ','], ['CommaSingleQuote', ",'"], ['CommaDoubleQuote', ',"'],
@@ -34,8 +36,6 @@ index d39c274..1bd6bdb 100644
 -    \       ['Unjoin', 'u'], ['RecallUnjoin', 'U'],
 -    \       ['Plus', 'p'], ['PlusRepeat', '.p'],
 -    \       ['GPlus', 'P'], ['GPlusRepeat', '.P']
-+    \       ['Queried', 'q'],
-+    \       ['RecallQueried', 'Q'],
      \   ]
  	for [l:direction, l:pasteCmd] in [['After', 'p'], ['Before', 'P']]
  	    let l:mappingName = 'UnconditionalPaste' . l:pasteName . l:direction

@@ -177,7 +177,27 @@ nvim.builtin_echo = nvim.echo
 ---@param hl string highlight group to link
 ---@param history boolean? add message to history
 ---@param wait number? amount of time to wait
-nvim.p = utils.cool_echo
+nvim.p =
+    setmetatable(
+    {},
+    {
+        __index = function(super, group)
+            group = utils.get_default(rawget(super, group), group)
+
+            return setmetatable(
+                {},
+                {
+                    __call = function(_, msg, history, wait)
+                        utils.cool_echo(msg, group, history, wait)
+                    end
+                }
+            )
+        end,
+        __call = function(_, ...)
+            utils.cool_echo(...)
+        end
+    }
+)
 
 ---Equivalent to `api.nvim_echo`. Allows multiple commands
 nvim.echo =

@@ -361,6 +361,16 @@ M.get_keymap = function(mode, search, lhs, buffer)
     return F.tern(#res == 1, res[1], res)
 end
 
+---Reset a keymap by mapping it back to itself
+---@param mode string mode to reset the keybinding in
+---@param lhs string keybinding to reset
+---@param opts MapArgs: Options given to keybindings
+M.reset_keymap = function(mode, lhs, opts)
+    opts = opts or {}
+    opts.desc = ("Reset %s keymap"):format(lhs)
+    M.map(mode, lhs, lhs, opts)
+end
+
 -- Replace termcodes; e.g., t'<C-n>'
 ---@param str string: String to be converted
 ---@param from_part boolean: Legacy vim parameter. Usually true

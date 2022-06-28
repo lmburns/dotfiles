@@ -383,7 +383,7 @@ alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
 }
 
 # === Fixes =====================================================================
-alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@burnsac.xyz:/var/www/lmburns'
+alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@lmburns.com:/var/www/lmburns'
 
 alias gpg-tui='gpg-tui --style colored -c 98676A'
 alias mpd='mpd $XDG_CONFIG_HOME/mpd/mpd.conf'

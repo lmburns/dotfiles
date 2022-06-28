@@ -81,14 +81,19 @@ function M.setup()
         -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
         hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"}, -- hide mapping boilerplate
         show_help = true, -- show help message on the command line when the popup is visible
+        ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
         triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers = "auto",
         triggers_blacklist = {
             i = {"j", "k"},
-            v = {"j", "k"},
+            v = {"j", "k"}
             -- n = {"o", "O"} -- Would be nice if two letter worked
         }
     }
+end
+
+local function wk_help()
+    return wk.show_command("", utils.mode())
 end
 
 local function init()
@@ -101,6 +106,7 @@ local function init()
 
     M.setup()
 
+    -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
     map("n", "d", '"_d', {desc = "Delete blackhole"})
     map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
@@ -125,16 +131,8 @@ local function init()
             ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
             ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
             ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
-            ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
+            ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"}
         }
-    )
-
-    -- Workaround until custom operator gets fixed
-    wk.register(
-        {
-            ["?"] = {"<Cmd>WhichKey '' o<CR>", "WhichKey operator"}
-        },
-        {mode = "o"}
     )
 
     wk.register(
@@ -154,8 +152,29 @@ local function init()
             ["zX"] = "Undo manual folds, reapply foldlevel",
             ["zn"] = "Fold none, open all folds",
             ["zN"] = "Fold normal, all folds remain",
-            ["zi"] = "Invert 'foldenable'",
+            ["zi"] = "Invert 'foldenable'"
         }
+    )
+
+    -- <F-3> to show which-key help in any relevant mode
+    local _modes = {"n", "i", "t", "v", "x", "o"}
+    for m = 1, #_modes do
+        wk.register(
+            {
+                ["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}
+            },
+            {
+                mode = _modes[m]
+            }
+        )
+    end
+
+    -- Workaround until custom operator gets fixed
+    wk.register(
+        {
+            ["?"] = {"<Cmd>WhichKey '' o<CR>", "WhichKey operator"}
+        },
+        {mode = "o"}
     )
 end
 

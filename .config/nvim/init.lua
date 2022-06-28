@@ -8,9 +8,11 @@ FIX: Cursor blinking is very fast on text operators which don't trigger which-ke
      * Stopped without lazyredraw. Started again with and without lazyredraw
      * It is the Bufferline plugin
      * Is not present in telescope prompt
-     * Happens with coc (e.g., Lua and Rust, but not toml or yaml)
+     * Happens with coc (e.g., Lua, Rust, Python, but not toml, yaml, solidity)
      * With "showtabline=2" it happens. Not with any other setting
      * With a timeoutlen over 800 it stops
+     * It's definitely gotta be that Bufferline and some langservers are refreshing the same thing
+     * ModeChange gets ran over and over only on operator pending
 
 Notes:
     * When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)
@@ -23,6 +25,8 @@ local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()
 end
+
+vim.cmd [[let $NVIM_COC_LOG_LEVEL='debug']]
 
 require("common.global")
 local utils = require("common.utils")
@@ -234,6 +238,7 @@ vim.schedule(
                     -- "coc-vimtex",
                     -- "coc-rescript",
                     -- "coc-dlang",
+                    -- "coc-yank",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
@@ -264,7 +269,6 @@ vim.schedule(
                     "coc-syntax",
                     "coc-prettier",
                     "coc-snippets",
-                    "coc-yank",
                     "coc-diagnostic",
                     "coc-fzf-preview",
                     "coc-lightbulb",

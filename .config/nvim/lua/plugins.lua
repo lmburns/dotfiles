@@ -57,7 +57,7 @@ end
 
 packer.on_complete = function()
     ex.doau("User PackerComplete")
-    nvim.p("Packer completed")
+    nvim.p.TSNote("Packer completed")
 end
 
 packer.init(
@@ -241,7 +241,8 @@ return packer.startup(
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
             -- ============================= Keybinding =========================== [[[
-            use({"folke/which-key.nvim", conf = "plugs.which-key"})
+            -- use({"folke/which-key.nvim", conf = "plugs.which-key"})
+            use({"max397574/which-key.nvim", conf = "plugs.which-key"})
             use(
                 {
                     "mrjones2014/legendary.nvim",
@@ -558,10 +559,6 @@ return packer.startup(
             )
             -- ]]] === Limelight ===
 
-            -- ============================= Vimtex =============================== [[[
-            use({"lervag/vimtex", conf = "plugs.vimtex"})
-            -- ]]] === Vimtex ===
-
             -- =============================== Marks ============================== [[[
             use({"chentoast/marks.nvim", conf = "plugs.marks"})
             -- ]]] === Marks ===
@@ -862,18 +859,9 @@ return packer.startup(
             use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
             -- ]]] === Commenter ===
 
-            -- ============================== Nvim-R =============================== [[[
-            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r", ft = {"r"}})
-            -- ]]] === Nvim-R ===
-
             -- =============================== Python ============================== [[[
             use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
             -- ]]] === Python ===
-
-            -- ================================ Rust =============================== [[[
-            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
-            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "crates"})
-            -- ]]] === VimSlime - Python ===
 
             -- ============================= Javascript ============================ [[[
             use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
@@ -899,10 +887,6 @@ return packer.startup(
                 }
             )
             -- ]]] === Javascript ===
-
-            -- ============================== Vim - Go ============================= [[[
-            use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
-            -- ]]] === Vim - Go ===
 
             -- ============================== Markdown ============================= [[[
             use(
@@ -941,6 +925,7 @@ return packer.startup(
                     after = colorscheme
                 }
             )
+
             use(
                 {
                     "FraserLee/ScratchPad",
@@ -960,7 +945,8 @@ return packer.startup(
                     requires = "romgrk/fzy-lua-native",
                     conf = "plugs.wilder"
                 }
-            ) -- ]]] === Wilder ===
+            )
+            -- ]]] === Wilder ===
 
             -- ========================= Syntax-Highlighting ======================= [[[
             use(
@@ -1023,7 +1009,7 @@ return packer.startup(
             use({"jamessan/vim-gnupg"})
             use({"AndrewRadev/id3.vim"})
             use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-            use({"HiPhish/info.vim", conf = "info", cmd = "Info"})
+            use({"HiPhish/info.vim", cmd = "Info"})
             -- ]]] === File Viewer ===
 
             -- ============================== Snippets ============================= [[[
@@ -1033,12 +1019,13 @@ return packer.startup(
 
             -- ============================= Highlight ============================ [[[
             -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
-            use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+            -- use({"max397574/colortils.nvim", cmd = {"Colortils"}, conf = "colortils"})
+            -- use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
+            -- use({"Pocco81/HighStr.nvim", event = "VimEnter", conf = "plugs.highstr"})
 
             -- "norcalli/nvim-colorizer.lua",
             -- The following plugin really needs to support ansi sequences
-            use({"xiyaowong/nvim-colorizer.lua", cmd = "ColorizerToggle", conf = "colorizer"})
-            use({"Pocco81/HighStr.nvim", event = "VimEnter", conf = "plugs.highstr"})
+            use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
             use(
                 {
@@ -1062,14 +1049,6 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "max397574/colortils.nvim",
-                    cmd = {"Colortils"},
-                    conf = "colortils"
-                }
-            )
-
             -- ]]] === Highlight ===
 
             -- ============================= Neoformat ============================= [[[
@@ -1080,11 +1059,17 @@ return packer.startup(
             -- │                           Coc                            │
             -- ╰──────────────────────────────────────────────────────────╯
 
+            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
+            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "crates"})
+
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
 
+            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r", ft = {"r"}})
+            use({"lervag/vimtex", conf = "plugs.vimtex"})
+            use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
             use({"vim-perl/vim-perl", ft = "perl"})
             use({"teal-language/vim-teal", ft = "teal"})

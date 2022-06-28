@@ -517,6 +517,7 @@ require("telescope").setup(
                 reset_selection = true
             },
             frecency = {
+                db_root = fn.stdpath("data") .. "/databases",
                 ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
                 persistent_filter = false,
                 show_scores = true,
