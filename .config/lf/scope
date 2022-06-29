@@ -76,7 +76,7 @@ handle_mime() {
     (text/csv)
       tidy-viewer -n 30 <$FILE_PATH ;;
       # bat -Pf -l csv ${FILE_PATH} ;;
-    (text/* | */xml)
+    (text/* | */xml | application/javascript)
       bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}" ;;
     (application/pgp-encrypted)
       bat -Pf --theme KimbieDark --style auto "${FILE_PATH}" ;;

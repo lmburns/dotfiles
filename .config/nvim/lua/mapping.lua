@@ -150,7 +150,7 @@ wk.register(
 wk.register(
     {
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
-        ["E"] = {[[^"_D]], "Delete line (blackhole)"},
+        ["E"] = {[[^"_D]], "Delete line (blackhole)"}, -- similar to 'S'/'cc'
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
         ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
@@ -178,13 +178,15 @@ wk.register(
 -- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste before})
 -- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste after"})
 
--- Move through folded lines
 -- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
 -- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
+-- map({ "n", "x", "o" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
+-- map({ "n", "x", "o" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
 
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
+
 
 map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
 map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})

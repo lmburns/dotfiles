@@ -1027,9 +1027,10 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
+            -- "folke/todo-comments.nvim",
             use(
                 {
-                    "folke/todo-comments.nvim",
+                    "eriedaberrie/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
                     after = "telescope.nvim"

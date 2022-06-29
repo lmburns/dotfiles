@@ -126,8 +126,8 @@ local function init()
     map("n", "<Leader><Leader>K", ":HopWordBC<CR>", {desc = "Hop any word BC"})
     map("n", "<Leader><Leader>J", ":HopWordAC<CR>", {desc = "Hop any word AC"})
     map("n", "<Leader><Leader>/", ":HopPattern<CR>", {desc = "Hop pattern"})
-    map("n", "<Leader><Leader>o", ":lua require('plugs.hop').hint_textobjects()<CR>", {desc = "Hop textobjects"})
-    map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
+    map("n", "<C-S-:>", ":lua require('plugs.hop').hint_textobjects()<CR>", {desc = "Hop textobjects"})
+    -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
     map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
 
     -- ========================== f-Mapping ==========================
