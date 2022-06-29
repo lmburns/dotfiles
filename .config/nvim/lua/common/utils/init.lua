@@ -763,7 +763,7 @@ end
 
 ---Focus the floating window
 M.focus_floating_win = function()
-    if dev.is_floating_window(fn.win_getid()).relative ~= "" then
+    if dev.is_floating_window(fn.win_getid()) then
         ex.wincmd("p")
         return
     end
