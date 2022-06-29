@@ -113,7 +113,6 @@ nvim.autocmd.lmb__GitEnv = {
                     -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
                     has_sourced()
                 -- else
-                -- vim.notify("RET 1")
 
                 -- if env.GIT_WORK_TREE == os.getenv("DOTBARE_TREE") and env.GIT_DIR == os.getenv("DOTBARE_DIR") then
                 --             local bt = api.nvim_buf_get_option(bufnr, "buftype")

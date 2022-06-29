@@ -620,6 +620,15 @@ M.notify = function(msg, level, opts)
     end
 end
 
+---Global notify function.
+---This must be defined here instead of `global.lua` due to loading order.
+---@param msg string
+---@param level number?
+---@param title string?
+N = function(msg, level, title)
+    M.notify(vim.inspect(msg), M.get_default(level, log.levels.INFO), {title = title})
+end
+
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
     local arguments = fmt("%q", arguments)
@@ -748,6 +757,22 @@ M.close_all_floating_wins = function()
     for _, win in ipairs(api.nvim_list_wins()) do
         if dev.is_floating_window(win) then
             api.nvim_win_close(win, false)
+        end
+    end
+end
+
+---Focus the floating window
+M.focus_floating_win = function()
+    if dev.is_floating_window(fn.win_getid()).relative ~= "" then
+        ex.wincmd("p")
+        return
+    end
+    for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
+        local winid = fn.win_getid(winnr)
+        local conf = api.nvim_win_get_config(winid)
+        if conf.focusable and conf.relative ~= "" then
+            fn.win_gotoid(winid)
+            return
         end
     end
 end

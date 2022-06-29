@@ -1,7 +1,10 @@
 local M = {}
+
 -- ╓                                                          ╖
 -- ║                          Global                          ║
 -- ╙                                                          ╜
+
+---@alias module table
 
 P = function(...)
     local vars = vim.tbl_map(vim.inspect, {...})
@@ -9,15 +12,26 @@ P = function(...)
     return {...}
 end
 
--- _G["PRINT"] = _G["P"]
-
+---Reload a module
+---@vararg string
+---@return nil
 RELOAD = function(...)
     return require("plenary.reload").reload_module(...)
 end
 
+---Reload a module, returning the newly loaded object
+---@param name string
+---@return module
 R = function(name)
     RELOAD(name)
     return require(name)
+end
+
+---Inspect a value
+---@param v any
+---@return string
+I = function(v)
+    return vim.inspect(v)
 end
 
 -- These may be specified in some files just to supress non-global warnings

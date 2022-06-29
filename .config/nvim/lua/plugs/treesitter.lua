@@ -566,16 +566,30 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vU",
+        "<Left>",
+        D.ithunk(sts.filtered_jump, {"variable_declaration"}, false),
+        {desc = "Jump to previous variable dec"}
+    )
+    map(
+        "n",
+        "<Right>",
+        D.ithunk(sts.filtered_jump, {"variable_declaration"}, true),
+        {desc = "Jump to next variable dec"}
+    )
+
+    map(
+        "n",
+        "vu",
         function()
             vim.opt.opfunc = "v:lua.STSSwapUpNormal_Dot"
             return "g@l"
         end,
         {silent = true, expr = true, desc = "Swap node up"}
     )
+
     map(
         "n",
-        "vD",
+        "vd",
         function()
             vim.opt.opfunc = "v:lua.STSSwapDownNormal_Dot"
             return "g@l"
@@ -585,7 +599,7 @@ M.setup_treesurfer = function()
 
     map(
         "n",
-        "vd",
+        "vD",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodeNextNormal_Dot"
             return "g@l"
@@ -594,7 +608,7 @@ M.setup_treesurfer = function()
     )
     map(
         "n",
-        "vu",
+        "vU",
         function()
             vim.opt.opfunc = "v:lua.STSSwapCurrentNodePrevNormal_Dot"
             return "g@l"
@@ -608,20 +622,20 @@ M.setup_treesurfer = function()
     map("n", "vn", '<cmd>lua require("syntax-tree-surfer").select()<cr>', {desc = "Select node"})
     map("n", "vm", '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>', {desc = "Select current node"})
 
-    map("x", "<M-]>", '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>', {desc = "Next node"})
-    map("x", "<M-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Previous node"})
-    map("x", "'", '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>', {desc = "Parent node"})
-    map("x", '"', '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>', {desc = "Child node"})
+    map("x", "<A-]>", '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>', {desc = "Next node"})
+    map("x", "<A-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Previous node"})
+    map("x", "<C-k>", '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>', {desc = "Parent node"})
+    map("x", "<C-j>", '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>', {desc = "Child node"})
 
     map(
         "x",
-        "<C-l>l",
+        "<C-A-]>",
         '<cmd>lua require("syntax-tree-surfer").surf("next", "visual", true)<cr>',
         {desc = "Swap next node"}
     )
     map(
         "x",
-        "<C-l>h",
+        "<C-A-[>",
         '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
         {desc = "Swap previous node"}
     )
@@ -727,8 +741,8 @@ M.setup = function()
             keymaps = {
                 init_selection = "<M-n>", -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                node_incremental = "<C-j>", -- increment to the upper named parent
-                node_decremental = "<C-k>" -- decrement to the previous node
+                node_incremental = "'", -- increment to the upper named parent
+                node_decremental = '"' -- decrement to the previous node
             }
         },
         context_commentstring = {

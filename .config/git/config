@@ -108,11 +108,18 @@
   default = current
 
 # Forgot: what is this for?
-; [diff "gpg"]
-;   texconv = gpg --no-tty --decrypt --quiet
+[diff "gpg"]
+  texconv = gpg --no-tty --decrypt --quiet
 
 [gpg]
   program = /usr/bin/gpg
+  ; format = x509
+
+; [tag]
+;   gpgsign = true
+;
+; [gpg "x509"]
+;   program = gitsign
 
 [filter "lfs"]
   required = true
@@ -322,7 +329,18 @@
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
 
+[global]
+  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
+  basedir = /home/lucas/projects/github
+
+[credential]
+  helper = cache
+
 # ================== THIRD PARTY ==============================
+[ghq]
+  vcs = git
+  root = ~/ghq
+
 [delta]
   features = decorations color-moved # hyperlinks
   # side-by-side unobstrusive-line-numbers
@@ -378,15 +396,5 @@
 
 [interactive]
   diffFilter = delta --color-only
-
-[ghq]
-  vcs = git
-  root = ~/ghq
-
-[global]
-  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
-  basedir = /home/lucas/projects/github
-[credential]
-  helper = cache
 
 ; vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

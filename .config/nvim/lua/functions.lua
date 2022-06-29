@@ -40,13 +40,13 @@ command(
 
 command(
     "LOC",
-    function(tbl)
+    function(_)
         local bufnr = api.nvim_get_current_buf()
         local ft = vim.bo[bufnr].ft
         ex.lcd(fn.expand("%:p:h"))
         cmd(("!tokei -t %s %%"):format(ft))
     end,
-    {desc = "Tokei current file"}
+    {nargs = 0, desc = "Tokei current file"}
 )
 
 command(
@@ -86,38 +86,6 @@ command(
     [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
     {nargs = 0, range = "%", desc = "Remove ANSI escape sequences"}
 )
-
--- command(
---     "CargoBuild",
---     function(tbl)
---         local args = tbl.fargs
---         local default_config = {}
---         local config = {}
---
---         for _, val in ipairs(args) do
---             local tokens = vim.split(val, "=")
---             if #tokens == 2 then
---                 config[tokens[1]] = tokens[2]
---             end
---         end
---
---         config = vim.tbl_extend("force", default_config, config)
---
---         if args[1] == "debug" then
---             require("dev").inspect(config)
---         end
---
---         local arg = ""
---
---         for key, val in pairs(config) do
---             arg = arg .. " -" .. key .. "=" .. val
---         end
---
---         vim.cmd(("cexpr system('cargo build --message-format=short %s'"):format(arg))
---         ex.copen()
---     end,
---     {nargs = "*"}
--- )
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[

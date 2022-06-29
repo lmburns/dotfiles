@@ -1,23 +1,17 @@
 local M = {}
 
 local utils = require("common.utils")
-local funcs = require("functions")
+-- local funcs = require("functions")
+-- local command = utils.command
 local map = utils.map
-local command = utils.command
 
-local ex = nvim.ex
+-- local ex = nvim.ex
+-- local api = vim.api
 local fn = vim.fn
-local api = vim.api
 
 -- Legendary needs to be called again in this file for the keybindings to register
 -- Not sure why these options only work from here
-require("legendary").setup(
-    ---@diagnostic disable-next-line: redundant-parameter
-    {
-        include_builtin = false,
-        include_legendary_cmds = false
-    }
-)
+require("legendary").setup({include_builtin = false, include_legendary_cmds = false})
 local wk = require("which-key")
 
 -- ============== General mappings ============== [[[
@@ -66,11 +60,7 @@ map("n", "q?", "<Nop>")
 map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
-wk.register(
-    {
-        ["<F2>"] = {"@:", "Repeat last command"}
-    }
-)
+wk.register({["<F2>"] = {"@:", "Repeat last command"}})
 
 map({"n", "x"}, "<Leader>2;", "@:", {desc = "Repeat last command"})
 -- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
@@ -248,6 +238,7 @@ map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
 -- map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
 -- map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
 -- map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
+
 -- Recursively open whatever top level fold
 -- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
 map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
@@ -317,20 +308,7 @@ wk.register(
                 "Close all floating windows"
             },
             ["<C-w>"] = {
-                function()
-                    if api.nvim_win_get_config(fn.win_getid()).relative ~= "" then
-                        ex.wincmd("p")
-                        return
-                    end
-                    for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
-                        local winid = fn.win_getid(winnr)
-                        local conf = nvim.win.get_config(winid)
-                        if conf.focusable and conf.relative ~= "" then
-                            fn.win_gotoid(winid)
-                            return
-                        end
-                    end
-                end,
+                utils.focus_floating_win,
                 "Focus floating window"
             }
         }
@@ -398,10 +376,7 @@ wk.register(
         ["<Leader>"] = {
             e = {
                 name = "+edit",
-                c = {
-                    "<cmd>CocConfig<CR>",
-                    "Edit coc-settings"
-                },
+                c = {"<cmd>CocConfig<CR>", "Edit coc-settings"},
                 v = {":e $NVIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"}
             },
