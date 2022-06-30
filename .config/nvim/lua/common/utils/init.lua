@@ -105,7 +105,7 @@ M.ife_nil = function(x, is_nil, is_not_nil)
 end
 
 ---Return a value based on two values
----@param condition boolean Statement to be tested
+---@param condition boolean|nil Statement to be tested
 ---@param is_if any Return if condition is truthy
 ---@param is_else any Return if condition is not truthy
 F.tern = function(condition, is_if, is_else)
@@ -155,19 +155,21 @@ end
 ---@field data any any arbitrary data passed to `nvim_exec_autocmds`
 
 ---@class Autocommand
----@field description string
----@field event  string[] list of autocommand events
+---@field desc    string? description of the `autocmd`
+---@field event   string[] list of autocommand events
 ---@field pattern string[] list of autocommand patterns
 ---@field command string|fun(args: AutocommandOpts)
 ---@field nested  boolean
 ---@field once    boolean
 ---@field buffer  number
+---@field group   number
+---@field description string? alternative to `self.desc`
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
 ---@param name string|table: Augroup name. If a table, `true` can be passed to clear the group
 ---@param ... Autocommand[]
----@return number Group ID of the autocommand
+---@return number: Group ID of the autocommand
 M.augroup = function(name, ...)
     local id
     -- If name is a table, user wants to probably not clear the augroup
@@ -185,15 +187,15 @@ M.augroup = function(name, ...)
 end
 
 ---Create a single autocmd
----@param autocmd Autocommand[]
+---@param autocmd Autocommand
 ---@param id? number Group id
----@return number Group ID of the autocommand
+---@return number|nil Group ID of the autocommand
 M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     api.nvim_create_autocmd(
         autocmd.event,
         {
-            group = F.if_nil(id, autocmd.group) or nil,
+            group = F.if_nil(id, autocmd.group),
             pattern = autocmd.pattern,
             desc = autocmd.description or autocmd.desc,
             callback = F.tern(is_callback, autocmd.command, nil),
@@ -207,24 +209,23 @@ M.autocmd = function(autocmd, id)
     return id
 end
 
---- @class MapArgs
---- @field unique boolean
---- @field expr boolean
---- @field script boolean
---- @field nowait boolean
---- @field silent boolean
---- @field buffer boolean|number
---- @field replace_keycodes boolean
---- @field remap boolean
---- @field callback function
---- @field cmd boolean
---- @field desc string
+---@class MapArgs
+---@field unique boolean
+---@field expr boolean
+---@field script boolean
+---@field nowait boolean
+---@field silent boolean
+---@field buffer boolean|number
+---@field replace_keycodes boolean
+---@field remap boolean
+---@field callback function
+---@field cmd boolean
+---@field desc string
 
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
----@param bufnr? number: Optional buffer id. If not given, the first argument is `modes`
----@param modes string|table: Modes the keymapping should be bound
+---@param modes string|table<string>: Modes the keymapping should be bound
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
@@ -245,19 +246,10 @@ end
 ---
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
 --- - `desc`: (string) Describe the keybinding, this hooks to `which-key`
-M.map = function(bufnr, modes, lhs, rhs, opts)
-    -- If it is not a buffer mapping, then shift all arguments
-    if type(bufnr) ~= "number" then
-        opts = rhs
-        rhs = lhs
-        lhs = modes
-        modes = bufnr
-        bufnr = nil
-    end
-
+M.map = function(modes, lhs, rhs, opts)
     vim.validate(
         {
-            bufnr = {bufnr, {"n", "nil"}, true},
+            -- bufnr = {bufnr, {"n", "nil"}, true},
             mode = {modes, {"s", "t"}},
             lhs = {lhs, "s"},
             rhs = {rhs, {"s", "f"}},
@@ -331,10 +323,15 @@ M.map = function(bufnr, modes, lhs, rhs, opts)
 end
 
 ---Create a buffer key mapping
-M.bmap = function(bufnr, mode, lhs, rhs, opts)
+---@param bufnr number Buffer ID
+---@param modes string|table<string> Modes the keymapping should be bound
+---@param lhs string Keybinding that is mapped
+---@param rhs string|function String or Lua function that will be bound to a key
+---@param opts MapArgs Options given to keybindings
+M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {}
-    opts.noremap = M.get_default(opts.noremap, true)
-    api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
+    opts.buffer = bufnr
+    M.map(modes, lhs, rhs, opts)
 end
 
 ---Get a given keymapping
@@ -378,13 +375,15 @@ end
 ---@param special boolean: Replace keycodes, e.g., `<CR>` => `\r`
 ---@return string
 M.t = function(str, from_part, do_lt, special)
+    ---@diagnostic disable-next-line:return-type-mismatch
     return api.nvim_replace_termcodes(str, F.if_nil(from_part, true), F.if_nil(do_lt, true), F.if_nil(special, true))
 end
 
 ---Debug helper
----@vararg table | string | number: Anything to dump
+---@vararg any: Anything to dump
 M.dump = function(...)
     local objects = vim.tbl_map(dev.inspect, {...})
+    ---@cast objects any[]
     print(unpack(objects))
 end
 
@@ -504,7 +503,7 @@ M.source = function(path, prefix)
 end
 
 ---Get the latest messages from `messages` command
----@param count number of messages to get
+---@param count number? of messages to get
 ---@param str boolean whether to return as a string or table
 ---@return string
 M.get_latest_messages = function(count, str)
@@ -520,6 +519,7 @@ M.get_latest_messages = function(count, str)
     )
     count = count and tonumber(count) or nil
     count = (count ~= nil and count >= 0) and count - 1 or #lines
+    ---@cast lines -?
     local slice = vim.list_slice(lines, #lines - count)
     return str and table.concat(slice, "\n") or slice
 end
@@ -584,7 +584,7 @@ end
 ---@field title? string Title to add
 
 ---Wrapper to send a notification
----@param msg string Message to notify
+---@param msg string? Message to notify
 ---@param level number
 ---@param opts NotifyOpts
 M.notify = function(msg, level, opts)
@@ -602,6 +602,7 @@ M.notify = function(msg, level, opts)
         [log.levels.ERROR] = {timeout = 10000, keep = keep}
     })[level]
 
+    ---@diagnostic disable-next-line:cast-local-type
     opts = vim.tbl_extend("force", _opts or {}, opts or {})
     if g.nvim_focused then
         local ok, notify = pcall(require, "notify")
@@ -631,6 +632,7 @@ end
 
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
+    local save = fn.winsaveview()
     local arguments = fmt("%q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     cmd(("keepj keepp execute %s"):format(arguments))
@@ -641,6 +643,7 @@ M.preserve = function(arguments)
     end
 
     api.nvim_win_set_cursor(0, {line, col})
+    fn.winrestview(save)
 end
 
 -- vim.cmd([[command! Preserve lua require("utils").preserve('%s/\\s\\+$//ge')]])
@@ -649,7 +652,7 @@ end
 
 ---Remove duplicate blank lines (2 -> 1)
 M.squeeze_blank_lines = function()
-    if vim.bo.binary == false and vim.opt.filetype:get() ~= "diff" then
+    if vim.bo.binary == false and vim.o.ft ~= "diff" then
         local old_query = fn.getreg("/") -- save search register
         M.preserve("sil! 1,.s/^\\n\\{2,}/\\r/gn") -- set current search count number
         local result = fn.searchcount({maxcount = 1000, timeout = 500}).current
@@ -744,6 +747,7 @@ M.is_vim_list_open = function()
     for _, win in ipairs(api.nvim_list_wins()) do
         local buf = api.nvim_win_get_buf(win)
         local location_list = fn.getloclist(0, {filewinid = 0})
+        ---@diagnostic disable-next-line:undefined-field
         local is_loc_list = location_list.filewinid > 0
         if vim.bo[buf].filetype == "qf" or is_loc_list then
             return true
@@ -788,17 +792,19 @@ end
 
 ---Determine if a value of any type is empty
 ---@param item any
----@return boolean
+---@return boolean?
 M.empty = function(item)
-    if not item then
+    local item_t = type(item)
+    if not item or not _t({"string", "table"}):contains(item_t) then
         return true
     end
 
-    local item_type = type(item)
-    if item_type == "string" then
+    if item_t == "string" then
         return item == ""
-    elseif item_type == "table" then
+    elseif item_t == "table" then
         return vim.tbl_isempty(item)
+        ---All values have been convered
+        ---@diagnostic disable-next-line:missing-return
     end
 end
 
@@ -901,11 +907,13 @@ M.render_str =
         if fg and type(fg) == "number" then
             escape_fg = ";" .. color2csi(fg, true)
         elseif def_fg and ansi[def_fg] then
+            ---@diagnostic disable-next-line:cast-local-type
             escape_fg = ansi[def_fg]
         end
         if bg and type(bg) == "number" then
             escape_fg = ";" .. color2csi(bg, false)
         elseif def_bg and ansi[def_bg] then
+            ---@diagnostic disable-next-line:cast-local-type
             escape_fg = ansi[def_bg]
         end
 
@@ -949,7 +957,7 @@ M.close_diff = function()
     if #winids > 1 then
         for _, winid in ipairs(winids) do
             local ok, msg = pcall(api.nvim_win_close, winid, false)
-            if not ok and msg:match("^Vim:E444:") then
+            if not ok and (msg and msg:match("^Vim:E444:")) then
                 if api.nvim_buf_get_name(0):match("^fugitive://") then
                     ex.Gedit()
                 end
@@ -973,6 +981,7 @@ M.cool_echo =
     ---@param history boolean? add message to history
     ---@param wait number? amount of time to wait
     return function(msg, hl, history, wait)
+        ---@cast history -?
         history = history == nil and true or history
         vim.schedule(
             function()
@@ -997,8 +1006,8 @@ end)()
 
 ---Expand a tab in a string
 ---@param str string
----@param ts string
----@param start number
+---@param ts integer
+---@param start integer
 ---@return string
 M.expandtab = function(str, ts, start)
     start = start or 1

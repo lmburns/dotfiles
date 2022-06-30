@@ -295,7 +295,7 @@ super + alt + Return
     tdrop -ma -w 1916 -y 0 alacritty
 
 # Open URL in clipboard
-ctrl + alt + super + o
+control + alt + super + o
     handlr open "$(xsel -b)"
 
 # Launch rofi application
@@ -384,6 +384,9 @@ ctrl + shift + 4
     prtregion --disk
 
 ctrl + shift + 5
+    prtwindow
+
+control + super + alt + u
     prtwindow
 
 # super + {F5,F6,F7,F8}

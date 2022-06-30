@@ -123,7 +123,7 @@
   "list.indicator": ">",
   "signature.enable": true,
   "signature.target": "float",
-  "tabnine.priority": 98,
+  "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
   "snippets.priority": 99,
   "snippets.shortcut": "",
@@ -276,6 +276,7 @@
   "Lua.hover.viewNumber": true,
   "Lua.window.statusBar": false,
   "Lua.window.progressBar": true,
+  // "Lua.semantic.enable": true,
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
@@ -285,7 +286,10 @@
     "lowercase-global",
     "redundant-parameter",
     "missing-parameter",
-    "redefined-local"
+    "redefined-local",
+    // New
+    "need-check-nil",
+    "param-type-mismatch"
   ],
   "Lua.diagnostics.globals": [
     "dev",

@@ -1,3 +1,6 @@
+---@diagnostic disable:duplicate-doc-alias
+---@diagnostic disable:need-check-nil
+
 local M = {}
 
 -- local D = require("dev")
@@ -22,8 +25,8 @@ local api = {
 
 ---@class ColorFormat
 ---@field default boolean Don't override existing definition
----@field background string
----@field foreground string
+---@field background string|integer
+---@field foreground string|integer
 ---@field special string
 ---@field fg string|fun():string
 ---@field bg string|fun():string
@@ -61,7 +64,7 @@ local function hex_to_rgb(color)
 end
 
 ---Convert RGB decimal to hexadecimal (#RRGGBB)
----@param dec number|string
+---@param dec integer
 ---@return string color @#RRGGBB
 local function hex(dec)
     -- return ("#%06x"):format(dec)
@@ -101,7 +104,7 @@ end
 
 ---Get a highlight group
 ---@param group Color @highlight group to try and get
----@param fallbacks? table<Color>|Color @highlight group list
+---@param fallbacks table<Color>|Color @highlight group list
 ---@return ColorFormat
 local function get_hl(group, fallbacks)
     local ok, hl = pcall(api.get, group, true)
@@ -252,6 +255,7 @@ function M.parse(hl)
     -- Allow both attributes, but only use one
     -- Foreground
     if hl.fg ~= nil and hl.foreground ~= nil then
+        ---@cast hl.foreground +?
         hl.foreground = nil
     end
 
@@ -367,6 +371,7 @@ function M.get_hl(group, attribute, fallback)
         return "NONE"
     end
 
+    ---@cast fallback -?
     local hl = get_hl(group, fallback)
     attribute = ({fg = "foreground", bg = "background"})[attribute] or attribute
     local color = hl[attribute] or fallback
@@ -388,7 +393,7 @@ end
 ---@param fallback Color?
 ---@return string
 function M.get_fg(group, fallback)
-    M.get_hl(group, "foreground", fallback)
+    return M.get_hl(group, "foreground", fallback)
 end
 
 ---Get the background string of a highlight group
@@ -396,7 +401,7 @@ end
 ---@param fallback Color?
 ---@return string
 function M.get_bg(group, fallback)
-    M.get_hl(group, "background", fallback)
+    return M.get_hl(group, "background", fallback)
 end
 
 ---Clear a highlight group

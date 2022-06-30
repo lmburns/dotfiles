@@ -1,12 +1,11 @@
 local uv = vim.loop
 
 ---@class Debounce
----@field timer userdata
+---@field timer userdata|nil
 ---@field fn function
 ---@field args table
 ---@field wait number
 ---@field leading? boolean
----@overload fun(fn: function, wait: number, leading?: boolean): UfoDebounce
 local Debounce = {}
 
 ---Create a new `Debounce` instance
@@ -23,6 +22,7 @@ function Debounce:new(fn, wait, leading)
         }
     )
     local obj = {}
+    ---@cast self -?
     setmetatable(obj, self)
     obj.timer = nil
     obj.fn = vim.schedule_wrap(fn)

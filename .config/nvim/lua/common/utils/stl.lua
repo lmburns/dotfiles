@@ -1,3 +1,6 @@
+---@diagnostic disable:need-check-nil
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 M.plugins = {}
@@ -422,11 +425,11 @@ local function toggleterm_statusline()
     return ("%s ToggleTerm #%d"):format(icon, vim.b.toggle_number)
 end
 
-local function term_title()
-    local title = vim.b.term_title
-    title = title:gsub("%d+:[^%s]+%s.*", "")
-    return title
-end
+-- local function term_title()
+--     local title = vim.b.term_title
+--     title = title:gsub("%d+:[^%s]+%s.*", "")
+--     return title
+-- end
 
 M.extensions.toggleterm = {
     sections = {

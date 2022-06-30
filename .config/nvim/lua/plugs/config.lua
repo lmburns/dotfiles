@@ -12,6 +12,7 @@ local wk = require("which-key")
 local C = require("common.color")
 
 local utils = require("common.utils")
+local bmap = utils.bmap
 local map = utils.map
 local command = utils.command
 local augroup = utils.augroup
@@ -1606,6 +1607,7 @@ function M.lfnvim()
     )
 
     map("n", "<A-o>", ":Lf<CR>")
+    -- map("n", "<A-y>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end
 
@@ -1899,12 +1901,12 @@ function M.git_conflict()
                     100
                 )
 
-                map(bufnr, "n", "co", "<Plug>(git-conflict-ours)")
-                map(bufnr, "n", "cb", "<Plug>(git-conflict-both)")
-                map(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
-                map(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)")
-                map(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
-                map(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
+                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)")
+                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)")
+                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
+                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)")
+                bmap(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
+                bmap(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
             end
         }
     )

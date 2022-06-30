@@ -1,7 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
--- local map = utils.map
+local map = utils.map
 
 local hlslens
 local config
@@ -43,11 +43,23 @@ function M.exit()
     end
 
     -- Reset the mapping on exit
-    bmap("n", "n", n_keymap, {silent = true})
+    -- Something happened where now I cannot get the correct binding
+    -- map("n", "n", n_keymap, {silent = true})
+    -- map("n", "n", "n", {silent = true})
+    map(
+        "n",
+        "n",
+        ("%s%s%s"):format(
+            [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
+            [[<Cmd>lua require('hlslens').start()<CR>]],
+            [[<Cmd>lua require("specs").show_specs()<CR>]]
+        )
+    )
 end
 
 function M.mappings()
-    n_keymap = utils.get_keymap("n", "n").rhs
+    ex.PackerLoad("nvim-hlslens")
+    -- n_keymap = utils.get_keymap("n", "n").rhs
     bmap("n", "n", "<C-n>", {silent = true, noremap = false})
     bmap("n", "<Esc>", "<Plug>(VM-Exit)")
     bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})

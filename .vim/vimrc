@@ -476,7 +476,7 @@ Plug 'ludovicchabant/vim-gutentags'
   "   let g:gutentags_ctags_tagfile = '.rusty-tags'
   " else
   set tags=tags
-  set tags+=~/.config/nvim/cpp_src/tags
+  " set tags+=~/.config/nvim/cpp_src/tags
   let g:gutentags_modules = ['ctags']
   let g:gutentags_cache_dir = expand('~/.cache/tags')
   let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
@@ -491,7 +491,7 @@ Plug 'ludovicchabant/vim-gutentags'
   let g:gutentags_file_list_command = 'rg --files'
 
   " Disable connecting gtags database automatically (gutentags_plus will handle the database connection)
-  let g:gutentags_auto_add_gtags_cscope = 0
+  " let g:gutentags_auto_add_gtags_cscope = 0
   " Disable default maps
   let g:gutentags_plus_nomap = 1
 
@@ -520,9 +520,9 @@ Plug 'ludovicchabant/vim-gutentags'
     \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
     \]
 
-  if executable('gtags-cscope') && executable('gtags')
-    let g:gutentags_modules += ['gtags_cscope'] "'cscopeprg' will be set to gtags-cscope
-  endif
+  " if executable('gtags-cscope') && executable('gtags')
+  "   let g:gutentags_modules += ['gtags_cscope'] "'cscopeprg' will be set to gtags-cscope
+  " endif
 
   function! s:SetupCTags()
     let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']
@@ -1795,94 +1795,94 @@ call plug#end()
 " ============== docs ============== {{{
   " set filetypes
   " au Filetype *vim,*tmux setl foldenable | setl foldmethod=marker
-  " autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-"   augroup cust_ft
-"     au!
-"     au BufRead,BufNewFile *.ztst            setl ft=ztst
-"     au BufRead,BufNewFile *pre-commit       setl ft=sh
-"     au BufNewFile,BufRead coc-settings.json setl ft=jsonc
-"     au FileType json syntax match Comment +\/\/.\+$+
-"     au BufRead,BufNewFile calcurse-note*,~/.local/share/calcurse/notes/* set filetype=markdown
-"     au BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
-"     au BufRead,BufNewFile *.tex set filetype=tex
-"     au FileType nroff setl wrap textwidth=85 colorcolumn=+1
-"     au Filetype *json setl shiftwidth=2
-"
-"     " Disable automatic comment
-"     au FileType * setl formatoptions-=cro
-"     au BufWritePre * %s/\s\+$//e            " End of lines
-"     au BufWritePre * %s#\($\n\s*\)\+\%$##e  " End of file
-"
-"     au BufReadPre   *.docx silent set ro
-"     au BufEnter     *.docx silent set modifiable
-"     au BufEnter     *.docx silent  %!pandoc --columns=78 -f docx -t markdown "%"
-"     au BufWritePost *.docx :!pandoc -f markdown -t docx % > tmp.docx
-"
-"     au BufReadPre *.odt silent set ro
-"     au BufEnter   *.odt silent  %!pandoc --columns=78 -f odt -t markdown "%"
-"
-"     autocmd BufReadPre *.rtf silent set ro
-"     autocmd BufReadPost *.rtf silent %!unrtf --text
-"   augroup END
-"
-"   " autocmd BufReadPost *.doc,*.docx,*.rtf,*.odp,*.odt silent %!pandoc "%" -tplain -o /dev/stdout
-"
-"   let g:zipPlugin_ext = '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,*.oxt,*.kmz,*.wsz,*.xap,*.docm,*.dotx,*.dotm,*.potx,*.potm,*.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,*.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx'
-"
-"   " autocmd BufReadPost *.odt :%!odt2txt %
-"
-"   " autocmd BufReadPost *.odt silent %!pandoc "%" -tmarkdown -o /dev/stdout
-"   " autocmd BufWritePost *.odt :%!pandoc -f markdown "%" -o "%:r".odt
-"
-"   " NOTE: `,kp` compiles RMarkdown to PDF using NVim-R
-"   autocmd Filetype rmd map <F5> :!echo<space>"require(rmarkdown);<space>render('<c-r>%')"<space>\|<space>R<space>--vanilla<enter>
-"
-"   nmap <Leader>cp :w! <bar> !compiler %<CR>
-"   nmap <Leader>pr :!opout <c-r>%<CR><CR>
-" " }}} === General Mappings ===
-"
-" " ============== Syntax ============== {{{
-"   map <F9> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-"   \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-"   \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-"
-"   nmap <c-a> :call <SID>SynStack()<CR>
-"   function! <SID>SynStack()
-"     if !exists("*synstack")
-"       return
-"     endif
-"     echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
-"   endfunction
-"
-"   ":verbose hi <name>
-"   " SyntaxQuery: Display the syntax stack at current cursor position
-"   function! s:syntax_query() abort
-"     for id in synstack(line("."), col("."))
-"       execute 'hi' synIDattr(id, "name")
-"     endfor
-"   endfunction
-"   command! SQ call s:syntax_query()
-"   nnoremap <Leader>sll :syn list
-"   nnoremap <Leader>slo :verbose hi
-"
-"   " === custom syntax groups ===
-"   " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
-"   " FIX: allow punctuation
-"   augroup ccommtitle
-"     autocmd!
-"     autocmd Syntax * syn match
-"       \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
-"       \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
-"     autocmd Syntax * syn match myTodo
-"       \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
-"       \ contained containedin=.*Comment.*,vimCommentTitle
-"     " perlLabel
-"     autocmd Syntax * syn keyword cmTitle contained=Comment
-"     autocmd Syntax * syn keyword myTodo contained=Comment
-"   augroup END
-"   " hi def link cmLineComment Comment
-"   hi def link cmTitle vimCommentTitle
-"   hi def link myTodo Todo
+  autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+  augroup cust_ft
+    au!
+    au BufRead,BufNewFile *.ztst            setl ft=ztst
+    au BufRead,BufNewFile *pre-commit       setl ft=sh
+    au BufNewFile,BufRead coc-settings.json setl ft=jsonc
+    au FileType json syntax match Comment +\/\/.\+$+
+    au BufRead,BufNewFile calcurse-note*,~/.local/share/calcurse/notes/* set filetype=markdown
+    au BufRead,BufNewFile *.ms,*.me,*.mom,*.man set filetype=groff
+    au BufRead,BufNewFile *.tex set filetype=tex
+    au FileType nroff setl wrap textwidth=85 colorcolumn=+1
+    au Filetype *json setl shiftwidth=2
+
+    " Disable automatic comment
+    au FileType * setl formatoptions-=cro
+    au BufWritePre * %s/\s\+$//e            " End of lines
+    au BufWritePre * %s#\($\n\s*\)\+\%$##e  " End of file
+
+    au BufReadPre   *.docx silent set ro
+    au BufEnter     *.docx silent set modifiable
+    au BufEnter     *.docx silent  %!pandoc --columns=78 -f docx -t markdown "%"
+    au BufWritePost *.docx :!pandoc -f markdown -t docx % > tmp.docx
+
+    au BufReadPre *.odt silent set ro
+    au BufEnter   *.odt silent  %!pandoc --columns=78 -f odt -t markdown "%"
+
+    autocmd BufReadPre *.rtf silent set ro
+    autocmd BufReadPost *.rtf silent %!unrtf --text
+  augroup END
+
+  " autocmd BufReadPost *.doc,*.docx,*.rtf,*.odp,*.odt silent %!pandoc "%" -tplain -o /dev/stdout
+
+  let g:zipPlugin_ext = '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,*.oxt,*.kmz,*.wsz,*.xap,*.docm,*.dotx,*.dotm,*.potx,*.potm,*.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,*.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx'
+
+  " autocmd BufReadPost *.odt :%!odt2txt %
+
+  " autocmd BufReadPost *.odt silent %!pandoc "%" -tmarkdown -o /dev/stdout
+  " autocmd BufWritePost *.odt :%!pandoc -f markdown "%" -o "%:r".odt
+
+  " NOTE: `,kp` compiles RMarkdown to PDF using NVim-R
+  autocmd Filetype rmd map <F5> :!echo<space>"require(rmarkdown);<space>render('<c-r>%')"<space>\|<space>R<space>--vanilla<enter>
+
+  nmap <Leader>cp :w! <bar> !compiler %<CR>
+  nmap <Leader>pr :!opout <c-r>%<CR><CR>
+" }}} === General Mappings ===
+
+" ============== Syntax ============== {{{
+  map <F9> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+  \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+  \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+  nmap <c-a> :call <SID>SynStack()<CR>
+  function! <SID>SynStack()
+    if !exists("*synstack")
+      return
+    endif
+    echo map(synstack(line('.'), col('.')), 'synIDattr(v:val, "name")')
+  endfunction
+
+  ":verbose hi <name>
+  " SyntaxQuery: Display the syntax stack at current cursor position
+  function! s:syntax_query() abort
+    for id in synstack(line("."), col("."))
+      execute 'hi' synIDattr(id, "name")
+    endfor
+  endfunction
+  command! SQ call s:syntax_query()
+  nnoremap <Leader>sll :syn list
+  nnoremap <Leader>slo :verbose hi
+
+  " === custom syntax groups ===
+  " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
+  " FIX: allow punctuation
+  augroup ccommtitle
+    autocmd!
+    autocmd Syntax * syn match
+      \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
+      \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
+    autocmd Syntax * syn match myTodo
+      \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
+      \ contained containedin=.*Comment.*,vimCommentTitle
+    " perlLabel
+    autocmd Syntax * syn keyword cmTitle contained=Comment
+    autocmd Syntax * syn keyword myTodo contained=Comment
+  augroup END
+  " hi def link cmLineComment Comment
+  hi def link cmTitle vimCommentTitle
+  hi def link myTodo Todo
 " }}} === Syntax ===
 
 " ============== wilder.nvim ============== {{{ "

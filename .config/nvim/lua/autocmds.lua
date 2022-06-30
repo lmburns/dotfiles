@@ -2,6 +2,7 @@
 -- local global = require("common.global")
 local utils = require("common.utils")
 local C = require("common.color")
+local global = require("common.global")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
@@ -728,8 +729,6 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             command = function()
                 local bufnr = nvim.buf.nr()
 
-                -- I have TMUX already automatically change title
-                -- It sets it to titlestring
                 if vim.bo[bufnr].bt == "" then
                     o.titlestring = fn.expand("%:t")
                 elseif vim.bo[bufnr].bt == "terminal" then
@@ -746,7 +745,8 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             event = "VimLeave",
             pattern = "*",
             command = function()
-                os.execute("tmux set-window automatic-rename on")
+                o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
+                pcall(os.execute, "tmux set-window automatic-rename on")
             end,
             desc = "Turn back on Tmux auto-rename"
         }

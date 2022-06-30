@@ -1,5 +1,6 @@
 local M = {}
 
+-- local global = require("common.global")
 local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
@@ -152,7 +153,8 @@ o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 o.title = true
 o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
 o.titlelen = 70
-o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
+o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t") -- This doesn't seem to work
+-- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
 
 o.list = true -- display tabs and trailing spaces visually
 -- Tab hides actual text when used with indent blankline

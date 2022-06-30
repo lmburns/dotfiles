@@ -38,9 +38,9 @@ function M.setup()
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
 
-    if nvim.executable("gtags-cscope") then
-        table.insert(g.gutentags_modules, "gtags_cscope")
-    end
+    -- if nvim.executable("gtags-cscope") then
+    --     table.insert(g.gutentags_modules, "gtags_cscope")
+    -- end
 
     -- if nvim.executable("cscope") then
     --     table.insert(g.gutentags_modules, "cscope")

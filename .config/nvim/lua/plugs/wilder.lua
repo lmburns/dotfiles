@@ -271,7 +271,6 @@ local function init()
         event = "FileType",
         pattern = "Telescope*",
         command = function()
-
             autocmd(
                 {
                     event = "CmdlineEnter",

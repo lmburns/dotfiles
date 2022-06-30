@@ -2,7 +2,7 @@ local M = {}
 
 local D = require("dev")
 local utils = require("common.utils")
-local map = utils.map
+local bmap = utils.bmap
 local augroup = utils.augroup
 local command = utils.command
 
@@ -90,7 +90,7 @@ local function init()
                 vim.opt_local.list = false
 
                 local bmap = function(...)
-                    map(bufnr, ...)
+                    bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>rp", ":GORUNS<CR>")
@@ -137,7 +137,7 @@ local function init()
                 bmap("n", "<Leader>fd", ":GoDeclsDir<CR>")
                 bmap("n", "<Leader>fj", ":GoDecls<CR>")
 
-                -- map(bufnr, "n", ";ff", ":GoFmt<CR>")
+                -- bmap("n", ";ff", ":GoFmt<CR>")
 
                 command(
                     "A",

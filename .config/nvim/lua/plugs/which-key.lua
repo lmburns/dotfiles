@@ -86,7 +86,9 @@ function M.setup()
         triggers = "auto",
         triggers_blacklist = {
             i = {"j", "k"},
-            v = {"j", "k"}
+            v = {"j", "k"},
+            -- n = {"d", '"_d'},
+            -- o = {"d", '"_d'}
             -- n = {"o", "O"} -- Would be nice if two letter worked
         }
     }

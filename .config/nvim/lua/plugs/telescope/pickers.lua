@@ -32,31 +32,32 @@ P.use_highlighter = true
 -- ╰──────────────────────────────────────────────────────────╯
 -- FIX: The builtin tags doesn't pick up fn.tagfiles() for whatever reason. This doesn't either
 --      So this is a clone of that. Even when using `bulitin.tags = P.tags`, it doesn't work
-P.tags = function(opts)
-    opts =
-        vim.tbl_deep_extend(
-        "force",
-        {
-            path_display = {"smart"},
-            bufnr = api.nvim_get_current_buf(),
-            preview = {
-                check_mime_type = true,
-                filesize_limit = 5,
-                hide_on_startup = false,
-                msg_bg_fillchar = "╱",
-                timeout = 150,
-                treesitter = true
-            }
-        },
-        opts or {}
-    )
 
-    local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
-    if vim.tbl_isempty(tagfiles) then
-        utils.notify(
-            "builtin.tags",
-            {
-                msg = "No tags file found. Create one with ctags -R",
+P.tags = function(opts)
+opts =
+    vim.tbl_deep_extend(
+    "force",
+    {
+        path_display = {"smart"},
+        bufnr = api.nvim_get_current_buf(),
+        preview = {
+            check_mime_type = true,
+            filesize_limit = 5,
+            hide_on_startup = false,
+            msg_bg_fillchar = "╱",
+            timeout = 150,
+            treesitter = true
+        }
+    },
+    opts or {}
+)
+
+local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
+if vim.tbl_isempty(tagfiles) then
+    utils.notify(
+        "builtin.tags",
+        {
+            msg = "No tags file found. Create one with ctags -R",
                 level = "ERROR"
             }
         )

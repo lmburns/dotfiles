@@ -150,6 +150,48 @@ M.setup_iswap = function()
     )
 end
 
+M.setup_autotag = function()
+    ex.packadd("nvim-ts-autotag")
+    local autotag = D.npcall(require, "nvim-ts-autotag")
+    if not autotag then
+        return
+    end
+
+    autotag.setup {
+        filetypes = {
+            "html",
+            "xml",
+            "xhtml",
+            "phtml",
+            "javascript",
+            "javascriptreact",
+            "typescriptreact",
+            "svelte",
+            "vue"
+        },
+        skip_tags = {
+            "area",
+            "base",
+            "br",
+            "col",
+            "command",
+            "embed",
+            "hr",
+            "img",
+            "slot",
+            "input",
+            "keygen",
+            "link",
+            "meta",
+            "param",
+            "source",
+            "track",
+            "wbr",
+            "menuitem"
+        }
+    }
+end
+
 ---Setup `aerial`
 M.setup_aerial = function()
     ex.packadd("aerial.nvim")
@@ -647,7 +689,7 @@ M.setup = function()
     return {
         ensure_installed = {
             "cmake",
-            "css",
+            -- "css",
             "d",
             "dart",
             "dockerfile",
@@ -802,18 +844,11 @@ M.setup = function()
                     ["id"] = "@comment.inner",
                     ["ag"] = "@conditional.outer",
                     ["ig"] = "@conditional.inner",
-                    -- targets.nvim does this good (with seeking)
-                    -- Though it isn't specifically parameters
                     ["aj"] = "@parameter.outer",
                     ["ij"] = "@parameter.inner",
                     ["aS"] = "@statement.outer",
                     ["al"] = "@loop.outer",
                     ["il"] = "@loop.inner"
-
-                    -- @conditional.inner
-                    -- @conditional.outer
-                    -- @loop.inner
-                    -- @loop.outer
                 }
             },
             -- @block.inner
@@ -982,6 +1017,7 @@ local function init()
     M.setup_aerial()
     M.setup_context_vt()
     M.setup_treesurfer()
+    M.setup_autotag()
 
     -- 'r = Smart rename
     -- ;d = Go to definition of symbol under cursor

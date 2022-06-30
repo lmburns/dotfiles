@@ -7,13 +7,18 @@ if not neoclip then
 end
 
 local utils = require("common.utils")
+local map = utils.map
 local augroup = utils.augroup
 local C = require("common.color")
 local yank = require("common.yank")
 local telescope = require("telescope")
 
+local uv = vim.loop
+local api = vim.api
 local fn = vim.fn
 local v = vim.v
+
+M.timeout = 165
 
 local function is_whitespace(line)
     return fn.match(line, [[^\s*$]]) ~= -1
@@ -60,7 +65,7 @@ end
 M.setup = function()
     neoclip.setup(
         {
-            history = 10000,
+            history = 500,
             enable_persistent_history = true,
             length_limit = 1048576,
             continious_sync = false,
@@ -115,9 +120,73 @@ M.setup = function()
     )
 end
 
+function M.setup_hl()
+    M.ns = api.nvim_create_namespace("put.region")
+    M.timer = uv.new_timer()
+    C.set_hl("HighlightedPutRegion", {bg = "#cc6666"})
+end
+
+local function get_region()
+    -- Previously yanked/changed text extmark
+    local start = api.nvim_buf_get_mark(0, "[")
+    local finish = api.nvim_buf_get_mark(0, "]")
+
+    return {
+        start_row = start[1] - 1,
+        start_col = start[2],
+        end_row = finish[1] - 1,
+        end_col = finish[2]
+    }
+end
+
+M.highlight_put = function(register)
+    M.timer:stop()
+    api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
+
+    local region = get_region()
+
+    vim.highlight.range(
+        0,
+        M.ns,
+        "HighlightedPutRegion",
+        {region.start_row, region.start_col},
+        {region.end_row, region.end_col},
+        {regtype = fn.getregtype(register), inclusive = true}
+    )
+
+    M.timer:start(
+        M.timeout,
+        0,
+        vim.schedule_wrap(
+            function()
+                api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
+            end
+        )
+    )
+end
+
+M.do_put = function(binding, reg)
+    reg = utils.get_default(reg, v.register)
+    local cnt = v.count1
+    -- local is_visual = fn.visualmode():match("[vV]")
+    -- local ok = pcall(cmd, ('norm! %s"%s%s%s'):format(F.tern(is_visual, "gv", ""), reg, cnt, binding))
+    local ok = pcall(cmd, ('norm! "%s%d%s'):format(reg, cnt, binding))
+
+    if ok then
+        M.highlight_put(reg)
+    end
+end
+
 local function init()
     M.setup()
+    M.setup_hl()
+
     -- require('neoclip.fzf')({'a', 'star', 'plus', 'b'})
+
+    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>")
+    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>")
+    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>")
+    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>")
 
     augroup(
         "lmb__Highlight",
@@ -125,9 +194,9 @@ local function init()
             event = "TextYankPost",
             pattern = "*",
             command = function()
-                C.set_hl("HighlightedyankRegion", {bg = "#cc6666"})
+                C.set_hl("HighlightedYankRegion", {bg = "#cc6666"})
                 if not vim.b.visual_multi then
-                    pcall(vim.highlight.on_yank, {higroup = "HighlightedyankRegion", timeout = 165})
+                    pcall(vim.highlight.on_yank, {higroup = "HighlightedYankRegion", timeout = M.timeout})
                 end
             end,
             desc = "Highlight a selection on yank"

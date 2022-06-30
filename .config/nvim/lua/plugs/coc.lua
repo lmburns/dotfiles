@@ -131,7 +131,8 @@ end
 ---@param action string: CocAction to run
 ---@param args table: Arguments to pass to that CocAction
 ---@param time number?: Time to wait for action to be performed
----@return string string: Error, result
+---@return boolean Error
+---@return string result
 function M.a2sync(action, args, time)
     local done = false
     local err = false
@@ -917,6 +918,9 @@ function M.init()
     -- map("x", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
     -- map("o", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
     -- map("o", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
+
+    -- FIX: Why is this not ran on each file anymore?
+    -- Lua -> Jsonc without closing buffer doesn't work
 
     -- Refresh coc completions
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})

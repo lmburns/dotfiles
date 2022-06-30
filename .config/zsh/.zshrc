@@ -1016,7 +1016,7 @@ zt 0c light-mode as'completion' for \
   id-as'poetry_comp' atclone='poetry completions zsh > _poetry' \
   atpull'%atclone' has'poetry' \
     zdharma-continuum/null \
-  id-as'rust_comp' atclone'rustup completions zsh > _rustup' \
+  id-as'rust_comp' atclone'rustup completions zsh rustup > _rustup' \
   atclone'rustup completions zsh cargo > _cargo' \
   atpull='%atclone' has'rustup' \
     zdharma-continuum/null \

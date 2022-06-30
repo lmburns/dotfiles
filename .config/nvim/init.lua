@@ -1,8 +1,5 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
-FIX: When opening Lf right after opening a file, sometimes 'p', 'o', or ')' are sent as keys
-FIX: Focus events stop firing in Tmux after a bit
-
 FIX: Cursor blinking is very fast on text operators which don't trigger which-key (gq)
      * This just started yesterday (i.e., June 22)
      * Stopped without lazyredraw. Started again with and without lazyredraw
@@ -25,8 +22,6 @@ local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()
 end
-
-vim.cmd [[let $NVIM_COC_LOG_LEVEL='debug']]
 
 require("common.global")
 local utils = require("common.utils")
@@ -83,14 +78,14 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     command(
         "PackerSnapshot",
         function(tbl)
-            require("plugins").snapshot(tbl.fargs)
+            require("plugins").snapshot(tbl.args)
         end,
         {nargs = "+", complete = ("%s.create"):format(snargs)}
     )
     command(
         "PackerSnapshotRollback",
         function(tbl)
-            require("plugins").rollback(tbl.fargs)
+            require("plugins").rollback(tbl.args)
         end,
         {nargs = "+", complete = ("%s.rollback"):format(snargs)}
     )
@@ -118,8 +113,8 @@ require("common.grepper")
 -- require("plugs.fold")
 
 vim.notify = function(...)
+    -- vim.notify = require("notify")
     require("plugins").loader("nvim-notify")
-    vim.notify = require("notify")
     require("plugins").loader("desktop-notify.nvim")
     vim.notify = require("common.utils").notify
     vim.notify(...)

@@ -378,6 +378,7 @@ wk.register(
         ["<Leader>"] = {
             e = {
                 name = "+edit",
+                -- c = {":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>", "Edit coc-settings"},
                 c = {"<cmd>CocConfig<CR>", "Edit coc-settings"},
                 v = {":e $NVIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"}

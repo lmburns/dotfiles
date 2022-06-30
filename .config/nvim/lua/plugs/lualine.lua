@@ -1,3 +1,5 @@
+---@diagnostic disable:need-check-nil
+
 local M = {}
 
 local D = require("dev")

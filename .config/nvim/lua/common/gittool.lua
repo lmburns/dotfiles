@@ -6,7 +6,7 @@ local utils = require("common.utils")
 ---Execute a git command
 ---@param args table arguments to pass to git
 ---@param cb fun(v: string)
----@return table stdout in a table
+---@return table? stdout in a table
 M.cmd = function(args, cb)
     local root = M.root()
     if #root == 0 then

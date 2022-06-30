@@ -9,6 +9,7 @@ end
 local log = require("common.log")
 local utils = require("common.utils")
 local map = utils.map
+local bmap = utils.bmap
 local augroup = utils.augroup
 
 local C = require("common.color")
@@ -67,10 +68,10 @@ local function mappings(bufnr)
         }
     )
 
-    -- map(bufnr, "n", "<Leader>he", "<Cmd>Gitsigns stage_hunk<CR>")
-    -- map(bufnr, "x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
-    -- map(bufnr, "n", "<Leader>hS", "<Cmd>Gitsigns undo_stage_hunk<CR>")
-    -- map(bufnr, "n", "<Leader>hu", "<Cmd>Gitsigns reset_hunk<CR>")
+    -- map("n", "<Leader>he", "<Cmd>Gitsigns stage_hunk<CR>")
+    -- map("x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
+    -- map("n", "<Leader>hS", "<Cmd>Gitsigns undo_stage_hunk<CR>")
+    -- map("n", "<Leader>hu", "<Cmd>Gitsigns reset_hunk<CR>")
 
     map(
         "x",
@@ -90,14 +91,14 @@ local function mappings(bufnr)
         {buffer = bufnr, desc = "Reset hunk"}
     )
 
-    -- bmap(bufnr, "x", "<Leader>hu", ":Gitsigns reset_hunk<CR>")
-    -- map(bufnr, "n", "<Leader>hp", "<Cmd>Gitsigns preview_hunk<CR>")
-    -- map(bufnr, "n", "<Leader>hv", [[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]])
-    -- map(bufnr, "n", "<Leader>hQ", "<Cmd>Gitsigns setqflist all<CR>")
-    -- map(bufnr, "n", "<Leader>hq", "<Cmd>Gitsigns setqflist<CR>")
+    -- map("x", "<Leader>hu", ":Gitsigns reset_hunk<CR>")
+    -- map("n", "<Leader>hp", "<Cmd>Gitsigns preview_hunk<CR>")
+    -- map("n", "<Leader>hv", [[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]])
+    -- map("n", "<Leader>hQ", "<Cmd>Gitsigns setqflist all<CR>")
+    -- map("n", "<Leader>hq", "<Cmd>Gitsigns setqflist<CR>")
 
-    map(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
-    map(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
+    bmap(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
+    bmap(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
 end
 
 function M.setup()

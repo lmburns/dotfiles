@@ -7,6 +7,7 @@ if not terminal then
 end
 
 local utils = require("common.utils")
+local bmap = utils.bmap
 local map = utils.map
 local command = utils.command
 
@@ -115,17 +116,17 @@ end
 -- ====================================================================
 
 function M.set_terminal_keymaps()
-    map(0, "t", "<Esc>", [[<C-\><C-n>]])
+    bmap(0, "t", "<Esc>", [[<C-\><C-n>]])
     -- Why does this need to be remapped to work?
-    map(0, "t", ":", ":")
-    map(0, "t", ":q!", [[<C-\><C-n>:q!<CR>]])
+    bmap(0, "t", ":", ":")
+    bmap(0, "t", ":q!", [[<C-\><C-n>:q!<CR>]])
 
-    -- map(0, "t", "jk", [[<C-\><C-n>]])
-    -- map(0, "t", "kj", [[<C-\><C-n>]])
-    -- map(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
-    -- map(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]])
-    -- map(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]])
-    -- map(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
+    -- bmap(0, "t", "jk", [[<C-\><C-n>]])
+    -- bmap(0, "t", "kj", [[<C-\><C-n>]])
+    -- bmap(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
+    -- bmap(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]])
+    -- bmap(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]])
+    -- bmap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
 end
 
 -- Sample on how a command can be ran
