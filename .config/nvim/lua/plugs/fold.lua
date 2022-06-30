@@ -354,6 +354,10 @@ local handler = function(virt_text, lnum, end_lnum, width, truncate)
     return new_virt_text
 end
 
+local ft_map = {
+    zsh = "indent"
+}
+
 ---Setup 'ultra-fold'
 M.setup_ufo = function()
     local ufo = D.npcall(require, "ufo")
@@ -364,7 +368,14 @@ M.setup_ufo = function()
     ufo.setup(
         {
             open_fold_hl_timeout = 360,
-            fold_virt_text_handler = handler
+            fold_virt_text_handler = handler,
+            provider_selector = function(bufnr, filetype)
+                -- return a string type use internal providers
+                -- return a string in a table like a string type
+                -- return empty string '' will disable any providers
+                -- return `nil` will use default value {'lsp', 'indent'}
+                return ft_map[filetype]
+            end
         }
     )
 end
@@ -405,7 +416,7 @@ local function init()
         "aerial"
     }
     coc_loaded_ft = {}
-    anyfold_prefer_ft = {"vim", "zsh"}
+    anyfold_prefer_ft = {"zsh"}
 
     -- local parsers = require("nvim-treesitter.parsers")
     -- local configs = parsers.get_parser_configs()
@@ -454,7 +465,6 @@ local function init()
 
     -- for _, bufnr in ipairs(api.nvim_list_bufs()) do
     --     M.defer_attach(bufnr)
-
 end
 
 init()

@@ -598,8 +598,8 @@ M.notify = function(msg, level, opts)
         [log.levels.TRACE] = {timeout = 500},
         [log.levels.DEBUG] = {timeout = 500},
         [log.levels.INFO] = {timeout = 1000},
-        [log.levels.WARN] = {timeout = 10000},
-        [log.levels.ERROR] = {timeout = 10000, keep = keep}
+        [log.levels.WARN] = {timeout = 3000},
+        [log.levels.ERROR] = {timeout = 5000, keep = keep}
     })[level]
 
     ---@diagnostic disable-next-line:cast-local-type

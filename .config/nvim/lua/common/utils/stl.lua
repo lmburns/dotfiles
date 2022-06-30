@@ -503,12 +503,13 @@ function M.document_diagnostics()
         return diagnostics
     end
 
-    local data = vim.b[bufnr].coc_diagnostic_info
+    -- Use a default {} to prevent indexing errors
+    local data = vim.b[bufnr].coc_diagnostic_info or {}
     return {
-        error = utils.ife_nil(data, 0, data.error),
-        warn = utils.ife_nil(data, 0, data.warning),
-        info = utils.ife_nil(data, 0, data.information),
-        hint = utils.ife_nil(data, 0, data.hint)
+        error = utils.get_default(data.error, 0),
+        warn = utils.get_default(data.warning, 0),
+        info = utils.get_default(data.information, 0),
+        hint = utils.get_default(data.hint, 0)
     }
 
     -- fn.CocActionAsync(

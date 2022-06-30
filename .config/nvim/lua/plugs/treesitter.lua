@@ -688,6 +688,7 @@ end
 M.setup = function()
     return {
         ensure_installed = {
+            "bash",
             "cmake",
             -- "css",
             "d",
@@ -723,8 +724,8 @@ M.setup = function()
             "sql",
             "teal",
             "typescript",
-            -- "tsx",
-            -- "vue",
+            "tsx",
+            "vue",
             "vim",
             -- "yaml",
             "zig",
@@ -734,7 +735,7 @@ M.setup = function()
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
-            disable = {"html", "comment", "zsh"}, -- list of language that will be disabled
+            disable = {"help", "html", "comment", "zsh"}, -- list of language that will be disabled
             -- disable = function(_, bufnr)
             --     return vim.api.nvim_buf_line_count(bufnr or 0) > vim.g.treesitter_highlight_maxlines
             -- end,
@@ -748,7 +749,7 @@ M.setup = function()
             }
         },
         autotag = {enable = true},
-        autopairs = {enable = true},
+        autopairs = {enable = true, disable = {"help"}},
         -- yati = {enable = true},
         -- tree_docs = {enable = true},
         indent = {enable = true},
@@ -790,6 +791,7 @@ M.setup = function()
         context_commentstring = {
             enable = true,
             enable_autocmd = false,
+            disable = {"help"},
             config = {
                 c = "// %s",
                 go = "// %s",
@@ -820,8 +822,8 @@ M.setup = function()
         rainbow = {
             enable = true,
             extended_mode = true,
-            max_file_lines = 1200
-            -- disable = {"cpp"},
+            max_file_lines = 1500,
+            disable = {"html", "help"},
             -- colors = {}
         },
         textobjects = {

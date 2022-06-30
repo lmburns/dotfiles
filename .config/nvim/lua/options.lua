@@ -9,7 +9,6 @@ local env = vim.env
 local o = vim.opt
 local g = vim.g
 
--- FIX: I noticed that filetype.vim is still being ran
 -- Disable filetype.vim (but still load filetype.lua if enabled)
 g.did_load_filetypes = 0
 -- Disable filetype.vim and filetype.lua
@@ -194,7 +193,7 @@ o.joinspaces = false -- prevent inserting two spaces with J
 -- o.lazyredraw = true
 o.redrawtime = 2000
 g.cursorhold_updatetime = 250
-o.updatetime = 200 -- cursorhold event time
+o.updatetime = 2000
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
 o.matchtime = 5 -- ms to blink when matching brackets

@@ -7,9 +7,12 @@ FIX: Cursor blinking is very fast on text operators which don't trigger which-ke
      * Is not present in telescope prompt
      * Happens with coc (e.g., Lua, Rust, Python, but not toml, yaml, solidity)
      * With "showtabline=2" it happens. Not with any other setting
-     * With a timeoutlen over 800 it stops
      * It's definitely gotta be that Bufferline and some langservers are refreshing the same thing
      * ModeChange gets ran over and over only on operator pending
+     * With a timeoutlen over 800 it stops
+     * With a timeoutlen = 800 and updatetime=2000, happens every other time
+     * With a timeoutlen = 800 and updatetime=4000, happens never
+     * Gotta be a combination of `updatetime` and `timeoutlen`
 
 Notes:
     * When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)

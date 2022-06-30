@@ -232,7 +232,6 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true
-                    -- inclusive_jump = false
                 }
             )
             utils.normal("n", "h")

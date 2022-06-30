@@ -222,18 +222,18 @@ function M.autocmds()
                 require("lualine.components.diff.git_diff").update_diff_args()
                 require("lualine.components.diff.git_diff").update_git_diff()
             end
+        },
+        {
+            event = "ModeChanged",
+            pattern = "*",
+            desc = "Update statusline to show operator pending mode",
+            command = function()
+                -- Lazy redraw just now started causing me problems
+                if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
+                    ex.redraws()
+                end
+            end
         }
-        -- {
-        --     event = "ModeChanged",
-        --     pattern = "*",
-        --     desc = "Update statusline to show operator pending mode",
-        --     command = function()
-        --         -- Lazy redraw just now started causing me problems
-        --         if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
-        --             ex.redraws()
-        --         end
-        --     end
-        -- }
     )
 end
 

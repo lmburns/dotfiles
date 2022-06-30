@@ -695,9 +695,6 @@ return packer.startup(
                     conf = "plugs.fzf-lua"
                 }
             )
-
-            -- use({"vijaymarupudi/nvim-fzf"})
-            -- use({ "lotabout/skim", run = "./install --bin" })
             -- ]]] === Fzf ===
 
             -- ============================= Operator ============================== [[[
@@ -713,11 +710,10 @@ return packer.startup(
                 }
             )
 
-            -- use({"AndrewRadev/splitjoin.vim", keys = {{"n", "gJ"}, {"n", "gS"}}})
-
             use(
                 {
                     "phaazon/hop.nvim",
+                    run = "gh pr checkout 265",
                     conf = "plugs.hop",
                     keys = {
                         {"n", "f"},
@@ -1028,9 +1024,10 @@ return packer.startup(
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
             -- "folke/todo-comments.nvim",
+            -- "eriedaberrie/todo-comments.nvim",
             use(
                 {
-                    "eriedaberrie/todo-comments.nvim",
+                    "folke/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
                     after = "telescope.nvim"

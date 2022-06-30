@@ -143,3 +143,6 @@
 --         after = {"nvim-lspconfig"}
 --     }
 -- )
+-- use({"vijaymarupudi/nvim-fzf"})
+-- use({ "lotabout/skim", run = "./install --bin" })
+-- use({"AndrewRadev/splitjoin.vim", keys = {{"n", "gJ"}, {"n", "gS"}}})

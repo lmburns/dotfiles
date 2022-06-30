@@ -6,6 +6,7 @@ local debounce = require("common.debounce")
 local json
 local bufs
 local mru = {}
+local dirs = {}
 
 local fn = vim.fn
 local api = vim.api
@@ -44,11 +45,22 @@ local function list(file)
 
     local fd = io.open(file, "r")
     if fd then
-        for fname in fd:lines() do
+        local ok, data = pcall(fd.read, fd)
+        if ok then
+            dirs = vim.json.decode(data)
+        end
+
+        for _, fname in ipairs(dirs) do
             if not add_list(fname) then
                 break
             end
         end
+
+        -- for fname in fd:lines() do
+        --     if not add_list(fname) then
+        --         break
+        --     end
+        -- end
         fd:close()
     end
     return mru_list
@@ -56,7 +68,8 @@ end
 
 function M.list()
     local mru_list = list(mru.db)
-    utils.write_file(mru.db, table.concat(mru_list, "\n"))
+    -- utils.write_file(mru.db, table.concat(mru_list, "\n"))
+    utils.write_file(mru.db, vim.json.encode(mru_list))
     return mru_list
 end
 
@@ -65,13 +78,15 @@ M.flush =
     local debounced
     return function(force)
         if force then
-            utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
+            -- utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
+            utils.write_file(mru.db, vim.json.encode(list(mru.db)), force)
         else
             if not debounced then
                 debounced =
                     debounce(
                     function()
-                        utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        -- utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        utils.write_file(mru.db, vim.json.encode(list(mru.db)))
                     end,
                     50
                 )
@@ -94,14 +109,51 @@ M.store_buf = (function()
     end
 end)()
 
+-- ╒══════════════════════════════════════════════════════════╕
+--                             JSON
+-- ╘══════════════════════════════════════════════════════════╛
+
+M.load_cache = function()
+    local file = io.open(json, "r")
+    if file then
+        local ok, data = pcall(file.read, file)
+        if ok then
+            dirs = vim.json.decode(data)
+        end
+        file:close()
+    end
+end
+
+M.save_cache = function()
+    local file = io.open(json, "w")
+    file:write(vim.json.encode(dirs))
+    file:close()
+end
+
+M.record_dir = function(dir)
+    dirs[dir] = 1
+    M.save_cache()
+end
+
+M.remove_dir = function(dir)
+    dirs[dir] = nil
+    M.save_cache()
+end
+
+M.get_dirs = function()
+    return vim.tbl_keys(dirs)
+end
+
 local function init()
+    json = fn.stdpath("data") .. "/recent_files.json"
     bufs = {}
+
     mru = {
         mtime = 0,
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
-        db = ("%s/%s"):format(fn.stdpath("data"), "mru_file")
+        db = ("%s/%s"):format(fn.stdpath("data"), "mru.json")
     }
 
     M.store_buf()

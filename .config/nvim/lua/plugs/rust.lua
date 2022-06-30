@@ -2,7 +2,8 @@ local M = {}
 
 local utils = require("common.utils")
 local augroup = utils.augroup
-local map = utils.map
+-- local map = utils.map
+local bmap = utils.bmap
 local coc = require("plugs.coc")
 
 local g = vim.g
@@ -25,34 +26,34 @@ local function init()
             command = function()
                 -- Rust analyzer really slows things down, so this needs more time
                vim.opt_local.timeoutlen = 500
+                local bufnr = nvim.get_current_buf()
 
                 local bmap = function(...)
                     bmap(bufnr, ...)
                 end
 
-                local bufnr = nvim.get_current_buf()
 
-                map("n", "<Leader>t<CR>", "RustTest", {buffer = bufnr, cmd = true})
-                map("n", "<Leader>h<CR>", ":T cargo clippy<CR>", {buffer = bufnr})
-                map("n", "<Leader>n<CR>", ":T cargo run -q<CR>", {buffer = bufnr})
-                map("n", "<Leader><Leader>n", ":T cargo run -q<space>", {buffer = bufnr})
-                map("n", "<Leader>b<CR>", ":T cargo build -q<CR>", {buffer = bufnr})
-                map("n", "<Leader>r<CR>", ":VT cargo play %<CR>", {buffer = bufnr})
-                map("n", "<Leader>v<CR>", ":T rust-script %<CR>", {buffer = bufnr})
-                map("n", "<Leader>e<CR>", ":T cargo eval %<CR>", {buffer = bufnr})
+                bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})
+                bmap("n", "<Leader>h<CR>", ":T cargo clippy<CR>")
+                bmap("n", "<Leader>n<CR>", ":T cargo run -q<CR>")
+                bmap("n", "<Leader><Leader>n", ":T cargo run -q<space>")
+                bmap("n", "<Leader>b<CR>", ":T cargo build -q<CR>")
+                bmap("n", "<Leader>r<CR>", ":VT cargo play %<CR>")
+                bmap("n", "<Leader>v<CR>", ":T rust-script %<CR>")
+                bmap("n", "<Leader>e<CR>", ":T cargo eval %<CR>")
 
-                map(
+                bmap(
                     "n",
                     "<Leader>re",
                     function()
                         coc.run_command("rust-analyzer.reloadWorkspace", {})
                         coc.run_command("rls.restart", {})
                     end,
-                    {buffer = bufnr,  desc = "Reload Rust workspace"}
+                    {desc = "Reload Rust workspace"}
                 )
 
-                map("n", ";ff", "keepj keepp RustFmt", {buffer = bufnr, cmd = true})
-                map("v", ";ff", "RustFmtRange", {buffer = bufnr, cmd = true})
+                bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true})
+                bmap("v", ";ff", "RustFmtRange", {cmd = true})
             end
         }
     )

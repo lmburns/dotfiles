@@ -1,3 +1,5 @@
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 local D = require("dev")
@@ -41,7 +43,7 @@ end
 --      However vim.b.coc_diagnostic_info still shows errors
 
 ---Get the nearest symbol in reference to the location of the cursor
----@return string
+---@return string?
 function M.getsymbol()
     local ok, _ = pcall(require, "nvim-gps")
 
@@ -168,7 +170,7 @@ end
 ---Run an asynchronous CocAction using a Javascript type framework of Promise
 ---@param action string
 ---@vararg table
----@return function
+---@return Promise
 function M.action(action, ...)
     local args = {...}
     return promise.new(
@@ -291,9 +293,38 @@ function M.diagnostic_change()
     end
 end
 
+---The current document diagnostics
+M.document = {}
+---The current workspace diagnostics
+M.workspace = {}
+
+---Get the diagnostics for Coc
+M.diagnostics_tracker = function()
+    -- Clear these on each run
+    local curr_bufname
+    M.document = {}
+    M.workspace = {}
+
+    curr_bufname = api.nvim_buf_get_name(0)
+
+    fn.CocActionAsync(
+        "diagnosticList",
+        function(err, res)
+            if err == vim.NIL then
+                for _, d in ipairs(res) do
+                    if d.file == curr_bufname then
+                        table.insert(M.document, d)
+                    end
+                    table.insert(M.workspace, d)
+                end
+            end
+        end
+    )
+end
+
 ---Fill quickfix with CocDiagnostics
 ---@param winid number
----@param nr boolean
+---@param nr number
 ---@param keep boolean
 function M.diagnostic(winid, nr, keep)
     fn.CocActionAsync(
@@ -659,7 +690,6 @@ function M.init()
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 
-    -- autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
     augroup(
         "CocNvimSetup",
         {
@@ -676,6 +706,7 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
+                require("plugs.coc").diagnostics_tracker()
                 -- fn["CocDiagnosticNotify"]()
             end
         },
@@ -687,6 +718,13 @@ function M.init()
         --         require("plugs.coc").coc_status_notification()
         --     end
         -- },
+        {
+            event = "BufEnter",
+            pattern = "*",
+            command = function()
+                require("plugs.coc").diagnostics_tracker()
+            end
+        },
         {
             event = "CursorHold",
             pattern = "*",

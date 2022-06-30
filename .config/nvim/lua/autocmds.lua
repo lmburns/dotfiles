@@ -465,6 +465,8 @@ nvim.autocmd.lmb__TermMappings = {
         require("plugs.neoterm").set_terminal_keymaps()
         vim.wo.number = false
         vim.wo.relativenumber = false
+        vim.bo.bufhidden = "hide"
+        ex.startinsert()
     end,
     desc = "Set terminal mappings"
 }
@@ -591,6 +593,8 @@ local smart_close_filetypes = {
     "startuptime"
 }
 
+local smart_close_buftypes = {"terminal"}
+
 local function smart_close()
     if fn.winnr("$") ~= 1 then
         api.nvim_win_close(0, true)
@@ -607,7 +611,9 @@ nvim.autocmd.lmb__SmartClose = {
         pattern = "*",
         command = function()
             local is_unmapped = fn.hasmapto("q", "n") == 0
-            local is_eligible = is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo.ft)
+            local is_eligible =
+                is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo.ft) or
+                _t(smart_close_buftypes):contains(vim.bo.bt)
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = 0, nowait = true})

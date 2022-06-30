@@ -7,8 +7,14 @@ if not trouble then
     return
 end
 
-local map = require("common.utils").map
+local coc = require("plugs.coc")
+local log = require("common.log")
+local utils = require("common.utils")
+local map = utils.map
+local augroup = utils.augroup
 local icon = require("style").icons
+
+local ex = nvim.ex
 
 function M.setup()
     trouble.setup(
@@ -63,6 +69,22 @@ function M.setup()
             track_cursor = true -- automatically track the cursor and update the selected item
         }
     )
+end
+
+function M.toggle_workspace()
+    if #coc.workspace > 0 then
+        ex.TroubleToggle("coc_workspace_diagnostics")
+    else
+        log.warn("No workspace diagnostics", true, {title = "Trouble"})
+    end
+end
+
+function M.toggle_document()
+    if #coc.document > 0 then
+        ex.TroubleToggle("coc_document_diagnostics")
+    else
+        log.warn("No document diagnostics", true, {title = "Trouble"})
+    end
 end
 
 local function init()
@@ -131,14 +153,14 @@ local function init()
     map(
         "n",
         "<Leader>x;",
-        "<cmd>TroubleToggle coc_workspace_diagnostics<cr>",
+        "<cmd>lua require('plugs.trouble').toggle_workspace()<cr>",
         {silent = true, desc = "Trouble workspace"}
     )
 
     map(
         "n",
         "<Leader>x,",
-        "<cmd>TroubleToggle coc_document_diagnostics<cr>",
+        "<cmd>lua require('plugs.trouble').toggle_document()<cr>",
         {silent = true, desc = "Trouble document"}
     )
 

@@ -1028,32 +1028,32 @@ zt 0c light-mode as'completion' for \
 # id-as'luarocks' has'luarocks' nocd eval'luarocks --lua-version=5.1 path' \
 #   zdharma-continuum/null \
 #===== variables ===== [[[
-  zt 0c light-mode run-atpull nocompile'!' for \
-    id-as'pipx_comp' has'pipx' nocd eval"register-python-argcomplete pipx" \
-    atload'zicdreplay -q' \
-      zdharma-continuum/null \
-    id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
-      zdharma-continuum/null \
-    id-as'pyenv_init' has'pyenv' nocd eval'pyenv init - zsh' \
-      zdharma-continuum/null \
-    id-as'pipenv_comp' has'pipenv' nocd eval'_PIPENV_COMPLETE=zsh_source pipenv' \
-      zdharma-continuum/null \
-    id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
-      zdharma-continuum/null \
-    id-as'go_env' has'goenv' nocd eval'goenv init -' \
-      zdharma-continuum/null \
-    id-as'thefuck_alias' has'thefuck' nocd eval'thefuck --alias' \
-      zdharma-continuum/null \
-    id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
-    atload'alias o=__zoxide_z z=__zoxide_zi' \
-      zdharma-continuum/null \
-    id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
-      zdharma-continuum/null \
-    id-as'keychain_init' has'keychain' nocd \
-    eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa \
-      && keychain --agents ssh -q --inherit any --eval git \
-      && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
-        zdharma-continuum/null
+zt 0c light-mode run-atpull nocompile'!' for \
+  id-as'pipx_comp' has'pipx' nocd eval"register-python-argcomplete pipx" \
+  atload'zicdreplay -q' \
+    zdharma-continuum/null \
+  id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
+    zdharma-continuum/null \
+  id-as'pyenv_init' has'pyenv' nocd eval'pyenv init - zsh' \
+    zdharma-continuum/null \
+  id-as'pipenv_comp' has'pipenv' nocd eval'_PIPENV_COMPLETE=zsh_source pipenv' \
+    zdharma-continuum/null \
+  id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
+    zdharma-continuum/null \
+  id-as'go_env' has'goenv' nocd eval'goenv init -' \
+    zdharma-continuum/null \
+  id-as'thefuck_alias' has'thefuck' nocd eval'thefuck --alias' \
+    zdharma-continuum/null \
+  id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
+  atload'alias o=__zoxide_z z=__zoxide_zi' \
+    zdharma-continuum/null \
+  id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
+    zdharma-continuum/null \
+  id-as'keychain_init' has'keychain' nocd \
+  eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa \
+    && keychain --agents ssh -q --inherit any --eval git \
+    && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
+      zdharma-continuum/null
 
 # id-as'ruby_env' has'rbenv' nocd eval'rbenv init - | sed "s|source .*|source $ZDOTDIR/extra/rbenv.zsh|"' \
 #   zdharma-continuum/null \
@@ -1274,4 +1274,4 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
-# vim: set sw=0 ts=2 sts=2 et ft=zsh fdm=marker fmr=[[[,]]]:
+# vim: set sw=0 ts=2 sts=2 et ft=zsh
