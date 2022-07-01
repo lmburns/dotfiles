@@ -116,10 +116,10 @@ end
 -- ====================================================================
 
 function M.set_terminal_keymaps()
-    bmap(0, "t", "<Esc>", [[<C-\><C-n>]])
+    map("t", "<Esc>", [[<C-\><C-n>]], {buffer = true})
     -- Why does this need to be remapped to work?
-    bmap(0, "t", ":", ":")
-    bmap(0, "t", ":q!", [[<C-\><C-n>:q!<CR>]])
+    map("t", ":", ":", {buffer = true})
+    map("t", ":q!", [[<C-\><C-n>:q!<CR>]], {buffer = true})
 
     -- bmap(0, "t", "jk", [[<C-\><C-n>]])
     -- bmap(0, "t", "kj", [[<C-\><C-n>]])
@@ -175,7 +175,7 @@ local function init()
         function(tbl)
             term_exec(tbl.args, tbl.count)
         end,
-        {nargs = "*", count = true, desc = "Terminal REPL"}
+        {nargs = "*", count = 1, desc = "Terminal REPL"}
     )
 
     command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*", desc = "Terminal split"})
@@ -187,7 +187,7 @@ local function init()
         function(tbl)
             M.neoterm(tbl.args, tbl.count)
         end,
-        {nargs = "*", count = true, desc = "Neoterm"}
+        {nargs = "*", count = 1, desc = "Neoterm"}
     )
 
     map("n", "gzo", "<Cmd>T<CR>", {desc = "Open terminal"})

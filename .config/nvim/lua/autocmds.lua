@@ -462,7 +462,7 @@ nvim.autocmd.lmb__TermMappings = {
     pattern = "term://*",
     command = function()
         -- vim.wo.statusline = "%{b:term_title}"
-        require("plugs.neoterm").set_terminal_keymaps()
+        -- require("plugs.neoterm").set_terminal_keymaps()
         vim.wo.number = false
         vim.wo.relativenumber = false
         vim.bo.bufhidden = "hide"
@@ -593,7 +593,7 @@ local smart_close_filetypes = {
     "startuptime"
 }
 
-local smart_close_buftypes = {"terminal"}
+local smart_close_buftypes = {}
 
 local function smart_close()
     if fn.winnr("$") ~= 1 then

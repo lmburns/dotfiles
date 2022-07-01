@@ -7,7 +7,7 @@
   // "coc.preferences.formatOnSaveFiletypes": [
   //   "go"
   // ],
-  "coc.preferences.formatOnType": false,
+  "coc.preferences.formatOnType": true,
   "coc.preferences.snippetHighlight": false,
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,

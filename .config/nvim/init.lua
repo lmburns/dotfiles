@@ -1,5 +1,7 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
+FIX: A few Coc keybindings are overridden when switching files
+     * Up/down do work in popup menu
 FIX: Cursor blinking is very fast on text operators which don't trigger which-key (gq)
      * This just started yesterday (i.e., June 22)
      * Stopped without lazyredraw. Started again with and without lazyredraw
@@ -25,6 +27,8 @@ local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()
 end
+
+-- vim.cmd [[let $NVIM_COC_LOG_LEVEL='debug']]
 
 require("common.global")
 local utils = require("common.utils")
@@ -168,7 +172,6 @@ vim.schedule(
             function()
                 g.loaded_clipboard_provider = nil
                 ex.runtime("autoload/provider/clipboard.vim")
-                -- require("plugs.yanking") -- Needs to be loaded after clipboard is set
                 require("plugs.neoclip") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
@@ -282,18 +285,6 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        -- augroup(
-                        --     "CocFzfLocation",
-                        --     {
-                        --         event = "User",
-                        --         pattern = "CocLocationsChange",
-                        --         nested = true,
-                        --         command = function()
-                        --             return true
-                        --         end
-                        --     }
-                        -- )
-
                         cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )

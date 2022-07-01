@@ -12,6 +12,7 @@ local utils = require("common.utils")
 local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
 local dev = require("dev")
+local coc = require("plugs.coc")
 local C = require("common.color")
 local colors = require("kimbox.colors")
 local icons = require("style").icons
@@ -497,7 +498,6 @@ function M.document_diagnostics()
     -- Maybe a better way to get previous buffer
     -- Would also be nice to distinguish between workspace and document
     local bufnr = fn.bufnr("#")
-    local coc = require("plugs.coc")
 
     if not coc.did_init() then
         return diagnostics

@@ -239,7 +239,7 @@ end
 
 ---Accept the completion
 function M.accept_complete()
-    local mode = api.nvim_get_mode().mode
+    local mode = utils.mode()
     if mode == "i" then
         return utils.termcodes["<C-l>"]
     elseif mode == "ic" then
@@ -248,8 +248,8 @@ function M.accept_complete()
         vim.schedule(
             function()
                 vim.o.ei = ei_bak
-                -- fn.CocActionAsync("stopCompletion")
-                fn["coc#pum#close"]()
+                fn.CocActionAsync("stopCompletion")
+                -- fn["coc#pum#close"]()
             end
         )
         return utils.termcodes["<C-y>"]
@@ -488,6 +488,12 @@ function _G.map_cr()
     else
         return require("nvim-autopairs").autopairs_cr()
     end
+
+    -- if fn["pumvisible"]() ~= 0 then
+    --     return fn["coc#_select_confirm"]()
+    -- else
+    --     return require("nvim-autopairs").autopairs_cr()
+    -- end
 end
 
 ---Check whether Coc has been initialized
@@ -662,20 +668,20 @@ end
 
 -- FIX: Style is not found when required
 ---Set the icons for Coc
-M.set_icons = function()
-    -- vim.defer_fn(
-    --     function()
-    --         local icons = require("style.icons")
-    --         local diag_config = fn["coc#util#get_config"]("diagnostic")
-    --         diag_config.errorSign = icons.lsp.error
-    --         diag_config.warningSign = icons.lsp.warn
-    --         diag_config.hintSign = icons.lsp.hint
-    --         diag_config.infoSign = icons.lsp.info
-    --         fn["coc#config"]("diagnostic", {diagnostic = diag_config})
-    --     end,
-    --     1000
-    -- )
-end
+-- M.set_icons = function()
+--     -- vim.defer_fn(
+--     --     function()
+--     --         local icons = require("style.icons")
+--     --         local diag_config = fn["coc#util#get_config"]("diagnostic")
+--     --         diag_config.errorSign = icons.lsp.error
+--     --         diag_config.warningSign = icons.lsp.warn
+--     --         diag_config.hintSign = icons.lsp.hint
+--     --         diag_config.infoSign = icons.lsp.info
+--     --         fn["coc#config"]("diagnostic", {diagnostic = diag_config})
+--     --     end,
+--     --     1000
+--     -- )
+-- end
 
 -- ========================== Init ==========================
 
@@ -794,26 +800,6 @@ function M.init()
         }
     )
 
-    -- CocCommand semanticTokens.inspect
-
-    --     CocSemNamespace              CocSemType                  CocSemClass                   CocSemEnum
-    --     CocSemInterface             CocSemStruct             CocSemTypeParameter             CocSemParameter
-    --      CocSemVariable            CocSemProperty             CocSemEnumMember                 CocSemEvent
-    --      CocSemFunction             CocSemMethod                 CocSemMacro                  CocSemKeyword
-    --      CocSemModifier            CocSemComment                CocSemString                  CocSemNumber
-    --      CocSemBoolean              CocSemRegexp               CocSemOperator                CocSemDecorator
-    --     CocSemDeprecated        CocSemDefaultLibrary      CocSemDefaultLibraryClass   CocSemDefaultLibraryInterface
-    -- CocSemDefaultLibraryEnum  CocSemDefaultLibraryType  CocSemDefaultLibraryNamespace       CocSemDeclaration
-    --  CocSemDeclarationClass  CocSemDeclarationInterface     CocSemDeclarationEnum         CocSemDeclarationType
-    -- CocSemDeclarationNamespace
-
-    -- command("Fold", [[:call CocAction('fold', <f-args>)]], {nargs = "?"})
-    -- command("CocMarket", [[:CocFzfList marketplace]], {nargs = 0})
-    -- command("Format", [[:call CocAction('format')]], {nargs = 0})
-    -- command("OR", [[:call CocAction('runCommand', 'editor.action.organizeImport')]], {nargs = 0})
-    -- command("CocOutput", [[CocCommand workspace.showOutput]], {nargs = 0})
-    -- command("DiagnosticToggleBuffer", [[call CocAction('diagnosticToggleBuffer')]], {nargs = 0})
-
     require("legendary").bind_commands(
         {
             {
@@ -919,16 +905,14 @@ function M.init()
         }
     )
 
+
     -- === CodeActions ===
     -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
-    -- map("n", "<C-CR>", "<cmd>lua R('code_action_menu').open_code_action_menu('')<CR>")
-    map("n", "<A-CR>", "<cmd>lua R('coc_code_action_menu').open_code_action_menu('cursor')<CR>")
+    -- map("n", "<C-CR>", ":lua require('plugs.coc').code_action('')<CR>", {desc = "Code action"})
+    -- map("n", "<C-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
+    map("n", "<A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>")
     map("n", "<C-A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>")
-
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-    -- map("n", "<C-CR>", "<Plug>(coc-codeaction)")
-    -- map("x", "<Leader>w", "<Plug>(coc-codeaction-selected)")
-    -- map("n", "<Leader>ww", "<Plug>(coc-codeaction-selected)")
 
     map("x", "<Leader>fm", "<Plug>(coc-format-selected)", {desc = "Format selected"})
 
@@ -936,47 +920,36 @@ function M.init()
     -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
     -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
 
-    -- map("s", "<Del>", '<C-g>"_c')
     -- map("s", "<C-h>", '<C-g>"_c')
     -- map("s", "<C-w>", "<Esc>a")
-
     -- map("s", "<C-o>", "<Nop>")
     -- map("s", "<C-o>o", "<Esc>a<C-o>o")
-
-    -- map("n", "[g", "<Plug>(coc-diagnostic-prev)", { noremap = false })
-    -- map("n", "]g", "<Plug>(coc-diagnostic-next)", { noremap = false })
-    -- map("n", "gd", "<Plug>(coc-definition)", { noremap = false, silent = true })
-    -- map("n", "gy", "<Plug>(coc-type-definition)", { noremap = false })
-    -- map("n", "gi", "<Plug>(coc-implementation)", { noremap = false })
-    -- map("n", "gr", "<Plug>(coc-references)", { noremap = false, silent = false })
-    -- map("n", "<Leader>rn", "<Plug>(coc-rename)", { noremap = false })
-
-    -- Create mappings for function text object
-    -- map("x", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
-    -- map("x", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
-    -- map("o", "if", "<Plug>(coc-funcobj-i)", { noremap = false })
-    -- map("o", "af", "<Plug>(coc-funcobj-a)", { noremap = false })
-
-    -- FIX: Why is this not ran on each file anymore?
-    -- Lua -> Jsonc without closing buffer doesn't work
 
     -- Refresh coc completions
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
 
-    -- Popup
-    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], {expr = true, silent = true})
-    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], {expr = true, silent = true})
-    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true, silent = true})
-    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true, silent = true})
-
+    -----
+    -- Before `pum` is merged
+    -----
     -- map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
     -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true, silent = true})
 
-    -- FIX: This mapping
-    -- map("i", "<C-'>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
+    -- map(
+    --     "i",
+    --     "<Tab>",
+    --     ("pumvisible() ? %s : %s"):format(
+    --         [["\<C-n>"]],
+    --         [[v:lua.check_backspace() ? "\<Tab>" : coc#refresh()]]
+    --     ),
+    --     {expr = true}
+    -- )
+    -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true})
+    -- map("i", "<C-l>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
 
+    -----
+    -- After `pum` is merged
+    -----
     map("i", "<CR>", "v:lua.map_cr()", {expr = true})
-
     map(
         "i",
         "<Tab>",
@@ -987,7 +960,15 @@ function M.init()
         {expr = true}
     )
 
-    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], {expr = true})
+    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], {expr = true})
+
+    -- Popup
+    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], {expr = true, silent = true})
+    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], {expr = true, silent = true})
+    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true, silent = true})
+    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true, silent = true})
+
+    -----
 
     -- Snippet
     map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})

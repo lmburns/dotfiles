@@ -107,7 +107,7 @@ map("n", "<Tab>", ">>")
 map("n", "<S-Tab>", "<<")
 map("v", "<Tab>", ">><Esc>gv")
 map("v", "<S-Tab>", "<<<Esc>gv")
-map("i", "<S-Tab>", "<C-d>")
+-- map("i", "<S-Tab>", "<C-d>")
 -- Don't lose selection when shifting sidewards
 map("x", "<", "<gv")
 map("x", ">", ">gv")
@@ -186,7 +186,6 @@ wk.register(
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
-
 
 map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
 map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})

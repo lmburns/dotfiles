@@ -60,16 +60,16 @@ _G.F = vim.F
 _G.fmt = string.format
 
 _G.dev = require("dev")
-_G.List = require("plenary.collections.py_list")
-_G.Path = require("plenary.path")
-_G.Job = require("plenary.job")
+-- _G.List = require("plenary.collections.py_list")
+-- _G.Path = require("plenary.path")
+-- _G.Job = require("plenary.job")
 _G.Promise = require("promise")
 -- _G.async = require("plenary.async")
 _G.a = require("plenary.async_lib")
 _G.nvim = require("nvim")
 _G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
-_G.telescope_ext = {}
+-- _G.telescope_ext = {}
 
 -- Makes `_t` global
 require("arshlib")

@@ -31,10 +31,8 @@
 -- p(control)
 
 local M = {
-    Colorizer = false,
     ["Comment.nvim"] = false,
     ["FixCursorHold.nvim"] = false,
-    ["HighStr.nvim"] = false,
     ["Nvim-R"] = false,
     ScratchPad = false,
     ["Spacegray.vim"] = false,
@@ -52,10 +50,10 @@ local M = {
     ["coc-fzf"] = false,
     ["coc-kvs"] = false,
     ["coc.nvim"] = false,
-    ["colortils.nvim"] = false,
     ["comment-box.nvim"] = false,
     ["crates.nvim"] = false,
     ["daycula-vim"] = false,
+    ["desktop-notify.nvim"] = false,
     ["dial.nvim"] = false,
     ["diffview.nvim"] = false,
     ["dressing.nvim"] = false,

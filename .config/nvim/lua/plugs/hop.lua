@@ -231,10 +231,10 @@ local function init()
             require("hop").hint_char1(
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
-                    current_line_only = true
+                    current_line_only = true,
+                    hint_offset = -1
                 }
             )
-            utils.normal("n", "h")
         end
     )
 
@@ -247,10 +247,10 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
+                    hint_offset = 1,
                     inclusive_jump = false
                 }
             )
-            utils.normal("n", "l")
         end
     )
 
@@ -263,6 +263,7 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
+                    hint_offset = -1,
                     inclusive_jump = false
                 }
             )
@@ -278,6 +279,7 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
+                    hint_offset = 1,
                     inclusive_jump = false
                 }
             )
@@ -293,10 +295,10 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = false
+                    hint_offset = -1,
+                    inclusive_jump = false,
                 }
             )
-            utils.normal("v", "h")
         end
     )
 
@@ -309,10 +311,10 @@ local function init()
                 {
                     direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
                     current_line_only = true,
+                    hint_offset = 1,
                     inclusive_jump = false
                 }
             )
-            utils.normal("v", "l")
         end
     )
 end

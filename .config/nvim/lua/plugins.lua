@@ -12,12 +12,11 @@ if not uv.fs_stat(install_path) then
 end
 
 local ex = nvim.ex
+local Path = require("plenary.path")
 
 ex.packadd("packer.nvim")
 local packer = require("packer")
 
--- This does run on require("packer").on_complete()
--- This does run on require("plugins").on_complete()
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -55,10 +54,10 @@ packer.on_compile_done = function()
     -- vim.cmd [[doautocmd User PackerCompileDone]]
 end
 
-packer.on_complete = function()
-    ex.doau("User PackerComplete")
-    nvim.p.TSNote("Packer completed")
-end
+-- packer.on_complete = function()
+--     ex.doau("User PackerComplete")
+--     nvim.p.TSNote("Packer completed")
+-- end
 
 packer.init(
     {
@@ -107,14 +106,6 @@ local handlers = {
     disable = function(_, plugin, _)
         plugin.disable = require("common.control")[plugin.short_name]
     end,
-    -- TODO: Finish this
-    ---@diagnostic disable-next-line: unused-local
-    telescope_ext = function(plugins, plugin, value)
-        value = type(value) == "table" and value or {value}
-        for _, ext in pairs(value) do
-            table.insert(_G.telescope_ext, ext)
-        end
-    end,
     ---@diagnostic disable-next-line: unused-local
     patch = function(plugins, plugin, value)
         -- local await = require("packer.async").wait
@@ -157,20 +148,6 @@ local handlers = {
                 nvim.p("Patch file does not exist", "ErrorMsg")
             end
         end
-
-        -- FIX: Get a post_update_hook to work
-        -- await(
-        -- run_hook(
-        --     plugin,
-        --     {
-        --         task_update = function()
-        --             -- Reset the repository after updating to apply the patch again
-        --             local git = require("common.gittool").cmd
-        --             git({"reset", "HEAD", "--hard"})
-        --         end
-        --     }
-        -- )
-        -- )
     end
 }
 
@@ -183,9 +160,6 @@ packer.set_handler(1, handlers.disable)
 
 ---Apply a patch to the given plugin
 packer.set_handler("patch", handlers.patch)
-
----Collect telescope extensions
--- packer.set_handler("telescope_ext", handlers.telescope_ext)
 
 ---Use a local plugin found on the filesystem
 ---@param url string link to repo
@@ -438,7 +412,6 @@ return packer.startup(
                             "nvim-telescope/telescope-dap.nvim",
                             after = "nvim-dap",
                             config = [[require("telescope").load_extension("dap")]],
-                            telescope_ext = "dap"
                         },
                         {
                             "rcarriga/nvim-dap-ui",
@@ -1077,14 +1050,7 @@ return packer.startup(
                 {
                     "neoclide/coc.nvim",
                     branch = "pum",
-                    -- run = {
-                    --     "git fetch origin pum:pum",
-                    --     "git checkout pum",
-                    --     "gh pr checkout 3862",
-                    --     "yarn install --frozen-lockfile"
-                    -- },
-                    run = {"git fetch origin pull/3862/head:pum", "git checkout pum", "yarn install --frozen-lockfile"},
-                    -- run = "yarn install --frozen-lockfile",
+                    run = "yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},

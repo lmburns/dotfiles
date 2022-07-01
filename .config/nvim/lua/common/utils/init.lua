@@ -249,7 +249,6 @@ end
 M.map = function(modes, lhs, rhs, opts)
     vim.validate(
         {
-            -- bufnr = {bufnr, {"n", "nil"}, true},
             mode = {modes, {"s", "t"}},
             lhs = {lhs, "s"},
             rhs = {rhs, {"s", "f"}},
@@ -300,9 +299,8 @@ M.map = function(modes, lhs, rhs, opts)
         return rhs
     end)()
 
-    bufnr = (function()
-        local b = bufnr == nil and opts.buffer or bufnr
-        b = b == true and 0 or b
+    local bufnr = (function()
+        local b = opts.buffer == true and 0 or opts.buffer
         opts.buffer = nil
         return b
     end)()
