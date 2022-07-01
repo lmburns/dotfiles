@@ -83,7 +83,7 @@ function M.setup()
             },
             handlers = {
                 diagnostic = false, -- FIX: once coc is supported
-                search = true
+                search = false
             }
         }
     )

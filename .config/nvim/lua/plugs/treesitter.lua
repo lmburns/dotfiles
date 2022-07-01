@@ -453,7 +453,7 @@ M.setup_aerial = function()
         {mode = "v"}
     )
 
-    require("telescope").load_extension("aerial")
+    -- require("telescope").load_extension("aerial")
 end
 
 ---Setup `nvim_context_vt`

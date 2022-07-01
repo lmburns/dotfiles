@@ -172,7 +172,7 @@ vim.schedule(
             function()
                 g.loaded_clipboard_provider = nil
                 ex.runtime("autoload/provider/clipboard.vim")
-                require("plugs.neoclip") -- Needs to be loaded after clipboard is set
+                -- require("plugs.neoclip") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
                     augroup(
@@ -285,7 +285,7 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                        -- cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )
 

@@ -54,10 +54,10 @@ packer.on_compile_done = function()
     -- vim.cmd [[doautocmd User PackerCompileDone]]
 end
 
--- packer.on_complete = function()
---     ex.doau("User PackerComplete")
---     nvim.p.TSNote("Packer completed")
--- end
+packer.on_complete = function()
+    ex.doau("User PackerComplete")
+    nvim.p.TSNote("Packer completed")
+end
 
 packer.init(
     {
@@ -411,7 +411,7 @@ return packer.startup(
                         {
                             "nvim-telescope/telescope-dap.nvim",
                             after = "nvim-dap",
-                            config = [[require("telescope").load_extension("dap")]],
+                            config = [[require("telescope").load_extension("dap")]]
                         },
                         {
                             "rcarriga/nvim-dap-ui",
@@ -449,10 +449,9 @@ return packer.startup(
                 {
                     prefer_local("lf.nvim"),
                     conf = "lfnvim",
-                    requires = {
-                        "plenary.nvim",
-                        "toggleterm.nvim"
-                    }
+                    after = {colorscheme},
+                    wants = "toggleterm.nvim",
+                    requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
                 }
             )
             -- use({"ptzz/lf.vim", conf = "lf"})
@@ -483,10 +482,7 @@ return packer.startup(
             use(
                 {
                     "arsham/listish.nvim",
-                    requires = {
-                        "arsham/arshlib.nvim",
-                        "norcalli/nvim.lua"
-                    },
+                    requires = {"arsham/arshlib.nvim", "norcalli/nvim.lua"},
                     conf = "listish"
                 }
             )
@@ -541,7 +537,8 @@ return packer.startup(
                 {
                     "kevinhwang91/nvim-hlslens",
                     conf = "hlslens",
-                    requires = "haya14busa/vim-asterisk",
+                    requires = {"haya14busa/vim-asterisk"},
+                    wants = "nvim-scrollbar",
                     keys = {
                         {"n", "n"},
                         {"x", "n"},
@@ -582,6 +579,7 @@ return packer.startup(
                 {
                     "petertriho/nvim-scrollbar",
                     requires = "kevinhwang91/nvim-hlslens",
+                    wants = "nvim-hlslens",
                     after = colorscheme,
                     conf = "plugs.scrollbar"
                 }
@@ -679,7 +677,7 @@ return packer.startup(
                     "AckslD/nvim-trevJ.lua",
                     conf = "trevj",
                     keys = {{"n", "gJ"}},
-                    requires = "nvim-treesitter"
+                    requires = "nvim-treesitter/nvim-treesitter"
                 }
             )
 
@@ -824,7 +822,14 @@ return packer.startup(
             -- ]]] === UndoTree ===
 
             -- ============================ Commenter ============================= [[[
-            use({"numToStr/Comment.nvim", conf = "plugs.comment", after = "nvim-treesitter"})
+            use(
+                {
+                    "numToStr/Comment.nvim",
+                    conf = "plugs.comment",
+                    after = "nvim-treesitter",
+                    requires = "nvim-treesitter/nvim-treesitter"
+                }
+            )
             use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
             -- ]]] === Commenter ===
 
@@ -1124,7 +1129,7 @@ return packer.startup(
                         },
                         {
                             "stevearc/aerial.nvim",
-                            requires = "nvim-treesitter"
+                            requires = "nvim-treesitter/nvim-treesitter"
                         },
                         {
                             "danymat/neogen",
@@ -1148,7 +1153,8 @@ return packer.startup(
                         },
                         {
                             "max397574/nvim-treehopper",
-                            after = "nvim-treesitter"
+                            after = "nvim-treesitter",
+                            requires = "nvim-treesitter/nvim-treesitter"
                         },
                         {
                             "ziontee113/syntax-tree-surfer",
@@ -1259,6 +1265,7 @@ return packer.startup(
                         {
                             "jvgrootveld/telescope-zoxide",
                             after = "telescope.nvim",
+                            requires = "nvim-telescope/telescope.nvim",
                             config = [[require("telescope").load_extension("zoxide")]]
                         },
                         {

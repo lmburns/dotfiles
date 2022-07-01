@@ -12,6 +12,11 @@ local map = utils.map
 
 local ft = require("Comment.ft")
 local U = require("Comment.utils")
+
+if not D.npcall(require, "nvim-treesitter") then
+    return
+end
+
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
