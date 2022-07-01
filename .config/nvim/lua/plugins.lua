@@ -561,26 +561,12 @@ return packer.startup(
             )
             -- ]]] === HlsLens ===
 
-            -- ============================== Grepper ============================= [[[
-            use(
-                {
-                    "mhinz/vim-grepper",
-                    cmd = {"Grepper", "GrepperRg"},
-                    keys = {{"n", "gs"}, {"x", "gs"}, {"n", "<Leader>rg"}},
-                    conf = "grepper"
-                }
-            )
-
-            -- use({"nvim-pack/nvim-spectre"})
-            -- ]]] === Grepper ===
-
             -- ============================ Scrollbar ============================= [[[
             use(
                 {
                     "petertriho/nvim-scrollbar",
                     requires = "kevinhwang91/nvim-hlslens",
-                    wants = "nvim-hlslens",
-                    after = colorscheme,
+                    after = {colorscheme, "nvim-hlslens"},
                     conf = "plugs.scrollbar"
                 }
             )
@@ -596,6 +582,19 @@ return packer.startup(
                 }
             )
             -- ]]] === Scrollbar ===
+
+            -- ============================== Grepper ============================= [[[
+            use(
+                {
+                    "mhinz/vim-grepper",
+                    cmd = {"Grepper", "GrepperRg"},
+                    keys = {{"n", "gs"}, {"x", "gs"}, {"n", "<Leader>rg"}},
+                    conf = "grepper"
+                }
+            )
+
+            -- use({"nvim-pack/nvim-spectre"})
+            -- ]]] === Grepper ===
 
             -- ============================ Trouble =============================== [[[
             -- "folke/trouble.nvim",
