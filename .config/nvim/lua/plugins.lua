@@ -13,6 +13,7 @@ end
 
 local ex = nvim.ex
 local Path = require("plenary.path")
+local Job = require("plenary.job")
 
 ex.packadd("packer.nvim")
 local packer = require("packer")
@@ -438,25 +439,10 @@ return packer.startup(
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
-            use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua"})
+            use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua", patch = true})
             use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- ]]] === Debugging ===
-
-            -- ============================ File Manager =========================== [[[
-            use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            use(
-                {
-                    prefer_local("lf.nvim"),
-                    conf = "lfnvim",
-                    after = {colorscheme},
-                    wants = "toggleterm.nvim",
-                    requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
-                }
-            )
-            -- use({"ptzz/lf.vim", conf = "lf"})
-
-            -- ]]] === File Manager ===
 
             -- ============================ Neo/Floaterm =========================== [[[
             use({"voldikss/fzf-floaterm", requires = {"voldikss/vim-floaterm"}, conf = "floaterm"})
@@ -465,12 +451,30 @@ return packer.startup(
                 {
                     "akinsho/toggleterm.nvim",
                     conf = "plugs.neoterm",
-                    keys = {"gzo", "gzz", "<C-\\>"},
-                    cmd = {"T", "TR", "TP", "VT"}
+                    -- keys = {"gzo", "gzz", "<C-\\>"},
+                    -- cmd = {"T", "TR", "TP", "VT"}
                 }
             )
             -- use({ "kassio/neoterm", conf = "neoterm" })
             -- ]]] === Floaterm ===
+
+            -- ============================ File Manager =========================== [[[
+            use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
+            -- The FloatBorder only works with this setup now, WTF?
+            use(
+                {
+                    prefer_local("lf.nvim"),
+                    conf = "lfnvim",
+                    cmd = {"Lf"},
+                    keys = {{"n", "<A-o>"}},
+                    after = {colorscheme, "toggleterm.nvim"},
+                    wants = "toggleterm.nvim",
+                    requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
+                }
+            )
+            -- use({"ptzz/lf.vim", conf = "lf"})
+
+            -- ]]] === File Manager ===
 
             -- =========================== BetterQuickFix ========================== [[[
             -- romainl/vim-qf
@@ -1300,7 +1304,6 @@ return packer.startup(
                     },
                     event = "VimEnter",
                     wants = {"telescope.nvim", "packer.nvim"},
-                    -- FIX: Doesn't work all the time
                     -- config = [[require("telescope").load_extension("packer")]],
                     config = function()
                         require("telescope.builtin").packer = function(opts)
@@ -1439,14 +1442,6 @@ return packer.startup(
                     cmd = "PP"
                 }
             )
-
-            -- use(
-            --     {
-            --         ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
-            --         conf = "plugs.nvim-reload",
-            --         opt = true
-            --     }
-            -- )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
             use(

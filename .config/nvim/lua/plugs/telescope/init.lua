@@ -1316,7 +1316,8 @@ wk.register(
 wk.register(
     {
         -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
-        ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
+        -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {":lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
 )
@@ -1324,7 +1325,8 @@ wk.register(
 wk.register(
     {
         -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
-        ["<A-;>"] = {"<cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
+        -- ["<A-;>"] = {"<cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
+        ["<A-;>"] = {"<cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
     },
     {mode = "i"}
 )

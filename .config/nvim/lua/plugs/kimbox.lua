@@ -20,7 +20,7 @@ M.catppuccin = function()
         return
     end
 
-    g.catppuccin_flavour = "mocha" -- latte, frappe, macchiato, mocha
+    g.catppuccin_flavour = "macchiato" -- latte, frappe, macchiato, mocha
     catppuccin.setup(
         {
             transparent_background = false,
@@ -30,12 +30,27 @@ M.catppuccin = function()
                 functions = "bold",
                 keywords = "none",
                 strings = "none",
-                variables = "none"
+                variables = "none",
+                numbers = "NONE",
+                booleans = "NONE",
+                properties = "NONE",
+                types = "NONE",
+                operators = "NONE"
             },
             integrations = {
+                treesitter = true,
+                coc_nvim = true,
+                telescope = true,
                 gitgutter = true,
                 ts_rainbow = true,
-                hop = true
+                hop = true,
+                which_key = true,
+                neogit = true,
+                notify = true,
+                symbols_outline = true,
+                indent_blankline = {
+                    enabled = true
+                }
             }
         }
     )
@@ -98,6 +113,7 @@ M.catppuccin = function()
                 TSProperty = {gui = "none"},
                 TSVariable = {gui = "none"},
                 TSFuncBuiltin = {gui = "bold"},
+                TSConditional = {fg = cp.red},
                 TSParameter = {gui = "none"},
                 TSFunction = {gui = "bold"},
                 TSMethod = {gui = "bold"},
@@ -182,9 +198,10 @@ M.kanagawa = function()
 
     kanagawa.setup(
         {
+            theme = "default",
             undercurl = true, -- enable undercurls
             commentStyle = {italic = true},
-            functionStyle = {bold = true},
+            functionStyle = {bold = false},
             keywordStyle = {},
             statementStyle = {},
             typeStyle = {bold = true},
@@ -193,7 +210,7 @@ M.kanagawa = function()
             specialException = true, -- special highlight for exception handling keywords
             transparent = false, -- do not set background color
             dimInactive = false, -- dim inactive window `:h hl-NormalNC`
-            globalStatus = false, -- adjust window separators highlight for laststatus=3
+            globalStatus = true, -- adjust window separators highlight for laststatus=3
             colors = {},
             overrides = overrides
         }

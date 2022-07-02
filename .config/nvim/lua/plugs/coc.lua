@@ -927,6 +927,7 @@ function M.init()
 
     -- Refresh coc completions
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
+    map("i", "<CR>", "v:lua.map_cr()", {expr = true})
 
     -----
     -- Before `pum` is merged
@@ -949,7 +950,6 @@ function M.init()
     -----
     -- After `pum` is merged
     -----
-    map("i", "<CR>", "v:lua.map_cr()", {expr = true})
     map(
         "i",
         "<Tab>",

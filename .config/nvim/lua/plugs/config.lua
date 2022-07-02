@@ -1058,6 +1058,7 @@ function M.matchup()
     g.matchup_surround_enabled = 0
     g.matchup_motion_cursor_end = 0
 
+    g.matchup_transmute_enabled = 0
     g.matchup_matchparen_timeout = 100
     g.matchup_matchparen_deferred = 1
     g.matchup_matchparen_hi_surround_always = 1
@@ -1067,7 +1068,13 @@ function M.matchup()
     g.matchup_delim_start_plaintext = 1
     g.matchup_motion_override_Npercent = 0
 
-    C.plugin("Matchup", {MatchWord = {link = "Underlined"}})
+    C.plugin(
+        "Matchup",
+        {
+            MatchWord = {link = "Underlined"},
+            MatchParen = {bg = "#5e452b", underline = true}
+        }
+    )
 
     map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
     map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
@@ -1108,7 +1115,8 @@ function M.better_esc()
 
     esc.setup {
         mapping = {"jk", "kj"}, -- a table with mappings to use
-        timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
+        -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
+        timeout = 375,
         clear_empty_lines = false, -- clear line after escaping if there is only whitespace
         keys = "<Esc>" -- keys used for escaping, if it is a function will use the result everytime
         -- keys = function()
@@ -1605,6 +1613,7 @@ function M.lfnvim()
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
         }
     )
+
 
     map("n", "<A-o>", ":Lf<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")

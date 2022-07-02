@@ -13,38 +13,6 @@ local command = utils.command
 
 local fn = vim.fn
 
-terminal.setup(
-    {
-        size = function(term)
-            if term.direction == "horizontal" then
-                return vim.o.lines * 0.4
-            elseif term.direction == "vertical" then
-                return vim.o.columns * 0.5
-            end
-        end,
-        open_mapping = [[<c-\>]],
-        hide_numbers = true,
-        shade_filetypes = {},
-        shade_terminals = true,
-        shading_factor = "1", -- the degree by which to darken to terminal colour, default: 1 for dark
-        start_in_insert = true,
-        insert_mappings = true, -- whether or not the open mapping applies in insert mode
-        terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
-        persist_size = true,
-        shell = vim.o.shell,
-        direction = "float",
-        -- direction = "horizontal",
-        close_on_exit = true,
-        float_opts = {
-            border = "rounded",
-            width = math.floor(vim.o.columns * 0.85),
-            height = math.floor(vim.o.lines * 0.8),
-            winblend = 4,
-            highlights = {border = "Normal", background = "Normal"}
-        }
-    }
-)
-
 local function ft_repl_cmd(ft)
     local repl_map = {
         ["lua"] = {"luap", "rep.lua", "lua"},
@@ -147,6 +115,42 @@ function M.neoterm(cmd, id)
 end
 
 local function init()
+    terminal.setup(
+        {
+            size = function(term)
+                if term.direction == "horizontal" then
+                    return vim.o.lines * 0.4
+                elseif term.direction == "vertical" then
+                    return vim.o.columns * 0.5
+                end
+            end,
+            open_mapping = [[<c-\>]],
+            hide_numbers = true,
+            shade_filetypes = {},
+            shade_terminals = true,
+            shading_factor = "1", -- the degree by which to darken to terminal colour, default: 1 for dark
+            start_in_insert = true,
+            insert_mappings = true, -- whether or not the open mapping applies in insert mode
+            terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
+            persist_size = true,
+            shell = vim.o.shell,
+            direction = "float",
+            -- direction = "horizontal",
+            close_on_exit = true,
+            float_opts = {
+                border = "rounded",
+                width = math.floor(vim.o.columns * 0.85),
+                height = math.floor(vim.o.lines * 0.8),
+                winblend = 4,
+                highlights = {
+                    -- border = "Normal",
+                    -- background = "Normal",
+                    border = "TSNote"
+                }
+            }
+        }
+    )
+
     map(
         "n",
         "gzz",

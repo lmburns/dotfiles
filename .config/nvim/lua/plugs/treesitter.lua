@@ -756,6 +756,7 @@ M.setup = function()
         fold = {enable = false},
         endwise = {enable = true},
         matchup = {enable = false, disable_virtual_text = true},
+        -- matchup = {enable = true},
         playground = {
             enable = true,
             disable = {},

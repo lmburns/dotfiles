@@ -33,6 +33,7 @@ local sections_1 = {
     lualine_a = {
         {
             -- FIX: Doesn't show operator mode?
+            --      This has to do with some other plugin
             "mode",
             fmt = function(str)
                 -- if api.nvim_get_mode().mode == "no" then
@@ -186,7 +187,6 @@ local sections_2 = {
 -- ╒══════════════════════════════════════════════════════════╕
 --                           Mapping
 -- ╘══════════════════════════════════════════════════════════╛
--- FIX: This stopped working once items were moved out of this file
 -- It has to do with the added padding
 function M.toggle_mode()
     local ll_req = require("lualine_require")

@@ -11,7 +11,7 @@ local api = vim.api
 -- This is meant to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
 --
--- FIX: There is an issue with some operators
+-- There was an issue with some operators
 --      got| => works all the time
 --      gof| => works some of the time
 -- Fix the text that is grabbed when the operator is hit

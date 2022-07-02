@@ -60,9 +60,9 @@ _G.F = vim.F
 _G.fmt = string.format
 
 _G.dev = require("dev")
--- _G.List = require("plenary.collections.py_list")
--- _G.Path = require("plenary.path")
--- _G.Job = require("plenary.job")
+_G.List = require("plenary.collections.py_list")
+_G.Path = require("plenary.path")
+_G.Job = require("plenary.job")
 _G.Promise = require("promise")
 -- _G.async = require("plenary.async")
 _G.a = require("plenary.async_lib")

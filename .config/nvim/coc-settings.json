@@ -133,6 +133,12 @@
     "cpp": ["c"],
     "typescript": ["javascript"]
   },
+  // Gone after pum is merged
+  "suggest.disableMenu": true,
+  "suggest.enablePreview": true,
+  "suggest.noselect": false,
+  // "suggest.selection": "none",
+
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,

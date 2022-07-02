@@ -1,4 +1,4 @@
--- local D = require("dev")
+local D = require("dev")
 -- local global = require("common.global")
 local utils = require("common.utils")
 local C = require("common.color")
@@ -21,6 +21,52 @@ local env = vim.env
 
 local debounced
 local has_sourced
+
+nvim.autocmd.lmb__RestoreCursor = {
+    {
+        event = "BufReadPost",
+        pattern = "*",
+        command = function()
+            local types =
+                _t(
+                {
+                    "nofile",
+                    "fugitive",
+                    "gitcommit",
+                    "gitrebase",
+                    "commit",
+                    "rebase",
+                    "help"
+                }
+            )
+            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
+                return
+            end
+
+            local row, col = unpack(nvim.buf.get_mark(0, '"'))
+            if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
+               if not pcall(nvim.win.set_cursor, 0, {row, 0}) then
+                   vim.notify("Neovim version has messed this up")
+                    return
+               end
+
+                -- nvim.win.set_cursor(0, {row, 0})
+                if fn.line("w$") ~= row then
+                    cmd("norm! zz")
+                end
+            end
+        end
+    },
+    {
+        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
+        event = {"BufReadCmd"},
+        pattern = {"file:///*"},
+        nested = true,
+        command = function(args)
+            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
+        end
+    }
+}
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                 Setting git environment                  │
@@ -245,44 +291,35 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
 -- I've noticed that `BufRead` works, but `BufReadPost` doesn't
 -- at least, with allowing opening a file with `nvim +5`
 
-nvim.autocmd.lmb__RestoreCursor = {
-    {
-        event = "BufReadPost",
-        pattern = "*",
-        command = function()
-            local types =
-                _t(
-                {
-                    "nofile",
-                    "fugitive",
-                    "gitcommit",
-                    "gitrebase",
-                    "commit",
-                    "rebase"
-                }
-            )
-            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
-                return
-            end
+-- local group = vim.api.nvim_create_augroup("RestoreCursor", {clear = true})
+-- vim.api.nvim_create_autocmd(
+--     "BufReadPost",
+--     {
+--         pattern = "*",
+--         group = group,
+--         callback = function()
+--             local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
+--             if {row, col} ~= {0, 0} and row <= vim.api.nvim_buf_line_count(0) then
+--                 vim.api.nvim_win_set_cursor(0, {row, 0})
+--                 if vim.fn.line("w$") ~= row then
+--                     vim.cmd("norm! zz")
+--                 end
+--             end
+--         end
+--     }
+-- )
 
-            local row, col = unpack(nvim.buf.get_mark(0, '"'))
-            if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                nvim.win.set_cursor(0, {row, 0})
-                if fn.line("w$") ~= row then
-                    cmd("norm! zz")
-                end
-            end
+nvim.autocmd.lmb__DiffTool = {
+    event = "BufWritePost",
+    pattern = "*",
+    command = function()
+        if vim.o.diff and not D.find_buf_with_var("difftool_special_keys") then
+            local o = {desc = "Mergetool mapping"}
+            map("n", "<leader>1", ":diffget LOCAL<CR>", o)
+            map("n", "<leader>2", ":diffget BASE<CR>", o)
+            map("n", "<leader>3", ":diffget REMOTE<CR>", o)
         end
-    },
-    {
-        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
-        event = {"BufReadCmd"},
-        pattern = {"file:///*"},
-        nested = true,
-        command = function(args)
-            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
-        end
-    }
+    end
 }
 
 -- nvim.autocmd.lmb__RememberFolds = {
@@ -462,7 +499,7 @@ nvim.autocmd.lmb__TermMappings = {
     pattern = "term://*",
     command = function()
         -- vim.wo.statusline = "%{b:term_title}"
-        -- require("plugs.neoterm").set_terminal_keymaps()
+        require("plugs.neoterm").set_terminal_keymaps()
         vim.wo.number = false
         vim.wo.relativenumber = false
         vim.bo.bufhidden = "hide"
@@ -719,14 +756,6 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 
 -- === Tmux === [[[
 if env.TMUX ~= nil and env.NORENAME == nil then
-    -- vim.cmd [[
-    --   augroup rename_tmux
-    --     au!
-    --     au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%(%m%)%(%{expand("%:~")}%)') | endif
-    --     au VimLeave * call system('tmux set-window automatic-rename on')
-    --   augroup END
-    -- ]]
-
     nvim.autocmd.lmb__RenameTmux = {
         {
             event = {"TermEnter", "BufEnter"},
@@ -794,15 +823,6 @@ do
     local o = vim.o
 
     nvim.autocmd.lmb__VimResize = {
-        -- {
-        --     event = "VimResized",
-        --     command = function()
-        --         local last_tab = api.nvim_get_current_tabpage()
-        --         ex.tabdo("wincmd =")
-        --         api.nvim_set_current_tabpage(last_tab)
-        --     end,
-        --     desc = "Equalize windows across tabs"
-        -- },
         {
             event = {"VimEnter", "VimResized"},
             command = function()

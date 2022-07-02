@@ -39,7 +39,7 @@ local opts = {
     layout_config = {
         prompt_position = "top",
         width = 0.8,
-        height = 0.6,
+        height = 0.7,
         horizontal = {width = {padding = 0.15}},
         vertical = {preview_height = 0.70}
     },
@@ -139,7 +139,7 @@ local function get_region()
     }
 end
 
-M.highlight_put = function(register)
+function M.highlight_put(register)
     M.timer:stop()
     api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
 
@@ -165,7 +165,7 @@ M.highlight_put = function(register)
     )
 end
 
-M.do_put = function(binding, reg)
+function M.do_put(binding, reg)
     reg = utils.get_default(reg, v.register)
     local cnt = v.count1
     -- local is_visual = fn.visualmode():match("[vV]")

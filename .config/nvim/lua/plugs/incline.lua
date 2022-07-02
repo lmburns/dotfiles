@@ -10,6 +10,7 @@ local C = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
 
+local g = vim.g
 local fn = vim.fn
 local api = vim.api
 
@@ -36,7 +37,7 @@ local function render(props)
     -- 
     for idx, part in ipairs(parts) do
         if next(parts, idx) then
-            local guifg = "InclineNormal"
+            local guifg = g.colors_name == "kimbox" and "InclineNormal" or "Directory"
             if part:match("^%$") then
                 guifg = "WarningMsg"
             end

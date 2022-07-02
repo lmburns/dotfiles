@@ -8,6 +8,7 @@ local utils = require("common.utils")
 local log = require("common.log")
 
 -- local fn = vim.fn
+local F = vim.F
 local cmd = vim.cmd
 local api = {
     set = vim.api.nvim_set_hl,
@@ -35,18 +36,16 @@ local api = {
 ---@field bold boolean
 ---@field standout boolean
 ---@field underline boolean
----@field underlineline boolean
 ---@field undercurl boolean
----@field underdot boolean
----@field underdash boolean
 ---@field strikethrough boolean
 ---@field italic boolean
 ---@field reverse boolean
 ---@field nocombine boolean
 ---@field link boolean|string
 ---@field inherit string
----@field from string Not here by default
----@field gui string  Not here by default
+---@field from string   Not here by default
+---@field gui string    Not here by default
+---@field cond string   Not here by default. Conditional colorscheme
 ---@deprecated @field guifg string
 ---@deprecated @field guibg string
 ---@deprecated @field guisp string
@@ -203,6 +202,10 @@ end
 function M.parse(hl)
     local def = {}
 
+    if hl.cond and hl.cond ~= vim.g.colors_name then
+        return
+    end
+
     for _, attribute in pairs({"default", "nocombine"}) do
         if hl[attribute] ~= nil then
             def[attribute] = hl[attribute]
@@ -219,10 +222,7 @@ function M.parse(hl)
         "italic",
         "bold",
         "underline",
-        "underlineline",
         "undercurl",
-        "underdot",
-        "underdash",
         "strikethrough",
         "reverse",
         "standout"
@@ -286,10 +286,7 @@ function M.parse(hl)
     def.italic = F.if_nil(hl.italic, inherit.italic) or false
     def.bold = F.if_nil(hl.bold, inherit.bold) or false
     def.underline = F.if_nil(hl.underline, inherit.underline) or false
-    def.underlineline = F.if_nil(hl.underlineline, inherit.underlineline) or false
     def.undercurl = F.if_nil(hl.undercurl, inherit.undercurl) or false
-    def.underdot = F.if_nil(hl.underdot, inherit.underdot) or false
-    def.underdash = F.if_nil(hl.underdash, inherit.underdash) or false
     def.strikethrough = F.if_nil(hl.strikethrough, inherit.strikethrough) or false
     def.reverse = F.if_nil(hl.reverse, inherit.reverse) or false
     def.standout = F.if_nil(hl.standout, inherit.standout) or false
@@ -349,7 +346,7 @@ function M.set_hl(name, opts)
     -- local hl = get_hl(opts.inherit or name)
     -- convert_hl_to_val(opts)
     -- opts.inherit = nil
-
+    --
     -- local ok, msg = pcall(api.set, 0, name, vim.tbl_deep_extend("force", hl, opts))
 
     local ok, msg = pcall(api.set, 0, name, M.parse(opts))
@@ -419,7 +416,6 @@ function M.all(hls)
     end
 end
 
----TODO: Add a field `cond`
 ---Apply highlights for a plugin and refresh on colorscheme change
 ---@param name string plugin name
 ---@param hls table<ColorFormat, string|boolean|number> list of highlights
@@ -527,8 +523,6 @@ M.colors = function(filter, exact)
                         "italic",
                         "underline",
                         "undercurl",
-                        "underdot",
-                        "underdash",
                         "reverse",
                         "strikethrough"
                     }

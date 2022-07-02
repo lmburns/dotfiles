@@ -50,7 +50,7 @@
   set nobackup
   set nowritebackup
   set magic
-  set clipboard+=unnamedplus                " use system clipboard
+  set clipboard=unnamedplus                " use system clipboard
   set splitbelow splitright                 " split screen below and right
   set tabstop=2 shiftwidth=0
   set expandtab softtabstop=2 smartindent
@@ -1824,21 +1824,6 @@ call plug#end()
     autocmd BufReadPre *.rtf silent set ro
     autocmd BufReadPost *.rtf silent %!unrtf --text
   augroup END
-
-  " autocmd BufReadPost *.doc,*.docx,*.rtf,*.odp,*.odt silent %!pandoc "%" -tplain -o /dev/stdout
-
-  let g:zipPlugin_ext = '*.zip,*.jar,*.xpi,*.ja,*.war,*.ear,*.celzip,*.oxt,*.kmz,*.wsz,*.xap,*.docm,*.dotx,*.dotm,*.potx,*.potm,*.ppsx,*.ppsm,*.pptx,*.pptm,*.ppam,*.sldx,*.thmx,*.xlam,*.xlsx,*.xlsm,*.xlsb,*.xltx,*.xltm,*.xlam,*.crtx,*.vdw,*.glox,*.gcsx,*.gqsx'
-
-  " autocmd BufReadPost *.odt :%!odt2txt %
-
-  " autocmd BufReadPost *.odt silent %!pandoc "%" -tmarkdown -o /dev/stdout
-  " autocmd BufWritePost *.odt :%!pandoc -f markdown "%" -o "%:r".odt
-
-  " NOTE: `,kp` compiles RMarkdown to PDF using NVim-R
-  autocmd Filetype rmd map <F5> :!echo<space>"require(rmarkdown);<space>render('<c-r>%')"<space>\|<space>R<space>--vanilla<enter>
-
-  nmap <Leader>cp :w! <bar> !compiler %<CR>
-  nmap <Leader>pr :!opout <c-r>%<CR><CR>
 " }}} === General Mappings ===
 
 " ============== Syntax ============== {{{
@@ -2039,7 +2024,7 @@ highlight DiffChange   ctermfg=white ctermbg=NONE guifg=#5F5F87 guibg=NONE
 highlight DiffDelete   ctermfg=white ctermbg=NONE guifg=#cc6666 guibg=NONE
 highlight DiffText     cterm=bold ctermfg=white ctermbg=DarkRed
 
-highlight HighlightedyankRegion ctermbg=Red   guibg=#A06469
+" highlight HighlightedyankRegion ctermbg=Red   guibg=#A06469
 highlight GitBlameVirtualText   cterm=italic  ctermfg=245   gui=italic guifg=#665c54
 
 hi MatchParen guifg=#088649

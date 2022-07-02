@@ -190,10 +190,10 @@ o.linebreak = true -- lines wrap at words rather than random characters
 
 o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
--- o.lazyredraw = true
+o.lazyredraw = false
 o.redrawtime = 2000
 g.cursorhold_updatetime = 250
-o.updatetime = 200
+o.updatetime = 2000
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
 o.matchtime = 5 -- ms to blink when matching brackets

@@ -28,8 +28,6 @@ M.prequire = function(check)
         return Result.ok(ret)
     end
 
-    -- R("common.utils").prequire("kimbox"):or_else(function(v) p(v) end)
-
     local dummy = {}
     setmetatable(
         dummy,
