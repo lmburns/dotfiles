@@ -13,15 +13,6 @@ local fn = vim.fn
 
 local colors_path
 
-function M.reload_module(m_name)
-    m_name = vim.trim(m_name)
-    for p in pairs(package.loaded) do
-        if p:sub(1, #m_name) == m_name then
-            package.loaded[p] = nil
-        end
-    end
-end
-
 -- if v:vim_did_enter
 --     syntax reset
 -- endif
@@ -44,7 +35,7 @@ let g:colors_name = '%s'
     local theme_path = ("%s/%s.vim"):format(colors_path, name)
 
     -- RELOAD("lush_theme")
-    M.reload_module("lush_theme")
+    D.reload_module("lush_theme")
     local ok, res = pcall(require, "lush_theme." .. name)
     if ok then
         local module = res

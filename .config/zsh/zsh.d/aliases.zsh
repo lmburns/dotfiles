@@ -23,10 +23,12 @@ alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 alias %= \$=
 
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
+# alias mail='/usr/bin/mail'
+# alias strace="/usr/local/bin/strace"
+alias RGL='RG -g "*.lua" -g "*.vim"'
 alias sane='stty sane'
 alias nd='neovide'
 alias tm='tmsu'
-alias mail='/usr/bin/mail'
 alias ja="jaime"
 # alias xq="$PYENV_ROOT/shims/yq"
 alias xp="xplr"
@@ -35,7 +37,6 @@ alias ca='cargo'
 alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
-alias strace="/usr/local/bin/strace"
 alias getcert='openssl s_client -connect'
 
 alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
@@ -177,9 +178,9 @@ alias __='doas'
   alias fd='fd -Hi'
   alias fdg='fd --glob'
   alias fdc='fd --color=always'
-  alias fdr='fd --changed-within=20m -d1'
-  alias fdrd='fd --changed-within=30m'
-  alias fdrr='fd --changed-within=1m'
+  alias fdr='fd --changed-within=20m -d1' # 'recent'
+  alias fdrd='fd --changed-within=30m'    # 'recent, depth'
+  alias fdrr='fd --changed-within=1m'     # 'really recent'
 }
 
 alias pl='print -rl --'

@@ -15,11 +15,13 @@ local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
+local icons = require("style").plugins.dap
 local utils = require("common.utils")
 local command = utils.command
 
 local fn = vim.fn
 local uv = vim.loop
+local F = vim.F
 
 local nvim_server
 local nvim_chanID
@@ -215,9 +217,9 @@ end
 function M.setup_dapui()
     dapui.setup(
         {
-            icons = {expanded = "-", collapsed = "$"},
+            icons = {expanded = "▾", collapsed = "▸"},
             mappings = {
-                expand = "<CR>",
+                expand = {"<CR>", "<2-LeftMouse>"},
                 open = "o",
                 remove = "d",
                 edit = "e",
@@ -230,20 +232,23 @@ function M.setup_dapui()
                         {id = "scopes", size = 0.5},
                         {id = "breakpoints", size = 0.25},
                         {id = "stacks", size = 0.25}
+                        -- { id = "watches", size = 00.25 },
                     },
                     size = 40,
                     position = "left"
                 },
                 {
-                    elements = {
-                        "repl",
-                        "console"
-                    },
+                    elements = {"repl", "console"},
                     size = 10,
                     position = "bottom"
                 }
             },
-            floating = {border = "rounded", mappings = {close = {"q", "<esc>", "<c-o>"}}}
+            floating = {
+                max_height = nil,
+                max_width = nil,
+                border = "rounded",
+                mappings = {close = {"q", "<Esc>", "<c-o>"}}
+            }
         }
     )
 
@@ -404,11 +409,16 @@ local function init()
     M.setup_dapui()
     M.setup_dap_virtual()
 
-    fn.sign_define("DapStopped", {text = "=>", texthl = "DiagnosticWarn"})
-    fn.sign_define("DapBreakpoint", {text = "<>", texthl = "DiagnosticInfo"})
-    fn.sign_define("DapBreakpointRejected", {text = "!>", texthl = "DiagnosticError"})
-    fn.sign_define("DapBreakpointCondition", {text = "?>", texthl = "DiagnosticInfo"})
-    fn.sign_define("DapLogPoint", {text = ".>", texthl = "DiagnosticInfo"})
+    fn.sign_define(
+        "DapStopped",
+        {text = icons.stopped, texthl = "DiagnosticWarn", numhl = "String", linehl = "DiagnosticUnderlineError"}
+    )
+    fn.sign_define("DapBreakpoint", {text = icons.breakpoint, texthl = "DiagnosticInfo"})
+    fn.sign_define("DapBreakpointRejected", {text = icons.rejected, texthl = "DiagnosticError"})
+    fn.sign_define("DapBreakpointCondition", {text = icons.condition, texthl = "DiagnosticInfo"})
+    fn.sign_define("DapLogPoint", {text = icons.log_point, texthl = "DiagnosticInfo"})
+
+    dap.set_log_level("TRACE") --TRACE DEBUG INFO WARN ERROR
 
     -- Debugpy
     dap.adapters.python = {

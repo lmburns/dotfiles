@@ -11,6 +11,8 @@ local a = require("plenary.async_lib")
 local async = a.async
 local await = a.await
 
+local wk = require("which-key")
+
 local ex = nvim.ex
 local api = vim.api
 
@@ -82,26 +84,6 @@ M.safe_require = function(name, cb)
     end
 end
 
----Return a default value if `x` is nil
----@param x any
----@param default any
----@return any
-M.get_default = function(x, default)
-    return M.ife_nil(x, default, x)
-end
-
----Similar to `vim.F.nil` except that an alternate default value can be given
----@param x any
----@param is_nil any
----@param is_not_nil any?
-M.ife_nil = function(x, is_nil, is_not_nil)
-    if x == nil then
-        return is_nil
-    else
-        return is_not_nil
-    end
-end
-
 ---Return a value based on two values
 ---@param condition boolean|nil Statement to be tested
 ---@param is_if any Return if condition is truthy
@@ -114,9 +96,27 @@ F.tern = function(condition, is_if, is_else)
     end
 end
 
+---Similar to `vim.F.nil` except that an alternate default value can be given
+---@param x any: Value to check if `nil`
+---@param is_nil any: Value to return if `x` is `nil`
+---@param is_not_nil any: Value to return if `x` is not `nil`
+M.ife_nil = function(x, is_nil, is_not_nil)
+    return F.tern(x == nil, is_nil, is_not_nil)
+end
+
+---Return a default value if `x` is nil
+---@generic T
+---@generic V
+---@param x T: Value to check if not `nil`
+---@param default V: Default value to return if `x` is `nil`
+---@return T|V
+M.get_default = function(x, default)
+    return M.ife_nil(x, default, x)
+end
+
 ---Load a module, returning only one parameter
 ---@param name string module to check
----@return table|nil
+---@return table?
 M.load_module = function(name)
     local ok, module = pcall(require, name)
     if not ok then
@@ -220,6 +220,9 @@ end
 ---@field cmd boolean
 ---@field desc string
 
+---@class DelMapArgs
+---@field buffer boolean|number
+
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
@@ -227,6 +230,8 @@ end
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
+---@return table<fun()>: Returns a table with a single key `discard` which can be ran to remove
+---these bindings. This can be used for temporary keymaps
 ---
 --- See: **:map-arguments**
 ---
@@ -256,8 +261,11 @@ M.map = function(modes, lhs, rhs, opts)
 
     opts = vim.deepcopy(opts) or {}
     modes = type(modes) == "string" and {modes} or modes
+
     if opts.remap == nil then
-        opts.noremap = true
+        if opts.noremap ~= false then
+            opts.noremap = true
+        end
     else
         -- remaps behavior is opposite of noremap option
         opts.noremap = not opts.remap
@@ -298,24 +306,42 @@ M.map = function(modes, lhs, rhs, opts)
     end)()
 
     local bufnr = (function()
-        local b = opts.buffer == true and 0 or opts.buffer
+        local b = F.tern(opts.buffer, 0, opts.buffer)
         opts.buffer = nil
         return b
     end)()
 
-    if bufnr ~= nil then
+    if bufnr == true or type(bufnr) == "number" then
         for _, mode in ipairs(modes) do
+            if opts.desc then
+                wk.register({[lhs] = opts.desc}, {mode = mode, buffer = bufnr})
+            end
+
             api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
         end
     else
         for _, mode in ipairs(modes) do
             if opts.desc then
-                require("which-key").register({[lhs] = opts.desc}, {mode = mode})
+                wk.register({[lhs] = opts.desc}, {mode = mode})
             end
 
             api.nvim_set_keymap(mode, lhs, rhs, opts)
         end
     end
+
+    return {
+        discard = function()
+            if bufnr ~= nil then
+                for _, mode in ipairs(modes) do
+                    api.nvim_buf_del_keymap(bufnr, mode, lhs)
+                end
+            else
+                for _, mode in ipairs(modes) do
+                    api.nvim_del_keymap(mode, lhs)
+                end
+            end
+        end
+    }
 end
 
 ---Create a buffer key mapping
@@ -324,10 +350,42 @@ end
 ---@param lhs string Keybinding that is mapped
 ---@param rhs string|function String or Lua function that will be bound to a key
 ---@param opts MapArgs Options given to keybindings
+---@return table<fun()>: Returns a table with a single key `discard` which can be ran to remove binding
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {}
     opts.buffer = bufnr
-    M.map(modes, lhs, rhs, opts)
+    return M.map(modes, lhs, rhs, opts)
+end
+
+---Delete a keymapping
+---@param modes string|table<string>: Modes to be deleted
+---@param lhs string: Keybinding that is to be deleted
+---@param opts DelMapArgs: Options given to keybindings
+M.del_keymap = function(modes, lhs, opts)
+    vim.validate(
+        {
+            mode = {modes, {"s", "t"}},
+            lhs = {lhs, "s"},
+            opts = {opts, "t", true}
+        }
+    )
+    opts = vim.deepcopy(opts) or {}
+    modes = type(modes) == "string" and {modes} or modes
+
+    local bufnr = false
+    if opts.buffer ~= nil then
+        bufnr = F.tern(bufnr, 0, bufnr)
+    end
+
+    if bufnr == false then
+        for _, mode in ipairs(modes) do
+            api.nvim_del_keymap(mode, lhs)
+        end
+    else
+        for _, mode in ipairs(modes) do
+            api.nvim_buf_del_keymap(bufnr, mode, lhs)
+        end
+    end
 end
 
 ---Get a given keymapping
@@ -799,8 +857,8 @@ M.empty = function(item)
         return item == ""
     elseif item_t == "table" then
         return vim.tbl_isempty(item)
-        ---All values have been convered
-        ---@diagnostic disable-next-line:missing-return
+    ---All values have been convered
+    ---@diagnostic disable-next-line:missing-return
     end
 end
 

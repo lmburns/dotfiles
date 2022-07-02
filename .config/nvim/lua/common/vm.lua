@@ -1,15 +1,19 @@
 local M = {}
 
+local debounce = require("common.debounce")
 local utils = require("common.utils")
 local map = utils.map
 
 local hlslens
 local config
 local lens_backup
+
+local dispose
 local n_keymap
+local debounced
 
 local bmap = function(...)
-    utils.bmap(0, ...)
+    return utils.bmap(0, ...)
 end
 
 local override_lens = function(render, plist, nearest, idx, r_idx)
@@ -42,25 +46,26 @@ function M.exit()
         hlslens.start(true)
     end
 
-    -- Reset the mapping on exit
-    -- Something happened where now I cannot get the correct binding
-    -- map("n", "n", n_keymap, {silent = true})
-    -- map("n", "n", "n", {silent = true})
-    map(
-        "n",
-        "n",
-        ("%s%s%s"):format(
-            [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
-            [[<Cmd>lua require('hlslens').start()<CR>]],
-            [[<Cmd>lua require("specs").show_specs()<CR>]]
-        )
-    )
+    dispose.discard()
+    map("n", "n", n_keymap, {silent = true})
 end
 
 function M.mappings()
-    ex.PackerLoad("nvim-hlslens")
-    -- n_keymap = utils.get_keymap("n", "n").rhs
-    bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+    -- ex.PackerLoad("nvim-hlslens")
+    if not debounced then
+        debounced =
+            debounce(
+            function()
+                n_keymap = utils.get_keymap("n", "n").rhs
+                vim.notify(("running: %s"):format(n_keymap))
+            end,
+            10
+        )
+        debounced()
+    end
+
+    dispose = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+    bmap("n", "M", "<cmd>lua vim.notify('hello')<CR>", {silent = true})
     bmap("n", "<Esc>", "<Plug>(VM-Exit)")
     bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})
 end

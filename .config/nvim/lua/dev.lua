@@ -800,7 +800,6 @@ M.find_buf_with_pattern = function(pattern, opt)
             return id
         end
     end
-
     return nil
 end
 
@@ -826,6 +825,7 @@ M.find_file_buffer = function(path, opt)
             return id
         end
     end
+    return nil
 end
 
 ---Return the buffer lines
@@ -948,7 +948,6 @@ end
 -- │                          Reload                          │
 -- ╰──────────────────────────────────────────────────────────╯
 ---Reload all lua modules
----FIX: This fails in treesitter, where a module is loaded inside another module
 M.reload_config = function()
     -- Handle impatient.nvim automatically.
     local luacache = (_G.__luacache or {}).modpaths.cache
@@ -971,24 +970,40 @@ M.reload_config = function()
 end
 
 ---Reload lua modules in a given path and reload the module
----@param path string
----@param recursive string
-M.rreload_module = function(path, recursive)
+---@param path string module to invalidate
+---@param recursive boolean? should the module be invalidated recursively?
+---@param req boolean? should a require be returned? If used with recursive, top module is returned
+---@return module|nil
+M.reload_module = function(path, recursive, req)
+    path = vim.trim(path)
+
     if recursive then
+        local to_return
         for key, value in pairs(package.loaded) do
             if key ~= "_G" and value and fn.match(key, path) ~= -1 then
                 package.loaded[key] = nil
-                require(key)
+                if req then
+                    local r = require(key)
+                    if key:sub(1, #path) == path then
+                        to_return = r
+                    end
+                end
             end
+        end
+        if req then
+            return to_return
         end
     else
         package.loaded[path] = nil
-        require(path)
+        if req then
+            return require(path)
+        end
+        ---@diagnostic disable-next-line:missing-return
     end
 end
 
----NOTE: this plugin returns the currently loaded state of a plugin given
----given certain assumptions i.e. it will only be true if the plugin has been
+---Note: this function returns the currently loaded state
+---Given certain assumptions i.e. it will only be true if the plugin has been
 ---loaded e.g. lazy loading will return false
 ---@param plugin_name string
 ---@return boolean?
@@ -1026,7 +1041,7 @@ end
 ---@param value table: Table to concatenate
 ---@param str string: String to concatenate to the table
 ---@param sep string: Separator to concatenate the table
----@return string
+---@return string|table
 M.list = function(value, str, sep)
     sep = sep or ","
     str = str or ""

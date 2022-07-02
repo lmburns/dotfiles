@@ -60,43 +60,17 @@ map("n", "q?", "<Nop>")
 map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
-wk.register({["<F2>"] = {"@:", "Repeat last command"}})
-
-map({"n", "x"}, "<Leader>2;", "@:", {desc = "Repeat last command"})
+map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
 -- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
-
--- map(
---     "n",
---     "i",
---     function()
---         return vim.fn.len(vim.fn.getline(".")) ~= 0 and "i" or '"_cc'
---     end,
---     {expr = true, desc = "Automatically indent blank line"}
--- )
--- map(
---     "n",
---     "A",
---     function()
---         return vim.fn.len(vim.fn.getline(".")) ~= 0 and "A" or '"_cc'
---     end,
---     {expr = true, desc = "Automatically indent blank line"}
--- )
+map("i", "<M-'>", "<End>", {desc = "Move to end of line"})
+map("i", '<M-S-">', "<Home>", {desc = "Move to of line"})
 
 -- Navigate merge conflict markers
 -- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 -- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
-
-wk.register(
-    {
-        ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"}
-
-        -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
-    },
-    {silent = false}
-)
 
 -- Jump back and forth jumplist
 map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
@@ -162,7 +136,19 @@ wk.register(
     }
 )
 
+-- map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
+map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
 map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
+
+wk.register(
+    {
+        ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
+        ["dm"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
+        ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
+        -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
+    },
+    {silent = false}
+)
 
 wk.register(
     {
@@ -208,10 +194,10 @@ map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {exp
 
 wk.register(
     {
-        ["[q"] = {[[:execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
-        ["]q"] = {[[:execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
-        ["[Q"] = {":cfirst<CR>", "First item in quickfix"},
-        ["]Q"] = {":clast<CR>", "Last item in quickfix"},
+        ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
+        ["]q"] = {[[<Cmd>execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
+        ["[Q"] = {"<Cmd>cfirst<CR>", "First item in quickfix"},
+        ["]Q"] = {"<Cmd>clast<CR>", "Last item in quickfix"},
         ["[S"] = {"<Cmd>lfirst<CR>", "First location list"},
         ["]S"] = {"<Cmd>llast<CR>", "Last location list"},
         ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
@@ -311,6 +297,14 @@ wk.register(
             ["<C-w>"] = {
                 utils.focus_floating_win,
                 "Focus floating window"
+            },
+            ["<C-t>"] = {
+                "<Cmd>tab sp<CR>",
+                "Split tab"
+            },
+            ["O"] = {
+                "<Cmd>tabo<CR>",
+                "Close all other tabs except this one"
             }
         }
     }

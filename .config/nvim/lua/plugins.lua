@@ -416,10 +416,7 @@ return packer.startup(
                         },
                         {
                             "rcarriga/nvim-dap-ui",
-                            after = "nvim-dap",
-                            config = function()
-                                require("dapui").setup()
-                            end
+                            after = "nvim-dap"
                         },
                         {
                             "mfussenegger/nvim-dap-python",
@@ -429,6 +426,18 @@ return packer.startup(
                                 require("dap-python").setup(("%s/shims/python"):format(env.PYENV_ROOT))
                             end
                         }
+                    }
+                }
+            )
+
+            use(
+                {
+                    "rcarriga/neotest",
+                    requires = {
+                        "akinsho/neotest-go",
+                        "nvim-lua/plenary.nvim",
+                        "nvim-treesitter/nvim-treesitter",
+                        "antoinemadec/FixCursorHold.nvim"
                     }
                 }
             )
@@ -450,7 +459,7 @@ return packer.startup(
             use(
                 {
                     "akinsho/toggleterm.nvim",
-                    conf = "plugs.neoterm",
+                    conf = "plugs.neoterm"
                     -- keys = {"gzo", "gzz", "<C-\\>"},
                     -- cmd = {"T", "TR", "TP", "VT"}
                 }
@@ -1440,6 +1449,14 @@ return packer.startup(
                     requires = "rktjmp/hotpot.nvim",
                     conf = "paperplanes",
                     cmd = "PP"
+                }
+            )
+
+            use(
+                {
+                    ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
+                    conf = "plugs.nvim-reload",
+                    opt = true
                 }
             )
 

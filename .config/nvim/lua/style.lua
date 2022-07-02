@@ -125,6 +125,16 @@ M.icons = {
     }
 }
 
+M.plugins = {
+    dap = {
+        stopped = "=>",
+        breakpoint = "<>",
+        rejected = M.icons.misc.bug, -- "!>",
+        condition = "?>",
+        log_point = ".>"
+    }
+}
+
 M.lsp = {
     kind_highlights = {
         Text = "String",

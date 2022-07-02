@@ -14,6 +14,32 @@ local api = vim.api
 -- ============================ Commands ============================== [[[
 
 command(
+    "NvimRestart",
+    function()
+        if not pcall(require, "nvim-reload") then
+            require("plugins").loader("nvim-reload")
+        end
+        local reload = R("plugs.nvim-reload")
+        reload.Restart()
+        -- ex.PackerSync()
+    end,
+    {nargs = "*"}
+)
+
+command(
+    "NvimReload",
+    function()
+        if not pcall(require, "nvim-reload") then
+            require("plugins").loader("nvim-reload")
+        end
+
+        require("nvim-reload").Reload()
+        ex.colorscheme("kimbox")
+    end,
+    {nargs = "*"}
+)
+
+command(
     "Grep",
     function(tbl)
         ex.noautocmd(("grep! %s | redraw! | copen"):format(tbl.args))

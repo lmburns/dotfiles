@@ -61,7 +61,6 @@ function M.neoformat()
     -- ex.sil_("up")
 end
 
----TODO: Use a promise here
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
@@ -170,9 +169,9 @@ function M.format_selected(mode, save)
                         if e ~= vim.NIL then
                             log.warn(e, true)
                         else
-                            if vim.bo[bufnr].ft == "lua" then
-                                M.neoformat()
-                            end
+                            -- if vim.bo[bufnr].ft == "lua" then
+                            --     M.neoformat()
+                            -- end
 
                             if save then
                                 save_doc(bufnr)
@@ -231,7 +230,6 @@ local function init()
         },
         stdin = 1
     }
-
     g.neoformat_enabled_sql = {
         "sqlformatter"
     }
@@ -243,7 +241,6 @@ local function init()
         },
         stdin = 1
     }
-
     g.neoformat_enabled_json = {
         "jq"
     }
@@ -266,14 +263,7 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function()
-                map(
-                    "n",
-                    ";ff",
-                    "<Cmd>CrystalFormat<CR>",
-                    {
-                        buffer = true
-                    }
-                )
+                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
             end
         }
         -- {

@@ -706,7 +706,7 @@ M.setup = function()
             "lua",
             "luap", -- lua regex?
             "make",
-            "markdown",
+            -- "markdown",
             -- "norg",
             -- Syntax isn't parsed the greatest
             -- "perl",

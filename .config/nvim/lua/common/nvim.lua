@@ -358,7 +358,7 @@ nvim.keymap =
     {
         add = utils.map,
         get = utils.get_keymap,
-        del = vim.keymap.del
+        del = utils.del_keymap
     },
     {
         __index = function(self, mode)
