@@ -11,10 +11,16 @@ if not dapui then
     return
 end
 
+local osv = D.npcall(require, "osv")
+if not osv then
+    return
+end
+
 local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
+local global = require("common.global")
 local icons = require("style").plugins.dap
 local utils = require("common.utils")
 local command = utils.command
@@ -22,6 +28,7 @@ local command = utils.command
 local fn = vim.fn
 local uv = vim.loop
 local F = vim.F
+local ithunk = D.ithunk
 
 local nvim_server
 local nvim_chanID
@@ -64,113 +71,40 @@ function M.setup()
         {desc = "[osv]: Run this"}
     )
 
-    local function repl_toggle()
-        require("dap").repl.toggle(nil, "botright split")
-    end
-    local function repl_open()
-        require("dap").repl.open()
-    end
-    -- Start the debug session and continue to next breakpoint
-    local function continue()
-        require("dap").continue()
-    end
-    local function step_out()
-        require("dap").step_out()
-    end
-    local function step_into()
-        require("dap").step_into()
-    end
-    local function step_over()
-        require("dap").step_over()
-    end
-    ---Run last again
-    local function run_last()
-        require("dap").run_last()
-    end
-    ---Run to cursor position
-    local function run_cursor()
-        require("dap").run_to_cursor()
-    end
-    ---Create and remove a breakpoint
-    local function toggle_breakpoint()
-        require("dap").toggle_breakpoint()
-    end
-    local function set_breakpoint()
-        require("dap").set_breakpoint(fn.input("Breakpoint condition: "))
-    end
-    ---Close the debug session
-    local function close()
-        require("dap").close()
-    end
-    ---Terminate the debug session
-    local function terminate()
-        require("dap").terminate()
-    end
-    ---Restart the execution
-    local function restart()
-        require("dap").restart()
-    end
-    ---Pause the execution
-    local function pause()
-        require("dap").pause()
-    end
-    ---Go up in the call stack
-    local function up()
-        require("dap").up()
-    end
-    ---Go down in the call stack
-    local function down()
-        require("dap").down()
-    end
-
-    local function hover()
-        widgets.hover()
-    end
     -- Inspect all scope properties
     local function inspect_scope()
         widgets.centered_float(widgets.scopes).open()
     end
-
-    local function ui_open()
-        require("dapui").toggle()
-    end
-    local function ui_eval()
-        require("dapui").eval()
-    end
-    local function ui_eval_input()
-        require("dapui").eval(fn.input "[Expression] > ")
-    end
-
-    local function osv_launch()
-        require("osv").launch()
+    local function dap_eval()
+        dapui.eval(fn.input("[Expression] > "))
     end
 
     wk.register(
         {
             d = {
                 name = "+debugger",
-                -- B = {set_breakpoint, "dap: set breakpoint"},
-                E = {ui_eval_input, "dapui: eval input"},
-                R = {restart, "dap: restart"},
-                T = {repl_open, "dap REPL: open"},
-                U = {ui_open, "dap UI: open"},
-                X = {terminate, "dap: terminate"},
-                b = {toggle_breakpoint, "dap: toggle breakpoint"},
-                c = {continue, "dap: continue or start debugging"},
-                d = {osv_launch, "dap: start osv"},
-                e = {step_out, "dap: step out"},
-                h = {hover, "dap widgets: hover"},
-                i = {step_into, "dap: step into"},
-                l = {run_last, "dap REPL: run last"},
-                m = {down, "dap: down"},
-                n = {up, "dap: up"},
-                o = {step_over, "dap: step over"},
-                p = {pause, "dap: pause"},
-                r = {run_cursor, "dap: run to cursor"},
+                -- B = {ithunk(dap.set_breakpoint, fn.input("Breakpoint condition: ")), "dap: set breakpoint"},
+                E = {dap_eval, "dapui: eval input"},
+                R = {ithunk(dap.restart), "dap: restart execution"},
+                T = {ithunk(dap.repl.open), "dap REPL: open"},
+                U = {ithunk(dapui.toggle), "dap UI: open"},
+                X = {ithunk(dap.terminate), "dap: terminate session"},
+                b = {ithunk(dap.toggle_breakpoint), "dap: toggle breakpoint"},
+                c = {ithunk(dap.continue), "dap: continue or start debugging"},
+                d = {ithunk(osv.launch), "dap: start osv"},
+                e = {ithunk(dap.step_out), "dap: step out"},
+                h = {ithunk(widgets.hover), "dap widgets: hover"},
+                i = {ithunk(dap.step_into), "dap: step into"},
+                l = {ithunk(dap.run_last), "dap REPL: run last"},
+                m = {ithunk(dap.down), "dap: down in callstack"},
+                n = {ithunk(dap.up), "dap: up in callstack"},
+                o = {ithunk(dap.step_over), "dap: step over"},
+                p = {ithunk(dap.pause), "dap: pause execution"},
+                r = {ithunk(dap.run_to_cursor), "dap: run to cursor"},
                 s = {inspect_scope, "dap widgets: inspect scope"},
-                t = {repl_toggle, "dap REPL: toggle"},
-                v = {ui_eval, "dap UI: eval"},
-                x = {close, "dap: close"},
+                t = {ithunk(dap.repl.toggle, nil, "botright split"), "dap REPL: toggle"},
+                v = {ithunk(dapui.eval), "dap UI: eval"},
+                x = {ithunk(dap.close), "dap: close session"},
                 [","] = {
                     name = "+telescope",
                     c = {telescope.extensions.dap.commands, "dap: commands"},
@@ -439,10 +373,59 @@ local function init()
         }
     }
 
-    -- Neovim Lua
-    -- dap.adapters.nlua = function(callback, config)
-    --     callback {type = "server", host = config.host, port = config.port}
-    -- end
+    local firefox_exec = "/usr/bin/firefox"
+    dap.adapters.firefox = {
+        type = "executable",
+        command = "node",
+        args = {
+            ("%s/%s"):format(
+                global.home,
+                "/.vscode/extensions/firefox-devtools.vscode-firefox-debug-2.9.6/dist/adapter.bundle.js"
+            )
+        }
+    }
+
+    dap.configurations.typescript = {
+        {
+            type = "node2",
+            name = "node attach",
+            request = "attach",
+            program = "${file}",
+            cwd = fn.expand("%:p:h"),
+            sourceMaps = true,
+            protocol = "inspector"
+        },
+        {
+            type = "chrome",
+            name = "chrome",
+            request = "attach",
+            program = "${file}",
+            -- cwd = "${workspaceFolder}",
+            -- protocol = "inspector",
+            port = 9222,
+            webRoot = "${workspaceFolder}",
+            -- sourceMaps = true,
+            sourceMapPathOverrides = {
+                -- Sourcemap override for nextjs
+                ["webpack://_N_E/./*"] = "${webRoot}/*",
+                ["webpack:///./*"] = "${webRoot}/*"
+            }
+        },
+        {
+            name = "Debug with Firefox",
+            type = "firefox",
+            request = "launch",
+            reAttach = true,
+            sourceMaps = true,
+            url = "http://localhost:6969",
+            webRoot = "${workspaceFolder}",
+            firefoxExecutable = firefox_exec
+        }
+    }
+
+    dap.configurations.typescriptreact = dap.configurations.typescript
+    dap.configurations.javascript = dap.configurations.typescript
+    dap.configurations.javascriptreact = dap.configurations.typescript
 
     dap.adapters.nlua = function(callback, config)
         if not config.port then

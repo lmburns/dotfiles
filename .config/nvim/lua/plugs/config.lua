@@ -627,6 +627,33 @@ function M.colortils()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                          LuaPad                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.luapad()
+    require("luapad").setup {
+        count_limit = 150000,
+        preview = true,
+        error_indicator = true,
+        print_highlight = "Comment",
+        error_highlight = "ErrorMsg",
+        eval_on_move = false,
+        eval_on_change = true,
+        split_orientation = "vertical",
+        on_init = function()
+            print("Luapad initialized")
+        end,
+        -- Global variables provided on startup
+        context = {
+            arr = {"abc", "def", "ghi", "jkl"},
+            tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
+            shout = function(str)
+                return (string.upper(str) .. "!")
+            end
+        }
+    }
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
@@ -1613,7 +1640,6 @@ function M.lfnvim()
             highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
         }
     )
-
 
     map("n", "<A-o>", ":Lf<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")

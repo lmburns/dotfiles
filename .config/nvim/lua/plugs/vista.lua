@@ -2,6 +2,7 @@ local M = {}
 
 local utils = require("common.utils")
 local map = utils.map
+local augroup = utils.augroup
 
 local g = vim.g
 
@@ -25,6 +26,15 @@ end
 
 local function init()
     M.setup()
+
+    augroup(
+        "lmb__VistaNearest",
+        {
+            event = "VimEnter",
+            pattern = "*",
+            command = [[call vista#RunForNearestMethodOrFunction()]]
+        }
+    )
 
     map("n", [[<C-A-S-">]], "Vista!!", {cmd = true, desc = "Toggle Vista window"})
     map("n", [[<A-\>]], ":Vista finder fzf:coc<CR>")

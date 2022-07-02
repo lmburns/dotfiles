@@ -57,7 +57,6 @@ function M.mappings()
             debounce(
             function()
                 n_keymap = utils.get_keymap("n", "n").rhs
-                vim.notify(("running: %s"):format(n_keymap))
             end,
             10
         )
@@ -65,7 +64,6 @@ function M.mappings()
     end
 
     dispose = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
-    bmap("n", "M", "<cmd>lua vim.notify('hello')<CR>", {silent = true})
     bmap("n", "<Esc>", "<Plug>(VM-Exit)")
     bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})
 end

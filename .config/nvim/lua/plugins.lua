@@ -434,16 +434,21 @@ return packer.startup(
                 {
                     "rcarriga/neotest",
                     requires = {
-                        "akinsho/neotest-go",
                         "nvim-lua/plenary.nvim",
                         "nvim-treesitter/nvim-treesitter",
-                        "antoinemadec/FixCursorHold.nvim"
-                    }
+                        "antoinemadec/FixCursorHold.nvim",
+                        "nvim-neotest/neotest-python",
+                        "nvim-neotest/neotest-go",
+                        "nvim-neotest/neotest-plenary",
+                        "nvim-neotest/neotest-vim-test",
+                        -- "vim-test/vim-test"
+                    },
+                    conf = "plugs.neotest"
                 }
             )
 
             -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
-            use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua"})
+            use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua", conf = "luapad"})
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})

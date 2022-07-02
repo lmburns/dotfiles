@@ -605,6 +605,7 @@ M.kimbox = function()
             popup = {
                 background = false -- use background color for pmenu
             },
+            toggle_style_key = "<Leader>tS",
             toggle_style_list = require("kimbox").bgs_list
         }
     )

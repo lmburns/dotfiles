@@ -610,24 +610,26 @@ nvim.autocmd.lmb__Help = {
 local smart_close_filetypes = {
     -- 'help',
     -- 'qf',
-    "godoc",
-    "git",
-    "git-status",
-    "git-log",
+    "LuaTree",
+    "Outline",
+    "aerial", -- has its own mapping but is slow
     "bufferize",
-    "gitcommit",
     "dbui",
+    "floggraph",
     "fugitive",
     "fugitiveblame",
-    "LuaTree",
+    "git",
+    "git-log",
+    "git-status",
+    "gitcommit",
+    "godoc",
     "log",
-    "Outline",
-    "tsplayground",
-    "floggraph",
-    "vista",
-    "aerial", -- has its own mapping but is slow
+    "lspinfo",
+    "neotest-summary",
     "scratchpad",
-    "startuptime"
+    "startuptime",
+    "tsplayground",
+    "vista",
 }
 
 local smart_close_buftypes = {}
@@ -1052,14 +1054,6 @@ augroup(
         end
     }
 )
-
--- autocmd(
---     {
---         event = "VimEnter",
---         pattern = "*",
---         command = [[call vista#RunForNearestMethodOrFunction()]]
---     }
--- )
 
 -- ============================== Unused ============================== [[[
 -- augroup(
