@@ -440,12 +440,21 @@ return packer.startup(
                         "nvim-neotest/neotest-python",
                         "nvim-neotest/neotest-go",
                         "nvim-neotest/neotest-plenary",
-                        "nvim-neotest/neotest-vim-test",
+                        "nvim-neotest/neotest-vim-test"
                         -- "vim-test/vim-test"
                     },
                     conf = "plugs.neotest"
                 }
             )
+
+            -- use(
+            --     {
+            --         "andythigpen/nvim-coverage",
+            --         ft = {"python", "rust"},
+            --         cmd = {"Coverage", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageClear"},
+            --         conf = "coverage"
+            --     }
+            -- )
 
             -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
             use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua", conf = "luapad"})
@@ -526,6 +535,7 @@ return packer.startup(
             -- ============================ Open Browser =========================== [[[
             use({"tyru/open-browser.vim", conf = "open_browser"})
             use({"axieax/urlview.nvim", conf = "urlview", after = "telescope.nvim"})
+            use({"xiyaowong/link-visitor.nvim", conf = "link_visitor"})
             -- use({"itchyny/vim-highlighturl"})
             -- ]]] === Open Browser ===
 

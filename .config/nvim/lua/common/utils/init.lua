@@ -7,14 +7,15 @@ local log = require("common.log")
 local debounce = require("common.debounce")
 local dev = require("dev")
 
-local a = require("plenary.async_lib")
-local async = a.async
-local await = a.await
-
 local wk = require("which-key")
+local uva = require("uva")
+local async = require("async")
 
 local ex = nvim.ex
+local uv = vim.loop
 local api = vim.api
+local fn = vim.fn
+local cmd = vim.cmd
 
 -- require("plenary.strings").align_str(string: any, width: any, right_justify: any)
 -- require("plenary.strings").dedent(str: any, leave_indent: any)
@@ -36,13 +37,7 @@ M.prequire = function(check)
         {
             -- Error has to be unwrapped to be notified
             __call = function()
-                M.notify(
-                    "Module is not installed",
-                    log.levels.ERROR,
-                    {
-                        title = ("require('%s')"):format(check)
-                    }
-                )
+                M.notify("Module is not installed", log.levels.ERROR, {title = ("require('%s')"):format(check)})
                 return dummy
             end,
             __index = function()
@@ -230,7 +225,7 @@ end
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
----@return table<fun()>: Returns a table with a single key `discard` which can be ran to remove
+---@return table<fun()>: Returns a table with a single key `dispose` which can be ran to remove
 ---these bindings. This can be used for temporary keymaps
 ---
 --- See: **:map-arguments**
@@ -311,7 +306,7 @@ M.map = function(modes, lhs, rhs, opts)
         return b
     end)()
 
-    if bufnr == true or type(bufnr) == "number" then
+    if bufnr or type(bufnr) == "number" then
         for _, mode in ipairs(modes) do
             if opts.desc then
                 wk.register({[lhs] = opts.desc}, {mode = mode, buffer = bufnr})
@@ -329,19 +324,22 @@ M.map = function(modes, lhs, rhs, opts)
         end
     end
 
-    return {
-        discard = function()
-            if bufnr ~= nil then
-                for _, mode in ipairs(modes) do
-                    api.nvim_buf_del_keymap(bufnr, mode, lhs)
-                end
-            else
-                for _, mode in ipairs(modes) do
-                    api.nvim_del_keymap(mode, lhs)
-                end
+    return setmetatable(
+        {
+            map = function()
+                local mode = modes[1]
+                return M.get_keymap(mode, lhs, true, F.tern(bufnr or type(bufnr) == "number", true, false))
+            end,
+            dispose = function()
+                M.del_keymap(modes, lhs, {buffer = bufnr})
             end
-        end
-    }
+        },
+        {
+            __call = function(self)
+                self.dispose()
+            end
+        }
+    )
 end
 
 ---Create a buffer key mapping
@@ -350,7 +348,7 @@ end
 ---@param lhs string Keybinding that is mapped
 ---@param rhs string|function String or Lua function that will be bound to a key
 ---@param opts MapArgs Options given to keybindings
----@return table<fun()>: Returns a table with a single key `discard` which can be ran to remove binding
+---@return table<fun()>: Returns a table with a single key `dispose` which can be ran to remove binding
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {}
     opts.buffer = bufnr
@@ -374,7 +372,7 @@ M.del_keymap = function(modes, lhs, opts)
 
     local bufnr = false
     if opts.buffer ~= nil then
-        bufnr = F.tern(bufnr, 0, bufnr)
+        bufnr = F.tern(opts.buffer == true, 0, opts.buffer)
     end
 
     if bufnr == false then
@@ -545,6 +543,17 @@ M.del_command = function(name, buffer)
     end
 end
 
+---Check that the current version is greater than or equal to the given version
+---@param major number
+---@param minor number
+---@param _ number? patch
+---@return boolean
+M.version = function(major, minor, _)
+    assert(major and minor, "major and minor must be provided")
+    local v = vim.version()
+    return major >= v.major and minor >= v.minor
+end
+
 ---Source a lua or vimscript file
 ---@param path string path relative to the nvim directory
 ---@param prefix boolean?
@@ -686,7 +695,7 @@ end
 
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
-    local save = fn.winsaveview()
+    local view = M.save_win_positions(0)
     local arguments = fmt("%q", arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     cmd(("keepj keepp execute %s"):format(arguments))
@@ -697,7 +706,7 @@ M.preserve = function(arguments)
     end
 
     api.nvim_win_set_cursor(0, {line, col})
-    fn.winrestview(save)
+    view.restore()
 end
 
 -- vim.cmd([[command! Preserve lua require("utils").preserve('%s/\\s\\+$//ge')]])
@@ -764,11 +773,14 @@ M.set_marks = function(marks, bufnr)
     end
 end
 
+---@class SaveWinPositionsReturn
+---@field restore function
+
 ---Save a window's positions
 ---@param bufnr number? buffer to save position
----@return function
+---@return SaveWinPositionsReturn
 M.save_win_positions = function(bufnr)
-    bufnr = (bufnr == nil or bufnr == 0) and api.nvim_get_current_buf() or bufnr
+    bufnr = F.tern(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
     local win_positions = {}
     for _, winid in pairs(api.nvim_list_wins()) do
         if api.nvim_win_get_buf(winid) == bufnr then
@@ -782,17 +794,19 @@ M.save_win_positions = function(bufnr)
         end
     end
 
-    return function()
-        for _, pair in pairs(win_positions) do
-            local winid, view = unpack(pair)
-            api.nvim_win_call(
-                winid,
-                function()
-                    pcall(fn.winrestview, view)
-                end
-            )
+    return {
+        restore = function()
+            for _, pair in pairs(win_positions) do
+                local winid, view = unpack(pair)
+                api.nvim_win_call(
+                    winid,
+                    function()
+                        pcall(fn.winrestview, view)
+                    end
+                )
+            end
         end
-    end
+    }
 end
 
 ---Check whether or not the location or quickfix list is open
@@ -899,6 +913,19 @@ M.ansi =
     }
 )
 
+---Return a 24 byte colored string
+local function color2csi24b(color_num, fg)
+    local r = math.floor(color_num / 2 ^ 16)
+    local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
+    local b = math.floor(color_num % 2 ^ 8)
+    return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
+end
+
+---Return a 8 byte colored string
+local function color2csi8b(color_num, fg)
+    return ("%d;5;%d"):format(fg and 38 or 48, color_num)
+end
+
 ---Render an ANSI escape sequence
 ---@param str string
 ---@param group_name string
@@ -917,20 +944,6 @@ M.render_str =
         white = 37
     }
     local gui = vim.o.termguicolors
-
-    ---Return a 24 byte colored string
-    local function color2csi24b(color_num, fg)
-        local r = math.floor(color_num / 2 ^ 16)
-        local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
-        local b = math.floor(color_num % 2 ^ 8)
-        return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
-    end
-
-    ---Return a 8 byte colored string
-    local function color2csi8b(color_num, fg)
-        return ("%d;5;%d"):format(fg and 38 or 48, color_num)
-    end
-
     local color2csi = gui and color2csi24b or color2csi8b
 
     return function(str, group_name, def_fg, def_bg)
@@ -1143,48 +1156,6 @@ M.highlight =
     end
 end)()
 
--- This needs testing
----Write a file asynchronously using plenary
----@param path string
----@param data string
----@param sync boolean
-M.write_file_async = function(path, data, sync)
-    local path_ = path .. "_"
-    if sync then
-        local fd = assert(uv.fs_open(path_, "w", 438))
-        assert(uv.fs_write(fd, data))
-        assert(uv.fs_close(fd))
-        uv.fs_rename(path_, path)
-    else
-        local err_open, fd = a.uv.fs_open(path_, "w", 438)
-        assert(not err_open, err_open)
-
-        local err_write = a.uv.fs_write(fd, data, -1)
-        assert(not err_write, err_write)
-
-        local err_close, succ = a.uv.fs_close(fd)
-        assert(not err_close, err_close)
-
-        if succ then
-            a.uv.fs_rename(path_, path)
-        end
-    end
-end
-
-M.readfile =
-    async(
-    function(path)
-        local _, fd = await(a.uv.fs_open(path, "r", 438))
-        if fd == nil then
-            return nil
-        end
-        local _, stat = await(a.uv.fs_fstat(fd))
-        local _, data = await(a.uv.fs_read(fd, stat.size, 0))
-        await(a.uv.fs_close(fd))
-        return data
-    end
-)
-
 ---Write a file using libuv
 ---@param path string
 ---@param data string
@@ -1229,6 +1200,21 @@ M.write_file = function(path, data, sync)
             end
         )
     end
+end
+
+---Read a file asynchronously
+---@param path string
+---@return Promise
+M.readFile = function(path)
+    return async(
+        function()
+            local fd = await(uva.open(path, "r", 438))
+            local stat = await(uva.fstat(fd))
+            local data = await(uva.read(fd, stat.size, 0))
+            await(uva.close(fd))
+            return data
+        end
+    )
 end
 
 -- ================= Tips ================== [[[

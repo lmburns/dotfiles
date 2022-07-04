@@ -24,11 +24,7 @@ end
 ---@return table
 local function get_augroup(name_id)
     vim.validate {
-        name_id = {
-            name_id,
-            {"s", "n"},
-            "Augroup name string or id number"
-        }
+        name_id = {name_id, {"s", "n"}, "Augroup name string or id number"}
     }
     return get_autocmd {group = name_id}
 end

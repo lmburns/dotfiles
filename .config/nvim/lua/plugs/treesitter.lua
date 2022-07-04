@@ -812,7 +812,7 @@ M.setup = function()
             navigation = {
                 enable = true,
                 keymaps = {
-                    goto_definition = ";d", -- mapping to go to definition of symbol under cursor
+                    goto_definition = ";D", -- mapping to go to definition of symbol under cursor
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
                     list_definitions_toc = "gO",
                     goto_next_usage = "]x",
@@ -1022,16 +1022,6 @@ local function init()
     M.setup_treesurfer()
     M.setup_autotag()
 
-    -- 'r = Smart rename
-    -- ;d = Go to definition of symbol under cursor
-    -- ;D = List all definitions in file
-    -- gO = List definitions TOC
-    --
-    -- <M-n> = Start scope selection
-    -- <M-n> = increment upper scope
-    -- <C-j> = increment upper named parent
-    -- <C-k> = decrement to previous node
-
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]])
     map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]])
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]])
@@ -1108,8 +1098,8 @@ local function init()
     wk.register(
         {
             ["'r"] = "Smart rename",
-            [";d"] = "Go to definition under cursor",
-            [";D"] = "List all definitions in file",
+            [";D"] = "Go to definition under cursor",
+            ["<Leader>fd"] = "List all definitions in file",
             ["gO"] = "List all definitions in TOC",
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",

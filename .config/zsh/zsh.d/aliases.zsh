@@ -25,7 +25,8 @@ alias %= \$=
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
 # alias mail='/usr/bin/mail'
 # alias strace="/usr/local/bin/strace"
-alias RGL='RG -g "*.lua" -g "*.vim"'
+alias RGV='RG -g "*.lua" -g "*.vim"'
+alias RGL='RG -g "*.lua"'
 alias sane='stty sane'
 alias nd='neovide'
 alias tm='tmsu'

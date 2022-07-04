@@ -36,24 +36,14 @@ local function mappings(bufnr)
             ["<Leader>hu"] = {"<Cmd>Gitsigns reset_hunk<CR>", "Reset hunk (git)"},
             ["<Leader>hr"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
             ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
-            ["<Leader>hD"] = {
-                function()
-                    gs.diffthis("~")
-                end,
-                "Diff this last commit (git)"
-            },
+            ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
             ["<Leader>hq"] = {"<Cmd>Gitsigns setqflist<CR>", "Set qflist (git)"},
             ["<Leader>hQ"] = {"<Cmd>Gitsigns setqflist all<CR>", "Set qflist all (git)"},
             ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
             ["<Leader>hl"] = {"<Cmd>Gitsigns toggle_linehl<CR>", "Toggle line highlight (git)"},
             ["<Leader>hw"] = {"<Cmd>Gitsigns toggle_word_diff<CR>", "Toggle word diff (git)"},
             ["<Leader>hB"] = {"<cmd>Gitsigns toggle_current_line_blame<CR>", "Toggle blame line virt (git)"},
-            ["<Leader>hb"] = {
-                function()
-                    gs.blame_line({full = true})
-                end,
-                "Blame line virt (git)"
-            }
+            ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}
         },
         {buffer = bufnr}
     )
@@ -187,44 +177,15 @@ function M.setup()
             show_deleted = false,
             trouble = true,
             yadm = {enable = false}
-
-            -- keymaps = {
-            --   -- Default keymap options
-            --   noremap = true,
-            --   buffer = true,
-            --
-            --   ["n ]c"] = {
-            --     expr = true,
-            --     "&diff ? ']c' : '<cmd>lua require\"gitsigns\".next_hunk()<CR>'",
-            --   },
-            --   ["n [c"] = {
-            --     expr = true,
-            --     "&diff ? '[c' : '<cmd>lua require\"gitsigns\".prev_hunk()<CR>'",
-            --   },
-            --
-            --   ["n <leader>hs"] = "<cmd>lua require\"gitsigns\".stage_hunk()<CR>",
-            --   ["v <leader>hs"] = "<cmd>lua require\"gitsigns\".stage_hunk({vim.fn.line(\".\"), vim.fn.line(\"v\")})<CR>",
-            --   ["n <leader>hu"] = "<cmd>lua require\"gitsigns\".undo_stage_hunk()<CR>",
-            --   ["n <leader>hr"] = "<cmd>lua require\"gitsigns\".reset_hunk()<CR>",
-            --   ["v <leader>hr"] = "<cmd>lua require\"gitsigns\".reset_hunk({vim.fn.line(\".\"), vim.fn.line(\"v\")})<CR>",
-            --   ["n <leader>hR"] = "<cmd>lua require\"gitsigns\".reset_buffer()<CR>",
-            --   ["n <leader>hp"] = "<cmd>lua require\"gitsigns\".preview_hunk()<CR>",
-            --   ["n <leader>hb"] = "<cmd>lua require\"gitsigns\".blame_line()<CR>",
-            --   ["n <leader>hS"] = "<cmd>lua require\"gitsigns\".stage_buffer()<CR>",
-            --   ["n <leader>hU"] = "<cmd>lua require\"gitsigns\".reset_buffer_index()<CR>",
-            --
-            --   -- Text objects
-            --   ["o ih"] = ":<C-U>lua require\"gitsigns.actions\".select_hunk()<CR>",
-            --   ["x ih"] = ":<C-U>lua require\"gitsigns.actions\".select_hunk()<CR>",
-            -- },
         }
     )
     config = require("gitsigns.config").config
 end
 
 local function init()
-    M.setup()
     ex.packadd("plenary.nvim")
+
+    M.setup()
 
     local gitsigns_hlights = {
         GitSignsChangeLn = {link = "DiffText"},

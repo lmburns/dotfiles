@@ -124,7 +124,7 @@ wk.register(
 wk.register(
     {
         ["D"] = {[["_D]], "Delete to end of line (blackhole)"},
-        ["E"] = {[[^"_D]], "Delete line (blackhole)"}, -- similar to 'S'/'cc'
+        ["S"] = {[[^"_D]], "Delete line (blackhole)"}, -- similar to norm! S/cc
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
         ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
@@ -143,8 +143,8 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 wk.register(
     {
         ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
-        ["dm"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
-        ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
+        -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}

@@ -45,10 +45,10 @@ nvim.autocmd.lmb__RestoreCursor = {
 
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-               if not pcall(nvim.win.set_cursor, 0, {row, 0}) then
-                   vim.notify("Neovim version has messed this up")
+                if not pcall(nvim.win.set_cursor, 0, {row, 0}) then
+                    vim.notify("Neovim version has messed this up")
                     return
-               end
+                end
 
                 -- nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
@@ -358,8 +358,6 @@ do
         event = {"BufEnter", "FileType"},
         pattern = "*",
         command = function()
-            -- Buffer option here doesn't work like global
-            -- o.formatoptions:remove({"c", "r", "o"})
             o.formatoptions = {
                 ["1"] = true,
                 ["2"] = true, -- Use indent from 2nd line of a paragraph
@@ -376,13 +374,21 @@ do
                 t = false, -- Autowrap lines using text width value
                 o = false --- Automatically insert comment leader after <enter>
             }
-            o.conceallevel = 2
-            o.concealcursor = "vc"
 
-            -- Allows a shared statusline
-            if b.ft ~= "fzf" then
-                o.laststatus = 3
-            end
+            vim.schedule(
+                function()
+                    local bufnr = api.nvim_get_current_buf()
+                    local ft = api.nvim_buf_get_option(bufnr, "filetype")
+
+                    o.conceallevel = 2
+                    o.concealcursor = "vc"
+
+                    -- Allows a shared statusline
+                    if ft ~= "fzf" then
+                        o.laststatus = 3
+                    end
+                end
+            )
         end,
         desc = "Setup format options"
     }
@@ -442,11 +448,20 @@ nvim.autocmd.lmb__FirstBuf = {
 
 -- === Disable Undofile === [[[
 nvim.autocmd.lmb__DisableUndofile = {
-    event = "BufWritePre",
-    pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log"},
-    command = function()
-        vim.bo.undofile = false
-    end
+    {
+        event = "BufWritePre",
+        pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log"},
+        command = function()
+            vim.bo.undofile = false
+        end
+    },
+    {
+        event = "FileType",
+        pattern = {"crontab"},
+        command = function()
+            vim.bo.undofile = false
+        end
+    }
 }
 -- ]]]
 
@@ -629,7 +644,7 @@ local smart_close_filetypes = {
     "scratchpad",
     "startuptime",
     "tsplayground",
-    "vista",
+    "vista"
 }
 
 local smart_close_buftypes = {}

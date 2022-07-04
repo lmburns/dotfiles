@@ -980,6 +980,7 @@ map gtr ${{
   command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
 map gtc ${{clear; gclp}}
+map gtB !git brws
 map gtb :git_branch
 map gtp !{{clear; git pull }}
 map gtP !{{clear; git pull --rebase }}

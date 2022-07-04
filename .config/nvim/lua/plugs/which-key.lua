@@ -44,12 +44,12 @@ function M.setup()
                 g = true -- bindings for prefixed with g
             }
         },
-        -- NOTE: These do not trigger the window to show
+        -- NOTE: Only gq works here
         operators = {
             -- add operators that will trigger motion and text object completion
+            gq = "Format",
             y = "Yank",
             gc = "Comments",
-            -- cr = "Change case",
             ga = "Easy align",
             ys = "Surround",
             s = "Substitute",
@@ -139,6 +139,7 @@ local function init()
 
     wk.register(
         {
+            ["gq"] = "Format operator",
             ["zW"] = "Mark word as bad internal wordlist",
             ["zuw"] = "Remove from spellfile",
             ["zuW"] = "Remove from internal wordlist",

@@ -38,6 +38,7 @@ local function render(props)
     for idx, part in ipairs(parts) do
         if next(parts, idx) then
             local guifg = g.colors_name == "kimbox" and "InclineNormal" or "Directory"
+            -- local guifg = "Directory"
             if part:match("^%$") then
                 guifg = "WarningMsg"
             end

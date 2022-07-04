@@ -72,7 +72,7 @@ end
 function M.format_doc(save)
     save = save == nil and true or save
 
-    local restore = utils.save_win_positions(nvim.buf.nr())
+    local view = utils.save_win_positions(0)
 
     gittool.root_exe(
         function()
@@ -138,7 +138,7 @@ function M.format_doc(save)
         end
     )
 
-    restore()
+    view.restore()
 end
 
 ---Format selected text

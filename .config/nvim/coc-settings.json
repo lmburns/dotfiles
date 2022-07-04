@@ -99,14 +99,14 @@
   "notification.border": true,
   "diagnostic-languageserver.filetypes": {
     // "zsh": "shellcheck"
-    "sh": "shellcheck",
+    // "sh": "shellcheck",
     // "yaml": ["yamllint"],
     // "lua": "selene",
     "cmake": ["cmake-lint"],
     "systemd": "systemd-analyze"
   },
   "diagnostic-languageserver.formatFiletypes": {
-    "sh": "shfmt"
+    // "sh": "shfmt"
     //   "zsh": "shfmt"
   },
   "prettier.tabWidth": 2,
@@ -299,21 +299,22 @@
   ],
   "Lua.diagnostics.globals": [
     "dev",
-    "a",
-    "async",
+    // "a",
+    // "async",
     "Path",
     "Job",
     "List",
-    "ex",
-    "F",
-    "uv",
-    "api",
-    "fn",
-    "cmd",
-    "env",
-    "o",
-    "b",
-    "w",
+    // "ex",
+    // "F",
+    // "uv",
+    // "api",
+    // "fn",
+    // "cmd",
+    // "env",
+    // "o",
+    // "b",
+    // "w",
+    "p",
     "R",
     "P",
     "RELOAD",
@@ -511,15 +512,17 @@
                 "%f:%l:%c: %trror: %m",
                 "%f:%l:%c: %tarning: %m",
                 "%f:%l:%c: %tarning: %m"
-              ]
-            }
-          ],
-          "teal": [
-            {
-              "formatCommand": "lua-format -i",
+              ],
+              "formatCommand": "shfmt -i 2",
               "formatStdin": true
             }
           ]
+          // "teal": [
+          //   {
+          //     "formatCommand": "lua-format -i",
+          //     "formatStdin": true
+          //   }
+          // ]
         }
       }
     },

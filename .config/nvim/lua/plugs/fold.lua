@@ -2,6 +2,7 @@ local M = {}
 
 local D = require("dev")
 local palette = require("kimbox.palette").colors
+local style = require("style")
 local utils = require("common.utils")
 local C = require("common.color")
 local coc = require("plugs.coc")
@@ -355,7 +356,8 @@ local handler = function(virt_text, lnum, end_lnum, width, truncate)
 end
 
 local ft_map = {
-    zsh = "indent"
+    zsh = "indent",
+    lua = "treesitter"
 }
 
 ---Setup 'ultra-fold'
@@ -369,11 +371,25 @@ M.setup_ufo = function()
         {
             open_fold_hl_timeout = 360,
             fold_virt_text_handler = handler,
+            preview = {
+                win_config = {
+                    border = style.current.border,
+                    winhighlight = "Normal:Folded",
+                    winblend = 0
+                },
+                mappings = {
+                    scrollU = "<C-u>",
+                    scrollD = "<C-d>"
+                }
+            },
             provider_selector = function(bufnr, filetype)
                 -- return a string type use internal providers
                 -- return a string in a table like a string type
                 -- return empty string '' will disable any providers
                 -- return `nil` will use default value {'lsp', 'indent'}
+
+                -- if you prefer treesitter provider rather than lsp,
+                -- return ftMap[filetype] or {'treesitter', 'indent'}
                 return ft_map[filetype]
             end
         }
@@ -390,6 +406,8 @@ local function init()
     vim.defer_fn(
         function()
             C.UFOFoldLevel = {fg = palette.blue, bold = true}
+            C.UfoPreviewThumb = {link = "PmenuThumb"}
+            C.UfoPreviewSbar = {link = "PmenuSbar"}
             M.setup_ufo()
 
             vim.wo.foldenable = true

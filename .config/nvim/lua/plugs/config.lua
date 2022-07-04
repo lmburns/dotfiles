@@ -213,41 +213,10 @@ function M.package_info()
             pattern = "package.json",
             command = function()
                 local bufnr = nvim.get_current_buf()
-                map(
-                    "n",
-                    "<Leader>cu",
-                    function()
-                        pi.update()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>ci",
-                    function()
-                        pi.install()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>ch",
-                    function()
-                        pi.change_version()
-                    end,
-                    {buffer = bufnr}
-                )
-
-                map(
-                    "n",
-                    "<Leader>cr",
-                    function()
-                        pi.reinstall()
-                    end,
-                    {buffer = bufnr}
-                )
+                map("n", "<Leader>cu", D.ithunk(pi.update), {buffer = bufnr})
+                map("n", "<Leader>ci", D.ithunk(pi.install), {buffer = bufnr})
+                map("n", "<Leader>ch", D.ithunk(pi.change_version), {buffer = bufnr})
+                map("n", "<Leader>cr", D.ithunk(pi.reinstall), {buffer = bufnr})
 
                 wk.register(
                     {
@@ -281,6 +250,46 @@ function M.open_browser()
             ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         },
         {mode = "x"}
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       LinkVisitor                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.link_visitor()
+    local lv = D.npcall(require, "link-visitor")
+    if not lv then
+        return
+    end
+
+    lv.setup(
+        {
+            open_cmd = "handlr open",
+            silent = false
+        }
+    )
+
+    map("n", "gw", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+
+    augroup(
+        "lmb__LinkVisitor",
+        {
+            event = "User",
+            pattern = "CocOpenFloat",
+            command = function()
+                local winid = g.coc_last_float_win
+                if winid and api.nvim_win_is_valid(winid) then
+                    local bufnr = api.nvim_win_get_buf(winid)
+                    api.nvim_buf_call(
+                        bufnr,
+                        function()
+                            bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+                            bmap(bufnr, "n", "L", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+                        end
+                    )
+                end
+            end
+        }
     )
 end
 
@@ -614,23 +623,15 @@ function M.vcoolor()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                       ColorPicker                        │
--- ╰──────────────────────────────────────────────────────────╯
-function M.colortils()
-    require("colortils").setup(
-        {
-            register = "+", -- register in which color codes will be copied: any register
-            color_preview = "█ %s",
-            border = "rounded" -- border for the float
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                          LuaPad                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.luapad()
-    require("luapad").setup {
+    local luapad = D.npcall(require, "luapad")
+    if not luapad then
+        return
+    end
+
+    luapad.setup {
         count_limit = 150000,
         preview = true,
         error_indicator = true,
@@ -928,7 +929,8 @@ function M.sandwhich()
         {
             ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
-            ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a word with function"},
+            ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
+            ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
             ["yss"] = "Surround text on line"
         }
     )
@@ -1070,6 +1072,8 @@ function M.caser()
     -- cr.      => dot.case
 
     g.caser_prefix = "cr"
+    map("n", "crS", " <Plug>CaserSentenceCase")
+    map("n", "crs", "<Plug>CaserSnakeCase")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1541,62 +1545,21 @@ function M.comment_box()
 
     -- 21 20 19 18 7
     map({"n", "v"}, "<Leader>bb", cb.cbox, {desc = "Left fixed box, center text (round)"})
+    map({"n", "v"}, "<Leader>bs", D.ithunk(cb.cbox, 19), {desc = "Left fixed box, center text (sides)"})
+    map({"n", "v"}, "<Leader>bd", D.ithunk(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
+    map({"n", "v"}, "<Leader>bh", D.ithunk(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
 
-    map(
-        {"n", "v"},
-        "<Leader>bh",
-        function()
-            cb.cbox(19)
-        end,
-        {desc = "Left fixed box, center text (sides)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>bd",
-        function()
-            cb.cbox(7)
-        end,
-        {desc = "Left fixed box, center text (double)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>cc",
-        function()
-            cb.cbox(21)
-        end,
-        {desc = "Left fixed box, center text (top/bottom)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>ca",
-        function()
-            cb.acbox(21)
-        end,
-        {desc = "Left center box, center text (top/bottom)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>bi",
-        function()
-            cb.cbox(13)
-        end,
-        {desc = "Left fixed box, center text (side)"}
-    )
+    map({"n", "v"}, "<Leader>cc", D.ithunk(cb.cbox, 21), {desc = "Left fixed box, center text (top/bottom)"})
+    map({"n", "v"}, "<Leader>cb", D.ithunk(cb.cbox, 8), {desc = "Left fixed box, center text (thick/single)"})
+    map({"n", "v"}, "<Leader>ca", D.ithunk(cb.acbox, 21), {desc = "Left center box, center text (top/bottom)"})
 
     map({"n", "v"}, "<Leader>be", cb.lbox, {desc = "Left fixed box, left text (round)"})
     map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
     map({"n", "v"}, "<Leader>bc", cb.accbox, {desc = "Center center box, center text (round)"})
 
     -- cline
-    map(
-        {"n", "i"},
-        "<M-w>",
-        function()
-            -- 2 6 7
-            cb.line(6)
-        end,
-        {desc = "Insert thick line"}
-    )
+    -- 2 6 7
+    map({"n", "i"}, "<M-w>", D.ithunk(cb.line, 6), {desc = "Insert thick line"})
 
     map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
 end
@@ -2162,6 +2125,50 @@ function M.fidget()
         }
     )
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Coverage                         │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.coverage()
+--     local coverage = D.npcall(require, "coverage")
+--     if not coverage then
+--         return
+--     end
+--
+--     coverage.setup(
+--         {
+--             commands = true, -- create commands
+--             highlights = {
+--                 -- customize highlight groups created by the plugin
+--                 covered = {fg = "#C3E88D"}, -- supports style, fg, bg, sp (see :h highlight-gui)
+--                 uncovered = {fg = "#F07178"}
+--             },
+--             signs = {
+--                 -- use your own highlight groups or text markers
+--                 covered = {hl = "CoverageCovered", text = "▎"},
+--                 uncovered = {hl = "CoverageUncovered", text = "▎"}
+--             },
+--             summary = {
+--                 -- customize the summary pop-up
+--                 min_coverage = 80.0 -- minimum coverage threshold (used for highlighting)
+--             },
+--             lang = {}
+--         }
+--     )
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       ColorPicker                        │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.colortils()
+--     require("colortils").setup(
+--         {
+--             register = "+", -- register in which color codes will be copied: any register
+--             color_preview = "█ %s",
+--             border = "rounded" -- border for the float
+--         }
+--     )
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Window Picker                       │

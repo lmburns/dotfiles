@@ -35,41 +35,11 @@ local nvim_chanID
 
 function M.setup()
     -- https://alpha2phi.medium.com/neovim-dap-enhanced-ebc730ff498b
-    command(
-        "BreakpointToggle",
-        function()
-            require("dap").toggle_breakpoint()
-        end,
-        {desc = "[dap]: Toggle breakpoint"}
-    )
-    command(
-        "Debug",
-        function()
-            require("dap").continue()
-        end,
-        {desc = "[dap]: Continue"}
-    )
-    command(
-        "DapREPL",
-        function()
-            require("dap").repl.open()
-        end,
-        {desc = "[dap]: Open REPL"}
-    )
-    command(
-        "DapLaunch",
-        function()
-            require("osv").launch()
-        end,
-        {desc = "[osv]: Launch"}
-    )
-    command(
-        "DapRun",
-        function()
-            require("osv").run_this()
-        end,
-        {desc = "[osv]: Run this"}
-    )
+    command("BreakpointToggle", ithunk(dap.toggle_breakpoint), {desc = "[dap]: Toggle breakpoint"})
+    command("Debug", ithunk(dap.continue), {desc = "[dap]: Continue"})
+    command("DapREPL", ithunk(dap.repl.open), {desc = "[dap]: Open REPL"})
+    command("DapLaunch", ithunk(osv.launch), {desc = "[osv]: Launch"})
+    command("DapRun", ithunk(osv.run_this), {desc = "[osv]: Run this"})
 
     -- Inspect all scope properties
     local function inspect_scope()
@@ -104,25 +74,34 @@ function M.setup()
                 s = {inspect_scope, "dap widgets: inspect scope"},
                 t = {ithunk(dap.repl.toggle, nil, "botright split"), "dap REPL: toggle"},
                 v = {ithunk(dapui.eval), "dap UI: eval"},
-                x = {ithunk(dap.close), "dap: close session"},
-                [","] = {
-                    name = "+telescope",
-                    c = {telescope.extensions.dap.commands, "dap: commands"},
-                    o = {telescope.extensions.dap.configurations, "dap: configurations"},
-                    b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
-                    v = {telescope.extensions.dap.variablesk, "dap: variables"},
-                    f = {telescope.extensions.dap.frames, "dap: frames"}
-                }
+                x = {ithunk(dap.close), "dap: close session"}
             }
         },
+        {prefix = "<LocalLeader>"}
+    )
+
+    wk.register(
         {
-            prefix = "<LocalLeader>"
-        }
+            d = {
+                name = "+telescope",
+                c = {telescope.extensions.dap.commands, "dap: commands"},
+                o = {telescope.extensions.dap.configurations, "dap: configurations"},
+                b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
+                v = {telescope.extensions.dap.variablesk, "dap: variables"},
+                f = {telescope.extensions.dap.frames, "dap: frames"}
+            }
+        },
+        {prefix = ";"}
     )
 end
 
 function M.setup_dap_virtual()
-    require("nvim-dap-virtual-text").setup {
+    local dap_virtual = D.npcall(require, "nvim-dap-virtual-text")
+    if not dap_virtual then
+        return
+    end
+
+    dap_virtual.setup {
         enabled = true, -- enable this plugin (the default)
         -- DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle,DapVirtualTextForceRefresh
         enabled_commands = true,

@@ -1133,7 +1133,7 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Async                           │
 -- ╰──────────────────────────────────────────────────────────╯
-M.set_timeout = function(callback, ms)
+M.setTimeout = function(callback, ms)
     local timer = uv.new_timer()
     timer:start(
         ms,

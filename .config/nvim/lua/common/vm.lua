@@ -46,7 +46,7 @@ function M.exit()
         hlslens.start(true)
     end
 
-    dispose.discard()
+    dispose.dispose()
     map("n", "n", n_keymap, {silent = true})
 end
 

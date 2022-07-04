@@ -88,6 +88,8 @@ function M.setup()
     bufferline.setup(
         {
             options = {
+                debug = {logging = true},
+                navigation = {mode = "uncentered"},
                 mode = "buffers",
                 numbers = function(opts)
                     return ("%s"):format(opts.raise(opts.ordinal))
@@ -130,7 +132,7 @@ function M.setup()
                     },
                     {
                         filetype = "DiffviewFiles",
-                        text = "Diff View",
+                        text = "DiffView",
                         highlight = "PanelHeading"
                     },
                     {
@@ -168,13 +170,21 @@ function M.setup()
                 show_buffer_default_icon = true,
                 always_show_bufferline = true,
                 persist_buffer_sort = true,
-                sort_by = "id", -- 'relative_directory'
+                -- sort_by = "id", -- 'relative_directory'
+                sort_by = "insert_after_current",
                 groups = {
                     options = {
                         toggle_hidden_on_enter = true
                     },
                     items = {
+                        groups.builtin.pinned:with({icon = ""}),
                         groups.builtin.ungrouped,
+                        {
+                            name = "SQL",
+                            matcher = function(buf)
+                                return buf.filename:match("%.sql$")
+                            end
+                        },
                         {
                             name = "Terraform",
                             matcher = function(buf)
@@ -186,7 +196,11 @@ function M.setup()
                             name = "tests",
                             icon = "",
                             matcher = function(buf)
-                                return buf.filename:match("_spec") or buf.filename:match("_test")
+                                local name = buf.filename
+                                if name:match("%.sql$") == nil then
+                                    return false
+                                end
+                                return name:match("_spec") or name:match("_test")
                             end
                         },
                         {

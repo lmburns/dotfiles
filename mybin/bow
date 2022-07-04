@@ -6,14 +6,14 @@ db="$XDG_DATA_HOME/buku/bookmarks.db"
 sql="SELECT id,URL,metadata,tags FROM bookmarks"
 
 url=$(
-  sqlite3 -separator $'\t' "$db" "$sql" \
-    | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' \
-    | fzf -m \
-          --reverse \
-          --preview "buku --nostdin -p {1}" \
-          --preview-window=wrap \
-          --query "${*:-}" \
-    | cut -f2
+  sqlite3 -separator $'\t' "$db" "$sql" |
+    perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' |
+    fzf -m \
+      --reverse \
+      --preview "buku --nostdin -p {1}" \
+      --preview-window=wrap \
+      --query "${*:-}" |
+    cut -f2
 )
 
 [[ -n "$url" ]] && w3m "$url"

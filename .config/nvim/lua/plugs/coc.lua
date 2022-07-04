@@ -108,24 +108,31 @@ end
 
 -- Use K to show documentation in preview window
 function M.show_documentation()
-    local ft = vim.bo.ft
-    if _t({"help"}):contains(ft) then
-        cmd(("sil! h %s"):format(fn.expand("<cword>")))
-    elseif ft == "man" then
-        ex.Man(("%s"):format(fn.expand("<cword>")))
-    elseif fn.expand("%:t") == "Cargo.toml" then
-        require("crates").show_popup()
-    elseif fn["coc#rpc#ready"]() then
-        -- definitionHover -- doHover
-        local err, res = M.a2sync("definitionHover")
-        if err then
-            if res == "timeout" then
-                log.warn("Show documentation timeout", true)
+    local winid
+    if vim.wo.foldenable and vim.wo.foldmethod == "manual" then
+        winid = require("ufo").peekFoldedLinesUnderCursor()
+    end
+
+    if not winid then
+        local ft = vim.bo.ft
+        if _t({"help"}):contains(ft) then
+            cmd(("sil! h %s"):format(fn.expand("<cword>")))
+        elseif ft == "man" then
+            ex.Man(("%s"):format(fn.expand("<cword>")))
+        elseif fn.expand("%:t") == "Cargo.toml" then
+            require("crates").show_popup()
+        elseif fn["coc#rpc#ready"]() then
+            -- definitionHover -- doHover
+            local err, res = M.a2sync("definitionHover")
+            if err then
+                if res == "timeout" then
+                    log.warn("Show documentation timeout", true)
+                end
+                cmd("norm! K")
             end
-            cmd("norm! K")
+        else
+            cmd(("!%s %s"):format(vim.o.keywordprg, fn.expand("<cword>")))
         end
-    else
-        cmd(("!%s %s"):format(vim.o.keywordprg, fn.expand("<cword>")))
     end
 end
 
@@ -305,18 +312,13 @@ M.diagnostics_tracker = function()
     M.document = {}
     M.workspace = {}
 
-    curr_bufname = api.nvim_buf_get_name(0)
-
-    fn.CocActionAsync(
-        "diagnosticList",
-        function(err, res)
-            if err == vim.NIL then
-                for _, d in ipairs(res) do
-                    if d.file == curr_bufname then
-                        table.insert(M.document, d)
-                    end
-                    table.insert(M.workspace, d)
+    M.action("diagnosticList"):thenCall(
+        function(res)
+            for _, d in ipairs(res) do
+                if d.file == curr_bufname then
+                    table.insert(M.document, d)
                 end
+                table.insert(M.workspace, d)
             end
         end
     )
@@ -327,61 +329,57 @@ end
 ---@param nr number
 ---@param keep boolean
 function M.diagnostic(winid, nr, keep)
-    fn.CocActionAsync(
-        "diagnosticList",
-        "",
-        function(err, res)
-            if err == vim.NIL then
-                local items = {}
-                for _, d in ipairs(res) do
-                    local text =
-                        ("[%s%s] %s"):format(
-                        (d.source == "" and "coc.nvim" or d.source),
-                        (d.code == vim.NIL and "" or " " .. d.code),
-                        d.message:match("([^\n]+)\n*")
-                    )
-                    local item = {
-                        filename = d.file,
-                        lnum = d.lnum,
-                        end_lnum = d.end_lnum,
-                        col = d.col,
-                        end_col = d.end_col,
-                        text = text,
-                        type = d.severity
-                    }
-                    table.insert(items, item)
-                end
-                local id
-                if winid and nr then
-                    id = diag_qfid
-                else
-                    local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
-                    id, winid, nr = info.id, info.winid, info.nr
-                end
-                local action = id == 0 and " " or "r"
-                fn.setqflist(
-                    {},
-                    action,
-                    {
-                        id = id ~= 0 and id or nil,
-                        title = "CocDiagnosticList",
-                        items = items
-                    }
+    M.action("diagnosticList"):thenCall(
+        function(res)
+            local items = {}
+            for _, d in ipairs(res) do
+                local text =
+                    ("[%s%s] %s"):format(
+                    (d.source == "" and "coc.nvim" or d.source),
+                    (d.code == vim.NIL and "" or " " .. d.code),
+                    d.message:match("([^\n]+)\n*")
                 )
+                local item = {
+                    filename = d.file,
+                    lnum = d.lnum,
+                    end_lnum = d.end_lnum,
+                    col = d.col,
+                    end_col = d.end_col,
+                    text = text,
+                    type = d.severity
+                }
+                table.insert(items, item)
+            end
+            local id
+            if winid and nr then
+                id = diag_qfid
+            else
+                local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
+                id, winid, nr = info.id, info.winid, info.nr
+            end
+            local action = id == 0 and " " or "r"
+            fn.setqflist(
+                {},
+                action,
+                {
+                    id = id ~= 0 and id or nil,
+                    title = "CocDiagnosticList",
+                    items = items
+                }
+            )
 
-                if id == 0 then
-                    local info = fn.getqflist({id = id, nr = 0})
-                    diag_qfid, nr = info.id, info.nr
-                end
+            if id == 0 then
+                local info = fn.getqflist({id = id, nr = 0})
+                diag_qfid, nr = info.id, info.nr
+            end
 
-                if not keep then
-                    if winid == 0 then
-                        ex.bo("cope")
-                    else
-                        api.nvim_set_current_win(winid)
-                    end
-                    ex.sil(("%dchi"):format(nr))
+            if not keep then
+                if winid == 0 then
+                    ex.bo("cope")
+                else
+                    api.nvim_set_current_win(winid)
                 end
+                ex.sil(("%dchi"):format(nr))
             end
         end
     )
@@ -549,13 +547,17 @@ end
 function M.toggle_outline()
     local winid = fn["coc#window#find"]("cocViewId", "OUTLINE")
     if winid == -1 then
-        local err, res = M.a2sync("showOutline", {1})
-        if not err then
-            if res == "timeout" then
-                log.warn("Show outline timeout", true)
+        -- local err, res = M.a2sync("showOutline", {1})
+        -- if not err then
+        --     if res == "timeout" then
+        --         log.warn("Show outline timeout", true)
+        --     end
+        -- end
+        M.action("showOutline", 1):thenCall(
+            function(res)
+                ex.wincmd("l")
             end
-            ex.wincmd("l")
-        end
+        )
     else
         fn["coc#window#close"](winid)
     end
@@ -904,7 +906,6 @@ function M.init()
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
         }
     )
-
 
     -- === CodeActions ===
     -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff

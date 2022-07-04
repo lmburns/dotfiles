@@ -9,27 +9,27 @@ typeset -r BOLD=$(tput bold) RESET=$(tput sgr0)
 typeset -a files
 files=()
 while IFS= read -r f; do
-  files+=( "${f}" )
+	files+=("${f}")
 done < <(fd . --exact-depth=1 -0 | sort -z | xargs -0 -I{} basename {})
 
 typeset -a f_remove
 f_remove=()
 while IFS= read -r f; do
-  f_remove+=( "${f}" )
+	f_remove+=("${f}")
 done < <(
-  IFS=$'\n'
-  echo "${files[*]}" \
-    | perl -lane 'print $F[-1]' \
-    | fzf --ansi --exit-0 --multi
+	IFS=$'\n'
+	echo "${files[*]}" |
+		perl -lane 'print $F[-1]' |
+		fzf --ansi --exit-0 --multi
 )
 
 if [[ "${#f_remove[@]}" -ne 0 ]]; then
-  for f in "${f_remove[@]}"; do
-    trash-put "$f"
-    printf "  %b.%b	%-5b%s%b\n" "${BOLD}${CYAN}" "${RESET}" "${GREEN}Removing${RESET} ${RED}" "$f" "${RESET}" >&2
-  done
+	for f in "${f_remove[@]}"; do
+		trash-put "$f"
+		printf "  %b.%b	%-5b%s%b\n" "${BOLD}${CYAN}" "${RESET}" "${GREEN}Removing${RESET} ${RED}" "$f" "${RESET}" >&2
+	done
 else
-  printf "  %b.%b	%-5b" "${BOLD}${RED}" "${RESET}" "${YELLOW}No files selected${RESET}" >&2
+	printf "  %b.%b	%-5b" "${BOLD}${RED}" "${RESET}" "${YELLOW}No files selected${RESET}" >&2
 fi
 
 ###################################

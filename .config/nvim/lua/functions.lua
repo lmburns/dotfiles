@@ -7,6 +7,9 @@ local command = utils.command
 local map = utils.map
 local augroup = utils.augroup
 
+local Path = require("plenary.path")
+
+local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
@@ -274,19 +277,29 @@ function M.open_path()
         return vim.cmd("norm gx")
     end
 
+    -- Check whether it is a file
+    -- Expand relative links, e.g., ../lua/abbr.lua
+    local abs = Path:new(path):absolute()
+    if uv.fs_stat(abs) then
+        return vim.cmd("norm! gf")
+    end
+
     -- Any URI with a protocol segment
     local protocol_uri_regex = "%a*:%/%/[%a%d%#%[%]%-%%+:;!$@/?&=_.,~*()]*"
     if path:match(protocol_uri_regex) then
         return vim.cmd("norm! gf")
     end
 
-    -- consider anything that looks like string/string a github link
+    -- Consider anything that looks like string/string a github link
     local plugin_url_regex = "[%a%d%-%.%_]*%/[%a%d%-%.%_]*"
-    local link = string.match(path, plugin_url_regex)
-    if link then
+    local link = path:match(plugin_url_regex)
+    -- Check to make sure a path doesn't accidentally get picked up
+    local num_slashes = #vim.split(path, "/") - 1
+    if link and num_slashes == 1 then
         return M.open(("https://www.github.com/%s"):format(link))
     end
     return vim.cmd("norm! gf")
+    -- M.open(path)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
