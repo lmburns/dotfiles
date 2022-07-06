@@ -540,7 +540,9 @@ M.setup_treesurfer = function()
         {
             "function",
             "function_definition",
+            "function_declaration",
             "function_item",
+            "method_definition", -- Typescript + others
             "closure_expression",
             "if_statement",
             "if_expression",
@@ -554,7 +556,10 @@ M.setup_treesurfer = function()
             "switch_statement",
             "match_expression",
             "struct_item",
-            "enum_item"
+            "enum_item",
+            "class_declaration",
+            "try_statement",
+            "catch_clause",
         }
     )
 
@@ -590,11 +595,15 @@ M.setup_treesurfer = function()
                 ["function_item"] = "",
                 ["function_definition"] = "",
                 ["function"] = "",
+                ["method_definition"] = "",
                 ["variable_declaration"] = "",
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
                 ["field_declaration"] = "",
-                ["enum_variant"] = ""
+                ["enum_variant"] = "",
+                ["class_declaration"] = "",
+                ["try_statement"] = "",
+                ["catch_clause"] = "",
             }
         }
     )

@@ -1261,7 +1261,7 @@ wk.register(
     {
         [";b"] = {":Telescope builtin<CR>", "Telescope builtins"},
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
-        ["<LocalLeader>b"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
+        ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
         ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},

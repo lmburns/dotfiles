@@ -143,7 +143,7 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 wk.register(
     {
         ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
-        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
@@ -278,34 +278,13 @@ wk.register(
                 [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
                 "Split last buffer (vertically)"
             },
-            H = {
-                "<C-w>t<C-w>K",
-                "Change vertical to horizontal"
-            },
-            V = {
-                "<C-w>t<C-w>H",
-                "Change horizontal to vertical"
-            },
-            [";"] = {
-                [[<Cmd>lua require('common.win').go2recent()<CR>]],
-                "Focus last buffer"
-            },
-            ["X"] = {
-                utils.close_all_floating_wins,
-                "Close all floating windows"
-            },
-            ["<C-w>"] = {
-                utils.focus_floating_win,
-                "Focus floating window"
-            },
-            ["<C-t>"] = {
-                "<Cmd>tab sp<CR>",
-                "Split tab"
-            },
-            ["O"] = {
-                "<Cmd>tabo<CR>",
-                "Close all other tabs except this one"
-            }
+            H = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
+            V = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
+            [";"] = {[[<Cmd>lua require('common.win').go2recent()<CR>]], "Focus last buffer"},
+            ["X"] = {utils.close_all_floating_wins, "Close all floating windows"},
+            ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
+            ["<C-t>"] = {"<Cmd>tab sp<CR>", "Split tab"},
+            ["O"] = {"<Cmd>tabo<CR>", "Close all other tabs except this one"}
         }
     }
 )

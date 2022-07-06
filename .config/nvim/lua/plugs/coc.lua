@@ -7,6 +7,7 @@ local log = require("common.log")
 local C = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
+local bmap = utils.bap
 local augroup = utils.augroup
 
 local wk = require("which-key")
@@ -77,13 +78,13 @@ function M.go2def()
             if
                 not pcall(
                     function()
-                        local wv = fn.winsaveview()
+                        local wv = utils.save_win_positions()
                         ex.ltag(cword)
                         local def_size = fn.getloclist(0, {size = 0}).size
                         by = "ltag"
                         if def_size > 1 then
                             api.nvim_set_current_buf(cur_bufnr)
-                            fn.winrestview(wv)
+                            wv.restore()
                             ex.abo("lw")
                         elseif def_size == 1 then
                             ex.lcl()
@@ -176,10 +177,11 @@ end
 
 ---Run an asynchronous CocAction using a Javascript type framework of Promise
 ---@param action string
----@vararg table
+---@param args table?
+---@param timeout number?
 ---@return Promise
-function M.action(action, ...)
-    local args = {...}
+function M.action(action, args, timeout)
+    local args = vim.deepcopy(F.if_nil(args, {}))
     return promise.new(
         function(resolve, reject)
             table.insert(
@@ -191,7 +193,17 @@ function M.action(action, ...)
                         if res == vim.NIL then
                             res = nil
                         end
-                        resolve(res)
+
+                        if timeout then
+                            dev.setTimeout(
+                                function()
+                                    resolve(res)
+                                end,
+                                1000
+                            )
+                        else
+                            resolve(res)
+                        end
                     end
                 end
             )
@@ -201,7 +213,7 @@ function M.action(action, ...)
 end
 
 function M.runCommand(name, ...)
-    return M.action("runCommand", name, ...)
+    return M.action("runCommand", {name, ...})
 end
 
 -- Code actions
@@ -458,12 +470,24 @@ end)()
 ---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
     local winid = g.coc_last_float_win
+
+    local lv = D.npcall(require, "link-visitor")
+    if not lv then
+        return
+    end
+
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
         api.nvim_buf_call(
             bufnr,
             function()
+                local bmap = utils.bmap
                 vim.wo[winid].showbreak = "NONE"
+
+                if lv then
+                    bmap(bufnr, "n", "K", D._(lv.link_under_cursor), {desc = "Link under cursor"})
+                    bmap(bufnr, "n", "L", D._(lv.link_near_cursor), {desc = "Link near cursor"})
+                end
             end
         )
     end
@@ -553,7 +577,8 @@ function M.toggle_outline()
         --         log.warn("Show outline timeout", true)
         --     end
         -- end
-        M.action("showOutline", 1):thenCall(
+
+        M.action("showOutline", {1}):thenCall(
             function(res)
                 ex.wincmd("l")
             end
@@ -781,14 +806,14 @@ function M.init()
                     vim.b.coc_diagnostic_disable = 1
                 end
             end
+        },
+        {
+            event = "User",
+            pattern = "CocOpenFloat",
+            command = function()
+                require("plugs.coc").post_open_float()
+            end
         }
-        -- {
-        --     event = "User",
-        --     pattern = "CocOpenFloat",
-        --     command = function()
-        --         require("plugs.coc").post_open_float()
-        --     end
-        -- }
     )
 
     C.plugin(

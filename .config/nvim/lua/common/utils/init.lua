@@ -689,14 +689,14 @@ end
 ---@param msg string
 ---@param level number?
 ---@param title string?
-N = function(msg, level, title)
+_G.N = function(msg, level, title)
     M.notify(vim.inspect(msg), M.get_default(level, log.levels.INFO), {title = title})
 end
 
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
     local view = M.save_win_positions(0)
-    local arguments = fmt("%q", arguments)
+    local arguments = ("%q"):format(arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     cmd(("keepj keepp execute %s"):format(arguments))
     -- ex.keepjumps(ex.keeppatterns(ex.execute(arguments)))

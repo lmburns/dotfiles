@@ -16,6 +16,8 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
+local F = vim.F
+
 local stl = require("common.utils.stl")
 local conds = stl.conditions
 local plugs = stl.plugins
@@ -78,7 +80,19 @@ local sections_1 = {
             },
             color = function(section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
-                return {gui = vim.bo.modified and "bold" or "none"}
+                return {gui = F.tern(vim.bo.modified, "bold", "none")}
+            end,
+            fmt = function(str)
+                local bufname = api.nvim_buf_get_name(0)
+                local fugitive_name = vim.b.fugitive_fname
+                if not fugitive_name then
+                    if bufname:match("^fugitive:") and fn.exists("*FugitiveReal") == 1 then
+                        fugitive_name = fn.fnamemodify(fn.FugitiveReal(bufname), ":t") .. " "
+                        vim.b.fugitive_fname = fugitive_name
+                    end
+                end
+
+                return F.tern(fugitive_name, fugitive_name, str)
             end
         },
         {
@@ -137,9 +151,10 @@ local sections_1 = {
         },
         {plugs.quickfix_count.fn, separator = {left = plugs.sep()}},
         plugs.loclist_count.fn,
-        "%l:%c",
-        -- "%p%%" .. (("/%s"):format(require("common.builtin").tokei() or "")) .. "/%L",
-        "%p%%/%L",
+        "%3l %3v",
+        "%p%%/%-3L",
+        -- "%l:%c",
+        -- "%p%%/%L",
         plugs.search_result.fn
     }
 }
@@ -319,7 +334,7 @@ local function init()
                         },
                         color = function(section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
-                            return {gui = vim.bo.modified and "bold" or "none"}
+                            return {gui = F.tern(vim.bo.modified, "bold", "none")}
                         end
                     }
                 },

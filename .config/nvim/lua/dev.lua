@@ -72,6 +72,7 @@ M.ok_or_nil = function(status, ...)
         return
     end
     return ...
+
 end
 
 ---Nil `pcall`.
@@ -129,6 +130,10 @@ M.ithunk = function(fun, ...)
         return fun(unpack(bound))
     end
 end
+
+---Shorthand aliases for these funtions
+M.__ = M.thunk
+M._ = M.ithunk
 
 ---Get the output of a system command in a table
 ---@param cmd string|table
@@ -250,7 +255,23 @@ end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Table                           │
+
 -- ╰──────────────────────────────────────────────────────────╯
+---Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
+---@vararg any any number of items to pack
+---@return table
+M.tbl_pack = function(...)
+    return {n = select("#", ...), ...}
+end
+
+---Unpack a table into arguments. Similar to `table.unpack`
+---@param t table table to unpack
+---@param i number
+---@param j number
+---@return any
+M.tbl_unpack = function(t, i, j)
+    return unpack(t, i or 1, j or t.n or #t)
+end
 
 ---Create table whose keys are now the values, and the values are now the keys
 ---Similar to vim.tbl_add_reverse_lookup
@@ -354,22 +375,6 @@ M.tbl_reduce = function(tbl, func, acc)
         acc = func(acc, v, k)
     end
     return acc
-end
-
----Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
----@vararg any any number of items to pack
----@return table
-M.tbl_pack = function(...)
-    return {n = select("#", ...), ...}
-end
-
----Unpack a table into arguments. Similar to `table.unpack`
----@param t table table to unpack
----@param i number
----@param j number
----@return any
-M.tbl_unpack = function(t, i, j)
-    return unpack(t, i or 1, j or t.n or #t)
 end
 
 ---Clear a table's values
@@ -1133,6 +1138,10 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Async                           │
 -- ╰──────────────────────────────────────────────────────────╯
+---Set a timeout
+---@param callback function
+---@param ms number
+---@return userdata
 M.setTimeout = function(callback, ms)
     local timer = uv.new_timer()
     timer:start(

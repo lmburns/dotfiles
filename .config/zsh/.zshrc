@@ -468,7 +468,9 @@ zt 0c light-mode binary for \
   lbin atclone"./build.zsh" mv"*.*completion -> _zunit" atpull"%atclone" \
     molovo/zunit \
   lbin mv"*.*completion -> _revolver" \
-    molovo/revolver
+    molovo/revolver \
+  lbin'**/fzf-panes.tmux; **/fzfp' \
+    kevinhwang91/fzf-tmux-script
 
 # atclone'local d="$XDG_CONFIG_HOME/tmux/plugins";
 # [[ ! -d "$d" ]] && mkdir -p "$d"; ln -sf %DIR% "$d/tpm"' \

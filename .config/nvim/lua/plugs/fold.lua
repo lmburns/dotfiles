@@ -225,7 +225,7 @@ end
 ---@param forward boolean should move forward?
 M.nav_fold = function(forward)
     local cnt = v.count1
-    local wv = fn.winsaveview()
+    local wv = utils.save_win_positions()
     cmd([[norm! m`]])
     local cur_l, cur_c
     while cnt > 0 do
@@ -250,7 +250,7 @@ M.nav_fold = function(forward)
     local cur_l1, cur_c1 = unpack(api.nvim_win_get_cursor(0))
     if cur_l == cur_l1 and cur_c == cur_c1 then
         if forward or fn.foldclosed(cur_l) == -1 then
-            fn.winrestview(wv)
+            wv.restore()
         end
     end
 end
@@ -355,9 +355,10 @@ local handler = function(virt_text, lnum, end_lnum, width, truncate)
     return new_virt_text
 end
 
-local ft_map = {
+local ftMap = {
     zsh = "indent",
-    lua = "treesitter"
+    lua = "treesitter",
+    tmux = {"indent", "treesitter", "lsp"}
 }
 
 ---Setup 'ultra-fold'
@@ -382,6 +383,7 @@ M.setup_ufo = function()
                     scrollD = "<C-d>"
                 }
             },
+            ---@diagnostic disable-next-line:unused-local
             provider_selector = function(bufnr, filetype)
                 -- return a string type use internal providers
                 -- return a string in a table like a string type
@@ -390,7 +392,7 @@ M.setup_ufo = function()
 
                 -- if you prefer treesitter provider rather than lsp,
                 -- return ftMap[filetype] or {'treesitter', 'indent'}
-                return ft_map[filetype]
+                return ftMap[filetype]
             end
         }
     )
@@ -436,6 +438,8 @@ local function init()
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"zsh"}
 
+
+
     -- local parsers = require("nvim-treesitter.parsers")
     -- local configs = parsers.get_parser_configs()
     --
@@ -479,6 +483,7 @@ local function init()
     --     {nargs = 0}
     -- )
 
+    -- These is only here as a backup
     map("n", ";fo", "AnyFoldActivate", {cmd = true, desc = "Manually fold"})
 
     -- for _, bufnr in ipairs(api.nvim_list_bufs()) do

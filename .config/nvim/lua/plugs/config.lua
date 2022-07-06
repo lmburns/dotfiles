@@ -10,7 +10,7 @@ local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
 local C = require("common.color")
-
+local coc = require("plugs.coc")
 local utils = require("common.utils")
 local bmap = utils.bmap
 local map = utils.map
@@ -271,7 +271,7 @@ function M.link_visitor()
 
     map("n", "gw", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
 
-    augroup(
+        augroup(
         "lmb__LinkVisitor",
         {
             event = "User",
@@ -291,6 +291,7 @@ function M.link_visitor()
             end
         }
     )
+
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1859,9 +1860,8 @@ function M.git_conflict()
         {
             {
                 default_mappings = false,
-                disable_diagnostics = false, -- This will disable the diagnostics in a buffer whilst it is conflicted
+                disable_diagnostics = false, -- will disable diagnostics while conflicted
                 highlights = {
-                    -- They must have background color, otherwise the default color will be used
                     incoming = "DiffText",
                     current = "DiffAdd"
                 }
