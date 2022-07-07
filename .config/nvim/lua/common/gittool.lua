@@ -3,6 +3,15 @@ local M = {}
 local log = require("common.log")
 local utils = require("common.utils")
 
+local Job = require("plenary.job")
+
+local ex = nvim.ex
+local fs = vim.fs
+local fn = vim.fn
+local api = vim.api
+local uv = vim.loop
+local cmd = vim.cmd
+
 ---Execute a git command
 ---@param args table arguments to pass to git
 ---@param cb fun(v: string)
@@ -45,7 +54,7 @@ function M.root(path)
     else
         local git_dir = vim.b.git_dir
         if git_dir then
-            return fn.fnamemodify(git_dir, ":h")
+            return fs.dirname(git_dir)
         else
             path = api.nvim_buf_get_name(0)
         end
@@ -54,7 +63,7 @@ function M.root(path)
     local ret = ""
     while path ~= prev do
         prev = path
-        path = fn.fnamemodify(path, ":h")
+        path = fs.dirname(path)
         local st = uv.fs_stat(path .. "/.git")
         local stt = st and st.type
         if stt and stt == "directory" or stt == "file" then
@@ -97,7 +106,12 @@ function M.root_exe(exec, path)
     end
 
     if r ~= "" then
-        fn.win_execute(cur_winid, "noa lcd " .. old_cwd)
+        api.nvim_win_call(
+            cur_winid,
+            function()
+                ex.noa(("lcd %s"):format(old_cwd))
+            end
+        )
     end
 
     return ok and res or nil

@@ -25,6 +25,11 @@ function M.toggle_deleted()
     log.info(("Gitsigns %s show_deleted"):format(config.show_deleted and "enable" or "disable"))
 end
 
+function M.toggle_linehl()
+    require("gitsigns").toggle_linehl()
+    log.info(("Gitsigns %s toggle_linehl"):format(config.linehl and "enable" or "disable"))
+end
+
 local function mappings(bufnr)
     local gs = package.loaded.gitsigns
 
@@ -37,10 +42,10 @@ local function mappings(bufnr)
             ["<Leader>hr"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
             ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
-            ["<Leader>hq"] = {"<Cmd>Gitsigns setqflist<CR>", "Set qflist (git)"},
-            ["<Leader>hQ"] = {"<Cmd>Gitsigns setqflist all<CR>", "Set qflist all (git)"},
+            ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
+            ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
             ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
-            ["<Leader>hl"] = {"<Cmd>Gitsigns toggle_linehl<CR>", "Toggle line highlight (git)"},
+            ["<Leader>hl"] = {"<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>", "Toggle line highlight (git)"},
             ["<Leader>hw"] = {"<Cmd>Gitsigns toggle_word_diff<CR>", "Toggle word diff (git)"},
             ["<Leader>hB"] = {"<cmd>Gitsigns toggle_current_line_blame<CR>", "Toggle blame line virt (git)"},
             ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}

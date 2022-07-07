@@ -278,7 +278,6 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
         command = function()
             vim.schedule(
                 function()
-                    -- cmd("redrawstatus")
                     ex.redrawstatus()
                 end
             )
@@ -545,7 +544,7 @@ nvim.autocmd.lmb__TermMappings = {
 local split_should_return = function()
     -- do nothing for floating windows
     local cfg = api.nvim_win_get_config(0)
-    if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) then
+    if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) or api.nvim_win_get_height(0) == 1 then
         return true
     end
     -- do not run if Diffview is open
@@ -597,19 +596,16 @@ nvim.autocmd.lmb__Help = {
         end,
         desc = "Equalize and create mapping for manpages"
     },
-    -- NOTE: Works when opening man with ':Man' but not with telescope or fzf-lua
-    --       if the event is BufHidden. However, BufLeave fixes this problem
     {
-        -- event = "BufLeave",
         event = "BufHidden",
-        pattern = "*",
+        pattern = "man://*",
         command = function()
-            if b.ft == "man" then
-                local bufnr = nvim.buf.nr()
+            if vim.bo.ft == "man" then
+                local bufnr = api.nvim_get_current_buf()
                 vim.defer_fn(
                     function()
-                        if nvim.buf.is_valid(bufnr) then
-                            nvim.buf.delete(bufnr, {force = true})
+                        if api.nvim_buf_is_valid(bufnr) then
+                            api.nvim_buf_delete(bufnr, {force = true})
                         end
                     end,
                     0
@@ -705,7 +701,6 @@ nvim.autocmd.lmb__SmartClose = {
         command = function()
             if vim.bo.filetype ~= "qf" then
                 cmd("sil! lcl")
-            -- ex.silent_("lclose")
             end
         end,
         desc = "Close loclist when quitting window"

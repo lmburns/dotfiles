@@ -173,11 +173,11 @@ function M.Reload()
 
     -- Source init file
     if string.match(fn.expand("$VIMRC"), "%.lua$") then
-        -- ex.luafile("$VIMRC")
-        vim.cmd("luafile $VIMRC")
+        -- ex.luafile("$NVIMRC")
+        vim.cmd("luafile $NVIMRC")
     else
-        -- ex.source("$VIMRC")
-        vim.cmd("source $VIMRC")
+        -- ex.source("$NVIMRC")
+        vim.cmd("source $NVIMRC")
     end
 
     -- Reload start plugins
@@ -198,9 +198,6 @@ function M.Restart()
     vim.cmd("doautoall BufEnter")
     vim.cmd("doautoall FileType")
     vim.cmd("doautoall VimEnter")
-    -- ex.doautoall("BufEnter")
-    -- ex.doautoall("FileType")
-    -- ex.doautoall("VimEnter")
 end
 
 return M

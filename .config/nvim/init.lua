@@ -241,6 +241,7 @@ vim.schedule(
                     -- "coc-rescript",
                     -- "coc-dlang",
                     -- "coc-yank",
+                    -- "coc-lightbulb",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
@@ -273,7 +274,6 @@ vim.schedule(
                     "coc-snippets",
                     "coc-diagnostic",
                     "coc-fzf-preview",
-                    "coc-lightbulb",
                     "coc-marketplace",
                     "coc-tabnine",
                     "coc-tag",

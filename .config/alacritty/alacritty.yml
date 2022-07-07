@@ -232,6 +232,10 @@ schemes:
       cyan: "#088649"
       white: "#a89983"
 
+    indexed_colors:
+      - { index: 16, color: "#ffa066" }
+      - { index: 17, color: "#ff5d62" }
+
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
       background: "#282828"
@@ -434,6 +438,7 @@ cursor:
     shape: Block
     blinking: Always
     blink_interval: 750
+    blink_timeout: 5
     unfocused_hollow: true
     vi_mode_style: Block
     thickness: 0.15
@@ -921,33 +926,33 @@ key_bindings:
   # meta      0b100000    (32)
   # caps_lock 0b1000000   (64)
   # num_lock  0b10000000  (128)
-  - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
-  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
-  - { key: J, mods: Control|Shift, chars: "\x1b[74;6u" }
-  - { key: K, mods: Control|Shift, chars: "\x1b[75;6u" }
-  - { key: H, mods: Control|Shift, chars: "\x1b[72;6u" }
-  - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
-  - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
-  - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  - { key: Return,     mods: Shift,             chars: "\x1b[13;2u"  }
+  - { key: Return,     mods: Control,           chars: "\x1b[13;5u"  }
+  - { key: J,          mods: Control|Shift,     chars: "\x1b[74;6u"  }
+  - { key: K,          mods: Control|Shift,     chars: "\x1b[75;6u"  }
+  - { key: H,          mods: Control|Shift,     chars: "\x1b[72;6u"  }
+  - { key: L,          mods: Control|Shift,     chars: "\x1b[76;6u"  }
+  - { key: M,          mods: Control|Shift,     chars: "\x1b[77;6u"  }
+  - { key: N,          mods: Control|Shift,     chars: "\x1b[78;6u"  }
   # - { key: I, mods: Control, chars: "\x1b[105;5u" }
-  - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
-  - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
-  - { key: 0x28, mods: Control|Shift|Alt, chars: "\x1b[34;8u" } # Double quote
-  - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
-  - { key: 0x34, mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
-  - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
-  - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
-  - { key: Period, mods: Control|Shift, chars: "\x1b[46;6u" }
-  - { key: Return, mods: Control|Alt, chars: "\x1b[13;7u" }
-  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
-  - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
-  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
-  - { key: Comma, mods: Control|Alt, chars: "\x1b[44;7u" }
-  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
-  - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
-  - { key: O, mods: Control|Alt, chars: "\x1b[111;7u" }
-  - { key: I, mods: Control|Alt, chars: "\x1b[105;7u" }
-  - { key: I, mods: Control, chars: "\x1b[105;5u" }
+  - { key: 0x28,       mods: Control|Shift,     chars: "\x1b[34;6u"  } # Double quote
+  - { key: 0x28,       mods: Alt|Shift,         chars: "\x1b[34;4u"  } # Double quote
+  - { key: 0x28,       mods: Control|Shift|Alt, chars: "\x1b[34;8u"  } # Double quote
+  - { key: 0x33,       mods: Control|Shift,     chars: "\x1b[60;6u"  } # Less than
+  - { key: 0x34,       mods: Control|Shift,     chars: "\x1b[62;6u"  } # Greater than
+  - { key: 0x35,       mods: Control|Shift,     chars: "\x1b[63;6u"  } # Question mark
+  - { key: Colon,      mods: Control|Shift,     chars: "\x1b[58;6u"  }
+  - { key: Period,     mods: Control|Shift,     chars: "\x1b[46;6u"  }
+  - { key: Return,     mods: Control|Alt,       chars: "\x1b[13;7u"  }
+  - { key: Period,     mods: Control,           chars: "\x1b[46;5u"  }
+  - { key: Period,     mods: Control|Alt,       chars: "\x1b[46;7u"  }
+  - { key: Comma,      mods: Control,           chars: "\x1b[44;5u"  }
+  - { key: Comma,      mods: Control|Alt,       chars: "\x1b[44;7u"  }
+  - { key: Apostrophe, mods: Control,           chars: "\x1b[39;5u"  }
+  - { key: Apostrophe, mods: Control|Alt,       chars: "\x1b[39;7u"  }
+  - { key: O,          mods: Control|Alt,       chars: "\x1b[111;7u" }
+  - { key: I,          mods: Control|Alt,       chars: "\x1b[105;7u" }
+  - { key: I,          mods: Control,           chars: "\x1b[105;5u" }
 
   # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
   # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
@@ -961,7 +966,35 @@ key_bindings:
   # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
   # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
 
-  # Vi Mode
+  # Map Control-([1-9]|[0;']) to Control-[F1-F12] (F25-F36)
+  - { key: Key1,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x50"     }
+  - { key: Key2,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x51"     }
+  - { key: Key3,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x52"     }
+  - { key: Key4,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x53"     }
+  - { key: Key5,      mods: Control,       chars: "\x1b\x5b\x31\x35\x3b\x35\x7e" }
+  - { key: Key6,      mods: Control,       chars: "\x1b\x5b\x31\x37\x3b\x35\x7e" }
+  - { key: Key7,      mods: Control,       chars: "\x1b\x5b\x31\x38\x3b\x35\x7e" }
+  - { key: Key8,      mods: Control,       chars: "\x1b\x5b\x31\x39\x3b\x35\x7e" }
+  - { key: Key9,      mods: Control,       chars: "\x1b\x5b\x32\x30\x3b\x35\x7e" }
+  - { key: Key0,      mods: Control,       chars: "\x1b\x5b\x32\x31\x3b\x35\x7e" }
+  # - { key: Semicolon, mods: Control,       chars: "\x1b\x5b\x32\x33\x3b\x35\x7e" }
+  # - { key: Apostrophe,mods: Control,       chars: "\x1b\x5b\x32\x34\x3b\x35\x7e" }
+
+  # Map Control-Alt-([1-9]) and Control-[,.] to Control-Shift-[F1-F12] (F37-F48)
+  - { key: Key1,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x50"     }
+  - { key: Key2,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x51"     }
+  - { key: Key3,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x52"     }
+  - { key: Key4,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x53"     }
+  - { key: Key5,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x35\x3b\x36\x7e" }
+  - { key: Key6,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x37\x3b\x36\x7e" }
+  - { key: Key7,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x38\x3b\x36\x7e" }
+  - { key: Key8,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x39\x3b\x36\x7e" }
+  - { key: Key9,      mods: Control|Alt,   chars: "\x1b\x5b\x32\x30\x3b\x36\x7e" }
+  - { key: Key0,      mods: Control|Alt,   chars: "\x1b\x5b\x32\x31\x3b\x36\x7e" }
+
+  #  ╭──────────────────────────────────────────────────────────╮
+  #  │                         Vi Mode                          │
+  #  ╰──────────────────────────────────────────────────────────╯
   - { key: Space, mods: Control, mode: Vi, action: ScrollToBottom }
   - { key: Space, mods: Control, action: ToggleViMode }
   - { key: I, mode: Vi|~Search, action: ScrollToBottom }
@@ -1031,3 +1064,6 @@ debug:
 
   # Print all received window events.
   print_events: false
+
+  # Highlight window damage information.
+  highlight_damage: true

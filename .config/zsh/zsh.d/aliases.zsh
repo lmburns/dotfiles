@@ -48,7 +48,6 @@ alias xmm="xmodmap"
 alias s="systemctl"
 alias bctl="bluetoothctl"
 alias plast="last -20"
-alias mux="tmuxinator"
 
 alias fehh='feh \
            --scale-down \
@@ -285,6 +284,7 @@ alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
   alias nskhdh='$EDITOR $XDG_CONFIG_HOME/sxhkd/mappings'
 }
 
+# ═══ Sourcing ═════════════════════════════════════════════════════════════════
 alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
 alias srce='source $HOME/.zshenv'
 alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
@@ -411,6 +411,12 @@ alias pbpaste="xsel --clipboard --output"
 alias pbc='pbcopy'
 alias pbp='pbpaste'
 
+alias lsf='lsof -w'
+alias lsfp='lsof -w -p'
+
+alias vmst='vmstat -SM 1'
+alias iost='iostat -y -d -h -t 1'
+
 alias jrnlw='jrnl wiki'
 alias nb='BROWSER=w3m nb'
 # alias jrnl='jrnl'
@@ -438,8 +444,10 @@ alias cleanzsh='sudo rm -rf /private/var/log/asl/*.asl'
 alias zath='zathura'
 alias n='man'
 
+alias mux="tmuxinator"
 alias tn='tmux new-session -s'
 alias tll='tmux list-sessions'
+alias tmuxls="ls $TMPDIR/tmux*/"
 
 alias mycli='LESS="-S $LESS" mycli'
 alias litecli='LESS="-S $LESS" litecli'

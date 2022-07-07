@@ -18,6 +18,7 @@ local command = utils.command
 local augroup = utils.augroup
 -- local autocmd = utils.autocmd
 
+local fs = vim.fs
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
@@ -298,7 +299,8 @@ end
 -- │                           Suda                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.suda()
-    map("c", "w!!", ":SudaWrite<CR>")
+    -- map("c", "w!!", ":SudaWrite<CR>")
+    map("n", "<Leader>W", ":SudaWrite<CR>")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -389,25 +391,6 @@ end
 -- │                         Markdown                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.markdown()
-    g.markdown_fenced_languages = {
-        "vim",
-        "html",
-        "c",
-        "py=python",
-        "python",
-        "go",
-        "rust",
-        "rs=rust",
-        "js=javascript",
-        "sh",
-        "shell=sh",
-        "bash=sh",
-        "json",
-        "yaml",
-        "toml",
-        "help"
-    }
-    -- use `ge`
     g.vim_markdown_follow_anchor = 1
     -- g.vim_markdown_folding_disabled = 1
 
@@ -1891,7 +1874,7 @@ function M.git_conflict()
                 vim.defer_fn(
                     function()
                         log.warn(
-                            ("Conflict detected in %s"):format(fn.fnamemodify(bufname, ":t")),
+                            ("Conflict detected in %s"):format(fs.basename(bufname)),
                             true,
                             {title = "GitConflict"}
                         )

@@ -16,6 +16,7 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
+local fn = vim.fn
 local F = vim.F
 
 local stl = require("common.utils.stl")
@@ -151,7 +152,12 @@ local sections_1 = {
         },
         {plugs.quickfix_count.fn, separator = {left = plugs.sep()}},
         plugs.loclist_count.fn,
-        "%3l %3v",
+        {
+            "%3l %3v",
+            fmt = function(s)
+                return ("%s %s"):format(icons.misc.line, s)
+            end
+        },
         "%p%%/%-3L",
         -- "%l:%c",
         -- "%p%%/%L",

@@ -1,9 +1,10 @@
 local M = {}
 
+local D = require("dev")
+local _  = D._
 local utils = require("common.utils")
--- local funcs = require("functions")
--- local command = utils.command
 local map = utils.map
+
 
 -- local ex = nvim.ex
 -- local api = vim.api
@@ -105,7 +106,7 @@ wk.register(
 -- Yank mappings
 wk.register(
     {
-        ["yd"] = {dev.ithunk(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")), "Copy directory"},
+        ["yd"] = {_(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")), "Copy directory"},
         ["yn"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>", "Copy file name"},
         ["yp"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>", "Copy full path"}
     }

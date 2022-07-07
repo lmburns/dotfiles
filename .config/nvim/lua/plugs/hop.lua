@@ -130,6 +130,9 @@ local function init()
     -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
     map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
 
+    map("n", "g(", "<cmd>lua require'hop'.hint_patterns({}, '(')<CR>", {desc = "Previous brace"})
+    map("n", "g)", "<cmd>lua require'hop'.hint_patterns({}, ')')<CR>", {desc = "Next brace"})
+
     -- ========================== f-Mapping ==========================
 
     -- f => |word here  :  Press 'fe'  =>  word h|re
@@ -296,7 +299,7 @@ local function init()
                     direction = require("hop.hint").HintDirection.AFTER_CURSOR,
                     current_line_only = true,
                     hint_offset = -1,
-                    inclusive_jump = false,
+                    inclusive_jump = false
                 }
             )
         end

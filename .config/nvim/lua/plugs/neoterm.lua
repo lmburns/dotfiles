@@ -136,7 +136,7 @@ local function init()
             shell = vim.o.shell,
             direction = "float",
             -- direction = "horizontal",
-            close_on_exit = true,
+            close_on_exit = false,
             float_opts = {
                 border = "rounded",
                 width = math.floor(vim.o.columns * 0.85),

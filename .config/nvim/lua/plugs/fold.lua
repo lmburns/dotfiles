@@ -358,7 +358,7 @@ end
 local ftMap = {
     zsh = "indent",
     lua = "treesitter",
-    tmux = {"indent", "treesitter", "lsp"}
+    tmux = {"indent"}
 }
 
 ---Setup 'ultra-fold'
@@ -379,8 +379,15 @@ M.setup_ufo = function()
                     winblend = 0
                 },
                 mappings = {
+                    scrollB = "",
+                    scrollF = "",
                     scrollU = "<C-u>",
-                    scrollD = "<C-d>"
+                    scrollD = "<C-d>",
+                    scrollE = "<C-e>",
+                    scrollY = "<C-y>",
+                    close = "q",
+                    switch = "<Tab>",
+                    trace = "<CR>"
                 }
             },
             ---@diagnostic disable-next-line:unused-local
@@ -437,8 +444,6 @@ local function init()
     }
     coc_loaded_ft = {}
     anyfold_prefer_ft = {"zsh"}
-
-
 
     -- local parsers = require("nvim-treesitter.parsers")
     -- local configs = parsers.get_parser_configs()

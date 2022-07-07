@@ -72,7 +72,6 @@ M.ok_or_nil = function(status, ...)
         return
     end
     return ...
-
 end
 
 ---Nil `pcall`.
@@ -144,7 +143,7 @@ end
 
 ---Get the output of a vim command in a table
 ---@param cmd string|table
----@return table
+---@return table?
 M.get_vim_output = function(cmd)
     local out = api.nvim_exec(cmd, true)
     local res = vim.split(out, "\n", {trimempty = true})
@@ -999,11 +998,11 @@ M.reload_module = function(path, recursive, req)
             return to_return
         end
     else
+        ---@diagnostic disable-next-line:missing-return
         package.loaded[path] = nil
         if req then
             return require(path)
         end
-        ---@diagnostic disable-next-line:missing-return
     end
 end
 
@@ -1153,6 +1152,24 @@ M.setTimeout = function(callback, ms)
         end
     )
     return timer
+end
+
+---@param ms number
+---@return Promise
+M.wait = function(ms)
+    return require("promise")(
+        function(resolve)
+            local timer = uv.new_timer()
+            timer:start(
+                ms,
+                0,
+                function()
+                    timer:close()
+                    resolve()
+                end
+            )
+        end
+    )
 end
 
 -- Examples:  https://github.com/luvit/luv/tree/master/examples

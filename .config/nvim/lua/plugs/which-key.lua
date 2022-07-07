@@ -6,6 +6,7 @@ if not wk then
     return
 end
 
+local style = require("style")
 local utils = require("common.utils")
 local map = utils.map
 
@@ -66,7 +67,7 @@ function M.setup()
             scroll_up = "<c-u>" -- binding to scroll up inside the popup
         },
         window = {
-            border = "rounded", -- none, single, double, shadow
+            border = style.current.border, -- none, single, double, shadow
             position = "bottom", -- bottom, top
             margin = {1, 0, 1, 0}, -- extra window margin [top, right, bottom, left]
             padding = {2, 2, 2, 2}, -- extra window padding [top, right, bottom, left]
@@ -87,6 +88,7 @@ function M.setup()
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
+            c = {},
             -- n = {"d", '"_d'},
             -- o = {"d", '"_d'}
             -- n = {"o", "O"} -- Would be nice if two letter worked

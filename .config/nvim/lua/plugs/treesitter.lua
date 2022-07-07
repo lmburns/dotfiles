@@ -12,13 +12,16 @@ local color = require("common.color")
 local wk = require("which-key")
 
 local ex = nvim.ex
+local g = vim.g
 local fn = vim.fn
 local api = vim.api
+local F = vim.F
 
 local ft_enabled
 local queries
 local parsers
 local configs
+local ts_disabled
 
 local context_vt_max_lines = 2000
 
@@ -67,25 +70,6 @@ function M.hijack_synset()
         end
     end
 end
-
--- function M.get_current_node(node_name, linenr)
---     vim.validate {
---         node_name = { node_name, 'string' },
---         linenr = { linenr, 'number', true },
---     }
---     local cursor = nvim.win.get_cursor(0)
---     linenr = linenr or cursor[1]
---
---     local func_list = M.list_nodes(node_name)
---
---     for idx, func in ipairs(func_list) do
---         if is_in_range(linenr, { func[2], func[3] }) then
---             return func_list[idx]
---         end
---     end
---
---     return nil
--- end
 
 M.setup_hlargs = function()
     ex.packadd("hlargs.nvim")
@@ -559,7 +543,7 @@ M.setup_treesurfer = function()
             "enum_item",
             "class_declaration",
             "try_statement",
-            "catch_clause",
+            "catch_clause"
         }
     )
 
@@ -603,7 +587,7 @@ M.setup_treesurfer = function()
                 ["enum_variant"] = "",
                 ["class_declaration"] = "",
                 ["try_statement"] = "",
-                ["catch_clause"] = "",
+                ["catch_clause"] = ""
             }
         }
     )
@@ -697,9 +681,11 @@ end
 M.setup = function()
     return {
         ensure_installed = {
-            "bash",
-            "cmake",
             -- "css",
+            "bash",
+            "c",
+            "cpp",
+            "cmake",
             "d",
             "dart",
             "dockerfile",
@@ -712,10 +698,12 @@ M.setup = function()
             "javascript",
             "json",
             "kotlin",
+            "latex",
             "lua",
             "luap", -- lua regex?
             "make",
-            -- "markdown",
+            "markdown",
+            "markdown_inline",
             -- "norg",
             -- Syntax isn't parsed the greatest
             -- "perl",
@@ -744,10 +732,13 @@ M.setup = function()
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
-            disable = {"help", "html", "comment", "zsh"}, -- list of language that will be disabled
-            -- disable = function(_, bufnr)
-            --     return vim.api.nvim_buf_line_count(bufnr or 0) > vim.g.treesitter_highlight_maxlines
-            -- end,
+            disable = function(ft, bufnr)
+                if ts_disabled:contains(ft) or api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines then
+                    return true
+                end
+
+                return false
+            end,
             use_languagetree = true,
             additional_vim_regex_highlighting = true,
             -- custom_captures = {}
@@ -833,7 +824,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help"},
+            disable = {"html", "help"}
             -- colors = {}
         },
         textobjects = {
@@ -1013,6 +1004,17 @@ local function init()
     ex.packadd("nvim-treesitter")
     ex.packadd("nvim-treesitter-textobjects")
 
+    ts_disabled =
+        _t(
+        {
+            "help",
+            "html",
+            "comment",
+            "zsh",
+            "markdown"
+        }
+    )
+
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
 
@@ -1106,7 +1108,7 @@ local function init()
 
     wk.register(
         {
-            ["'r"] = "Smart rename",
+            ["<A-r>"] = "Smart rename",
             [";D"] = "Go to definition under cursor",
             ["<Leader>fd"] = "List all definitions in file",
             ["gO"] = "List all definitions in TOC",
@@ -1150,7 +1152,8 @@ local function init()
     map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
 
     queries = require("nvim-treesitter.query")
-    local hl_disabled = conf.highlight.disable
+    local cfhl = conf.highlight.disable
+    local hl_disabled = F.tern(type(cfhl) == "function", ts_disabled, cfhl)
     ft_enabled = {"telescope"}
     for _, lang in ipairs(conf.ensure_installed) do
         if not vim.tbl_contains(hl_disabled, lang) then

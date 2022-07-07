@@ -236,7 +236,6 @@ return packer.startup(
             -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
-            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
@@ -247,6 +246,7 @@ return packer.startup(
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
             use(
                 {
                     "AndrewRadev/linediff.vim",
@@ -255,7 +255,6 @@ return packer.startup(
                     keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}}
                 }
             )
-            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
 
             use(
                 {
@@ -343,6 +342,8 @@ return packer.startup(
                     conf = "suda"
                 }
             )
+
+            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -708,10 +709,11 @@ return packer.startup(
                 }
             )
 
+            -- This doesn't work as expected
+            -- "phaazon/hop.nvim",
             use(
                 {
-                    "phaazon/hop.nvim",
-                    run = "gh pr checkout 265",
+                    "christianchiarulli/hop.nvim",
                     conf = "plugs.hop",
                     keys = {
                         {"n", "f"},
@@ -997,6 +999,7 @@ return packer.startup(
 
             -- use({"wfxr/dockerfile.vim"})
             -- use({"thesis/vim-solidity"})
+            -- use({"tmux-plugins/vim-tmux", event = "BufRead tmux.conf"})
             use({"rhysd/vim-rustpeg", ft = "rustpeg"})
             use({"nastevens/vim-cargo-make"})
             use({"NoahTheDuke/vim-just", ft = "just"})

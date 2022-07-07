@@ -17,6 +17,8 @@ g.do_filetype_lua = 1
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.
 g.nvim_focused = true
+g.treesitter_refactor_maxlines = 10 * 1024
+g.treesitter_highlight_maxlines = 12 * 1024
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -62,6 +64,26 @@ vim.tbl_map(
 -- g.loaded_gtags = 1
 -- g.loaded_gtags_cscope = 1
 g.load_black = 1
+
+g.markdown_fenced_languages = {
+    "bash=sh",
+    "c",
+    "go",
+    "help",
+    "html",
+    "js=javascript",
+    "json",
+    "lua",
+    "py=python",
+    "python",
+    "rs=rust",
+    "rust",
+    "sh",
+    "shell=sh",
+    "toml",
+    "vim",
+    "yaml",
+}
 
 if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
@@ -235,7 +257,7 @@ if not uv.fs_stat(vim.o.viewdir) then
 end
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
-o.jumpoptions = "stack"
+o.jumpoptions = {"stack", "view"}
 
 o.history = 10000
 o.backup = false
