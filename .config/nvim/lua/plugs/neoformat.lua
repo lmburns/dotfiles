@@ -18,6 +18,7 @@ local ex = nvim.ex
 local g = vim.g
 local api = vim.api
 local fn = vim.fn
+local F = vim.F
 
 local scan = require("plenary.scandir")
 
@@ -70,14 +71,13 @@ end
 ---Format the document using `Neoformat`
 ---@param save boolean whether to save the document
 function M.format_doc(save)
-    save = save == nil and true or save
-
+    save = utils.get_default(save, true)
     local view = utils.save_win_positions(0)
 
     gittool.root_exe(
         function()
             if coc.did_init() then
-                local bufnr = nvim.buf.nr()
+                local bufnr = api.nvim_get_current_buf()
 
                 -- if _t({"typescript", "javascript"}):contains(vim.bo[bufnr].ft) then
                 --     neoformat()
@@ -92,16 +92,15 @@ function M.format_doc(save)
                     },
                     2000
                 )
+
                 if not err and res == true then
-                    fn.CocActionAsync(
-                        "format",
-                        "",
-                        function(e, res)
+                    coc.action("format"):thenCall(
+                        function(res)
                             -- FIX: Why are some results false? (i.e., TS, JS, Python)
                             -- This is only needed if Sumneko-Coc is used
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
-                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
+                            if (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
@@ -145,7 +144,7 @@ end
 ---@param mode boolean
 ---@param save boolean whether to save file
 function M.format_selected(mode, save)
-    save = save == nil and true or save
+    save = utils.get_default(save, true)
     if not coc.did_init() then
         return
     end
@@ -156,29 +155,42 @@ function M.format_selected(mode, save)
                 coc.a2sync(
                 "hasProvider",
                 {
-                    mode and "formatRange" or "format"
+                    F.tern(mode, "formatRange", "format")
                 },
                 2000
             )
+
             if not err and res == true then
                 local bufnr = api.nvim_get_current_buf()
-                fn.CocActionAsync(
-                    mode and "formatSelected" or "format",
-                    mode,
-                    function(e, _)
-                        if e ~= vim.NIL then
-                            log.warn(e, true)
-                        else
-                            -- if vim.bo[bufnr].ft == "lua" then
-                            --     M.neoformat()
-                            -- end
-
-                            if save then
-                                save_doc(bufnr)
-                            end
+                coc.action(F.tern(mode, "formatSelected", "format"), mode):thenCall(
+                    function(_)
+                        if save then
+                            save_doc(bufnr)
                         end
                     end
+                ):catch(
+                    function(e)
+                        log.warn(e, true)
+                    end
                 )
+
+            -- fn.CocActionAsync(
+            --     F.tern(mode, "formatSelected", "format"),
+            --     mode,
+            --     function(e, _)
+            --         if e ~= vim.NIL then
+            --             log.warn(e, true)
+            --         else
+            --             -- if vim.bo[bufnr].ft == "lua" then
+            --             --     M.neoformat()
+            --             -- end
+            --
+            --             if save then
+            --                 save_doc(bufnr)
+            --             end
+            --         end
+            --     end
+            -- )
             end
         end
     )
@@ -263,7 +275,14 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function()
-                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
+                map(
+                    "n",
+                    ";ff",
+                    "<Cmd>CrystalFormat<CR>",
+                    {
+                        buffer = true
+                    }
+                )
             end
         }
         -- {

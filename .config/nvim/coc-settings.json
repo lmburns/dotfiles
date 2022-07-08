@@ -3,7 +3,7 @@
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
-  "coc.preferences.currentFunctionSymbolAutoUpdate": false,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   // "coc.preferences.formatOnSaveFiletypes": [
   //   "go"
   // ],
@@ -379,7 +379,6 @@
   // │                    Config file types                     │
   // ╰──────────────────────────────────────────────────────────╯
   "json.trace.server": "off",
-  "yaml.schemas": {},
   "json.schemas": [
     {
       "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
@@ -387,6 +386,8 @@
     }
   ],
   "yaml.trace.server": "off",
+  "yaml.schemaStore.enable": true,
+  // "yaml.schemas": {},
   "yaml.validate": true,
   "yaml.format.singleQuote": true,
   "yaml.completion": true,

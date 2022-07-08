@@ -272,7 +272,7 @@ function M.link_visitor()
 
     map("n", "gw", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
 
-        augroup(
+    augroup(
         "lmb__LinkVisitor",
         {
             event = "User",
@@ -292,7 +292,6 @@ function M.link_visitor()
             end
         }
     )
-
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -540,16 +539,22 @@ function M.notify()
             fps = 60,
             timeout = 3000,
             minimum_width = 30,
+            max_width = math.floor(vim.o.columns * 0.4),
             background_color = "NormalFloat",
             -- on_close = function()
             -- -- Could create something to write to a file
             -- end,
-            -- on_open = function(win)
-            --     if nvim.win.is_valid(win) then
-            --     end
-            -- end,
-            on_open = function(win)
-                api.nvim_win_set_config(win, {zindex = 500})
+            on_open = function(winnr)
+                api.nvim_win_set_config(winnr, {zindex = 500})
+                local bufnr = api.nvim_win_get_buf(winnr)
+                bmap(bufnr, "n", "q", "<Cmd>bdelete<CR>", {nowait = true})
+                api.nvim_buf_call(
+                    bufnr,
+                    function()
+                        vim.wo[winnr].wrap = true
+                        vim.wo[winnr].showbreak = "NONE"
+                    end
+                )
             end,
             render = function(bufnr, notif, highlights, config)
                 local style = notif.title[1] == "" and "minimal" or "default"
@@ -859,17 +864,17 @@ function M.sandwhich()
       \     'buns':         ['{', '}'],
       \     'nesting':      1,
       \     'skip_break':   1,
-      \     'input':        ['{', '}', 'B'],
+      \     'input':        ['}', 'B'],
       \   },
       \   {
       \     'buns':         ['[', ']'],
       \     'nesting':      1,
-      \     'input':        ['[', ']', 'r'],
+      \     'input':        [']', 'r'],
       \   },
       \   {
       \     'buns':         ['(', ')'],
       \     'nesting':      1,
-      \     'input':        ['(', ')', 'b'],
+      \     'input':        [')', 'b'],
       \   },
       \   {
       \     'buns':         ['<', '>'],
@@ -1517,6 +1522,8 @@ function M.comment_box()
         }
     )
 
+    local _ = D._
+
     --        Box | Size | Text
     -- lbox    L     F      L
     -- clbox   C     F      L
@@ -1529,13 +1536,13 @@ function M.comment_box()
 
     -- 21 20 19 18 7
     map({"n", "v"}, "<Leader>bb", cb.cbox, {desc = "Left fixed box, center text (round)"})
-    map({"n", "v"}, "<Leader>bs", D.ithunk(cb.cbox, 19), {desc = "Left fixed box, center text (sides)"})
-    map({"n", "v"}, "<Leader>bd", D.ithunk(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
-    map({"n", "v"}, "<Leader>bh", D.ithunk(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
+    map({"n", "v"}, "<Leader>bs", _(cb.cbox, 19), {desc = "Left fixed box, center text (sides)"})
+    map({"n", "v"}, "<Leader>bd", _(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
+    map({"n", "v"}, "<Leader>bh", _(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
 
-    map({"n", "v"}, "<Leader>cc", D.ithunk(cb.cbox, 21), {desc = "Left fixed box, center text (top/bottom)"})
-    map({"n", "v"}, "<Leader>cb", D.ithunk(cb.cbox, 8), {desc = "Left fixed box, center text (thick/single)"})
-    map({"n", "v"}, "<Leader>ca", D.ithunk(cb.acbox, 21), {desc = "Left center box, center text (top/bottom)"})
+    map({"n", "v"}, "<Leader>cc", _(cb.cbox, 21), {desc = "Left fixed box, center text (top/bottom)"})
+    map({"n", "v"}, "<Leader>cb", _(cb.cbox, 8), {desc = "Left fixed box, center text (thick/single)"})
+    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Left center box, center text (top/bottom)"})
 
     map({"n", "v"}, "<Leader>be", cb.lbox, {desc = "Left fixed box, left text (round)"})
     map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
@@ -1543,7 +1550,7 @@ function M.comment_box()
 
     -- cline
     -- 2 6 7
-    map({"n", "i"}, "<M-w>", D.ithunk(cb.line, 6), {desc = "Insert thick line"})
+    map({"n", "i"}, "<M-w>", _(cb.line, 6), {desc = "Insert thick line"})
 
     map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
 end

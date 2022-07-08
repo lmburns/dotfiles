@@ -280,11 +280,9 @@ end
 ---Coc rename
 function M.rename()
     g.coc_jump_locations = nil
-    fn.CocActionAsync(
-        "rename",
-        "",
-        function(err, res)
-            if err == vim.NIL and res then
+    M.action("rename"):thenCall(
+        function(res)
+            if res then
                 local loc = g.coc_jump_locations
                 if loc then
                     local uri = vim.uri_from_bufnr(0)

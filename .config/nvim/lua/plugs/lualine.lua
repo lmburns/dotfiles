@@ -16,6 +16,7 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
+local fs = vim.fs
 local fn = vim.fn
 local F = vim.F
 
@@ -88,7 +89,7 @@ local sections_1 = {
                 local fugitive_name = vim.b.fugitive_fname
                 if not fugitive_name then
                     if bufname:match("^fugitive:") and fn.exists("*FugitiveReal") == 1 then
-                        fugitive_name = fn.fnamemodify(fn.FugitiveReal(bufname), ":t") .. " "
+                        fugitive_name = fs.basename(fn.FugitiveReal(bufname)) .. " "
                         vim.b.fugitive_fname = fugitive_name
                     end
                 end
@@ -185,8 +186,8 @@ local sections_2 = {
     lualine_c = {},
     lualine_x = {
         {
-            -- "aerial"
-            'require("nvim-gps").get_location()',
+            --[[ -- "aerial"
+            'require("nvim-gps").get_location()', ]]
             cond = conds.is_available_gps,
             color = {fg = colors.red}
         },

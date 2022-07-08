@@ -809,13 +809,13 @@ Plug 'antoinemadec/coc-fzf'
     \  "coc-yank",
     \  "coc-diagnostic",
     \  "coc-fzf-preview",
-    \  "coc-lightbulb",
     \  "coc-marketplace",
     \  "coc-tabnine",
     \  "coc-tag",
     \  "coc-word"
     \ ]
 
+    " \  "coc-lightbulb",
     " \ 'coc-clojure',
     " \ 'coc-nginx',
     " \ 'coc-toml',
