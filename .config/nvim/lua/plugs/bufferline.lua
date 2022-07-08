@@ -10,6 +10,7 @@ end
 local icons = require("style").icons
 local color = require("common.color")
 local groups = require("bufferline.groups")
+local pithunk = D.pithunk
 
 local fn = vim.fn
 local api = vim.api
@@ -316,7 +317,10 @@ local function init()
                 -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
                 -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
                 -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
-                q = {"<Cmd>BDelete this<cr>", "Delete this buffer"},
+                q = {
+                    pithunk(require("close_buffers").cmd, "this", "delete"),
+                    "Delete this buffer"
+                },
                 w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
                 Q = {":bufdo bd! #<CR>", "Close all buffers"}
             }

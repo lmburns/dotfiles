@@ -2,7 +2,6 @@ local M = {}
 
 local D = require("dev")
 local bqf = D.npcall(require, "bqf")
-
 if not bqf then
     return
 end
@@ -91,7 +90,6 @@ local function preview_fugitive(bufnr, ...)
 end
 
 function M.setup()
-    -- FIX: Sometimes preview window is transparent
     C.link("BqfPreviewBorder", "Parameter")
 
     bqf.setup(

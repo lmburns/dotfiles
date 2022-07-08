@@ -41,8 +41,13 @@ end
 
 -- TODO: Fix fugitive buffer command autocommand
 function M.map()
-    bmap("n", "st", ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>", {noremap = false, silent = true})
-    bmap("n", "<Leader>gb", ":GBrowse<CR>")
+    bmap(
+        "n",
+        "st",
+        ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>",
+        {noremap = false, silent = true, desc = "Gtabedit"}
+    )
+    bmap("n", "<Leader>gb", ":GBrowse<CR>", {desc = "GBrowse"})
 end
 
 local function init()
@@ -55,16 +60,17 @@ local function init()
         )
     end
 
+    -- How does this work?
     g.nremap = {
-        ["d?"] = "s?",
-        dv = "sv",
-        dp = "sp",
-        ds = "sh",
-        dh = "sh",
+        ["d?"] = "d?",
+        dv = "dv",
+        dp = "dp",
+        ds = "dh",
+        dh = "dh",
         dq = "",
-        d2o = "s2o",
-        d3o = "s3o",
-        dd = "ss",
+        d2o = "d2o",
+        d3o = "d3o",
+        dd = "dd",
         s = "<C-s>",
         u = "<C-u>",
         O = "T",
@@ -77,6 +83,7 @@ local function init()
         ["[m"] = "[f",
         ["]m"] = "]f"
     }
+
     g.xremap = {s = "S", u = "<C-u>", ["-"] = "a", X = "x"}
 
     augroup(
@@ -87,15 +94,14 @@ local function init()
             command = function()
                 require("plugs.fugitive").map()
             end
-        }
-    )
-
-    augroup(
-        "Fugitive",
+        },
+        -- TODO: Prevent adding to MRU
         {
-            event = "BufReadPost,",
+            event = "BufReadPost",
             pattern = "fugitive://*",
-            command = "set bufhidden=delete"
+            command = function()
+                vim.cmd("set bufhidden=delete")
+            end
         }
     )
 
@@ -103,15 +109,26 @@ local function init()
 
     wk.register(
         {
-            ["<Leader>gg"] = {[[<Cmd>lua require('plugs.fugitive').index()<CR>]], "Fugitive index"},
-            ["<Leader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
-            ["<Leader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive blame"},
-            ["<Leader>gw"] = {
-                [[<Cmd>lua require('utils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+            ["<LocalLeader>gg"] = {
+                [[<Cmd>lua require('plugs.fugitive').index()<CR>]],
+                "Fugitive index"
+            },
+            ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
+            ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive Gread (plain)"},
+            ["<LocalLeader>gB"] = {
+                "<Cmd>Git blame -w<Bar>winc p<CR>",
+                "Fugitive blame split"
+            },
+            ["<LocalLeader>gw"] = {
+                [[<Cmd>lua require('common.utils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
                 "Fugitive Gwrite"
             },
-            ["<Leader>gr"] = {
-                [[<Cmd>lua require('utils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+            ["<LocalLeader>gW"] = {
+                [[<Cmd>lua require('common.utils').follow_symlink("Gwrite")<CR>]],
+                "Fugitive Gwrite"
+            },
+            ["<LocalLeader>gr"] = {
+                [[<Cmd>lua require('common.utils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
                 "Fugitive Gread"
             },
             ["<Leader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
@@ -119,6 +136,9 @@ local function init()
             -- ["<Leader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )
+
+    -- nnoremap <silent> ,g, :diffget //2<CR>
+    -- nnoremap <silent> ,g. :diffget //3<CR>
 
     wk.register(
         {

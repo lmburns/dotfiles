@@ -122,12 +122,22 @@ M.thunk = function(fun, ...)
     end
 end
 
----Like thunk(), but arguments passed to the thunk are ignored
+---Like `thunk()`, but arguments passed to the thunk are ignored
+---@param fun function
+---@vararg any
+---@return function
 M.ithunk = function(fun, ...)
     local bound = {...}
     return function()
         return fun(unpack(bound))
     end
+end
+
+---Same as `ithunk()`, except prefixed with a `pcall`
+---@param fun function
+---@vararg any
+M.pithunk = function(fun, ...)
+    return M.ithunk(pcall, fun, ...)
 end
 
 ---Shorthand aliases for these funtions

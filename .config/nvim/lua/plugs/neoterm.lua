@@ -7,7 +7,7 @@ if not terminal then
 end
 
 local utils = require("common.utils")
-local bmap = utils.bmap
+-- local bmap = utils.bmap
 local map = utils.map
 local command = utils.command
 
@@ -136,17 +136,12 @@ local function init()
             shell = vim.o.shell,
             direction = "float",
             -- direction = "horizontal",
-            close_on_exit = false,
+            close_on_exit = true,
             float_opts = {
                 border = "rounded",
                 width = math.floor(vim.o.columns * 0.85),
                 height = math.floor(vim.o.lines * 0.8),
-                winblend = 4,
-                highlights = {
-                    -- border = "Normal",
-                    -- background = "Normal",
-                    border = "TSNote"
-                }
+                winblend = 4
             }
         }
     )
@@ -164,7 +159,7 @@ local function init()
         "v",
         "gz",
         function()
-            local mode = vim.fn.mode()
+            local mode = utils.mode()
             if mode == "v" or mode == "V" or mode == "" then
                 local text = utils.get_visual_selection()
                 term_exec(text)

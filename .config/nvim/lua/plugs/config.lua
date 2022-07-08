@@ -761,8 +761,16 @@ function M.sandwhich()
             ket = ")",
             footer = ""
         },
+        -- default dsf works on func(arg) and not on macro!(arg)
         {
             header = [[\<\h\k*!]],
+            bra = "(",
+            ket = ")",
+            footer = ""
+        },
+        -- default dsf works on func(arg) and not on obj.method(arg)
+        {
+            header = [[\<\%(\h\k*\.\)*\h\k*]],
             bra = "(",
             ket = ")",
             footer = ""
@@ -770,6 +778,11 @@ function M.sandwhich()
     }
 
     ex.runtime("macros/sandwich/keymap/surround.vim")
+
+    -- move the cursor at the start of the surrounded object
+    -- "VimEnter * :call operator#sandwich#set('all', 'all', 'cursor', 'inner_head')",
+    -- -- keep the same indent level on operator actions
+    -- "VimEnter * :call operator#sandwich#set('all', 'all', 'autoindent', 4)",
 
     cmd [[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
@@ -881,8 +894,18 @@ function M.sandwhich()
       \     'expand_range': 0,
       \     'input':        ['>', 'a'],
       \   },
+      \   {
+      \     'buns': ['(', ')'],
+      \     'cursor': 'head',
+      \     'command': ['startinsert'],
+      \     'kind': ['add', 'replace'],
+      \     'action': ['add'],
+      \     'input': ['j']
+      \   },
       \ ]
     ]]
+
+    -- The last bun is the same as ysiwf, but start in insert mode
 
     -- TODO
     -- \   {
@@ -1522,7 +1545,7 @@ function M.comment_box()
         }
     )
 
-    local _ = D._
+    local _ = D.ithunk
 
     --        Box | Size | Text
     -- lbox    L     F      L
@@ -1550,7 +1573,7 @@ function M.comment_box()
 
     -- cline
     -- 2 6 7
-    map({"n", "i"}, "<M-w>", _(cb.line, 6), {desc = "Insert thick line"})
+    map({"n", "i"}, "<M-w>", _(cb.cline, 6), {desc = "Insert thick line"})
 
     map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
 end
@@ -1586,6 +1609,7 @@ function M.lfnvim()
 
     g.lf_netrw = 1
 
+    -- The float border stopped working
     lf.setup(
         {
             escape_quit = true,
@@ -1792,6 +1816,8 @@ function M.visualmulti()
     }
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
+    map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
+    map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
     map("n", "<C-n>", "<Plug>(VM-Find-Under)")
     map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
     map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
@@ -1799,8 +1825,6 @@ function M.visualmulti()
     map("n", "<Leader>A", "<Plug>(VM-Select-All)")
     map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
     map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)")
-    map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
-    map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
     map("n", "g/", "<Cmd>VMSearch<CR>")
 
     command(
@@ -1896,55 +1920,6 @@ function M.git_conflict()
                 bmap(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
                 bmap(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
             end
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       regexplainer                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.regexplainer()
-    local regexplainer = D.npcall(require, "regexplainer")
-    if not regexplainer then
-        return
-    end
-
-    regexplainer.setup(
-        {
-            mode = "narrative", -- TODO: 'ascii', 'graphical'
-            -- automatically show the explainer when the cursor enters a regexp
-            auto = false,
-            -- filetypes (i.e. extensions) in which to run the autocommand
-            filetypes = {
-                "html",
-                "js",
-                "cjs",
-                "mjs",
-                "ts",
-                "jsx",
-                "tsx",
-                "cjsx",
-                "mjsx"
-                -- "rs"
-            },
-            debug = false, -- Whether to log debug messages
-            display = "popup", -- 'split', 'popup', 'pasteboard'
-            popup = {
-                border = {
-                    padding = {1, 2},
-                    style = "solid"
-                }
-            },
-            mappings = {
-                toggle = "gR",
-                show = "gS"
-                -- hide = 'gH',
-                -- show_split = 'gP',
-                -- show_popup = 'gU',
-            },
-            narrative = {
-                separator = "\n"
-            }
         }
     )
 end
@@ -2148,6 +2123,55 @@ end
 -- end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                       regexplainer                       │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.regexplainer()
+--     local regexplainer = D.npcall(require, "regexplainer")
+--     if not regexplainer then
+--         return
+--     end
+--
+--     regexplainer.setup(
+--         {
+--             mode = "narrative", -- TODO: 'ascii', 'graphical'
+--             -- automatically show the explainer when the cursor enters a regexp
+--             auto = false,
+--             -- filetypes (i.e. extensions) in which to run the autocommand
+--             filetypes = {
+--                 "html",
+--                 "js",
+--                 "cjs",
+--                 "mjs",
+--                 "ts",
+--                 "jsx",
+--                 "tsx",
+--                 "cjsx",
+--                 "mjsx"
+--                 -- "rs"
+--             },
+--             debug = false, -- Whether to log debug messages
+--             display = "popup", -- 'split', 'popup', 'pasteboard'
+--             popup = {
+--                 border = {
+--                     padding = {1, 2},
+--                     style = "solid"
+--                 }
+--             },
+--             mappings = {
+--                 toggle = "gR",
+--                 show = "gS"
+--                 -- hide = 'gH',
+--                 -- show_split = 'gP',
+--                 -- show_popup = 'gU',
+--             },
+--             narrative = {
+--                 separator = "\n"
+--             }
+--         }
+--     )
+-- end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                       ColorPicker                        │
 -- ╰──────────────────────────────────────────────────────────╯
 -- function M.colortils()
@@ -2300,43 +2324,6 @@ end
 --           [["\<C-y>"]], [[(getline('.') =~ '^\s*$' ? '' : "\<C-g>u")]]
 --       ), { noremap = false, expr = true }
 --   )
--- end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Sneak                           │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.sneak()
---   g["sneak#label"] = 1
---
---   -- map(
---   --     { "n", "x" }, "f", "sneak#is_sneaking() ? '<Plug>Sneak_s' : 'f'",
---   --     { noremap = false, expr = true }
---   -- )
---   -- map(
---   --     { "n", "x" }, "F", "sneak#is_sneaking() ? '<Plug>Sneak_S' : 'F'",
---   --     { noremap = false, expr = true }
---   -- )
---
---   map("n", "f", "<Plug>Sneak_s", { noremap = false })
---   map("n", "F", "<Plug>Sneak_S", { noremap = false })
---
---   -- Repeat the last Sneak
---   map("n", "gs", "f<CR>", { noremap = false })
---   map("n", "gS", "F<CR>", { noremap = false })
--- end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                        AbbrevMan                         │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.abbrevman()
---     require("abbrev-man").setup(
---         {
---             load_natural_dictionaries_at_startup = true,
---             load_programming_dictionaries_at_startup = true,
---             natural_dictionaries = {["nt_en"] = {["adn"] = "and"}},
---             programming_dictionaries = {["pr_py"] = {}}
---         }
---     )
 -- end
 
 -- ╭──────────────────────────────────────────────────────────╮

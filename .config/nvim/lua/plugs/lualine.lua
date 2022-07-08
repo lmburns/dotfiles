@@ -82,7 +82,10 @@ local sections_1 = {
             },
             color = function(section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
-                return {gui = F.tern(vim.bo.modified, "bold", "none")}
+                return {
+                    gui = F.tern(vim.bo.modified, "bold", "none"),
+                    fg = F.tern(vim.b.fugitive_fname, colors.orange, "none")
+                }
             end,
             fmt = function(str)
                 local bufname = api.nvim_buf_get_name(0)

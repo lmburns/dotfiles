@@ -990,11 +990,21 @@ end)()
 
 ---Follow a symbolic link
 ---@param fname string filename to follow
-M.follow_symlink = function(fname)
-    fname = fname and fn.fnamemodify(fname, ":p") or api.nvim_buf_get_name(0)
+---@param func string|function? action to execute after following symlink
+M.follow_symlink = function(fname, func)
+    fname = F.tern(not M.empty(fname), fn.fnamemodify(fname, ":p"), api.nvim_buf_get_name(0))
     local linked_path = uv.fs_readlink(fname)
     if linked_path then
         cmd(("keepalt file %s"):format(linked_path))
+
+        if func then
+            local f_type = type(func)
+            if f_type == "string" then
+                cmd(func)
+            elseif f_type == "function" then
+                f_type()
+            end
+        end
     end
 end
 

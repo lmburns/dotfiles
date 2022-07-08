@@ -190,8 +190,11 @@ map({"n", "x", "o"}, "'", "`")
 map({"n", "x", "o"}, "`", "'")
 
 map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
-map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
-map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
+-- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
+-- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
+
+-- TODO: Finish this
+-- map("i", "<C-CR>", "<Cmd>set fo+=o<CR><CR><Cmd>set fo-=o<CR>")
 
 wk.register(
     {

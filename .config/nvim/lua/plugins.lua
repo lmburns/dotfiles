@@ -484,13 +484,12 @@ return packer.startup(
 
             -- ============================ File Manager =========================== [[[
             use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
-            -- The FloatBorder only works with this setup now, WTF?
             use(
                 {
                     prefer_local("lf.nvim"),
                     conf = "lfnvim",
-                    cmd = {"Lf"},
-                    keys = {{"n", "<A-o>"}},
+                    -- cmd = {"Lf"},
+                    -- keys = {{"n", "<A-o>"}},
                     after = {colorscheme, "toggleterm.nvim"},
                     wants = "toggleterm.nvim",
                     requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
@@ -863,6 +862,7 @@ return packer.startup(
             -- ]]] === Commenter ===
 
             -- =============================== Python ============================== [[[
+            -- fdschmidt93/resin.nvim
             use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
             -- ]]] === Python ===
 
@@ -877,18 +877,18 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "bennypowers/nvim-regexplainer",
-                    requires = {
-                        "nvim-lua/plenary.nvim",
-                        "MunifTanjim/nui.nvim",
-                        {"nvim-treesitter/nvim-treesitter", opt = true}
-                    },
-                    after = {"nvim-treesitter"},
-                    conf = "regexplainer"
-                }
-            )
+            -- use(
+            --     {
+            --         "bennypowers/nvim-regexplainer",
+            --         requires = {
+            --             "nvim-lua/plenary.nvim",
+            --             "MunifTanjim/nui.nvim",
+            --             {"nvim-treesitter/nvim-treesitter", opt = true}
+            --         },
+            --         after = {"nvim-treesitter"},
+            --         conf = "regexplainer"
+            --     }
+            -- )
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
@@ -1382,13 +1382,14 @@ return packer.startup(
                         "Gwrite"
                     },
                     keys = {
-                        {"n", "<Leader>gg"},
-                        {"n", "<Leader>ge"},
-                        {"n", "<Leader>gb"},
-                        {"n", "<Leader>gw"},
-                        {"n", "<Leader>gr"},
-                        {"n", "<Leader>gf"},
-                        {"n", "<Leader>gF"},
+                        {"n", "<LocalLeader>gg"},
+                        {"n", "<LocalLeader>ge"},
+                        {"n", "<LocalLeader>gR"},
+                        {"n", "<LocalLeader>gB"},
+                        {"n", "<LocalLeader>gw"},
+                        {"n", "<LocalLeader>gr"},
+                        {"n", "<LocalLeader>gf"},
+                        {"n", "<LocalLeader>gF"},
                         {"n", "<Leader>gC"},
                         {"n", "<Leader>gd"},
                         {"n", "<Leader>gt"}
@@ -1470,13 +1471,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
-                    conf = "plugs.nvim-reload",
-                    opt = true
-                }
-            )
+            -- use(
+            --     {
+            --         ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
+            --         conf = "plugs.nvim-reload",
+            --         opt = true
+            --     }
+            -- )
 
             use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
             use(

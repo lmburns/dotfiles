@@ -1236,7 +1236,7 @@ $FZF_DEFAULT_OPTS
 # source $ZDOTDIR/.zkbd/tmux-256color-:0
 
 zt 0b light-mode null id-as for \
-  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,git-token,abbreviations}.zsh" \
+  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,tmux,git-token,abbreviations}.zsh" \
     zdharma-continuum/null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";

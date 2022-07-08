@@ -434,7 +434,7 @@ M.setup_aerial = function()
             ["{"] = {"<Cmd>AerialPrev<CR>", "Aerial previous (anon)"},
             ["}"] = {"<Cmd>AerialNext<CR>", "Aerial next (anon)"}
         },
-        {mode = "v"}
+        {mode = "x"}
     )
 
     -- require("telescope").load_extension("aerial")

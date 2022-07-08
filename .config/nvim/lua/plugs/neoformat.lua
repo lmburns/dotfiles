@@ -84,23 +84,18 @@ function M.format_doc(save)
                 --     return
                 -- end
 
-                local err, res =
-                    coc.a2sync(
-                    "hasProvider",
-                    {
-                        "format"
-                    },
-                    2000
-                )
+                local err, res = coc.a2sync("hasProvider", {"format"}, 2000)
 
                 if not err and res == true then
-                    coc.action("format"):thenCall(
-                        function(res)
+                    fn.CocActionAsync(
+                        "format",
+                        "",
+                        function(e, res)
                             -- FIX: Why are some results false? (i.e., TS, JS, Python)
                             -- This is only needed if Sumneko-Coc is used
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
-                            if (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
+                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
@@ -144,7 +139,7 @@ end
 ---@param mode boolean
 ---@param save boolean whether to save file
 function M.format_selected(mode, save)
-    save = utils.get_default(save, true)
+    save = save == nil and true or save
     if not coc.did_init() then
         return
     end
@@ -159,38 +154,25 @@ function M.format_selected(mode, save)
                 },
                 2000
             )
-
             if not err and res == true then
                 local bufnr = api.nvim_get_current_buf()
-                coc.action(F.tern(mode, "formatSelected", "format"), mode):thenCall(
-                    function(_)
-                        if save then
-                            save_doc(bufnr)
+                fn.CocActionAsync(
+                    mode and "formatSelected" or "format",
+                    mode,
+                    function(e, _)
+                        if e ~= vim.NIL then
+                            log.warn(e, true)
+                        else
+                            -- if vim.bo[bufnr].ft == "lua" then
+                            --     M.neoformat()
+                            -- end
+
+                            if save then
+                                save_doc(bufnr)
+                            end
                         end
                     end
-                ):catch(
-                    function(e)
-                        log.warn(e, true)
-                    end
                 )
-
-            -- fn.CocActionAsync(
-            --     F.tern(mode, "formatSelected", "format"),
-            --     mode,
-            --     function(e, _)
-            --         if e ~= vim.NIL then
-            --             log.warn(e, true)
-            --         else
-            --             -- if vim.bo[bufnr].ft == "lua" then
-            --             --     M.neoformat()
-            --             -- end
-            --
-            --             if save then
-            --                 save_doc(bufnr)
-            --             end
-            --         end
-            --     end
-            -- )
             end
         end
     )
@@ -275,14 +257,7 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function()
-                map(
-                    "n",
-                    ";ff",
-                    "<Cmd>CrystalFormat<CR>",
-                    {
-                        buffer = true
-                    }
-                )
+                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
             end
         }
         -- {

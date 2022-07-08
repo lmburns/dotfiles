@@ -273,7 +273,7 @@ end
 ---Open a file or a link
 function M.open_path()
     local path = fn.expand("<cfile>")
-    if path:match("https://") then
+    if path:match("https?://") then
         return vim.cmd("norm gx")
     end
 

@@ -48,6 +48,15 @@ function M.exit()
 
     dispose.dispose()
     map("n", "n", n_keymap, {silent = true})
+    -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
+    -- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
+
+    -- Sometimes this doesn't clear properly
+    local stl = "%{%v:lua.require'lualine'.statusline()%}"
+    if not vim.o.stl == stl then
+        pcall(ex.VMClear)
+        vim.o.stl = stl
+    end
 end
 
 function M.mappings()
@@ -57,6 +66,8 @@ function M.mappings()
             debounce(
             function()
                 n_keymap = utils.get_keymap("n", "n").rhs
+                -- utils.del_keymap("n", "[")
+                -- utils.del_keymap("n", "]")
             end,
             10
         )
