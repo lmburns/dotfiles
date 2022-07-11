@@ -311,9 +311,8 @@
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>#7E602C</string>
-                    <key>background</key>
-                    <string>#000000</string>
+                    <string>#a57a4c</string>
+                    <!-- <string>#7E602C</string> -->
                 </dict>
             </dict>
             <dict>
@@ -778,7 +777,7 @@
                 <dict>
                     <!-- IS: ?? -->
                     <key>foreground</key>
-                    <string>#e8a2af</string>
+                    <string>#957FB8</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>

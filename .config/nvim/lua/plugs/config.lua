@@ -1664,6 +1664,36 @@ function M.urlview()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                         DevIcons                         │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.devicons()
+    local devicons = D.npcall(require, "nvim-web-devicons")
+    if not devicons then
+        return
+    end
+
+    devicons.set_icon(
+        {
+            scratchpad = {
+                icon = "",
+                color = "#6d8086",
+                name = "Scratchpad"
+            },
+            NeogitStatus = {
+                icon = "",
+                color = "#F14C28",
+                name = "BranchCycle"
+            },
+            org = {
+                icon = "◉",
+                color = "#75A899",
+                name = "Org"
+            }
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                          trevj                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.trevj()
@@ -1767,7 +1797,7 @@ function M.visualmulti()
         Undo = "u",
         Redo = "U",
         ["Switch Mode"] = ",",
-        ["Select Operator"] = "v",
+        ["Select Operator"] = "s",
         ["Find Operator"] = "m",
         ["Surround"] = "S",
         ["Replace Pattern"] = "R",
@@ -1814,6 +1844,8 @@ function M.visualmulti()
         ["Toggle Single Region"] = "<Leader><CR>",
         ["Toggle Multiline"] = "<Leader>M"
     }
+
+    -- TODO: <C-n> smartcase
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")

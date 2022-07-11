@@ -203,6 +203,15 @@ schemes:
     # foreground: '#dc3958'
     # background: None
 
+  # Footer bar
+  #
+  # Color used for the footer bar on the bottom, used by search regex input,
+  # hyperlink URI preview, etc.
+  #
+    footer_bar:
+      background: '#c5c8c6'
+      foreground: '#1d1f21'
+
     # blue:    '#733e8b'
     normal:
       black: "#201f1f"
@@ -512,6 +521,7 @@ hints:
 
       # action: Copy
       command: xdg-open
+      hyperlinks: true
       post_processing: true
       mouse:
         enabled: true

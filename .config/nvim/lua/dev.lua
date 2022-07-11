@@ -264,7 +264,6 @@ end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Table                           │
-
 -- ╰──────────────────────────────────────────────────────────╯
 ---Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
 ---@vararg any any number of items to pack

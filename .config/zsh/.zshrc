@@ -1278,3 +1278,6 @@ zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
+
+# bun completions
+[ -s "/home/lucas/.bun/_bun" ] && source "/home/lucas/.bun/_bun"

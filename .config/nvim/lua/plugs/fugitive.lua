@@ -100,7 +100,7 @@ local function init()
             event = "BufReadPost",
             pattern = "fugitive://*",
             command = function()
-                vim.cmd("set bufhidden=delete")
+                vim.o.bufhidden = "delete"
             end
         }
     )

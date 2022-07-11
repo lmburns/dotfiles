@@ -696,11 +696,12 @@ M.setup = function()
             "html",
             "java",
             "javascript",
+            "jsdoc",
             "json",
             "kotlin",
             "latex",
             "lua",
-            "luap", -- lua regex?
+            "luap",
             "make",
             "markdown",
             "markdown_inline",

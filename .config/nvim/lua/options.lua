@@ -8,11 +8,8 @@ local list = require("dev").list
 local env = vim.env
 local o = vim.opt
 local g = vim.g
-
--- Disable filetype.vim (but still load filetype.lua if enabled)
-g.did_load_filetypes = 0
--- Disable filetype.vim and filetype.lua
-g.do_filetype_lua = 1
+local fn = vim.fn
+local fs = vim.fs
 
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.
@@ -174,7 +171,7 @@ o.nrformats = list {"octal", "hex", "bin", "unsigned"}
 o.title = true
 o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
 o.titlelen = 70
-o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t") -- This doesn't seem to work
+o.titleold = fs.basename(os.getenv("SHELL")) -- This doesn't seem to work
 -- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
 
 o.list = true -- display tabs and trailing spaces visually

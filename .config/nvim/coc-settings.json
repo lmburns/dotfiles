@@ -110,7 +110,7 @@
     //   "zsh": "shfmt"
   },
   "prettier.tabWidth": 2,
-  "prettier.singleQuote": false,
+  "prettier.singleQuote": true,
   "prettier.semi": true,
   "prettier.trailingComma": "es5",
   "lightbulb.excludeFiletypes": [],
@@ -176,7 +176,7 @@
     "struct": "פּ", // 
     "event": "", // 鬒
     "operator": "Ψ", // 
-    "typeParameter": "" //   
+    "typeParameter": "<>" //   
   },
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Clangd                          │

@@ -8,6 +8,7 @@ set filesep "\n"  # default already
 
 set scrolloff 10      # space on top and bottom of screen
 set icons on          # show icons next to files
+set history on        # save history across sessions
 set period 1          # interval to check for directory updates
 set hidden on         # show hidden files by default
 set incsearch o       # jump to first match after each keystroke in search
@@ -114,7 +115,8 @@ cmd q! ${{
     lf -remote "send $id quit"
 }}
 cmd Q! :q!
-map <esc> quit
+map <Esc> quit
+map ZZ quit
 
 # -- Tmux: Toggle a second lf file manager pane
 cmd split ${{
@@ -303,7 +305,7 @@ cmd broot_jump ${{
 }}
 
 # -- Jump: zoxide
-cmd fzf_z ${{
+cmd fzf_zoxide ${{
   sel="$(zoxide query -i)"
   [[ -d "$sel" ]] && lf -remote "send $id cd \"$sel\""
 }}
@@ -551,7 +553,7 @@ cmd ndel-bookmark ${{
 
 
 # -- Jump: wfxr plugin
-cmd jumpi ${{
+cmd jumpInteractive ${{
   clear
   local field esc N R G Y B pattern PTH
   local -a bmark_dirs
@@ -765,9 +767,10 @@ cmd zle-init :{{
 # │ Mappings                                                                  │
 # └───────────────────────────────────────────────────────────────────────────┘
 # map n
+# map "'"
+# map '"'
 map m
-map "'"
-map '"'
+map M
 map d
 map O
 map e
@@ -800,8 +803,8 @@ map V push :!nvim<space>                     # enter filename for nvim
 map ? $batman lf                             # open lfrc docs
 map gH $bat -l bash -f ~/.config/lf/mappings # open these mappings
 map Ow push :open-with<space>                # open w/ specified program
-# map Op $handlr open $PWD                     # open curr directory in finder
-# map o  $clear; handlr ask --config $f
+map Op $handlr open $PWD                     # open curr directory in finder
+map o  $clear; handlr ask --config $f
 map Oa $mimeopen --ask $f
 # map Oa $mimeopen $f
 
@@ -809,7 +812,7 @@ map Qm !clear; mdcat -p $fx                   # preview in mdcat
 map Qg !clear; glow -p $fx                    # preview in glow
 map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
-map as !du -hsx * | sort -rh | bat --paging=always               # directory info
+map as !clear; du -hsx * | sort -rh | bat --paging=always               # directory info
 map ai !clear; file-info $f  # info
 map ad usage                                  # get disk information
 map aI $dua i
@@ -856,10 +859,9 @@ map Bm massren                          # bulk rename with massren
 map Bv mmv                              # bulk rename only with selected
 map Bf push :f2<space>                  # use f2 to rename
 map ch chmod                            # change file permissions
-map = chmod                             # change file permissions
+map =  chmod                            # change file permissions
 map cH chown                            # change file owner
 
-# map bk $/usr/local/bin/gcp -r --force --suffix=.bak "$f" "$f".bak     # backup file
 map rs rmspace
 # ]]]
 
@@ -868,12 +870,13 @@ map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
 map fr push :fd<space>-d1<space>--changed-within<space> # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit (with preview)
-# map <c-b> broot_jump    # use broot to jump to directory
-map cc fzf_z              # fzf zioxide
-map ci jumpi              # wfxr plugin
+
+map cc fzf_zoxide         # fzf zioxide
+map ci jumpInteractive    # rualdi fzf
 map cJ njump              # lf specifc - jump bookmark
 map cB nbookmark          # lf specifc - add bookmark
 map cD ndel-bookmark      # lf specifc - del bookmark
+
 map w fzf_cd              # fzf cd
 map W fzf_cd_depth        # fzf cd further depth
 map Ma $neomutt -a "$fx"  # mail a file
@@ -889,6 +892,7 @@ map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
 map Pp ppaste "copy"          # paste and preview progress
+
 # map y
 map y copy                    # general copy
 map Yp yank-path              # yank file path
@@ -939,8 +943,6 @@ map <enter> shell-wait                              # enter shell cmd
 map <c-x>x $$f                                      # execute file
 map <c-x>X !$f                                      # execute file and $PAGER output
 map <c-x>l $$f | bat --paging=always -f             # execute file and bat output
-map <c-x>G !go build $fx && ./$(basename ${fx%.go}) # execute go file
-map <c-x>g !go run $fx                              # execute go file
 map <c-x>w push :wim<space>                         # open script source code
 map <c-x>p $cat $fx | up                            # cat file to up (unix piper)
 # ]]]
@@ -952,6 +954,8 @@ map tos $stig                          # transmisison TUI
 # ]]]
 
 # == Tagging == [[[
+map M mark-save
+
 map ; push :tag<space>
 map Tj jump_tag
 map X tag-toggle
@@ -1026,9 +1030,9 @@ map bo $bow       # buku bookmarks
 # map <c-m-up> up
 # map <c-m-down> down
 
-map Hc cd ~/.config
-map Hi cd /run/media/lucas
-map Hh cd ~
+map bc cd ~/.config
+map bi cd /run/media/lucas
+map bh cd ~
 
 #######################################################################
 #                          Helper Functions                           #

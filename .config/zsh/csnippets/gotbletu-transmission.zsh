@@ -53,27 +53,27 @@ tsm-blocklist() {
   echo -e "${Green}>>>Numbers of IP Now Blocked ${Color_Off}"
     tsm-count
 }
-tsm-altdownloadspeed() { transmission-remote --downlimit "${@:-900}" ;} # download default to 900K, else enter your own
+tsm-altdownloadspeed()          { transmission-remote --downlimit "${@:-900}" ;} # download default to 900K, else enter your own
 tsm-altdownloadspeedunlimited() { transmission-remote --no-downlimit ;}
-tsm-limitupload() { transmission-remote --uplimit "${@:-10}" ;} # upload default to 10kpbs, else enter your own
-tsm-limituploadunlimited() { transmission-remote --no-uplimit ;}
-tsm-askmorepeers() { transmission-remote -t"$1" --reannounce ;}
-tsm-daemon() { transmission-daemon ;}
-tsm-quit() { killall transmission-daemon ;}
-tsm-add() { transmission-remote --add "$1" ;}
-tsm-hash() { transmission-remote --add "magnet:?xt=urn:btih:$1" ;}       # adding via hash info
-tsm-verify() { transmission-remote --verify "$1" ;}
-tsm-pause() { transmission-remote -t"$1" --stop ;}    # <id> or all
-tsm-start() { transmission-remote -t"$1" --start ;}   # <id> or all
-tsm-purge() { transmission-remote -t"$1" --remove-and-delete ;} # delete data also
-tsm-remove() { transmission-remote -t"$1" --remove ;}   # leaves data alone
-tsm-info() { transmission-remote -t"$1" --info ;}
-tsm-speed() { while true;do clear; transmission-remote -t"$1" -i | grep Speed;sleep 1;done ;}
-tsm-grep() { transmission-remote --list | grep -i "$1" ;}
-tsm() { transmission-remote --list ;}
-tsm-show() { transmission-show "$1" ;}                          # show .torrent file information
+tsm-limitupload()               { transmission-remote --uplimit "${@:-10}" ;} # upload default to 10kpbs, else enter your own
+tsm-limituploadunlimited()      { transmission-remote --no-uplimit ;}
+tsm-askmorepeers()              { transmission-remote -t"$1" --reannounce ;}
+tsm-daemon()                    { transmission-daemon ;}
+tsm-quit()                      { killall transmission-daemon ;}
+tsm-add()                       { transmission-remote --add "$1" ;}
+tsm-hash()                      { transmission-remote --add "magnet:?xt=urn:btih:$1" ;}       # adding via hash info
+tsm-verify()                    { transmission-remote --verify "$1" ;}
+tsm-pause()                     { transmission-remote -t"$1" --stop ;}    # <id> or all
+tsm-start()                     { transmission-remote -t"$1" --start ;}   # <id> or all
+tsm-purge()                     { transmission-remote -t"$1" --remove-and-delete ;} # delete data also
+tsm-remove()                    { transmission-remote -t"$1" --remove ;}   # leaves data alone
+tsm-info()                      { transmission-remote -t"$1" --info ;}
+tsm-speed()                     { while true;do clear; transmission-remote -t"$1" -i | grep Speed;sleep 1;done ;}
+tsm-grep()                      { transmission-remote --list | grep -i "$1" ;}
+tsm()                           { transmission-remote --list ;}
+tsm-show()                      { transmission-show "$1" ;}                          # show .torrent file information
 
-tsm-ncurse() { tide;}
+tsm-ncurse()                    { tide;}
 
 export PATH_ARIA_DAEMON_DOWNLOAD_DIR="$HOME/Downloads/Aria"
 

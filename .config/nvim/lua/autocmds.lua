@@ -83,39 +83,6 @@ nvim.autocmd.lmb__RestoreCursor = {
 -- -- The first item contains an error because dotbare uses `stty` for a command
 -- local _ = git_pattern:remove(1)
 --
--- nvim.autocmd.lmb__GitEnv = {
---     event = {"BufRead", "BufEnter"},
---     pattern = git_pattern,
---     desc = "Set git environment variables for dotfiles bare repo",
---     command = function()
---         local curr_file = fn.expand("%")
---         local bufnr = api.nvim_get_current_buf()
---
---         vim.defer_fn(
---             function()
---                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
---                 if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
---                     return
---                 end
---
---                 if not has_sourced then
---                     has_sourced =
---                         debounce(
---                         function()
---                             env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
---                             env.GIT_DIR = os.getenv("DOTBARE_DIR")
---                             nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
---                         end,
---                         10
---                     )
---                     has_sourced()
---                 end
---             end,
---             1
---         )
---     end
--- }
-
 -- This version runs a command on every event
 -- Wilder doesn't trigger a BufWinEnter when coming back like telescope does
 nvim.autocmd.lmb__GitEnv = {
@@ -150,8 +117,8 @@ nvim.autocmd.lmb__GitEnv = {
                         has_sourced =
                             debounce(
                             function()
-                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                                env.GIT_WORK_TREE = env.DOTBARE_TREE
+                                env.GIT_DIR = env.DOTBARE_DIR
                             end,
                             10
                         )
@@ -314,9 +281,9 @@ nvim.autocmd.lmb__DiffTool = {
     command = function()
         if vim.o.diff and not D.find_buf_with_var("difftool_special_keys") then
             local o = {desc = "Mergetool mapping"}
-            map("n", "<leader>1", ":diffget LOCAL<CR>", o)
-            map("n", "<leader>2", ":diffget BASE<CR>", o)
-            map("n", "<leader>3", ":diffget REMOTE<CR>", o)
+            map("n", "<Leader>1", ":diffget LOCAL<CR>", o)
+            map("n", "<Leader>2", ":diffget BASE<CR>", o)
+            map("n", "<Leader>3", ":diffget REMOTE<CR>", o)
         end
     end
 }

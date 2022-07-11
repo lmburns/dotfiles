@@ -129,7 +129,7 @@ local function init()
         event = "VimLeavePre",
         pattern = "*",
         command = function()
-            ex.SSaveCurrent()
+            pcall(ex.SSaveCurrent)
         end,
         once = false
     }

@@ -357,8 +357,9 @@ end
 
 local ftMap = {
     zsh = "indent",
-    lua = "treesitter",
-    tmux = {"indent"}
+    tmux = "indent",
+    lua = {"lsp", "treesitter"},
+    typescript = {"lsp", "treesitter"}
 }
 
 ---Setup 'ultra-fold'

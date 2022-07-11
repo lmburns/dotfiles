@@ -144,7 +144,9 @@ local sections_1 = {
     },
     lualine_z = {
         {
-            "branch",
+            -- "branch",
+            "b:gitsigns_head",
+            -- "FugitiveHead",
             icon = icons.git.branch,
             cond = function()
                 local ok, ret = pcall(plugs.search_result.fn)
@@ -199,8 +201,6 @@ local sections_2 = {
             icon = icons.git.branch,
             cond = conds.check_git_workspace
         }
-        -- "b:gitsigns_head"
-        -- "Fugitivehead"
     },
     lualine_y = {
         plugs.progress.fn,

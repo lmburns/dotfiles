@@ -15,10 +15,7 @@ FIX: Cursor blinking is very fast on text operators which don't trigger which-ke
      * With a timeoutlen = 800 and updatetime=4000, happens never
 
 Notes:
-    * When opening command line window (i.e., <C-c>) todo-comments autocmd error (needs modified)
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
-
-    * Folding causing cursor to move one left on startup (UFO fixed this)
 --]]
 -- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
@@ -43,7 +40,7 @@ local cmd = vim.cmd
 
 -- Lua utilities
 require("common.nvim")
-require("dev")
+local D = require("dev")
 require("options")
 
 local conf_dir = fn.stdpath("config")
@@ -72,14 +69,7 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         )
     )
 
-    map(
-        "n",
-        "<Leader>pp",
-        function()
-            require("plugins").compile()
-        end,
-        {desc = "Packer compile"}
-    )
+    map("n", "<Leader>pp", D.ithunk(require("plugins").compile), {desc = "Packer compile"})
 
     local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
     command(
@@ -121,9 +111,9 @@ require("common.grepper")
 -- require("plugs.fold")
 
 vim.notify = function(...)
-    -- vim.notify = require("notify")
+    vim.notify = require("notify")
     require("plugins").loader("nvim-notify")
-    -- require("plugins").loader("desktop-notify.nvim")
+    require("plugins").loader("desktop-notify.nvim")
     vim.notify = require("common.utils").notify
     vim.notify(...)
 end
@@ -154,7 +144,7 @@ vim.schedule(
 
                 ex.syntax("on")
                 ex.filetype("on")
-                ex.doautoall("filetypedetect BufRead")
+                ex.doau("filetypedetect BufRead")
             end,
             15
         )
@@ -286,7 +276,7 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        -- cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
                     end
                 )
 
@@ -301,10 +291,16 @@ vim.schedule(
                     }
                 )
 
-                C.set_hl("CocUnderline", {gui = "none"})
-                C.set_hl("CocSemStatic", {gui = "bold"})
-                C.set_hl("CocSemDefaultLibrary", {link = "Constant"})
-                C.set_hl("CocSemDocumentation", {link = "Number"})
+                C.plugin(
+                    "CocInit",
+                    {
+                        CocUnderline = {gui = "none"},
+                        CocSemStatic = {gui = "bold"},
+                        CocSemDefaultLibrary = {link = "Constant"},
+                        CocSemDocumentation = {link = "Number"}
+                    }
+                )
+
                 -- set_hl("CocSemDefaultLibraryNamespace", {link = "TSNamespace"})
 
                 ex.packadd("coc-kvs")

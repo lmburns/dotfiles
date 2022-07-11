@@ -66,9 +66,9 @@ alias :q='exit'
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
   alias srh='srg github'
-  alias srb='BROWSER=$BROWSERCLI srg'
+  alias srb='BROWSER=$BROWSERCLI sr'
   alias srr='BROWSER=brave srg'
-  alias srgg='BROWSER=$BROWSER surfraw -g google'
+  alias srgg='BROWSER=$BROWSER srg google'
 }
 
 (( ${+commands[xidlehook]} )) && {

@@ -212,7 +212,7 @@ return packer.startup(
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
-            use({"kyazdani42/nvim-web-devicons"})
+            use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
             -- ============================= Keybinding =========================== [[[
@@ -595,6 +595,7 @@ return packer.startup(
                     "petertriho/nvim-scrollbar",
                     requires = "kevinhwang91/nvim-hlslens",
                     after = {colorscheme, "nvim-hlslens"},
+                    event = "BufEnter",
                     conf = "plugs.scrollbar"
                 }
             )
@@ -604,7 +605,6 @@ return packer.startup(
             use(
                 {
                     "edluffy/specs.nvim",
-                    -- after = "neoscroll.nvim",
                     conf = "specs",
                     desc = "Keep an eye on where the cursor moves"
                 }
