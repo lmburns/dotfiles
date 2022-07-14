@@ -381,6 +381,7 @@ return packer.startup(
             use({"levuaska/levuaska.nvim"})
             use({"kyazdani42/blue-moon"})
             use({"meliora-theme/neovim"})
+            use({"rockyzhang24/arctic.nvim"})
             -- use({"wadackel/vim-dogrun"})
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
@@ -435,6 +436,7 @@ return packer.startup(
             use(
                 {
                     "rcarriga/neotest",
+                    module = "neotest",
                     requires = {
                         "nvim-lua/plenary.nvim",
                         "nvim-treesitter/nvim-treesitter",
@@ -459,7 +461,14 @@ return packer.startup(
             -- )
 
             -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
-            use({"rafcamlet/nvim-luapad", cmd = {"Luapad", "LuaRun"}, ft = "lua", conf = "luapad"})
+            use(
+                {
+                    "rafcamlet/nvim-luapad",
+                    cmd = {"Luapad", "LuaRun"},
+                    ft = "lua",
+                    conf = "luapad"
+                }
+            )
 
             -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
@@ -1032,7 +1041,6 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
-            -- "folke/todo-comments.nvim",
             -- "eriedaberrie/todo-comments.nvim",
             use(
                 {

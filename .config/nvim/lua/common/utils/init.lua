@@ -1212,6 +1212,28 @@ M.write_file = function(path, data, sync)
     end
 end
 
+---This class is meant to mimic the standard io.lines function
+---@class Data
+---@field str string
+---@field new fun(v: string) create a new Data object
+---@field lines fun() return an iterator over the lines
+local Data = {}
+
+---Create a new Data instance
+---@param str string
+function Data:new(str)
+    local o = setmetatable({}, self)
+    self.__index = self
+    self.str = str
+    return o
+end
+
+---Return a table of the string split on newlines
+---@return table<string>
+function Data:lines()
+    return vim.split(self.str, "\n")
+end
+
 ---Read a file asynchronously
 ---@param path string
 ---@return Promise
@@ -1222,6 +1244,7 @@ M.readFile = function(path)
             local stat = await(uva.fstat(fd))
             local data = await(uva.read(fd, stat.size, 0))
             await(uva.close(fd))
+            -- return Data:new(data)
             return data
         end
     )

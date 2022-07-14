@@ -8,3 +8,6 @@ nnoremap <buffer> <A-CR> /<C-R><C-W><CR>:nohl<CR>
 " Next link
 nnoremap <buffer> <A-]> /\v\<Bar>[^<Bar>]+\<Bar><CR>
 nnoremap <buffer> <A-[> ?\v\<Bar>[^<Bar>]+\<Bar><CR>
+
+set textwidth=85
+set colorcolumn=+1

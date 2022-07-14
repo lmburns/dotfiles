@@ -3,6 +3,24 @@ set statusbar-h-padding 0
 set statusbar-v-padding 0
 set page-padding 1
 set selection-clipboard clipboard
+set incremental-search true
+set search-hadjust true
+set render-loading "false"
+set scroll-step 50
+set guioptions 'hv'
+# set adjust-open width
+
+set font "Fira Code Nerd Font"
+
+unmap q
+unmap f
+unmap <C-n>
+
+map qq quit
+map Q quit
+
+map f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
 map u scroll half-up
 map d scroll half-down
 map D toggle_page_mode
@@ -14,53 +32,12 @@ map i recolor
 map p print
 map g goto top
 
-set incremental-search true
-set search-hadjust true
-# set adjust-open width
-set render-loading "false"
-set scroll-step 50
-unmap f
-map f toggle_fullscreen
-map [fullscreen] f toggle_fullscreen
-
-set font "Fira Code Nerd Font"
-# set font "Inconsolata 12"
-
-# bluish
-# set default-bg              "#141A1F"
-# set default-fg              "#A6B5C5"
-
-# set statusbar-bg            "#1A2128"
-# set statusbar-fg            "#13AFAF"
-
-# set inputbar-bg             "#141A1F"
-# set inputbar-fg             "#A6B5C5"
-
-# set notification-error-bg   "#EC5252"
-# set notification-error-fg   "#141A1F"
-
-# set notification-warning-bg "#EC5252"
-# set notification-warning-fg "#141A1F"
-
-# set highlight-color         "#53697F"
-# set highlight-active-color  "#EC5252"
-
-# set completion-highlight-fg "#13AFAF"
-# set completion-highlight-bg "#141A1F"
-
-# set completion-bg           "#141A1F"
-# set completion-fg           "#A6B5C5"
-
-# set notification-bg         "#A6B5C5"
-# set notification-fg         "#141A1F"
-
-# set recolor                 "true"
-# set recolor-lightcolor      "#141A1F"
-# set recolor-darkcolor       "#A6B5C5"
-# set recolor-reverse-video   "true"
-# set recolor-keephue         "false"
-
-########################################
+map <C-p> toggle_page_mode
+map <C-g> toggle_statusbar
+map <C-0> zoom default
+map <C--> zoom out
+map <C-=> zoom in
+map <C-l> nohlsearch
 
 # set default-bg "#1a1729" #00
 # set default-fg "#F7F7F6" #01
@@ -96,42 +73,71 @@ set font "Fira Code Nerd Font"
 # set recolor-reverse-video "true"
 # set recolor-keephue "false"
 
-set notification-error-bg       "#20202a"
-set notification-error-fg       "#63718b"
-set notification-warning-bg     "#20202a"
-set notification-warning-fg     "#c34864"
-set notification-bg             "#20202a"
-set notification-fg             "#cddbf9"
+###################################################
 
-set completion-bg               "#20202a"
-set completion-fg               "#cddbf9"
-set completion-group-bg         "#313449"
-set completion-group-fg         "#cddbf9"
-set completion-highlight-bg     "#b8dceb"
-set completion-highlight-fg     "#313449"
+set notification-error-bg   "#20202a"
+set notification-error-fg   "#63718b"
+set notification-warning-bg "#20202a"
+set notification-warning-fg "#c34864"
+set notification-bg         "#20202a"
+set notification-fg         "#cddbf9"
 
-set index-bg                    "#20202a"
-set index-fg                    "#b1dba4"
-set index-active-bg             "#b1dba4"
-set index-active-fg             "#20202a"
+set completion-bg           "#20202a"
+set completion-fg           "#cddbf9"
+set completion-group-bg     "#313449"
+set completion-group-fg     "#cddbf9"
+set completion-highlight-bg "#b8dceb"
+set completion-highlight-fg "#313449"
 
-set inputbar-bg                 "#20202a"
-set inputbar-fg                 "#cddbf9"
+set index-bg                "#20202a"
+set index-fg                "#b1dba4"
+set index-active-bg         "#b1dba4"
+set index-active-fg         "#20202a"
 
-set statusbar-bg                "#313449"
-set statusbar-fg                "#cddbf9"
+set inputbar-bg             "#20202a"
+set inputbar-fg             "#cddbf9"
 
-set highlight-color             "#c8cca7"
-set highlight-active-color      "#eac1c1"
+set statusbar-bg            "#313449"
+set statusbar-fg            "#cddbf9"
 
-set default-bg                  "#20202a"
-set default-fg                  "#cddbf9"
-set render-loading              "true"
-set render-loading-bg           "#20202a"
-set render-loading-fg           "#cddbf9"
+set highlight-color         "#c8cca7"
+set highlight-active-color  "#eac1c1"
 
-set recolor-lightcolor          "#20202a"
-set recolor-darkcolor           "#cddbf9"
-set recolor                     "true"
+set default-bg              "#20202a"
+set default-fg              "#cddbf9"
+set render-loading          "true"
+set render-loading-bg       "#20202a"
+set render-loading-fg       "#cddbf9"
+
+set recolor-lightcolor      "#20202a"
+set recolor-darkcolor       "#cddbf9"
+set recolor                 true
+
+###################################################
+
+# set recolor true
+# set recolor-darkcolor '#d3dae3'
+# set recolor-lightcolor '#202326'
+# set statusbar-bg '#313640'
+# set statusbar-fg '#d3dae3'
+# set inputbar-bg '#202326'
+# set inputbar-fg '#d3dae3'
+# set notification-bg '#383c4a'
+# set notification-fg '#d3dae3'
+# set notification-error-bg '#202326'
+# set notification-error-fg '#e06c75'
+# set notification-warning-bg '#202326'
+# set notification-warning-fg '#d19a66'
+# set highlight-color '#e5c07b'
+# set highlight-active-color '#61afef'
+# set completion-fg '#d3dae3'
+# set completion-bg '#333841'
+# set completion-highlight-fg '#d3dae3'
+# set completion-highlight-bg '#4b5263'
+# set completion-group-fg '#d3dae3'
+# set completion-group-bg '#5c6370'
+# set selection-clipboard 'clipboard'
+# set default-bg '#202326'
+# set default-fg '#d3dae3'
 
 # vim:ft=zsh:

@@ -637,9 +637,9 @@ local function init()
     -- local theme = "dusk-fox"
 
     -- local theme = "tokyonight"
-    local theme = "catppuccin"
+    -- local theme = "catppuccin"
     -- local theme = "kanagawa"
-    -- local theme = "kimbox"
+    local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then

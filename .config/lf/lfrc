@@ -115,7 +115,7 @@ cmd q! ${{
     lf -remote "send $id quit"
 }}
 cmd Q! :q!
-map <Esc> quit
+map <esc> quit
 map ZZ quit
 
 # -- Tmux: Toggle a second lf file manager pane
@@ -782,7 +782,7 @@ map gh
 map .
 map r
 map t
-map <C-l>
+map <c-l>
 map H
 map L
 
@@ -917,10 +917,10 @@ map G bottom -- []
 map J half-down
 map K half-up
 map R reload
-map <C-n> redraw
+map <c-n> redraw
 map C clear
 map U unselect
-map <C-l> cd-followlink
+map <c-l> cd-followlink
 map H jump-prev
 map L jump-next
 map , :{{ clear; unselect; }}

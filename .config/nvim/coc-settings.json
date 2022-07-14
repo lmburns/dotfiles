@@ -183,7 +183,7 @@
   // ╰──────────────────────────────────────────────────────────╯
   "clangd.enabled": true,
   "clangd.inlayHints.enable": true,
-  "clangd.inlayHints.sep": "‣",
+  "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
   // "clangd.arguments": [
   //   "--clang-tidy",
   //   "--completion-style=detailed",

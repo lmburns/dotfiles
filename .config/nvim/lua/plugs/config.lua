@@ -726,22 +726,22 @@ end
 -- │                        Sandwhich                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.sandwhich()
-    -- Sandwhich
-    -- dss = automatic deletion
-    -- css = automatic changing
-    -- ySi = ask head and tail (add)
-    -- yS = to end of line
-    -- yss = whole line (add)
-    -- yiss = inside nearest delimiter
-    -- y{a,i}si = head - tail (select)
-    -- yaa = <here>
-    -- yar = [here]
-    -- ygs = (\n<line>\n)
-    -- ds<CR> = delete line above/below
+    -- dss      = automatic deletion
+    -- css      = automatic change detection
+    -- ySi      = ask head and tail to add
+    -- yS       = surround to end of line
+    -- yss      = surround whole line (add)
+    -- ygs      = surround (\n<line>\n)
+    -- ysi      = surround delimiter
+    -- ds<CR>   = delete empty line above/below
 
-    -- === Visual ===
-    -- Si = head - tail
-    -- gS = (\n<line>\n)
+    -- y{a,i}si = yank head - tail
+    -- yiss = yank inside nearest delimiter
+    -- yaa  = yank inside <here>
+    -- yar  = yank inside [here]
+
+    -- vSi = surround head - tail
+    -- vgS = surround (\n<line>\n)
 
     -- --Old--                   ---Input---        ---Output---
     -- "hello"                   ysiwtkey<cr>       "<key>hello</key>"
@@ -753,24 +753,46 @@ function M.sandwhich()
     -- "hello"                   ysWFprint<cr>     print( "hello" )
     -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
-    -- This allows for macros in Rust
+    -- dsf
     g["sandwich#magicchar#f#patterns"] = {
+        -- This: func(arg) => arg
         {
-            header = [[\<\h\k*]],
+            header = [[\<\%(\.\|:\{1,2}\)\@<!\h\k*\%(\.\|:\{1,2}\)\@!]],
             bra = "(",
             ket = ")",
             footer = ""
         },
-        -- default dsf works on func(arg) and not on macro!(arg)
+        -- This: macro!(arg) => arg
         {
             header = [[\<\h\k*!]],
             bra = "(",
             ket = ")",
             footer = ""
         },
-        -- default dsf works on func(arg) and not on obj.method(arg)
+        -- This: func.method.xx(arg) => arg
         {
-            header = [[\<\%(\h\k*\.\)*\h\k*]],
+            header = [[\<\%(\h\k*\.\)\+\h\k*]],
+            bra = "(",
+            ket = ")",
+            footer = ""
+        },
+        -- This: func<T>(generic) => T(generic)
+        {
+            header = [[\<\h\k*]],
+            bra = "<",
+            ket = ">",
+            footer = ""
+        },
+        -- This: Lua:method(arg) => arg
+        {
+            header = [[\<\%(\h\k*:\)\h\k*]],
+            bra = "(",
+            ket = ")",
+            footer = ""
+        },
+        -- This: func::method(arg) => arg
+        {
+            header = [[\<\%(\h\k*::\)\+\h\k*]],
             bra = "(",
             ket = ")",
             footer = ""
@@ -1660,7 +1682,7 @@ function M.urlview()
     )
 
     require("telescope").load_extension("urlview")
-    map("n", "gL", "UrlView", {cmd = true})
+    map("n", "<LocalLeader>l", "UrlView", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

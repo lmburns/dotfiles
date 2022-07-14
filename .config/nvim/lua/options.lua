@@ -32,8 +32,8 @@ vim.tbl_map(
         "getscriptPlugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
-        "matchit",
-        "matchparen",
+        -- "matchit",
+        -- "matchparen",
         "rrhelper",
         "spec",
         "tar",

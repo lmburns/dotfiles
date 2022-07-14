@@ -741,7 +741,7 @@ M.setup = function()
                 return false
             end,
             use_languagetree = true,
-            additional_vim_regex_highlighting = true,
+            additional_vim_regex_highlighting = false,
             -- custom_captures = {}
             custom_captures = {
                 ["function.call"] = "TSFunction",

@@ -740,7 +740,8 @@ zt 0c light-mode null lbin \
     celeo/cargo-nav \
     g-k/cargo-show \
     mre/cargo-inspect \
-    sminez/roc
+    sminez/roc \
+    MordechaiHadad/bob
 
 # razrfalcon/cargo-bloat \
 # matthiaskrgr/cargo-cache \
