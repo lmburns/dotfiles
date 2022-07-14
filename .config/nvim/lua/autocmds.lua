@@ -378,8 +378,6 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                 TSConditional = {default = true, gui = "none"},
                 TSString = {default = true, gui = "none"},
                 TSKeywordFunction = {default = true, gui = "none"},
-                TSFunction = {default = true, bold = true},
-                TSFuncBuiltin = {default = true, bold = true},
                 Function = {default = true, gui = "bold"},
                 Todo = {default = true, bg = "none"},
                 QuickFixLine = {default = true, fg = "none"}
@@ -392,7 +390,14 @@ nvim.autocmd.lmb__ColorschemeSetup = {
         if g.colors_name ~= "kimbox" then
             C.all(
                 {
-                    Hlargs = {link = "TSParameter"}
+                    Hlargs = {link = "TSParameter"},
+                }
+            )
+        else
+            C.all(
+                {
+                    TSFunction = {default = true, bold = true},
+                    TSFuncBuiltin = {link = "TSFunction", bold = true}
                 }
             )
         end

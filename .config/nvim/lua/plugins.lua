@@ -380,6 +380,7 @@ return packer.startup(
             use({"rmehri01/onenord.nvim"})
             use({"levuaska/levuaska.nvim"})
             use({"kyazdani42/blue-moon"})
+            use({"meliora-theme/neovim"})
             -- use({"wadackel/vim-dogrun"})
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})

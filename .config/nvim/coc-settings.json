@@ -37,7 +37,7 @@
   // Filetypes that enable semanticTokens highlighting
   "semanticTokens.filetypes": [
     // "c",
-    "cpp",
+    // "cpp",
     "go",
     "html",
     "java"

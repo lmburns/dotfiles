@@ -156,7 +156,10 @@ local sections_1 = {
                 return conds.check_git_workspace() and ret == ""
             end
         },
-        {plugs.quickfix_count.fn, separator = {left = plugs.sep()}},
+        {
+            plugs.quickfix_count.fn,
+            separator = {left = plugs.sep()},
+        },
         plugs.loclist_count.fn,
         {
             "%3l %3v",

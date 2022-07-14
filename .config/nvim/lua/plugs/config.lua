@@ -960,8 +960,6 @@ function M.targets()
     -- inb anb Inb Anb ilb alb Ilb Alb = any block
     -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
-    -- cib = change in () or {}
-
     augroup(
         "lmb__Targets",
         {
@@ -971,31 +969,24 @@ function M.targets()
                 fn["targets#mappings#extend"](
                     {
                         -- Parameter
-                        -- a = {argument = {{o = "(", c = ")", s = ","}}},
+                        J = {argument = {{o = "(", c = ")", s = ","}}},
                         a = {pair = {{o = "<", c = ">"}}},
                         r = {pair = {{o = "[", c = "]"}}},
-                        -- Closest separator
-                        -- g = {
-                        --     separator = {
-                        --         {d = ","},
-                        --         {d = "."},
-                        --         {d = ";"},
-                        --         {d = "="},
-                        --         {d = "+"},
-                        --         {d = "-"},
-                        --         {d = "="},
-                        --         {d = "~"},
-                        --         {d = "_"},
-                        --         {d = "*"},
-                        --         {d = "#"},
-                        --         {d = "/"},
-                        --         {d = [[\]]},
-                        --         {d = "|"},
-                        --         {d = "&"},
-                        --         {d = "$"}
-                        --     }
-                        -- },
-                        -- Closest text object
+                        B = {pair = {{o = "{", c = "}"}}},
+                        b = {
+                            pair = {
+                                {o = "(", c = ")"},
+                                {o = "{", c = "}"}
+                            }
+                        },
+                        A = {
+                            pair = {
+                                {o = "(", c = ")"},
+                                {o = "{", c = "}"},
+                                {o = "[", c = "]"}
+                            }
+                        },
+                        -- Closest delimiter
                         ["2"] = {
                             separator = {
                                 {d = ","},
@@ -1015,7 +1006,12 @@ function M.targets()
                                 {d = "&"},
                                 {d = "$"}
                             },
-                            pair = {{o = "(", c = ")"}, {o = "[", c = "]"}, {o = "{", c = "}"}, {o = "<", c = ">"}},
+                            pair = {
+                                {o = "(", c = ")"},
+                                {o = "[", c = "]"},
+                                {o = "{", c = "}"},
+                                {o = "<", c = ">"}
+                            },
                             quote = {{d = "'"}, {d = '"'}, {d = "`"}},
                             tag = {{}}
                         }
@@ -1038,7 +1034,11 @@ function M.targets()
             ["an"] = "Next object",
             ["am"] = "Previous object",
             ["i2"] = "Inner nearest object",
-            ["a2"] = "Around nearest object"
+            ["a2"] = "Around nearest object",
+            ["iA"] = "Inner any bracket",
+            ["aA"] = "Around any bracket",
+            ["iJ"] = "Inner parameter (comma)",
+            ["AJ"] = "Around parameter (comma)"
         },
         {mode = "o"}
     )

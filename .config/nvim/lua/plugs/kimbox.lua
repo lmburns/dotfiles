@@ -26,23 +26,27 @@ M.catppuccin = function()
             transparent_background = false,
             term_colors = true,
             styles = {
-                comments = "italic",
-                functions = "bold",
-                keywords = "none",
-                strings = "none",
-                variables = "none",
-                numbers = "NONE",
-                booleans = "NONE",
-                properties = "NONE",
-                types = "NONE",
-                operators = "NONE"
+                comments = {"italic"},
+                functions = {"bold"},
+                keywords = {},
+                strings = {},
+                variables = {},
+                numbers = {},
+                booleans = {},
+                properties = {},
+                types = {},
+                operators = {}
             },
             integrations = {
+                bufferline = true,
                 treesitter = true,
+                lsp_trouble = true,
+                lsp_saga = true,
                 coc_nvim = true,
                 telescope = true,
-                gitgutter = true,
+                gitsigns = true,
                 ts_rainbow = true,
+                markdown = true,
                 hop = true,
                 which_key = true,
                 neogit = true,
@@ -63,51 +67,6 @@ M.catppuccin = function()
                 BufferLineNumbers = {fg = cp.white, bg = cp.black1},
                 BufferLineNumbersVisible = {fg = cp.white, bg = cp.black4},
                 BufferLineNumbersSelected = {fg = cp.red, bg = cp.black4},
-                BufferLinePick = {fg = cp.maroon, bg = cp.black1},
-                BufferLinePickVisible = {fg = cp.maroon, bg = cp.black4},
-                BufferLinePickSelected = {fg = cp.maroon, bg = cp.black4},
-                BufferLineModified = {fg = cp.white, bg = cp.black1},
-                BufferLineModifiedVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineModifiedSelected = {fg = cp.red, bg = cp.black4},
-                BufferLineDiagnostic = {fg = cp.white, bg = cp.black1},
-                BufferLineDiagnosticVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineDiagnosticSelected = {fg = cp.rd, bg = cp.black4},
-                BufferLineHintDiagnostic = {fg = cp.white, bg = cp.black1},
-                BufferLineHintDiagnosticVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineHintDiagnosticSelected = {fg = cp.green, bg = cp.black4},
-                BufferLineInfoDiagnostic = {fg = cp.white, bg = cp.black1},
-                BufferLineInfoDiagnosticVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineInfoDiagnosticSelected = {fg = cp.blue, bg = cp.black4},
-                BufferLineWarningDiagnostic = {fg = cp.white, bg = cp.black1},
-                BufferLineWarningDiagnosticVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineWarningDiagnosticSelected = {fg = cp.yellow, bg = cp.black4},
-                BufferLineErrorDiagnostic = {fg = cp.white, bg = cp.black1},
-                BufferLineErrorDiagnosticVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineErrorDiagnosticSelected = {fg = cp.red, bg = cp.black4},
-                BufferLineHint = {fg = cp.white, bg = cp.black1},
-                BufferLineHintVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineHintSelected = {fg = cp.green, bg = cp.black4},
-                BufferLineInfo = {fg = cp.white, bg = cp.black1},
-                BufferLineInfoVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineInfoSelected = {fg = cp.blue, bg = cp.black4},
-                BufferLineWarning = {fg = cp.white, bg = cp.black1},
-                BufferLineWarningVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineWarningSelected = {fg = cp.yellow, bg = cp.black4},
-                BufferLineError = {fg = cp.white, bg = cp.black1},
-                BufferLineErrorVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineErrorSelected = {fg = cp.red, bg = cp.black4},
-                BufferLineFill = {fg = cp.black1, bg = cp.black1},
-                BufferLineBackground = {fg = cp.white, bg = cp.black1},
-                BufferLineBuffer = {fg = cp.mauve, bg = cp.black1},
-                BufferLineBufferVisible = {fg = cp.mauve, bg = cp.black4},
-                BufferLineBufferSelected = {fg = cp.mauve, bg = cp.black4, gui = "bold,italic"},
-                BufferLineTab = {fg = cp.mauve, bg = cp.black1},
-                BufferLineTabSelected = {fg = cp.white, bg = cp.black4},
-                BufferLineTabClose = {fg = cp.white, bg = cp.black4},
-                BufferLineIndicatorSelected = {fg = cp.maroon, bg = cp.black4},
-                BufferLineSeparator = {fg = cp.black1, bg = cp.black1},
-                BufferLineSeparatorVisible = {fg = cp.black1, bg = cp.black4},
-                BufferLineSeparatorSelected = {fg = cp.black1, bg = cp.black4},
                 TSVariableBuiltin = {gui = "none"},
                 TSTypeBuiltin = {gui = "none"},
                 TSProperty = {gui = "none"},
@@ -198,13 +157,12 @@ M.kanagawa = function()
 
     kanagawa.setup(
         {
-            theme = "default",
-            undercurl = true, -- enable undercurls
+            undercurl = true,
             commentStyle = {italic = true},
-            functionStyle = {bold = false},
+            functionStyle = {bold = true},
             keywordStyle = {},
             statementStyle = {},
-            typeStyle = {bold = true},
+            typeStyle = {bold = false},
             variablebuiltinStyle = {italic = true},
             specialReturn = true, -- special highlight for the return keyword
             specialException = true, -- special highlight for exception handling keywords
@@ -228,7 +186,6 @@ M.nightfox = function()
     nightfox.setup(
         {
             options = {
-                -- Compiled file's destination location
                 compile_path = fn.stdpath("cache") .. "/nightfox",
                 compile_file_suffix = "_compiled", -- Compiled file suffix
                 transparent = false, -- Disable setting background
@@ -236,10 +193,13 @@ M.nightfox = function()
                 dim_inactive = false, -- Non focused panes set to alternative background
                 styles = {
                     -- Style to be applied to different syntax groups
-                    comments = "none", -- Value is any valid attr-list value `:help attr-list`
+                    comments = "NONE", -- Value is any valid attr-list value `:help attr-list`
+                    conditionals = "NONE",
+                    constants = "NONE",
                     functions = "bold",
-                    keywords = "bold",
+                    keywords = "NONE",
                     numbers = "NONE",
+                    operators = "NONE",
                     strings = "NONE",
                     types = "NONE",
                     variables = "NONE"
@@ -250,7 +210,22 @@ M.nightfox = function()
                     visual = false,
                     search = false
                 },
-                modules = {}
+                modules = {
+                    aerial = true,
+                    diagnostic = true,
+                    fidget = true,
+                    gitsigns = true,
+                    hop = true,
+                    lsp_saga = true,
+                    lsp_trouble = true,
+                    neogit = true,
+                    notify = true,
+                    symbol_outline = true,
+                    telescope = true,
+                    treesitter = true,
+                    tsrainbow = true,
+                    whichkey = true
+                }
             }
         }
     )
@@ -662,9 +637,9 @@ local function init()
     -- local theme = "dusk-fox"
 
     -- local theme = "tokyonight"
-    -- local theme = "catppuccin"
+    local theme = "catppuccin"
     -- local theme = "kanagawa"
-    local theme = "kimbox"
+    -- local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then

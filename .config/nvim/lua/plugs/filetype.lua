@@ -18,12 +18,6 @@ end
 -- require('plenary.filetype').detect_from_shebang(fn.expand('%:p'))
 
 function M.setup()
-    -- g.do_filetype_lua = 1
-
-    -- 0 = Disable filetype.vim (but still load filetype.lua if enabled)
-    -- 1 = Disable filetype.vim and filetype.lua
-    -- g.did_load_filetypes = 0
-
     vim.filetype.add(
         {
             extension = {

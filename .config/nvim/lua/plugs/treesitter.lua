@@ -466,7 +466,7 @@ M.setup_context_vt = function()
             disable_virtual_lines = false,
             -- Same as above but only for spesific filetypes
             -- Default: {}
-            disable_virtual_lines_ft = {"yaml"},
+            disable_virtual_lines_ft = {"yaml", "python"},
             -- How many lines required after starting position to show virtual text
             min_rows = fn.winheight("%") / 3,
             -- Same as above but only for spesific filetypes
