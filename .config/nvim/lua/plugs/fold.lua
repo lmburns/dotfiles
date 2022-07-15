@@ -358,8 +358,8 @@ end
 local ftMap = {
     zsh = "indent",
     tmux = "indent",
-    lua = {"lsp", "treesitter"},
     typescript = {"lsp", "treesitter"}
+    -- lua = {"lsp", "treesitter"},
 }
 
 ---Setup 'ultra-fold'
@@ -376,7 +376,7 @@ M.setup_ufo = function()
             preview = {
                 win_config = {
                     border = style.current.border,
-                    winhighlight = "Normal:Folded",
+                    winhighlight = "Normal:CocFloating",
                     winblend = 0
                 },
                 mappings = {
@@ -425,6 +425,33 @@ local function init()
         end,
         50
     )
+
+    -- Folding
+    -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
+    map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
+    map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
+    map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
+    map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
+
+    -- map("n", "za", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
+    -- map("n", "zA", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
+    -- map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
+    -- map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
+    -- map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
+    -- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
+    -- map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
+
+    map("n", "zR", require("ufo").openAllFolds)
+    map("n", "zM", require("ufo").closeAllFolds)
+    map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
+    map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
+
+    -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
+    map("n", "z[", [[<Cmd>lua require('ufo').goPreviousStartFold()<CR>]])
+    map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
+
+    map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
+    map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
 
     -- blacklist
     bl_ft = {

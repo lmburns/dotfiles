@@ -29,6 +29,7 @@ end
 -- placeholder for Git difftool --name-only :)
 function M.diff_hist()
     local info = fn.getqflist({idx = 0, context = 0})
+    ---@diagnostic disable-next-line:undefined-field
     local idx, ctx = info.idx, info.context
     if idx and ctx and type(ctx.items) == "table" then
         local diff = ctx.items[idx].diff or {}
@@ -65,14 +66,14 @@ local function init()
         ["d?"] = "d?",
         dv = "dv",
         dp = "dp",
-        ds = "dh",
+        ds = "ds",
         dh = "dh",
         dq = "",
         d2o = "d2o",
         d3o = "d3o",
         dd = "dd",
-        s = "<C-s>",
-        u = "<C-u>",
+        s = "s",
+        u = "u",
         O = "T",
         a = "",
         X = "x",
@@ -95,7 +96,6 @@ local function init()
                 require("plugs.fugitive").map()
             end
         },
-        -- TODO: Prevent adding to MRU
         {
             event = "BufReadPost",
             pattern = "fugitive://*",
@@ -131,8 +131,8 @@ local function init()
                 [[<Cmd>lua require('common.utils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
                 "Fugitive Gread"
             },
-            ["<Leader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
-            ["<Leader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"}
+            ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
+            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"}
             -- ["<Leader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )
@@ -142,10 +142,10 @@ local function init()
 
     wk.register(
         {
-            ["<Leader>gC"] = {":Git commit<Space>", "Fugitive commit"},
-            -- ["<Leader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
-            ["<Leader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
-            ["<Leader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"}
+            ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive commit"},
+            ["<LocalLeader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
+            ["<LocalLeader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
+            ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"}
         },
         {silent = false}
     )

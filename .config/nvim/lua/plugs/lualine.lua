@@ -144,6 +144,14 @@ local sections_1 = {
     },
     lualine_z = {
         {
+            plugs.gitbuf.fn,
+            color = {fg = colors.light_red, gui = "bold"}
+        },
+        {
+            plugs.recording.fn,
+            color = {fg = colors.orange, gui = "bold"}
+        },
+        {
             -- "branch",
             "b:gitsigns_head",
             -- "FugitiveHead",
@@ -154,11 +162,12 @@ local sections_1 = {
                     return conds.check_git_workspace()
                 end
                 return conds.check_git_workspace() and ret == ""
-            end
+            end,
+            color = {fg = colors.dyellow, gui = "bold"}
         },
         {
             plugs.quickfix_count.fn,
-            separator = {left = plugs.sep()},
+            separator = {left = plugs.sep()}
         },
         plugs.loclist_count.fn,
         {
@@ -167,7 +176,10 @@ local sections_1 = {
                 return ("%s %s"):format(icons.misc.line, s)
             end
         },
-        "%p%%/%-3L",
+        {
+            "%p%%/%-3L",
+            color = {fg = colors.light_red, gui = "bold"}
+        },
         -- "%l:%c",
         -- "%p%%/%L",
         plugs.search_result.fn

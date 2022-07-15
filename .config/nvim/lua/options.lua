@@ -65,9 +65,11 @@ g.load_black = 1
 g.markdown_fenced_languages = {
     "bash=sh",
     "c",
+    "console=sh",
     "go",
     "help",
     "html",
+    "javascript",
     "js=javascript",
     "json",
     "lua",
@@ -78,6 +80,8 @@ g.markdown_fenced_languages = {
     "sh",
     "shell=sh",
     "toml",
+    "ts=typescript",
+    "typescript",
     "vim",
     "yaml",
 }

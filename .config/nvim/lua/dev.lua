@@ -11,21 +11,6 @@ local uv = vim.loop
 
 ---@alias vector table
 
--- Addition to `os` module
----Capture output of command as a string
-function os.capture(cmd, raw)
-    local f = assert(io.popen(cmd, "r"))
-    local s = assert(f:read("*a"))
-    f:close()
-    if raw then
-        return s
-    end
-    s = string.gsub(s, "^%s+", "")
-    s = string.gsub(s, "%s+$", "")
-    s = string.gsub(s, "[\n\r]+", " ")
-    return s
-end
-
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Global
 -- ╘══════════════════════════════════════════════════════════╛
@@ -139,10 +124,6 @@ end
 M.pithunk = function(fun, ...)
     return M.ithunk(pcall, fun, ...)
 end
-
----Shorthand aliases for these funtions
-M.__ = M.thunk
-M._ = M.ithunk
 
 ---Get the output of a system command in a table
 ---@param cmd string|table

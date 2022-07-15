@@ -390,11 +390,15 @@ end
 -- │                         Markdown                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.markdown()
-    g.vim_markdown_follow_anchor = 1
     -- g.vim_markdown_folding_disabled = 1
-
     g.vim_markdown_conceal = 0
     g.vim_markdown_conceal_code_blocks = 0
+    g.vim_markdown_fenced_languages = g.markdown_fenced_languages
+    g.vim_markdown_folding_level = 10
+    g.vim_markdown_folding_style_pythonic = 1
+    g.vim_markdown_follow_anchor = 1
+    g.vim_markdown_frontmatter = 1
+    g.vim_markdown_strikethrough = 1
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -577,6 +581,28 @@ function M.notify()
     )
 
     require("telescope").load_extension("notify")
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                           Sort                           │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.sort()
+    local sort = D.npcall(require, "sort")
+    if not sort then
+        return
+    end
+
+    sort.setup({delimiters = {",", "|", ";", ":", "s", "t"}})
+
+    map("n", "gS", "Sort", {cmd = true})
+
+    -- [!]         = Sort order is reversed
+    -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
+    -- [b]         = First binary number in the word
+    -- [i]         = Case is ignored
+    -- [n]         = First decimal number in the word
+    -- [o]         = First octal number in the word
+    -- [u]         = Keep the first instance of words within selection
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

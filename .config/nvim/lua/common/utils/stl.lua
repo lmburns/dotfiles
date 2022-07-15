@@ -177,6 +177,45 @@ M.plugins.lsp_status2 = {
     end
 }
 
+M.plugins.blame = {
+    fn = function()
+        if vim.b.gitsigns_blame_line_dict then
+            local info = vim.b.gitsigns_blame_line_dict
+            local date_time = require("gitsigns.util").get_relative_time(tonumber(info.author_time))
+            return ("%s - %s"):format(info.author, date_time)
+        end
+        return ""
+    end
+}
+
+M.plugins.recording = {
+    fn = function()
+        local reg = fn.reg_recording()
+        if reg ~= "" then
+            return ("Recording[%s]"):format(reg)
+        else
+            return ""
+        end
+    end
+}
+
+M.plugins.gitbuf = {
+    fn = function()
+        local name = api.nvim_eval_statusline("%f", {}).str
+        if vim.startswith(name, "fugitive://") then
+            local _, _, commit, relpath = name:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
+            return ("fugitive@%s"):format(commit:sub(1, 7))
+            -- name = relpath .. "@" .. commit:sub(1, 7)
+        end
+        if vim.startswith(name, "gitsigns://") then
+            local _, _, revision, relpath = name:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
+            return ("gitsigns@%s"):format(revision:sub(1, 7))
+            -- name = relpath .. "@" .. revision:sub(1, 7)
+        end
+        return ""
+    end
+}
+
 M.plugins.coc_status = {
     fn = function()
         return vim.trim(g.coc_status or "")

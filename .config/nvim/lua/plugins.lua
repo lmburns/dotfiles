@@ -817,6 +817,8 @@ return packer.startup(
                 }
             )
 
+            use({"sQVe/sort.nvim", conf = "sort", cmd = {"Sort"}})
+
             use(
                 {
                     "monaqa/dial.nvim",
@@ -1396,12 +1398,14 @@ return packer.startup(
                         {"n", "<LocalLeader>gR"},
                         {"n", "<LocalLeader>gB"},
                         {"n", "<LocalLeader>gw"},
+                        {"n", "<LocalLeader>gW"},
                         {"n", "<LocalLeader>gr"},
                         {"n", "<LocalLeader>gf"},
                         {"n", "<LocalLeader>gF"},
-                        {"n", "<Leader>gC"},
-                        {"n", "<Leader>gd"},
-                        {"n", "<Leader>gt"}
+                        {"n", "<LocalLeader>gc"},
+                        {"n", "<LocalLeader>gC"},
+                        {"n", "<LocalLeader>gd"},
+                        {"n", "<LocalLeader>gt"}
                     },
                     requires = {"tpope/vim-rhubarb"}
                 }

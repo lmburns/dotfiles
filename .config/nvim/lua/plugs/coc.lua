@@ -7,8 +7,9 @@ local log = require("common.log")
 local C = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
-local bmap = utils.bap
+-- local bmap = utils.bap
 local augroup = utils.augroup
+local _ = D.ithunk
 
 local wk = require("which-key")
 local promise = require("promise")
@@ -483,8 +484,8 @@ function M.post_open_float()
                 vim.wo[winid].showbreak = "NONE"
 
                 if lv then
-                    bmap(bufnr, "n", "K", D._(lv.link_under_cursor), {desc = "Link under cursor"})
-                    bmap(bufnr, "n", "L", D._(lv.link_near_cursor), {desc = "Link near cursor"})
+                    bmap(bufnr, "n", "K", _(lv.link_under_cursor), {desc = "Link under cursor"})
+                    bmap(bufnr, "n", "L", _(lv.link_near_cursor), {desc = "Link near cursor"})
                 end
             end
         )

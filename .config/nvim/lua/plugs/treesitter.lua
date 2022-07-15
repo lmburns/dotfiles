@@ -5,6 +5,7 @@ if not D.npcall(require, "nvim-treesitter") then
     return
 end
 
+local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 local color = require("common.color")
@@ -21,7 +22,7 @@ local ft_enabled
 local queries
 local parsers
 local configs
-local ts_disabled
+local ts_hl_disabled
 
 local context_vt_max_lines = 2000
 
@@ -592,25 +593,15 @@ M.setup_treesurfer = function()
         }
     )
 
-    -- map("n", "<C-A-.>", D.ithunk(sts.targeted_jump, filter), {desc = "Jump to a main node"})
-    map("n", "<C-A-,>", D.ithunk(sts.targeted_jump, filter), {desc = "Jump to any node"})
-    map("n", "<C-A-[>", D.ithunk(sts.filtered_jump, filter, false), {desc = "Jump to previous important node"})
-    map("n", "<C-A-]>", D.ithunk(sts.filtered_jump, filter, true), {desc = "Jump to next important node"})
-    map("n", "(", D.ithunk(sts.filtered_jump, "default", false), {desc = "Jump previous main node"})
-    map("n", ")", D.ithunk(sts.filtered_jump, "default", true), {desc = "Jump next main node"})
+    -- map("n", "<C-A-.>", _(sts.targeted_jump, filter), {desc = "Jump to a main node"})
+    map("n", "<C-A-,>", _(sts.targeted_jump, filter), {desc = "Jump to any node"})
+    map("n", "<C-A-[>", _(sts.filtered_jump, filter, false), {desc = "Jump to previous important node"})
+    map("n", "<C-A-]>", _(sts.filtered_jump, filter, true), {desc = "Jump to next important node"})
+    map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Jump previous main node"})
+    map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Jump next main node"})
 
-    map(
-        "n",
-        "<Left>",
-        D.ithunk(sts.filtered_jump, {"variable_declaration"}, false),
-        {desc = "Jump to previous variable dec"}
-    )
-    map(
-        "n",
-        "<Right>",
-        D.ithunk(sts.filtered_jump, {"variable_declaration"}, true),
-        {desc = "Jump to next variable dec"}
-    )
+    map("n", "<Left>", _(sts.filtered_jump, {"variable_declaration"}, false), {desc = "Jump to previous variable dec"})
+    map("n", "<Right>", _(sts.filtered_jump, {"variable_declaration"}, true), {desc = "Jump to next variable dec"})
 
     map(
         "n",
@@ -680,6 +671,8 @@ end
 ---@return table
 M.setup = function()
     return {
+        -- "norg",
+        -- "rescript",
         ensure_installed = {
             -- "css",
             "bash",
@@ -705,43 +698,41 @@ M.setup = function()
             "make",
             "markdown",
             "markdown_inline",
-            -- "norg",
-            -- Syntax isn't parsed the greatest
-            -- "perl",
+            "perl", -- Syntax isn't parsed the greatest
             "python",
             "query",
             "rasi",
-            -- Injections are sent into various filetypes
-            "regex",
-            -- "rescript",
+            "regex", -- Injections are sent into various filetypes
             "ruby",
             "rust",
             "scheme",
             "scss",
-            -- "solidity",
+            "solidity",
             "sql",
             "teal",
             "typescript",
             "tsx",
             "vue",
             "vim",
-            -- "yaml",
+            "yaml",
             "zig",
             "help"
         },
         sync_install = false,
+        auto_install = true,
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
             enable = true, -- false will disable the whole extension
             disable = function(ft, bufnr)
-                if ts_disabled:contains(ft) or api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines then
+                if ts_hl_disabled:contains(ft) or api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines then
                     return true
                 end
 
                 return false
             end,
             use_languagetree = true,
-            additional_vim_regex_highlighting = false,
+            -- additional_vim_regex_highlighting = true,
+            additional_vim_regex_highlighting = {"perl"},
             -- custom_captures = {}
             custom_captures = {
                 ["function.call"] = "TSFunction",
@@ -756,7 +747,7 @@ M.setup = function()
         indent = {enable = true},
         fold = {enable = false},
         endwise = {enable = true},
-        matchup = {enable = false, disable_virtual_text = true},
+        matchup = {enable = true, disable_virtual_text = false},
         -- matchup = {enable = true},
         playground = {
             enable = true,
@@ -940,13 +931,23 @@ M.setup = function()
                 enable = true,
                 swap_next = {
                     ["<Leader>.f"] = "@function.outer",
-                    ["<Leader>.e"] = "@element"
+                    ["<Leader>.e"] = "@element",
                     -- ["<Leader>a"] = "@parameter.inner", -- iswap
+                    ["sp"] = "@parameter.inner",
+                    ["sf"] = "@function.outer",
+                    ["sc"] = "@class.outer",
+                    ["ss"] = "@statement.outer",
+                    ["sb"] = "@block.outer"
                 },
                 swap_previous = {
                     ["<Leader>,f"] = "@function.outer",
-                    ["<Leader>,e"] = "@element"
+                    ["<Leader>,e"] = "@element",
                     -- ["<Leader>A"] = "@parameter.inner",
+                    ["sP"] = "@parameter.inner",
+                    ["sF"] = "@function.outer",
+                    ["sC"] = "@class.outer",
+                    ["sS"] = "@statement.outer",
+                    ["sB"] = "@block.outer"
                 }
             }
         }
@@ -1005,14 +1006,16 @@ local function init()
     ex.packadd("nvim-treesitter")
     ex.packadd("nvim-treesitter-textobjects")
 
-    ts_disabled =
+    ts_hl_disabled =
         _t(
         {
             "help",
             "html",
             "comment",
             "zsh",
-            "markdown"
+            "markdown",
+            "solidity",
+            "yaml"
         }
     )
 
@@ -1154,8 +1157,8 @@ local function init()
 
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
-    local hl_disabled = F.tern(type(cfhl) == "function", ts_disabled, cfhl)
-    ft_enabled = {"telescope"}
+    local hl_disabled = F.tern(type(cfhl) == "function", ts_hl_disabled, cfhl)
+    ft_enabled = {telescope = true}
     for _, lang in ipairs(conf.ensure_installed) do
         if not vim.tbl_contains(hl_disabled, lang) then
             local parser = parsers.list[lang]

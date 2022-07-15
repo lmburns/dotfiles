@@ -133,6 +133,7 @@ local function init()
             ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
             ["''"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
             ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
+            ["s<CR>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
             ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
             ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
             ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"}

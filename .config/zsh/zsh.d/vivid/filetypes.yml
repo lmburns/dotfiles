@@ -1,7 +1,6 @@
 core:
   regular_file: [$fi]
   directory: [$di]
-
   executable_file: [$ex]
 
   symlink: [$ln]
@@ -261,6 +260,11 @@ programming:
       cxx:
         - .clang-format
 
+      lua:
+        - .lua-format
+        - .luarc.jsonc
+        - .luacheckrc
+
     editors:
       qt:
         - .pro
@@ -275,10 +279,10 @@ programming:
         - .dox
 
       man-page:
-        - ".1"
-        - ".2"
-        - ".3"
-        - ".5"
+        - '.1'
+        - '.2'
+        - '.3'
+        - '.5'
 
     continuous-integration:
       - appveyor.yml
@@ -475,7 +479,7 @@ unimportant:
     - .zshrc
 
   other:
-    - "~"
+    - '~'
     - .bak
     - .git # only works for '.git' files (submodules)
     - .lock

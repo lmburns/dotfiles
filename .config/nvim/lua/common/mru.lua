@@ -42,25 +42,15 @@ local function list(file)
         end
     end
 
-    utils.readFile(file):thenCall(
-        function(data)
-            for _, fname in ipairs(vim.split(data, "\n")) do
-                if not add_list(fname) then
-                    break
-                end
+    local fd = io.open(file, "r")
+    if fd then
+        for fname in fd:lines() do
+            if not add_list(fname) then
+                break
             end
         end
-    )
-
-    -- local fd = io.open(file, "r")
-    -- if fd then
-    --     for fname in fd:lines() do
-    --         if not add_list(fname) then
-    --             break
-    --         end
-    --     end
-    --     fd:close()
-    -- end
+        fd:close()
+    end
     return mru_list
 end
 

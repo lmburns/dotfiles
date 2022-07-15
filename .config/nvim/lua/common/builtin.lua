@@ -17,7 +17,8 @@ function M.prefix_timeout(prefix)
     return char == "" and utils.termcodes["<Ignore>"] or prefix .. char
 end
 
--- once
+---Wipe empty buffers on startup (only meant to be ran *one* time)
+---@return nil
 function M.wipe_empty_buf()
     local bufnr = api.nvim_get_current_buf()
     vim.schedule(
@@ -203,6 +204,7 @@ function M.split_lastbuf(vertical)
     cmd(sp .. " sb " .. (last_buf_info and last_buf_info.bufnr or ""))
 end
 
+---Highlight the line once the search results wrap back around to the top of the file
 function M.search_wrap()
     if api.nvim_get_mode().mode ~= "n" then
         return
@@ -220,7 +222,10 @@ function M.search_wrap()
     )
 end
 
--- TODO: Add option for selection. Write visual selection to temporary file
+-- TODO: Write visual selection to temporary file
+-- TODO: Give an interval update so it isn't running every second
+-- TODO: Use this result as a statusbar item
+
 ---Display tokei output similar to
 ---@param path string
 ---@param full? boolean whether to display full tokei output

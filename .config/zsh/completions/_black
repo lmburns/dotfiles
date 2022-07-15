@@ -1,0 +1,36 @@
+#compdef black
+
+# zsh completions for 'black'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--code}'[format the code passed in as a string.]'
+  {-l,--line-length}'[how many characters per line to allow.]'
+  {-t,--target-version}'[33|py34|py35|py36|py37|py38|py39|py310\]]'
+  '--pyi[format all input files like typing stubs]'
+  '--ipynb[format all input files like Jupyter]'
+  '--python-cell-magics[when processing Jupyter Notebooks, add the]'
+  {-S,--skip-string-normalization}'[dont normalize string quotes or prefixes.]'
+  {-C,--skip-magic-trailing-comma}'[dont use trailing commas as a reason to]'
+  '--preview[enable potentially disruptive style changes]'
+  '--check[dont write the files back, just return the]'
+  '--diff[dont write the files back, just output a]'
+  {--color,--no-color}'[show colored diff. Only applies when]'
+  {--fast,--safe}'[if --fast given, skip temporary sanity]'
+  '--required-version[require a specific version of Black to be]'
+  '--include[A regular expression that matches files and]'
+  '--exclude[A regular expression that matches files and]'
+  '--extend-exclude[like --exclude, but adds additional files]'
+  '--force-exclude[like --exclude, but files and directories]'
+  '--stdin-filename[the name of the file when passing it through]'
+  {-W,--workers}'[RANGE     Number of parallel workers  \[default: 16;]'
+  {-q,--quiet}'[dont emit non-error messages to stderr.]'
+  {-v,--verbose}'[also emit messages to stderr about files]'
+  '--version[show the version and exit.]'
+  '--config[read configuration from FILE path.]'
+  {-h,--help}'[show this message and exit.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

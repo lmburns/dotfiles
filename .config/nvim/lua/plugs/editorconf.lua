@@ -36,7 +36,7 @@ end
 
 local function init()
     indentLine_loaded = false
-    g.EditorConfig_exclude_patterns = {"fugitive://.*"}
+    g.EditorConfig_exclude_patterns = {"fugitive://.*", "scp://.*", "gitsigns://.*"}
     g.EditorConfig_max_line_indicator = "none"
     g.EditorConfig_preserve_formatoptions = 1
     fn["editorconfig#AddNewHook"](M.hook)

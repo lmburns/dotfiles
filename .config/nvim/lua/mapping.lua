@@ -1,7 +1,7 @@
 local M = {}
 
 local D = require("dev")
-local _  = D._
+local _  = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 
@@ -212,46 +212,6 @@ wk.register(
 -- Location list
 -- map("n", "[s", [[<Cmd>execute(v:count1 . 'lprev')<CR>]])
 -- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
-
--- Folding
-map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
-map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
--- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
-map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
-map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
-
--- map("n", "zf", "za")
--- map("n", "zF", "zA")
--- map("n", "zR", "zCzO")
-
--- map("n", "za", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
--- map("n", "zA", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
--- map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
--- map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
--- map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
-
--- Recursively open whatever top level fold
--- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
-map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
-map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
--- map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
-
--- map(
---     "n",
---     "zp",
---     [[:lua if vim.o.foldlevel > 0 then require'ufo'.closeAllFolds() else require'ufo'.openAllFolds() end<CR>]],
---     {silent = true}
--- )
-
--- map("n", "ff", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
--- map("n", "fl", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true})
-
--- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
-map("n", "z[", [[<Cmd>lua require('ufo').goPreviousStartFold()<CR>]])
-map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
-
-map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
-map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
 
 map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
 map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
