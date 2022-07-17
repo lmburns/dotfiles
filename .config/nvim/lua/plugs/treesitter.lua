@@ -513,12 +513,55 @@ M.setup_context_vt = function()
     )
 end
 
+M.setup_context = function()
+    require "treesitter-context".setup {
+        enable = true,
+        max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+        trim_scope = "outer", -- Choices: 'inner', 'outer'
+        patterns = {
+            -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+            -- For all filetypes
+            -- Note that setting an entry here replaces all other patterns for this entry.
+            -- By setting the 'default' entry below, you can control which nodes you want to
+            -- appear in the context window.
+            default = {
+                "class",
+                "function",
+                "method",
+                "for", -- These won't appear in the context
+                "field",
+                "if"
+                -- 'while',
+                -- 'if',
+                -- 'switch',
+                -- 'case',
+            }
+            -- Example for a specific filetype.
+            -- If a pattern is missing, *open a PR* so everyone can benefit.
+            --   rust = {
+            --       'impl_item',
+            --   },
+        },
+        exact_patterns = {},
+        -- [!] The options below are exposed but shouldn't require your attention,
+        --     you can safely ignore them.
+
+        zindex = 20, -- The Z-index of the context window
+        mode = "cursor" -- Line used to calculate context. Choices: 'cursor', 'topline'
+    }
+end
+
 M.setup_treesurfer = function()
     ex.packadd("syntax-tree-surfer")
     local sts = D.npcall(require, "syntax-tree-surfer")
     if not sts then
         return
     end
+
+    local vars = {
+        "variable_declaration",
+        "let_declaration"
+    }
 
     local default =
         _t(
@@ -581,7 +624,8 @@ M.setup_treesurfer = function()
                 ["function_definition"] = "",
                 ["function"] = "",
                 ["method_definition"] = "",
-                ["variable_declaration"] = "",
+                ["variable_declaration"] = "",
+                ["let_declaration"] = "",
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
                 ["field_declaration"] = "",
@@ -600,8 +644,8 @@ M.setup_treesurfer = function()
     map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Jump previous main node"})
     map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Jump next main node"})
 
-    map("n", "<Left>", _(sts.filtered_jump, {"variable_declaration"}, false), {desc = "Jump to previous variable dec"})
-    map("n", "<Right>", _(sts.filtered_jump, {"variable_declaration"}, true), {desc = "Jump to next variable dec"})
+    map("n", "<Left>", _(sts.filtered_jump, vars, false), {desc = "Jump to previous variable dec"})
+    map("n", "<Right>", _(sts.filtered_jump, vars, true), {desc = "Jump to next variable dec"})
 
     map(
         "n",
@@ -733,22 +777,21 @@ M.setup = function()
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
             additional_vim_regex_highlighting = {"perl"},
-            -- custom_captures = {}
+            -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
             custom_captures = {
+                ["todo"] = "Todo",
+                ["require_call"] = "RequireCall",
                 ["function.call"] = "TSFunction",
                 ["function.bracket"] = "Type",
-                ["namespace.type"] = "Namespace"
+                ["namespace.type"] = "TSNamespaceType"
             }
         },
         autotag = {enable = true},
-        autopairs = {enable = true, disable = {"help"}},
-        -- yati = {enable = true},
-        -- tree_docs = {enable = true},
+        autopairs = {enable = true, disable = {"help", "comment"}},
         indent = {enable = true},
         fold = {enable = false},
         endwise = {enable = true},
-        matchup = {enable = true, disable_virtual_text = false},
-        -- matchup = {enable = true},
+        matchup = {enable = true, disable_virtual_text = true},
         playground = {
             enable = true,
             disable = {},
@@ -930,23 +973,19 @@ M.setup = function()
             swap = {
                 enable = true,
                 swap_next = {
-                    ["<Leader>.f"] = "@function.outer",
-                    ["<Leader>.e"] = "@element",
-                    -- ["<Leader>a"] = "@parameter.inner", -- iswap
+                    -- ["ss"] = "@statement.outer",
+                    ["s."] = "@element",
                     ["sp"] = "@parameter.inner",
                     ["sf"] = "@function.outer",
                     ["sc"] = "@class.outer",
-                    ["ss"] = "@statement.outer",
                     ["sb"] = "@block.outer"
                 },
                 swap_previous = {
-                    ["<Leader>,f"] = "@function.outer",
-                    ["<Leader>,e"] = "@element",
-                    -- ["<Leader>A"] = "@parameter.inner",
+                    -- ["sS"] = "@statement.outer",
+                    ["s,"] = "@element",
                     ["sP"] = "@parameter.inner",
                     ["sF"] = "@function.outer",
                     ["sC"] = "@class.outer",
-                    ["sS"] = "@statement.outer",
                     ["sB"] = "@block.outer"
                 }
             }
@@ -1029,6 +1068,7 @@ local function init()
 
     -- cmd("au! NvimTreesitter FileType *")
     -- M.setup_comment_frame()
+    -- M.setup_context()
 
     M.setup_iswap()
     M.setup_hlargs()
@@ -1072,10 +1112,16 @@ local function init()
 
     wk.register(
         {
-            ["<Leader>.f"] = "Swap next function",
-            ["<Leader>.e"] = "Swap next element",
-            ["<Leader>,f"] = "Swap previous function",
-            ["<Leader>,e"] = "Swap previous element"
+            ["sf"] = "Swap next function",
+            ["sF"] = "Swap previous function",
+            ["sp"] = "Swap next parameter",
+            ["sP"] = "Swap previous parameter",
+            ["sb"] = "Swap next block",
+            ["sB"] = "Swap previous block",
+            ["sc"] = "Swap next class",
+            ["sC"] = "Swap previous class",
+            ["s."] = "Swap next element",
+            ["s,"] = "Swap previous element"
         }
     )
 

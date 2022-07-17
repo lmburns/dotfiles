@@ -117,8 +117,8 @@ nvim.autocmd.lmb__GitEnv = {
                         has_sourced =
                             debounce(
                             function()
-                                env.GIT_WORK_TREE = env.DOTBARE_TREE
-                                env.GIT_DIR = env.DOTBARE_DIR
+                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
                             end,
                             10
                         )

@@ -99,41 +99,46 @@ end
 function M.setup()
     gitsigns.setup(
         {
+            debug_mode = false,
+            _extmark_signs = true,
+            _threaded_diff = true,
             signs = {
                 add = {
                     hl = "GitSignsAdd",
                     text = "▍",
                     numhl = "Constant",
-                    linehl = "GitSignsAddLn"
+                    linehl = "GitSignsAddLn",
+                    show_count = false
                 },
                 change = {
                     hl = "GitSignsChange",
                     text = "▍",
                     numhl = "Type",
-                    linehl = "GitSignsChangeLn"
+                    linehl = "GitSignsChangeLn",
+                    show_count = false
                 },
                 delete = {
                     hl = "GitSignsDelete",
                     -- text = "↗",
                     text = "_",
-                    show_count = true,
                     numhl = "Identifier",
-                    linehl = "GitSignsDeleteLn"
+                    linehl = "GitSignsDeleteLn",
+                    show_count = true,
                 },
                 topdelete = {
                     hl = "GitSignsDelete",
                     -- text = "↘",
                     text = "‾",
-                    show_count = true,
                     numhl = "ErrorMsg",
-                    linehl = "GitSignsDeleteLn"
+                    linehl = "GitSignsDeleteLn",
+                    show_count = true,
                 },
                 changedelete = {
                     hl = "GitSignsChange",
                     text = "~",
-                    show_count = true,
                     numhl = "Number",
-                    linehl = "GitSignsChangeLn"
+                    linehl = "GitSignsChangeLn",
+                    show_count = true,
                 }
             },
             count_chars = {
@@ -180,7 +185,7 @@ function M.setup()
                 col = 1
             },
             show_deleted = false,
-            trouble = true,
+            trouble = false,
             yadm = {enable = false}
         }
     )

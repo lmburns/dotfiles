@@ -113,7 +113,7 @@ local sections_1 = {
         {
             plugs.gps.fn,
             cond = function()
-                return conds.is_available_gps() and conds.hide_in_width() and conds.coc_status_width()
+                return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
             end,
             color = {fg = colors.morning_blue}
         },

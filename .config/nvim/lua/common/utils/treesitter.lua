@@ -4,7 +4,7 @@ local fn = vim.fn
 local api = vim.api
 
 local queries = {
-    ["function"] = {
+    ['function'] = {
         lua = [[
             (function_declaration)
             [
@@ -69,7 +69,7 @@ local function get_vim_range(range, buf)
         -- Use the value of the last col of the previous row instead.
         erow = erow - 1
         if not buf or buf == 0 then
-            ecol = fn.col {erow, "$"} - 1
+            ecol = fn.col {erow, '$'} - 1
         else
             ecol = #api.nvim_buf_get_lines(buf, erow - 1, erow, false)[1]
         end
@@ -109,27 +109,23 @@ end
 ---@param range table: range to look for the node
 ---@param node table: list of nodes to look for
 ---@param buf number: buffer number
----@return true or false otherwise
+---@return boolean?
 function M.is_node(range, node, buf)
     vim.validate {
-        buf = {buf, "number", true},
+        buf = {buf, 'number', true},
         range = {
-            range,
-            function(r)
+            range, function(r)
                 return vim.tbl_islist(r)
-            end,
-            "an array"
+            end, 'an array'
         },
         node = {
-            node,
-            function(n)
-                return not n or type(n) == type "" or vim.tbl_islist(n)
-            end,
-            "should be a string or an array"
+            node, function(n)
+                return not n or type(n) == type '' or vim.tbl_islist(n)
+            end, 'should be a string or an array'
         }
     }
     buf = buf or api.nvim_get_current_buf()
-    node = node or {"comment"}
+    node = node or {'comment'}
 
     if not vim.tbl_islist(node) then
         node = {node}
@@ -140,9 +136,7 @@ function M.is_node(range, node, buf)
         return
     end
 
-    local ts_to_ft = {
-        bash = "sh"
-    }
+    local ts_to_ft = {bash = 'sh'}
 
     local langtree = parser:language_for_range(range)
     -- local buf_lang = vim.bo[buf].filetype
@@ -165,9 +159,9 @@ end
 
 function M.is_in_node(node_name, buf, linenr)
     vim.validate {
-        node_name = {node_name, "string"},
-        buf = {buf, "number", true},
-        linenr = {linenr, "number", true}
+        node_name = {node_name, 'string'},
+        buf = {buf, 'number', true},
+        linenr = {linenr, 'number', true}
     }
 
     if not M.has_ts(buf) then
@@ -195,7 +189,7 @@ function M.list_nodes(node_type)
     local buf_lines = nvim.buf.line_count(0)
     local line = nvim.buf.get_lines(0, buf_lines - 1, buf_lines, false)[1]
 
-    local langtree = parser:language_for_range {0, 0, buf_lines, #line}
+    local langtree = parser:language_for_range{0, 0, buf_lines, #line}
     local ts_lang = langtree:lang()
 
     if not queries[node_type] or not queries[node_type][ts_lang] then
@@ -231,10 +225,7 @@ function M.list_nodes(node_type)
 end
 
 function M.get_current_node(node_name, linenr)
-    vim.validate {
-        node_name = {node_name, "string"},
-        linenr = {linenr, "number", true}
-    }
+    vim.validate {node_name = {node_name, 'string'}, linenr = {linenr, 'number', true}}
     local cursor = nvim.win.get_cursor(0)
     linenr = linenr or cursor[1]
 
@@ -250,11 +241,11 @@ function M.get_current_node(node_name, linenr)
 end
 
 function M.get_current_func(linenr)
-    return M.get_current_node("function", linenr)
+    return M.get_current_node('function', linenr)
 end
 
 function M.get_current_class(linenr)
-    return M.get_current_node("class", linenr)
+    return M.get_current_node('class', linenr)
 end
 
 return M

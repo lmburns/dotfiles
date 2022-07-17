@@ -181,6 +181,14 @@ function M.setup()
                         groups.builtin.pinned:with({icon = ""}),
                         groups.builtin.ungrouped,
                         {
+                            name = "Dependencies",
+                            highlight = {guifg = require("kimbox.colors").yellow},
+                            matcher = function(buf)
+                                return vim.startswith(buf.path, ("%s/site/pack/packer"):format(fn.stdpath("data"))) or
+                                    vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
+                            end
+                        },
+                        {
                             name = "SQL",
                             matcher = function(buf)
                                 return buf.filename:match("%.sql$")

@@ -191,7 +191,7 @@ function M.grep_operator(type)
     -- end
 
     -- local row, col = unpack(api.nvim_win_get_cursor(0))
-    local escaped = require("dev").shellescape(fn.getreg("@@"))
+    local escaped = fn.shellescape(fn.getreg("@@"))
 
     -- cmd(("vimgrep! %s %s"):format(escaped, fn.expand("%")))
     ex.vimgrep(("%s %s"):format(escaped, fn.expand("%")))

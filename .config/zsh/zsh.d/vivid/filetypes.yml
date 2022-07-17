@@ -252,14 +252,14 @@ programming:
         - .gemspec
         - Rakefile
         - Gemfile
+      lua:
+        - .rockspec
 
     code-style:
       python:
         - .flake8
-
       cxx:
         - .clang-format
-
       lua:
         - .lua-format
         - .luarc.jsonc
@@ -277,6 +277,9 @@ programming:
       doxygen:
         - Doxyfile
         - .dox
+
+      tag:
+        - tags
 
       man-page:
         - '.1'

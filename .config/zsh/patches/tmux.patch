@@ -1,0 +1,28 @@
+diff --git i/input-keys.c w/input-keys.c
+index ebf61333..2ba04465 100644
+--- i/input-keys.c
++++ w/input-keys.c
+@@ -49,6 +49,10 @@ struct input_key_tree input_key_tree = RB_INITIALIZER(&input_key_tree);
+ 
+ /* List of default keys, the tree is built from this. */
+ static struct input_key_entry input_key_defaults[] = {
++	/* Ctrl+i. */
++	{ .key = 0x69 | KEYC_CTRL,
++		.data = "\x1b[105;5u"
++	},
+ 	/* Paste keys. */
+ 	{ .key = KEYC_PASTE_START,
+ 	  .data = "\033[200~"
+diff --git i/tty-keys.c w/tty-keys.c
+index 4a712d42..176ac7b7 100644
+--- i/tty-keys.c
++++ w/tty-keys.c
+@@ -975,7 +975,7 @@ tty_keys_extended_key(struct tty *tty, const char *buf, size_t len,
+ 		    onlykey != 13 &&
+ 		    onlykey != 27)
+ 			/* nothing */;
+-		else if (onlykey >= 97 && onlykey <= 122)
++		else if (onlykey >= 97 && onlykey <= 122 && onlykey != 105)
+ 			onlykey -= 96;
+ 		else if (onlykey >= 64 && onlykey <= 95)
+ 			onlykey -= 64;

@@ -1126,8 +1126,8 @@ return packer.startup(
                         },
                         {
                             "RRethy/nvim-treesitter-endwise",
+                            desc = "Adds 'end' to ruby and lua",
                             after = "nvim-treesitter",
-                            desc = "Adds 'end' to ruby and lua"
                         },
                         {
                             "nvim-treesitter/nvim-treesitter-textobjects",
@@ -1140,33 +1140,33 @@ return packer.startup(
                         },
                         {
                             "windwp/nvim-ts-autotag",
+                            desc = "Html/CSS/JSX tagging",
                             after = "nvim-treesitter",
-                            desc = "Html/CSS/JSX tagging"
                         },
                         {
                             "JoosepAlviste/nvim-ts-context-commentstring",
+                            desc = "Embedded language comment strings",
                             after = "nvim-treesitter",
-                            desc = "Embedded language comment strings"
                         },
                         {
                             "michaeljsmith/vim-indent-object",
+                            desc = "ai ii aI iI text objects",
                             after = "nvim-treesitter",
-                            desc = "ai ii aI iI text objects"
                         },
                         {
                             "haringsrob/nvim_context_vt",
+                            desc = "Adds -> context messages",
                             after = "nvim-treesitter",
-                            desc = "Adds -> context messages"
                         },
                         {
                             "David-Kunz/treesitter-unit",
+                            desc = "Adds unit text object",
                             after = "nvim-treesitter",
-                            desc = "Adds unit text object"
                         },
                         {
                             "m-demare/hlargs.nvim",
+                            desc = "Highlight argument definitions",
                             after = "nvim-treesitter",
-                            desc = "Highlight argument definitions"
                         },
                         {
                             "stevearc/aerial.nvim",
@@ -1174,6 +1174,7 @@ return packer.startup(
                         },
                         {
                             "danymat/neogen",
+                            desc = "Code documentation generator",
                             conf = "neogen",
                             after = "nvim-treesitter",
                             cmd = "Neogen",
@@ -1185,22 +1186,31 @@ return packer.startup(
                         },
                         {
                             "lewis6991/spellsitter.nvim",
+                            desc = "Treesitter powered spellchecker",
                             after = "nvim-treesitter",
                             config = [[require("spellsitter").setup()]]
                         },
                         {
                             "p00f/nvim-ts-rainbow",
+                            desc = "Rainbow parenthesis using treesitter",
                             after = "nvim-treesitter"
                         },
                         {
                             "max397574/nvim-treehopper",
+                            desc = "Region selection with hints on the AST nodes",
                             after = "nvim-treesitter",
                             requires = "nvim-treesitter/nvim-treesitter"
                         },
                         {
                             "ziontee113/syntax-tree-surfer",
+                            desc = "Surf through your document and move elements around",
                             after = "nvim-treesitter"
-                        }
+                        },
+                        -- {
+                        --     "nvim-treesitter/nvim-treesitter-context",
+                        --     desc = " Show code context",
+                        --     after = "nvim-treesitter"
+                        -- },
                         -- {
                         --     "s1n7ax/nvim-comment-frame",
                         --     after = "nvim-treesitter"
@@ -1210,10 +1220,6 @@ return packer.startup(
                         --     after = "nvim-treesitter",
                         --     desc = "Similar to hop but highlight"
                         -- }
-                        -- {
-                        --     "romgrk/nvim-treesitter-context",
-                        --     after = "nvim-treesitter"
-                        -- },
                         -- {
                         --     "yioneko/nvim-yati",
                         --     after = "nvim-treesitter",

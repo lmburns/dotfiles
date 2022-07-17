@@ -181,11 +181,12 @@ end
 
 ---Create a single autocmd
 ---@param autocmd Autocommand
----@param id? number Group id
----@return number|nil Group ID of the autocommand
+---@param id? number Group ID of the `autocmd`
+---@return table ID of the autocmd, allows disposal
 M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
-    api.nvim_create_autocmd(
+    local autocmd_id =
+        api.nvim_create_autocmd(
         autocmd.event,
         {
             group = F.if_nil(id, autocmd.group),
@@ -199,7 +200,20 @@ M.autocmd = function(autocmd, id)
         }
     )
 
-    return id
+    -- return autocmd_id
+    return setmetatable(
+        {
+            id = autocmd_id,
+            dispose = function()
+                api.nvim_del_autocmd(autocmd_id)
+            end
+        },
+        {
+            __call = function(self)
+                self.dispose()
+            end
+        }
+    )
 end
 
 ---@class MapArgs

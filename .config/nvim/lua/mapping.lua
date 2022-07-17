@@ -5,10 +5,10 @@ local _  = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 
-
 -- local ex = nvim.ex
 -- local api = vim.api
 local fn = vim.fn
+local F = vim.F
 
 -- Legendary needs to be called again in this file for the keybindings to register
 -- Not sure why these options only work from here
@@ -51,7 +51,7 @@ map(
     "n",
     "qq",
     function()
-        return fn.reg_recording() == "" and "qq" or "q"
+        return F.tern(fn.reg_recording() == "", "qq", "q")
     end,
     {expr = true, desc = "Record macro"}
 )
@@ -76,6 +76,9 @@ map("i", '<M-S-">', "<Home>", {desc = "Move to of line"})
 -- Jump back and forth jumplist
 map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
 map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
+-- This works if Alacritty is configured correctly and Tmux is recompiled
+-- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
+-- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
 
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")

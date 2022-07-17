@@ -105,6 +105,7 @@ require("autocmds")
 require("common.qf")
 require("common.mru")
 require("common.grepper")
+require("common.jump")
 
 -- require("common.stl")
 -- require("common.reg")
