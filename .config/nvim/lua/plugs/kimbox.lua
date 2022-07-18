@@ -20,7 +20,9 @@ M.catppuccin = function()
         return
     end
 
-    g.catppuccin_flavour = "macchiato" -- latte, frappe, macchiato, mocha
+    local cp = require("catppuccin.palettes").get_palette()
+    g.catppuccin_flavour = "mocha" -- frappe, macchiato, mocha
+
     catppuccin.setup(
         {
             transparent_background = false,
@@ -55,32 +57,23 @@ M.catppuccin = function()
                 indent_blankline = {
                     enabled = true
                 }
+            },
+            custom_highlights = {
+                TSConditional = {fg = cp.red},
+                TSKeywordOperator = {fg = cp.teal},
+                TSFunction = {fg = cp.maroon, style = {"bold"}},
+                TSMethod = {fg = cp.maroon, style = {"bold"}},
+                -- TSVariableBuiltin = {style = "none"},
+                -- TSTypeBuiltin = {style = "none"},
+                -- TSProperty = {style = "none"},
+                -- TSVariable = {style = "none"},
+                -- TSFuncBuiltin = {style = "bold"},
+                -- TSParameter = {style = "none"},
+                -- Function = {style = "bold"}
             }
         }
     )
 
-    local cp = require("catppuccin.api.colors").get_colors()
-
-    catppuccin.after_loading = function()
-        C.all(
-            {
-                BufferLineNumbers = {fg = cp.white, bg = cp.black1},
-                BufferLineNumbersVisible = {fg = cp.white, bg = cp.black4},
-                BufferLineNumbersSelected = {fg = cp.red, bg = cp.black4},
-                TSVariableBuiltin = {gui = "none"},
-                TSTypeBuiltin = {gui = "none"},
-                TSProperty = {gui = "none"},
-                TSVariable = {gui = "none"},
-                TSFuncBuiltin = {gui = "bold"},
-                TSConditional = {fg = cp.red},
-                TSParameter = {gui = "none"},
-                TSFunction = {gui = "bold"},
-                TSMethod = {gui = "bold"},
-                Function = {gui = "bold"}
-                -- TSNamespace = {gui="none"},
-            }
-        )
-    end
 
     -- cmd [[colorscheme catppuccin]]
 end
@@ -635,11 +628,12 @@ local function init()
     -- local theme = "night-owl"
     -- local theme = "rose-pine"
     -- local theme = "dusk-fox"
+    -- local theme = "oceanic_material"
 
     -- local theme = "tokyonight"
-    -- local theme = "catppuccin"
+    local theme = "catppuccin"
     -- local theme = "kanagawa"
-    local theme = "kimbox"
+    -- local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then

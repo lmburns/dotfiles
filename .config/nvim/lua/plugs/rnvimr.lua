@@ -19,7 +19,7 @@ function M.setup()
     g.rnvimr_edit_cmd = "drop" -- Replace `$EDITOR` item with command to open file
     g.rnvimr_enable_bw = 1 -- Wipe the buffers corresponding to delete fileds
     g.rnvimr_shadow_winblend = 70 -- Add a shadow window (100 hides it)
-    g.rnvimr_draw_border = 0 -- Disable a border for floating window
+    g.rnvimr_draw_border = 1 -- Disable a border for floating window
     -- g.rnvimr_border_attr = {fg = 14, bg = -1} -- Change the border's color
     g.rnvimr_border_attr = {fg = 3}
 

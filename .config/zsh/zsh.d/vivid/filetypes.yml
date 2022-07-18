@@ -195,6 +195,7 @@ programming:
     teal: [.tl]
     moon: [.moon]
     fennel: [.fnl]
+    sass: [.sass]
 
   tooling:
     vcs:

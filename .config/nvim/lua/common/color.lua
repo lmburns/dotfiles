@@ -29,8 +29,8 @@ local api = {
 ---@field background string|integer
 ---@field foreground string|integer
 ---@field special string
----@field fg string|fun():string
----@field bg string|fun():string
+---@field fg string|fun(): string
+---@field bg string|fun(): string
 ---@field sp string
 ---@field blend number 0 to 100
 ---@field bold boolean
@@ -192,7 +192,7 @@ end
 ---For example:
 ---```lua
 --- -- This will take the fg from ErrorMsg and set it to the fg of MatchParen
----  M.set_hl({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
+--- M.set_hl({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
 ---```
 ---
 ---### Legacy

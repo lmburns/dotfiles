@@ -12,192 +12,12 @@ local map = utils.map
 local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
-local uv = vim.loop
 local cmd = vim.cmd
-local g = vim.g
+-- local uv = vim.loop
+-- local g = vim.g
 local v = vim.v
 
-local bl_ft
-local coc_loaded_ft
-local anyfold_prefer_ft
-
-M.use_anyfold = function(bufnr, force)
-    local filename = api.nvim_buf_get_name(bufnr)
-    local st = uv.fs_stat(filename)
-    if st then
-        local fsize = st.size
-        if force or 0 < fsize and fsize < 131072 then
-            if fn.bufwinid(bufnr) == -1 then
-                augroup(
-                    {"FoldLoad", false},
-                    {
-                        event = "BufEnter",
-                        buffer = bufnr,
-                        once = true,
-                        command = function()
-                            require("plugs.fold").use_anyfold(bufnr)
-                        end
-                    }
-                )
-            else
-                api.nvim_buf_call(
-                    bufnr,
-                    function()
-                        utils.cool_echo(("bufnr: %d is using anyfold"):format(bufnr), "WarningMsg")
-                        ex.AnyFoldActivate()
-                    end
-                )
-            end
-        end
-    end
-    vim.b[bufnr].loaded_fold = "anyfold"
-end
-
-local function apply_fold(bufnr, ranges)
-    api.nvim_buf_call(
-        bufnr,
-        function()
-            vim.wo.foldmethod = "manual"
-
-            local win_view = fn.winsaveview()
-            ex.norm_("zE")
-            fn.winrestview(win_view)
-
-            local fold_cmd = {}
-            for _, f in ipairs(ranges) do
-                table.insert(fold_cmd, ("%d,%d:fold"):format(f.startLine + 1, f.endLine + 1))
-            end
-            cmd(table.concat(fold_cmd, "|"))
-            vim.wo.foldenable = true
-            vim.wo.foldlevel = 99
-
-            -- require("ufo").enableFold(bufnr)
-        end
-    )
-end
-
-M.update_fold = function(bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
-    coc.run_command(
-        -- "kvs.fold.foldingRange",
-        "ufo.foldingRange",
-        {bufnr},
-        function(e, r)
-            if e == vim.NIL and type(r) == "table" then
-                apply_fold(bufnr, r)
-            end
-        end
-    )
-end
-
-M.attach = function(bufnr, force)
-    bufnr = bufnr or api.nvim_get_current_buf()
-    if not api.nvim_buf_is_valid(bufnr) or not force and vim.b[bufnr].loaded_fold then
-        return
-    end
-
-    if vim.g.coc_service_initialized == 1 and not vim.tbl_contains(anyfold_prefer_ft, vim.bo.ft) then
-        coc.run_command(
-            -- "kvs.fold.foldingRange",
-            "ufo.foldingRange",
-            {bufnr},
-            function(e, r)
-                if not force and vim.b[bufnr].loaded_fold then
-                    return
-                end
-
-                if e == vim.NIL and type(r) == "table" then
-                    -- language servers may need time to parse buffer
-                    if #r == 0 then
-                        local ft = vim.bo[bufnr].ft
-                        local loaded = coc_loaded_ft[ft]
-                        if not loaded then
-                            vim.defer_fn(
-                                function()
-                                    coc_loaded_ft[ft] = true
-                                    M.attach(bufnr)
-                                end,
-                                2000
-                            )
-                            return
-                        end
-                    end
-
-                    local winid = fn.bufwinid(bufnr)
-                    if winid == -1 then
-                        augroup(
-                            {"FoldLoad", false},
-                            {
-                                event = "BufEnter",
-                                buffer = bufnr,
-                                once = true,
-                                command = function()
-                                    require("plugs.fold").update_fold()
-                                end
-                            }
-                        )
-                    else
-                        apply_fold(bufnr, r)
-                    end
-
-                    vim.b[bufnr].loaded_fold = "coc"
-
-                    augroup(
-                        {"FoldLoad", false},
-                        {
-                            event = "BufWritePost",
-                            buffer = bufnr,
-                            command = function()
-                                require("plugs.fold").update_fold()
-                            end
-                        },
-                        {
-                            event = "BufRead",
-                            buffer = bufnr,
-                            command = function()
-                                vim.defer_fn(require("plugs.fold").update_fold, 100)
-                            end
-                        }
-                    )
-                else
-                    M.use_anyfold(bufnr, force)
-                end
-            end
-        )
-    else
-        M.use_anyfold(bufnr, force)
-    end
-    cmd(("au! FoldLoad * <buffer=%d>"):format(bufnr))
-    vim.wo.foldenable = true
-    vim.wo.foldlevel = 99
-    -- vim.wo.foldtext = [[v:lua.require'plugs.fold'.foldtext()]]
-end
-
-M.defer_attach = function(bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
-    local bo = vim.bo[bufnr]
-    if vim.b[bufnr].loaded_fold or vim.tbl_contains(bl_ft, bo.ft) or bo.bt ~= "" then
-        return
-    end
-
-    local winid = D.find_win_except_float(bufnr)
-    if winid == 0 or not api.nvim_win_is_valid(winid) then
-        return
-    end
-    local wo = vim.wo[winid]
-    -- if wo.foldmethod == "diff" or wo.foldmethod == "expr" then
-    if wo.foldmethod == "diff" then
-        return
-    end
-
-    wo.foldmethod = "manual"
-    vim.defer_fn(
-        function()
-            M.attach(bufnr)
-        end,
-        1000
-    )
-end
+local ft_map
 
 ---Set the `foldtext` (i.e., the text displayed for a fold)
 ---@return string
@@ -355,13 +175,6 @@ local handler = function(virt_text, lnum, end_lnum, width, truncate)
     return new_virt_text
 end
 
-local ftMap = {
-    zsh = "indent",
-    tmux = "indent",
-    typescript = {"lsp", "treesitter"}
-    -- lua = {"lsp", "treesitter"},
-}
-
 ---Setup 'ultra-fold'
 M.setup_ufo = function()
     local ufo = D.npcall(require, "ufo")
@@ -399,8 +212,8 @@ M.setup_ufo = function()
                 -- return `nil` will use default value {'lsp', 'indent'}
 
                 -- if you prefer treesitter provider rather than lsp,
-                -- return ftMap[filetype] or {'treesitter', 'indent'}
-                return ftMap[filetype]
+                -- return ft_map[filetype] or {'treesitter', 'indent'}
+                return ft_map[filetype]
             end
         }
     )
@@ -408,16 +221,37 @@ end
 
 local function init()
     -- vim.opt.fillchars:append("fold:•")
+    vim.opt.sessionoptions:append("folds")
 
-    g.anyfold_fold_display = 0
-    g.anyfold_identify_comments = 0
-    g.anyfold_motion = 0
+    ft_map = {
+        zsh = "indent",
+        tmux = "indent",
+        typescript = {"lsp", "treesitter"},
+        [""] = "",
+        man = "",
+        vimwiki = "",
+        git = "",
+        floggraph = "",
+        neoterm = "",
+        floaterm = "",
+        toggleterm = "",
+        fzf = "",
+        telescope = "",
+        scratchpad = "",
+        luapad = "",
+        aerial = ""
+    }
 
     vim.defer_fn(
         function()
-            C.UFOFoldLevel = {fg = palette.blue, bold = true}
-            C.UfoPreviewThumb = {link = "PmenuThumb"}
-            C.UfoPreviewSbar = {link = "PmenuSbar"}
+            C.plugin(
+                "Ufo",
+                {
+                    UFOFoldLevel = {fg = palette.blue, bold = true},
+                    UfoPreviewThumb = {link = "PmenuThumb"},
+                    UfoPreviewSbar = {link = "PmenuSbar"}
+                }
+            )
             M.setup_ufo()
 
             vim.wo.foldenable = true
@@ -453,26 +287,6 @@ local function init()
     map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
     map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
 
-    -- blacklist
-    bl_ft = {
-        "",
-        "man",
-        "vimwiki",
-        "markdown",
-        "git",
-        "floggraph",
-        "neoterm",
-        "floaterm",
-        "toggleterm",
-        "fzf",
-        "telescope",
-        "scratchpad",
-        "luapad",
-        "aerial"
-    }
-    coc_loaded_ft = {}
-    anyfold_prefer_ft = {"zsh"}
-
     -- local parsers = require("nvim-treesitter.parsers")
     -- local configs = parsers.get_parser_configs()
     --
@@ -495,32 +309,6 @@ local function init()
     --         end
     --     }
     -- )
-
-    -- Augroup is created here
-    -- augroup(
-    --     "FoldLoad",
-    --     {
-    --         event = "FileType",
-    --         pattern = "*",
-    --         command = function()
-    --             require("plugs.fold").defer_attach(tonumber(fn.expand("<abuf>")))
-    --         end
-    --     }
-    -- )
-    --
-    -- command(
-    --     "Fold",
-    --     function()
-    --         require("plugs.fold").attach(nil, true)
-    --     end,
-    --     {nargs = 0}
-    -- )
-
-    -- These is only here as a backup
-    map("n", ";fo", "AnyFoldActivate", {cmd = true, desc = "Manually fold"})
-
-    -- for _, bufnr in ipairs(api.nvim_list_bufs()) do
-    --     M.defer_attach(bufnr)
 end
 
 init()

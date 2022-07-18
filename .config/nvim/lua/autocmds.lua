@@ -27,6 +27,8 @@ nvim.autocmd.lmb__RestoreCursor = {
         event = "BufReadPost",
         pattern = "*",
         command = function()
+            -- local bufname = api.nvim_buf_get_name(0)
+            -- vim.startswith(bufname, "fugitive://")
             local types =
                 _t(
                 {
@@ -45,10 +47,7 @@ nvim.autocmd.lmb__RestoreCursor = {
 
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                if not pcall(nvim.win.set_cursor, 0, {row, 0}) then
-                    vim.notify("Neovim version has messed this up")
-                    return
-                end
+                pcall(nvim.win.set_cursor, 0, {row, 0})
 
                 -- nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
@@ -390,7 +389,7 @@ nvim.autocmd.lmb__ColorschemeSetup = {
         if g.colors_name ~= "kimbox" then
             C.all(
                 {
-                    Hlargs = {link = "TSParameter"},
+                    Hlargs = {link = "TSParameter"}
                 }
             )
         else

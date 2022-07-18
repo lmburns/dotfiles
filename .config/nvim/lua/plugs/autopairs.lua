@@ -141,11 +141,11 @@ function M.rules()
         ):with_cr(cond.none()):with_del(cond.none()):use_key("]")
     }
 
-    autopairs.add_rule(
-        Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(true):set_end_pair_length(
-            2
-        )
-    )
+    -- autopairs.add_rule(
+    --     Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(true):set_end_pair_length(
+    --         2
+    --     )
+    -- )
 
     autopairs.add_rule(Rule("$", "$", "tex"))
 

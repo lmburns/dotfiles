@@ -797,15 +797,6 @@ return packer.startup(
 
             -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
             -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
-            -- use({ "lambdalisue/readablefold.vim", event = "VimEnter" })
-            use(
-                {
-                    "pseewald/vim-anyfold",
-                    cmd = "AnyFoldActivate",
-                    keys = {{"n", ";fo"}},
-                    setup = [[vim.g.anyfold_fold_display = 0]]
-                }
-            )
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
             use(

@@ -514,7 +514,7 @@ M.setup_context_vt = function()
 end
 
 M.setup_context = function()
-    require "treesitter-context".setup {
+    require("treesitter-context").setup {
         enable = true,
         max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
         trim_scope = "outer", -- Choices: 'inner', 'outer'
@@ -586,6 +586,7 @@ M.setup_treesurfer = function()
             "struct_item",
             "enum_item",
             "class_declaration",
+            "class_name",
             "try_statement",
             "catch_clause"
         }
@@ -631,6 +632,7 @@ M.setup_treesurfer = function()
                 ["field_declaration"] = "",
                 ["enum_variant"] = "",
                 ["class_declaration"] = "",
+                ["class_name"] = "",
                 ["try_statement"] = "",
                 ["catch_clause"] = ""
             }

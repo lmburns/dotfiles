@@ -195,12 +195,6 @@ function M.setup()
                             end
                         },
                         {
-                            name = "Terraform",
-                            matcher = function(buf)
-                                return buf.name:match("%.tf") ~= nil
-                            end
-                        },
-                        {
                             highlight = {guisp = "#418292", gui = "underline"},
                             name = "tests",
                             icon = "",
@@ -226,7 +220,7 @@ function M.setup()
                     }
                 }
             },
-            highlights = require("kimbox.bufferline").theme()
+            -- highlights = require("kimbox.bufferline").theme()
         }
     )
 end
@@ -344,7 +338,8 @@ local function init()
             {
                 [("<Leader>%d"):format(i)] = {
                     ("<cmd>BufferLineGoToBuffer %d<CR>"):format(i),
-                    ("Go to buffer %d"):format(i)
+                    "which_key_ignore"
+                    -- ("Go to buffer %d"):format(i)
                 }
             }
         )

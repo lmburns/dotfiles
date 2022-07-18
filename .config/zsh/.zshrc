@@ -738,6 +738,7 @@ zt 0c light-mode null lbin \
     iamsauravsharma/cargo-trim \
     andrewradev/cargo-local \
     celeo/cargo-nav \
+    TimonPost/cargo-unused-features \
     g-k/cargo-show \
     mre/cargo-inspect \
     sminez/roc \

@@ -53,7 +53,7 @@ function M.setup()
             gc = "Comments",
             ga = "Easy align",
             ys = "Surround",
-            s = "Substitute",
+            -- s = "Substitute",
             ['"_d'] = "Delete"
         },
         key_labels = {},
@@ -89,7 +89,7 @@ function M.setup()
             i = {"j", "k"},
             v = {"j", "k"},
             c = {},
-            -- n = {"d", '"_d'},
+            n = {"s"},
             -- o = {"d", '"_d'}
             -- n = {"o", "O"} -- Would be nice if two letter worked
         }
