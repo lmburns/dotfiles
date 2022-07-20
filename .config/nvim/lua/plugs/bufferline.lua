@@ -220,7 +220,7 @@ function M.setup()
                     }
                 }
             },
-            -- highlights = require("kimbox.bufferline").theme()
+            highlights = require("kimbox.bufferline").theme()
         }
     )
 end

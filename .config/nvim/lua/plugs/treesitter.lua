@@ -18,11 +18,11 @@ local fn = vim.fn
 local api = vim.api
 local F = vim.F
 
+local ts_hl_disabled
 local ft_enabled
 local queries
 local parsers
 local configs
-local ts_hl_disabled
 
 local context_vt_max_lines = 2000
 
@@ -42,8 +42,8 @@ function M.do_textobj(obj, inner, visual)
     local ret = false
     if queries.has_query_files(vim.bo.ft, "textobjects") then
         require("nvim-treesitter.textobjects.select").select_textobject(
-            ("@%s.%s"):format(obj, inner and "inner" or "outer"),
-            visual and "x" or "o"
+            ("@%s.%s"):format(obj, F.tern(inner, "inner", "outer")),
+            F.tern(visual, "x", "o")
         )
         ret = true
     end
@@ -80,10 +80,6 @@ M.setup_hlargs = function()
     end
 
     hlargs.setup {
-        -- color = "#ef9062",
-        -- color = "#cc6666",
-        -- color = "#5F875F",
-        -- color = "#89b482",
         color = "#ea6962",
         excluded_filetypes = BLACKLIST_FT,
         paint_arg_declarations = true,

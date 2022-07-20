@@ -1,4 +1,5 @@
 local uv = vim.loop
+local F = vim.F
 
 ---@class Debounce
 ---@field timer userdata|nil
@@ -22,7 +23,6 @@ function Debounce:new(fn, wait, leading)
         }
     )
     local obj = {}
-    ---@cast self -?
     setmetatable(obj, self)
     obj.timer = nil
     obj.fn = vim.schedule_wrap(fn)
@@ -32,8 +32,7 @@ function Debounce:new(fn, wait, leading)
     return obj
 end
 
----Execute the function to debounce.
---- This is called when the returned function from this module is called
+---Execute the function
 ---@vararg any
 function Debounce:call(...)
     local timer = self.timer
@@ -45,11 +44,15 @@ function Debounce:call(...)
         timer:start(
             wait,
             wait,
-            self.leading and function()
+            F.tern(
+                self.leading,
+                function()
                     self:cancel()
-                end or function()
+                end,
+                function()
                     self:flush()
                 end
+            )
         )
         if self.leading then
             self.fn(...)
@@ -59,6 +62,7 @@ function Debounce:call(...)
     end
 end
 
+---Reset the debounce timer
 function Debounce:cancel()
     local timer = self.timer
     if timer then
@@ -72,6 +76,7 @@ function Debounce:cancel()
     end
 end
 
+---Reset the timer if there is one and execute the function
 function Debounce:flush()
     if self.timer then
         self:cancel()
@@ -79,8 +84,9 @@ function Debounce:flush()
     end
 end
 
----ref() returns a normal function which, when called, calls Debounce:call()
----bound to the original instance.
+---Returns a normal function which, when called,
+---calls `Debounce:call()` bound to the original instance.
+---
 ---Useful for using Debounce with an API that doesn't accept callable tables.
 function Debounce:ref()
     return function(...)
@@ -91,6 +97,8 @@ end
 Debounce.__index = Debounce
 Debounce.__call = Debounce.call
 
+---Calling this module will create a new `Debounce` instance
+---Calling the returned value of the aforementioned call will call `Debouce.call`
 return setmetatable(
     Debounce,
     {

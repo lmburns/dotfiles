@@ -157,13 +157,13 @@ local sections_1 = {
             -- "FugitiveHead",
             icon = icons.git.branch,
             cond = function()
-                local ok, ret = pcall(plugs.search_result.fn)
-                if not ok then
-                    return conds.check_git_workspace()
-                end
-                return conds.check_git_workspace() and ret == ""
+                -- local ok, ret = pcall(plugs.search_result.fn)
+                -- if not ok then
+                return conds.check_git_workspace()
+                -- end
+                -- return conds.check_git_workspace() and ret == ""
             end,
-            color = {fg = colors.dyellow, gui = "bold"}
+            color = F.tern(g.colors_name == "kimbox", {fg = colors.dyellow, gui = "bold"}, {gui = "bold"})
         },
         {
             plugs.quickfix_count.fn,
@@ -176,13 +176,19 @@ local sections_1 = {
                 return ("%s %s"):format(icons.misc.line, s)
             end
         },
-        {
-            "%p%%/%-3L",
-            color = {fg = colors.light_red, gui = "bold"}
-        },
+        F.tern(
+            g.colors_name == "kimbox",
+            {
+                "%p%%/%-3L",
+                color = {fg = colors.light_red, gui = "bold"}
+            },
+            {
+                "%p%%/%-3L"
+            }
+        )
         -- "%l:%c",
         -- "%p%%/%L",
-        plugs.search_result.fn
+        -- plugs.search_result.fn
     }
 }
 

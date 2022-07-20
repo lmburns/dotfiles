@@ -34,17 +34,20 @@ let g:colors_name = '%s'
 
     local theme_path = ("%s/%s.vim"):format(colors_path, name)
 
+    -- FIX: This whole thing stopped working
     -- RELOAD("lush_theme")
     D.reload_module("lush_theme")
     local ok, res = pcall(require, "lush_theme." .. name)
     if ok then
         local module = res
         ok, res = pcall(lush.compile, module)
+        -- require("lush").compile(R("lush_theme.jellybeans"), {to_vimscript = true})
         if ok then
             local lines = res
             local fp = assert(io.open(theme_path, "w+"))
             fp:write(header)
             -- fp:write(([[let g:colors_name = '%s'%s]]):format(name, "\n"))
+
             for _, line in ipairs(lines) do
                 fp:write(line, "\n")
             end

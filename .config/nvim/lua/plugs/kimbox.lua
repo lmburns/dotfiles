@@ -92,7 +92,7 @@ M.kanagawa = function()
         BufferLineFill = {bg = ibg},
         BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
         BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
-        BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, bold = true, italic = true}, -- current
+        BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, bold = true, italic = true},
         --
         BufferLineTab = {fg = cp.sumiInk0, bg = cp.ibg},
         BufferLineTabSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
@@ -145,7 +145,13 @@ M.kanagawa = function()
         --
         BufferLineError = {fg = cp.fujiWhite, bg = ibg},
         BufferLineErrorVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4}
+        BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+        --
+        TSFunction = {fg = cp.waveRed, bold = true},
+        TSKeywordOperator = {fg = cp.sakuraPink, bold = false},
+        TSBoolean = {fg = cp.surimiOrange, bold = false},
+        TSConstant = {fg = cp.surimiOrange, bold = true},
+        TSConstructor = {fg = cp.sakuraPink, bold = true}
     }
 
     kanagawa.setup(
@@ -631,9 +637,9 @@ local function init()
     -- local theme = "oceanic_material"
 
     -- local theme = "tokyonight"
-    local theme = "catppuccin"
+    -- local theme = "catppuccin"
     -- local theme = "kanagawa"
-    -- local theme = "kimbox"
+    local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then

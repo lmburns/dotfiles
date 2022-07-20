@@ -345,8 +345,8 @@ do
                     local bufnr = api.nvim_get_current_buf()
                     local ft = api.nvim_buf_get_option(bufnr, "filetype")
 
-                    o.conceallevel = 2
-                    o.concealcursor = "vc"
+                    -- o.conceallevel = 2
+                    -- o.concealcursor = "vc"
 
                     -- Allows a shared statusline
                     if ft ~= "fzf" then

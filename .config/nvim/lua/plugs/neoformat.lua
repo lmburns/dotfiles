@@ -22,6 +22,8 @@ local F = vim.F
 
 local scan = require("plenary.scandir")
 
+local prefer_neoformat
+
 local function save_doc(bufnr)
     vim.schedule(
         function()
@@ -91,11 +93,10 @@ function M.format_doc(save)
                         "format",
                         "",
                         function(e, res)
-                            -- FIX: Why are some results false? (i.e., TS, JS, Python)
                             -- This is only needed if Sumneko-Coc is used
                             -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
-                            if e ~= vim.NIL or (vim.bo[bufnr].ft == "lua" and res == false) or res == false then
+                            if e ~= vim.NIL or _t(prefer_neoformat):contains(vim.bo[bufnr].ft) or res == false then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
@@ -181,40 +182,21 @@ end
 -- TODO: Get keepj keepp to prevent neoformat from modifying changes
 --       g; moves to last line after format
 local function init()
+    prefer_neoformat = {
+        "lua"
+    }
+
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1
     g.neoformat_basic_format_align = 1
 
-    -- g.neoformat_enabled_lua = { "luaformat" }
-    -- g.neoformat_enabled_lua = { "luafmt" }
-
-    -- g.neoformat_enabled_teal = {
-    --     "luaformat"
-    -- }
-
-    g.neoformat_enabled_python = {
-        "black"
-    }
-    g.neoformat_enabled_zsh = {
-        "expand"
-    }
-    g.neoformat_enabled_java = {
-        "prettier"
-    }
-    g.neoformat_enabled_solidity = {
-        "prettier"
-    }
-    g.neoformat_enabled_typescript = {
-        "prettier",
-        "clang-format"
-    }
-    g.neoformat_enabled_javascript = {
-        "prettier"
-    }
-
-    g.neoformat_enabled_yaml = {
-        "prettier"
-    }
+    g.neoformat_enabled_python = {"black"}
+    g.neoformat_enabled_zsh = {"expand"}
+    g.neoformat_enabled_java = {"prettier"}
+    g.neoformat_enabled_solidity = {"prettier"}
+    g.neoformat_enabled_typescript = {"prettier", "clangformat"}
+    g.neoformat_enabled_javascript = {"prettier"}
+    g.neoformat_enabled_yaml = {"prettier"}
     g.neoformat_yaml_prettier = {
         exe = "prettier",
         args = {
@@ -235,9 +217,7 @@ local function init()
         },
         stdin = 1
     }
-    g.neoformat_enabled_json = {
-        "jq"
-    }
+    g.neoformat_enabled_json = {"jq"}
     g.neoformat_json_jq = {
         exe = "jq",
         args = {

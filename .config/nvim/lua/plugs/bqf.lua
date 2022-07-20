@@ -58,7 +58,7 @@ local function preview_fugitive(bufnr, ...)
     local debounced
     if not debounced then
         debounced =
-            debounce(
+            debounce:new(
             function(bufnr, qwinid, bufname)
                 if not api.nvim_buf_is_loaded(bufnr) then
                     api.nvim_buf_call(
@@ -82,9 +82,10 @@ local function preview_fugitive(bufnr, ...)
     end
 
     if api.nvim_buf_is_loaded(bufnr) then
-        debounced(bufnr, ...)
+        debounced:flush(bufnr, ...)
         return true
     end
+
     debounced(bufnr, ...)
     return false
 end
@@ -98,7 +99,7 @@ function M.setup()
             auto_resize_height = true,
             preview = {
                 auto_preview = true,
-                delay_syntax = 50,
+                delay_syntax = 40,
                 should_preview_cb = function(bufnr, qwinid)
                     local ret = true
                     local bufname = api.nvim_buf_get_name(bufnr)

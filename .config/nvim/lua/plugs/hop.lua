@@ -9,6 +9,7 @@ end
 local utils = require("common.utils")
 local map = utils.map
 
+local hint_direction = require("hop.hint").HintDirection
 local hint_with = require("hop").hint_with
 local window = require("hop.window")
 local jump_target = require("hop.jump_target")
@@ -143,9 +144,9 @@ local function init()
         "n",
         "f",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true
                 }
             )
@@ -157,9 +158,9 @@ local function init()
         "n",
         "F",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true
                 }
             )
@@ -171,11 +172,11 @@ local function init()
         "o",
         "f",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
-                    inclusive_jump = true -- Why is this only needed here, not for F?
+                    inclusive_jump = true
                 }
             )
         end
@@ -186,9 +187,9 @@ local function init()
         "o",
         "F",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true
                     -- inclusive_jump = true
                 }
@@ -201,9 +202,9 @@ local function init()
         "x",
         "f",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true
                 }
             )
@@ -215,9 +216,9 @@ local function init()
         "x",
         "F",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true
                 }
             )
@@ -231,9 +232,9 @@ local function init()
         "n",
         "t",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
                     hint_offset = -1
                 }
@@ -246,9 +247,9 @@ local function init()
         "n",
         "T",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true,
                     hint_offset = 1,
                     inclusive_jump = false
@@ -264,7 +265,7 @@ local function init()
         function()
             require("hop").hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
                     hint_offset = -1,
                     inclusive_jump = false
@@ -280,7 +281,7 @@ local function init()
         function()
             require("hop").hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true,
                     hint_offset = 1,
                     inclusive_jump = false
@@ -296,7 +297,7 @@ local function init()
         function()
             require("hop").hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.AFTER_CURSOR,
+                    direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
                     hint_offset = -1,
                     inclusive_jump = false
@@ -312,7 +313,7 @@ local function init()
         function()
             require("hop").hint_char1(
                 {
-                    direction = require("hop.hint").HintDirection.BEFORE_CURSOR,
+                    direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true,
                     hint_offset = 1,
                     inclusive_jump = false

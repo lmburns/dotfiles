@@ -231,7 +231,7 @@
   "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
-  "rust-analyzer.inlayHints.typeHintsSeparator": "‣",
+  "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Golang                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -284,7 +284,11 @@
   "Lua.hover.viewNumber": true,
   "Lua.window.statusBar": false,
   "Lua.window.progressBar": true,
-  // "Lua.semantic.enable": true,
+  "Lua.type.castNumberToInteger": true,
+  "Lua.semantic.annotation": true,
+  "Lua.semantic.variable": true,
+  "Lua.semantic.enable": true,
+  "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {

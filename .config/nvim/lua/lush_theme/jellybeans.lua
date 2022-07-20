@@ -52,6 +52,7 @@ local tea_green = hsl("#d2ebbe")
 local dell = hsl("#437019")
 local calypso = hsl("#2B5B77")
 
+---@diagnostic disable
 local theme =
     lush(
     function()
@@ -319,5 +320,6 @@ local theme =
     end
 )
 
--- return our parsed theme for extension or use else where.
+---@diagnostic enable
+
 return theme

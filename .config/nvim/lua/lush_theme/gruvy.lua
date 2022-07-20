@@ -1,6 +1,7 @@
 local lush = require("lush")
 local hsl = lush.hsl
 
+---@diagnostic disable
 local theme =
     lush(
     function()
@@ -270,6 +271,8 @@ local theme =
         }
     end
 )
+
+---@diagnostic enable
 
 -- return our parsed theme for extension or use else where.
 return theme

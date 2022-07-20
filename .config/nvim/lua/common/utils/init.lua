@@ -149,8 +149,8 @@ end
 
 ---@class Autocommand
 ---@field desc    string? description of the `autocmd`
----@field event   string[] list of autocommand events
----@field pattern string[] list of autocommand patterns
+---@field event   string|string[] list of autocommand events
+---@field pattern string|string[] list of autocommand patterns
 ---@field command string|fun(args: AutocommandOpts)
 ---@field nested  boolean
 ---@field once    boolean
@@ -616,7 +616,7 @@ M.is_visual_mode = function()
 end
 
 ---Get the current visual selection
----@return table
+---@return string
 M.get_visual_selection = function()
     -- this will exit visual mode
     -- use 'gv' to reselect the text
@@ -891,13 +891,13 @@ M.empty = function(item)
 end
 
 ---Table of escaped termcodes
----@param tbl table self
----@param k string termcode to retrieve
----@return string
 M.termcodes =
     setmetatable(
     {},
     {
+        ---@param tbl table self
+        ---@param k string termcode to retrieve
+        ---@return string
         __index = function(tbl, k)
             local k_upper = k:upper()
             local v_upper = rawget(tbl, k_upper)
@@ -912,13 +912,13 @@ M.termcodes =
 )
 
 ---Escaped ansi sequence
----@param t table
----@param k string
----@return string
 M.ansi =
     setmetatable(
     {},
     {
+        ---@param t table
+        ---@param k string
+        ---@return string
         __index = function(t, k)
             local v = M.render_str("%s", k)
             rawset(t, k, v)
@@ -940,11 +940,6 @@ local function color2csi8b(color_num, fg)
     return ("%d;5;%d"):format(fg and 38 or 48, color_num)
 end
 
----Render an ANSI escape sequence
----@param str string
----@param group_name string
----@param def_fg string
----@param def_bg string
 M.render_str =
     (function()
     local ansi = {
@@ -960,6 +955,11 @@ M.render_str =
     local gui = vim.o.termguicolors
     local color2csi = gui and color2csi24b or color2csi8b
 
+    ---Render an ANSI escape sequence
+    ---@param str string
+    ---@param group_name string
+    ---@param def_fg string?
+    ---@param def_bg string?
     return function(str, group_name, def_fg, def_bg)
         vim.validate(
             {
@@ -1058,10 +1058,6 @@ M.close_diff = function()
 end
 
 ---API around `nvim_echo`
----@param msg string message to echo
----@param hl string highlight group
----@param history boolean? whether it should be added to history
----@param wait number? time to wait before echoing
 M.cool_echo =
     (function()
     local lastmsg
@@ -1131,13 +1127,6 @@ M.expandtab = function(str, ts, start)
     return new
 end
 
----Wrapper to deal with extmarks
----@param bufnr number
----@param hl_group string
----@param start number
----@param finish number
----@param opt table
----@param delay number
 M.highlight =
     (function()
     local ns = api.nvim_create_namespace("l-highlight")
@@ -1162,6 +1151,13 @@ M.highlight =
         return row, col
     end
 
+    ---Wrapper to deal with extmarks
+    ---@param bufnr number
+    ---@param hl_group string
+    ---@param start number
+    ---@param finish number
+    ---@param opt table
+    ---@param delay number
     return function(bufnr, hl_group, start, finish, opt, delay)
         local row, col = do_unpack(start)
         local end_row, end_col = do_unpack(finish)

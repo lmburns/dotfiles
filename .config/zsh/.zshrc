@@ -738,7 +738,6 @@ zt 0c light-mode null lbin \
     iamsauravsharma/cargo-trim \
     andrewradev/cargo-local \
     celeo/cargo-nav \
-    TimonPost/cargo-unused-features \
     g-k/cargo-show \
     mre/cargo-inspect \
     sminez/roc \
@@ -766,6 +765,8 @@ zt 0c light-mode null for \
     yozhgoor/cargo-temp \
   lbin'tar*/rel*/evcxr' atclone'cargo br' atpull'%atclone' \
     google/evcxr \
+  lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean unused-features)" \
+    TimonPost/cargo-unused-features \
   lbin'rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
   atclone'command mv -vf rusty-man/* . && rm -rf rusty-man' \
   atclone'cargo br && cargo doc' atpull'%atclone' id-as'sr-ht/rusty-man' \

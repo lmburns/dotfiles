@@ -75,10 +75,17 @@ function M.setup()
                 -- keyword = "wide",
                 -- after = "fg",
 
-                pattern = [[.*<(KEYWORDS)\s*:]], -- pattern or table of patterns, used for highlightng (vim regex)
+                -- Matches:
+                --      TODO: hi
+                --      TODO  : hi
+                --      TODO (xx): hi
+                --      TODO(lmburns):
+                -- Special vim regex: %[] means optional group
+                -- pattern = [[.*<(KEYWORDS)(\s*\(.*\))?\s*:]], -- pattern or table of patterns (vim regex)
+                pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]], -- pattern or table of patterns (vim regex)
                 comments_only = true, -- uses treesitter to match keywords in comments only
                 max_line_len = 400, -- ignore lines longer than this
-                exclude = {} -- list of file types to exclude highlighting
+                exclude = BLACKLIST_FT -- list of file types to exclude highlighting
             },
             -- list of named colors where we try to extract the guifg from the
             -- list of hilight groups or use the hex color if hl not found as a fallback
@@ -100,7 +107,7 @@ function M.setup()
                 },
                 -- regex that will be used to match keywords.
                 -- don't replace the (KEYWORDS) placeholder
-                pattern = [[\b(KEYWORDS):]] -- ripgrep regex
+                pattern = [[\b(KEYWORDS)(\s*\(.*\))?\s*:]] -- ripgrep regex
                 -- pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
             }
         }
@@ -110,7 +117,7 @@ end
 -- FIX: Why is this not inserting into table?
 ---Get the number of `TODO` comments in the current buffer
 ---@param cwd string?
----@return table
+---@return integer
 function M.get_todo_count(cwd)
     local result = {}
     Search.search(

@@ -1,6 +1,7 @@
 local lush = require('lush')
 local hsl = lush.hsl
 
+---@diagnostic disable
 local theme = lush(function()
   local c = {
     bg         = hsl(229, 20, 11),
@@ -322,6 +323,8 @@ local theme = lush(function()
     HopUnmatched { fg = c.bg3 },
   }
 end)
+
+---@diagnostic enable
 
 -- return our parsed theme for extension or use else where.
 return theme
