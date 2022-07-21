@@ -77,7 +77,7 @@ local function preview_fugitive(bufnr, ...)
                 vim.bo[fbufnr].ft = "git"
                 register_preview_buf(qwinid, bufnr)
             end,
-            60
+            10
         )
     end
 

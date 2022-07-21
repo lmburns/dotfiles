@@ -196,6 +196,7 @@ programming:
     moon: [.moon]
     fennel: [.fnl]
     sass: [.sass]
+    reason: [.re]
 
   tooling:
     vcs:

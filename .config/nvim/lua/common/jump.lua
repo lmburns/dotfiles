@@ -133,7 +133,8 @@ local function get_text(jumplist, current)
     for i = current - 3, current + 10 do
         local j = jumplist[i]
         if j then
-            local bufname = fn.fnamemodify(api.nvim_buf_get_name(j.bufnr), ":~:.")
+            --If there is no bufnr field then it is a changelist and not jumplist
+            local bufname = fn.fnamemodify(api.nvim_buf_get_name(j.bufnr or 0), ":~:.")
             local line = ("%s:%d:%d"):format(bufname, j.lnum, j.col)
             local len = api.nvim_strwidth(line)
             if len > width then
@@ -181,25 +182,28 @@ local function do_show()
     show = true
 end
 
-local function show_jumps(forward)
+---Display the list in a window
+---@param changelist boolean whether to show changelist or jumplist
+---@param forward boolean
+local function show_list(changelist, forward)
     if not do_show() then
         return
     end
 
     disable_cmoved_au()
 
-    local jumplist, last_jump_pos = unpack(fn.getjumplist())
+    local list, last_pos = unpack(F.tern(changelist, fn.getchangelist(), fn.getjumplist()))
 
-    local current = last_jump_pos + 1 + (forward and 1 or -1)
+    local current = last_pos + 1 + (F.tern(forward, 1, -1))
     if current == 0 then
         current = 1
     end
 
-    if current > #jumplist then
-        current = #jumplist
+    if current > #list then
+        current = #list
     end
 
-    local lines, current_line, width = get_text(jumplist, current)
+    local lines, current_line, width = get_text(list, current)
     render_buf(lines, current_line)
 
     vim.schedule(
@@ -233,7 +237,7 @@ local function init()
                 "n",
                 "<C-o>",
                 function()
-                    show_jumps()
+                    show_list(false)
                     return "<C-o>"
                 end,
                 {expr = true, desc = "Show jumps (prev)"}
@@ -243,8 +247,28 @@ local function init()
                 "n",
                 "<C-i>",
                 function()
-                    show_jumps(true)
+                    show_list(false, true)
                     return "<C-i>"
+                end,
+                {expr = true, desc = "Show jumps (next)"}
+            )
+
+            map(
+                "n",
+                "g;",
+                function()
+                    show_list(true, false)
+                    return "g;"
+                end,
+                {expr = true, desc = "Show jumps (prev)"}
+            )
+
+            map(
+                "n",
+                "g,",
+                function()
+                    show_list(true, true)
+                    return "g,"
                 end,
                 {expr = true, desc = "Show jumps (next)"}
             )

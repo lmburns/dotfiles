@@ -22,51 +22,6 @@ local env = vim.env
 local debounced
 local has_sourced
 
-nvim.autocmd.lmb__RestoreCursor = {
-    {
-        event = "BufReadPost",
-        pattern = "*",
-        command = function()
-            -- local bufname = api.nvim_buf_get_name(0)
-            -- vim.startswith(bufname, "fugitive://")
-            local types =
-                _t(
-                {
-                    "nofile",
-                    "fugitive",
-                    "gitcommit",
-                    "gitrebase",
-                    "commit",
-                    "rebase",
-                    "help"
-                }
-            )
-            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
-                return
-            end
-
-            local row, col = unpack(nvim.buf.get_mark(0, '"'))
-            if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                pcall(nvim.win.set_cursor, 0, {row, 0})
-
-                -- nvim.win.set_cursor(0, {row, 0})
-                if fn.line("w$") ~= row then
-                    cmd("norm! zz")
-                end
-            end
-        end
-    },
-    {
-        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
-        event = {"BufReadCmd"},
-        pattern = {"file:///*"},
-        nested = true,
-        command = function(args)
-            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
-        end
-    }
-}
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                 Setting git environment                  │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -253,38 +208,49 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
 -- === Highlight Disable ===
 
 -- === Restore Cursor Position === [[[
--- I've noticed that `BufRead` works, but `BufReadPost` doesn't
--- at least, with allowing opening a file with `nvim +5`
+nvim.autocmd.lmb__RestoreCursor = {
+    {
+        event = "BufReadPost",
+        pattern = "*",
+        command = function()
+            -- local bufname = api.nvim_buf_get_name(0)
+            -- vim.startswith(bufname, "fugitive://")
+            local types =
+                _t(
+                {
+                    "nofile",
+                    "fugitive",
+                    "gitcommit",
+                    "gitrebase",
+                    "commit",
+                    "rebase",
+                    "help"
+                }
+            )
+            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
+                return
+            end
 
--- local group = vim.api.nvim_create_augroup("RestoreCursor", {clear = true})
--- vim.api.nvim_create_autocmd(
---     "BufReadPost",
---     {
---         pattern = "*",
---         group = group,
---         callback = function()
---             local row, col = unpack(vim.api.nvim_buf_get_mark(0, '"'))
---             if {row, col} ~= {0, 0} and row <= vim.api.nvim_buf_line_count(0) then
---                 vim.api.nvim_win_set_cursor(0, {row, 0})
---                 if vim.fn.line("w$") ~= row then
---                     vim.cmd("norm! zz")
---                 end
---             end
---         end
---     }
--- )
+            local row, col = unpack(nvim.buf.get_mark(0, '"'))
+            if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
+                pcall(nvim.win.set_cursor, 0, {row, 0})
 
-nvim.autocmd.lmb__DiffTool = {
-    event = "BufWritePost",
-    pattern = "*",
-    command = function()
-        if vim.o.diff and not D.find_buf_with_var("difftool_special_keys") then
-            local o = {desc = "Mergetool mapping"}
-            map("n", "<Leader>1", ":diffget LOCAL<CR>", o)
-            map("n", "<Leader>2", ":diffget BASE<CR>", o)
-            map("n", "<Leader>3", ":diffget REMOTE<CR>", o)
+                -- nvim.win.set_cursor(0, {row, 0})
+                if fn.line("w$") ~= row then
+                    cmd("norm! zz")
+                end
+            end
         end
-    end
+    },
+    {
+        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
+        event = {"BufReadCmd"},
+        pattern = {"file:///*"},
+        nested = true,
+        command = function(args)
+            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
+        end
+    }
 }
 
 -- nvim.autocmd.lmb__RememberFolds = {
@@ -314,8 +280,6 @@ nvim.autocmd.lmb__DiffTool = {
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them.
---
--- Without FileType, the first buffer that is loaded does not have these settings applied
 do
     local o = vim.opt_local
 
@@ -909,7 +873,7 @@ C.all({cmTitle = {link = "vimCommentTitle", default = true}})
 
 -- ======================= CursorLine Control ========================= [[[
 ---Cursorline highlighting control
---- Only have it on in the active buffer
+---Only have it on in the active buffer
 do
     local id = utils.create_augroup("lmb__CursorLineControl")
     local set_cursorline = function(event, value, pattern)
