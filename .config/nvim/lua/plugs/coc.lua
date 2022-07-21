@@ -578,7 +578,7 @@ function M.toggle_outline()
         -- end
 
         M.action("showOutline", {1}):thenCall(
-            function(res)
+            function(_)
                 ex.wincmd("l")
             end
         )

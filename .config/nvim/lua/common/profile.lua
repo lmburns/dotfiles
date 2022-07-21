@@ -3,6 +3,8 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 
+local fn = vim.fn
+
 PROFILE_LOAD = false
 
 if PROFILE_LOAD then

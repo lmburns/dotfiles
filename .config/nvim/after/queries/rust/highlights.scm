@@ -2,7 +2,7 @@
  function_item
  (
   identifier
-  )@function_definition
+  ) @function_definition
 )
 
 ;; TODO: Try and replace doc comment symbol with a document icon

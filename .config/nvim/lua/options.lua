@@ -10,6 +10,7 @@ local o = vim.opt
 local g = vim.g
 local fn = vim.fn
 local fs = vim.fs
+local uv = vim.loop
 
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.

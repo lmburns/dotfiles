@@ -203,11 +203,13 @@ M.plugins.gitbuf = {
     fn = function()
         local name = api.nvim_eval_statusline("%f", {}).str
         if vim.startswith(name, "fugitive://") then
+            ---@diagnostic disable-next-line:unused-local
             local _, _, commit, relpath = name:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
             return ("fugitive@%s"):format(commit:sub(1, 7))
             -- name = relpath .. "@" .. commit:sub(1, 7)
         end
         if vim.startswith(name, "gitsigns://") then
+            ---@diagnostic disable-next-line:unused-local
             local _, _, revision, relpath = name:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
             return ("gitsigns@%s"):format(revision:sub(1, 7))
             -- name = relpath .. "@" .. revision:sub(1, 7)

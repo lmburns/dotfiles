@@ -57,6 +57,7 @@ local treesitter_queries = function(query, inners, outers, queryfile)
         outers = true
     end
 
+    ---@diagnostic disable-next-line:unused-local
     return function(hint_opts)
         local context = window.get_window_context()
         local queries = require("nvim-treesitter.query")

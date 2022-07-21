@@ -155,6 +155,7 @@ local keys = {guisp = "sp", guibg = "background", guifg = "foreground"}
 ---into keys that `api.nvim_set_hl` will accept.
 ---
 ---@param opts table<string, string|boolean|table<string,string>>
+---@diagnostic disable-next-line:unused-function, unused-local
 local function convert_hl_to_val(opts)
     for name, value in pairs(opts) do
         if type(value) == "table" and value.from then
@@ -241,7 +242,7 @@ function M.parse(hl)
     }
 
     if hl.gui then
-        hl = vim.tbl_extend("force", hl, convert_gui(hl.gui))
+        hl = vim.tbl_extend("force", hl, convert_gui(hl.gui)) --[[@as ColorFormat]]
         hl.gui = nil
     end
 
@@ -255,7 +256,6 @@ function M.parse(hl)
     -- Allow both attributes, but only use one
     -- Foreground
     if hl.fg ~= nil and hl.foreground ~= nil then
-        ---@cast hl.foreground +?
         hl.foreground = nil
     end
 

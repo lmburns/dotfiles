@@ -44,6 +44,7 @@ function M.setup()
             wilder.branch(
                 {
                     wilder.check(
+                        ---@diagnostic disable:unused-local
                         function(ctx, x)
                             return fn.getcmdtype() == ":"
                         end

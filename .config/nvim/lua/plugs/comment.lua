@@ -24,7 +24,7 @@ local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
-local state = {}
+-- local state = {}
 
 -- TODO: Maybe create an issue
 -- Would like to ignore certain lines on comment

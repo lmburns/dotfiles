@@ -187,7 +187,7 @@ programming:
     typescriptreact: [.tsx]
     viml: [.vim]
     zig: [.zig]
-    zsh: [.zsh, .ztst]
+    zsh: [.zsh, .ztst, .zcompdump]
 
     database: [.sqlite, .sqlite3, .db]
     jq: [.jq]
@@ -197,6 +197,7 @@ programming:
     fennel: [.fnl]
     sass: [.sass]
     reason: [.re]
+    scheme: [.scm]
 
   tooling:
     vcs:

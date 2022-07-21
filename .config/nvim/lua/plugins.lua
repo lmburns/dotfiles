@@ -424,10 +424,7 @@ return packer.startup(
                         {
                             "mfussenegger/nvim-dap-python",
                             after = "nvim-dap",
-                            wants = "nvim-dap",
-                            config = function()
-                                require("dap-python").setup(("%s/shims/python"):format(env.PYENV_ROOT))
-                            end
+                            wants = "nvim-dap"
                         }
                     }
                 }
@@ -1118,7 +1115,7 @@ return packer.startup(
                         {
                             "RRethy/nvim-treesitter-endwise",
                             desc = "Adds 'end' to ruby and lua",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "nvim-treesitter/nvim-treesitter-textobjects",
@@ -1132,32 +1129,32 @@ return packer.startup(
                         {
                             "windwp/nvim-ts-autotag",
                             desc = "Html/CSS/JSX tagging",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "JoosepAlviste/nvim-ts-context-commentstring",
                             desc = "Embedded language comment strings",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "michaeljsmith/vim-indent-object",
                             desc = "ai ii aI iI text objects",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "haringsrob/nvim_context_vt",
                             desc = "Adds -> context messages",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "David-Kunz/treesitter-unit",
                             desc = "Adds unit text object",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "m-demare/hlargs.nvim",
                             desc = "Highlight argument definitions",
-                            after = "nvim-treesitter",
+                            after = "nvim-treesitter"
                         },
                         {
                             "stevearc/aerial.nvim",
@@ -1196,7 +1193,7 @@ return packer.startup(
                             "ziontee113/syntax-tree-surfer",
                             desc = "Surf through your document and move elements around",
                             after = "nvim-treesitter"
-                        },
+                        }
                         -- {
                         --     "nvim-treesitter/nvim-treesitter-context",
                         --     desc = " Show code context",

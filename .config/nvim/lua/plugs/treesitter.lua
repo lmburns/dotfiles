@@ -121,6 +121,8 @@ M.setup_iswap = function()
         grey = "disable",
         hl_snipe = "ISwapSwap",
         hl_selection = "WarningMsg",
+        flash_style = "simultaneous", -- sequential
+        hl_flash = "ModeMsg",
         autoswap = true
     }
 
@@ -469,6 +471,7 @@ M.setup_context_vt = function()
             -- Same as above but only for spesific filetypes
             min_rows_ft = {},
             -- Custom virtual text node parser callback
+            ---@diagnostic disable:unused-local
             custom_parser = function(node, ft, opts)
                 if api.nvim_buf_line_count(0) >= context_vt_max_lines then
                     return nil
@@ -716,18 +719,24 @@ M.setup = function()
         -- "norg",
         -- "rescript",
         ensure_installed = {
-            -- "css",
             "bash",
             "c",
-            "cpp",
             "cmake",
+            -- "comment",
+            "cpp",
+            "css",
             "d",
             "dart",
             "dockerfile",
             "fennel",
+            -- "git-commit",
+            -- "git-config",
+            -- "git-rebase",
             "gitignore",
             "go",
             "gomod",
+            "help",
+            "hjson",
             "html",
             "java",
             "javascript",
@@ -752,13 +761,14 @@ M.setup = function()
             "solidity",
             "sql",
             "teal",
-            "typescript",
+            "toml",
             "tsx",
-            "vue",
+            "typescript",
             "vim",
+            "vue",
             "yaml",
-            "zig",
-            "help"
+            "zig"
+            -- "ron",
         },
         sync_install = false,
         auto_install = true,
@@ -786,7 +796,7 @@ M.setup = function()
         },
         autotag = {enable = true},
         autopairs = {enable = true, disable = {"help", "comment"}},
-        indent = {enable = true},
+        indent = {enable = true, disable = {"comment"}},
         fold = {enable = false},
         endwise = {enable = true},
         matchup = {enable = true, disable_virtual_text = true},
@@ -857,7 +867,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help"}
+            disable = {"html", "help", "comment"}
             -- colors = {}
         },
         textobjects = {
@@ -1029,7 +1039,7 @@ function M.install_extra_parsers()
     -- Lua regex
     parser_config.luap = {
         install_info = {
-            url = "https://github.com/vhyrro/tree-sitter-luap.git", -- local path or git repo
+            url = "https://github.com/vhyrro/tree-sitter-luap", -- local path or git repo
             files = {"src/parser.c"},
             -- optional entries:
             branch = "main", -- default branch in case of git repo if different from master
@@ -1037,6 +1047,52 @@ function M.install_extra_parsers()
         },
         filetype = "luap" -- if filetype does not match the parser name
     }
+
+    -- Git commits
+    -- parser_config["git-commit"] = {
+    --     install_info = {
+    --         url = "https://github.com/the-mikedavis/tree-sitter-git-commit",
+    --         files = {"src/parser.c"},
+    --         branch = "main",
+    --         generate_requires_npm = false -- if stand-alone parser without npm dependencies
+    --     },
+    --     filetype = "gitcommit"
+    -- }
+
+    -- Git rebase
+    -- parser_config["git-rebase"] = {
+    --     install_info = {
+    --         url = "https://github.com/the-mikedavis/tree-sitter-git-rebase",
+    --         files = {"src/parser.c"},
+    --         branch = "main",
+    --         generate_requires_npm = false -- if stand-alone parser without npm dependencies
+    --     },
+    --     filetype = "gitrebase"
+    -- }
+
+    -- Git config
+    -- parser_config["git-config"] = {
+    --     install_info = {
+    --         url = "https://github.com/the-mikedavis/tree-sitter-git-config",
+    --         files = {"src/parser.c"},
+    --         branch = "main",
+    --         generate_requires_npm = true, -- if stand-alone parser without npm dependencies
+    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+    --     },
+    --     filetype = "gitconfig"
+    -- }
+
+    -- Rusty object notation
+    -- https://cppdig.com/c/rusty-object-notation-ron-grammar-for-treesitter
+    -- parser_config.ron = {
+    --     install_info = {
+    --         url = "~/projects/treesitter/tree-sitter-ron",
+    --         files = {"src/parser.c"},
+    --         generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+    --     },
+    --     filetype = "ron"
+    -- }
 end
 
 local function init()
@@ -1052,7 +1108,8 @@ local function init()
             "zsh",
             "markdown",
             "solidity",
-            "yaml"
+            "yaml",
+            "css"
         }
     )
 

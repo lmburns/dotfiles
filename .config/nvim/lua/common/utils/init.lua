@@ -16,6 +16,7 @@ local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
+local F = vim.F
 
 -- require("plenary.strings").align_str(string: any, width: any, right_justify: any)
 -- require("plenary.strings").dedent(str: any, leave_indent: any)
@@ -80,9 +81,11 @@ M.safe_require = function(name, cb)
 end
 
 ---Return a value based on two values
+---@generic T, V
 ---@param condition boolean|nil Statement to be tested
----@param is_if any Return if condition is truthy
----@param is_else any Return if condition is not truthy
+---@param is_if T Return if condition is truthy
+---@param is_else V Return if condition is not truthy
+---@return T|V
 F.tern = function(condition, is_if, is_else)
     if condition then
         return is_if
@@ -100,8 +103,7 @@ M.ife_nil = function(x, is_nil, is_not_nil)
 end
 
 ---Return a default value if `x` is nil
----@generic T
----@generic V
+---@generic T, V
 ---@param x T: Value to check if not `nil`
 ---@param default V: Default value to return if `x` is `nil`
 ---@return T|V
@@ -482,7 +484,7 @@ end
 
 ---@class CommandOpts
 ---@field nargs number|string 0|1|'*'|'?'|'+'
----@field range number?|string? '%'|N
+---@field range number|'%'
 ---@field count number
 ---@field bar boolean
 ---@field bang boolean
@@ -496,13 +498,13 @@ end
 ---@param rhs string|fun(args: CommandArgs)
 ---@param opts CommandOpts
 M.command = function(name, rhs, opts)
-    vim.validate(
-        {
-            name = {name, "string"},
-            cmd = {cmd, {"f", "s"}},
-            opts = {opts, "table", true}
-        }
-    )
+    -- vim.validate(
+    --     {
+    --         name = {name, "string"},
+    --         cmd = {cmd, {"f", "s"}},
+    --         opts = {opts, "table", true}
+    --     }
+    -- )
 
     local is_buffer = false
     opts = opts or {}
@@ -656,9 +658,29 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
+---@alias NotifyLevels
+---| '0' # Trace level
+---| '1' # Debug level
+---| '2' # Info level
+---| '3' # Warn level
+---| '4' # Error level
+
+-- ---Correctly assign this to be an enum
+-- ---@enum NotifyLevels
+-- NotifyLevels = {
+--     Trace = log.levels.TRACE,
+--     Debug = log.levels.DEBUG,
+--     Info = log.levels.INFO,
+--     Warn = log.levels.WARN,
+--     Error = log.levels.ERROR
+-- }
+
 ---@class NotifyOpts
 ---@field icon? string Icon to add to notification
 ---@field title? string Title to add
+---@field message? string Notification message
+---@field level? NotifyLevels Notification level
+---@field hl? string Highlight group
 
 ---Wrapper to send a notification
 ---@param msg string? Message to notify
@@ -704,7 +726,7 @@ end
 ---@param level number?
 ---@param title string?
 _G.N = function(msg, level, title)
-    M.notify(vim.inspect(msg), M.get_default(level, log.levels.INFO), {title = title})
+    M.notify(vim.inspect(msg), M.get_default(level, log.levels.INFO) --[[@as number]], {title = title})
 end
 
 ---Preserve cursor position when executing command
@@ -1244,7 +1266,7 @@ function Data:lines()
     return vim.split(self.str, "\n")
 end
 
----Read a file asynchronously
+---Read a file asynchronously (using Promises)
 ---@param path string
 ---@return Promise
 M.readFile = function(path)
@@ -1260,12 +1282,43 @@ M.readFile = function(path)
     )
 end
 
+---Write to a file asynchronously (using Promises)
+---@param path string
+---@param data string
+---@return Promise
+M.writeFile = function(path, data)
+    return async(
+        function()
+            local path_ = path .. "_"
+            local fd = await(uva.open(path_, "w", 438))
+            await(uva.write(fd, data))
+            await(uva.close(fd))
+            await(uva.rename(path_, path))
+        end
+    )
+end
+
+---Only stat a given file.
+---This function does not require a file descriptor, instead it takes a string
+---@param path string
+---@return Promise
+M.stat = function(path)
+    return async(
+        function()
+            local fd = await(uva.open(fn.expand(path), "r", 438))
+            local stat = await(uva.fstat(fd))
+            await(uva.close(fd))
+            return stat
+        end
+    )
+end
+
 -- ================= Tips ================== [[[
 -- Search global variables:
 --    filter <pattern> let g:
 
 -- EmmyLua
---    https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations#Comments
+--    https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
 
 -- Patterns
 --   http://lua-users.org/wiki/PatternsTutorial

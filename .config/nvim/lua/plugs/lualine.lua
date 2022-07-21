@@ -19,6 +19,7 @@ local augroup = utils.augroup
 local fs = vim.fs
 local fn = vim.fn
 local F = vim.F
+local api = vim.api
 
 local stl = require("common.utils.stl")
 local conds = stl.conditions
@@ -80,6 +81,7 @@ local sections_1 = {
                 unnamed = icons.misc.unnamed,
                 shorting_target = 40
             },
+            ---@diagnostic disable:unused-local
             color = function(section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                 return {
@@ -363,6 +365,7 @@ local function init()
                             readonly = icons.misc.readonly,
                             unnamed = icons.misc.unnamed
                         },
+                        ---@diagnostic disable:unused-local
                         color = function(section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                             return {gui = F.tern(vim.bo.modified, "bold", "none")}

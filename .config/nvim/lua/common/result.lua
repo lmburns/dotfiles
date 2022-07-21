@@ -51,7 +51,7 @@ setmetatable(
 ---Execute `f` if the Result is Ok, else return an Err
 ---@param f function
 ---@vararg any
----@return Ok
+---@return Ok|Err
 function Ok:and_then(f, ...)
     local r = f(...)
     if r == nil then
@@ -102,7 +102,7 @@ function Ok:unwrap_or()
 end
 
 ---Test whether the result is okay
----@return Ok
+---@return boolean
 function Ok:is_ok()
     return self.err ~= true
 end
@@ -193,7 +193,7 @@ function Err:unwrap_or(f)
 end
 
 ---Test whether the result is an error
----@return Err
+---@return boolean
 function Err:is_err()
     return self.err == true
 end

@@ -13,10 +13,13 @@ local log = require("common.log")
 M.table = function(cb)
     ---Check if Lua 5.2 compatability is available by testing whether goto is a
     ---valid identifier name, which is not the case in 5.2.
-    if loadstring("local goto = true") ~= nil then
+    ---
+    ---This check doesn't seem to do anything. My neovim setup allows goto to be set, but it is valid
+    if loadstring("local goto = true")() ~= nil then
         log.err("LuaJIT 5.2 is required", true, {title = "Lazy"})
         return cb()
     end
+
     local t = {data = nil}
     local init = function()
         if t.data == nil then

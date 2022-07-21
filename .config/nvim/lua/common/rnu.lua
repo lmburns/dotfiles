@@ -4,7 +4,7 @@ local C = require("common.color")
 
 local ex = nvim.ex
 local fn = vim.fn
--- local cmd = vim.cmd
+local api = vim.api
 
 local delay = 50
 local focus_lock = 1

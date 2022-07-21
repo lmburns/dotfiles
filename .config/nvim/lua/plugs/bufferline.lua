@@ -64,6 +64,8 @@ local function custom_filter(bufnr, buf_nums)
 end
 
 ---Function to show diagnostics in the bufferline
+---@return string
+---@diagnostic disable-next-line:unused-local
 local function diagnostics_indicator(_count, _level, diagnostics, _context)
     local result = {}
     for name, count in pairs(diagnostics) do
@@ -71,8 +73,8 @@ local function diagnostics_indicator(_count, _level, diagnostics, _context)
             table.insert(result, ("%s%d"):format(diagnostics_signs[name], count))
         end
     end
-    result = table.concat(result, " ")
-    return #result > 0 and result or ""
+    local str = table.concat(result, " ")
+    return #str > 0 and str or ""
 end
 
 ---Can be used to change the buffer's label in the bufferline.

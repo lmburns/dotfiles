@@ -50,6 +50,7 @@ function M.setup()
     autopairs.setup(opt)
 end
 
+---@diagnostic disable-next-line:unused-function
 local function basic(...)
     local move_func = opt.enable_moveright and cond.move_right or cond.none
     local rule = Rule(...):with_move(move_func()):with_pair(cond.not_add_quote_inside_quote())
@@ -61,6 +62,7 @@ local function basic(...)
     return rule
 end
 
+---@diagnostic disable-next-line:unused-function, unused-local
 local function bracket(...)
     local rule = basic(...)
     if opt.enable_check_bracket_line == true then

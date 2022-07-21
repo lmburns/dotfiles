@@ -2,15 +2,16 @@ local M = {}
 
 local utils = require("common.utils")
 local debounce = require("common.debounce")
-local uva = require("uva")
+-- local uva = require("uva")
+-- local async = require("async")
 
 local bufs
 local mru = {}
 
 local fn = vim.fn
 local api = vim.api
--- local cmd = vim.cmd
 local uv = vim.loop
+-- local cmd = vim.cmd
 
 local function list(file)
     local mru_list = {}
@@ -65,13 +66,15 @@ M.flush =
     local debounced
     return function(force)
         if force then
+            -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
             utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
         else
             if not debounced then
                 debounced =
-                    debounce(
+                    debounce:new(
                     function()
-                        utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        -- utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
                     end,
                     50
                 )

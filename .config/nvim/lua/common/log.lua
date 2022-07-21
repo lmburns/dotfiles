@@ -46,36 +46,39 @@ M.logger = built
 ---INFO message
 ---@param msg string
 ---@param notify boolean?
----@param opts table?
+---@param opts NotifyOpts?
 M.info = function(msg, notify, opts)
+    opts = opts or {}
     if notify then
         vim.notify(msg, M.levels.INFO, opts)
     else
-        api.nvim_echo({{msg, "SpellCap"}}, true, {})
+        api.nvim_echo({{msg, F.if_nil(opts.hl, "SpellCap")}}, true, {})
     end
 end
 
 ---WARN message
 ---@param msg string
 ---@param notify boolean?
----@param opts table?
+---@param opts NotifyOpts?
 M.warn = function(msg, notify, opts)
+    opts = opts or {}
     if notify then
         vim.notify(msg, M.levels.WARN, opts)
     else
-        api.nvim_echo({{msg, "WarningMsg"}}, true, {})
+        api.nvim_echo({{msg, F.if_nil(opts.hl, "WarningMsg")}}, true, {})
     end
 end
 
 ---ERROR message
 ---@param msg string
 ---@param notify boolean?
----@param opts table?
+---@param opts NotifyOpts?
 M.err = function(msg, notify, opts)
+    opts = opts or {}
     if notify then
         vim.notify(msg, M.levels.ERROR, opts)
     else
-        api.nvim_echo({{msg, "ErrorMsg"}}, true, {})
+        api.nvim_echo({{msg, F.if_nil(opts.hl, "ErrorMsg")}}, true, {})
     end
 end
 

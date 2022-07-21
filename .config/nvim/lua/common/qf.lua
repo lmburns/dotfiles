@@ -1,3 +1,5 @@
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 -- TODO: Get sign column to show in bqfpreview
@@ -6,10 +8,11 @@ local command = require("common.utils").command
 local log = require("common.log")
 
 local ex = nvim.ex
+local F = vim.F
 local api = vim.api
+local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
-local cmd = vim.cmd
 
 -- WIP
 function M.batch_sub(is_loc, pat_rep)

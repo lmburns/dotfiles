@@ -1122,7 +1122,7 @@ FZF_COLORS="
 --color=header:#fb4934,prompt:#b16286
 "
 
-typeset -a SKIM_COLORS=(
+declare -a SKIM_COLORS=(
   "fg:-1" "fg+:-1" "hl:#458588" "hl+:#689d6a" "bg+:-1" "marker:#fe8019"
   "spinner:#b8bb26" "header:#cc241d" "prompt:#fb4934"
 )
@@ -1139,7 +1139,12 @@ export FZF_DEFAULT_OPTS="
 --marker '┃'
 --cycle
 $FZF_COLORS
---reverse --height 80% --ansi --info=inline --multi --border
+--reverse
+--height=80%
+--ansi
+--info=inline
+--multi
+--border
 --preview-window=':hidden,right:60%'
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
 --bind='?:toggle-preview,alt-w:toggle-preview-wrap'

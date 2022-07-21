@@ -72,6 +72,7 @@ function M.setup_zenmode()
             }
         },
         -- callback where you can add custom code when the Zen window opens
+        ---@diagnostic disable:unused-local
         on_open = function(win)
             g.indent_blankline_enabled = false
             w.foldlevel = 99

@@ -244,6 +244,15 @@ schemes:
     indexed_colors:
       - { index: 16, color: "#ffa066" }
       - { index: 17, color: "#ff5d62" }
+      - { index: 18, color: "#89b482" }
+      - { index: 19, color: "#d3869b" }
+      - { index: 20, color: "#719190" }
+      - { index: 21, color: "#957FB8" }
+      - { index: 22, color: "#938AA9" }
+      - { index: 23, color: "#ea6962" }
+      - { index: 24, color: "#E46876" }
+      - { index: 25, color: "#FF5D62" }
+      - { index: 26, color: "#cc6666" }
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
@@ -951,6 +960,7 @@ key_bindings:
   - { key: Period,     mods: Control,           chars: "\x1b[46;5u"  }
   - { key: Comma,      mods: Control,           chars: "\x1b[44;5u"  }
   - { key: Apostrophe, mods: Control,           chars: "\x1b[39;5u"  }
+  - { key: 0x61,       mods: Control,           chars: "\x1b[47;5u"  }
 
   # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
   # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }

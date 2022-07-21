@@ -17,17 +17,28 @@ local wk = require("which-key")
 
 local ex = nvim.ex
 local fn = vim.fn
+local F = vim.F
 
 local config
 
 function M.toggle_deleted()
     require("gitsigns").toggle_deleted()
-    log.info(("Gitsigns %s show_deleted"):format(config.show_deleted and "enable" or "disable"))
+    log.info(("Gitsigns %s show_deleted"):format(F.tern(config.show_deleted, "enable", "disable")))
 end
 
 function M.toggle_linehl()
     require("gitsigns").toggle_linehl()
-    log.info(("Gitsigns %s toggle_linehl"):format(config.linehl and "enable" or "disable"))
+    log.info(("Gitsigns %s toggle_linehl"):format(F.tern(config.linehl, "enable", "disable")))
+end
+
+function M.toggle_word_diff()
+    require("gitsigns").toggle_word_diff()
+    log.info(("Gitsigns %s toggle_word_diff"):format(F.tern(config.word_diff, "enable", "disable")))
+end
+
+function M.toggle_blame()
+    require("gitsigns").toggle_current_line_blame()
+    log.info(("Gitsigns %s toggle_current_line_blame"):format(F.tern(config.current_line_blame, "enable", "disable")))
 end
 
 local function mappings(bufnr)
@@ -46,8 +57,8 @@ local function mappings(bufnr)
             ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
             ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
             ["<Leader>hl"] = {"<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>", "Toggle line highlight (git)"},
-            ["<Leader>hw"] = {"<Cmd>Gitsigns toggle_word_diff<CR>", "Toggle word diff (git)"},
-            ["<Leader>hB"] = {"<cmd>Gitsigns toggle_current_line_blame<CR>", "Toggle blame line virt (git)"},
+            ["<Leader>hw"] = {"<Cmd>lua require('plugs.gitsigns').toggle_word_diff()<CR>", "Toggle word diff (git)"},
+            ["<Leader>hB"] = {"<Cmd>lua require('plugs.gitsigns').toggle_blame()<CR>", "Toggle blame line virt (git)"},
             ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}
         },
         {buffer = bufnr}
@@ -123,7 +134,7 @@ function M.setup()
                     text = "_",
                     numhl = "Identifier",
                     linehl = "GitSignsDeleteLn",
-                    show_count = true,
+                    show_count = true
                 },
                 topdelete = {
                     hl = "GitSignsDelete",
@@ -131,14 +142,14 @@ function M.setup()
                     text = "‾",
                     numhl = "ErrorMsg",
                     linehl = "GitSignsDeleteLn",
-                    show_count = true,
+                    show_count = true
                 },
                 changedelete = {
                     hl = "GitSignsChange",
                     text = "~",
                     numhl = "Number",
                     linehl = "GitSignsChangeLn",
-                    show_count = true,
+                    show_count = true
                 }
             },
             count_chars = {

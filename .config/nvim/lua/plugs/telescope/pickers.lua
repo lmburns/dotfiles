@@ -420,7 +420,7 @@ P.marks = function(opts)
             return true
         end,
         results
-    )
+    ) --[[@as table]]
 
     local displayer =
         entry_display.create {
@@ -739,6 +739,7 @@ P.XXX = function(opts)
                 results = {"red", "green", "blue"}
             },
             sorter = conf.generic_sorter(opts),
+            ---@diagnostic disable-next-line:unused-local
             attach_mapping = function(prompt_bufnr, map)
                 actions.select_default:replace(
                     function()

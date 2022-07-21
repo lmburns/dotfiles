@@ -46,6 +46,7 @@ function M.setup()
     -- g.go_play_open_browser = 1
 end
 
+---@diagnostic disable-next-line:unused-function, unused-local
 local function wrap_qf(fname, ...)
     local args = D.tbl_pack(...)
     return function()

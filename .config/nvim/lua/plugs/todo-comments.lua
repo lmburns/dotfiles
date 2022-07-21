@@ -118,6 +118,7 @@ end
 ---Get the number of `TODO` comments in the current buffer
 ---@param cwd string?
 ---@return integer
+---@diagnostic disable:unused-local
 function M.get_todo_count(cwd)
     local result = {}
     Search.search(

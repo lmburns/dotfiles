@@ -8,6 +8,7 @@ local C = require("common.color")
 local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
+local cmd = vim.cmd
 
 ---Set a timeout for a character-prefix in keybindings
 ---@param prefix string a prefix for other mappings
@@ -229,7 +230,7 @@ end
 ---Display tokei output similar to
 ---@param path string
 ---@param full? boolean whether to display full tokei output
----@return string
+---@return table|number
 function M.tokei(path, full)
     local bufnr = api.nvim_get_current_buf()
     local ft = vim.bo[bufnr].ft

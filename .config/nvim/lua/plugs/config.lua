@@ -10,7 +10,7 @@ local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
 local C = require("common.color")
-local coc = require("plugs.coc")
+-- local coc = require("plugs.coc")
 local utils = require("common.utils")
 local bmap = utils.bmap
 local map = utils.map
@@ -859,6 +859,14 @@ function M.sandwhich()
       \     'kind': ['add', 'replace'],
       \     'action': ['add'],
       \     'input': ['(']
+      \   },
+      \   {
+      \     'buns': ['[`', '`]'],
+      \     'nesting': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['add', 'replace', 'delete'],
+      \     'action': ['add'],
+      \     'input': ['1']
       \   },
       \   {
       \     'buns': ['{\s*', '\s*}'],

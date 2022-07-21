@@ -7,6 +7,7 @@ local map = utils.map
 local ex = nvim.ex
 local fn = vim.fn
 local api = vim.api
+local F = vim.F
 
 -- This is meant to be used in concert with `vim-grepper`
 -- Vim-grepper searches the current directory, this searches the current buffer
@@ -33,9 +34,6 @@ function M.vg_motion(motion)
     api.nvim_feedkeys("g@" .. (motion or ""), "i", false)
 end
 
-map("n", "go", [[:lua R('common.grepper').vg_motion()<CR>]], {desc = "Grep current file"})
-map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<CR>]], {desc = "Grep current file"})
-
 -- Credit: gbprod/substitute.nvim
 ---Turn region markers into text
 ---@param regions table
@@ -55,7 +53,7 @@ function M.get_text(regions)
     return all_lines
 end
 
--- Credit: gbprod/substitute.nvim
+---Credit: gbprod/substitute.nvim
 ---Get motion region
 ---@param vmode string
 ---@return table
@@ -63,12 +61,11 @@ function M.get_regions(vmode)
     if vmode == utils.termcodes["<c-v>"] then
         local start = nvim.buf.get_mark(0, "<")
         local finish = nvim.buf.get_mark(0, ">")
-        -- local start = api.nvim_buf_get_mark(0, "<")
-        -- local finish = api.nvim_buf_get_mark(0, ">")
 
         local regions = {}
 
         for row = start[1], finish[1], 1 do
+            ---@diagnostic disable-next-line:undefined-field
             local current_row_len = fn.getline(row):len() - 1
 
             table.insert(
@@ -77,7 +74,7 @@ function M.get_regions(vmode)
                     start_row = row,
                     start_col = start[2],
                     end_row = row,
-                    end_col = current_row_len >= finish[2] and finish[2] or current_row_len
+                    end_col = F.tern(current_row_len >= finish[2], finish[2], current_row_len)
                 }
             )
         end
@@ -92,12 +89,13 @@ function M.get_regions(vmode)
 
     local start = nvim.buf.get_mark(0, start_mark)
     local finish = nvim.buf.get_mark(0, end_mark)
+    ---@diagnostic disable-next-line:undefined-field
     local end_row_len = fn.getline(finish[1]):len() - 1
 
     return {
         {
             start_row = start[1],
-            start_col = vmode ~= "line" and start[2] or 0,
+            start_col = F.tern(vmode ~= "line", start[2], 0),
             end_row = finish[1],
             end_col = (end_row_len >= finish[2] and vmode ~= "line") and finish[2] or end_row_len
         }
@@ -133,7 +131,7 @@ M.telescope_grep = function(type, only_curr)
         layout_strategy = "vertical",
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
-        search_dirs = {only_curr and curr or (#root == 0 and cwd or root)},
+        search_dirs = {F.tern(only_curr, curr, (#root == 0 and cwd or root))},
         search = nvim.reg["@"]
     }
 
@@ -150,21 +148,33 @@ M.telescope_grep_current_buffer = function(type)
     M.telescope_grep(type, true)
 end
 
-map("n", "gt", [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep<cr>g@]], {desc = "Telescope grep"})
-map("x", "gt", [[:call v:lua.R'common.grepper'.telescope_grep(visualmode())<cr>]], {desc = "Telescope grep"})
+local function init()
+    map("n", "go", [[:lua R('common.grepper').vg_motion()<CR>]], {desc = "Grep current file"})
+    map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<CR>]], {desc = "Grep current file"})
 
-map(
-    "n",
-    "gT",
-    [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep_current_buffer<cr>g@]],
-    {desc = "Telescope grep (current buf)"}
-)
-map(
-    "x",
-    "gT",
-    [[:call v:lua.R'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]],
-    {desc = "Telescope grep (current buf)"}
-)
+    map(
+        "n",
+        "gt",
+        [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep<cr>g@]],
+        {desc = "Telescope grep"}
+    )
+    map("x", "gt", [[:call v:lua.R'common.grepper'.telescope_grep(visualmode())<cr>]], {desc = "Telescope grep"})
+
+    map(
+        "n",
+        "gT",
+        [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep_current_buffer<cr>g@]],
+        {desc = "Telescope grep (current buf)"}
+    )
+    map(
+        "x",
+        "gT",
+        [[:call v:lua.R'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]],
+        {desc = "Telescope grep (current buf)"}
+    )
+end
+
+init()
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Alternative Grep                     │

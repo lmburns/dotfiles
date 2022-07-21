@@ -7,6 +7,7 @@ local C = require("common.color")
 
 local fn = vim.fn
 local g = vim.g
+local api = vim.api
 -- local go = vim.go
 
 function M.setup()

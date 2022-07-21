@@ -8,7 +8,10 @@ local Path = require("plenary.path")
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
+local env = vim.env
+local F = vim.F
 
+---@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias vector table
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -224,7 +227,7 @@ end
 ---Split a string on a delimiter
 ---@param input string
 ---@param sep string
----@return string
+---@return table
 M.split = function(input, sep)
     vim.validate {
         input = {input, {"s"}},
@@ -266,9 +269,9 @@ end
 ---Similar to vim.tbl_add_reverse_lookup
 ---
 ---Assumes that the values in tbl are unique and hashable (no nil/NaN)
----@generic K,V
----@param tbl table<K,V>
----@return table<V,K>
+---@generic K, V
+---@param tbl table<K, V>
+---@return table<V, K>
 M.tbl_reverse_kv = function(tbl)
     local ret = {}
     for k, v in pairs(tbl) do
@@ -288,8 +291,8 @@ M.shift = function(tbl, n)
 end
 
 ---Determine whether two tables are equivalent
----@param t1 table
----@param t2 table
+---@param t1 table|any[]
+---@param t2 table|any[]
 ---@param ignore_mt boolean Ignore metatable
 ---@return boolean
 M.tbl_equivalent = function(t1, t2, ignore_mt)
@@ -322,9 +325,9 @@ M.tbl_equivalent = function(t1, t2, ignore_mt)
 end
 
 ---Merge two tables
----@param a 'table'
----@param b 'table'
----@return 'table'
+---@param a table
+---@param b table
+---@return table
 M.merge = function(a, b)
     if type(a) == "table" and type(b) == "table" then
         for k, v in pairs(b) do
@@ -356,7 +359,7 @@ end
 
 ---Execute a function across a table, keeping an accumulation of results
 ---@param tbl table
----@param fn fun(table, any, any)
+---@param func fun(table, any, any)
 ---@param acc table
 ---@return table
 M.tbl_reduce = function(tbl, func, acc)
@@ -377,7 +380,7 @@ end
 ---Clone a table
 ---
 ---@param t table: Table to clone
----@return table
+---@return table?
 M.tbl_clone = function(t)
     if not t then
         return
@@ -393,7 +396,7 @@ end
 
 ---Deep clone a table (i.e., clone nested tables)
 ---@param t table
----@return table
+---@return table?
 M.tbl_deep_clone = function(t)
     if not t then
         return
@@ -628,7 +631,7 @@ end
 ---Filter table based on function
 ---@param tbl table Table to be filtered
 ---@param func function Function to apply filter
----@return table
+---@return table|any[]|nil
 M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
 end
@@ -687,13 +690,13 @@ M.get_buf_count = function()
 end
 
 ---Get valid buffers
----@return number[]
+---@return number[]?
 M.get_valid_buffers = function()
     return M.filter(api.nvim_list_bufs(), M.buf_is_valid)
 end
 
 ---Return a table of the id's of loaded buffers (hidden are removed)
----@return table
+---@return table?
 M.get_loaded_bufs = function()
     return M.filter(
         api.nvim_list_bufs(),
@@ -922,7 +925,7 @@ end
 
 ---Get windows of a given type
 ---@param wintype string
----@return table
+---@return number[]?
 M.get_wins_of_type = function(wintype)
     return M.filter(
         api.nvim_list_wins(),
@@ -933,7 +936,7 @@ M.get_wins_of_type = function(wintype)
 end
 
 ---Return a table of window ID's for quickfix windows
----@return table<number, boolean>
+---@return number?
 M.get_qfwin = function()
     return M.get_wins_of_type("quickfix")[1]
 end
@@ -1002,7 +1005,7 @@ end
 ---@param plugin_name string
 ---@return boolean?
 M.plugin_loaded = function(plugin_name)
-    local plugins = _G.packer_plugins or {}
+    local plugins = packer_plugins or {}
     return plugins[plugin_name] and plugins[plugin_name].loaded
 end
 
@@ -1039,89 +1042,8 @@ end
 M.list = function(value, str, sep)
     sep = sep or ","
     str = str or ""
-    value = type(value) == "table" and table.concat(value, sep) or value
-    return str ~= "" and table.concat({value, str}, sep) or value
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       Switch-case                        │
--- ╰──────────────────────────────────────────────────────────╯
-
----Switch/case statement
----
----Usage:
---- <code>
---- a = switch {
----   [1] = function (x) print(x,10) end,
----   [2] = function (x) print(x,20) end,
----   default = function (x) print(x,0) end,
---- }
----
---- a:case(2)  -- ie. call case 2
---- a:case(9)
---- </code>
----
----@param t table: Table gets `:case` added
----@return table
--- function M.switch(t)
---     t.case = function(self, x)
---         local f = self[x] or self.default
---         if f then
---             if type(f) == "function" then
---                 f(x, self)
---             else
---                 error("case " .. tostring(x) .. " not a function")
---             end
---         end
---     end
---     return t
--- end
-
----Switch/case statement. Allows return statement
----
----Usage:
----<code>
---- c = 1
---- switch(c) : caseof {
----     [1]   = function (x) print(x,"one") end,
----     [2]   = function (x) print(x,"two") end,
----     [3]   = 12345, -- this is an invalid case stmt
----   default = function (x) print(x,"default") end,
----   missing = function (x) print(x,"missing") end,
---- }
----
---- -- also test the return value
---- -- sort of like the way C's ternary "?" is often used
---- -- but perhaps more like LISP's "cond"
---- --
---- print("expect to see 468:  ".. 123 +
----   switch(2):caseof{
----     [1] = function(x) return 234 end,
----     [2] = function(x) return 345 end
----   })
----</code>
----@param c table
----@return table
-M.switch = function(c)
-    local swtbl = {
-        casevar = c,
-        caseof = function(self, code)
-            local f
-            if (self.casevar) then
-                f = code[self.casevar] or code.default
-            else
-                f = code.missing or code.default
-            end
-            if f then
-                if type(f) == "function" then
-                    return f(self.casevar, self)
-                else
-                    error("case " .. tostring(self.casevar) .. " not a function")
-                end
-            end
-        end
-    }
-    return swtbl
+    value = F.tern(type(value) == "table", table.concat(value, sep), value)
+    return F.tern(str ~= "", table.concat({value, str}, sep), value)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

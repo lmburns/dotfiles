@@ -3,6 +3,7 @@ local M = {}
 local utils = require("common.utils")
 
 local api = vim.api
+local F = vim.F
 -- local fn = vim.fn
 
 ---Get an autocmd
@@ -169,10 +170,6 @@ nvim.termcodes = utils.termcodes
 nvim.builtin_echo = nvim.echo
 
 ---Echo a single colored message
----@param msg string message to echo
----@param hl string highlight group to link
----@param history boolean? add message to history
----@param wait number? amount of time to wait
 nvim.p =
     setmetatable(
     {},
@@ -183,6 +180,9 @@ nvim.p =
             return setmetatable(
                 {},
                 {
+                    ---@param msg string message to echo
+                    ---@param history boolean? add message to history
+                    ---@param wait number? amount of time to wait
                     __call = function(_, msg, history, wait)
                         utils.cool_echo(msg, group, history, wait)
                     end

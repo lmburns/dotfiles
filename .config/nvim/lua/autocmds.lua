@@ -1,4 +1,4 @@
-local D = require("dev")
+-- local D = require("dev")
 -- local global = require("common.global")
 local utils = require("common.utils")
 local C = require("common.color")
@@ -6,6 +6,7 @@ local global = require("common.global")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
+local a = require("plenary.async_lib")
 -- local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
@@ -18,6 +19,7 @@ local fn = vim.fn
 local g = vim.g
 local v = vim.v
 local env = vim.env
+local cmd = vim.cmd
 
 local debounced
 local has_sourced

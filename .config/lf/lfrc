@@ -144,7 +144,7 @@ cmd nvim-tmux ${{
   nvim-tmux "$fx"
 }}
 map Et :nvim-tmux
-map Ev !vim "$fx"
+map Ev $vim "$fx"
 
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Commands / Functions                                                      │

@@ -2,11 +2,18 @@ local M = {}
 
 local log = require("common.log")
 local fn = vim.fn
+local cmd = vim.cmd
 
 M.modes = {
     insert = "i",
     command = "c"
 }
+
+---This is just to show that this is possible
+function M.abbr_test(lhs, rhs)
+    -- cmd({cmd = "abbrev", args = {lhs, rhs}})
+    cmd.abbr(lhs, rhs)
+end
 
 ---Only execute the given command if the abbreviation is in `command` mode
 ---and the command is at the start.
@@ -120,33 +127,33 @@ M =
 -- I can't get insert mode to work
 M.i("funciton", "function")
 
-M.c("Qall!", "qll!")
-M.c("Qall", "qll")
-M.c("Wq", "wq")
-M.c("Wa", "wa")
-M.c("wQ", "wq")
-M.c("WQ", "wq")
-M.c("W", "w")
-M.c("W!", "w!")
+M.abbr("c", "Qall!", "qll!")
+M.abbr("c", "Qall", "qll")
+M.abbr("c", "Wq", "wq")
+M.abbr("c", "Wa", "wa")
+M.abbr("c", "wQ", "wq")
+M.abbr("c", "WQ", "wq")
+M.abbr("c", "W", "w")
+M.abbr("c", "W!", "w!")
 
-M.c("tel", "Telescope")
-M.c("Review", "DiffviewOpen")
-M.c("ld", "Linediff")
+M.abbr("c", "tel", "Telescope")
+M.abbr("c", "Review", "DiffviewOpen")
+M.abbr("c", "ld", "Linediff")
 
-M.c("PI", "PackerInstall")
-M.c("PU", "PackerUpdate")
-M.c("PS", "PackerSync")
-M.c("PC", "PackerCompile")
+M.abbr("c", "PI", "PackerInstall")
+M.abbr("c", "PU", "PackerUpdate")
+M.abbr("c", "PS", "PackerSync")
+M.abbr("c", "PC", "PackerCompile")
 
-M.c("man", "Man")
-M.c("vg", "vimgrep", {only_start = false})
-M.c("grep", "Grep", {only_start = false})
-M.c("lgrep", "LGrep", {only_start = false})
-M.c("buf", "Bufferize")
-M.c("req", "lua require('")
-M.c("cfilter", "Cfilter")
-M.c("cfi", "Cfilter")
-M.c("lfilter", "Lfilter")
-M.c("lfi", "Cfilter")
+M.abbr("c", "man", "Man")
+M.abbr("c", "vg", "vimgrep", {only_start = false})
+M.abbr("c", "grep", "Grep", {only_start = false})
+M.abbr("c", "lgrep", "LGrep", {only_start = false})
+M.abbr("c", "buf", "Bufferize")
+M.abbr("c", "req", "lua require('")
+M.abbr("c", "cfilter", "Cfilter")
+M.abbr("c", "cfi", "Cfilter")
+M.abbr("c", "lfilter", "Lfilter")
+M.abbr("c", "lfi", "Cfilter")
 
 return M

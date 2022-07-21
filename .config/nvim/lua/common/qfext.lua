@@ -1,3 +1,5 @@
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 local gittool = require("common.gittool")
@@ -9,8 +11,10 @@ local config = require("aerial.config")
 local data = require("aerial.data")
 
 local ex = nvim.ex
+local F = vim.F
 local api = vim.api
 local fn = vim.fn
+local cmd = vim.cmd
 
 ---@class Outline
 ---@field filter_kind table<number, "Array"|"Boolean"|"Class"|"Constant"|"Constructor"|"Enum"|"EnumMember"|"Event"|"Field"|"...">
@@ -75,8 +79,8 @@ function M.outline_aerial(opts)
 
     local items = {}
     local text_fmt = "%-32s│%5d:%-3d│%10s%s%s"
-    local hl_defs = api.nvim__get_hl_defs(0)
-    local hl_def_keys = _t(hl_defs):keys()
+    -- local hl_defs = api.nvim__get_hl_defs(0)
+    -- local hl_def_keys = _t(hl_defs):keys()
 
     -- local ns = api.nvim_create_namespace("aerial-sign")
     -- for name, icon in pairs(config.icons) do
@@ -322,6 +326,7 @@ end
 -- │                        Treesitter                        │
 -- ╰──────────────────────────────────────────────────────────╯
 
+---@diagnostic disable-next-line:unused-local
 local function prepare_match(entry, kind)
     local entries = {}
 

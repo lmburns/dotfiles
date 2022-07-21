@@ -301,7 +301,7 @@ function M.copyq()
         [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\n");' | tac]]
     )
 
-    local fzf_complete = fn["fzf#vim#complete"]
+    -- local fzf_complete = fn["fzf#vim#complete"]
     local opts = {
         source = source,
         options = {"+m", "--prompt", "Copyq> ", "--tiebreak", "index"},
@@ -388,7 +388,7 @@ local function init()
         ["alt-x"] = "split"
     }
 
-    env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
+    vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
     g.fzf_preview_window = {"right:50%,border-left", "ctrl-/"}
 
     g.fzf_preview_quit_map = 1

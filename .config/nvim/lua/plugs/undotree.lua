@@ -5,12 +5,15 @@ local M = {}
 -- end
 
 local utils = require("common.utils")
-local map = utils.map
+-- local map = utils.map
 local command = utils.command
 
 local ex = nvim.ex
 local g = vim.g
+local fn = vim.fn
+local cmd = vim.cmd
 
+---@diagnostic disable:unused-function, unused-local
 local bmap = function(...)
     utils.bmap(0, ...)
 end

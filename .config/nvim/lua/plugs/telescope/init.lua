@@ -142,7 +142,7 @@ local c_actions = {
 ---@param bufnr number
 ---@param opts table
 local new_maker = function(filepath, bufnr, opts)
-    filepath = fn.expand(filepath)
+    filepath = fn.expand(filepath) --[[@as string]]
     Job:new(
         {
             command = "file",
@@ -594,6 +594,10 @@ require("telescope").setup(
 
                     return true
                 end
+            },
+            aerial = {
+                -- Display symbols as <root>.<parent>.<symbol>
+                show_nesting = true
             },
             heading = {
                 treesitter = true
@@ -1326,7 +1330,7 @@ wk.register(
     {
         -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
         -- ["<A-;>"] = {"<cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
-        ["<A-;>"] = {"<cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {"<cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"}
     },
     {mode = "i"}
 )

@@ -28,6 +28,7 @@ local command = utils.command
 local fn = vim.fn
 local uv = vim.loop
 local F = vim.F
+local env = vim.env
 local ithunk = D.ithunk
 
 local nvim_server
@@ -93,6 +94,15 @@ function M.setup()
         },
         {prefix = ";"}
     )
+end
+
+function M.setup_dap_python()
+    local dap_python = D.npcall(require, "dap-python")
+    if not dap_python then
+        return
+    end
+
+    dap_python.setup(("%s/shims/python"):format(env.PYENV_ROOT))
 end
 
 function M.setup_dap_virtual()
@@ -288,6 +298,7 @@ function M.setup_notify()
         update_spinner("dap", body.progressId)
     end
 
+    ---@diagnostic disable-next-line:unused-local
     dap.listeners.before["event_progressUpdate"]["progress-notifications"] = function(session, body)
         local notif_data = get_notif_data("dap", body.progressId)
         notif_data.notification =
@@ -301,6 +312,7 @@ function M.setup_notify()
         )
     end
 
+    ---@diagnostic disable-next-line:unused-local
     dap.listeners.before["event_progressEnd"]["progress-notifications"] = function(session, body)
         local notif_data = client_notifs["dap"][body.progressId]
         notif_data.notification =
@@ -321,6 +333,7 @@ local function init()
     M.setup()
     M.setup_dapui()
     M.setup_dap_virtual()
+    M.setup_dap_python()
 
     fn.sign_define(
         "DapStopped",
@@ -427,6 +440,7 @@ local function init()
             -- host = function() end,
             -- port = function() end,
             post = function()
+                ---@diagnostic disable-next-line:unused-local
                 dap.listeners.after["setBreakpoints"]["osv"] = function(session, body)
                     assert(nvim_chanID, "Fatal: neovim RPC channel is nil!")
                     fn.rpcnotify(nvim_chanID, "nvim_command", "luafile " .. fn.expand("%:p"))

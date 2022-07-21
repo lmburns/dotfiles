@@ -90,22 +90,23 @@ local function init()
     M.setup()
     -- local wk = require("which-key")
 
+    -- NOTE: C-_ => C-/
     legend.bind_keymaps(
         {
             {
-                "<C-,><C-,>",
+                "<C-_>",
                 [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("n"))<CR>]],
                 description = "Show Legendary keymaps (normal)",
                 mode = "n"
             },
             {
-                "<C-,><C-,>",
+                "<C-_>",
                 [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("i"))<CR>]],
                 description = "Show Legendary keymaps (insert)",
                 mode = "i"
             },
             {
-                "<C-,><C-,>",
+                "<C-_>",
                 [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("v"))<CR>]],
                 description = "Show Legendary keymaps (visual)",
                 mode = "v"

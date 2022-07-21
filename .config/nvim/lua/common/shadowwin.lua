@@ -1,6 +1,6 @@
 local M = {}
 
-require("common.utils")
+local api = vim.api
 
 local shadow_winblend = 70
 local shadow_winid = -1
@@ -18,18 +18,23 @@ function M.create()
     local ret = false
     if not is_existed() then
         local bufnr = api.nvim_create_buf(false, true)
-        vim.bo[bufnr].bufhidden = 'wipe'
-        shadow_winid = api.nvim_open_win(bufnr, false, {
-            relative = 'editor',
-            focusable = 0,
-            width = vim.o.columns,
-            height = vim.o.lines,
-            row = 0,
-            col = 0,
-            style = 'minimal',
-            zindex = 1
-        })
-        vim.wo[shadow_winid].winhl = 'Normal:Normal'
+        vim.bo[bufnr].bufhidden = "wipe"
+        shadow_winid =
+            api.nvim_open_win(
+            bufnr,
+            false,
+            {
+                relative = "editor",
+                focusable = 0,
+                width = vim.o.columns,
+                height = vim.o.lines,
+                row = 0,
+                col = 0,
+                style = "minimal",
+                zindex = 1
+            }
+        )
+        vim.wo[shadow_winid].winhl = "Normal:Normal"
         vim.wo[shadow_winid].winbl = shadow_winblend
         ret = true
     end

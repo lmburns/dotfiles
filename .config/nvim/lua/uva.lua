@@ -10,7 +10,7 @@ local compat = require("promise-async.compat")
 local function wrap(name, argc)
     return function(...)
         local argv = {...}
-        return promise(
+        return promise.new(
             function(resolve, reject)
                 argv[argc] = function(err, data)
                     if err then

@@ -164,7 +164,7 @@ zstyle+ ':completion:*' '' '' \
       + ':git-checkout:*' sort             false                                                  \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
       + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
-      + ':xcompress:*'    file-patterns   '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
+      + ':xcompress:*'    file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim):*'   sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|git-(add,rm)|bat|nvim):*' ignore-line other
@@ -221,13 +221,19 @@ zstyle+ ':plugin:zui' log_append above \
 
 # === fzf-tab === [[[
 typeset -ga FZF_TAB_GROUP_COLORS=(
-    $'\033[94m'      $'\033[32m'       $'\033[33m'       $'\033[35m'      $'\033[31m' \
-    $'\033[38;5;27m' $'\033[96m'       $'\033[38;5;100m' $'\033[38;5;98m' $'\033[91m' \
-    $'\033[38;5;80m' $'\033[92m'       $'\033[38;5;214m' $'\033[38;5;165m' $'\033[38;5;124m' \
-    $'\033[38;5;120m'
+    $'\e[38;5;1m'  $'\e[38;5;17m' $'\e[38;5;3m'   $'\e[38;5;4m'  \
+    $'\e[38;5;5m'  $'\e[38;5;6m'  $'\e[38;5;16m'  $'\e[38;5;19m' \
+    $'\e[38;5;2m'  $'\e[38;5;21m' $'\e[38;5;22m'  $'\e[38;5;12m' \
+    $'\e[38;5;13m' $'\e[38;5;14m' $'\e[38;5;129m' $'\e[38;5;16m'
   )
 
 # zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
+
+# Numeric ternary operator doesn't allow returning strings
+# So, the one that is used is equivalent to a ternary operation
+#
+# + ''           fzf-flags "--color=hl:$(( $#_ftb_headers == 0 ? 188 : 0xFF ))" \
+# + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
 
 zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           accept-line space \
@@ -235,6 +241,7 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           switch-group ',' '.' \
       + ''           single-group header color \
       + ''           fzf-pad 4 \
+      + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
       + ''           group-colors $FZF_TAB_GROUP_COLORS \
       + ''           fzf-bindings \
                         'enter:accept,backward-eof:abort,ctrl-a:toggle-all' \

@@ -1,6 +1,6 @@
 local M = {}
 
-local D = require("dev")
+-- local D = require("dev")
 local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
@@ -123,6 +123,7 @@ map("n", "<Leader>sll", ":syn list")
 map("n", "<Leader>slo", ":verbose hi")
 
 ---Display the syntax stack at current cursor position
+---@return table?
 function M.name_syn_stack()
     local stack = fn.synstack(fn.line("."), fn.col("."))
     stack =
@@ -131,7 +132,7 @@ function M.name_syn_stack()
             return fn.synIDattr(v, "name")
         end,
         stack
-    )
+    ) --[[@as table]]
     return stack
 end
 
