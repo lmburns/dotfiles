@@ -108,14 +108,14 @@ M.percentage = function(startl, endl)
     local folded_lines = endl - startl + 1
     local total_lines = api.nvim_buf_line_count(0)
     local pnum = math.floor(100 * folded_lines / total_lines)
-    local ret
+    local str = tostring(pnum)
     if pnum == 0 then
-        ret = tostring(100 * folded_lines / total_lines):sub(2, 3)
+        str = tostring(100 * folded_lines / total_lines):sub(2, 3)
     -- elseif pnum < 10 then
     --     pnum = " " .. pnum
     --     pnum = pnum
     end
-    return ret .. "%"
+    return str .. "%"
 end
 
 ---Force the fold on the current line to immediately open or close.

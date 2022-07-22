@@ -52,11 +52,11 @@ _G.go = vim.go -- vim global options
 _G.w = vim.wo -- vim window options: behaves like `:setlocal` (alias for vim.wo)
 _G.b = vim.bo -- vim buffer options: behaves like `:setlocal` (alias for vim.bo)
 
--- _G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
--- _G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
--- _G.env = vim.env -- environment variable access
--- _G.api = vim.api
--- _G.uv = vim.loop
+_G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
+_G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
+_G.env = vim.env -- environment variable access
+_G.api = vim.api
+_G.uv = vim.loop
 _G.F = vim.F
 
 _G.fmt = string.format

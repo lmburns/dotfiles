@@ -640,6 +640,10 @@
       "filetypes": ["teal"],
       "rootPatterns": [".git/", "tlconfig.lua"]
     },
+    "awk": {
+      "command": "awk-language-server",
+      "filetypes": ["awk"]
+    },
     // "rescript": {
     //   "enable": true,
     //   "module": "~/.local/share/nvim/site/pack/packer/start/vim-rescript/server/out/server.js",

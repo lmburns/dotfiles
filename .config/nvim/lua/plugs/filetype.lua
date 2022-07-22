@@ -33,6 +33,7 @@ function M.setup()
                 rasi = "rasi",
                 cr = "crystal",
                 ["pre-commit"] = "sh",
+                log = "log",
                 ms = nroff_ft,
                 me = nroff_ft,
                 mom = nroff_ft,

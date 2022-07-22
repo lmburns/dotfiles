@@ -21,24 +21,35 @@ local F = vim.F
 
 local config
 
+---Echo a message to `:messages`
+---@param status string
+---@param toggled string
+local function echo(status, toggled)
+    nvim.echo({{"Gitsigns [", "SpellCap"}, {status, "MoreMsg"}, {("] %s"):format(toggled), "SpellCap"}})
+end
+
 function M.toggle_deleted()
     require("gitsigns").toggle_deleted()
-    log.info(("Gitsigns %s show_deleted"):format(F.tern(config.show_deleted, "enable", "disable")))
+    local status = F.tern(config.show_deleted, "enable", "disable")
+    echo(status, "show_deleted")
 end
 
 function M.toggle_linehl()
     require("gitsigns").toggle_linehl()
-    log.info(("Gitsigns %s toggle_linehl"):format(F.tern(config.linehl, "enable", "disable")))
+    local status = F.tern(config.linehl, "enable", "disable")
+    echo(status, "linehl")
 end
 
 function M.toggle_word_diff()
     require("gitsigns").toggle_word_diff()
-    log.info(("Gitsigns %s toggle_word_diff"):format(F.tern(config.word_diff, "enable", "disable")))
+    local status = F.tern(config.word_diff, "enable", "disable")
+    echo(status, "word_diff")
 end
 
 function M.toggle_blame()
     require("gitsigns").toggle_current_line_blame()
-    log.info(("Gitsigns %s toggle_current_line_blame"):format(F.tern(config.current_line_blame, "enable", "disable")))
+    local status = F.tern(config.current_line_blame, "enable", "disable")
+    echo(status, "current_line_blame")
 end
 
 local function mappings(bufnr)

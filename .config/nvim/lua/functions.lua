@@ -115,6 +115,18 @@ command(
     [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
     {nargs = 0, range = "%", desc = "Remove ANSI escape sequences"}
 )
+
+command(
+    "Camel2Snake",
+    [[:%s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
+    {nargs = 0, desc = "Convert camelCase to snake_case"}
+)
+
+command(
+    "Snake2Camel",
+    [[:%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
+    {nargs = 0, desc = "Convert snake_case to camelCase"}
+)
 -- ]]] === Commands ===
 
 -- ============================ Functions ============================= [[[

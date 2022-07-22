@@ -729,9 +729,9 @@ M.setup = function()
             "dart",
             "dockerfile",
             "fennel",
-            -- "git-commit",
-            -- "git-config",
-            -- "git-rebase",
+            -- "gitcommit",
+            -- "gitconfig",
+            -- "gitrebase",
             "gitignore",
             "go",
             "gomod",
@@ -744,6 +744,7 @@ M.setup = function()
             "json",
             "kotlin",
             "latex",
+            "log",
             "lua",
             "luap",
             "make",
@@ -795,11 +796,24 @@ M.setup = function()
             }
         },
         autotag = {enable = true},
-        autopairs = {enable = true, disable = {"help", "comment"}},
-        indent = {enable = true, disable = {"comment"}},
+        autopairs = {
+            enable = true,
+            disable = {"help", "comment", "log", "gitignore"}
+        },
+        indent = {
+            enable = true,
+            disable = {"comment", "log", "gitignore"}
+        },
         fold = {enable = false},
-        endwise = {enable = true},
-        matchup = {enable = true, disable_virtual_text = true},
+        endwise = {
+            enable = true,
+            disable = {"comment", "log", "gitignore"}
+        },
+        matchup = {
+            enable = true,
+            disable_virtual_text = true,
+            disable = {"comment", "log", "gitignore"}
+        },
         playground = {
             enable = true,
             disable = {},
@@ -867,7 +881,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help", "comment"}
+            disable = {"html", "help", "comment", "log", "gitignore"}
             -- colors = {}
         },
         textobjects = {
@@ -876,7 +890,7 @@ M.setup = function()
                 enable = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
-                disable = {"comment"},
+                disable = {"comment", "log", "gitignore"},
                 keymaps = {
                     ["af"] = "@function.outer",
                     ["if"] = "@function.inner",
@@ -919,7 +933,7 @@ M.setup = function()
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "luapad"},
+                disable = {"comment", "luapad", "log", "gitignore"},
                 goto_next_start = {
                     -- ["]]"] = "@function.outer",
                     ["]f"] = "@function.outer",
@@ -1005,16 +1019,6 @@ end
 function M.install_extra_parsers()
     local parser_config = parsers.get_parser_configs()
 
-    -- gitignore
-    parser_config.gitignore = {
-        install_info = {
-            url = "https://github.com/shunsambongi/tree-sitter-gitignore",
-            files = {"src/parser.c"},
-            branch = "main"
-        },
-        filetype = "gitignore"
-    }
-
     -- SQL
     parser_config.sql = {
         install_info = {
@@ -1048,8 +1052,30 @@ function M.install_extra_parsers()
         filetype = "luap" -- if filetype does not match the parser name
     }
 
+    -- Log files
+    parser_config.log = {
+        install_info = {
+            url = "https://github.com/lpraneis/tree-sitter-tracing-log",
+            files = {"src/parser.c"},
+            branch = "main", -- default branch in case of git repo if different from master
+            generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+            requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+        },
+        filetype = "log"
+    }
+
+    -- gitignore
+    parser_config.gitignore = {
+        install_info = {
+            url = "https://github.com/shunsambongi/tree-sitter-gitignore",
+            files = {"src/parser.c"},
+            branch = "main"
+        },
+        filetype = "gitignore"
+    }
+
     -- Git commits
-    -- parser_config["git-commit"] = {
+    -- parser_config.gitcommit = {
     --     install_info = {
     --         url = "https://github.com/the-mikedavis/tree-sitter-git-commit",
     --         files = {"src/parser.c"},
@@ -1060,7 +1086,7 @@ function M.install_extra_parsers()
     -- }
 
     -- Git rebase
-    -- parser_config["git-rebase"] = {
+    -- parser_config.gitrebase = {
     --     install_info = {
     --         url = "https://github.com/the-mikedavis/tree-sitter-git-rebase",
     --         files = {"src/parser.c"},
@@ -1071,9 +1097,10 @@ function M.install_extra_parsers()
     -- }
 
     -- Git config
-    -- parser_config["git-config"] = {
+    -- parser_config.gitconfig = {
     --     install_info = {
-    --         url = "https://github.com/the-mikedavis/tree-sitter-git-config",
+    --         -- url = "https://github.com/the-mikedavis/tree-sitter-git-config",
+    --         url = "/home/lucas/projects/treesitter/tree-sitter-git-config",
     --         files = {"src/parser.c"},
     --         branch = "main",
     --         generate_requires_npm = true, -- if stand-alone parser without npm dependencies
