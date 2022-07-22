@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export BMUX_SESSION_NAME="0"
-
-tmux new-session -s 0 -d -c "$HOME"

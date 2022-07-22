@@ -297,8 +297,6 @@ add-zsh-hook chpwd chpwd_ls
 zt 0a light-mode for \
   is-snippet trigger-load'!x' blockf svn \
     OMZ::plugins/extract \
-  trigger-load'!bd' pick'bd.zsh' \
-    Tarrasch/zsh-bd \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
   trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
   atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
@@ -340,10 +338,6 @@ zt 0a light-mode for \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' \
     kazhala/dotbare \
-  lbin'!' atinit'_wbmux() { bmux }; zle -N _wbmux' \
-  atload'
-  export BMUX_DIR="$XDG_CONFIG_HOME/bmux"' \
-    kazhala/bmux \
   pick'timewarrior.plugin.zsh' \
     svenXY/timewarrior \
   pick'async.zsh' \

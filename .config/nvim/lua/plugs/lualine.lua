@@ -238,8 +238,10 @@ local sections_2 = {
     lualine_x = {
         {
             -- { 'aerial', sep = '', dense = true, dense_sep = '  ' },
-            -- 'require("nvim-gps").get_location()',
-            cond = conds.is_available_gps,
+            plugs.gps.fn,
+            cond = function()
+                return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
+            end,
             color = {fg = colors.red}
         },
         {
@@ -266,14 +268,13 @@ function M.toggle_mode()
     local lutils = require("lualine.utils.utils")
 
     if D.tbl_equivalent(current_config.sections, sections_1) then
+    -- if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)
     end
     require("lualine").setup(current_config)
 end
-
-map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true})
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                           Autocmds
@@ -343,6 +344,7 @@ end
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     M.autocmds()
+    map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true})
 
     local my_extension = {
         sections = {
