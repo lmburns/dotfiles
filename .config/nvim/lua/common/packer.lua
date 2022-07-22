@@ -1,12 +1,15 @@
 local M = {}
 
--- TODO: This needs work
-
+local log = require("common.log")
 local ex = nvim.ex
 
-M.packer_reinstall = function(name) -- usage example => :lua PackerReinstall "yaml.nvim"
+---Reinstall a plugin. Only the repository name is allowed
+---Example: `:PackerReinstall "theme.nvim"`
+---@param name string
+M.reinstall = function(name)
     if package.loaded["packer"] == nil then
-        p("Packer not installed or not loaded")
+        log.err("Packer not installed or not loaded", true)
+        return
     end
 
     local utils = require("packer.plugin_utils")
@@ -19,8 +22,8 @@ M.packer_reinstall = function(name) -- usage example => :lua PackerReinstall "ya
                 if dir:sub(-suffix:len()) == suffix then
                     vim.ui.input(
                         {prompt = ("Remove %s? [Y/n]"):format(dir)},
-                        function(confirmation)
-                            if confirmation:lower() ~= "y" then
+                        function(confirm)
+                            if not confirm or (confirm and confirm:lower() ~= "y") then
                                 return
                             end
                             os.execute(("cd %s && git fetch --progress origin && git reset --hard origin"):format(dir))

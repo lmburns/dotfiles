@@ -1,10 +1,13 @@
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 local utils = require("common.utils")
+local nvim = require("nvim")
 
 local api = vim.api
 local F = vim.F
--- local fn = vim.fn
+local fn = vim.fn
 
 ---Get an autocmd
 ---@param opts table
@@ -27,7 +30,7 @@ local function get_augroup(name_id)
     vim.validate {
         name_id = {name_id, {"s", "n"}, "Augroup name string or id number"}
     }
-    return get_autocmd {group = name_id}
+    return get_autocmd({group = name_id})
 end
 
 ---Return augroup ID
@@ -115,19 +118,19 @@ nvim.plugins =
 
 local exists_tbl = {
     cmd = function(cmd)
-        return api.nvim_call_function("exists", {":" .. cmd}) == 2
+        return fn.exists(":" .. cmd) == 2
     end,
     event = function(event)
-        return api.nvim_call_function("exists", {"##" .. event}) == 2
+        return fn.exists("##" .. event) == 2
     end,
     augroup = function(augroup)
-        return api.nvim_call_function("exists", {"#" .. augroup}) == 1
+        return fn.exists("#" .. augroup) == 1
     end,
     option = function(option)
-        return api.nvim_call_function("exists", {"+" .. option}) == 1
+        return fn.exists("+" .. option) == 1
     end,
     func = function(func)
-        return api.nvim_call_function("exists", {"*" .. func}) == 1
+        return fn.exists("*" .. func) == 1
     end
 }
 
@@ -451,7 +454,7 @@ nvim.autocmd =
             if x ~= nil then
                 return x
             end
-            local cmds = get_autocmd {event = k}
+            local cmds = get_autocmd({event = k})
             return #cmds > 0 and cmds or nil
         end,
         __newindex = function(_, k, v)

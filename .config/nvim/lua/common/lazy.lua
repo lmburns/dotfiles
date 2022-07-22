@@ -14,7 +14,8 @@ M.table = function(cb)
     ---Check if Lua 5.2 compatability is available by testing whether goto is a
     ---valid identifier name, which is not the case in 5.2.
     ---
-    ---This check doesn't seem to do anything. My neovim setup allows goto to be set, but it is valid
+    ---This check doesn't seem to do anything
+    ---My neovim setup allows goto to be set, but it is a valid keyword
     if loadstring("local goto = true")() ~= nil then
         log.err("LuaJIT 5.2 is required", true, {title = "Lazy"})
         return cb()
@@ -24,7 +25,7 @@ M.table = function(cb)
     local init = function()
         if t.data == nil then
             t.data = cb()
-            assert(type(t.data) == "table", "lazy_config: expected callback to return value of type table")
+            assert(type(t.data) == "table", "lazy: expected callback to return value of type table")
         end
     end
 
@@ -99,7 +100,7 @@ end
 
 ---Requires only when you call the _module_ itself.
 ---If you want to require an exported value from the module,
----see instead |lazy.require_on_exported_call()|
+---see instead |`lazy.require_on_exported_call()`|
 M.require_on_module_call = function(require_path)
     return setmetatable(
         {},
@@ -137,7 +138,7 @@ M.require_on_exported_call = function(require_path)
 end
 
 ---Require when any descendant is called
----This is like require_on_module_call plus require_on_exported_call but also
+---This is like `require_on_module_call` plus `require_on_exported_call` but also
 ---works with arbitrarily nested indices.
 M.require_on_call_rec = function(require_path)
     return M.on_call_rec(

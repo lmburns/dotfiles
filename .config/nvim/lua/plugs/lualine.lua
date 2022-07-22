@@ -8,6 +8,8 @@ if not lualine then
     return
 end
 
+local lutils = require("lualine.utils.utils")
+
 local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
@@ -15,11 +17,13 @@ local icons = style.icons
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
+-- local autocmd = utils.autocmd
 
 local fs = vim.fs
 local fn = vim.fn
 local F = vim.F
 local api = vim.api
+-- local uv = vim.loop
 
 local stl = require("common.utils.stl")
 local conds = stl.conditions
@@ -30,6 +34,23 @@ local only_pad_right = stl.other.only_pad_right
 --     api.nvim_echo({{vim.inspect(api.nvim_get_mode()), "WarningMsg"}}, true, {})
 -- end
 -- )
+
+---@param trunc_width number trunctates component when screen width is less then trunc_width
+---@param trunc_len number truncates component to trunc_len number of chars
+---@param hide_width number hides component when window width is smaller then hide_width
+---@param no_ellipsis boolean whether to disable adding '' at end after truncation
+---return function that can format the component accordingly
+local function trunc(trunc_width, trunc_len, hide_width, no_ellipsis)
+    return function(str)
+        local win_width = fn.winwidth(0)
+        if hide_width and win_width < hide_width then
+            return ""
+        elseif trunc_width and trunc_len and win_width < trunc_width and #str > trunc_len then
+            return str:sub(1, trunc_len) .. (F.tern(no_ellipsis, "", ""))
+        end
+        return str
+    end
+end
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
@@ -70,7 +91,8 @@ local sections_1 = {
             plugs.spell.fn,
             cond = plugs.spell.toggle,
             color = "SpellCap",
-            padding = only_pad_right
+            padding = only_pad_right,
+            type = "stl"
         },
         {
             "filename",
@@ -138,7 +160,8 @@ local sections_1 = {
                 modified = "GitSignsChange", --  "DiffChange",
                 removed = "GitSignsDelete" -- "DiffDelete"
             },
-            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove}
+            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
+            source = plugs.diff.fn
             -- separator = {left = ""}
         },
         {plugs.luapad.fn, cond = plugs.luapad.toggle},
@@ -214,8 +237,8 @@ local sections_2 = {
     lualine_c = {},
     lualine_x = {
         {
-            --[[ -- "aerial"
-            'require("nvim-gps").get_location()', ]]
+            -- { 'aerial', sep = '', dense = true, dense_sep = '  ' },
+            -- 'require("nvim-gps").get_location()',
             cond = conds.is_available_gps,
             color = {fg = colors.red}
         },
@@ -256,6 +279,15 @@ map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true}
 --                           Autocmds
 -- ╘══════════════════════════════════════════════════════════╛
 function M.autocmds()
+    -- Clear the builtin Lualine ModeChanged
+    vim.defer_fn(
+        function()
+            cmd("au! lualine_stl_refresh  ModeChanged")
+            cmd("au! lualine_stl_refresh  BufEnter")
+        end,
+        20
+    )
+
     augroup(
         "lmb__Lualine",
         {
@@ -270,18 +302,39 @@ function M.autocmds()
                 require("lualine.components.diff.git_diff").update_diff_args()
                 require("lualine.components.diff.git_diff").update_git_diff()
             end
+        },
+        {
+            event = {"RecordingEnter", "RecordingLeave", "BufWritePost", "BufModifiedSet"},
+            pattern = "*",
+            desc = "Update statusline on macro enter/exit, and buffer modification",
+            command = function()
+                lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
+            end
+        },
+        -- This has been fixed, but it redraws too often
+        {
+            event = "ModeChanged",
+            pattern = "*",
+            desc = "Update statusline to show operator pending mode",
+            command = function()
+                -- Lazy redraw just now started causing me problems
+                if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
+                    lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
+                -- ex.redraws()
+                end
+            end
+        },
+        {
+            event = "BufEnter",
+            pattern = "*",
+            desc = "Update Lualine statusline refresh to match against Wilder",
+            command = function()
+                local bufname = api.nvim_buf_get_name(0)
+                if not bufname:match("%[Wilder Float %d%]") then
+                    lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
+                end
+            end
         }
-        -- {
-        --     event = "ModeChanged",
-        --     pattern = "*",
-        --     desc = "Update statusline to show operator pending mode",
-        --     command = function()
-        --         -- Lazy redraw just now started causing me problems
-        --         if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
-        --             ex.redraws()
-        --         end
-        --     end
-        -- }
     )
 end
 
@@ -290,6 +343,7 @@ end
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     M.autocmds()
+
     local my_extension = {
         sections = {
             lualine_a = {
@@ -321,7 +375,10 @@ local function init()
             "dapui_scopes",
             "dapui_breakpoints",
             "dapui_stacks",
-            "dapui_watches"
+            "dapui_watches",
+            "man",
+            "neoterm",
+            "floaterm"
         } -- aerial
     }
 
@@ -330,17 +387,22 @@ local function init()
             options = {
                 icons_enabled = true,
                 theme = "auto",
-                globalstatus = true, -- enable global statusline (single SL for all windows)
+                globalstatus = true,
                 always_divide_middle = true,
                 section_separators = {left = "", right = ""},
                 component_separators = {left = "", right = ""},
+                refresh = {
+                    statusline = 1000,
+                    tabline = 1000,
+                    winbar = 1000
+                },
                 disabled_filetypes = {
-                    -- "help",
-                    -- "undotree",
-                    "NvimTree",
-                    "quickmenu",
-                    "neoterm",
-                    "floaterm"
+                    statusline = {
+                        "NvimTree",
+                        "quickmenu",
+                        "wilder"
+                    },
+                    winbar = {}
                 }
             },
             sections = sections_1,
@@ -377,6 +439,8 @@ local function init()
                 lualine_y = {},
                 lualine_z = {}
             },
+            winbar = {},
+            inactive_winbar = {},
             tabline = {},
             -- tabline = {
             --   lualine_a = { "tabs" },
@@ -396,11 +460,12 @@ local function init()
                 stl.extensions.qf,
                 stl.extensions.toggleterm,
                 stl.extensions.trouble,
-                "symbols-outline",
                 my_extension,
+                "symbols-outline",
                 "aerial",
                 "fzf",
-                "fugitive"
+                "fugitive",
+                "nvim-dap-ui"
             }
         }
     )

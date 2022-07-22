@@ -713,7 +713,7 @@ cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
 cmd yank-path $print -r "$fx" | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
 cmd yank-name $print -r "${fx:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
-cmd yank-dir $print -r "${fx:h:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h:t}\nCopied to clipboard"
+cmd yank-dir $print -r "${fx:h}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h}\nCopied to clipboard"
 cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 

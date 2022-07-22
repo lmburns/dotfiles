@@ -73,8 +73,8 @@ M.flush =
                 debounced =
                     debounce:new(
                     function()
-                        -- utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
-                        utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
+                        utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
                     end,
                     50
                 )

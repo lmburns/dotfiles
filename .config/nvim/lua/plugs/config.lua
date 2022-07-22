@@ -2018,158 +2018,158 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Outline                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.outline()
-    vim.g.symbols_outline = {
-        highlight_hovered_item = true,
-        show_guides = true,
-        auto_preview = false,
-        position = "right",
-        relative_width = true,
-        width = 25,
-        show_numbers = false,
-        show_relative_numbers = false,
-        show_symbol_details = true,
-        preview_bg_highlight = "Pmenu",
-        keymaps = {
-            -- These keymaps can be a string or a table for multiple keys
-            close = {"<Esc>", "q"},
-            goto_location = "<Cr>",
-            focus_location = "o",
-            hover_symbol = "M",
-            toggle_preview = "K",
-            rename_symbol = "r",
-            code_actions = "a"
-        },
-        lsp_blacklist = {},
-        symbol_blacklist = {},
-        symbols = {
-            File = {icon = "", hl = "TSURI"},
-            Module = {icon = "", hl = "TSNamespace"},
-            Namespace = {icon = "", hl = "TSNamespace"},
-            Package = {icon = "", hl = "TSNamespace"},
-            Class = {icon = "𝓒", hl = "TSType"},
-            Method = {icon = "ƒ", hl = "TSMethod"},
-            Property = {icon = "", hl = "TSMethod"},
-            Field = {icon = "", hl = "TSField"},
-            Constructor = {icon = "", hl = "TSConstructor"},
-            Enum = {icon = "ℰ", hl = "TSType"},
-            Interface = {icon = "ﰮ", hl = "TSType"},
-            Function = {icon = "", hl = "TSFunction"},
-            Variable = {icon = "", hl = "TSConstant"},
-            Constant = {icon = "", hl = "TSConstant"},
-            String = {icon = "𝓐", hl = "TSString"},
-            Number = {icon = "#", hl = "TSNumber"},
-            Boolean = {icon = "⊨", hl = "TSBoolean"},
-            Array = {icon = "", hl = "TSConstant"},
-            Object = {icon = "⦿", hl = "TSType"},
-            Key = {icon = "🔐", hl = "TSType"},
-            Null = {icon = "NULL", hl = "TSType"},
-            EnumMember = {icon = "", hl = "TSField"},
-            Struct = {icon = "𝓢", hl = "TSType"},
-            Event = {icon = "🗲", hl = "TSType"},
-            Operator = {icon = "+", hl = "TSOperator"},
-            TypeParameter = {icon = "𝙏", hl = "TSParameter"}
-        }
-    }
-
-    map("n", '<A-S-">', "<Cmd>SymbolsOutline<CR>", {desc = "Open symbols"})
-end
+-- function M.outline()
+--     vim.g.symbols_outline = {
+--         highlight_hovered_item = true,
+--         show_guides = true,
+--         auto_preview = false,
+--         position = "right",
+--         relative_width = true,
+--         width = 25,
+--         show_numbers = false,
+--         show_relative_numbers = false,
+--         show_symbol_details = true,
+--         preview_bg_highlight = "Pmenu",
+--         keymaps = {
+--             -- These keymaps can be a string or a table for multiple keys
+--             close = {"<Esc>", "q"},
+--             goto_location = "<Cr>",
+--             focus_location = "o",
+--             hover_symbol = "M",
+--             toggle_preview = "K",
+--             rename_symbol = "r",
+--             code_actions = "a"
+--         },
+--         lsp_blacklist = {},
+--         symbol_blacklist = {},
+--         symbols = {
+--             File = {icon = "", hl = "TSURI"},
+--             Module = {icon = "", hl = "TSNamespace"},
+--             Namespace = {icon = "", hl = "TSNamespace"},
+--             Package = {icon = "", hl = "TSNamespace"},
+--             Class = {icon = "𝓒", hl = "TSType"},
+--             Method = {icon = "ƒ", hl = "TSMethod"},
+--             Property = {icon = "", hl = "TSMethod"},
+--             Field = {icon = "", hl = "TSField"},
+--             Constructor = {icon = "", hl = "TSConstructor"},
+--             Enum = {icon = "ℰ", hl = "TSType"},
+--             Interface = {icon = "ﰮ", hl = "TSType"},
+--             Function = {icon = "", hl = "TSFunction"},
+--             Variable = {icon = "", hl = "TSConstant"},
+--             Constant = {icon = "", hl = "TSConstant"},
+--             String = {icon = "𝓐", hl = "TSString"},
+--             Number = {icon = "#", hl = "TSNumber"},
+--             Boolean = {icon = "⊨", hl = "TSBoolean"},
+--             Array = {icon = "", hl = "TSConstant"},
+--             Object = {icon = "⦿", hl = "TSType"},
+--             Key = {icon = "🔐", hl = "TSType"},
+--             Null = {icon = "NULL", hl = "TSType"},
+--             EnumMember = {icon = "", hl = "TSField"},
+--             Struct = {icon = "𝓢", hl = "TSType"},
+--             Event = {icon = "🗲", hl = "TSType"},
+--             Operator = {icon = "+", hl = "TSOperator"},
+--             TypeParameter = {icon = "𝙏", hl = "TSParameter"}
+--         }
+--     }
+--
+--     map("n", '<A-S-">', "<Cmd>SymbolsOutline<CR>", {desc = "Open symbols"})
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                        Lightbulb                         │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.lightbulb()
-    local lightbulb = D.npcall(require, "nvim-lightbulb")
-    if not lightbulb then
-        return
-    end
-
-    lightbulb.setup(
-        {
-            ignore = {"null-ls"},
-            sign = {enabled = false},
-            float = {enabled = true, win_opts = {border = "none"}},
-            autocmd = {
-                enabled = true
-            }
-        }
-    )
-end
+-- function M.lightbulb()
+--     local lightbulb = D.npcall(require, "nvim-lightbulb")
+--     if not lightbulb then
+--         return
+--     end
+--
+--     lightbulb.setup(
+--         {
+--             ignore = {"null-ls"},
+--             sign = {enabled = false},
+--             float = {enabled = true, win_opts = {border = "none"}},
+--             autocmd = {
+--                 enabled = true
+--             }
+--         }
+--     )
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Semantic Tokens                      │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.semantic_tokens()
-    local semantic = D.npcall(require, "nvim-semantic-tokens")
-    if not semantic then
-        return
-    end
-
-    semantic.setup(
-        {
-            preset = "default"
-        }
-    )
-end
+-- function M.semantic_tokens()
+--     local semantic = D.npcall(require, "nvim-semantic-tokens")
+--     if not semantic then
+--         return
+--     end
+--
+--     semantic.setup(
+--         {
+--             preset = "default"
+--         }
+--     )
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                        Illuminate                        │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.illuminate()
-    vim.g.Illuminate_delay = 300
-
-    map("n", "]i", "<cmd>lua require'illuminate'.next_reference{wrap=true}<cr>", {desc = "Next word under cursor"})
-    map(
-        "n",
-        "[i",
-        "<cmd>lua require'illuminate'.next_reference{reverse=true,wrap=true}<cr>",
-        {desc = "Previous word under cursor"}
-    )
-end
+-- function M.illuminate()
+--     vim.g.Illuminate_delay = 300
+--
+--     map("n", "]i", "<cmd>lua require'illuminate'.next_reference{wrap=true}<cr>", {desc = "Next word under cursor"})
+--     map(
+--         "n",
+--         "[i",
+--         "<cmd>lua require'illuminate'.next_reference{reverse=true,wrap=true}<cr>",
+--         {desc = "Previous word under cursor"}
+--     )
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Fidget                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.fidget()
-    local fidget = D.npcall(require, "fidget")
-    if not fidget then
-        return
-    end
-
-    fidget.setup(
-        {
-            text = {
-                spinner = {
-                    "⏺∙∙∙∙",
-                    "∙⏺∙∙∙",
-                    "∙∙⏺∙∙",
-                    "∙∙∙⏺∙",
-                    "∙∙∙∙⏺",
-                    "∙∙∙⏺∙",
-                    "∙∙⏺∙∙",
-                    "∙⏺∙∙∙"
-                },
-                done = "✔",
-                commenced = "Started",
-                completed = "Completed"
-            },
-            window = {
-                relative = "editor",
-                blend = 0
-            },
-            fmt = {
-                stack_upwards = false,
-                fidget = function(fidget_name, spinner)
-                    return ("%s %s"):format(spinner, fidget_name)
-                end,
-                -- function to format each task line
-                task = function(task_name, message, percentage)
-                    return ("%s%s [%s]"):format(message, percentage and (" (%s%%)"):format(percentage) or "", task_name)
-                end
-            }
-        }
-    )
-end
+-- function M.fidget()
+--     local fidget = D.npcall(require, "fidget")
+--     if not fidget then
+--         return
+--     end
+--
+--     fidget.setup(
+--         {
+--             text = {
+--                 spinner = {
+--                     "⏺∙∙∙∙",
+--                     "∙⏺∙∙∙",
+--                     "∙∙⏺∙∙",
+--                     "∙∙∙⏺∙",
+--                     "∙∙∙∙⏺",
+--                     "∙∙∙⏺∙",
+--                     "∙∙⏺∙∙",
+--                     "∙⏺∙∙∙"
+--                 },
+--                 done = "✔",
+--                 commenced = "Started",
+--                 completed = "Completed"
+--             },
+--             window = {
+--                 relative = "editor",
+--                 blend = 0
+--             },
+--             fmt = {
+--                 stack_upwards = false,
+--                 fidget = function(fidget_name, spinner)
+--                     return ("%s %s"):format(spinner, fidget_name)
+--                 end,
+--                 -- function to format each task line
+--                 task = function(task_name, message, percentage)
+--                     return ("%s%s [%s]"):format(message, percentage and (" (%s%%)"):format(percentage) or "", task_name)
+--                 end
+--             }
+--         }
+--     )
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Coverage                         │

@@ -57,7 +57,7 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
 
         com! -nargs=? PackerCompile lua require('plugins').compile(<q-args>)
         com! -nargs=+ -complete=%s PackerLoad lua require('plugins').loader(<f-args>)
-        com! -nargs=1 -complete=%s PackerReinstall lua require('common.packer').packer_reinstall(<f-args>)
+        com! -nargs=1 -complete=%s PackerReinstall lua require('common.packer').reinstall(<f-args>)
 
         com! PSC so %s/plugins.lua | PackerCompile
         com! PSS so %s/plugins.lua | PackerSync

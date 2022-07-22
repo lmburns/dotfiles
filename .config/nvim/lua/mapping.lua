@@ -248,10 +248,11 @@ wk.register(
             H = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
             V = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
             [";"] = {[[<Cmd>lua require('common.win').go2recent()<CR>]], "Focus last buffer"},
-            ["X"] = {utils.close_all_floating_wins, "Close all floating windows"},
+            X = {utils.close_all_floating_wins, "Close all floating windows"},
             ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
             ["<C-t>"] = {"<Cmd>tab sp<CR>", "Split tab"},
-            ["O"] = {"<Cmd>tabo<CR>", "Close all other tabs except this one"}
+            O = {"<Cmd>tabo<CR>", "Close all other tabs except this one"},
+            ["<C-c>"] = {"<C-w>c", "Close window"},
         }
     }
 )

@@ -89,7 +89,7 @@ function M.setup()
             i = {"j", "k"},
             v = {"j", "k"},
             c = {},
-            n = {"s"},
+            n = {"s"}
             -- o = {"d", '"_d'}
             -- n = {"o", "O"} -- Would be nice if two letter worked
         }
@@ -140,6 +140,7 @@ local function init()
         }
     )
 
+    -- Addition to builtin which-key
     wk.register(
         {
             ["gq"] = "Format operator",
@@ -159,6 +160,21 @@ local function init()
             ["zn"] = "Fold none, open all folds",
             ["zN"] = "Fold normal, all folds remain",
             ["zi"] = "Invert 'foldenable'"
+        }
+    )
+
+    wk.register(
+        {
+            ["<C-w>"] = {
+                name = "+window",
+                ["<C-r>"] = "Rotate window down/right",
+                r = "Rotate window down/right",
+                R = "Rotate window up/left",
+                K = "Move current window to top",
+                J = "Move current window to bottom",
+                H = "Move current window to left",
+                L = "Move current window to right"
+            }
         }
     )
 

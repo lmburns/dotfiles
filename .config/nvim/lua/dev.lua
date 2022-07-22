@@ -199,7 +199,7 @@ M.inspect = function(v)
     elseif t == "userdata" then
         s = ("Userdata:\n%s"):format(vim.inspect(getmetatable(v)))
     elseif t ~= "string" then
-        s = vim.inspect(v, {depth = math.huge, indent = '', newline = ' '})
+        s = vim.inspect(v, {depth = math.huge})
     else
         s = tostring(v)
     end

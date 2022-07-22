@@ -177,6 +177,26 @@ M.plugins.lsp_status2 = {
     end
 }
 
+M.plugins.keymap = {
+    fn = function()
+        if vim.o.iminsert > 0 and vim.b.keymap_name then
+            return "⌨ " .. vim.b.keymap_name
+        end
+        return ""
+    end
+}
+
+M.plugins.diff = {
+    fn = function()
+        local gs = vim.b.gitsigns_status_dict
+        if gs then
+            return {added = gs.added, modified = gs.changed, removed = gs.removed}
+        end
+
+        return {added = nil, modified = nil, removed = nil}
+    end
+}
+
 M.plugins.blame = {
     fn = function()
         if vim.b.gitsigns_blame_line_dict then
@@ -206,13 +226,13 @@ M.plugins.gitbuf = {
             ---@diagnostic disable-next-line:unused-local
             local _, _, commit, relpath = name:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
             return ("fugitive@%s"):format(commit:sub(1, 7))
-            -- name = relpath .. "@" .. commit:sub(1, 7)
+        -- name = relpath .. "@" .. commit:sub(1, 7)
         end
         if vim.startswith(name, "gitsigns://") then
             ---@diagnostic disable-next-line:unused-local
             local _, _, revision, relpath = name:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
             return ("gitsigns@%s"):format(revision:sub(1, 7))
-            -- name = relpath .. "@" .. revision:sub(1, 7)
+        -- name = relpath .. "@" .. revision:sub(1, 7)
         end
         return ""
     end
@@ -229,7 +249,7 @@ M.plugins.spell = {
     toggle = function()
         return api.nvim_win_get_option(0, "spell")
     end,
-    fn = ([[%%"%s]]):format(icons.misc.spell)
+    fn = ([[%s]]):format(icons.misc.spell)
 }
 
 M.plugins.wrap = {

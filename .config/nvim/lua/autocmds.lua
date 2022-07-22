@@ -47,7 +47,7 @@ nvim.autocmd.lmb__GitEnv = {
     desc = "Set git environment variables for dotfiles bare repo",
     command = function()
         -- Has to be deferred otherwise something like a terminal buffer doesn't show
-        -- Also, I think the API call instead of vim.bo[bufnr].bt is needed
+        -- Also, I think the API call instead of vim.bo[bufnr].bt is needed for the deferring to happen
         vim.defer_fn(
             function()
                 local curr_file = fn.expand("%")
@@ -215,8 +215,6 @@ nvim.autocmd.lmb__RestoreCursor = {
         event = "BufReadPost",
         pattern = "*",
         command = function()
-            -- local bufname = api.nvim_buf_get_name(0)
-            -- vim.startswith(bufname, "fugitive://")
             local types =
                 _t(
                 {
@@ -235,9 +233,8 @@ nvim.autocmd.lmb__RestoreCursor = {
 
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                pcall(nvim.win.set_cursor, 0, {row, 0})
+                nvim.win.set_cursor(0, {row, 0})
 
-                -- nvim.win.set_cursor(0, {row, 0})
                 if fn.line("w$") ~= row then
                     cmd("norm! zz")
                 end
