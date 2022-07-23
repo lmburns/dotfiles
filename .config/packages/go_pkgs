@@ -2,6 +2,7 @@ asmfmt
 cgasm
 dlv
 drive-gen
+efm-langserver
 errcheck
 fillstruct
 gdrive
@@ -20,6 +21,7 @@ keyify
 massren
 memo
 motion
+pwdsafety
 revive
 staticcheck
 taskmail

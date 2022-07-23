@@ -83,7 +83,7 @@ function M.setup()
                 [("%s/calcurse/notes/.*"):format(os.getenv("XDG_DATA_HOME"))] = "markdown",
                 [".*sxhkdrc"] = "sxhkdrc",
                 ["/tmp/buku%-edit.*"] = "conf",
-                ["/tmp/neomutt.*"] = "vimwiki",
+                ["/tmp/neomutt.*"] = "mail",
                 ---@diagnostic disable-next-line: unused-local
                 ["README.(%a+)$"] = function(_path, bufnr, ext)
                     if ext == "md" then

@@ -390,6 +390,8 @@ alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
 # === Fixes =====================================================================
 alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@lmburns.com:/var/www/lmburns'
 
+alias tornew="echo -e 'AUTHENTICATE \"\"\r\nsignal NEWNYM\r\nQUIT' | nc 127.0.0.1 9051"
+alias gpgkill='gpgconf --kill all'
 alias gpg-tui='gpg-tui --style colored -c 98676A'
 alias mpd='mpd $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias hangups='hangups -c $XDG_CONFIG_HOME/hangups/hangups.conf'

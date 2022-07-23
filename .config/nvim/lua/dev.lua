@@ -82,6 +82,17 @@ end
 
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later
 ---Useful for setting up callbacks without anonymous functions
+---@param fun  fun(v: any)
+---@vararg any
+---@return fun(v: any)
+M.thunk = function(fun, ...)
+    local bound = {...}
+    return function(...)
+        return fun(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
+    end
+end
+
+---Like `thunk()`, but arguments passed to the thunk are ignored
 ---
 --- ### Example 1: Only string
 ---```lua
@@ -103,14 +114,6 @@ end
 ---```lua
 ---  map("n", "yd", dev.ithunk(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")))
 ---```
-M.thunk = function(fun, ...)
-    local bound = {...}
-    return function(...)
-        return fun(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
-    end
-end
-
----Like `thunk()`, but arguments passed to the thunk are ignored
 ---@param fun function
 ---@vararg any
 ---@return function

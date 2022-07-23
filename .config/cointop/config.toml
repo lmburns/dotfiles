@@ -6,8 +6,11 @@ colorscheme = "cointop"
 refresh_rate = 60
 cache_dir = "/home/lucas/.cache/cointop"
 compact_notation = false
+enable_mouse = true
 
 [shortcuts]
+  "!" = "sort_column_cost"
+  "#" = "sort_column_pnl_percent"
   "$" = "last_page"
   "%" = "sort_column_percent_holdings"
   "+" = "show_price_alert_add_menu"
@@ -20,6 +23,7 @@ compact_notation = false
   "<" = "scroll_left"
   ">" = "scroll_right"
   "?" = "help"
+  "@" = "sort_column_pnl"
   A = "toggle_price_alerts"
   C = "show_currency_convert_menu"
   E = "show_portfolio_edit_menu"
@@ -96,12 +100,11 @@ compact_notation = false
   columns = ["rank", "name", "symbol", "price", "1h_change", "24h_change", "7d_change", "24h_volume", "market_cap", "available_supply", "total_supply", "last_updated"]
   compact_notation = false
   names = ["Bitcoin", "Cardano", "Ethereum", "Polkadot", "VeChain"]
-  symbols = []
 
 [portfolio]
   columns = ["rank", "name", "symbol", "price", "holdings", "balance", "1h_change", "24h_change", "7d_change", "percent_holdings", "last_updated"]
   compact_notation = false
-  holdings = [["Bitcoin", "0.00849268"]]
+  holdings = [["Bitcoin", "0.00849268", "0", ""]]
 
 [price_alerts]
   alerts = [["Bitcoin", ">", "99899449", "once"]]

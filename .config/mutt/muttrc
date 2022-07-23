@@ -185,52 +185,52 @@ auto_view application/pgp-encrypted
 alternative_order text/plain text/enriched text/html
 
 # General rebindings
-bind  index               \Cf      noop
-bind  editor              <space>  noop
-bind  editor              <Tab>    complete-query                     # Completion
-bind  editor              ^T       complete                           # Completion
-bind  attach              <return> view-mailcap
-bind  attach              l        view-mailcap
-bind  index               j        next-entry
-bind  index               k        previous-entry
-bind  index               G        last-entry
-bind  index               g        noop
-bind  index               gg       first-entry
-bind  pager,attach        h        exit
-bind  pager               j        next-line
-bind  pager               k        previous-line
-bind  pager               l        view-attachments
+bind index        \Cf      noop
+bind editor       <space>  noop
+bind editor       <Tab>    complete-query # Completion
+bind editor       ^T       complete       # Completion
+bind attach       <return> view-mailcap
+bind attach       l        view-mailcap
+bind index        j        next-entry
+bind index        k        previous-entry
+bind index        G        last-entry
+bind index        g        noop
+bind index        gg       first-entry
+bind pager,attach h        exit
+bind pager        j        next-line
+bind pager        k        previous-line
+bind pager        l        view-attachments
 # bind  browser,index       \Ce      next-line
 # bind  browser,index       \Cy      previous-line
 # bind index              D delete-message
-bind  pager,index         d        noop
-bind  index               dd       delete-message
-bind  index               U        undelete-message
-bind  index               L        limit
-bind  index               h        noop
-bind  index               l        display-message
-bind  index,query         <space>  tag-entry
+bind pager,index d       noop
+bind index       dd      delete-message
+bind index       U       undelete-message
+bind index       L       limit
+bind index       h       noop
+bind index       l       display-message
+bind index,query <space> tag-entry
 #bind browser             h goto-parent
-macro browser             h        '<change-dir><kill-line>..<enter>' "Go to parent folder"
 # bind  index,pager         H        view-raw-message
-bind  browser             l        select-entry
-bind  browser             gg       top-page
-bind  browser             G        bottom-page
-bind  pager               gg       top
-bind  pager               G        bottom
-bind  index,pager,browser \Cd      half-down
-bind  index,pager,browser \Cu      half-up
-bind  pager,index         dT       delete-thread
-bind  pager,index         dt       delete-subthread
-bind  pager,index         gt       next-thread
-bind  pager,index         gT       previous-thread
-bind  index,pager         S        sync-mailbox
-bind  index,pager         I        group-reply
+macro browser             h   '<change-dir><kill-line>..<enter>' "Go to parent folder"
+bind  browser             l   select-entry
+bind  browser             gg  top-page
+bind  browser             G   bottom-page
+bind  pager               gg  top
+bind  pager               G   bottom
+bind  index,pager,browser \Cd half-down
+bind  index,pager,browser \Cu half-up
+bind  pager,index         dT  delete-thread
+bind  pager,index         dt  delete-subthread
+bind  pager,index         gt  next-thread
+bind  pager,index         gT  previous-thread
+bind  index,pager         S   sync-mailbox
+bind  index,pager         I   group-reply
 
-bind  index               \031     previous-undeleted                 # Mouse wheel
-bind  index               \005     next-undeleted                     # Mouse wheel
-bind  pager               \031     previous-line                      # Mouse wheel
-bind  pager               \005     next-line                          # Mouse wheel
+bind index \031 previous-undeleted # Mouse wheel
+bind index \005 next-undeleted     # Mouse wheel
+bind pager \031 previous-line      # Mouse wheel
+bind pager \005 next-line          # Mouse wheel
 
 # macro index,pager D "<purge-message><sync-mailbox>"
 
@@ -292,8 +292,8 @@ bind index,pager \Cp sidebar-prev-new
 bind index,pager \Cn sidebar-next-new
 bind index,pager . sidebar-toggle-visible
 
-bind index,pager ]] next-unread-mailbox
-bind index,pager [[ previous-unread # No previous unread-mailbox?
+bind index,pager ]] next-unread
+bind index,pager [[ previous-unread
 bind index,pager N search-opposite
 bind index \\ toggle-new
 

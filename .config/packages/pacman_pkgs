@@ -36,6 +36,7 @@ bfg
 bind
 birdtray
 bison
+bisq
 bitwise
 bluedevil
 blueman
@@ -69,6 +70,7 @@ clipit
 clipman
 cloc
 clojure-lsp-bin
+cmake-lint
 cmatrix
 cmus
 code
@@ -103,7 +105,7 @@ dict-wikt-en-all
 dict-wn
 dictd
 diff-so-fancy
-diffsitter
+diffsitter-bin
 direnv
 discord
 discover
@@ -132,6 +134,7 @@ efibootmgr
 elementary-wallpapers
 elinks
 elisa
+encfs
 entr
 evtest
 exa
@@ -140,6 +143,7 @@ expac
 fakeroot
 fastmod
 fcitx
+featherwallet-bin
 feh
 ffmpegthumbs
 figlet
@@ -164,6 +168,8 @@ git
 git-crypt
 git-dude-git
 git-lfs
+github-cli
+gitsign
 global
 glow-bin
 gnome-backgrounds
@@ -172,7 +178,6 @@ gnome-font-viewer
 gnome-keyring
 gnome-tweaks
 go
-go-ipfs
 goaccess
 goenv
 google-java-format
@@ -185,6 +190,7 @@ gotop-bin
 gparted
 gpg-tui
 grantlee-editor
+grc
 grip
 grub
 gruvbox-icon-theme
@@ -194,6 +200,7 @@ gst-plugin-gtk
 gst-plugins-ugly
 gstreamer-vaapi
 gtk-engine-murrine
+gvim
 gwenview
 hawck-git
 hck
@@ -221,7 +228,7 @@ isync
 itinerary
 iw
 jgmenu
-jo-git
+jo
 jpegoptim
 jql
 jre-openjdk
@@ -313,12 +320,12 @@ ktimer
 ktorrent
 ktuberling
 kturtle
+kubo
 kvantum
 kwallet-pam
 kwalletmanager
 kwave
 kwayland-integration
-kwayland-server
 kwin
 kwordquiz
 kwrite
@@ -341,6 +348,7 @@ libxkbcommon-doc
 linux
 linux-docs
 linux-firmware
+linux-headers
 lldb
 lnav
 logkeys-git
@@ -354,6 +362,7 @@ ltrace
 lua
 lua-format-git
 lua-language-server
+lua53-lpeg
 luarocks
 luau
 lutris
@@ -393,6 +402,7 @@ menyoki
 milou
 minify
 minuet
+monero-gui
 moreutils
 mousepad
 mp3info
@@ -424,9 +434,11 @@ nitrogen
 nmap
 nnn
 nodejs-lua-fmt
+nodenv
 nordic-theme-git
 notmuch
 npm
+ntp
 numlockx
 nushell
 nvm
@@ -562,6 +574,7 @@ sblg
 sc-im
 scli-git
 screengrab
+screenkey
 scrot
 sddm-kcm
 seahorse
@@ -573,6 +586,7 @@ shotgun
 siggo
 signal-desktop
 signon-kwallet-extension
+sioyek
 skanlite
 slock
 songrec
@@ -646,11 +660,13 @@ timg
 timidity++
 tmate
 tmsu-bin
-tmux
+tmux-git
 toilet
 tomb
 topgrade
 tor
+tor-browser
+torsocks
 transmission-cli
 transmission-rss
 tree
@@ -675,8 +691,8 @@ vaccine-git
 valgrind
 veracrypt
 vi
+viddy
 vifm
-vim
 vint
 virt-manager
 viu
@@ -817,6 +833,7 @@ xtitle
 xwinfo-git
 yad
 yakuake
+yamllint
 zathura
 zathura-pdf-poppler
 zeroconf-ioslave

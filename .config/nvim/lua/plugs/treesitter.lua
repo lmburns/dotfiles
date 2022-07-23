@@ -933,7 +933,7 @@ M.setup = function()
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "luapad", "log", "gitignore"},
+                disable = {"comment", "log", "gitignore"},
                 goto_next_start = {
                     -- ["]]"] = "@function.outer",
                     ["]f"] = "@function.outer",
@@ -1136,6 +1136,7 @@ local function init()
             "markdown",
             "solidity",
             "yaml",
+            "toml",
             "css"
         }
     )

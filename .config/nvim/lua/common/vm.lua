@@ -46,7 +46,7 @@ function M.exit()
         hlslens.start(true)
     end
 
-    dispose.dispose()
+    dispose:dispose()
     map("n", "n", n_keymap, {silent = true})
     -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
     -- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})

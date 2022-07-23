@@ -1,3 +1,4 @@
+upgrading shared libraries...
 venvs are in /home/lucas/.local/pipx/venvs
 apps are exposed on your $PATH at /home/lucas/.local/bin
    package aria2p 0.11.2, installed using Python 3.10.0
@@ -15,9 +16,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - dte
    package epy-reader 2022.4.18, installed using Python 3.10.0
     - epy
-   package fmdpy 0.5.1, installed using Python 3.10.0
+   package fmdpy 0.5.2, installed using Python 3.10.0
     - fmdpy
-   package glances 3.2.5, installed using Python 3.10.0
+   package glances 3.2.6.4, installed using Python 3.10.0
     - glances
    package greg 0.4.8, installed using Python 3.10.0
     - greg
@@ -30,7 +31,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - khal
    package khard 0.17.0, installed using Python 3.10.0
     - khard
-   package litecli 1.8.0, installed using Python 3.10.0
+   package litecli 1.9.0, installed using Python 3.10.0
     - litecli
    package mplug 0.2.1, installed using Python 3.10.0
     - mplug
@@ -38,11 +39,11 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - mycli
    package organize-tool 2.2.0, installed using Python 3.10.0
     - organize
-   package pdm 1.15.0, installed using Python 3.10.0
+   package pdm 1.15.2, installed using Python 3.10.0
     - pdm
    package pipdeptree 2.2.1, installed using Python 3.10.0
     - pipdeptree
-   package pipenv 2022.5.2, installed using Python 3.10.0
+   package pipenv 2022.6.7, installed using Python 3.10.0
     - pipenv
     - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
@@ -53,15 +54,22 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - pre-commit
     - pre-commit-validate-config
     - pre-commit-validate-manifest
-   package pxpx 1.6.1, installed using Python 3.10.0
+   package pxpx 3.0.0, installed using Python 3.10.0
     - ptop
     - px
+   package pydevf 0.1.5, installed using Python 3.10.0
+    - pydevf
    package pyflow 0.3.1, installed using Python 3.10.0
     - pyflow
    package rich-cli 1.8.0, installed using Python 3.10.0
     - rich
    package setconf 0.7.7, installed using Python 3.10.0
     - setconf
+   package solc-select 0.2.1, installed using Python 3.10.0
+    - solc
+    - solc-select
+   package sqlfluff 0.13.2, installed using Python 3.10.0
+    - sqlfluff
    package stig 0.12.3a0, installed using Python 3.10.0
     - stig
    package surfraw-tools 0.2.0, installed using Python 3.10.0
@@ -71,7 +79,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - ueberzug
    package vim-vint 0.3.21, installed using Python 3.10.0
     - vint
-   package you-get 0.4.1602, installed using Python 3.10.0
+   package you-get 0.4.1612, installed using Python 3.10.0
     - you-get
    package youtube-dl 2021.12.17, installed using Python 3.10.0
     - youtube-dl

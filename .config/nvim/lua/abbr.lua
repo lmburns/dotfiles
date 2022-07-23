@@ -73,6 +73,7 @@ function M.abbr(mode, lhs, rhs, args)
             table.insert(command, 1, "cabbrev")
             table.insert(command, lhs)
 
+            -- ((if_statement)
             if args.only_start ~= false then
                 rhs = ("v:lua.require'abbr'.command('%s', '%s')"):format(lhs, rhs)
             end

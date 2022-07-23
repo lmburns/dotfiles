@@ -44,7 +44,7 @@ end
 
 local function disable_cmoved_au()
     if cmoved_au then
-        cmoved_au.dispose()
+        cmoved_au:dispose()
         cmoved_au = nil
     end
 end

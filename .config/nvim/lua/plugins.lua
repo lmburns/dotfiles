@@ -1099,7 +1099,6 @@ return packer.startup(
             -- │                        Treesitter                        │
             -- ╰──────────────────────────────────────────────────────────╯
 
-            -- use({ "vigoux/architext.nvim", after = { "nvim-treesitter" } })
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
                 {
@@ -1193,6 +1192,12 @@ return packer.startup(
                             "ziontee113/syntax-tree-surfer",
                             desc = "Surf through your document and move elements around",
                             after = "nvim-treesitter"
+                        },
+                        {
+                            "vigoux/architext.nvim",
+                            desc = "Create treesitter queries",
+                            -- cmd = {"Architext", "ArchitextREPL"},
+                            after =  "nvim-treesitter" ,
                         }
                         -- {
                         --     "nvim-treesitter/nvim-treesitter-context",

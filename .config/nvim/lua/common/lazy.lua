@@ -106,7 +106,8 @@ M.require_on_module_call = function(require_path)
         {},
         {
             __call = function(_, ...)
-                return require(require_path)(...)
+                local args = {...}
+                return require(require_path)(unpack(args))
             end
         }
     )
@@ -130,7 +131,8 @@ M.require_on_exported_call = function(require_path)
         {
             __index = function(_, k)
                 return function(...)
-                    return require(require_path)[k](...)
+                    local args = {...}
+                    return require(require_path)[k](unpack(args))
                 end
             end
         }

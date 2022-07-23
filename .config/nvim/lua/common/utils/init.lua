@@ -5,6 +5,7 @@ local M = {}
 local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
+local disposable = require("common.disposable")
 local dev = require("dev")
 
 local wk = require("which-key")
@@ -184,7 +185,7 @@ end
 ---Create a single autocmd
 ---@param autocmd Autocommand
 ---@param id? number Group ID of the `autocmd`
----@return table ID of the autocmd, allows disposal
+---@return Disposable
 M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     local autocmd_id =
@@ -202,18 +203,12 @@ M.autocmd = function(autocmd, id)
         }
     )
 
-    -- return autocmd_id
-    return setmetatable(
+    return disposable:create(
+        function()
+            api.nvim_del_autocmd(autocmd_id)
+        end,
         {
-            id = autocmd_id,
-            dispose = function()
-                api.nvim_del_autocmd(autocmd_id)
-            end
-        },
-        {
-            __call = function(self)
-                self.dispose()
-            end
+            id = autocmd_id
         }
     )
 end
@@ -340,19 +335,14 @@ M.map = function(modes, lhs, rhs, opts)
         end
     end
 
-    return setmetatable(
+    return disposable:create(
+        function()
+            M.del_keymap(modes, lhs, {buffer = bufnr})
+        end,
         {
             map = function()
                 local mode = modes[1]
                 return M.get_keymap(mode, lhs, true, F.tern(bufnr or type(bufnr) == "number", true, false))
-            end,
-            dispose = function()
-                M.del_keymap(modes, lhs, {buffer = bufnr})
-            end
-        },
-        {
-            __call = function(self)
-                self.dispose()
             end
         }
     )
@@ -423,7 +413,7 @@ M.get_keymap = function(mode, search, lhs, buffer)
         end
     end
 
-    return F.tern(#res == 1, res[1], res)
+    return #res == 1 and res[1] or res
 end
 
 ---Reset a keymap by mapping it back to itself
