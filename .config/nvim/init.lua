@@ -97,7 +97,7 @@ else
     require("plugins").compile()
 end
 
-ex.packadd("cfilter")
+cmd.packadd("cfilter")
 require("mapping")
 require("abbr")
 require("functions")

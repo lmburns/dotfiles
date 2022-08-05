@@ -917,7 +917,7 @@ function M.init()
             -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
-            ["<Leader>qf"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
+            [";fx"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
             -- ["[c"] = {"<Plug>(coc-git-prevconflict)", "Goto previous conflict"},
             -- ["]c"] = {"<Plug>(coc-git-nextconflict)", "Goto next conflict"},
             -- ["gC"] = {"<Plug>(coc-git-commit)", "Show commits in current position"},

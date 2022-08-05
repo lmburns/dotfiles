@@ -3,6 +3,8 @@
 # Desc: When programs crash from an overloaded CPU
 
 # Basically the same as .xinitrc
+# Really need to fix things from crashing all of these items
+# Usually happens when linking occurs during a massive C compilation
 
 function setsid_notify() {
     setsid -f ${(z)@} &>/dev/null
@@ -10,13 +12,13 @@ function setsid_notify() {
 
 # bustd &
 (
-    pidof nm-applet || setsid_notify nm-applet
+    pidof nm-applet         || setsid_notify nm-applet
     pgrep -x blueman-applet || setsid_notify blueman-applet
-    pidof pasystray || setsid_notify pasystray
-    pgrep -x udiskie || setsid_notify udiskie --tray -n --file-manager="$TERMINAL"
-    pidof copyq || setsid_notify copyq
-    pidof greenclip || setsid_notify greenclip daemon 2>&1
-    pgrep -x ulauncher || setsid_notify ulauncher --hide-window
+    pidof pasystray         || setsid_notify pasystray
+    pgrep -x udiskie        || setsid_notify udiskie --tray -n --file-manager="$TERMINAL"
+    pidof copyq             || setsid_notify copyq
+    pidof greenclip         || setsid_notify greenclip daemon 2>&1
+    pgrep -x ulauncher      || setsid_notify ulauncher --hide-window
     pidof xidlehook || {
       xidlehook \
           --not-when-fullscreen \
@@ -28,12 +30,12 @@ function setsid_notify() {
           --socket "/tmp/xidlehook.sock" &!
     }
 
-    pidof flameshot || setsid_notify flameshot &
-    pidof dunst || setsid_notify dunst
-    pkill -USR1 sxhkd && setsid_notify sxhkd
-    pidof redshift || redshift -c "$HOME/.config/redshift/redshift.conf" &!
+    pidof flameshot      || setsid_notify flameshot &
+    pidof dunst          || setsid_notify dunst
+    pkill -USR1 sxhkd    && setsid_notify sxhkd
+    pidof redshift       || redshift -c "$HOME/.config/redshift/redshift.conf" &!
     pgrep -x autokey-gtk || setsid_notify autokey-gtk
-    pgrep -x pcmanfm || setsid_notify pcmanfm -d
+    pgrep -x pcmanfm     || setsid_notify pcmanfm -d
 ) 1>/dev/null
 
 dbus-launch

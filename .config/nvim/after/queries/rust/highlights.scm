@@ -17,7 +17,7 @@
 
 (("use"    @keyword) (#set! conceal ""))
 (("return" @keyword) (#set! conceal ""))
-(("break" @keyword) (#set! conceal ""))
+; (("break" @keyword) (#set! conceal ""))
 
 ; (type_arguments ("<" @punctuation.bracket (#set! conceal "⟨")))
 ; (type_arguments (">" @punctuation.bracket (#set! conceal "⟩")))

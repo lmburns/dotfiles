@@ -1,5 +1,5 @@
--- local D = require("dev")
 -- local global = require("common.global")
+local D = require("dev")
 local utils = require("common.utils")
 local C = require("common.color")
 local global = require("common.global")
@@ -201,7 +201,7 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
         command = function()
             vim.schedule(
                 function()
-                    ex.redrawstatus()
+                    cmd.redrawstatus()
                 end
             )
         end
@@ -209,6 +209,7 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
 }
 -- === Highlight Disable ===
 
+-- FIX: This stopped working after 6cee15da7
 -- === Restore Cursor Position === [[[
 nvim.autocmd.lmb__RestoreCursor = {
     {
@@ -227,13 +228,14 @@ nvim.autocmd.lmb__RestoreCursor = {
                     "help"
                 }
             )
-            if fn.expand("%") == "" or types:contains(b.filetype) or b.bt == "nofile" then
+
+            if fn.expand("%") == "" or types:contains(b.ft) or b.bt == "nofile" or D.is_floating_window(0) then
                 return
             end
 
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                nvim.win.set_cursor(0, {row, 0})
+                api.nvim_win_set_cursor(0, {row, 0})
 
                 if fn.line("w$") ~= row then
                     cmd("norm! zz")
@@ -433,7 +435,7 @@ nvim.autocmd.lmb__TermFix = {
     command = function()
         vim.schedule(
             function()
-                ex.nohlsearch()
+                cmd.nohlsearch()
                 fn.clearmatches()
             end
         )
@@ -451,7 +453,7 @@ nvim.autocmd.lmb__TermMappings = {
         vim.wo.number = false
         vim.wo.relativenumber = false
         vim.bo.bufhidden = "hide"
-        ex.startinsert()
+        cmd.startinsert()
     end,
     desc = "Set terminal mappings"
 }
@@ -503,7 +505,7 @@ nvim.autocmd.lmb__Help = {
                 -- Fix, somwhere this is not allowing me to resize window
                 local width = math.floor(vim.o.columns * 0.75)
                 -- pcall needed when opening a TOC inside a help page and returning to help page
-                pcall(ex.wincmd, "L")
+                pcall(cmd.wincmd, "L")
                 cmd("vertical resize " .. width)
                 map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
@@ -524,7 +526,7 @@ nvim.autocmd.lmb__Help = {
             end
 
             local width = math.floor(vim.o.columns * 0.75)
-            pcall(ex.wincmd, "L")
+            pcall(cmd.wincmd, "L")
             cmd("vertical resize " .. width)
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,

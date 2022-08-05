@@ -403,13 +403,13 @@ zt 0b light-mode for \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
-  wait'[[ -n $DISPLAY ]]' atload'
-  zstyle ":notify:*" expire-time 6
-  zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
-  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
-    marzocchi/zsh-notify \
     OMZP::systemd/systemd.plugin.zsh
 
+# wait'[[ -n $DISPLAY ]]' atload'
+# zstyle ":notify:*" expire-time 6
+# zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
+# zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
+#   marzocchi/zsh-notify \
 # jeffreytse/zsh-vi-mode
 #  ]]] === wait'0b' ===
 
@@ -1001,8 +1001,8 @@ path=(
   $CARGO_HOME/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $XDG_DATA_HOME/neovim/bin(N-/)
+  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/lib/{goenv/libexec,w3m}

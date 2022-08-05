@@ -862,7 +862,7 @@ end
 ---Focus the floating window
 M.focus_floating_win = function()
     if dev.is_floating_window(fn.win_getid()) then
-        ex.wincmd("p")
+        cmd.wincmd("p")
         return
     end
     for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
@@ -1062,7 +1062,7 @@ M.close_diff = function()
             local ok, msg = pcall(api.nvim_win_close, winid, false)
             if not ok and (msg and msg:match("^Vim:E444:")) then
                 if api.nvim_buf_get_name(0):match("^fugitive://") then
-                    ex.Gedit()
+                    cmd.Gedit()
                 end
             end
         end

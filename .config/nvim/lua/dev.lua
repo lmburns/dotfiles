@@ -11,8 +11,8 @@ local uv = vim.loop
 local env = vim.env
 local F = vim.F
 
----@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias vector table
+---@alias module table
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Global
@@ -227,22 +227,6 @@ end
 -- │                          String                          │
 -- ╰──────────────────────────────────────────────────────────╯
 
----Split a string on a delimiter
----@param input string
----@param sep string
----@return table
-M.split = function(input, sep)
-    vim.validate {
-        input = {input, {"s"}},
-        sep = {sep, {"s"}}
-    }
-    local t = {}
-    for str in string.gmatch(input, "([^" .. sep .. "]+)") do
-        table.insert(t, str)
-    end
-    return t
-end
-
 ---Check if `string` is empty or `nil`
 ---@return boolean
 M.is_empty = function(str)
@@ -299,6 +283,7 @@ end
 ---@param ignore_mt boolean Ignore metatable
 ---@return boolean
 M.tbl_equivalent = function(t1, t2, ignore_mt)
+    -- vim.deep_equal(t1, t2)
     local ty1 = type(t1)
     local ty2 = type(t2)
     if ty1 ~= ty2 then
@@ -345,13 +330,14 @@ M.merge = function(a, b)
 end
 
 ---Return a table with duplicates filtered out
----@param array table
----@return table
-M.filter_duplicates = function(array)
+---@generic T
+---@param vec T[]
+---@return T[]
+M.filter_duplicates = function(vec)
     local seen = {}
     local res = {}
 
-    for _, v in ipairs(array) do
+    for _, v in ipairs(vec) do
         if not seen[v] then
             res[#res + 1] = v
             seen[v] = true
@@ -429,10 +415,11 @@ M.vec2tbl = function(v)
 end
 
 ---Create a shallow copy of a portion of a vector.
----@param t vector
+---@generic T
+---@param t T[]
 ---@param first? integer First index, inclusive
 ---@param last? integer Last index, inclusive
----@return vector
+---@return T[] sliced vector
 M.vec_slice = function(t, first, last)
     local slice = {}
     for i = first or 1, last or #t do
@@ -443,8 +430,9 @@ M.vec_slice = function(t, first, last)
 end
 
 ---Join multiple vectors into one.
----@vararg vector
----@return vector
+---@generic T
+---@vararg T[]
+---@return T[]
 M.vec_join = function(...)
     local result = {}
     local args = {...}
@@ -467,39 +455,10 @@ M.vec_join = function(...)
     return result
 end
 
----Find an item in a list
----@generic T
----@param haystack T[]
----@param matcher fun(arg: T):boolean
----@return T
-M.find = function(haystack, matcher)
-    local found
-    for _, needle in ipairs(haystack) do
-        if matcher(needle) then
-            found = needle
-            break
-        end
-    end
-    return found
-end
-
----Search for a value in a table
----@param tbl table Table/List to search through
----@param val any Value to find
----@return boolean
-M.has_value = function(tbl, val)
-    for _, value in ipairs(tbl) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
-end
-
 ---Get the result of the union of the given vectors.
----@vararg vector
----@return vector
+---@generic T
+---@vararg T[]
+---@return T[]
 M.vec_union = function(...)
     local result = {}
     local args = {...}
@@ -525,8 +484,9 @@ M.vec_union = function(...)
 end
 
 ---Get the result of the difference of the given vectors.
----@vararg vector
----@return vector
+---@generic T
+---@vararg T[]
+---@return T[]
 M.vec_diff = function(...)
     local args = {...}
     local seen = {}
@@ -555,8 +515,9 @@ M.vec_diff = function(...)
 end
 
 ---Get the result of the symmetric difference of the given vectors.
----@vararg vector
----@return vector
+---@generic T
+---@vararg T[]
+---@return T[]
 M.vec_symdiff = function(...)
     local result = {}
     local args = {...}
@@ -583,15 +544,47 @@ M.vec_symdiff = function(...)
     return result
 end
 
----Return the first index a given object can be found in a vector, or -1 if
----it's not present.
----
----@param t vector
----@param v any
+---Find an item in a vector
+---@generic T
+---@param haystack T[]
+---@param matcher fun(arg: T):boolean
+---@return T
+M.find = function(haystack, matcher)
+    local found
+    for _, needle in ipairs(haystack) do
+        if matcher(needle) then
+            found = needle
+            break
+        end
+    end
+    return found
+end
+
+---Search for a value in a table
+---@generic T
+---@param tbl T[]: Vector to search
+---@param val T Item to find
+---@return boolean
+M.vec_contains = function(tbl, val)
+    -- return vim.tbl_contains(t, value)
+    for _, value in ipairs(tbl) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
+---Return first index a given object can be found in a vector,
+---or -1 if it's not present.
+---@generic T
+---@param tbl T[]: Vector to search
+---@param val T Item to find
 ---@return integer
-M.vec_indexof = function(t, v)
-    for i, vt in ipairs(t) do
-        if vt == v then
+M.vec_indexof = function(tbl, val)
+    for i, vt in ipairs(tbl) do
+        if vt == val then
             return i
         end
     end
@@ -599,24 +592,14 @@ M.vec_indexof = function(t, v)
 end
 
 ---Append any number of objects to the end of a vector.
----Pushing `nil` effectively does nothing.
----
----@param t vector
----@return vector t
+---@generic T
+---@param t T[] Vector to push to
+---@return T[] vec #Vector with the pushed value
 M.vec_push = function(t, ...)
     for _, v in ipairs({...}) do
         t[#t + 1] = v
     end
     return t
-end
-
----Checks if a list-like (vector) table contains `value`.
----
----@param t vector Table to check
----@param value any Value to compare
----@returns boolean true if `t` contains `value`
-M.contains = function(t, value)
-    return vim.tbl_contains(t, value)
 end
 
 ---Apply a function to each value in a table.
@@ -640,12 +623,45 @@ M.filter = function(tbl, func)
 end
 
 ---Apply function to each element of vector
----@param tbl vector A list of elements
----@param func fun(v: any) to be applied
-M.each = function(tbl, func)
+---@generic T
+---@param tbl T[] A list of elements
+---@param func fun(v: T) Function to be applied
+M.for_each = function(tbl, func)
     for _, item in ipairs(tbl) do
         func(item)
     end
+end
+
+---Apply a function to each element of a vector
+---Returning true if *any* element matches `func`
+---@generic T
+---@param tbl T[] A list of elements
+---@param func fun(v: T) Function to be applied
+---@return boolean
+M.any = function(tbl, func)
+    for _, v in pairs(tbl) do
+        if func(v) then
+            return true
+        end
+    end
+
+    return false
+end
+
+---Apply a function to each element of a vector
+---Returning true if *all* elements match `func`
+---@generic T
+---@param tbl T[] A list of elements
+---@param func fun(v: T) Function to be applied
+---@return boolean
+M.all = function(tbl, func)
+    for _, v in pairs(tbl) do
+        if not func(v) then
+            return false
+        end
+    end
+
+    return true
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

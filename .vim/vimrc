@@ -806,7 +806,6 @@ Plug 'antoinemadec/coc-fzf'
     \  "coc-syntax",
     \  "coc-prettier",
     \  "coc-snippets",
-    \  "coc-yank",
     \  "coc-diagnostic",
     \  "coc-fzf-preview",
     \  "coc-marketplace",
@@ -815,6 +814,7 @@ Plug 'antoinemadec/coc-fzf'
     \  "coc-word"
     \ ]
 
+    " \  "coc-yank",
     " \  "coc-lightbulb",
     " \ 'coc-clojure',
     " \ 'coc-nginx',

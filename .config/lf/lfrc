@@ -152,14 +152,16 @@ map Ev $vim "$fx"
 # -- Open: any file
 cmd open ${{
     case $(file --mime-type -b -L $f) in
-      (application/pdf|application/vnd*|application/epub*) setsid -f zathura $fx >/dev/null 2>&1 ;;
+      (application/pdf|application/vnd*(!sqlite3)|application/epub*)
+        setsid -f zathura $fx >/dev/null 2>&1 ;;
       (application/csv) vd $fx ;;
       (application/msword\
         |application/vnd.openxmlformats-officedocument.*\
         |application/vnd.oasis.opendocument.text\
         |application/vnd.ms-excel\
         |text/rtf) handlr open $fx ;;
-      (text/*|application/pgp-encrypted) $EDITOR $fx;;
+      (application/vnd.sqlite3) litecli $fx ;;
+      (text/*|application/pgp-encrypted) $EDITOR $fx ;;
       (image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
       (image/svg+xml) display -- $f ;;
       (image/*) rotdir $f \
@@ -184,10 +186,6 @@ cmd open ${{
           ;;
           (*)
             handlr open $fx
-            # $EDITOR $fx
-            # for f in $fx; do
-            #   $OPENER $f > /dev/null 2> /dev/null &
-            # done;;
           ;;
         esac
         ;;

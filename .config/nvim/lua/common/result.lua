@@ -29,13 +29,6 @@ setmetatable(
             if type(r.ok) == "nil" then
                 return "Result::Ok(nil)"
             elseif type(r.ok) == "table" then
-                -- local objects = vim.tbl_map(require("dev").inspect, r.ok)
-                -- local str = "{ "
-                -- for i, v in pairs(r.value) do
-                --     str = str .. i .. ":" .. tostring(v) .. ", "
-                -- end
-                -- str = str:sub(0, str:len() - 2)
-                -- str = str .. " }"
                 return ("Result::Ok(%s)"):format(vim.tbl_map(require("dev").inspect, r.ok))
             else
                 return ("Result::Ok(%s)"):format(r.ok)
@@ -82,11 +75,6 @@ end
 ---@return Ok
 function Ok:map_err()
     return self
-end
-
----??? Taken from luafp
-function Ok:match_with(tbl)
-    return tbl['Ok'](self)
 end
 
 ---Return the underlying value
@@ -174,11 +162,6 @@ function Err:map_err(f)
     return self
 end
 
----??? Taken from luafp
-function Err:match_with(tbl)
-    return tbl['Err'](self)
-end
-
 ---Return the underlying error
 ---@return Err
 function Err:unwrap()
@@ -201,7 +184,7 @@ end
 ---Check whether given value is an error
 ---@param o any
 function Err:is_instance(o)
-    if type(o) ~= 'nil' then
+    if type(o) ~= "nil" then
         return Err() == o
     else
         return false
@@ -210,24 +193,22 @@ end
 
 Err.__index = Err
 
+local function wrap(cb)
+    local ok, res = pcall(cb)
+    if ok then
+        return Ok(res)
+    end
+
+    return Err(res)
+end
+
 ---Create a Result from a value. If `nil`, then Error
 ---@param o any
 function Result:from_nil(o)
-    if type(o) == 'nil' then
+    if type(o) == "nil" then
         return Err(o)
     else
         return Ok(o)
-    end
-end
-
----??? Taken from luafp
-function Result:try(f)
-    local results = {pcall(f)}
-    if results[1] == true then
-        table.remove(results)
-        return Ok(results)
-    else
-        return Err(results[2])
     end
 end
 

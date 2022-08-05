@@ -109,9 +109,6 @@ local handlers = {
     end,
     ---@diagnostic disable-next-line: unused-local
     patch = function(plugins, plugin, value)
-        -- local await = require("packer.async").wait
-        -- local async = require("packer.async").sync
-        -- local plugin_utils = require("packer.plugin_utils")
         -- local run_hook = plugin_utils.post_update_hook
 
         vim.validate {
@@ -1057,7 +1054,7 @@ return packer.startup(
             -- ]]] === Highlight ===
 
             -- ============================= Neoformat ============================= [[[
-            use({"sbdchd/neoformat", conf = "plugs.neoformat"})
+            use({"sbdchd/neoformat", conf = "plugs.format"})
             -- ]]] === Neoformat ===
 
             -- ╭──────────────────────────────────────────────────────────╮
@@ -1197,7 +1194,7 @@ return packer.startup(
                             "vigoux/architext.nvim",
                             desc = "Create treesitter queries",
                             -- cmd = {"Architext", "ArchitextREPL"},
-                            after =  "nvim-treesitter" ,
+                            after = "nvim-treesitter"
                         }
                         -- {
                         --     "nvim-treesitter/nvim-treesitter-context",

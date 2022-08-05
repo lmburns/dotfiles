@@ -1,10 +1,11 @@
 ---
 global_config:
   ignores:
-    - ".git/"
-    - "target/"
-    - ".vscode/"
+    - '.git/'
+    - 'target/'
+    - '.vscode/'
 envs:
+  X: { exe_exists: [X] }
   abook: { exe_exists: [abook] }
   afew: { exe_exists: [afew] }
   alacritty: { exe_exists: [alacritty] }
@@ -32,8 +33,8 @@ envs:
   dive: { exe_exists: [dive] }
   dnsmasq: { exe_exists: [dnsmasq] }
   dte: { exe_exists: [dte] }
-  dxhd: { exe_exists: [dxhd] }
   dunst: { exe_exists: [dunst] }
+  dxhd: { exe_exists: [dxhd] }
   emplace: { exe_exists: [emplace] }
   f2: { exe_exists: [f2] }
   fcitx: { exe_exists: [fcitx] }
@@ -44,11 +45,11 @@ envs:
   fselect: { exe_exists: [fselect] }
   fw: { exe_exists: [fw] }
   gh: { exe_exists: [gh] }
-  git: { exe_exists: [git] }
   git-cliff: { exe_exists: [git-cliff] }
+  git: { exe_exists: [git] }
   gitui: { exe_exists: [gitui] }
-  gpg: { exe_exists: [gpg] }
   gopass: { exe_exists: [gopass] }
+  gpg: { exe_exists: [gpg] }
   hoard: { exe_exists: [hoard] }
   jaime: { exe_exists: [jaime] }
   jgmenu: { exe_exists: [jgmenu] }
@@ -60,8 +61,8 @@ envs:
   kmonad: { exe_exists: [kmonad] }
   lazydocker: { exe_exists: [lazydocker] }
   lazygit: { exe_exists: [lazygit] }
-  litecli: { exe_exists: [litecli] }
   lf: { exe_exists: [lf] }
+  litecli: { exe_exists: [litecli] }
   lolcate: { exe_exists: [lolcate] }
   lua-format: { exe_exists: [lua-format] }
   lxhkd: { exe_exists: [lxhkd] }
@@ -87,8 +88,8 @@ envs:
   notmuch: { exe_exists: [notmuch] }
   paru: { exe_exists: [paru] }
   pcmanfm: { exe_exists: [pcmanfm] }
-  pet: { exe_exists: [pet] }
   perltidy: { exe_exists: [perltidy] }
+  pet: { exe_exists: [pet] }
   picom: { exe_exists: [picom] }
   pier: { exe_exists: [pier] }
   polybar: { exe_exists: [polybar] }
@@ -101,8 +102,8 @@ envs:
   rclone: { exe_exists: [rclone] }
   redshift: { exe_exists: [redshift] }
   rg: { exe_exists: [rg] }
-  rpaste: { exe_exists: [rpaste] }
   rofi: { exe_exists: [rofi] }
+  rpaste: { exe_exists: [rpaste] }
   rtv: { exe_exists: [rtv] }
   rualdi: { exe_exists: [rualdi] }
   rubocop: { exe_exists: [rubocop] }
@@ -110,6 +111,7 @@ envs:
   sc-im: { exe_exists: [sc-im] }
   shellcaster: { exe_exists: [shellcaster] }
   siggo: { exe_exists: [siggo] }
+  sioyek: { exe_exists: [sioyek] }
   spotifyd: { exe_exists: [spotifyd] }
   spt: { exe_exists: [spt] }
   stig: { exe_exists: [stig] }
@@ -136,7 +138,6 @@ envs:
   wezterm: { exe_exists: [wezterm] }
   wget: { exe_exists: [wget] }
   wutag: { exe_exists: [wutag] }
-  X: { exe_exists: [X] }
   xkeysnail: { exe_exists: [xkeysnail] }
   xplr: { exe_exists: [xplr] }
   xsettingsd: { exe_exists: [xsettingsd] }
@@ -151,392 +152,390 @@ envs:
 hoards:
   abook:
     addressbook:
-      unix|abook: "${XDG_DATA_HOME}/abook/addressbook"
+      unix|abook: '${XDG_DATA_HOME}/abook/addressbook'
     abookrc:
-      unix|abook: "${XDG_CONFIG_HOME}/abook/abookrc"
+      unix|abook: '${XDG_CONFIG_HOME}/abook/abookrc'
   afew:
-    unix|afew: "${XDG_CONFIG_HOME}/afew/config"
+    unix|afew: '${XDG_CONFIG_HOME}/afew/config'
   alacritty:
-    unix|alacritty: "${XDG_CONFIG_HOME}/alacritty/alacritty.yml"
+    unix|alacritty: '${XDG_CONFIG_HOME}/alacritty/alacritty.yml'
   amfora:
     conf:
-      unix|amfora: "${XDG_CONFIG_HOME}/amfora/config.toml"
+      unix|amfora: '${XDG_CONFIG_HOME}/amfora/config.toml'
     bookmarks:
-      unix|amfora: "${XDG_DATA_HOME}/amfora/bookmarks.toml"
+      unix|amfora: '${XDG_DATA_HOME}/amfora/bookmarks.toml'
   arch:
-    unix: "${XDG_CONFIG_HOME}/arch"
+    unix: '${XDG_CONFIG_HOME}/arch'
   aria:
     aria2p:
-      unix|aria2p: "${XDG_CONFIG_HOME}/aria2p/config.toml"
+      unix|aria2p: '${XDG_CONFIG_HOME}/aria2p/config.toml'
     aria2:
-      unix|aria2p: "${XDG_CONFIG_HOME}/aria2/aria2.conf"
+      unix|aria2p: '${XDG_CONFIG_HOME}/aria2/aria2.conf'
   arranger:
-    unix|arranger: "${XDG_CONFIG_HOME}/arranger/arranger.conf"
+    unix|arranger: '${XDG_CONFIG_HOME}/arranger/arranger.conf'
   atuin:
-    unix|atuin: "${XDG_CONFIG_HOME}/atuin/"
+    unix|atuin: '${XDG_CONFIG_HOME}/atuin/'
   batp:
     conf:
-      unix|bat: "${XDG_CONFIG_HOME}/bat/config"
+      unix|bat: '${XDG_CONFIG_HOME}/bat/config'
     themes:
-      unix|bat: "${XDG_CONFIG_HOME}/bat/themes"
+      unix|bat: '${XDG_CONFIG_HOME}/bat/themes'
     syntax:
-      unix|bat: "${XDG_CONFIG_HOME}/bat/syntaxes"
+      unix|bat: '${XDG_CONFIG_HOME}/bat/syntaxes'
   beet:
     library:
-      unix|beet: "${XDG_CONFIG_HOME}/beets/library.db"
+      unix|beet: '${XDG_CONFIG_HOME}/beets/library.db'
     conf:
-      unix|beet: "${XDG_CONFIG_HOME}/beets/config.yaml"
-  bmux:
-    unix: "${XDG_CONFIG_HOME}/bmux"
+      unix|beet: '${XDG_CONFIG_HOME}/beets/config.yaml'
   broot:
     myconf:
-      unix|broot: "${XDG_CONFIG_HOME}/broot/conf.hjson"
+      unix|broot: '${XDG_CONFIG_HOME}/broot/conf.hjson'
     egconf:
-      unix|broot: "${XDG_CONFIG_HOME}/broot/eg.toml"
+      unix|broot: '${XDG_CONFIG_HOME}/broot/eg.toml'
   btm:
-    unix|btm: "${XDG_CONFIG_HOME}/bottom/bottom.toml"
+    unix|btm: '${XDG_CONFIG_HOME}/bottom/bottom.toml'
   bspwm:
-    unix|bspwm: "${XDG_CONFIG_HOME}/bspwm/bspwmrc"
+    unix|bspwm: '${XDG_CONFIG_HOME}/bspwm/bspwmrc'
   buku:
     database:
-      unix|buku: "${XDG_DATA_HOME}/buku/bookmarks.db"
+      unix|buku: '${XDG_DATA_HOME}/buku/bookmarks.db'
     exported:
-      unix|buku: "${BACKUP_DIR}/bookmarks/buku-bookmarks.html"
+      unix|buku: '${BACKUP_DIR}/bookmarks/buku-bookmarks.html'
   calcurse:
     conf:
-      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/conf"
+      unix|calcurse: '${XDG_CONFIG_HOME}/calcurse/conf'
     keys:
-      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/keys"
+      unix|calcurse: '${XDG_CONFIG_HOME}/calcurse/keys'
     hooks:
-      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/hooks"
+      unix|calcurse: '${XDG_CONFIG_HOME}/calcurse/hooks'
     caldev:
-      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/caldav"
+      unix|calcurse: '${XDG_CONFIG_HOME}/calcurse/caldav'
     todohooks:
-      unix|calcurse: "${XDG_CONFIG_HOME}/calcurse/todohooks"
+      unix|calcurse: '${XDG_CONFIG_HOME}/calcurse/todohooks'
   cargo:
     config:
       regex: true
-      pattern: ".*.toml|^[^.]nv"
+      pattern: '.*.toml|^[^.]nv'
       max_depth: 1
-    unix|cargo: "${XDG_DATA_HOME}/cargo/"
+    unix|cargo: '${XDG_DATA_HOME}/cargo/'
   castero:
-    unix|castero: "${XDG_CONFIG_HOME}/castero/castero.conf"
+    unix|castero: '${XDG_CONFIG_HOME}/castero/castero.conf'
   cloak:
-    unix|cloak: "${HOME}/.cloak"
+    unix|cloak: '${HOME}/.cloak'
   cmus:
-    unix|cmus: "${XDG_CONFIG_HOME}/cmus/rc"
+    unix|cmus: '${XDG_CONFIG_HOME}/cmus/rc'
   cointop:
-    unix|cointop: "${XDG_CONFIG_HOME}/cointop/config.toml"
+    unix|cointop: '${XDG_CONFIG_HOME}/cointop/config.toml'
   conky:
-    unix|conky: "${XDG_CONFIG_HOME}/conky/conky.conf"
+    unix|conky: '${XDG_CONFIG_HOME}/conky/conky.conf'
   copyq:
     conf:
-      unix|copyq: "${XDG_CONFIG_HOME}/copyq/copyq.conf"
+      unix|copyq: '${XDG_CONFIG_HOME}/copyq/copyq.conf'
     themes:
-      unix|copyq: "${XDG_CONFIG_HOME}/copyq/themes"
+      unix|copyq: '${XDG_CONFIG_HOME}/copyq/themes'
     scripts:
-      unix|copyq: "${XDG_CONFIG_HOME}/copyq/scripts"
+      unix|copyq: '${XDG_CONFIG_HOME}/copyq/scripts'
   ctags:
-    unix|ctags: "${XDG_CONFIG_HOME}/ctags/default.ctags"
+    unix|ctags: '${XDG_CONFIG_HOME}/ctags/default.ctags'
   dive:
-    unix|dive: "${XDG_CONFIG_HOME}/dive/dive.yaml"
+    unix|dive: '${XDG_CONFIG_HOME}/dive/dive.yaml'
   dnsmasq:
     ads:
-      unix|dnsmasq: "${XDG_CONFIG_HOME}/dnsmasq/ads.conf"
+      unix|dnsmasq: '${XDG_CONFIG_HOME}/dnsmasq/ads.conf'
     conf:
-      unix|dnsmasq: "${XDG_CONFIG_HOME}/dnsmasq/stubby.conf"
+      unix|dnsmasq: '${XDG_CONFIG_HOME}/dnsmasq/stubby.conf'
   dte:
-    unix|dte: "${XDG_CONFIG_HOME}/dte/config.json"
+    unix|dte: '${XDG_CONFIG_HOME}/dte/config.json'
   dunst:
     conf:
-      unix|dunst: "${XDG_CONFIG_HOME}/dunst/dunstrc"
+      unix|dunst: '${XDG_CONFIG_HOME}/dunst/dunstrc'
     icons:
-      unix|dunst: "${XDG_CONFIG_HOME}/dunst/icons"
+      unix|dunst: '${XDG_CONFIG_HOME}/dunst/icons'
   emplace:
-    unix|emplace: "${XDG_CONFIG_HOME}/emplace/emplace.toml"
+    unix|emplace: '${XDG_CONFIG_HOME}/emplace/emplace.toml'
   # epy:
   #   unix: "${XDG_CONFIG_HOME}/epy/config.json"
   # faint:
   #   unix: "${XDG_CONFIG_HOME}/faint/faintrc"
   f2:
-    unix|f2: "${XDG_DATA_HOME}/f2/backups/"
+    unix|f2: '${XDG_DATA_HOME}/f2/backups/'
   fastsyntaxhighlighting:
     kimbie:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/kimbox.ini"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/kimbox.ini'
     kimbie_og:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/kimbox-og.ini"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/kimbox-og.ini'
     current_theme:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/current_theme.zsh"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/current_theme.zsh'
     secondary_theme:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/secondary_theme.zsh"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/secondary_theme.zsh'
     theme-backup:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/mod-backup.ini"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/mod-backup.ini'
     others:
-      unix|zsh: "${XDG_CONFIG_HOME}/fsh/default"
+      unix|zsh: '${XDG_CONFIG_HOME}/fsh/default'
   fcitx:
-    unix|fcitx: "${XDG_CONFIG_HOME}/fcitx/config"
+    unix|fcitx: '${XDG_CONFIG_HOME}/fcitx/config'
   feh:
-    unix|feh: "${XDG_CONFIG_HOME}/feh/keys"
+    unix|feh: '${XDG_CONFIG_HOME}/feh/keys'
   feroxbuster:
-    unix|feroxbuster: "${XDG_CONFIG_HOME}/feroxbuster/ferox-config.toml"
+    unix|feroxbuster: '${XDG_CONFIG_HOME}/feroxbuster/ferox-config.toml'
   flake8:
-    unix: "${XDG_CONFIG_HOME}/flake8"
+    unix: '${XDG_CONFIG_HOME}/flake8'
   flameshot:
-    unix|flameshot: "${XDG_CONFIG_HOME}/flameshot/flameshot.ini"
+    unix|flameshot: '${XDG_CONFIG_HOME}/flameshot/flameshot.ini'
   flashfocus:
-    unix|flashfocus: "${XDG_CONFIG_HOME}/flashfocus/flashfocus.yml"
+    unix|flashfocus: '${XDG_CONFIG_HOME}/flashfocus/flashfocus.yml'
   fontconfig:
     conf:
-      unix: "${XDG_CONFIG_HOME}/fontconfig/fonts.conf"
+      unix: '${XDG_CONFIG_HOME}/fontconfig/fonts.conf'
     extra:
-      unix: "${XDG_CONFIG_HOME}/fontconfig/fonts.conf"
+      unix: '${XDG_CONFIG_HOME}/fontconfig/fonts.conf'
   formatters:
     perltidy:
-      unix|perltidy: "${XDG_CONFIG_HOME}/perltidy/perltidyrc"
+      unix|perltidy: '${XDG_CONFIG_HOME}/perltidy/perltidyrc'
     clang:
-      unix|clang-format: "${XDG_CONFIG_HOME}/clang-format/.clang-format"
+      unix|clang-format: '${XDG_CONFIG_HOME}/clang-format/.clang-format'
     luaformatter:
-      unix|lua-format: "${XDG_CONFIG_HOME}/luaformatter/config.yaml"
+      unix|lua-format: '${XDG_CONFIG_HOME}/luaformatter/config.yaml'
     stylua:
-      unix|stylua: "${XDG_CONFIG_HOME}/stylua/stylua.toml"
+      unix|stylua: '${XDG_CONFIG_HOME}/stylua/stylua.toml'
     rubocop:
-      unix|rubocop: "${XDG_CONFIG_HOME}/rubocop/config.yml"
+      unix|rubocop: '${XDG_CONFIG_HOME}/rubocop/config.yml'
     rust:
-      unix: "${XDG_CONFIG_HOME}/rustfmt"
+      unix: '${XDG_CONFIG_HOME}/rustfmt'
   fselect:
-    unix|fselect: "${XDG_CONFIG_HOME}/fselect/config.toml"
+    unix|fselect: '${XDG_CONFIG_HOME}/fselect/config.toml'
   fw:
-    unix|fw: "${XDG_CONFIG_HOME}/fw"
+    unix|fw: '${XDG_CONFIG_HOME}/fw'
   gitp:
     conf:
-      unix|git: "${XDG_CONFIG_HOME}/git/config"
+      unix|git: '${XDG_CONFIG_HOME}/git/config'
     message:
-      unix|git: "${XDG_CONFIG_HOME}/git/gitmessage"
+      unix|git: '${XDG_CONFIG_HOME}/git/gitmessage'
     globalignore:
-      unix|git: "${XDG_CONFIG_HOME}/git/gitignore_global"
+      unix|git: '${XDG_CONFIG_HOME}/git/gitignore_global'
     git-cliff:
-      unix|git-cliff: "${XDG_CONFIG_HOME}/git-cliff/cliff.toml"
+      unix|git-cliff: '${XDG_CONFIG_HOME}/git-cliff/cliff.toml'
   gh:
     hosts:
-      unix|gh: "${XDG_CONFIG_HOME}/gh/hosts.yml"
+      unix|gh: '${XDG_CONFIG_HOME}/gh/hosts.yml'
     conf:
-      unix|gh: "${XDG_CONFIG_HOME}/gh/config.yml"
+      unix|gh: '${XDG_CONFIG_HOME}/gh/config.yml'
   gitui:
     conf:
-      unix: "${XDG_CONFIG_HOME}/gitui/key_config.ron"
+      unix: '${XDG_CONFIG_HOME}/gitui/key_config.ron'
     theme:
-      unix: "${XDG_CONFIG_HOME}/gitui/theme.ron"
+      unix: '${XDG_CONFIG_HOME}/gitui/theme.ron'
   gkey:
-    unix: "${XDG_DATA_HOME}/gkeys"
+    unix: '${XDG_DATA_HOME}/gkeys'
   gpg:
     conf:
-      unix|gpg: "${XDG_CONFIG_HOME}/gnupg/gpg.conf"
+      unix|gpg: '${XDG_CONFIG_HOME}/gnupg/gpg.conf'
     agentconf:
-      unix|gpg: "${XDG_CONFIG_HOME}/gnupg/gpg-agent.conf"
+      unix|gpg: '${XDG_CONFIG_HOME}/gnupg/gpg-agent.conf'
   gtk:
     two:
-      unix: "${HOME}/.gtkrc-2.0"
+      unix: '${HOME}/.gtkrc-2.0'
     three:
-      unix: "${XDG_CONFIG_HOME}/gtk-3.0/"
+      unix: '${XDG_CONFIG_HOME}/gtk-3.0/'
     four:
-      unix: "${XDG_CONFIG_HOME}/gtk-4.0/"
+      unix: '${XDG_CONFIG_HOME}/gtk-4.0/'
   gopass:
-    unix|gopass: "${XDG_CONFIG_HOME}/gopass/config.yml"
+    unix|gopass: '${XDG_CONFIG_HOME}/gopass/config.yml'
   grip:
-    unix: "${XDG_CONFIG_HOME}/grip/settings.py"
+    unix: '${XDG_CONFIG_HOME}/grip/settings.py'
   hoard:
     yaml:
-      unix|hoard: "${XDG_CONFIG_HOME}/hoard/hoard.yml"
+      unix|hoard: '${XDG_CONFIG_HOME}/hoard/hoard.yml'
     toml:
-      unix|hoard: "${XDG_CONFIG_HOME}/hoard/hoard.toml"
+      unix|hoard: '${XDG_CONFIG_HOME}/hoard/hoard.toml'
     docs:
-      unix|hoard: "${XDG_CONFIG_HOME}/hoard/docs-config"
+      unix|hoard: '${XDG_CONFIG_HOME}/hoard/docs-config'
   jaime:
-    unix: "${XDG_CONFIG_HOME}/jaime/config.yml"
+    unix: '${XDG_CONFIG_HOME}/jaime/config.yml'
   jgmenu:
-    unix: "${XDG_CONFIG_HOME}/jgmenu/"
+    unix: '${XDG_CONFIG_HOME}/jgmenu/'
   jrnl:
     conf:
-      unix|jrnl: "${XDG_CONFIG_HOME}/jrnl/jrnl.yaml"
+      unix|jrnl: '${XDG_CONFIG_HOME}/jrnl/jrnl.yaml'
     data:
-      unix|jrnl: "${XDG_DATA_HOME}/jrnl"
+      unix|jrnl: '${XDG_DATA_HOME}/jrnl'
   just:
     justfile:
-      unix: "${XDG_DATA_HOME}/just/justfile"
+      unix: '${XDG_DATA_HOME}/just/justfile'
     overall:
-      unix: "${XDG_DATA_HOME}/just/overall.just"
+      unix: '${XDG_DATA_HOME}/just/overall.just'
   khal:
     conf:
-      unix|khal: "${XDG_CONFIG_HOME}/khal/config"
+      unix|khal: '${XDG_CONFIG_HOME}/khal/config'
     calendar:
-      unix|khal: "${XDG_CONFIG_HOME}/khal/calendars"
+      unix|khal: '${XDG_CONFIG_HOME}/khal/calendars'
   khard:
     conf:
-      unix|khard: "${XDG_CONFIG_HOME}/khard/khard.conf"
+      unix|khard: '${XDG_CONFIG_HOME}/khard/khard.conf'
     address:
-      unix|khard: "${XDG_DATA_HOME}/mates2"
+      unix|khard: '${XDG_DATA_HOME}/mates2'
   key-mapper:
-    unix: "${XDG_CONFIG_HOME}/key-mapper/"
+    unix: '${XDG_CONFIG_HOME}/key-mapper/'
   kitty:
     conf:
-      unix: "${XDG_CONFIG_HOME}/kitty/kitty.conf"
+      unix: '${XDG_CONFIG_HOME}/kitty/kitty.conf'
     theme:
-      unix: "${XDG_CONFIG_HOME}/kitty/colors/kimbox.conf"
+      unix: '${XDG_CONFIG_HOME}/kitty/colors/kimbox.conf'
   kmonad:
-    unix|kmonad: "${XDG_CONFIG_HOME}/kmonad/"
+    unix|kmonad: '${XDG_CONFIG_HOME}/kmonad/'
   # latex:
   #   awesomecv:
   #     unix: "${HOME}/Documents/cv/Awesome-CV/examples"
   #   cv:
   #     unix: "${HOME}/Documents/cv/templates"
   lazydocker:
-    unix|lazydocker: "${XDG_CONFIG_HOME}/lazydocker/config.yml"
+    unix|lazydocker: '${XDG_CONFIG_HOME}/lazydocker/config.yml'
   lazygit:
     conf:
-      unix|lazygit: "${XDG_CONFIG_HOME}/lazygit/config.yml"
+      unix|lazygit: '${XDG_CONFIG_HOME}/lazygit/config.yml'
     state:
-      unix|lazygit: "${XDG_CONFIG_HOME}/lazygit/state.yml"
+      unix|lazygit: '${XDG_CONFIG_HOME}/lazygit/state.yml'
   litecli:
-    unix|litecli: "${XDG_CONFIG_HOME}/litecli/config"
+    unix|litecli: '${XDG_CONFIG_HOME}/litecli/config'
   lf:
     conf:
-      unix|lf: "${XDG_CONFIG_HOME}/lf/lfrc"
+      unix|lf: '${XDG_CONFIG_HOME}/lf/lfrc'
     scope:
-      unix|lf: "${XDG_CONFIG_HOME}/lf/scope"
+      unix|lf: '${XDG_CONFIG_HOME}/lf/scope'
     mappings:
-      unix|lf: "${XDG_CONFIG_HOME}/lf/mappings"
+      unix|lf: '${XDG_CONFIG_HOME}/lf/mappings'
     icons:
-      unix|lf: "${ZDOTDIR}/zsh.d/lficons.zsh"
+      unix|lf: '${ZDOTDIR}/zsh.d/lficons.zsh'
   lolcate:
     conf:
-      unix|lolcate: "${XDG_CONFIG_HOME}/lolcate"
+      unix|lolcate: '${XDG_CONFIG_HOME}/lolcate'
     database:
-      unix|lolcate: "${XDG_DATA_HOME}/lolcate"
+      unix|lolcate: '${XDG_DATA_HOME}/lolcate'
   macchina:
-    unix|macchina: "${XDG_CONFIG_HOME}/macchina/macchina.toml"
+    unix|macchina: '${XDG_CONFIG_HOME}/macchina/macchina.toml'
   makers:
     conf:
-      unix|makers: "${XDG_CONFIG_HOME}/cargo-make/config.toml"
+      unix|makers: '${XDG_CONFIG_HOME}/cargo-make/config.toml'
     makefile:
-      unix|makers: "${XDG_CONFIG_HOME}/cargo-make/Makefile.toml"
+      unix|makers: '${XDG_CONFIG_HOME}/cargo-make/Makefile.toml'
   meli:
-    unix|meli: "${XDG_CONFIG_HOME}/meli"
+    unix|meli: '${XDG_CONFIG_HOME}/meli'
   memo:
-    unix|memo: "${XDG_CONFIG_HOME}/memo"
+    unix|memo: '${XDG_CONFIG_HOME}/memo'
   menyoki:
-    unix|menyoki: "${XDG_CONFIG_HOME}/menyoki/menyoki.conf"
+    unix|menyoki: '${XDG_CONFIG_HOME}/menyoki/menyoki.conf'
   mmtc:
-    unix|mmtc: "${XDG_CONFIG_HOME}/mmtc/config.ron"
+    unix|mmtc: '${XDG_CONFIG_HOME}/mmtc/config.ron'
   mozilla:
     chrome:
-      unix|mozilla: "${HOME}/.librewolf/chrome/userChrome.css"
+      unix|mozilla: '${HOME}/.librewolf/chrome/userChrome.css'
     content:
-      unix|mozilla: "${HOME}/.librewolf/chrome/userContent.css"
+      unix|mozilla: '${HOME}/.librewolf/chrome/userContent.css'
   mpd:
-    unix|mpd: "${XDG_CONFIG_HOME}/mpd/mpd.conf"
+    unix|mpd: '${XDG_CONFIG_HOME}/mpd/mpd.conf'
   mpv:
     scripts:
-      unix|mpv: "${XDG_CONFIG_HOME}/mpv/scripts"
+      unix|mpv: '${XDG_CONFIG_HOME}/mpv/scripts'
     scripts_opts:
-      unix|mpv: "${XDG_CONFIG_HOME}/mpv/script-opts"
+      unix|mpv: '${XDG_CONFIG_HOME}/mpv/script-opts'
     sockets:
-      unix|mpv: "${XDG_CONFIG_HOME}/mpv/mpvSockets"
+      unix|mpv: '${XDG_CONFIG_HOME}/mpv/mpvSockets'
   mutt:
     neomuttrc:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/muttrc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/muttrc'
     burnsac:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/burnsac@me.com.muttrc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/accounts/burnsac@me.com.muttrc'
     burnsppl:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/burnsppl@gmail.com.muttrc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/accounts/burnsppl@gmail.com.muttrc'
     lucas:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/lucas@lmburns.com.muttrc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/accounts/lucas@lmburns.com.muttrc'
     lmburns:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/accounts/lmb@lmburns.com.muttrc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/accounts/lmb@lmburns.com.muttrc'
     msmtp:
-      unix|msmtp: "${XDG_CONFIG_HOME}/msmtp/config"
+      unix|msmtp: '${XDG_CONFIG_HOME}/msmtp/config'
     mbsyncrc:
-      unix|mbsync: "${HOME}/.mbsyncrc"
+      unix|mbsync: '${HOME}/.mbsyncrc'
     # mail_dir:
     #   unix: "${XDG_DATA_HOME}/mail"
     muttrc:
-      unix|mutt: "${HOME}/.muttrc"
+      unix|mutt: '${HOME}/.muttrc'
     help:
-      unix|neomutt: "${XDG_CONFIG_HOME}/mutt/sample_rc"
+      unix|neomutt: '${XDG_CONFIG_HOME}/mutt/sample_rc'
   notmuch:
     notmuch-config:
-      unix|notmuch: "${XDG_CONFIG_HOME}/notmuch/notmuch-config"
+      unix|notmuch: '${XDG_CONFIG_HOME}/notmuch/notmuch-config'
     hooks:
-      unix|notmuch: "${XDG_DATA_HOME}/mail/.notmuch/hooks"
+      unix|notmuch: '${XDG_DATA_HOME}/mail/.notmuch/hooks'
   mycli:
-    unix|mycli: "${HOME}/.myclirc"
+    unix|mycli: '${HOME}/.myclirc'
   mysql:
-    unix|mysql: "${HOME}/.my.cnf"
+    unix|mysql: '${HOME}/.my.cnf'
   naabu:
-    unix|naabu: "${XDG_CONFIG_HOME}/naabu"
+    unix|naabu: '${XDG_CONFIG_HOME}/naabu'
   ncmpcpp:
     conf:
-      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config"
+      unix: '${XDG_CONFIG_HOME}/ncmpcpp/config'
     bindings:
-      unix: "${XDG_CONFIG_HOME}/ncmpcpp/bindings"
+      unix: '${XDG_CONFIG_HOME}/ncmpcpp/bindings'
     conf_cover:
-      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config-cover"
+      unix: '${XDG_CONFIG_HOME}/ncmpcpp/config-cover'
     conf_minimal:
-      unix: "${XDG_CONFIG_HOME}/ncmpcpp/config-minimal"
+      unix: '${XDG_CONFIG_HOME}/ncmpcpp/config-minimal'
   newsboat:
     conf:
-      unix|newsboat: "${XDG_CONFIG_HOME}/newsboat/config"
+      unix|newsboat: '${XDG_CONFIG_HOME}/newsboat/config'
     urls:
-      unix|newsboat: "${XDG_CONFIG_HOME}/newsboat/urls"
+      unix|newsboat: '${XDG_CONFIG_HOME}/newsboat/urls'
   neofetch:
-    unix|neofetch: "${XDG_CONFIG_HOME}/neofetch/config.conf"
+    unix|neofetch: '${XDG_CONFIG_HOME}/neofetch/config.conf'
   nvim:
-    unix: "${XDG_CONFIG_HOME}/nvim"
+    unix: '${XDG_CONFIG_HOME}/nvim'
   packages:
-    unix: "${XDG_CONFIG_HOME}/packages"
+    unix: '${XDG_CONFIG_HOME}/packages'
   pass:
     tomb:
-      unix|prs: "${XDG_DATA_HOME}/password-store.tomb"
+      unix|prs: '${XDG_DATA_HOME}/password-store.tomb'
     key:
-      unix|prs: "${XDG_DATA_HOME}/password-store.tomb.key"
+      unix|prs: '${XDG_DATA_HOME}/password-store.tomb.key'
   paru:
-    unix|paru: "${XDG_CONFIG_HOME}/paru/paru.conf"
+    unix|paru: '${XDG_CONFIG_HOME}/paru/paru.conf'
   pcmanfm:
-    unix|pcmanfm: "${XDG_CONFIG_HOME}/pcmanfm/default/pcmanfm.conf"
+    unix|pcmanfm: '${XDG_CONFIG_HOME}/pcmanfm/default/pcmanfm.conf'
   pet:
     conf:
-      unix|pet: "${XDG_CONFIG_HOME}/pet/config.toml"
+      unix|pet: '${XDG_CONFIG_HOME}/pet/config.toml'
     snippets:
-      unix|pet: "${XDG_CONFIG_HOME}/pet/snippet.toml"
+      unix|pet: '${XDG_CONFIG_HOME}/pet/snippet.toml'
     functions:
-      unix|pet: "${ZDOTDIR}/zinit/polaris/share/pet/pet_atload.zsh"
+      unix|pet: '${ZDOTDIR}/zinit/polaris/share/pet/pet_atload.zsh'
   picom:
-    unix|picom: "${XDG_CONFIG_HOME}/picom/picom.conf"
+    unix|picom: '${XDG_CONFIG_HOME}/picom/picom.conf'
   pier:
-    unix|pier: "${XDG_CONFIG_HOME}/pier/config.toml"
+    unix|pier: '${XDG_CONFIG_HOME}/pier/config.toml'
   polybar:
     conf:
-      unix|polybar: "${XDG_CONFIG_HOME}/polybar/config"
+      unix|polybar: '${XDG_CONFIG_HOME}/polybar/config'
     scripts:
-      unix|polybar: "${XDG_CONFIG_HOME}/polybar/scripts"
+      unix|polybar: '${XDG_CONFIG_HOME}/polybar/scripts'
     colors:
-      unix|polybar: "${XDG_CONFIG_HOME}/polybar/colors.ini"
+      unix|polybar: '${XDG_CONFIG_HOME}/polybar/colors.ini'
     custom_modules:
-      unix|polybar: "${XDG_CONFIG_HOME}/polybar/custom.ini"
+      unix|polybar: '${XDG_CONFIG_HOME}/polybar/custom.ini'
     internal_modules:
-      unix|polybar: "${XDG_CONFIG_HOME}/polybar/internal.ini"
+      unix|polybar: '${XDG_CONFIG_HOME}/polybar/internal.ini'
   ptpython:
-    unix: "${XDG_CONFIG_HOME}/ptpython/config.py"
+    unix: '${XDG_CONFIG_HOME}/ptpython/config.py'
   prettier:
     config:
-      exclude: ["node_modules"]
-    unix|prettier: "${XDG_CONFIG_HOME}/prettier/"
+      exclude: ['node_modules']
+    unix|prettier: '${XDG_CONFIG_HOME}/prettier/'
   procs:
-    unix: "${XDG_CONFIG_HOME}/procs/config.toml"
+    unix: '${XDG_CONFIG_HOME}/procs/config.toml'
   pueue:
     conf:
-      unix|pueue: "${XDG_CONFIG_HOME}/pueue/pueue.yml"
+      unix|pueue: '${XDG_CONFIG_HOME}/pueue/pueue.yml'
     aliases:
-      unix|pueue: "${XDG_CONFIG_HOME}/pueue/pueue_aliases.yml"
+      unix|pueue: '${XDG_CONFIG_HOME}/pueue/pueue_aliases.yml'
   # rlang:
   #   profile:
   #     unix: "${XDG_CONFIG_HOME}/r/Rprofile"
@@ -549,230 +548,235 @@ hoards:
   #     unix: "${XDG_CONFIG_HOME}/ranger/scope.sh"
   rclone:
     cli:
-      unix|rclone: "${XDG_CONFIG_HOME}/rclone/rclone.conf"
+      unix|rclone: '${XDG_CONFIG_HOME}/rclone/rclone.conf'
     gui:
-      unix|rclone-browser: "${XDG_CONFIG_HOME}/rclone-browser/rclone-browser.conf"
+      unix|rclone-browser: '${XDG_CONFIG_HOME}/rclone-browser/rclone-browser.conf'
   redshit:
     redshift.conf:
-      unix|redshift: "${XDG_CONFIG_HOME}/redshift/redshift.conf"
+      unix|redshift: '${XDG_CONFIG_HOME}/redshift/redshift.conf'
     redshiftgrc:
-      unix|redshift: "${HOME}/.redshiftgrc"
+      unix|redshift: '${HOME}/.redshiftgrc'
   ripgrep:
-    unix|rg: "${XDG_CONFIG_HOME}/ripgrep/ripgreprc"
+    unix|rg: '${XDG_CONFIG_HOME}/ripgrep/ripgreprc'
   rofi:
-    unix|rofi: "${XDG_CONFIG_HOME}/rofi/"
+    unix|rofi: '${XDG_CONFIG_HOME}/rofi/'
   rtv:
-    unix|rtv: "${XDG_CONFIG_HOME}/rtv/rtv.cfg"
+    unix|rtv: '${XDG_CONFIG_HOME}/rtv/rtv.cfg'
   rualdi:
-    unix|rualdi: "${XDG_DATA_HOME}/rualdi/rualdi.toml"
+    unix|rualdi: '${XDG_DATA_HOME}/rualdi/rualdi.toml'
   rusty-paste:
     cli:
-      unix|rpaste: "${HOME}/.rustypaste.toml"
+      unix|rpaste: '${HOME}/.rustypaste.toml'
   sauce:
-    unix|sauce: "${XDG_DATA_HOME}/sauce"
+    unix|sauce: '${XDG_DATA_HOME}/sauce'
   sc_im:
-    unix|sc-im: "${XDG_CONFIG_HOME}/sc-im/scimrc"
+    unix|sc-im: '${XDG_CONFIG_HOME}/sc-im/scimrc'
   shellcaster:
-    unix|shellcaster: "${XDG_CONFIG_HOME}/shellcaster/config.toml"
+    unix|shellcaster: '${XDG_CONFIG_HOME}/shellcaster/config.toml'
   siggo:
-    unix|siggo: "${XDG_CONFIG_HOME}/siggo/config.yml"
+    unix|siggo: '${XDG_CONFIG_HOME}/siggo/config.yml'
+  sioyek:
+    keys:
+      unix|sioyek: '${XDG_CONFIG_HOME}/sioyek/keys_user.config'
+    prefs:
+      unix|sioyek: '${XDG_CONFIG_HOME}/sioyek/prefs_user.config'
   spotifyd:
-    unix|spotifyd: "${XDG_CONFIG_HOME}/spotifyd/spotifyd.conf"
+    unix|spotifyd: '${XDG_CONFIG_HOME}/spotifyd/spotifyd.conf'
   spotify-tui:
     conf:
-      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/config.yml"
+      unix|spt: '${XDG_CONFIG_HOME}/spotify-tui/config.yml'
     client:
-      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/client.yml"
+      unix|spt: '${XDG_CONFIG_HOME}/spotify-tui/client.yml'
     token:
-      unix|spt: "${XDG_CONFIG_HOME}/spotify-tui/.spotify_token_cache.json"
+      unix|spt: '${XDG_CONFIG_HOME}/spotify-tui/.spotify_token_cache.json'
   stig:
-    unix|stig: "${XDG_CONFIG_HOME}/stig"
+    unix|stig: '${XDG_CONFIG_HOME}/stig'
   sxhkd:
-    unix|sxhkd: "${XDG_CONFIG_HOME}/sxhkd/"
+    unix|sxhkd: '${XDG_CONFIG_HOME}/sxhkd/'
   ssh:
     conf:
-      unix: "${HOME}/.ssh/config"
+      unix: '${HOME}/.ssh/config'
     known_hosts:
-      unix: "${HOME}/.ssh/known_hosts"
+      unix: '${HOME}/.ssh/known_hosts'
     git:
-      unix: "${HOME}/.ssh/git"
+      unix: '${HOME}/.ssh/git'
     git-pub:
-      unix: "${HOME}/.ssh/git.pub"
+      unix: '${HOME}/.ssh/git.pub'
     burnsac:
-      unix: "${HOME}/.ssh/burnsac"
+      unix: '${HOME}/.ssh/burnsac'
     burnsac-pub:
-      unix: "${HOME}/.ssh/burnsac.pub"
+      unix: '${HOME}/.ssh/burnsac.pub'
     gitlab:
-      unix: "${HOME}/.ssh/gitlab-new"
+      unix: '${HOME}/.ssh/gitlab-new'
     gitlab-pub:
-      unix: "${HOME}/.ssh/gitlab-new.pub"
+      unix: '${HOME}/.ssh/gitlab-new.pub'
   surfraw:
     conf:
-      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/conf"
+      unix|surfraw: '${XDG_CONFIG_HOME}/surfraw/conf'
     bookmarks:
-      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/bookmarks"
+      unix|surfraw: '${XDG_CONFIG_HOME}/surfraw/bookmarks'
     elvi:
-      unix|surfraw: "${XDG_CONFIG_HOME}/surfraw/elvi"
+      unix|surfraw: '${XDG_CONFIG_HOME}/surfraw/elvi'
   surfingkeys:
-    unix: "${XDG_CONFIG_HOME}/surfingkeys/surfingkeys.js"
+    unix: '${XDG_CONFIG_HOME}/surfingkeys/surfingkeys.js'
   sxiv:
-    unix|sxiv: "${XDG_CONFIG_HOME}/sxiv/exec/key-handler"
+    unix|sxiv: '${XDG_CONFIG_HOME}/sxiv/exec/key-handler'
   systemd:
     config:
       follow_links: true
-    unix|systemd: "${XDG_CONFIG_HOME}/systemd/"
+    unix|systemd: '${XDG_CONFIG_HOME}/systemd/'
   task:
     conf:
-      unix|task: "${XDG_CONFIG_HOME}/task/taskrc"
+      unix|task: '${XDG_CONFIG_HOME}/task/taskrc'
     hooks:
-      unix|task: "${XDG_CONFIG_HOME}/task/hooks"
+      unix|task: '${XDG_CONFIG_HOME}/task/hooks'
     completed:
-      unix|task: "${XDG_CONFIG_HOME}/task/completed.data"
+      unix|task: '${XDG_CONFIG_HOME}/task/completed.data'
     undo:
-      unix|task: "${XDG_CONFIG_HOME}/task/undo.data"
+      unix|task: '${XDG_CONFIG_HOME}/task/undo.data'
     pending:
-      unix|task: "${XDG_CONFIG_HOME}/task/pending.data"
+      unix|task: '${XDG_CONFIG_HOME}/task/pending.data'
     backlog:
-      unix|task: "${XDG_CONFIG_HOME}/task/backlog.data"
+      unix|task: '${XDG_CONFIG_HOME}/task/backlog.data'
     taskn:
-      unix|taskn: "${HOME}/.taskn/"
+      unix|taskn: '${HOME}/.taskn/'
   the-way:
     config:
-      unix|the-way: "${XDG_CONFIG_HOME}/the-way/the-way.toml"
+      unix|the-way: '${XDG_CONFIG_HOME}/the-way/the-way.toml'
     db:
-      unix|the-way: "${XDG_DATA_HOME}/the-way/the_way_db"
+      unix|the-way: '${XDG_DATA_HOME}/the-way/the_way_db'
   ticker:
-    unix|ticker: "${XDG_CONFIG_HOME}/ticker/ticker.yaml"
+    unix|ticker: '${XDG_CONFIG_HOME}/ticker/ticker.yaml'
   tig:
-    unix|tig: "${XDG_CONFIG_HOME}/tig/tigrc"
+    unix|tig: '${XDG_CONFIG_HOME}/tig/tigrc'
   timew:
-    unix|timew: "${XDG_DATA_HOME}/timewarrior"
+    unix|timew: '${XDG_DATA_HOME}/timewarrior'
   tmsu:
-    unix|tmsu: "${HOME}/.tmsu/db"
+    unix|tmsu: '${HOME}/.tmsu/db'
   tmux:
-    unix|tmux: "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+    unix|tmux: '${XDG_CONFIG_HOME}/tmux/tmux.conf'
   tmuxinator:
-    unix|tmuxinator: "${XDG_CONFIG_HOME}/tmuxinator"
+    unix|tmuxinator: '${XDG_CONFIG_HOME}/tmuxinator'
   transmission:
-    unix|transmission: "${XDG_CONFIG_HOME}/transmission-daemon/settings.json"
+    unix|transmission: '${XDG_CONFIG_HOME}/transmission-daemon/settings.json'
   ulauncher:
     settings:
-      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/settings.json"
+      unix|ulauncher: '${XDG_CONFIG_HOME}/ulauncher/settings.json'
     extensions:
-      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/extensions.json"
+      unix|ulauncher: '${XDG_CONFIG_HOME}/ulauncher/extensions.json'
     shortcuts:
-      unix|ulauncher: "${XDG_CONFIG_HOME}/ulauncher/shortcuts.json"
+      unix|ulauncher: '${XDG_CONFIG_HOME}/ulauncher/shortcuts.json'
   um:
     pages:
-      unix|um: "${XDG_CONFIG_HOME}/um/pages"
+      unix|um: '${XDG_CONFIG_HOME}/um/pages'
     conf:
-      unix|um: "${XDG_CONFIG_HOME}/um/umconfig"
+      unix|um: '${XDG_CONFIG_HOME}/um/umconfig'
   vifm:
     conf:
-      unix: "${XDG_CONFIG_HOME}/vifm/vifmrc"
+      unix: '${XDG_CONFIG_HOME}/vifm/vifmrc'
     info:
-      unix: "${XDG_CONFIG_HOME}/vifm/vifminfo.json"
+      unix: '${XDG_CONFIG_HOME}/vifm/vifminfo.json'
   vim:
     init:
-      unix|vim: "${HOME}/.vim/.vimrc"
+      unix|vim: '${HOME}/.vim/vimrc'
   vimwiki:
     directory:
-      unix: "${HOME}/vimwiki"
+      unix: '${HOME}/vimwiki'
   visidata:
-    unix|visidata: "${HOME}/.visidatarc"
+    unix|visidata: '${HOME}/.visidatarc'
   w3m:
     conf:
-      unix|w3m: "${HOME}/.w3m/config"
+      unix|w3m: '${HOME}/.w3m/config'
     keymap:
-      unix|w3m: "${HOME}/.w3m/keymap"
+      unix|w3m: '${HOME}/.w3m/keymap'
     mailcap:
-      unix|w3m: "${HOME}/.w3m/mailcap"
+      unix|w3m: '${HOME}/.w3m/mailcap'
     urimethodmap:
-      unix|w3m: "${HOME}/.w3m/urimethodmap"
+      unix|w3m: '${HOME}/.w3m/urimethodmap'
     cgi-bin:
-      unix|w3m: "${HOME}/.w3m/cgi-bin"
+      unix|w3m: '${HOME}/.w3m/cgi-bin'
     root-cgi-bin:
-      unix|w3m: "${HOME}/.w3m/root-cgi-bin"
+      unix|w3m: '${HOME}/.w3m/root-cgi-bin'
   wezterm:
     colors:
-      unix|wezterm: "${XDG_CONFIG_HOME}/wezterm/colors"
+      unix|wezterm: '${XDG_CONFIG_HOME}/wezterm/colors'
     wezterm.lua:
-      unix|wezterm: "${XDG_CONFIG_HOME}/wezterm/wezterm.lua"
+      unix|wezterm: '${XDG_CONFIG_HOME}/wezterm/wezterm.lua'
   wget:
-    unix|wget: "${XDG_CONFIG_HOME}/wget/wgetrc"
+    unix|wget: '${XDG_CONFIG_HOME}/wget/wgetrc'
   wutag:
-    unix|wutag: "${XDG_CONFIG_HOME}/wutag/wutag.yml"
+    unix|wutag: '${XDG_CONFIG_HOME}/wutag/wutag.yml'
   x11:
     config:
-      exclude: ["*.cache"]
+      exclude: ['*.cache']
     dir:
-      unix|X: "${XDG_CONFIG_HOME}/x11"
+      unix|X: '${XDG_CONFIG_HOME}/x11'
     xsettings:
-      unix|X: "${XDG_CONFIG_HOME}/xsettingsd/xsettingsd.conf"
+      unix|X: '${XDG_CONFIG_HOME}/xsettingsd/xsettingsd.conf'
     xinitrc:
-      unix|X: "${HOME}/.xinitrc"
+      unix|X: '${HOME}/.xinitrc'
     xbindkeys:
-      unix|X: "${HOME}/.xbindkeysrc"
+      unix|X: '${HOME}/.xbindkeysrc'
     xmodmap:
-      unix|X: "${HOME}/.Xmodmap"
+      unix|X: '${HOME}/.Xmodmap'
     xresources:
-      unix|X: "${HOME}/.Xresources"
+      unix|X: '${HOME}/.Xresources'
     xscreensaver:
-      unix|X: "${HOME}/.xscreensaver"
+      unix|X: '${HOME}/.xscreensaver'
     pam_environment:
-      unix|X: "${HOME}/.pam_environment"
+      unix|X: '${HOME}/.pam_environment'
     desktop_files:
-      unix|X: "${XDG_DATA_HOME}/applications/"
+      unix|X: '${XDG_DATA_HOME}/applications/'
   xkeysnail:
-    unix|xkeysnail: "${XDG_CONFIG_HOME}/xkeysnail/"
+    unix|xkeysnail: '${XDG_CONFIG_HOME}/xkeysnail/'
   xplr:
     plugins:
-      unix|xplr: "${XDG_CONFIG_HOME}/xplr/plugins"
+      unix|xplr: '${XDG_CONFIG_HOME}/xplr/plugins'
     conf:
-      unix|xplr: "${XDG_CONFIG_HOME}/xplr/init.lua"
+      unix|xplr: '${XDG_CONFIG_HOME}/xplr/init.lua'
     theme:
-      unix|xplr: "${XDG_CONFIG_HOME}/xplr/extra/theme.yml"
+      unix|xplr: '${XDG_CONFIG_HOME}/xplr/extra/theme.yml'
   xsettingsd:
-    unix|xsettingsd: "${HOME}/.xsettingsd"
+    unix|xsettingsd: '${HOME}/.xsettingsd'
   youtube_dl:
-    unix: "${XDG_CONFIG_HOME}/youtube-dl/config"
+    unix: '${XDG_CONFIG_HOME}/youtube-dl/config'
   youtube_viewer:
-    unix: "${XDG_CONFIG_HOME}/youtube-viewer/youtube-viewer.conf"
+    unix: '${XDG_CONFIG_HOME}/youtube-viewer/youtube-viewer.conf'
   ytfzf:
-    unix: "${XDG_CONFIG_HOME}/ytfzf/conf.sh"
+    unix: '${XDG_CONFIG_HOME}/ytfzf/conf.sh'
   ytmdl:
-    unix: "${XDG_CONFIG_HOME}/ytmdl/config"
+    unix: '${XDG_CONFIG_HOME}/ytmdl/config'
   zathura:
-    unix: "${XDG_CONFIG_HOME}/zathura"
+    unix: '${XDG_CONFIG_HOME}/zathura'
   zoxide:
-    unix|zoxide: "${XDG_DATA_HOME}/zoxide/db.zo"
+    unix|zoxide: '${XDG_DATA_HOME}/zoxide/db.zo'
   zsh:
     functions:
-      zsh|unix: "${ZDOTDIR}/functions"
+      zsh|unix: '${ZDOTDIR}/functions'
     patches:
-      zsh|unix: "${ZDOTDIR}/patches"
+      zsh|unix: '${ZDOTDIR}/patches'
     themes:
-      zsh|unix: "${ZDOTDIR}/themes"
+      zsh|unix: '${ZDOTDIR}/themes'
     git_token:
-      zsh|unix: "${ZDOTDIR}/zsh.d/git-token.zsh"
+      zsh|unix: '${ZDOTDIR}/zsh.d/git-token.zsh'
     bindings:
-      zsh|unix: "${ZDOTDIR}/zsh.d/keybindings.zsh"
+      zsh|unix: '${ZDOTDIR}/zsh.d/keybindings.zsh'
     aliases:
-      zsh|unix: "${ZDOTDIR}/zsh.d/aliases.zsh"
+      zsh|unix: '${ZDOTDIR}/zsh.d/aliases.zsh'
     env:
-      zsh|unix: "${HOME}/.zshenv"
+      zsh|unix: '${HOME}/.zshenv'
     csnippets:
-      zsh|unix: "${ZDOTDIR}/csnippets"
+      zsh|unix: '${ZDOTDIR}/csnippets'
     completions:
-      zsh|unix: "${ZDOTDIR}/completions"
+      zsh|unix: '${ZDOTDIR}/completions'
     history:
-      zsh|unix: "${XDG_CACHE_HOME}/zsh/zsh_history"
+      zsh|unix: '${XDG_CACHE_HOME}/zsh/zsh_history'
     histdb:
-      zsh|unix: "${ZDOTDIR}/.zsh-history.db"
+      zsh|unix: '${ZDOTDIR}/.zsh-history.db'
   keymap:
     autokey:
-      unix|autokey: "${XDG_CONFIG_HOME}/autokey"
+      unix|autokey: '${XDG_CONFIG_HOME}/autokey'
     dxhd:
-      unix|dxhd: "${XDG_CONFIG_HOME}/dxhd/dxhd.sh"
+      unix|dxhd: '${XDG_CONFIG_HOME}/dxhd/dxhd.sh'
     lxhkd:
-      unix|lxhkd: "${XDG_CONFIG_HOME}/lxhkd"
+      unix|lxhkd: '${XDG_CONFIG_HOME}/lxhkd'

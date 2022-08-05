@@ -184,13 +184,15 @@
   "clangd.enabled": true,
   "clangd.inlayHints.enable": true,
   "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
-  // "clangd.arguments": [
-  //   "--clang-tidy",
-  //   "--completion-style=detailed",
-  //   "--fallback-style=google",
-  //   "--header-insertion=iwyu",
-  //   "--suggest-missing-includes"
-  // ],
+  "clangd.arguments": [
+    "--query-driver=/usr/bin/clang++",
+    "--background-index",
+    "--clang-tidy",
+    "--completion-style=detailed",
+    "--fallback-style=google",
+    "--header-insertion=iwyu",
+    "--suggest-missing-includes"
+  ],
   "clangd.trace.server": "off",
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Rust                           │
@@ -261,7 +263,7 @@
   "Lua.telemetry.enable": false,
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
-  // "Lua.workspace.checkThirdParty": false,
+  "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 10000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 10000,
@@ -292,7 +294,32 @@
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
-    "different-requires": "None"
+    "different-requires": "None",
+    "no-implicit-any": "Any",
+    "codestyle-check": "Opened",
+    "ambiguity-1": "Opened",
+    "circle-doc-class": "Opened",
+    "close-non-object": "Opened",
+    "count-down-loop": "Opened",
+    "doc-field-no-class": "Opened",
+    "duplicate-doc-alias": "Opened",
+    "duplicate-doc-field": "Opened",
+    "duplicate-doc-param": "Opened",
+    "duplicate-index": "Opened",
+    "duplicate-set-field": "Opened",
+    "global-in-nil-env": "Opened",
+    "lowercase-global": "Opened",
+    "newfield-call": "Opened",
+    "newline-call": "Opened",
+    "unbalanced-assignments": "Opened",
+    "undefined-doc-class": "Opened",
+    "undefined-doc-name": "Opened",
+    "undefined-doc-param": "Opened",
+    "undefined-env-child": "Opened",
+    "undefined-field": "Opened",
+    "undefined-global": "Opened",
+    "unknown-diag-code": "Opened",
+    "unknown-cast-variable": "Opened"
   },
   "Lua.diagnostics.disable": [
     "lowercase-global",
@@ -604,7 +631,7 @@
       },
       "command": "efm-langserver",
       "args": [],
-      "filetypes": ["sh", "teal"],
+      "filetypes": ["sh", "teal", "python"],
       "settings": {
         "rootMarkers": [".git/"],
         "languages": {
@@ -619,6 +646,17 @@
               ],
               "formatCommand": "shfmt -i 2",
               "formatStdin": true
+            }
+          ],
+          "python": [
+            {
+              "lintCommand": "mypy --show-column-numbers",
+              "lintSource": "mypy",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tote: %m"
+              ]
             }
           ]
           // "teal": [
