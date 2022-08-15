@@ -758,7 +758,7 @@ function M.sandwhich()
     -- yS       = surround to end of line
     -- yss      = surround whole line (add)
     -- ygs      = surround (\n<line>\n)
-    -- ysi      = surround delimiter
+    -- ys{a,i}  = surround delimiter
     -- ds<CR>   = delete empty line above/below
 
     -- y{a,i}si = yank head - tail
@@ -1094,7 +1094,7 @@ function M.targets()
             ["iA"] = "Inner any bracket",
             ["aA"] = "Around any bracket",
             ["iJ"] = "Inner parameter (comma)",
-            ["AJ"] = "Around parameter (comma)"
+            ["aJ"] = "Around parameter (comma)"
         },
         {mode = "o"}
     )

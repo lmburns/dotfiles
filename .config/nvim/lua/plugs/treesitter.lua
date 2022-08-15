@@ -886,6 +886,8 @@ M.setup = function()
         },
         textobjects = {
             lsp_interop = {enable = false},
+            lookahead = true,
+            include_surrounding_whitespace = true,
             select = {
                 enable = true,
                 -- Automatically jump forward to textobj, similar to targets.vim

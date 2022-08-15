@@ -45,11 +45,10 @@ DEFAULT_FORMAT = "mp3"
 # Available options are:
 # exit, skip, manual
 #
-ON_META_ERROR = "exit"
+ON_META_ERROR = "manual"
 #****************************************#
 # ITUNES SETTINGS
 # Which region to use while searching from Itunes.
 #
 # By default, 'US' will be used.
 ITUNES_COUNTRY = "US"
-#

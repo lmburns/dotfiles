@@ -113,11 +113,11 @@
   "prettier.singleQuote": true,
   "prettier.semi": true,
   "prettier.trailingComma": "es5",
-  "lightbulb.excludeFiletypes": [],
-  "lightbulb.enableVirtualText": true,
-  "lightbulb.virtualText": "💡",
-  "lightbulb.text": "Code action",
-  "lightbulb.enableSign": false,
+  // "lightbulb.excludeFiletypes": [],
+  // "lightbulb.enableVirtualText": true,
+  // "lightbulb.virtualText": "💡",
+  // "lightbulb.text": "Code action",
+  // "lightbulb.enableSign": false,
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
@@ -176,7 +176,7 @@
     "struct": "פּ", // 
     "event": "", // 鬒
     "operator": "Ψ", // 
-    "typeParameter": "<>" //   
+    "typeParameter": "" //   
   },
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Clangd                          │
@@ -294,8 +294,8 @@
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
+    // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
     "different-requires": "None",
-    "no-implicit-any": "Any",
     "codestyle-check": "Opened",
     "ambiguity-1": "Opened",
     "circle-doc-class": "Opened",
@@ -327,6 +327,7 @@
     "missing-parameter",
     "redefined-local",
     // New
+    "codestyle-check",
     "need-check-nil",
     "param-type-mismatch" // Until the builtin functions are updated totally, this should be off
   ],
@@ -647,18 +648,18 @@
               "formatCommand": "shfmt -i 2",
               "formatStdin": true
             }
-          ],
-          "python": [
-            {
-              "lintCommand": "mypy --show-column-numbers",
-              "lintSource": "mypy",
-              "lintFormats": [
-                "%f:%l:%c: %trror: %m",
-                "%f:%l:%c: %tarning: %m",
-                "%f:%l:%c: %tote: %m"
-              ]
-            }
           ]
+          // "python": [
+          //   {
+          //     "lintCommand": "mypy --show-column-numbers",
+          //     "lintSource": "mypy",
+          //     "lintFormats": [
+          //       "%f:%l:%c: %trror: %m",
+          //       "%f:%l:%c: %tarning: %m",
+          //       "%f:%l:%c: %tote: %m"
+          //     ]
+          //   }
+          // ]
           // "teal": [
           //   {
           //     "formatCommand": "lua-format -i",

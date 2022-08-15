@@ -24,8 +24,6 @@ local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
--- local state = {}
-
 -- TODO: Maybe create an issue
 -- Would like to ignore certain lines on comment
 -- And ignore others on uncomment
@@ -62,6 +60,16 @@ function M.setup()
                 -- block-comment keymap
                 block = "gb"
             },
+            ---LHS of extra mappings
+            ---@type table
+            extra = {
+                ---Add comment on the line above
+                above = "gcO",
+                ---Add comment on the line below
+                below = "gco",
+                ---Add comment at the end of line
+                eol = "gcA"
+            },
             -- Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
             -- @type table
             mappings = {
@@ -78,34 +86,17 @@ function M.setup()
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: Ctx):string
             pre_hook = function(ctx)
-                -- Track comments, keep text highlighted
-                -- if ctx.cmotion >= 3 and ctx.cmotion <= 5 then
-                --     local c = vim.api.nvim_win_get_cursor(0)
-                --     local m = {
-                --         vim.api.nvim_buf_get_mark(0, "<"),
-                --         vim.api.nvim_buf_get_mark(0, ">")
-                --     }
-                --     if c[1] == m[1][1] then
-                --         m = {m[2], m[1]}
-                --     end
-                --     state.marks = m
-                --     state.cursor = c
-                --     state.cursor_line_len = #(vim.api.nvim_buf_get_lines(0, c[1] - 1, c[1], true))[1]
-                -- else
-                --     state = {}
-                -- end
+                -- Detemine whether to use linewise or blockwise commentstring
+                local type = ctx.ctype == U.ctype.linewise and "__default" or "__multiline"
 
                 -- Determine the location where to calculate commentstring from
                 -- Comment out nested languages using correct comment character
                 local location = nil
-                if ctx.ctype == U.ctype.block then
+                if ctx.ctype == U.ctype.blockwise then
                     location = ts_utils.get_cursor_location()
                 elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
                     location = ts_utils.get_visual_start_location()
                 end
-
-                -- Detemine whether to use linewise or blockwise commentstring
-                local type = ctx.ctype == U.ctype.line and "__default" or "__multiline"
 
                 return internal.calculate_commentstring(
                     {
@@ -114,7 +105,6 @@ function M.setup()
                     }
                 )
             end,
-
             -- Post-hook, called after commenting is done
             -- @type fun(ctx: Ctx)
             post_hook = nil
@@ -176,31 +166,30 @@ function M.flip_flop_comment(opmode)
     local range = U.get_region(opmode)
     local lines = U.get_lines(range)
     local ctx = {
-        ctype = U.ctype.line,
+        ctype = U.ctype.linewise,
         range = range
     }
     local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
     local lcs, rcs = U.unwrap_cstr(cstr)
-    local ll, rr = U.escape(lcs), U.escape(rcs)
-    local padding, pp = U.get_padding(true)
+    local padding = U.get_pad(true)
 
-    local min_indent = nil
+    local min_indent = -1
     for _, line in ipairs(lines) do
-        if not U.is_empty(line) and not U.is_commented(ll, rr, pp)(line) then
-            local cur_indent = U.grab_indent(line)
-            if not min_indent or #min_indent > #cur_indent then
+        if not U.is_empty(line) and not U.is_commented(lcs, rcs, padding)(line) then
+            local cur_indent = U.indent_len(line)
+            if min_indent == -1 or min_indent > cur_indent then
                 min_indent = cur_indent
             end
         end
     end
 
     for i, line in ipairs(lines) do
-        local is_commented = U.is_commented(ll, rr, pp)(line)
+        local is_commented = U.is_commented(lcs, rcs, padding)(line)
         if line == "" then
         elseif is_commented then
-            lines[i] = U.uncomment_str(line, ll, rr, pp)
+            lines[i] = U.uncommenter(lcs, rcs, padding)(line)
         else
-            lines[i] = U.comment_str(line, lcs, rcs, padding, min_indent)
+            lines[i] = U.commenter(lcs, rcs, padding, min_indent)(line)
         end
     end
     api.nvim_buf_set_lines(0, range.srow - 1, range.erow, false, lines)
@@ -218,9 +207,9 @@ local function init()
         [[<Cmd>set operatorfunc=v:lua.require'plugs.comment'.flip_flop_comment<CR>g@]],
         {desc = "Flip comment order"}
     )
-    map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle_current_linewise()<CR>j")
-    map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle_current_linewise()<CR>]])
-    map("x", "<C-.>", [[<ESC><Cmd>lua require("Comment.api").locked.toggle_linewise_op(vim.fn.visualmode())<CR>]])
+    map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle.linewise.current()<CR>j")
+    map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle.linewise.current()<CR>]])
+    map("x", "<C-.>", [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise.current")()<CR>]])
 
     map(
         "x",
@@ -228,8 +217,9 @@ local function init()
         function()
             local selection = utils.get_visual_selection()
             fn.setreg(vim.v.register, selection)
-            cmd("normal! gv")
-            require("Comment.api").locked.toggle_linewise_op(fn.visualmode())
+            utils.normal("n", "gv")
+            -- cmd("normal! gv")
+            require("Comment.api").locked("toggle.linewise.current")()
         end,
         {desc = "Copy text and comment it out"}
     )

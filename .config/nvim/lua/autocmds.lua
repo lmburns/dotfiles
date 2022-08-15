@@ -332,39 +332,44 @@ nvim.autocmd.lmb__ColorschemeSetup = {
     event = "ColorScheme",
     pattern = "*",
     command = function()
-        C.all(
-            {
-                TSVariableBuiltin = {default = true, gui = "none"},
-                TSTypeBuiltin = {default = true, gui = "none"},
-                TSProperty = {default = true, gui = "none"},
-                TSVariable = {default = true, gui = "none"},
-                TSKeyword = {default = true, gui = "none"},
-                TSConditional = {default = true, gui = "none"},
-                TSString = {default = true, gui = "none"},
-                TSKeywordFunction = {default = true, gui = "none"},
-                Function = {default = true, gui = "bold"},
-                Todo = {default = true, bg = "none"},
-                QuickFixLine = {default = true, fg = "none"}
-                -- TSConstBuiltin = {default = true, gui = "none"},
-                -- TSMethod = {default = true, gui = "bold"},
-                -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
-            }
-        )
+        vim.defer_fn(
+            function()
+                C.all(
+                    {
+                        TSVariableBuiltin = {default = true, gui = "none"},
+                        TSTypeBuiltin = {default = true, gui = "none"},
+                        TSProperty = {default = true, gui = "none"},
+                        TSVariable = {default = true, gui = "none"},
+                        TSKeyword = {default = true, gui = "none"},
+                        TSConditional = {default = true, gui = "none"},
+                        TSString = {default = true, gui = "none"},
+                        TSKeywordFunction = {default = true, gui = "none"},
+                        Function = {default = true, gui = "bold"},
+                        Todo = {default = true, bg = "none"},
+                        QuickFixLine = {default = true, fg = "none"}
+                        -- TSConstBuiltin = {default = true, gui = "none"},
+                        -- TSMethod = {default = true, gui = "bold"},
+                        -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
+                    }
+                )
 
-        if g.colors_name ~= "kimbox" then
-            C.all(
-                {
-                    Hlargs = {link = "TSParameter"}
-                }
-            )
-        else
-            C.all(
-                {
-                    TSFunction = {default = true, bold = true},
-                    TSFuncBuiltin = {link = "TSFunction", bold = true}
-                }
-            )
-        end
+                if g.colors_name ~= "kimbox" then
+                    C.all(
+                        {
+                            Hlargs = {link = "TSParameter"}
+                        }
+                    )
+                else
+                    C.all(
+                        {
+                            TSFunction = {default = true, bold = true},
+                            TSFuncBuiltin = {link = "TSFunction", bold = true}
+                        }
+                    )
+                end
+            end,
+            1
+        )
     end,
     desc = "Override highlight groups"
 }

@@ -9,6 +9,7 @@ skip_global_compinit=1
 
 export DO_NOT_TRACK=1
 export HINT_TELEMETRY="off"
+export NEXT_TELEMETRY_DISABLED=1
 export LANGUAGE="en_US.UTF-8"
 export LANG="$LANGUAGE"
 export LC_ALL="$LANGUAGE"

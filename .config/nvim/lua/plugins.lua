@@ -864,6 +864,13 @@ return packer.startup(
             -- ]]] === Python ===
 
             -- ============================= Javascript ============================ [[[
+            -- use(
+            --     {
+            --         "zxelvc/template-string.nvim",
+            --         conf = "template_string",
+            --         requires = "nvim-treesitter/nvim-treesitter"
+            --     }
+            -- )
             use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
             use(
                 {

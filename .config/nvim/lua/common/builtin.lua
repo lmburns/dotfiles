@@ -6,7 +6,7 @@ local D = require("dev")
 local utils = require("common.utils")
 local C = require("common.color")
 
-local ex = nvim.ex
+-- local ex = nvim.ex
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -91,9 +91,9 @@ function M.jumps2qf()
 end
 
 function M.spellcheck()
-    ex.SpellCheck()
+    cmd.SpellCheck()
     if #fn.getqflist() > 0 then
-        ex.copen()
+        cmd.copen()
     end
 end
 
@@ -160,18 +160,18 @@ function M.switch_lastbuf()
     local alter_bufnr = fn.bufnr("#")
     local cur_bufnr = api.nvim_get_current_buf()
     if alter_bufnr ~= -1 and alter_bufnr ~= cur_bufnr then
-        ex.b("#")
+        cmd.b("#")
         -- If a buffer was closed with 'bq', then reopened
         local new_bufnr = api.nvim_get_current_buf()
         if not vim.bo[new_bufnr].buflisted then
-            ex.set("buflisted")
+            cmd.set("buflisted")
         end
     else
         local mru_list = require("common.mru").list()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
-                -- pcall(ex.e, fn.fnameescape(f))
+                -- pcall(cmd.e, fn.fnameescape(f))
                 cmd(("e %s"):format(fn.fnameescape(f)))
 
                 -- Cursor position when last exiting
@@ -208,7 +208,7 @@ end
 
 ---Highlight the line once the search results wrap back around to the top of the file
 function M.search_wrap()
-    if api.nvim_get_mode().mode ~= "n" then
+    if utils.mode() ~= "n" then
         return
     end
     C.set_hl("SearchWrapReverse", {bg = "#5e452b"})

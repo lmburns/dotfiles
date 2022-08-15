@@ -184,7 +184,7 @@ function M.setup()
                         groups.builtin.ungrouped,
                         {
                             name = "Dependencies",
-                            highlight = {guifg = require("kimbox.colors").yellow},
+                            highlight = {fg = require("kimbox.colors").yellow},
                             matcher = function(buf)
                                 return vim.startswith(buf.path, ("%s/site/pack/packer"):format(fn.stdpath("data"))) or
                                     vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
@@ -197,7 +197,7 @@ function M.setup()
                             end
                         },
                         {
-                            highlight = {guisp = "#418292", gui = "underline"},
+                            highlight = {fg = "#418292", underline = true},
                             name = "tests",
                             icon = "",
                             matcher = function(buf)
