@@ -6,7 +6,7 @@ local bmap = utils.bmap
 local augroup = utils.augroup
 local command = utils.command
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local g = vim.g

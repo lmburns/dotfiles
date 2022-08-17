@@ -8,7 +8,7 @@ end
 
 -- local utils = require("common.utils")
 local icons = require("style").icons
-local color = require("common.color")
+local hl = require("common.color")
 local groups = require("bufferline.groups")
 local pithunk = D.pithunk
 
@@ -283,10 +283,10 @@ function M.setup_close_buffers()
 end
 
 local function init_hl()
-    local normal_bg = color.get_hl("Normal", "bg")
-    local bg_color = color.alter_color(normal_bg, -8)
+    local normal_bg = hl.get("Normal", "bg")
+    local bg_color = hl.alter_color(normal_bg, -8)
 
-    color.all(
+    hl.all(
         {
             PanelHeading = {background = bg_color, bold = true}
         }

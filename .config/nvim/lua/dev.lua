@@ -12,6 +12,7 @@ local env = vim.env
 local F = vim.F
 
 ---@alias vector table
+---@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias module table
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -54,9 +55,10 @@ _G.pp = vim.pretty_print
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
+        local info = debug.getinfo(1, "S")
         local msg = vim.split(table.concat(args, "\n"), "\n")
         local mod = msg[1]:match("module '(%w.*)'")
-        log.err(msg, true, {title = ('Failed to require("%s")'):format(mod)})
+        log.err(msg, true, {title = ('Failed to require("%s"): %s'):format(mod, info)})
         return
     end
     return ...
@@ -271,13 +273,12 @@ end
 ---@param tbl table table to shift
 ---@param n number number of elements to shift
 M.shift = function(tbl, n)
-    ---@diagnostic disable-next-line:unused-local
-    for i = 1, n do
+    for _ = 1, n do
         table.insert(tbl, 1, table.remove(tbl, #tbl))
     end
 end
 
----Determine whether two tables are equivalent
+---Determine whether two table/vectors are equivalent
 ---@param t1 table|any[]
 ---@param t2 table|any[]
 ---@param ignore_mt boolean Ignore metatable
@@ -344,18 +345,6 @@ M.filter_duplicates = function(vec)
         end
     end
     return res
-end
-
----Execute a function across a table, keeping an accumulation of results
----@param tbl table
----@param func fun(table, any, any)
----@param acc table
----@return table
-M.tbl_reduce = function(tbl, func, acc)
-    for k, v in pairs(tbl) do
-        acc = func(acc, v, k)
-    end
-    return acc
 end
 
 ---Clear a table's values
@@ -602,24 +591,36 @@ M.vec_push = function(t, ...)
     return t
 end
 
----Apply a function to each value in a table.
----@param tbl table
----@param func function (value)
-M.map = function(tbl, func)
-    -- local t = {}
-    -- for k, v in pairs(tbl) do
-    --     t[k] = func(v)
-    -- end
-    -- return t
-    return vim.tbl_map(func, tbl)
+---Execute a function across a table, keeping an accumulation of results
+---@generic T: table
+---@param tbl T[]
+---@param func fun(T, T, key: string|number): T
+---@param acc T
+---@return T
+M.fold = function(tbl, func, acc)
+    for k, v in pairs(tbl) do
+        acc = func(acc, v, k)
+        assert(acc ~= nil, "Accumulator must be returned on each iteration")
+    end
+    return acc
 end
 
----Filter table based on function
----@param tbl table Table to be filtered
----@param func function Function to apply filter
----@return table|any[]|nil
-M.filter = function(tbl, func)
-    return vim.tbl_filter(func, tbl)
+---Apply a function to each value in a table. Return the table
+---@generic T: table
+---@param tbl T[]
+---@param func fun(T, key: string|number): T
+---@return T[]
+M.map = function(tbl, func)
+    -- return vim.tbl_map(func, tbl)
+
+    return M.fold(
+        tbl,
+        function(acc, v, k)
+            table.insert(acc, func(v, k, acc))
+            return acc
+        end,
+        {}
+    )
 end
 
 ---Apply function to each element of vector
@@ -630,6 +631,14 @@ M.for_each = function(tbl, func)
     for _, item in ipairs(tbl) do
         func(item)
     end
+end
+
+---Filter table based on function
+---@param tbl table Table to be filtered
+---@param func function Function to apply filter
+---@return table|any[]|nil
+M.filter = function(tbl, func)
+    return vim.tbl_filter(func, tbl)
 end
 
 ---Apply a function to each element of a vector
@@ -966,6 +975,7 @@ end
 ---Reload all lua modules
 M.reload_config = function()
     -- Handle impatient.nvim automatically.
+    ---@diagnostic disable-next-line:undefined-field
     local luacache = (_G.__luacache or {}).modpaths.cache
 
     -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)

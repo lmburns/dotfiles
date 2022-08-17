@@ -20,6 +20,7 @@ local augroup = utils.augroup
 
 local fs = vim.fs
 local cmd = vim.cmd
+local ex = vim.cmd
 local fn = vim.fn
 local g = vim.g
 local api = vim.api
@@ -1637,6 +1638,23 @@ function M.registers()
     g.registers_window_border = "rounded"
     g.registers_insert_mode = false -- removes <C-R> insert mapping
     g.registers_visual_mode = false -- removes <C-R> insert mapping
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Template String                      │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.template_string()
+    local ts = D.npcall(require, "template-string")
+    if not ts then
+        return
+    end
+
+    ts.setup(
+        {
+            filetypes = {"typescript", "javascript", "typescriptreact", "javascriptreact"},
+            jsx_brackets = true -- should add brackets to jsx attributes
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

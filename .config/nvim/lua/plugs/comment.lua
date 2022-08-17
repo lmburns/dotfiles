@@ -20,7 +20,7 @@ end
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
-local cmd = vim.cmd
+-- local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 

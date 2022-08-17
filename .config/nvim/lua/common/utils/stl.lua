@@ -13,7 +13,7 @@ local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
 local dev = require("dev")
 local coc = require("plugs.coc")
-local C = require("common.color")
+local hl = require("common.color")
 local colors = require("kimbox.colors")
 local icons = require("style").icons
 
@@ -58,7 +58,7 @@ M.conditions = {
         return vim.bo.ft or not vim.bo.ft == ""
     end,
     is_lsp_attached = function()
-        return not vim.tbl_isempty(vim.lsp.buf_get_clients())
+        return not vim.tbl_isempty(vim.lsp.get_active_clients())
     end,
     check_git_workspace = function()
         -- local filepath = fn.expand("%:p:h")
@@ -478,7 +478,7 @@ local function get_terminal_status()
         return ""
     end
     local status = terminal_status()
-    C.set_hl("LualineToggleTermStatus", {fg = terminal_status_color(status), bg = colors.bg0, bold = true})
+    hl.set("LualineToggleTermStatus", {fg = terminal_status_color(status), bg = colors.bg0, bold = true})
     return status
 end
 

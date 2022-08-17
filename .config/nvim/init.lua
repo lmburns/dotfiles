@@ -97,7 +97,7 @@ else
     require("plugins").compile()
 end
 
-cmd.packadd("cfilter")
+ex.packadd("cfilter")
 require("mapping")
 require("abbr")
 require("functions")
@@ -301,8 +301,6 @@ vim.schedule(
                         CocSemDocumentation = {link = "Number"}
                     }
                 )
-
-                -- set_hl("CocSemDefaultLibraryNamespace", {link = "TSNamespace"})
 
                 ex.packadd("coc-kvs")
                 ex.packadd("coc.nvim")

@@ -13,13 +13,14 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 -- local create_augroup = utils.create_augroup
 
-local ex = nvim.ex
+local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
-local g = vim.g
-local v = vim.v
 local env = vim.env
 local cmd = vim.cmd
+local g = vim.g
+local v = vim.v
+local b = vim.bo
 
 local debounced
 local has_sourced

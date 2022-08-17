@@ -9,7 +9,7 @@ end
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
-local C = require("common.color")
+local hl = require("common.color")
 local yank = require("common.yank")
 local telescope = require("telescope")
 
@@ -124,7 +124,7 @@ end
 function M.setup_hl()
     M.ns = api.nvim_create_namespace("put.region")
     M.timer = uv.new_timer()
-    C.set_hl("HighlightedPutRegion", {bg = "#cc6666"})
+    hl.set("HighlightedPutRegion", {bg = "#cc6666"})
 end
 
 local function get_region()
@@ -195,7 +195,7 @@ local function init()
             event = "TextYankPost",
             pattern = "*",
             command = function()
-                C.set_hl("HighlightedYankRegion", {bg = "#cc6666"})
+                hl.set("HighlightedYankRegion", {bg = "#cc6666"})
                 if not vim.b.visual_multi then
                     pcall(vim.highlight.on_yank, {higroup = "HighlightedYankRegion", timeout = M.timeout})
                 end

@@ -193,14 +193,14 @@ end
 
 Err.__index = Err
 
-local function wrap(cb)
-    local ok, res = pcall(cb)
-    if ok then
-        return Ok(res)
-    end
-
-    return Err(res)
-end
+-- local function wrap(cb)
+--     local ok, res = pcall(cb)
+--     if ok then
+--         return Ok(res)
+--     end
+--
+--     return Err(res)
+-- end
 
 ---Create a Result from a value. If `nil`, then Error
 ---@param o any

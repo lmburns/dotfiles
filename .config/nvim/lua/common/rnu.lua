@@ -1,8 +1,8 @@
 local M = {}
 
-local C = require("common.color")
+local hl = require("common.color")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
@@ -62,14 +62,14 @@ end
 ---Show the relative line number
 local function set_rnu()
     set_win_rnu(true)
-    C.set_hl("FoldColumn", {link = "LineNr"})
+    hl.set("FoldColumn", {link = "LineNr"})
     -- cmd("hi! link FoldColumn NONE")
 end
 
 ---Hide the relative line number
 local function unset_rnu()
     set_win_rnu(false)
-    C.set_hl("FoldColumn", {link = "Ignore"})
+    hl.set("FoldColumn", {link = "Ignore"})
     -- cmd("hi! link FoldColumn Ignore")
 end
 

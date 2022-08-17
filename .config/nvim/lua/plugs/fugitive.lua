@@ -4,7 +4,7 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local wk = require("which-key")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g

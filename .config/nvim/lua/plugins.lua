@@ -454,6 +454,7 @@ return packer.startup(
             --     }
             -- )
 
+            -- use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
             -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
             use(
                 {
@@ -468,7 +469,6 @@ return packer.startup(
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua", patch = true})
-            use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
 
             -- ]]] === Debugging ===
 
@@ -864,19 +864,20 @@ return packer.startup(
             -- ]]] === Python ===
 
             -- ============================= Javascript ============================ [[[
-            -- use(
-            --     {
-            --         "zxelvc/template-string.nvim",
-            --         conf = "template_string",
-            --         requires = "nvim-treesitter/nvim-treesitter"
-            --     }
-            -- )
+            use(
+                {
+                    "axelvc/template-string.nvim",
+                    conf = "template_string",
+                    requires = "nvim-treesitter/nvim-treesitter"
+                }
+            )
             use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
             use(
                 {
                     "vuki656/package-info.nvim",
                     requires = "MunifTanjim/nui.nvim",
                     event = "BufRead package.json",
+                    after = "nui.nvim",
                     conf = "package_info"
                 }
             )
@@ -1087,7 +1088,7 @@ return packer.startup(
             use(
                 {
                     "neoclide/coc.nvim",
-                    branch = "pum",
+                    branch = "master",
                     run = "yarn install --frozen-lockfile",
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {

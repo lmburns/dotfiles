@@ -9,17 +9,18 @@ local utils = require("common.utils")
 local map = utils.map
 -- local bmap = utils.bap
 local augroup = utils.augroup
-local _ = D.ithunk
+local ithunk = D.ithunk
 
 local wk = require("which-key")
 local promise = require("promise")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local g = vim.g
 local cmd = vim.cmd
 local uv = vim.loop
+local F = vim.F
 
 local diag_qfid
 
@@ -484,8 +485,8 @@ function M.post_open_float()
                 vim.wo[winid].showbreak = "NONE"
 
                 if lv then
-                    bmap(bufnr, "n", "K", _(lv.link_under_cursor), {desc = "Link under cursor"})
-                    bmap(bufnr, "n", "L", _(lv.link_near_cursor), {desc = "Link near cursor"})
+                    bmap(bufnr, "n", "K", ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+                    bmap(bufnr, "n", "L", ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
                 end
             end
         )
@@ -509,12 +510,6 @@ function _G.map_cr()
     else
         return require("nvim-autopairs").autopairs_cr()
     end
-
-    -- if fn["pumvisible"]() ~= 0 then
-    --     return fn["coc#_select_confirm"]()
-    -- else
-    --     return require("nvim-autopairs").autopairs_cr()
-    -- end
 end
 
 ---Check whether Coc has been initialized
@@ -570,13 +565,6 @@ end
 function M.toggle_outline()
     local winid = fn["coc#window#find"]("cocViewId", "OUTLINE")
     if winid == -1 then
-        -- local err, res = M.a2sync("showOutline", {1})
-        -- if not err then
-        --     if res == "timeout" then
-        --         log.warn("Show outline timeout", true)
-        --     end
-        -- end
-
         M.action("showOutline", {1}):thenCall(
             function(_)
                 ex.wincmd("l")
@@ -647,41 +635,10 @@ M.get_lua_runtime = function(sumneko)
     return result
 end
 
---- Setup the Lua language-server
-M.lua_langserver = function()
-    local bin = M.get_config("languageserver.lua").command
-    local main = fn.fnamemodify(bin, ":h") .. "/main.lua"
-
-    M.set_config("languageserver.lua", {args = {"-E", main}})
-
-    local settings = M.get_config("languageserver.lua").settings
-
-    -- This only works with max397574's fork
-    local luadev = require("lua-dev").setup({}).settings
-    settings = vim.tbl_deep_extend("force", settings, luadev)
-
-    -- fn["coc#config"]("languageserver.lua.settings.Lua.workspace", {library = M.get_lua_runtime()})
-    M.set_config("languageserver.lua", {settings = settings})
-
-    -- Add async library to Lua workspace library0
-    if D.plugin_loaded("promise-async") then
-        local library = M.get_config("languageserver.lua").settings.Lua.workspace.library
-        ---@diagnostic disable-next-line: undefined-field
-        local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
-        library = vim.tbl_deep_extend("force", library, {[promise] = true})
-        M.set_config("languageserver.lua.settings.Lua.workspace", {library = library})
-    end
-end
-
 ---Setup the Sumneko-Coc Lua language-server
 ---Note that the runtime paths here are placed into an array, not a table
 M.sumneko_ls = function()
     local library = M.get_config("Lua").workspace.library
-    local runtime = _t(M.get_lua_runtime(true)):keys()
-    library = vim.list_extend(library, runtime)
-
-    local luadev = require("lua-dev.sumneko").types()
-    library = vim.list_extend(library, {luadev})
 
     if D.plugin_loaded("promise-async") then
         ---@diagnostic disable-next-line: undefined-field
@@ -714,8 +671,6 @@ end
 function M.init()
     diag_qfid = -1
 
-    -- local client = vim.lsp.get_active_clients()
-    -- M.lua_langserver()
     M.sumneko_ls()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
@@ -742,14 +697,6 @@ function M.init()
                 -- fn["CocDiagnosticNotify"]()
             end
         },
-        -- {
-        --     event = "User",
-        --     pattern = "CocStatusChange",
-        --     command = function()
-        --         -- fn["CocStatusNotify"]()
-        --         require("plugs.coc").coc_status_notification()
-        --     end
-        -- },
         {
             event = "BufEnter",
             pattern = "*",

@@ -6,7 +6,7 @@ if not incline then
     return
 end
 
-local C = require("common.color")
+local hl = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
 
@@ -26,7 +26,7 @@ local function render(props)
         return "[No name]"
     end
 
-    local directory_color = C.Comment.fg
+    local directory_color = hl.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
     fname = fname:gsub("^/home/lucas/.config/nvim/", "$NVIM/")
     fname = fname:gsub("^/home/lucas/.local/share/", "$DATA/")
@@ -46,7 +46,7 @@ local function render(props)
             vim.list_extend(
                 result,
                 {
-                    {truncate(part, 20), guifg = C.get_hl(guifg, "fg"), gui = "bold"},
+                    {truncate(part, 20), guifg = hl.get(guifg, "fg"), gui = "bold"},
                     {("%s"):format("/"), guifg = directory_color}
                 }
             )
@@ -117,7 +117,7 @@ function M.setup()
         }
     )
 
-    C.plugin(
+    hl.plugin(
         "Incline",
         {
             InclineNormal = {default = true, bold = true},

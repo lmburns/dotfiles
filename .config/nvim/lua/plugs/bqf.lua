@@ -11,7 +11,7 @@ local C = require("common.color")
 local utils = require("common.utils")
 local autocmd = utils.autocmd
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 

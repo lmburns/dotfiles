@@ -11,8 +11,8 @@ local utils = require("common.utils")
 local map = utils.map
 local command = utils.command
 
+local ex = vim.cmd
 local fn = vim.fn
-local ex = nvim.ex
 
 function M.setup()
     local python_adapter = D.npcall(require, "neotest-python")

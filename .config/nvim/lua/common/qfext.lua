@@ -10,7 +10,7 @@ local backends = require("aerial.backends")
 local config = require("aerial.config")
 local data = require("aerial.data")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local F = vim.F
 local api = vim.api
 local fn = vim.fn
@@ -31,12 +31,12 @@ local cmd = vim.cmd
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Fill a quickfix-list with symbols from Aerial
----@param opts Outline
-function M.outline_aerial(opts)
-    opts =
+---@param args Outline
+function M.outline_aerial(args)
+    local opts =
         vim.tbl_extend(
         "keep",
-        opts or {},
+        args or {},
         {
             filter_kind = {
                 "Class",
@@ -193,14 +193,14 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Fill a quickfix-list with symbols from Coc
----@param opts Outline
-function M.outline(opts)
+---@param args Outline
+function M.outline(args)
     if not coc.did_init() then
         log.err("Coc not ready yet ...", true)
         return
     end
 
-    opts = opts or {}
+    local opts = args or {}
 
     if opts.filter_kind and opts.filter_kind == false then
         opts.filter_kind = {
@@ -251,7 +251,7 @@ function M.outline(opts)
             },
             fzf = false
         }
-    )
+    ) or {} -- NOTE: This is needed to prevent diagnostic warning on casting 'Outline' to table|nil
 
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].bt == "quickfix" then
@@ -354,12 +354,12 @@ local treesitter_type_highlight = {
 }
 
 ---Create an outline using treesitter
----@param opts Outline?
-function M.outline_treesitter(opts)
-    opts =
+---@param args Outline
+function M.outline_treesitter(args)
+    local opts =
         vim.tbl_extend(
         "keep",
-        opts or {},
+        args or {},
         {
             bufnr = api.nvim_get_current_buf(),
             fzf = false

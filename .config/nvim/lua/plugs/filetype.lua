@@ -4,6 +4,7 @@ local fn = vim.fn
 local g = vim.g
 local b = vim.bo
 local w = vim.wo
+local o = vim.opt
 
 local nroff_ft = function()
     b.filetype = "nroff"

@@ -8,8 +8,6 @@ if not lualine then
     return
 end
 
-local lutils = require("lualine.utils.utils")
-
 local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
@@ -23,6 +21,8 @@ local fs = vim.fs
 local fn = vim.fn
 local F = vim.F
 local api = vim.api
+local cmd = vim.cmd
+local g = vim.g
 -- local uv = vim.loop
 
 local stl = require("common.utils.stl")
@@ -40,6 +40,7 @@ local only_pad_right = stl.other.only_pad_right
 ---@param hide_width number hides component when window width is smaller then hide_width
 ---@param no_ellipsis boolean whether to disable adding '' at end after truncation
 ---return function that can format the component accordingly
+---@diagnostic disable-next-line:unused-function, unused-local
 local function trunc(trunc_width, trunc_len, hide_width, no_ellipsis)
     return function(str)
         local win_width = fn.winwidth(0)

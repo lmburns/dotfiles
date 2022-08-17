@@ -5,7 +5,7 @@ local utils = require("common.utils")
 
 local Job = require("plenary.job")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fs = vim.fs
 local fn = vim.fn
 local api = vim.api

@@ -6,7 +6,7 @@ if not gitsigns then
     return
 end
 
-local log = require("common.log")
+-- local log = require("common.log")
 local utils = require("common.utils")
 local map = utils.map
 local bmap = utils.bmap
@@ -15,7 +15,7 @@ local augroup = utils.augroup
 local C = require("common.color")
 local wk = require("which-key")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local F = vim.F
 

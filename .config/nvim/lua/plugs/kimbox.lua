@@ -7,7 +7,7 @@ local M = {}
 local D = require("dev")
 -- local C = require("common.color")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local uv = vim.loop

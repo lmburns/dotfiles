@@ -1,7 +1,7 @@
 local M = {}
 
 local log = require("common.log")
-local ex = nvim.ex
+local ex = vim.cmd
 
 ---Reinstall a plugin. Only the repository name is allowed
 ---Example: `:PackerReinstall "theme.nvim"`

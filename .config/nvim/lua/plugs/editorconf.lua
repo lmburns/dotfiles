@@ -3,7 +3,7 @@ local M = {}
 -- https://editorconfig-specification.readthedocs.io/
 -- https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties
 
-local ex = nvim.ex
+local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local g = vim.g

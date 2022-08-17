@@ -8,11 +8,11 @@ end
 local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
-local color = require("common.color")
+local hl = require("common.color")
 
 local wk = require("which-key")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local api = vim.api
@@ -114,7 +114,7 @@ M.setup_iswap = function()
         return
     end
 
-    color.set_hl("ISwapSwap", {bg = "#957FB8"})
+    hl.set("ISwapSwap", {bg = "#957FB8"})
 
     iswap.setup {
         keys = "asdfghjkl;",

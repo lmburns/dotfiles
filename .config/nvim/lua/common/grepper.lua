@@ -4,7 +4,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local F = vim.F

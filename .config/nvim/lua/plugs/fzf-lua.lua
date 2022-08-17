@@ -6,7 +6,7 @@ if not fzf_lua then
     return
 end
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 
 function M.setup()

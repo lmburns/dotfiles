@@ -8,7 +8,7 @@ end
 
 local log = require("common.log")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local fn = vim.fn
 
 local colors_path

@@ -7,7 +7,7 @@ local M = {}
 local command = require("common.utils").command
 local log = require("common.log")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local F = vim.F
 local api = vim.api
 local cmd = vim.cmd
@@ -191,11 +191,11 @@ function M.close()
                 function()
                     local char = fn.getchar()
                     if type(char) == "number" then
-                        char = fn.nr2char(char)
-                        if char == "q" then
+                        local charstr = fn.nr2char(char)
+                        if charstr == "q" then
                             -- cmd("ccl")
                             ex.ccl()
-                        elseif char == "l" then
+                        elseif charstr == "l" then
                             ex.lcl()
                         -- cmd("lcl")
                         end

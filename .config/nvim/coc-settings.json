@@ -67,7 +67,9 @@
     "border": true,
     "rounded": true,
     "borderhighlight": "FloatBorder",
-    "highlight": "CocSuggestFloating"
+    "highlight": "CocSuggestFloating",
+    "maxWidth": 120,
+    "focusable": true
   },
   "diagnostic.floatConfig": {
     "border": true,
@@ -97,6 +99,8 @@
   "dialog.floatBorderHighlight": "Normal",
   "dialog.rounded": true,
   "notification.border": true,
+  "notification.focusable": true,
+  "notification.highlightGroup": "CocFloating",
   "diagnostic-languageserver.filetypes": {
     // "zsh": "shellcheck"
     // "sh": "shellcheck",
@@ -136,10 +140,20 @@
     "typescript": ["javascript"]
   },
   // Gone after pum is merged
-  "suggest.disableMenu": true,
-  "suggest.enablePreview": true,
-  "suggest.noselect": false,
-  // "suggest.selection": "none",
+  // "suggest.disableMenu": true,
+  // "suggest.enablePreview": true,
+  // "suggest.noselect": false,
+
+  "suggest.selection": "first", // recentlyUsed
+
+  "suggest.pumFloatConfig": {
+    "border": true,
+    "rounded": true,
+    "highlight": "CocSuggestFloating",
+    "borderhighlight": "FloatBorder",
+    "maxWidth": 120,
+    "focusable": true
+  },
 
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 99,
@@ -254,10 +268,10 @@
   // The Coc package for Lua provides inline hints, which is better
   // than a manual setup (can be found below)
   "sumneko-lua.enable": true,
-  // "sumneko-lua.enableNvimLuaDev": true,
+  "sumneko-lua.enableNvimLuaDev": true,
   "sumneko-lua.checkUpdate": true,
   "sumneko-lua.inlayHints.refreshOnInsertMode": false,
-  "sumneko-lua.inlayHints.trimSemicolon": true,
+  "sumneko-lua.inlayHints.trimSemicolon": false,
   "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
   "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
   "Lua.telemetry.enable": false,
@@ -273,7 +287,8 @@
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace",
   "Lua.completion.postfix": ".",
-  "Lua.hint.enable": true,
+  // sumneko-lua.inlayHints already does this (though it is displayed the same color as CodeLens)
+  "Lua.hint.enable": false,
   "Lua.hint.await": true,
   "Lua.hint.paramName": "All",
   "Lua.hint.arrayIndex": "Enable",

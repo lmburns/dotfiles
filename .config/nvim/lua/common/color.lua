@@ -3,7 +3,7 @@
 
 local M = {}
 
--- local D = require("dev")
+local D = require("dev")
 local utils = require("common.utils")
 local log = require("common.log")
 
@@ -147,7 +147,7 @@ local keys = {guisp = "sp", guibg = "background", guifg = "foreground"}
 ---i
 ---For example:
 ---```lua
----  M.set_hl("MatchParen", {fg = {from = 'ErrorMsg'}})
+---  M.set("MatchParen", {fg = {from = 'ErrorMsg'}})
 ---```
 ---This will take the foreground color from ErrorMsg and set it to the foreground of MatchParen.
 ---
@@ -157,12 +157,15 @@ local keys = {guisp = "sp", guibg = "background", guifg = "foreground"}
 ---@param opts table<string, string|boolean|table<string,string>>
 ---@diagnostic disable-next-line:unused-function, unused-local
 local function convert_hl_to_val(opts)
-    for name, value in pairs(opts) do
+    for attr, value in pairs(opts) do
         if type(value) == "table" and value.from then
-            opts[name] = M.get_hl(value.from, F.if_nil(value.attr, name))
-        elseif keys[name] then
-            opts[keys[name]] = value
-            opts[name] = nil
+            opts[attr] = M.get(value.from, value.attr or attr)
+            if value.alter then
+                opts[attr] = M.alter_color(opts[attr], value.alter)
+            end
+        elseif keys[attr] then
+            opts[keys[attr]] = value
+            opts[attr] = nil
         end
     end
 end
@@ -193,7 +196,7 @@ end
 ---For example:
 ---```lua
 --- -- This will take the fg from ErrorMsg and set it to the fg of MatchParen
---- M.set_hl({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
+--- M.set({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
 ---```
 ---
 ---### Legacy
@@ -321,7 +324,10 @@ function M.parse(hl)
     -- WinSeparator = { bg = 'NONE', fg = { from = 'NonText' } }
     for name, value in pairs(hl) do
         if type(value) == "table" and value.from then
-            def[name] = M.get_hl(value.from, F.if_nil(value.attr, name))
+            def[name] = M.get(value.from, value.attr or name)
+            if value.alter then
+                def[name] = M.alter_color(def[name], value.alter)
+            end
         end
     end
 
@@ -332,22 +338,11 @@ end
 ---
 ---@param name string
 ---@param opts ColorFormat
-function M.set_hl(name, opts)
+function M.set(name, opts)
     vim.validate {
         name = {name, "string", false},
         opts = {opts, "table", false}
     }
-
-    -- if opts.gui then
-    --     opts = vim.tbl_extend("force", opts, convert_gui(opts.gui))
-    --     opts.gui = nil
-    -- end
-    --
-    -- local hl = get_hl(opts.inherit or name)
-    -- convert_hl_to_val(opts)
-    -- opts.inherit = nil
-    --
-    -- local ok, msg = pcall(api.set, 0, name, vim.tbl_deep_extend("force", hl, opts))
 
     local ok, msg = pcall(api.set, 0, name, M.parse(opts))
 
@@ -362,7 +357,7 @@ end
 ---@param attribute string
 ---@param fallback Color?
 ---@return string
-function M.get_hl(group, attribute, fallback)
+function M.get(group, attribute, fallback)
     if not group then
         log.err("Need a group to get a highlight")
         return "NONE"
@@ -390,7 +385,7 @@ end
 ---@param fallback Color?
 ---@return string
 function M.get_fg(group, fallback)
-    return M.get_hl(group, "foreground", fallback)
+    return M.get(group, "foreground", fallback)
 end
 
 ---Get the background string of a highlight group
@@ -398,22 +393,29 @@ end
 ---@param fallback Color?
 ---@return string
 function M.get_bg(group, fallback)
-    return M.get_hl(group, "background", fallback)
+    return M.get(group, "background", fallback)
 end
 
 ---Clear a highlight group
 ---@param name string
 function M.clear_hl(name)
     assert(name, "name is required to clear a highlight")
-    M.set_hl(name, {})
+    M.set(name, {})
 end
 
 ---Apply a list of highlights
 ---@param hls table<string, table<string, boolean|string>>
 function M.all(hls)
-    for name, hl in pairs(hls) do
-        M.set_hl(name, hl)
-    end
+    D.for_each(
+        hls,
+        function(hl)
+            M.set(next(hl))
+        end
+    )
+
+    -- for name, hl in pairs(hls) do
+    --     M.set(name, hl)
+    -- end
 end
 
 ---Apply highlights for a plugin and refresh on colorscheme change
@@ -444,7 +446,7 @@ function M.bg(group, color, fmt)
         vim.tbl_extend("keep", opts, fmt)
     end
     opts.bg = color
-    M.set_hl(group, opts)
+    M.set(group, opts)
 end
 
 ---Define fg color
@@ -459,7 +461,7 @@ function M.fg(group, color, fmt)
         vim.tbl_extend("keep", opts, fmt)
     end
     opts.fg = color
-    M.set_hl(group, opts)
+    M.set(group, opts)
 end
 
 ---Group to modify gui
@@ -482,7 +484,7 @@ function M.fg_bg(group, fgcol, bgcol, fmt)
     end
     opts.fg = fgcol
     opts.bg = bgcol
-    M.set_hl(group, opts)
+    M.set(group, opts)
 end
 
 ---Highlight link one group to another
@@ -491,7 +493,7 @@ end
 function M.link(from, to)
     -- bang = bang ~= false and "!" or " default"
     -- cmd(("hi%s link %s %s"):format(bang, from, to))
-    M.set_hl(from, {link = to})
+    M.set(from, {link = to})
 end
 
 ---List all highlight groups, or ones matching `filter`
@@ -558,11 +560,11 @@ setmetatable(
         ---@param opts ColorFormat
         __newindex = function(_, hlgroup, opts)
             if type(opts) == "string" then
-                M.set_hl(hlgroup, {link = opts})
+                M.set(hlgroup, {link = opts})
                 return
             end
 
-            M.set_hl(hlgroup, opts)
+            M.set(hlgroup, opts)
         end,
         ---Syntactic sugar retrieve a highlight group
         ---@param k ColorFormat

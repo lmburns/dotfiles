@@ -14,7 +14,7 @@ local map = utils.map
 -- local augroup = utils.augroup
 local icon = require("style").icons
 
-local ex = nvim.ex
+local ex = vim.cmd
 
 function M.setup()
     trouble.setup(

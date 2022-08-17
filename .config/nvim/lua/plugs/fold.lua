@@ -4,12 +4,12 @@ local D = require("dev")
 local palette = require("kimbox.palette").colors
 local style = require("style")
 local utils = require("common.utils")
-local C = require("common.color")
+local hl = require("common.color")
 -- local coc = require("plugs.coc")
 -- local augroup = utils.augroup
 local map = utils.map
 
-local ex = nvim.ex
+local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -85,7 +85,7 @@ M.with_highlight = function(c)
         foend = fn.foldclosedend(".")
     end
 
-    C.set_hl("MyFoldHighlight", {bg = "#5e452b"})
+    hl.set("MyFoldHighlight", {bg = "#5e452b"})
 
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
@@ -245,7 +245,7 @@ local function init()
 
     vim.defer_fn(
         function()
-            C.plugin(
+            hl.plugin(
                 "Ufo",
                 {
                     UFOFoldLevel = {fg = palette.blue, bold = true},

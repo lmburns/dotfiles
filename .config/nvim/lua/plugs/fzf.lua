@@ -9,7 +9,7 @@ local mru = require("common.mru")
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd

@@ -12,7 +12,7 @@ local wk = require("which-key")
 local uva = require("uva")
 local async = require("async")
 
-local ex = nvim.ex
+local ex = vim.cmd
 local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
@@ -378,7 +378,7 @@ M.del_keymap = function(modes, lhs, opts)
 
     local bufnr = false
     if opts.buffer ~= nil then
-        bufnr = F.tern(opts.buffer == true, 0, opts.buffer)
+        bufnr = opts.buffer == true and 0 or opts.buffer
     end
 
     if bufnr == false then
@@ -483,9 +483,9 @@ end
 ---@field force boolean override existing definition
 ---@field preview function perview callback for inccomand
 
----Create an nvim command
+---Create an `nvim` command
 ---@param name any
----@param rhs string|fun(args: CommandArgs)
+---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts CommandOpts
 M.command = function(name, rhs, opts)
     -- vim.validate(
@@ -862,7 +862,7 @@ end
 ---Focus the floating window
 M.focus_floating_win = function()
     if dev.is_floating_window(fn.win_getid()) then
-        cmd.wincmd("p")
+        ex.wincmd("p")
         return
     end
     for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
@@ -1062,7 +1062,7 @@ M.close_diff = function()
             local ok, msg = pcall(api.nvim_win_close, winid, false)
             if not ok and (msg and msg:match("^Vim:E444:")) then
                 if api.nvim_buf_get_name(0):match("^fugitive://") then
-                    cmd.Gedit()
+                    ex.Gedit()
                 end
             end
         end

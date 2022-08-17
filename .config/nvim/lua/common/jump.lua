@@ -1,6 +1,6 @@
 ---Credit: lewis6991
 
-local C = require("common.color")
+local hl = require("common.color")
 local style = require("style")
 local utils = require("common.utils")
 -- local augroup = utils.augroup
@@ -231,7 +231,7 @@ local function init()
     vim.defer_fn(
         function()
             local colors = require("kimbox.colors")
-            C.set_hl("JumpFloatBorder", {fg = colors.blue})
+            hl.set("JumpFloatBorder", {fg = colors.blue})
 
             map(
                 "n",

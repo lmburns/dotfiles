@@ -8,7 +8,7 @@ local utils = require("common.utils")
 -- local map = utils.map
 local command = utils.command
 
-local ex = nvim.ex
+local ex = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local cmd = vim.cmd
