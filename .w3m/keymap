@@ -695,20 +695,20 @@ keymap  xn      EXTERN_LINK   '$BROWSER_PRIVATE'
 keymap  XN      EXTERN        '$BROWSER_PRIVATE'
 
 # queue download file (task-spooler)
-# keymap  xd      EXTERN_LINK   'TS_SOCKET=/tmp/w3m ts aria2c -j 1 -x 2 -c -d ~/Downloads'
+# keymap  xd      EXTERN_LINK   'TS_SOCKET=/tmp/w3m tsp aria2c -j 1 -x 2 -c -d ~/Downloads'
 keymap  yd      EXTERN_LINK   'yt-dlp -o "~/Downloads/%(title)s.%(ext)s"'
 keymap  xd      EXTERN_LINK   'diana add'
 keymap  XD      EXTERN_LINK   'diana --pause add'
 keymap  xD      SHELL         'diana-mui'
 
-# keymap  wg      EXTERN_LINK   'TS_SOCKET=/tmp/w3m ts wget -c -P /media/EdoTensei/Wget'
-# keymap  WG      EXTERN        'TS_SOCKET=/tmp/w3m ts wget -c -P /media/EdoTensei/Wget'
+# keymap  wg      EXTERN_LINK   'TS_SOCKET=/tmp/w3m tsp wget -c -P /media/EdoTensei/Wget'
+# keymap  WG      EXTERN        'TS_SOCKET=/tmp/w3m tsp wget -c -P /media/EdoTensei/Wget'
 # keymap  wG      SHELL         'watch TS_SOCKET=/tmp/w3m'
 # keymap  wc      SHELL         'TS_SOCKET=/tmp/w3m -C'
 
 # queue external media player (task-spooler) e.g youtube, video links
-keymap  xm      EXTERN_LINK   'ts mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
-keymap  XM      EXTERN        'ts mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
+keymap  xm      EXTERN_LINK   'tsp mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
+keymap  XM      EXTERN        'tsp mpv --ontop --no-border --force-window --autofit=500x280 --geometry=-15-53'
 
 # open external image viewer
 # keymap  xi      EXTERN_LINK   'w3m -o display_image=1 -o imgdisplay=w3mimgdisplay'
@@ -724,8 +724,8 @@ keymap  XT      EXTERN        ~/.sripts/shellscripts/torrentportal
 
 # basic task-spooler view, cat, clear
 # keymap  xs      SHELL         'watch TS_SOCKET=/tmp/w3m ts'
-# keymap  XS      SHELL         'clear && TS_SOCKET=/tmp/w3m ts -c'
-# keymap  xc      SHELL         'clear && TS_SOCKET=/tmp/w3m ts -C'
+# keymap  XS      SHELL         'clear && TS_SOCKET=/tmp/w3m tsp -c'
+# keymap  xc      SHELL         'clear && TS_SOCKET=/tmp/w3m tsp -C'
 
 keymap  xc      SHELL         'aria2c $W3M_URL'
 # keymap  xc      SHELL         'aria2c $W3M_CURRENT_LINK'

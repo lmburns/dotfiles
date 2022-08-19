@@ -14,7 +14,7 @@ local gittool = require("common.gittool")
 -- local async = require("async")
 -- local a = require("plenary.async_lib")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local g = vim.g
 local api = vim.api
 local fn = vim.fn
@@ -31,7 +31,7 @@ local function save_doc(bufnr)
             api.nvim_buf_call(
                 bufnr,
                 function()
-                    ex.sil_("up")
+                    cmd("sil! up")
                 end
             )
         end
@@ -57,12 +57,12 @@ function M.neoformat()
                 {}
             ) > 0
      then
-        ex.Neoformat("stylua")
+        cmd.Neoformat("stylua")
     else
-        ex.Neoformat()
+        cmd.Neoformat()
     end
 
-    -- ex.sil_("up")
+    -- cmd("sil! up")
 end
 
 ---@return string
@@ -94,8 +94,6 @@ function M.format_doc(save)
                         "format",
                         "",
                         function(e, res)
-                            -- This is only needed if Sumneko-Coc is used
-                            -- Otherwise, formatting can be disabled, and hasProvider returns false
                             -- Now, result has to be checked as false here
                             if e ~= vim.NIL or _t(prefer_neoformat):contains(vim.bo[bufnr].ft) or res == false then
                                 api.nvim_buf_call(
@@ -180,9 +178,47 @@ function M.format_selected(mode, save)
     )
 end
 
+function M.juliaformat()
+    g.JuliaFormatter_options = {
+        indent = 4,
+        margin = 92,
+        always_for_in = false,
+        whitespace_typedefs = false,
+        whitespace_ops_in_indices = true,
+        normalize_line_ends = "unix",
+        remove_extra_newlines = true,
+        import_to_using = false,
+        pipe_to_function_call = false,
+        short_to_long_function_def = false,
+        long_to_short_function_def = false,
+        always_use_return = false, -- implicit return
+        whitespace_in_kwargs = false,
+        annotate_untyped_fields_with_any = true,
+        format_docstrings = true,
+        conditional_to_if = false, -- ternary to conditional
+        trailing_comma = true,
+        indent_submodule = true,
+        separate_kwargs_with_semicolon = false,
+        surround_whereop_typeparameters = true
+    }
+
+    augroup(
+        "lmb__FormattingJulia",
+        {
+            event = "FileType",
+            pattern = "julia",
+            command = function()
+                map("n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
+                map("x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
+            end
+        }
+    )
+end
+
 -- TODO: Get keepj keepp to prevent neoformat from modifying changes
 --       g; moves to last line after format
 local function init()
+    M.juliaformat()
     prefer_neoformat = {"lua"}
 
     g.neoformat_basic_format_retab = 1

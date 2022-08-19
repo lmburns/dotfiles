@@ -3,7 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
-local C = require("common.color")
+local hl = require("common.color")
 
 local fn = vim.fn
 local g = vim.g
@@ -80,7 +80,7 @@ end
 
 local function init()
     M.setup()
-    C.plugin(
+    hl.plugin(
         "Rnvimr",
         { RnvimrNormal = {link = "Normal"} }
     )

@@ -53,7 +53,7 @@ function M.setup()
                     g.c_syntax_for_h = 1
                 end,
                 json = function()
-                    -- ex.syntax("match Comment +//.+$+")
+                    -- cmd.syntax("match Comment +//.+$+")
                     o.shiftwidth = 2
                 end
             },
@@ -145,7 +145,7 @@ function M.setup()
     --                     g.c_syntax_for_h = 1
     --                 end,
     --                 ["json"] = function()
-    --                     -- ex.syntax("match Comment +//.+$+")
+    --                     -- cmd.syntax("match Comment +//.+$+")
     --                     o.shiftwidth = 2
     --                 end,
     --                 ["ms"] = nroff_ft,
@@ -156,7 +156,7 @@ function M.setup()
     --             function_literal = {},
     --             function_complex = {
     --                 ["*.math_notes/%w+"] = function()
-    --                     ex.iabbrev("$ $$")
+    --                     cmd.iabbrev("$ $$")
     --                 end
     --             },
     --             shebang = {

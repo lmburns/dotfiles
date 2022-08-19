@@ -37,8 +37,6 @@ I = function(v)
     return vim.inspect(v)
 end
 
--- These may be specified in some files just to supress non-global warnings
---
 _G.o = vim.opt -- vim options: behaves like `:set`
 _G.opt_local = vim.opt_local
 _G.opt_global = vim.opt_global
@@ -46,6 +44,11 @@ _G.opt_global = vim.opt_global
 -- opt         --  behaves like `:set` (global and local)
 -- opt_global  --  behaves like `:setglobal`
 -- opt_local   --  behaves like `:setlocal`
+
+-- Only use 'vim.ex' when indexing 'vim.cmd'
+vim.ex = vim.cmd
+
+-- Having these be global helps when typing the command after pressing ':'
 
 _G.g = vim.g -- vim global variables:
 _G.go = vim.go -- vim global options

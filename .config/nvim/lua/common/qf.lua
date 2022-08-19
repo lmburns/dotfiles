@@ -6,15 +6,15 @@ local M = {}
 
 local command = require("common.utils").command
 local log = require("common.log")
+local abbr = require("abbr").abbr
 
-local ex = vim.cmd
 local F = vim.F
 local api = vim.api
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
 
--- WIP
+-- FINISH
 function M.batch_sub(is_loc, pat_rep)
     local matches = fn.matchlist(pat_rep, [[\v(([^|"\\a-zA-Z0-9]).*\2.*\2=)([cgeiI]*)\s*$]])
     if vim.tbl_isempty(matches) then
@@ -158,11 +158,11 @@ end
 function M.close()
     local loc_winid = fn.getloclist(0, {winid = 0}).winid
     if loc_winid == 0 then
-        ex.ccl()
+        cmd.ccl()
     else
         local qf_winid = fn.getqflist({winid = 0}).winid
         if qf_winid == 0 then
-            ex.lcl()
+            cmd.lcl()
         else
             local prompt = " [q]uickfix, [l]ocation ? "
             local bufnr = api.nvim_create_buf(false, true)
@@ -194,13 +194,13 @@ function M.close()
                         local charstr = fn.nr2char(char)
                         if charstr == "q" then
                             -- cmd("ccl")
-                            ex.ccl()
+                            cmd.ccl()
                         elseif charstr == "l" then
-                            ex.lcl()
+                            cmd.lcl()
                         -- cmd("lcl")
                         end
                     end
-                    ex.noa(("bw %d"):format(bufnr))
+                    cmd(("noa bw %d"):format(bufnr))
                     -- cmd(("noa bw %d"):format(bufnr))
                 end
             )
@@ -246,8 +246,8 @@ local function init()
     g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    ex.cabbrev("cdos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>")
-    ex.cabbrev("ldos <C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>")
+    abbr("c", "cdos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>", {only_start = false})
+    abbr("c", "ldos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>", {only_start = false})
 
     command(
         "Cdos",

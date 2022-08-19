@@ -338,7 +338,7 @@ local function init()
         i = tostring(i)
         wk.register(
             {
-                [("<Leader>%d"):format(i)] = {
+                [("<Leader><Leader>%d"):format(i)] = {
                     ("<cmd>BufferLineGoToBuffer %d<CR>"):format(i),
                     "which_key_ignore"
                     -- ("Go to buffer %d"):format(i)

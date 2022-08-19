@@ -4,6 +4,8 @@ local debounce = require("common.debounce")
 local utils = require("common.utils")
 local map = utils.map
 
+local cmd = vim.cmd
+
 local hlslens
 local config
 local lens_backup
@@ -54,13 +56,13 @@ function M.exit()
     -- Sometimes this doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
     if not vim.o.stl == stl then
-        pcall(ex.VMClear)
+        pcall(cmd.VMClear)
         vim.o.stl = stl
     end
 end
 
 function M.mappings()
-    -- ex.PackerLoad("nvim-hlslens")
+    -- cmd.PackerLoad("nvim-hlslens")
     if not debounced then
         debounced =
             debounce(

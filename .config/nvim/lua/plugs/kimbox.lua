@@ -5,9 +5,9 @@
 local M = {}
 
 local D = require("dev")
--- local C = require("common.color")
+-- local hl = require("common.color")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local uv = vim.loop
@@ -566,7 +566,7 @@ M.kimbox = function()
         return
     end
 
-    ex.packadd("kimbox")
+    cmd.packadd("kimbox")
     kimbox.setup(
         {
             style = "ocean",
@@ -587,7 +587,7 @@ M.kimbox = function()
 end
 
 local function init()
-    local colorscheme = ex.colorscheme
+    local colorscheme = cmd.colorscheme
 
     nvim.autocmd.LushTheme = {
         event = "BufWritePost",

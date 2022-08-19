@@ -5,17 +5,17 @@
 -- ==========================================================================
 local fn = vim.fn
 local uv = vim.loop
+local cmd = vim.cmd
 
 local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
 if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
-local ex = nvim.ex
 local Path = require("plenary.path")
 local Job = require("plenary.job")
 
-ex.packadd("packer.nvim")
+cmd.packadd("packer.nvim")
 local packer = require("packer")
 
 packer.on_compile_done = function()
@@ -56,7 +56,7 @@ packer.on_compile_done = function()
 end
 
 packer.on_complete = function()
-    ex.doau("User PackerComplete")
+    cmd("doau User PackerComplete")
     nvim.p.TSNote("Packer completed")
 end
 
@@ -130,7 +130,7 @@ local handlers = {
         plugin.run = function()
             if uv.fs_stat(value) then
                 nvim.p(("Applying patch: %s"):format(plugin.short_name), "WarningMsg")
-                ex.lcd(plugin.install_path)
+                cmd.lcd(plugin.install_path)
                 Job:new(
                     {
                         command = "patch",
@@ -180,10 +180,10 @@ return packer.startup(
                     "wbthomason/packer.nvim",
                     opt = true,
                     setup = function()
-                        if g.loaded_visual_multi == 1 then
+                        if vim.g.loaded_visual_multi == 1 then
                             vim.schedule(
                                 function()
-                                    vim.fn["vm#plugs#permanent"]()
+                                    fn["vm#plugs#permanent"]()
                                 end
                             )
                         end
@@ -386,14 +386,14 @@ return packer.startup(
 
             -- ======================== Session Management ======================== [[[
 
-            use(
-                {
-                    "jedrzejboczar/possession.nvim",
-                    event = "BufReadPre",
-                    conf = "plugs.possession",
-                    after = "telescope.nvim"
-                }
-            )
+            -- use(
+            --     {
+            --         "jedrzejboczar/possession.nvim",
+            --         event = "BufReadPre",
+            --         conf = "plugs.possession",
+            --         after = "telescope.nvim"
+            --     }
+            -- )
             -- use({"folke/persistence.nvim"})
             -- use({"rmagatti/auto-session", event = "BufReadPre"})
             -- use({"Shatur/neovim-session-manager", event = "BufReadPre", conf = "session_manager"})
@@ -430,7 +430,9 @@ return packer.startup(
             use(
                 {
                     "rcarriga/neotest",
+                    conf = "plugs.neotest",
                     module = "neotest",
+                    wants = "overseer.nvim",
                     requires = {
                         "nvim-lua/plenary.nvim",
                         "nvim-treesitter/nvim-treesitter",
@@ -440,10 +442,33 @@ return packer.startup(
                         "nvim-neotest/neotest-plenary",
                         "nvim-neotest/neotest-vim-test"
                         -- "vim-test/vim-test"
-                    },
-                    conf = "plugs.neotest"
+                    }
                 }
             )
+
+            -- ========================== Task Runner ============================= [[[
+            use(
+                {
+                    "stevearc/overseer.nvim",
+                    conf = "plugs.overseer",
+                    after = {"dressing.nvim"},
+                    module = "overseer",
+                    cmd = {
+                        "OverseerOpen",
+                        "OverseerClose",
+                        "OverseerToggle",
+                        "OverseerSaveBundle",
+                        "OverseerLoadBundle",
+                        "OverseerDeleteBundle",
+                        "OverseerRunCmd",
+                        "OverseerRun",
+                        "OverseerBuild",
+                        "OverseerQuickAction",
+                        "OverseerTaskAction"
+                    }
+                }
+            )
+            -- ]]] === Task Runner ===
 
             -- use(
             --     {
@@ -712,11 +737,9 @@ return packer.startup(
                 }
             )
 
-            -- This doesn't work as expected
-            -- "phaazon/hop.nvim",
             use(
                 {
-                    "christianchiarulli/hop.nvim",
+                    "phaazon/hop.nvim",
                     conf = "plugs.hop",
                     keys = {
                         {"n", "f"},
@@ -891,7 +914,14 @@ return packer.startup(
             --             {"nvim-treesitter/nvim-treesitter", opt = true}
             --         },
             --         after = {"nvim-treesitter"},
-            --         conf = "regexplainer"
+            --         conf = "regexplainer",
+            --         cmd = {
+            --             "RegexplainerShow",
+            --             "RegexplainerShowSplit",
+            --             "RegexplainerShowPopup",
+            --             "RegexplainerHide",
+            --             "RegexplainerToggle",
+            --         },
             --     }
             -- )
             -- ]]] === Javascript ===
@@ -978,6 +1008,7 @@ return packer.startup(
                             "gomod",
                             "html",
                             "java",
+                            "julia",
                             -- "lua",
                             -- "json",
                             -- "kotlin",
@@ -1063,6 +1094,7 @@ return packer.startup(
 
             -- ============================= Neoformat ============================= [[[
             use({"sbdchd/neoformat", conf = "plugs.format"})
+            use({"kdheepak/JuliaFormatter.vim", ft = "julia"})
             -- ]]] === Neoformat ===
 
             -- ╭──────────────────────────────────────────────────────────╮
@@ -1077,7 +1109,7 @@ return packer.startup(
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
 
-            use({"jalvesaq/Nvim-R", branch = "stable", conf = "plugs.nvim-r", ft = {"r"}})
+            use({"jalvesaq/Nvim-R", ft = {"r"}, branch = "stable", conf = "plugs.nvim-r"})
             use({"lervag/vimtex", conf = "plugs.vimtex"})
             use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
@@ -1099,6 +1131,14 @@ return packer.startup(
                     }
                 }
             )
+
+            -- use(
+            --     {
+            --         "github/copilot.vim",
+            --         conf = "copilot",
+            --         keys = {"n", "<Leader>ce"}
+            --     }
+            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Treesitter                        │
@@ -1229,7 +1269,7 @@ return packer.startup(
 
             -- use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
             -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
-            -- use({ "theHamsta/nvim-treesitter-pairs", after = { "nvim-treesitter" } })
+            -- use({"theHamsta/nvim-treesitter-pairs", after = {"nvim-treesitter"}})
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
 
             -- ╭──────────────────────────────────────────────────────────╮
@@ -1508,5 +1548,4 @@ return packer.startup(
     }
 )
 
--- rcarriga/neotest
 -- smjonas/inc-rename.nvim

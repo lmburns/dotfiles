@@ -12,7 +12,7 @@ local hl = require("common.color")
 
 local wk = require("which-key")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local api = vim.api
@@ -73,7 +73,7 @@ function M.hijack_synset()
 end
 
 M.setup_hlargs = function()
-    ex.packadd("hlargs.nvim")
+    cmd.packadd("hlargs.nvim")
     local hlargs = D.npcall(require, "hlargs")
     if not hlargs then
         return
@@ -108,7 +108,7 @@ M.setup_hlargs = function()
 end
 
 M.setup_iswap = function()
-    ex.packadd("iswap.nvim")
+    cmd.packadd("iswap.nvim")
     local iswap = D.npcall(require, "iswap")
     if not iswap then
         return
@@ -134,7 +134,7 @@ M.setup_iswap = function()
 end
 
 M.setup_autotag = function()
-    ex.packadd("nvim-ts-autotag")
+    cmd.packadd("nvim-ts-autotag")
     local autotag = D.npcall(require, "nvim-ts-autotag")
     if not autotag then
         return
@@ -177,7 +177,7 @@ end
 
 ---Setup `aerial`
 M.setup_aerial = function()
-    ex.packadd("aerial.nvim")
+    cmd.packadd("aerial.nvim")
     local aerial = D.npcall(require, "aerial")
     if not aerial then
         return
@@ -441,7 +441,7 @@ end
 
 ---Setup `nvim_context_vt`
 M.setup_context_vt = function()
-    ex.packadd("nvim_context_vt")
+    cmd.packadd("nvim_context_vt")
     local ctx = D.npcall(require, "nvim_context_vt")
     if not ctx then
         return
@@ -513,7 +513,13 @@ M.setup_context_vt = function()
 end
 
 M.setup_context = function()
-    require("treesitter-context").setup {
+    cmd.packadd("treesitter-context")
+    local tctx = D.npcall(require, "treesitter-context")
+    if not tctx then
+        return
+    end
+
+    tctx.setup {
         enable = true,
         max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
         trim_scope = "outer", -- Choices: 'inner', 'outer'
@@ -551,7 +557,7 @@ M.setup_context = function()
 end
 
 M.setup_treesurfer = function()
-    ex.packadd("syntax-tree-surfer")
+    cmd.packadd("syntax-tree-surfer")
     local sts = D.npcall(require, "syntax-tree-surfer")
     if not sts then
         return
@@ -742,6 +748,7 @@ M.setup = function()
             "javascript",
             "jsdoc",
             "json",
+            "julia",
             "kotlin",
             "latex",
             "log",
@@ -798,21 +805,23 @@ M.setup = function()
         autotag = {enable = true},
         autopairs = {
             enable = true,
-            disable = {"help", "comment", "log", "gitignore"}
+            disable = {"help", "comment", "log", "gitignore", "markdown"}
         },
         indent = {
             enable = true,
-            disable = {"comment", "log", "gitignore"}
+            disable = {"comment", "log", "gitignore", "markdown"}
         },
         fold = {enable = false},
         endwise = {
             enable = true,
-            disable = {"comment", "log", "gitignore"}
+            disable = {"comment", "log", "gitignore", "markdown"}
         },
         matchup = {
             enable = true,
             disable_virtual_text = true,
-            disable = {"comment", "log", "gitignore"}
+            disable = {"comment", "log", "gitignore"},
+            include_match_words = true,
+            matchparen_offscreen = {method = "popup"}
         },
         playground = {
             enable = true,
@@ -852,9 +861,17 @@ M.setup = function()
             disable = {"help"},
             config = {
                 c = "// %s",
+                css = "/* %s */",
                 go = "// %s",
+                html = "<!-- %s -->",
+                json = "",
+                jsonc = "// %s",
+                scss = "/* %s */",
                 sql = "-- %s",
-                vim = '" %s'
+                svelte = "<!-- %s -->",
+                typescript = "// %s",
+                vim = '" %s',
+                vue = "<!-- %s -->",
             }
         },
         refactor = {
@@ -881,7 +898,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help", "comment", "log", "gitignore"}
+            disable = {"html", "help", "comment", "log", "gitignore", "markdown"}
             -- colors = {}
         },
         textobjects = {
@@ -1066,16 +1083,6 @@ function M.install_extra_parsers()
         filetype = "log"
     }
 
-    -- gitignore
-    parser_config.gitignore = {
-        install_info = {
-            url = "https://github.com/shunsambongi/tree-sitter-gitignore",
-            files = {"src/parser.c"},
-            branch = "main"
-        },
-        filetype = "gitignore"
-    }
-
     -- Git commits
     -- parser_config.gitcommit = {
     --     install_info = {
@@ -1125,8 +1132,8 @@ function M.install_extra_parsers()
 end
 
 local function init()
-    ex.packadd("nvim-treesitter")
-    ex.packadd("nvim-treesitter-textobjects")
+    cmd.packadd("nvim-treesitter")
+    cmd.packadd("nvim-treesitter-textobjects")
 
     ts_hl_disabled =
         _t(
@@ -1182,18 +1189,6 @@ local function init()
     map("x", "ie", [[:normal! ggVG"<CR>]])
     map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
     map("x", "ae", [[:normal! HVL"<CR>]])
-
-    -- This doesn't work
-    -- map(
-    --     {"x", "o"},
-    --     "ae",
-    --     function()
-    --         local scrolloff = opt_local.scrolloff:get()
-    --         opt_local.scrolloff = 0
-    --         ex.normal_('HVL"')
-    --         opt_local.scrolloff = scrolloff
-    --     end
-    -- )
 
     wk.register(
         {

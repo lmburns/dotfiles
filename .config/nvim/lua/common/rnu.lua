@@ -2,7 +2,7 @@ local M = {}
 
 local hl = require("common.color")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
@@ -100,7 +100,7 @@ end
 ---Function to be ran on `CmdlineEnter` when searching (i.e., `/`,`?`)
 function M.scmd_enter()
     set_win_rnu(false)
-    ex.redraws()
+    cmd.redraws()
 end
 
 ---Function to be ran on `CmdlineLeave` when searching (i.e., `/`,`?`)

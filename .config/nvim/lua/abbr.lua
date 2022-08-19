@@ -89,7 +89,7 @@ function M.abbr(mode, lhs, rhs, args)
         table.insert(command, 1, "silent!")
     end
 
-    vim.cmd(table.concat(command, " "))
+    cmd(table.concat(command, " "))
 end
 
 M =

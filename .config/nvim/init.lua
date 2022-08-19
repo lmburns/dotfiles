@@ -1,9 +1,6 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 FIX: Cursor blinking is very fast on text operators which don't trigger which-key (gq)
-     * This just started yesterday (i.e., June 22)
-     * Firstly, this was able to be fixed by disabling lazyredraw
-     * Started again with and without lazyredraw
      * It stops without the Bufferline plugin
      * Is not present in telescope prompt
      * Happens with heavier coc langservers (e.g., Lua, Rust, Python, but not toml, yaml, solidity)
@@ -125,7 +122,7 @@ require("plugs.filetype")
 
 vim.schedule(
     function()
-        local C = require("common.color")
+        local hl = require("common.color")
 
         -- === Treesitter
         vim.defer_fn(
@@ -245,6 +242,7 @@ vim.schedule(
                     "coc-html",
                     "coc-markdownlint",
                     "coc-java",
+                    "coc-julia",
                     "coc-perl",
                     "coc-pyright",
                     "coc-r-lsp",
@@ -292,7 +290,7 @@ vim.schedule(
                     }
                 )
 
-                C.plugin(
+                hl.plugin(
                     "CocInit",
                     {
                         CocUnderline = {gui = "none"},

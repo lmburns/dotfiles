@@ -12,10 +12,10 @@ local map = utils.map
 local bmap = utils.bmap
 local augroup = utils.augroup
 
-local C = require("common.color")
+local hl = require("common.color")
 local wk = require("which-key")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 local F = vim.F
 
@@ -78,17 +78,41 @@ local function mappings(bufnr)
     map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']], {expr = true})
     map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']], {expr = true})
 
-    wk.register(
-        {
-            ["]c"] = "Next hunk",
-            ["[c"] = "Prevous hunk"
-        }
-    )
+    -- map(
+    --     "n",
+    --     "]c",
+    --     function()
+    --         if vim.wo.diff then
+    --             return "]c"
+    --         end
+    --         vim.schedule(
+    --             function()
+    --                 gs.next_hunk()
+    --             end
+    --         )
+    --         return "<Ignore>"
+    --     end,
+    --     {expr = true, desc = "Next hunk"}
+    -- )
+    --
+    -- map(
+    --     "n",
+    --     "[c",
+    --     function()
+    --         if vim.wo.diff then
+    --             return "[c"
+    --         end
+    --         vim.schedule(
+    --             function()
+    --                 gs.prev_hunk()
+    --             end
+    --         )
+    --         return "<Ignore>"
+    --     end,
+    --     {expr = true, desc = "Previous hunk"}
+    -- )
 
-    -- map("n", "<Leader>he", "<Cmd>Gitsigns stage_hunk<CR>")
     -- map("x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
-    -- map("n", "<Leader>hS", "<Cmd>Gitsigns undo_stage_hunk<CR>")
-    -- map("n", "<Leader>hu", "<Cmd>Gitsigns reset_hunk<CR>")
 
     map(
         "x",
@@ -215,7 +239,7 @@ function M.setup()
 end
 
 local function init()
-    ex.packadd("plenary.nvim")
+    cmd.packadd("plenary.nvim")
 
     M.setup()
 
@@ -231,7 +255,7 @@ local function init()
         gitsigns_hlights["GitSignsChange"] = {fg = colors.yellow}
     end
 
-    C.plugin("GitSigns", gitsigns_hlights)
+    hl.plugin("GitSigns", gitsigns_hlights)
 
     augroup(
         "lmb__GitSignsBlameToggle",

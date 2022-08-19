@@ -6,7 +6,6 @@ local bmap = utils.bmap
 local augroup = utils.augroup
 local command = utils.command
 
-local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local g = vim.g
@@ -54,7 +53,7 @@ local function wrap_qf(fname, ...)
             fn[fname](D.tbl_unpack(args))
         end
         if #fn.getqflist() > 0 then
-            ex.copen()
+            cmd.copen()
         end
     end
 end

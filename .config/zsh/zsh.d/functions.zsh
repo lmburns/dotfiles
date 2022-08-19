@@ -214,7 +214,14 @@ function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
 # Backup a file
 function bk() {
   emulate -L zsh
-  cp -iv --preserve=all -b $1 ${1:r}_$(date --iso-8601=m).${1:e}
+  command cp -iv --preserve=all -b $1 ${1:r}_$(date --iso-8601=m).${1:e}
+}
+
+# Add a date suffix to a file
+function datify() {
+  emulate -L zsh
+  # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d').${1:e}
+  f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYY}}_{{mtime.MM}}_{{mtime.DD}}.${1:e}"
 }
 
 # Only renames using f2

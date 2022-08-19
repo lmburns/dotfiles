@@ -7,7 +7,7 @@ if not ng then
 end
 
 local wk = require("which-key")
-local C = require("common.color")
+local hl = require("common.color")
 
 local fn = vim.fn
 
@@ -70,7 +70,7 @@ function M.setup()
 end
 
 local function init()
-    C.plugin(
+    hl.plugin(
         "Neogit",
         {
             NeogitNotificationInfo = {fg = "#4C96A8"},

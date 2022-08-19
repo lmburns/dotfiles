@@ -123,6 +123,7 @@ function M.setup()
 
     -- Extend the default table
     -- Is there a better way to extend the default?
+    -- TODO: Allow overriding default. This stopped working again
     local lua =
         extend(
         "lua",
@@ -142,7 +143,11 @@ function M.setup()
         extend(
         "typescript",
         default,
-        {aug({"let", "const", "var"}), aug({"===", "!=="}), aug({"public", "private", "protected"})}
+        {
+            aug({"let", "const", "var"}),
+            aug({"===", "!=="}),
+            aug({"public", "private", "protected"})
+        }
     )
     -- local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
     local vim_ = extend("vim", default, {aug({"elseif", "if"})})
@@ -252,6 +257,8 @@ function M.setup()
         }
     )
 end
+
+-- == ~=
 
 ---Create an autocmd for a given filetype
 ---@param ft string

@@ -51,6 +51,7 @@ local keybinds = {
 return {
     check_for_updates = false,
     debug_key_events = false,
+    font = wezterm.font("FiraMono Nerd Font Mono", {weight = "Medium"}),
     -- font = wezterm.font_with_fallback({{"FiraMono Nerd Font Mono", {weight = "Medium"}}, {"Noto Sans CJK SC"}}),
     font_size = 12.0,
     color_scheme = "kimbox",

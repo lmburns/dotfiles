@@ -4,7 +4,7 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
-local C = require("common.color")
+local hl = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
 -- local bmap = utils.bap
@@ -14,7 +14,6 @@ local ithunk = D.ithunk
 local wk = require("which-key")
 local promise = require("promise")
 
-local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local g = vim.g
@@ -81,15 +80,15 @@ function M.go2def()
                 not pcall(
                     function()
                         local wv = utils.save_win_positions()
-                        ex.ltag(cword)
+                        cmd.ltag(cword)
                         local def_size = fn.getloclist(0, {size = 0}).size
                         by = "ltag"
                         if def_size > 1 then
                             api.nvim_set_current_buf(cur_bufnr)
                             wv.restore()
-                            ex.abo("lw")
+                            cmd("abo lw")
                         elseif def_size == 1 then
-                            ex.lcl()
+                            cmd.lcl()
                             fn.search(cword, "cs")
                         end
                     end
@@ -121,7 +120,7 @@ function M.show_documentation()
         if _t({"help"}):contains(ft) then
             cmd(("sil! h %s"):format(fn.expand("<cword>")))
         elseif ft == "man" then
-            ex.Man(("%s"):format(fn.expand("<cword>")))
+            cmd.Man(("%s"):format(fn.expand("<cword>")))
         elseif fn.expand("%:t") == "Cargo.toml" then
             require("crates").show_popup()
         elseif fn["coc#rpc#ready"]() then
@@ -251,7 +250,7 @@ function M.jump2loc(locs, skip)
     if not skip then
         local winid = fn.getloclist(0, {winid = 0}).winid
         if winid == 0 then
-            ex.abo("lw")
+            cmd("abo lw")
         else
             api.nvim_set_current_win(winid)
         end
@@ -387,11 +386,11 @@ function M.diagnostic(winid, nr, keep)
 
             if not keep then
                 if winid == 0 then
-                    ex.bo("cope")
+                    cmd("bo cope")
                 else
                     api.nvim_set_current_win(winid)
                 end
-                ex.sil(("%dchi"):format(nr))
+                cmd(("sil %dchi"):format(nr))
             end
         end
     )
@@ -567,7 +566,7 @@ function M.toggle_outline()
     if winid == -1 then
         M.action("showOutline", {1}):thenCall(
             function(_)
-                ex.wincmd("l")
+                cmd.wincmd("l")
             end
         )
     else
@@ -603,9 +602,8 @@ M.tag_cmd = function()
 end
 
 ---Adds all lua runtime paths to coc
----@param sumneko boolean?
 ---@return table
-M.get_lua_runtime = function(sumneko)
+M.get_lua_runtime = function()
     local result = {}
 
     local function add(lib)
@@ -628,10 +626,6 @@ M.get_lua_runtime = function(sumneko)
         add(run)
     end
 
-    if sumneko then
-        add(require("lua-dev.sumneko").types())
-    end
-
     return result
 end
 
@@ -639,6 +633,11 @@ end
 ---Note that the runtime paths here are placed into an array, not a table
 M.sumneko_ls = function()
     local library = M.get_config("Lua").workspace.library
+
+    -- This doubles the number of files that are checked on startup
+    -- But it allows one to use 'gd' to go to definition
+    -- local runtime = _t(M.get_lua_runtime(true)):keys()
+    -- library = vim.list_extend(library, runtime)
 
     if D.plugin_loaded("promise-async") then
         ---@diagnostic disable-next-line: undefined-field
@@ -723,7 +722,7 @@ function M.init()
             event = "FileType",
             pattern = "list",
             command = function()
-                ex.pa("nvim-bqf")
+                cmd.packadd("nvim-bqf")
                 require("bqf.magicwin.handler").attach()
             end
         },
@@ -762,7 +761,7 @@ function M.init()
         }
     )
 
-    C.plugin(
+    hl.plugin(
         "Coc",
         {
             CocSemVariable = {link = "TSVariable"},

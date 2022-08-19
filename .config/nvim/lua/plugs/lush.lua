@@ -8,7 +8,7 @@ end
 
 local log = require("common.log")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 
 local colors_path
@@ -52,7 +52,7 @@ let g:colors_name = '%s'
                 fp:write(line, "\n")
             end
             fp:close()
-            ex.so(theme_path)
+            cmd.so(theme_path)
         else
             log.err(res)
         end
@@ -71,7 +71,7 @@ function M.write_post()
 end
 
 local function init()
-    ex.pa("lush.nvim")
+    cmd.packadd("lush.nvim")
     colors_path = ("%s/colors"):format(fn.stdpath("config"))
     fn.mkdir(colors_path, "p")
 end

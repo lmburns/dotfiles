@@ -1,7 +1,7 @@
 -- local global = require("common.global")
 local D = require("dev")
 local utils = require("common.utils")
-local C = require("common.color")
+local hl = require("common.color")
 local global = require("common.global")
 local debounce = require("common.debounce")
 local log = require("common.log")
@@ -13,14 +13,15 @@ local augroup = utils.augroup
 local autocmd = utils.autocmd
 -- local create_augroup = utils.create_augroup
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local env = vim.env
-local cmd = vim.cmd
 local g = vim.g
 local v = vim.v
 local b = vim.bo
+local o = vim.opt
+local ol = vim.opt_local
 
 local debounced
 local has_sourced
@@ -239,7 +240,7 @@ nvim.autocmd.lmb__RestoreCursor = {
                 api.nvim_win_set_cursor(0, {row, 0})
 
                 if fn.line("w$") ~= row then
-                    cmd("norm! zz")
+                    cmd.norm({"zz", bang = true})
                 end
             end
         end
@@ -250,7 +251,8 @@ nvim.autocmd.lmb__RestoreCursor = {
         pattern = {"file:///*"},
         nested = true,
         command = function(args)
-            cmd(("bd!|edit %s"):format(vim.uri_to_fname(args.file)))
+            cmd.bdelete({bang = true})
+            cmd.edit(vim.uri_to_fname(args.file))
         end
     }
 }
@@ -261,7 +263,7 @@ nvim.autocmd.lmb__RestoreCursor = {
 --         pattern = "?*",
 --         command = function()
 --             if funcs.makeview() then
---                 ex.silent_("mkview")
+--                 cmd.silent({"mkview", bang = true})
 --             end
 --         end,
 --         desc = "Save folds"
@@ -271,7 +273,7 @@ nvim.autocmd.lmb__RestoreCursor = {
 --         pattern = "?*",
 --         command = function()
 --             if funcs.makeview() then
---                 ex.silent_("loadview")
+--                 cmd.silent({"loadview", bang = true})
 --             end
 --         end,
 --         desc = "Restore folds from previous session"
@@ -282,48 +284,44 @@ nvim.autocmd.lmb__RestoreCursor = {
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them.
-do
-    local o = vim.opt_local
+nvim.autocmd.lmb__FormatOptions = {
+    event = {"BufEnter", "FileType"},
+    pattern = "*",
+    command = function()
+        ol.formatoptions = {
+            ["1"] = true,
+            ["2"] = true, -- Use indent from 2nd line of a paragraph
+            q = true, -- Continue comments with gq"
+            n = true, -- Recognize numbered lists
+            j = true, -- Remove a comment leader when joining lines.
+            -- Only break if the line was not longer than 'textwidth' when the insert
+            -- started and only at a white character that has been entered during the
+            -- current insert command.
+            l = true,
+            v = true, -- Only break line at blank line I've entered
+            c = true, -- Auto-wrap comments using textwidth
+            r = false, -- Continue comments when pressing Enter
+            t = false, -- Autowrap lines using text width value
+            o = false --- Automatically insert comment leader after <enter>
+        }
 
-    nvim.autocmd.lmb__FormatOptions = {
-        event = {"BufEnter", "FileType"},
-        pattern = "*",
-        command = function()
-            o.formatoptions = {
-                ["1"] = true,
-                ["2"] = true, -- Use indent from 2nd line of a paragraph
-                q = true, -- Continue comments with gq"
-                n = true, -- Recognize numbered lists
-                j = true, -- Remove a comment leader when joining lines.
-                -- Only break if the line was not longer than 'textwidth' when the insert
-                -- started and only at a white character that has been entered during the
-                -- current insert command.
-                l = true,
-                v = true, -- Only break line at blank line I've entered
-                c = true, -- Auto-wrap comments using textwidth
-                r = false, -- Continue comments when pressing Enter
-                t = false, -- Autowrap lines using text width value
-                o = false --- Automatically insert comment leader after <enter>
-            }
+        vim.schedule(
+            function()
+                local bufnr = api.nvim_get_current_buf()
+                local ft = api.nvim_buf_get_option(bufnr, "filetype")
 
-            vim.schedule(
-                function()
-                    local bufnr = api.nvim_get_current_buf()
-                    local ft = api.nvim_buf_get_option(bufnr, "filetype")
+                -- o.conceallevel = 2
+                -- o.concealcursor = "vc"
 
-                    -- o.conceallevel = 2
-                    -- o.concealcursor = "vc"
-
-                    -- Allows a shared statusline
-                    if ft ~= "fzf" then
-                        o.laststatus = 3
-                    end
+                -- Allows a shared statusline
+                if ft ~= "fzf" then
+                    ol.laststatus = 3
                 end
-            )
-        end,
-        desc = "Setup format options"
-    }
-end
+            end
+        )
+    end,
+    desc = "Setup format options"
+}
 -- ]]] === Format Options ===
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -335,7 +333,7 @@ nvim.autocmd.lmb__ColorschemeSetup = {
     command = function()
         vim.defer_fn(
             function()
-                C.all(
+                hl.all(
                     {
                         TSVariableBuiltin = {default = true, gui = "none"},
                         TSTypeBuiltin = {default = true, gui = "none"},
@@ -355,13 +353,13 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                 )
 
                 if g.colors_name ~= "kimbox" then
-                    C.all(
+                    hl.all(
                         {
                             Hlargs = {link = "TSParameter"}
                         }
                     )
                 else
-                    C.all(
+                    hl.all(
                         {
                             TSFunction = {default = true, bold = true},
                             TSFuncBuiltin = {link = "TSFunction", bold = true}
@@ -593,7 +591,7 @@ local function smart_close()
     end
     -- For floggraph
     -- if fn.tabpagewinnr("$") ~= 1 then
-    --     ex.tabc()
+    --     cmd.tabc()
     -- end
 end
 
@@ -626,11 +624,11 @@ nvim.autocmd.lmb__SmartClose = {
             local bufnr = api.nvim_get_current_buf()
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
-                vim.opt_local.cursorline = false
+                ol.cursorline = false
             end
 
             -- if bufname:match("%[Wilder Float %d%]") then
-            --     vim.opt_local.buflisted = false
+            --     ol.buflisted = false
             -- end
         end,
         desc = "Close QuickFix if last window, disable cursorline on [No Name]"
@@ -659,7 +657,7 @@ nvim.autocmd.lmb__FiletypeDetect = {
     command = function()
         if utils.empty(vim.bo.filetype) or fn.exists("b:ftdetect") == 1 then
             vim.b.ftdetect = nil
-            ex.filetype("detect")
+            cmd.filetype("detect")
             utils.cool_echo(("Filetype set to %s"):format(vim.bo.ft), "Macro")
         end
     end,
@@ -871,10 +869,10 @@ nvim.autocmd.lmb__CommentTitle = {
     }
 }
 
-C.all({cmTitle = {link = "vimCommentTitle", default = true}})
--- ex.hi("def link cmTitle vimCommentTitle")
--- ex.hi("def link myTodo Todo")
--- ex.hi("def link cmLineComment Comment")
+hl.all({cmTitle = {link = "vimCommentTitle", default = true}})
+-- cmd.hi("def link cmTitle vimCommentTitle")
+-- cmd.hi("def link myTodo Todo")
+-- cmd.hi("def link cmLineComment Comment")
 
 -- ]]] === Custom syntax groups ===
 
@@ -890,7 +888,7 @@ do
                 group = id,
                 pattern = pattern,
                 command = function()
-                    opt_local.cursorline = value
+                    ol.cursorline = value
                 end
             }
         )

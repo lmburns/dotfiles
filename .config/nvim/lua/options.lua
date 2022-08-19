@@ -84,7 +84,7 @@ g.markdown_fenced_languages = {
     "ts=typescript",
     "typescript",
     "vim",
-    "yaml",
+    "yaml"
 }
 
 if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
@@ -243,7 +243,8 @@ o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
 o.wildmenu = true
 o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true -- ignore case when completing file names and directories
-o.wildcharm = fn.char2nr(utils.termcodes["<Tab>"])
+-- o.wildcharm = fn.char2nr(utils.termcodes["<Tab>"])
+o.wildcharm = ("\t"):byte()
 
 o.winminwidth = 10
 o.pumheight = 10 -- number of items in popup menu

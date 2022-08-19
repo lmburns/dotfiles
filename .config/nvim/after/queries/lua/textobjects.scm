@@ -22,7 +22,7 @@ _ @token.outer
 (identifier) @token.outer
 
 ; Generalized argument
-; TODO: 
+; TODO:
 
 ; swappable
 ; TODO: (for_numeric_cause > start)

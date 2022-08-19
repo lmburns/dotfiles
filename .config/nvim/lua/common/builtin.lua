@@ -6,7 +6,6 @@ local M = {}
 local utils = require("common.utils")
 local hl = require("common.color")
 
-local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -91,9 +90,9 @@ function M.jumps2qf()
 end
 
 function M.spellcheck()
-    ex.SpellCheck()
+    cmd.SpellCheck()
     if #fn.getqflist() > 0 then
-        ex.copen()
+        cmd.copen()
     end
 end
 
@@ -101,7 +100,7 @@ end
 ---Translate spelling mistakes to quickfix
 function M.spell2qf()
     vim.opt_local.spell = true
-    cmd("norm! gg")
+    cmd.norm({"gg", bang = true})
 
     local bufnr = api.nvim_get_current_buf()
     local mistakes = {}
@@ -109,11 +108,11 @@ function M.spell2qf()
     local line = 0
     -- Why is this nil?
     while api.nvim_win_get_cursor(0)[1] or 1 > line do
-        cmd("norm! ]syw")
+        cmd.norm({"]syw", bang = true})
         local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
         -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))
         line = ilnum
-        table.insert(mistakes, {bufnr = bufnr, lnum = ilnum, col = icol, text = fn.getreg('"')})
+        table.insert(mistakes, {bufnr = bufnr, lnum = ilnum, col = icol, text = nvim.reg['"']})
     end
 
     p(mistakes)
@@ -160,19 +159,18 @@ function M.switch_lastbuf()
     local alter_bufnr = fn.bufnr("#")
     local cur_bufnr = api.nvim_get_current_buf()
     if alter_bufnr ~= -1 and alter_bufnr ~= cur_bufnr then
-        ex.b("#")
+        cmd.b("#")
         -- If a buffer was closed with 'bq', then reopened
         local new_bufnr = api.nvim_get_current_buf()
         if not vim.bo[new_bufnr].buflisted then
-            ex.set("buflisted")
+            vim.bo.buflisted = true
         end
     else
         local mru_list = require("common.mru").list()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
-                -- pcall(ex.e, fn.fnameescape(f))
-                cmd(("e %s"):format(fn.fnameescape(f)))
+                cmd.e(fn.fnameescape(f))
 
                 -- Cursor position when last exiting
                 -- I already have an autocmd for this

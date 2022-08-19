@@ -24,3 +24,12 @@ map(
     end,
     {buffer = true, desc = "ESLint autofix"}
 )
+
+map(
+    "n",
+    ";fo",
+    function()
+        coc.run_command("tsserver.organizeImports")
+    end,
+    {buffer = true, desc = "TSServer organizeImports"}
+)

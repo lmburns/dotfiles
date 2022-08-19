@@ -5,7 +5,7 @@ local _  = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 
--- local ex = vim.cmd
+-- local ex = nvim.ex
 -- local api = vim.api
 local fn = vim.fn
 local F = vim.F

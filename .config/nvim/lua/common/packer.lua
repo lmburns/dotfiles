@@ -1,7 +1,7 @@
 local M = {}
 
 local log = require("common.log")
-local ex = vim.cmd
+local cmd = vim.cmd
 
 ---Reinstall a plugin. Only the repository name is allowed
 ---Example: `:PackerReinstall "theme.nvim"`
@@ -27,7 +27,7 @@ M.reinstall = function(name)
                                 return
                             end
                             os.execute(("cd %s && git fetch --progress origin && git reset --hard origin"):format(dir))
-                            ex.PackerSync()
+                            cmd.PackerSync()
                         end
                     )
                     return

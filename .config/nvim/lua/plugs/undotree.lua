@@ -8,7 +8,6 @@ local utils = require("common.utils")
 -- local map = utils.map
 local command = utils.command
 
-local ex = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local cmd = vim.cmd
@@ -37,8 +36,8 @@ end
 
 -- This doesn't translate to global vim space
 -- function Undotree_CustomMap()
---     ex.nunmap("<buffer> u")
---     ex.nunmap("<buffer> U")
+--     cmd.nunmap("<buffer> u")
+--     cmd.nunmap("<buffer> U")
 --     bmap("n", "J", "<Plug>UndotreePreviousState")
 --     bmap("n", "K", "<Plug>UndotreeNextState")
 --     bmap("n", "D", "<Plug>UndotreeDiffToggle")
@@ -67,7 +66,7 @@ local function init()
     ]]
     )
 
-    ex.packadd("undotree")
+    cmd.packadd("undotree")
 
     -- <plug>UndotreeHelp
     -- <plug>UndotreeClose

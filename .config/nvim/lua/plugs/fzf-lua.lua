@@ -6,7 +6,7 @@ if not fzf_lua then
     return
 end
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 
 function M.setup()
@@ -643,7 +643,7 @@ M.cst_files = function(opts)
     opts = opts or {}
     local cwd = fn.expand("%:p:h")
     local root = require("common.gittool").root(cwd)
-    ex.lcd(cwd)
+    cmd.lcd(cwd)
     opts.cwd = cwd
 
     if #root == 0 then
@@ -656,7 +656,7 @@ end
 M.cst_fd = function()
     local opts = {}
     local cwd = fn.expand("%:p:h")
-    ex.lcd(cwd)
+    cmd.lcd(cwd)
     -- Override this so it gets ran on each file
     opts.cwd = cwd
 

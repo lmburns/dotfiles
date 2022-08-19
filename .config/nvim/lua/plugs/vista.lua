@@ -4,7 +4,7 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
-local C = require("common.color")
+local hl = require("common.color")
 
 local g = vim.g
 
@@ -29,7 +29,7 @@ end
 local function init()
     M.setup()
 
-    C.link("VistaFloat", "CocFloating")
+    hl.link("VistaFloat", "CocFloating")
 
     augroup(
         "lmb__VistaNearest",

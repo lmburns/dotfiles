@@ -11,7 +11,7 @@ configuration {
   sorting-method: "fzf";
   drun-display-format: "{name}";
 
-  kb-mode-next: "Tab";
+  /* kb-mode-next: "Tab"; */
   kb-mode-previous: "Shift+Tab";
   kb-row-tab: "";
   kb-row-down: "Down,Control+j";

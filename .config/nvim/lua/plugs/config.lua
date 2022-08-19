@@ -9,7 +9,7 @@ local abbr = require("abbr")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
-local C = require("common.color")
+local hl = require("common.color")
 -- local coc = require("plugs.coc")
 local utils = require("common.utils")
 local bmap = utils.bmap
@@ -20,7 +20,6 @@ local augroup = utils.augroup
 
 local fs = vim.fs
 local cmd = vim.cmd
-local ex = vim.cmd
 local fn = vim.fn
 local g = vim.g
 local api = vim.api
@@ -376,7 +375,7 @@ function M.floaterm()
     g.floaterm_width = 0.9
     g.floaterm_borderchars = "─│─│╭╮╯╰"
 
-    C.plugin(
+    hl.plugin(
         "floaterm",
         {
             FloatermBorder = {fg = "#A06469", gui = "none"}
@@ -437,7 +436,7 @@ end
 -- │                         VimWiki                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.vimwiki()
-    C.all(
+    hl.all(
         {
             VimwikiBold = {fg = "#a25bc4", bold = true},
             VimwikiCode = {fg = "#d3869b"},
@@ -519,7 +518,7 @@ function M.notify()
         return
     end
 
-    C.plugin(
+    hl.plugin(
         "notify",
         {
             NotifyERRORBorder = {bg = {from = "NormalFloat"}},
@@ -826,7 +825,7 @@ function M.sandwhich()
         }
     }
 
-    ex.runtime("macros/sandwich/keymap/surround.vim")
+    cmd.runtime("macros/sandwich/keymap/surround.vim")
 
     -- move the cursor at the start of the surrounded object
     -- "VimEnter * :call operator#sandwich#set('all', 'all', 'cursor', 'inner_head')",
@@ -1168,7 +1167,7 @@ function M.matchup()
     g.matchup_delim_start_plaintext = 1
     g.matchup_motion_override_Npercent = 0
 
-    C.plugin(
+    hl.plugin(
         "Matchup",
         {
             MatchWord = {link = "Underlined"},
@@ -1179,7 +1178,7 @@ function M.matchup()
     map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
     map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
     map({"n", "x", "o"}, "]5", "<Plug>(matchup-]%)")
-    map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)")
+    map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
     map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
     map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
 
@@ -1681,13 +1680,61 @@ function M.lfnvim()
             escape_quit = true,
             -- open_on = true,
             border = "rounded",
-            highlights = {FloatBorder = {guifg = require("kimbox.palette").colors.magenta}}
+            highlights = {
+                NormalFloat = {link = "Normal"},
+                FloatBorder = {guifg = require("kimbox.palette").colors.magenta}
+            }
         }
     )
 
     map("n", "<A-o>", ":Lf<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Copilot                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.copilot()
+    g.copilot_no_tab_map = true
+    g.copilot_assume_mapped = true
+    g.copilot_tab_fallback = false
+    g.copilot_filetypes = {
+        ["*"] = true,
+        gitcommit = false,
+        NeogitCommitMessage = false
+    }
+
+    map(
+        "n",
+        "<Leader>ce",
+        function()
+            cmd("Copilot enable")
+            map(
+                "i",
+                "<C-l>",
+                [[copilot#Accept("")]],
+                {silent = true, expr = true, script = true, desc = "Copilot accept suggestion"}
+            )
+        end,
+        {silent = true, desc = "Enable Copilot"}
+    )
+
+    map(
+        "n",
+        "<Leader>cy",
+        function()
+            cmd("Copilot disable")
+            vim.keymap.del("i", "<C-l>")
+        end,
+        {silent = true, desc = "Disable Copilot"}
+    )
+
+    vim.schedule(
+        function()
+            vim.cmd("Copilot disable")
+        end
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1928,7 +1975,7 @@ function M.visualmulti()
     command(
         "VMFixStl",
         function()
-            ex.VMClear()
+            cmd.VMClear()
             vim.o.statusline = "%{%v:lua.require'lualine'.statusline()%}"
         end
     )
@@ -1981,7 +2028,7 @@ function M.git_conflict()
         }
     )
 
-    -- C.plugin(
+    -- hl.plugin(
     --     "GitConflict",
     --     {
     --         GitConflictCurrent = {link = "DiffAdd"},

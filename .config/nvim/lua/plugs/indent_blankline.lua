@@ -6,7 +6,7 @@ if not indent then
     return
 end
 
-local C = require("common.color")
+local hl = require("common.color")
 
 -- #A06469 #d3869b #4C96A8
 
@@ -66,7 +66,7 @@ function M.setup()
 end
 
 local function init()
-    C.plugin("Indent_Blankline", {IndentBlanklineContextChar = {fg = "#DC3958", gui = "nocombine"}})
+    hl.plugin("IndentBlankline", {IndentBlanklineContextChar = {fg = "#DC3958", gui = "nocombine"}})
     M.setup()
 end
 

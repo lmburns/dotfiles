@@ -12,6 +12,8 @@ local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
 
+local overseer = require("overseer")
+
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -211,7 +213,23 @@ local sections_1 = {
             {
                 "%p%%/%-3L"
             }
-        )
+        ),
+        {
+            "overseer",
+            label = "", -- Prefix for task counts
+            colored = true, -- Color the task icons and counts
+            symbols = {
+                [overseer.STATUS.FAILURE] = "F:",
+                [overseer.STATUS.CANCELED] = "C:",
+                [overseer.STATUS.SUCCESS] = "S:",
+                [overseer.STATUS.RUNNING] = "R:"
+            },
+            unique = true, -- Unique-ify non-running task count by name
+            name = nil, -- List of task names to search for
+            name_not = false, -- When true, invert the name search
+            status = nil, -- List of task statuses to display
+            status_not = false -- When true, invert the status search
+        }
         -- "%l:%c",
         -- "%p%%/%L",
         -- plugs.search_result.fn
@@ -269,7 +287,7 @@ function M.toggle_mode()
     local lutils = require("lualine.utils.utils")
 
     if D.tbl_equivalent(current_config.sections, sections_1) then
-    -- if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
+        -- if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)
@@ -322,7 +340,7 @@ function M.autocmds()
                 -- Lazy redraw just now started causing me problems
                 if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
                     lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
-                -- ex.redraws()
+                -- cmd.redraws()
                 end
             end
         },

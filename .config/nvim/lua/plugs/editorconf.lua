@@ -3,7 +3,7 @@ local M = {}
 -- https://editorconfig-specification.readthedocs.io/
 -- https://github.com/editorconfig/editorconfig/wiki/EditorConfig-Properties
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local g = vim.g
@@ -18,13 +18,13 @@ function M.hook(config)
                 local bt = vim.bo[bufnr].bt
                 if bt == "" then
                     if not indentLine_loaded then
-                        ex.PackerLoad("indent-blankline.nvim")
+                        cmd.PackerLoad("indent-blankline.nvim")
                         indentLine_loaded = true
                     end
                     api.nvim_buf_call(
                         bufnr,
                         function()
-                            ex.IndentBlanklineEnable()
+                            cmd.IndentBlanklineEnable()
                         end
                     )
                 end
@@ -43,7 +43,7 @@ local function init()
 
     vim.defer_fn(
         function()
-            ex.EditorConfigReload()
+            cmd.EditorConfigReload()
         end,
         100
     )

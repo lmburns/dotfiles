@@ -14,7 +14,7 @@ local map = utils.map
 -- local augroup = utils.augroup
 local icon = require("style").icons
 
-local ex = vim.cmd
+local cmd = vim.cmd
 
 function M.setup()
     trouble.setup(
@@ -73,7 +73,7 @@ end
 
 function M.toggle_workspace()
     if #coc.workspace > 0 then
-        ex.TroubleToggle("coc_workspace_diagnostics")
+        cmd.TroubleToggle("coc_workspace_diagnostics")
     else
         log.warn("No workspace diagnostics", true, {title = "Trouble"})
     end
@@ -81,7 +81,7 @@ end
 
 function M.toggle_document()
     if #coc.document > 0 then
-        ex.TroubleToggle("coc_document_diagnostics")
+        cmd.TroubleToggle("coc_document_diagnostics")
     else
         log.warn("No document diagnostics", true, {title = "Trouble"})
     end

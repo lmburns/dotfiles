@@ -4,7 +4,6 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 local wk = require("which-key")
 
-local ex = vim.cmd
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
@@ -17,9 +16,9 @@ end
 function M.index()
     local bufname = api.nvim_buf_get_name(0)
     if fn.winnr("$") == 1 and bufname == "" then
-        ex.Git()
+        cmd.Git()
     else
-        ex.tab("Git")
+        cmd("tab Git")
     end
     if bufname == "" then
         cmd("sil! noa bw #")
@@ -35,7 +34,7 @@ function M.diff_hist()
         local diff = ctx.items[idx].diff or {}
         if #diff == 1 then
             cmd("abo vert diffs " .. diff[1].filename)
-            ex.winc("p")
+            cmd.winc("p")
         end
     end
 end
@@ -56,7 +55,7 @@ local function init()
     if bufname:find("/.git/index$") then
         vim.schedule(
             function()
-                ex.doau(("fugitive BufReadCmd %s"):format(bufname))
+                cmd(("doau fugitive BufReadCmd %s"):format(bufname))
             end
         )
     end
@@ -105,7 +104,7 @@ local function init()
         }
     )
 
-    ex.packadd("vim-rhubarb")
+    cmd.packadd("vim-rhubarb")
 
     wk.register(
         {

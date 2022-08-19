@@ -2,6 +2,7 @@
 
 local M = {}
 
+local utils = require("common.utils")
 local gittool = require("common.gittool")
 local coc = require("plugs.coc")
 local log = require("common.log")
@@ -10,7 +11,6 @@ local backends = require("aerial.backends")
 local config = require("aerial.config")
 local data = require("aerial.data")
 
-local ex = vim.cmd
 local F = vim.F
 local api = vim.api
 local fn = vim.fn
@@ -169,7 +169,7 @@ function M.outline_aerial(args)
 
     local winid = fn.getloclist(0, {winid = 0}).winid
     if winid == 0 then
-        ex.bel("lw")
+        cmd("bel lw")
     else
         api.nvim_set_current_win(winid)
     end
@@ -308,9 +308,9 @@ function M.outline(args)
             local winid = fn.getloclist(0, {winid = 0}).winid
             if winid == 0 then
                 if opts.fzf then
-                    ex.abo("lw")
+                    cmd("abo lw")
                 else
-                    ex.bel("lw")
+                    cmd("bel lw")
                 end
             else
                 api.nvim_set_current_win(winid)
@@ -450,7 +450,7 @@ function M.outline_treesitter(args)
 
     local winid = fn.getloclist(0, {winid = 0}).winid
     if winid == 0 then
-        ex.bel("lw")
+        cmd("bel lw")
     else
         api.nvim_set_current_win(winid)
     end
@@ -479,7 +479,7 @@ function M.conflicts2qf()
                 goto continue
             end
 
-            ex.badd(("+%d %s"):format(lnum, fname))
+            cmd(("badd +%d %s"):format(lnum, fname))
             local bufnr = fn.bufnr(fname)
             local text = nvim.buf.get_lines(bufnr, tonumber(lnum), tonumber(lnum) + 1, false)[1]
 
@@ -500,7 +500,7 @@ function M.conflicts2qf()
         fn.setqflist(conflicts, "r")
 
         if #conflicts > 0 then
-            ex.copen()
+            cmd.copen()
         end
     end
 end

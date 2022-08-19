@@ -468,7 +468,7 @@ end
 ---@param group Group
 ---@param gui string
 function M.gui(group, gui)
-    cmd(("hi %s gui=%s"):format(group, gui))
+    cmd.hi(("%s gui=%s"):format(group, gui))
 end
 
 ---Define bg and fg color

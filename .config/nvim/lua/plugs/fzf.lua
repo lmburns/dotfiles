@@ -9,7 +9,6 @@ local mru = require("common.mru")
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
-local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -70,7 +69,7 @@ local function do_action(expect, path, bufnr, lnum, col)
                     local winids = bi[1].windows
                     if #winids > 0 then
                         fn.win_gotoid(winids[1])
-                        ex.keepalt(("b %d"):format(tmp_bufnr))
+                        cmd(("keepalt b %d"):format(tmp_bufnr))
                     else
                         jump_path(tmpfile)
                     end
@@ -78,8 +77,8 @@ local function do_action(expect, path, bufnr, lnum, col)
             else
                 jump_path(tmpfile)
             end
-            ex.keepalt(("b %d"):format(bufnr))
-            ex.noa(("bw %d"):format(tmp_bufnr))
+            cmd(("keepalt b %d"):format(bufnr))
+            cmd(("noa bw %d"):format(tmp_bufnr))
         end
     else
         jump_path(path)
@@ -407,8 +406,8 @@ local function init()
         ["--preview-window"] = "wrap"
     }
 
-    ex.pa("fzf")
-    ex.pa("fzf.vim")
+    cmd.packadd("fzf")
+    cmd.packadd("fzf.vim")
 
     -- Hide status and ruler for fzf
     api.nvim_create_autocmd(

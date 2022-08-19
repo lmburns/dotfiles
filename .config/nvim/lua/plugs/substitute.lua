@@ -15,6 +15,7 @@ function M.setup()
             range = {
                 prefix = "s",
                 prompt_current_text = false,
+                group_substituted_text = true,
                 confirm = false,
                 complete_word = false,
                 motion1 = false,
@@ -22,7 +23,7 @@ function M.setup()
             },
             -- exchange = {
             --     motion = false
-            -- },
+            -- }
             -- on_substitute = function(event)
             --     require("yanky").init_ring("p", event.register, event.count, event.vmode:match("[vV]"))
             -- end
@@ -70,7 +71,7 @@ local function init()
     wk.register(
         {
             ["ss"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
-            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange"},
+            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange line"},
             ["sr"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
         },
         {mode = "x"}

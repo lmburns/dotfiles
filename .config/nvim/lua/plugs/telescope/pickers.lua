@@ -19,7 +19,7 @@ local scan = require("plenary.scandir")
 
 local b_utils = require("common.utils") -- "builtin" utils
 
-local ex = nvim.ex
+local g = vim.g
 local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
@@ -34,30 +34,30 @@ P.use_highlighter = true
 --      So this is a clone of that. Even when using `bulitin.tags = P.tags`, it doesn't work
 
 P.tags = function(opts)
-opts =
-    vim.tbl_deep_extend(
-    "force",
-    {
-        path_display = {"smart"},
-        bufnr = api.nvim_get_current_buf(),
-        preview = {
-            check_mime_type = true,
-            filesize_limit = 5,
-            hide_on_startup = false,
-            msg_bg_fillchar = "╱",
-            timeout = 150,
-            treesitter = true
-        }
-    },
-    opts or {}
-)
-
-local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
-if vim.tbl_isempty(tagfiles) then
-    utils.notify(
-        "builtin.tags",
+    opts =
+        vim.tbl_deep_extend(
+        "force",
         {
-            msg = "No tags file found. Create one with ctags -R",
+            path_display = {"smart"},
+            bufnr = api.nvim_get_current_buf(),
+            preview = {
+                check_mime_type = true,
+                filesize_limit = 5,
+                hide_on_startup = false,
+                msg_bg_fillchar = "╱",
+                timeout = 150,
+                treesitter = true
+            }
+        },
+        opts or {}
+    )
+
+    local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
+    if vim.tbl_isempty(tagfiles) then
+        utils.notify(
+            "builtin.tags",
+            {
+                msg = "No tags file found. Create one with ctags -R",
                 level = "ERROR"
             }
         )
@@ -98,9 +98,9 @@ if vim.tbl_isempty(tagfiles) then
                                 end
                             )
 
-                            cmd("norm! gg")
+                            cmd.norm({"gg", bang = true})
                             fn.search(scode)
-                            cmd("norm! zz")
+                            cmd.norm({"zz", bang = true})
                         else
                             api.nvim_win_set_cursor(0, {selection.lnum, 0})
                         end
@@ -593,7 +593,7 @@ P.scriptnames = function(opts)
                     function()
                         local sel = action_state.get_selected_entry()
                         actions.close(prompt_bufnr)
-                        ex.e(sel.filename)
+                        cmd.e(sel.filename)
                     end
                 )
                 return true
@@ -766,7 +766,7 @@ P.find = function(opts)
         finders._new {
         fn_command = function(_, prompt)
             if opts.cwd then
-                cmd("cd " .. opts.cwd)
+                cmd.cd(opts.cwd)
             end
             local prefix = (fn.getcwd()) .. ".*"
 

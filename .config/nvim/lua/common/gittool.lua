@@ -5,12 +5,11 @@ local utils = require("common.utils")
 
 local Job = require("plenary.job")
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fs = vim.fs
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
-local cmd = vim.cmd
 
 ---Execute a git command
 ---@param args table arguments to pass to git
@@ -109,7 +108,8 @@ function M.root_exe(exec, path)
         api.nvim_win_call(
             cur_winid,
             function()
-                ex.noa(("lcd %s"):format(old_cwd))
+                -- FIX: This works with nvim.ex but not vim.cmd
+                cmd(("noa lcd %s"):format(old_cwd))
             end
         )
     end

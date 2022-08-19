@@ -34,11 +34,11 @@ local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
 
 local map = b_utils.map
-local ex = nvim.ex
 local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 local uv = vim.loop
+local F = vim.F
 
 -- local extensions_loaded = false
 -- local function load_extensions()
@@ -428,12 +428,12 @@ require("telescope").setup(
                         ["<C-l>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
-                            ex.DiffviewOpen(("%s~1.. %s"):format(value, value))
+                            cmd.DiffviewOpen(("%s~1.. %s"):format(value, value))
                         end,
                         ["<C-s>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
-                            ex.DiffviewOpen(value)
+                            cmd.DiffviewOpen(value)
                         end,
                         ["<C-u>"] = function(prompt_bufnr)
                             R("telescope.actions").close(prompt_bufnr)
@@ -443,7 +443,7 @@ require("telescope").setup(
                                 {"git", "rev-parse", "upstream/master"},
                                 fn.expand("%:p:h") or uv.cwd()
                             )[1]
-                            ex.DiffviewOpen(("%s %s"):format(rev, value))
+                            cmd.DiffviewOpen(("%s %s"):format(rev, value))
                         end
                     }
                 }
@@ -610,7 +610,7 @@ require("telescope").setup(
                 mappings = {
                     default = {
                         action = function(selection)
-                            cmd("cd " .. selection.path)
+                            cmd.cd(selection.path)
                         end,
                         after_action = function(selection)
                             print("Directory changed to " .. selection.path)
@@ -719,7 +719,7 @@ end
 M.cst_files = function()
     local cwd = fn.expand("%:p:h")
     local root = require("common.gittool").root(cwd)
-    ex.lcd(cwd)
+    cmd.lcd(cwd)
     -- Override this so it gets ran on each file
     options.cwd = cwd
 
@@ -733,7 +733,7 @@ end
 
 M.cst_fd = function()
     local cwd = fn.expand("%:p:h")
-    ex.lcd(cwd)
+    cmd.lcd(cwd)
     -- Override this so it gets ran on each file
     options.cwd = cwd
     options.sorting_strategy = "descending"
@@ -1344,7 +1344,7 @@ wk.register(
         ["<Leader>e."] = {"<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>", "Telescope dotfiles (cst)"},
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
         ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
-        ["<Leader>rr"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
+        ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
         -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
     }
 )

@@ -11,7 +11,7 @@ local utils = require("common.utils")
 local map = utils.map
 local command = utils.command
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 
 function M.setup()
@@ -90,6 +90,9 @@ function M.setup()
             discovery = {
                 enabled = false
             },
+            consumers = {
+                overseer = utils.safe_require("neotest.consumers.overseer")
+            },
             diagnostic = {
                 enabled = true
             },
@@ -127,14 +130,14 @@ function M.setup()
 end
 
 local function init()
-    ex.packadd("neotest-python")
-    ex.packadd("neotest-plenary")
-    ex.packadd("neotest-vim-test")
-    ex.packadd("neotest-go")
+    cmd.packadd("neotest-python")
+    cmd.packadd("neotest-plenary")
+    cmd.packadd("neotest-vim-test")
+    cmd.packadd("neotest-go")
 
     M.setup()
 
-    vim.cmd(
+    cmd(
         [[
             hi! link NeotestPassed String
             hi! link NeotestFailed DiagnosticError

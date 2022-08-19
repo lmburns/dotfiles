@@ -56,6 +56,8 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
+  "diagnostic.virtualTextLineSeparator": " \\ ",
+  "diagnostic.virtualTextPrefix": " | ",
   // "diagnostic.virtualTextCurrentLineOnly": true,
   // "diagnostic.format": "%message [%source:%code]", // %source code severity message
   "diagnostic.signPriority": 50,
@@ -217,7 +219,12 @@
   "rust-analyzer.updates.channel": "nightly",
   "rust-analyzer.updates.checkOnStartup": true,
   "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.procMacro.attributes.enable": true,
+  "rust-analyzer.cargo.buildScripts.enable": true,
   "rust-analyzer.updates.prompt": true,
+  "rust-analyzer.completion.autoimport.enable": true,
+  "rust-analyzer.completion.autoself.enable": true,
+  "rust-analyzer.completion.callable.snippets": "fill_arguments",
   "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.completion.postfix.enable": true,
   "rust-analyzer.diagnostics.enable": true,
@@ -233,21 +240,21 @@
   "rust-analyzer.inlayHints.enable": true,
   "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
   "rust-analyzer.inlayHints.chainingHints.enable": true,
-  "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
   "rust-analyzer.inlayHints.closingBraceHints.enable": true,
   "rust-analyzer.inlayHints.closingBraceHints.minLines": 25,
   "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
   "rust-analyzer.inlayHints.lifetimeElisionHints.enable": "skip_trivial",
-  "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": false,
+  "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": true,
   "rust-analyzer.inlayHints.maxLength": 30,
   "rust-analyzer.inlayHints.parameterHints.enable": true,
   "rust-analyzer.inlayHints.reborrowHints.enable": "always",
-  "rust-analyzer.inlayHints.refreshOnInsertMode": false,
   "rust-analyzer.inlayHints.renderColons": true,
   "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
-  "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
+  // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
+  // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣ // FIX: This stopped working
+  // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣", // FIX: This stopped working
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Golang                          │
   // ╰──────────────────────────────────────────────────────────╯

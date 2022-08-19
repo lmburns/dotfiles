@@ -1,6 +1,6 @@
 local M = {}
 
--- local D = require("dev")
+local D = require("dev")
 local log = require("common.log")
 local utils = require("common.utils")
 local command = utils.command
@@ -13,39 +13,15 @@ local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
+local o = vim.opt
+local F = vim.F
 
 -- ============================ Commands ============================== [[[
 
 command(
-    "NvimRestart",
-    function()
-        if not pcall(require, "nvim-reload") then
-            require("plugins").loader("nvim-reload")
-        end
-        local reload = R("plugs.nvim-reload")
-        reload.Restart()
-        -- ex.PackerSync()
-    end,
-    {nargs = "*"}
-)
-
-command(
-    "NvimReload",
-    function()
-        if not pcall(require, "nvim-reload") then
-            require("plugins").loader("nvim-reload")
-        end
-
-        require("nvim-reload").Reload()
-        ex.colorscheme("kimbox")
-    end,
-    {nargs = "*"}
-)
-
-command(
     "Grep",
     function(tbl)
-        ex.noautocmd(("grep! %s | redraw! | copen"):format(tbl.args))
+        cmd(("noau grep! %s | redraw! | copen"):format(tbl.args))
     end,
     {nargs = "+", complete = "file", desc = "Grep current file"}
 )
@@ -53,7 +29,7 @@ command(
 command(
     "LGrep",
     function(tbl)
-        ex.noautocmd(("lgrep! %s | redraw! | lcopen"):format(tbl.args))
+        cmd(("noau lgrep! %s | redraw! | lcopen"):format(tbl.args))
     end,
     {nargs = "+", complete = "file", desc = "Grep location list"}
 )
@@ -72,7 +48,7 @@ command(
     function(_)
         local bufnr = api.nvim_get_current_buf()
         local ft = vim.bo[bufnr].ft
-        ex.lcd(fn.expand("%:p:h"))
+        cmd.lcd(fn.expand("%:p:h"))
         cmd(("!tokei -t %s %%"):format(ft))
     end,
     {nargs = 0, desc = "Tokei current file"}
@@ -158,7 +134,7 @@ end
 ---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
 function M.print_hi_group()
     for _, id in pairs(M.name_syn_stack()) do
-        ex.hi(id)
+        cmd.hi(id)
     end
 end
 
@@ -248,9 +224,11 @@ end
 function M.diffsaved()
     local bufnr = api.nvim_get_current_buf()
     local ft = vim.bo[bufnr].ft
-    ex.diffthis()
-    cmd("vnew | r # | normal! 1Gdd")
-    ex.diffthis()
+    cmd.diffthis()
+    cmd.vnew()
+    cmd.r("#")
+    cmd.norm({"1Gdd", bang = true})
+    cmd.diffthis()
     fn.execute(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
 end
 
@@ -277,7 +255,7 @@ end
 function M.open_link()
     local file = fn.expand("<cfile>")
     if fn.isdirectory(file) > 0 then
-        ex.edit("file")
+        cmd.edit("file")
     else
         M.open(file)
     end
@@ -287,20 +265,20 @@ end
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("https?://") then
-        return vim.cmd("norm gx")
+        return cmd.norm("gx")
     end
 
     -- Check whether it is a file
     -- Expand relative links, e.g., ../lua/abbr.lua
     local abs = Path:new(path):absolute()
     if uv.fs_stat(abs) then
-        return vim.cmd("norm! gf")
+        return cmd.norm({"gf", bang = true})
     end
 
     -- Any URI with a protocol segment
     local protocol_uri_regex = "%a*:%/%/[%a%d%#%[%]%-%%+:;!$@/?&=_.,~*()]*"
     if path:match(protocol_uri_regex) then
-        return vim.cmd("norm! gf")
+        return cmd.norm({"gf", bang = true})
     end
 
     -- Consider anything that looks like string/string a github link
@@ -311,7 +289,7 @@ function M.open_path()
     if link and num_slashes == 1 then
         return M.open(("https://www.github.com/%s"):format(link))
     end
-    return vim.cmd("norm! gf")
+    return cmd.norm({"gf", bang = true})
     -- M.open(path)
 end
 
@@ -377,7 +355,7 @@ map(
     "n",
     "zk",
     function()
-        vim.opt.opfunc = "v:lua.require'functions'.empty_line_above"
+        o.opfunc = "v:lua.require'functions'.empty_line_above"
         return "g@l"
     end,
     {expr = true, desc = "Insert empty line above"}
@@ -388,7 +366,7 @@ map(
     "zj",
     function()
         -- M.insert_empty_lines(vim.v.count, 0)
-        vim.opt.opfunc = "v:lua.require'functions'.empty_line_below"
+        o.opfunc = "v:lua.require'functions'.empty_line_below"
         return "g@l"
     end,
     {expr = true, desc = "Insert empty line below"}
@@ -417,9 +395,9 @@ function M.tmux_copy_mode_toggle()
     -- opt_local.rnu = not opt_local.rnu
 
     if o.signcolumn:get() == "no" then
-        opt_local.signcolumn = "yes:1"
+        vim.opt_local.signcolumn = "yes:1"
     else
-        opt_local.signcolumn = "no"
+        vim.opt_local.signcolumn = "no"
     end
 end
 
@@ -445,8 +423,7 @@ if fn.executable("xsel") then
 
     function M.preserve_clipboard_and_suspend()
         M.preserve_clipboard()
-        vim.cmd("suspend")
-        -- ex.suspend()
+        cmd.suspend()
     end
 
     nvim.autocmd.lmb__PreserveClipboard = {
@@ -457,7 +434,7 @@ if fn.executable("xsel") then
         end
     }
 
-    map({"n", "v"}, "<C-z>", dev.ithunk(M.preserve_clipboard_and_suspend))
+    map({"n", "v"}, "<C-z>", D.ithunk(M.preserve_clipboard_and_suspend))
 end
 -- ]]] === Functions ===
 

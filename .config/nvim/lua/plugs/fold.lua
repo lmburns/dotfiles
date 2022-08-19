@@ -9,7 +9,6 @@ local hl = require("common.color")
 -- local augroup = utils.augroup
 local map = utils.map
 
-local ex = vim.cmd
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -46,23 +45,20 @@ end
 M.nav_fold = function(forward)
     local cnt = v.count1
     local wv = utils.save_win_positions()
-    cmd([[norm! m`]])
+    cmd.norm({"m`", bang = true})
+
     local cur_l, cur_c
     while cnt > 0 do
         if forward then
-            -- cmd("keepj norm! ]z")
-            ex.keepj(ex.norm_("]z"))
+            cmd("keepj norm! ]z")
         else
-            -- cmd("keepj norm! zk")
-            ex.keepj(ex.norm_("zk"))
+            cmd("keepj norm! zk")
         end
         cur_l, cur_c = unpack(api.nvim_win_get_cursor(0))
         if forward then
-            -- cmd("keepj norm! zj_")
-            ex.keepj(ex.norm_("zj_"))
+            cmd("keepj norm! zj_")
         else
-            -- cmd("keepj norm! [z_")
-            ex.keepj(ex.norm_("[z_"))
+            cmd("keepj norm! [z_")
         end
         cnt = cnt - 1
     end
@@ -123,10 +119,10 @@ end
 ---Unlike zO it does not open recursively, it only opens the current fold.
 M.open_fold = function()
     if fn.foldclosed(".") == -1 then
-        ex.foldclose()
+        cmd.foldclose()
     else
         while fn.foldclosed(".") ~= -1 do
-            ex.foldopen()
+            cmd.foldopen()
         end
     end
 end

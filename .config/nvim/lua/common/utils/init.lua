@@ -12,7 +12,7 @@ local wk = require("which-key")
 local uva = require("uva")
 local async = require("async")
 
-local ex = vim.cmd
+local ex = nvim.ex
 local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
@@ -488,13 +488,11 @@ end
 ---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts CommandOpts
 M.command = function(name, rhs, opts)
-    -- vim.validate(
-    --     {
-    --         name = {name, "string"},
-    --         cmd = {cmd, {"f", "s"}},
-    --         opts = {opts, "table", true}
-    --     }
-    -- )
+    vim.validate {
+        name = {name, "string"},
+        rhs = {rhs, {"f", "s"}},
+        opts = {opts, "table", true}
+    }
 
     local is_buffer = false
     opts = opts or {}
@@ -531,16 +529,11 @@ end
 ---@param name string Command to delete
 ---@param buffer? boolean|number Whether to delete buffer command
 M.del_command = function(name, buffer)
-    vim.validate(
-        {
-            name = {name, "string"},
-            buffer = {
-                buffer,
-                {"boolean", "number"},
-                "a boolean or a number"
-            }
-        }
-    )
+    vim.validate {
+        name = {name, "string"},
+        buffer = {buffer, {"boolean", "number"}, "a boolean or a number"}
+    }
+
     if buffer then
         buffer = type(buffer) == "number" and buffer or 0
         api.nvim_buf_del_user_command(buffer, name)
@@ -555,7 +548,10 @@ end
 ---@param _ number? patch
 ---@return boolean
 M.version = function(major, minor, _)
-    assert(major and minor, "major and minor must be provided")
+    vim.validate {
+        major = {major, "n", false},
+        minor = {minor, "n", false},
+    }
     local v = vim.version()
     return major >= v.major and minor >= v.minor
 end
@@ -565,9 +561,9 @@ end
 ---@param prefix boolean?
 M.source = function(path, prefix)
     if not prefix then
-        ex.source(path)
+        cmd.source(path)
     else
-        ex.source(("%s/%s"):format(fn.stdpath("config"), path))
+        cmd.source(("%s/%s"):format(fn.stdpath("config"), path))
     end
 end
 
@@ -725,7 +721,6 @@ M.preserve = function(arguments)
     local arguments = ("%q"):format(arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     cmd(("keepj keepp execute %s"):format(arguments))
-    -- ex.keepjumps(ex.keeppatterns(ex.execute(arguments)))
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -862,7 +857,7 @@ end
 ---Focus the floating window
 M.focus_floating_win = function()
     if dev.is_floating_window(fn.win_getid()) then
-        ex.wincmd("p")
+        cmd.wincmd("p")
         return
     end
     for _, winnr in ipairs(fn.range(1, fn.winnr("$"))) do
@@ -1062,7 +1057,7 @@ M.close_diff = function()
             local ok, msg = pcall(api.nvim_win_close, winid, false)
             if not ok and (msg and msg:match("^Vim:E444:")) then
                 if api.nvim_buf_get_name(0):match("^fugitive://") then
-                    ex.Gedit()
+                    ex.Gedit() -- FIX: cmd ex: Why doesn't cmd.Gedit work?
                 end
             end
         end

@@ -1,51 +1,64 @@
 ;; Lua Injections
 
+(comment) @comment
+
 ;; Luap
-(function_call
-  name: (_) @_fname
-  arguments: (arguments (_) (string content: _ @luap))
-  (#lua-match? @_fname "%.match$"))
-
-(function_call
-  name: (_) @_fname
-  arguments: (arguments (string content: _ @luap))
-  (#lua-match? @_fname ":match$"))
-
 (
- (function_call
-   (identifier) @_exec_lua
-   (arguments
-     (string) @lua)
+ function_call
+ (dot_index_expression
+   table: (identifier)@_table_name
+   field: (identifier)@_field_name
    )
-
- (#eq? @_exec_lua "exec_lua")
- (#lua-match? @lua "^%[%[")
- (#offset! @lua 0 2 0 -2)
+ arguments: (
+     arguments (_)(string("string_content")@luap)
+     )
+ (#eq? @_table_name "string")
+ (#any-of? @_field_name "find" "gsub" "gmatch" "match")
  )
 
-(
- (function_call
-   (identifier) @_exec_lua
-   (arguments
-     (string) @lua)
+((method_index_expression
+   table: (identifier)
+   method: (identifier)@_method_name
    )
-
- (#eq? @_exec_lua "exec_lua")
- (#lua-match? @lua "^[\"']")
- (#offset! @lua 0 1 0 -1)
+ (arguments(string("string_content")@luap))
+ (#any-of? @_method_name "find" "gsub" "match" "gmatch")
  )
+
+; (
+;  (function_call
+;    (identifier) @_exec_lua
+;    (arguments
+;      (string) @lua)
+;    )
+;
+;  (#eq? @_exec_lua "exec_lua")
+;  (#lua-match? @lua "^%[%[")
+;  (#offset! @lua 0 2 0 -2)
+;  )
+;
+; (
+;  (function_call
+;    (identifier) @_exec_lua
+;    (arguments
+;      (string) @lua)
+;    )
+;
+;  (#eq? @_exec_lua "exec_lua")
+;  (#lua-match? @lua "^[\"']")
+;  (#offset! @lua 0 1 0 -1)
+;  )
 
 ;; Vimscript Injections
 
 ((function_call
-   name: (_) @_vimcmd_identifier
-   arguments: (arguments (string content: _ @vim)))
- (#any-of? @_vimcmd_identifier "cmd" "vim.cmd" "vim.api.nvim_command" "vim.api.nvim_exec"))
+  name: (_) @_vimcmd_identifier
+  arguments: (arguments (string content: _ @vim)))
+  (#any-of? @_vimcmd_identifier "cmd" "vim.cmd" "vim.api.nvim_command" "vim.api.nvim_exec"))
 
 ((function_call
-   name: (_) @_vimcmd_identifier
-   arguments: (arguments (string content: _ @query) .))
- (#eq? @_vimcmd_identifier "vim.treesitter.query.set_query"))
+  name: (_) @_vimcmd_identifier
+  arguments: (arguments (string content: _ @query) .))
+  (#eq? @_vimcmd_identifier "vim.treesitter.query.set_query"))
 
 ;; (
 ;;   (function_call
@@ -72,30 +85,11 @@
 ;; )
 
 ;; C Injections
-;; (
-;;   (function_call
-;;     (field_expression
-;;       (property_identifier) @_cdef_identifier)
-;;     (arguments
-;;       (string) @c)
-;;   )
-;;
-;;   (#eq? @_cdef_identifier "cdef")
-;;   (#lua-match? @c "^[\"']")
-;;   (#offset! @c 0 1 0 -1)
-;; )
-;;
-;; (
-;;   (function_call
-;;     (field_expression
-;;       (property_identifier) @_cdef_identifier)
-;;     (arguments
-;;       (string) @c)
-;;   )
-;;
-;;   (#eq? @_cdef_identifier "cdef")
-;;   (#lua-match? @c "^%[%[")
-;;   (#offset! @c 0 2 0 -2)
-;; )
 
-(comment) @comment
+((function_call
+  name: [
+    (identifier) @_cdef_identifier
+    (_ _ (identifier) @_cdef_identifier)
+  ]
+  arguments: (arguments (string content: _ @c)))
+  (#eq? @_cdef_identifier "cdef"))

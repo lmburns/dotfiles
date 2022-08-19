@@ -7,11 +7,10 @@ if not bqf then
 end
 
 local debounce = require("common.debounce")
-local C = require("common.color")
+local hl = require("common.color")
 local utils = require("common.utils")
 local autocmd = utils.autocmd
 
-local ex = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
@@ -64,7 +63,7 @@ local function preview_fugitive(bufnr, ...)
                     api.nvim_buf_call(
                         bufnr,
                         function()
-                            ex.doau(("fugitive BufReadCmd %s"):format(bufname))
+                            cmd(("doau fugitive BufReadCmd %s"):format(bufname))
                         end
                     )
                 end
@@ -91,7 +90,7 @@ local function preview_fugitive(bufnr, ...)
 end
 
 function M.setup()
-    C.link("BqfPreviewBorder", "Parameter")
+    hl.link("BqfPreviewBorder", "Parameter")
 
     bqf.setup(
         {

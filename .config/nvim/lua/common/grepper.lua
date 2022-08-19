@@ -4,7 +4,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 
-local ex = vim.cmd
+local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local F = vim.F
@@ -24,7 +24,8 @@ function M.vimgrep_qf(mode)
     -- Multiline in unsupported, so concatenate with a space
     local text = table.concat(M.get_text(regions), " ")
     -- Vimgrep doesn't respect smartcase
-    ex.vimgrep(([['\C%s' %% | copen]]):format(text))
+    cmd.vimgrep(([['\C%s' %%]]):format(text))
+    cmd.copen()
 end
 
 ---'Operator function' function
@@ -115,9 +116,9 @@ M.telescope_grep = function(type, only_curr)
     local reg_save = nvim.reg["@"]
 
     if type:match("v") then
-        ex.normal_("`<v`>y")
+        cmd.normal({"`<v`>y", bang = true})
     elseif type:match("char") then
-        ex.normal_("`[v`]y")
+        cmd.normal({"`[v`]y", bang = true})
     else
         return
     end
@@ -125,7 +126,7 @@ M.telescope_grep = function(type, only_curr)
     local curr = fn.expand("%:p")
     local cwd = fn.expand("%:p:h")
     local root = require("common.gittool").root(cwd)
-    ex.lcd(cwd)
+    cmd.lcd(cwd)
 
     local opts = {
         layout_strategy = "vertical",
@@ -185,12 +186,13 @@ init()
 function M.grep_operator(type)
     -- local saved_unnamed_register = fn.getreg("@@")
     if type:match("v") then
-        vim.cmd([[normal! `<v`>y]])
+        cmd.normal({"`<v`>y", bang = true})
     elseif type:match("char") then
-        vim.cmd([[normal! `[v`]y']])
+        cmd.normal({"`[v`]y", bang = true})
     else
         return
     end
+
 
     -- Use Winnr to check if the cursor has moved it if has restore it
     -- local winnr = fn.winnr()
@@ -204,7 +206,7 @@ function M.grep_operator(type)
     local escaped = fn.shellescape(fn.getreg("@@"))
 
     -- cmd(("vimgrep! %s %s"):format(escaped, fn.expand("%")))
-    ex.vimgrep(("%s %s"):format(escaped, fn.expand("%")))
+    cmd.vimgrep(("%s %s"):format(escaped, fn.expand("%")))
     -- vim.cmd([[silent execute 'grep! ' . shellescape(@@) . ' %%']])
 
     -- fn.setreg("@@", saved_unnamed_register)
@@ -212,7 +214,7 @@ function M.grep_operator(type)
 
     -- p(("%s %s"):format(winnr, fn.winnr()))
 
-    ex.copen()
+    cmd.copen()
 end
 
 -- map("n", "gt", [[:silent! set operatorfunc=v:lua.R'common.grepper'.grep_operator<cr>g@]])

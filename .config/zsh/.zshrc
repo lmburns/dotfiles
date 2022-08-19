@@ -788,7 +788,9 @@ zt 0c light-mode null for \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
     sayanarijit/xplr \
   lbin from'gh-r' atload'alias ld="lazydocker"' \
-    jesseduffield/lazydocker
+    jesseduffield/lazydocker \
+  lbin from'gh-r' atload'alias lnpm="lazynpm"' \
+    jesseduffield/lazynpm
 # ]]] === tui specifi block ===
 
 # kdheepak/taskwarrior-tui
@@ -1001,14 +1003,16 @@ path=(
   $CARGO_HOME/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim/bin(N-/)
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
+  $XDG_DATA_HOME/neovim/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/lib/{goenv/libexec,w3m}
   $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
   "${path[@]}"
 )
+
+# 35653e6bc
 # ]]]
 
 #===== completions ===== [[[

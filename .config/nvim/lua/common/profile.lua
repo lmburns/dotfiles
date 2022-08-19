@@ -4,6 +4,7 @@ local utils = require("common.utils")
 local map = utils.map
 
 local fn = vim.fn
+local cmd = vim.cmd
 
 PROFILE_LOAD = false
 
@@ -29,7 +30,7 @@ M.profile = function(filename)
         profile.report(logfile)
         vim.defer_fn(
             function()
-                ex.tabedit(logfile)
+                cmd.tabedit(logfile)
             end,
             1000
         )
