@@ -2,6 +2,7 @@
 
 local M = {}
 
+local D = require("dev")
 local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
@@ -130,6 +131,25 @@ M.normal = function(mode, motion)
     -- local sequence = M.t(motion, true, false, false)
     -- nvim.feedkeys(sequence, mode, true)
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
+end
+
+---Set the (1,0)-indexed cursor position without having to worry about
+---out-of-bounds coordinates. The line number is clamped to the number of lines
+---in the target buffer.
+---@param winid integer
+---@param line? integer
+---@param column? integer
+M.set_cursor = function(winid, line, column)
+    local bufnr = api.nvim_win_get_buf(winid)
+
+    pcall(
+        api.nvim_win_set_cursor,
+        winid,
+        {
+            D.clamp(line or 1, 1, api.nvim_buf_line_count(bufnr)),
+            math.max(0, column or 0)
+        }
+    )
 end
 
 ---Create an augroup with the lua api
@@ -366,13 +386,12 @@ end
 ---@param lhs string: Keybinding that is to be deleted
 ---@param opts DelMapArgs: Options given to keybindings
 M.del_keymap = function(modes, lhs, opts)
-    vim.validate(
-        {
-            mode = {modes, {"s", "t"}},
-            lhs = {lhs, "s"},
-            opts = {opts, "t", true}
-        }
-    )
+    vim.validate {
+        mode = {modes, {"s", "t"}},
+        lhs = {lhs, "s"},
+        opts = {opts, "t", true}
+    }
+
     opts = vim.deepcopy(opts) or {}
     modes = type(modes) == "string" and {modes} or modes
 
@@ -550,7 +569,7 @@ end
 M.version = function(major, minor, _)
     vim.validate {
         major = {major, "n", false},
-        minor = {minor, "n", false},
+        minor = {minor, "n", false}
     }
     local v = vim.version()
     return major >= v.major and minor >= v.minor
@@ -726,7 +745,7 @@ M.preserve = function(arguments)
         line = lastline
     end
 
-    api.nvim_win_set_cursor(0, {line, col})
+    M.set_cursor(0, line, col)
     view.restore()
 end
 
@@ -745,7 +764,7 @@ M.squeeze_blank_lines = function()
         M.preserve("sil! keepp keepj %s/\\v($\\n\\s*)+%$/\\r/e")
         M.preserve([[sil! keepp keepj 0;/^\%(\n*.\)\@!/,$d]])
         if result > 0 then
-            api.nvim_win_set_cursor(0, {(line - result), col})
+            M.set_cursor(0, (line - result), col)
         end
         nvim.reg["/"] = old_query
     end

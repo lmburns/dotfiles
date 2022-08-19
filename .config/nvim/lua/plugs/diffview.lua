@@ -7,7 +7,12 @@ if not diffview then
 end
 
 local actions = require("diffview.actions")
-local map = require("common.utils").map
+
+local utils = require("common.utils")
+local map = utils.map
+
+local cmd = vim.cmd
+local api = vim.api
 
 M.setup = function()
     diffview.setup {
@@ -19,7 +24,10 @@ M.setup = function()
             folder_closed = "",
             folder_open = ""
         },
-        signs = {fold_closed = "", fold_open = ""},
+        signs = {
+            fold_closed = "",
+            fold_open = ""
+        },
         file_panel = {
             listing_style = "tree", -- One of 'list' or 'tree'
             win_config = {
@@ -68,7 +76,47 @@ M.setup = function()
             DiffviewOpen = {},
             DiffviewFileHistory = {}
         },
-        hooks = {}, -- See ':h diffview-config-hooks'
+        hooks = {
+            ---@param view StandardView
+            view_opened = function(view)
+                -- Highlight 'DiffChange' as 'DiffDelete' on the left, and 'DiffAdd' on
+                -- the right.
+                local function post_layout()
+                    D.tbl_ensure(view, "winopts.diff2.a")
+                    D.tbl_ensure(view, "winopts.diff2.b")
+                    view.winopts.diff2.a =
+                        D.tbl_union_extend(
+                        view.winopts.diff2.a,
+                        {
+                            winhl = {
+                                "DiffChange:DiffAddAsDelete",
+                                "DiffText:DiffDeleteText"
+                            }
+                        }
+                    )
+                    view.winopts.diff2.b =
+                        D.tbl_union_extend(
+                        view.winopts.diff2.b,
+                        {
+                            winhl = {
+                                "DiffChange:DiffAdd",
+                                "DiffText:DiffAddText"
+                            }
+                        }
+                    )
+                end
+
+                view.emitter:on("post_layout", post_layout)
+                post_layout()
+            end,
+            diff_buf_read = function(bufnr)
+                utils.set_cursor(0, 1)
+                -- Disable some performance heavy stuff in long files.
+                if api.nvim_buf_line_count(bufnr) >= 2500 then
+                    cmd.IndentBlanklineDisable()
+                end
+            end
+        }, -- See ':h diffview-config-hooks'
         keymaps = {
             disable_defaults = false, -- Disable the default key bindings
             -- The `view` bindings are active in the diff buffers, only when the current
@@ -80,7 +128,8 @@ M.setup = function()
                 ["<C-w><C-f>"] = actions.goto_file_split, -- Open the file in a new split
                 ["<C-w>gf"] = actions.goto_file_tab, -- Open the file in a new tabpage
                 ["<leader>e"] = actions.focus_files, -- Bring focus to the files panel
-                ["<leader>b"] = actions.toggle_files -- Toggle the files panel.
+                ["<leader>b"] = actions.toggle_files, -- Toggle the files panel.
+                ["?"] = "<Cmd>h diffview-maps-view<CR>"
             },
             file_panel = {
                 ["j"] = actions.next_entry, -- Bring the cursor to the next file entry
@@ -106,7 +155,8 @@ M.setup = function()
                 ["i"] = actions.listing_style, -- Toggle between 'list' and 'tree' views
                 ["f"] = actions.toggle_flatten_dirs, -- Flatten empty subdirectories in tree listing style.
                 ["<leader>e"] = actions.focus_files,
-                ["<leader>b"] = actions.toggle_files
+                ["<leader>b"] = actions.toggle_files,
+                ["?"] = "<Cmd>h diffview-maps-file-panel<CR>"
             },
             file_history_panel = {
                 ["g!"] = actions.options, -- Open the option panel
@@ -130,11 +180,13 @@ M.setup = function()
                 ["<C-w><C-f>"] = actions.goto_file_split,
                 ["<C-w>gf"] = actions.goto_file_tab,
                 ["<leader>e"] = actions.focus_files,
-                ["<leader>b"] = actions.toggle_files
+                ["<leader>b"] = actions.toggle_files,
+                ["?"] = "<Cmd>h diffview-maps-file-history-panel<CR>"
             },
             option_panel = {
                 ["<tab>"] = actions.select_entry,
-                ["q"] = actions.close
+                ["q"] = actions.close,
+                ["?"] = "<Cmd>h diffview-maps-options<CR>"
             }
         }
     }

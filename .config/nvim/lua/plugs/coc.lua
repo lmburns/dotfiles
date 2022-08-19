@@ -4,6 +4,7 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
+local icons = require("style").icons
 local hl = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
@@ -601,30 +602,62 @@ M.tag_cmd = function()
     )
 end
 
----Adds all lua runtime paths to coc
+---Adds all Lua runtime paths to coc
 ---@return table
 M.get_lua_runtime = function()
     local result = {}
+    local filter = {"kimbox"}
 
-    local function add(lib)
-        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+    ---Add a path to the Lua runtime
+    ---@param lib string
+    ---@param filter string[]
+    ---@param types boolean?
+    local function add(lib, filter, types)
+        -- If it is a colorscheme, skip it. Removes a lot of files
+        for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
             path = uv.fs_realpath(path)
-            if path and fn.isdirectory(path) then
-                result[path] = true
+            if path and not filter[fn.fnamemodify(path, ":h:t")] then
+                goto continue
             end
         end
-    end
 
-    add("$VIMRUNTIME")
+        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+            path = uv.fs_realpath(path)
+            -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
+
+            if path then
+                local stat = uv.fs_stat(path)
+                if stat and stat.type == "directory" then
+                    result[path] = true
+                end
+            end
+        end
+
+        -- Add types for plugins that have them
+        if types then
+            for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
+                path = uv.fs_realpath(path)
+                if path and fn.isdirectory(path) then
+                    result[path] = true
+                end
+            end
+        end
+
+        ::continue::
+    end
 
     for _, site in pairs(vim.split(vim.o.packpath, ",")) do
-        add(site .. "/pack/*/opt/*")
-        add(site .. "/pack/*/start/*")
+        add(site .. "/pack/*/opt/*", filter, true)
+        add(site .. "/pack/*/start/*", filter, true)
     end
 
-    for _, run in pairs(api.nvim_list_runtime_paths()) do
-        add(run)
-    end
+    -- add("$VIMRUNTIME")
+    -- api.nvim_get_runtime_file("", true)
+
+    -- This adds 400-500+ files
+    -- for _, run in pairs(api.nvim_list_runtime_paths()) do
+    --     add(run, {}, true)
+    -- end
 
     return result
 end
@@ -634,10 +667,10 @@ end
 M.sumneko_ls = function()
     local library = M.get_config("Lua").workspace.library
 
-    -- This doubles the number of files that are checked on startup
+    -- NOTE: This doubles the number of files that are checked on startup
     -- But it allows one to use 'gd' to go to definition
-    -- local runtime = _t(M.get_lua_runtime(true)):keys()
-    -- library = vim.list_extend(library, runtime)
+    local runtime = _t(M.get_lua_runtime()):keys()
+    library = vim.list_extend(library, runtime)
 
     if D.plugin_loaded("promise-async") then
         ---@diagnostic disable-next-line: undefined-field
@@ -648,22 +681,20 @@ M.sumneko_ls = function()
     M.set_config("Lua.workspace", {library = library})
 end
 
--- FIX: Style is not found when required
 ---Set the icons for Coc
--- M.set_icons = function()
---     -- vim.defer_fn(
---     --     function()
---     --         local icons = require("style.icons")
---     --         local diag_config = fn["coc#util#get_config"]("diagnostic")
---     --         diag_config.errorSign = icons.lsp.error
---     --         diag_config.warningSign = icons.lsp.warn
---     --         diag_config.hintSign = icons.lsp.hint
---     --         diag_config.infoSign = icons.lsp.info
---     --         fn["coc#config"]("diagnostic", {diagnostic = diag_config})
---     --     end,
---     --     1000
---     -- )
--- end
+M.set_icons = function()
+    vim.defer_fn(
+        function()
+            local diag_config = M.get_config("diagnostic")
+            diag_config.errorSign = icons.lsp.error
+            diag_config.warningSign = icons.lsp.warn
+            diag_config.hintSign = icons.lsp.hint
+            diag_config.infoSign = icons.lsp.info
+            M.set_config("diagnostic", {diagnostic = diag_config})
+        end,
+        1000
+    )
+end
 
 -- ========================== Init ==========================
 
@@ -671,6 +702,7 @@ function M.init()
     diag_qfid = -1
 
     M.sumneko_ls()
+    M.set_icons()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
     g.coc_snippet_next = "<C-j>"

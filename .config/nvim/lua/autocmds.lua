@@ -1,12 +1,13 @@
 -- local global = require("common.global")
 local D = require("dev")
-local utils = require("common.utils")
 local hl = require("common.color")
 local global = require("common.global")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
 local a = require("plenary.async_lib")
+
+local utils = require("common.utils")
 -- local funcs = require("functions")
 local map = utils.map
 local augroup = utils.augroup
@@ -237,7 +238,7 @@ nvim.autocmd.lmb__RestoreCursor = {
 
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
-                api.nvim_win_set_cursor(0, {row, 0})
+                utils.set_cursor(0, row, 0)
 
                 if fn.line("w$") ~= row then
                     cmd.norm({"zz", bang = true})

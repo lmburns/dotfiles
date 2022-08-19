@@ -11,7 +11,7 @@ local uv = vim.loop
 local env = vim.env
 local F = vim.F
 
----@alias vector table
+---@class Vector<T>: { [integer]: T }
 ---@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias module table
 
@@ -19,6 +19,7 @@ local F = vim.F
 --                            Global
 -- ╘══════════════════════════════════════════════════════════╛
 
+---Print text nicely, joined with newlines
 _G.pln = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
@@ -30,7 +31,7 @@ _G.pln = function(...)
     print(table.concat(msg_tbl, "\n\n"))
 end
 
----Print text nicely
+---Print text nicely, joined with spaces
 _G.p = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
@@ -49,9 +50,10 @@ _G.pp = vim.pretty_print
 -- ╘══════════════════════════════════════════════════════════╛
 
 ---Use in combination with pcall
+---@generic T
 ---@param status boolean
----@param ... any
----@return any
+---@param ... T
+---@return T?
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
@@ -66,16 +68,18 @@ end
 
 ---Nil `pcall`.
 ---If `pcall` succeeds, return result of `fn`, else `nil`
----@param fn fun(args: ...)
----@param ... any
----@return any
+---@generic T
+---@param fn fun(v: T)
+---@param ... T
+---@return T?
 M.npcall = function(fn, ...)
     return M.ok_or_nil(pcall(fn, ...))
 end
 
 ---Wrap a function to return `nil` if it fails, otherwise the value
----@param fn fun(args: ...)
----@return fun(args: ...)
+---@generic T
+---@param fn fun(v: T)
+---@return fun(v: T)
 M.nil_wrap = function(fn)
     return function(...)
         return M.npcall(fn, ...)
@@ -84,13 +88,14 @@ end
 
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later
 ---Useful for setting up callbacks without anonymous functions
----@param fun  fun(v: any)
----@vararg any
----@return fun(v: any)
-M.thunk = function(fun, ...)
+---@generic T
+---@param fn fun(v: T)
+---@vararg T
+---@return fun(v: T)
+M.thunk = function(fn, ...)
     local bound = {...}
     return function(...)
-        return fun(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
+        return fn(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
     end
 end
 
@@ -116,33 +121,36 @@ end
 ---```lua
 ---  map("n", "yd", dev.ithunk(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")))
 ---```
----@param fun function
----@vararg any
----@return function
-M.ithunk = function(fun, ...)
+---@generic T
+---@param fn fun(v: T)
+---@vararg T
+---@return fun()
+M.ithunk = function(fn, ...)
     local bound = {...}
     return function()
-        return fun(unpack(bound))
+        return fn(unpack(bound))
     end
 end
 
 ---Same as `ithunk()`, except prefixed with a `pcall`
----@param fun function
----@vararg any
-M.pithunk = function(fun, ...)
-    return M.ithunk(pcall, fun, ...)
+---@generic T
+---@param fn fun(v: T)
+---@vararg T
+---@return fun()
+M.pithunk = function(fn, ...)
+    return M.ithunk(pcall, fn, ...)
 end
 
 ---Get the output of a system command in a table
 ---@param cmd string|table
----@return table
+---@return Vector<string>
 M.get_system_output = function(cmd)
     return vim.split(fn.system(cmd), "\n")
 end
 
----Get the output of a vim command in a table
+---Get the output of a vim command in a *table*
 ---@param cmd string|table
----@return table?
+---@return Vector<string>
 M.get_vim_output = function(cmd)
     local out = api.nvim_exec(cmd, true)
     local res = vim.split(out, "\n", {trimempty = true})
@@ -196,6 +204,9 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Print a value in lua
+---@generic T : any
+---@param v T Value to inspect
+---@return T
 M.inspect = function(v)
     local s
     local t = type(v)
@@ -215,6 +226,13 @@ M.round = function(value)
     return math.floor(value + 0.5)
 end
 
+---If the value is less than min, return `min`
+---If the value is greater than max, return `max`
+---If the value is in-between min and max, return `value`
+---@param value number
+---@param min number
+---@param max number
+---@return number
 M.clamp = function(value, min, max)
     if value < min then
         return min
@@ -226,27 +244,19 @@ M.clamp = function(value, min, max)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                          String                          │
--- ╰──────────────────────────────────────────────────────────╯
-
----Check if `string` is empty or `nil`
----@return boolean
-M.is_empty = function(str)
-    return str == "" or str == nil
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                          Table                           │
 -- ╰──────────────────────────────────────────────────────────╯
----Pack a table. Similar to `table.pack`. Sets number of elements to `.n`
----@vararg any any number of items to pack
----@return table
+
+---Pack a table. Same as `table.pack`. Sets number of elements to `.n`
+---@generic T
+---@vararg T Any number of items to pack
+---@return { n: number, [any]: T }
 M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
 end
 
----Unpack a table into arguments. Similar to `table.unpack`
----@param t table table to unpack
+---Unpack a table into arguments. Same as `table.unpack`
+---@param t table Table to unpack
 ---@param i number
 ---@param j number
 ---@return any
@@ -255,9 +265,9 @@ M.tbl_unpack = function(t, i, j)
 end
 
 ---Create table whose keys are now the values, and the values are now the keys
----Similar to vim.tbl_add_reverse_lookup
+---Similar to `vim.tbl_add_reverse_lookup`
 ---
----Assumes that the values in tbl are unique and hashable (no nil/NaN)
+---Assumes that the values in tbl are unique and hashable (no `nil`)
 ---@generic K, V
 ---@param tbl table<K, V>
 ---@return table<V, K>
@@ -269,16 +279,7 @@ M.tbl_reverse_kv = function(tbl)
     return ret
 end
 
----Shift a table `n` elements
----@param tbl table table to shift
----@param n number number of elements to shift
-M.shift = function(tbl, n)
-    for _ = 1, n do
-        table.insert(tbl, 1, table.remove(tbl, #tbl))
-    end
-end
-
----Determine whether two table/vectors are equivalent
+---Determine whether two tables/vectors are equivalent
 ---@param t1 table|any[]
 ---@param t2 table|any[]
 ---@param ignore_mt boolean Ignore metatable
@@ -330,24 +331,7 @@ M.merge = function(a, b)
     return a
 end
 
----Return a table with duplicates filtered out
----@generic T
----@param vec T[]
----@return T[]
-M.filter_duplicates = function(vec)
-    local seen = {}
-    local res = {}
-
-    for _, v in ipairs(vec) do
-        if not seen[v] then
-            res[#res + 1] = v
-            seen[v] = true
-        end
-    end
-    return res
-end
-
----Clear a table's values
+---Clear a table's values in-place
 ---@param t table
 M.tbl_clear = function(t)
     for k, _ in pairs(t) do
@@ -356,9 +340,9 @@ M.tbl_clear = function(t)
 end
 
 ---Clone a table
----
----@param t table: Table to clone
----@return table?
+---@generic K, V
+---@param t table<K, V>: Table to clone
+---@return table<K, V>?
 M.tbl_clone = function(t)
     if not t then
         return
@@ -373,8 +357,9 @@ M.tbl_clone = function(t)
 end
 
 ---Deep clone a table (i.e., clone nested tables)
----@param t table
----@return table?
+---@generic K, V
+---@param t table<K, V>: Table to deep clone
+---@return table<K, V>?
 M.tbl_deep_clone = function(t)
     if not t then
         return
@@ -392,8 +377,123 @@ M.tbl_deep_clone = function(t)
     return clone
 end
 
----Turn a vector into a new table
----@param v vector
+---Deep extend a table, while performing a union on all the sub-tables.
+---@param t table<any>
+---@param ... table<any>
+---@return table<any>
+M.tbl_union_extend = function(t, ...)
+    local res = M.tbl_clone(t)
+
+    local function recurse(ours, theirs)
+        -- Get the union of the two tables
+        local sub = M.vec_union(ours, theirs)
+
+        for k, v in pairs(ours) do
+            if type(k) ~= "number" then
+                sub[k] = v
+            end
+        end
+
+        for k, v in pairs(theirs) do
+            if type(k) ~= "number" then
+                if type(v) == "table" then
+                    sub[k] = recurse(sub[k] or {}, v)
+                else
+                    sub[k] = v
+                end
+            end
+        end
+
+        return sub
+    end
+
+    for _, theirs in ipairs({...}) do
+        res = recurse(res, theirs)
+    end
+
+    return res
+end
+
+---Perform a *map* and *filter* out index values that would become `nil`.
+---@generic K, V
+---@param t table<K, V>
+---@param fn fun(v: V): any?
+---@return table<K, V>
+M.tbl_fmap = function(t, fn)
+    local ret = {}
+
+    for key, item in pairs(t) do
+        local v = fn(item)
+        if v ~= nil then
+            if type(key) == "number" then
+                table.insert(ret, v)
+            else
+                ret[key] = v
+            end
+        end
+    end
+
+    return ret
+end
+
+---Try property access into a table.
+---@generic T : table
+---@param t T Table to index into
+---@param path string|string[]: Either a `.` separated string of table keys, or a list.
+---@return T?
+M.tbl_access = function(t, path)
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+
+    local cur = t
+
+    for _, k in ipairs(keys) do
+        cur = cur[k]
+        if not cur then
+            return nil
+        end
+    end
+
+    return cur
+end
+
+---Set a value in a table,
+---creating all missing intermediate tables in the table path.
+---@param t table Table to index into
+---@param path string|string[]: Either a `.` separated string of table keys, or a list.
+---@param value any
+M.tbl_set = function(t, path, value)
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+
+    local cur = t
+
+    for i = 1, #keys - 1 do
+        local k = keys[i]
+
+        if not cur[k] then
+            cur[k] = {}
+        end
+
+        cur = cur[k]
+    end
+
+    cur[keys[#keys]] = value
+end
+
+---Ensure that the table path is a valid in `t`.
+---@param t table
+---@param path string|string[]: Either a `.` separated string of table keys, or a list.
+M.tbl_ensure = function(t, path)
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+
+    if not M.tbl_access(t, keys) then
+        M.tbl_set(t, keys, {})
+    end
+end
+
+---Turn a *vector* into a new *table*
+---@generic T
+---@param v Vector<T>
+---@return table<T, boolean>
 M.vec2tbl = function(v)
     local ret = {}
     for _, val in ipairs(v) do
@@ -401,6 +501,32 @@ M.vec2tbl = function(v)
     end
 
     return ret
+end
+
+---Return a `vector` with duplicates filtered out
+---@generic T
+---@param vec T[]
+---@return T[]
+M.vec_filter_dupes = function(vec)
+    local seen = {}
+    local ret = {}
+
+    for _, v in ipairs(vec) do
+        if not seen[v] then
+            ret[#ret + 1] = v
+            seen[v] = true
+        end
+    end
+    return ret
+end
+
+---Shift a `vector` `n` elements in-place
+---@param tbl table Table to shift
+---@param n number number of elements to shift
+M.vec_shift = function(tbl, n)
+    for _ = 1, n do
+        table.insert(tbl, 1, table.remove(tbl, #tbl))
+    end
 end
 
 ---Create a shallow copy of a portion of a vector.
@@ -536,7 +662,7 @@ end
 ---Find an item in a vector
 ---@generic T
 ---@param haystack T[]
----@param matcher fun(arg: T):boolean
+---@param matcher fun(v: T): boolean
 ---@return T
 M.find = function(haystack, matcher)
     local found
@@ -605,7 +731,7 @@ M.fold = function(tbl, func, acc)
     return acc
 end
 
----Apply a function to each value in a table. Return the table
+---Apply a function to each value in a `vector`. Return the `vector`
 ---@generic T: table
 ---@param tbl T[]
 ---@param func fun(T, key: string|number): T
@@ -623,7 +749,7 @@ M.map = function(tbl, func)
     )
 end
 
----Apply function to each element of vector
+---Apply function to each element of `vector`
 ---@generic T
 ---@param tbl T[] A list of elements
 ---@param func fun(v: T) Function to be applied
@@ -926,7 +1052,7 @@ end
 M.is_floating_window = function(winid)
     return fn.win_gettype() == "popup" or api.nvim_win_get_config(winid).relative ~= ""
     --
-    -- This two commands here are not equivalent as the docs might suggest
+    -- These two commands here are not equivalent as the docs might suggest
     -- In the function below `M.find_win_except_float`,
     -- they act the same about 200ms into starting Neovim
     --

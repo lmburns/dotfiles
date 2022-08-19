@@ -1725,7 +1725,7 @@ function M.copilot()
         "<Leader>cy",
         function()
             cmd("Copilot disable")
-            vim.keymap.del("i", "<C-l>")
+            utils.del_keymap("i", "<C-l>")
         end,
         {silent = true, desc = "Disable Copilot"}
     )

@@ -105,6 +105,7 @@ function M.setup()
                 end, -- can be a string | function, see "Mouse actions"
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
                 middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
+                indicator = {style = "underline"},
                 indicator_icon = "▎",
                 buffer_close_icon = "",
                 modified_icon = "●",
@@ -129,40 +130,47 @@ function M.setup()
                 -- },
                 offsets = {
                     {
-                        filetype = "undotree",
                         text = "Undotree",
-                        highlight = "PanelHeading"
+                        filetype = "undotree",
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
-                        filetype = "DiffviewFiles",
                         text = "DiffView",
-                        highlight = "PanelHeading"
+                        filetype = "DiffviewFiles",
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
-                        filetype = "Outline",
                         text = "Symbols",
-                        highlight = "PanelHeading"
+                        filetype = "Outline",
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
+                        text = " Packer",
                         filetype = "packer",
-                        text = "Packer",
-                        highlight = "PanelHeading"
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
-                        filetype = "aerial",
                         text = "Aerial",
+                        filetype = "aerial",
                         text_align = "center",
-                        highlight = "PanelHeading"
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
-                        filetype = "coctree",
                         text = "CocTree",
-                        highlight = "PanelHeading"
+                        filetype = "coctree",
+                        highlight = "PanelHeading",
+                        separator = true
                     },
                     {
-                        filetype = "vista",
                         text = "Vista",
-                        highlight = "PanelHeading"
+                        filetype = "vista",
+                        highlight = "PanelHeading",
+                        separator = true
                     }
                 },
                 show_buffer_icons = true,
@@ -184,6 +192,7 @@ function M.setup()
                         groups.builtin.ungrouped,
                         {
                             name = "Dependencies",
+                            icon = "",
                             highlight = {fg = require("kimbox.colors").yellow},
                             matcher = function(buf)
                                 return vim.startswith(buf.path, ("%s/site/pack/packer"):format(fn.stdpath("data"))) or
@@ -308,6 +317,7 @@ local function init()
             ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
             ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
+            ["<Leader>bp"] = {"<Cmd>BufferLinePickClose<CR>", "Pick buffer to delete"},
             ["<C-A-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
             ["<C-A-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"}
         }

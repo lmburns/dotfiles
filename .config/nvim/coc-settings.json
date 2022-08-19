@@ -318,7 +318,14 @@
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
     "different-requires": "None",
-    "codestyle-check": "Opened",
+    "codestyle-check": "None",
+    "param-type-mismatch": "None",
+    "need-check-nil": "None",
+    "redefined-local": "None",
+    "missing-parameter": "None",
+    "redundant-parameter": "None",
+    "lowercase-global": "None",
+
     "ambiguity-1": "Opened",
     "circle-doc-class": "Opened",
     "close-non-object": "Opened",
@@ -330,7 +337,6 @@
     "duplicate-index": "Opened",
     "duplicate-set-field": "Opened",
     "global-in-nil-env": "Opened",
-    "lowercase-global": "Opened",
     "newfield-call": "Opened",
     "newline-call": "Opened",
     "unbalanced-assignments": "Opened",
