@@ -221,6 +221,7 @@ alias info='info --vi-keys'
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
 alias svi="sudo $EDITOR"
+alias vim='/usr/bin/vim'
 alias vimdiff='nvim -d'
 
 # alias f='pushd'

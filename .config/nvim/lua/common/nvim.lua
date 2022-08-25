@@ -9,6 +9,8 @@ local api = vim.api
 local F = vim.F
 local fn = vim.fn
 
+-- ---@class Nvim
+
 ---Get an autocmd
 ---@param opts table
 ---@return table

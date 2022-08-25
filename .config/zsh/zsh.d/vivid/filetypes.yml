@@ -198,6 +198,7 @@ programming:
     sass: [.sass]
     reason: [.re]
     scheme: [.scm]
+    vue: [.vue]
 
   tooling:
     vcs:

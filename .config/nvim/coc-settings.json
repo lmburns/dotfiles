@@ -46,6 +46,10 @@
     // "rust",
     // "typescript"
   ],
+  "pullDiagnostic.onChange": true,
+  "pullDiagnostic.onSave": false,
+  "pullDiagnostic.workspace": false,
+  "inlayHint.filetypes": ["*"],
   "diagnostic.errorSign": "", //  ••
   "diagnostic.warningSign": "", //  •
   "diagnostic.hintSign": "", // •
@@ -146,8 +150,6 @@
   // "suggest.enablePreview": true,
   // "suggest.noselect": false,
 
-  "suggest.selection": "first", // recentlyUsed
-
   "suggest.pumFloatConfig": {
     "border": true,
     "rounded": true,
@@ -162,9 +164,9 @@
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
   "suggest.detailMaxLength": 100,
-  "suggest.selection": "recentlyUsedByPrefix", // recentlyUsed
   "suggest.defaultSortMethod": "none",
   "suggest.virtualText": false,
+  "suggest.selection": "first", // recentlyUsed
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
     "default": "",
@@ -265,7 +267,16 @@
     "usePlaceholders": true,
     "semanticTokens": true,
     "experimentalPostfixCompletions": true,
-    "staticcheck": true
+    "staticcheck": true,
+    "hints": {
+      "assignVariableTypes": true,
+      "compositeLiteralFields": true,
+      "compositeLiteralTypes": true,
+      "constantValues": true,
+      "functionTypeParameters": true,
+      "parameterNames": false,
+      "rangeVariableTypes": true
+    }
   },
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Lua                            │
@@ -281,6 +292,7 @@
   "sumneko-lua.inlayHints.trimSemicolon": false,
   "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
   "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
+  "Lua.misc.parameters": [],
   "Lua.telemetry.enable": false,
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
@@ -291,6 +303,7 @@
   "Lua.workspace.library": [],
   "Lua.format.enable": false,
   "Lua.completion.enable": true,
+  "Lua.completion.showParams": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace",
   "Lua.completion.postfix": ".",
@@ -314,6 +327,7 @@
   "Lua.semantic.enable": true,
   "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
+  "Lua.diagnostics.workspaceDelay": 3000,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
@@ -599,9 +613,11 @@
   "html.trace.server": "off",
   "css.trace.server": "off",
   "zig.path": "/usr/bin/zls",
+
   // "sh.enable": true,
-  "yank.highlight.duration": 100,
-  "yank.enableCompletion": false,
+  // "yank.highlight.duration": 100,
+  // "yank.enableCompletion": false,
+
   "markdownlint.config": {
     "default": true,
     "line-length": false

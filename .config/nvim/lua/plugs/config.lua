@@ -1709,7 +1709,7 @@ function M.copilot()
         "n",
         "<Leader>ce",
         function()
-            cmd("Copilot enable")
+            cmd.Copilot("enable")
             map(
                 "i",
                 "<C-l>",
@@ -1724,7 +1724,7 @@ function M.copilot()
         "n",
         "<Leader>cy",
         function()
-            cmd("Copilot disable")
+            cmd.Copilot("disable")
             utils.del_keymap("i", "<C-l>")
         end,
         {silent = true, desc = "Disable Copilot"}
@@ -1732,7 +1732,7 @@ function M.copilot()
 
     vim.schedule(
         function()
-            vim.cmd("Copilot disable")
+            cmd.Copilot("disable")
         end
     )
 end

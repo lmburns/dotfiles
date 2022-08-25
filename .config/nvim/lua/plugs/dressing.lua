@@ -6,6 +6,11 @@ if not dressing then
     return
 end
 
+local hl = require("common.color")
+local style = require("style")
+
+local themes = require("telescope.themes")
+
 M.setup = function()
     dressing.setup {
         input = {
@@ -17,7 +22,7 @@ M.setup = function()
             insert_only = true,
             -- These are passed to nvim_open_win
             anchor = "SW",
-            border = "rounded",
+            border = style.current.border,
             -- 'editor' and 'win' will default to being centered
             relative = "cursor",
             -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
@@ -47,7 +52,7 @@ M.setup = function()
             -- Options for telescope selector
             -- These are passed into the telescope picker directly. Can be used like:
             -- telescope = require('telescope.themes').get_ivy({}),
-            telescope = require("telescope.themes").get_dropdown({}),
+            telescope = themes.get_dropdown({}),
             -- telescope = require("telescope.themes").get_cursor({}),
 
             -- Options for fzf selector
@@ -92,23 +97,22 @@ M.setup = function()
             -- Used to override format_item. See :help dressing-format
             format_item_override = {},
             -- see :help dressing_get_config
-            get_config = nil
-            -- get_config = function(opts)
-            --     if opts.kind == 'codeaction' then
-            --         return {
-            --             backend = 'nui',
-            --             nui = {
-            --                 relative = 'cursor',
-            --                 max_width = 40,
-            --             }
-            --         }
-            --     end
-            -- end,
+            get_config = function(opts)
+                -- center the picker for treesitter prompts
+                if opts.kind == "codeaction" then
+                    return {
+                        backend = "telescope",
+                        telescope = themes.get_cursor({})
+                    }
+                end
+            end
         }
     }
 end
 
 local function init()
+    hl.plugin("Dressing", {FloatTitle = {inherit = "Visual", bold = true}})
+
     M.setup()
 end
 

@@ -12,9 +12,9 @@ local map = utils.map
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
+local v = vim.v
 -- local uv = vim.loop
 -- local g = vim.g
-local v = vim.v
 
 local ft_map
 
@@ -133,7 +133,7 @@ end
 ---@param end_lnum number
 ---@param width number
 ---@return table
-local handler = function(virt_text, lnum, end_lnum, width, truncate)
+local function handler(virt_text, lnum, end_lnum, width, truncate)
     local new_virt_text = {}
     local percentage = (" %s"):format(M.percentage(lnum, end_lnum))
     local suffix = ("  %d "):format(end_lnum - lnum)
@@ -183,11 +183,19 @@ M.setup_ufo = function()
         {
             open_fold_hl_timeout = 360,
             fold_virt_text_handler = handler,
+            -- Enable to capture the virtual text for the fold end lnum and assign the
+            -- result to `end_virt_text` field of ctx table as 6th parameter in
+            -- `fold_virt_text_handler`
+            enable_fold_end_virt_text = false,
+            -- After the buffer is displayed (opened for the first time), close the
+            -- folds whose range with `kind` field is included in this option.
+            -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
+            close_fold_kinds = {"imports", --[[ "comment" ]]},
             preview = {
                 win_config = {
                     border = style.current.border,
                     winhighlight = "Normal:CocFloating",
-                    winblend = 0
+                    winblend = 5
                 },
                 mappings = {
                     scrollB = "",
@@ -249,10 +257,13 @@ local function init()
                     UfoPreviewSbar = {link = "PmenuSbar"}
                 }
             )
+
             M.setup_ufo()
 
-            vim.wo.foldenable = true
-            vim.wo.foldlevel = 99
+            vim.o.foldenable = true
+            vim.o.foldlevel = 99
+            vim.o.foldlevelstart = 99
+            vim.o.foldcolumn = "1"
         end,
         50
     )

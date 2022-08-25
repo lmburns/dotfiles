@@ -27,14 +27,22 @@ vim.tbl_map(
         g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
     end,
     {
-        "ftplugin",
         "2html_plugin",
+        -- "ftplugin",
         "getscript",
         "getscriptPlugin",
         "gzip",
         "logiPat", -- boolean logical pattern matcher
+        -- "man",
         "matchit",
         "matchparen",
+        "netrw",
+        "netrwFileHandlers",
+        "netrwPlugin",
+        "netrwSettings",
+        "node_provider",
+        -- "remote_plugins", -- required for wilder.nvim
+        -- "rplugin", -- involved with remote_plugins
         "rrhelper",
         "spec",
         "tar",
@@ -44,17 +52,11 @@ vim.tbl_map(
         "vimballPlugin",
         "zip",
         "zipPlugin",
-        "ruby_provider",
+
         "perl_provider",
-        "node_provider",
         "python_provider",
+        "ruby_provider",
         -- "python3_provider",
-        -- "rplugin",
-        -- "remote_plugins",
-        "netrw",
-        "netrwFileHandlers",
-        "netrwPlugin"
-        -- "netrwSettings",
     }
 )
 

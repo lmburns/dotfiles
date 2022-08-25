@@ -340,7 +340,6 @@ function M.autocmds()
                 -- Lazy redraw just now started causing me problems
                 if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
                     lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
-                -- cmd.redraws()
                 end
             end
         },

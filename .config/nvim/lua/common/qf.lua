@@ -6,11 +6,11 @@ local M = {}
 
 local command = require("common.utils").command
 local log = require("common.log")
-local abbr = require("abbr").abbr
+local abbr = require("abbr")
 
+local cmd = vim.cmd
 local F = vim.F
 local api = vim.api
-local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
 
@@ -101,6 +101,7 @@ function M.batch_sub(is_loc, pat_rep)
             cmd(([[%s s%s]]):format(do_cmd, concat))
         end
     )
+
     fn.histdel("/", -1)
     fn.histadd("/", pat)
     fn.setreg("/", pat)

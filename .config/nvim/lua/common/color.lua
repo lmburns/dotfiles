@@ -1,9 +1,8 @@
 ---@diagnostic disable:duplicate-doc-alias
----@diagnostic disable:need-check-nil
 
 local M = {}
 
-local D = require("dev")
+-- local D = require("dev")
 local utils = require("common.utils")
 local log = require("common.log")
 
@@ -18,20 +17,19 @@ local api = {
 
 ---@alias Group string
 ---@alias Color string
----@alias HighlightAttribute
----| '"foreground"'
----| '"background"'
----| '"fg"'
----| '"bg"'
+---@class HighlightAttribute
+---@field from string
+---@field attr 'foreground' | 'fg' | 'background' | 'bg'
+---@field alter integer
 
 ---@class ColorFormat
 ---@field default boolean Don't override existing definition
----@field background string|integer
----@field foreground string|integer
+---@field background string|HighlightAttribute
+---@field foreground string|HighlightAttribute
 ---@field special string
----@field fg string|fun(): string
----@field bg string|fun(): string
----@field sp string
+---@field fg string|HighlightAttribute | fun(): string|HighlightAttribute
+---@field bg string|HighlightAttribute | fun(): string|HighlightAttribute
+---@field sp string|HighlightAttribute
 ---@field blend number 0 to 100
 ---@field bold boolean
 ---@field standout boolean
@@ -46,14 +44,15 @@ local api = {
 ---@field from string   Not here by default
 ---@field gui string    Not here by default
 ---@field cond string   Not here by default. Conditional colorscheme
+--                      i.e., do not execute highlight command if colorscheme differs from 'cond'
 ---@deprecated @field guifg string
 ---@deprecated @field guibg string
 ---@deprecated @field guisp string
 
----Convert a hex color (#RRGGBB) to (#RRGGBB) RGB
+---Convert a hexidecimal color (#RRGGBB) to RGB
 ---@param color Color
 ---@return table<number, number, number>
-local function hex_to_rgb(color)
+local function hex2rgb(color)
     local hex = color:gsub("#", ""):gsub("0x", "")
     return {
         tonumber(hex:sub(1, 2), 16),
@@ -62,10 +61,10 @@ local function hex_to_rgb(color)
     }
 end
 
----Convert RGB decimal to hexadecimal (#RRGGBB)
+---Convert RGB decimal (RGB) to hexadecimal (#RRGGBB)
 ---@param dec integer
 ---@return string color @#RRGGBB
-local function hex(dec)
+local function rgb2hex(dec)
     -- return ("#%06x"):format(dec)
     return ("#%s"):format(bit.tohex(dec, 6))
 end
@@ -78,8 +77,8 @@ end
 ---@param group ColorFormat
 ---@return ColorFormat
 local function stringify_attrs(group)
-    group.foreground = group.foreground and hex(group.foreground)
-    group.background = group.background and hex(group.background)
+    group.foreground = group.foreground and rgb2hex(group.foreground)
+    group.background = group.background and rgb2hex(group.background)
     group[true] = nil -- BUG: API returns a true key which errors
     return group
 end
@@ -178,7 +177,7 @@ end
 ---@param percent number
 ---@return string
 function M.alter_color(color, percent)
-    local r, g, b = unpack(hex_to_rgb(color))
+    local r, g, b = unpack(hex2rgb(color))
     if not r or not g or not b then
         return "NONE"
     end
@@ -280,7 +279,7 @@ function M.parse(hl)
     end
 
     if type(hl.background) == "function" then
-        hl.background = hl.fg()
+        hl.background = hl.bg()
     end
 
     def.foreground = hl.fg or inherit.foreground or "NONE"
@@ -321,7 +320,7 @@ function M.parse(hl)
     end
 
     -- Special `from` field
-    -- WinSeparator = { bg = 'NONE', fg = { from = 'NonText' } }
+    -- WinSeparator = { bg = 'NONE', fg = { from = 'NonText', attr = 'fg', alter = -3 } }
     for name, value in pairs(hl) do
         if type(value) == "table" and value.from then
             def[name] = M.get(value.from, value.attr or name)
@@ -363,7 +362,6 @@ function M.get(group, attribute, fallback)
         return "NONE"
     end
 
-    ---@cast fallback -?
     local hl = get_hl(group, fallback)
     attribute = ({fg = "foreground", bg = "background"})[attribute] or attribute
     local color = hl[attribute] or fallback
@@ -399,37 +397,35 @@ end
 ---Clear a highlight group
 ---@param name string
 function M.clear_hl(name)
-    assert(name, "name is required to clear a highlight")
+    vim.validate({name = {name, "s", false}})
     M.set(name, {})
 end
 
 ---Apply a list of highlights
----@param hls table<string, table<string, boolean|string>>
+---@param hls { [string]: { [string]: boolean|string } }
 function M.all(hls)
-    D.for_each(
-        hls,
-        function(hl)
-            M.set(next(hl))
-        end
-    )
-
-    -- for name, hl in pairs(hls) do
-    --     M.set(name, hl)
-    -- end
+    for name, hl in pairs(hls) do
+        M.set(name, hl)
+    end
 end
 
 ---Apply highlights for a plugin and refresh on colorscheme change
 ---@param name string plugin name
 ---@param hls table<ColorFormat, string|boolean|number> list of highlights
 function M.plugin(name, hls)
-    name = name:gsub("^%l", string.upper) -- capitalize the name for autocommand convention sake
+    name = name:gsub("^%l", string.upper)
     M.all(hls)
     utils.augroup(
         ("%sHighlightOverrides"):format(name),
         {
             event = "ColorScheme",
             command = function()
-                M.all(hls)
+                vim.defer_fn(
+                    function()
+                        M.all(hls)
+                    end,
+                    1
+                )
             end
         }
     )
@@ -473,17 +469,17 @@ end
 
 ---Define bg and fg color
 ---@param group Group
----@param fgcol Color
----@param bgcol Color
+---@param fg Color
+---@param bg Color
 ---@param fmt ColorFormat
-function M.fg_bg(group, fgcol, bgcol, fmt)
-    -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fgcol, bgcol))
+function M.fg_bg(group, fg, bg, fmt)
+    -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fg, bg))
     local opts = {}
     if fmt then
         vim.tbl_extend("keep", opts, fmt)
     end
-    opts.fg = fgcol
-    opts.bg = bgcol
+    opts.fg = fg
+    opts.bg = bg
     M.set(group, opts)
 end
 
@@ -514,7 +510,7 @@ M.colors = function(filter, exact)
                 end
                 for key, def_key in pairs({foreground = "fg", background = "bg", special = "sp"}) do
                     if type(hl[key]) == "number" then
-                        local hex = hex(hl[key])
+                        local hex = rgb2hex(hl[key])
                         def[def_key] = hex
                     end
                 end

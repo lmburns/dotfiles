@@ -241,9 +241,7 @@ local function init()
         },
         stdin = 1
     }
-    g.neoformat_enabled_sql = {
-        "sqlformatter"
-    }
+    g.neoformat_enabled_sql = {"sqlformatter"}
     g.neoformat_sql_sqlformatter = {
         exe = "sql-formatter",
         args = {
@@ -262,6 +260,8 @@ local function init()
         },
         stdin = 1
     }
+
+    g.neoformat_enabled_lua = {"luafmtext", "stylua"}
 
     map("n", ";ff", [[:lua require('plugs.format').format_doc()<CR>]])
     map("x", ";ff", [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]])

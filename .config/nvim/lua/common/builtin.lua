@@ -174,7 +174,7 @@ function M.switch_lastbuf()
 
                 -- Cursor position when last exiting
                 -- I already have an autocmd for this
-                cmd('sil! norm! `"')
+                cmd.norm({'`"', bang = true, mods = {silent = true}})
                 break
             end
         end

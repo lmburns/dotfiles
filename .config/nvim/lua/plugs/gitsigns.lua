@@ -29,25 +29,25 @@ local function echo(status, toggled)
 end
 
 function M.toggle_deleted()
-    require("gitsigns").toggle_deleted()
+    gitsigns.toggle_deleted()
     local status = F.tern(config.show_deleted, "enable", "disable")
     echo(status, "show_deleted")
 end
 
 function M.toggle_linehl()
-    require("gitsigns").toggle_linehl()
+    gitsigns.toggle_linehl()
     local status = F.tern(config.linehl, "enable", "disable")
     echo(status, "linehl")
 end
 
 function M.toggle_word_diff()
-    require("gitsigns").toggle_word_diff()
+    gitsigns.toggle_word_diff()
     local status = F.tern(config.word_diff, "enable", "disable")
     echo(status, "word_diff")
 end
 
 function M.toggle_blame()
-    require("gitsigns").toggle_current_line_blame()
+    gitsigns.toggle_current_line_blame()
     local status = F.tern(config.current_line_blame, "enable", "disable")
     echo(status, "current_line_blame")
 end

@@ -51,7 +51,8 @@ function M.setup()
                 -- or alternatively have them auto-register,
                 -- see section on which-key integration
                 mappings = {},
-                opts = {}
+                opts = {},
+                do_binding = false
             },
             -- Automatically add which-key tables to legendary
             -- see "which-key.nvim Integration" below for more details
@@ -67,47 +68,35 @@ function M.setup()
     )
 end
 
--- local keymaps = {
---   { '<C-d>', description = 'Scroll docs up' },
---   { '<C-f>', description = 'Scroll docs down' },
--- }
-
--- local commands = {
---   {
---     ":MyCommand {some_argument}<CR>",
---     description = "Command with argument",
---     unfinished = true,
---   },
---   -- or
---   {
---     ":MyCommand [some_argument]<CR>",
---     description = "Command with argument",
---     unfinished = true,
---   },
--- }
-
 local function init()
     M.setup()
     -- local wk = require("which-key")
 
+    -- [[<Cmd>lua require('legendary').find({filters = require('legendary.filters').current_mode()})<CR>]],
     -- NOTE: C-_ => C-/
     legend.bind_keymaps(
         {
             {
                 "<C-_>",
-                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("n"))<CR>]],
+                function()
+                    legend.find({kind = "keymaps", filters = require("legendary.filters").mode("n")})
+                end,
                 description = "Show Legendary keymaps (normal)",
                 mode = "n"
             },
             {
                 "<C-_>",
-                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("i"))<CR>]],
+                function()
+                    legend.find({kind = "keymaps", filters = require("legendary.filters").mode("i")})
+                end,
                 description = "Show Legendary keymaps (insert)",
                 mode = "i"
             },
             {
                 "<C-_>",
-                [[<Cmd>lua require("legendary").find("keymaps", require("legendary.filters").mode("v"))<CR>]],
+                function()
+                    legend.find({kind = "keymaps", filters = require("legendary.filters").mode("v")})
+                end,
                 description = "Show Legendary keymaps (visual)",
                 mode = "v"
             }

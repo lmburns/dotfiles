@@ -50,10 +50,9 @@ _G.pp = vim.pretty_print
 -- ╘══════════════════════════════════════════════════════════╛
 
 ---Use in combination with pcall
----@generic T
 ---@param status boolean
----@param ... T
----@return T?
+---@param ... any
+---@return any?
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
@@ -68,18 +67,16 @@ end
 
 ---Nil `pcall`.
 ---If `pcall` succeeds, return result of `fn`, else `nil`
----@generic T
----@param fn fun(v: T)
----@param ... T
----@return T?
+---@param fn fun(v: any)
+---@param ... any
+---@return any?
 M.npcall = function(fn, ...)
     return M.ok_or_nil(pcall(fn, ...))
 end
 
 ---Wrap a function to return `nil` if it fails, otherwise the value
----@generic T
----@param fn fun(v: T)
----@return fun(v: T)
+---@param fn fun(v: any)
+---@return fun(v: any)
 M.nil_wrap = function(fn)
     return function(...)
         return M.npcall(fn, ...)

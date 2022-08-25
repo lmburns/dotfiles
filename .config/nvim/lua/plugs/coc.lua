@@ -576,7 +576,7 @@ function M.toggle_outline()
 end
 
 -- If this is ran in `init.lua` the command is not overwritten
-M.tag_cmd = function()
+function M.tag_cmd()
     augroup(
         "MyCocDef",
         {
@@ -664,25 +664,30 @@ end
 
 ---Setup the Sumneko-Coc Lua language-server
 ---Note that the runtime paths here are placed into an array, not a table
-M.sumneko_ls = function()
-    local library = M.get_config("Lua").workspace.library
+function M.sumneko_ls()
+    vim.defer_fn(
+        function()
+            local library = M.get_config("Lua").workspace.library
 
-    -- NOTE: This doubles the number of files that are checked on startup
-    -- But it allows one to use 'gd' to go to definition
-    local runtime = _t(M.get_lua_runtime()):keys()
-    library = vim.list_extend(library, runtime)
+            -- NOTE: This doubles the number of files that are checked on startup
+            -- But it allows one to use 'gd' to go to definition
+            local runtime = _t(M.get_lua_runtime()):keys()
+            library = vim.list_extend(library, runtime)
 
-    if D.plugin_loaded("promise-async") then
-        ---@diagnostic disable-next-line: undefined-field
-        local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
-        library = vim.list_extend(library, {promise})
-    end
+            if D.plugin_loaded("promise-async") then
+                ---@diagnostic disable-next-line: undefined-field
+                local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
+                library = vim.list_extend(library, {promise})
+            end
 
-    M.set_config("Lua.workspace", {library = library})
+            M.set_config("Lua.workspace", {library = library})
+        end,
+        1000
+    )
 end
 
 ---Set the icons for Coc
-M.set_icons = function()
+function M.set_icons()
     vim.defer_fn(
         function()
             local diag_config = M.get_config("diagnostic")

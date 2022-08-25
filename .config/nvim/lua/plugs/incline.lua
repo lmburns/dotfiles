@@ -15,7 +15,11 @@ local fn = vim.fn
 local api = vim.api
 
 local function truncate(str, max_len)
-    assert(str and max_len, "string and max_len must be provided")
+    vim.validate {
+        str = {str, "s", false},
+        max_len = {max_len, "n", false}
+    }
+
     return api.nvim_strwidth(str) > max_len and str:sub(1, max_len) .. "…" or str
 end
 

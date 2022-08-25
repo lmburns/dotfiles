@@ -256,7 +256,7 @@ function linkts() {
 # ====================================================================
 # Hardlink relevant files to a Rust project
 function linkrust() {
-  command ln -v $XDG_DATA_HOME/just/rust_justfile $PWD/justfile
+  command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
   command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
   command cp -v $XDG_CONFIG_HOME/rust/pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }

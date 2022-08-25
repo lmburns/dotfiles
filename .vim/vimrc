@@ -869,11 +869,11 @@ Plug 'antoinemadec/coc-fzf'
   "       \ coc#jumpable() ? "\<C-R>=coc#rpc#request('snippetPrev', [])\<cr>" :
   "       \ "\<Up>"
 
-  inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
+inoremap <silent><expr> <tab>
+      \ coc#pum#visible() ? coc#pum#next(1):
+      \ <SID>check_back_space() ? "\<Tab>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -903,9 +903,6 @@ endfunction
   command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
   let g:endwise_no_mappings = v:true
-  " inoremap <expr> <Plug>CustomCocCR "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-  inoremap <silent><expr> <tab> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"
-  imap <CR> <Plug>CustomCocCR<Plug>DiscretionaryEnd
 
   " use K to show documentation in preview window.
   function! s:show_documentation()
@@ -927,15 +924,11 @@ endfunction
   " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
   " \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-  " Make <tab> auto-select the first completion item
-  inoremap <silent><expr> <tab> pumvisible()
-      \ ? coc#_select_confirm() : "\<C-g>u\<tab>"
-
   " Use <c-space> to trigger completion
   inoremap <silent><expr> <C-'> coc#refresh()
 
-  " position. Coc only does snippet and additional edit on confirm.
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+  inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
   " inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
 

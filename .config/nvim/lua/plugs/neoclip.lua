@@ -25,15 +25,6 @@ local function is_whitespace(line)
     return fn.match(line, [[^\s*$]]) ~= -1
 end
 
-local function all(tbl, check)
-    for _, entry in ipairs(tbl) do
-        if not check(entry) then
-            return false
-        end
-    end
-    return true
-end
-
 local opts = {
     winblend = 10,
     layout_strategy = "flex",
@@ -73,7 +64,7 @@ M.setup = function()
             db_path = fn.stdpath("data") .. "/databases/neoclip.sqlite3",
             -- filter = nil,
             filter = function(data)
-                return not all(data.event.regcontents, is_whitespace)
+                return not D.all(data.event.regcontents, is_whitespace)
             end,
             preview = true,
             default_register = "+",
@@ -197,7 +188,10 @@ local function init()
             command = function()
                 hl.set("HighlightedYankRegion", {bg = "#cc6666"})
                 if not vim.b.visual_multi then
-                    pcall(vim.highlight.on_yank, {higroup = "HighlightedYankRegion", timeout = M.timeout})
+                    pcall(
+                        vim.highlight.on_yank,
+                        {higroup = "HighlightedYankRegion", timeout = M.timeout, on_visual = true}
+                    )
                 end
             end,
             desc = "Highlight a selection on yank"

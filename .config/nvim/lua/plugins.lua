@@ -115,7 +115,8 @@ local handlers = {
             value = {
                 value,
                 function(n)
-                    return type(n) == "string" or type(n) == "boolean"
+                    local t = type(n)
+                    return t == "string" or t == "boolean"
                 end,
                 ("%s: must be a string or boolean"):format(plugin.short_name)
             }
@@ -299,7 +300,6 @@ return packer.startup(
                 {
                     "othree/eregex.vim",
                     cmd = {"E2v", "S", "M"},
-                    -- after = "vim-abolish",
                     setup = [[vim.g.eregex_default_enable = 0]],
                     keys = {{"n", "<Leader>es"}},
                     conf = "eregex",
@@ -1067,10 +1067,11 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
-            -- "eriedaberrie/todo-comments.nvim",
+            -- eriedaberrie/todo-comments.nvim
+            -- B4mbus/todo-comments.nvim
             use(
                 {
-                    "folke/todo-comments.nvim",
+                    "B4mbus/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
                     after = "telescope.nvim"
@@ -1132,13 +1133,14 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "github/copilot.vim",
-            --         conf = "copilot",
-            --         keys = {"n", "<Leader>ce"}
-            --     }
-            -- )
+            use(
+                {
+                    "github/copilot.vim",
+                    conf = "copilot",
+                    keys = {"n", "<Leader>ce"},
+                    cmd = {"Copilot"}
+                }
+            )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Treesitter                        │

@@ -27,11 +27,11 @@ local function custom_filter(bufnr, buf_nums)
     local bo = vim.bo[bufnr]
 
     local logs =
-        vim.tbl_filter(
+        D.filter(
+        buf_nums,
         function(b)
             return vim.bo[b].ft == "log"
-        end,
-        buf_nums
+        end
     )
     if vim.tbl_isempty(logs) then
         return true
@@ -51,12 +51,6 @@ local function custom_filter(bufnr, buf_nums)
     if _t({"", "[No Name]", "[dap-repl]"}):contains(fn.bufname(bufnr)) then
         return false
     end
-
-    -- -- filter out based on arbitrary rules
-    -- -- e.g. filter out vim wiki buffer from tabline in your work repo
-    -- if vim.fn.getcwd() == "<work-repo>" and vim.bo[buf_number].filetype ~= "wiki" then
-    --   return true
-    -- end
 
     -- only show log buffers in secondary tabs
     return (tab_num == last_tab and is_log) or (tab_num ~= last_tab and not is_log)
@@ -105,8 +99,7 @@ function M.setup()
                 end, -- can be a string | function, see "Mouse actions"
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
                 middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
-                indicator = {style = "underline"},
-                indicator_icon = "▎",
+                indicator = {style = "NONE"},
                 buffer_close_icon = "",
                 modified_icon = "●",
                 close_icon = "",

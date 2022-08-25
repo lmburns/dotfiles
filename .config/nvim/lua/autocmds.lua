@@ -1,3 +1,5 @@
+---@diagnostic disable:undefined-field
+
 -- local global = require("common.global")
 local D = require("dev")
 local hl = require("common.color")
@@ -207,6 +209,18 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
                     cmd.redrawstatus()
                 end
             )
+        end
+    },
+    {
+        event = "RecordingEnter",
+        command = function()
+            o.hlsearch = false
+        end
+    },
+    {
+        event = "RecordingLeave",
+        command = function()
+            o.hlsearch = true
         end
     }
 }
@@ -641,7 +655,7 @@ nvim.autocmd.lmb__SmartClose = {
         nested = true,
         command = function()
             if vim.bo.filetype ~= "qf" then
-                cmd("sil! lcl")
+                cmd.lcl({mods = {silent = true}})
             end
         end,
         desc = "Close loclist when quitting window"
