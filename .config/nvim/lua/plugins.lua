@@ -55,10 +55,10 @@ packer.on_compile_done = function()
     -- vim.cmd [[doautocmd User PackerCompileDone]]
 end
 
-packer.on_complete = function()
-    cmd("doau User PackerComplete")
-    nvim.p.TSNote("Packer completed")
-end
+-- packer.on_complete = function()
+--     cmd("doau User PackerComplete")
+--     nvim.p.TSNote("Packer completed")
+-- end
 
 packer.init(
     {
@@ -375,10 +375,10 @@ return packer.startup(
             use({"marko-cerovac/material.nvim"})
             use({"ghifarit53/daycula-vim"})
             use({"rmehri01/onenord.nvim"})
-            use({"levuaska/levuaska.nvim"})
             use({"kyazdani42/blue-moon"})
             use({"meliora-theme/neovim"})
             use({"rockyzhang24/arctic.nvim"})
+            -- use({"levuaska/levuaska.nvim"})
             -- use({"wadackel/vim-dogrun"})
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
@@ -1022,7 +1022,7 @@ return packer.startup(
                             "scss",
                             "vim",
                             -- "solidity",
-                            -- "teal",
+                            "teal",
                             -- "tsx",
                             -- "vue",
                             "zig"
@@ -1538,7 +1538,7 @@ return packer.startup(
             --     }
             -- )
 
-            use({"rcarriga/nvim-notify", conf = "notify", after = colorscheme})
+            use({"rcarriga/nvim-notify", conf = "plugs.notify", after = colorscheme})
             use(
                 {
                     "simrat39/desktop-notify.nvim",

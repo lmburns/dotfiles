@@ -686,6 +686,7 @@ end
 ---@field message? string Notification message
 ---@field level? NotifyLevels Notification level
 ---@field hl? string Highlight group
+---@field on_open fun(winnr: number): nil
 
 ---Wrapper to send a notification
 ---@param msg string? Message to notify
@@ -708,7 +709,7 @@ M.notify = function(msg, level, opts)
 
     ---@diagnostic disable-next-line:cast-local-type
     opts = vim.tbl_extend("force", _opts or {}, opts or {})
-    if g.nvim_focused then
+    if vim.g.nvim_focused then
         local ok, notify = pcall(require, "notify")
         if not ok then
             vim.defer_fn(

@@ -4,7 +4,6 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
-local icons = require("style").icons
 local hl = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
@@ -255,27 +254,6 @@ function M.jump2loc(locs, skip)
         else
             api.nvim_set_current_win(winid)
         end
-    end
-end
-
----Accept the completion
-function M.accept_complete()
-    local mode = utils.mode()
-    if mode == "i" then
-        return utils.termcodes["<C-l>"]
-    elseif mode == "ic" then
-        local ei_bak = vim.o.ei
-        vim.o.ei = "CompleteDone"
-        vim.schedule(
-            function()
-                vim.o.ei = ei_bak
-                fn.CocActionAsync("stopCompletion")
-                -- fn["coc#pum#close"]()
-            end
-        )
-        return utils.termcodes["<C-y>"]
-    else
-        return utils.termcodes["<Ignore>"]
     end
 end
 
@@ -606,58 +584,67 @@ end
 ---@return table
 M.get_lua_runtime = function()
     local result = {}
-    local filter = {"kimbox"}
+    -- local filter = {"kimbox"}
 
-    ---Add a path to the Lua runtime
-    ---@param lib string
-    ---@param filter string[]
-    ---@param types boolean?
-    local function add(lib, filter, types)
-        -- If it is a colorscheme, skip it. Removes a lot of files
-        for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
-            path = uv.fs_realpath(path)
-            if path and not filter[fn.fnamemodify(path, ":h:t")] then
-                goto continue
-            end
-        end
+    -- ---Add a path to the Lua runtime
+    -- ---@param lib string
+    -- ---@param filter string[]
+    -- ---@param types boolean?
+    -- local function add(lib, filter, types)
+    --     -- If it is a colorscheme, skip it. Removes a lot of files
+    --     -- for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
+    --     --     path = uv.fs_realpath(path)
+    --     --     if path and not filter[fn.fnamemodify(path, ":h:t")] then
+    --     --         goto continue
+    --     --     end
+    --     -- end
+    --
+    --     for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+    --         path = uv.fs_realpath(path)
+    --         -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
+    --
+    --         if path then
+    --             local stat = uv.fs_stat(path)
+    --             if stat and stat.type == "directory" then
+    --                 result[path] = true
+    --             end
+    --         end
+    --     end
+    --
+    --     -- Add types for plugins that have them
+    --     if types then
+    --         for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
+    --             path = uv.fs_realpath(path)
+    --             if path and fn.isdirectory(path) then
+    --                 result[path] = true
+    --             end
+    --         end
+    --     end
+    --
+    --     ::continue::
+    -- end
 
+    local function add(lib)
         for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
             path = uv.fs_realpath(path)
-            -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
-
-            if path then
-                local stat = uv.fs_stat(path)
-                if stat and stat.type == "directory" then
-                    result[path] = true
-                end
+            if path and fn.isdirectory(path) then
+                result[path] = true
             end
         end
-
-        -- Add types for plugins that have them
-        if types then
-            for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
-                path = uv.fs_realpath(path)
-                if path and fn.isdirectory(path) then
-                    result[path] = true
-                end
-            end
-        end
-
-        ::continue::
     end
 
     for _, site in pairs(vim.split(vim.o.packpath, ",")) do
-        add(site .. "/pack/*/opt/*", filter, true)
-        add(site .. "/pack/*/start/*", filter, true)
+        add(site .. "/pack/*/opt/*")
+        add(site .. "/pack/*/start/*")
     end
 
     -- add("$VIMRUNTIME")
     -- api.nvim_get_runtime_file("", true)
 
     -- This adds 400-500+ files
-    -- for _, run in pairs(api.nvim_list_runtime_paths()) do
-    --     add(run, {}, true)
-    -- end
+    for _, run in pairs(api.nvim_list_runtime_paths()) do
+        add(run)
+    end
 
     return result
 end
@@ -667,6 +654,7 @@ end
 function M.sumneko_ls()
     vim.defer_fn(
         function()
+            ---@type string[]
             local library = M.get_config("Lua").workspace.library
 
             -- NOTE: This doubles the number of files that are checked on startup
@@ -682,22 +670,7 @@ function M.sumneko_ls()
 
             M.set_config("Lua.workspace", {library = library})
         end,
-        1000
-    )
-end
-
----Set the icons for Coc
-function M.set_icons()
-    vim.defer_fn(
-        function()
-            local diag_config = M.get_config("diagnostic")
-            diag_config.errorSign = icons.lsp.error
-            diag_config.warningSign = icons.lsp.warn
-            diag_config.hintSign = icons.lsp.hint
-            diag_config.infoSign = icons.lsp.info
-            M.set_config("diagnostic", {diagnostic = diag_config})
-        end,
-        1000
+        1
     )
 end
 
@@ -707,7 +680,6 @@ function M.init()
     diag_qfid = -1
 
     M.sumneko_ls()
-    M.set_icons()
 
     g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
     g.coc_snippet_next = "<C-j>"
@@ -730,7 +702,6 @@ function M.init()
             command = function()
                 require("plugs.coc").diagnostic_change()
                 require("plugs.coc").diagnostics_tracker()
-                -- fn["CocDiagnosticNotify"]()
             end
         },
         {
@@ -937,27 +908,6 @@ function M.init()
     map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
     map("i", "<CR>", "v:lua.map_cr()", {expr = true})
 
-    -----
-    -- Before `pum` is merged
-    -----
-    -- map("i", "<Tab>", [[pumvisible() ? coc#_select_confirm() : "\<C-g>u\<tab>"]], {expr = true, silent = true})
-    -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true, silent = true})
-
-    -- map(
-    --     "i",
-    --     "<Tab>",
-    --     ("pumvisible() ? %s : %s"):format(
-    --         [["\<C-n>"]],
-    --         [[v:lua.check_backspace() ? "\<Tab>" : coc#refresh()]]
-    --     ),
-    --     {expr = true}
-    -- )
-    -- map("i", "<S-Tab>", [[pumvisible() ? "\<C-p>" : "\<C-h>"]], {expr = true})
-    -- map("i", "<C-l>", [[v:lua.require'plugs.coc'.accept_complete()]], {expr = true})
-
-    -----
-    -- After `pum` is merged
-    -----
     map(
         "i",
         "<Tab>",
@@ -975,8 +925,6 @@ function M.init()
     map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], {expr = true, silent = true})
     map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true, silent = true})
     map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true, silent = true})
-
-    -----
 
     -- Snippet
     map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})
@@ -1001,9 +949,6 @@ function M.init()
     map("i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]], {expr = true, silent = true})
 
     map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
-    -- map("n", "<Leader>st", [[<Cmd>CocCommand go.test.toggle<CR>]])
-    -- map("n", "<Leader>tf", [[<Cmd>CocCommand go.test.generate.function<CR>]])
-    -- map("x", "<Leader>tf", [[:CocCommand go.test.generate.function<CR>]])
 end
 
 return M

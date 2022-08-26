@@ -76,12 +76,6 @@ function grepo() {
   command handlr open "$url"
 }
 
-# Shorten a github URL
-function git.io() {
-  emulate -L zsh
-  curl -i -s https://git.io -F "url=$1" | grep "Location" | cut -f 2 -d " "
-}
-
 # Dump zsh hash
 function dump_map() {
   eval "[[ \${(t)$1} = association ]]" || {

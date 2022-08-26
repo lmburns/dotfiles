@@ -8,10 +8,10 @@ M.extensions = {}
 M.conditions = {}
 M.other = {}
 
+local D = require("dev")
 local utils = require("common.utils")
 local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
-local dev = require("dev")
 local coc = require("plugs.coc")
 local hl = require("common.color")
 local colors = require("kimbox.colors")
@@ -268,7 +268,7 @@ end
 ---Show number of TODO comments in buffer
 M.plugins.todo_comment_count = {
     toggle = function()
-        return dev.plugin_loaded("todo-comments.nvim")
+        return D.plugin_loaded("todo-comments.nvim")
     end,
     fn = function()
         return require("plugs.todo-comments").get_todo_count()
@@ -278,7 +278,7 @@ M.plugins.todo_comment_count = {
 ---Show function is statusbar with vista
 M.plugins.vista_nearest_method = {
     toggle = function()
-        return dev.plugin_loaded("vista.vim")
+        return D.plugin_loaded("vista.vim")
     end,
     fn = function()
         return vim.b.vista_nearest_method_or_function
@@ -296,7 +296,7 @@ M.plugins.coc_function = {
 
 M.plugins.gutentags_progress = {
     toggle = function()
-        return dev.plugin_loaded("vim-gutentags")
+        return D.plugin_loaded("vim-gutentags")
     end,
     fn = function()
         return fn["gutentags#statusline"]("[", "]")
@@ -305,7 +305,7 @@ M.plugins.gutentags_progress = {
 
 M.plugins.gps = {
     toggle = function()
-        return dev.plugin_loaded("nvim-gps")
+        return D.plugin_loaded("nvim-gps")
     end,
     fn = function()
         local opts = {
@@ -320,7 +320,7 @@ M.plugins.gps = {
 
 M.plugins.luapad = {
     toggle = function()
-        return dev.plugin_loaded("nvim-luapad")
+        return D.plugin_loaded("nvim-luapad")
     end,
     fn = function()
         local status = fn["luapad#lightline_status"]()
@@ -336,7 +336,7 @@ M.plugins.luapad = {
 
 M.plugins.debugger = {
     toggle = function()
-        return dev.plugin_loaded("dap")
+        return D.plugin_loaded("dap")
     end,
     fn = function()
         -- local session = require('dap').session()

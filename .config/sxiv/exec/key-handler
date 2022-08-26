@@ -1,4 +1,5 @@
 #!/bin/sh
+
 while read file; do
   case "$1" in
   "w") setbg "$file" & ;;
@@ -30,7 +31,7 @@ while read file; do
       notify-send "$(readlink -f "$file") copied to clipboard" &
     ;;
   "d")
-    [ "$(printf "No\\nYes" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rm "$file" && notify-send "$file deleted."
+    [ "$(printf "No\\nYes" | dmenu -i -p "Really delete $file?")" = "Yes" ] && rip "$file" && notify-send "$file deleted."
     ;;
   "g") ifinstalled gimp && setsid -f gimp "$file" ;;
   "i") notify-send "File information" "$(mediainfo "$file")" ;;

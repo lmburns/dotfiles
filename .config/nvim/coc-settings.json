@@ -63,12 +63,20 @@
   "diagnostic.virtualTextLineSeparator": " \\ ",
   "diagnostic.virtualTextPrefix": " | ",
   // "diagnostic.virtualTextCurrentLineOnly": true,
-  // "diagnostic.format": "%message [%source:%code]", // %source code severity message
+  "diagnostic.format": "%message [%source%code]", // %source code severity message
   "diagnostic.signPriority": 50,
   "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.messageTarget": "float",
   "diagnostic.separateRelatedInformationAsDiagnostics": true,
   // Float
+  "floatFactory.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "highlight": "CocSuggestFloating",
+    "borderhighlight": "FloatBorder",
+    "maxWidth": 120,
+    "focusable": true
+  },
   "suggest.floatConfig": {
     "border": true,
     "rounded": true,
@@ -286,7 +294,7 @@
   // The Coc package for Lua provides inline hints, which is better
   // than a manual setup (can be found below)
   "sumneko-lua.enable": true,
-  "sumneko-lua.enableNvimLuaDev": true,
+  "sumneko-lua.enableNvimLuaDev": false,
   "sumneko-lua.checkUpdate": true,
   "sumneko-lua.inlayHints.refreshOnInsertMode": false,
   "sumneko-lua.inlayHints.trimSemicolon": false,
@@ -300,7 +308,9 @@
   "Lua.workspace.maxPreload": 10000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 10000,
-  "Lua.workspace.library": [],
+  "Lua.workspace.library": [
+    "/home/lucas/.config/nvim/lua"
+  ],
   "Lua.format.enable": false,
   "Lua.completion.enable": true,
   "Lua.completion.showParams": true,

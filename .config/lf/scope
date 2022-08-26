@@ -68,20 +68,26 @@ handle_mime() {
   local mimetype="${1}"
   case "${mimetype}" in
     (text/html)
-      w3m -dump "${FILE_PATH}" ;;
+      w3m -dump "${FILE_PATH}"
       # bat -Pf --theme kimbro --style auto -l html -- "${FILE_PATH}" ;;
+    ;;
     (text/troff)
       # color isn't shown
-      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${FILE_PATH}" ;;
+      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${FILE_PATH}"
+    ;;
     (text/csv)
-      tidy-viewer -n 30 <$FILE_PATH ;;
+      tidy-viewer -n 30 <$FILE_PATH
       # bat -Pf -l csv ${FILE_PATH} ;;
+    ;;
     (text/* | */xml | application/javascript)
-      bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}" ;;
+      bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}"
+    ;;
     (application/pgp-encrypted)
-      bat -Pf --theme KimbieDark --style auto "${FILE_PATH}" ;;
+      bat -Pf --theme KimbieDark --style auto "${FILE_PATH}"
+    ;;
     (application/zip)
-      atool --list -- "${FILE_PATH}" ;;
+      atool --list -- "${FILE_PATH}"
+    ;;
     (image/*)
       prev-image "$FILE_PATH"
       # prev-image "$FILE_PATH" "$WIDTH" "$HEIGHT" "$X_COORD" "$Y_COORD"
@@ -102,7 +108,8 @@ handle_mime() {
       prev-image "$CACHE.jpg"
     ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-      docx2txt "${FILE_PATH}" ;;
+      docx2txt "${FILE_PATH}"
+    ;;
   esac
 }
 

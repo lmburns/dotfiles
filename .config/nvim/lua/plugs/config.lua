@@ -509,81 +509,6 @@ function M.slime()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                          Notify                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.notify()
-    -- local notify = D.npcall(lazy.require_on_exported_call, "notify")
-    local notify = D.npcall(require, "notify")
-    if not notify then
-        return
-    end
-
-    hl.plugin(
-        "notify",
-        {
-            NotifyERRORBorder = {bg = {from = "NormalFloat"}},
-            NotifyWARNBorder = {bg = {from = "NormalFloat"}},
-            NotifyINFOBorder = {bg = {from = "NormalFloat"}},
-            NotifyDEBUGBorder = {bg = {from = "NormalFloat"}},
-            NotifyTRACEBorder = {bg = {from = "NormalFloat"}},
-            NotifyERRORBody = {link = "NormalFloat"},
-            NotifyWARNBody = {link = "NormalFloat"},
-            NotifyINFOBody = {link = "NormalFloat"},
-            NotifyDEBUGBody = {link = "NormalFloat"},
-            NotifyTRACEBody = {link = "NormalFloat"}
-        }
-    )
-
-    ---@type table<string, fun(bufnr: number, notif: table, highlights: table)>
-    local renderer = require("notify.render")
-
-    notify.setup(
-        {
-            stages = "fade_in_slide_out", -- slide
-            fps = 60,
-            timeout = 3000,
-            minimum_width = 30,
-            max_width = math.floor(vim.o.columns * 0.4),
-            background_color = "NormalFloat",
-            -- on_close = function()
-            -- -- Could create something to write to a file
-            -- end,
-            on_open = function(winnr)
-                api.nvim_win_set_config(winnr, {zindex = 500})
-                local bufnr = api.nvim_win_get_buf(winnr)
-                bmap(bufnr, "n", "q", "<Cmd>bdelete<CR>", {nowait = true})
-                api.nvim_buf_call(
-                    bufnr,
-                    function()
-                        vim.wo[winnr].wrap = true
-                        vim.wo[winnr].showbreak = "NONE"
-                    end
-                )
-            end,
-            render = function(bufnr, notif, highlights, config)
-                local style = notif.title[1] == "" and "minimal" or "default"
-                renderer[style](bufnr, notif, highlights, config)
-            end,
-            icons = {
-                ERROR = " ",
-                WARN = " ",
-                INFO = " ",
-                DEBUG = " ",
-                TRACE = " "
-            }
-        }
-    )
-
-    wk.register(
-        {
-            ["<C-S-N>"] = {notify.dismiss, "Dismiss notification"}
-        }
-    )
-
-    require("telescope").load_extension("notify")
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                           Sort                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.sort()
@@ -1822,6 +1747,11 @@ function M.trevj()
                     table_constructor = {final_separator = ",", final_end_line = true},
                     arguments = {final_separator = false, final_end_line = true},
                     parameters = {final_separator = false, final_end_line = true}
+                },
+                teal = {
+                    -- table_constructor = {final_separator = ",", final_end_line = true},
+                    arguments = {final_separator = false, final_end_line = true},
+                    -- parameters = {final_separator = false, final_end_line = true}
                 },
                 html = {
                     start_tag = {

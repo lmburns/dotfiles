@@ -1,8 +1,8 @@
 local M = {}
 
 local D = require("dev")
-local gitsigns = D.npcall(require, "gitsigns")
-if not gitsigns then
+local gs = D.npcall(require, "gitsigns")
+if not gs then
     return
 end
 
@@ -29,32 +29,30 @@ local function echo(status, toggled)
 end
 
 function M.toggle_deleted()
-    gitsigns.toggle_deleted()
+    gs.toggle_deleted()
     local status = F.tern(config.show_deleted, "enable", "disable")
     echo(status, "show_deleted")
 end
 
 function M.toggle_linehl()
-    gitsigns.toggle_linehl()
+    gs.toggle_linehl()
     local status = F.tern(config.linehl, "enable", "disable")
     echo(status, "linehl")
 end
 
 function M.toggle_word_diff()
-    gitsigns.toggle_word_diff()
+    gs.toggle_word_diff()
     local status = F.tern(config.word_diff, "enable", "disable")
     echo(status, "word_diff")
 end
 
 function M.toggle_blame()
-    gitsigns.toggle_current_line_blame()
+    gs.toggle_current_line_blame()
     local status = F.tern(config.current_line_blame, "enable", "disable")
     echo(status, "current_line_blame")
 end
 
 local function mappings(bufnr)
-    local gs = package.loaded.gitsigns
-
     wk.register(
         {
             ["<Leader>he"] = {"<Cmd>Gitsigns stage_hunk<CR>", "Stage hunk (git)"},
@@ -143,7 +141,7 @@ local function mappings(bufnr)
 end
 
 function M.setup()
-    gitsigns.setup(
+    gs.setup(
         {
             debug_mode = false,
             _extmark_signs = true,
