@@ -7,8 +7,6 @@ local uv = vim.loop
 -- ║                          Global                          ║
 -- ╙                                                          ╜
 
----@alias module table
-
 P = function(...)
     local vars = vim.tbl_map(vim.inspect, {...})
     print(unpack(vars))
@@ -68,13 +66,19 @@ _G.dev = require("dev")
 _G.List = require("plenary.collections.py_list")
 -- _G.Path = require("plenary.path")
 -- _G.Job = require("plenary.job")
-_G.Promise = require("promise")
 -- _G.async = require("plenary.async")
 -- _G.a = require("plenary.async_lib")
-_G.nvim = require("nvim")
-_G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 
--- _G.telescope_ext = {}
+_G.Promise = require("promise")
+_G.async = require("async")
+_G.await = require("async").wait
+
+---@class Nvim
+_G.nvim = require("nvim")
+-- _G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
+
+---@type { [string]: { [string]: any } }
+_G.packer_plugins = _G.packer_plugins
 
 -- Makes `_t` global
 require("arshlib")

@@ -1,4 +1,5 @@
---- Tools that will help with Lua development
+--@module common.utils
+---@description: Lowest level utility functions that will also be used in `common.utils`
 
 local M = {}
 

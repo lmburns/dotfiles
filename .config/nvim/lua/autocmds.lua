@@ -9,6 +9,7 @@ local log = require("common.log")
 local Job = require("plenary.job")
 local a = require("plenary.async_lib")
 
+local funcs = require("functions")
 local utils = require("common.utils")
 -- local funcs = require("functions")
 local map = utils.map
@@ -254,9 +255,7 @@ nvim.autocmd.lmb__RestoreCursor = {
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 utils.set_cursor(0, row, 0)
 
-                if fn.line("w$") ~= row then
-                    cmd.norm({"zz", bang = true})
-                end
+                funcs.center_next()
             end
         end
     },

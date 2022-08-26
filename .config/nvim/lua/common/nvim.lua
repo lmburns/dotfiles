@@ -3,16 +3,44 @@
 local M = {}
 
 local utils = require("common.utils")
-local nvim = require("nvim")
 
 local api = vim.api
 local F = vim.F
 local fn = vim.fn
 
--- ---@class Nvim
+---@class RetrieveAutocommand
+---@field group string|number Autocommand name or id
+---@field event string|string[] Event(s) to match against
+---@field pattern string|string[] Pattern(s) to match against
+
+---@class Nvim.Augroup
+---@field add fun(name: string, clear?: boolean): number
+---@field clear fun(name: string)
+---@field del fun(id: string|number)
+---@field get fun(id: string|number)
+---@field get_id fun(name: string|number)
+
+---@class Nvim.Autocmd
+---@field add fun(autocmd: Autocommand, id?: number): Disposable
+---@field get fun(opts: RetrieveAutocommand)
+---@field del fun(id: number)
+
+---@class Nvim.Buf
+---@field nr fun(): number #Return the current buffer number
+---@field line fun(): number #Return the content on the current line
+
+---@class Nvim
+---@field augroup Nvim.Augroup
+---@field autocmd Nvim.Autocmd
+---@field b table
+---@field bo table
+---@field buf Nvim.Buf
+---@diagnostic disable-next-line:assign-type-mismatch
+local nvim = require("nvim")
+_G.nvim = require("nvim")
 
 ---Get an autocmd
----@param opts table
+---@param opts RetrieveAutocommand
 ---@return table
 local function get_autocmd(opts)
     vim.validate {opts = {opts, "table", true}}

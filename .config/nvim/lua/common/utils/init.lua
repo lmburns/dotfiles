@@ -1,4 +1,6 @@
--- ========================== Functions ==========================
+--@module common.utils
+---@description: Utility functions that are used in multiple files
+---              They are a higher-level set than `dev`
 
 local M = {}
 
@@ -171,15 +173,15 @@ end
 ---@field data any any arbitrary data passed to `nvim_exec_autocmds`
 
 ---@class Autocommand
----@field desc    string? description of the `autocmd`
----@field event   string|string[] list of autocommand events
----@field pattern string|string[] list of autocommand patterns
+---@field desc    string?         Description of the `autocmd`
+---@field event   string|string[] List of autocommand events
+---@field pattern string|string[] List of autocommand patterns
 ---@field command string|fun(args: AutocommandOpts)
 ---@field nested  boolean
 ---@field once    boolean
----@field buffer  number
----@field group   number
----@field description string? alternative to `self.desc`
+---@field buffer  number        Buffer number. Conflicts with `pattern`
+---@field group   string|number Group name or ID to match against
+---@field description string?   Alternative to `self.desc`
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
@@ -1323,7 +1325,7 @@ end
 --    filter <pattern> let g:
 
 -- EmmyLua
---    https://github.com/sumneko/lua-language-server/wiki/EmmyLua-Annotations
+--    https://github.com/sumneko/lua-language-server/wiki/Annotations
 
 -- Patterns
 --   http://lua-users.org/wiki/PatternsTutorial

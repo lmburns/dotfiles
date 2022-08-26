@@ -310,6 +310,8 @@
   "Lua.workspace.preloadFileSize": 10000,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua"
+    // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
+    // "/home/lucas/.local/share/nvim/site/pack/packer/start"
   ],
   "Lua.format.enable": false,
   "Lua.completion.enable": true,
@@ -337,7 +339,7 @@
   "Lua.semantic.enable": true,
   "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
-  "Lua.diagnostics.workspaceDelay": 3000,
+  "Lua.diagnostics.workspaceDelay": 1,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
@@ -413,7 +415,10 @@
     "it",
     "describe",
     "before_each",
-    "after_each"
+    "after_each",
+    "await",
+    "async",
+    "Promise"
   ],
   // ╭──────────────────────────────────────────────────────────╮
   // │                           Ruby                           │

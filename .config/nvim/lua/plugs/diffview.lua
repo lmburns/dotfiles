@@ -196,7 +196,7 @@ local function init()
     M.setup()
 
     map("n", "<Leader>g;", ":DiffviewFileHistory %<CR>")
-    map("n", "<Leader>gh", ":DiffviewFileHistory<CR>")
+    map("n", "<Leader>gm", ":DiffviewFileHistory<CR>")
     map("n", "<Leader>g.", "DiffviewOpen", {cmd = true})
 
     nvim.autocmd.DiffViewMappings = {

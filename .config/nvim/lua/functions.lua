@@ -1,3 +1,7 @@
+--@module functions
+---@description: Functions/commands that are built to perform one specific task.
+---              They take advantage of utilities and such.
+
 local M = {}
 
 local D = require("dev")
@@ -13,11 +17,11 @@ local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
-local o = vim.opt
 local F = vim.F
 
--- ============================ Commands ============================== [[[
-
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Commands                         │
+-- ╰──────────────────────────────────────────────────────────╯
 command(
     "Grep",
     function(tbl)
@@ -103,12 +107,10 @@ command(
     [[:%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
     {nargs = 0, desc = "Convert snake_case to camelCase"}
 )
--- ]]] === Commands ===
 
--- ============================ Functions ============================= [[[
--- ============================== Syntax ============================== [[[
-map("n", "<Leader>sll", ":syn list")
-map("n", "<Leader>slo", ":verbose hi")
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Syntax                          │
+-- ╰──────────────────────────────────────────────────────────╯
 
 ---Display the syntax stack at current cursor position
 ---@return table?
@@ -145,9 +147,14 @@ command(
     end,
     {desc = "Show highlight group (non-treesitter)"}
 )
--- ]]] === Syntax ===
 
--- ========================== Execute Buffer ========================== [[[
+map("n", "<Leader>sll", ":syn list")
+map("n", "<Leader>slo", ":verbose hi")
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                     Buffer Execution                     │
+-- ╰──────────────────────────────────────────────────────────╯
+
 cmd [[
   function! s:execute_buffer()
     if !empty(expand('%'))
@@ -213,7 +220,6 @@ augroup(
         end
     }
 )
--- ]]] === Execute Buffer ===
 
 function M.execute_macro_over_visual_range()
     print("@" .. fn.getcmdline())
@@ -243,6 +249,7 @@ command(
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Open Links/Files                     │
 -- ╰──────────────────────────────────────────────────────────╯
+
 ---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
 ---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
 ---Generic open function used with other functions
@@ -296,6 +303,7 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Line Delimiter                      │
 -- ╰──────────────────────────────────────────────────────────╯
+
 ---Add a delimiter to the end of the line if the delimiter isn't already present
 ---If the delimiter is present, remove it
 ---@param character string
@@ -322,6 +330,7 @@ map("n", "<C-,>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to e
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                    Insert empty lines                    │
 -- ╰──────────────────────────────────────────────────────────╯
+
 -- arsham/archer.nvim
 ---Insert an empty line `count` lines above the cursor
 ---@param count number
@@ -355,7 +364,7 @@ map(
     "n",
     "zk",
     function()
-        o.opfunc = "v:lua.require'functions'.empty_line_above"
+        vim.o.opfunc = "v:lua.require'functions'.empty_line_above"
         return "g@l"
     end,
     {expr = true, desc = "Insert empty line above"}
@@ -366,15 +375,28 @@ map(
     "zj",
     function()
         -- M.insert_empty_lines(vim.v.count, 0)
-        o.opfunc = "v:lua.require'functions'.empty_line_below"
+        vim.o.opfunc = "v:lua.require'functions'.empty_line_below"
         return "g@l"
     end,
     {expr = true, desc = "Insert empty line below"}
 )
 
--- Not have to wait for normal o/O command
--- map("n", "oa", "<cmd>norm! O<CR>i")
--- map("n", "os", "<cmd>norm! o<CR>i")
+---Run a command like `n`/`N` and center the screen
+---Can be used to just center the screen
+---@param command string? Option command to run
+function M.center_next(command)
+    local view = fn.winsaveview()
+
+    if command then
+        cmd.norm({command, mods = {silent = true}})
+    end
+
+    if view.topline ~= fn.winsaveview().topline then
+        cmd.norm({"zz", mods = {silent = true}, bang = true})
+    end
+
+    -- fn.line("w$") ~= row
+end
 
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()
@@ -394,7 +416,7 @@ function M.tmux_copy_mode_toggle()
     -- opt_local.number = not opt_local.number
     -- opt_local.rnu = not opt_local.rnu
 
-    if o.signcolumn:get() == "no" then
+    if vim.o.signcolumn == "no" then
         vim.opt_local.signcolumn = "yes:1"
     else
         vim.opt_local.signcolumn = "no"
