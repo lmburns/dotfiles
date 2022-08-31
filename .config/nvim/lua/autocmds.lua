@@ -755,13 +755,11 @@ if env.TMUX ~= nil and env.NORENAME == nil then
 end
 -- ]]] === Tmux ===
 
--- === Clear cmd line message === [[[
 do
     local timer
     local timeout = 6000
 
-    -- Automatically clear command-line messages after a few seconds delay
-    -- Source: https://unix.stackexchange.com/a/613645
+    -- Automatically clear command-line messages after a few second delay
     nvim.autocmd.lmb__ClearCliMsgs = {
         event = "CmdlineLeave",
         pattern = ":",
@@ -782,7 +780,6 @@ do
         desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
     }
 end
--- ]]]
 
 -- === Auto Resize on Resize Event === [[[
 do
@@ -844,75 +841,7 @@ a.async_void(
         end
     )
 )()
-
--- nvim.create_autocmd(
---     {"BufNewFile", "BufRead"},
---     {
---         pattern = "*",
---         command = function()
---             require("filetype").resolve()
---         end
---     }
--- )
 -- ]]] === Custom file type ===
-
--- === Custom syntax groups === [[[
-nvim.autocmd.lmb__CommentTitle = {
-    {
-        event = "Syntax",
-        pattern = "*",
-        command = [[syn match cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/ ]] ..
-            [[contained containedin=.*Comment,vimCommentTitle,rustCommentLine ]]
-    },
-    {
-        event = "Syntax",
-        pattern = "*",
-        command = [[syn match myTodo ]] ..
-            [[/\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/]] ..
-                [[ contained containedin=.*Comment.*,vimCommentTitle ]]
-    },
-    {
-        event = "Syntax",
-        pattern = "*",
-        command = [[syn keyword cmTitle contained=Comment]]
-    },
-    {
-        event = "Syntax",
-        pattern = "*",
-        command = [[syn keyword myTodo contained=Comment]]
-    }
-}
-
-hl.all({cmTitle = {link = "vimCommentTitle", default = true}})
--- cmd.hi("def link cmTitle vimCommentTitle")
--- cmd.hi("def link myTodo Todo")
--- cmd.hi("def link cmLineComment Comment")
-
--- ]]] === Custom syntax groups ===
-
--- ======================= CursorLine Control ========================= [[[
----Cursorline highlighting control
----Only have it on in the active buffer
-do
-    local id = utils.create_augroup("lmb__CursorLineControl")
-    local set_cursorline = function(event, value, pattern)
-        nvim.autocmd.add(
-            {
-                event = event,
-                group = id,
-                pattern = pattern,
-                command = function()
-                    ol.cursorline = value
-                end
-            }
-        )
-    end
-
-    set_cursorline("WinLeave", false)
-    set_cursorline("WinEnter", true)
-    set_cursorline("FileType", false, "TelescopePrompt")
-end
--- ]]]
 
 -- ========================== Buffer Reload =========================== [[[
 -- nvim.autocmd.lmb__AutoReloadFile = {

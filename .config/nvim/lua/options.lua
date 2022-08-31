@@ -52,10 +52,9 @@ vim.tbl_map(
         "vimballPlugin",
         "zip",
         "zipPlugin",
-
         "perl_provider",
         "python_provider",
-        "ruby_provider",
+        "ruby_provider"
         -- "python3_provider",
     }
 )
@@ -114,15 +113,14 @@ o.shell = os.getenv("SHELL")
 o.encoding = "utf-8"
 o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
-o.fileformats = list {"unix", "mac", "dos"}
+o.fileformats = {"unix", "mac", "dos"}
 
 -- Settings
 o.path:append("**")
 o.number = true
 o.relativenumber = true
 o.cursorline = true
-o.cursorlineopt = list {"number", "screenline"}
-o.clipboard:append("unnamedplus")
+o.cursorlineopt = {"number", "screenline"}
 
 o.infercase = true -- change case inference with completions
 o.ignorecase = true
@@ -173,7 +171,7 @@ o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\)\s*]]
 --                                          ├───┘
 --                                          └ recognize unordered lists
 
-o.nrformats = list {"octal", "hex", "bin", "unsigned"}
+o.nrformats = {"octal", "hex", "bin", "unsigned"}
 
 o.title = true
 o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
@@ -203,10 +201,10 @@ o.cpoptions:append("A") -- ":write" sets alternate file name
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
 
-o.mouse = "a" -- enable mouse all modes
-o.mousefocus = true
+-- o.mouse = "a" -- enable mouse all modes
+-- o.mousefocus = true
 
-o.backspace = list {"indent", "eol", "start"}
+o.backspace = {"indent", "eol", "start"}
 o.breakindentopt = "sbr" -- shift:2,min:20
 o.smartindent = true
 -- o.copyindent = true
@@ -226,7 +224,7 @@ o.matchtime = 5 -- ms to blink when matching brackets
 -- o.autoread = true
 -- o.autowriteall = true -- automatically :write before running commands and changing files
 
-o.whichwrap:append(list {"<", ">", "h", "l", "[", "]"})
+o.whichwrap:append(list({"<", ">", "h", "l", "[", "]"}))
 o.wrap = true
 o.wrapmargin = 2
 
@@ -276,16 +274,15 @@ if not uv.fs_stat(vim.o.undodir) then
     fn.mkdir(vim.o.undodir, "p")
 end
 
-o.shada =
-    list {
-    "!", -- save and restore global variables starting with uppercase
+o.shada = {
+    "!",     -- save and restore global variables starting with uppercase
     "'1000", -- previously edited files
-    "<50", -- lines saved in each register
-    "s100", -- maximum size of an item in KiB
+    "<50",   -- lines saved in each register
+    "s100",  -- maximum size of an item in KiB
     "/5000", -- search pattern history
     "@1000", -- input line history
     ":5000", -- command line history
-    "h" -- disable `hlsearch` on loading
+    "h"      -- disable `hlsearch` on loading
 }
 o.shadafile = fn.stdpath("data") .. "/shada/main.shada"
 
@@ -413,7 +410,10 @@ if env.DISPLAY and fn.executable("xsel") == 1 then
             ["+"] = {"xsel", "--nodetach", "-i", "-b"},
             ["*"] = {"xsel", "--nodetach", "-i", "-p"}
         },
-        paste = {["+"] = {"xsel", "-o", "-b"}, ["*"] = {"xsel", "-o", "-p"}},
+        paste = {
+            ["+"] = {"xsel", "-o", "-b"},
+            ["*"] = {"xsel", "-o", "-p"},
+        },
         cache_enabled = true
     }
 elseif env.TMUX then
@@ -427,6 +427,7 @@ elseif env.TMUX then
     clipboard.paste["*"] = clipboard.paste["+"]
 end
 
+o.clipboard:append("unnamedplus")
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 

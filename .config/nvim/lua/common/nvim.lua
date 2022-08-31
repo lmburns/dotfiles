@@ -37,6 +37,7 @@ local fn = vim.fn
 ---@field buf Nvim.Buf
 ---@diagnostic disable-next-line:assign-type-mismatch
 local nvim = require("nvim")
+---@diagnostic disable-next-line:assign-type-mismatch
 _G.nvim = require("nvim")
 
 ---Get an autocmd

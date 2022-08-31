@@ -148,9 +148,6 @@ command(
     {desc = "Show highlight group (non-treesitter)"}
 )
 
-map("n", "<Leader>sll", ":syn list")
-map("n", "<Leader>slo", ":verbose hi")
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Buffer Execution                     │
 -- ╰──────────────────────────────────────────────────────────╯

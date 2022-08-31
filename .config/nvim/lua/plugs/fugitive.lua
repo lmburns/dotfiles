@@ -63,20 +63,20 @@ local function init()
     -- How does this work?
     g.nremap = {
         ["d?"] = "d?",
-        dv = "dv",
-        dp = "dp",
-        ds = "ds",
-        dh = "dh",
+        dv = "dv", -- :Gvdiffsplit
+        dp = "dp", -- git diff
+        ds = "ds", -- :Ghdiffsplit
+        dh = "dh", -- :Ghdiffsplit
         dq = "",
         d2o = "d2o",
         d3o = "d3o",
-        dd = "dd",
-        s = "s",
-        u = "u",
-        O = "T",
+        dd = "dd", -- :Gdiffsplit
+        s = "s", -- stage file
+        u = "u", -- unstage file
+        O = "T", -- open file in a new tab
         a = "",
         X = "x",
-        ["-"] = "a",
+        ["-"] = "a", -- stage/unstage
         ["*"] = "",
         ["#"] = "",
         ["<C-W>gf"] = "gF",
@@ -84,7 +84,12 @@ local function init()
         ["]m"] = "]f"
     }
 
-    g.xremap = {s = "S", u = "<C-u>", ["-"] = "a", X = "x"}
+    g.xremap = {
+        s = "S",
+        u = "<C-u>",
+        ["-"] = "a",
+        X = "x",
+    }
 
     augroup(
         "FugitiveCustom",

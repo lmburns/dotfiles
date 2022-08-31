@@ -43,6 +43,15 @@ local opt = {
     ts_config = {
         lua = {"string", "source"}
         -- javascript = {"string", "template_string"}
+    },
+    html_break_line_filetype = {
+        "html",
+        "javascript",
+        "javascriptreact",
+        "svelte",
+        "template",
+        "typescriptreact",
+        "vue"
     }
 }
 

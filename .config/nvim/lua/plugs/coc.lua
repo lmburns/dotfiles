@@ -642,9 +642,9 @@ M.get_lua_runtime = function()
     -- api.nvim_get_runtime_file("", true)
 
     -- This adds 400-500+ files
-    for _, run in pairs(api.nvim_list_runtime_paths()) do
-        add(run)
-    end
+    -- for _, run in pairs(api.nvim_list_runtime_paths()) do
+    --     add(run)
+    -- end
 
     return result
 end
@@ -652,13 +652,10 @@ end
 ---Setup the Sumneko-Coc Lua language-server
 ---Note that the runtime paths here are placed into an array, not a table
 function M.sumneko_ls()
-    -- vim.defer_fn(
-    -- function()
+    -- Workspace
     ---@type string[]
     local library = M.get_config("Lua").workspace.library
 
-    -- NOTE: This doubles the number of files that are checked on startup
-    -- But it allows one to use 'gd' to go to definition
     local runtime = _t(M.get_lua_runtime()):keys()
     library = vim.list_extend(library, runtime)
 
@@ -668,9 +665,12 @@ function M.sumneko_ls()
     end
 
     M.set_config("Lua.workspace", {library = library})
-    -- end,
-    -- 9999
-    -- )
+
+    -- Runtime path
+    local path = vim.split(package.path, ";")
+    table.insert(path, "?.lua")
+    table.insert(path, "?/init.lua")
+    M.set_config("Lua.runtime", {path = path})
 end
 
 -- ========================== Init ==========================

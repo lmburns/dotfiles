@@ -50,6 +50,11 @@
   "pullDiagnostic.onSave": false,
   "pullDiagnostic.workspace": false,
   "inlayHint.filetypes": ["*"],
+  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.enableParameter": true,
+  "inlayHint.typeSeparator": "« ", // "‣
+  "inlayHint.parameterSeparator": "» ",
+  "inlayHint.subSeparator": " ",
   "diagnostic.errorSign": "", //  ••
   "diagnostic.warningSign": "", //  •
   "diagnostic.hintSign": "", // •
@@ -250,7 +255,7 @@
   "rust-analyzer.inlayHints.enable": true,
   "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
   "rust-analyzer.inlayHints.chainingHints.enable": true,
-  "rust-analyzer.inlayHints.closingBraceHints.enable": true,
+  "rust-analyzer.inlayHints.closingBraceHints.enable": false, // Shows things slike 'fn fname'
   "rust-analyzer.inlayHints.closingBraceHints.minLines": 25,
   "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
   "rust-analyzer.inlayHints.lifetimeElisionHints.enable": "skip_trivial",
@@ -258,7 +263,7 @@
   "rust-analyzer.inlayHints.maxLength": 30,
   "rust-analyzer.inlayHints.parameterHints.enable": true,
   "rust-analyzer.inlayHints.reborrowHints.enable": "always",
-  "rust-analyzer.inlayHints.renderColons": true,
+  "rust-analyzer.inlayHints.renderColons": false,
   "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
@@ -272,10 +277,18 @@
   "go.goplsPath": "gopls",
   "go.goplsUseDaemon": false,
   "go.goplsOptions": {
+    "codelenses": {
+      "generate": true,
+      "gc_details": false,
+      "tidy": true
+    },
     "usePlaceholders": true,
     "semanticTokens": true,
     "experimentalPostfixCompletions": true,
     "staticcheck": true,
+    "analyses": {
+      "unusedparams": true
+    },
     "hints": {
       "assignVariableTypes": true,
       "compositeLiteralFields": true,
@@ -332,14 +345,14 @@
   "Lua.hover.viewString": true,
   "Lua.hover.viewNumber": true,
   "Lua.window.statusBar": false,
-  "Lua.window.progressBar": true,
+  "Lua.window.progressBar": false, // FIX: I like having this but somehow it cancels startup
   "Lua.type.castNumberToInteger": true,
   "Lua.semantic.annotation": true,
   "Lua.semantic.variable": true,
   "Lua.semantic.enable": true,
   "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
-  "Lua.diagnostics.workspaceDelay": 1,
+  // "Lua.diagnostics.workspaceDelay": -1,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
@@ -760,87 +773,5 @@
       "args": ["--stdio"],
       "filetypes": ["crystal"]
     }
-    // "lua": {
-    //   "command": "/usr/bin/lua-language-server",
-    //   // "command": "/home/lucas/.config/coc/extensions/coc-lua-data/sumneko-lua-ls/bin/Linux/lua-language-server",
-    //   "filetypes": ["lua"],
-    //   "rootPatterns": [".git/"],
-    //   "settings": {
-    //     "Lua": {
-    //       "workspace": {
-    //         "maxPreload": 10000,
-    //         "preloadFileSize": 10000
-    //         // "checkThirdParty": false,
-    //         // "library": { "/usr/share/nvim/runtime/lua": true }
-    //       },
-    //       "runtime": {
-    //         "version": "LuaJIT"
-    //       },
-    //       "completion": {
-    //         "callSnippet": "Replace",
-    //         "postfix": "."
-    //       },
-    //       "diagnostics": {
-    //         "enable": true,
-    //         "globals": [
-    //           // "dev",
-    //           // "a",
-    //           // "async",
-    //           // "Path",
-    //           // "Job",
-    //           // "List",
-    //           // "ex",
-    //           // "F",
-    //           // "uv",
-    //           // "api",
-    //           // "fn",
-    //           // "cmd",
-    //           // "env",
-    //           // "o",
-    //           // "b",
-    //           // "w",
-    //           // "R",
-    //           // "P",
-    //           // "RELOAD",
-    //           // "BLACKLIST_FT",
-    //           // "packer_plugins",
-    //           // "_t",
-    //           // "hs",
-    //           "vim",
-    //           "nvim",
-    //           "it",
-    //           "describe",
-    //           "before_each",
-    //           "after_each"
-    //         ],
-    //         "disable": [
-    //           "lowercase-global",
-    //           "redundant-parameter",
-    //           "missing-parameter"
-    //         ],
-    //         "neededFileStatus": {
-    //           "different-requires": "None"
-    //         }
-    //       },
-    //       "IntelliSense": {
-    //         "traceLocalSet": true,
-    //         "traceReturn": true,
-    //         "traceBeSetted": true,
-    //         "traceFieldInject": true
-    //       },
-    //       "semantic": {
-    //         "enable": true
-    //       },
-    //       "telemetry": {
-    //         "enable": false
-    //       },
-    //       "window": {
-    //         "progressBar": false,
-    //         "statusBar": false
-    //       }
-    //     }
-    //   },
-    //   "disabledFeatures": ["documentFormatting", "documentRangeFormatting"]
-    // }
   }
 }

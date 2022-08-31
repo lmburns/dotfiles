@@ -20,8 +20,6 @@ if ok then
     impatient.enable_profile()
 end
 
--- vim.cmd [[let $NVIM_COC_LOG_LEVEL='debug']]
-
 require("common.global")
 local utils = require("common.utils")
 local augroup = utils.augroup
@@ -29,7 +27,6 @@ local autocmd = utils.autocmd
 local command = utils.command
 local map = utils.map
 
-local ex = nvim.ex
 local g = vim.g
 local fn = vim.fn
 local uv = vim.loop
@@ -94,7 +91,7 @@ else
     require("plugins").compile()
 end
 
-ex.packadd("cfilter")
+cmd.packadd("cfilter")
 require("mapping")
 require("abbr")
 require("functions")
@@ -103,10 +100,10 @@ require("common.qf")
 require("common.mru")
 require("common.grepper")
 require("common.jump")
+require("plugs.fold")
 
 -- require("common.stl")
 -- require("common.reg")
--- require("plugs.fold")
 
 vim.notify = function(...)
     vim.notify = require("notify")
@@ -140,27 +137,27 @@ vim.schedule(
                     }
                 )
 
-                ex.syntax("on")
-                ex.filetype("on")
-                ex.doau("filetypedetect BufRead")
+                cmd.syntax("on")
+                cmd.filetype("on")
+                cmd("doau filetypedetect BufRead")
             end,
             15
         )
 
         -- === Folding
         -- Deferring this function will override any modeline with foldelevel=0
-        vim.defer_fn(
-            function()
-                require("plugs.fold")
-            end,
-            200
-        )
+        -- vim.defer_fn(
+        --     function()
+        --         require("plugs.fold")
+        --     end,
+        --     200
+        -- )
 
         -- === Clipboard
         vim.defer_fn(
             function()
                 g.loaded_clipboard_provider = nil
-                ex.runtime("autoload/provider/clipboard.vim")
+                cmd.runtime("autoload/provider/clipboard.vim")
                 require("plugs.neoclip") -- Needs to be loaded after clipboard is set
 
                 if fn.exists("##ModeChanged") == 1 then
@@ -170,20 +167,20 @@ vim.schedule(
                             event = "ModeChanged",
                             pattern = "*:s",
                             command = function()
-                                ex.set("clipboard=")
+                                vim.o.clipboard = nil
                             end
                         },
                         {
                             event = "ModeChanged",
                             pattern = "s:*",
                             command = function()
-                                ex.set("clipboard=unnamedplus")
+                                vim.o.clipboard = "unnamedplus"
                             end
                         }
                     )
                 else
-                    ex.packadd("nvim-hclipboard")
-                    require("hclipboard").start()
+                    -- cmd.packadd("nvim-hclipboard")
+                    -- require("hclipboard").start()
                 end
 
                 augroup(
@@ -192,15 +189,15 @@ vim.schedule(
                         event = "BufWritePost",
                         pattern = {"*/plugins.lua", "*/common/control.lua"},
                         command = function()
-                            ex.source("<afile>")
-                            ex.PackerCompile()
+                            cmd.source("<afile>")
+                            cmd.PackerCompile()
                         end,
                         description = "Source plugins file"
                     }
                 )
 
                 -- Highlight syntax
-                if fn.exists("##SearchWrapped") == 1 then
+                if nvim.exists("##SearchWrapped") then
                     augroup(
                         "SearchWrappedHighlight",
                         {
@@ -300,11 +297,11 @@ vim.schedule(
                     }
                 )
 
-                ex.packadd("coc-kvs")
-                ex.packadd("coc.nvim")
-                ex.packadd("nvim-autopairs")
+                cmd.packadd("coc-kvs")
+                cmd.packadd("coc.nvim")
+                cmd.packadd("nvim-autopairs")
             end,
-            300
+            1
         )
     end
 )

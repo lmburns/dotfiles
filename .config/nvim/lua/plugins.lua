@@ -193,7 +193,7 @@ return packer.startup(
             )
 
             -- Cache startup
-            use({"lewis6991/impatient.nvim", rocks = "mpack"})
+            use({"lewis6991/impatient.nvim"})
 
             -- Faster version of filetype.vim
             -- use({"nathom/filetype.nvim", conf = "plugs.filetype"})
@@ -239,12 +239,21 @@ return packer.startup(
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
             use({"aserowy/tmux.nvim", conf = "tmux"})
             use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
-            use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
+            -- use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
             -- use({"gbprod/yanky.nvim"})
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
-            use({"dstein64/vim-startuptime", cmd = "StartupTime"})
+            use(
+                {
+                    "dstein64/vim-startuptime",
+                    cmd = "StartupTime",
+                    config = function()
+                        vim.g.startuptime_tries = 15
+                        vim.g.startuptime_exe_args = {"+let g:auto_session_enabled = 0"}
+                    end
+                }
+            )
             use(
                 {
                     "AndrewRadev/linediff.vim",
@@ -900,7 +909,7 @@ return packer.startup(
                     "vuki656/package-info.nvim",
                     requires = "MunifTanjim/nui.nvim",
                     event = "BufRead package.json",
-                    after = "nui.nvim",
+                    -- after = "nui.nvim",
                     conf = "package_info"
                 }
             )
@@ -1505,7 +1514,8 @@ return packer.startup(
                     conf = "plugs.diffview",
                     keys = {
                         {"n", "<Leader>g;"},
-                        {"n", "<Leader>g."}
+                        {"n", "<Leader>g."},
+                        {"n", "<Leader>gh"}
                     }
                 }
             )

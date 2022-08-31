@@ -150,7 +150,7 @@ function M.format_selected(mode, save)
                 coc.a2sync(
                 "hasProvider",
                 {
-                    F.tern(mode, "formatRange", "format")
+                    mode and "formatRange" or "format"
                 },
                 2000
             )
@@ -261,7 +261,7 @@ local function init()
         stdin = 1
     }
 
-    g.neoformat_enabled_lua = {"luafmtext", "stylua"}
+    g.neoformat_enabled_lua = {"luafmtext", "stylua", "luaformat"}
 
     map("n", ";ff", [[:lua require('plugs.format').format_doc()<CR>]])
     map("x", ";ff", [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]])

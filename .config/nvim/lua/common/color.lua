@@ -35,6 +35,9 @@ local api = {
 ---@field standout boolean
 ---@field underline boolean
 ---@field undercurl boolean
+---@field underdouble boolean
+---@field underdotted boolean
+---@field underdashed boolean
 ---@field strikethrough boolean
 ---@field italic boolean
 ---@field reverse boolean
@@ -84,7 +87,7 @@ local function stringify_attrs(group)
 end
 
 ---Return a highlight group as a fallback
----@param groups table<Color>|Color @highlight group list
+---@param groups Color[]|Color @highlight group list
 ---@return ColorFormat
 local function fallback(groups)
     groups = type(groups) == "string" and {groups} or groups
@@ -102,7 +105,7 @@ end
 
 ---Get a highlight group
 ---@param group Color @highlight group to try and get
----@param fallbacks table<Color>|Color @highlight group list
+---@param fallbacks Color[]|Color @highlight group list
 ---@return ColorFormat
 local function get_hl(group, fallbacks)
     local ok, hl = pcall(api.get, group, true)
@@ -225,7 +228,10 @@ function M.parse(hl)
         "italic",
         "bold",
         "underline",
+        "underdouble",
         "undercurl",
+        "underdotted",
+        "underdashed",
         "strikethrough",
         "reverse",
         "standout"
@@ -266,7 +272,7 @@ function M.parse(hl)
     end
 
     if type(hl.foreground) == "function" then
-        hl.foreground = hl.fg()
+        hl.foreground = hl.foreground()
     end
 
     -- Background
@@ -279,7 +285,7 @@ function M.parse(hl)
     end
 
     if type(hl.background) == "function" then
-        hl.background = hl.bg()
+        hl.background = hl.background()
     end
 
     def.foreground = hl.fg or inherit.foreground or "NONE"
@@ -288,7 +294,10 @@ function M.parse(hl)
     def.italic = F.if_nil(hl.italic, inherit.italic) or false
     def.bold = F.if_nil(hl.bold, inherit.bold) or false
     def.underline = F.if_nil(hl.underline, inherit.underline) or false
+    def.underdouble = F.if_nil(hl.underdouble, inherit.underdouble) or false
     def.undercurl = F.if_nil(hl.undercurl, inherit.undercurl) or false
+    def.underdotted = F.if_nil(hl.underdotted, inherit.underdotted) or false
+    def.underdashed = F.if_nil(hl.underdashed, inherit.underdashed) or false
     def.strikethrough = F.if_nil(hl.strikethrough, inherit.strikethrough) or false
     def.reverse = F.if_nil(hl.reverse, inherit.reverse) or false
     def.standout = F.if_nil(hl.standout, inherit.standout) or false

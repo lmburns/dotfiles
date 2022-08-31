@@ -956,6 +956,13 @@ M.ansi =
     }
 )
 
+---Remove ANSI escape sequences from a string
+---@param str string
+---@return string, integer
+M.remove_ansi = function(str)
+  return str:gsub("\x1b%[[%d;]*%d[Km]", "")
+end
+
 ---Return a 24 byte colored string
 local function color2csi24b(color_num, fg)
     local r = math.floor(color_num / 2 ^ 16)

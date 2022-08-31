@@ -134,22 +134,23 @@ end
 ---@param width number
 ---@return table
 local function handler(virt_text, lnum, end_lnum, width, truncate)
+    local strwidth = api.nvim_strwidth
     local new_virt_text = {}
     local percentage = (" %s"):format(M.percentage(lnum, end_lnum))
     local suffix = ("  %d "):format(end_lnum - lnum)
-    local target_width = width - api.nvim_strwidth(suffix) - api.nvim_strwidth(percentage)
+    local target_width = width - strwidth(suffix) - strwidth(percentage)
     local curr_width = 0
 
     for _, chunk in ipairs(virt_text) do
         local chunk_text = chunk[1]
-        local chunk_width = api.nvim_strwidth(chunk_text)
+        local chunk_width = strwidth(chunk_text)
         if target_width > curr_width + chunk_width then
             table.insert(new_virt_text, chunk)
         else
             chunk_text = truncate(chunk_text, target_width - curr_width)
             local hl_group = chunk[2]
             table.insert(new_virt_text, {chunk_text, hl_group})
-            chunk_width = api.nvim_strwidth(chunk_text)
+            chunk_width = strwidth(chunk_text)
             -- str width returned from truncate() may less than 2nd argument, need padding
             if curr_width + chunk_width < target_width then
                 suffix = suffix .. (" "):rep(target_width - curr_width - chunk_width)
@@ -162,8 +163,7 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
     local foldlvl = ("+"):rep(v.foldlevel)
     local filler_right = ("•"):rep(3)
     -- This extra 1 comes from the space added on the line below the following
-    local filler =
-        ("•"):rep(target_width - curr_width - api.nvim_strwidth(foldlvl) - api.nvim_strwidth(filler_right) - 1)
+    local filler = ("•"):rep(target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1)
     table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
     table.insert(new_virt_text, {foldlvl, "UFOFoldLevel"})
     table.insert(new_virt_text, {percentage, "ErrorMsg"})
@@ -190,7 +190,7 @@ M.setup_ufo = function()
             -- After the buffer is displayed (opened for the first time), close the
             -- folds whose range with `kind` field is included in this option.
             -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
-            close_fold_kinds = {"imports", --[[ "comment" ]]},
+            close_fold_kinds = {"imports"}, -- comment
             preview = {
                 win_config = {
                     border = style.current.border,
@@ -294,29 +294,6 @@ local function init()
 
     map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
     map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
-
-    -- local parsers = require("nvim-treesitter.parsers")
-    -- local configs = parsers.get_parser_configs()
-    --
-    -- augroup(
-    --     "lmb__TreesitterFold",
-    --     {
-    --         event = "FileType",
-    --         pattern = table.concat(
-    --             vim.tbl_map(
-    --                 function(ft)
-    --                     return configs[ft].filetype or ft
-    --                 end,
-    --                 parsers.available_parsers()
-    --             ),
-    --             ","
-    --         ),
-    --         command = function()
-    --             vim.opt_local.foldmethod = "expr"
-    --             vim.opt_local.foldexpr = "nvim_treesitter#foldexpr()"
-    --         end
-    --     }
-    -- )
 end
 
 init()

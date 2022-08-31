@@ -1,0 +1,35 @@
+global !p
+# Capitalize the first letter without affecting the rest of the letters
+def capitalize_first(word):
+	if(word):
+		word = word[0].upper() + word[1:]
+	return word
+endglobal
+
+# `!p snip.rv=capitalize_first(t[1])`
+
+snippet rfk "React functional component (no PropType)" b
+import React, {useState} from 'react'
+
+interface ${TM_FILENAME_BASE}Props {
+	$1
+}
+
+export const ${TM_FILENAME_BASE}: React.FC<${TM_FILENAME_BASE}Props> = (props: $2) => {
+	return (
+		<div>
+			${3:<p>Body</p>}
+		</div>
+	)
+}
+endsnippet
+
+snippet rpc "React PureComponent" b
+import * as React from 'react'
+
+export class $1 extends React.PureComponent {
+	render() {
+		return ($2);
+	}
+}
+endsnippet

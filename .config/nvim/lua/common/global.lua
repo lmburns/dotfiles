@@ -73,7 +73,6 @@ _G.Promise = require("promise")
 _G.async = require("async")
 _G.await = require("async").wait
 
----@class Nvim
 _G.nvim = require("nvim")
 -- _G.ex = nvim.ex -- nvim ex functions e.g., PackerInstall()
 

@@ -29,14 +29,46 @@ function M.setup()
                     color = "#ea6962",
                     alt = {"FIXME", "BUG", "FIXIT", "FIX", "ISSUE"}
                 },
-                TODO = {icon = " ", color = "#d16d9e"},
-                TEST = {icon = " ", color = "#819c3b"},
-                HACK = {icon = " ", color = "#fe8019"},
-                WARN = {icon = " ", color = "#EC5f67", alt = {"WARNING", "XXX"}},
-                TIP = {icon = " ", color = "#9a9a9a", alt = {"HINT"}},
-                FEATURE = {icon = " ", color = "#957FB8", alt = {"NEW"}},
-                MAYBE = {icon = " ", color = "#FF5D62", alt = {"POSSIBLE", "TODO_MAYBE"}},
-                DONE = {icon = " ", color = "#98BB6C", alt = {"FINISHED"}},
+                TODO = {
+                    icon = " ",
+                    color = "#d16d9e",
+                    alt = {"TODOS"},
+                },
+                TEST = {
+                    icon = " ",
+                    color = "#819c3b",
+                    alt = {"TESTING"},
+                },
+                HACK = {
+                    icon = " ",
+                    color = "#fe8019",
+                    alt = {},
+                },
+                WARN = {
+                    icon = " ",
+                    color = "#EC5f67",
+                    alt = {"WARNING", "XXX"},
+                },
+                TIP = {
+                    icon = " ",
+                    color = "#9a9a9a",
+                    alt = {"HINT"},
+                },
+                FEATURE = {
+                    icon = " ",
+                    color = "#957FB8",
+                    alt = {"NEW"},
+                },
+                MAYBE = {
+                    icon = " ",
+                    color = "#FF5D62",
+                    alt = {"POSSIBLY", "TODO_MAYBE"},
+                },
+                DONE = {
+                    icon = " ",
+                    color = "#98BB6C",
+                    alt = {"FINISHED"},
+                },
                 -- ["???"] = {icon = "", color = "#38A89D"},
                 CHANGED = {
                     icon = " ",

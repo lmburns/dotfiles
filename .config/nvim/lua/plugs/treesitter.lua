@@ -10,6 +10,7 @@ local utils = require("common.utils")
 local map = utils.map
 local hl = require("common.color")
 
+-- local theme = require("kimbox.colors")
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -18,6 +19,7 @@ local fn = vim.fn
 local api = vim.api
 local F = vim.F
 
+local custom_captures
 local ts_hl_disabled
 local ft_enabled
 local queries
@@ -56,7 +58,6 @@ function M.hijack_synset()
     local lcount = api.nvim_buf_line_count(bufnr)
     local bytes = api.nvim_buf_get_offset(bufnr, lcount)
 
-    -- bytes / lcount < 500 LGTM :)
     if bytes / lcount < 500 then
         if ft_enabled[ft] then
             configs.reattach_module("highlight", bufnr)
@@ -86,10 +87,12 @@ M.setup_hlargs = function()
         paint_arg_usages = true,
         hl_priority = 10000,
         excluded_argnames = {
-            declarations = {},
+            declarations = {"use", "use_rocks", "_"},
             usages = {
-                python = {"self", "cls"},
-                lua = {"self"}
+                python = {"cls", "self"},
+                go = {"_"},
+                rust = {"_", "self"},
+                lua = {"_", "self", "use", "use_rocks"}
             }
         },
         performance = {
@@ -212,21 +215,21 @@ M.setup_aerial = function()
             -- This can be a filetype map (see :help aerial-filetype-map)
             -- To see all available values, see :help SymbolKind
             -- FIX: Why are only functions, classes, and impls shown?
-            filter_kind = false,
-            -- filter_kind = {
-            --     "Class",
-            --     "Constructor",
-            --     "Enum",
-            --     "Function",
-            --     "Interface",
-            --     "Module",
-            --     "Method",
-            --     "Struct",
-            --     "Type",
-            --     "Field",
-            --     "Variable",
-            --     "Array"
-            -- },
+            -- filter_kind = false,
+            filter_kind = {
+                "Class",
+                "Constructor",
+                "Enum",
+                "Function",
+                "Interface",
+                "Module",
+                "Method",
+                "Struct",
+                "Type",
+                "Field",
+                -- "Variable",
+                "Array"
+            },
             -- Enum: split_width, full_width, last, none
             -- Determines line highlighting mode when multiple splits are visible.
             -- split_width   Each open window will have its cursor location marked in the
@@ -365,35 +368,6 @@ M.setup_aerial = function()
         }
     )
 
-    -- Use 'o' to open to the function, not <CR>
-    -- local keys = require("aerial.bindings").keys
-    -- local dev = require("dev")
-
-    -- local cr_idx =
-    --     dev.vec_indexof(
-    --     dev.map(
-    --         keys,
-    --         function(val)
-    --             return val[1]
-    --         end
-    --     ),
-    --     "<CR>"
-    -- )
-    --
-    -- local o_idx =
-    --     dev.vec_indexof(
-    --     dev.map(
-    --         keys,
-    --         function(val)
-    --             return F.if_nil(val[1][1], val[1])
-    --         end
-    --     ),
-    --     "o"
-    -- )
-    --
-    -- keys[cr_idx][1] = "o"
-    -- keys[o_idx][1][1] = "<CR>"
-
     local ts_langs = require("aerial.backends.treesitter.language_kind_map")
 
     -- Would be nice to get this to work
@@ -407,14 +381,6 @@ M.setup_aerial = function()
         struct_item = "Struct",
         trait_item = "Interface"
     }
-
-    -- ts_langs.rescript = {
-    --     ["function"] = "Function",
-    --     module_declaration = "Module",
-    --     type_declaration = "Type",
-    --     type_annotation = "Interface",
-    --     external_declaration = "Interface"
-    -- }
 
     wk.register(
         {
@@ -576,6 +542,7 @@ M.setup_treesurfer = function()
             "function_declaration",
             "function_item",
             "method_definition", -- Typescript + others
+            "macro_definition",
             "closure_expression",
             "if_statement",
             "if_expression",
@@ -592,6 +559,7 @@ M.setup_treesurfer = function()
             "enum_item",
             "class_declaration",
             "class_name",
+            "impl_item",
             "try_statement",
             "catch_clause"
         }
@@ -625,6 +593,7 @@ M.setup_treesurfer = function()
                 ["while_statement"] = "菱",
                 ["switch_statement"] = "",
                 ["match_expression"] = "",
+                ["macro_definition"] = "",
                 ["closure_expression"] = "",
                 ["function_item"] = "",
                 ["function_definition"] = "",
@@ -634,10 +603,11 @@ M.setup_treesurfer = function()
                 ["let_declaration"] = "",
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
-                ["field_declaration"] = "",
                 ["enum_variant"] = "",
+                ["field_declaration"] = "",
                 ["class_declaration"] = "",
                 ["class_name"] = "",
+                ["impl_item"] = "ﴯ",
                 ["try_statement"] = "",
                 ["catch_clause"] = ""
             }
@@ -793,14 +763,7 @@ M.setup = function()
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
             additional_vim_regex_highlighting = {"perl"},
-            -- Highlight the @foo.bar capture group with the "Identifier" highlight group.
-            custom_captures = {
-                ["todo"] = "Todo",
-                ["require_call"] = "RequireCall",
-                ["function.call"] = "TSFunction",
-                ["function.bracket"] = "Type",
-                ["namespace.type"] = "TSNamespaceType"
-            }
+            custom_captures = custom_captures
         },
         autotag = {enable = true},
         autopairs = {
@@ -871,7 +834,7 @@ M.setup = function()
                 svelte = "<!-- %s -->",
                 typescript = "// %s",
                 vim = '" %s',
-                vue = "<!-- %s -->",
+                vue = "<!-- %s -->"
             }
         },
         refactor = {
@@ -899,7 +862,36 @@ M.setup = function()
             extended_mode = true,
             max_file_lines = 1500,
             disable = {"html", "help", "comment", "log", "gitignore", "markdown"}
-            -- colors = {}
+            -- colors = {
+            --     theme.red,
+            --     theme.magenta,
+            --     theme.orange,
+            --     theme.green,
+            --     theme.yellow,
+            --     theme.aqua,
+            --     theme.blue,
+            --     theme.purple,
+            --     theme.sea_green,
+            --     theme.morning_blue,
+            --     theme.deep_lilac,
+            --     theme.vista_blue,
+            --     theme.wave_red,
+            -- },
+            -- termcolors = {
+            --     "Red",
+            --     "Green",
+            --     "Yellow",
+            --     "Blue",
+            --     "Magenta",
+            --     "Cyan",
+            --     "White",
+            --     "Red",
+            --     "Green",
+            --     "Yellow",
+            --     "Blue",
+            --     "Magenta",
+            --     "Cyan",
+            -- },
         },
         textobjects = {
             lsp_interop = {enable = false},
@@ -1135,6 +1127,17 @@ local function init()
     cmd.packadd("nvim-treesitter")
     cmd.packadd("nvim-treesitter-textobjects")
 
+    custom_captures =
+        _t(
+        {
+            ["todo"] = "Todo",
+            ["require_call"] = "RequireCall",
+            ["function.call"] = "TSFunction",
+            ["function.bracket"] = "Type",
+            ["namespace.type"] = "TSNamespaceType"
+        }
+    )
+
     ts_hl_disabled =
         _t(
         {
@@ -1156,9 +1159,9 @@ local function init()
     M.install_extra_parsers()
     local conf = M.setup()
 
+    require("nvim-treesitter.highlight").set_custom_captures(custom_captures)
     configs.setup(conf)
 
-    -- cmd("au! NvimTreesitter FileType *")
     -- M.setup_comment_frame()
     -- M.setup_context()
 
@@ -1281,9 +1284,11 @@ local function init()
     map("n", "vx", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
 
+    map("n", "<Leader>sh", "TSHighlightCapturesUnderCursor", {cmd = true, desc = "Highlight capture group"})
+
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
-    local hl_disabled = F.tern(type(cfhl) == "function", ts_hl_disabled, cfhl)
+    local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
     ft_enabled = {telescope = true}
     for _, lang in ipairs(conf.ensure_installed) do
         if not vim.tbl_contains(hl_disabled, lang) then

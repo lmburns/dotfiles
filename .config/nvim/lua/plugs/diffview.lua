@@ -28,6 +28,12 @@ M.setup = function()
             fold_closed = "",
             fold_open = ""
         },
+        view = {
+            merge_tool = {
+                layout = "diff_3_mixed",
+                disable_diagnostics = true
+            }
+        },
         file_panel = {
             listing_style = "tree", -- One of 'list' or 'tree'
             win_config = {
@@ -75,6 +81,7 @@ M.setup = function()
             -- Default args prepended to the arg-list for the listed commands
             DiffviewOpen = {},
             DiffviewFileHistory = {}
+            -- DiffviewFileHistory = { "%" }
         },
         hooks = {
             ---@param view StandardView
@@ -111,7 +118,6 @@ M.setup = function()
             end,
             diff_buf_read = function(bufnr)
                 utils.set_cursor(0, 1)
-                -- Disable some performance heavy stuff in long files.
                 if api.nvim_buf_line_count(bufnr) >= 2500 then
                     cmd.IndentBlanklineDisable()
                 end
@@ -129,7 +135,8 @@ M.setup = function()
                 ["<C-w>gf"] = actions.goto_file_tab, -- Open the file in a new tabpage
                 ["<leader>e"] = actions.focus_files, -- Bring focus to the files panel
                 ["<leader>b"] = actions.toggle_files, -- Toggle the files panel.
-                ["?"] = "<Cmd>h diffview-maps-view<CR>"
+                ["?"] = "<Cmd>h diffview-maps-view<CR>",
+                ["qq"] = "<Cmd>DiffviewClose<CR>"
             },
             file_panel = {
                 ["j"] = actions.next_entry, -- Bring the cursor to the next file entry
@@ -156,7 +163,8 @@ M.setup = function()
                 ["f"] = actions.toggle_flatten_dirs, -- Flatten empty subdirectories in tree listing style.
                 ["<leader>e"] = actions.focus_files,
                 ["<leader>b"] = actions.toggle_files,
-                ["?"] = "<Cmd>h diffview-maps-file-panel<CR>"
+                ["?"] = "<Cmd>h diffview-maps-file-panel<CR>",
+                ["qq"] = "<Cmd>DiffviewClose<CR>"
             },
             file_history_panel = {
                 ["g!"] = actions.options, -- Open the option panel
@@ -181,7 +189,8 @@ M.setup = function()
                 ["<C-w>gf"] = actions.goto_file_tab,
                 ["<leader>e"] = actions.focus_files,
                 ["<leader>b"] = actions.toggle_files,
-                ["?"] = "<Cmd>h diffview-maps-file-history-panel<CR>"
+                ["?"] = "<Cmd>h diffview-maps-file-history-panel<CR>",
+                ["qq"] = "<Cmd>DiffviewClose<CR>"
             },
             option_panel = {
                 ["<tab>"] = actions.select_entry,
@@ -195,18 +204,18 @@ end
 local function init()
     M.setup()
 
-    map("n", "<Leader>g;", ":DiffviewFileHistory %<CR>")
-    map("n", "<Leader>gm", ":DiffviewFileHistory<CR>")
+    map("n", "<Leader>g;", "DiffviewFileHistory %", {cmd = true})
+    map("n", "<Leader>gh", "DiffviewFileHistory", {cmd = true})
     map("n", "<Leader>g.", "DiffviewOpen", {cmd = true})
 
-    nvim.autocmd.DiffViewMappings = {
-        event = "FileType",
-        pattern = {"DiffviewFiles", "DiffviewFileHistory"},
-        command = function()
-            local bufnr = nvim.buf.nr()
-            map("n", "qq", "DiffviewClose", {cmd = true, buffer = bufnr})
-        end
-    }
+    -- nvim.autocmd.DiffViewMappings = {
+    --     event = "FileType",
+    --     pattern = {"DiffviewFiles", "DiffviewFileHistory"},
+    --     command = function()
+    --         local bufnr = nvim.buf.nr()
+    --         map("n", "qq", "DiffviewClose", {cmd = true, buffer = bufnr})
+    --     end
+    -- }
 end
 
 init()

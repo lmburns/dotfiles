@@ -24,43 +24,43 @@ settings.tabsMRUOrder = false;
 
 // "border: solid 3px #552a48; color:#efe1eb; background: none; background-color: #552a48;"
 api.Hints.style(
-  "padding: 1px; color:#ddc7a1; background: none; background-color: #b16286"
+  'padding: 1px; color:#ddc7a1; background: none; background-color: #b16286'
 );
 
 api.Hints.style(
-  "div{color:#ddc7a1; background: none; background-color: #7daea3;} div.begin{color:#ea6962;}",
-  "text"
+  'div{color:#ddc7a1; background: none; background-color: #7daea3;} div.begin{color:#ea6962;}',
+  'text'
 );
 
 // Emoji
-api.iunmap(":");
+api.iunmap(':');
 // Baidu search
-api.unmap("ob");
+api.unmap('ob');
 
 // Left move tab
-api.map("h", "E");
+api.map('h', 'E');
 // Right move tab
-api.map("l", "R");
+api.map('l', 'R');
 
 // Backward history
-api.map("H", "S");
+api.map('H', 'S');
 // Forward history
-api.map("L", "D");
+api.map('L', 'D');
 
 // Up
-api.map("K", "u");
+api.map('K', 'u');
 // Down
-api.map("J", "d");
+api.map('J', 'd');
 
 // Close tab
-api.map("D", "x");
+api.map('D', 'x');
 
-api.mapkey("d", "#3Close current tab", function () {
-  api.RUNTIME("closeTab");
+api.mapkey('d', '#3Close current tab', function () {
+  api.RUNTIME('closeTab');
 });
 
-api.mapkey("u", "#3Restore closed tab", function () {
-  api.RUNTIME("openLast");
+api.mapkey('u', '#3Restore closed tab', function () {
+  api.RUNTIME('openLast');
 });
 
 // Scroll Page Down/Up
@@ -72,8 +72,8 @@ api.mapkey("u", "#3Restore closed tab", function () {
 // });
 
 // Next/Prev Page
-api.map("]", "]]");
-api.map("[", "[[");
+api.map(']', ']]');
+api.map('[', '[[');
 
 // api.mapkey(
 //   "K",
@@ -83,18 +83,18 @@ api.map("[", "[[");
 // api.mapkey("J", "#1Click on the next link on current page", api.nextPage);
 
 // Move Tab Left/Right
-api.map(">", ">>");
-api.map("<", "<<");
+api.map('>', '>>');
+api.map('<', '<<');
 
 // cmap("<Ctrl-n>", "<Tab>");
 // cmap("<Ctrl-p>", "<Shift-Tab>");
 
-api.mapkey("T", "Choose a tab with omnibar", function () {
-  api.Front.openOmnibar({ type: "Tabs" });
+api.mapkey('T', 'Choose a tab with omnibar', function () {
+  Front.openOmnibar({ type: 'Tabs' });
 });
 
-api.mapkey("gt", "#8Open a URL", function () {
-  api.Front.openOmnibar({ type: "URLs", extra: "getAllSites" });
+api.mapkey('gt', '#8Open a URL', function () {
+  Front.openOmnibar({ type: 'URLs', extra: 'getAllSites' });
 });
 
 // api.mapkey("t", "#3Choose a tab", function () {
