@@ -30,21 +30,14 @@ local function wrap_targets(targets)
         }
     end
     -- local indir = setmetatable({}, zero_jump_scores)
-    return {
-        jump_targets = targets,
-        indirect_jump_targets = indir
-    }
+    return {jump_targets = targets, indirect_jump_targets = indir}
 end
 
 local function treesitter_filter_window(node, contexts, nodes_set)
     local context = contexts[1].contexts[1]
     local line, col, start = node:start()
     if line <= context.bot_line and line >= context.top_line then
-        nodes_set[start] = {
-            line = line,
-            column = col + 1,
-            window = 0
-        }
+        nodes_set[start] = {line = line, column = col + 1, window = 0}
     end
 end
 
@@ -106,12 +99,7 @@ function M.hint_textobjects(query, opts)
             query and query.outers,
             query and query.queryfile
         ),
-        setmetatable(
-            opts or {},
-            {
-                __index = require("hop").opts
-            }
-        )
+        setmetatable(opts or {}, {__index = require("hop").opts})
     )
 end
 
@@ -145,12 +133,7 @@ local function init()
         "n",
         "f",
         function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true
-                }
-            )
+            hop.hint_char1({direction = hint_direction.AFTER_CURSOR, current_line_only = true})
         end
     )
 
@@ -159,12 +142,7 @@ local function init()
         "n",
         "F",
         function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true
-                }
-            )
+            hop.hint_char1({direction = hint_direction.BEFORE_CURSOR, current_line_only = true})
         end
     )
 
@@ -203,12 +181,7 @@ local function init()
         "x",
         "f",
         function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true
-                }
-            )
+            hop.hint_char1({direction = hint_direction.AFTER_CURSOR, current_line_only = true})
         end
     )
 
@@ -217,12 +190,7 @@ local function init()
         "x",
         "F",
         function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true
-                }
-            )
+            hop.hint_char1({direction = hint_direction.BEFORE_CURSOR, current_line_only = true})
         end
     )
 

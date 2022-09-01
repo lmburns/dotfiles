@@ -9,7 +9,6 @@ local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
 local disposable = require("common.disposable")
-local dev = require("dev")
 
 local wk = require("which-key")
 local uva = require("uva")
@@ -254,7 +253,7 @@ end
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
----@param modes string|table<string>: Modes the keymapping should be bound
+---@param modes string|string[]: Modes the keymapping should be bound
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
@@ -384,7 +383,7 @@ M.bmap = function(bufnr, modes, lhs, rhs, opts)
 end
 
 ---Delete a keymapping
----@param modes string|table<string>: Modes to be deleted
+---@param modes string|string[]: Modes to be deleted
 ---@param lhs string: Keybinding that is to be deleted
 ---@param opts DelMapArgs: Options given to keybindings
 M.del_keymap = function(modes, lhs, opts)
@@ -461,7 +460,7 @@ end
 ---Debug helper
 ---@vararg any: Anything to dump
 M.dump = function(...)
-    local objects = vim.tbl_map(dev.inspect, {...})
+    local objects = vim.tbl_map(D.inspect, {...})
     ---@cast objects any[]
     print(unpack(objects))
 end
@@ -505,7 +504,7 @@ end
 ---@field preview function perview callback for inccomand
 
 ---Create an `nvim` command
----@param name any
+---@param name string
 ---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts CommandOpts
 M.command = function(name, rhs, opts)
@@ -870,7 +869,7 @@ end
 ---Close all floating windows
 M.close_all_floating_wins = function()
     for _, win in ipairs(api.nvim_list_wins()) do
-        if dev.is_floating_window(win) then
+        if D.is_floating_window(win) then
             api.nvim_win_close(win, false)
         end
     end
@@ -878,7 +877,7 @@ end
 
 ---Focus the floating window
 M.focus_floating_win = function()
-    if dev.is_floating_window(fn.win_getid()) then
+    if D.is_floating_window(fn.win_getid()) then
         cmd.wincmd("p")
         return
     end
@@ -960,7 +959,7 @@ M.ansi =
 ---@param str string
 ---@return string, integer
 M.remove_ansi = function(str)
-  return str:gsub("\x1b%[[%d;]*%d[Km]", "")
+    return str:gsub("\x1b%[[%d;]*%d[Km]", "")
 end
 
 ---Return a 24 byte colored string
@@ -1074,7 +1073,7 @@ end
 ---Close a diff file
 M.close_diff = function()
     local winids =
-        dev.filter(
+        D.filter(
         api.nvim_tabpage_list_wins(0),
         function(winid)
             return vim.wo[winid].diff

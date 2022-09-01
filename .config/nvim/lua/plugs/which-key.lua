@@ -181,14 +181,7 @@ local function init()
     -- <F-3> to show which-key help in any relevant mode
     local _modes = {"n", "i", "t", "v", "x", "o"}
     for m = 1, #_modes do
-        wk.register(
-            {
-                ["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}
-            },
-            {
-                mode = _modes[m]
-            }
-        )
+        wk.register({["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}}, {mode = _modes[m]})
     end
 
     -- Workaround until custom operator gets fixed

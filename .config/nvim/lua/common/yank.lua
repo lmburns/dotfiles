@@ -4,7 +4,6 @@ local utils = require("common.utils")
 local augroup = utils.augroup
 
 local api = vim.api
-local fn = vim.fn
 
 local last_wv
 local winid
@@ -12,7 +11,7 @@ local bufnr
 local report
 
 function M.wrap(suffix)
-    if api.nvim_get_mode().mode == "n" then
+    if utils.mode() == "n" then
         M.set_wv()
     else
         M.clear_wv()
@@ -22,9 +21,9 @@ end
 
 ---Set window view options
 function M.set_wv()
-    last_wv = fn.winsaveview()
     winid = api.nvim_get_current_win()
     bufnr = api.nvim_get_current_buf()
+    last_wv = utils.save_win_positions(bufnr)
     report = vim.o.report
     -- skip `update_topline_redraw` in `op_yank_reg` caller
     vim.o.report = 65535
@@ -47,7 +46,7 @@ function M.restore()
         vim.v.event.operator == "y" and last_wv and api.nvim_get_current_win() == winid and
             api.nvim_get_current_buf() == bufnr
      then
-        fn.winrestview(last_wv)
+        last_wv.restore()
     end
     M.clear_wv()
 end
@@ -58,7 +57,7 @@ end
 ---@param level number?
 ---@param opts table?
 function M.yank_reg(regname, context, level, opts)
-    fn.setreg(regname, context)
+    nvim.reg[regname] = context
     vim.notify(context, level, opts)
 end
 

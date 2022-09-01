@@ -150,7 +150,7 @@ function M.format_selected(mode, save)
                 coc.a2sync(
                 "hasProvider",
                 {
-                    mode and "formatRange" or "format"
+                    F.tern(mode, "formatRange", "format")
                 },
                 2000
             )
@@ -234,34 +234,28 @@ local function init()
     g.neoformat_enabled_yaml = {"prettier"}
     g.neoformat_yaml_prettier = {
         exe = "prettier",
-        args = {
-            "--stdin-filepath",
-            '"%:p"',
-            "--tab-width=2"
-        },
+        args = {"--stdin-filepath", '"%:p"', "--tab-width=2"},
         stdin = 1
     }
     g.neoformat_enabled_sql = {"sqlformatter"}
     g.neoformat_sql_sqlformatter = {
         exe = "sql-formatter",
-        args = {
-            "--indent",
-            "4"
-        },
+        args = {"--indent", "4"},
         stdin = 1
     }
     g.neoformat_enabled_json = {"jq"}
     g.neoformat_json_jq = {
         exe = "jq",
-        args = {
-            "--indent",
-            "4",
-            "--tab"
-        },
+        args = {"--indent", "4", "--tab"},
         stdin = 1
     }
 
     g.neoformat_enabled_lua = {"luafmtext", "stylua", "luaformat"}
+    g.neoformat_lua_luafmtext = {
+        exe = "lua-fmt-ext",
+        args = {"--stdin"},
+        stdin = 1
+    }
 
     map("n", ";ff", [[:lua require('plugs.format').format_doc()<CR>]])
     map("x", ";ff", [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]])

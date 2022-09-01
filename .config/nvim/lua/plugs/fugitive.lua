@@ -18,7 +18,8 @@ function M.index()
     if fn.winnr("$") == 1 and bufname == "" then
         cmd.Git()
     else
-        cmd("tab Git")
+        -- cmd('tab Git')
+        cmd.Git({mods = {tab = 1}})
     end
     if bufname == "" then
         cmd("sil! noa bw #")
@@ -88,7 +89,7 @@ local function init()
         s = "S",
         u = "<C-u>",
         ["-"] = "a",
-        X = "x",
+        X = "x"
     }
 
     augroup(

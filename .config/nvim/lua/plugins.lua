@@ -1136,20 +1136,20 @@ return packer.startup(
                     requires = {
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
+                        {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
                         {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {prefer_local("coc-code-action-menu"), after = "coc.nvim"}
                     }
                 }
             )
 
-            use(
-                {
-                    "github/copilot.vim",
-                    conf = "copilot",
-                    keys = {"n", "<Leader>ce"},
-                    cmd = {"Copilot"}
-                }
-            )
+            -- use(
+            --     {
+            --         "github/copilot.vim",
+            --         conf = "copilot",
+            --         keys = {"n", "<Leader>ce"},
+            --         cmd = {"Copilot"}
+            --     }
+            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Treesitter                        │
@@ -1413,55 +1413,56 @@ return packer.startup(
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Git                            │
             -- ╰──────────────────────────────────────────────────────────╯
+            -- For some reason, if this is lazy-loaded, an error occurs when pressing keybinding
             use(
                 {
                     "tpope/vim-fugitive",
-                    fn = {"fugitive#*", "Fugitive*"},
-                    event = "BufReadPre */.git/index",
                     conf = "plugs.fugitive",
-                    cmd = {
-                        "0Git",
-                        "G",
-                        "GBrowse",
-                        "Gcd",
-                        "Gclog",
-                        "GDelete",
-                        "Gdiffsplit",
-                        "Gedit",
-                        "Ggrep",
-                        "Ghdiffsplit",
-                        "Git",
-                        "Glcd",
-                        "Glgrep",
-                        "Gllog",
-                        "GMove",
-                        "Gpedit",
-                        "Gread",
-                        "GRemove",
-                        "GRename",
-                        "Gsplit",
-                        "Gtabedit",
-                        "GUnlink",
-                        "Gvdiffsplit",
-                        "Gvsplit",
-                        "Gwq",
-                        "Gwrite"
-                    },
-                    keys = {
-                        {"n", "<LocalLeader>gg"},
-                        {"n", "<LocalLeader>ge"},
-                        {"n", "<LocalLeader>gR"},
-                        {"n", "<LocalLeader>gB"},
-                        {"n", "<LocalLeader>gw"},
-                        {"n", "<LocalLeader>gW"},
-                        {"n", "<LocalLeader>gr"},
-                        {"n", "<LocalLeader>gf"},
-                        {"n", "<LocalLeader>gF"},
-                        {"n", "<LocalLeader>gc"},
-                        {"n", "<LocalLeader>gC"},
-                        {"n", "<LocalLeader>gd"},
-                        {"n", "<LocalLeader>gt"}
-                    },
+                    -- fn = {"fugitive#*", "Fugitive*"},
+                    -- event = "BufReadPre */.git/index",
+                    -- cmd = {
+                    --     "0Git",
+                    --     "G",
+                    --     "GBrowse",
+                    --     "Gcd",
+                    --     "Gclog",
+                    --     "GDelete",
+                    --     "Gdiffsplit",
+                    --     "Gedit",
+                    --     "Ggrep",
+                    --     "Ghdiffsplit",
+                    --     "Git",
+                    --     "Glcd",
+                    --     "Glgrep",
+                    --     "Gllog",
+                    --     "GMove",
+                    --     "Gpedit",
+                    --     "Gread",
+                    --     "GRemove",
+                    --     "GRename",
+                    --     "Gsplit",
+                    --     "Gtabedit",
+                    --     "GUnlink",
+                    --     "Gvdiffsplit",
+                    --     "Gvsplit",
+                    --     "Gwq",
+                    --     "Gwrite"
+                    -- },
+                    -- keys = {
+                    --     {"n", "<LocalLeader>gg"},
+                    --     {"n", "<LocalLeader>ge"},
+                    --     {"n", "<LocalLeader>gR"},
+                    --     {"n", "<LocalLeader>gB"},
+                    --     {"n", "<LocalLeader>gw"},
+                    --     {"n", "<LocalLeader>gW"},
+                    --     {"n", "<LocalLeader>gr"},
+                    --     {"n", "<LocalLeader>gf"},
+                    --     {"n", "<LocalLeader>gF"},
+                    --     {"n", "<LocalLeader>gc"},
+                    --     {"n", "<LocalLeader>gC"},
+                    --     {"n", "<LocalLeader>gd"},
+                    --     {"n", "<LocalLeader>gt"}
+                    -- },
                     requires = {"tpope/vim-rhubarb"}
                 }
             )

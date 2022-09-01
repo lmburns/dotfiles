@@ -25,7 +25,13 @@ local config
 ---@param status string
 ---@param toggled string
 local function echo(status, toggled)
-    nvim.echo({{"Gitsigns [", "SpellCap"}, {status, "MoreMsg"}, {("] %s"):format(toggled), "SpellCap"}})
+    nvim.echo(
+        {
+            {"Gitsigns [", "SpellCap"},
+            {status, "MoreMsg"},
+            {("] %s"):format(toggled), "SpellCap"}
+        }
+    )
 end
 
 function M.toggle_deleted()

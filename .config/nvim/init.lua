@@ -100,8 +100,7 @@ require("common.qf")
 require("common.mru")
 require("common.grepper")
 require("common.jump")
-require("plugs.fold")
-
+-- require("plugs.fold")
 -- require("common.stl")
 -- require("common.reg")
 
@@ -126,32 +125,32 @@ vim.schedule(
             function()
                 require("plugs.treesitter")
 
-                augroup(
-                    "syntaxset",
-                    {
-                        event = "FileType",
-                        pattern = "*",
-                        command = function()
-                            require("plugs.treesitter").hijack_synset()
-                        end
-                    }
-                )
+                -- augroup(
+                --     "syntaxset",
+                --     {
+                --         event = "FileType",
+                --         pattern = "*",
+                --         command = function()
+                --             require("plugs.treesitter").hijack_synset()
+                --         end
+                --     }
+                -- )
 
                 cmd.syntax("on")
                 cmd.filetype("on")
-                cmd("doau filetypedetect BufRead")
+                -- cmd("doau filetypedetect BufRead")
             end,
             15
         )
 
         -- === Folding
         -- Deferring this function will override any modeline with foldelevel=0
-        -- vim.defer_fn(
-        --     function()
-        --         require("plugs.fold")
-        --     end,
-        --     200
-        -- )
+        vim.defer_fn(
+            function()
+                require("plugs.fold")
+            end,
+            200
+        )
 
         -- === Clipboard
         vim.defer_fn(
@@ -178,9 +177,9 @@ vim.schedule(
                             end
                         }
                     )
-                else
-                    -- cmd.packadd("nvim-hclipboard")
-                    -- require("hclipboard").start()
+                -- else
+                -- cmd.packadd("nvim-hclipboard")
+                -- require("hclipboard").start()
                 end
 
                 augroup(
@@ -272,7 +271,9 @@ vim.schedule(
                 -- Disable CocFzfList
                 vim.schedule(
                     function()
-                        cmd("au! CocFzfLocation User ++nested CocLocationsChange")
+                        if not pcall(cmd, "au! CocFzfLocation User ++nested CocLocationsChange") then
+                            vim.notify("Failed to disable CocFzfLocation")
+                        end
                     end
                 )
 

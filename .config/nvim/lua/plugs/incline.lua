@@ -68,20 +68,6 @@ end
 function M.setup()
     incline.setup(
         {
-            -- render = function(props)
-            --     local bufname = api.nvim_buf_get_name(props.buf)
-            --     if bufname == "" then
-            --         return "[No name]"
-            --     else
-            --         -- bufname = fn.fnamemodify(bufname, ":h")
-            --         bufname = Path:new(bufname):shorten(3, {-2, -1})
-            --         bufname = bufname:gsub("^/hom/luc/.co/nvi/", "$NVIM/")
-            --         bufname = bufname:gsub("^/hom/luc/.lo/sha/", "$DATA/")
-            --         bufname = bufname:gsub("^/hom/luc/.co/", "$CONFIG/")
-            --         bufname = bufname:gsub("^/hom/luc/", "~/")
-            --     end
-            --     return bufname
-            -- end,
             render = render,
             debounce_threshold = 30,
             window = {
@@ -111,13 +97,13 @@ function M.setup()
                 filetypes = {"scratchpad"},
                 buftypes = "special",
                 wintypes = "special"
+            },
+            highlight = {
+                groups = {
+                    InclineNormal = {group = "WinBar", default = true},
+                    InclineNormalNC = {group = "NormalFloat", default = true}
+                }
             }
-            -- highlight = {
-            --     groups = {
-            --         InclineNormal = "WinBar",
-            --         InclineNormalNC = "InclineNormal"
-            --     }
-            -- }
         }
     )
 

@@ -114,6 +114,7 @@ M =
             log.err(("invalid mode given: %s"):format(k), true, {title = "Abbrs"})
         end,
         ---Can be used like so: `require("abbr").c(lhs, rhs, opts)`
+        ---Can be used like so: `require("abbr")(mode, lhs, rhs, opts)`
         ---@param self table
         ---@param mode string
         ---@param lhs string
@@ -125,36 +126,40 @@ M =
     }
 )
 
--- I can't get insert mode to work
-M.i("funciton", "function")
+local function init()
+    -- I can't get insert mode to work
+    M.abbr("i", "funciton", "function")
 
-M.abbr("c", "Qall!", "qll!")
-M.abbr("c", "Qall", "qll")
-M.abbr("c", "Wq", "wq")
-M.abbr("c", "Wa", "wa")
-M.abbr("c", "wQ", "wq")
-M.abbr("c", "WQ", "wq")
-M.abbr("c", "W", "w")
-M.abbr("c", "W!", "w!")
+    M.abbr("c", "Qall!", "qll!")
+    M.abbr("c", "Qall", "qll")
+    M.abbr("c", "Wq", "wq")
+    M.abbr("c", "Wa", "wa")
+    M.abbr("c", "wQ", "wq")
+    M.abbr("c", "WQ", "wq")
+    M.abbr("c", "W", "w")
+    M.abbr("c", "W!", "w!")
 
-M.abbr("c", "tel", "Telescope")
-M.abbr("c", "Review", "DiffviewOpen")
-M.abbr("c", "ld", "Linediff")
+    M.abbr("c", "tel", "Telescope")
+    M.abbr("c", "Review", "DiffviewOpen")
+    M.abbr("c", "ld", "Linediff")
 
-M.abbr("c", "PI", "PackerInstall")
-M.abbr("c", "PU", "PackerUpdate")
-M.abbr("c", "PS", "PackerSync")
-M.abbr("c", "PC", "PackerCompile")
+    M.abbr("c", "PI", "PackerInstall")
+    M.abbr("c", "PU", "PackerUpdate")
+    M.abbr("c", "PS", "PackerSync")
+    M.abbr("c", "PC", "PackerCompile")
 
-M.abbr("c", "man", "Man")
-M.abbr("c", "vg", "vimgrep", {only_start = false})
-M.abbr("c", "grep", "Grep", {only_start = false})
-M.abbr("c", "lgrep", "LGrep", {only_start = false})
-M.abbr("c", "buf", "Bufferize")
-M.abbr("c", "req", "lua require('")
-M.abbr("c", "cfilter", "Cfilter")
-M.abbr("c", "cfi", "Cfilter")
-M.abbr("c", "lfilter", "Lfilter")
-M.abbr("c", "lfi", "Cfilter")
+    M.abbr("c", "man", "Man")
+    M.abbr("c", "vg", "vimgrep", {only_start = false})
+    M.abbr("c", "grep", "Grep", {only_start = false})
+    M.abbr("c", "lgrep", "LGrep", {only_start = false})
+    M.abbr("c", "buf", "Bufferize")
+    M.abbr("c", "req", "lua require('")
+    M.abbr("c", "cfilter", "Cfilter")
+    M.abbr("c", "cfi", "Cfilter")
+    M.abbr("c", "lfilter", "Lfilter")
+    M.abbr("c", "lfi", "Cfilter")
+end
+
+init()
 
 return M

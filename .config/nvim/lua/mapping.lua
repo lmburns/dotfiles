@@ -1,7 +1,7 @@
 local M = {}
 
 local D = require("dev")
-local _  = D.ithunk
+local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 
@@ -109,7 +109,7 @@ wk.register(
 -- Yank mappings
 wk.register(
     {
-        ["yd"] = {_(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")), "Copy directory"},
+        ["yd"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>", "Copy directory"},
         ["yn"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>", "Copy file name"},
         ["yp"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>", "Copy full path"}
     }
@@ -252,7 +252,7 @@ wk.register(
             ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
             ["<C-t>"] = {"<Cmd>tab sp<CR>", "Split tab"},
             O = {"<Cmd>tabo<CR>", "Close all other tabs except this one"},
-            ["<C-c>"] = {"<C-w>c", "Close window"},
+            ["<C-c>"] = {"<C-w>c", "Close window"}
         }
     }
 )

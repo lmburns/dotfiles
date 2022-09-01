@@ -152,26 +152,6 @@ command(
 -- │                     Buffer Execution                     │
 -- ╰──────────────────────────────────────────────────────────╯
 
-cmd [[
-  function! s:execute_buffer()
-    if !empty(expand('%'))
-        write
-        call system('chmod +x '.expand('%'))
-        silent e
-        vsplit | terminal ./%
-    else
-        echohl WarningMsg
-        echo 'Save the file first'
-        echohl None
-    endif
-  endfunction
-
-  command! RUN :call s:execute_buffer()
-]]
-
--- function M.execute_buffer()
--- end
-
 function M.lua_executor()
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].ft == "lua" then
@@ -231,8 +211,8 @@ function M.diffsaved()
     cmd.vnew()
     cmd.r("#")
     cmd.norm({"1Gdd", bang = true})
+    cmd(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
     cmd.diffthis()
-    fn.execute(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
 end
 
 command(
@@ -415,8 +395,10 @@ function M.tmux_copy_mode_toggle()
 
     if vim.o.signcolumn == "no" then
         vim.opt_local.signcolumn = "yes:1"
+        vim.opt_local.foldcolumn = "1"
     else
         vim.opt_local.signcolumn = "no"
+        vim.opt_local.foldcolumn = "0"
     end
 end
 
@@ -427,11 +409,6 @@ command(
     end,
     {nargs = 0, desc = "Toggle line numbers to copy with tmux"}
 )
-
--- map(
---     "n", "<Leader>.", ":call system('tmux select-pane -t :.+')<cr>",
---     { silent = true }
--- )
 
 -- Prevent vim clearing the system clipboard
 if fn.executable("xsel") then

@@ -196,7 +196,7 @@ function M.action(action, args, timeout)
                         end
 
                         if timeout then
-                            dev.setTimeout(
+                            D.setTimeout(
                                 function()
                                     resolve(res)
                                 end,
@@ -309,6 +309,7 @@ M.diagnostics_tracker = function()
                     table.insert(M.document, d)
                 end
                 table.insert(M.workspace, d)
+                curr_bufname = d.file
             end
         end
     )

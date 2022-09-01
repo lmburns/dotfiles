@@ -61,12 +61,12 @@ function M.hijack_synset()
     if bytes / lcount < 500 then
         if ft_enabled[ft] then
             configs.reattach_module("highlight", bufnr)
-            vim.defer_fn(
-                function()
-                    configs.reattach_module("textobjects.move", bufnr)
-                end,
-                300
-            )
+            -- vim.defer_fn(
+            --     function()
+            --         configs.reattach_module("textobjects.move", bufnr)
+            --     end,
+            --     300
+            -- )
         else
             vim.bo.syntax = ft
         end
@@ -698,7 +698,7 @@ M.setup = function()
             "bash",
             "c",
             "cmake",
-            -- "comment",
+            "comment",
             "cpp",
             "css",
             "d",
@@ -711,6 +711,7 @@ M.setup = function()
             "gitignore",
             "go",
             "gomod",
+            "graphql",
             "help",
             "hjson",
             "html",
@@ -718,6 +719,7 @@ M.setup = function()
             "javascript",
             "jsdoc",
             "json",
+            "jsonc",
             "julia",
             "kotlin",
             "latex",
@@ -727,6 +729,7 @@ M.setup = function()
             "make",
             "markdown",
             "markdown_inline",
+            "ninja",
             "perl", -- Syntax isn't parsed the greatest
             "python",
             "query",

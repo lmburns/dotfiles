@@ -309,7 +309,7 @@ function M.linediff()
     map("n", "<Leader>ld", "Linediff", {cmd = true})
     map("x", "<Leader>ld", ":Linediff<CR>")
 
-    abbr.abbr({mode = "c", lhs = "ldr", rhs = "LinediffReset"})
+    require('abbr')("c", "ldr", "LinediffReset")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

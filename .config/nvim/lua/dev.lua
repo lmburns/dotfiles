@@ -4,7 +4,6 @@
 local M = {}
 
 local log = require("common.log")
-local Path = require("plenary.path")
 
 local fn = vim.fn
 local api = vim.api
@@ -722,6 +721,7 @@ end
 ---@param acc T
 ---@return T
 M.fold = function(tbl, func, acc)
+    acc = acc or {}
     for k, v in pairs(tbl) do
         acc = func(acc, v, k)
         assert(acc ~= nil, "Accumulator must be returned on each iteration")
@@ -758,9 +758,10 @@ M.for_each = function(tbl, func)
 end
 
 ---Filter table based on function
----@param tbl table Table to be filtered
----@param func function Function to apply filter
----@return table|any[]|nil
+---@generic T
+---@param tbl T[] Table to be filtered
+---@param func fun(v: T) Function to apply filter
+---@return T[]
 M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
 end
@@ -823,11 +824,12 @@ end
 ---@return boolean
 M.buf_is_modified = function(bufnr)
     vim.validate {
-        buffer = {
+        bufnr = {
             bufnr,
             function(b)
-                return (type(b) == "number" and b > 1) or type(b) == "nil"
-            end
+                return (type(b) == "number" and b >= 1) or type(b) == "nil"
+            end,
+            "number >= 1 or nil"
         }
     }
 
@@ -841,42 +843,43 @@ M.get_buf_count = function()
     return #fn.getbufinfo({buflisted = 1})
 end
 
----Get valid buffers
----@return number[]?
-M.get_valid_buffers = function()
-    return M.filter(api.nvim_list_bufs(), M.buf_is_valid)
-end
-
----Return a table of the id's of loaded buffers (hidden are removed)
----@return table?
-M.get_loaded_bufs = function()
-    return M.filter(
-        api.nvim_list_bufs(),
-        function(id)
-            return api.nvim_buf_is_loaded(id)
-        end
-    )
-end
-
 ---@class ListBufsSpec
----@field loaded boolean Filter out buffers that aren't loaded.
----@field listed boolean Filter out buffers that aren't listed.
----@field no_hidden boolean Filter out buffers that are hidden.
----@field tabpage integer Filter out buffers that are not displayed in a given tabpage.
+---@field loaded boolean Filter out buffers that aren't loaded
+---@field valid boolean Filter out buffers that aren't valid
+---@field listed boolean Filter out buffers that aren't listed
+---@field modified boolean Filter out buffers that aren't modified
+---@field empty boolean Filter out buffers that are empty
+---@field no_hidden boolean Filter out buffers that are hidden
+---@field tabpage number Filter out buffers that are not displayed in a given tabpage.
+---@field bufname string Filter out buffers whose name doesn't match a given Lua pattern
+---@field bufpath string Filter out buffers whose *full-path* doesn't match a given Lua pattern
+---@field options { [string]: any } Filter out buffers that don't match a given map of options
+---@field vars { [string]: any } Filter out buffers that don't match a given map of variables
 
----@param opt? ListBufsSpec
-M.list_bufs = function(opt)
-    -- vim.validate {
-    --     loaded = {opt.loaded, {"b"}, true},
-    --     listed = {opt.listed, {"b"}, true},
-    --     no_hidden = {opt.listed, {"b"}, true},
-    --     tabpage = {opt.listed, {"n"}, true}
-    -- }
-    opt = opt or {}
+---List buffers matching options
+---@param opts? ListBufsSpec
+---@return number[]
+M.list_bufs = function(opts)
+    vim.validate {
+        loaded = {opts.loaded, {"b"}, true},
+        valid = {opts.valid, {"b"}, true},
+        listed = {opts.listed, {"b"}, true},
+        modified = {opts.modified, {"b"}, true},
+        empty = {opts.empty, {"b"}, true},
+        no_hidden = {opts.no_hidden, {"b"}, true},
+        tabpage = {opts.tabpage, {"n"}, true},
+        bufname = {opts.bufname, {"s"}, true},
+        bufpath = {opts.bufpath, {"s"}, true},
+        options = {opts.options, {"t"}, true},
+        vars = {opts.vars, {"t"}, true}
+    }
+
+    opts = opts or {}
+    ---@type number[]
     local bufs
 
-    if opt.no_hidden or opt.tabpage then
-        local wins = opt.tabpage and api.nvim_tabpage_list_wins(opt.tabpage) or api.nvim_list_wins()
+    if opts.no_hidden or opts.tabpage then
+        local wins = opts.tabpage and api.nvim_tabpage_list_wins(opts.tabpage) or api.nvim_list_wins()
         local bufnr
         local seen = {}
         bufs = {}
@@ -893,91 +896,78 @@ M.list_bufs = function(opt)
 
     return M.filter(
         bufs,
-        function(v)
-            if opt.loaded and not api.nvim_buf_is_loaded(v) then
+        function(bufnr)
+            if opts.loaded and not api.nvim_buf_is_loaded(bufnr) then
                 return false
             end
-            if opt.listed and not vim.bo[v].buflisted then
+
+            if opts.valid and not M.buf_is_valid(bufnr) then
                 return false
+            end
+
+            if opts.listed and not vim.bo[bufnr].buflisted then
+                return false
+            end
+
+            if opts.modified and not M.buf_is_modified(bufnr) then
+                return false
+            end
+
+            if opts.empty and M.buf_is_empty(bufnr) then
+                return false
+            end
+
+            if opts.bufname and not fn.bufname(bufnr):match(opts.bufname) then
+                return false
+            end
+
+            if opts.bufpath and not api.nvim_buf_get_name(bufnr):match(opts.bufpath) then
+                return false
+            end
+
+            if opts.options then
+                for option, value in pairs(opts.options) do
+                    -- if vim.bo[bufnr][option] ~= value then
+                    --     return false
+                    -- end
+
+                    local ok, v = pcall(api.nvim_buf_get_option, bufnr, option)
+                    if not ok or v ~= value then
+                        return false
+                    end
+                end
+            end
+
+            if opts.vars then
+                for var, value in pairs(opts.vars) do
+                    -- if vim.b[bufnr][var] ~= value then
+                    --     return false
+                    -- end
+
+                    local ok, v = pcall(api.nvim_buf_get_var, bufnr, var)
+                    if not ok or v ~= value then
+                        return false
+                    end
+                end
             end
             return true
         end
     )
 end
 
----Find a buffer that has a given variable with a value
----@param var string variable to search for
----@param value string|number value the variable should have
----@param opts? ListBufsSpec
----@return any
-M.find_buf_with_var = function(var, value, opts)
-    for _, id in ipairs(M.list_bufs(opts or {})) do
-        local ok, v = pcall(api.nvim_buf_get_var, id, var)
-        if ok and v == value then
-            return id
+---Get buffer info of buffers that match given options
+---@param opts ListBufsSpec
+---@return number[]
+M.buf_info = function(opts)
+    return M.map(
+        M.list_bufs(opts),
+        function(bufnr)
+            return fn.getbufinfo(bufnr)
         end
-    end
-
-    return nil
+    )
 end
 
----Find a buffer that has an option set at a value
----@param option string option to search for
----@param value string|number value the option should have
----@param opts? ListBufsSpec
----@return any
-M.find_buf_with_option = function(option, value, opts)
-    for _, id in ipairs(opts or {}) do
-        local ok, v = pcall(api.nvim_buf_get_option, id, option)
-        if ok and v == value then
-            return id
-        end
-    end
-
-    return nil
-end
-
----Find a buffer whose full path matches a pattern
----@param pattern string Lua pattern mathed against buffer name
----@param opt? ListBufsSpec
----@return integer?
-M.find_buf_with_pattern = function(pattern, opt)
-    for _, id in ipairs(M.list_bufs(opt or {})) do
-        -- local m = fn.bufname(id):match(pattern)
-        local m = api.nvim_buf_get_name(id):match(pattern)
-        if m then
-            return id
-        end
-    end
-    return nil
-end
-
----Fina a buffer that has a given name
----@param name string
----@param opt? ListBufsSpec
-M.find_named_buffer = function(name, opt)
-    for _, v in ipairs(M.list_bufs(opt or {})) do
-        if fn.bufname(v) == name then
-            return v
-        end
-    end
-    return nil
-end
-
----@param path string
----@param opt? ListBufsSpec
----@return integer? bufnr
-M.find_file_buffer = function(path, opt)
-    local p = Path:new(path):absolute()
-    for _, id in ipairs(M.list_bufs(opt or {})) do
-        if p == api.nvim_buf_get_name(id) then
-            return id
-        end
-    end
-    return nil
-end
-
----Return the buffer lines
+---Return the buffer lines, proper line endings for 'dos' format
 ---@param bufnr number?
 ---@return string
 M.buf_lines = function(bufnr)
@@ -1024,6 +1014,30 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Window                          │
 -- ╰──────────────────────────────────────────────────────────╯
+
+---Call the function `f`, ignoring most window/buffer autocmds
+---@param f function
+---@return boolean, any
+M.no_win_event_call = function(f)
+    local last = vim.o.eventignore
+    ---@diagnostic disable-next-line: undefined-field
+    vim.opt.eventignore:prepend(
+        M.list {
+            "WinEnter",
+            "WinLeave",
+            "WinNew",
+            "WinClosed",
+            "BufWinEnter",
+            "BufWinLeave",
+            "BufEnter",
+            "BufLeave"
+        }
+    )
+    local ok, err = pcall(f)
+    vim.opt.eventignore = last
+
+    return ok, err
+end
 
 ---Determine if the window is the only open one
 ---@param win_id number?
@@ -1123,7 +1137,7 @@ end
 ---@param path string module to invalidate
 ---@param recursive boolean? should the module be invalidated recursively?
 ---@param req boolean? should a require be returned? If used with recursive, top module is returned
----@return module|nil
+---@return module?
 M.reload_module = function(path, recursive, req)
     path = vim.trim(path)
 
@@ -1144,7 +1158,6 @@ M.reload_module = function(path, recursive, req)
             return to_return
         end
     else
-        ---@diagnostic disable-next-line:missing-return
         package.loaded[path] = nil
         if req then
             return require(path)
@@ -1163,7 +1176,7 @@ M.plugin_loaded = function(plugin_name)
 end
 
 local installed
----Check if a plugin is on the system not whether or not it is loaded
+---Check if a plugin is on installed. Doesn't have to be loaded
 ---@param plugin_name string
 ---@return boolean
 M.plugin_installed = function(plugin_name)
@@ -1180,6 +1193,18 @@ M.plugin_installed = function(plugin_name)
         )
     end
     return vim.tbl_contains(installed, plugin_name)
+end
+
+-- defer_plugin: defer loading plugin until timeout passes
+---@param plugin string
+---@param timeout number
+M.defer_plugin = function(plugin, timeout)
+    vim.defer_fn(
+        function()
+            require("plugins").loader(plugin)
+        end,
+        timeout or 0
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1271,7 +1296,7 @@ M.switch = function(c)
         casevar = c,
         caseof = function(self, code)
             local f
-            if (self.casevar) then
+            if self.casevar then
                 f = code[self.casevar] or code.default
             else
                 f = code.missing or code.default

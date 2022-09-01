@@ -29,16 +29,50 @@ local fn = vim.fn
 ---@field nr fun(): number #Return the current buffer number
 ---@field line fun(): number #Return the content on the current line
 
+---@class Nvim.Command
+---@field set fun(name: string, rhs: string|fun(args: CommandArgs), opts: CommandOpts)
+---@field del fun(name: string, buffer?: boolean|number)
+---@field get fun(id: string)
+
+---@class Nivm.Keymap
+---@field add fun(modes: string|string[], lhs: string, rhs: string|function, opts: MapArgs): fun()[]
+---@field get fun(mode: string, search?: string, lhs?: boolean, buffer?: boolean)
+---@field del fun(modes: string|string[], lhs: string, opts: DelMapArgs)
+
 ---@class Nvim
 ---@field augroup Nvim.Augroup
 ---@field autocmd Nvim.Autocmd
 ---@field b table
 ---@field bo table
 ---@field buf Nvim.Buf
+---@field buffer Nvim.Buf
+---@field builtin_echo fun(chunks: { [string]: string }[], history?: boolean)
+---@field cmd Nvim.Command
+---@field colors table
+---@field command Nvim.Command
+---@field cursor fun(win: number): (number, number)
+---@field echo fun(chunks: { [string]: string }[], history?: boolean)
+---@field env table
+---@field executable fun(exe: string): boolean
+---@field exists table
+---@field has table
+---@field keymap Nivm.Keymap
 ---@diagnostic disable-next-line:assign-type-mismatch
 local nvim = require("nvim")
 ---@diagnostic disable-next-line:assign-type-mismatch
 _G.nvim = require("nvim")
+
+-- local nvim: Nvim {
+--     mode: unknown,
+--     p: table,
+--     plugins: table,
+--     reg: table,
+--     t: table,
+--     tab: table,
+--     termcodes: table,
+--     ui: table,
+--     win: table,
+-- }
 
 ---Get an autocmd
 ---@param opts RetrieveAutocommand
@@ -230,21 +264,17 @@ nvim.p =
 )
 
 ---Equivalent to `api.nvim_echo`. Allows multiple commands
-nvim.echo =
-    setmetatable(
-    {},
-    {
-        __call = function(_, chunks, history)
-            vim.validate(
-                {
-                    chunks = {chunks, "t"},
-                    history = {history, "b", true}
-                }
-            )
-            api.nvim_echo(chunks, history or true, {})
-        end
-    }
-)
+---@param chunks { [string]: string }[]
+---@param history boolean
+nvim.echo = function(chunks, history)
+    vim.validate(
+        {
+            chunks = {chunks, "t"},
+            history = {history, "b", true}
+        }
+    )
+    api.nvim_echo(chunks, history or true, {})
+end
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 

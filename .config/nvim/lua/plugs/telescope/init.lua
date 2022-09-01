@@ -848,7 +848,7 @@ end
 
 M.keymaps = function(mode)
     local title =
-        require("dev").switch(mode):caseof {
+        D.switch(mode):caseof {
         n = function()
             return "Normal"
         end,
