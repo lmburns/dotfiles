@@ -1,5 +1,7 @@
 local M = {}
 
+-- local utf8 = require("utf8")
+
 M.border = {
     line = {"🭽", "▔", "🭾", "▕", "🭿", "▁", "🭼", "▏"},
     rectangle = {"┌", "─", "┐", "│", "┘", "─", "└", "│"},
@@ -46,6 +48,7 @@ M.icons = {
         boolean = "蘒"
     },
     misc = {
+        -- ellipsis = utf8.char(0x2026), -- "…"
         ellipsis = "…",
         up = "⇡",
         down = "⇣",

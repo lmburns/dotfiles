@@ -570,6 +570,7 @@ M.kimbox = function()
     kimbox.setup(
         {
             style = "ocean",
+            langs08 = true,
             allow_bold = true,
             allow_italic = false,
             allow_underline = false,

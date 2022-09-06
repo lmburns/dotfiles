@@ -14,21 +14,19 @@ local g = vim.g
 local fn = vim.fn
 local api = vim.api
 
-local function truncate(str, max_len)
-    vim.validate {
-        str = {str, "s", false},
-        max_len = {max_len, "n", false}
-    }
-
-    return api.nvim_strwidth(str) > max_len and str:sub(1, max_len) .. "…" or str
-end
-
 local function render(props)
-    local devicons = require("nvim-web-devicons")
+    local devicons = D.npcall(require, "nvim-web-devicons")
+    if not devicons then
+        return
+    end
+
     local bufname = api.nvim_buf_get_name(props.buf)
     if bufname == "" then
         return "[No name]"
     end
+
+    -- if vim.bo[props.buf].buftype == "terminal" then
+    -- end
 
     local directory_color = hl.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
@@ -42,7 +40,6 @@ local function render(props)
     for idx, part in ipairs(parts) do
         if next(parts, idx) then
             local guifg = g.colors_name == "kimbox" and "InclineNormal" or "Directory"
-            -- local guifg = "Directory"
             if part:match("^%$") then
                 guifg = "WarningMsg"
             end
@@ -50,18 +47,19 @@ local function render(props)
             vim.list_extend(
                 result,
                 {
-                    {truncate(part, 20), guifg = hl.get(guifg, "fg"), gui = "bold"},
+                    {utils.truncate(part, 20), guifg = hl.get(guifg, "fg"), gui = "bold"},
                     {("%s"):format("/"), guifg = directory_color}
                 }
             )
         else
             -- File tail
-            table.insert(result, {part, gui = "bold", guisp = directory_color})
+            table.insert(result, {part, gui = "bold", guifg = vim.bo[props.buf].modified and hl.TypeDef.fg or nil})
         end
     end
     local icon, color = devicons.get_icon_color(bufname, nil, {default = true})
     -- table.insert(result, #result, {icon .. " ", guifg = color}) -- $NVIM/lua/plugs/ incline
     table.insert(result, #result + 1, {" " .. icon, guifg = color}) -- $NVIM/lua/plugs/incline 
+    -- table.insert(result, vim.bo[props.buf].modified and {" [+]", guifg = hl.get("MoreMsg", "fg")} or nil)
     return result
 end
 

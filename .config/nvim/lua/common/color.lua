@@ -17,6 +17,7 @@ local api = {
 
 ---@alias Group string
 ---@alias Color string
+
 ---@class HighlightAttribute
 ---@field from string
 ---@field attr 'foreground' | 'fg' | 'background' | 'bg'
@@ -156,7 +157,7 @@ local keys = {guisp = "sp", guibg = "background", guifg = "foreground"}
 ---This function will also convert legacy keys (i.e., `guisp`, `guibg`, `guibg`, and `default`)
 ---into keys that `api.nvim_set_hl` will accept.
 ---
----@param opts table<string, string|boolean|table<string,string>>
+---@param opts HighlightAttribute[]|string[]
 ---@diagnostic disable-next-line:unused-function, unused-local
 local function convert_hl_to_val(opts)
     for attr, value in pairs(opts) do
@@ -352,11 +353,13 @@ function M.set(name, opts)
         opts = {opts, "table", false}
     }
 
-    local ok, msg = pcall(api.set, 0, name, M.parse(opts))
+    -- local ok, msg = pcall(api.set, 0, name, M.parse(opts))
+    --
+    -- if not ok then
+    --     log.err(("Failed to set %s: %s"):format(name, msg))
+    -- end
 
-    if not ok then
-        log.err(("Failed to set %s: %s"):format(name, msg))
-    end
+    utils.wrap_err(("Failed to set %s"):format(name), api.set, 0, name, M.parse(opts))
 end
 
 ---Get the value a highlight group whilst handling errors, fallbacks as well as returning a gui value

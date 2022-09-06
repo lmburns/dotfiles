@@ -21,7 +21,7 @@ M.profile = function(filename)
     fn.mkdir(base, "p")
     local success, profile = pcall(require, "plenary.profile.lua_profiler")
     if not success then
-        utils.cool_echo("Plenary is not installed", "Title", true)
+        utils.cecho("Plenary is not installed", "Title", true)
     end
     profile.start()
     return function()

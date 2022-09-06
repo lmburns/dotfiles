@@ -252,13 +252,13 @@ nvim.p =
                     ---@param history boolean? add message to history
                     ---@param wait number? amount of time to wait
                     __call = function(_, msg, history, wait)
-                        utils.cool_echo(msg, group, history, wait)
+                        utils.cecho(msg, group, history, wait)
                     end
                 }
             )
         end,
         __call = function(_, ...)
-            utils.cool_echo(...)
+            utils.cecho(...)
         end
     }
 )

@@ -91,7 +91,7 @@ function M.setup()
                 enabled = false
             },
             consumers = {
-                overseer = utils.safe_require("neotest.consumers.overseer")
+                overseer = utils.prequire("neotest.consumers.overseer")
             },
             diagnostic = {
                 enabled = true

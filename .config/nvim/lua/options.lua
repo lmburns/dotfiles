@@ -396,6 +396,7 @@ o.complete:append({"kspell"})
 o.complete:remove({"w", "b", "u", "t"})
 o.spelllang:append("en_us")
 o.spelloptions = "camel"
+-- o.spelloptions:append({"camel", "noplainbuffer"})
 o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest = "12"
 o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"

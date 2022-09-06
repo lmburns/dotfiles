@@ -672,7 +672,7 @@ nvim.autocmd.lmb__FiletypeDetect = {
         if utils.empty(vim.bo.filetype) or fn.exists("b:ftdetect") == 1 then
             vim.b.ftdetect = nil
             cmd.filetype("detect")
-            utils.cool_echo(("Filetype set to %s"):format(vim.bo.ft), "Macro")
+            utils.cecho(("Filetype set to %s"):format(vim.bo.ft), "Macro")
         end
     end,
     desc = "Set filetype after modification"

@@ -6,7 +6,7 @@ if not gs then
     return
 end
 
--- local log = require("common.log")
+local style = require("style")
 local utils = require("common.utils")
 local map = utils.map
 local bmap = utils.bmap
@@ -150,7 +150,7 @@ function M.setup()
     gs.setup(
         {
             debug_mode = false,
-            _extmark_signs = true,
+            _extmark_signs = false,
             _threaded_diff = true,
             signs = {
                 add = {
@@ -227,7 +227,7 @@ function M.setup()
             max_file_length = 40000,
             preview_config = {
                 -- Options passed to nvim_open_win
-                border = "rounded",
+                border = style.current.border,
                 style = "minimal",
                 relative = "cursor",
                 noautocmd = true,

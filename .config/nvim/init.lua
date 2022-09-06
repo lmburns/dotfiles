@@ -125,16 +125,16 @@ vim.schedule(
             function()
                 require("plugs.treesitter")
 
-                -- augroup(
-                --     "syntaxset",
-                --     {
-                --         event = "FileType",
-                --         pattern = "*",
-                --         command = function()
-                --             require("plugs.treesitter").hijack_synset()
-                --         end
-                --     }
-                -- )
+                augroup(
+                    "syntaxset",
+                    {
+                        event = "FileType",
+                        pattern = "*",
+                        command = function()
+                            require("plugs.treesitter").hijack_synset()
+                        end
+                    }
+                )
 
                 cmd.syntax("on")
                 cmd.filetype("on")

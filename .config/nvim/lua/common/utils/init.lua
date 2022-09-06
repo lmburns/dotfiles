@@ -5,10 +5,10 @@
 local M = {}
 
 local D = require("dev")
-local Result = require("common.result")
 local log = require("common.log")
 local debounce = require("common.debounce")
 local disposable = require("common.disposable")
+local style = require("style")
 
 local wk = require("which-key")
 local uva = require("uva")
@@ -27,36 +27,10 @@ local F = vim.F
 -- require("plenary.strings").strdisplaywidth(string, col)
 
 ---Safely check if a plugin is installed
----@param check string Module to check if is installed
----@return table Result<T, E>
-M.prequire = function(check)
-    local ok, ret = pcall(require, check)
-    if ok then
-        return Result.ok(ret)
-    end
-
-    local dummy = {}
-    setmetatable(
-        dummy,
-        {
-            -- Error has to be unwrapped to be notified
-            __call = function()
-                M.notify("Module is not installed", log.levels.ERROR, {title = ("require('%s')"):format(check)})
-                return dummy
-            end,
-            __index = function()
-                return dummy
-            end
-        }
-    )
-    return Result.err(dummy)
-end
-
----Safely check if a plugin is installed
 ---@param name string Module to check if is installed
 ---@param cb function
 ---@return table Module
-M.safe_require = function(name, cb)
+M.prequire = function(name, cb)
     local ok, ret = pcall(require, name)
     if ok then
         if cb and type(cb) == "function" then
@@ -66,7 +40,7 @@ M.safe_require = function(name, cb)
     else
         M.notify(("Invalid module %s"):format(name), log.levels.WARN)
         -- Return a dummy item that returns functions, so we can do things like
-        -- safe_require("module").setup()
+        -- prequire("module").setup()
         local dummy = {}
         setmetatable(
             dummy,
@@ -81,6 +55,33 @@ M.safe_require = function(name, cb)
         )
         return dummy
     end
+end
+
+---Call the given function and use `vim.notify` to notify of any errors
+---this function is a wrapper around `xpcall` which allows having a single
+---error handler for all errors
+---@param msg string|fun()|nil
+---@param func function
+---@vararg any
+---@return boolean, any
+---@overload fun(fun: function, ...): boolean, any
+M.wrap_err = function(msg, func, ...)
+    local args = {...}
+    if type(msg) == "function" then
+        args, func, msg = {func, unpack(args)}, msg, nil
+    end
+    return xpcall(
+        func,
+        function(err)
+            msg = msg and ("%s:\n%s"):format(msg, err) or err
+            vim.schedule(
+                function()
+                    vim.notify(msg, log.levels.ERROR, {title = "ERROR"})
+                end
+            )
+        end,
+        unpack(args)
+    )
 end
 
 ---Return a value based on two values
@@ -112,17 +113,6 @@ end
 ---@return T|V
 M.get_default = function(x, default)
     return M.ife_nil(x, default, x)
-end
-
----Load a module, returning only one parameter
----@param name string module to check
----@return table?
-M.load_module = function(name)
-    local ok, module = pcall(require, name)
-    if not ok then
-        return nil
-    end
-    return module
 end
 
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
@@ -257,7 +247,7 @@ end
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
----@return table<fun()>: Returns a table with a single key `dispose` which can be ran to remove
+---@return { map: fun(), dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
 ---these bindings. This can be used for temporary keymaps
 ---
 --- See: **:map-arguments**
@@ -375,7 +365,7 @@ end
 ---@param lhs string Keybinding that is mapped
 ---@param rhs string|function String or Lua function that will be bound to a key
 ---@param opts MapArgs Options given to keybindings
----@return table<fun()>: Returns a table with a single key `dispose` which can be ran to remove binding
+---@return { map: fun(), dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {}
     opts.buffer = bufnr
@@ -526,7 +516,7 @@ M.command = function(name, rhs, opts)
     end
 
     if opts.desc then
-        M.safe_require(
+        M.prequire(
             "legendary",
             function(lgnd)
                 lgnd.bind_command({(":%s"):format(name), opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}})
@@ -751,10 +741,6 @@ M.preserve = function(arguments)
     view.restore()
 end
 
--- vim.cmd([[command! Preserve lua require("utils").preserve('%s/\\s\\+$//ge')]])
--- vim.cmd([[command! Reindent lua preserve("sil keepj normal! gg=G")]])
--- vim.cmd([[command! BufOnly lua preserve("silent! %bd|e#)]])
-
 ---Remove duplicate blank lines (2 -> 1)
 M.squeeze_blank_lines = function()
     if vim.bo.binary == false and vim.o.ft ~= "diff" then
@@ -900,22 +886,36 @@ M.executable = function(exec)
     return fn.executable(exec) == 1
 end
 
----Determine if a value of any type is empty
----@param item any
+---Will determine whether a string or table is empty
+---A number can be given to this function and it will assume that is it as buffer
+---
+---@param item string|table|buffer
 ---@return boolean?
 M.empty = function(item)
     local item_t = type(item)
-    if not item or not _t({"string", "table"}):contains(item_t) then
-        return true
-    end
 
     if item_t == "string" then
         return item == ""
     elseif item_t == "table" then
         return vim.tbl_isempty(item)
-    ---All values have been convered
+    elseif item_t == "number" then
+        local lines = api.nvim_buf_get_lines(b, 0, -1, false)
+        return #lines == 1 and lines[1] == ""
+    ---All values have been covered
     ---@diagnostic disable-next-line:missing-return
     end
+end
+
+---@param str string
+---@param max_len integer
+---@return string
+M.truncate = function(str, max_len)
+    vim.validate {
+        str = {str, "s", false},
+        max_len = {max_len, "n", false}
+    }
+
+    return api.nvim_strwidth(str) > max_len and str:sub(1, max_len) .. style.icons.misc.ellipsis or str
 end
 
 ---Table of escaped termcodes
@@ -1093,7 +1093,8 @@ M.close_diff = function()
 end
 
 ---API around `nvim_echo`
-M.cool_echo =
+---"Colored echo"
+M.cecho =
     (function()
     local lastmsg
     local debounced
@@ -1167,15 +1168,7 @@ M.highlight =
     local ns = api.nvim_create_namespace("l-highlight")
 
     local function do_unpack(pos)
-        vim.validate(
-            {
-                pos = {
-                    pos,
-                    {"table", "number"},
-                    "must be table or number type"
-                }
-            }
-        )
+        vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
         local row, col
         if type(pos) == "table" then
             row, col = unpack(pos)

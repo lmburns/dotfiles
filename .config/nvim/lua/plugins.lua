@@ -88,7 +88,7 @@ packer.init(
                 return require("packer.util").float({border = "rounded"})
             end
         },
-        log = {level = "debug"},
+        log = {level = "info"},
         profile = {enable = true}
     }
 )
@@ -207,6 +207,7 @@ return packer.startup(
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
             use({"kevinhwang91/promise-async"})
+            use({"uga-rosa/utf8.nvim"})
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
@@ -533,7 +534,7 @@ return packer.startup(
                     requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
                 }
             )
-            -- use({"ptzz/lf.vim", conf = "lf"})
+            use({"ptzz/lf.vim", conf = "lf"})
 
             -- ]]] === File Manager ===
 
@@ -1137,7 +1138,7 @@ return packer.startup(
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
                         {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
-                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
                     }
                 }
             )
@@ -1178,7 +1179,8 @@ return packer.startup(
                         },
                         {
                             "nvim-treesitter/playground",
-                            after = "nvim-treesitter"
+                            after = "nvim-treesitter",
+                            -- commit = "ce7e4b7"
                             -- cmd = {"TSHighlightCapturesUnderCursor", "TSPlaygroundToggle"}
                         },
                         {
@@ -1228,18 +1230,13 @@ return packer.startup(
                             }
                         },
                         {
-                            "lewis6991/spellsitter.nvim",
-                            desc = "Treesitter powered spellchecker",
-                            after = "nvim-treesitter",
-                            config = [[require("spellsitter").setup()]]
-                        },
-                        {
                             "p00f/nvim-ts-rainbow",
                             desc = "Rainbow parenthesis using treesitter",
                             after = "nvim-treesitter"
                         },
                         {
-                            "max397574/nvim-treehopper",
+                            -- "max397574/nvim-treehopper",
+                            "mfussenegger/nvim-treehopper",
                             desc = "Region selection with hints on the AST nodes",
                             after = "nvim-treesitter",
                             requires = "nvim-treesitter/nvim-treesitter"
@@ -1282,6 +1279,17 @@ return packer.startup(
             -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
             -- use({"theHamsta/nvim-treesitter-pairs", after = {"nvim-treesitter"}})
             -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
+
+            -- use(
+            --     {
+            --         "nvim-neorg/neorg",
+            --         conf = "norg",
+            --         cmd = "Neorg",
+            --         ft = "norg",
+            --         after = {"nvim-treesitter", "telescope.nvim"},
+            --         requires = {"nvim-neorg/neorg-telescope", "folke/zen-mode.nvim"}
+            --     }
+            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Telescope                         │

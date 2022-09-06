@@ -60,7 +60,7 @@ function M.select(obj, inner, visual)
         obj = "function"
     end
     require("plugs.treesitter").do_textobj(obj, inner, visual)
-    utils.cool_echo("textobjects: treesitter", "WarningMsg")
+    utils.cecho("textobjects: treesitter", "WarningMsg")
 end
 
 return M

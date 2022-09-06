@@ -3,6 +3,7 @@ set statusbar-h-padding 0
 set statusbar-v-padding 0
 set page-padding 1
 set selection-clipboard clipboard
+set window-title-basename "true"
 set incremental-search true
 set search-hadjust true
 set render-loading "false"
@@ -39,105 +40,96 @@ map <C--> zoom out
 map <C-=> zoom in
 map <C-l> nohlsearch
 
-# set default-bg "#1a1729" #00
-# set default-fg "#F7F7F6" #01
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                         Theme 1                          │
+#  ╰──────────────────────────────────────────────────────────╯
+
+# set notification-error-bg   "#20202a"
+# set notification-error-fg   "#63718b"
+# set notification-warning-bg "#20202a"
+# set notification-warning-fg "#c34864"
+# set notification-bg         "#20202a"
+# set notification-fg         "#cddbf9"
 #
-# set statusbar-fg "#B0B0B0" #04
-# set statusbar-bg "#202020" #01
+# set completion-bg           "#20202a"
+# set completion-fg           "#cddbf9"
+# set completion-group-bg     "#313449"
+# set completion-group-fg     "#cddbf9"
+# set completion-highlight-bg "#b8dceb"
+# set completion-highlight-fg "#313449"
 #
-# set inputbar-bg "#151515" #00 currently not used
-# set inputbar-fg "#FFFFFF" #02
+# set index-bg                "#20202a"
+# set index-fg                "#b1dba4"
+# set index-active-bg         "#b1dba4"
+# set index-active-fg         "#20202a"
 #
-# set notification-error-bg "#AC4142" #08
-# set notification-error-fg "#151515" #00
+# set inputbar-bg             "#20202a"
+# set inputbar-fg             "#cddbf9"
 #
-# set notification-warning-bg "#AC4142" #08
-# set notification-warning-fg "#151515" #00
+# set statusbar-bg            "#313449"
+# set statusbar-fg            "#cddbf9"
 #
-# set highlight-color "#F4BF75" #0A
-# set highlight-active-color "#6A9FB5" #0D
+# set highlight-color         "#c8cca7"
+# set highlight-active-color  "#eac1c1"
 #
-# set completion-highlight-fg "#151515" #02
-# set completion-highlight-bg "#90A959" #0C
+# set default-bg              "#20202a"
+# set default-fg              "#cddbf9"
+# set render-loading          "true"
+# set render-loading-bg       "#20202a"
+# set render-loading-fg       "#cddbf9"
 #
-# set completion-bg "#303030" #02
-# set completion-fg "#E0E0E0" #0C
+# set recolor-lightcolor      "#20202a"
+# set recolor-darkcolor       "#cddbf9"
+# set recolor                 true
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                         Theme 2                          │
+#  ╰──────────────────────────────────────────────────────────╯
+set notification-error-bg       "#ff5555" # Red
+set notification-error-fg       "#f8f8f2" # Foreground
+set notification-warning-bg     "#ffb86c" # Orange
+set notification-warning-fg     "#44475a" # Selection
+set notification-bg             "#282a36" # Background
+set notification-fg             "#f8f8f2" # Foreground
+
+set completion-bg               "#282a36" # Background
+set completion-fg               "#6272a4" # Comment
+set completion-group-bg         "#282a36" # Background
+set completion-group-fg         "#6272a4" # Comment
+set completion-highlight-bg     "#44475a" # Selection
+set completion-highlight-fg     "#f8f8f2" # Foreground
+
+set index-bg                    "#282a36" # Background
+set index-fg                    "#f8f8f2" # Foreground
+set index-active-bg             "#44475a" # Current Line
+set index-active-fg             "#f8f8f2" # Foreground
+
+set inputbar-bg                 "#282a36" # Background
+set inputbar-fg                 "#f8f8f2" # Foreground
+set statusbar-bg                "#282a36" # Background
+set statusbar-fg                "#f8f8f2" # Foreground
+
+set highlight-color             "#ffb86c" # Orange
+set highlight-active-color      "#ff79c6" # Pink
+
+set default-bg                  "#282a36" # Background
+set default-fg                  "#f8f8f2" # Foreground
+
+set render-loading              true
+set render-loading-fg           "#282a36" # Background
+set render-loading-bg           "#f8f8f2" # Foreground
+
 #
-# set notification-bg "#90A959" #0B
-# set notification-fg "#151515" #00
+# Recolor mode settings
 #
-# set recolor "true"
-# #set recolor-lightcolor "#000000" #00
-# set recolor-lightcolor "#1a1729" #00
-# set recolor-darkcolor "#E0E0E0" #06
-# set recolor-reverse-video "true"
-# set recolor-keephue "false"
 
-###################################################
+set recolor-lightcolor          "#282a36" # Background
+set recolor-darkcolor           "#f8f8f2" # Foreground
 
-set notification-error-bg   "#20202a"
-set notification-error-fg   "#63718b"
-set notification-warning-bg "#20202a"
-set notification-warning-fg "#c34864"
-set notification-bg         "#20202a"
-set notification-fg         "#cddbf9"
-
-set completion-bg           "#20202a"
-set completion-fg           "#cddbf9"
-set completion-group-bg     "#313449"
-set completion-group-fg     "#cddbf9"
-set completion-highlight-bg "#b8dceb"
-set completion-highlight-fg "#313449"
-
-set index-bg                "#20202a"
-set index-fg                "#b1dba4"
-set index-active-bg         "#b1dba4"
-set index-active-fg         "#20202a"
-
-set inputbar-bg             "#20202a"
-set inputbar-fg             "#cddbf9"
-
-set statusbar-bg            "#313449"
-set statusbar-fg            "#cddbf9"
-
-set highlight-color         "#c8cca7"
-set highlight-active-color  "#eac1c1"
-
-set default-bg              "#20202a"
-set default-fg              "#cddbf9"
-set render-loading          "true"
-set render-loading-bg       "#20202a"
-set render-loading-fg       "#cddbf9"
-
-set recolor-lightcolor      "#20202a"
-set recolor-darkcolor       "#cddbf9"
-set recolor                 true
-
-###################################################
-
-# set recolor true
-# set recolor-darkcolor '#d3dae3'
-# set recolor-lightcolor '#202326'
-# set statusbar-bg '#313640'
-# set statusbar-fg '#d3dae3'
-# set inputbar-bg '#202326'
-# set inputbar-fg '#d3dae3'
-# set notification-bg '#383c4a'
-# set notification-fg '#d3dae3'
-# set notification-error-bg '#202326'
-# set notification-error-fg '#e06c75'
-# set notification-warning-bg '#202326'
-# set notification-warning-fg '#d19a66'
-# set highlight-color '#e5c07b'
-# set highlight-active-color '#61afef'
-# set completion-fg '#d3dae3'
-# set completion-bg '#333841'
-# set completion-highlight-fg '#d3dae3'
-# set completion-highlight-bg '#4b5263'
-# set completion-group-fg '#d3dae3'
-# set completion-group-bg '#5c6370'
-# set selection-clipboard 'clipboard'
-# set default-bg '#202326'
-# set default-fg '#d3dae3'
+#
+# Startup options
+#
+set adjust-open width
+set recolor true
 
 # vim:ft=zsh:

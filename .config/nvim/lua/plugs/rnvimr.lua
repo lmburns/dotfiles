@@ -25,6 +25,7 @@ function M.setup()
     g.rnvimr_border_attr = {fg = 3}
 
     g.rnvimr_action = {
+        l = "NvimEdit edit",
         ["<C-t>"] = "NvimEdit tabedit",
         ["<C-x>"] = "NvimEdit split",
         ["<C-v>"] = "NvimEdit vsplit",

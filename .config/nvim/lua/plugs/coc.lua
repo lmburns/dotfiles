@@ -40,10 +40,6 @@ function M.toggle_diagnostic_target()
     end
 end
 
--- FIX: Diagnostic are not refreshing properly
---      When using [g/]g to naviagte there aren't any
---      However vim.b.coc_diagnostic_info still shows errors
-
 ---Get the nearest symbol in reference to the location of the cursor
 ---@return string?
 function M.getsymbol()
@@ -104,7 +100,7 @@ function M.go2def()
     end
 
     if by then
-        utils.cool_echo("go2def: " .. by, "Special")
+        utils.cecho("go2def: " .. by, "Special")
     end
 end
 
@@ -200,7 +196,7 @@ function M.action(action, args, timeout)
                                 function()
                                     resolve(res)
                                 end,
-                                1000
+                                timeout
                             )
                         else
                             resolve(res)
@@ -289,6 +285,10 @@ function M.diagnostic_change()
         end
     end
 end
+
+-- FIX: Diagnostic are not refreshing properly
+--      When using [g/]g to naviagte there aren't any
+--      However vim.b.coc_diagnostic_info still shows errors
 
 ---The current document diagnostics
 M.document = {}
@@ -432,7 +432,7 @@ M.hl_fallback =
 
     return function()
         local ft = vim.bo.ft
-        if vim.tbl_contains(fb_bl_ft, ft) or nvim.mode().mode == "t" then
+        if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
             return
         end
 
@@ -585,58 +585,60 @@ end
 ---@return table
 M.get_lua_runtime = function()
     local result = {}
-    -- local filter = {"kimbox"}
+    local filter = {"kimbox"}
 
-    -- ---Add a path to the Lua runtime
-    -- ---@param lib string
-    -- ---@param filter string[]
-    -- ---@param types boolean?
-    -- local function add(lib, filter, types)
-    --     -- If it is a colorscheme, skip it. Removes a lot of files
-    --     -- for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
-    --     --     path = uv.fs_realpath(path)
-    --     --     if path and not filter[fn.fnamemodify(path, ":h:t")] then
-    --     --         goto continue
-    --     --     end
-    --     -- end
-    --
-    --     for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
-    --         path = uv.fs_realpath(path)
-    --         -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
-    --
-    --         if path then
-    --             local stat = uv.fs_stat(path)
-    --             if stat and stat.type == "directory" then
-    --                 result[path] = true
-    --             end
-    --         end
-    --     end
-    --
-    --     -- Add types for plugins that have them
-    --     if types then
-    --         for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
-    --             path = uv.fs_realpath(path)
-    --             if path and fn.isdirectory(path) then
-    --                 result[path] = true
-    --             end
-    --         end
-    --     end
-    --
-    --     ::continue::
-    -- end
-
-    local function add(lib)
-        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+    ---Add a path to the Lua runtime
+    ---@param lib string
+    ---@param filter string[]
+    ---@param types boolean?
+    local function add(lib, filter, types)
+        -- If it is a colorscheme, skip it. Removes a lot of files
+        for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
             path = uv.fs_realpath(path)
-            if path and fn.isdirectory(path) then
-                result[path] = true
+            if path and not filter[fn.fnamemodify(path, ":h:t")] then
+                goto continue
             end
         end
+
+        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+            path = uv.fs_realpath(path)
+            -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
+
+            if path then
+                local stat = uv.fs_stat(path)
+                if stat and stat.type == "directory" then
+                    result[path] = true
+                end
+            end
+        end
+
+        -- Add types for plugins that have them
+        if types then
+            for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
+                path = uv.fs_realpath(path)
+                if path and fn.isdirectory(path) then
+                    result[path] = true
+                end
+            end
+        end
+
+        ::continue::
     end
 
+    -- local function add(lib)
+    --     for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+    --         path = uv.fs_realpath(path)
+    --         if path and fn.isdirectory(path) then
+    --             result[path] = true
+    --         end
+    --     end
+    -- end
+
     for _, site in pairs(vim.split(vim.o.packpath, ",")) do
-        add(site .. "/pack/*/opt/*")
-        add(site .. "/pack/*/start/*")
+        -- add(site .. "/pack/*/opt/*")
+        -- add(site .. "/pack/*/start/*")
+        add(site .. "/pack/*/opt/*", filter, true)
+        add(site .. "/pack/*/start/*", filter, true)
     end
 
     -- add("$VIMRUNTIME")
@@ -711,6 +713,20 @@ function M.init()
                 require("plugs.coc").diagnostics_tracker()
             end
         },
+        -- {
+        --     event = "CursorHold",
+        --     pattern = "*",
+        --     command = function()
+        --         if fn["coc#rpc#ready"]() then
+        --             vim.defer_fn(
+        --                 function()
+        --                     fn.CocActionAsync("diagnosticRefresh")
+        --                 end,
+        --                 1000
+        --             )
+        --         end
+        --     end
+        -- },
         {
             event = "CursorHold",
             pattern = "*",

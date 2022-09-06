@@ -14,10 +14,10 @@
 --regex-perl=/^[ \t]*?require[ \t]+((\w|\:)+)/\1/r,require,requires/
 --regex-perl=/^[ \t]*?has[ \t]+['"]?(\w+)['"]?/\1/a,property,properties/
 --regex-perl=/^[ \t]*?\*(\w+)[ \t]*?=/\1/b,alias,aliases/
---regex-perl=/->helper\([ \t]?['"]?(\w+)['"]?/\1/h,helper,helpers/
 --regex-perl=/^[ \t]*?our[ \t]*?[\$@%](\w+)/\1/o,our,ours/
 --regex-perl=/^\s*package\s+(.+)\s*;/\1/p,package/
 --regex-perl=/^[ \t]*?my[ \t]*?(\$\w+)[ \t]*?=[ \t]*?sub/\1/z,psubroutine,psubroutines/
+# --regex-perl=/->helper\([ \t]?['"]?(\w+)['"]?/\1/h,helper,helpers/
 # --regex-perl=/^\=head1[ \t]+(.+)/\1/d,pod,POD/
 # --regex-perl=/^\=head2[ \t]+(.+)/-- \1/d,pod,POD/
 # --regex-perl=/^\=head[3][ \t]+(.+)/--- \1/d,pod,POD/
@@ -47,7 +47,7 @@
 --regex-Solidity=/[ \t]*(error|revert)[ \t]+([a-zA-Z0-9_]+)*\(/\2/r,error/
 --regex-Solidity=/[ \t]*(struct[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
 --regex-Solidity=/[ \t]*(enum[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
---regex-Solidity=/[ \t]*mapping[ \t]+\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mappin
+# --regex-Solidity=/[ \t]*mapping[ \t]+\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mappin
 
 # === Typescript ===
 # --langmap=typescript:.ts

@@ -5,7 +5,7 @@ local augroup = utils.augroup
 
 local api = vim.api
 
-local last_wv
+local wv
 local winid
 local bufnr
 local report
@@ -23,7 +23,7 @@ end
 function M.set_wv()
     winid = api.nvim_get_current_win()
     bufnr = api.nvim_get_current_buf()
-    last_wv = utils.save_win_positions(bufnr)
+    wv = utils.save_win_positions(bufnr)
     report = vim.o.report
     -- skip `update_topline_redraw` in `op_yank_reg` caller
     vim.o.report = 65535
@@ -31,7 +31,7 @@ end
 
 ---Reset window view options
 function M.clear_wv()
-    last_wv = nil
+    wv = nil
     winid = nil
     bufnr = nil
     if report then
@@ -43,10 +43,10 @@ end
 ---Restore window view
 function M.restore()
     if
-        vim.v.event.operator == "y" and last_wv and api.nvim_get_current_win() == winid and
+        vim.v.event.operator == "y" and wv and api.nvim_get_current_win() == winid and
             api.nvim_get_current_buf() == bufnr
      then
-        last_wv.restore()
+        wv.restore()
     end
     M.clear_wv()
 end

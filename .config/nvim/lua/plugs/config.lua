@@ -5,7 +5,6 @@
 local M = {}
 
 local D = require("dev")
-local abbr = require("abbr")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local wk = require("which-key")
@@ -1584,12 +1583,12 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                            LF                            │
 -- ╰──────────────────────────────────────────────────────────╯
--- function M.lf()
---     g.lf_map_keys = 0
---     g.lf_replace_netrw = 1
---
---     map("n", "<A-o>", ":Lf<CR>")
--- end
+function M.lf()
+    g.lf_map_keys = 0
+    g.lf_replace_netrw = 1
+
+    map("n", "<C-A-u>", ":Lf<CR>")
+end
 
 function M.lfnvim()
     local lf = D.npcall(require, "lf")
@@ -1612,7 +1611,7 @@ function M.lfnvim()
         }
     )
 
-    map("n", "<A-o>", ":Lf<CR>")
+    map("n", "<A-o>", ":Lfnvim<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
 end

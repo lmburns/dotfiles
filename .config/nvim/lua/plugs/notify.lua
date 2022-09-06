@@ -6,6 +6,7 @@ if not notify then
     return
 end
 
+local style = require("style")
 local hl = require("common.color")
 local utils = require("common.utils")
 local bmap = utils.bmap
@@ -17,12 +18,11 @@ local api = vim.api
 function M.setup()
     ---@type table<string, fun(bufnr: number, notif: table, highlights: table, config: table)>
     local renderer = require("notify.render")
-    local stages_util = require("notify.stages.util")
+    -- local stages_util = require("notify.stages.util")
 
     notify.setup(
         {
             stages = "fade_in_slide_out", -- slide
-            direction = "top",
             fps = 60,
             timeout = 3000,
             minimum_width = 30,
@@ -32,7 +32,15 @@ function M.setup()
             -- -- Could create something to write to a file
             -- end,
             on_open = function(winnr)
-                api.nvim_win_set_config(winnr, {zindex = 500})
+                if api.nvim_win_is_valid(winnr) then
+                    api.nvim_win_set_config(
+                        winnr,
+                        {
+                            border = style.current.border,
+                            zindex = 500
+                        }
+                    )
+                end
                 local bufnr = api.nvim_win_get_buf(winnr)
                 bmap(bufnr, "n", "q", "<Cmd>bdelete<CR>", {nowait = true})
                 api.nvim_buf_call(

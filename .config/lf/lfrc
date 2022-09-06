@@ -952,7 +952,7 @@ map tos $stig                          # transmisison TUI
 # ]]]
 
 # == Tagging == [[[
-map M mark-save
+map <c-_> mark-save
 
 map ; push :tag<space>
 map Tj jump_tag

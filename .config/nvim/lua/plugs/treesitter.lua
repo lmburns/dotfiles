@@ -61,12 +61,12 @@ function M.hijack_synset()
     if bytes / lcount < 500 then
         if ft_enabled[ft] then
             configs.reattach_module("highlight", bufnr)
-            -- vim.defer_fn(
-            --     function()
-            --         configs.reattach_module("textobjects.move", bufnr)
-            --     end,
-            --     300
-            -- )
+            vim.defer_fn(
+                function()
+                    configs.reattach_module("textobjects.move", bufnr)
+                end,
+                300
+            )
         else
             vim.bo.syntax = ft
         end
@@ -538,6 +538,7 @@ M.setup_treesurfer = function()
         _t(
         {
             "function",
+            "arrow_function",
             "function_definition",
             "function_declaration",
             "function_item",
@@ -598,6 +599,7 @@ M.setup_treesurfer = function()
                 ["function_item"] = "",
                 ["function_definition"] = "",
                 ["function"] = "",
+                ["arrow_function"] = "",
                 ["method_definition"] = "",
                 ["variable_declaration"] = "",
                 ["let_declaration"] = "",
@@ -653,6 +655,7 @@ M.setup_treesurfer = function()
         end,
         {silent = true, expr = true, desc = "Swap cursor node w/ next sibling"}
     )
+
     map(
         "n",
         "vU",
@@ -692,7 +695,6 @@ end
 ---@return table
 M.setup = function()
     return {
-        -- "norg",
         -- "rescript",
         ensure_installed = {
             "bash",
@@ -729,6 +731,9 @@ M.setup = function()
             "make",
             "markdown",
             "markdown_inline",
+            -- "norg",
+            -- "norg_meta",
+            -- "norg_table",
             "ninja",
             "perl", -- Syntax isn't parsed the greatest
             "python",
@@ -958,24 +963,12 @@ M.setup = function()
                     ["]a"] = "@call.inner",
                     ["]l"] = "@loop.inner",
                     ["]d"] = "@conditional.inner"
-                    -- ["]l"] = "@statement.inner"
-                    -- ["gnf"] = "@function.outer",
-                    -- ["gnif"] = "@function.inner",
-                    -- ["gnp"] = "@parameter.inner",
-                    -- ["gnc"] = "@call.outer",
-                    -- ["gnic"] = "@call.inner"
                 },
                 goto_next_end = {
-                    -- ["]["] = "@function.outer",
                     ["]F"] = "@function.outer",
                     ["]M"] = "@class.outer",
                     ["]R"] = "@block.outer",
                     ["]A"] = "@call.outer"
-                    -- ["gnF"] = "@function.outer",
-                    -- ["gniF"] = "@function.inner",
-                    -- ["gnP"] = "@parameter.inner",
-                    -- ["gnC"] = "@call.outer",
-                    -- ["gniC"] = "@call.inner",
                 },
                 goto_previous_start = {
                     -- ["[["] = "@function.outer",
@@ -987,29 +980,17 @@ M.setup = function()
                     ["[a"] = "@call.inner",
                     ["[l"] = "@loop.inner",
                     ["[d"] = "@conditional.inner"
-                    -- ["gpf"] = "@function.outer",
-                    -- ["gpif"] = "@function.inner",
-                    -- ["gpp"] = "@parameter.inner",
-                    -- ["gpc"] = "@call.outer",
-                    -- ["gpic"] = "@call.inner",
                 },
                 goto_previous_end = {
-                    -- ["[]"] = "@function.outer",
                     ["[F"] = "@function.outer",
                     ["[R"] = "@block.outer",
                     ["[M"] = "@class.outer",
                     ["[A"] = "@call.outer"
-                    -- ["gpF"] = "@function.outer",
-                    -- ["gpiF"] = "@function.inner",
-                    -- ["gpP"] = "@parameter.inner",
-                    -- ["gpC"] = "@call.outer",
-                    -- ["gpiC"] = "@call.inner",
                 }
             },
             swap = {
                 enable = true,
                 swap_next = {
-                    -- ["ss"] = "@statement.outer",
                     ["s."] = "@element",
                     ["sp"] = "@parameter.inner",
                     ["sf"] = "@function.outer",
@@ -1017,7 +998,6 @@ M.setup = function()
                     ["sb"] = "@block.outer"
                 },
                 swap_previous = {
-                    -- ["sS"] = "@statement.outer",
                     ["s,"] = "@element",
                     ["sP"] = "@parameter.inner",
                     ["sF"] = "@function.outer",
@@ -1078,6 +1058,33 @@ function M.install_extra_parsers()
         filetype = "log"
     }
 
+    -- Norg
+    -- parser_config.norg = {
+    --     install_info = {
+    --         url = "https://github.com/nvim-neorg/tree-sitter-norg",
+    --         files = {"src/parser.c", "src/scanner.cc"},
+    --         branch = "main"
+    --     }
+    -- }
+
+    -- Norg Table
+    -- parser_config.norg_table = {
+    --     install_info = {
+    --         url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
+    --         files = {"src/parser.c"},
+    --         branch = "main"
+    --     }
+    -- }
+
+    -- Norg Meta
+    -- parser_config.norg_meta = {
+    --     install_info = {
+    --         url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+    --         branch = "main",
+    --         files = {"src/parser.c"}
+    --     }
+    -- }
+
     -- Git commits
     -- parser_config.gitcommit = {
     --     install_info = {
@@ -1137,7 +1144,12 @@ local function init()
             ["require_call"] = "RequireCall",
             ["function.call"] = "TSFunction",
             ["function.bracket"] = "Type",
-            ["namespace.type"] = "TSNamespaceType"
+            ["namespace.type"] = "TSNamespaceType",
+            ["function_definition"] = "FunctionDefinition",
+            ["quantifier"] = "Special",
+            ["utils"] = "Function",
+            ["code"] = "Comment",
+            ["rust_path"] = "String",
         }
     )
 

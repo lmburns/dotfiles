@@ -159,43 +159,6 @@ M.get_vim_output = function(cmd)
     )
 end
 
----@class JobOpts
----@field on_stdout function function to run on stdout
----@field input string input for stdin
----@field on_exit function function to run on exit
-
----@param cmd string
----@param opts JobOpts
----@return number the job id
-M.start_job = function(cmd, opts)
-    opts = opts or {}
-    local id =
-        fn.jobstart(
-        cmd,
-        {
-            stdout_buffered = true,
-            on_stdout = function(_, data, _)
-                if data and type(opts.on_stdout) == "function" then
-                    opts.on_stdout(data)
-                end
-            end,
-            on_exit = function(_, data, _)
-                if type(opts.on_exit) == "function" then
-                    opts.on_exit(data)
-                end
-            end
-        }
-    )
-
-    if opts.input then
-        api.nvim_chan_send(id, opts.input)
-        -- fn.chansend(id, opts.input)
-        fn.chanclose(id, "stdin")
-    end
-
-    return id
-end
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Print                           │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -761,7 +724,7 @@ end
 ---@generic T
 ---@param tbl T[] Table to be filtered
 ---@param func fun(v: T) Function to apply filter
----@return T[]
+---@return T[]?
 M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
 end

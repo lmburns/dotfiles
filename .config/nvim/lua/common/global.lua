@@ -137,6 +137,7 @@ _G.BLACKLIST_FT = {
     "nerdtree",
     "neotest-summary",
     "netrw",
+    "norg",
     "NvimTree",
     "org",
     "orgagenda",

@@ -268,8 +268,8 @@
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
   // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
-  // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣ // FIX: This stopped working
-  // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣", // FIX: This stopped working
+  // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
+  // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
   // ╭──────────────────────────────────────────────────────────╮
   // │                          Golang                          │
   // ╰──────────────────────────────────────────────────────────╯
@@ -307,7 +307,7 @@
   // The Coc package for Lua provides inline hints, which is better
   // than a manual setup (can be found below)
   "sumneko-lua.enable": true,
-  "sumneko-lua.enableNvimLuaDev": false,
+  "sumneko-lua.enableNvimLuaDev": true,
   "sumneko-lua.checkUpdate": true,
   "sumneko-lua.inlayHints.refreshOnInsertMode": false,
   "sumneko-lua.inlayHints.trimSemicolon": false,

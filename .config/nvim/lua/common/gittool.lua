@@ -18,7 +18,7 @@ local uv = vim.loop
 M.cmd = function(args, cb)
     local root = M.root()
     if #root == 0 then
-        utils.cool_echo("Not in a git directory", "TSNote")
+        utils.cecho("Not in a git directory", "TSNote")
         return
     end
     local stdout, _ =
@@ -35,7 +35,7 @@ M.cmd = function(args, cb)
                         return j:result()
                     end
                 else
-                    utils.cool_echo("Command returned non-zero exit code", "ErrorMsg")
+                    utils.cecho("Command returned non-zero exit code", "ErrorMsg")
                 end
             end
         }
