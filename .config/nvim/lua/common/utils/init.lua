@@ -235,6 +235,7 @@ end
 ---@field remap boolean
 ---@field callback function
 ---@field cmd boolean
+---@field luacmd boolean
 ---@field desc string
 
 ---@class DelMapArgs
@@ -265,16 +266,15 @@ end
 --- - `callback`: (function, default nil) Use a Lua function to bind to a key
 ---
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
+--- - `luacmd`: (boolean, default false) Make the mapping a `<Cmd>lua` mapping (do not use `<Cmd>`..<CR> with this)
 --- - `desc`: (string) Describe the keybinding, this hooks to `which-key`
 M.map = function(modes, lhs, rhs, opts)
-    vim.validate(
-        {
-            mode = {modes, {"s", "t"}},
-            lhs = {lhs, "s"},
-            rhs = {rhs, {"s", "f"}},
-            opts = {opts, "t", true}
-        }
-    )
+    vim.validate {
+        mode = {modes, {"s", "t"}},
+        lhs = {lhs, "s"},
+        rhs = {rhs, {"s", "f"}},
+        opts = {opts, "t", true}
+    }
 
     opts = vim.deepcopy(opts) or {}
     modes = type(modes) == "string" and {modes} or modes
@@ -315,6 +315,13 @@ M.map = function(modes, lhs, rhs, opts)
             if opts.cmd then
                 opts.cmd = nil
                 rhs = ("<Cmd>%s<CR>"):format(rhs)
+            end
+
+            -- This is placed after `cmd`
+            -- If `cmd` and `luacmd` are both used, `luacmd` overrules
+            if opts.luacmd then
+                opts.luacmd = nil
+                rhs = ("<Cmd>lua %s<CR>"):format(rhs)
             end
         end
 

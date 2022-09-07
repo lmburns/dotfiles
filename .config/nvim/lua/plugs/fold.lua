@@ -289,11 +289,11 @@ local function init()
     map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
 
     -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
-    map("n", "z[", [[<Cmd>lua require('ufo').goPreviousStartFold()<CR>]])
-    map("n", "z]", [[<Cmd>lua require('plugs.fold').nav_fold(true)<CR>]])
+    map("n", "z[", [[require('ufo').goPreviousStartFold()]], {luacmd = true})
+    map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true})
 
-    map("n", "z,", [[<Cmd>lua require('ufo').goPreviousClosedFold()<CR>]])
-    map("n", "z.", [[<Cmd>lua require('ufo').goNextClosedFold()<CR>]])
+    map("n", "z,", [[require('ufo').goPreviousClosedFold()]], {luacmd = true})
+    map("n", "z.", [[require('ufo').goNextClosedFold()]], {luacmd = true})
 end
 
 init()
