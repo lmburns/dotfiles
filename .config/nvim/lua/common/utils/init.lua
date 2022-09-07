@@ -451,7 +451,6 @@ end
 ---@vararg any: Anything to dump
 M.dump = function(...)
     local objects = vim.tbl_map(D.inspect, {...})
-    ---@cast objects any[]
     print(unpack(objects))
 end
 
@@ -581,20 +580,19 @@ end
 ---@param count number? of messages to get
 ---@param str boolean whether to return as a string or table
 ---@return string
-M.get_latest_messages = function(count, str)
+M.messages = function(count, str)
     -- local messages = api.nvim_exec("messages", true)
     local messages = fn.execute("messages")
     local lines = vim.split(messages, "\n")
     lines =
-        vim.tbl_filter(
+        D.filter(
+        lines,
         function(line)
             return line ~= ""
-        end,
-        lines
+        end
     )
     count = count and tonumber(count) or nil
     count = (count ~= nil and count >= 0) and count - 1 or #lines
-    ---@cast lines -?
     local slice = vim.list_slice(lines, #lines - count)
     return str and table.concat(slice, "\n") or slice
 end
@@ -678,42 +676,59 @@ end
 ---@field level? NotifyLevels Notification level
 ---@field hl? string Highlight group
 ---@field on_open fun(winnr: number): nil
+---@field once boolean Only send notification one time
 
----Wrapper to send a notification
----@param msg string? Message to notify
----@param level number
----@param opts NotifyOpts
-M.notify = function(msg, level, opts)
-    level = F.if_nil(level, log.levels.INFO)
-    local keep = function()
-        return true
-    end
+do
+    local notifications = {}
 
-    local _opts =
-        ({
-        [log.levels.TRACE] = {timeout = 500},
-        [log.levels.DEBUG] = {timeout = 500},
-        [log.levels.INFO] = {timeout = 1000},
-        [log.levels.WARN] = {timeout = 3000},
-        [log.levels.ERROR] = {timeout = 5000, keep = keep}
-    })[level]
-
-    ---@diagnostic disable-next-line:cast-local-type
-    opts = vim.tbl_extend("force", _opts or {}, opts or {})
-    if vim.g.nvim_focused then
-        local ok, notify = pcall(require, "notify")
-        if not ok then
-            vim.defer_fn(
-                function()
-                    vim.notify(msg, level, opts)
-                end,
-                100
-            )
-            return
+    ---Wrapper to send a notification
+    ---@param msg string? Message to notify
+    ---@param level number
+    ---@param opts NotifyOpts
+    M.notify = function(msg, level, opts)
+        level = F.if_nil(level, log.levels.INFO)
+        local keep = function()
+            return true
         end
-        return notify.notify(msg, level, opts)
-    else
-        return require("desktop-notify").notify(msg, level, opts)
+
+        local _opts =
+            ({
+            [log.levels.TRACE] = {timeout = 500},
+            [log.levels.DEBUG] = {timeout = 500},
+            [log.levels.INFO] = {timeout = 1000},
+            [log.levels.WARN] = {timeout = 3000},
+            [log.levels.ERROR] = {timeout = 5000, keep = keep}
+        })[level]
+
+        ---@diagnostic disable-next-line:cast-local-type
+        opts = vim.tbl_extend("force", _opts or {}, opts or {})
+
+        local function notify()
+            if vim.g.nvim_focused then
+                local ok, notify = pcall(require, "notify")
+                if not ok then
+                    vim.defer_fn(
+                        function()
+                            vim.notify(msg, level, opts)
+                        end,
+                        100
+                    )
+                    return
+                end
+                return notify.notify(msg, level, opts)
+            else
+                return require("desktop-notify").notify(msg, level, opts)
+            end
+        end
+
+        if opts.once then
+            if not notifications[msg] then
+                notify()
+                notifications[msg] = true
+            end
+        else
+            notify()
+        end
     end
 end
 
@@ -1104,7 +1119,6 @@ M.cecho =
     ---@param history boolean? add message to history
     ---@param wait number? amount of time to wait
     return function(msg, hl, history, wait)
-        ---@cast history -?
         history = history == nil and true or history
         vim.schedule(
             function()

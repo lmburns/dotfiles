@@ -23,6 +23,7 @@ function M.setup()
     notify.setup(
         {
             stages = "fade_in_slide_out", -- slide
+            top_down = true,
             fps = 60,
             timeout = 3000,
             minimum_width = 30,

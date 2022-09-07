@@ -105,7 +105,7 @@ require("common.jump")
 -- require("common.reg")
 
 vim.notify = function(...)
-    vim.notify = require("notify")
+    -- vim.notify = require("notify")
     require("plugins").loader("nvim-notify")
     require("plugins").loader("desktop-notify.nvim")
     vim.notify = require("common.utils").notify
