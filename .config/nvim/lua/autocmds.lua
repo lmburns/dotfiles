@@ -227,7 +227,6 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
 }
 -- === Highlight Disable ===
 
--- FIX: This stopped working after 6cee15da7
 -- === Restore Cursor Position === [[[
 nvim.autocmd.lmb__RestoreCursor = {
     {

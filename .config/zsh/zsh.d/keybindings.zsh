@@ -26,7 +26,7 @@ if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
 }
 
 # Remove specific widgets
-function remove_widget () {
+function remove_widget() {
   local name=$1
   local cap=$2
   if (( ${+functions[$name]} )) && [[ ${functions[$name]} == *${cap}* ]]; then
@@ -35,6 +35,7 @@ function remove_widget () {
     [[ $w == user:* ]] && unfunction ${w#*:}
   fi
 }
+
 # remove_widget zle-line-init smkx
 # remove_widget zle-line-finish rmkx
 # unfunction remove_widget
@@ -44,10 +45,9 @@ builtin bindkey -r '^[,'
 builtin bindkey -r '^[/'
 builtin bindkey -M vicmd -r 'R'
 
-# autoload -Uz incarg
+autoload -Uz incarg
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 
-autoload -Uz edit-command-line; zle -N edit-command-line
 
 autoload -Uz surround
 zle -N delete-surround surround
@@ -56,6 +56,8 @@ zle -N change-surround surround
 
 # =========================== zle Functions ==========================
 # ====================================================================
+
+# autoload -Uz edit-command-line; zle -N edit-command-line
 
 # Expand everything under cursor
 function expand-all() {
@@ -107,11 +109,10 @@ zle -N fcq
 zle -N pw
 zle -N fe
 zle -N macho-zle
+zle -N __unicode_translate # translate unicode to symbol
 
 # zle -N fcd-zle
 # zle -N bow2
-
-zle -N __unicode_translate # translate unicode to symbol
 
 autoload up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -156,6 +157,15 @@ function src-locate() {
 }
 zle -N src-locate
 
+function fzf-locate-widget() {
+  local selected
+  if selected=$(locate / | fzf -q "$LBUFFER"); then
+    LBUFFER=$selected
+  fi
+  zle redisplay
+}
+zle -N fzf-locate-widget
+
 # TODO: Set this to history file that is similar to per-dir-history
 function stash_buffer() {
   [[ -z $BUFFER ]] && return
@@ -168,13 +178,14 @@ zle -N stash_buffer
 # ====================================================================
 if [[ $TMUX ]]; then
   zle -N tmux::attach-create
-  vbindkey 'M-t' tmt                       # alt-t
+  vbindkey 'M-t' tmt                 # alt-t
   zle -N tmux::select-window
   vbindkey 'M-w' tmux::select-window # alt-w
 fi
 
 # bindkey '^I' expand-or-complete-prefix # Fix autopair completion within brackets
 # bindkey '^T' backward-kill-word
+
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 declare -gA keybindings; keybindings=(
@@ -183,6 +194,7 @@ declare -gA keybindings; keybindings=(
 # 'F1'                    dotbare-fstat
 # 'F2'                    db-faddf
 # 'F3'                    _wbmux
+# 'ga'                    what-cursor-position
   'Home'                  beginning-of-line
   'End'                   end-of-line
   'Delete'                delete-char
@@ -209,7 +221,8 @@ declare -gA keybindings; keybindings=(
   'C-x C-f'               fz-find
   'C-x C-u'               RG_buff                  # RG with $BUFFER
   'C-x C-x'               execute-command          # Execute ZLE command
-  'mode=vicmd u'          undo
+  'mode=vicmd 0'          vi-digit-or-beginning-of-line
+  'mode=vicmd u'          vi-undo-change
   'mode=vicmd R'          replace-pattern
   'mode=vicmd U'          redo
   'mode=vicmd E'          backward-kill-line
@@ -219,32 +232,33 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd H'          vi-beginning-of-line
   'mode=vicmd Q'          src-locate # search for something placing results in $candidates[@]
   'mode=vicmd ?'          which-command
-  'mode=vicmd yy'         copyx
-  'mode=vicmd ;v'         clipboard-fzf         # greenclip fzf
-  'mode=vicmd ;e'         edit-command-line-as-zsh
-  'mode=vicmd ;x'         vi-backward-kill-word
-  'mode=vicmd cc'         vi-change-whole-line
-  'mode=vicmd ds'         delete-surround
-  'mode=vicmd cs'         change-surround
+  # 'mode=vicmd ?'          which-command
   'mode=vicmd K'          run-help
-  'mode=vicmd M-\'        list-keys          # list keybindings in mode
+  'mode=vicmd yy'         copyx                    # copy text, display message
+  'mode=vicmd ;v'         clipboard-fzf            # greenclip fzf
+  'mode=vicmd ;e'         edit-command-line-as-zsh # edit command in editor
+  'mode=vicmd ;x'         vi-backward-kill-word    # kill word backwards
+  'mode=vicmd cc'         vi-change-whole-line     # change all text to start over
+  'mode=vicmd ds'         delete-surround          # delete 'surrounders'
+  'mode=vicmd cs'         change-surround          # change 'surrounders'
+  'mode=visual S'         add-surround             # add 'surrounders'
+  'mode=vicmd M-\'        list-keys                # list keybindings in mode
   'mode=vicmd /'          history-incremental-pattern-search-backward
-  'mode=vicmd \$'         expand-all         # expand alias etc under keyboard
-  'mode=vicmd \-'         zvm_switch_keyword # decrement item under keyboard
-  'mode=vicmd \+'         zvm_switch_keyword # increment item under keyboard
-  'mode=vicmd ,.'         get-line           # get line from buffer-stack
-  'mode=vicmd ..'         push-line          # push line to buffer-stack
-  'mode=viins jk'         vi-cmd-mode
-  'mode=viins kj'         vi-cmd-mode
-  'mode=visual S'         add-surround
-  'mode=str M-o'          lc                 # lf change dir
-  'mode=str M-S-O'        lfub               # lf ueberzug
-  'mode=str C-u'          lf                 # regular lf
-  'mode=str ;o'           noptions           # edit zsh options
-  'mode=@ C-b'            bow2               # surfraw open w3m
-  'mode=+ M-.'            kf                 # a formarks like thing in rust
-  'mode=+ M-,'            frd                # cd interactively recent dir
-  'mode=+ M-;'            fcd                # cd interactively
+  'mode=vicmd \$'         expand-all               # expand alias etc under keyboard
+  'mode=vicmd \-'         zvm_switch_keyword       # decrement item under keyboard
+  'mode=vicmd \+'         zvm_switch_keyword       # increment item under keyboard
+  'mode=vicmd ,.'         get-line                 # get line from buffer-stack
+  'mode=vicmd ..'         push-line                # push line to buffer-stack
+  'mode=viins jk'         vi-cmd-mode              # switch to vi-cmd mode
+  'mode=viins kj'         vi-cmd-mode              # switch to vi-cmd mode
+  'mode=str M-o'          lc                       # lf change dir
+  'mode=str M-S-O'        lfub                     # lf ueberzug
+  'mode=str C-u'          lf                       # regular lf
+  'mode=str ;o'           noptions                 # edit zsh options
+  'mode=@ C-b'            bow2                     # surfraw open w3m
+  'mode=+ M-.'            kf                       # a formarks like thing in rust
+  'mode=+ M-,'            frd                      # cd interactively recent dir
+  'mode=+ M-;'            fcd                      # cd interactively
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi
   'mode=@ M-['            fstat
@@ -255,8 +269,11 @@ declare -gA keybindings; keybindings=(
   'mode=menuselect C-f'   history-incremental-search-forward
 
 # ========================== Testing ==========================
-# 'mode=vicmd Q'    save-alias
-  'mode=vicmd ;d'   dirstack-plus
+# 'mode=vicmd Q'  save-alias
+# 'mode=vicmd u'  undo
+# 'mode=vicmd Z'  where-is
+
+  'mode=vicmd ;d'   dirstack-plus  # show the directory stack
   'C-x o'           stash_buffer
 )
 
@@ -383,17 +400,17 @@ function lskb() {
   # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
 
-# unalias which-command 2> /dev/null
-# zle -C  which-command list-choices which-command
-# function which-command() {
-#   zle -I
-#   command whatis      -- $words[@] 2> /dev/null
-#   builtin whence -aSv -- $words[@] 2> /dev/null
-#   compstate[insert]=
-#   compstate[list]=
-# }
+unalias which-command 2> /dev/null
+zle -C  which-command list-choices which-command
+function which-command() {
+  zle -I
+  command whatis      -- $words[@] 2> /dev/null
+  builtin whence -aSv -- $words[@] 2> /dev/null
+  compstate[insert]=
+  compstate[list]=
+}
 
-# typeset -g HELPDIR='/usr/share/zsh/help'
+typeset -g HELPDIR='/usr/share/zsh/help'
 
 # ============================= Zle Help =============================
 # ====================================================================
@@ -521,8 +538,8 @@ function lskb() {
 # # display help for keybindings and ZLE (cycle pages with consecutive use)
 # zle -N help-zle && bindkey '^xz' help-zle
 
-# TODO: Modify these
 # ======================== From Valodim/github =======================
+# ======================== Run Norm Commands =========================
 
 # applies $1 exnorm string to BUFFER
 # function ex-norm-run() {
@@ -559,8 +576,8 @@ function lskb() {
 #     } "$1" =(<<<"$BUFFER")
 #
 # }
-#
-# # ZSH_HIST_DIR from localhist, or just use $ZSH or just use $HOME
+
+# ZSH_HIST_DIR from localhist, or just use $ZSH or just use $HOME
 # typeset -H ZSH_EXN_HIST=${ZSH_HIST_DIR:-${ZSH:-$HOME}}/.zsh_exnhist
 #
 # function ex-norm () {
@@ -607,8 +624,8 @@ function lskb() {
 #
 # }
 # zle -N ex-norm
-#
-# # runs last exnorm command, or n'th last if there is a NUMERIC argument
+
+# runs last exnorm command, or n'th last if there is a NUMERIC argument
 # ex-norm-repeat () {
 #     fc -p -a $ZSH_EXN_HIST
 #
@@ -783,7 +800,7 @@ function lskb() {
 #   zle .accept-line
 # }
 #
-# function visearch-movecursor() { (( vs_cursor = $1 )) }
+# function visearch-movecursor() { (( vs_cursor = $1 )); }
 #
 # zle -N visearch+accept-line
 # zle -N accept-line visearch+accept-line
@@ -791,7 +808,7 @@ function lskb() {
 # bindkey -M visearch "^[" send-break
 # bindkey -M visearch "^[^[" send-break
 #
-# function visearch() { visearch-aux }
+# function visearch() { visearch-aux; }
 #
 # function visearch-aux() {
 #   (( vs_repeat_p = 0 ))

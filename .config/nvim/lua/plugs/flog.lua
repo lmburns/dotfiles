@@ -3,9 +3,8 @@ local M = {}
 local wk = require("which-key")
 
 local g = vim.g
-local fn = vim.fn
 local cmd = vim.cmd
-local has_forest = fn.executable("git-forest") == 1
+local has_forest = nvim.executable("git-forest") == 1
 
 function M.curr_file()
     if has_forest then

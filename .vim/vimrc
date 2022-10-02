@@ -432,14 +432,10 @@ let g:lightline.mode_map = {
 " }}} === lightline ===
 
 " ============== EasyEscape ============== {{{
-Plug 'zhou13/vim-easyescape'
-  imap jk <ESC>
-  imap kj <ESC>
-
-  let g:easyescape_chars = { "j": 1, "k": 1 }
-  let g:easyescape_timeout = 100
-  cnoremap jk <ESC>
-  cnoremap kj <ESC>
+imap jk <ESC>
+imap kj <ESC>
+cnoremap jk <ESC>
+cnoremap kj <ESC>
 
   " Fix paste bug triggered by the above inoremaps
   set t_BE=
@@ -805,7 +801,6 @@ Plug 'antoinemadec/coc-fzf'
     \  "coc-eslint",
     \  "coc-syntax",
     \  "coc-prettier",
-    \  "coc-snippets",
     \  "coc-diagnostic",
     \  "coc-fzf-preview",
     \  "coc-marketplace",
@@ -1137,14 +1132,13 @@ Plug 'fatih/vim-go', { 'for': 'go' }
   nnoremap <Leader>ez :e $ZDOTDIR/.zshrc<CR>
 
 " ============== UltiSnips ============== {{{
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-  let g:UltiSnipsExpandTrigger='<C-S-1>'
-  let g:UltiSnipsJumpForwardTrigger='<C-j>'
-  let g:UltiSnipsJumpBackwardTrigger='<C-k>'
-  let g:UltiSnipsListSnippets="<C-u>"
-  let g:UltiSnipsEditSplit='horizontal'
-  " autocmd Filetype snippet set shiftwidth=4
+" Plug 'SirVer/ultisnips'
+" Plug 'honza/vim-snippets'
+  " let g:UltiSnipsExpandTrigger='<C-S-1>'
+  " let g:UltiSnipsJumpForwardTrigger='<C-j>'
+  " let g:UltiSnipsJumpBackwardTrigger='<C-k>'
+  " let g:UltiSnipsListSnippets="<C-u>"
+  " let g:UltiSnipsEditSplit='horizontal'
 
 " Plug 'vim-scripts/RltvNmbr.vim'
 " nmap <Leader>rl :RltvNmbr<CR>
@@ -1165,6 +1159,8 @@ Plug 'jamessan/vim-gnupg'
 "}}} === Syntax Highlighting ===
 
 Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
 
 " ============== FZF & Ripgrep ============== {{{
 " Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
@@ -1919,11 +1915,10 @@ call plug#end()
              \    wilder#python_file_finder_pipeline({
              \      'file_command': {_, arg -> arg[0] ==# '.' ? ['rg', '--files', '--hidden'] : ['rg', '--files']},
              \      'dir_command':  {_, arg -> arg[0] ==# '.' ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
-             \      'filters': ['fuzzy_filter', 'difflib_sorter'],
+             \      'filters': ['difflib_sorter'],
              \    }),
              \    wilder#cmdline_pipeline({
              \      'language': 'python',
-             \      'fuzzy': 1,
              \      'set_pcre2_pattern': 1,
              \    }),
              \    wilder#python_search_pipeline({

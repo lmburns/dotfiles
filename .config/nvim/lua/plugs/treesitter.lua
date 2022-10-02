@@ -193,13 +193,6 @@ M.setup_aerial = function()
             -- Priority list of preferred backends for aerial.
             -- This can be a filetype map (see :help aerial-filetype-map)
             backends = {"treesitter", "markdown" --[[ "lsp" ]]},
-            -- Enum: persist, close, auto, global
-            --   persist - aerial window will stay open until closed
-            --   close   - aerial window will close when original file is no longer visible
-            --   auto    - aerial window will stay open as long as there is a visible
-            --             buffer to attach to
-            --   global  - same as 'persist', and will always show symbols for the current buffer
-            close_behavior = "auto",
             -- Set to false to remove the default keybindings for the aerial buffer
             default_bindings = true,
             -- Enum: prefer_right, prefer_left, right, left, float
@@ -249,8 +242,6 @@ M.setup_aerial = function()
             -- Set to false to disable
             highlight_on_jump = 300,
             -- Control which windows and buffers aerial should ignore.
-            -- If close_behavior is "global", focusing an ignored window/buffer will
-            -- not cause the aerial window to update.
             -- If open_automatic is true, focusing an ignored window/buffer will not
             -- cause an aerial window to open.
             -- If open_automatic is a function, ignore rules have no effect on aerial
@@ -739,13 +730,14 @@ M.setup = function()
             "python",
             "query",
             "rasi",
-            "regex", -- Injections are sent into various filetypes
+            "regex",
             "ruby",
             "rust",
             "scheme",
             "scss",
             "solidity",
             "sql",
+            "svelte",
             "teal",
             "toml",
             "tsx",

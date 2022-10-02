@@ -308,7 +308,7 @@ function M.linediff()
     map("n", "<Leader>ld", "Linediff", {cmd = true})
     map("x", "<Leader>ld", ":Linediff<CR>")
 
-    require('abbr')("c", "ldr", "LinediffReset")
+    require("abbr")("c", "ldr", "LinediffReset")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -751,11 +751,6 @@ function M.sandwhich()
 
     cmd.runtime("macros/sandwich/keymap/surround.vim")
 
-    -- move the cursor at the start of the surrounded object
-    -- "VimEnter * :call operator#sandwich#set('all', 'all', 'cursor', 'inner_head')",
-    -- -- keep the same indent level on operator actions
-    -- "VimEnter * :call operator#sandwich#set('all', 'all', 'autoindent', 4)",
-
     cmd [[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
@@ -910,9 +905,6 @@ function M.sandwhich()
     map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)", {desc = "Auto delimiter"})
     map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)", {desc = "Auto delimiter"})
 
-    map("n", "ygs", "<Plug>(sandwich-add):normal! V<CR>", {desc = "Surround entire line"})
-    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
-
     -- map("o", "if", "<Plug>(textobj-sandwich-function-ip)")
     -- map("n", "X", "<Plug>(sandwich-delete-auto)")
     -- map("n", "X", "<Plug>(sandwich-replace-auto)")
@@ -923,9 +915,12 @@ function M.sandwhich()
             ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
             ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
-            ["yss"] = "Surround text on line"
+            ["yss"] = "Surround text on line",
+            ["ygs"] = {"<Plug>(sandwich-add):normal! V<CR>", "Surround entire line"}
         }
     )
+
+    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1138,7 +1133,7 @@ function M.better_esc()
 
     esc.setup {
         mapping = {"jk", "kj"}, -- a table with mappings to use
-        -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
+        -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
         timeout = 375,
         clear_empty_lines = false, -- clear line after escaping if there is only whitespace
         keys = "<Esc>" -- keys used for escaping, if it is a function will use the result everytime
@@ -1554,13 +1549,63 @@ end
 -- │                        Registers                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.registers()
-    g.registers_return_symbol = "⏎"
-    g.registers_tab_symbol = "\t" -- "·"
-    g.registers_show_empty_registers = 0
-    -- g.registers_hide_only_whitespace = 1
-    g.registers_window_border = "rounded"
-    g.registers_insert_mode = false -- removes <C-R> insert mapping
-    g.registers_visual_mode = false -- removes <C-R> insert mapping
+    local registers = D.npcall(require, "registers")
+    if not registers then
+        return
+    end
+
+    registers.setup(
+        {
+            show = '*+"-/_=#%.0123456789abcdefghijklmnopqrstuvwxyz:',
+            show_empty = true,
+            register_user_command = true,
+            system_clipboard = true,
+            trim_whitespace = true,
+            hide_only_whitespace = true,
+            show_register_types = true,
+            -- bind_keys = {
+            --     normal = registers.show_window({ mode = "motion" }),
+            --     visual = registers.show_window({ mode = "motion" }),
+            --     insert = registers.show_window({ mode = "insert" }),
+            --     registers = registers.apply_register({ delay = 0.1 }),
+            --     return_key = registers.apply_register(),
+            --     escape = registers.close_window(),
+            --     ctrl_n = registers.move_cursor_down(),
+            --     ctrl_p = registers.move_cursor_up(),
+            --     ctrl_j = registers.move_cursor_down(),
+            --     ctrl_k = registers.move_cursor_up(),
+            -- },
+            symbols = {
+                newline = "⏎",
+                space = " ",
+                tab = "·",
+                register_type_charwise = "ᶜ",
+                register_type_linewise = "ˡ",
+                register_type_blockwise = "ᵇ"
+            },
+            window = {
+                max_width = 100,
+                highlight_cursorline = true,
+                border = "rounded",
+                transparency = 10
+            },
+            sign_highlights = {
+                cursorline = "Visual",
+                selection = "Constant",
+                default = "Function",
+                unnamed = "Statement",
+                read_only = "Type",
+                expression = "Exception",
+                black_hole = "Error",
+                alternate_buffer = "Operator",
+                last_search = "Tag",
+                delete = "Special",
+                yank = "Delimiter",
+                history = "Number",
+                named = "Todo"
+            }
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1681,10 +1726,21 @@ function M.urlview()
             default_prefix = "https://",
             -- Command or method to open links with
             -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
-            navigate_method = "netrw",
-            -- Logs user warnings
-            debug = true,
+            -- By default, this is "netrw", or "system" if netrw is disabled
+            default_action = "netrw",
+            -- Ensure links shown in the picker are unique (no duplicates)
+            unique = true,
+            -- Ensure links shown in the picker are sorted alphabetically
+            sorted = true,
+            -- Minimum log level (recommended at least `vim.log.levels.WARN` for error detection warnings)
+            log_level_min = vim.log.levels.INFO,
+            -- Keymaps for jumping to previous / next URL in buffer
+            jump = {
+                prev = "[u",
+                next = "]u"
+            },
             -- Custom search captures
+            -- NOTE: captures follow Lua pattern matching (https://riptutorial.com/lua/example/20315/lua-pattern-matching)
             custom_searches = {
                 -- KEY: search source name
                 -- VALUE: custom search function or table (map with keys capture, format)
@@ -1763,6 +1819,19 @@ function M.trevj()
         }
     )
     map("n", "gJ", [[:lua require('trevj').format_at_cursor()<CR>]])
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Spread                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.spread()
+    local spread = D.npcall(require, "spread")
+    if not spread then
+        return
+    end
+
+    map("n", "gJ", spread.out, {desc = "Spread: out"})
+    map("n", "gS", spread.combine, {desc = "Spread: combine"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

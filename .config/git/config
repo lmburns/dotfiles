@@ -91,6 +91,10 @@
   mnemonicPrefix = true
   compactionHeuristic = true
 #  renames = copies
+[diff "ruby"]
+	funcname = "^ *\\(\\(def\\) .*\\)"
+[diff "image"]
+	textconv = identify
 
 [log]
   decorate = auto

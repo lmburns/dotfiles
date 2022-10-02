@@ -681,9 +681,8 @@ keymap  :t       SHELL "$EDITOR ~/.w3m/RestoreTab.txt"
 # EXTERN      = current page
 
 # yank url to clipboard
-# keymap  yx      EXTERN_LINK   '(echo -n %s | pbcopy)'
-keymap  yx      EXTERN_LINK   '(printf %s "$0" | pbcopy)'
-keymap  YX      EXTERN        '(printf %s | pbcopy)'
+keymap  yx      EXTERN_LINK   '(printf %s "$0" | xsel -i -b)'
+keymap  YX      EXTERN        '(printf %s | xsel -i -b)'
 # yank url to tmux clipboard
 keymap  yy      EXTERN_LINK   'tmux set-buffer'
 keymap  YY      EXTERN        'tmux set-buffer'
@@ -712,7 +711,6 @@ keymap  XM      EXTERN        'tsp mpv --ontop --no-border --force-window --auto
 
 # open external image viewer
 # keymap  xi      EXTERN_LINK   'w3m -o display_image=1 -o imgdisplay=w3mimgdisplay'
-# open -b "drabweb.macfeh" "$@";
 keymap  xf      EXTERN_LINK   'feh -. -x -B black -g 900x600-15+60 %s &'
 keymap  xF      EXTERN_LINK   'mpv --loop --quiet --ontop --no-border --force-window --autofit=900x600 --geometry=-15+60'
 
@@ -720,7 +718,7 @@ keymap  xF      EXTERN_LINK   'mpv --loop --quiet --ontop --no-border --force-wi
 keymap  xt      EXTERN_LINK   'stig add'
 # keymap  xt      EXTERN_LINK   'transmission-remote --add'
 # keymap  xt      EXTERN_LINK   ~/.scripts/privatescripts/addtorrent-thinkcentre
-keymap  XT      EXTERN        ~/.sripts/shellscripts/torrentportal
+# keymap  XT      EXTERN        ~/.scripts/shellscripts/torrentportal
 
 # basic task-spooler view, cat, clear
 # keymap  xs      SHELL         'watch TS_SOCKET=/tmp/w3m ts'
@@ -751,13 +749,22 @@ keymap  xv      SHELL         'nvim $W3M_CURRENT_FORM'
 
 # Source: https://github.com/felipesaa/A-vim-like-firefox-like-configuration-for-w3m
 # paste and go
-keymap  px       GOTO          /.w3m/cgi-bin/goto_clipboard.cgi
-keymap  PX       TAB_GOTO      /.w3m/cgi-bin/goto_clipboard.cgi
-keymap  pp       GOTO          /.w3m/cgi-bin/goto_tmux_clipboard.cgi
-keymap  PP       TAB_GOTO      /.w3m/cgi-bin/goto_tmux_clipboard.cgi
-# retore closed tabs
-keymap  u       TAB_GOTO      /.w3m/cgi-bin/restore_tab.cgi
-keymap  C-T     TAB_GOTO      /.w3m/cgi-bin/restore_tab.cgi
+# keymap  px       GOTO          ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard.cgi
+# keymap  PX       TAB_GOTO      ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_clipboard.cgi
+# keymap  pp       GOTO          ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_tmux_clipboard.cgi
+# keymap  PP       TAB_GOTO      ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/goto_tmux_clipboard.cgi
+# # restore closed tabs
+# keymap  u       TAB_GOTO      ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/restore_tab.cgi
+# keymap  C-T     TAB_GOTO      ~/.config/zsh/zinit/polaris/libexec/w3m/cgi-bin/restore_tab.cgi
+
+keymap  px       GOTO          /usr/lib/w3m/cgi-bin/goto_clipboard.cgi
+keymap  PX       TAB_GOTO      /usr/lib/w3m/cgi-bin/goto_clipboard.cgi
+keymap  pp       GOTO          /usr/lib/w3m/cgi-bin/goto_tmux_clipboard.cgi
+keymap  PP       TAB_GOTO      /usr/lib/w3m/cgi-bin/goto_tmux_clipboard.cgi
+# restore closed tabs
+keymap  u       TAB_GOTO      /usr/lib/w3m/cgi-bin/restore_tab.cgi
+keymap  C-T     TAB_GOTO      /usr/lib/w3m/cgi-bin/restore_tab.cgi
+
 # close tabs and save url link to file
 keymap  d       COMMAND       "EXTERN 'echo %s >> ~/.w3m/RestoreTab.txt' ; CLOSE_TAB"
 # keymap  C-w     COMMAND       "EXTERN 'echo %s >> ~/.w3m/RestoreTab.txt' ; CLOSE_TAB"
@@ -792,7 +799,7 @@ keymap  XS      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw.cgi ; TAB_GOTO /
 # keymap  XS      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw.cgi ; TAB_GOTO /.w3m/cgi-bin/goto_clipboard.cgi"
 # keymap  xs      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw_tmux.cgi ; GOTO /.w3m/cgi-bin/goto_tmux_clipboard.cgi"
 # keymap  XS      COMMAND       "SHELL ~/.w3m/cgi-bin/fzf_surfraw_tmux.cgi ; TAB_GOTO /.w3m/cgi-bin/goto_tmux_clipboard.cgi"
-keymap  xx      COMMAND       "TAB_GOTO /.w3m/cgi-bin/goto_tmux_clipboard.cgi"
+keymap  xx      COMMAND       "TAB_GOTO /usr/lib/w3m/cgi-bin/goto_tmux_clipboard.cgi"
 
 # keymap  xu      COMMAND       "SHELL ~/.w3m/cgi-bin/user_agent_switcher_tmux.cgi"
 keymap  XU      COMMAND       "SHELL ~/.w3m/cgi-bin/user_agent_switcher.cgi"

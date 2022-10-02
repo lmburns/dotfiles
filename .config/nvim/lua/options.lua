@@ -31,7 +31,7 @@ vim.tbl_map(
         -- "ftplugin",
         "getscript",
         "getscriptPlugin",
-        "gzip",
+        -- "gzip",
         "logiPat", -- boolean logical pattern matcher
         -- "man",
         "matchit",
@@ -50,8 +50,8 @@ vim.tbl_map(
         "tutor_mode_plugin",
         "vimball",
         "vimballPlugin",
-        "zip",
-        "zipPlugin",
+        -- "zip",
+        -- "zipPlugin",
         "perl_provider",
         "python_provider",
         "ruby_provider"

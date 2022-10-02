@@ -4,10 +4,10 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
-#######################################################################
-#                               Aliases                               #
-#######################################################################
-
+# Giving item its' full path
+# alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
+# alias mail='/usr/bin/mail'
+# alias strace="/usr/local/bin/strace"
 
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
@@ -22,9 +22,6 @@ alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 
 alias %= \$=
 
-# alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
-# alias mail='/usr/bin/mail'
-# alias strace="/usr/local/bin/strace"
 alias RGV='RG -g "*.lua" -g "*.vim"'
 alias RGL='RG -g "*.lua"'
 alias sane='stty sane'
@@ -66,8 +63,8 @@ alias :q='exit'
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
   alias srh='srg github'
-  alias srb='BROWSER=$BROWSERCLI sr'
-  alias srr='BROWSER=brave srg'
+  alias srl='BROWSER=$BROWSERCLI sr'
+  alias srb='BROWSER=brave srg'
   alias srgg='BROWSER=$BROWSER srg google'
 }
 
@@ -217,11 +214,11 @@ alias wa="whence -va" # where
 alias wm="whence -vm"
 alias info='info --vi-keys'
 
-[[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+# [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
 alias svi="sudo $EDITOR"
-alias vim='/usr/bin/vim'
+#alias vim='/usr/bin/vim'
 alias vimdiff='nvim -d'
 
 # alias f='pushd'

@@ -31,7 +31,7 @@ function M.setup()
                 -- { CLOSED, OPENED }
                 section = {"", ""},
                 item = {"", ""},
-                hunk = {"", ""}
+                hunk = {"樂", ""}
             },
             integrations = {
                 diffview = true

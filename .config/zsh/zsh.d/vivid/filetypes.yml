@@ -102,6 +102,8 @@ markup:
     - .mdown
     - .rst
     - .xml
+    - .ctags
+    - .grc
 
   sublime:
     - .sublime-syntax

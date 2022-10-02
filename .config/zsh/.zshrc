@@ -11,6 +11,12 @@
 umask 022
 # limit coredumpsize 0
 
+# Execute 'ZSH_PROFILE_RC=1 zsh'
+if [[ $ZSH_PROFILE_RC -gt 0 ]] ; then
+    zmodload zsh/zprof
+    zprof
+fi
+
 typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
 
@@ -37,8 +43,8 @@ typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g SAVEHIST=10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
+typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)" # Ignore pattern
 typeset -g LISTMAX=50                            # Size of asking history
-typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp)" # Ignore pattern
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
@@ -47,6 +53,10 @@ typeset -g KEYTIMEOUT=15               # Key action time
 typeset -g FCEDIT=$EDITOR              # History editor
 typeset -g READNULLCMD=$PAGER          # Read contents of file with <file
 typeset -g TMPPREFIX="${TMPDIR%/}/zsh" # Temporary file prefix for zsh
+
+watch=( notme )
+PERIOD=3600
+function periodic() { builtin rehash;  }
 
 # Various highlights for CLI
 typeset -ga zle_highlight=(
@@ -80,6 +90,8 @@ typeset -ga zle_highlight=(
 setopt hist_ignore_space    # don't add if starts with space
 setopt hist_reduce_blanks   # remove superfluous blanks from each command
 setopt hist_ignore_all_dups # replace duplicate commands in history file
+setopt hist_expire_dups_first # if the internal history needs to be trimmed, trim oldest
+setopt hist_ignore_dups     # do not enter command lines into the history list if they are duplicates
 setopt hist_fcntl_lock      # use fcntl to lock hist file
 setopt extended_history     # add beginning time, and duration to history
 setopt append_history       # all zsh sessions append to history, not replace
@@ -92,7 +104,6 @@ setopt auto_cd   auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
 setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
 
 setopt prompt_subst # allow substitution in prompt (p10k?)
-
 
 setopt numeric_glob_sort # sort globs numerically
 setopt case_paths        # nocaseglob + casepaths treats only path components containing glob chars as insensitive
@@ -111,6 +122,7 @@ setopt hash_list_all # when a completion is attempted, hash it first
 setopt correct      # try to correct mistakes
 
 setopt rc_quotes            # allow '' inside '' to indicate a single '
+setopt rm_star_silent       # do not query the user before executing `rm *' or `rm path/*'
 setopt interactive_comments # allow comments in history
 setopt unset                # don't error out when unset parameters are used
 setopt long_list_jobs       # list jobs in long format by default
@@ -769,7 +781,6 @@ zt 0c light-mode null for \
     zdharma-continuum/null
 
 # Canop/bacon
-
 # ]]] == rust extensions
 # ]]] == rust
 
@@ -856,25 +867,29 @@ autoload -Uz zmv zcalc zargs zed relative zrecompile
 alias fned="zed -f"
 alias zmv='noglob zmv -v'  zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
 alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
+
 # autoload -Uz sticky-note regexp-replace
 
 [[ -v aliases[run-help] ]] && unalias run-help
 autoload +X -Uz run-help
 autoload -Uz $^fpath/run-help-^*.zwc(N:t)
+
 # zmodload -F zsh/parameter p:functions_source
 # autoload -Uz $functions_source[run-help]-*~*.zwc
 # ]]]
 
-# === helper functions === [[[
+# === Helper Functions === [[[
 # Shorten command length
 add-zsh-hook zshaddhistory max_history_len
 function max_history_len() {
   if (( $#1 > 240 )) {
     return 2
   }
+
   return 0
 }
 
+# Function that is ran on each command
 function zshaddhistory() {
   emulate -L zsh
   # whence ${${(z)1}[1]} >| /dev/null || return 1 # doesn't add setting arrays
@@ -1001,18 +1016,17 @@ path=(
   $PYENV_ROOT/{shims,bin}
   $GOENV_ROOT/bin(N-/)
   $CARGO_HOME/bin(N-/)
+  $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim/bin(N-/)
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
+  $XDG_DATA_HOME/neovim/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/lib/{goenv/libexec,w3m}
   $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
   "${path[@]}"
 )
-
-# 35653e6bc
 # ]]]
 
 #===== completions ===== [[[
@@ -1152,6 +1166,7 @@ $FZF_COLORS
 --bind=alt-p:preview-up,alt-n:preview-down
 --bind=ctrl-k:preview-up,ctrl-j:preview-down
 --bind=ctrl-u:half-page-up,ctrl-d:half-page-down
+--bind='ctrl-y:execute-silent(echo {} | xsel --trim -b)'
 --bind=alt-,:first,alt-.:last,change:first"
 
 SKIM_DEFAULT_OPTIONS="
@@ -1201,7 +1216,6 @@ export SKIM_CTRL_R_OPTS="\
 export SKIM_DEFAULT_COMMAND='fd --no-ignore --hidden --follow --exclude ".git"'
 export FZF_DEFAULT_COMMAND="(git ls-tree -r --name-only HEAD | lscolors ||
          rg --files --no-ignore --hidden -g '!{.git,node_modules,target}/*') 2> /dev/null"
-#          find . -path "*/\.*" -prune -o -type f -print -o -type l -print | sed s/^..//) 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 export SKIM_COMPLETION_TRIGGER='~~'

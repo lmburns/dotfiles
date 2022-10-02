@@ -1,0 +1,51 @@
+#!/usr/bin/env zsh
+
+INFILE="$1"
+OUTFILE="$2"
+SIZE="$3"
+
+# Use album art image for MP3 files, if available
+if [[ "$(mimetype -b "${INFILE}")" == "audio/mpeg" ]]; then
+    TMP_DIR="$(mktemp -d -t .audio-thumbnailer-XXXXXX)"
+    COVERFILE=
+
+    eyeD3 --write-images "${TMP_DIR}" "$(readlink -f "${INFILE}")"
+
+    for i in PUBLISHER_LOGO BAND_LOGO ILLUSTRATION BRIGHT_COLORED_FISH VIDEO DURING_PERFORMANCE DURING_RECORDING RECORDING_LOCATION LYRICIST COMPOSER BAND CONDUCTOR ARTIST LEAD_ARTIST MEDIA LEAFLET BACK_COVER OTHER OTHER_ICON ICON FRONT_COVER ; do
+        if [ -f "${TMP_DIR}/$i.png"  ]; then COVERFILE="${TMP_DIR}/$i.png";  fi
+        if [ -f "${TMP_DIR}/$i.jpeg" ]; then COVERFILE="${TMP_DIR}/$i.jpeg"; fi
+        if [ -f "${TMP_DIR}/$i.jpg"  ]; then COVERFILE="${TMP_DIR}/$i.jpg";  fi
+    done
+
+    if [ ${COVERFILE} ]; then
+        convert "${COVERFILE}" -resize "${SIZE}" "${OUTFILE}"
+    fi
+    rm -R "${TMP_DIR}"
+fi
+
+
+# Use album art image for OGG files, if available
+if [[ "$(mimetype -b "${INFILE}")" == "audio/x-vorbis+ogg" ]]; then
+    PRIORITIES=(3 1 2 0 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20)
+    BEST_PRIORITY=21
+    BEST_BLOCK=""
+
+    for block in $(vorbiscomment "${INFILE}" | grep METADATA_BLOCK_PICTURE= | cut -d = -f 2- ); do
+        TYPE=$(echo ${block} | base64 -d | mbp-decode -n 2>/dev/null)
+        PRIORITY=${PRIORITIES[${TYPE}]}
+        if [ ${PRIORITY} -le ${BEST_PRIORITY} ]; then
+            BEST_PRIORITY=${PRIORITY}
+            BEST_BLOCK=${block}
+        fi
+    done
+
+    if [ ${BEST_BLOCK} ]; then
+        echo ${BEST_BLOCK} | base64 -d | mbp-decode -p 2>/dev/null | convert - -resize "${SIZE}" "${OUTFILE}"
+    fi
+fi
+
+
+# If no album art is available, generate audio spectrogram
+if ! [ -f "${OUTFILE}" ]; then
+    sox "${INFILE}" -n remix 1 spectrogram -x ${SIZE} -y $((SIZE+1)) -r -o "${OUTFILE}"
+fi

@@ -215,8 +215,8 @@ return packer.startup(
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
             -- ============================= Keybinding =========================== [[[
-            -- use({"folke/which-key.nvim", conf = "plugs.which-key"})
-            use({"max397574/which-key.nvim", conf = "plugs.which-key"})
+            -- use({"max397574/which-key.nvim", conf = "plugs.which-key"})
+            use({"folke/which-key.nvim", conf = "plugs.which-key"})
             use(
                 {
                     "mrjones2014/legendary.nvim",
@@ -350,7 +350,7 @@ return packer.startup(
                 }
             )
 
-            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
+            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -738,11 +738,20 @@ return packer.startup(
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
 
+            -- use(
+            --     {
+            --         "AckslD/nvim-trevJ.lua",
+            --         conf = "trevj",
+            --         keys = {{"n", "gJ"}},
+            --         requires = "nvim-treesitter/nvim-treesitter"
+            --     }
+            -- )
+
             use(
                 {
-                    "AckslD/nvim-trevJ.lua",
-                    conf = "trevj",
-                    keys = {{"n", "gJ"}},
+                    "aarondiel/spread.nvim",
+                    conf = "spread",
+                    keys = {{"n", "gJ"}, {"n", "gS"}},
                     requires = "nvim-treesitter/nvim-treesitter"
                 }
             )
@@ -798,29 +807,7 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "machakann/vim-sandwich",
-                    conf = "sandwhich"
-                    -- keys = {
-                    --     {"n", "ds"},
-                    --     {"n", "cs"},
-                    --     {"n", "cS"},
-                    --     {"n", "ys"},
-                    --     {"n", "ysW"},
-                    --     {"n", "yS"},
-                    --     {"n", "yss"},
-                    --     {"n", "ygs"},
-                    --     {"x", "S"},
-                    --     {"x", "gS"},
-                    --     {"v", "sa"},
-                    --     {"o", "is"},
-                    --     {"o", "as"},
-                    --     {"o", "ib"},
-                    --     {"o", "ab"}
-                    -- }
-                }
-            )
+            use({"machakann/vim-sandwich", conf = "sandwhich"})
 
             -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
             -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
@@ -1077,11 +1064,10 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
-            -- eriedaberrie/todo-comments.nvim
             -- B4mbus/todo-comments.nvim
             use(
                 {
-                    "B4mbus/todo-comments.nvim",
+                    "folke/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
                     after = "telescope.nvim"
@@ -1120,7 +1106,7 @@ return packer.startup(
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
 
-            use({"jalvesaq/Nvim-R", ft = {"r"}, branch = "stable", conf = "plugs.nvim-r"})
+            -- use({"jalvesaq/Nvim-R", ft = {"r"}, branch = "stable", conf = "plugs.nvim-r"})
             use({"lervag/vimtex", conf = "plugs.vimtex"})
             use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
@@ -1162,6 +1148,7 @@ return packer.startup(
                     -- conf = "plugs.treesitter"
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
+                    commit = "2a63ea56",
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",
@@ -1179,9 +1166,7 @@ return packer.startup(
                         },
                         {
                             "nvim-treesitter/playground",
-                            after = "nvim-treesitter",
-                            -- commit = "ce7e4b7"
-                            -- cmd = {"TSHighlightCapturesUnderCursor", "TSPlaygroundToggle"}
+                            after = "nvim-treesitter"
                         },
                         {
                             "windwp/nvim-ts-autotag",
@@ -1252,29 +1237,14 @@ return packer.startup(
                             -- cmd = {"Architext", "ArchitextREPL"},
                             after = "nvim-treesitter"
                         }
-                        -- {
-                        --     "nvim-treesitter/nvim-treesitter-context",
-                        --     desc = " Show code context",
-                        --     after = "nvim-treesitter"
-                        -- },
-                        -- {
-                        --     "s1n7ax/nvim-comment-frame",
-                        --     after = "nvim-treesitter"
-                        -- }
-                        -- {
-                        --     "mfussenegger/nvim-ts-hint-textobject",
-                        --     after = "nvim-treesitter",
-                        --     desc = "Similar to hop but highlight"
-                        -- }
-                        -- {
-                        --     "yioneko/nvim-yati",
-                        --     after = "nvim-treesitter",
-                        --     desc = "Yet another tressitter indent"
-                        -- },
                     }
                 }
             )
 
+            --     "nvim-treesitter/nvim-treesitter-context",
+            --     "s1n7ax/nvim-comment-frame",
+            --     "mfussenegger/nvim-ts-hint-textobject",
+            --     "yioneko/nvim-yati",
             -- use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
             -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
             -- use({"theHamsta/nvim-treesitter-pairs", after = {"nvim-treesitter"}})
@@ -1494,7 +1464,14 @@ return packer.startup(
             use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
 
             use({"lewis6991/gitsigns.nvim", conf = "plugs.gitsigns", requires = {"nvim-lua/plenary.nvim"}})
-            use({"TimUntersberger/neogit", conf = "plugs.neogit", requires = {"nvim-lua/plenary.nvim"}})
+            use(
+                {
+                    "TimUntersberger/neogit",
+                    conf = "plugs.neogit",
+                    commit = "8adf22f103250864171f7eb087046db8ad296f78",
+                    requires = {"nvim-lua/plenary.nvim"}
+                }
+            )
 
             use(
                 {

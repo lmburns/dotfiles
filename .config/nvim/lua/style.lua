@@ -41,11 +41,11 @@ M.icons = {
         open_folder = ""
     },
     type = {
-        array = "",
-        number = "",
-        object = "",
-        string = "",
-        boolean = "蘒"
+      array = "",
+      number = "",
+      object = "",
+      string = "",
+      boolean = "蘒"
     },
     misc = {
         -- ellipsis = utf8.char(0x2026), -- "…"

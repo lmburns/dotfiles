@@ -14,7 +14,7 @@ if [ "$1" = -h ] || [ "$1" = --help ]; then
   helpmsg
   exit 0
 else
-  ts -C
-  TS_SOCKET=/tmp/fm ts -C
-  TS_SOCKET=/tmp/wb ts -C
+  tsp -C
+  TS_SOCKET=/tmp/fm tsp -C
+  TS_SOCKET=/tmp/wb tsp -C
 fi

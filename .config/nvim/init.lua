@@ -256,7 +256,7 @@ vim.schedule(
                     --
                     "coc-syntax",
                     "coc-prettier",
-                    "coc-snippets",
+                    -- "coc-snippets",
                     "coc-diagnostic",
                     "coc-fzf-preview",
                     "coc-marketplace",

@@ -14,6 +14,6 @@ notify-send \
 
 location="$HOME/Pictures/screenshot/${title}_$(date '+%Y-%m-%d_%H-%M').png"
 
-# sleep 2
+sleep 2
 maim --hidecursor --window "$(xdotool getactivewindow)" "$location"
 notify-send -a Screenshot -i "$location" -u normal -t 3000 'Screenshot taken'

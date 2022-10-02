@@ -186,7 +186,7 @@ M.setup_ufo = function()
             -- Enable to capture the virtual text for the fold end lnum and assign the
             -- result to `end_virt_text` field of ctx table as 6th parameter in
             -- `fold_virt_text_handler`
-            enable_fold_end_virt_text = false,
+            enable_get_fold_virt_text = false,
             -- After the buffer is displayed (opened for the first time), close the
             -- folds whose range with `kind` field is included in this option.
             -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
@@ -289,11 +289,11 @@ local function init()
     map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
 
     -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
-    map("n", "z[", [[require('ufo').goPreviousStartFold()]], {luacmd = true})
-    map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true})
+    map("n", "z[", [[require('ufo').goPreviousStartFold()]], {luacmd = true, desc = "Previous start fold"})
+    map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
 
-    map("n", "z,", [[require('ufo').goPreviousClosedFold()]], {luacmd = true})
-    map("n", "z.", [[require('ufo').goNextClosedFold()]], {luacmd = true})
+    map("n", "z,", [[require('ufo').goPreviousClosedFold()]], {luacmd = true, desc = "Previous closed fold"})
+    map("n", "z.", [[require('ufo').goNextClosedFold()]], {luacmd = true, desc = "Next closed fold"})
 end
 
 init()

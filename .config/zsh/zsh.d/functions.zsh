@@ -141,7 +141,7 @@ function lswifi()    { nmcli device wifi; }
 # Get wifi information
 function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 # Nmap info
-function lsnmap() { nmap --iflist; }
+function lsnmap()    { nmap --iflist; }
 
 # =============================== Listing ============================
 # ====================================================================
@@ -369,12 +369,12 @@ function nrg() {
 }
 
 function ng() {
-  git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
+  command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
 }
 
 compdef __ngl_compdef ngl
 function ngl() {
-  git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
+  command git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
 }
 function __ngl_compdef() {
   (( $+functions[_git-log] )) || _git
@@ -431,48 +431,3 @@ function log::dump() {
   print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
   print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
 }
-
-# ======================== Dynamic Directory =========================
-# ====================================================================
-# Why both?
-# typeset -gA zdn_wrap_top=(
-#   p         ~/projects
-#   c         ~/.config/:second2
-#   :default: /:second1
-# )
-#
-# typeset -gA zdn_top=(
-#   p         ~/projects
-#   c         ~/.config/:second2
-#   :default: /:second1
-# )
-#
-# typeset -gA second1=(
-#     g  github/:third
-#     p  perl
-#     py python
-#     r  ruby
-# )
-#
-# typeset -gA second2=(
-#     zd  zsh/zsh.d
-#     zi  zsh/zinit
-#     zc  zsh/csnippets
-#     zf  zsh/functions
-# )
-#
-# typeset -gA third=(
-#   w wutag
-#   l lxhkd
-#   z zinit
-# )
-#
-# # cdr is used instead
-# zstyle ':zdn:zdn_wrap:' mapping zdn_wrap_top
-# autoload -Uz add-zsh-hook zsh_directory_name_generic zdn_wrap
-# add-zsh-hook -U zsh_directory_name zdn_wrap
-
-# function zdn_wrap() {
-#   autoload -Uz zsh_directory_name_generic
-#   zsh_directory_name_generic "$@"
-# }

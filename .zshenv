@@ -4,12 +4,13 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
+setopt no_global_rcs
 skip_global_compinit=1
-# setopt no_global_rcs
 
 export DO_NOT_TRACK=1
 export HINT_TELEMETRY="off"
 export NEXT_TELEMETRY_DISABLED=1
+
 export LANGUAGE="en_US.UTF-8"
 export LANG="$LANGUAGE"
 export LC_ALL="$LANGUAGE"
@@ -39,8 +40,13 @@ export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="${XDG_MBIN_HOME}/linux/zenpass" # xfsudo
 # export SUDO_PROMPT="%u entered passwd to become %U: "
 
-export BC_ENV_ARGS="-q"
+export ZDOTDIR="${XDG_CONFIG_HOME}/zsh" # Only one that is actually needed
+export ZHOMEDIR="${XDG_CONFIG_HOME}/zsh"
+export ZRCDIR="${ZHOMEDIR}/zsh.d"
+export ZDATADIR="${XDG_DATA_HOME}/zsh"
+export ZCACHEDIR="${XDG_CACHE_HOME}/zsh"
 
+export BC_ENV_ARGS="-q"
 export TEXLIVE="$HOME/texlive"
 
 export TERMINAL="alacritty"
@@ -88,14 +94,14 @@ export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
-export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"
-
+# export CCACHE_CONFIGPATH="${XDG_CONFIG_HOME}/ccache/ccache.config"
 export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 # export CCACHE_COMPRESS=1
 # export CCACHE_SLOPPINESS=time_macros,file_macro
 # export CCACHE_BASEDIR="$TRAVIS_BUILD_DIR"
 # export CCACHE_CPP2=1
 
+export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 export GTK_USE_PORTAL=1
 export GTK_THEME_VARIANT=dark
 export QT_QPA_PLATFORMTHEME=qt5ct
@@ -114,6 +120,7 @@ export TASKDATA="${XDG_CONFIG_HOME}/task"
 export RIPGREP_CONFIG_PATH="${XDG_CONFIG_HOME}/ripgrep/ripgreprc"
 export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
 export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"
+export BUN_INSTALL="${HOME}/.bun"
 export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
 export LUAROCKS_CONFIG="${XDG_CONFIG_HOME}/luarocks/config.lua"
@@ -147,7 +154,6 @@ export OPAMROOT="${XDG_DATA_HOME}/opam"
 export GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
 export MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
 export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
-export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 # export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
 export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"

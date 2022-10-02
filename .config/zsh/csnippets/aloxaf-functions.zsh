@@ -60,14 +60,14 @@ function edit-command-line-as-zsh {
 zle -N edit-command-line-as-zsh
 
 ##################
-_call_navi() {
+function _call_navi() {
    local -r buff="$BUFFER"
    local -r r="$(printf "$(navi --print </dev/tty)")"
    zle kill-whole-line
    zle -U "${buff}${r}"
 }
 
-_navi_next_pos() {
+function _navi_next_pos() {
     local -i pos=$BUFFER[(ri)\(*\)]-1
     BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
     CURSOR=$pos
