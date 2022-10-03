@@ -184,10 +184,6 @@ set sendmail_wait=1
 `test "$GPG_AGENT_INFO" && echo set pgp_use_gpg_agent || echo set`
 # ]]]
 
-# TODO: Look into alias file
-# set alias_file=~/.mail_aliases
-
-mailboxes "!"
 auto_view application/pgp-encrypted
 auto_view text/html
 auto_view text/richtext text/html
@@ -274,7 +270,7 @@ macro index \Cf "<enter-command>unset wait_key<enter>\
   <limit>~i \"\`notmuch search --output=messages \$(cat ~/.cache/mutt_terms) | head -n 600 | perl -le '@a=<>;s/\^id:// for@a;$,=\"|\";print@a' | perl -le '@a=<>; chomp@a; s/\\+/\\\\+/ for@a;print@a' \`\"<enter>" "show only messages matching a notmuch pattern"
 
 # simulate the old url menu
-macro index,pager,attach,compose \cb "\
+macro index,pager,attach,compose \Cb "\
   <enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
   <pipe-message> urlscan<Enter>\
   <enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \

@@ -216,6 +216,8 @@ o.magic = true
 o.joinspaces = false -- prevent inserting two spaces with J
 o.lazyredraw = false
 o.redrawtime = 2000
+-- I like to have a differeniation between CursorHold and updatetime
+-- Also, when only using updatetime, CursorHold doesn't seem to fire
 g.cursorhold_updatetime = 250
 o.updatetime = 2000
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete

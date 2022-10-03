@@ -518,10 +518,9 @@ require("telescope").setup(
             },
             frecency = {
                 db_root = fn.stdpath("data") .. "/databases",
-                ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
-                persistent_filter = false,
                 show_scores = true,
                 show_unindexed = true,
+                ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
                 disable_devicons = false,
                 workspaces = {
                     ["conf"] = "/home/lucas/.config",

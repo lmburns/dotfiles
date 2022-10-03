@@ -194,57 +194,6 @@ return packer.startup(
 
             -- Cache startup
             use({"lewis6991/impatient.nvim"})
-
-            -- Faster version of filetype.vim
-            -- use({"nathom/filetype.nvim", conf = "plugs.filetype"})
-
-            -- ╭──────────────────────────────────────────────────────────╮
-            -- │                         Library                          │
-            -- ╰──────────────────────────────────────────────────────────╯
-            use({"tpope/vim-repeat"})
-            use({"ryanoasis/vim-devicons"})
-
-            use({"nvim-lua/popup.nvim"})
-            use({"nvim-lua/plenary.nvim"})
-            use({"kevinhwang91/promise-async"})
-            use({"uga-rosa/utf8.nvim"})
-            use({"norcalli/nvim.lua"})
-            use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
-            use({"tami5/sqlite.lua"})
-            use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
-            use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
-
-            -- ============================= Keybinding =========================== [[[
-            -- use({"max397574/which-key.nvim", conf = "plugs.which-key"})
-            use({"folke/which-key.nvim", conf = "plugs.which-key"})
-            use(
-                {
-                    "mrjones2014/legendary.nvim",
-                    conf = "plugs.legendary",
-                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
-                }
-            )
-            -- use(
-            --     {
-            --         "anuvyklack/hydra.nvim",
-            --         requires = {"anuvyklack/keymap-layer.nvim", opt = true},
-            --         after = "gitsigns.nvim",
-            --         conf = "plugs.hydra"
-            --     }
-            -- )
-            -- ]]] === Keybinding ===
-
-            -- ========================== Fixes / Addons ========================== [[[
-            use({"antoinemadec/FixCursorHold.nvim", opt = false})
-            use({"max397574/better-escape.nvim", conf = "better_esc"})
-            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
-            use({"aserowy/tmux.nvim", conf = "tmux"})
-            use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
-            -- use({"kevinhwang91/nvim-hclipboard", desc = "Prevent clipboard from being hijacked by snippets"})
-            -- use({"gbprod/yanky.nvim"})
-            use({"tversteeg/registers.nvim", conf = "registers"})
-            use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
-            use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
             use(
                 {
                     "dstein64/vim-startuptime",
@@ -255,6 +204,43 @@ return packer.startup(
                     end
                 }
             )
+
+            -- ╭──────────────────────────────────────────────────────────╮
+            -- │                         Library                          │
+            -- ╰──────────────────────────────────────────────────────────╯
+            use({"tpope/vim-repeat"})
+            use({"ryanoasis/vim-devicons"})
+
+            use({"nvim-lua/popup.nvim"})
+            use({"nvim-lua/plenary.nvim"})
+            use({"kevinhwang91/promise-async"})
+            use({"norcalli/nvim.lua"})
+            use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
+            use({"tami5/sqlite.lua"})
+            use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
+            use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
+
+            -- ============================= Keybinding =========================== [[[
+            use({"folke/which-key.nvim", conf = "plugs.which-key"})
+            use(
+                {
+                    "mrjones2014/legendary.nvim",
+                    conf = "plugs.legendary",
+                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
+                }
+            )
+            -- ]]] === Keybinding ===
+
+            -- ========================== Fixes / Addons ========================== [[[
+            use({"antoinemadec/FixCursorHold.nvim", opt = false})
+            use({"max397574/better-escape.nvim", conf = "better_esc"})
+            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
+            use({"aserowy/tmux.nvim", conf = "tmux"})
+            use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
+            use({"tversteeg/registers.nvim", conf = "registers"})
+            use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
+            use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+
             use(
                 {
                     "AndrewRadev/linediff.vim",
@@ -287,16 +273,6 @@ return packer.startup(
                     }
                 }
             )
-
-            -- :Subvert/child{,ren}/adult{,s}/g
-            -- use(
-            --     {
-            --         "tpope/vim-abolish",
-            --         conf = "abolish",
-            --         cmd = {"Subvert", "Abolish"},
-            --         keys = {{"n", "cr"}}
-            --     }
-            -- )
 
             use({"arthurxavierx/vim-caser", setup = [[vim.g.caser_prefix = "cr"]], conf = "caser"})
 
@@ -394,21 +370,6 @@ return packer.startup(
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
             -- ]]] === Colorscheme ===
 
-            -- ======================== Session Management ======================== [[[
-
-            -- use(
-            --     {
-            --         "jedrzejboczar/possession.nvim",
-            --         event = "BufReadPre",
-            --         conf = "plugs.possession",
-            --         after = "telescope.nvim"
-            --     }
-            -- )
-            -- use({"folke/persistence.nvim"})
-            -- use({"rmagatti/auto-session", event = "BufReadPre"})
-            -- use({"Shatur/neovim-session-manager", event = "BufReadPre", conf = "session_manager"})
-            -- ]]] === Session ===
-
             -- ============================== Debugging ============================ [[[
             use(
                 {
@@ -480,17 +441,6 @@ return packer.startup(
             )
             -- ]]] === Task Runner ===
 
-            -- use(
-            --     {
-            --         "andythigpen/nvim-coverage",
-            --         ft = {"python", "rust"},
-            --         cmd = {"Coverage", "CoverageShow", "CoverageHide", "CoverageToggle", "CoverageClear"},
-            --         conf = "coverage"
-            --     }
-            -- )
-
-            -- use({"max397574/lua-dev.nvim", ft = "lua", module = "lua-dev"})
-            -- use({ "bfredl/nvim-luadev", conf = "luadev", ft = "lua" })
             use(
                 {
                     "rafcamlet/nvim-luapad",
@@ -901,26 +851,6 @@ return packer.startup(
                     conf = "package_info"
                 }
             )
-
-            -- use(
-            --     {
-            --         "bennypowers/nvim-regexplainer",
-            --         requires = {
-            --             "nvim-lua/plenary.nvim",
-            --             "MunifTanjim/nui.nvim",
-            --             {"nvim-treesitter/nvim-treesitter", opt = true}
-            --         },
-            --         after = {"nvim-treesitter"},
-            --         conf = "regexplainer",
-            --         cmd = {
-            --             "RegexplainerShow",
-            --             "RegexplainerShowSplit",
-            --             "RegexplainerShowPopup",
-            --             "RegexplainerHide",
-            --             "RegexplainerToggle",
-            --         },
-            --     }
-            -- )
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
@@ -1055,11 +985,6 @@ return packer.startup(
             -- ]]] === Snippets ===
 
             -- ============================= Highlight ============================ [[[
-            -- use({"rrethy/vim-hexokinase", run = "make hexokinase"})
-            -- use({"max397574/colortils.nvim", cmd = {"Colortils"}, conf = "colortils"})
-            -- use({"chrisbra/Colorizer", cmd = {"Colorizer", "ColorHighlight"}})
-            -- use({"Pocco81/HighStr.nvim", event = "VimEnter", conf = "plugs.highstr"})
-
             -- "norcalli/nvim-colorizer.lua",
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
@@ -1128,15 +1053,6 @@ return packer.startup(
                     }
                 }
             )
-
-            -- use(
-            --     {
-            --         "github/copilot.vim",
-            --         conf = "copilot",
-            --         keys = {"n", "<Leader>ce"},
-            --         cmd = {"Copilot"}
-            --     }
-            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Treesitter                        │
@@ -1240,26 +1156,6 @@ return packer.startup(
                     }
                 }
             )
-
-            --     "nvim-treesitter/nvim-treesitter-context",
-            --     "s1n7ax/nvim-comment-frame",
-            --     "mfussenegger/nvim-ts-hint-textobject",
-            --     "yioneko/nvim-yati",
-            -- use({"nkrkv/nvim-treesitter-rescript", after = "nvim-treesitter"})
-            -- use({"Badhi/nvim-treesitter-cpp-tools", after = "nvim-treesitter"})
-            -- use({"theHamsta/nvim-treesitter-pairs", after = {"nvim-treesitter"}})
-            -- use({"nvim-treesitter/nvim-tree-docs", after = {"nvim-treesitter"}})
-
-            -- use(
-            --     {
-            --         "nvim-neorg/neorg",
-            --         conf = "norg",
-            --         cmd = "Neorg",
-            --         ft = "norg",
-            --         after = {"nvim-treesitter", "telescope.nvim"},
-            --         requires = {"nvim-neorg/neorg-telescope", "folke/zen-mode.nvim"}
-            --     }
-            -- )
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Telescope                         │
