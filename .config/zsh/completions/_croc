@@ -1,0 +1,31 @@
+#compdef croc
+
+# zsh completions for 'croc'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--internal-dns[use a built-in DNS stub resolver rather than the host operating system (default: false)]'
+  '--remember[save these settings to reuse next time (default: false)]'
+  '--debug[toggle debug mode (default: false)]'
+  '--yes[automatically agree to all prompts (default: false)]'
+  '--stdout[redirect file to stdout (default: false)]'
+  '--no-compress[disable compression (default: false)]'
+  '--ask[make sure sender and recipient are prompted (default: false)]'
+  '--local[force to use only local connections (default: false)]'
+  '--ignore-stdin[ignore piped stdin (default: false)]'
+  '--overwrite[do not prompt to overwrite (default: false)]'
+  '--curve[choose an encryption curve (p521, p256, p384, siec) (default: "p256")]'
+  '--ip[set sender ip if known e.g. 10.0.0.1:9009, \[::1\]:9009]'
+  '--relay[address of the relay (default: "5.161.69.143:9009") \[$CROC_RELAY\]]'
+  '--relay6[ipv6 address of the relay (default: "\[2a01:4ff:f0:23c2::14c:1\]:9009") \[$CROC_RELAY6\]]'
+  '--out[specify an output folder to receive the file (default: ".")]'
+  '--pass[password for the relay (default: "pass123") \[$CROC_PASS\]]'
+  '--socks5[add a socks5 proxy \[$SOCKS5_PROXY\]]'
+  '--throttleUpload[throttle the upload speed e.g. 500k]'
+  {--help,-h}'[show help (default: false)]'
+  {--version,-v}'[print the version (default: false)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

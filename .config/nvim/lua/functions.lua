@@ -6,6 +6,7 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
+local H = require("common.color")
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
@@ -409,6 +410,35 @@ command(
     end,
     {nargs = 0, desc = "Toggle line numbers to copy with tmux"}
 )
+
+---Return the filetype icon and color
+---@return string?, string?
+local function fileicon()
+    local name = fn.bufname()
+    local icon, hl
+
+    local devicons = D.npcall(require, "nvim-web-devicons")
+    if devicons then
+        icon, hl = devicons.get_icon_color(name, nil, {default = true})
+    end
+    return icon, hl
+end
+
+---Change tmux title string or return filename
+---@return string
+function M.title_string()
+    local fname = fn.expand("%:t")
+    local icon, hl = fileicon()
+    if not hl then
+        return (icon or "") .. " "
+    end
+
+    if vim.env.TMUX ~= nil then
+        return ("#[fg=%s]%s %s #[fg=%s]"):format(hl, fname, icon, "#EF1D55")
+    end
+
+    return ("%s %s"):format(fname, icon)
+end
 
 -- Prevent vim clearing the system clipboard
 if fn.executable("xsel") then

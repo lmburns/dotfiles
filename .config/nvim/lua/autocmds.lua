@@ -730,7 +730,8 @@ if env.TMUX ~= nil and env.NORENAME == nil then
                 local bufnr = nvim.buf.nr()
 
                 if vim.bo[bufnr].bt == "" then
-                    o.titlestring = fn.expand("%:t")
+                    -- o.titlestring = fn.expand("%:t")
+                    o.titlestring = funcs.title_string()
                 elseif vim.bo[bufnr].bt == "terminal" then
                     if vim.bo[bufnr].ft == "toggleterm" then
                         o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
@@ -745,7 +746,8 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             event = "VimLeave",
             pattern = "*",
             command = function()
-                o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
+                -- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
+                o.titleold = fn.fnamemodify(os.getenv("SHELL"), ":t")
                 pcall(os.execute, "tmux set-window automatic-rename on")
             end,
             desc = "Turn back on Tmux auto-rename"

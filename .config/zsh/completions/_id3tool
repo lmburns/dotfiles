@@ -1,0 +1,22 @@
+#compdef id3tool
+
+# zsh completions for 'id3tool'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-t,--set-title}'[sets the title to WORD]'
+  {-a,--set-album}'[sets the album to WORD]'
+  {-r,--set-artist}'[sets the artist to WORD]'
+  {-y,--set-year}'[sets the year to YEAR \[4 digits\]]'
+  {-n,--set-note}'[sets the note to WORD]'
+  {-g,--set-genre}'[sets the genre code to INT]'
+  {-G,--set-genre-word}'[sets the genre to WORD]'
+  {-c,--set-track}'[sets the track number to INT]'
+  {-l,--genre-list}'[shows the Genres and their codes]'
+  {-v,--version}'[displays the version]'
+  {-h,--help}'[displays this message]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

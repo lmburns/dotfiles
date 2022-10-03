@@ -1,0 +1,29 @@
+#compdef pacgraph
+
+# zsh completions for 'pacgraph'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  {-s,--svg}'[produce the SVG but do not attempt to rasterize it.]'
+  {-o,--opt-deps}'[include optional dependencies.  May produce a less]'
+  {-e,--explicits}'[preserve explicitly installed applications from]'
+  {-c,--console}'[print summary to console, does not draw a graph.  Good]'
+  {-r,--rip}'[rips a copy of your installed packages to]'
+  {-f,--file}'[override default filename/location.  Do not specify an]'
+  '--disable-palette[disables lossy palette compression.]'
+  {-b,--background}'[background color.]'
+  {-l,--link}'[color of links between packages.]'
+  {-t,--top}'[color of packages which are not dependencies.]'
+  {-d,--dep}'[color of packages which are dependencies.]'
+  '-i[COLOR COLOR, --highlight=COLOR COLOR COLOR]'
+  '-p[INT, --point=INT INT]'
+  {-m,--mode}'[curently supported modes are arch, arch-repo, debian]'
+  {-n,--no-compression}'[disable all chain compression.]'
+  '--shared[compare shared libraries.]'
+  '--show-req-by[includes required-by of specified packages.  Only]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

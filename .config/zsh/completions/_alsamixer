@@ -1,0 +1,21 @@
+#compdef alsamixer
+
+# zsh completions for 'alsamixer'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[this help]'
+  {-c,--card}'[sound card number or id]'
+  {-D,--device}'[mixer device name]'
+  {-m,--mouse}'[enable mouse]'
+  {-M,--no-mouse}'[disable mouse]'
+  {-f,--config}'[configuration file]'
+  {-F,--no-config}'[do not load configuration file]'
+  {-V,--view}'[starting view mode: playback/capture/all]'
+  {-g,--no-color}'[toggle using of colors]'
+  {-a,--abstraction}'[mixer abstraction level: none/basic]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
