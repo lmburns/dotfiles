@@ -253,16 +253,19 @@ vim.schedule(
                     "coc-zig",
                     "coc-tsserver",
                     "coc-eslint",
+                    "coc-texlab",
+                    "coc-vimtex",
                     --
+                    -- "coc-snippets",
                     "coc-syntax",
                     "coc-prettier",
-                    -- "coc-snippets",
                     "coc-diagnostic",
                     "coc-fzf-preview",
                     "coc-marketplace",
                     "coc-tabnine",
                     "coc-tag",
                     "coc-word"
+                    -- "coc-highlight" -- Highlight words under cursor without language server
                 }
 
                 g.coc_enable_locationlist = 0

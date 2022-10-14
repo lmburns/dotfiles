@@ -151,7 +151,9 @@ M.kanagawa = function()
         TSKeywordOperator = {fg = cp.sakuraPink, bold = false},
         TSBoolean = {fg = cp.surimiOrange, bold = false},
         TSConstant = {fg = cp.surimiOrange, bold = true},
-        TSConstructor = {fg = cp.sakuraPink, bold = true}
+        TSConstructor = {fg = cp.sakuraPink, bold = true},
+        CocHighlightText = {bg = cp.sumiInk4},
+        Visual = {--[[ fg = cp.sumiInk0, ]] bg = cp.katanaGray, bold = true}
     }
 
     kanagawa.setup(

@@ -61,8 +61,6 @@ end
 local sections_1 = {
     lualine_a = {
         {
-            -- FIX: Doesn't show operator mode?
-            --      This has to do with some other plugin
             "mode",
             fmt = function(str)
                 -- if api.nvim_get_mode().mode == "no" then
@@ -181,8 +179,8 @@ local sections_1 = {
         },
         {
             -- "branch",
-            "b:gitsigns_head",
             -- "FugitiveHead",
+            "b:gitsigns_head",
             icon = icons.git.branch,
             cond = function()
                 -- local ok, ret = pcall(plugs.search_result.fn)
@@ -413,8 +411,8 @@ local function init()
                 component_separators = {left = "", right = ""},
                 refresh = {
                     statusline = 1000,
-                    tabline = 1000,
-                    winbar = 1000
+                    tabline = 0,
+                    winbar = 0
                 },
                 disabled_filetypes = {
                     statusline = {

@@ -198,7 +198,7 @@ local function init()
         }
     )
 
-    telescope.load_extension("neoclip")
+    -- telescope.load_extension("neoclip")
 end
 
 init()

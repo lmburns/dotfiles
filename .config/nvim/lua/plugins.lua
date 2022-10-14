@@ -1064,7 +1064,7 @@ return packer.startup(
                     -- conf = "plugs.treesitter"
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
-                    commit = "2a63ea56",
+                    -- commit = "2a63ea56",
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",

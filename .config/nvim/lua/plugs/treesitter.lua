@@ -716,6 +716,7 @@ M.setup = function()
         -- "rescript",
         ensure_installed = {
             "bash",
+            "bibtex",
             "c",
             "cmake",
             "comment",
@@ -789,7 +790,7 @@ M.setup = function()
             end,
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
-            additional_vim_regex_highlighting = {"perl"},
+            additional_vim_regex_highlighting = {"perl", "latex"},
             custom_captures = custom_captures
         },
         autotag = {enable = true},
@@ -1183,7 +1184,8 @@ local function init()
             "solidity",
             "yaml",
             "toml",
-            "css"
+            "css",
+            "latex"
         }
     )
 
@@ -1193,7 +1195,7 @@ local function init()
     M.install_extra_parsers()
     local conf = M.setup()
 
-    require("nvim-treesitter.highlight").set_custom_captures(custom_captures)
+    -- require("nvim-treesitter.highlight").set_custom_captures(custom_captures)
     configs.setup(conf)
 
     -- M.setup_comment_frame()
