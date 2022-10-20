@@ -37,8 +37,12 @@ function M.setup()
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
         -- default virt_text is "".
-        bookmark_0 = {sign = "⚑", virt_text = "Group0"},
-        bookmark_1 = {sign = "", virt_text = "Group0"},
+        bookmark_0 = {sign = "", virt_text = "Group0"},
+        bookmark_1 = {sign = "◉"},
+        bookmark_2 = {sign = "○"},
+        bookmark_3 = {sign = "✸"},
+        bookmark_4 = {sign = "✿"},
+        bookmark_5 = {sign = ""},
         mappings = {}
         -- mappings = {
         --   set_next = "m,",

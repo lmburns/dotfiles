@@ -240,7 +240,8 @@ M.plugins.gitbuf = {
 
 M.plugins.coc_status = {
     fn = function()
-        return vim.trim(g.coc_status or "")
+        return vim.pesc(g.coc_status or "")
+        -- return "hi"
     end
 }
 

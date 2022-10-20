@@ -192,7 +192,7 @@ alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
 # alias ..='cd .. 2>/dev/null || cd "$(dirname $PWD)"' # Allows leaving from deleted directories
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
-alias ng="noglob"
+alias ngl="noglob"
 
 alias chx='chmod ug+x'
 alias chmx='chmod -x'

@@ -561,8 +561,6 @@ zt 0c light-mode null for \
     koalaman/shellcheck \
   lbin'shfmt* -> shfmt' from'gh-r' \
     @mvdan/sh \
-  lbin'sops* -> sops' from'gh-r' \
-    mozilla/sops \
   lbin'q-* -> q' from'gh-r' \
     harelba/q \
   lbin lman make"YANKCMD='xsel -b' PREFIX=$ZPFX install" \
@@ -573,8 +571,6 @@ zt 0c light-mode null for \
     baskerville/diana \
   lbin has'recode' \
     Bugswriter/tuxi \
-  lbin from'gh-r' \
-    orf/gping \
   lbin'jq-* -> jq' from'gh-r' dl"$(grman -e '1.prebuilt')" lman \
   atclone'mv jq.1* jq.1' \
     stedolan/jq \
@@ -595,13 +591,9 @@ zt 0c light-mode null for \
   lbin from'gh-r' bpick'*linux_amd*gz' \
   atload"source $ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet \
-  lbin from'gh-r' atload'alias of="onefetch"' \
-    o2sh/onefetch \
   id-as'bisqwit/regex-opt' lbin atclone'xh --download https://bisqwit.iki.fi/src/arch/regex-opt-1.2.4.tar.gz' \
   atclone'ziextract --move --auto regex-*.tar.gz' make'all' \
     zdharma-continuum/null
-  # lbin"!**/nvim" from'gh-r' lman bpick'*linux*.gz' \
-  #   neovim/neovim \
 
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 # greymd/teip
@@ -668,10 +660,6 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     imsnif/bandwhich \
   lbin atclone"cargo br" atpull'%atclone' atclone"$(mv_clean)" \
     theryangeary/choose \
-  lbin'* -> hck' from'gh-r' \
-    sstadick/hck \
-  lbin from'gh-r' \
-    BurntSushi/xsv \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean dua)" \
     Byron/dua-cli \
   lbin atclone'cargo br' atpull'%atclone' \

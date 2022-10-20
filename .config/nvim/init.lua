@@ -255,6 +255,7 @@ vim.schedule(
                     "coc-eslint",
                     "coc-texlab",
                     "coc-vimtex",
+                    -- "coc-nav",
                     --
                     -- "coc-snippets",
                     "coc-syntax",

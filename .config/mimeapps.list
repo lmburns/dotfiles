@@ -7,6 +7,7 @@ x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
 
 [Default Applications]
+text/javascript=nvim.desktop;
 application/javascript=nvim.desktop;
 application/json=nvim.desktop;
 application/pdf=zathura.desktop;

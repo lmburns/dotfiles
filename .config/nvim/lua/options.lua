@@ -352,6 +352,7 @@ o.shortmess:append("c") -- don't give ins-completion-menu messages
 o.shortmess:append("s") -- don't give "search hit BOTTOM
 o.shortmess:append("I") -- don't give the intro message when starting Vim
 o.shortmess:append("S") -- do not show search count message when searching (HLSLens)
+-- o.shortmess:append("T") -- truncate messages if they're too long
 -- A = true, -- don't give the "ATTENTION" message when an existing swap file
 
 o.cedit = "<C-c>" -- Key used to open command window on the CLI

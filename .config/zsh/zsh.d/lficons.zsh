@@ -88,6 +88,7 @@ ex=:\
 *.gitmodules=:\
 *.go=:\
 *.gradle=:\
+*.graphql=:\
 *.groovy=:\
 *.gsheet=:\
 *.gslides=:\

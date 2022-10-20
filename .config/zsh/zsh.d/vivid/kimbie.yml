@@ -142,6 +142,7 @@ programming:
     zsh: { foreground: dark_magenta }
     solidity: { foreground: magenta }
     scheme: { foreground: dark_purple }
+    graphql: { foreground: aqua }
 
   tooling:
     foreground: orange

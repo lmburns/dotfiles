@@ -376,6 +376,7 @@ compdef __ngl_compdef ngl
 function ngl() {
   command git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
 }
+
 function __ngl_compdef() {
   (( $+functions[_git-log] )) || _git
   _git-log

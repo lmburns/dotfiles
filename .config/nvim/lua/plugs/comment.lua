@@ -108,46 +108,12 @@ function M.setup()
             -- Post-hook, called after commenting is done
             -- @type fun(ctx: Ctx)
             post_hook = nil
-
-            -- post_hook = function(ctx)
-            --     -- lprint(ctx)
-            --     if ctx.range.scol == -1 then
-            --         -- do something with the current line
-            --     else
-            --         -- print(vim.inspect(ctx), ctx.range.srow, ctx.range.erow, ctx.range.scol, ctx.range.ecol)
-            --         if ctx.range.ecol > 400 then
-            --             ctx.range.ecol = 1
-            --         end
-            --         if ctx.cmotion > 1 then
-            --             -- 322 324 0 2147483647
-            --             vim.fn.setpos("'<", {0, ctx.range.srow, ctx.range.scol})
-            --             vim.fn.setpos("'>", {0, ctx.range.erow, ctx.range.ecol})
-            --             vim.cmd([[exe "norm! gv"]])
-            --         end
-            --     end
-            -- end
-
-            -- post_hook = function(ctx)
-            --     vim.schedule(
-            --         function()
-            --             if state and state.marks and #state.marks > 0 then
-            --                 vim.api.nvim_buf_set_mark(0, "<", state.marks[1][1], state.marks[1][2], {})
-            --                 vim.api.nvim_buf_set_mark(0, ">", state.marks[2][1], state.marks[2][2], {})
-            --                 vim.cmd [[normal gv]]
-            --                 local c = state.cursor
-            --                 local diff =
-            --                     #(vim.api.nvim_buf_get_lines(0, c[1] - 1, c[1], true))[1] - state.cursor_line_len
-            --                 vim.api.nvim_win_set_cursor(0, {state.cursor[1], state.cursor[2] + diff})
-            --                 state = {}
-            --             end
-            --         end
-            --     )
-            -- end
         }
     )
 
     ft.set("rescript", {"//%s", "/*%s*/"})
     ft.set("javascript", {"//%s", "/*%s*/"})
+    ft.set("typescript", {"//%s", "/*%s*/"})
     ft.set("conf", "#%s")
     ft({"go", "rust"}, {"//%s", "/*%s*/"})
 end
@@ -158,45 +124,46 @@ end
 --      print("second")      ==>     # print("second")
 --      # print("third")             print("third")
 --      # print("fourth")            print("fourth")
----@param opmode string
-function M.flip_flop_comment(opmode)
-    local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
-    local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
+-- ---@param opmode string
 
-    local range = U.get_region(opmode)
-    local lines = U.get_lines(range)
-    local ctx = {
-        ctype = U.ctype.linewise,
-        range = range
-    }
-    local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
-    local lcs, rcs = U.unwrap_cstr(cstr)
-    local padding = U.get_pad(true)
-
-    local min_indent = -1
-    for _, line in ipairs(lines) do
-        if not U.is_empty(line) and not U.is_commented(lcs, rcs, padding)(line) then
-            local cur_indent = U.indent_len(line)
-            if min_indent == -1 or min_indent > cur_indent then
-                min_indent = cur_indent
-            end
-        end
-    end
-
-    for i, line in ipairs(lines) do
-        local is_commented = U.is_commented(lcs, rcs, padding)(line)
-        if line == "" then
-        elseif is_commented then
-            lines[i] = U.uncommenter(lcs, rcs, padding)(line)
-        else
-            lines[i] = U.commenter(lcs, rcs, padding, min_indent)(line)
-        end
-    end
-    api.nvim_buf_set_lines(0, range.srow - 1, range.erow, false, lines)
-
-    api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
-    api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
-end
+-- function M.flip_flop_comment(opmode)
+--     local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
+--     local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
+--
+--     local range = U.get_region(opmode)
+--     local lines = U.get_lines(range)
+--     local ctx = {
+--         ctype = U.ctype.linewise,
+--         range = range
+--     }
+--     local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
+--     local lcs, rcs = U.unwrap_cstr(cstr)
+--     local padding = U.get_pad(true)
+--
+--     local min_indent = -1
+--     for _, line in ipairs(lines) do
+--         if not U.is_empty(line) and not U.is_commented(lcs, rcs, padding)(line) then
+--             local cur_indent = U.indent_len(line)
+--             if min_indent == -1 or min_indent > cur_indent then
+--                 min_indent = cur_indent
+--             end
+--         end
+--     end
+--
+--     for i, line in ipairs(lines) do
+--         local is_commented = U.is_commented(lcs, rcs, padding)(line)
+--         if line == "" then
+--         elseif is_commented then
+--             lines[i] = U.uncommenter(lcs, rcs, padding)(line)
+--         else
+--             lines[i] = U.commenter(lcs, rcs, padding, min_indent)(line)
+--         end
+--     end
+--     api.nvim_buf_set_lines(0, range.srow - 1, range.erow, false, lines)
+--
+--     api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
+--     api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
+-- end
 
 local function init()
     M.setup()

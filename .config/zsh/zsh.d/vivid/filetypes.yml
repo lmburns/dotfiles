@@ -201,6 +201,7 @@ programming:
     reason: [.re]
     scheme: [.scm]
     vue: [.vue]
+    graphql: [.graphql]
 
   tooling:
     vcs:
@@ -221,6 +222,7 @@ programming:
         - .cvsignore
         - .fdignore
         - .rgignore
+        - .eslintignore
 
     build:
       cmake:

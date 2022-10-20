@@ -152,7 +152,7 @@ local sections_1 = {
                 hint = icons.lsp.sb.hint
             }
         },
-        -- FIX: When gps isn't show there's a white seprator shown
+        -- FIX: When gps isn't show there's a white seperator shown
         {
             "diff",
             colored = true,
@@ -301,6 +301,7 @@ function M.autocmds()
     vim.defer_fn(
         function()
             cmd("au! lualine_stl_refresh  ModeChanged")
+            cmd("au! lualine_stl_refresh  CursorMoved") -- Messes up certain languages (like Rust)
             cmd("au! lualine_stl_refresh  BufEnter")
         end,
         20
