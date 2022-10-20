@@ -140,8 +140,16 @@ local sections_1 = {
             cond = function()
                 return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
             end,
-            color = {fg = colors.morning_blue}
         },
+        -- {
+        --     "aerial",
+        --     sep = "",
+        --     depth = nil,
+        --     dense = true,
+        --     dense_sep = "  ",
+        --     colored = true,
+        --     color = {fg = colors.morning_blue}
+        -- },
         {
             "diagnostics",
             sources = {"nvim_diagnostic", "coc"},
@@ -300,8 +308,8 @@ function M.autocmds()
     -- Clear the builtin Lualine ModeChanged
     vim.defer_fn(
         function()
-            cmd("au! lualine_stl_refresh  ModeChanged")
             cmd("au! lualine_stl_refresh  CursorMoved") -- Messes up certain languages (like Rust)
+            cmd("au! lualine_stl_refresh  ModeChanged")
             cmd("au! lualine_stl_refresh  BufEnter")
         end,
         20

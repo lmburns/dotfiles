@@ -240,8 +240,11 @@ M.plugins.gitbuf = {
 
 M.plugins.coc_status = {
     fn = function()
-        return vim.pesc(g.coc_status or "")
-        -- return "hi"
+        -- FIX: Whatever the hell this is. Gotta be a symbol in coc_status causing problem
+        if vim.bo.ft == "rust" then
+            return vim.pesc(g.coc_status or "")
+        end
+        return vim.trim(g.coc_status or "")
     end
 }
 
