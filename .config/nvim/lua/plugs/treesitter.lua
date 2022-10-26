@@ -713,7 +713,6 @@ end
 ---@return table
 M.setup = function()
     return {
-        -- "rescript",
         ensure_installed = {
             "bash",
             "bibtex",
@@ -724,11 +723,13 @@ M.setup = function()
             "css",
             "d",
             "dart",
+            -- "diff",
             "dockerfile",
             "fennel",
             -- "gitcommit",
             -- "gitconfig",
             -- "gitrebase",
+            -- "gitattributes",
             "gitignore",
             "go",
             "gomod",
@@ -738,6 +739,7 @@ M.setup = function()
             "html",
             "java",
             "javascript",
+            "jq",
             "jsdoc",
             "json",
             "jsonc",
@@ -759,6 +761,7 @@ M.setup = function()
             "query",
             "rasi",
             "regex",
+            -- "ron",
             "ruby",
             "rust",
             "scheme",
@@ -766,6 +769,7 @@ M.setup = function()
             "solidity",
             "sql",
             "svelte",
+            "sxhkdrc",
             "teal",
             "toml",
             "tsx",
@@ -774,7 +778,6 @@ M.setup = function()
             "vue",
             "yaml",
             "zig"
-            -- "ron",
         },
         sync_install = false,
         auto_install = true,
@@ -1078,6 +1081,17 @@ function M.install_extra_parsers()
         filetype = "log"
     }
 
+    parser_config.jq = {
+        install_info = {
+            url = "https://github.com/flurie/tree-sitter-jq",
+            files = {"src/parser.c"},
+            branch = "main", -- default branch in case of git repo if different from master
+            generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+            requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+        },
+        filetype = "jq"
+    }
+
     -- Norg
     -- parser_config.norg = {
     --     install_info = {
@@ -1109,6 +1123,7 @@ function M.install_extra_parsers()
     -- parser_config.gitcommit = {
     --     install_info = {
     --         url = "https://github.com/the-mikedavis/tree-sitter-git-commit",
+    --         -- url = "https://github.com/gbprod/tree-sitter-git-commit",
     --         files = {"src/parser.c"},
     --         branch = "main",
     --         generate_requires_npm = false -- if stand-alone parser without npm dependencies

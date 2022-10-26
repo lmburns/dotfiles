@@ -223,6 +223,7 @@ programming:
         - .fdignore
         - .rgignore
         - .eslintignore
+        - .styluaignore
 
     build:
       cmake:

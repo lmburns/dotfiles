@@ -12,7 +12,7 @@ local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
 
-local overseer = require("overseer")
+-- local overseer = require("overseer")
 
 local utils = require("common.utils")
 local map = utils.map
@@ -139,7 +139,7 @@ local sections_1 = {
             plugs.gps.fn,
             cond = function()
                 return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
-            end,
+            end
         },
         -- {
         --     "aerial",
@@ -219,23 +219,23 @@ local sections_1 = {
             {
                 "%p%%/%-3L"
             }
-        ),
-        {
-            "overseer",
-            label = "", -- Prefix for task counts
-            colored = true, -- Color the task icons and counts
-            symbols = {
-                [overseer.STATUS.FAILURE] = "F:",
-                [overseer.STATUS.CANCELED] = "C:",
-                [overseer.STATUS.SUCCESS] = "S:",
-                [overseer.STATUS.RUNNING] = "R:"
-            },
-            unique = true, -- Unique-ify non-running task count by name
-            name = nil, -- List of task names to search for
-            name_not = false, -- When true, invert the name search
-            status = nil, -- List of task statuses to display
-            status_not = false -- When true, invert the status search
-        }
+        )
+        -- {
+        --     "overseer",
+        --     label = "", -- Prefix for task counts
+        --     colored = true, -- Color the task icons and counts
+        --     symbols = {
+        --         [overseer.STATUS.FAILURE] = "F:",
+        --         [overseer.STATUS.CANCELED] = "C:",
+        --         [overseer.STATUS.SUCCESS] = "S:",
+        --         [overseer.STATUS.RUNNING] = "R:"
+        --     },
+        --     unique = true, -- Unique-ify non-running task count by name
+        --     name = nil, -- List of task names to search for
+        --     name_not = false, -- When true, invert the name search
+        --     status = nil, -- List of task statuses to display
+        --     status_not = false -- When true, invert the status search
+        -- }
         -- "%l:%c",
         -- "%p%%/%L",
         -- plugs.search_result.fn

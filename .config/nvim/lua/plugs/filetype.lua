@@ -26,6 +26,7 @@ function M.setup()
                 tmTheme = "xml",
                 pn = "potion",
                 conf = "conf",
+                jq = "jq",
                 mdx = "markdown",
                 md = "vimwiki",
                 mjml = "html",

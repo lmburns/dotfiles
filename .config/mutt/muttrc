@@ -13,12 +13,6 @@ set hostname = "archbox"
 set use_domain=no
 set reverse_alias
 set attribution="On %D, %n wrote:"
-
-bind index,pager          i noop
-bind index,pager          g noop
-
-bind index,pager go sidebar-open
-source /home/lucas/.config/mutt/emails.muttrc
 # ]]]
 
 # GPG [[[
@@ -148,6 +142,10 @@ set include                    # include message in replies
 set mime_forward=ask-no # attachments are forwarded with mail
 set mime_forward_rest
 
+# Suppress autoview messages
+# set display_filter="sd -p '.*(Autoview|\-\- Attachment|\-\- Type: ).*\]\n' ''"
+set display_filter = "tac | sed '/\\\[-- Autoview/,+1d' | tac"
+
 # == Mailbox handling ==
 set nomove             # Don't move as result of hook
 set noconfirmappend    # Don't confirm append to other mailbox
@@ -158,7 +156,7 @@ set noabort_unmodified # unmodified drafts saved to inbox, not discard
 set mime_type_query_command = "file --mime-type -b %s"
 set smtp_authenticators = 'gssapi:login'
 # set query_command = "khard email --parsable --search-in-source-files '%s'"
-set query_command = "abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook --mutt-query '%s'"
+set query_command = "abook --config $XDG_CONFIG_HOME/abook/abookrc --datafile $XDG_DATA_HOME/abook/addressbook --mutt-query '%s'"
 set rfc2047_parameters = yes
 
 # sorting and threading
@@ -187,14 +185,16 @@ set sendmail_wait=1
 auto_view application/pgp-encrypted
 auto_view text/html
 auto_view text/richtext text/html
-#set display_filter = "tac | sed '/\\\[-- Autoview/,+1d' | tac" # Suppress autoview messages.
 alternative_order text/plain    text/enriched text/html
 alternative_order text/enriched text/richtext text/plain text
 
 # General rebindings
-bind index ga noop
-bind pager ga noop
-bind index gd noop
+bind index,pager i  noop
+bind index,pager g  noop
+bind index       ga noop
+bind pager       ga noop
+bind index       gd noop
+
 
 bind index        \Cf      noop
 bind editor       <space>  noop
@@ -305,10 +305,8 @@ bind index,pager . sidebar-toggle-visible
 
 bind index,pager ]] next-unread
 bind index,pager [[ previous-unread
-bind index,pager N search-opposite
-bind index \\ toggle-new
-
-bind attach <return> view-mailcap # Same as l
+bind index,pager N  search-opposite
+bind index       \\ toggle-new
 
 # Attach an image from the clipboard
 # macro compose P "<attach-file>\
@@ -444,26 +442,9 @@ set abort_noattach = ask-yes
 # bind index,pager \Cx modify-labels
 # ]]]
 
-set virtual_spoolfile
 source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc
-macro index,pager i1 \
-  '<sync-mailbox><enter-command>\
-    source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
-    "switch to burnsac@me.com"
-macro index,pager i2 \
-  '<sync-mailbox><enter-command>\
-    source /home/lucas/.config/mutt/accounts/lucas@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
-    "switch to lucas@lmburns.com"
-macro index,pager i3 \
-  '<sync-mailbox><enter-command>\
-  source /home/lucas/.config/mutt/accounts/lmb@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' "switch to lmb@lmburns.com"
-macro index,pager i4 \
-  '<sync-mailbox><enter-command>\
-    source /home/lucas/.config/mutt/accounts/burnsppl@gmail.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
-    "switch to burnsppl@gmail.com"
-macro index,pager i5 \
-  '<sync-mailbox><enter-command>\
-    source /home/lucas/.config/mutt/accounts/email@lmburns.com.muttrc<enter><change-folder>!<enter>;<check-stats>' \
-    "switch to email@lmburns.com"
+source /home/lucas/.config/mutt/emails.muttrc
+
+set virtual_spoolfile
 
 # vim: ft=neomuttrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

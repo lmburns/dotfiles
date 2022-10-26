@@ -221,7 +221,13 @@ return packer.startup(
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
             -- ============================= Keybinding =========================== [[[
-            use({"folke/which-key.nvim", conf = "plugs.which-key"})
+            use(
+                {
+                    "folke/which-key.nvim",
+                    conf = "plugs.which-key",
+                    commit = "45be0ef"
+                }
+            )
             use(
                 {
                     "mrjones2014/legendary.nvim",
@@ -232,6 +238,7 @@ return packer.startup(
             -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
+            -- "folke/noice.nvim"
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
@@ -403,7 +410,7 @@ return packer.startup(
                     "rcarriga/neotest",
                     conf = "plugs.neotest",
                     module = "neotest",
-                    wants = "overseer.nvim",
+                    -- wants = "overseer.nvim",
                     requires = {
                         "nvim-lua/plenary.nvim",
                         "nvim-treesitter/nvim-treesitter",
@@ -418,27 +425,27 @@ return packer.startup(
             )
 
             -- ========================== Task Runner ============================= [[[
-            use(
-                {
-                    "stevearc/overseer.nvim",
-                    conf = "plugs.overseer",
-                    after = {"dressing.nvim"},
-                    module = "overseer",
-                    cmd = {
-                        "OverseerOpen",
-                        "OverseerClose",
-                        "OverseerToggle",
-                        "OverseerSaveBundle",
-                        "OverseerLoadBundle",
-                        "OverseerDeleteBundle",
-                        "OverseerRunCmd",
-                        "OverseerRun",
-                        "OverseerBuild",
-                        "OverseerQuickAction",
-                        "OverseerTaskAction"
-                    }
-                }
-            )
+            -- use(
+            --     {
+            --         "stevearc/overseer.nvim",
+            --         conf = "plugs.overseer",
+            --         after = {"dressing.nvim"},
+            --         module = "overseer",
+            --         cmd = {
+            --             "OverseerOpen",
+            --             "OverseerClose",
+            --             "OverseerToggle",
+            --             "OverseerSaveBundle",
+            --             "OverseerLoadBundle",
+            --             "OverseerDeleteBundle",
+            --             "OverseerRunCmd",
+            --             "OverseerRun",
+            --             "OverseerBuild",
+            --             "OverseerQuickAction",
+            --             "OverseerTaskAction"
+            --         }
+            --     }
+            -- )
             -- ]]] === Task Runner ===
 
             use(
@@ -1064,7 +1071,7 @@ return packer.startup(
                     -- conf = "plugs.treesitter"
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
-                    commit = "2a63ea56",
+                    -- commit = "2a63ea56",
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",

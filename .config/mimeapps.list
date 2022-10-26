@@ -7,7 +7,6 @@ x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
 
 [Default Applications]
-text/javascript=nvim.desktop;
 application/javascript=nvim.desktop;
 application/json=nvim.desktop;
 application/pdf=zathura.desktop;
@@ -23,13 +22,16 @@ image/jpeg=sxiv.desktop;
 image/png=sxiv.desktop;
 inode/directory=lf.desktop;
 message/rfc822=mail.desktop;
+text/javascript=nvim.desktop;
 text/markdown=nvim.desktop;
 text/plain=nvim.desktop;
 text/rust=nvim.desktop;
+text/vnd.trolltech.linguist=nvim.desktop;
 text/x-log=nvim.desktop;
 text/x-lua=nvim.desktop;
 text/x-matlab=nvim.desktop;
 text/x-shellscript=nvim.desktop;
+video/mp2t=nvim.desktop;
 x-scheme-handler/http=librewolf.desktop;
 x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/magnet=torrent.desktop;
