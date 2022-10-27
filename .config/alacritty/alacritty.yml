@@ -44,16 +44,22 @@ window:
   #
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
-  padding:
-    x: 2
-    y: 2
+  # padding:
+  #   x: 2
+  #   y: 2
 
   # Spread additional padding evenly around the terminal content.
   dynamic_padding: false
 
+  # Window decorations
+  #
   # Values for `decorations`:
   #     - full: Borders and title bar
   #     - none: Neither borders nor title bar
+  #
+  # Values for `decorations` (macOS only):
+  #     - transparent: Title bar, transparent background and title bar buttons
+  #     - buttonless: Title bar, transparent background and no title bar buttons
   decorations: full
 
   # Window title
@@ -67,14 +73,12 @@ window:
     # General application class
     general: Alacritty
 
-  # GTK theme variant (Linux/BSD only)
-  #
-  # Override the variant of the GTK theme. Commonly supported values are `dark` and `light`.
-  # Set this to `None` to use the default theme variant.
-  gtk_theme_variant: dark
+  # Override the variant of the GTK theme/Wayland client side decorations.
+  # Commonly supported values are `dark` and `light`. Set this to `None` to use
+  # the default theme variant.
+  decorations_theme_variant: dark
 
   opacity: 0.90
-  # opacity: 1
 
 scrolling:
   # Maximum number of lines in the scrollback buffer.
@@ -1213,4 +1217,4 @@ debug:
   print_events: false
 
   # Highlight window damage information.
-  highlight_damage: true
+  highlight_damage: false

@@ -1155,6 +1155,11 @@ return packer.startup(
                             after = "nvim-treesitter"
                         },
                         {
+                            'ziontee113/query-secretary',
+                            desc = "Help create treesitter queries",
+                            after = "nvim-treesitter"
+                        },
+                        {
                             "vigoux/architext.nvim",
                             desc = "Create treesitter queries",
                             -- cmd = {"Architext", "ArchitextREPL"},

@@ -62,7 +62,7 @@ M.catppuccin = function()
                 TSConditional = {fg = cp.red},
                 TSKeywordOperator = {fg = cp.teal},
                 TSFunction = {fg = cp.maroon, style = {"bold"}},
-                TSMethod = {fg = cp.maroon, style = {"bold"}},
+                TSMethod = {fg = cp.maroon, style = {"bold"}}
                 -- TSVariableBuiltin = {style = "none"},
                 -- TSTypeBuiltin = {style = "none"},
                 -- TSProperty = {style = "none"},
@@ -73,7 +73,6 @@ M.catppuccin = function()
             }
         }
     )
-
 
     -- cmd [[colorscheme catppuccin]]
 end

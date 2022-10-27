@@ -1738,7 +1738,7 @@ function M.urlview()
             jump = {
                 prev = "[u",
                 next = "]u"
-            },
+            }
         }
     )
 

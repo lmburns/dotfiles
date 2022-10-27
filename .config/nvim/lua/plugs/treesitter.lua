@@ -281,7 +281,7 @@ M.setup_aerial = function()
                 -- Ignore unlisted buffers. See :help buflisted
                 unlisted_buffers = true,
                 -- List of filetypes to ignore.
-                filetypes = _t(BLACKLIST_FT):merge({"gomod"}),
+                filetypes = _t(BLACKLIST_FT):merge({"gomod", "help"}),
                 -- Ignored buftypes.
                 -- Can be one of the following:
                 -- false or nil - No buftypes are ignored.
@@ -1168,6 +1168,10 @@ function M.install_extra_parsers()
     -- }
 end
 
+M.setup_query_secretary = function()
+    map("n", "<Leader>qu", "require('query-secretary').query_window_initiate()", {luacmd = true})
+end
+
 local function init()
     cmd.packadd("nvim-treesitter")
     cmd.packadd("nvim-treesitter-textobjects")
@@ -1222,6 +1226,7 @@ local function init()
     M.setup_context_vt()
     M.setup_treesurfer()
     M.setup_autotag()
+    M.setup_query_secretary()
 
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]])
     map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]])

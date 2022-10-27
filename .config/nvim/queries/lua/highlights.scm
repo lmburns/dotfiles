@@ -193,6 +193,10 @@
 
 ;; ===== CUSTOM =====
 
+;; Change capital letter field names to be constants
+((dot_index_expression field: (identifier) @constant)
+ (#lua-match? @constant "^[A-Z][A-Z_0-9]*$"))
+
 (
   (identifier) @function
   (#eq? @function "utils")
