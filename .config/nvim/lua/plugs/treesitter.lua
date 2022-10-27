@@ -723,13 +723,13 @@ M.setup = function()
             "css",
             "d",
             "dart",
-            -- "diff",
+            "diff",
             "dockerfile",
             "fennel",
             -- "gitcommit",
             -- "gitconfig",
             -- "gitrebase",
-            -- "gitattributes",
+            "gitattributes",
             "gitignore",
             "go",
             "gomod",
@@ -1145,8 +1145,7 @@ function M.install_extra_parsers()
     -- Git config
     -- parser_config.gitconfig = {
     --     install_info = {
-    --         -- url = "https://github.com/the-mikedavis/tree-sitter-git-config",
-    --         url = "/home/lucas/projects/treesitter/tree-sitter-git-config",
+    --         url = "https://github.com/the-mikedavis/tree-sitter-git-config",
     --         files = {"src/parser.c"},
     --         branch = "main",
     --         generate_requires_npm = true, -- if stand-alone parser without npm dependencies
