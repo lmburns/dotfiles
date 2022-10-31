@@ -224,6 +224,7 @@ programming:
         - .rgignore
         - .eslintignore
         - .styluaignore
+        - .dockerignore
 
     build:
       cmake:

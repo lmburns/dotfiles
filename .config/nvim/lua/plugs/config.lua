@@ -2047,8 +2047,8 @@ function M.git_conflict()
 
                 bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)")
                 bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)")
-                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
                 bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)")
+                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
                 bmap(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
                 bmap(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
             end

@@ -799,21 +799,21 @@ M.setup = function()
         autotag = {enable = true},
         autopairs = {
             enable = true,
-            disable = {"help", "comment", "log", "gitignore", "markdown"}
+            disable = {"help", "comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
         },
         indent = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "markdown"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
         },
         fold = {enable = false},
         endwise = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "markdown"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
         },
         matchup = {
             enable = true,
             disable_virtual_text = true,
-            disable = {"comment", "log", "gitignore"},
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
             include_match_words = true,
             matchparen_offscreen = {method = "popup"}
         },
@@ -892,7 +892,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help", "comment", "log", "gitignore", "markdown"}
+            disable = {"html", "help", "comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
             -- colors = {
             --     theme.red,
             --     theme.magenta,
@@ -932,7 +932,7 @@ M.setup = function()
                 enable = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
-                disable = {"comment", "log", "gitignore"},
+                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
                 keymaps = {
                     ["af"] = "@function.outer",
                     ["if"] = "@function.inner",
@@ -975,7 +975,7 @@ M.setup = function()
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "log", "gitignore"},
+                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
                 goto_next_start = {
                     -- ["]]"] = "@function.outer",
                     ["]f"] = "@function.outer",
@@ -1187,7 +1187,7 @@ local function init()
             "html",
             "comment",
             "zsh",
-            "markdown",
+            -- "markdown",
             "solidity",
             "yaml",
             "toml",
