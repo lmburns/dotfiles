@@ -206,67 +206,23 @@ function M.rules()
     -- )
 
     -- Add <> pair
-    -- autopairs.add_rule(
-    --     Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(cond.not_after_regex(opt.ignored_next_char)):with_pair(
-    --         cond.not_before_regex("<")
-    --     )
-    -- )
+    autopairs.add_rule(
+        Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(cond.not_before_regex("<")):with_pair(
+            function(_)
+                local excluded = {"markdown", "vimwiki"}
+                if vim.tbl_contains(excluded, vim.o.ft) then
+                    return false
+                end
 
-    autopairs.add_rule(Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(cond.not_before_regex("<")))
+                return true
+            end
+        )
+    )
 
     -- autopairs.add_rule(
     --     Rule("<", ">", "rust"):with_pair(cond.before_regex("%a+")):with_pair(cond.not_after_regex("%a")):with_move(
     --         ts_conds.is_ts_node {"type_arguments", "type_parameters", "string"}
     --     )
-    -- )
-
-    -- autopairs.add_rules(
-    --     {
-    --         -- Auto add space on =
-    --         Rule("=", ""):with_pair(cond.not_inside_quote()):with_pair(
-    --             function(opts)
-    --                 local excluded = {"rust", "sh", "bash", "zsh"}
-    --                 if vim.tbl_contains(excluded, vim.o.filetype) then
-    --                     return false
-    --                 end
-    --
-    --                 local last_char = opts.line:sub(opts.col - 1, opts.col - 1)
-    --
-    --                 if last_char:match("[%w%=%s]") then
-    --                     return true
-    --                 end
-    --                 return false
-    --             end
-    --         ):replace_endpair(
-    --             function(opts)
-    --                 local prev_2char = opts.line:sub(opts.col - 2, opts.col - 1)
-    --                 local next_char = opts.line:sub(opts.col, opts.col)
-    --                 next_char = next_char == " " and "" or " "
-    --                 if prev_2char:match("%w$") then
-    --                     return "<bs> =" .. next_char
-    --                 end
-    --                 if prev_2char:match("%=$") then
-    --                     return next_char
-    --                 end
-    --                 if prev_2char:match("=") then
-    --                     return "<bs><bs>=" .. next_char
-    --                 end
-    --                 return ""
-    --             end
-    --         ):set_end_pair_length(0):with_move(cond.none()):with_del(cond.none())
-    --     }
-    -- )
-
-    -- local endwise = require("nvim-autopairs.ts-rule").endwise
-    -- -- TODO: Crystal
-    -- autopairs.add_rules(
-    --     {
-    --         -- 'then$' is a lua regex
-    --         -- 'end' is a match pair
-    --         -- 'lua' is a filetype
-    --         -- 'if_statement' is a treesitter name. set it = nil to skip check with treesitter
-    --         endwise("then$", "end", "teal", "if_statement")
-    --     }
     -- )
 end
 

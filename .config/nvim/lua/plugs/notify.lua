@@ -27,8 +27,8 @@ function M.setup()
             fps = 60,
             timeout = 3000,
             minimum_width = 30,
-            max_width = math.floor(vim.o.columns * 0.4),
             background_color = "NormalFloat",
+            -- max_width = math.floor(vim.o.columns * 0.4),
             -- on_close = function()
             -- -- Could create something to write to a file
             -- end,

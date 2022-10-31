@@ -83,8 +83,8 @@
   parameter: (identifier) @parameter)
 
 ;; ===== CUSTOM =====
-(function_declaration (identifier) @function_definition)
 (function_signature name: (identifier) @function)
+(index_signature name: (identifier) @field)
 
 ;; Change to this an orange highlight group instead of blue
 (undefined) @constant.builtin

@@ -397,21 +397,22 @@ end
 M.hl_fallback =
     (function()
     local fb_bl_ft = {
-        "qf",
-        "fzf",
-        "vim",
-        "sh",
-        "python",
-        "go",
         "c",
         "cpp",
-        "rust",
-        "java",
-        "lua",
-        "typescript",
-        "javascript",
         "css",
+        "fzf",
+        "go",
+        -- "help",
         "html",
+        "java",
+        "javascript",
+        "lua",
+        "python",
+        "qf",
+        "rust",
+        "sh",
+        "typescript",
+        "vim",
         "xml"
     }
     local hl_fb_tbl = {}

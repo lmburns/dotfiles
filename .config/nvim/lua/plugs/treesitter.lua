@@ -728,7 +728,7 @@ M.setup = function()
             "fennel",
             -- "gitcommit",
             -- "gitconfig",
-            -- "gitrebase",
+            "git_rebase",
             "gitattributes",
             "gitignore",
             "go",
@@ -1129,17 +1129,6 @@ function M.install_extra_parsers()
     --         generate_requires_npm = false -- if stand-alone parser without npm dependencies
     --     },
     --     filetype = "gitcommit"
-    -- }
-
-    -- Git rebase
-    -- parser_config.gitrebase = {
-    --     install_info = {
-    --         url = "https://github.com/the-mikedavis/tree-sitter-git-rebase",
-    --         files = {"src/parser.c"},
-    --         branch = "main",
-    --         generate_requires_npm = false -- if stand-alone parser without npm dependencies
-    --     },
-    --     filetype = "gitrebase"
     -- }
 
     -- Git config

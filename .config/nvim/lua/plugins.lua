@@ -221,13 +221,7 @@ return packer.startup(
             use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
 
             -- ============================= Keybinding =========================== [[[
-            use(
-                {
-                    "folke/which-key.nvim",
-                    conf = "plugs.which-key",
-                    commit = "45be0ef"
-                }
-            )
+            use({"folke/which-key.nvim", conf = "plugs.which-key"})
             use(
                 {
                     "mrjones2014/legendary.nvim",
@@ -877,16 +871,13 @@ return packer.startup(
                 }
             )
 
-            -- FIX: TOC is written each time
-            -- use(
-            --     {
-            --         "SidOfc/mkdx",
-            --         ft = {"markdown", "vimwiki"},
-            --         config = function()
-            --             vim.cmd("source " .. fn.stdpath("config") .. "/vimscript/plugins/mkdx.vim")
-            --         end
-            --     }
-            -- )
+            use(
+                {
+                    "SidOfc/mkdx",
+                    ft = {"markdown", "vimwiki"},
+                    config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]
+                }
+            )
 
             use(
                 {
@@ -1069,9 +1060,9 @@ return packer.startup(
             use(
                 {
                     -- conf = "plugs.treesitter"
+                    -- commit = "2a63ea56",
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
-                    -- commit = "2a63ea56",
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",
@@ -1155,7 +1146,7 @@ return packer.startup(
                             after = "nvim-treesitter"
                         },
                         {
-                            'ziontee113/query-secretary',
+                            "ziontee113/query-secretary",
                             desc = "Help create treesitter queries",
                             after = "nvim-treesitter"
                         },

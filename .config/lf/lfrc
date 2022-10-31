@@ -457,12 +457,9 @@ cmd edit_scope :{{
 # -- Diff: between two files
 cmd diff_files !{{
   local -a files; files=( ${(@f)fx} )
-  (( $#files > 2 )) && {
-    notify-send "too many files"
-    return
+  (( $#files == 2 )) && {
+    clear; delta $files[1] $files[2]
   }
-
-  clear; delta $files[1] $files[2]
 }}
 
 map D diff_files
