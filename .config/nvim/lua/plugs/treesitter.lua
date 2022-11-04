@@ -1326,7 +1326,8 @@ local function init()
     map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("o", ",", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
     map("n", "vx", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
+    -- map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
+    -- hl.set("TSNodeUnmatched", {fg = "#666666"})
 
     map("n", "<Leader>sh", "TSHighlightCapturesUnderCursor", {cmd = true, desc = "Highlight capture group"})
 

@@ -157,6 +157,7 @@ set mime_type_query_command = "file --mime-type -b %s"
 set smtp_authenticators = 'gssapi:login'
 # set query_command = "khard email --parsable --search-in-source-files '%s'"
 set query_command = "abook --config $XDG_CONFIG_HOME/abook/abookrc --datafile $XDG_DATA_HOME/abook/addressbook --mutt-query '%s'"
+
 set rfc2047_parameters = yes
 
 # sorting and threading

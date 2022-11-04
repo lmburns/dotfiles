@@ -89,3 +89,12 @@
 ;; Change to this an orange highlight group instead of blue
 (undefined) @constant.builtin
 (override_modifier) @keyword
+; (this_type) @variable.builtin
+(this_type) @type.builtin
+
+((identifier) @variable.builtin
+ (#vim-match? @variable.builtin "^(arguments|module|console|window|document|globalThis)$"))
+
+;; Make anything following `new` highlight as a constructor
+(new_expression ((identifier) @constructor
+ (#lua-match? @constructor "^[_a-zA-Z]")))
