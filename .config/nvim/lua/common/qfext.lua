@@ -179,6 +179,7 @@ function M.outline_aerial(args)
     end
 
     -- TODO: How to clear sign column on close?
+    --
     -- vim.defer_fn(
     --     function()
     --         fn.sign_unplace("aerial-sign")

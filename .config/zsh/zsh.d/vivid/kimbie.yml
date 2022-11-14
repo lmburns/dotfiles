@@ -1,51 +1,51 @@
 # Author: https://github.com/lmburns
 colors:
-  black: '201f1f'         # #201f1f
-  red: 'EF1D55'           # #EF1D55
-  magenta: 'A06469'       # #A06469
-  orange: 'FF5813'        # #FF5813
-  green: '819C3B'         # #819C3B
-  yellow: 'FF9500'        # #FF9500
-  aqua: '7EB2B1'          # #7EB2B1
-  blue: '4C96A8'          # #4C96A8
-  purple: '98676A'        # #98676A
+  black: '201f1f' # #201f1f
+  red: 'EF1D55' # #EF1D55
+  magenta: 'A06469' # #A06469
+  orange: 'FF5813' # #FF5813
+  green: '819C3B' # #819C3B
+  yellow: 'FF9500' # #FF9500
+  aqua: '7EB2B1' # #7EB2B1
+  blue: '4C96A8' # #4C96A8
+  purple: '98676A' # #98676A
 
   yellow_orange: 'fe8019' # #fe8019
-  dark_red: 'DC3958'      # #DC3958
-  dark_purple: '733e8b'   # #733e8b
-  dark_magenta: 'b16185'  # #b16185
-  gruv_magenta: 'd3869b'  # #d3869b
-  dark_green: '088649'    # #088649
+  dark_red: 'DC3958' # #DC3958
+  dark_purple: '733e8b' # #733e8b
+  dark_magenta: 'b16185' # #b16185
+  gruv_magenta: 'd3869b' # #d3869b
+  dark_green: '088649' # #088649
   bright_yellow: 'f79a32' # #f79a32
-  bright_green: 'a3b95a'  # #a3b95a
-  darker_red: '9B111E'    # #d92944
+  bright_green: 'a3b95a' # #a3b95a
+  darker_red: '9B111E' # #d92944
 
-  dark_blue: '418292'     # #418292
-  dark_aqua: '719190'     # #719190
+  dark_blue: '418292' # #418292
+  dark_aqua: '719190' # #719190
   bright_purple: 'a25bc4' # #a25bc4
   bright_violet: '7E9CD8' # #7E9CD8
-  light_violet: '938AA9'  # #938AA9
-  oni_violet: '957FB8'    # #957FB8
-  morning_blue: '83a598'  # #83a598
+  light_violet: '938AA9' # #938AA9
+  oni_violet: '957FB8' # #957FB8
+  morning_blue: '83a598' # #83a598
 
-  salmon: 'ea6962'        # #ea6962
-  wave_red: 'E46876'      # #E46876
-  peach_red: 'FF5D62'     # #FF5D62
+  salmon: 'ea6962' # #ea6962
+  wave_red: 'E46876' # #E46876
+  peach_red: 'FF5D62' # #FF5D62
   surimi_orange: 'FFA066' # #FFA066
 
-  dyellow: 'e78a4e'       # #e78a4e
-  bg_red: 'DC3958'        # #DC3958
-  light_red: 'cc6666'     # #cc6666
+  dyellow: 'e78a4e' # #e78a4e
+  bg_red: 'DC3958' # #DC3958
+  light_red: 'cc6666' # #cc6666
 
-  base0: 'D9AE80'         # #D9AE80
-  base1: 'c2a383'         # #c2a383
-  grey0: '7E602C'         # #7E602C
-  grey1: 'a89984'         # #a89984
-  grey2: '676767'         # #676767
-  grey3: '51412c'         # #51412c
+  base0: 'D9AE80' # #D9AE80
+  base1: 'c2a383' # #c2a383
+  grey0: '7E602C' # #7E602C
+  grey1: 'a89984' # #a89984
+  grey2: '676767' # #676767
+  grey3: '51412c' # #51412c
   operator_base: 'e8c097' # #e8c097
-  darkgrey: '6b7089'      # #6b7089
-  darkergrey: '36384a'    # #36384a
+  darkgrey: '6b7089' # #6b7089
+  darkergrey: '36384a' # #36384a
 
 core:
   regular_file:
@@ -193,6 +193,8 @@ executable:
 
 unimportant:
   foreground: darkgrey
+  partial:
+    crdownload: { foreground: darker_red }
 
 macos:
   foreground: red

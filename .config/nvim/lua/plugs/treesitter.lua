@@ -576,6 +576,7 @@ M.setup_treesurfer = function()
             "match_expression",
             "struct_item",
             "enum_item",
+            "interface_declaration",
             "class_declaration",
             "class_name",
             "impl_item",
@@ -625,6 +626,7 @@ M.setup_treesurfer = function()
                 ["enum_item"] = "",
                 ["enum_variant"] = "",
                 ["field_declaration"] = "",
+                ["interface_declaration"] = "",
                 ["class_declaration"] = "",
                 ["class_name"] = "",
                 ["impl_item"] = "ﴯ",
@@ -813,7 +815,7 @@ M.setup = function()
         matchup = {
             enable = true,
             disable_virtual_text = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
             include_match_words = true,
             matchparen_offscreen = {method = "popup"}
         },
@@ -932,7 +934,7 @@ M.setup = function()
                 enable = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
-                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
+                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
                 keymaps = {
                     ["af"] = "@function.outer",
                     ["if"] = "@function.inner",
@@ -953,6 +955,8 @@ M.setup = function()
                     ["il"] = "@loop.inner"
                 }
             },
+            -- @attribute.inner
+            -- @attribute.outer
             -- @block.inner
             -- @block.outer
             -- @call.inner
@@ -975,7 +979,7 @@ M.setup = function()
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes",},
+                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
                 goto_next_start = {
                     -- ["]]"] = "@function.outer",
                     ["]f"] = "@function.outer",

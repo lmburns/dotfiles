@@ -134,7 +134,7 @@
 ;; Constants
 
 ((identifier) @constant
- (#lua-match? @constant "^[A-Z][A-Z_0-9]*$"))
+ (#lua-match? @constant "^[_A-Z][A-Z_0-9]*$"))
 
 (vararg_expression) @constant
 
@@ -195,7 +195,7 @@
 
 ;; Change capital letter field names to be constants
 ((dot_index_expression field: (identifier) @constant)
- (#lua-match? @constant "^[A-Z][A-Z_0-9]*$"))
+ (#lua-match? @constant "^[A-Z_][A-Z_0-9]*$"))
 
 (
   (identifier) @function

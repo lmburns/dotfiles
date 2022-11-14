@@ -213,8 +213,8 @@
   // │                          Clangd                          │
   // ╰──────────────────────────────────────────────────────────╯
   "clangd.enabled": true,
-  "clangd.inlayHints.enable": true,
-  "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
+  // "clangd.inlayHints.enable": true,
+  // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
   "clangd.arguments": [
     "--query-driver=/usr/bin/clang++",
     "--background-index",

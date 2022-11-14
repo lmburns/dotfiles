@@ -390,9 +390,11 @@ keymap  f LINK_BEGIN
 ############################ Move to the next hyperlink (NEXT_LINK)
 keymap  TAB     NEXT_LINK
 keymap  C-n     NEXT_LINK
+keymap  }       NEXT_LINK
 ############################ Move to the previous hyperlink (PREV_LINK)
 keymap  M-[Z    PREV_LINK
 keymap  C-p     PREV_LINK
+keymap  {       PREV_LINK
 ############################ Pop up menu to navigate between hyperlinks (MOVE_LIST_MENU)
 keymap  gf      MOVE_LIST_MENU
 ############################ Move right to the next hyperlink (NEXT_RIGHT)

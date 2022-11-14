@@ -432,6 +432,8 @@ executable:
     - .ko
 
 unimportant:
+  partial:
+    crdownload: [.crdownload]
   build_artifacts:
     cxx:
       - .o

@@ -904,6 +904,7 @@ function M.init()
 
     -- === CodeActions ===
     -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
+
     -- map("n", "<C-CR>", ":lua require('plugs.coc').code_action('')<CR>", {desc = "Code action"})
     -- map("n", "<C-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
     map("n", "<A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>")

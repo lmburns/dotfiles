@@ -145,6 +145,7 @@ function M.setup()
         default,
         {
             aug({"let", "const", "var"}),
+            aug({"of", "in"}),
             aug({"===", "!=="}),
             aug({"public", "private", "protected"})
         }
