@@ -8,8 +8,20 @@ end
 
 local wk = require("which-key")
 local Search = require("todo-comments.search")
+local icons = require("style").icons
 
 local fn = vim.fn
+
+---Pad the icons for this plugin
+---@param icon string
+---@return string
+local function pad(icon)
+    if icon:sub(2, 2):byte() == 32 then
+        return icon:sub(2, 2)
+    end
+
+    return ("%s "):format(icon)
+end
 
 function M.setup()
     local hl = require("todo-comments.highlight")
@@ -25,67 +37,67 @@ function M.setup()
             keywords = {
                 -- #E46876
                 FIX = {
-                    icon = " ",
+                    icon = pad(icons.misc.bug),
                     color = "#ea6962",
                     alt = {"FIXME", "BUG", "FIXIT", "FIX", "ISSUE"}
                 },
                 TODO = {
-                    icon = " ",
+                    icon = pad(icons.ui.CheckThick),
                     color = "#d16d9e",
-                    alt = {"TODOS"},
+                    alt = {"TODOS"}
                 },
                 TEST = {
-                    icon = " ",
+                    icon = pad(icons.ui.CheckThick),
                     color = "#819c3b",
-                    alt = {"TESTING"},
+                    alt = {"TESTING"}
                 },
                 HACK = {
-                    icon = " ",
+                    icon = pad(icons.ui.Fire),
                     color = "#fe8019",
-                    alt = {},
+                    alt = {}
                 },
                 WARN = {
-                    icon = " ",
+                    icon = pad(icons.ui.Warning),
                     color = "#EC5f67",
-                    alt = {"WARNING", "XXX"},
+                    alt = {"WARNING", "XXX"}
                 },
                 TIP = {
-                    icon = " ",
+                    icon = pad(icons.ui.Tip),
                     color = "#9a9a9a",
-                    alt = {"HINT"},
+                    alt = {"HINT"}
                 },
                 FEATURE = {
-                    icon = " ",
+                    icon = pad(icons.ui.Plus),
                     color = "#957FB8",
-                    alt = {"NEW"},
+                    alt = {"NEW"}
                 },
                 MAYBE = {
-                    icon = " ",
+                    icon = pad(icons.ui.CircleHollow),
                     color = "#FF5D62",
-                    alt = {"POSSIBLY", "TODO_MAYBE"},
+                    alt = {"POSSIBLY", "TODO_MAYBE"}
                 },
                 DONE = {
-                    icon = " ",
+                    icon = pad(icons.ui.CheckBox),
                     color = "#98BB6C",
-                    alt = {"FINISHED"},
+                    alt = {"FINISHED"}
                 },
                 -- ["???"] = {icon = "", color = "#38A89D"},
                 CHANGED = {
-                    icon = " ",
+                    icon = pad(icons.ui.ArrowSwap),
                     color = "#89b482",
                     alt = {"ALTERED", "ALTER", "MOD", "MODIFIED"}
                 },
                 PERF = {
-                    icon = " ",
+                    icon = pad(icons.ui.Clock),
                     alt = {"#a7c777", "PERFORMANCE", "OPTIMIZE", "FUNCTION"}
                 },
                 NOTE = {
-                    icon = " ",
+                    icon = pad(icons.ui.TextOutline),
                     color = "#62b3b2",
                     alt = {"INFO", "NOTES", "SUBSECTION"}
                 },
                 CHECK = {
-                    icon = "",
+                    icon = pad(icons.ui.CheckCircle),
                     color = "#e78a4e",
                     alt = {"EXPLAIN", "DISCOVER", "SECTION"}
                 }
@@ -100,6 +112,10 @@ function M.setup()
             -- * keyword: highlights of the keyword
             -- * after: highlights after the keyword (todo text)
             highlight = {
+                multiline = true, -- enable multine todo comments
+                -- This would be nice to be able to get the length of the comment keyword
+                multiline_pattern = "^%s%s%s%s", -- lua pattern to match next ML from start of the matched keyword
+                multiline_context = 10, -- extra lines that will be re-evaluated when changing a line
                 before = "", -- "fg" or "bg" or empty
                 keyword = "fg", -- "fg", "bg", "wide"
                 after = "fg", -- "fg" or "bg" or empty
@@ -116,6 +132,7 @@ function M.setup()
                 --      TODO  : hi
                 --      TODO (xx): hi
                 --      TODO(lmburns):
+                --
                 -- Special vim regex: %[] means optional group
                 -- pattern = [[.*<(KEYWORDS)(\s*\(.*\))?\s*:]], -- pattern or table of patterns (vim regex)
                 pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]], -- pattern or table of patterns (vim regex)
@@ -179,6 +196,8 @@ local function init()
 
     wk.register(
         {
+            ["]T"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+            ["[T"] = {":lua require('todo-comments').jump_prev()<CR>", "Previous todo comment"},
             ["<LocalLeader>T"] = {":TodoTelescope<CR>", "Todo telescope (workspace)"},
             [";t"] = {":TodoQuickFix<CR>", "Todo quickfix (workspace)"},
             [";T"] = {":TodoTrouble<CR>", "Todo trouble (workspace)"},

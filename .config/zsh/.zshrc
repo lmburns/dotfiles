@@ -11,7 +11,6 @@
 umask 022
 # limit coredumpsize 0
 
-# Execute 'ZSH_PROFILE_RC=1 zsh'
 if [[ $ZSH_PROFILE_RC -gt 0 ]] ; then
     zmodload zsh/zprof
     zprof
@@ -43,7 +42,7 @@ typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g SAVEHIST=10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
-typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)" # Ignore pattern
+typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
 typeset -g LISTMAX=50                            # Size of asking history
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
@@ -56,7 +55,7 @@ typeset -g TMPPREFIX="${TMPDIR%/}/zsh" # Temporary file prefix for zsh
 
 watch=( notme )
 PERIOD=3600
-function periodic() { builtin rehash;  }
+function periodic() { builtin rehash; }
 
 # Various highlights for CLI
 typeset -ga zle_highlight=(
@@ -292,8 +291,7 @@ zt light-mode for \
       export STARSHIP_CACHE="${XDG_CACHE_HOME}/${MYPROMPT}"
       eval "$(starship init zsh)"
       zt 0a light-mode for \
-        lbin atclone'cargo br --features=notify-rust' atpull'%atclone' \
-        atclone"$(mv_clean)" \
+        lbin atclone'cargo br --features=notify-rust' atpull'%atclone' atclone"$(mv_clean)" \
         atclone'./starship completions zsh > _starship' atload'alias ntheme="$EDITOR $STARSHIP_CONFIG"' \
         starship/starship
     }
@@ -1284,5 +1282,7 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
+
+typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

@@ -29,6 +29,7 @@ local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
+local dirs = require("common.global").dirs
 local log = require("common.log")
 local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
@@ -173,7 +174,7 @@ require("telescope").setup(
     {
         defaults = {
             history = {
-                path = fn.stdpath("data") .. "/databases/telescope_history.sqlite3",
+                path = dirs.data .. "/databases/telescope_history.sqlite3",
                 limit = 1000
             },
             dynamic_preview_title = true,
@@ -517,7 +518,7 @@ require("telescope").setup(
                 reset_selection = true
             },
             frecency = {
-                db_root = fn.stdpath("data") .. "/databases",
+                db_root = dirs.data .. "/databases",
                 show_scores = true,
                 show_unindexed = true,
                 ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
@@ -1152,7 +1153,7 @@ M.grep_tags = function()
 end
 
 builtin.installed_plugins = function()
-    builtin.find_files {cwd = fn.stdpath("data") .. "/site/pack/packer/"}
+    builtin.find_files {cwd = dirs.data .. "/site/pack/packer/"}
 end
 
 -- builtin.tags = P.tags

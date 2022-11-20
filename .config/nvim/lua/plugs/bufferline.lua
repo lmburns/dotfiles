@@ -10,6 +10,7 @@ end
 local icons = require("style").icons
 local hl = require("common.color")
 local groups = require("bufferline.groups")
+local dirs = require("common.global").dirs
 local pithunk = D.pithunk
 
 local fn = vim.fn
@@ -188,7 +189,7 @@ function M.setup()
                             icon = "",
                             highlight = {fg = require("kimbox.colors").yellow},
                             matcher = function(buf)
-                                return vim.startswith(buf.path, ("%s/site/pack/packer"):format(fn.stdpath("data"))) or
+                                return vim.startswith(buf.path, ("%s/site/pack/packer"):format(dirs.data)) or
                                     vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
                             end
                         },

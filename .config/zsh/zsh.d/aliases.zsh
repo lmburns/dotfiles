@@ -325,7 +325,8 @@ alias vwdir='cd $HOME/vimwiki'
 alias nvimd='cd /usr/local/share/nvim/runtime'
 
 # === internet / vpn / etc ======================================================
-alias b='buku --suggest --colors gMclo'
+# alias b='buku --suggest --colors gMclo'
+alias b='buku --suggest --colors cJelo'
 alias dl='aria2c -x 4 --dir="${HOME}/Downloads/Aria"'
 alias dlpaste='aria2c "$(pbpaste)"'
 # alias toilet='toilet -d /usr/local/figlet/2.2.5/share/figlet/fonts'

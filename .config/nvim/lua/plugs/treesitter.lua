@@ -1328,8 +1328,8 @@ local function init()
 
     require("tsht").config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
     map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("o", ",", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("n", "vx", [[<Cmd>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("o", ",", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
+    map("n", "vx", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
     -- map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
     -- hl.set("TSNodeUnmatched", {fg = "#666666"})
 

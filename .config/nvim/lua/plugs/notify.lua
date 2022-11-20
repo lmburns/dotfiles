@@ -43,7 +43,8 @@ function M.setup()
                     )
                 end
                 local bufnr = api.nvim_win_get_buf(winnr)
-                bmap(bufnr, "n", "q", "<Cmd>bdelete<CR>", {nowait = true})
+                -- bmap(bufnr, "n", "q", "<Cmd>bdelete<CR>", {nowait = true})
+
                 api.nvim_buf_call(
                     bufnr,
                     function()

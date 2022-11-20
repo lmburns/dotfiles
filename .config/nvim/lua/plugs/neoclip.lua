@@ -6,6 +6,7 @@ if not neoclip then
     return
 end
 
+local dirs = require("common.global").dirs
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -61,7 +62,7 @@ M.setup = function()
             enable_persistent_history = true,
             length_limit = 1048576,
             continious_sync = false,
-            db_path = fn.stdpath("data") .. "/databases/neoclip.sqlite3",
+            db_path = ("%s/%s"):format(dirs.data, "databases/neoclip.sqlite3"),
             -- filter = nil,
             filter = function(data)
                 return not D.all(data.event.regcontents, is_whitespace)
@@ -181,7 +182,7 @@ local function init()
     map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>")
 
     augroup(
-        "lmb__Highlight",
+        "lmb__HighlightYankClip",
         {
             event = "TextYankPost",
             pattern = "*",

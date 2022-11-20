@@ -89,6 +89,8 @@ _G.BLACKLIST_FT = {
     "alpha",
     "bqfpreview",
     "bufferize",
+    "cmp_docs",
+    "cmp_menu",
     "coc-explorer",
     "coc-list",
     "coctree",
@@ -134,9 +136,12 @@ _G.BLACKLIST_FT = {
     "NeogitStatus",
     "NeogitStatusNew",
     "neoterm",
+    "neo-tree",
     "nerdtree",
     "neotest-summary",
     "netrw",
+    "noice",
+    "notify",
     "norg",
     "NvimTree",
     "org",
@@ -184,7 +189,8 @@ M.version = {
 M.dirs = {
     config = fn.stdpath("config"),
     cache = fn.stdpath("cache"),
-    data = fn.stdpath("data")
+    data = fn.stdpath("data"),
+    run = fn.stdpath("run"),
 }
 
 return M

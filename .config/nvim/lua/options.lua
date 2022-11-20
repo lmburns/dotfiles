@@ -4,6 +4,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
+local dirs = require("common.global").dirs
 
 local env = vim.env
 local o = vim.opt
@@ -256,7 +257,7 @@ o.pumblend = 3 -- Make popup window translucent
 -- o.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
 
 o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
-o.viewdir = fn.stdpath("data") .. "views"
+o.viewdir = dirs.data .. "views"
 if not uv.fs_stat(vim.o.viewdir) then
     fn.mkdir(vim.o.viewdir, "p")
 end
@@ -271,7 +272,7 @@ o.swapfile = false -- no swap files
 o.undofile = true
 o.undolevels = 1000
 o.undoreload = 10000
-o.undodir = fn.stdpath("data") .. "/vim-persisted-undo/"
+o.undodir = dirs.data .. "/vim-persisted-undo/"
 if not uv.fs_stat(vim.o.undodir) then
     fn.mkdir(vim.o.undodir, "p")
 end
@@ -286,7 +287,7 @@ o.shada = {
     ":5000", -- command line history
     "h"      -- disable `hlsearch` on loading
 }
-o.shadafile = fn.stdpath("data") .. "/shada/main.shada"
+o.shadafile = dirs.data .. "/shada/main.shada"
 
 o.belloff = "all"
 o.visualbell = false
@@ -402,7 +403,7 @@ o.spelloptions = "camel"
 -- o.spelloptions:append({"camel", "noplainbuffer"})
 o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest = "12"
-o.spellfile = fn.stdpath("config") .. "/spell/en.utf-8.add"
+o.spellfile = ("%s%s"):format(dirs.config,  "/spell/en.utf-8.add")
 -- ]]] === Spell Check ===
 
 -- =============== Clipboard =============== [[[

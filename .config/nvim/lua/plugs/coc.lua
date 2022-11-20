@@ -797,7 +797,7 @@ function M.init()
         }
     )
 
-    require("legendary").bind_commands(
+    require("legendary").commands(
         {
             {
                 ":CocMarket",

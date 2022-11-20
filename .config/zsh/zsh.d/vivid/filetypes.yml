@@ -83,6 +83,7 @@ text:
 
   gpg:
     - .gpg
+    - .asc
 
   other:
     - .txt
@@ -305,7 +306,6 @@ media:
   image:
     - .bmp
     - .eps
-    - .gif
     - .ico
     - .jpeg
     - .jpg
@@ -318,6 +318,10 @@ media:
     - .tif
     - .tiff
     - .xcf
+
+  # Do this so I can change its color specifically
+  gif:
+    - .gif
 
   audio:
     - .aif
@@ -359,10 +363,11 @@ office:
     - .docx
     - .epub
     - .odt
-    - .pdf
     - .ps
     - .rtf
     - .sxw
+  pdf:
+    - .pdf
 
   spreadsheet:
     - .xls

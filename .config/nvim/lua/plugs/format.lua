@@ -3,12 +3,12 @@ local M = {}
 -- FIX: The coc formatter provided doesn't read configs
 
 local D = require("dev")
-local utils = require("common.utils")
-local map = utils.map
-local augroup = utils.augroup
 local coc = require("plugs.coc")
 local log = require("common.log")
 local gittool = require("common.gittool")
+local utils = require("common.utils")
+local map = utils.map
+local augroup = utils.augroup
 
 -- local promise = require("promise")
 -- local async = require("async")

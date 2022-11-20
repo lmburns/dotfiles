@@ -8,6 +8,7 @@ end
 
 local cmd = vim.cmd
 local fn = vim.fn
+local dirs = require("common.global").dirs
 
 function M.setup()
     local actions = require("fzf-lua.actions")
@@ -617,7 +618,7 @@ M.installed_plugins = function(opts)
         opts = {}
     end
     opts.prompt = "Plugins❯ "
-    opts.cwd = fn.stdpath("data") .. "/site/pack/packer/"
+    opts.cwd = dirs.data .. "/site/pack/packer/"
     fzf_lua.files(opts)
 end
 

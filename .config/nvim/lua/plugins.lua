@@ -6,8 +6,9 @@
 local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
+local dirs = require("common.global").dirs
 
-local install_path = fn.stdpath("data") .. "/site/pack/packer/opt/packer.nvim"
+local install_path = ("%s/%s"):format(dirs.data, "/site/pack/packer/opt/packer.nvim")
 if not uv.fs_stat(install_path) then
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
@@ -62,9 +63,9 @@ end
 
 packer.init(
     {
-        compile_path = ("%s/plugin/packer_compiled.lua"):format(fn.stdpath("config")),
-        snapshot_path = ("%s/snapshot/packer.nvim"):format(fn.stdpath("config")),
-        -- snapshot_path = ("%s/snapshot/packer.nvim"):format(fn.stdpath("cache")),
+        compile_path = ("%s/plugin/packer_compiled.lua"):format(dirs.config),
+        snapshot_path = ("%s/snapshot/packer.nvim"):format(dirs.config),
+        -- snapshot_path = ("%s/snapshot/packer.nvim"):format(dirs.cache),
         -- opt_default = false,
         auto_clean = true,
         auto_reload_compiled = true,
@@ -93,7 +94,7 @@ packer.init(
     }
 )
 
-PATCH_DIR = ("%s/patches"):format(fn.stdpath("config"))
+PATCH_DIR = ("%s/patches"):format(dirs.config)
 
 local handlers = {
     ---@diagnostic disable-next-line: unused-local
@@ -172,6 +173,14 @@ local function prefer_local(url, path)
     return uv.fs_stat(fn.expand(path)) ~= nil and path or url
 end
 
+-- TODO: Checkout
+-- folke/paint.nvim
+-- folke/noice.nvim
+-- woosaaahh/sj.nvim
+-- kristijanhusak/line-notes.nvim
+-- smjonas/live-command.nvim
+-- nacro90/numb.nvim (Cool, but not useful)
+
 return packer.startup(
     {
         function(use)
@@ -232,7 +241,6 @@ return packer.startup(
             -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
-            -- "folke/noice.nvim"
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
@@ -241,6 +249,15 @@ return packer.startup(
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+
+            use(
+                {
+                    "ghillb/cybu.nvim",
+                    branch = "main",
+                    conf = "plugs.cybu",
+                    requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
+                }
+            )
 
             use(
                 {
@@ -615,10 +632,10 @@ return packer.startup(
             -- ]]] === Grepper ===
 
             -- ============================ Trouble =============================== [[[
-            -- "folke/trouble.nvim",
             use(
                 {
                     "lmburns/trouble.nvim",
+                    og = "folke/trouble.nvim",
                     requires = {"kyazdani42/nvim-web-devicons", opt = true},
                     conf = "plugs.trouble"
                 }
@@ -628,6 +645,7 @@ return packer.startup(
             -- =========================== Statusline ============================= [[[
 
             use({"b0o/incline.nvim", conf = "plugs.incline"})
+
             use(
                 {
                     "nvim-lualine/lualine.nvim",
@@ -655,6 +673,18 @@ return packer.startup(
                     -- requires = "famiu/bufdelete.nvim"
                 }
             )
+
+            use(
+                {
+                    "folke/drop.nvim",
+                    event = "VimEnter",
+                    config = function()
+                        math.randomseed(os.time())
+                        local theme = ({"stars", "snow"})[math.random(1, 2)]
+                        require("drop").setup({theme = theme})
+                    end
+                }
+            )
             -- ]]] === Lualine ===
 
             -- =========================== Indentline ============================= [[[
@@ -663,6 +693,20 @@ return packer.startup(
                     "lukas-reineke/indent-blankline.nvim",
                     after = colorscheme,
                     conf = "plugs.indent_blankline"
+                }
+            )
+
+            use(
+                {
+                    "folke/noice.nvim",
+                    -- after = {colorscheme},
+                    conf = "plugs.noice",
+                    wants = {"nui.nvim", "nvim-notify"},
+                    requires = {
+                        {"MunifTanjim/nui.nvim", module = "nui"},
+                        "rcarriga/nvim-notify"
+                    },
+                    event = {"UIEnter"}
                 }
             )
             -- ]]] === Indentline ===
@@ -815,6 +859,15 @@ return packer.startup(
                     keys = {{"n", "<Leader>ut"}}
                 }
             )
+
+            use(
+                {
+                    "kevinhwang91/nvim-fundo",
+                    requires = "kevinhwang91/promise-async",
+                    conf = "fundo",
+                    config = [[require("fundo").install()]]
+                }
+            )
             -- ]]] === UndoTree ===
 
             -- ============================ Commenter ============================= [[[
@@ -846,9 +899,8 @@ return packer.startup(
             use(
                 {
                     "vuki656/package-info.nvim",
-                    requires = "MunifTanjim/nui.nvim",
+                    requires = {"MunifTanjim/nui.nvim", module = "nui"},
                     event = "BufRead package.json",
-                    -- after = "nui.nvim",
                     conf = "package_info"
                 }
             )
@@ -987,13 +1039,20 @@ return packer.startup(
             -- The following plugin really needs to support ansi sequences
             use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
 
-            -- B4mbus/todo-comments.nvim
             use(
                 {
                     "folke/todo-comments.nvim",
                     conf = "plugs.todo-comments",
                     wants = "plenary.nvim",
                     after = "telescope.nvim"
+                }
+            )
+
+            use(
+                {
+                    "folke/paint.nvim",
+                    event = "BufReadPre",
+                    conf = "plugs.paint"
                 }
             )
 
@@ -1229,7 +1288,7 @@ return packer.startup(
                             after = {"telescope.nvim", "sqlite.lua"},
                             config = [[require("telescope").load_extension("smart_history")]],
                             run = function()
-                                local path = Path:new(fn.stdpath("data") .. "/databases/")
+                                local path = Path:new(dirs.data .. "/databases/")
                                 if not path:exists() then
                                     path:mkdir()
                                 end
@@ -1367,7 +1426,7 @@ return packer.startup(
                 {
                     "TimUntersberger/neogit",
                     conf = "plugs.neogit",
-                    commit = "8adf22f103250864171f7eb087046db8ad296f78",
+                    -- commit = "8adf22f103250864171f7eb087046db8ad296f78",
                     requires = {"nvim-lua/plenary.nvim"}
                 }
             )
@@ -1427,11 +1486,15 @@ return packer.startup(
 
             -- use(
             --     {
-            --         ("%s/%s"):format(fn.stdpath("config"), "lua/plugs/nvim-reload"),
+            --         ("%s/%s"):format(dirs.config, "lua/plugs/nvim-reload"),
             --         conf = "plugs.nvim-reload",
             --         opt = true
             --     }
             -- )
+
+            --  ╭──────────────────────────────────────────────────────────╮
+            --  │                          Notify                          │
+            --  ╰──────────────────────────────────────────────────────────╯
 
             use({"rcarriga/nvim-notify", conf = "plugs.notify", after = colorscheme})
             use(

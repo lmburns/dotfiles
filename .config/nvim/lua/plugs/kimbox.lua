@@ -11,6 +11,7 @@ local cmd = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local uv = vim.loop
+local dirs = require("common.global").dirs
 
 -- General configurations for various themes
 
@@ -186,7 +187,7 @@ M.nightfox = function()
     nightfox.setup(
         {
             options = {
-                compile_path = fn.stdpath("cache") .. "/nightfox",
+                compile_path = dirs.cache .. "/nightfox",
                 compile_file_suffix = "_compiled", -- Compiled file suffix
                 transparent = false, -- Disable setting background
                 terminal_colors = true, -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
@@ -644,7 +645,7 @@ local function init()
     local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
-        if uv.fs_stat(("%s/%s/%s.lua"):format(fn.stdpath("config"), "lua/lush_theme", theme)) then
+        if uv.fs_stat(("%s/%s/%s.lua"):format(dirs.config, "lua/lush_theme", theme)) then
             require("plugs.lush").dump(theme)
         -- else
         --     log.err("theme file does not exist")

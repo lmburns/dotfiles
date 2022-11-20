@@ -21,6 +21,7 @@ local win_timer
 local key_timer
 local win
 local buf
+local show = false
 
 -- Autocmd ID for cursor moved
 local cmoved_au
@@ -157,8 +158,6 @@ local function get_text(jumplist, current)
     end
     return lines, current_line, width
 end
-
-local show = false
 
 local function do_show()
     -- Only show on second succesive jump within KEY_TIMEOUT

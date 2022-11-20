@@ -55,6 +55,7 @@ local function trunc(trunc_width, trunc_len, hide_width, no_ellipsis)
     end
 end
 
+
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
 -- ╘══════════════════════════════════════════════════════════╛
@@ -137,6 +138,7 @@ local sections_1 = {
     lualine_y = {
         {
             plugs.gps.fn,
+            color = {fg = colors.sea_green, gui = "bold"},
             cond = function()
                 return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
             end
@@ -191,11 +193,7 @@ local sections_1 = {
             "b:gitsigns_head",
             icon = icons.git.branch,
             cond = function()
-                -- local ok, ret = pcall(plugs.search_result.fn)
-                -- if not ok then
                 return conds.check_git_workspace()
-                -- end
-                -- return conds.check_git_workspace() and ret == ""
             end,
             color = F.tern(g.colors_name == "kimbox", {fg = colors.dyellow, gui = "bold"}, {gui = "bold"})
         },

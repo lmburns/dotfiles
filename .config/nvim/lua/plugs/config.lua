@@ -7,8 +7,10 @@ local M = {}
 local D = require("dev")
 local lazy = require("common.lazy")
 local log = require("common.log")
-local wk = require("which-key")
 local hl = require("common.color")
+local dirs = require("common.global").dirs
+local wk = require("which-key")
+local telescope = require("telescope")
 -- local coc = require("plugs.coc")
 local utils = require("common.utils")
 local bmap = utils.bmap
@@ -61,7 +63,7 @@ function M.listish()
         }
     )
 
-    require("legendary").bind_commands(
+    require("legendary").commands(
         {
             {":ClearQuickfix", description = "Clear quickfix list"},
             {":ClearLoclist", description = "Clear location list"},
@@ -482,6 +484,7 @@ end
 function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
     g.UltiSnipsExpandTrigger = "<C-y>"
+    g.UltiSnipsListSnippets = "<NUL>"
 
     -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"
@@ -882,7 +885,7 @@ function M.sandwhich()
 
     -- The last bun is the same as ysiwf, but start in insert mode
 
-    -- TODO
+    -- TODO:
     -- \   {
     -- \     'buns': ['sandwich#magicchar#f#fname()' . '\<Space>', '" )"'],
     -- \     'kind': ['add'],
@@ -897,6 +900,8 @@ function M.sandwhich()
     -- \     'linewise'    : 1,
     -- \     'command'     : ["'[+1,']-1normal! >>"],
     -- \   },
+
+    -- TODO: Create a visual mode method to create a function surrounding
 
     -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
     -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
@@ -1203,6 +1208,10 @@ function M.tmux()
             -- enables copy sync and overwrites all register actions to
             -- sync registers *, +, unnamed, and 0 till 9 from tmux in advance
             enable = false,
+            -- ignore specific tmux buffers e.g. buffer0 = true to ignore the
+            -- first buffer or named_buffer_name = true to ignore a named tmux
+            -- buffer with name named_buffer_name :)
+            ignore_buffers = {empty = false},
             -- TMUX >= 3.2: yanks (and deletes) will get redirected to system
             -- clipboard by tmux
             redirect_to_clipboard = false,
@@ -1212,7 +1221,9 @@ function M.tmux()
             -- sync clipboard overwrites vim.g.clipboard to handle * and +
             -- registers. If you sync your system clipboard without tmux, disable
             -- this option!
-            sync_clipboard = false,
+            sync_clipboard = true,
+            -- synchronizes registers *, +, unnamed, and 0 till 9 with tmux buffers.
+            sync_registers = true,
             -- syncs deletes with tmux clipboard as well, it is adviced to
             -- do so. Nvim does not allow syncing registers 0 and 1 without
             -- overwriting the unnamed register. Thus, ddp would not be possible.
@@ -1307,7 +1318,7 @@ function M.lazygit()
     --     }
     -- )
 
-    require("telescope").load_extension("lazygit")
+    telescope.load_extension("lazygit")
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
@@ -1331,8 +1342,8 @@ function M.specs()
                 blend = 20, -- starting blend, between 0-100 (fully transparent), see :h winblend
                 width = 20,
                 winhl = "PMenu",
-                fader = require("specs").linear_fader,
-                resizer = require("specs").shrink_resizer
+                fader = specs.linear_fader,
+                resizer = specs.shrink_resizer
             },
             ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
             ignore_buftypes = {nofile = true}
@@ -1374,6 +1385,8 @@ function M.paperplanes()
     -- post_range(buffer, start, end, cb)
     -- post_selection(cb)
     -- post_buffer(buffer, cb)
+
+    -- Command: PP
 
     local paperplanes = D.npcall(require, "paperplanes")
     if not paperplanes then
@@ -1662,51 +1675,6 @@ function M.lfnvim()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                         Copilot                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.copilot()
-    g.copilot_no_tab_map = true
-    g.copilot_assume_mapped = true
-    g.copilot_tab_fallback = false
-    g.copilot_filetypes = {
-        ["*"] = true,
-        gitcommit = false,
-        NeogitCommitMessage = false
-    }
-
-    map(
-        "n",
-        "<Leader>ce",
-        function()
-            cmd.Copilot("enable")
-            map(
-                "i",
-                "<C-l>",
-                [[copilot#Accept("")]],
-                {silent = true, expr = true, script = true, desc = "Copilot accept suggestion"}
-            )
-        end,
-        {silent = true, desc = "Enable Copilot"}
-    )
-
-    map(
-        "n",
-        "<Leader>cy",
-        function()
-            cmd.Copilot("disable")
-            utils.del_keymap("i", "<C-l>")
-        end,
-        {silent = true, desc = "Disable Copilot"}
-    )
-
-    vim.schedule(
-        function()
-            cmd.Copilot("disable")
-        end
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                         urlview                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.urlview()
@@ -1742,6 +1710,13 @@ function M.urlview()
         }
     )
 
+    wk.register(
+        {
+            ["[u"] = "Previous URL",
+            ["]u"] = "Next URL"
+        }
+    )
+
     map("n", "<LocalLeader>l", "UrlView", {cmd = true})
 end
 
@@ -1770,44 +1745,20 @@ function M.devicons()
                 icon = "◉",
                 color = "#75A899",
                 name = "Org"
+            },
+            sol = {
+                icon = "♦",
+                color = "#a074c4",
+                name = "Sol"
+            },
+            sh = {
+                icon = "",
+                color = "#89e051",
+                cterm_color = "113",
+                name = "Sh"
             }
         }
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          trevj                           │
--- ╰──────────────────────────────────────────────────────────╯
-function M.trevj()
-    local trevj = D.npcall(require, "trevj")
-    if not trevj then
-        return
-    end
-
-    trevj.setup(
-        {
-            containers = {
-                lua = {
-                    table_constructor = {final_separator = ",", final_end_line = true},
-                    arguments = {final_separator = false, final_end_line = true},
-                    parameters = {final_separator = false, final_end_line = true}
-                },
-                teal = {
-                    table_constructor = {final_separator = ",", final_end_line = true},
-                    arguments = {final_separator = false, final_end_line = true},
-                    parameters = {final_separator = false, final_end_line = true}
-                },
-                html = {
-                    start_tag = {
-                        final_separator = false,
-                        final_end_line = true,
-                        skip = {tag_name = true}
-                    }
-                }
-            }
-        }
-    )
-    map("n", "gJ", [[:lua require('trevj').format_at_cursor()<CR>]])
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1865,13 +1816,18 @@ function M.project()
             -- When set to false, you will get a message when project.nvim changes your
             -- directory.
             silent_chdir = true,
+            -- What scope to change the directory, valid options are
+            -- * global (default)
+            -- * tab
+            -- * win
+            scope_chdir = "global",
             -- Path where project.nvim will store the project history for use in
             -- telescope
-            datapath = fn.stdpath("data")
+            datapath = dirs.data
         }
     )
 
-    require("telescope").load_extension("projects")
+    telescope.load_extension("projects")
     map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
 end
 
@@ -1946,6 +1902,7 @@ function M.visualmulti()
     }
 
     -- TODO: <C-n> smartcase
+
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
@@ -1991,6 +1948,18 @@ function M.visualmulti()
             end
         }
     )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Fundo                           │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.fundo()
+    local fundo = D.npcall(require, "fundo")
+    if not fundo then
+        return
+    end
+
+    fundo.setup({archives_dir = ("%s/%s"):format(dirs.cache, "fundo")})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -2045,10 +2014,10 @@ function M.git_conflict()
                     100
                 )
 
-                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)")
-                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)")
-                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)")
-                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)")
+                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)", {desc = "Conflict: ours"})
+                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)", {desc = "Conflict: both"})
+                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)", {desc = "Conflict: theirs"})
+                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)", {desc = "Conflict: none"})
                 bmap(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
                 bmap(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
             end

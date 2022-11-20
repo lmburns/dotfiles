@@ -6,7 +6,6 @@ local M = {}
 local utils = require("common.utils")
 local log = require("common.log")
 
--- local fn = vim.fn
 local F = vim.F
 local cmd = vim.cmd
 local api = {
@@ -47,7 +46,7 @@ local api = {
 ---@field inherit string
 ---@field from string   Not here by default
 ---@field gui string    Not here by default
----@field cond string   Not here by default. Conditional colorscheme
+---@field cond string   Not here by default. Conditional colorscheme name
 --                      i.e., do not execute highlight command if colorscheme differs from 'cond'
 ---@deprecated @field guifg string
 ---@deprecated @field guibg string
@@ -141,7 +140,7 @@ local function convert_gui(guistr)
     return gui
 end
 
-local keys = {guisp = "sp", guibg = "background", guifg = "foreground"}
+local keys = {guisp = "special", guibg = "background", guifg = "foreground"}
 
 ---This helper takes a table of highlights and converts any highlights
 ---specified as `highlight_prop = { from = 'group'}` into the underlying
@@ -174,7 +173,7 @@ local function convert_hl_to_val(opts)
 end
 
 ---@source https://stackoverflow.com/q/5560248
----@see: https://stackoverflow.com/a/37797380
+---@see Stack: https://stackoverflow.com/a/37797380
 ---
 ---Darken a specified hex color
 ---@param color string
@@ -190,7 +189,7 @@ function M.alter_color(color, percent)
     return ("#%02x%02x%02x"):format(r, g, b)
 end
 
----Parse ColorFormat into highlight definition map to be used by `nvim_set_hl`
+---Parse `ColorFormat` into highlight definition map to be used by `api.nvim_set_hl`
 ---
 ---### Special `from` field
 ---Accepts a table of highlights, and converts them to `property = { from = 'group' }`
@@ -199,7 +198,7 @@ end
 ---For example:
 ---```lua
 --- -- This will take the fg from ErrorMsg and set it to the fg of MatchParen
---- M.set({ MatchParen = {foreground = {from = 'ErrorMsg'}}})
+--- M.set({MatchParen = {foreground = {from = 'ErrorMsg'}}})
 ---```
 ---
 ---### Legacy
@@ -208,10 +207,6 @@ end
 ---@param hl ColorFormat
 function M.parse(hl)
     local def = {}
-
-    if hl.cond and hl.cond ~= vim.g.colors_name then
-        return
-    end
 
     for _, attribute in pairs({"default", "nocombine"}) do
         if hl[attribute] ~= nil then
@@ -344,13 +339,24 @@ function M.parse(hl)
 end
 
 ---Create a highlight group
+---See `ColorFormat` for more information on the highlight keys.
+---For example, to set bold on a highlight group, there are two ways.
+---```lua
+---local hl = require("common.color")
+---
+--- -- Method 1
+---hl.set("TSFunction", {bold = true})
+---
+--- -- Method 2
+---hl.set("TSFunction", {gui = "bold"})
+---```
 ---
 ---@param name string
 ---@param opts ColorFormat
 function M.set(name, opts)
     vim.validate {
-        name = {name, "string", false},
-        opts = {opts, "table", false}
+        name = {name, "s", false},
+        opts = {opts, "t", false}
     }
 
     -- local ok, msg = pcall(api.set, 0, name, M.parse(opts))
@@ -362,8 +368,8 @@ function M.set(name, opts)
     utils.wrap_err(("Failed to set %s"):format(name), api.set, 0, name, M.parse(opts))
 end
 
----Get the value a highlight group whilst handling errors, fallbacks as well as returning a gui value
----in the right format
+---Get the value a highlight group whilst handling errors
+---Fallbacks are returned as well as the gui value in the right format
 ---@param group Group
 ---@param attribute string
 ---@param fallback Color?
@@ -408,7 +414,7 @@ end
 
 ---Clear a highlight group
 ---@param name string
-function M.clear_hl(name)
+function M.clear(name)
     vim.validate({name = {name, "s", false}})
     M.set(name, {})
 end
@@ -449,6 +455,7 @@ end
 ---@param fmt ColorFormat
 function M.bg(group, color, fmt)
     -- cmd(("hi %s guibg=%s"):format(group, col))
+
     local opts = {}
     if fmt then
         vim.tbl_extend("keep", opts, fmt)
@@ -464,6 +471,7 @@ end
 function M.fg(group, color, fmt)
     -- local g = gui == nil and "" or (" gui=%s"):format(gui)
     -- cmd(("hi %s guifg=%s %s"):format(group, color, g))
+
     local opts = {}
     if fmt then
         vim.tbl_extend("keep", opts, fmt)
@@ -486,6 +494,7 @@ end
 ---@param fmt ColorFormat
 function M.fg_bg(group, fg, bg, fmt)
     -- cmd(("hi %s guifg=%s guibg=%s"):format(group, fg, bg))
+
     local opts = {}
     if fmt then
         vim.tbl_extend("keep", opts, fmt)

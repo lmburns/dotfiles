@@ -9,6 +9,7 @@ local log = require("common.log")
 local debounce = require("common.debounce")
 local disposable = require("common.disposable")
 local style = require("style")
+local dirs = require("common.global").dirs
 
 local wk = require("which-key")
 local uva = require("uva")
@@ -205,7 +206,7 @@ M.autocmd = function(autocmd, id)
         {
             group = F.if_nil(id, autocmd.group),
             pattern = autocmd.pattern,
-            desc = autocmd.description or autocmd.desc,
+            desc = autocmd.desc or autocmd.description,
             callback = F.tern(is_callback, autocmd.command, nil),
             command = F.tern(not is_callback, autocmd.command, nil),
             once = autocmd.once,
@@ -240,6 +241,7 @@ end
 
 ---@class DelMapArgs
 ---@field buffer boolean|number
+---@field notify boolean
 
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
@@ -264,6 +266,7 @@ end
 --- - `replace_keycodes`: (boolean, default true) When this and `expr` are true, termcodes are replaced
 --- - `remap`: (boolean, default false) Make the mapping recursive. Inverse of `noremap`
 --- - `callback`: (function, default nil) Use a Lua function to bind to a key
+--- - `unmap`: (boolean, default false) Unmap the given default before the new one is set
 ---
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
 --- - `luacmd`: (boolean, default false) Make the mapping a `<Cmd>lua` mapping (do not use `<Cmd>`..<CR> with this)
@@ -275,6 +278,8 @@ M.map = function(modes, lhs, rhs, opts)
         rhs = {rhs, {"s", "f"}},
         opts = {opts, "t", true}
     }
+
+    -- TODO: Add an unmap feature
 
     opts = vim.deepcopy(opts) or {}
     modes = type(modes) == "string" and {modes} or modes
@@ -337,6 +342,17 @@ M.map = function(modes, lhs, rhs, opts)
 
     if bufnr or type(bufnr) == "number" then
         for _, mode in ipairs(modes) do
+            if opts.unmap then
+                opts.unmap = nil
+
+                for _, mode in ipairs(modes) do
+                    -- local exists = M.get_keymap(mode, lhs, true, F.tern(bufnr or type(bufnr) == "number", true, false))
+                    if fn.hasmapto(lhs, mode) > 1 then
+                        M.del_keymap(mode, lhs, {notify = true, buffer = bufnr})
+                    end
+                end
+            end
+
             if opts.desc then
                 wk.register({[lhs] = opts.desc}, {mode = mode, buffer = bufnr})
             end
@@ -344,6 +360,17 @@ M.map = function(modes, lhs, rhs, opts)
             api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
         end
     else
+        if opts.unmap then
+            opts.unmap = nil
+
+            for _, mode in ipairs(modes) do
+                -- local exists = M.get_keymap(mode, lhs, true, F.tern(bufnr or type(bufnr) == "number", true, false))
+                if fn.hasmapto(lhs, mode) > 1 then
+                    M.del_keymap(mode, lhs, {notify = true})
+                end
+            end
+        end
+
         for _, mode in ipairs(modes) do
             if opts.desc then
                 wk.register({[lhs] = opts.desc}, {mode = mode})
@@ -401,11 +428,17 @@ M.del_keymap = function(modes, lhs, opts)
 
     if bufnr == false then
         for _, mode in ipairs(modes) do
-            api.nvim_del_keymap(mode, lhs)
+            local ok = pcall(api.nvim_del_keymap, mode, lhs)
+            if not ok and opts.notify then
+                log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
+            end
         end
     else
         for _, mode in ipairs(modes) do
-            api.nvim_buf_del_keymap(bufnr, mode, lhs)
+            local ok = pcall(api.nvim_buf_del_keymap, bufnr, mode, lhs)
+            if not ok and opts.notify then
+                log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
+            end
         end
     end
 end
@@ -415,6 +448,7 @@ end
 ---@param search? string lhs or rhs to search for
 ---@param lhs? boolean search left-hand side or not
 ---@param buffer? boolean buffer-local keymaps
+---@return table
 M.get_keymap = function(mode, search, lhs, buffer)
     lhs = M.get_default(lhs, true)
     local res = {}
@@ -526,7 +560,7 @@ M.command = function(name, rhs, opts)
         M.prequire(
             "legendary",
             function(lgnd)
-                lgnd.bind_command({(":%s"):format(name), opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}})
+                lgnd.command({(":%s"):format(name), opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}})
             end
         )
     end
@@ -580,7 +614,7 @@ M.source = function(path, prefix)
     if not prefix then
         cmd.source(path)
     else
-        cmd.source(("%s/%s"):format(fn.stdpath("config"), path))
+        cmd.source(("%s/%s"):format(dirs.config, path))
     end
 end
 

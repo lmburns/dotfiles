@@ -2,10 +2,16 @@
 
 # Desc: make a local archive of an entire website
 
+# --mirror \
+
 wget \
-  --mirror \
+  --recursive \
+  --level inf \
+  --no-remove-listing \
+  --no-clobber \
   --page-requisites \
   --adjust-extension \
   --no-check-certificate \
   -e robots=off \
+  --no-parent \
   "$@"

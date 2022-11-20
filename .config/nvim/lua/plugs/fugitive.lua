@@ -49,6 +49,7 @@ function M.map()
         {noremap = false, silent = true, desc = "Gtabedit"}
     )
     bmap("n", "<Leader>gb", ":GBrowse<CR>", {desc = "GBrowse"})
+    bmap("n", "<A-p>", "<Cmd>Git pull<CR>", {buffer = "Git pull"})
 end
 
 local function init()
@@ -63,26 +64,34 @@ local function init()
 
     -- How does this work?
     g.nremap = {
-        ["d?"] = "d?",
-        dv = "dv", -- :Gvdiffsplit
-        dp = "dp", -- git diff
-        ds = "ds", -- :Ghdiffsplit
-        dh = "dh", -- :Ghdiffsplit
-        dq = "",
+        O = "T", -- Open file in a new tab
+        X = "x", -- Discard the change under the cursor.
+        U = "U", -- Unstage everything
+        a = "",
         d2o = "d2o",
         d3o = "d3o",
         dd = "dd", -- :Gdiffsplit
-        s = "s", -- stage file
-        u = "u", -- unstage file
-        O = "T", -- open file in a new tab
-        a = "",
-        X = "x",
-        ["-"] = "a", -- stage/unstage
-        ["*"] = "",
-        ["#"] = "",
+        dh = "dh", -- :Ghdiffsplit
+        dp = "dp", -- Git diff
+        dq = "", -- Close all but one diff buffer
+        ds = "ds", -- :Ghdiffsplit
+        dv = "dv", -- :Gvdiffsplit
+        p = "p", -- Open file in preview window
+        s = "s", -- Stage file
+        u = "u", -- Unstage file
+        gO = "gO", -- Open file in new vertical split
+        o = "o", -- Open file in a split
+        C = "C", -- Open the commit containing the current file
+        ["("] = "(", -- Jump to the previous file, hunk, or revision
+        [")"] = ")", -- Jump to the next file, hunk, or revision
+        ["#"] = "", -- Search forward
+        ["*"] = "", -- Search backwards
+        ["-"] = "a", -- Stage/unstage file or hunk under cursor
         ["<C-W>gf"] = "gF",
-        ["[m"] = "[f",
-        ["]m"] = "]f"
+        ["="] = "<Tab>", -- toggle inline diff
+        ["[m"] = "[f", -- jump to previous file, close inline diffs
+        ["]m"] = "]f", -- jump to next file, close inline diffs
+        ["d?"] = "d?"
     }
 
     g.xremap = {
@@ -137,8 +146,8 @@ local function init()
                 "Fugitive Gread"
             },
             ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
-            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"}
-            -- ["<Leader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
+            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},
+            ["<Leader>gu"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )
 

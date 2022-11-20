@@ -3,7 +3,6 @@
 -- local global = require("common.global")
 local D = require("dev")
 local hl = require("common.color")
-local global = require("common.global")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
@@ -51,13 +50,13 @@ nvim.autocmd.lmb__GitEnv = {
     event = {"BufRead", "BufEnter"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
-    command = function()
+    command = function(args)
         -- Has to be deferred otherwise something like a terminal buffer doesn't show
         -- Also, I think the API call instead of vim.bo[bufnr].bt is needed for the deferring to happen
         vim.defer_fn(
             function()
                 local curr_file = fn.expand("%")
-                local bufnr = api.nvim_get_current_buf()
+                local bufnr = args.buf
                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
                 if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
                     return
@@ -227,6 +226,28 @@ nvim.autocmd.lmb__VimrcIncSearchHighlight = {
 }
 -- === Highlight Disable ===
 
+-- === Macro Recording === [[[
+nvim.autocmd.lmb__MacroRecording = {
+    {
+        event = "RecordingEnter",
+        pattern = "*",
+        command = function()
+            local msg = (" 壘Recording @%s"):format(fn.reg_recording())
+            vim.notify(msg, log.levels.INFO, {title = "Macro", icon = ""})
+        end
+    },
+    {
+        event = "RecordingLeave",
+        pattern = "*",
+        command = function()
+            local event = vim.v.event
+            local msg = ("  Recorded @%s\n%s"):format(event.regname, event.regcontents)
+            vim.notify(msg, log.levels.INFO, {title = "Macro", icon = ""})
+        end
+    }
+}
+-- ]]] === Macro Recording ===
+
 -- === Restore Cursor Position === [[[
 nvim.autocmd.lmb__RestoreCursor = {
     {
@@ -320,6 +341,7 @@ nvim.autocmd.lmb__FormatOptions = {
 
         vim.schedule(
             function()
+                -- Bufnr has to be captured in here, not args.buf
                 local bufnr = api.nvim_get_current_buf()
                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
 
@@ -374,6 +396,7 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                 else
                     hl.all(
                         {
+                            Function = {default = true, bold = true},
                             TSFunction = {default = true, bold = true},
                             TSFuncBuiltin = {link = "TSFunction", bold = true}
                         }
@@ -403,15 +426,15 @@ nvim.autocmd.lmb__DisableUndofile = {
     {
         event = "BufWritePre",
         pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log"},
-        command = function()
-            vim.bo.undofile = false
+        command = function(args)
+            vim.bo[args.buf].undofile = false
         end
     },
     {
         event = "FileType",
         pattern = {"crontab"},
-        command = function()
-            vim.bo.undofile = false
+        command = function(args)
+            vim.bo[args.buf].undofile = false
         end
     }
 }
@@ -512,8 +535,8 @@ nvim.autocmd.lmb__Help = {
     {
         event = "BufEnter",
         pattern = "*.txt",
-        command = function()
-            local bufnr = nvim.buf.nr()
+        command = function(args)
+            local bufnr = args.buf
             if b[bufnr].bt == "help" then
                 if split_should_return() then
                     return
@@ -524,7 +547,7 @@ nvim.autocmd.lmb__Help = {
                 -- pcall needed when opening a TOC inside a help page and returning to help page
                 pcall(cmd.wincmd, "L")
                 cmd("vertical resize " .. width)
-                map("n", "qq", "q", {cmd = true, buffer = bufnr})
+                map("n", "qq", "helpclose", {cmd = true, buffer = bufnr})
             end
         end,
         desc = "Equalize and create mapping for help pages"
@@ -536,8 +559,8 @@ nvim.autocmd.lmb__Help = {
         event = "FileType",
         pattern = {"man"},
         once = false,
-        command = function()
-            local bufnr = nvim.buf.nr()
+        command = function(args)
+            local bufnr = args.buf
             if split_should_return() then
                 return
             end
@@ -552,9 +575,9 @@ nvim.autocmd.lmb__Help = {
     {
         event = "BufHidden",
         pattern = "man://*",
-        command = function()
-            if vim.bo.ft == "man" then
-                local bufnr = api.nvim_get_current_buf()
+        command = function(args)
+            local bufnr = args.buf
+            if vim.bo[bufnr].ft == "man" then
                 vim.defer_fn(
                     function()
                         if api.nvim_buf_is_valid(bufnr) then
@@ -612,29 +635,30 @@ nvim.autocmd.lmb__SmartClose = {
     {
         event = "FileType",
         pattern = "*",
-        command = function()
+        command = function(args)
+            local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
             local is_eligible =
-                is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo.ft) or
-                _t(smart_close_buftypes):contains(vim.bo.bt)
+                is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo[bufnr].ft) or
+                _t(smart_close_buftypes):contains(vim.bo[bufnr].bt)
 
             if is_eligible then
-                map("n", "qq", smart_close, {buffer = 0, nowait = true})
+                map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
             end
         end,
-        desc = "Create qq mapping"
+        desc = "Create a smart qq (close) mapping"
     },
     {
         -- Close quick fix window if the file containing it was closed
         event = "BufEnter",
         pattern = "*",
-        command = function()
-            if fn.winnr("$") == 1 and vim.bo.buftype == "quickfix" then
-                api.nvim_buf_delete(0, {force = true})
+        command = function(args)
+            local bufnr = args.buf
+            if fn.winnr("$") == 1 and vim.bo[bufnr].buftype == "quickfix" then
+                api.nvim_buf_delete(bufnr, {force = true})
             end
 
             -- Hide cursorline on popup
-            local bufnr = api.nvim_get_current_buf()
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
                 ol.cursorline = false
@@ -651,8 +675,9 @@ nvim.autocmd.lmb__SmartClose = {
         event = "QuitPre",
         pattern = "*",
         nested = true,
-        command = function()
-            if vim.bo.filetype ~= "qf" then
+        command = function(args)
+            local bufnr = args.buf
+            if vim.bo[bufnr].filetype ~= "qf" then
                 cmd.lcl({mods = {silent = true}})
             end
         end,
@@ -667,11 +692,12 @@ nvim.autocmd.lmb__FiletypeDetect = {
     event = {"BufWritePost"},
     pattern = {"*"},
     nested = true,
-    command = function()
-        if utils.empty(vim.bo.filetype) or fn.exists("b:ftdetect") == 1 then
+    command = function(args)
+        local bufnr = args.buf
+        if utils.empty(vim.bo[bufnr].filetype) or fn.exists("b:ftdetect") == 1 then
             vim.b.ftdetect = nil
             cmd.filetype("detect")
-            utils.cecho(("Filetype set to %s"):format(vim.bo.ft), "Macro")
+            utils.cecho(("Filetype set to %s"):format(vim.bo[bufnr].ft), "Macro")
         end
     end,
     desc = "Set filetype after modification"
@@ -682,8 +708,9 @@ nvim.autocmd.lmb__FiletypeDetect = {
 nvim.autocmd.lmb__LargeFileEnhancement = {
     event = "BufRead",
     desc = "Optimize the viewing of larger files",
-    command = function()
-        if vim.bo.ft == "help" then
+    command = function(args)
+        local bufnr = args.buf
+        if vim.bo[bufnr].ft == "help" then
             return
         end
 
@@ -693,7 +720,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
             local lazyredraw = vim.opt.lazyredraw
             local showmatch = vim.opt.showmatch
 
-            vim.bo.undofile = false
+            vim.bo[bufnr].undofile = false
             vim.wo.colorcolumn = ""
             vim.wo.relativenumber = false
             vim.wo.foldmethod = "manual"
@@ -719,6 +746,33 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 }
 -- ]]]
 
+-- ======================= CursorLine Control ========================= [[[
+nvim.autocmd.lmb__CursorLineControl = {
+    {
+        event = {"BufWinEnter", "WinEnter", "FocusGained", "CmdlineLeave"},
+        pattern = "*",
+        command = function()
+            local winid = api.nvim_get_current_win()
+            vim.wo[winid].cursorline = not vim.w[winid].nocursorline
+        end,
+        desc = "Control cursorline when re-focusing"
+    },
+    {
+        event = {"WinLeave", "FocusLost", "CmdlineEnter"},
+        pattern = "*",
+        command = function(args)
+            local bufnr = args.buf
+            local bufs = D.list_bufs({loaded = true, buftype = {"", "terminal"}})
+            if _t(bufs):contains(bufnr) and not vim.b[bufnr].keep_cursor_on_leave then
+                local winid = fn.bufwinid(bufnr)
+                vim.wo[winid].cursorline = false
+            end
+        end,
+        desc = "Control cursorline when un-focusing"
+    }
+}
+-- ]]]
+
 -- === Tmux === [[[
 if env.TMUX ~= nil and env.NORENAME == nil then
     nvim.autocmd.lmb__RenameTmux = {
@@ -726,8 +780,8 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             event = {"TermEnter", "BufEnter"},
             pattern = "*",
             once = false,
-            command = function()
-                local bufnr = nvim.buf.nr()
+            command = function(args)
+                local bufnr = args.buf
 
                 if vim.bo[bufnr].bt == "" then
                     -- o.titlestring = fn.expand("%:t")
@@ -826,16 +880,16 @@ a.async_void(
                     pattern = "*",
                     command = function()
                         -- Delete trailing spaces
-                        require("common.utils").preserve("keepj keepp %s/\\s\\+$//ge")
+                        utils.preserve("keepj keepp %s/\\s\\+$//ge")
 
                         -- Delete trailing blank lines
-                        require("common.utils").preserve([[keepj keepp %s#\($\n\s*\)\+\%$##e]])
+                        utils.preserve([[keepj keepp %s#\($\n\s*\)\+\%$##e]])
 
                         -- Delete trailing blank lines at end of file
-                        -- require("common.utils").preserve([[keepj keepp 0;/^\%(\n*.\)\@!/,$d]])
+                        -- utils.preserve([[keepj keepp 0;/^\%(\n*.\)\@!/,$d]])
 
                         -- Delete blank lines if more than 2 in a row
-                        -- require("common.utils").squeeze_blank_lines()
+                        -- utils.squeeze_blank_lines()
                     end
                 }
             )
@@ -845,34 +899,33 @@ a.async_void(
 -- ]]] === Custom file type ===
 
 -- ========================== Buffer Reload =========================== [[[
--- nvim.autocmd.lmb__AutoReloadFile = {
---     {
---         event = {"BufEnter", "CursorHold", "FocusGained"},
---         command = function()
---             -- local bufnr = tonumber(fn.expand "<abuf>")
---             local bufnr = nvim.buf.nr()
---             local name = nvim.buf.get_name(bufnr)
---             if
---                 name == "" or -- Only check for normal files
---                     vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
---                     not fn.filereadable(name)
---              then
---                 return
---             end
---
---             cmd(bufnr .. "checktime")
---         end,
---         desc = "Reload file when modified outside of the instance"
---     },
---     {
---         event = "FileChangedShellPost",
---         pattern = "*",
---         command = function()
---             nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
---         end,
---         desc = "Display a message if the buffer is changed outside of instance"
---     }
--- }
+nvim.autocmd.lmb__AutoReloadFile = {
+    {
+        event = {"BufEnter", "CursorHold", "FocusGained"},
+        command = function(args)
+            local bufnr = args.buf
+            local name = api.nvim_buf_get_name(bufnr)
+            if
+                name == "" or -- Only check for normal files
+                    vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
+                    not fn.filereadable(name)
+             then
+                return
+            end
+
+            cmd(bufnr .. "checktime")
+        end,
+        desc = "Reload file when modified outside of the instance"
+    },
+    {
+        event = "FileChangedShellPost",
+        pattern = "*",
+        command = function()
+            nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
+        end,
+        desc = "Display a message if the buffer is changed outside of instance"
+    }
+}
 -- ]]] === Buffer Reload ===
 
 -- =========================== RNU Column ============================= [[[

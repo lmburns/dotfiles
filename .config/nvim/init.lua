@@ -20,7 +20,9 @@ if ok then
     impatient.enable_profile()
 end
 
-require("common.global")
+local dirs = require("common.global").dirs
+local _ = require("common.global")
+
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -32,15 +34,16 @@ local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
 
+
 -- Lua utilities
 require("common.nvim")
 local D = require("dev")
 require("options")
 
-local conf_dir = fn.stdpath("config")
+local conf_dir = dirs.config
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     local packer_loader_complete = [[customlist,v:lua.require'packer'.loader_complete]]
-    local config = ("%s/%s"):format(fn.stdpath("config"), "lua")
+    local config = ("%s/%s"):format(dirs.config, "lua")
     cmd(
         ([[
         com! PackerUpdate lua require('plugins').update()

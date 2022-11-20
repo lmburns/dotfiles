@@ -7,6 +7,7 @@ if not lush then
 end
 
 local log = require("common.log")
+local dirs = require("common.global").dirs
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -72,7 +73,7 @@ end
 
 local function init()
     cmd.packadd("lush.nvim")
-    colors_path = ("%s/colors"):format(fn.stdpath("config"))
+    colors_path = ("%s/colors"):format(dirs.config)
     fn.mkdir(colors_path, "p")
 end
 

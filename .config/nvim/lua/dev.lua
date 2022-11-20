@@ -723,7 +723,7 @@ end
 ---Filter table based on function
 ---@generic T
 ---@param tbl T[] Table to be filtered
----@param func fun(v: T) Function to apply filter
+---@param func fun(v: T): boolean Function to apply filter
 ---@return T[]?
 M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
@@ -733,7 +733,7 @@ end
 ---Returning true if *any* element matches `func`
 ---@generic T
 ---@param tbl T[] A list of elements
----@param func fun(v: T) Function to be applied
+---@param func fun(v: T): boolean Function to be applied
 ---@return boolean
 M.any = function(tbl, func)
     for _, v in pairs(tbl) do
@@ -749,7 +749,7 @@ end
 ---Returning true if *all* elements match `func`
 ---@generic T
 ---@param tbl T[] A list of elements
----@param func fun(v: T) Function to be applied
+---@param func fun(v: T): boolean Function to be applied
 ---@return boolean
 M.all = function(tbl, func)
     for _, v in pairs(tbl) do
@@ -815,6 +815,7 @@ end
 ---@field no_hidden boolean Filter out buffers that are hidden
 ---@field tabpage number Filter out buffers that are not displayed in a given tabpage.
 ---@field bufname string Filter out buffers whose name doesn't match a given Lua pattern
+---@field buftype string|string[] Filter out buffers that are not of a certain type
 ---@field bufpath string Filter out buffers whose *full-path* doesn't match a given Lua pattern
 ---@field options { [string]: any } Filter out buffers that don't match a given map of options
 ---@field vars { [string]: any } Filter out buffers that don't match a given map of variables
@@ -823,6 +824,8 @@ end
 ---@param opts? ListBufsSpec
 ---@return number[]
 M.list_bufs = function(opts)
+    opts = opts or {}
+
     vim.validate {
         loaded = {opts.loaded, {"b"}, true},
         valid = {opts.valid, {"b"}, true},
@@ -831,13 +834,13 @@ M.list_bufs = function(opts)
         empty = {opts.empty, {"b"}, true},
         no_hidden = {opts.no_hidden, {"b"}, true},
         tabpage = {opts.tabpage, {"n"}, true},
+        buftype = {opts.buftype, {"s", "t"}, true},
         bufname = {opts.bufname, {"s"}, true},
         bufpath = {opts.bufpath, {"s"}, true},
         options = {opts.options, {"t"}, true},
         vars = {opts.vars, {"t"}, true}
     }
 
-    opts = opts or {}
     ---@type number[]
     local bufs
 
@@ -888,6 +891,19 @@ M.list_bufs = function(opts)
                 return false
             end
 
+            -- Have to check for "" buftype
+            if type(opts.buftype) == "string" and not vim.bo[bufnr].buftype == opts.buftype then
+                return false
+            end
+
+            if type(opts.buftype) == "table" then
+                for _, bt in ipairs(opts.buftype) do
+                    if type(bt) == "string" and not vim.bo[bufnr].buftype == bt then
+                        return false
+                    end
+                end
+            end
+
             if opts.options then
                 for option, value in pairs(opts.options) do
                     -- if vim.bo[bufnr][option] ~= value then
@@ -925,7 +941,7 @@ M.buf_info = function(opts)
     return M.map(
         M.list_bufs(opts),
         function(bufnr)
-            return fn.getbufinfo(bufnr)
+            return fn.getbufinfo(bufnr) --[[@as number[]]
         end
     )
 end
@@ -1079,7 +1095,7 @@ M.reload_config = function()
     ---@diagnostic disable-next-line:undefined-field
     local luacache = (_G.__luacache or {}).modpaths.cache
 
-    -- local lua_dirs = fn.glob(("%s/lua/*"):format(fn.stdpath("config")), 0, 1)
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(dirs.config), 0, 1)
     -- require("plenary.reload").reload_module(dir)
 
     for name, _ in pairs(package.loaded) do

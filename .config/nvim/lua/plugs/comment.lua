@@ -22,7 +22,6 @@ local internal = require("ts_context_commentstring.internal")
 
 -- local cmd = vim.cmd
 local fn = vim.fn
-local api = vim.api
 
 -- TODO: Maybe create an issue
 -- Would like to ignore certain lines on comment
@@ -168,12 +167,13 @@ end
 local function init()
     M.setup()
 
-    map(
-        {"n", "x"},
-        "gC",
-        [[<Cmd>set operatorfunc=v:lua.require'plugs.comment'.flip_flop_comment<CR>g@]],
-        {desc = "Flip comment order"}
-    )
+    -- map(
+    --     {"n", "x"},
+    --     "gC",
+    --     [[<Cmd>set operatorfunc=v:lua.require'plugs.comment'.flip_flop_comment<CR>g@]],
+    --     {desc = "Flip comment order"}
+    -- )
+
     map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle.linewise.current()<CR>j")
     map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle.linewise.current()<CR>]])
     map("x", "<C-.>", [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise.current")()<CR>]])

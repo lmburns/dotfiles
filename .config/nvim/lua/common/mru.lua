@@ -11,6 +11,7 @@ local mru = {}
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
+local dirs = require("common.global").dirs
 -- local cmd = vim.cmd
 
 local function list(file)
@@ -131,7 +132,7 @@ local function init()
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
-        db = ("%s/%s"):format(fn.stdpath("data"), "mru_file")
+        db = ("%s/%s"):format(dirs.data, "mru_file")
     }
 
     M.store_buf()
