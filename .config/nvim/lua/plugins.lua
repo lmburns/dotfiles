@@ -174,12 +174,13 @@ local function prefer_local(url, path)
 end
 
 -- TODO: Checkout
--- folke/paint.nvim
--- folke/noice.nvim
--- woosaaahh/sj.nvim
+-- TODO: Remove notifications from which-key
+-- folke/drop.nvim - Screensaver
+-- folke/paint.nvim - Add extra highlights
 -- kristijanhusak/line-notes.nvim
 -- smjonas/live-command.nvim
--- nacro90/numb.nvim (Cool, but not useful)
+-- nacro90/numb.nvim - Peek at line
+-- gorbit99/codewindow.nvim
 
 return packer.startup(
     {
@@ -249,15 +250,6 @@ return packer.startup(
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
-
-            use(
-                {
-                    "ghillb/cybu.nvim",
-                    branch = "main",
-                    conf = "plugs.cybu",
-                    requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
-                }
-            )
 
             use(
                 {
@@ -507,17 +499,20 @@ return packer.startup(
             -- ]]] === File Manager ===
 
             -- =========================== BetterQuickFix ========================== [[[
-            -- romainl/vim-qf
-
-            -- cclose won't work
-            -- use({"stefandtw/quickfix-reflector.vim", ft = {"qf"}, conf = "qf_reflector"})
-
             use({"kevinhwang91/nvim-bqf", ft = {"qf"}, conf = "plugs.bqf"})
             use(
                 {
                     "arsham/listish.nvim",
                     requires = {"arsham/arshlib.nvim", "norcalli/nvim.lua"},
                     conf = "listish"
+                }
+            )
+
+            use(
+                {
+                    "cbochs/portal.nvim",
+                    conf = "plugs.portal",
+                    requires = {"cbochs/grapple.nvim"}
                 }
             )
             -- ]]] === BetterQuickFix ===
@@ -635,7 +630,6 @@ return packer.startup(
             use(
                 {
                     "lmburns/trouble.nvim",
-                    og = "folke/trouble.nvim",
                     requires = {"kyazdani42/nvim-web-devicons", opt = true},
                     conf = "plugs.trouble"
                 }
@@ -676,15 +670,24 @@ return packer.startup(
 
             use(
                 {
-                    "folke/drop.nvim",
-                    event = "VimEnter",
-                    config = function()
-                        math.randomseed(os.time())
-                        local theme = ({"stars", "snow"})[math.random(1, 2)]
-                        require("drop").setup({theme = theme})
-                    end
+                    "ghillb/cybu.nvim",
+                    branch = "main",
+                    conf = "plugs.cybu",
+                    requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
                 }
             )
+
+            -- use(
+            --     {
+            --         "folke/drop.nvim",
+            --         event = "VimEnter",
+            --         config = function()
+            --             math.randomseed(os.time())
+            --             local theme = ({"stars", "snow"})[math.random(1, 2)]
+            --             require("drop").setup({theme = theme})
+            --         end
+            --     }
+            -- )
             -- ]]] === Lualine ===
 
             -- =========================== Indentline ============================= [[[
@@ -696,19 +699,18 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "folke/noice.nvim",
-                    -- after = {colorscheme},
-                    conf = "plugs.noice",
-                    wants = {"nui.nvim", "nvim-notify"},
-                    requires = {
-                        {"MunifTanjim/nui.nvim", module = "nui"},
-                        "rcarriga/nvim-notify"
-                    },
-                    event = {"UIEnter"}
-                }
-            )
+            -- use(
+            --     {
+            --         "folke/noice.nvim",
+            --         conf = "plugs.noice",
+            --         wants = {"nui.nvim", "nvim-notify"},
+            --         requires = {
+            --             {"MunifTanjim/nui.nvim", module = "nui"},
+            --             "rcarriga/nvim-notify"
+            --         },
+            --         event = {"UIEnter"}
+            --     }
+            -- )
             -- ]]] === Indentline ===
 
             -- =============================== Fzf ================================ [[[

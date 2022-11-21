@@ -12,6 +12,8 @@ local utils = require("common.utils")
 -- local augroup = utils.augroup
 local map = utils.map
 
+-- local api = vim.api
+
 function M.setup()
     cybu.setup(
         {
@@ -22,8 +24,10 @@ function M.setup()
                 -- bottomleft, bottomcenter, bottomright
                 vertical_offset = -1, -- vertical offset from anchor in lines
                 horizontal_offset = -1, -- vertical offset from anchor in columns
-                max_win_height = 50, -- height of cybu window in lines
-                max_win_width = 50 -- integer for absolute in columns
+                -- max_win_height = 10, -- height of cybu window in lines
+                -- max_win_width = api.nvim_win_get_width(0) -- integer for absolute in columns
+                max_win_height = 5,
+                max_win_width = 0.5
                 -- float for relative to win/editor width
             },
             style = {
@@ -33,11 +37,14 @@ function M.setup()
                 separator = " ", -- string used as separator
                 prefix = "…", -- string used as prefix for truncated paths
                 padding = 1, -- left & right padding in number of spaces
-                hide_buffer_id = false, -- hide buffer IDs in window
+                hide_buffer_id = true, -- hide buffer IDs in window
                 devicons = {
                     enabled = true, -- enable or disable web dev icons
                     colored = true, -- enable color for web dev icons
                     truncate = true -- truncate wide icons to one char width
+                },
+                infobar = {
+                  enabled = false,
                 },
                 highlights = {
                     -- see highlights via :highlight
@@ -63,7 +70,7 @@ function M.setup()
                         view = "rolling" -- paging, rolling
                     },
                     last_used = {
-                        switch = "on_close", -- immediate, on_close
+                        switch = "immediate", -- immediate, on_close
                         view = "paging" -- paging, rolling
                     }
                 }

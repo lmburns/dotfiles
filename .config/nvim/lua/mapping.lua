@@ -74,8 +74,8 @@ map("i", '<M-S-">', "<Home>", {desc = "Move to of line"})
 -- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
 
 -- Jump back and forth jumplist
-map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
-map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
+-- map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
+-- map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
 -- This works if Alacritty is configured correctly and Tmux is recompiled
 -- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
 -- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})

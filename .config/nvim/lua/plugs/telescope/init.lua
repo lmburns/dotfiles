@@ -1356,18 +1356,19 @@ local color = require("common.color")
 color.plugin(
     "Telescope",
     {
+        TelescopeBorder = {fg = c.magenta},
+        TelescopeBufferLoaded = {fg = c.red},
+        TelescopeFrecencyScores = {fg = c.green},
+        TelescopeMatching = {fg = c.orange},
+        TelescopeMultiSelection = {fg = c.aqua},
+        TelescopePathSeparator = {fg = c.magenta},
+        TelescopePreviewBorder = {fg = c.magenta},
+        TelescopePrompt = {fg = c.fg1},
+        TelescopePromptBorder = {fg = c.magenta},
+        TelescopePromptPrefix = {fg = c.red},
+        TelescopeResultsBorder = {fg = c.magenta},
         TelescopeSelection = {fg = c.yellow, bold = true},
         TelescopeSelectionCaret = {fg = c.blue},
-        TelescopeMultiSelection = {fg = c.aqua},
-        TelescopeBorder = {fg = c.magenta},
-        TelescopePromptBorder = {fg = c.magenta},
-        TelescopeResultsBorder = {fg = c.magenta},
-        TelescopePreviewBorder = {fg = c.magenta},
-        TelescopeMatching = {fg = c.orange},
-        TelescopePromptPrefix = {fg = c.red},
-        TelescopePathSeparator = {fg = c.magenta},
-        TelescopeFrecencyScores = {fg = c.green},
-        TelescopeBufferLoaded = {fg = c.red}
     }
 )
 

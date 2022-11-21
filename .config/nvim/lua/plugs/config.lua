@@ -144,8 +144,8 @@ function M.crates()
         {
             event = "BufEnter",
             pattern = "Cargo.toml",
-            command = function()
-                local bufnr = nvim.get_current_buf()
+            command = function(args)
+                local bufnr = args.buf
                 map("n", "<Leader>ca", crates.upgrade_all_crates, {buffer = bufnr})
                 map("n", "<Leader>cu", crates.upgrade_crate, {buffer = bufnr})
                 map("n", "<Leader>ch", crates.open_homepage, {buffer = bufnr})
@@ -202,7 +202,7 @@ function M.package_info()
             },
             autostart = true, -- Whether to autostart when `package.json` is opened
             hide_up_to_date = true, -- It hides up to date versions when displaying virtual text
-            hide_unstable_versions = false, -- It hides unstable versions from version list e.g next-11.1.3-canary3
+            hide_unstable_versions = false, -- It hides unstable versions from version list
             -- `npm`, `yarn`
             package_manager = "yarn"
         }
@@ -213,8 +213,8 @@ function M.package_info()
         {
             event = "BufEnter",
             pattern = "package.json",
-            command = function()
-                local bufnr = nvim.get_current_buf()
+            command = function(args)
+                local bufnr = args.buf
                 map("n", "<Leader>cu", D.ithunk(pi.update), {buffer = bufnr})
                 map("n", "<Leader>ci", D.ithunk(pi.install), {buffer = bufnr})
                 map("n", "<Leader>ch", D.ithunk(pi.change_version), {buffer = bufnr})
@@ -377,7 +377,7 @@ function M.floaterm()
     g.floaterm_borderchars = "─│─│╭╮╯╰"
 
     hl.plugin(
-        "floaterm",
+        "Floaterm",
         {
             FloatermBorder = {fg = "#A06469", gui = "none"}
         }
@@ -456,9 +456,10 @@ function M.vimwiki()
         {
             event = "FileType",
             pattern = {"markdown", "vimwiki"},
-            command = function()
-                map("i", "<S-CR>", "<Plug>VimwikiFollowLink")
-                map("n", "<Leader>vw", ":VimwikiIndex<CR>")
+            command = function(args)
+                local bufnr = args.buf
+                map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
+                map("n", "<Leader>vw", ":VimwikiIndex<CR>", {buffer = bufnr})
             end
         }
     )
@@ -659,21 +660,6 @@ function M.hlslens()
 
     g["asterisk#keeppos"] = 1
 end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Surround                         │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.surround()
---     map("n", "ds", "<Plug>Dsurround")
---     map("n", "cs", "<Plug>Csurround")
---     map("n", "cS", "<Plug>CSurround")
---     map("n", "ys", "<Plug>Ysurround")
---     map("n", "yS", "<Plug>YSurround")
---     map("n", "yss", "<Plug>Yssurround")
---     map("n", "ygs", "<Plug>YSsurround")
---     map("x", "S", "<Plug>VSurround")
---     map("x", "gS", "<Plug>VgSurround")
--- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                        Sandwhich                         │
@@ -1111,17 +1097,19 @@ function M.matchup()
         {
             event = "TermOpen",
             pattern = "*",
-            command = function()
-                vim.b.matchup_matchparen_enabled = 0
-                vim.b.matchup_matchparen_fallback = 0
+            command = function(args)
+                local bufnr = args.buf
+                vim.b[bufnr].matchup_matchparen_enabled = 0
+                vim.b[bufnr].matchup_matchparen_fallback = 0
             end
         },
         {
             event = "FileType",
             pattern = "qf",
-            command = function()
-                vim.b.matchup_matchparen_enabled = 0
-                vim.b.matchup_matchparen_fallback = 0
+            command = function(args)
+                local bufnr = args.buf
+                vim.b[bufnr].matchup_matchparen_enabled = 0
+                vim.b[bufnr].matchup_matchparen_fallback = 0
             end
         }
     )
@@ -1656,7 +1644,6 @@ function M.lfnvim()
 
     g.lf_netrw = 1
 
-    -- The float border stopped working
     lf.setup(
         {
             escape_quit = true,
@@ -1835,11 +1822,14 @@ end
 -- │                       VisualMulti                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.visualmulti()
+    -- FIX: 'cw' consumes more than what it used to
+    -- FIX: Keep statusline
     -- g.VM_theme = "purplegray"
     g.VM_highlight_matches = ""
     g.VM_show_warnings = 0
     g.VM_silent_exit = 1
     g.VM_default_mappings = 1
+    g.VM_set_statusline = 0 -- 3 if you want to use this STL
 
     g.VM_Mono_hl = "DiffText" -- ErrorMsg DiffText
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
@@ -1899,6 +1889,11 @@ function M.visualmulti()
         ["Toggle Block"] = "<Leader><BS>",
         ["Toggle Single Region"] = "<Leader><CR>",
         ["Toggle Multiline"] = "<Leader>M"
+    }
+
+    g.VM_custom_motions = {
+        ["L"] = "$",
+        ["H"] = "^"
     }
 
     -- TODO: <C-n> smartcase

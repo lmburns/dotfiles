@@ -155,12 +155,6 @@ function M.setup()
                     numhl = "Number",
                     linehl = "GitSignsChangeLn",
                     show_count = true
-                },
-                untracked = {
-                    hl = "GitSignsAdd",
-                    text = "┆",
-                    numhl = "SpellBad",
-                    linehl = "GitSignsAddLn"
                 }
             },
             count_chars = {

@@ -10,9 +10,23 @@ local hlslens
 local config
 local lens_backup
 
-local dispose
+local dispose1
+local dispose2
 local n_keymap
 local debounced
+
+local MODE = {
+    NORMAL = "NORMAL",
+    VISUAL = "VISUAL"
+}
+
+M.mode = function()
+    if vim.g["Vm"].extend_mode == 1 then
+        return MODE.VISUAL
+    else
+        return MODE.NORMAL
+    end
+end
 
 local bmap = function(...)
     return utils.bmap(0, ...)
@@ -48,7 +62,8 @@ function M.exit()
         hlslens.start(true)
     end
 
-    dispose:dispose()
+    dispose1:dispose()
+    dispose2:dispose()
     map("n", "n", n_keymap, {silent = true})
     -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
     -- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
@@ -62,7 +77,6 @@ function M.exit()
 end
 
 function M.mappings()
-    -- cmd.PackerLoad("nvim-hlslens")
     if not debounced then
         debounced =
             debounce(
@@ -76,8 +90,39 @@ function M.mappings()
         debounced()
     end
 
-    dispose = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
-    bmap("n", "<Esc>", "<Plug>(VM-Exit)")
+    dispose1 = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+
+    -- dispose2 =
+    --     bmap(
+    --     "n",
+    --     "v",
+    --     function()
+    --         local bufnr = api.nvim_get_current_buf()
+    --         p(tostring(vim.b[bufnr].VM_Selection.Global.extend_mode))
+    --     end,
+    --     {silent = true, noremap = false}
+    -- )
+
+    -- FIX: Unsure why you can call b:VM_Selection in Vim but not Lua
+    --      Dispose2 needs to be used to reset the keybinding when exiting
+    -- dispose2 = bmap("n", "v", ":lua p(vim.b.VM_Selection)<CR>", {silent = true, noremap = false})
+    dispose2 = bmap("n", "v", ":call b:VM_Selection.Global.extend_mode()<CR>", {silent = true, noremap = false})
+
+    bmap(
+        "n",
+        "<Esc>",
+        function()
+            if M.mode() == MODE.VISUAL then
+                -- vim.notify("Exiting VISUAL")
+                vim.cmd("call b:VM_Selection.Global.cursor_mode()")
+            else
+                -- vim.notify("Exiting")
+                utils.normal("n", "<Plug>(VM-Exit)")
+            end
+        end,
+        {nowait = true}
+    )
+
     bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})
 end
 

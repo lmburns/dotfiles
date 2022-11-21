@@ -11,10 +11,14 @@ FIX: Cursor blinking is very fast on text operators which don't trigger which-ke
      * With a timeoutlen = 800 and updatetime=2000, happens every other time
      * With a timeoutlen = 800 and updatetime=4000, happens never
 
+-- FIX: Cursorline within noice cmdline
+-- FIX: Make noice notifications minimal
+-- FIX: Remove cursorline in telescope
+-- FIX: Cybu not wide enough
+
 Notes:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 --]]
--- NOTE: A lot of credit can be given to kevinhwang91 for this setup
 local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()

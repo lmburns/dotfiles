@@ -50,13 +50,14 @@ nvim.autocmd.lmb__GitEnv = {
     event = {"BufRead", "BufEnter"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
-    command = function(args)
+    command = function()
         -- Has to be deferred otherwise something like a terminal buffer doesn't show
         -- Also, I think the API call instead of vim.bo[bufnr].bt is needed for the deferring to happen
         vim.defer_fn(
             function()
                 local curr_file = fn.expand("%")
-                local bufnr = args.buf
+                -- Can't use the buffer from args passed to this function
+                local bufnr = api.nvim_get_current_buf()
                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
                 if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
                     return

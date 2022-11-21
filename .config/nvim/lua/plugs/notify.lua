@@ -8,9 +8,7 @@ end
 
 local style = require("style")
 local hl = require("common.color")
-local utils = require("common.utils")
-local bmap = utils.bmap
-
+-- local utils = require("common.utils")
 local wk = require("which-key")
 
 local api = vim.api

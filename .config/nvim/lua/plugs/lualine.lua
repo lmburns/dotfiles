@@ -86,6 +86,11 @@ local sections_1 = {
             color = {fg = colors.green}
         },
         {
+            plugs.vm.fn,
+            cond = plugs.vm.toggle,
+            color = {fg = colors.jelly_bean_blue}
+        },
+        {
             plugs.file_encoding.fn,
             cond = plugs.file_encoding.toggle
         },

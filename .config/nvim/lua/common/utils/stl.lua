@@ -307,6 +307,22 @@ M.plugins.gutentags_progress = {
     end
 }
 
+-- Visual Multi
+M.plugins.vm = {
+    toggle = function()
+        return fn.exists("b:VM_Selection") == 1 and api.nvim_eval("empty(b:VM_Selection)") == 0
+    end,
+    fn = function()
+        local vm_infos = fn.VMInfos()
+        return ("%s [%s/%s] [%s]"):format(
+            require("common.vm").mode(),
+            vm_infos.current,
+            vm_infos.total,
+            vm_infos.patterns[1]
+        )
+    end
+}
+
 M.plugins.gps = {
     toggle = function()
         return D.plugin_loaded("nvim-gps")

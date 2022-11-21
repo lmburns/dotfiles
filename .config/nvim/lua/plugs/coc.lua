@@ -287,7 +287,7 @@ function M.diagnostic_change()
 end
 
 -- FIX: Diagnostic are not refreshing properly
---      When using [g/]g to naviagte there aren't any
+--      When using [g/]g to navigate there aren't any
 --      However vim.b.coc_diagnostic_info still shows errors
 
 ---The current document diagnostics

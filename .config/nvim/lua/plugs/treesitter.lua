@@ -560,7 +560,7 @@ M.setup_treesurfer = function()
             "function_definition",
             "function_declaration",
             "function_item",
-            "method_definition", -- Typescript + others
+            "method_definition",
             "macro_definition",
             "closure_expression",
             "if_statement",
@@ -712,7 +712,7 @@ M.setup_treesurfer = function()
 end
 
 ---Setup treesitter
----@return table
+---@return TSConfig
 M.setup = function()
     return {
         ensure_installed = {
@@ -720,7 +720,7 @@ M.setup = function()
             "bibtex",
             "c",
             "cmake",
-            "comment",
+            -- "comment",
             "cpp",
             "css",
             "d",
@@ -895,36 +895,6 @@ M.setup = function()
             extended_mode = true,
             max_file_lines = 1500,
             disable = {"html", "help", "comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
-            -- colors = {
-            --     theme.red,
-            --     theme.magenta,
-            --     theme.orange,
-            --     theme.green,
-            --     theme.yellow,
-            --     theme.aqua,
-            --     theme.blue,
-            --     theme.purple,
-            --     theme.sea_green,
-            --     theme.morning_blue,
-            --     theme.deep_lilac,
-            --     theme.vista_blue,
-            --     theme.wave_red,
-            -- },
-            -- termcolors = {
-            --     "Red",
-            --     "Green",
-            --     "Yellow",
-            --     "Blue",
-            --     "Magenta",
-            --     "Cyan",
-            --     "White",
-            --     "Red",
-            --     "Green",
-            --     "Yellow",
-            --     "Blue",
-            --     "Magenta",
-            --     "Cyan",
-            -- },
         },
         textobjects = {
             lsp_interop = {enable = false},

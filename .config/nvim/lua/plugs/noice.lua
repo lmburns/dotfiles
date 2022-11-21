@@ -12,6 +12,9 @@ local mini = require("noice.config.views").defaults.mini
 
 local fn = vim.fn
 local cmd = vim.cmd
+
+-- TODO: How to search a popup menu?
+
 ---Setup `noice.nvim`
 function M.setup()
     --  ╭──────────────────────────────────────────────────────────╮
@@ -102,20 +105,20 @@ function M.setup()
     --   },
     -- })
 
-    -- KIND:
-    -- "" (empty)          Unknown (consider a feature-request: |bugs|)
-    --     "confirm"       |confirm()| or |:confirm| dialog
-    --     "confirm_sub"   |:substitute| confirm dialog |:s_c|
-    --     "emsg"          Error (|errors|, internal error, |:throw|, …)
-    --     "echo"          |:echo| message
-    --     "echomsg"       |:echomsg| message
-    --     "echoerr"       |:echoerr| message
-    --     "lua_error"     Error in |:lua| code
-    --     "rpc_error"     Error response from |rpcrequest()|
-    --     "return_prompt" |press-enter| prompt after a multiple messages
-    --     "quickfix"      Quickfix navigation message
-    --     "search_count"  Search count message ("S" flag of 'shortmess')
-    --     "wmsg"          Warning ("search hit BOTTOM", |W10|, …)
+    -- FILTER_KIND:
+    -- "" (empty)        Unknown (consider a feature-request: |bugs|)
+    -- confirm         |confirm()| or |:confirm| dialog
+    -- confirm_sub     |:substitute| confirm dialog |:s_c|
+    -- emsg            Error (|errors|, internal error, |:throw|, …)
+    -- echo            |:echo| message
+    -- echomsg         |:echomsg| message
+    -- echoerr         |:echoerr| message
+    -- lua_error       Error in |:lua| code
+    -- rpc_error       Error response from |rpcrequest()|
+    -- return_prompt   |press-enter| prompt after a multiple messages
+    -- quickfix        Quickfix navigation message
+    -- search_count    Search count message (S flag of 'shortmess')
+    -- wmsg            Warning (search hit BOTTOM, |W10|, …)
 
     -- MSG_EVENT:
     -- msg_show
@@ -168,12 +171,12 @@ function M.setup()
                 winhighlight = {
                     Normal = "NormalFloat", -- change to NormalFloat to make normal
                     FloatBorder = "NoicePopupmenuBorder", -- border highlight
-                    CursorLine = "", -- used for highlighting the selected item
                     PmenuMatch = "NoicePopupmenuMatch" -- part of the item that matches input
                 },
                 winblend = 10,
                 wrap = true,
-                linebreak = true
+                linebreak = true,
+                cursorline = false
             },
             border = {
                 style = "rounded",
@@ -194,6 +197,7 @@ function M.setup()
             filter = {
                 any = {
                     {event = "msg_show", find = "%[w%]"}, -- Writing a file
+                    {event = "msg_show", find = "^%?"}, -- Clicking 'N' after search for something
                     {event = "msg_show", find = "%d+ lines indented ?$"},
                     {event = "msg_show", find = "%d+ lines to indent... ?$"},
                     {event = "msg_show", find = "No active Snippet"},
@@ -311,9 +315,9 @@ function M.setup()
                 view = "cmdline", -- view for rendering the cmdline. `cmdline` = Classic
                 opts = {buf_options = {filetype = "vim"}}, -- enable syntax highlighting in the cmdline
                 icons = {
-                    ["/"] = {icon = " ", hl_group = "DiagnosticWarn"},
-                    ["?"] = {icon = " ", hl_group = "DiagnosticWarn"},
-                    [":"] = {icon = " ", hl_group = "DiagnosticInfo", firstc = false}
+                    ["/"] = {icon = " ", hl_group = "MoreMsg"},
+                    ["?"] = {icon = " ", hl_group = "WarningMsg"},
+                    [":"] = {icon = " ", hl_group = "Macro", firstc = false}
                 },
                 win_options = {
                     winhighlight = {
@@ -321,7 +325,8 @@ function M.setup()
                         FloatBorder = "FloatBorder", -- border highlight
                         CursorLine = "" -- used for highlighting the selected item
                     },
-                    winblend = 10
+                    winblend = 10,
+                    cursorline = false
                 },
                 ---@type table<string, CmdlineFormat>
                 format = {
@@ -330,24 +335,32 @@ function M.setup()
                     -- opts: any options passed to the view
                     -- icon_hl_group: optional hl_group for the icon
                     -- title: set to anything or empty string to hide
-                    cmdline = {pattern = "^:", icon = "", lang = "vim"},
+                    cmdline = {
+                        pattern = "^:",
+                        icon = "",
+                        lang = "vim",
+                        icon_hl_group = "Macro"
+                    },
                     search_down = {
                         kind = "Search",
                         pattern = "^/",
                         icon = " ",
                         lang = "regex",
-                        view = "cmdline"
+                        view = "cmdline",
+                        icon_hl_group = "MoreMsg"
                     },
                     search_up = {
                         kind = "Search",
                         pattern = "^%?",
                         icon = " ",
                         lang = "regex",
-                        view = "cmdline"
+                        view = "cmdline",
+                        icon_hl_group = "WarningMsg"
                     },
                     filter = {pattern = "^:%s*!", icon = "$", lang = "bash"},
                     lua = {pattern = "^:%s*lua%s+", icon = "", lang = "lua", view = "cmdline"},
                     help = {pattern = "^:%s*he?l?p?%s+", icon = "", view = "cmdline"},
+                    man = { pattern = '^:%s*Man%s+', icon = '龎', lang = 'bash' },
                     inspect = {
                         conceal = true,
                         icon = " ",
@@ -653,6 +666,11 @@ function M.setup()
                     },
                     win_options = {
                         winhighlight = {Normal = "NoicePopup", FloatBorder = "NoicePopupBorder"}
+                    },
+                    opts = {
+                        replace = true,
+                        merge = true,
+                        title = "Messages"
                     }
                 },
                 --  ╭───────╮
