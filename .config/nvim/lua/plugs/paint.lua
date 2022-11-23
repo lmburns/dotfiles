@@ -6,6 +6,7 @@ if not paint then
     return
 end
 
+local utils = require("common.utils")
 local hl = require("common.color")
 local colors = require("kimbox.palette").colors
 
@@ -14,7 +15,8 @@ local fn = vim.fn
 function M.setup()
     -- Use this to make sure the highlighting starts at the beginning of comment
     -- Would probably need to be reloaded when filetypes are switched
-    local comment = vim.trim(fn.split(vim.bo.commentstring, "%s")[1])
+    local bufnr = api.nvim_get_current_buf()
+    local comment = vim.trim(fn.split(vim.bo[bufnr].commentstring, "%s")[1] or "#")
 
     paint.setup(
         {
@@ -35,7 +37,7 @@ function M.setup()
                         end
                         return true
                     end,
-                    pattern = comment .. "%s?([%u_]+):",
+                    pattern = utils.escape(comment) .. "%s?([%u_]+):",
                     hl = "PaintTag"
                 },
                 {
@@ -47,7 +49,7 @@ function M.setup()
                         end
                         return true
                     end,
-                    pattern = comment .. "%s?(%(?#[%d]+%)?):",
+                    pattern = utils.escape(comment) .. "%s?(%(?#[%d]+%)?):",
                     hl = "PaintTag"
                 },
                 -- {
@@ -102,7 +104,12 @@ local function init()
     hl.set("PaintTag", {fg = colors.oni_violet, bold = true})
     hl.set("PaintType", {fg = colors.vista_blue})
 
-    M.setup()
+    -- Needs to be deferred otherwise comment is correct
+    vim.schedule(
+        function()
+            M.setup()
+        end
+    )
 end
 
 init()

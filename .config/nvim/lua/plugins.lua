@@ -174,13 +174,13 @@ local function prefer_local(url, path)
 end
 
 -- TODO: Checkout
--- TODO: Remove notifications from which-key
 -- folke/drop.nvim - Screensaver
--- folke/paint.nvim - Add extra highlights
 -- kristijanhusak/line-notes.nvim
 -- smjonas/live-command.nvim
+-- smjonas/inc-rename.nvim
 -- nacro90/numb.nvim - Peek at line
 -- gorbit99/codewindow.nvim
+-- cshuaimin/ssr.nvim
 
 return packer.startup(
     {
@@ -344,6 +344,7 @@ return packer.startup(
             -- Needed for some themes
             use({"rktjmp/lush.nvim"})
 
+            use({"sam4llis/nvim-tundra"})
             use({"eddyekofo94/gruvbox-flat.nvim"})
             use({"sainnhe/gruvbox-material"})
             use({"sainnhe/edge"})
@@ -374,6 +375,7 @@ return packer.startup(
             use({"kyazdani42/blue-moon"})
             use({"meliora-theme/neovim"})
             use({"rockyzhang24/arctic.nvim"})
+            -- use({"shaunsingh/oxocarbon.nvim", run = "./install.sh"})
             -- use({"levuaska/levuaska.nvim"})
             -- use({"wadackel/vim-dogrun"})
 
@@ -668,14 +670,14 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "ghillb/cybu.nvim",
-                    branch = "main",
-                    conf = "plugs.cybu",
-                    requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
-                }
-            )
+            -- use(
+            --     {
+            --         "ghillb/cybu.nvim",
+            --         branch = "main",
+            --         conf = "plugs.cybu",
+            --         requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
+            --     }
+            -- )
 
             -- use(
             --     {
@@ -1509,5 +1511,3 @@ return packer.startup(
         end
     }
 )
-
--- smjonas/inc-rename.nvim

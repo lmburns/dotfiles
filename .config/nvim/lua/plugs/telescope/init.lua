@@ -170,7 +170,7 @@ local new_maker = function(filepath, bufnr, opts)
 end
 -- ============================ Config ===========================
 
-require("telescope").setup(
+telescope.setup(
     {
         defaults = {
             history = {
@@ -946,7 +946,7 @@ end
 
 -- Grep a string with a prompt
 builtin.grep_prompt = function(opts)
-    opts.search = vim.fn.input("Grep String > ")
+    opts.search = fn.input("Grep String > ")
     builtin.cst_grep(opts)
 end
 
@@ -968,9 +968,9 @@ builtin.cst_grep = function(opts)
 end
 
 builtin.cst_grep_in_dir = function(opts)
-    opts.search = vim.fn.input("Grep String > ")
+    opts.search = fn.input("Grep String > ")
     opts.search_dirs = {}
-    opts.search_dirs[1] = vim.fn.input("Target Directory > ")
+    opts.search_dirs[1] = fn.input("Target Directory > ")
     builtin.grep_string(
         {
             opts = opts,

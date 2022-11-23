@@ -9,7 +9,6 @@ local D = require("dev")
 
 local cmd = vim.cmd
 local g = vim.g
-local fn = vim.fn
 local uv = vim.loop
 local dirs = require("common.global").dirs
 
@@ -60,10 +59,13 @@ M.catppuccin = function()
                 }
             },
             custom_highlights = {
-                TSConditional = {fg = cp.red},
-                TSKeywordOperator = {fg = cp.teal},
-                TSFunction = {fg = cp.maroon, style = {"bold"}},
-                TSMethod = {fg = cp.maroon, style = {"bold"}}
+                ["@conditional.lua"] = {fg = cp.red},
+                ["@conditional"] = {fg = cp.red},
+                ["@keyword.operator"] = {fg = cp.teal},
+                ["@function"] = {fg = cp.maroon, style = {"bold"}},
+                ["@function.lua"] = {fg = cp.maroon, style = {"bold"}},
+                ["@method"] = {fg = cp.maroon, style = {"bold"}},
+                ["@method.lua"] = {fg = cp.maroon, style = {"bold"}}
                 -- TSVariableBuiltin = {style = "none"},
                 -- TSTypeBuiltin = {style = "none"},
                 -- TSProperty = {style = "none"},
@@ -161,7 +163,7 @@ M.kanagawa = function()
             undercurl = true,
             commentStyle = {italic = true},
             functionStyle = {bold = true},
-            keywordStyle = {},
+            keywordStyle = {bold = false},
             statementStyle = {},
             typeStyle = {bold = false},
             variablebuiltinStyle = {italic = true},
@@ -178,6 +180,7 @@ M.kanagawa = function()
     -- cmd [[colorscheme kanagawa]]
 end
 
+-- === Nightfox ===
 M.nightfox = function()
     local nightfox = D.npcall(require, "nightfox")
     if not nightfox then
@@ -233,6 +236,113 @@ M.nightfox = function()
 
     -- nordfox duskfox terafxo
     -- cmd [[colorscheme nightfox]]
+end
+
+-- === Tundra ===
+M.tundra = function()
+    local tundra = D.npcall(require, "nvim-tundra")
+    if not tundra then
+        return
+    end
+
+    tundra.setup(
+        {
+            transparent_background = false,
+            dim_inactive_windows = {
+                enabled = false,
+                color = nil
+            },
+            editor = {
+                search = {},
+                substitute = {}
+            },
+            syntax = {
+                booleans = {bold = false, italic = false},
+                comments = {bold = false, italic = false},
+                conditionals = {},
+                constants = {bold = true},
+                fields = {},
+                functions = {bold = true},
+                keywords = {},
+                loops = {},
+                numbers = {bold = false},
+                operators = {bold = false},
+                punctuation = {},
+                strings = {},
+                types = {italic = false}
+            },
+            diagnostics = {
+                errors = {},
+                warnings = {},
+                information = {},
+                hints = {}
+            },
+            plugins = {
+                lsp = true,
+                treesitter = true,
+                nvimtree = true,
+                cmp = true,
+                context = true,
+                dbui = true,
+                gitsigns = true,
+                telescope = true
+            },
+            overwrite = {
+                colors = {},
+                highlights = {}
+            }
+        }
+    )
+end
+
+-- === Meliora ===
+M.meliora = function()
+    local meliora = D.npcall(require, "meliora")
+    if not meliora then
+        return
+    end
+
+    meliora.setup(
+        {
+            dim_inactive = false,
+            styles = {
+                comments = "italic",
+                conditionals = "NONE",
+                folds = "NONE",
+                loops = "NONE",
+                functions = "bold",
+                keywords = "NONE",
+                strings = "NONE",
+                variables = "NONE",
+                numbers = "NONE",
+                booleans = "NONE",
+                properties = "NONE",
+                types = "NONE",
+                operators = "NONE"
+            },
+            transparent_background = {
+                enabled = false,
+                floating_windows = false,
+                telescope = false,
+                file_tree = true,
+                cursor_line = true,
+                status_line = false
+            },
+            plugins = {
+                cmp = true,
+                indent_blankline = true,
+                nvim_tree = {
+                    enabled = true,
+                    show_root = false
+                },
+                telescope = {
+                    enabled = true,
+                    nvchad_like = true
+                },
+                startify = true
+            }
+        }
+    )
 end
 
 -- === Gruvbox ===
@@ -403,51 +513,6 @@ M.vscode = function()
     g.vscode_italic_comment = 0
 end
 
--- === OneDark ===
-M.onedark = function()
-    local od = D.npcall(require, "onedark")
-    if not od then
-        return
-    end
-
-    od.setup(
-        {
-            -- Theme can be overwritten with 'onedark' or 'onelight' as a string
-            theme = "onedark",
-            colors = {}, -- Override default colors by specifying colors for 'onelight' or 'onedark' themes
-            hlgroups = {}, -- Override default highlight groups
-            filetype_hlgroups = {}, -- Override default highlight groups for specific filetypes
-            plugins = {
-                -- Override which plugins highlight groups are loaded
-                native_lsp = true,
-                polygot = true,
-                treesitter = true
-                -- NOTE: Other plugins have been omitted for brevity
-            },
-            styles = {
-                strings = "NONE", -- Style that is applied to strings
-                comments = "NONE", -- Style that is applied to comments
-                keywords = "NONE", -- Style that is applied to keywords
-                functions = "NONE", -- Style that is applied to functions
-                variables = "NONE", -- Style that is applied to variables
-                virtual_text = "NONE" -- Style that is applied to virtual text
-            },
-            options = {
-                bold = false, -- Use the themes opinionated bold styles?
-                italic = false, -- Use the themes opinionated italic styles?
-                underline = false, -- Use the themes opinionated underline styles?
-                undercurl = false, -- Use the themes opinionated undercurl styles?
-                cursorline = false, -- Use cursorline highlighting?
-                transparency = false, -- Use a transparent background?
-                terminal_colors = false, -- Use the theme's colors for Neovim's :terminal?
-                window_unfocussed_color = false -- When the window is out of focus, change the normal background?
-            }
-        }
-    )
-
-    -- od.load()
-end
-
 -- === OneNord ===
 M.onenord = function()
     local onenord = D.npcall(require, "onenord")
@@ -483,25 +548,6 @@ end
 M.nightfly = function()
     g.nightflyItalics = 0
 end
-
--- === Leaf ===
--- M.leaf = function()
---     require("leaf").setup(
---         {
---             undercurl = true,
---             commentStyle = "NONE",
---             functionStyle = "bold",
---             keywordStyle = "none",
---             statementStyle = "bold",
---             typeStyle = "NONE",
---             variablebuiltinStyle = "none",
---             transparent = false,
---             colors = {},
---             overrides = {},
---             theme = "dark" -- default, alternatives: "dark", "lighter", "darker", "lightest", "darkest"
---         }
---     )
--- end
 
 -- === RosePine ===
 M.rose_pine = function()
@@ -550,17 +596,6 @@ M.rose_pine = function()
     )
 end
 
--- === Calvera ===
-M.calvera = function()
-    g.calvera_italic_comments = false
-    g.calvera_italic_keywords = false
-    g.calvera_italic_functions = false
-    g.calvera_italic_variables = false
-    g.calvera_contrast = true
-    g.calvera_borders = false
-    g.calvera_disable_background = false
-end
-
 -- === Kimbox ===
 M.kimbox = function()
     local kimbox = D.npcall(require, "kimbox")
@@ -601,34 +636,32 @@ local function init()
     }
 
     M.kimbox()
+
+    M.catppuccin()
+    M.edge()
+    M.everforest()
     M.gruvbox()
     M.gruvbox_flat()
-    M.everforest()
-    M.ocean_material()
-    M.miramare()
-    M.tokyonight()
     M.kanagawa()
-    M.catppuccin()
     M.material()
+    M.meliora()
+    M.miramare()
+    M.nightfly()
     M.nightfox()
-    M.edge()
+    M.ocean_material()
     M.onenord()
-    M.tokyodark()
     M.rose_pine()
-    -- M.calvera()
-    -- M.leaf()
+    M.tokyodark()
+    M.tokyonight()
+    M.tundra()
     M.vscode()
 
-    -- require("kimbox").load()
-
     -- local theme = "jellybeans"
-    -- local theme = "lmspacegray"
-    -- local theme = "one"
-    -- local theme = "icy"
     -- local theme = "vscode"
 
     -- local theme = "iceberg"
     -- local theme = "gruvbox-material"
+    -- local theme = "gruvbox-flat"
     -- local theme = "spaceduck"
     -- local theme = "everforest"
     -- local theme = "onenord"
@@ -638,11 +671,13 @@ local function init()
     -- local theme = "rose-pine"
     -- local theme = "dusk-fox"
     -- local theme = "oceanic_material"
+    -- local theme = "meliora"
 
     -- local theme = "tokyonight"
-    -- local theme = "catppuccin"
+    local theme = "catppuccin"
+    -- local theme = "tundra"
     -- local theme = "kanagawa"
-    local theme = "kimbox"
+    -- local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(dirs.config, "lua/lush_theme", theme)) then

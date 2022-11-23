@@ -7,12 +7,11 @@ if not trouble then
     return
 end
 
+local icon = require("style").icons
 local coc = require("plugs.coc")
 local log = require("common.log")
 local utils = require("common.utils")
 local map = utils.map
--- local augroup = utils.augroup
-local icon = require("style").icons
 
 local cmd = vim.cmd
 

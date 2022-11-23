@@ -975,6 +975,13 @@ M.truncate = function(str, max_len)
     return api.nvim_strwidth(str) > max_len and str:sub(1, max_len) .. style.icons.misc.ellipsis or str
 end
 
+---Escape a string correctly
+---@param s string
+---@return string
+M.escape = function(s)
+    return (s:gsub("[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
+end
+
 ---Table of escaped termcodes
 M.termcodes =
     setmetatable(

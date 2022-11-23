@@ -329,7 +329,7 @@ M.setup_aerial = function()
             -- When true, aerial will automatically close after jumping to a symbol
             close_on_select = false,
             -- Show box drawing characters for the tree hierarchy
-            show_guides = false,
+            show_guides = true,
             -- The autocmds that trigger symbols update (not used for LSP backend)
             update_events = "TextChanged,InsertLeave",
             -- Customize the characters used when show_guides = true
@@ -403,19 +403,19 @@ M.setup_aerial = function()
     wk.register(
         {
             ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
-            ["[["] = {"<Cmd>AerialPrevUp<CR>", "Aerial previous up"},
-            ["]]"] = {"<Cmd>AerialNextUp<CR>", "Aerial next up"},
-            ["{"] = {"<Cmd>AerialPrev<CR>", "Aerial previous (anon)"},
-            ["}"] = {"<Cmd>AerialNext<CR>", "Aerial next (anon)"}
+            ["[["] = {aerial.prev_up, "Aerial previous up"},
+            ["]]"] = {aerial.next_up, "Aerial next up"},
+            ["{"] = {aerial.prev, "Aerial previous (anon)"},
+            ["}"] = {aerial.next, "Aerial next (anon)"}
         }
     )
 
     wk.register(
         {
-            ["[["] = {"<Cmd>AerialPrevUp<CR>", "Aerial previous"},
-            ["]]"] = {"<Cmd>AerialNextUp<CR>", "Aerial next"},
-            ["{"] = {"<Cmd>AerialPrev<CR>", "Aerial previous (anon)"},
-            ["}"] = {"<Cmd>AerialNext<CR>", "Aerial next (anon)"}
+            ["[["] = {aerial.prev_up, "Aerial previous"},
+            ["]]"] = {aerial.next_up, "Aerial next"},
+            ["{"] = {aerial.prev, "Aerial previous (anon)"},
+            ["}"] = {aerial.next, "Aerial next (anon)"}
         },
         {mode = "x"}
     )

@@ -71,7 +71,7 @@ function M.setup()
             position = "bottom", -- bottom, top
             margin = {1, 0, 1, 0}, -- extra window margin [top, right, bottom, left]
             padding = {2, 2, 2, 2}, -- extra window padding [top, right, bottom, left]
-            winblend = 0
+            winblend = 10
         },
         layout = {
             height = {min = 4, max = 25}, -- min and max height of the columns
@@ -91,7 +91,6 @@ function M.setup()
             c = {},
             n = {"s"}
             -- o = {"d", '"_d'}
-            -- n = {"o", "O"} -- Would be nice if two letter worked
         }
     }
 end
@@ -101,18 +100,11 @@ local function wk_help()
 end
 
 local function init()
-    -- cmd([[highlight default link WhichKey          htmlH1]])
-    -- cmd([[highlight default link WhichKeySeperator String]])
-    -- cmd([[highlight default link WhichKeyGroup     Keyword]])
-    -- cmd([[highlight default link WhichKeyDesc      Include]])
-    -- cmd([[highlight default link WhichKeyFloat     CursorLine]])
-    -- cmd([[highlight default link WhichKeyValue     Comment]])
-
     M.setup()
 
     -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
     map("n", "d", '"_d', {desc = "Delete blackhole"})
-    map("i", "<C-M-w>", "<Esc><Cmd>WhichKey '' i<CR>")
+    map("i", "<C-A-w>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 
     -- The reason why some of these are here is because they don't always trigger (some never do)

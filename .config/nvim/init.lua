@@ -1,20 +1,7 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
-FIX: Cursor blinking is very fast on text operators which don't trigger which-key (gq)
-     * It stops without the Bufferline plugin
-     * Is not present in telescope prompt
-     * Happens with heavier coc langservers (e.g., Lua, Rust, Python, but not toml, yaml, solidity)
-     * It's definitely gotta be that Bufferline and some langservers are refreshing the same thing
-     * With "showtabline=2" it happens. Not with any other setting
-     * ModeChange gets ran over and over only on operator pending
-     * With a timeoutlen over 800 it stops
-     * With a timeoutlen = 800 and updatetime=2000, happens every other time
-     * With a timeoutlen = 800 and updatetime=4000, happens never
 
--- FIX: Cursorline within noice cmdline
--- FIX: Make noice notifications minimal
--- FIX: Remove cursorline in telescope
--- FIX: Cybu not wide enough
+FIX: Telescope opens file in insert mode
 
 Notes:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
@@ -242,6 +229,7 @@ vim.schedule(
                     "coc-clangd",
                     "coc-css",
                     "coc-go",
+                    -- "coc-graphql",
                     "coc-html",
                     "coc-markdownlint",
                     "coc-java",

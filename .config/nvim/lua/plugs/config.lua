@@ -799,8 +799,7 @@ function M.sandwhich()
       \     'nesting': 1,
       \     'regex': 1,
       \     'match_syntax': 1,
-      \     'kind': ['delete',
-      \     'replace', 'textobj'],
+      \     'kind': ['delete', 'replace', 'textobj'],
       \     'action': ['delete'],
       \     'input': ['(']
       \   },
@@ -859,35 +858,22 @@ function M.sandwhich()
       \     'input':        ['>', 'a'],
       \   },
       \   {
+      \     'buns': ["(\n", "\n)"],
+      \     'nesting': 1,
+      \     'kind': ['add'],
+      \     'action': ['add'],
+      \     'input':  ['R'],
+      \   },
+      \   {
       \     'buns': ['(', ')'],
       \     'cursor': 'head',
       \     'command': ['startinsert'],
       \     'kind': ['add', 'replace'],
       \     'action': ['add'],
-      \     'input': ['j']
+      \     'input': ['F']
       \   },
       \ ]
     ]]
-
-    -- The last bun is the same as ysiwf, but start in insert mode
-
-    -- TODO:
-    -- \   {
-    -- \     'buns': ['sandwich#magicchar#f#fname()' . '\<Space>', '" )"'],
-    -- \     'kind': ['add'],
-    -- \     'action': ['add'],
-    -- \     'expr': 1,
-    -- \     'input': ['J']
-    -- \   },
-    -- \   {
-    -- \     'buns'        : ["'", "'"],
-    -- \     'motionwise'  : ['line'],
-    -- \     'kind'        : ['add'],
-    -- \     'linewise'    : 1,
-    -- \     'command'     : ["'[+1,']-1normal! >>"],
-    -- \   },
-
-    -- TODO: Create a visual mode method to create a function surrounding
 
     -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
     -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
@@ -1822,7 +1808,7 @@ end
 -- │                       VisualMulti                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.visualmulti()
-    -- FIX: 'cw' consumes more than what it used to
+    -- FIX: 'cw' consumes more than what it used to due to noice.nvim
     -- FIX: Keep statusline
     -- g.VM_theme = "purplegray"
     g.VM_highlight_matches = ""

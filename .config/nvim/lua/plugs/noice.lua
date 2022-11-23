@@ -155,8 +155,10 @@ function M.setup()
         {
             view = "mini",
             timeout = 6000,
+            reverse = false,
             zindex = 60,
             relative = "editor",
+            align = "message-right",
             position = {
                 row = "8%",
                 col = "100%"
@@ -357,10 +359,10 @@ function M.setup()
                         view = "cmdline",
                         icon_hl_group = "WarningMsg"
                     },
-                    filter = {pattern = "^:%s*!", icon = "$", lang = "bash"},
                     lua = {pattern = "^:%s*lua%s+", icon = "", lang = "lua", view = "cmdline"},
                     help = {pattern = "^:%s*he?l?p?%s+", icon = "", view = "cmdline"},
-                    man = { pattern = '^:%s*Man%s+', icon = '龎', lang = 'bash' },
+                    filter = {pattern = "^:%s*!", icon = "$", lang = "bash"},
+                    man = {pattern = "^:%s*Man%s+", icon = "龎", lang = "bash"},
                     inspect = {
                         conceal = true,
                         icon = " ",
@@ -411,7 +413,7 @@ function M.setup()
             commands = {
                 history = {
                     -- options for the message history that you get with `:Noice`
-                    view = "split",
+                    view = "popup",
                     opts = {enter = true, format = "details"},
                     filter = {
                         any = {
@@ -552,7 +554,7 @@ function M.setup()
                 -- you can also add custom presets that you can enable/disable with enabled=true
                 bottom_search = false, -- use a classic bottom cmdline for search
                 command_palette = false, -- position the cmdline and popupmenu together
-                long_message_to_split = false, -- long messages will be sent to a split
+                long_message_to_split = true, -- long messages will be sent to a split
                 inc_rename = false, -- enables an input dialog for inc-rename.nvim
                 lsp_doc_border = false -- add a border to hover docs and signature help
             },
@@ -730,17 +732,23 @@ function M.setup()
                     backend = "mini",
                     relative = "editor",
                     align = "message-right",
-                    timeout = 2000,
-                    reverse = true,
+                    timeout = 3000,
+                    reverse = false,
                     focusable = false,
                     position = {
                         row = -1,
                         col = "100%"
                         -- col = 0,
                     },
-                    size = "auto",
+                    -- size = "auto",
+                    size = {
+                        max_height = math.ceil(0.8 * vim.o.lines),
+                        max_width = math.ceil(0.8 * vim.o.columns),
+                        width = "auto",
+                        height = "auto"
+                    },
                     border = {
-                        style = "none"
+                        style = "rounded"
                     },
                     zindex = 60,
                     win_options = {

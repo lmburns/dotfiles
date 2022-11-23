@@ -593,6 +593,9 @@ zt 0c light-mode null for \
   atclone'ziextract --move --auto regex-*.tar.gz' make'all' \
     zdharma-continuum/null
 
+  # lbin \
+  #   syndbg/goenv \
+
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 # greymd/teip
 
