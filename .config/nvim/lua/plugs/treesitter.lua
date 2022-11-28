@@ -81,7 +81,7 @@ M.setup_hlargs = function()
     end
 
     hlargs.setup {
-        color = "#ea6962",
+        color = g.colors_name == "kimbox" and "#ea6962" or nil,
         excluded_filetypes = BLACKLIST_FT,
         paint_arg_declarations = true,
         paint_arg_usages = true,
@@ -720,7 +720,7 @@ M.setup = function()
             "bibtex",
             "c",
             "cmake",
-            -- "comment",
+            "comment",
             "cpp",
             "css",
             "d",

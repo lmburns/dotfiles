@@ -228,6 +228,7 @@ local function init()
     g.neoformat_enabled_python = {"black"}
     g.neoformat_enabled_zsh = {"expand"}
     g.neoformat_enabled_java = {"prettier"}
+    g.neoformat_enabled_graphql = {"prettier"}
     g.neoformat_enabled_solidity = {"prettier"}
     g.neoformat_enabled_typescript = {"prettier", "clangformat"}
     g.neoformat_enabled_javascript = {"prettier"}

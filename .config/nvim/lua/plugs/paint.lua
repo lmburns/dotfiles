@@ -104,7 +104,7 @@ local function init()
     hl.set("PaintTag", {fg = colors.oni_violet, bold = true})
     hl.set("PaintType", {fg = colors.vista_blue})
 
-    -- Needs to be deferred otherwise comment is correct
+    -- Needs to be deferred otherwise comment is incorrect
     vim.schedule(
         function()
             M.setup()

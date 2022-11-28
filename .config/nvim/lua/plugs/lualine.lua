@@ -55,7 +55,6 @@ local function trunc(trunc_width, trunc_len, hide_width, no_ellipsis)
     end
 end
 
-
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
 -- ╘══════════════════════════════════════════════════════════╛
@@ -88,7 +87,7 @@ local sections_1 = {
         {
             plugs.vm.fn,
             cond = plugs.vm.toggle,
-            color = {fg = colors.jelly_bean_blue}
+            color = {fg = colors.green}
         },
         {
             plugs.file_encoding.fn,
@@ -421,6 +420,7 @@ local function init()
                 always_divide_middle = true,
                 section_separators = {left = "", right = ""},
                 component_separators = {left = "", right = ""},
+                ignore_focus = {},
                 refresh = {
                     statusline = 1000,
                     tabline = 0,
@@ -472,19 +472,6 @@ local function init()
             winbar = {},
             inactive_winbar = {},
             tabline = {},
-            -- tabline = {
-            --   lualine_a = { "tabs" },
-            --   lualine_b = { { "buffers" } },
-            --   lualine_c = {},
-            --   lualine_x = {},
-            --   lualine_y = {},
-            --   lualine_z = {
-            --     {
-            --       'require("nvim-gps").get_location()',
-            --       cond = conds.is_available_gps,
-            --     },
-            --   },
-            -- },
             extensions = {
                 -- "quickfix",
                 stl.extensions.qf,

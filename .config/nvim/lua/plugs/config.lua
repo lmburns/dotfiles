@@ -1389,35 +1389,43 @@ function M.colorizer()
 
     colorizer.setup(
         {
-            "gitconfig",
-            "vim",
-            "sh",
-            "zsh",
-            "markdown",
-            "tmux",
-            "yaml",
-            "json",
-            "xml",
-            "css",
-            "typescript",
-            "javascript",
-            "conf",
-            "toml",
-            lua = {names = false}
-        },
-        {
-            RGB = true, -- #RGB hex codes
-            RRGGBB = true, -- #RRGGBB hex codes
-            RRGGBBAA = true, -- #RRGGBBAA hex codes
-            names = false, -- "Name" codes like Blue
-            rgb_0x = false, -- 0xAARRGGBB hex codes
-            rgb_fn = false, -- CSS rgb() and rgba() functions
-            hsl_fn = false, -- CSS hsl() and hsla() functions
-            css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-            css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-            -- Available modes: foreground, background, virtualtext
-            mode = "background", -- Set the display mode.
-            virtualtext = "■"
+            filetypes = {
+                "gitconfig",
+                "vim",
+                "sh",
+                "zsh",
+                "markdown",
+                "tmux",
+                "yaml",
+                "json",
+                "xml",
+                "css",
+                "typescript",
+                "javascript",
+                "conf",
+                "toml",
+                "lua"
+            },
+            user_default_options = {
+                RGB = true, -- #RGB hex codes
+                RRGGBB = true, -- #RRGGBB hex codes
+                RRGGBBAA = true, -- #RRGGBBAA hex codes
+                names = false, -- "Name" codes like Blue
+                -- rgb_0x = false, -- 0xAARRGGBB hex codes
+                rgb_fn = true, -- CSS rgb() and rgba() functions
+                hsl_fn = true, -- CSS hsl() and hsla() functions
+                css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+                css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+                -- Available modes: foreground, background, virtualtext
+                mode = "background", -- Set the display mode.
+                -- Available methods are false / true / "normal" / "lsp" / "both"
+                tailwind = false, -- Enalbe tailwind colors
+                -- parsers can contain values used in |user_default_options|
+                sass = {enable = false, parsers = {"css"}}, -- Enable sass colors
+                virtualtext = "■"
+            },
+            -- all the sub-options of filetypes apply to buftypes
+            buftypes = {}
         }
     )
 end
@@ -1690,7 +1698,7 @@ function M.urlview()
         }
     )
 
-    map("n", "<LocalLeader>l", "UrlView", {cmd = true})
+    map("n", "<LocalLeader>L", "UrlView", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

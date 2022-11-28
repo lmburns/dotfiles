@@ -176,7 +176,7 @@
   "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,
   "suggest.detailField": "preview",
-  "suggest.detailMaxLength": 100,
+  "suggest.labelMaxLength": 100,
   "suggest.defaultSortMethod": "none",
   "suggest.virtualText": false,
   "suggest.selection": "first", // recentlyUsed
@@ -599,17 +599,16 @@
   "eslint.format.enable": true,
   "tsserver.trace.server": "off",
   // Typescript
-  "typescript.format.enabled": true,
   "typescript.preferences.quoteStyle": "double",
   "typescript.preferences.useAliasesForRenames": false,
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
   // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
   "typescript.referencesCodeLens.showOnAllFunctions": true,
-  "typescript.implementationsCodeLens.enable": true,
-  "typescript.referencesCodeLens.enable": false,
   "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
@@ -618,8 +617,9 @@
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   // Javascript
-  "javascript.format.enabled": true,
   "javascript.preferences.quoteStyle": "double",
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.format.enable": true,
   "javascript.format.semicolons": "insert",
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
@@ -631,6 +631,7 @@
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
   "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
   "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  //
   "vimlsp.diagnostic.enable": true,
   "vimlsp.trace.server": "off",
   "xml.trace.server": "off",

@@ -120,8 +120,8 @@ local function init()
     -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
     map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
 
-    map("n", "g(", "<cmd>lua require'hop'.hint_patterns({}, '(')<CR>", {desc = "Previous brace"})
-    map("n", "g)", "<cmd>lua require'hop'.hint_patterns({}, ')')<CR>", {desc = "Next brace"})
+    map("n", "g(", "require'hop'.hint_patterns({}, '(')", {desc = "Previous brace", luacmd = true})
+    map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Next brace", luacmd = true})
 
     -- ========================== f-Mapping ==========================
 

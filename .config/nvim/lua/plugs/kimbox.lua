@@ -21,14 +21,25 @@ M.catppuccin = function()
     end
 
     local cp = require("catppuccin.palettes").get_palette()
-    g.catppuccin_flavour = "mocha" -- frappe, macchiato, mocha
 
     catppuccin.setup(
         {
+            flavour = "mocha", -- frappe, macchiato, mocha
+            background = {
+                light = "mocha",
+                dark = "mocha"
+            },
             transparent_background = false,
             term_colors = true,
+            dim_inactive = {
+                enabled = false,
+                shade = "dark",
+                percentage = 0.15
+            },
             styles = {
                 comments = {"italic"},
+                conditionals = {},
+                loops = {},
                 functions = {"bold"},
                 keywords = {},
                 strings = {},
@@ -40,32 +51,54 @@ M.catppuccin = function()
                 operators = {}
             },
             integrations = {
+                aerial = true,
                 bufferline = true,
-                treesitter = true,
-                lsp_trouble = true,
-                lsp_saga = true,
                 coc_nvim = true,
-                telescope = true,
+                dap = {
+                    enabled = true,
+                    enable_ui = true
+                },
                 gitsigns = true,
-                ts_rainbow = true,
-                markdown = true,
                 hop = true,
-                which_key = true,
-                neogit = true,
-                notify = true,
-                symbols_outline = true,
                 indent_blankline = {
-                    enabled = true
-                }
+                    enabled = true,
+                    colored_indent_levels = false
+                },
+                lsp_saga = true,
+                lsp_trouble = true,
+                markdown = true,
+                neogit = true,
+                neotest = true,
+                noice = true,
+                notify = true,
+                overseer = true,
+                semantic_tokens = true,
+                symbols_outline = true,
+                telescope = true,
+                treesitter = true,
+                treesitter_context = true,
+                ts_rainbow = true,
+                vimwiki = true,
+                which_key = true
             },
+            color_overrides = {},
             custom_highlights = {
-                ["@conditional.lua"] = {fg = cp.red},
                 ["@conditional"] = {fg = cp.red},
+                ["@conditional.lua"] = {fg = cp.red},
+                ["@conditional.rust"] = {fg = cp.red},
+                ["@conditional.tsx"] = {fg = cp.red},
+                ["@conditional.typescript"] = {fg = cp.red},
                 ["@keyword.operator"] = {fg = cp.teal},
                 ["@function"] = {fg = cp.maroon, style = {"bold"}},
                 ["@function.lua"] = {fg = cp.maroon, style = {"bold"}},
+                ["@function.rust"] = {fg = cp.maroon, style = {"bold"}},
+                ["@function.tsx"] = {fg = cp.maroon, style = {"bold"}},
+                ["@function.typescript"] = {fg = cp.maroon, style = {"bold"}},
                 ["@method"] = {fg = cp.maroon, style = {"bold"}},
-                ["@method.lua"] = {fg = cp.maroon, style = {"bold"}}
+                ["@method.lua"] = {fg = cp.maroon, style = {"bold"}},
+                ["@method.rust"] = {fg = cp.maroon, style = {"bold"}},
+                ["@method.tsx"] = {fg = cp.maroon, style = {"bold"}},
+                ["@method.typescript"] = {fg = cp.maroon, style = {"bold"}}
                 -- TSVariableBuiltin = {style = "none"},
                 -- TSTypeBuiltin = {style = "none"},
                 -- TSProperty = {style = "none"},
@@ -149,13 +182,17 @@ M.kanagawa = function()
         BufferLineErrorVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
         BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
         --
-        TSFunction = {fg = cp.waveRed, bold = true},
-        TSKeywordOperator = {fg = cp.sakuraPink, bold = false},
-        TSBoolean = {fg = cp.surimiOrange, bold = false},
-        TSConstant = {fg = cp.surimiOrange, bold = true},
-        TSConstructor = {fg = cp.sakuraPink, bold = true},
+        -- ["@function"] = {fg = cp.waveRed, bold = true},
+        ["@keyword.operator"] = {fg = cp.sakuraPink, bold = false},
+        ["@boolean"] = {fg = cp.surimiOrange, bold = false},
+        ["@constant"] = {fg = cp.surimiOrange, bold = true},
+        ["@constructor"] = {fg = cp.sakuraPink, bold = true},
+        ["@property"] = {fg = cp.carpYellow, bold = false},
+        ["@property.tsx"] = {fg = cp.carpYellow, bold = false},
+        ["@property.typescript"] = {fg = cp.carpYellow, bold = false},
+        ["@parameter"] = {fg = cp.springGreen},
         CocHighlightText = {bg = cp.sumiInk4},
-        Visual = {--[[ fg = cp.sumiInk0, ]] bg = cp.katanaGray, bold = true}
+        Visual = {--[[ fg = cp.sumiInk0, ]] bg = cp.katanaGray, bold = false}
     }
 
     kanagawa.setup(
@@ -245,6 +282,8 @@ M.tundra = function()
         return
     end
 
+    local cp = require("nvim-tundra.palette.arctic")
+
     tundra.setup(
         {
             transparent_background = false,
@@ -257,7 +296,7 @@ M.tundra = function()
                 substitute = {}
             },
             syntax = {
-                booleans = {bold = false, italic = false},
+                booleans = {},
                 comments = {bold = false, italic = false},
                 conditionals = {},
                 constants = {bold = true},
@@ -289,7 +328,10 @@ M.tundra = function()
             },
             overwrite = {
                 colors = {},
-                highlights = {}
+                highlights = {
+                    CocErrorFloat = {fg = cp.red._500, bg = cp.gray._900},
+                    CocInfoFloat = {fg = cp.sky._500, bg = cp.gray._900}
+                }
             }
         }
     )
@@ -373,7 +415,7 @@ M.gruvbox_flat = function()
 end
 
 -- === Oceanic ===
-M.ocean_material = function()
+M.oceanic_material = function()
     g.oceanic_material_background = "ocean"
     -- g.oceanic_material_background = "deep"
     -- g.oceanic_material_background = "medium"
@@ -648,7 +690,7 @@ local function init()
     M.miramare()
     M.nightfly()
     M.nightfox()
-    M.ocean_material()
+    M.oceanic_material()
     M.onenord()
     M.rose_pine()
     M.tokyodark()
@@ -674,10 +716,10 @@ local function init()
     -- local theme = "meliora"
 
     -- local theme = "tokyonight"
-    local theme = "catppuccin"
+    -- local theme = "catppuccin"
     -- local theme = "tundra"
     -- local theme = "kanagawa"
-    -- local theme = "kimbox"
+    local theme = "kimbox"
 
     if not pcall(colorscheme, theme) then
         if uv.fs_stat(("%s/%s/%s.lua"):format(dirs.config, "lua/lush_theme", theme)) then

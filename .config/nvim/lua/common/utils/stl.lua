@@ -238,13 +238,13 @@ M.plugins.gitbuf = {
     end
 }
 
+-- p(api.nvim_eval_statusline('+ 10', {}))
+
 M.plugins.coc_status = {
     fn = function()
-        -- FIX: Whatever the hell this is. Gotta be a symbol in coc_status causing problem
-        if vim.bo.ft == "rust" then
-            return vim.pesc(g.coc_status or "")
-        end
-        return vim.trim(g.coc_status or "")
+        local s = vim.trim(g.coc_status or "")
+        s, _ = s:gsub("%% ", "%%%%")
+        return s
     end
 }
 

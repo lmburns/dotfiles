@@ -112,6 +112,7 @@ local handlers = {
     patch = function(plugins, plugin, value)
         -- local run_hook = plugin_utils.post_update_hook
 
+        -- This is preferred because you can provide own error message
         vim.validate {
             value = {
                 value,
@@ -173,8 +174,6 @@ local function prefer_local(url, path)
     return uv.fs_stat(fn.expand(path)) ~= nil and path or url
 end
 
--- TODO: Checkout
--- folke/drop.nvim - Screensaver
 -- kristijanhusak/line-notes.nvim
 -- smjonas/live-command.nvim
 -- smjonas/inc-rename.nvim
@@ -1039,9 +1038,7 @@ return packer.startup(
             -- ]]] === Snippets ===
 
             -- ============================= Highlight ============================ [[[
-            -- "norcalli/nvim-colorizer.lua",
-            -- The following plugin really needs to support ansi sequences
-            use({"xiyaowong/nvim-colorizer.lua", conf = "colorizer"})
+            use({"NvChad/nvim-colorizer.lua", conf = "colorizer"})
 
             use(
                 {
@@ -1052,13 +1049,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "folke/paint.nvim",
-                    event = "BufReadPre",
-                    conf = "plugs.paint"
-                }
-            )
+            -- use(
+            --     {
+            --         "folke/paint.nvim",
+            --         event = "BufReadPre",
+            --         conf = "plugs.paint"
+            --     }
+            -- )
 
             use(
                 {

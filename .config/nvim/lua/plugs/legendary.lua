@@ -22,7 +22,7 @@ function M.setup()
             -- default opts to merge with the `opts` table
             -- of each individual item
             default_opts = {
-                keymaps = {noremap = true},
+                keymaps = {},
                 commands = {},
                 autocmds = {}
             },
@@ -110,7 +110,6 @@ local function init()
                 "<C-_>",
                 function()
                     legend.find({filters = {filters.mode("v"), filters.keymaps()}})
-                    -- legend.find({filters = {filters.current_mode()}})
                 end,
                 description = "Show Legendary keymaps (visual)",
                 mode = "v"
