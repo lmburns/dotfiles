@@ -174,10 +174,12 @@ local function prefer_local(url, path)
     return uv.fs_stat(fn.expand(path)) ~= nil and path or url
 end
 
+-- nacro90/numb.nvim - Peek at line
+-- PatschD/zippy.nvim
+-- nvim-zh/colorful-winsep.nvim
 -- kristijanhusak/line-notes.nvim
 -- smjonas/live-command.nvim
 -- smjonas/inc-rename.nvim
--- nacro90/numb.nvim - Peek at line
 -- gorbit99/codewindow.nvim
 -- cshuaimin/ssr.nvim
 
@@ -335,7 +337,7 @@ return packer.startup(
                 }
             )
 
-            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
+            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -343,6 +345,7 @@ return packer.startup(
             -- Needed for some themes
             use({"rktjmp/lush.nvim"})
 
+            use({"kvrohit/mellow.nvim"})
             use({"sam4llis/nvim-tundra"})
             use({"eddyekofo94/gruvbox-flat.nvim"})
             use({"sainnhe/gruvbox-material"})
@@ -669,27 +672,7 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "ghillb/cybu.nvim",
-            --         branch = "main",
-            --         conf = "plugs.cybu",
-            --         requires = {"nvim-tree/nvim-web-devicons", "nvim-lua/plenary.nvim"}
-            --     }
-            -- )
-
-            -- use(
-            --     {
-            --         "folke/drop.nvim",
-            --         event = "VimEnter",
-            --         config = function()
-            --             math.randomseed(os.time())
-            --             local theme = ({"stars", "snow"})[math.random(1, 2)]
-            --             require("drop").setup({theme = theme})
-            --         end
-            --     }
-            -- )
-            -- ]]] === Lualine ===
+            -- ]]] === Statusline ===
 
             -- =========================== Indentline ============================= [[[
             use(
@@ -699,6 +682,7 @@ return packer.startup(
                     conf = "plugs.indent_blankline"
                 }
             )
+            -- ]]] === Indentline ===
 
             -- use(
             --     {
@@ -712,7 +696,22 @@ return packer.startup(
             --         event = {"UIEnter"}
             --     }
             -- )
-            -- ]]] === Indentline ===
+
+            -- Eandrju/cellular-automaton.nvim
+            -- tamton-aquib/zone.nvim
+            -- use(
+            --     {
+            --         "folke/drop.nvim",
+            --         event = "VimEnter",
+            --         config = function()
+            --             math.randomseed(os.time())
+            --             local theme = ({"stars", "snow"})[math.random(1, 2)]
+            --             require("drop").setup({theme = theme})
+            --         end
+            --     }
+            -- )
+
+            use({"nullchilly/fsread.nvim", conf = "fsread", cmd = {"FSRead"}})
 
             -- =============================== Fzf ================================ [[[
             use(
@@ -736,15 +735,7 @@ return packer.startup(
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
 
-            -- use(
-            --     {
-            --         "AckslD/nvim-trevJ.lua",
-            --         conf = "trevj",
-            --         keys = {{"n", "gJ"}},
-            --         requires = "nvim-treesitter/nvim-treesitter"
-            --     }
-            -- )
-
+            -- "AckslD/nvim-trevJ.lua",
             use(
                 {
                     "aarondiel/spread.nvim",

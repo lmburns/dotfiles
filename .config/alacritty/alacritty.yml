@@ -1015,6 +1015,10 @@ key_bindings:
   - { key: 0x33,   mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
   - { key: 0x34,   mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
   - { key: 0x35,   mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
+  - { key: 0x0b,   mods: Control|Shift, chars: "\x1b[41;6u" } # Right parenthesis
+  - { key: 0x1b,   mods: Control|Shift, chars: "\x1b[125;6u"} # Right curly brace
+
+  - { key: 0x0A, mods: Control,       chars: "\x1b[57;5u" }
 
   # Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 

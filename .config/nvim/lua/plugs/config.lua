@@ -25,6 +25,22 @@ local fn = vim.fn
 local g = vim.g
 local api = vim.api
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          FSRead                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.fsread()
+    g.flow_strength = 0.7 -- low: 0.3, middle: 0.5, high: 0.7 (default)
+    g.skip_flow_default_hl = true -- If you want to override default highlights
+
+    hl.plugin(
+        "FSRead",
+        {
+            FSPrefix = {fg = "#cdd6f4"},
+            FSSuffix = {fg = "#6C7086"}
+        }
+    )
+end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Listish                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -862,7 +878,14 @@ function M.sandwhich()
       \     'nesting': 1,
       \     'kind': ['add'],
       \     'action': ['add'],
-      \     'input':  ['R'],
+      \     'input':  ["\<C-S-)>"],
+      \   },
+      \   {
+      \     'buns': ["{\n", "\n}"],
+      \     'nesting': 1,
+      \     'kind': ['add'],
+      \     'action': ['add'],
+      \     'input':  ["\<C-S-}>", "U"],
       \   },
       \   {
       \     'buns': ['(', ')'],

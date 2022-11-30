@@ -663,6 +663,7 @@ nvim.autocmd.lmb__SmartClose = {
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
                 ol.cursorline = false
+                -- vim.wo.cursorline = true
             end
 
             -- if bufname:match("%[Wilder Float %d%]") then
@@ -717,15 +718,16 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 
         local size = fn.getfsize(fn.expand("%"))
         if size > 1024 * 1024 * 5 then
+            local winid = fn.bufwinid(bufnr)
             local hlsearch = vim.opt.hlsearch
             local lazyredraw = vim.opt.lazyredraw
             local showmatch = vim.opt.showmatch
 
             vim.bo[bufnr].undofile = false
-            vim.wo.colorcolumn = ""
-            vim.wo.relativenumber = false
-            vim.wo.foldmethod = "manual"
-            vim.wo.spell = false
+            vim.wo[winid].colorcolumn = ""
+            vim.wo[winid].relativenumber = false
+            vim.wo[winid].foldmethod = "manual"
+            vim.wo[winid].spell = false
             vim.opt.hlsearch = false
             vim.opt.lazyredraw = true
             vim.opt.showmatch = false
@@ -748,30 +750,30 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
-nvim.autocmd.lmb__CursorLineControl = {
-    {
-        event = {"BufWinEnter", "WinEnter", "FocusGained", "CmdlineLeave"},
-        pattern = "*",
-        command = function()
-            local winid = api.nvim_get_current_win()
-            vim.wo[winid].cursorline = not vim.w[winid].nocursorline
-        end,
-        desc = "Control cursorline when re-focusing"
-    },
-    {
-        event = {"WinLeave", "FocusLost", "CmdlineEnter"},
-        pattern = "*",
-        command = function(args)
-            local bufnr = args.buf
-            local bufs = D.list_bufs({loaded = true, buftype = {"", "terminal"}})
-            if _t(bufs):contains(bufnr) and not vim.b[bufnr].keep_cursor_on_leave then
-                local winid = fn.bufwinid(bufnr)
-                vim.wo[winid].cursorline = false
-            end
-        end,
-        desc = "Control cursorline when un-focusing"
-    }
-}
+-- nvim.autocmd.lmb__CursorLineControl = {
+--     {
+--         event = {"BufWinEnter", "WinEnter", "FocusGained", "CmdlineLeave"},
+--         pattern = "*",
+--         command = function()
+--             local winid = api.nvim_get_current_win()
+--             vim.wo[winid].cursorline = not vim.wo[winid].cursorline
+--         end,
+--         desc = "Control cursorline when re-focusing"
+--     },
+--     {
+--         event = {"WinLeave", "FocusLost", "CmdlineEnter"},
+--         pattern = "*",
+--         command = function(args)
+--             local bufnr = args.buf
+--             local bufs = D.list_bufs({loaded = true, buftype = {"", "terminal"}})
+--             if _t(bufs):contains(bufnr) and not vim.b[bufnr].keep_cursor_on_leave then
+--                 local winid = fn.bufwinid(bufnr)
+--                 vim.wo[winid].cursorline = false
+--             end
+--         end,
+--         desc = "Control cursorline when un-focusing"
+--     }
+-- }
 -- ]]]
 
 -- === Tmux === [[[

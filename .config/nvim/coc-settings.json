@@ -601,13 +601,13 @@
   // Typescript
   "typescript.preferences.quoteStyle": "double",
   "typescript.preferences.useAliasesForRenames": false,
-  "typescript.referencesCodeLens.enabled": true,
   "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
   // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
+  "typescript.referencesCodeLens.enabled": false,
   "typescript.referencesCodeLens.showOnAllFunctions": true,
   "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
@@ -618,7 +618,7 @@
   "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   // Javascript
   "javascript.preferences.quoteStyle": "double",
-  "javascript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.enabled": false,
   "javascript.format.enable": true,
   "javascript.format.semicolons": "insert",
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
