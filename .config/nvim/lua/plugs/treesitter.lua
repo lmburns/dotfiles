@@ -192,7 +192,7 @@ M.setup_aerial = function()
         {
             -- Priority list of preferred backends for aerial.
             -- This can be a filetype map (see :help aerial-filetype-map)
-            backends = {"treesitter", "markdown" --[[ "lsp" ]]},
+            backends = {"treesitter", "markdown", "man" --[[ "lsp" ]]},
             layout = {
                 -- These control the width of the aerial window.
                 -- They can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
@@ -201,6 +201,8 @@ M.setup_aerial = function()
                 max_width = {40, 0.2},
                 width = nil,
                 min_width = 10,
+                -- key-value pairs of window-local options for aerial window (e.g. winhl)
+                win_opts = {},
                 -- Determines the default direction to open the aerial window. The 'prefer'
                 -- options will open the window in the other direction *if* there is a
                 -- different buffer in the way of the preferred direction
@@ -209,7 +211,9 @@ M.setup_aerial = function()
                 -- Determines where the aerial window will be opened
                 --   edge   - open aerial at the far right/left of the editor
                 --   window - open aerial to the right/left of the current window
-                placement = "window"
+                placement = "window",
+                -- Preserve window size equality with (:help CTRL-W_=)
+                preserve_equality = false
             },
             -- Determines how the aerial window decides which buffer to display symbols for
             --   window - aerial window will display symbols for the buffer in the window from which it was opened
@@ -222,6 +226,9 @@ M.setup_aerial = function()
             close_automatic_events = {},
             -- Set to false to remove the default keybindings for the aerial buffer
             default_bindings = true,
+            -- When true, don't load aerial until a command or function is called
+            -- Defaults to true, unless `on_attach` is provided, then it defaults to false
+            lazy_load = true,
             -- Disable aerial on files with this many lines
             disable_max_lines = 10000,
             -- Disable aerial on files this size or larger (in bytes)
@@ -303,15 +310,15 @@ M.setup_aerial = function()
                 --                Takes two arguments, `winid` and `wintype`.
                 wintypes = "special"
             },
+            -- Use symbol tree for folding. Set to true or false to enable/disable
+            -- 'auto' will manage folds if your previous foldmethod was 'manual'
+            manage_folds = false,
             -- When you fold code with za, zo, or zc, update the aerial tree as well.
             -- Only works when manage_folds = true
             link_folds_to_tree = false,
             -- Fold code when you open/collapse symbols in the tree.
             -- Only works when manage_folds = true
             link_tree_to_folds = true,
-            -- Use symbol tree for folding. Set to true or false to enable/disable
-            -- 'auto' will manage folds if your previous foldmethod was 'manual'
-            manage_folds = false,
             -- Set default symbol icons to use patched font icons (see https://www.nerdfonts.com/)
             -- "auto" will set it to true if nvim-web-devicons or lspkind-nvim is installed.
             nerd_font = "auto",
@@ -328,10 +335,10 @@ M.setup_aerial = function()
             post_jump_cmd = "normal! zz",
             -- When true, aerial will automatically close after jumping to a symbol
             close_on_select = false,
-            -- Show box drawing characters for the tree hierarchy
-            show_guides = true,
             -- The autocmds that trigger symbols update (not used for LSP backend)
             update_events = "TextChanged,InsertLeave",
+            -- Show box drawing characters for the tree hierarchy
+            show_guides = true,
             -- Customize the characters used when show_guides = true
             guides = {
                 -- When the child item has a sibling below it
@@ -359,7 +366,8 @@ M.setup_aerial = function()
                 max_height = 0.9,
                 height = nil,
                 min_height = {8, 0.1},
-                override = function(conf)
+                ---@diagnostic disable-next-line:unused-local
+                override = function(conf, source_winid)
                     -- This is the config that will be passed to nvim_open_win.
                     -- Change values here to customize the layout
                     return conf
@@ -382,23 +390,13 @@ M.setup_aerial = function()
             markdown = {
                 -- How long to wait (in ms) after a buffer change before updating
                 update_delay = update_delay
+            },
+            man = {
+                -- How long to wait (in ms) after a buffer change before updating
+                update_delay = update_delay
             }
         }
     )
-
-    local ts_langs = require("aerial.backends.treesitter.language_kind_map")
-
-    -- Would be nice to get this to work
-    ts_langs.rust = {
-        enum_item = "Enum",
-        function_item = "Function",
-        ["closure_expression"] = "Function",
-        function_signature_item = "Function",
-        impl_item = "Class",
-        mod_item = "Module",
-        struct_item = "Struct",
-        trait_item = "Interface"
-    }
 
     wk.register(
         {

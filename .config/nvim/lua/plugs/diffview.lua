@@ -52,26 +52,6 @@ M.setup = function()
                 position = "bottom", -- One of 'left', 'right', 'top', 'bottom'
                 width = 35, -- Only applies when position is 'left' or 'right'
                 height = 16 -- Only applies when position is 'top' or 'bottom'
-            },
-            log_options = {
-                single_file = {
-                    max_count = 512,
-                    follow = false, -- Follow renames (only for single file)
-                    all = false, -- Include all refs under 'refs/' including HEAD
-                    merges = false, -- List only merge commits
-                    no_merges = false, -- List no merge commits
-                    reverse = false, -- List commits in reverse order
-                    diff_merges = "combined"
-                },
-                multi_file = {
-                    max_count = 128,
-                    follow = false, -- Follow renames (only for single file)
-                    all = false, -- Include all refs under 'refs/' including HEAD
-                    merges = false, -- List only merge commits
-                    no_merges = false, -- List no merge commits
-                    reverse = false, -- List commits in reverse order
-                    diff_merges = "first-parent"
-                }
             }
         },
         commit_log_panel = {

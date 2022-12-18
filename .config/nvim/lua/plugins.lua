@@ -572,25 +572,26 @@ return packer.startup(
                     "kevinhwang91/nvim-hlslens",
                     conf = "hlslens",
                     requires = {"haya14busa/vim-asterisk"},
-                    wants = "nvim-scrollbar",
-                    keys = {
-                        {"n", "n"},
-                        {"x", "n"},
-                        {"o", "n"},
-                        {"n", "N"},
-                        {"x", "N"},
-                        {"o", "N"},
-                        {"n", "/"},
-                        {"n", "?"},
-                        {"n", "*"},
-                        {"x", "*"},
-                        {"n", "#"},
-                        {"x", "#"},
-                        {"n", "g*"},
-                        {"x", "g*"},
-                        {"n", "g#"},
-                        {"x", "g#"}
-                    }
+                    wants = "nvim-scrollbar"
+                    -- FIX: Lazy loading this doesn't work anymore
+                    -- keys = {
+                    --     {"n", "n"},
+                    --     {"x", "n"},
+                    --     {"o", "n"},
+                    --     {"n", "N"},
+                    --     {"x", "N"},
+                    --     {"o", "N"},
+                    --     {"n", "/"},
+                    --     {"n", "?"},
+                    --     {"n", "*"},
+                    --     {"x", "*"},
+                    --     {"n", "#"},
+                    --     {"x", "#"},
+                    --     {"n", "g*"},
+                    --     {"x", "g*"},
+                    --     {"n", "g#"},
+                    --     {"x", "g#"}
+                    -- }
                 }
             )
             -- ]]] === HlsLens ===
@@ -1413,7 +1414,14 @@ return packer.startup(
             use({"akinsho/git-conflict.nvim", conf = "git_conflict"})
             use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
 
-            use({"lewis6991/gitsigns.nvim", conf = "plugs.gitsigns", requires = {"nvim-lua/plenary.nvim"}})
+            use(
+                {
+                    "lewis6991/gitsigns.nvim",
+                    conf = "plugs.gitsigns",
+                    requires = {"nvim-lua/plenary.nvim"},
+                    wants = "nvim-scrollbar"
+                }
+            )
             use(
                 {
                     "TimUntersberger/neogit",

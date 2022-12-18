@@ -286,7 +286,7 @@ function M.diagnostic_change()
 end
 
 -- FIX: Diagnostic are not refreshing properly
---      When using [g/]g to navigate there aren't any
+--      When using ]g or [g to navigate there aren't any
 --      However vim.b.coc_diagnostic_info still shows errors
 
 ---The current document diagnostics
@@ -379,6 +379,7 @@ end
 ---@param name string
 ---@param args table
 ---@param cb function
+---@return string[]
 function M.run_command(name, args, cb)
     local action_fn
     args = args or {}

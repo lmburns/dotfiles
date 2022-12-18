@@ -640,7 +640,7 @@ function M.hlslens()
     command(
         "HlSearchLensToggle",
         function()
-            require("hlslens").toggle()
+            hlslens.toggle()
         end,
         {desc = "Togggle HLSLens"}
     )

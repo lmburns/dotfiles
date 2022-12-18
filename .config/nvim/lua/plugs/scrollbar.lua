@@ -12,9 +12,12 @@ function M.setup()
     scrollbar.setup(
         {
             show = true,
+            show_in_active_only = false,
             set_highlights = true,
             folds = 1000, -- handle folds, set to number to disable folds if no. of lines in buffer exceeds this
             maxlines = false,
+            hide_if_all_visible = false, -- Hides everything if all lines are visible
+            throttle_ms = 100,
             handle = {
                 text = " ",
                 color = "#7E602C",
@@ -23,6 +26,13 @@ function M.setup()
                 hide_if_all_visible = true -- Hides handle if all lines are visible
             },
             marks = {
+                Cursor = {
+                    text = "•",
+                    priority = 0,
+                    color = colors.orange,
+                    cterm = nil,
+                    highlight = "Normal"
+                },
                 Search = {
                     text = {"-", "="},
                     priority = 0,
@@ -64,13 +74,33 @@ function M.setup()
                     color = colors.magenta,
                     cterm = nil,
                     highlight = "Normal"
+                },
+                GitAdd = {
+                    text = "┆",
+                    priority = 7,
+                    color = nil,
+                    cterm = nil,
+                    highlight = "GitSignsAdd"
+                },
+                GitChange = {
+                    text = "┆",
+                    priority = 7,
+                    color = nil,
+                    cterm = nil,
+                    highlight = "GitSignsChange"
+                },
+                GitDelete = {
+                    text = "▁",
+                    priority = 7,
+                    color = nil,
+                    cterm = nil,
+                    highlight = "GitSignsDelete"
                 }
             },
             excluded_buftypes = {"terminal"},
             excluded_filetypes = BLACKLIST_FT,
             autocmd = {
                 render = {
-                    -- "BufEnter",
                     "BufWinEnter",
                     "TabEnter",
                     "TermEnter",
@@ -79,10 +109,19 @@ function M.setup()
                     "TextChanged",
                     "VimResized",
                     "WinScrolled"
+                },
+                clear = {
+                    "BufWinLeave",
+                    "TabLeave",
+                    "TermLeave",
+                    "WinLeave"
                 }
             },
             handlers = {
+                cursor = true,
                 diagnostic = false, -- FIX: once coc is supported
+                gitsigns = false, -- Requires gitsigns
+                handle = true,
                 search = true
             }
         }
@@ -91,6 +130,7 @@ end
 
 local function init()
     M.setup()
+    -- require("scrollbar.handlers.gitsigns").setup()
 
     -- api.nvim_create_autocmd(
     --     "VimEnter", {

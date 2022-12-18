@@ -18,7 +18,7 @@ function M.setup()
             -- Initial augroups/autocmds to bind
             autocmds = {},
             -- Initial functions to bidn
-            functions = {},
+            funcs = {},
             -- default opts to merge with the `opts` table
             -- of each individual item
             default_opts = {
