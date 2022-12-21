@@ -524,10 +524,10 @@ telescope.setup(
                 ignore_patterns = {"*.git/*", "*/tmp/*", "*/node_modules/*", "*/target/*"},
                 disable_devicons = false,
                 workspaces = {
-                    ["conf"] = "/home/lucas/.config",
-                    ["nvim"] = "/home/lucas/.config/nvim",
-                    ["data"] = "/home/lucas/.local/share",
-                    ["project"] = "/home/lucas/projects"
+                    conf = "/home/lucas/.config",
+                    nvim = "/home/lucas/.config/nvim",
+                    data = "/home/lucas/.local/share",
+                    project = "/home/lucas/projects"
                 }
             },
             packer = {
@@ -1207,10 +1207,6 @@ builtin.bookmarks = function(opts)
     telescope.extensions.bookmarks.bookmarks(opts)
 end
 
-builtin.possession = function(opts)
-    telescope.extensions.possession.list(opts)
-end
-
 builtin.heading = function(opts)
     telescope.extensions.heading.heading(opts)
 end
@@ -1242,6 +1238,14 @@ end
 builtin.macroclip = function(opts)
     telescope.extensions.macroscope.default(opts)
 end
+
+builtin.undo = function(opts)
+    telescope.extensions.undo.undo(opts)
+end
+
+-- builtin.possession = function(opts)
+--     telescope.extensions.possession.list(opts)
+-- end
 
 -- builtin.yanky = function(opts)
 --     telescope.extensions.yank_history.yank_history(opts)

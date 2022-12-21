@@ -65,12 +65,14 @@ function M.outline_aerial(args)
     if not backend then
         backends.log_support_err()
         return
-    elseif not data:has_symbols(bufnr) then
+    elseif not data.has_symbols(bufnr) then
         backend.fetch_symbols_sync(bufnr)
     end
 
-    if data:has_symbols(bufnr) then
-        data[0]:visit(
+    if data.has_symbols(bufnr) then
+        local bufdata = data.get_or_create(bufnr)
+
+        bufdata:visit(
             function(item)
                 table.insert(results, item)
             end

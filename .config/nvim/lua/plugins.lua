@@ -1294,6 +1294,11 @@ return packer.startup(
                             config = [[require("telescope").load_extension("zoxide")]]
                         },
                         {
+                            "debugloop/telescope-undo.nvim",
+                            after = "telescope.nvim",
+                            config = [[require("telescope").load_extension("undo")]]
+                        },
+                        {
                             prefer_local("telescope-rualdi.nvim"),
                             after = "telescope.nvim",
                             config = [[require("telescope").load_extension("rualdi")]]

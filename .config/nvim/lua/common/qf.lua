@@ -7,6 +7,7 @@ local M = {}
 local command = require("common.utils").command
 local log = require("common.log")
 local abbr = require("abbr")
+local style = require("style")
 
 local cmd = vim.cmd
 local F = vim.F
@@ -178,7 +179,7 @@ function M.close()
                     row = 1,
                     col = 1,
                     style = "minimal",
-                    border = "rounded",
+                    border = style.current.border,
                     noautocmd = true
                 }
             )

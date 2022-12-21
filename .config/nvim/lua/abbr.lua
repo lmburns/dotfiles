@@ -9,12 +9,6 @@ M.modes = {
     command = "c"
 }
 
----This is just to show that this is possible
-function M.abbr_test(lhs, rhs)
-    -- cmd({cmd = "abbrev", args = {lhs, rhs}})
-    cmd.abbr(lhs, rhs)
-end
-
 ---Only execute the given command if the abbreviation is in `command` mode
 ---and the command is at the start.
 ---@param cmd string
@@ -157,7 +151,7 @@ local function init()
     M.abbr("c", "cfilter", "Cfilter")
     M.abbr("c", "cfi", "Cfilter")
     M.abbr("c", "lfilter", "Lfilter")
-    M.abbr("c", "lfi", "Cfilter")
+    M.abbr("c", "lfi", "Lfilter")
 end
 
 init()

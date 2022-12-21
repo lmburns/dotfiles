@@ -483,7 +483,7 @@ function _G.check_backspace()
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
 end
 
----Used to map <CR> with both autoparis and coc
+---Used to map <CR> with both autopairs and coc
 function _G.map_cr()
     if fn["coc#pum#visible"]() ~= 0 then
         return fn["coc#pum#confirm"]()
@@ -498,7 +498,7 @@ end
 function M.did_init(silent)
     if g.coc_service_initialized == 0 then
         if silent then
-            log.warn([[coc.nvim hasn't initialized]], true)
+            log.warn("coc.nvim hasn't initialized", true)
         end
         return false
     end
@@ -896,6 +896,7 @@ function M.init()
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
+            -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"}
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
@@ -903,10 +904,6 @@ function M.init()
     )
 
     -- === CodeActions ===
-    -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
-
-    -- map("n", "<C-CR>", ":lua require('plugs.coc').code_action('')<CR>", {desc = "Code action"})
-    -- map("n", "<C-CR>", "<cmd>lua require('code_action_menu').open_code_action_menu('')<CR>")
     map("n", "<A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>")
     map("n", "<C-A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>")
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])

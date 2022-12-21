@@ -236,7 +236,7 @@ local function init()
                 "n",
                 "<C-o>",
                 function()
-                    show_list(false)
+                    show_list(false, false)
                     return "<C-o>"
                 end,
                 {expr = true, desc = "Show jumps (prev)"}
