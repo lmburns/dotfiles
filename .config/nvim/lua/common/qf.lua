@@ -231,7 +231,7 @@ function M.syntax()
           syn match qfNote / [NHZ] .*$/ contained
 
 
-          hi def link qfFileName Function
+          hi def link qfFileName @function
           hi def link qfSeparatorLeft Delimiter
           hi def link qfSeparatorRight Delimiter
           hi def link qfLineNr LineNr

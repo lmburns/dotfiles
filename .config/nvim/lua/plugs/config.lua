@@ -5,6 +5,7 @@
 local M = {}
 
 local D = require("dev")
+local style = require("style")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
@@ -12,6 +13,7 @@ local dirs = require("common.global").dirs
 local wk = require("which-key")
 local telescope = require("telescope")
 -- local coc = require("plugs.coc")
+
 local utils = require("common.utils")
 local bmap = utils.bmap
 local map = utils.map
@@ -626,7 +628,9 @@ function M.hlslens()
         {
             auto_enable = true,
             enable_incsearch = true,
-            calm_down = false,
+            -- Clear all lens & hl when cursor is out of the range of the matched instance
+            -- I had this on my own, but removed it due to this being added here
+            calm_down = true,
             nearest_only = false,
             nearest_float_when = "auto",
             float_shadow_blend = 50,
@@ -664,6 +668,8 @@ function M.hlslens()
         )
     )
 
+    g["asterisk#keeppos"] = 1
+
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]])
     map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
@@ -674,7 +680,21 @@ function M.hlslens()
     map("x", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]])
     map("x", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]])
 
-    g["asterisk#keeppos"] = 1
+    map(
+        {"n", "x"},
+        "gL",
+        function()
+            vim.schedule(
+                function()
+                    if hlslens.exportLastSearchToQuickfix() then
+                        cmd("cw")
+                    end
+                end
+            )
+            return ":noh<CR>"
+        end,
+        {expr = true, desc = "Export last search to QF"}
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1664,8 +1684,8 @@ function M.lfnvim()
     lf.setup(
         {
             escape_quit = true,
-            -- open_on = true,
-            border = "rounded",
+            focus_on_open = true,
+            border = style.current.border,
             highlights = {
                 NormalFloat = {link = "Normal"},
                 FloatBorder = {guifg = require("kimbox.palette").colors.magenta}
@@ -1971,7 +1991,12 @@ function M.fundo()
         return
     end
 
-    fundo.setup({archives_dir = ("%s/%s"):format(dirs.cache, "fundo")})
+    fundo.setup(
+        {
+            archives_dir = ("%s/%s"):format(dirs.cache, "fundo"),
+            limit_archives_size = 512
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

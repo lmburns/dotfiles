@@ -6,7 +6,7 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
-local H = require("common.color")
+-- local H = require("common.color")
 local utils = require("common.utils")
 local command = utils.command
 local map = utils.map
@@ -109,6 +109,40 @@ command(
     {nargs = 0, desc = "Convert snake_case to camelCase"}
 )
 
+command(
+    "Reverse",
+    "<line1>,<line2>g/^/m<line1>-1",
+    {
+        range = "%",
+        bar = true,
+        desc = "Reverse the selected lines"
+    }
+)
+
+command(
+    "MoveWrite",
+    [[<line1>,<line2>write<bang> <args> | <line1>,<line2>delete _]],
+    {
+        nargs = 1,
+        bang = true,
+        range = "%",
+        complete = "file",
+        desc = "Write selection to another file, placing in blackhole register"
+    }
+)
+
+command(
+    "MoveAppend",
+    [[<line1>,<line2>write<bang> >> <args> | <line1>,<line2>delete _]],
+    {
+        nargs = 1,
+        bang = true,
+        range = "%",
+        complete = "file",
+        desc = "Append selection to another file, placing in blackhole register"
+    }
+)
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Syntax                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -201,7 +235,7 @@ augroup(
 
 function M.execute_macro_over_visual_range()
     print("@" .. fn.getcmdline())
-    fn.execute(":'<,'>normal @" .. fn.nr2char(vim.fn.getchar()))
+    fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
 end
 
 -- Show changes since last save
@@ -240,7 +274,7 @@ end
 function M.open_link()
     local file = fn.expand("<cfile>")
     if fn.isdirectory(file) > 0 then
-        cmd.edit("file")
+        cmd.edit(file)
     else
         M.open(file)
     end
@@ -249,11 +283,17 @@ end
 ---Open a file or a link
 function M.open_path()
     local path = fn.expand("<cfile>")
-    if path:match("https?://") then
+    if path:match("http[s]?://") then
         return cmd.norm("gx")
     end
 
     -- Check whether it is a file
+    -- Need to switch directories before doing this to guarantee the relativity is correct
+    local full = fn.expand("%:p:h")
+    if uv.cwd() ~= full then
+        cmd.lcd(full)
+    end
+
     -- Expand relative links, e.g., ../lua/abbr.lua
     local abs = Path:new(path):absolute()
     if uv.fs_stat(abs) then

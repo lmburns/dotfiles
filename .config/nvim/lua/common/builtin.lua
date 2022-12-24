@@ -158,13 +158,20 @@ end
 function M.switch_lastbuf()
     local alter_bufnr = fn.bufnr("#")
     local cur_bufnr = api.nvim_get_current_buf()
+
     if alter_bufnr ~= -1 and alter_bufnr ~= cur_bufnr then
-        cmd.b("#")
-        -- If a buffer was closed with 'bq', then reopened
-        local new_bufnr = api.nvim_get_current_buf()
-        if not vim.bo[new_bufnr].buflisted then
-            vim.bo.buflisted = true
-        end
+        -- With nvim-fundo, the check for '%' within the file name is required
+        -- local alt_bufname = api.nvim_buf_get_name(alter_bufnr)
+        -- if not alt_bufname:match("%%") then
+
+            cmd.b("#")
+            -- If a buffer was closed with 'bq', then reopened
+            local new_bufnr = api.nvim_get_current_buf()
+            if not vim.bo[new_bufnr].buflisted then
+                vim.bo.buflisted = true
+            end
+
+        -- end
     else
         local mru_list = require("common.mru").list()
         local cur_bufname = api.nvim_buf_get_name(cur_bufnr)

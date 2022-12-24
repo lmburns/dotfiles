@@ -9,6 +9,17 @@ end
 function M.setup()
     local colors = require("kimbox.colors")
 
+    local keep = {"markdown", "vimwiki"}
+    local bl =
+        _t(BLACKLIST_FT):filter(
+        function(f)
+            if _t(keep):contains(f) then
+                return false
+            end
+            return true
+        end
+    )
+
     scrollbar.setup(
         {
             show = true,
@@ -98,7 +109,7 @@ function M.setup()
                 }
             },
             excluded_buftypes = {"terminal"},
-            excluded_filetypes = BLACKLIST_FT,
+            excluded_filetypes = bl,
             autocmd = {
                 render = {
                     "BufWinEnter",

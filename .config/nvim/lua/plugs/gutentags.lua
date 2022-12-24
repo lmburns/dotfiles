@@ -34,17 +34,8 @@ function M.setup()
     g.gutentags_project_root = {".git", ".root", ".project", "package.json"}
     g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local"}
 
-    -- g.gutentags_auto_add_gtags_cscope = 0
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
-
-    -- if nvim.executable("gtags-cscope") then
-    --     table.insert(g.gutentags_modules, "gtags_cscope")
-    -- end
-
-    -- if nvim.executable("cscope") then
-    --     table.insert(g.gutentags_modules, "cscope")
-    -- end
 
     g.gutentags_ctags_extra_args = {"--fields=+niazS", "--extras=+q", "--c++-kinds=+px", "--c-kinds=+px"}
 

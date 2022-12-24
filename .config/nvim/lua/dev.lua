@@ -941,7 +941,7 @@ M.buf_info = function(opts)
     return M.map(
         M.list_bufs(opts),
         function(bufnr)
-            return fn.getbufinfo(bufnr) --[[@as number[]]
+            return fn.getbufinfo(bufnr) --[==[@as number[]]==]
         end
     )
 end

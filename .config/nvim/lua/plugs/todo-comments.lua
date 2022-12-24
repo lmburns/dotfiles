@@ -16,6 +16,7 @@ local fn = vim.fn
 ---@param icon string
 ---@return string
 local function pad(icon)
+    -- 32 is a space
     if icon:sub(2, 2):byte() == 32 then
         return icon:sub(2, 2)
     end
@@ -24,11 +25,11 @@ local function pad(icon)
 end
 
 function M.setup()
-    local hl = require("todo-comments.highlight")
-    local highlight_win = hl.highlight_win
-    hl.highlight_win = function(win, force)
-        pcall(highlight_win, win, force)
-    end
+    -- local hl = require("todo-comments.highlight")
+    -- local highlight_win = hl.highlight_win
+    -- hl.highlight_win = function(win, force)
+    --     pcall(highlight_win, win, force)
+    -- end
 
     todo.setup(
         {

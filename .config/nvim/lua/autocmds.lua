@@ -21,12 +21,10 @@ local api = vim.api
 local fn = vim.fn
 local env = vim.env
 local g = vim.g
-local v = vim.v
 local b = vim.bo
 local o = vim.opt
 local ol = vim.opt_local
 
-local debounced
 local has_sourced
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -106,126 +104,6 @@ nvim.autocmd.lmb__GitEnv = {
         )
     end
 }
-
--- === Highlight Disable === [[[
---[[
-Credit: github.com/akinsho
-
-The mappings below are essentially faked user input this is because in order to automatically turn off
-the search highlight just changing the value of 'hlsearch' inside a function does not work
-read `:h nohlsearch`.
-
-To have this work, check that the current mouse position is not a search
-result, if it is we leave highlighting on, otherwise I turn it off on cursor moved by faking my input
-using the expr mappings below
-
-This has been modified to only display the error message once
-
-This is based on the implementation discussed here:
-https://github.com/neovim/neovim/issues/5581
---]]
-map({"n", "v", "o", "i", "c"}, "<Plug>(StopHL)", 'execute("nohlsearch")[-1]', {expr = true})
-map("n", "<Esc><Esc>", "<Esc>:nohlsearch<CR>", {desc = "Disable hlsearch"})
-
-local function stop_hl()
-    if v.hlsearch == 0 or utils.mode() ~= "n" then
-        return
-    end
-    utils.normal("m", "<Plug>(StopHL)")
-end
-
----Check whether or not the current line matches the search string
----@return number, boolean, table|string
-local function hl_search_ret()
-    local col = nvim.win.get_cursor(0)[2]
-    local curr_line = nvim.buf.line()
-    return col, pcall(fn.matchstrpos, curr_line, nvim.reg["/"], 0)
-end
-
----Determine when the highlighting is supposed to stop
----@param col number
----@param match table|string Can be: `Vim:E55:` or `{ "str", 20, 23 }`
-local function hl_search_match(col, match)
-    -- This shouldn't ever be called here
-    if type(match) == "string" and match:match(":E55:") then
-        stop_hl()
-        return
-    end
-
-    local _, p_start, p_end = unpack(match)
-    -- If the cursor is in a search result, leave highlighting on
-    if col < p_start or col > p_end then
-        stop_hl()
-    end
-end
-
----Execute the highlight search
----@param overwrite boolean should the register be overwritten
-local function hl_search(overwrite)
-    -- 0 false Vim:E55: Unmatched \)
-    -- 20 true { "deb", 20, 23 }
-
-    local col, ok, match = hl_search_ret()
-    if not ok then
-        if overwrite then
-            nvim.reg["/"] = fn.histget("/", -2)
-            log.warn("Register has been overwritten", true, {title = "HLSearch"})
-        end
-
-        if not debounced then
-            debounced =
-                debounce:new(
-                function()
-                    vim.notify(match, "error", {title = "HLSearch"})
-                end,
-                10
-            )
-            debounced()
-        end
-        return
-    end
-
-    hl_search_match(col, match)
-end
-
-nvim.autocmd.lmb__VimrcIncSearchHighlight = {
-    {
-        event = {"CursorMoved"},
-        command = function()
-            hl_search(true)
-        end
-    },
-    {
-        event = {"InsertEnter"},
-        command = function()
-            stop_hl()
-        end
-    },
-    {
-        event = {"OptionSet"},
-        pattern = {"hlsearch"},
-        command = function()
-            vim.schedule(
-                function()
-                    cmd.redrawstatus()
-                end
-            )
-        end
-    },
-    {
-        event = "RecordingEnter",
-        command = function()
-            o.hlsearch = false
-        end
-    },
-    {
-        event = "RecordingLeave",
-        command = function()
-            o.hlsearch = true
-        end
-    }
-}
--- === Highlight Disable ===
 
 -- === Macro Recording === [[[
 nvim.autocmd.lmb__MacroRecording = {
@@ -426,9 +304,13 @@ nvim.autocmd.lmb__FirstBuf = {
 nvim.autocmd.lmb__DisableUndofile = {
     {
         event = "BufWritePre",
-        pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log"},
+        pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log", "/dev/shm/*"},
         command = function(args)
             vim.bo[args.buf].undofile = false
+
+            -- if D.plugin_loaded('fundo') then
+            --     require('fundo').disable()
+            -- end
         end
     },
     {
@@ -436,6 +318,10 @@ nvim.autocmd.lmb__DisableUndofile = {
         pattern = {"crontab"},
         command = function(args)
             vim.bo[args.buf].undofile = false
+
+            -- if D.plugin_loaded('fundo') then
+            --     require('fundo').disable()
+            -- end
         end
     }
 }

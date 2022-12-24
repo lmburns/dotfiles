@@ -120,8 +120,6 @@ end
 ---@param mode string
 ---@param motion string
 M.normal = function(mode, motion)
-    -- local sequence = M.t(motion, true, false, false)
-    -- nvim.feedkeys(sequence, mode, true)
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
 end
 

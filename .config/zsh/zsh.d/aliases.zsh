@@ -338,8 +338,6 @@ alias tsm='transmission-remote'
 alias tsmd='transmission-daemon'
 alias qbt='qbt torrent'
 
-alias pyn='openpyn'
-alias oconn='openpyn us -t 10'
 alias speedt='speedtest | rg "(Download:|Upload:)"'
 alias essh='eval $(ssh-add)'
 alias kc='keychain'

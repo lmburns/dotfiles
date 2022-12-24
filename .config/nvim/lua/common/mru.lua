@@ -1,6 +1,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local dirs = require("common.global").dirs
 local debounce = require("common.debounce")
 -- local uva = require("uva")
 -- local async = require("async")
@@ -11,7 +12,6 @@ local mru = {}
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
-local dirs = require("common.global").dirs
 -- local cmd = vim.cmd
 
 local function list(file)
@@ -36,7 +36,7 @@ local function list(file)
         local bufnr = table.remove(bufs)
         if api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].bt == "" then
             local fname = api.nvim_buf_get_name(bufnr)
-            if not fname:match(mru.tmp_prefix) then
+            if not fname:match(mru.tmp_prefix) and not fname:match("%%") then
                 if not add_list(fname) then
                     break
                 end

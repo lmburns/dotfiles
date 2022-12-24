@@ -16,15 +16,38 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 
+---@alias SymbolKind table<number,
+---|  "Array"
+---|  "Boolean"
+---|  "Class"
+---|  "Constant"
+---|  "Constructor"
+---|  "Enum"
+---|  "EnumMember"
+---|  "Event"
+---|  "Field"
+---|  "File"
+---|  "Function"
+---|  "Interface"
+---|  "Key"
+---|  "Method"
+---|  "Module"
+---|  "Namespace"
+---|  "Null"
+---|  "Number"
+---|  "Object"
+---|  "Operator"
+---|  "Package"
+---|  "Property"
+---|  "String"
+---|  "Struct"
+---|  "TypeParameter"
+---|  "Variable">
+
 ---@class Outline
----@field filter_kind table<number, "Array"|"Boolean"|"Class"|"Constant"|"Constructor"|"Enum"|"EnumMember"|"Event"|"Field"|"...">
+---@field filter_kind SymbolKind
 ---@field fzf boolean
 ---@field bufnr number?
-
--- Array Boolean Class    Constant  Constructor Enum     EnumMember Event
--- Field File    Function Interface Key         Method   Module     Namespace
--- Null  Number  Object   Operator  Package     Property String     Struct
--- TypeParameter Variable
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Aerial                          │
@@ -111,7 +134,6 @@ function M.outline_aerial(args)
                 end_lnum = s.end_lnum,
                 end_col = s.end_col,
                 text = text_fmt:format(s.kind, s.lnum, col, " ", ("| "):rep(s.level), s.name),
-                -- type = s.kind, -- Not sure why this would be needed
                 icon = icon, -- Not needed
                 kind = s.kind
             }
@@ -123,7 +145,7 @@ function M.outline_aerial(args)
         {},
         " ",
         {
-            title = ("Outline Bufnr: %d"):format(bufnr),
+            title = ("Outline Bufnr (Aerial): %d"):format(bufnr),
             id = "$",
             context = {
                 bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
@@ -176,8 +198,8 @@ function M.outline_aerial(args)
         api.nvim_set_current_win(winid)
     end
 
-    if vim.b.bqf_enabled and opts.fzf then
-        api.nvim_feedkeys("zf", "m", false)
+    if vim.w.bqf_enabled and opts.fzf then
+        utils.normal("m", "zf")
     end
 
     -- TODO: How to clear sign column on close?
@@ -318,8 +340,9 @@ function M.outline(args)
             else
                 api.nvim_set_current_win(winid)
             end
-            if vim.b.bqf_enabled and opts.fzf then
-                api.nvim_feedkeys("zf", "m", false)
+
+            if vim.w.bqf_enabled and opts.fzf then
+                utils.normal("m", "zf")
             end
         end
     )
@@ -329,8 +352,8 @@ end
 -- │                        Treesitter                        │
 -- ╰──────────────────────────────────────────────────────────╯
 
----@diagnostic disable-next-line:unused-local
 local function prepare_match(entry, kind)
+    local _ = kind
     local entries = {}
 
     if entry.node then
@@ -344,17 +367,17 @@ local function prepare_match(entry, kind)
     return entries
 end
 
-local treesitter_type_highlight = {
-    ["associated"] = "TSConstant",
-    ["constant"] = "TSConstant",
-    ["field"] = "TSField",
-    ["function"] = "TSFunction",
-    ["method"] = "TSMethod",
-    ["parameter"] = "TSParameter",
-    ["property"] = "TSProperty",
-    ["struct"] = "Struct",
-    ["var"] = "TSVariableBuiltin"
-}
+-- local treesitter_type_highlight = {
+--     ["associated"] = "@constant",
+--     ["constant"] = "@constant",
+--     ["field"] = "@field",
+--     ["function"] = "@function",
+--     ["method"] = "@method",
+--     ["parameter"] = "@parameter",
+--     ["property"] = "@property",
+--     ["struct"] = "@struct",
+--     ["var"] = "@variable.builtin"
+-- }
 
 ---Create an outline using treesitter
 ---@param args Outline
@@ -370,13 +393,7 @@ function M.outline_treesitter(args)
     )
     local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
-        utils.notify(
-            "No parser for the current buffer",
-            log.levels.ERROR,
-            {
-                title = "builtin.treesitter"
-            }
-        )
+        vim.notify("No parser for the current buffer", log.levels.ERROR, {title = "builtin.treesitter"})
         return
     end
 
@@ -395,7 +412,7 @@ function M.outline_treesitter(args)
     end
 
     -- local ns = api.nvim_create_namespace("treesitter-qf")
-    local ts_utils = require "nvim-treesitter.ts_utils"
+    local ts_utils = require("nvim-treesitter.ts_utils")
     local items = {}
     local text_fmt = "%-32s│%5d:%-3d│%10s%s"
 
@@ -411,9 +428,9 @@ function M.outline_treesitter(args)
                 col = start_col,
                 end_lnum = end_row,
                 end_col = end_col,
-                kind = entry.kind,
                 text = text_fmt:format(entry.kind, start_row, start_col, " ", vim.trim(node_text)),
-                hl_group = treesitter_type_highlight[entry.kind]
+                kind = entry.kind
+                -- hl_group = treesitter_type_highlight[entry.kind]
             }
         )
     end
@@ -423,7 +440,7 @@ function M.outline_treesitter(args)
         {},
         " ",
         {
-            title = ("Treesitter Bufnr: %d"):format(opts.bufnr),
+            title = ("Outline Bufnr (Treesitter): %d"):format(opts.bufnr),
             id = "$",
             context = {
                 bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
@@ -458,8 +475,8 @@ function M.outline_treesitter(args)
         api.nvim_set_current_win(winid)
     end
 
-    if vim.b.bqf_enabled and opts.fzf then
-        api.nvim_feedkeys("zf", "m", false)
+    if vim.w.bqf_enabled and opts.fzf then
+        utils.normal("m", "zf")
     end
 end
 
@@ -509,15 +526,30 @@ function M.conflicts2qf()
 end
 
 function M.outline_syntax()
-    cmd [[
-        syn match Function /^\(Method\|Function\)\s*/ nextgroup=qfSeparator
-        syn match Structure /^\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
-        syn match TSMethod /^\(Constructor\)\s*/ nextgroup=qfSeparator
+    cmd(
+        [[
+        syn match @function /^\(Function\)\s*/ nextgroup=qfSeparator
+        syn match @method /^\(Method\)\s*/ nextgroup=qfSeparator
+        syn match @keyword /^\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
+        syn match @constructor /^\(Constructor\)\s*/ nextgroup=qfSeparator
+
+        syn match @constant /^\(associated\|constant\)\s*/ nextgroup=qfSeparator
+        syn match @field /^\(field\)\s*/ nextgroup=qfSeparator
+        syn match @function /^\(function\)\s*/ nextgroup=qfSeparator
+        syn match @method /^\(method\)\s*/ nextgroup=qfSeparator
+        syn match HLArgsParam /^\(parameter\)\s*/ nextgroup=qfSeparator
+        syn match @property /^\(property\)\s*/ nextgroup=qfSeparator
+        syn match @struct /^\(struct\)\s*/ nextgroup=qfSeparator
+        syn match @method /^\(var\)\s*/ nextgroup=qfSeparator
+
         syn match qfSeparator /│/ contained nextgroup=qfLineNr
         syn match qfLineNr /[^│]*/ contained
+
         hi def link qfSeparator Delimiter
         hi def link qfLineNr LineNr
+        hi HLArgsParam guifg=#ea6962
     ]]
+    )
 end
 
 return M

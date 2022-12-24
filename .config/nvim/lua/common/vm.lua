@@ -52,14 +52,14 @@ function M.start()
         config = require("hlslens.config")
         lens_backup = config.override_lens
         config.override_lens = override_lens
-        hlslens.start(true)
+        hlslens.start()
     end
 end
 
 function M.exit()
     if hlslens then
         config.override_lens = lens_backup
-        hlslens.start(true)
+        hlslens.start()
     end
 
     dispose1:dispose()
@@ -113,10 +113,8 @@ function M.mappings()
         "<Esc>",
         function()
             if M.mode() == MODE.VISUAL then
-                -- vim.notify("Exiting VISUAL")
                 vim.cmd("call b:VM_Selection.Global.cursor_mode()")
             else
-                -- vim.notify("Exiting")
                 utils.normal("n", "<Plug>(VM-Exit)")
             end
         end,

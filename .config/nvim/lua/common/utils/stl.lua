@@ -243,7 +243,7 @@ M.plugins.gitbuf = {
 M.plugins.coc_status = {
     fn = function()
         local s = vim.trim(g.coc_status or "")
-        s, _ = s:gsub("%% ", "%%%%")
+        s, _ = s:gsub("%% ", "%%%% ")
         return s
     end
 }

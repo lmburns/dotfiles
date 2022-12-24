@@ -860,7 +860,10 @@ return packer.startup(
                     "kevinhwang91/nvim-fundo",
                     requires = "kevinhwang91/promise-async",
                     conf = "fundo",
-                    config = [[require("fundo").install()]]
+                    -- run = [[require("fundo").install()]]
+                    run = function()
+                        require("fundo").install()
+                    end
                 }
             )
             -- ]]] === UndoTree ===
@@ -1294,15 +1297,15 @@ return packer.startup(
                             config = [[require("telescope").load_extension("zoxide")]]
                         },
                         {
-                            "debugloop/telescope-undo.nvim",
-                            after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("undo")]]
-                        },
-                        {
                             prefer_local("telescope-rualdi.nvim"),
                             after = "telescope.nvim",
                             config = [[require("telescope").load_extension("rualdi")]]
                         }
+                        -- {
+                        --     "debugloop/telescope-undo.nvim",
+                        --     after = "telescope.nvim",
+                        --     config = [[require("telescope").load_extension("undo")]]
+                        -- },
                         -- {
                         --     "nvim-telescope/telescope-ui-select.nvim",
                         --     after = {"telescope.nvim"},

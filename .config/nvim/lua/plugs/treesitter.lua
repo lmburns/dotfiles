@@ -236,7 +236,6 @@ M.setup_aerial = function()
             -- A list of all symbols to display. Set to false to display all symbols.
             -- This can be a filetype map (see :help aerial-filetype-map)
             -- To see all available values, see :help SymbolKind
-            -- FIX: Why are only functions, classes, and impls shown?
             -- filter_kind = false,
             filter_kind = {
                 "Class",
@@ -248,8 +247,8 @@ M.setup_aerial = function()
                 "Method",
                 "Struct",
                 "Type",
+                --
                 "Field",
-                -- "Variable",
                 "Array"
             },
             -- Determines line highlighting mode when multiple splits are visible.
@@ -1188,10 +1187,10 @@ local function init()
     M.setup_autotag()
     M.setup_query_secretary()
 
-    map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]])
-    map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]])
-    map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]])
-    map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]])
+    map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]], {silent = true})
+    map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
+    map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]], {silent = true})
+    map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
 
     map("x", "iF", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
     map("x", "aF", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
@@ -1208,6 +1207,11 @@ local function init()
     map("x", "ie", [[:normal! ggVG"<CR>]])
     map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
     map("x", "ae", [[:normal! HVL"<CR>]])
+
+    map("x", "aL", "$o0")
+    map("o", "aL", "<Cmd>norm vaL<CR>")
+    map("x", "iL", [[<Esc>^vg_]])
+    map("o", "iL", [[<Cmd>norm! ^vg_<CR>]])
 
     wk.register(
         {
@@ -1226,6 +1230,8 @@ local function init()
 
     wk.register(
         {
+            ["aL"] = "Line (include newline)",
+            ["iL"] = "Line (no newline or spaces)",
             ["ie"] = "Entire buffer",
             ["ae"] = "Entire visible buffer",
             ["ac"] = "Around call",
@@ -1264,8 +1270,6 @@ local function init()
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",
-            ["[["] = "Aerial prevous function",
-            ["]]"] = "Aerial next function",
             ["]f"] = "Next function start",
             ["]m"] = "Next class start",
             ["]r"] = "Next block start",

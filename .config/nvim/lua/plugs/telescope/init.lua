@@ -198,12 +198,13 @@ telescope.setup(
             winblend = 3,
             wrap_results = false,
             set_env = {["COLORTERM"] = "truecolor"},
-            selection_strategy = "reset",
+            --
             sorting_strategy = "descending",
-            layout_strategy = "horizontal",
-            color_devicons = true,
+            selection_strategy = "reset",
+            layout_strategy = "horizontal", -- "flex"
             scroll_strategy = "cycle",
-            -- layout_strategy = "flex",
+            cycle_layout_list = { "horizontal", "vertical" },
+            color_devicons = true,
             border = {},
             borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
             path_display = {},
@@ -1239,9 +1240,9 @@ builtin.macroclip = function(opts)
     telescope.extensions.macroscope.default(opts)
 end
 
-builtin.undo = function(opts)
-    telescope.extensions.undo.undo(opts)
-end
+-- builtin.undo = function(opts)
+--     telescope.extensions.undo.undo(opts)
+-- end
 
 -- builtin.possession = function(opts)
 --     telescope.extensions.possession.list(opts)
@@ -1270,6 +1271,7 @@ wk.register(
         [";b"] = {":Telescope builtin<CR>", "Telescope builtins"},
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
         ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
+        [";h"] = {":Telescope man_pages<CR>", "Telescope man pages"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
         ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},

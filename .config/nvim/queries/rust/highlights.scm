@@ -289,10 +289,15 @@
 
 (macro_invocation macro: (identifier) @_ident @exception "!" @exception
  (#eq? @_ident "panic"))
-(macro_invocation macro: (identifier) @_ident @exception "!" @exception
- (#contains? @_ident "assert"))
 
 ;; ===== CUSTOM =====
+
+; (macro_invocation macro: (identifier) @_ident @exception "!" @exception
+;  (#contains? @_ident "assert"))
+;;
+;; Make this the color of other macros
+(macro_invocation macro: (identifier) @_ident @function.macro "!" @function.macro
+ (#contains? @_ident "assert"))
 
 (("->" @operator) (#set! conceal ""))
 ;; (("fn" @keyword.function) (#set! conceal ""))

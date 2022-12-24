@@ -304,7 +304,8 @@ o.diffopt =
         "foldcolumn:0",
         "context:4",
         "algorithm:histogram",
-        "indent-heuristic"
+        "indent-heuristic",
+        "linematch:60"
     }
 
 o.inccommand = "split" -- nosplit
