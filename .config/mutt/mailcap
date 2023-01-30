@@ -1,19 +1,110 @@
-# text/*; less '%s'; edit=vim '%s'; needsterminal; test=test -t 0
+# https://www.systutorials.com/docs/linux/man/5-mailcap/
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                           Tips                           │
+#  ╰──────────────────────────────────────────────────────────╯
+# *  content-type-field = the mimetype
+# *  command = If contains `%s`, replaced by name of file that contains body of message
+#              If contains `%t`, replaced by content-type field
+#              If contains `%{var}`, replaced by `var`
+#              If contains `\%`, replaced by `%`
+#              If doesn't contain `%s`, instead of using tmp file, use STDIN
+# * `copiousoutput` = voluminous output, requires scrolling window/pager
+# * `notes` = specify name of person who installed entry
+# * `test` = executed to determine whether the mailcap applies
+# * `print` = executed to print data instead of display interactively
+# * `textualnewlines` = force translation for specified content-type
+# * `compose` = specify program can  be used to compose new body or body part
+# * `composedtype` = when composing program needs to specify Content-type header
+# * `needsterminal` = needs to interact with the user in the terminal
+
+# TODO:
+# `special codes` = `%F` `%n`
+
+# text/*; bat '%s'; edit=vim '%s'; needsterminal; test=test -t 0
 text/plain; $EDITOR %s ;
-# text/html; openfile %s ; nametemplate=%s.html
 # text/html; lynx -assume_charset=%{charset} -display_charset=utf-8 -dump %s; nametemplate=%s.html; copiousoutput;
 text/html; w3m -I %{charset} -T text/html; copiousoutput;
 
-# image/*; openfile %s ;
+# dump with colors, remove useless whitespace
+text/html; iconv -f %{charset} %s | elinks -dump %{charset} -dump -dump-color-mode 1 /dev/stdin 2>/dev/null | sed 's/ *$//' | sed 's/   //'; copiousoutput
+application/xhtml+xml; iconv -f %{charset} %s | elinks -dump %{charset} -dump -dump-color-mode 1 /dev/stdin 2>/dev/null | sed 's/ *$//' | sed 's/   //'; copiousoutput
+
+# == Media ==
 image/png; /usr/bin/sxiv %s
 image/jpeg; /usr/bin/sxiv %s
+image/gif; /usr/bin/mplayer '%s'
 video/*; setsid mpv --quiet %s &; copiousoutput
 audio/*; mpv %s ; description="Audio"; needsterminal; test=test -t 0
 
-# application/pdf; openfile %s ;
-application/pdf; /usr/bin/zathura %s pdf
+# == PDF ==
+application/pdf; /usr/bin/zathura %s pdf; test=test "$DISPLAY" != ""; description="Portable Document Format"; nametemplate=%s.pdf
+application/x-pdf; pdftotext -htmlmeta %s - | w3m -dump -T text/html; nametemplate=%s.pdf; copiousoutput
+application/x-pdf; /usr/bin/zathura %s pdf; test=test "$DISPLAY" != ""; description="Portable Document Format"; nametemplate=%s.pdf
+application/x-pdf; pdftotext -htmlmeta %s - | w3m -dump -T text/html; nametemplate=%s.pdf; copiousoutput
+application/x-bittorrent; /usr/bin/env stig add '%s'
+application/octet-stream; pdftotext %s -; test=echo %s|grep -qi "pdf$"
 
+# == PGP ==
 application/pgp-encrypted; gpg -d '%s';  copiousoutput;
 application/pgp-keys; gpg --import '%s'; copiousoutput;
 
-*/*; handlr open '%s'; test=expr "$DISPLAY" : :
+# == Other Formats ==
+# Word
+application/msword; libreoffice --nologo '%s'; test=test -n "$DISPLAY"
+application/octet-stream; libreoffice --nologo %s; copiousoutput; test=echo %s|grep -Eqi "docx?$"
+application/docx; libreoffice --nologo '%s'; test=test -n "$DISPLAY"
+application/doc; libreoffice --nologo '%s'; test=test -n "$DISPLAY"
+
+application/epub+zip; fbreader %s; test=test -n "$DISPLAY"
+application/vnd.openxmlformats; libreoffice --nologo '%s'; test=test -n "$DISPLAY"
+application/vnd.openxmlformats-officedocument.wordprocessingml.document; libreoffice --nologo %s; test=test -n "$DISPLAY"
+
+application/vnd.oasis.opendocument.text; okular  %s; test=test -n "$DISPLAY"
+application/vnd.oasis.opendocument.text; odt2txt %s; copiousoutput
+
+# PowerPoint
+application/vnd.ms-powerpoint; libreoffice --nologo %s; test=test -n "$DISPLAY"
+
+# Excel
+application/vnd.ms-excel; libreoffice --nologo '%s'; test=test -n "$DISPLAY"
+application/vnd.ms-excel; antioffice excel %s; copiousoutput;
+application/octet-stream; antioffice excel %s; copiousoutput; test=echo %s|grep -qi "xls$"
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; antioffice excel %s; copiousoutput;
+
+# RTF
+text/rtf; libreoffice --nologo '%s'; test=test -n "$DISPLAY"; copiousoutput;
+application/rtf; unrtf --html %s | w3m -dump -T text/html; copiousoutput
+application/rtf; libreoffice --nologo '%s'; test=test -n "$DISPLAY"; copiousoutput;
+application/richtext; libreoffice --nologo %s; test=test -n "$DISPLAY"
+application/richtext; unrtf --html %s | w3m -dump -T text/html; copiousoutput
+
+application/xml; $EDITOR %s ;
+application/csv; vd '%s' ; test=test -n "$DISPLAY"
+application/vnd.sqlite3; litecli '%s' ; test=test -n "$DISPLAY"
+
+application/x-bzpdf; /usr/bin/zathura %s; test=test -n "$DISPLAY"; nametemplate=%s.pdf.bz2; description="PDF Document"
+application/x-gzpdf; /usr/bin/zathura %s; test=test -n "$DISPLAY"; nametemplate=%s.pdf.gz; description="PDF Document"
+application/x-xzpdf; /usr/bin/zathura %s; test=test -n "$DISPLAY"; nametemplate=%s.pdf.xz; description="PDF Document"
+
+application/x-tar;                 tar tvvf %s; copiousoutput
+application/x-rar-compressed;      unrar v %s; copiousoutput
+application/x-tar-gz;              tar tvfz %s; copiousoutput
+application/zip;                   unzip -l %s; copiousoutput
+application/x-zip-compressed;      unzip -l %s; copiousoutput
+application/x-bzip-compressed-tar; tar jtvvf %s; copiousoutput
+
+# TODO: Maybe?
+text/x-diff; delta %s; copiousoutput
+text/x-patch; delta %s; copiousoutput
+
+application/*; handlr open '%s' 2>/dev/null; test=test -n "$DISPLAY"
+application/*; libreoffice --cat %s | bat; copiousoutput
+
+text/*; handlr open '%s' 2>/dev/null; test=test -n "$DISPLAY"
+message/*; handlr open '%s' 2>/dev/null; test=test -n "$DISPLAY"
+message/*; libreoffice --cat %s | bat; copiousoutput
+multipart/*; handlr open '%s' 2>/dev/null; test=test -n "$DISPLAY"
+multipart/*; libreoffice --cat %s | bat; copiousoutput
+
+# application/x-mobi8-ebook; ebook-edit %s; test=test -n "$DISPLAY"

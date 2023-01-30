@@ -68,6 +68,13 @@ text:
     dockerfile:
       - Dockerfile
 
+    snippet:
+      - .snippets
+      - .snippet
+
+    zshrc:
+      - .zshrc
+
     nix:
       - .nix
 
@@ -494,9 +501,6 @@ unimportant:
   torrent:
     - .torrent
     - .magnet
-
-  zshrc:
-    - .zshrc
 
   other:
     - '~'

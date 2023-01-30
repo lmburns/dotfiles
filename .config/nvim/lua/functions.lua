@@ -211,14 +211,29 @@ cmd [[
   endif
 ]]
 
+---Execute the buffer. Used for interpreted languages
+function M.execute_buffer()
+    local f = fn.expand("%")
+
+    if f ~= "" then
+        cmd.write({mods = {silent = true}})
+        fn.system("chmod +x " .. f)
+        cmd.e({mods = {silent = true}})
+        cmd.vsplit()
+        cmd.terminal("./%")
+    else
+        nvim.p("Save the file first", "WarningMsg")
+    end
+end
+
 augroup(
     "ExecuteBuffer",
     {
         event = "FileType",
         pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
         command = function()
-            map("n", "<Leader>r<CR>", ":RUN<CR>")
-            map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>")
+            map("n", "<Leader>r<CR>", "require('functions').execute_buffer()", {desc = "Execute file", luacmd = true})
+            map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>", {desc = "Execute file in Floaterm"})
         end
     },
     {
@@ -238,7 +253,7 @@ function M.execute_macro_over_visual_range()
     fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
 end
 
--- Show changes since last save
+---Show changes since last save
 function M.diffsaved()
     local bufnr = api.nvim_get_current_buf()
     local ft = vim.bo[bufnr].ft

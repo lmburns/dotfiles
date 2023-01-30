@@ -232,13 +232,13 @@ local function init()
         {
             event = {"InsertEnter"},
             command = function()
-                require("gitsigns").toggle_current_line_blame(false)
+               gs.toggle_current_line_blame(false)
             end
         },
         {
             event = {"InsertLeave"},
             command = function()
-                require("gitsigns").toggle_current_line_blame(true)
+                gs.toggle_current_line_blame(true)
             end
         }
     )

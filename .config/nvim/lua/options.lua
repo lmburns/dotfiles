@@ -148,20 +148,23 @@ o.foldcolumn = "1"
 -- o.formatoptions:remove({"c", "r", "o"})
 
 o.formatoptions = {
-    ["1"] = true,
+    ["1"] = true, -- Don't break a line after a one-letter word; break before
     ["2"] = true, -- Use indent from 2nd line of a paragraph
     q = true, -- Format comments with gq"
     n = true, -- Recognize numbered lists. Indent past formatlistpat not under
+    M = true, -- When joining lines, don't insert a space before or after a multibyte char
     j = true, -- Remove a comment leader when joining lines.
     -- Only break if the line was not longer than 'textwidth' when the insert
     -- started and only at a white character that has been entered during the
     -- current insert command.
     l = true,
     v = true, -- Only break line at blank line I've entered
-    c = true, -- Auto-wrap comments using textwidth
     r = false, -- Continue comments when pressing Enter
+    c = true, -- Auto-wrap comments using textwidth
     t = false, -- Autowrap lines using text width value
-    o = false --- Automatically insert comment leader after <enter>
+    p = true, -- Don't break lines at single spaces that follow periods
+    o = false, --- Automatically insert comment leader after <enter>
+    ["/"] = true, -- When 'o' included: don't insert comment leader for a // comment after statement
 }
 
 -- A pattern that is used to recognize a list header. This is used for the "n"

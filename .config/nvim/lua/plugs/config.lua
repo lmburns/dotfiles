@@ -430,23 +430,67 @@ function M.table_mode()
             event = "FileType",
             pattern = {"markdown", "vimwiki"},
             command = function()
-                g.table_mode_map_prefix = "<Leader>t"
-                g.table_mode_realign_map = "<Leader>tr"
-                g.table_mode_delete_row_map = "<Leader>tdd"
-                g.table_mode_delete_column_map = "<Leader>tdc"
-                g.table_mode_insert_column_after_map = "<Leader>tic"
-                g.table_mode_echo_cell_map = "<Leader>t?"
-                g.table_mode_sort_map = "<Leader>ts"
-                g.table_mode_tableize_map = "<Leader>tt"
-                g.table_mode_tableize_d_map = "<Leader>T"
-                g.table_mode_tableize_auto_border = 1
-                g.table_mode_corner = "|"
-                g.table_mode_fillchar = "-"
-                g.table_mode_separator = "|"
-
+                -- Use <Leader>tm to start
                 -- Expand snippets in VimWiki
                 map("i", "<right>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"]], {expr = true})
             end
+        }
+    )
+
+    -- Make table-mode global
+    g.loaded_table_mode = 1 -- Enable/disable plugin
+    g.table_mode_always_active = 1 -- permanently enable the table mode
+    g.table_mode_disable_mappings = 0 -- disable all mappings
+    g.table_mode_delete_column_map = "<Leader>tdc"
+    g.table_mode_sort_map = "<Leader>ts"
+
+    g.table_mode_tableize_map = "<Leader>tt"
+    g.table_mode_tableize_d_map = "<Leader>T"
+    g.table_mode_realign_map = "<Leader>tr"
+    g.table_mode_echo_cell_map = "<Leader>t?"
+    g.table_mode_map_prefix = "<Leader>t"
+    g.table_mode_delete_row_map = "<Leader>tdd"
+    g.table_mode_insert_column_after_map = "<Leader>tic"
+
+    g.table_mode_tableize_auto_border = 1 -- add row borders to when using tableize
+    g.table_mode_disable_tableize_mappings = 0 -- disables mappings for tableize
+
+    g.table_mode_syntax = 1 -- should define table syntax definitions or not
+    g.table_mode_auto_align = 1 -- auto align as you type when table mode is active
+
+    g.table_mode_corner = "|"
+    g.table_mode_fillchar = "-"
+    g.table_mode_separator = "|"
+    g.table_mode_separator_map = "<Bar>"
+    g.table_mode_header_fillchar = "="
+    g.table_mode_align_char = ":" -- alignments for cols in table header border
+
+    g.table_mode_motion_up_map = "{<Bar>" -- move up a cell vertically
+    g.table_mode_motion_down_map = "}<Bar>" -- move down a cell vertically
+    g.table_mode_motion_left_map = "[<Bar>" -- move to the left cell
+    g.table_mode_motion_right_map = "]<Bar>" -- move to the right cell
+    g.table_mode_cell_text_object_a_map = "a<Bar>" -- text object for around cell object
+    g.table_mode_cell_text_object_i_map = "i<Bar>" -- text object for inner cell object
+
+    wk.register(
+        {
+            ["[|"] = "Move to previous cell",
+            ["]|"] = "Move to next cell",
+            ["{|"] = "Move to the cell above",
+            ["}|"] = "Move to the cell below",
+            ["<Leader>tm"] = "Toggle table mode for the current buffer",
+            ["<Leader>tS"] = {"<Cmd>TableModeDisable<CR>", "Disable table mode for the current buffer"},
+            ["<Leader>tt"] = "Triggers 'tableize' on visually selected content",
+            ["<Leader>T"] = "Triggers 'tableize' on visually selected asking for input of the delimiter",
+            ["<Leader>tr"] = "Realigns table columns",
+            ["<Leader>t?"] = "Echo current table cells representation for defining formulas",
+            ["<Leader>tdd"] = "Delete entire table row you are on or multiple `[count]`",
+            ["<Leader>tdc"] = "Delete entire table column you are within, can use `[count]",
+            ["<Leader>tiC"] = "Insert a table column before the column you are within, can use `[count]`",
+            ["<Leader>tic"] = "Insert a table column after the column you are within, can use `[count]`",
+            ["<Leader>tfa"] = "Add formula for current table cell. Invokes `TableAddFormula`",
+            ["<Leader>tfe"] = "Evaluate formula line commented after table beginning with 'tmf:'. Invokes the `TableEvalFormulaLine`",
+            ["<Leader>ts"] = "Sort a column under the cursor. Invokes `TableSort`"
         }
     )
 end
@@ -784,7 +828,7 @@ function M.sandwhich()
       \     'buns': ['{ ', ' }'],
       \     'nesting': 1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace'],
+      \     'kind': ['add', 'replace', 'delete'],
       \     'action': ['add'],
       \     'input': ['{']
       \   },
@@ -792,7 +836,7 @@ function M.sandwhich()
       \     'buns': ['[ ', ' ]'],
       \     'nesting': 1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace'],
+      \     'kind': ['add', 'replace', 'delete'],
       \     'action': ['add'],
       \     'input': ['[']
       \   },
@@ -800,9 +844,17 @@ function M.sandwhich()
       \     'buns': ['( ', ' )'],
       \     'nesting': 1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace'],
+      \     'kind': ['add', 'replace', 'delete'],
       \     'action': ['add'],
       \     'input': ['(']
+      \   },
+      \   {
+      \     'buns': ['< ', ' >'],
+      \     'nesting': 1,
+      \     'match_syntax': 1,
+      \     'kind': ['add', 'replace', 'delete'],
+      \     'action': ['add'],
+      \     'input': ['<']
       \   },
       \   {
       \     'buns': ['[`', '`]'],
@@ -889,6 +941,27 @@ function M.sandwhich()
       \     'input':        [')', 'b'],
       \   },
       \   {
+      \     'buns':   ['|', '|'],
+      \     'nesting':      1,
+      \     'kind':   ['add', 'replace', 'delete'],
+      \     'action': ['add'],
+      \     'input':  ['|', 'V'],
+      \   },
+      \   {
+      \     'buns':   ['`', '`'],
+      \     'nesting':      1,
+      \     'kind':   ['add', 'replace', 'delete'],
+      \     'action': ['add'],
+      \     'input':  ['`', 'v'],
+      \   },
+      \   {
+      \     'buns':   ['=== ', ' ==='],
+      \     'nesting':      1,
+      \     'kind':   ['add', 'replace', 'delete'],
+      \     'action': ['add'],
+      \     'input':  ['='],
+      \   },
+      \   {
       \     'buns':         ['<', '>'],
       \     'expand_range': 0,
       \     'input':        ['>', 'a'],
@@ -933,11 +1006,26 @@ function M.sandwhich()
         {
             ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
             ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
+            ["m."] = {"<Plug>(sandwich-add)iw'", "Surround a word"},
             ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
             ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
             ["yss"] = "Surround text on line",
             ["ygs"] = {"<Plug>(sandwich-add):normal! V<CR>", "Surround entire line"}
         }
+    )
+
+    -- ygv<Esc>
+
+    -- TODO: Create some insert mode mappings for these too
+    wk.register(
+        {
+            -- ["m'"] = {"<Plug>(sandwich-add)'", "Surround with single quote (')"},
+            -- ['m"'] = {'<Plug>(sandwich-add)"', 'Surround with double quote (")'},
+            -- ["mi"] = {"<Plug>(sandwich-add)*", "Surround with italics (*)"},
+            -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
+            ["```"] = {"<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```)"}
+        },
+        {mode = "v"}
     )
 
     map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
@@ -1447,7 +1535,8 @@ function M.colorizer()
                 "javascript",
                 "conf",
                 "toml",
-                "lua"
+                "lua",
+                "python"
             },
             user_default_options = {
                 RGB = true, -- #RGB hex codes
@@ -1719,7 +1808,8 @@ function M.urlview()
             -- Command or method to open links with
             -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
             -- By default, this is "netrw", or "system" if netrw is disabled
-            default_action = "netrw",
+            -- Can also be "clipboard"
+            default_action = "clipboard",
             -- Ensure links shown in the picker are unique (no duplicates)
             unique = true,
             -- Ensure links shown in the picker are sorted alphabetically
@@ -1741,7 +1831,11 @@ function M.urlview()
         }
     )
 
-    map("n", "<LocalLeader>L", "UrlView", {cmd = true})
+    -- Examples:
+    -- :UrlView buffer bufnr=1
+    -- :UrlView file filepath=/etc/hosts picker=telescope
+    -- :UrlView packer sorted=false
+    map("n", "<LocalLeader>x", "UrlView", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1978,6 +2072,40 @@ function M.visualmulti()
             command = function()
                 require("common.vm").mappings()
             end
+        }
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Neodev                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.neodev()
+    local neodev = D.npcall(require, "neodev")
+    if not neodev then
+        return
+    end
+
+    neodev.setup(
+        {
+            library = {
+                enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
+                -- these settings will be used for your Neovim config directory
+                runtime = false, -- runtime path
+                types = true, -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+                plugins = true -- installed opt or start plugins in packpath
+                -- you can also specify the list of plugins to make available as a workspace library
+                -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+            },
+            setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
+            -- for your Neovim config directory, the config.library settings will be used as is
+            -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
+            -- for any other directory, config.library.enabled will be set to false
+            override = function(root_dir, options)
+            end,
+            -- With lspconfig, Neodev will automatically setup your lua-language-server
+            -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
+            -- in your lsp start options
+            lspconfig = false
         }
     )
 end

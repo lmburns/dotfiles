@@ -1274,6 +1274,7 @@ wk.register(
         [";h"] = {":Telescope man_pages<CR>", "Telescope man pages"},
         [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
+        ["<Leader>rm"] = {":Telescope reloader<CR>", "Telescope reload Lua module"},
         ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
@@ -1327,7 +1328,7 @@ wk.register(
     {
         -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
         -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
-        ["<A-;>"] = {":lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
 )
@@ -1335,8 +1336,8 @@ wk.register(
 wk.register(
     {
         -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
-        -- ["<A-;>"] = {"<cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
-        ["<A-;>"] = {"<cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"}
+        -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
+        ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"}
     },
     {mode = "i"}
 )

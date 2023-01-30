@@ -92,6 +92,12 @@
     # frame_color = "#aaaaaa"
     frame_color = "#7e5053"
 
+    # Size of gap to display between notifications - requires a compositor.
+    # If value is greater than 0, separator_height will be ignored and a border
+    # of size frame_width will be drawn around each notification instead.
+    # Click events on gaps do not currently propagate to applications below.
+    gap_size = 0
+
     # Define a color for the separator.
     # possible values are:
     #  * auto: dunst tries to find a color fitting to the background;
@@ -185,6 +191,15 @@
 
     ### Icons ###
 
+    # Recursive icon lookup. You can set a single theme, instead of having to
+    # define all lookup paths.
+    enable_recursive_icon_lookup = true
+
+    # Set icon theme (only used for recursive icon lookup)
+    icon_theme = Adwaita
+    # You can also set multiple icon themes, with the leftmost one being used first.
+    # icon_theme = "Adwaita, breeze"
+
     # Align icons left/right/off
     icon_position = left
 
@@ -265,6 +280,9 @@
 
 [log_notifs]
     script = ~/mybin/linux/dunstlogger
+
+[check_action]
+    script = ~/mybin/linux/dunst-dismiss
 
 [dunst_icon]
     appname = dunst

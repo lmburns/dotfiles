@@ -1,9 +1,15 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
-
 FIX: Telescope opens file in insert mode
 
-Notes:
+FIX: Urlview problem: Could not navigate link with `xdg-open`:
+FIX: MKDX keybindings for bold
+
+TODO: Add keybinding to go to top of current function you're inside of
+TODO: Add keybinding to create a comment of clipboard
+TODO: Add keybinding to paste and select
+
+NOTES:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 --]]
 local ok, impatient = pcall(require, "impatient")
@@ -98,6 +104,7 @@ require("common.jump")
 -- require("common.stl")
 -- require("common.reg")
 
+---@diagnostic disable-next-line:duplicate-set-field
 vim.notify = function(...)
     -- vim.notify = require("notify")
     require("plugins").loader("nvim-notify")

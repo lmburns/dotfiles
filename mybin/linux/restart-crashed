@@ -36,6 +36,7 @@ function setsid_notify() {
     pidof redshift       || redshift -c "$HOME/.config/redshift/redshift.conf" &!
     pgrep -x autokey-gtk || setsid_notify autokey-gtk
     pgrep -x pcmanfm     || setsid_notify pcmanfm -d
+    pidof pulseaudio     || pulseaudio --start
 ) 1>/dev/null
 
 dbus-launch

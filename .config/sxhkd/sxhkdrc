@@ -16,10 +16,6 @@
 # mod3 + l
 #     xdotool keyup l key --clearmodifiers Right
 
-# Remap keys
-F11
-    remaps && notify-send "remaps" "remapped"
-
 # Get help for keybindings
 super + shift + h
     sxhkd_help &
@@ -39,18 +35,19 @@ super + shift + p
 
 # Restart dunst
 super + shift + d
-    killall dunst && dunst &
+    killandnotify dunst "Dunst reloaded" && dunst &
 
 # Restart bspwm
 ctrl + alt + super + r
     notify-send "bpswm" "Configuration reloaded" && bspc wm -r
+
+# Restart crashed items
+super + shift + c
+    notify-send "Crashed" "Items were reloaded" && restart-crashed
+
 # bspc wm -r
 
 # ========================== Screen ==========================
-# Toggle caffeinate on/off
-F10
-    togglecaffeine
-
 # Lock screen
 super + Delete
     xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
@@ -189,11 +186,6 @@ super + ctrl + alt + {h,j,k,l}
 # super + {p,b, comma, period}
 #     bspc node -f @{parent,brother,first,second}
 
-# focus the next/previous desktop in the current monitor
-super + bracket{left,right}
-    bspc desktop -f {prev,next}.local
-# bspc desktop -f {prev.occupied,next.occupied}
-
 # focus the last node/desktop
 super + {grave,Tab}
     bspc {node,desktop} -f last
@@ -207,6 +199,11 @@ super + {o,i}
 # focus or send to the given desktop
 super + {_,shift + }{1-9,0}
     bspc {desktop -f,node -d} '^{1-9,10}'
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+    bspc desktop -f {prev,next}.local
+# bspc desktop -f {prev.occupied,next.occupied}
 
 # move desktops in another way
 alt + {Left,Right}
@@ -350,6 +347,14 @@ shift + XF86Audio{Mute,LowerVolume,RaiseVolume}
 
 ctrl + alt + shift + b
     $TERMINAL -e "fzf-bluetooth" &
+
+# Toggle caffeinate on/off
+F10
+    togglecaffeine
+
+# Remap keys
+F11
+    remaps && dunstify "remaps" "remapped"
 
 # ??
 # XF86Mail

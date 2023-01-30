@@ -14,6 +14,7 @@ function M.setup()
     -- Workaround until WhichKey has autocmds to disable it for certain filetypes
     local show = wk.show
     wk.show = function(keys, opts)
+        ---@diagnostic disable-next-line: undefined-field
         if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi then
             return
         end

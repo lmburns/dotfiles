@@ -6,13 +6,18 @@
 # file being loaded last. If a field is already present in a previous import, it
 # will be replaced.
 #
-# Must start with '/' or '~'
+# All imports must either be absolute paths starting with `/`, or paths relative
+# to the user's home directory starting with `~/` .
 # import:
 #   - /path/to/alacritty.yml
 
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
 # set by alacritty itself.
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                       Environment                        │
+#  ╰──────────────────────────────────────────────────────────╯
 env:
   # TERM variable
   #
@@ -23,14 +28,24 @@ env:
   # TERM: xterm-256color
   TERM: alacritty
 
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                          Window                          │
+#  ╰──────────────────────────────────────────────────────────╯
 window:
-  # Window dimensions (changes require restart)
+  # Number of lines/columns (not pixels) in the terminal. Both lines and columns
+  # must be non-zero for this to take effect. The number of columns must be at
+  # least `2`, while using a value of `0` for columns and lines will fall back
+  # to the window manager's recommended size
+  dimensions:
+    columns: 0
+    lines: 0
+
+  # Decorations theme variant (Linux/BSD only)
   #
-  # Specified in number of columns/lines, not pixels.
-  # If both are `0`, this setting is ignored.
-  #dimensions:
-  #  columns: 0
-  #  lines: 0
+  # Override the variant of the GTK theme/Wayland client side decorations.
+  # Commonly supported values are `dark` and `light`. Set this to `None` to use
+  # the default theme variant.
+  decorations_theme_variant: None
 
   # Window position (changes require restart)
   #
@@ -44,9 +59,9 @@ window:
   #
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
-  # padding:
-  #   x: 2
-  #   y: 2
+  padding:
+    x: 2
+    y: 2
 
   # Spread additional padding evenly around the terminal content.
   dynamic_padding: false
@@ -62,24 +77,46 @@ window:
   #     - buttonless: Title bar, transparent background and no title bar buttons
   decorations: full
 
+  # Background opacity
+  #
+  # Window opacity as a floating point number from `0.0` to `1.0`.
+  # The value `0.0` is completely transparent and `1.0` is opaque.
+  opacity: 0.90
+
+  # Startup Mode (changes require restart)
+  #
+  # Values for `startup_mode`:
+  #   - Windowed
+  #   - Maximized
+  #   - Fullscreen
+  #
+  # Values for `startup_mode` (macOS only):
+  #   - SimpleFullscreen
+  startup_mode: Windowed
+
   # Window title
   title: Alacritty
   # Allow terminal applications to change Alacritty's window title.
   dynamic_title: true
 
+  # Window class (Linux/BSD only):
   class:
     # Application instance name
     instance: Alacritty
     # General application class
     general: Alacritty
 
-  # Override the variant of the GTK theme/Wayland client side decorations.
+  # Decorations theme variant (Linux/BSD only)
+  #
   # Commonly supported values are `dark` and `light`. Set this to `None` to use
   # the default theme variant.
-  decorations_theme_variant: dark
 
-  opacity: 0.90
+  # Override the variant of the GTK theme/Wayland client side decorations.
+  # decorations_theme_variant: None
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                        Scrolling                         │
+# ╰──────────────────────────────────────────────────────────╯
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
@@ -89,23 +126,34 @@ scrolling:
   # scrollback is enabled (history > 0).
   multiplier: 1
 
-# Font configuration
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                    Font Configuration                    │
+#  ╰──────────────────────────────────────────────────────────╯
+
+#normal:
+# Font family
+#
+# Default:
+#   - (macOS) Menlo
+#   - (Linux/BSD) monospace
+#   - (Windows) Consolas
+#family: monospace
+
 font:
   normal:
     # FiraMono has odd shaped characters for the double
     # lined p10k prompt when from the AUR, using Alacritty.
-
     # ─╮
 
     family: FiraMono Nerd Font Mono
-    # family: FiraCode Nerd Font Mono
-    # family: Go Mono Nerd Font Mono
+    # family:  FiraCode Nerd Font Mono
+    # family:  Go Mono Nerd Font Mono
     # family:  Hasklug Nerd Font Mono
     # family:  Roboto Mono Nerd Font
     # family:  Roboto Mono Nerd Font Mono
     # family:  BitstreamVeraSansMono Nerd Font Mono
-    # family: JetBrainsMono Nerd Font Mono
-    # family: Hack Nerd Font Mono
+    # family:  JetBrainsMono Nerd Font Mono
+    # family:  Hack Nerd Font Mono
     style: Medium
 
   bold:
@@ -114,7 +162,6 @@ font:
   italic:
     family: JetBrainsMono Nerd Font
     style: Italic
-
   bold_italic:
     family: FiraMono Nerd Font Mono
     style: Bold Italic
@@ -122,31 +169,34 @@ font:
   # Point size
   size: 12
 
-  # Offset is the extra space around each character. `offset.y` can be thought of
-  # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
+  # Offset is the extra space around each character. `offset.y` can be thought
+  # of as modifying the line spacing, and `offset.x` as modifying the letter spacing.
   offset:
     x: -1
     y: -1
 
   # Glyph offset determines the locations of the glyphs within their cells with
-  # the default being at the bottom. Increasing `x` moves the glyph to the right,
-  # increasing `y` moves the glyph upwards.
+  # the default being at the bottom. Increasing `x` moves the glyph to the
+  # right, increasing `y` moves the glyph upward.
   glyph_offset:
     x: 0
     y: 0
 
-  builtin_box_drawing: true
+  # builtin_box_drawing: true
 
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                         Schemas                          │
+#  ╰──────────────────────────────────────────────────────────╯
 schemes:
   kimbie: &kimbie
     transparent_background_colors: false
     primary:
-      background: "#221a02"
-      foreground: "#c2a383"
-      bright_foreground: "#f06431"
+      background: '#221a02'
+      foreground: '#c2a383'
+      bright_foreground: '#f06431'
       # dim_foreground: '#9a9a9a'
 
     # Cursor colors
@@ -154,8 +204,8 @@ schemes:
     # Colors which should be used to draw the terminal cursor. If these are unset,
     # the cursor color will be the inverse of the cell color.
     cursor:
-      text: "#221a02"
-      cursor: "#f79a32"
+      text: '#221a02'
+      cursor: '#f79a32'
       # cursor: '#c2a383'
       # text: CellBackground
       # cursor: CellForeground
@@ -170,8 +220,8 @@ schemes:
     # background is unset, selection color will be the inverse of the cell colors.
     # If only text is unset the cell text color will remain the same.
     selection:
-      text: "#221a02"
-      background: "#889b4a"
+      text: '#221a02'
+      background: '#889b4a'
       # background: '#c2a383'
 
     # search:
@@ -191,11 +241,11 @@ schemes:
 
     hints:
       start:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
       end:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
 
     # Line indicator
     #
@@ -207,204 +257,225 @@ schemes:
     # foreground: '#dc3958'
     # background: None
 
-  # Footer bar
-  #
-  # Color used for the footer bar on the bottom, used by search regex input,
-  # hyperlink URI preview, etc.
-  #
+    # Footer bar
+    #
+    # Color used for the footer bar on the bottom, used by search regex input,
+    # hyperlink URI preview, etc.
+    #
     footer_bar:
       background: '#c5c8c6'
       foreground: '#1d1f21'
 
-    # blue:    '#733e8b'
     normal:
-      black: "#201f1f"
-      red: "#dc3958"
-      green: "#819c3b"
-      yellow: "#f79a32"
-      blue: "#924f79"
-      magenta: "#7e5053"
-      cyan: "#088649"
-      white: "#a89983"
+      black: '#201F1F'
+      red: '#DC3958'
+      green: '#819C3B'
+      yellow: '#F79A32'
+      blue: '#924F79'
+      magenta: '#7E5053'
+      cyan: '#088649'
+      white: '#A89983'
     bright:
-      black: "#676767"
-      red: "#f14a68"
-      green: "#a3b95a"
-      yellow: "#f79a32"
-      blue: "#dc3958"
-      magenta: "#fe8019"
-      cyan: "#4c96a8"
-      white: "#51412c"
+      black: '#676767'
+      red: '#F14A68'
+      green: '#A3B95A'
+      yellow: '#F79A32'
+      blue: '#DC3958'
+      magenta: '#FE8019'
+      cyan: '#4C96A8'
+      white: '#51412C'
     dim:
-      black: "#676f78"
-      red: "#dc3958"
-      green: "#088649"
-      yellow: "#f79a32"
-      blue: "#733e8b"
-      magenta: "#7e5053"
-      cyan: "#088649"
-      white: "#a89983"
+      black: '#676F78'
+      red: '#DC3958'
+      green: '#088649'
+      yellow: '#F79A32'
+      blue: '#733E8B'
+      magenta: '#7E5053'
+      cyan: '#088649'
+      white: '#A89983'
 
     indexed_colors:
-      - { index: 16, color: "#ffa066" }
-      - { index: 17, color: "#ff5d62" }
-      - { index: 18, color: "#89b482" }
-      - { index: 19, color: "#d3869b" }
-      - { index: 20, color: "#719190" }
-      - { index: 21, color: "#957FB8" }
-      - { index: 22, color: "#938AA9" }
-      - { index: 23, color: "#ea6962" }
-      - { index: 24, color: "#E46876" }
-      - { index: 25, color: "#FF5D62" }
-      - { index: 26, color: "#cc6666" }
+      - { index: 16, color: '#FFA066' }
+      - { index: 17, color: '#FF5D62' }
+      - { index: 18, color: '#89B482' }
+      - { index: 19, color: '#D3869B' }
+      - { index: 20, color: '#719190' }
+      - { index: 21, color: '#957FB8' }
+      - { index: 22, color: '#938AA9' }
+      - { index: 23, color: '#EA6962' }
+      - { index: 24, color: '#E46876' }
+      - { index: 25, color: '#FF5D62' }
+      - { index: 27, color: '#CC6666' }
+      - { index: 28, color: '#77A172' }
+      - { index: 29, color: '#83A598' }
+      - { index: 30, color: '#7E9CD8' }
+      - { index: 31, color: '#BD798B' }
+      - { index: 32, color: '#E78A4E' }
+      - { index: 33, color: '#7E602C' }
+      - { index: 34, color: '#A89984' }
+      - { index: 35, color: '#625A5A' }
+      - { index: 36, color: '#39260E' }
+      - { index: 37, color: '#362712' }
+      - { index: 38, color: '#291804' }
+      - { index: 39, color: '#5E452B' }
+      - { index: 40, color: '#E8C097' }
+      - { index: 41, color: '#665C54' }
+      - { index: 42, color: '#D9AE80' }
+      - { index: 43, color: '#7DAEA3' }
+      - { index: 44, color: '#EA6962' }
+      - { index: 45, color: '#F06431' }
+      - { index: 46, color: '#C2A383' }
+      # - { index: 46, color: '#D9AE80' }
+      # - { index: 47, color: '#D9AE80' }
+      # - { index: 48, color: '#D9AE80' }
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
-      background: "#282828"
-      foreground: "#dfbf8e"
+      background: '#282828'
+      foreground: '#DFBF8E'
     normal:
-      black: "#665c54"
-      red: "#ea6962"
-      green: "#a9b665"
-      yellow: "#e78a4e"
-      blue: "#7daea3"
-      magenta: "#d3869b"
-      cyan: "#89b482"
-      white: "#dfbf8e"
+      black: '#665C54'
+      red: '#EA6962'
+      green: '#A9B665'
+      yellow: '#E78A4E'
+      blue: '#7DAEA3'
+      magenta: '#D3869B'
+      cyan: '#89B482'
+      white: '#DFBF8E'
     bright:
-      black: "#928374"
-      red: "#ea6962"
-      green: "#a9b665"
-      yellow: "#e3a84e"
-      blue: "#7daea3"
-      magenta: "#d3869b"
-      cyan: "#89b482"
-      white: "#dfbf8e"
+      black: '#928374'
+      red: '#ea6962'
+      green: '#a9b665'
+      yellow: '#e3a84e'
+      blue: '#7daea3'
+      magenta: '#d3869b'
+      cyan: '#89b482'
+      white: '#dfbf8e'
 
   gruvbox: &gruvbox
     primary:
-      background: "#1c1b1a"
-      foreground: "#dfbf8e"
+      background: '#1c1b1a'
+      foreground: '#dfbf8e'
       # foreground: '#ebdbb2'
-      bright_foreground: "#448488"
+      bright_foreground: '#448488'
       #dim_foreground: '#9a9a9a'
 
     cursor:
-      text: "#1c1b1a"
-      cursor: "#dfbf8e"
+      text: '#1c1b1a'
+      cursor: '#dfbf8e'
 
     vi_mode_cursor:
       text: CellBackground
       cursor: CellForeground
 
     selection:
-      text: "#655b53"
-      background: "#dfbf8e"
+      text: '#655b53'
+      background: '#dfbf8e'
 
     hints:
       start:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
       end:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
 
     normal:
-      black: "#665c54"
-      red: "#ea6962"
-      green: "#989719"
-      yellow: "#e78a4e"
-      blue: "#689d69"
-      magenta: "#b16185"
-      cyan: "#448488"
-      white: "#dfbf8e"
+      black: '#665c54'
+      red: '#ea6962'
+      green: '#989719'
+      yellow: '#e78a4e'
+      blue: '#689d69'
+      magenta: '#b16185'
+      cyan: '#448488'
+      white: '#dfbf8e'
     bright:
-      black: "#928374"
-      red: "#ea6962"
-      green: "#a9b665"
-      yellow: "#e3a84e"
-      blue: "#a43a57"
-      magenta: "#d3869b"
-      cyan: "#89b482"
-      white: "#dfbf8e"
+      black: '#928374'
+      red: '#EA6962'
+      green: '#A9B665'
+      yellow: '#E3A84E'
+      blue: '#A43A57'
+      magenta: '#D3869B'
+      cyan: '#89B482'
+      white: '#DFBF8E'
 
   mona_lisa: &mona_lisa
     primary:
-      background: "#160b0e"
-      foreground: "#af8d6e"
-      bright_foreground: "#586081"
+      background: '#160b0e'
+      foreground: '#af8d6e'
+      bright_foreground: '#586081'
 
     cursor:
-      text: "#160b0e"
-      cursor: "#d08040"
+      text: '#160b0e'
+      cursor: '#d08040'
 
     vi_mode_cursor:
       text: CellBackground
       cursor: CellForeground
 
     selection:
-      text: "#160b0e"
-      background: "#a0936a"
+      text: '#160b0e'
+      background: '#a0936a'
 
     hints:
       start:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
       end:
-        foreground: "#201f1f"
-        background: "#f79a32"
+        foreground: '#201f1f'
+        background: '#f79a32'
 
     normal:
-      black: "#44230f"
-      red: "#ad3a23"
-      green: "#989719"
-      yellow: "#cf8233"
-      blue: "#646f6f"
-      magenta: "#ad2e36"
-      cyan: "#689d69"
-      white: "#bba45a"
+      black: '#44230f'
+      red: '#ad3a23'
+      green: '#989719'
+      yellow: '#cf8233'
+      blue: '#646f6f'
+      magenta: '#ad2e36'
+      cyan: '#689d69'
+      white: '#bba45a'
     bright:
-      black: "#9a5534"
-      red: "#ff5b3e"
-      green: "#b8ba25"
-      yellow: "#ffa678"
-      blue: "#b16185"
-      magenta: "#d3869b"
-      cyan: "#89b482"
-      white: "#ffe8a7"
+      black: '#9a5534'
+      red: '#ff5b3e'
+      green: '#b8ba25'
+      yellow: '#ffa678'
+      blue: '#b16185'
+      magenta: '#d3869b'
+      cyan: '#89b482'
+      white: '#ffe8a7'
 
   kanagwa: &kanagwa
     primary:
-      background: "#1f1f28"
-      foreground: "#dcd7ba"
+      background: '#1f1f28'
+      foreground: '#dcd7ba'
 
     normal:
-      black: "#090618"
-      red: "#c34043"
-      green: "#76946a"
-      yellow: "#c0a36e"
-      blue: "#7e9cd8"
-      magenta: "#957fb8"
-      cyan: "#6a9589"
-      white: "#c8c093"
+      black: '#090618'
+      red: '#c34043'
+      green: '#76946a'
+      yellow: '#c0a36e'
+      blue: '#7e9cd8'
+      magenta: '#957fb8'
+      cyan: '#6a9589'
+      white: '#c8c093'
 
     bright:
-      black: "#727169"
-      red: "#e82424"
-      green: "#98bb6c"
-      yellow: "#e6c384"
-      blue: "#7fb4ca"
-      magenta: "#938aa9"
-      cyan: "#7aa89f"
-      white: "#dcd7ba"
+      black: '#727169'
+      red: '#e82424'
+      green: '#98bb6c'
+      yellow: '#e6c384'
+      blue: '#7fb4ca'
+      magenta: '#938aa9'
+      cyan: '#7aa89f'
+      white: '#dcd7ba'
 
     selection:
-      background: "#2d4f67"
-      foreground: "#c8c093"
+      background: '#2d4f67'
+      foreground: '#c8c093'
 
     indexed_colors:
-      - { index: 16, color: "#ffa066" }
-      - { index: 17, color: "#ff5d62" }
+      - { index: 16, color: '#ffa066' }
+      - { index: 17, color: '#ff5d62' }
 
 colors:
   *kimbie
@@ -443,7 +514,7 @@ colors:
 bell:
   animation: EaseOutExpo
   duration: 1
-  color: "#ffffff"
+  color: '#ffffff'
   # command:
   #   program: notify-send
   #   args: ["Bell Rang"]
@@ -494,10 +565,20 @@ working_directory: None
 # Offer IPC using `alacritty msg` (unix only)
 ipc_socket: true
 
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                          Hints                           │
+#  ╰──────────────────────────────────────────────────────────╯
+#
+# Terminal hints can be used to find text or hyperlink in the visible part of
+# the terminal and pipe it to other applications.
 hints:
+  # Terminal hints can be used to find text or hyperlink in the visible part of
+  # The terminal and pipe it to other applications.
   # Keys used for the hint labels.
-  alphabet: "jfkdls;ahgurieowpq"
+  alphabet: 'jfkdls;ahgurieowpq'
 
+  # List with all available hints
+  #
   # Each hint must have a `regex` and either an `action` or a `command` field.
   # The fields `mouse`, `binding` and `post_processing` are optional.
   #
@@ -533,8 +614,8 @@ hints:
         [^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
 
       # action: Copy
-      command: xdg-open
       hyperlinks: true
+      command: xdg-open
       post_processing: true
       mouse:
         enabled: true
@@ -562,7 +643,7 @@ hints:
         enabled: true
         mods: None
       binding:
-        key: P
+        key: C
         mods: Control|Shift
 
 # /home/lucas
@@ -598,8 +679,9 @@ mouse:
 # Mouse bindings are specified as a list of objects, much like the key
 # bindings further below.
 #
-# To trigger mouse bindings when an application running within Alacritty captures the mouse, the
-# `Shift` modifier is automatically added as a requirement.
+# To trigger mouse bindings when an application running within Alacritty
+# captures the mouse, the `Shift` modifier is automatically added as a
+# requirement.
 #
 # Each mouse binding will specify a:
 #
@@ -610,18 +692,22 @@ mouse:
 #   - Right
 #   - Numeric identifier such as `5`
 #
-# - `action` (see key bindings)
+# - `action` (see key bindings for actions not exclusive to mouse mode)
 #
+# - Mouse exclusive actions:
 #   - ExpandSelection
 #       Expand the selection to the current mouse cursor location.
 #
-# - { mouse: Right, action: ExpandSelection }
 mouse_bindings:
+  # These two are basically the same
   - { mouse: Middle, action: Copy }
+  - { mouse: Middle, mods: Alt, action: Copy }
+
   - { mouse: Middle, mode: ~Vi, action: PasteSelection }
   - { mouse: Right, mode: ~Vi, action: ClearSelection }
-  - { mouse: Middle, mods: Alt, action: Copy }
   - { mouse: Right, mode: Vi, mods: Alt, action: Open }
+  - { mouse: Right, action: ExpandSelection }
+  - { mouse: Right, mods: Control, action: ExpandSelection }
 
 # Key bindings
 #
@@ -924,21 +1010,20 @@ mouse_bindings:
 key_bindings:
   # - { key: Y,         mods: Control,              action:  Copy             }
   # - { key: M,         mods: Control|Shift,        action: Minimize         }
-  - { key: P,         mods: Control,              action: Paste            }
-  - { key: Insert,    mods: Shift,                action: Paste            }
-  - { key: Key0,      mods: Control,              action: ResetFontSize    }
-  - { key: Equals,    mods: Control,              action: IncreaseFontSize }
-  - { key: Plus,      mods: Control,              action: IncreaseFontSize }
-  - { key: Minus,     mods: Control,              action: DecreaseFontSize }
-  - { key: Semicolon, mods: Control|Option|Super, action: ClearLogNotice   }
-  - { key: Period,    mods: Control|Option|Super, action: CreateNewWindow  }
-  - { key: Comma,     mods: Control|Option|Super, action: SpawnNewInstance }
-  - { key: Space,     mods: Control|Shift,        action: ToggleViMode     }
-  # - { key: U,         mods: Control|Shift,        action: EnterHintsMode }
+  - { key: P, mods: Control, action: Paste }
+  - { key: Insert, mods: Shift, action: Paste }
+  - { key: Key0, mods: Control, action: ResetFontSize }
+  - { key: Equals, mods: Control, action: IncreaseFontSize }
+  - { key: Plus, mods: Control|Shift, action: IncreaseFontSize }
+  - { key: Minus, mods: Control, action: DecreaseFontSize }
+  - { key: Semicolon, mods: Control|Option|Super, action: ClearLogNotice }
+  - { key: Period, mods: Control|Option|Super, action: CreateNewWindow }
+  - { key: Comma, mods: Control|Option|Super, action: SpawnNewInstance }
+  - { key: Space, mods: Control|Shift, action: ToggleViMode }
   - {
       key: B,
       mods: Control|Option,
-      command: { program: "alacritty", args: ["-e", "btm"] },
+      command: { program: 'alacritty', args: ['-e', 'btm'] },
     }
 
   # https://www.eso.org/~ndelmott/ascii.html
@@ -952,19 +1037,19 @@ key_bindings:
   # caps_lock 0b1000000   (64)
   # num_lock  0b10000000  (128)
 
-  - { key: Return,     mods: Shift,             chars: "\x1b[13;2u"  }
-  - { key: 0x28,       mods: Alt|Shift,         chars: "\x1b[34;4u"  } # Double quote
-  - { key: 0x28,       mods: Control|Shift|Alt, chars: "\x1b[34;8u"  } # Double quote
-  - { key: I,          mods: Control|Alt,       chars: "\x1b[105;7u" }
-  - { key: O,          mods: Control|Alt,       chars: "\x1b[111;7u" }
-  - { key: Return,     mods: Control|Alt,       chars: "\x1b[13;7u"  }
-  - { key: Period,     mods: Control|Alt,       chars: "\x1b[46;7u"  }
-  - { key: Comma,      mods: Control|Alt,       chars: "\x1b[44;7u"  }
-  - { key: Apostrophe, mods: Control|Alt,       chars: "\x1b[39;7u"  }
-  - { key: Period,     mods: Control,           chars: "\x1b[46;5u"  }
-  - { key: Comma,      mods: Control,           chars: "\x1b[44;5u"  }
-  - { key: Apostrophe, mods: Control,           chars: "\x1b[39;5u"  }
-  - { key: 0x61,       mods: Control,           chars: "\x1b[47;5u"  }
+  - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
+  - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
+  - { key: 0x28, mods: Control|Shift|Alt, chars: "\x1b[34;8u" } # Double quote
+  - { key: I, mods: Control|Alt, chars: "\x1b[105;7u" }
+  - { key: O, mods: Control|Alt, chars: "\x1b[111;7u" }
+  - { key: Return, mods: Control|Alt, chars: "\x1b[13;7u" }
+  - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
+  - { key: Comma, mods: Control|Alt, chars: "\x1b[44;7u" }
+  - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
+  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
+  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
+  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
+  - { key: 0x61, mods: Control, chars: "\x1b[47;5u" }
 
   # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
   # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
@@ -973,11 +1058,11 @@ key_bindings:
   # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
 
   # Control + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: Return, mods: Control, chars: "\x1b[13;5u"  }
-  - { key: H,      mods: Control, chars: "\x1b[104;5u" }
-  - { key: I,      mods: Control, chars: "\x1b[105;5u" }
-  - { key: J,      mods: Control, chars: "\x1b[106;5u" }
-  - { key: M,      mods: Control, chars: "\x1b[109;5u" }
+  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
+  - { key: H, mods: Control, chars: "\x1b[104;5u" }
+  - { key: I, mods: Control, chars: "\x1b[105;5u" }
+  - { key: J, mods: Control, chars: "\x1b[106;5u" }
+  - { key: M, mods: Control, chars: "\x1b[109;5u" }
 
   # Control + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
@@ -988,37 +1073,37 @@ key_bindings:
   # Control + U ⇒ “EnterHintsMode”
   # Control + V ⇒ Paste
 
-  - { key: A,      mods: Control|Shift, chars: "\x1b[65;6u" }
-  - { key: D,      mods: Control|Shift, chars: "\x1b[68;6u" }
-  - { key: E,      mods: Control|Shift, chars: "\x1b[69;6u" }
-  - { key: G,      mods: Control|Shift, chars: "\x1b[71;6u" }
-  - { key: H,      mods: Control|Shift, chars: "\x1b[72;6u" }
-  - { key: I,      mods: Control|Shift, chars: "\x1b[73;6u" }
-  - { key: J,      mods: Control|Shift, chars: "\x1b[74;6u" }
-  - { key: K,      mods: Control|Shift, chars: "\x1b[75;6u" }
-  - { key: L,      mods: Control|Shift, chars: "\x1b[76;6u" }
-  - { key: N,      mods: Control|Shift, chars: "\x1b[78;6u" }
-  - { key: M,      mods: Control|Shift, chars: "\x1b[77;6u" }
+  - { key: A, mods: Control|Shift, chars: "\x1b[65;6u" }
+  - { key: D, mods: Control|Shift, chars: "\x1b[68;6u" }
+  - { key: E, mods: Control|Shift, chars: "\x1b[69;6u" }
+  - { key: G, mods: Control|Shift, chars: "\x1b[71;6u" }
+  - { key: H, mods: Control|Shift, chars: "\x1b[72;6u" }
+  - { key: I, mods: Control|Shift, chars: "\x1b[73;6u" }
+  - { key: J, mods: Control|Shift, chars: "\x1b[74;6u" }
+  - { key: K, mods: Control|Shift, chars: "\x1b[75;6u" }
+  - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
+  - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
   # - { key: O,      mods: Control|Shift, chars: "\x1b[79;6u" }
   # - { key: P,      mods: Control|Shift, chars: "\x1b[80;6u" }
-  - { key: Q,      mods: Control|Shift, chars: "\x1b[81;6u" }
-  - { key: R,      mods: Control|Shift, chars: "\x1b[82;6u" }
-  - { key: S,      mods: Control|Shift, chars: "\x1b[83;6u" }
-  - { key: T,      mods: Control|Shift, chars: "\x1b[84;6u" }
-  - { key: W,      mods: Control|Shift, chars: "\x1b[87;6u" }
-  - { key: X,      mods: Control|Shift, chars: "\x1b[88;6u" }
+  - { key: Q, mods: Control|Shift, chars: "\x1b[81;6u" }
+  - { key: R, mods: Control|Shift, chars: "\x1b[82;6u" }
+  - { key: S, mods: Control|Shift, chars: "\x1b[83;6u" }
+  - { key: T, mods: Control|Shift, chars: "\x1b[84;6u" }
+  - { key: W, mods: Control|Shift, chars: "\x1b[87;6u" }
+  - { key: X, mods: Control|Shift, chars: "\x1b[88;6u" }
   # - { key: Y,      mods: Control|Shift, chars: "\x1b[89;6u" }
-  - { key: Z,      mods: Control|Shift, chars: "\x1b[90;6u" }
-  - { key: Colon,  mods: Control|Shift, chars: "\x1b[58;6u" }
+  - { key: Z, mods: Control|Shift, chars: "\x1b[90;6u" }
+  - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
   - { key: Period, mods: Control|Shift, chars: "\x1b[46;6u" }
-  - { key: 0x28,   mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
-  - { key: 0x33,   mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
-  - { key: 0x34,   mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
-  - { key: 0x35,   mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
-  - { key: 0x0b,   mods: Control|Shift, chars: "\x1b[41;6u" } # Right parenthesis
-  - { key: 0x1b,   mods: Control|Shift, chars: "\x1b[125;6u"} # Right curly brace
+  - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
+  - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
+  - { key: 0x34, mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
+  - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
+  - { key: 0x0b, mods: Control|Shift, chars: "\x1b[41;6u" } # Right parenthesis
+  - { key: 0x1b, mods: Control|Shift, chars: "\x1b[125;6u" } # Right curly brace
 
-  - { key: 0x0A, mods: Control,       chars: "\x1b[57;5u" }
+  - { key: 0x0A, mods: Control, chars: "\x1b[57;5u" }
 
   # Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 
@@ -1098,30 +1183,30 @@ key_bindings:
   # - { key: Slash,      mods: Alt|Shift, chars: "\x1b?"  }
 
   # Map Control-([1-9]|[0;']) to Control-[F1-F12] (F25-F36)
-  - { key: Key1,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x50"     }
-  - { key: Key2,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x51"     }
-  - { key: Key3,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x52"     }
-  - { key: Key4,      mods: Control,       chars: "\x1b\x5b\x31\x3b\x35\x53"     }
-  - { key: Key5,      mods: Control,       chars: "\x1b\x5b\x31\x35\x3b\x35\x7e" }
-  - { key: Key6,      mods: Control,       chars: "\x1b\x5b\x31\x37\x3b\x35\x7e" }
-  - { key: Key7,      mods: Control,       chars: "\x1b\x5b\x31\x38\x3b\x35\x7e" }
-  - { key: Key8,      mods: Control,       chars: "\x1b\x5b\x31\x39\x3b\x35\x7e" }
-  - { key: Key9,      mods: Control,       chars: "\x1b\x5b\x32\x30\x3b\x35\x7e" }
-  - { key: Key0,      mods: Control,       chars: "\x1b\x5b\x32\x31\x3b\x35\x7e" }
+  - { key: Key1, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x50" }
+  - { key: Key2, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x51" }
+  - { key: Key3, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x52" }
+  - { key: Key4, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x53" }
+  - { key: Key5, mods: Control, chars: "\x1b\x5b\x31\x35\x3b\x35\x7e" }
+  - { key: Key6, mods: Control, chars: "\x1b\x5b\x31\x37\x3b\x35\x7e" }
+  - { key: Key7, mods: Control, chars: "\x1b\x5b\x31\x38\x3b\x35\x7e" }
+  - { key: Key8, mods: Control, chars: "\x1b\x5b\x31\x39\x3b\x35\x7e" }
+  - { key: Key9, mods: Control, chars: "\x1b\x5b\x32\x30\x3b\x35\x7e" }
+  - { key: Key0, mods: Control, chars: "\x1b\x5b\x32\x31\x3b\x35\x7e" }
   # - { key: Semicolon, mods: Control,       chars: "\x1b\x5b\x32\x33\x3b\x35\x7e" }
   # - { key: Apostrophe,mods: Control,       chars: "\x1b\x5b\x32\x34\x3b\x35\x7e" }
 
   # Map Control-Alt-([1-9]) and Control-[,.] to Control-Shift-[F1-F12] (F37-F48)
-  - { key: Key1,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x50"     }
-  - { key: Key2,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x51"     }
-  - { key: Key3,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x52"     }
-  - { key: Key4,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x3b\x36\x53"     }
-  - { key: Key5,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x35\x3b\x36\x7e" }
-  - { key: Key6,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x37\x3b\x36\x7e" }
-  - { key: Key7,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x38\x3b\x36\x7e" }
-  - { key: Key8,      mods: Control|Alt,   chars: "\x1b\x5b\x31\x39\x3b\x36\x7e" }
-  - { key: Key9,      mods: Control|Alt,   chars: "\x1b\x5b\x32\x30\x3b\x36\x7e" }
-  - { key: Key0,      mods: Control|Alt,   chars: "\x1b\x5b\x32\x31\x3b\x36\x7e" }
+  - { key: Key1, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x50" }
+  - { key: Key2, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x51" }
+  - { key: Key3, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x52" }
+  - { key: Key4, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x53" }
+  - { key: Key5, mods: Control|Alt, chars: "\x1b\x5b\x31\x35\x3b\x36\x7e" }
+  - { key: Key6, mods: Control|Alt, chars: "\x1b\x5b\x31\x37\x3b\x36\x7e" }
+  - { key: Key7, mods: Control|Alt, chars: "\x1b\x5b\x31\x38\x3b\x36\x7e" }
+  - { key: Key8, mods: Control|Alt, chars: "\x1b\x5b\x31\x39\x3b\x36\x7e" }
+  - { key: Key9, mods: Control|Alt, chars: "\x1b\x5b\x32\x30\x3b\x36\x7e" }
+  - { key: Key0, mods: Control|Alt, chars: "\x1b\x5b\x32\x31\x3b\x36\x7e" }
 
   # Control + <number> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   # Control + 0 ⇒ ResetFontSize

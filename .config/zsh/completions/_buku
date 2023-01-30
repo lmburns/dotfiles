@@ -1,14 +1,14 @@
 #compdef buku
-#
-# Completion definition for buku.
-#
-# Author:
-#   Arun Prakash Jana <engineerarun@gmail.com>
-#
 
 setopt localoptions noshwordsplit noksharrays
-local -a args
-args=(
+
+_buku() {
+  typeset -A opt_args
+  typeset -a _arguments_options
+  local ret=1
+
+  typeset -a commands
+  commands=(
     '(-a --add)'{-a,--add}'[add bookmark]:URL tags'
     '(--ai)--ai[auto-import bookmarks]'
     '(-c --comment)'{-c,--comment}'[comment on bookmark]'
@@ -49,5 +49,11 @@ args=(
     '(-w --write)'{-w,--write}'[open editor]'
     '(-x --exclude)'{-x,--exclude}'[exclude keywords]:keyword(s)'
     '(-g --debug)'{-g,--debug}'[enable debugging mode]'
-)
-_arguments -S -s $args
+  )
+
+    _arguments -S -s $commands
+}
+
+_buku "$@"
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:

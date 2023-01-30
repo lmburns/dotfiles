@@ -220,7 +220,7 @@ end
 --       g; moves to last line after format
 local function init()
     M.juliaformat()
-    prefer_neoformat = {"lua"}
+    prefer_neoformat = {"lua", "json"}
 
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1

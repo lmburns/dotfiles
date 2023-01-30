@@ -296,7 +296,8 @@ local function init()
         once = false, -- Needed for coming back out of Telescope
         command = function()
             require("wilder").enable()
-        end
+        end,
+        desc = "Enable wilder manually"
     }
 
     -- Allow both Tab/S-Tab and Ctrl{j,k} to rotate through completions

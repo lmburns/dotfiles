@@ -223,6 +223,20 @@ M.autocmd = function(autocmd, id)
     )
 end
 
+---@class Keymap_t
+---@field buffer number
+---@field expr number
+---@field lhs string
+---@field lhsraw string
+---@field lnum number
+---@field mode string
+---@field noremap number
+---@field nowait number
+---@field rhs string
+---@field script number
+---@field sid number
+---@field silent number
+
 ---@class MapArgs
 ---@field unique boolean
 ---@field expr boolean
@@ -248,8 +262,8 @@ end
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
 ---@param opts MapArgs: Options given to keybindings
----@return { map: fun(), dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
----these bindings. This can be used for temporary keymaps
+---@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a two keys `dispose` & `map`.
+---                                        `.dispose()` can be used for temporary keyaps.
 ---
 --- See: **:map-arguments**
 ---
@@ -397,7 +411,7 @@ end
 ---@param lhs string Keybinding that is mapped
 ---@param rhs string|function String or Lua function that will be bound to a key
 ---@param opts MapArgs Options given to keybindings
----@return { map: fun(), dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
+---@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {}
     opts.buffer = bufnr
@@ -442,17 +456,26 @@ M.del_keymap = function(modes, lhs, opts)
 end
 
 ---Get a given keymapping
+---If only a mode is given, this acts the same as `api.nvim_get_keymap()`
 ---@param mode string mode to search for keymapping
 ---@param search? string lhs or rhs to search for
 ---@param lhs? boolean search left-hand side or not
 ---@param buffer? boolean buffer-local keymaps
----@return table
+---@return Keymap_t|Keymap_t[]
 M.get_keymap = function(mode, search, lhs, buffer)
     lhs = M.get_default(lhs, true)
     local res = {}
     local keymaps = F.tern(buffer, api.nvim_buf_get_keymap(0, mode), api.nvim_get_keymap(mode))
     if search == nil then
         return keymaps
+    end
+
+    if search:find("<[Ll]eader>") then
+        search = search:gsub("<[Ll]eader>", g.mapleader)
+    end
+
+    if search:find("<C%-") then
+        search = search:gsub("(<C%-[%w%p-]+>[%w%p]?)", string.upper)
     end
 
     for _, keymap in ipairs(keymaps) do
@@ -1138,7 +1161,7 @@ M.close_diff = function()
         D.filter(
         api.nvim_tabpage_list_wins(0),
         function(winid)
-            return vim.wo[winid].diff
+            return vim.wo[winid].diff --[[@as boolean]]
         end
     )
 
@@ -1361,12 +1384,25 @@ end
 -- Search global variables:
 --    filter <pattern> let g:
 
+-- Switching from Vimscript to Lua
+--   https://github.com/nanotee/nvim-lua-guide
+
 -- EmmyLua
---    https://github.com/sumneko/lua-language-server/wiki/Annotations
+--   https://github.com/sumneko/lua-language-server/wiki/Annotations
+
+-- Metatable Events
+--   http://lua-users.org/wiki/MetatableEvents
+
+-- String Recipes
+--   http://lua-users.org/wiki/StringRecipes
 
 -- Patterns
 --   http://lua-users.org/wiki/PatternsTutorial
 --   https://www.lua.org/pil/20.2.html
+--
+--   %b:
+--     p(("capture {what is inside} these brackets"):gsub("%b{}", ""))
+--     --> capture  these brackets 1
 -- ]]] === Tips ===
 
 -- Allows us to use utils globally

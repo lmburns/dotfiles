@@ -106,6 +106,13 @@ wk.register(
     }
 )
 
+-- https://vi.stackexchange.com/questions/27571/how-do-i-copy-the-url-under-the-cursor
+-- https://lmburns.com/academic/file.pdf
+-- https://riptutorial.com/lua/example/20315/lua-pattern-matching
+
+-- TODO: Finish keybinding. Paste comment on line below
+-- map("n", "gjp", "<Cmd>norm! j+p<CR>")
+
 -- Yank mappings
 wk.register(
     {
@@ -147,7 +154,7 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 wk.register(
     {
         ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
-        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
@@ -159,7 +166,8 @@ wk.register(
         ["d"] = {[["_d]], "Delete (blackhole)"},
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"},
         ["<C-g>"] = {[[g<C-g>]], "Show word count"},
-        -- ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
+        ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
+        ["<Leader>/"] = {"<Esc>/\\%V", "Search visual selection"},
         -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
@@ -179,8 +187,8 @@ wk.register(
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
 
-map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
-map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})
+map("n", "gJ", ":norm! }<CR>", {desc = "Move to next blank line"})
+map("n", "gK", ":norm! {<CR>", {desc = "Move to previous blank line"})
 
 -- Move selected text up down
 -- map("v", "J", ":m '>+1<CR>gv=gv")

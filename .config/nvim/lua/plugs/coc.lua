@@ -161,6 +161,7 @@ function M.a2sync(action, args, time)
         vim.wait(
         time or 1000,
         function()
+            ---@diagnostic disable-next-line:redundant-return-value
             return done
         end
     )
@@ -498,7 +499,7 @@ end
 function M.did_init(silent)
     if g.coc_service_initialized == 0 then
         if silent then
-            log.warn("coc.nvim hasn't initialized", true)
+            log.warn([[coc.nvim hasn't initialized]], true)
         end
         return false
     end
@@ -594,22 +595,26 @@ M.get_lua_runtime = function()
     ---@param types boolean?
     local function add(lib, filter, types)
         -- If it is a colorscheme, skip it. Removes a lot of files
-        for _, path in pairs(fn.expand(lib .. "/colors", false, true)) do
-            path = uv.fs_realpath(path)
-            if path and not filter[fn.fnamemodify(path, ":h:t")] then
-                goto continue
-            end
-        end
+        -- for _, path in ipairs(fn.expand(lib .. "/colors", false, true)) do
+        --     path = uv.fs_realpath(path)
+        --     if path and not filter[fn.fnamemodify(path, ":h:t")] then
+        --         vim.notify(('COLORS: %s'):format(path))
+        --         goto continue
+        --     end
+        -- end
 
-        for _, path in pairs(fn.expand(lib .. "/lua", false, true)) do
+        for _, path in ipairs(fn.expand(lib .. "/lua", false, true)) do
             path = uv.fs_realpath(path)
             -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
 
             if path then
-                local stat = uv.fs_stat(path)
-                if stat and stat.type == "directory" then
-                    result[path] = true
-                end
+                -- local stat = uv.fs_stat(path)
+                -- if stat and stat.type == "directory" then
+                --     result[path] = true
+                -- end
+
+                path = fn.fnamemodify(path, ":h")
+                result[path] = true
             end
         end
 
@@ -623,7 +628,7 @@ M.get_lua_runtime = function()
             end
         end
 
-        ::continue::
+        -- ::continue::
     end
 
     -- local function add(lib)
@@ -636,8 +641,6 @@ M.get_lua_runtime = function()
     -- end
 
     for _, site in pairs(vim.split(vim.o.packpath, ",")) do
-        -- add(site .. "/pack/*/opt/*")
-        -- add(site .. "/pack/*/start/*")
         add(site .. "/pack/*/opt/*", filter, true)
         add(site .. "/pack/*/start/*", filter, true)
     end
@@ -668,6 +671,12 @@ function M.sumneko_ls()
         library = vim.list_extend(library, {promise})
     end
 
+    -- TODO: Find a way to only get these to show, not coc-sumneko-lua
+    if D.plugin_loaded("neodev.nvim") then
+        local typings = require("neodev.config").types()
+        library = vim.list_extend(library, {typings})
+    end
+
     M.set_config("Lua.workspace", {library = library})
 
     -- Runtime path
@@ -681,6 +690,8 @@ end
 
 function M.init()
     diag_qfid = -1
+
+    local shexpr = {expr = true, silent = true}
 
     M.sumneko_ls()
 
@@ -704,16 +715,16 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
-                require("plugs.coc").diagnostics_tracker()
+                -- require("plugs.coc").diagnostics_tracker()
             end
         },
-        {
-            event = "BufEnter",
-            pattern = "*",
-            command = function()
-                require("plugs.coc").diagnostics_tracker()
-            end
-        },
+        -- {
+        --     event = "BufEnter",
+        --     pattern = "*",
+        --     command = function()
+        --         require("plugs.coc").diagnostics_tracker()
+        --     end
+        -- },
         -- {
         --     event = "CursorHold",
         --     pattern = "*",
@@ -920,8 +931,8 @@ function M.init()
     -- map("s", "<C-o>o", "<Esc>a<C-o>o")
 
     -- Refresh coc completions
-    map("i", "<C-'>", "coc#refresh()", {expr = true, silent = true})
-    map("i", "<CR>", "v:lua.map_cr()", {expr = true})
+    map("i", "<C-'>", "coc#refresh()", shexpr)
+    map("i", "<CR>", "v:lua.map_cr()", shexpr)
 
     map(
         "i",
@@ -930,10 +941,10 @@ function M.init()
             [[coc#pum#next(1)]],
             [[v:lua.check_backspace() ? "\<Tab>" : coc#refresh()]]
         ),
-        {expr = true}
+        shexpr
     )
 
-    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], {expr = true})
+    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], shexpr)
 
     -- Popup
     map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], {expr = true, silent = true})

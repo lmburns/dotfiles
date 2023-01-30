@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 
-"""cpu usage indicator
-
-used for tmux status bar
 """
+CPU usage indicator used for tmux status bar
+"""
+
 try:
     import psutil
-except:
+except:  # noqa: E722
     print("N/A")
     exit()
 
 
 class bcolors:
-    OKGREEN = "#[fg=#a3b95a, bg=default]"
-    WARNING = "#[fg=#f79a32, bg=default]"
-    FAIL = "#[fg=#dc3958, bg=default]"
+    OKAY = "#[fg=#A3B95A, bg=default]"
+    WARNING = "#[fg=#F79A32, bg=default]"
+    FAIL = "#[fg=#CC6666, bg=default]"
 
 
 cpu_usage = psutil.cpu_percent(interval=1)
@@ -26,6 +26,6 @@ elif cpu_usage >= 60:
 elif cpu_usage >= 40:
     print(bcolors.WARNING + " %s" % cpu_usage + "%")
 elif cpu_usage >= 20:
-    print(bcolors.OKGREEN + " %s" % cpu_usage + "%")
+    print(bcolors.OKAY + " %s" % cpu_usage + "%")
 else:
-    print(bcolors.OKGREEN + " %s" % cpu_usage + "%")
+    print(bcolors.OKAY + " %s" % cpu_usage + "%")

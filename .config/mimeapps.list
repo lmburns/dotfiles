@@ -11,6 +11,7 @@ application/javascript=nvim.desktop;
 application/json=nvim.desktop;
 application/pdf=zathura.desktop;
 application/rss+xml=rss.desktop;
+application/xml=nvim.desktop;
 application/rtf=libreoffice-writer.desktop;
 application/schema+json=nvim.desktop;
 application/x-bittorrent=torrent.desktop;

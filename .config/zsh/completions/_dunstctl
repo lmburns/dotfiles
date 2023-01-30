@@ -1,0 +1,104 @@
+#compdef dunstctl
+
+_dunstctl_subcommands() {
+  local commands; commands=(
+    help:"Show this help"
+    debug:"Print debugging information"
+    action:"Peform default action or open context menu of notification"
+    close:"Close the last notification"
+    close-all:"Close the all notifications"
+    context:"Open context menu"
+    count:"Show the number of notifications"
+    history:"Display notification history (in JSON)"
+    history-pop:"Pop latest notification from history or notification with given ID"
+    is-paused:"Check if dunst is running or paused"
+    set-paused:"Set the pause status"
+    rule:"Enable or disable a rule by its name"
+  )
+
+  _describe -t commands 'dunstctl commands' commands "$@"
+}
+
+_dunstctl_context_commands() {
+  local commands; commands=(
+    "displayed:Open the displayed context menu"
+    "history:Open the history context menu"
+    "waiting:Open the waitng context menu"
+  )
+  _describe -t commands 'dunstcl context commands' commands "$@"
+}
+
+_dunstctl () {
+    local curcontext="$curcontext" state line context
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+    _arguments_options=(-s -S -C)
+
+    _arguments "${_arguments_options[@]}" \
+        ":: :_dunstctl_subcommands" \
+        "*::: :->dunstctl" \
+        && ret=0
+
+  case $state in
+    (dunstctl)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:dunstctl-command-$line[1]:"
+      case $line[1] in
+        (help)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (debug)
+          _arguments "${_arguments_options[@]}" \
+              && ret=0
+        ;;
+        (action)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (close)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (close-all)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (context)
+          _arguments "${_arguments_options[@]}" \
+            ':: :_dunstctl_context_commands' \
+            && ret=0
+        ;;
+        (count)
+          _message -r "ID of notification"
+            && ret=0
+        ;;
+        (history)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (history-pop)
+          _message -r "ID of notification"
+            && ret=0
+        ;;
+        (is-paused)
+          _arguments "${_arguments_options[@]}" \
+            && ret=0
+        ;;
+        (set-paused)
+          _arguments "${_arguments_options[@]}" \
+            '*::Status:(true false toggle)' \
+            && ret=0
+        ;;
+        (rule)
+          _arguments "${_arguments_options[@]}" \
+            '*::Status:(true false toggle)' \
+            && ret=0
+        ;;
+        esac
+  esac
+}
+
+_dunstctl "$@"

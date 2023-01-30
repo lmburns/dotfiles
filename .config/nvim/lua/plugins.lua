@@ -225,6 +225,7 @@ return packer.startup(
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
             use({"kevinhwang91/promise-async"})
+            use({"folke/neodev.nvim", conf = "neodev"})
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
@@ -337,7 +338,7 @@ return packer.startup(
                 }
             )
 
-            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
+            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -913,18 +914,12 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "dhruvasagar/vim-table-mode",
-                    ft = {"markdown", "vimwiki"},
-                    conf = "table_mode"
-                }
-            )
+            use({"dhruvasagar/vim-table-mode", conf = "table_mode"})
 
             use(
                 {
                     "SidOfc/mkdx",
-                    ft = {"markdown", "vimwiki"},
+                    -- ft = {"markdown", "vimwiki"},
                     config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]
                 }
             )

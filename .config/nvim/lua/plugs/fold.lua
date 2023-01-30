@@ -224,6 +224,17 @@ M.setup_ufo = function()
     )
 end
 
+local function go_prev_and_peek()
+    require('ufo').goPreviousClosedFold()
+    require('ufo').peekFoldedLinesUnderCursor()
+end
+
+local function go_next_and_peek()
+    require('ufo').goNextClosedFold()
+    require('ufo').peekFoldedLinesUnderCursor()
+end
+
+
 local function init()
     -- vim.opt.fillchars:append("fold:•")
     vim.opt.sessionoptions:append("folds")
@@ -272,8 +283,12 @@ local function init()
     -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
     map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
     map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
+
     map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
     map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
+
+    map({"n", "x"}, "zL", D.ithunk(go_next_and_peek), {desc = "Go next closed fold & peek"})
+    map({"n", "x"}, "zH", D.ithunk(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
 
     -- map("n", "za", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
     -- map("n", "zA", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])

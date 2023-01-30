@@ -138,7 +138,12 @@ function M.setup()
 
     local python = extend("python", default, aug({"elif", "if"}))
     local sh = extend("sh", default, aug({"elif", "if"}))
-    local zsh = extend("zsh", default, {aug({"elif", "if"}), aug({"((:))", "[[:]]"}, false)})
+    local zsh =
+        extend(
+        "zsh",
+        default,
+        {aug({"elif", "if"}), aug({"((:))", "[[:]]"}, false), aug({"local", "typeset", "integer", "private"})}
+    )
     local typescript =
         extend(
         "typescript",

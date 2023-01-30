@@ -12,7 +12,7 @@
 # where INPUT_FILE.vcf is, of course, the monolithic vCard  file.
 #
 
-main() {
+function main() {
     local card_lines
     local card_guid
     declare -a card_lines

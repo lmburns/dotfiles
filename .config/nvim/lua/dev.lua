@@ -998,8 +998,8 @@ end
 ---@param f function
 ---@return boolean, any
 M.no_win_event_call = function(f)
-    local last = vim.o.eventignore
-    ---@diagnostic disable-next-line: undefined-field
+    local ei = vim.o.eventignore
+
     vim.opt.eventignore:prepend(
         M.list {
             "WinEnter",
@@ -1013,9 +1013,19 @@ M.no_win_event_call = function(f)
         }
     )
     local ok, err = pcall(f)
-    vim.opt.eventignore = last
+    vim.opt.eventignore = ei
 
     return ok, err
+end
+
+---Sets the current buffer in a window, without side effects
+---@param win number
+---@param buf number
+M.win_set_buf_noautocmd = function(win, buf)
+  local ei = vim.o.eventignore
+  vim.o.eventignore = "all"
+  api.nvim_win_set_buf(win, buf)
+  vim.o.eventignore = ei
 end
 
 ---Determine if the window is the only open one

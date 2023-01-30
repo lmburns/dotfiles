@@ -367,18 +367,6 @@ local function prepare_match(entry, kind)
     return entries
 end
 
--- local treesitter_type_highlight = {
---     ["associated"] = "@constant",
---     ["constant"] = "@constant",
---     ["field"] = "@field",
---     ["function"] = "@function",
---     ["method"] = "@method",
---     ["parameter"] = "@parameter",
---     ["property"] = "@property",
---     ["struct"] = "@struct",
---     ["var"] = "@variable.builtin"
--- }
-
 ---Create an outline using treesitter
 ---@param args Outline
 function M.outline_treesitter(args)
@@ -411,7 +399,6 @@ function M.outline_treesitter(args)
         return
     end
 
-    -- local ns = api.nvim_create_namespace("treesitter-qf")
     local ts_utils = require("nvim-treesitter.ts_utils")
     local items = {}
     local text_fmt = "%-32s│%5d:%-3d│%10s%s"
@@ -430,7 +417,6 @@ function M.outline_treesitter(args)
                 end_col = end_col,
                 text = text_fmt:format(entry.kind, start_row, start_col, " ", vim.trim(node_text)),
                 kind = entry.kind
-                -- hl_group = treesitter_type_highlight[entry.kind]
             }
         )
     end
@@ -454,14 +440,6 @@ function M.outline_treesitter(args)
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
-
-                    -- for j = 1, #items do
-                    --     local item = items[j]
-                    --     if item.text == ele.text then
-                    --         -- TODO: Get this to work
-                    --         api.nvim_buf_add_highlight(bufnr, ns, item.hl_group, i, 0, 1)
-                    --     end
-                    -- end
                 end
                 return ret
             end
@@ -536,6 +514,7 @@ function M.outline_syntax()
         syn match @constant /^\(associated\|constant\)\s*/ nextgroup=qfSeparator
         syn match @field /^\(field\)\s*/ nextgroup=qfSeparator
         syn match @function /^\(function\)\s*/ nextgroup=qfSeparator
+        syn match @include /^\(import\)\s*/ nextgroup=qfSeparator
         syn match @method /^\(method\)\s*/ nextgroup=qfSeparator
         syn match HLArgsParam /^\(parameter\)\s*/ nextgroup=qfSeparator
         syn match @property /^\(property\)\s*/ nextgroup=qfSeparator

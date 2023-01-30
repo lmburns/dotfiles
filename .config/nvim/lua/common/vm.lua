@@ -1,10 +1,14 @@
 local M = {}
 
+local D = require("dev")
 local debounce = require("common.debounce")
 local utils = require("common.utils")
 local map = utils.map
 
 local cmd = vim.cmd
+local g = vim.g
+
+local last_cmdheight
 
 local hlslens
 local config
@@ -21,7 +25,7 @@ local MODE = {
 }
 
 M.mode = function()
-    if vim.g["Vm"].extend_mode == 1 then
+    if g["Vm"].extend_mode == 1 then
         return MODE.VISUAL
     else
         return MODE.NORMAL
@@ -48,6 +52,13 @@ local override_lens = function(render, plist, nearest, idx, r_idx)
 end
 
 function M.start()
+    if D.plugin_loaded("noice.nvim") then
+        cmd("silent! Noice disable")
+        -- FIX: This bounces back and forth between 2 and 1
+        last_cmdheight = vim.opt.cmdheight:get()
+        vim.opt_local.cmdheight = 1
+    end
+
     if hlslens then
         config = require("hlslens.config")
         lens_backup = config.override_lens
@@ -57,6 +68,11 @@ function M.start()
 end
 
 function M.exit()
+    if D.plugin_loaded("noice.nvim") then
+        cmd("silent! Noice enable")
+        vim.opt_local.cmdheight = last_cmdheight
+    end
+
     if hlslens then
         config.override_lens = lens_backup
         hlslens.start()

@@ -592,7 +592,6 @@ _stig_commands() {
 
 _stig () {
     local curcontext="$curcontext" state line context
-    typeset -A opt_args
     typeset -a _arguments_options
     local ret=1
 

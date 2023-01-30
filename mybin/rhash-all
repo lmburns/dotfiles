@@ -1,0 +1,47 @@
+#!/usr/bin/env zsh
+
+emulate -L zsh
+
+local template reset c04 c14 c16 c18
+
+reset="\x1b[0m"
+c04="\x1b[1;38;5;4m"
+c14="\x1b[1;38;5;14m"
+c16="\x1b[1;38;5;16m"
+c18="\x1b[0;38;5;18m"
+
+template="$c04%f$reset
+${c18}CRC32${reset}            : %{crc32}
+${c18}CRC32C${reset}           : %{crc32c}
+${c18}MD4${reset}              : %{md4}
+${c18}MD5${reset}              : %{md5}
+${c18}SHA1${reset}             : %{sha1}
+${c18}Tiger${reset}            : %{tiger}
+${c18}TTH${reset}              : %{tth}
+${c18}BTIH${reset}             : %{btih}
+${c18}ED2K${reset}             : %{ed2k}
+${c18}AICH${reset}             : %{aich}
+${c18}Whirlpool${reset}        : %{whirlpool}
+${c18}RIPEMD160${reset}        : %{ripemd160}
+${c18}HAS160${reset}           : %{has160}
+${c18}GOST94${reset}           : %{gost94}
+${c18}GOST94-Cryptopro${reset} : %{gost94-cryptopro}
+${c18}GOST12-256${reset}       : %{gost12-256}
+${c18}GOST12-512${reset}       : %{gost12-512}
+${c18}SHA-224${reset}          : %{sha-224}
+${c18}SHA-256${reset}          : %{sha-256}
+${c18}SHA-384${reset}          : %{sha-384}
+${c18}SHA-512${reset}          : %{sha-512}
+${c18}SHA3-224${reset}         : %{sha3-224}
+${c18}SHA3-256${reset}         : %{sha3-256}
+${c18}SHA3-384${reset}         : %{sha3-384}
+${c18}SHA3-512${reset}         : %{sha3-512}
+${c18}EDON-R256${reset}        : %{edon-r256}
+${c18}EDON-R512${reset}        : %{edon-r512}
+${c18}BLAKE2S${reset}          : %{blake2s}
+${c18}BLAKE2B${reset}          : %{blake2b}
+${c18}SNEFRU128${reset}        : %{snefru128}
+${c18}SNEFRU256${reset}        : %{snefru256}
+"
+
+rhash -p $template ${@}

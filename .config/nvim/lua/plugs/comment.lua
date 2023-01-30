@@ -186,7 +186,7 @@ local function init()
             local selection = utils.get_visual_selection()
             fn.setreg(vim.v.register, selection)
             utils.normal("n", "gv")
-            -- cmd("normal! gv")
+            cmd("normal! gv")
             require("Comment.api").locked("toggle.linewise.current")()
         end,
         {desc = "Copy text and comment it out"}

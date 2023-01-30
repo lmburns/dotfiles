@@ -1,1 +1,1 @@
-syn keyword lfOptions += tagfmt incfilter jump-prev jump-next
+syn keyword lfOptions += tagfmt incfilter jump-prev jump-next history tempmarks

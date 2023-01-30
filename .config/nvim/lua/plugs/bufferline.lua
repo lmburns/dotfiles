@@ -87,8 +87,9 @@ function M.setup()
         {
             options = {
                 debug = {logging = true},
-                navigation = {mode = "uncentered"},
+                -- navigation = {mode = "uncentered"},
                 mode = "buffers",
+                themable = true, -- whether or not bufferline highlights can be overridden externally
                 numbers = function(opts)
                     return ("%s"):format(opts.raise(opts.ordinal))
                 end,
@@ -167,12 +168,14 @@ function M.setup()
                         separator = true
                     }
                 },
+                color_icons = true,
                 show_buffer_icons = true,
                 show_buffer_close_icons = false,
+                show_buffer_default_icon = true,
                 show_close_icon = false,
                 show_tab_indicators = true,
+                show_duplicate_prefix = true,
                 enforce_regular_tabs = true,
-                show_buffer_default_icon = true,
                 always_show_bufferline = true,
                 persist_buffer_sort = true,
                 -- sort_by = "id", -- 'relative_directory'
@@ -194,15 +197,24 @@ function M.setup()
                             end
                         },
                         {
+                            name = "Bufferize",
+                            icon = "",
+                            matcher = function(buf)
+                                local match = buf.path:match("(Bufferize).*")
+                                -- p(('hi: %s'):format(match))
+                                return match
+                            end
+                        },
+                        {
                             name = "SQL",
                             matcher = function(buf)
                                 return buf.filename:match("%.sql$")
                             end
                         },
                         {
-                            highlight = {fg = "#418292", underline = true},
                             name = "tests",
                             icon = "",
+                            highlight = {fg = "#418292", underline = true},
                             matcher = function(buf)
                                 local name = buf.filename
                                 if name:match("%.sql$") == nil then
@@ -229,25 +241,6 @@ function M.setup()
         }
     )
 end
-
----@deprecated
----Bufdelete moves forward, I'm used to moving backwards
--- function M.bufdelete()
---     local bufnr = api.nvim_get_current_buf()
---
---     utils.prequire("bufdelete"):map_ok(
---         function(bd)
---             bufferline.cycle(-1)
---             pcall(bd.bufdelete, bufnr)
---         end
---     ):unwrap_or(
---         function()
---             vim.cmd(("bp | bd %s"):format(bufnr))
---         end
---     )
---
---     -- require("bufdelete").bufdelete(bufnr)
--- end
 
 function M.setup_close_buffers()
     local close = D.npcall(require, "close_buffers")

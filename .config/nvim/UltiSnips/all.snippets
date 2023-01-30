@@ -24,6 +24,19 @@
 #
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 
+global !p
+from vimsnippets import foldmarker, make_box, get_comment_format
+from subprocess import check_output
+from datetime import datetime
+
+LOREM = """
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod \
+tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At \
+vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, \
+no sea takimata sanctus est Lorem ipsum dolor sit amet.
+"""
+endglobal
+
 snippet mit "MIT license" b
 MIT (c) ${1:`git config user.name`}
 ${2}
@@ -32,12 +45,6 @@ endsnippet
 snippet c)
 Copyright `&enc[:2] == "utf" ? "©" : "(c)"` `strftime("%Y")` ${1:`git config user.name`}. All Rights Reserved.
 endsnippet
-
-global !p
-from vimsnippets import get_comment_format
-from subprocess import check_output
-from datetime import datetime
-endglobal
 
 snippet stit "Short title" b
 `!p
@@ -78,29 +85,18 @@ snip.rv += (' ' + eq + "\n" + beg.strip() + ' ' + (eq * 2) + ('=' * 8))
 `
 endsnippet
 
+# `!p snip.rv=get_comment_format()[0]` ${2:TODO}: $0${3: <${4:`!v strftime('%d-%m-%y')`}${5:, `!v g:snips_author`}>} `!p snip.rv=get_comment_format()[2]`
+
 snippet todo "TODO comment" bw
-`!p snip.rv=get_comment_format()[0]` ${1:TODO}: $2${3: <`!v strftime('%y-%m-%d %H:%M')`, `git config user.name`>} `!p snip.rv=get_comment_format()[2]`
+`!p snip.rv=get_comment_format()[0]` ${1:TODO}: $2${3: <`!v strftime('%m-%d-%y %I:%M%p')`, `git config user.name`>}
 endsnippet
 
 snippet today "date of today" b
-`date +%F`
+`date +%m-%d-%4Y`
 endsnippet
 
 snippet yesterday "date of today" b
-`[[ "$OSTYPE" =~ darwin ]] && date -v -1d +%F || date --date=yesterday +%F`
-endsnippet
-
-snippet modeline2 "# vim: set ..." b
-`!p
-beg, end = vim.eval("&commentstring").split('%s')
-snip.rv += beg.strip() + ' '
-`vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!p
-snip.rv += (': ' + end.strip()).strip()
-`
-endsnippet
-
-snippet modeline3 "Vim settings" b
-vim:${1:filetype=$2:}${3:foldmethod=${4:marker}:}${5:${7:tabstop=${6:4}:}${9:shiftwidth=${8:4}:}${11:softtabstop=${10:4}:}${12:noexpandtab:}}
+`[[ "$OSTYPE" =~ darwin ]] && date -v -1d +%m-%d-%4Y || date --date=yesterday +%m-%d-%4Y`
 endsnippet
 
 snippet vimsf "Vim modeline fdm=marker"
@@ -138,7 +134,7 @@ snip += d
 $0
 endsnippet
 
-snippet boxx "A nice box, fits just around text" b
+snippet box "A nice box, fits just around text" b
 `!p
 box = make_box(len(t[1]))
 snip.rv = box[0]
@@ -149,31 +145,6 @@ snip.rv = box[2]
 snip += box[3]`
 $0
 endsnippet
-
-# TODO:
-
-# snippet afbox "Ansii box, wide"
-# `!p
-# snip.rv = get_comment_format()[0]
-# snip.rv += ' ┌' + '─' * (len(t[1]) + 2) + '┐'
-# snip += get_comment_format()[0]
-# ` │ ${1:${VISUAL:content}} │
-# `!p
-# snip.rv = get_comment_format()[0]
-# snip.rv += ' └' + '─' * (len(t[1]) + 2) + '┘'`
-# $0
-# endsnippet
-
-# def make_box(twidth, bwidth=None):
-#     b, m, e, i = (s.strip() for s in get_comment_format())
-#     m0 = m[0] if m else ''
-#     bwidth_inner = bwidth - 3 - max(len(b), len(i + e)) if bwidth else twidth + 2
-#     sline = b + m + bwidth_inner * m0 + 2 * m0
-#     nspaces = (bwidth_inner - twidth) // 2
-#     mlines = i + m + " " + " " * nspaces
-#     mlinee = " " + " "*(bwidth_inner - twidth - nspaces) + m
-#     eline = i + m + bwidth_inner * m0 + 2 * m0 + e
-#     return sline, mlines, mlinee, eline
 
 snippet bbox "Wider box" b
 `!p
@@ -215,7 +186,7 @@ else:
 	l = '%-4s' % c
 	r = '%4s'  % c
 
-time      = '%-68s' % ("Created: " + datetime.now().strftime('%F %H:%M'))
+time      = '%-68s' % ("Created: " + datetime.now().strftime('%F %I:%M:%S %p'))
 
 snip.rv += u
 snip += l + time      + r
@@ -243,11 +214,15 @@ snippet shebang "Add shebang line" b
 endsnippet
 
 snippet date "YYYY-MM-DD" w
-`!v strftime("%Y-%m-%d")`
+`!v strftime("%m-%d-%Y")`
 endsnippet
 
-snippet time "HH:MM" w
-`!v strftime("%H:%M")`
+snippet ddate "Month DD, YYYY" w
+`!v strftime("%b %d, %Y")`
+endsnippet
+
+snippet diso "ISO format datetime" w
+`!v strftime("%Y-%m-%d %H:%M:%S%z")`
 endsnippet
 
 snippet dtime_readable "1997 Apr 27 11:53:25" w
@@ -258,31 +233,34 @@ snippet dtime_iso8601 "1997 Apr 27 11:53:25" w
 `!v strftime("%Y-%m-%dT%H:%M:%S")`
 endsnippet
 
-snippet timestamp
-`!v strftime("%Y-%m-%d %H:%M:%S")`
+snippet time "HH:MM" w
+`!v strftime("%I:%M:%S%p")`
 endsnippet
 
-snippet lorem "Lorem ipsum" b
+snippet timestamp
+`!v strftime("%m-%d-%Y %I:%M:%S%p")`
+endsnippet
+
+snippet loreml "Lorem ipsum longer" b
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod ligula odio, at blandit orci facilisis in. Nam mollis odio a aliquam fringilla. Maecenas lacinia, ante quis facilisis tincidunt, libero felis laoreet est, a interdum magna justo sit amet libero. Sed purus justo, pellentesque eu lacus sit amet, iaculis dignissim felis. Curabitur euismod interdum turpis, id venenatis justo accumsan sit amet. Nulla scelerisque lectus vel justo venenatis, dictum pharetra tellus maximus. Praesent dui eros, rutrum in sapien non, luctus sollicitudin dolor. Morbi et ipsum lobortis, imperdiet orci maximus, fermentum turpis. Morbi dapibus convallis auctor. Aliquam dictum pretium varius. Cras est eros, mattis dapibus interdum quis, tempus quis odio. Praesent maximus lorem sed sem luctus porttitor at ac tellus. Mauris quis fermentum felis, lobortis placerat nibh. Sed pulvinar, quam auctor tempor commodo, turpis felis dictum neque, et gravida nunc diam eget turpis. Vestibulum et purus eget erat facilisis porta quis ut felis. Donec facilisis orci vel lectus consectetur, eget bibendum nisi suscipit.
 endsnippet
 
 snippet loremn "Lorem ipsum with newlines" b
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod ligula
-odio, at blandit orci facilisis in. Nam mollis odio a aliquam fringilla.
-Maecenas lacinia, ante quis facilisis tincidunt, libero felis laoreet est,
-a interdum magna justo sit amet libero. Sed purus justo, pellentesque eu lacus
-sit amet, iaculis dignissim felis. Curabitur euismod interdum turpis, id venenatis
-justo accumsan sit amet. Nulla scelerisque lectus vel justo venenatis, dictum pharetra
-tellus maximus. Praesent dui eros, rutrum in sapien non, luctus sollicitudin dolor.
-Morbi et ipsum lobortis, imperdiet orci maximus, fermentum turpis. Morbi dapibus
-convallis auctor. Aliquam dictum pretium varius. Cras est eros, mattis dapibus interdum
-quis, tempus quis odio. Praesent maximus lorem sed sem luctus porttitor at ac tellus.
-Mauris quis fermentum felis, lobortis placerat nibh. Sed pulvinar, quam auctor tempor
-commodo, turpis felis dictum neque, et gravida nunc diam eget turpis. Vestibulum et
-purus eget erat facilisis porta quis ut felis. Donec facilisis orci vel lectus consectetur,
-eget bibendum nisi suscipit.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer euismod ligula odio, at blandit
+orci facilisis in. Nam mollis odio a aliquam fringilla. Maecenas lacinia, ante quis facilisis
+tincidunt, libero felis laoreet est, a interdum magna justo sit amet libero. Sed purus justo,
+pellentesque eu lacus sit amet, iaculis dignissim felis. Curabitur euismod interdum turpis, id
+venenatis justo accumsan sit amet. Nulla scelerisque lectus vel justo venenatis, dictum pharetra
+tellus maximus. Praesent dui eros, rutrum in sapien non, luctus sollicitudin dolor. Morbi et ipsum
+lobortis, imperdiet orci maximus, fermentum turpis. Morbi dapibus convallis auctor. Aliquam dictum
+pretium varius. Cras est eros, mattis dapibus interdum quis, tempus quis odio. Praesent maximus
+lorem sed sem luctus porttitor at ac tellus. Mauris quis fermentum felis, lobortis placerat nibh.
+Sed pulvinar, quam auctor tempor commodo, turpis felis dictum neque, et gravida nunc diam eget
+turpis. Vestibulum et purus eget erat facilisis porta quis ut felis. Donec facilisis orci vel lectus
+consectetur, eget bibendum nisi suscipit.
 endsnippet
 
+# Usage: `lorem<number>` then hit <C-y> or whatever `g.UltiSnipsExpandTrigger` is
 snippet "lorem(([1-4])?[0-9])?" "Lorem Ipsum generator" r
 `!p snip.rv = " ".join(LOREM.split()[:int(match.group(1))]) if match.group(1) else LOREM`
 endsnippet
@@ -290,3 +268,7 @@ endsnippet
 snippet uuid "Random UUID" w
 `!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
 endsnippet
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                         Disabled                         │
+# ╰──────────────────────────────────────────────────────────╯

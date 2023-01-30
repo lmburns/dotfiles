@@ -283,7 +283,6 @@ _xdotool_commands() {
     'sleep:Sleep for a specified period. Fractions of seconds (like 1.3, or 0.4) are valid'
   )
   _describe -t xdotool-commands "command" subcommands
-  _xdotool_tui_cmds
 }
 
 _xdotool () {

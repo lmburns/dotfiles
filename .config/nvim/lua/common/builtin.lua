@@ -99,7 +99,7 @@ end
 ---TODO: Finish this
 ---Translate spelling mistakes to quickfix
 function M.spell2qf()
-    vim.opt_local.spell = true
+    vim.opt.spell = true
     cmd.norm({"gg", bang = true})
 
     local bufnr = api.nvim_get_current_buf()

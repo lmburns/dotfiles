@@ -132,13 +132,13 @@ alias __='doas'
   alias lse='exa -Flhb --git --sort=extension --icons'
   # Reverse
   alias llr='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions --reverse'
-
+  # Sort by modified
   alias lsm='exa -Flhb --git --sort=modified --modified --icons'
   # 10 oldest files
   alias lsm10O='lsm *(D.Om[1,10])'
   # 10 newest files
   alias lsm10N='lsm *(D.om[1,10])'
-
+  # Sort by size
   alias lsz='exa -Flhb --git --sort=size --icons'
   # 10 biggest files
   alias lsbig='lsz *(.OL[1,10])'

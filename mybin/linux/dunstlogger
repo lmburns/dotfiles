@@ -15,7 +15,6 @@
 # DUNST_TIMEOUT,
 # DUNST_TIMESTAMP
 # DUNST_DESKTOP_ENTRY
-# DUNST_STACK_TAG
 ################
 # appname, summary, body, icon_path, urgency
 

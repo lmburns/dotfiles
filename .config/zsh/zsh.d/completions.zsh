@@ -258,11 +258,6 @@ zstyle+ \
           fzf-preview 'r=$realpath; w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --style=numbers --terminal-width=$w --color=always $r) \
                         || ([[ -d $r ]] && tree -C $r | less) || (echo $r 2> /dev/null | head -200)' \
-    + ':updatelocal:argument-rest' \
-          fzf-flags '--preview-window=down:5:wrap' \
-    + ':updatelocal:argument-rest' \
-          fzf-preview "git --git-dir=$UPDATELOCAL_GITDIR/\${word}/.git log --color \
-                      --date=short --pretty=format:'%Cgreen%cd %h %Creset%s %Cred%d%Creset ||%b' ..FETCH_HEAD 2>/dev/null" \
     + ':systemctl-*:*'           fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word' \
     + ':systemctl-*:*'           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':figlet:option-f-1'       fzf-preview 'figlet -f $word Hello world' \
@@ -288,6 +283,12 @@ zstyle+ \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
+
+# + ':updatelocal:argument-rest' \
+#       fzf-flags '--preview-window=down:5:wrap' \
+# + ':updatelocal:argument-rest' \
+#       fzf-preview "git --git-dir=$UPDATELOCAL_GITDIR/\${word}/.git log --color \
+#                   --date=short --pretty=format:'%Cgreen%cd %h %Creset%s %Cred%d%Creset ||%b' ..FETCH_HEAD 2>/dev/null" \
 # ]]] === fzf-tab ===
 
 # ========================================================================
@@ -480,4 +481,4 @@ compdef _functions     fim
 compdef _functions     freload
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 
-# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:

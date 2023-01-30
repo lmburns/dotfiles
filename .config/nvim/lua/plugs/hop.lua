@@ -17,7 +17,8 @@ local jump_target = require("hop.jump_target")
 -- =============================== Hop ================================
 function M.setup()
     -- "etovxqpdygfblzhckisuran"
-    hop.setup({keys = "asdfjklhmnwertzxcvbuio"})
+    -- "asdfjklhmnwertzxcvbuio"
+    hop.setup({keys = "abcdefghijklmnopqrstuvwxyz"})
 end
 
 local function wrap_targets(targets)

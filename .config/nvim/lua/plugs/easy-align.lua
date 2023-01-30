@@ -19,6 +19,37 @@ local g = vim.g
 | `<Right>` | `stick_to_left`    | `{ 'stick_to_left': 0, 'left_margin': 1 }`                 |
 | `<Down>`  | `*_margin`         | `{ 'left_margin': 0, 'right_margin': 0 }`                  |
 ]]
+
+--[[
+| Option           | Expression |
+| ================ | ========== |
+| filter           |   [gv]/.*/ |
+| left_margin      |    l[0-9]+ |
+| right_margin     |    r[0-9]+ |
+| stick_to_left    |     < or > |
+| ignore_unmatched |     iu[01] |
+| ignore_groups    |   ig\[.*\] |
+| align            |   a[lrc*]* |
+| delimiter_align  |     d[lrc] |
+| indentation      |    i[ksdn] |
+
+]]
+-- EXAMPLE 1: `ignore_unmatched`
+-- `#` = `ignore_unmatched`
+-- `iu` = `i`gnore_`u`nmatched
+
+-- Equivalent
+-- `:EasyAlign#{'iu':0}`
+-- `:EasyAlign#iu0`
+--
+-- EXAMPLE 2: Using regular expression `/#/`
+-- `:EasyAlign/#/ig['String']iu0`
+--  `:'<,'>EasyAlign**/[\t]\+/ig['Comment']`
+
+-- EXAMPLE 3: Exampl format
+-- `:EasyAlign * /[:;]\+/ { 'stick_to_left': 1, 'left_margin': 0 }`
+
+
 function M.setup()
     g.easy_align_bypass_fold = 1
 
@@ -42,7 +73,8 @@ function M.setup()
         [">"] = {pattern = table.concat(gt_sign, "\\|")},
         ["<"] = {pattern = table.concat(lt_sign, "\\|")},
         -- ["\\"] = {pattern = [[\\]]},
-        ["\\"] = {pattern = "\\", left_margin = 1, right_margin = 0},
+        -- ["\\"] = {pattern = "\\", left_margin = 1, right_margin = 0},
+        ["#"] = {pattern = "#", ignore_groups = {"String"}, ignore_unmatched = 0},
         ["/"] = {pattern = [[//\+\|/\*\|\*/]], delimiter_align = "l", ignore_groups = {"!Comment"}},
         [";"] = {pattern = ";", left_margin = 0},
         [","] = {pattern = ",", left_margin = 0, right_margin = 1},
@@ -96,6 +128,9 @@ end
 
 local function init()
     M.setup()
+
+    -- Insert mode tips
+    -- <,'>:EasyAlign **/[\t]\+/
 
     map("n", "ga", "<Plug>(EasyAlign)")
     map("x", "ga", "<Plug>(EasyAlign)")

@@ -39,10 +39,10 @@ zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
 typeset -g DIRSTACKSIZE=20
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
-typeset -g SAVEHIST=10_000_000
+typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
-typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
+typeset -g SAVEHIST=10_000_000
 typeset -g LISTMAX=50                            # Size of asking history
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
@@ -68,14 +68,16 @@ typeset -ga zle_highlight=(
   paste:none
 )
 
-[[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
+# [[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
 
 () {
   # local i; i=${(@j::):-%\({1..36}"e,$( echoti cuf 2 ),)"}
   # typeset -g PS4=$'%(?,,\t\t-> %F{9}%?%f\n)'
   # PS4+=$'%2<< %{\e[2m%}%e%22<<             %F{10}%N%<<%f %3<<  %I%<<%b %(1_,%F{11}%_%f ,)'
-  declare -g PS2="%F{1}%B>%f%b "
-  declare -g RPS2="%F{14}%i:%_%f"
+
+  declare -g SPROMPT="Correct '%F{17}%B%R%f%b' to '%F{20}%B%r%f%b'? [%F{18}%Bnyae%f%b] : "  # Spelling correction prompt
+  declare -g PS2="%F{1}%B>%f%b "  # Secondary prompt
+  declare -g RPS2="%F{14}%i:%_%f" # Right-hand side of secondary prompt
 
   autoload -Uz colors; colors
   local red=$fg_bold[red] blue=$fg[blue] rst=$reset_color
@@ -99,7 +101,7 @@ setopt no_hist_no_functions # don't remove function defs from history
 # setopt inc_append_history # append to history file immediately, not when shell exits
 
 # cd settings
-setopt auto_cd   auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
+setopt auto_cd      auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
 setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
 
 setopt prompt_subst # allow substitution in prompt (p10k?)
@@ -202,11 +204,6 @@ local dir=${(%):-%~}
 }
 alias c=cdr
 
-# local dir
-# for dir ($dirstack) {
-#   [[ -d "$dir" ]] && { cd -q "$dir"; break }
-# }
-
 fpath=( ${0:h}/{functions,completions} "${fpath[@]}" )
 autoload -Uz $fpath[1]/*(:t)
 # module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
@@ -215,9 +212,9 @@ autoload -Uz $fpath[1]/*(:t)
 # === zinit === [[[
 # ========================== zinit-functions ========================== [[[
 # Shorten zinit command
-zt() { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
+zt()       { zinit depth'3' lucid ${1/#[0-9][a-c]/wait"${1}"} "${@:2}"; }
 # Zinit wait if command is already installed
-has() { print -lr -- ${(j: && :):-"[[ ! -v commands[${^@}] ]]"}; }
+has()      { print -lr -- ${(j: && :):-"[[ ! -v commands[${^@}] ]]"}; }
 # Print command to be executed by zinit
 mv_clean() { print -lr -- "command mv -f tar*/rel*/${1:-%PLUGIN%} . && cargo clean"; }
 
@@ -237,7 +234,7 @@ id_as() {
 {
   [[ ! -f $ZINIT[BIN_DIR]/zinit.zsh ]] && {
     command mkdir -p "$ZINIT_HOME" && command chmod g-rwX "$ZINIT_HOME"
-    command git clone https://github.com/lmburns/zinit "$ZINIT[BIN_DIR]"
+    command git clone https://github.com/zdarma-continuum/zinit "$ZINIT[BIN_DIR]"
   }
 } always {
   builtin source "$ZINIT[BIN_DIR]/zinit.zsh"
@@ -302,15 +299,10 @@ add-zsh-hook chpwd chpwd_ls
 # ]]] === annex, prompt ===
 
 # === trigger-load block ===[[[
-
 # unsure why only works with number
 zt 0a light-mode for \
   is-snippet trigger-load'!x' blockf svn \
     OMZ::plugins/extract \
-  patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
-  trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
-  atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
-    NICHOLAS85/updatelocal \
   trigger-load'!zhooks' \
     agkozak/zhooks \
   trigger-load'!ugit' \
@@ -319,6 +311,12 @@ zt 0a light-mode for \
     wfxr/forgit \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist
+
+# patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
+# trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
+# atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
+#   NICHOLAS85/updatelocal \
+#
 # atinit'forgit_ignore="/dev/null"' \
 
 zt 0a light-mode for \
@@ -330,8 +328,6 @@ zt 0a light-mode for \
     Aloxaf/gencomp
 
 # ]]] === trigger-load block ===
-
-# OMZP::sudo/sudo.plugin.zsh
 
 # === wait'0a' block === [[[
 zt 0a light-mode for \
@@ -359,8 +355,7 @@ zt 0a light-mode for \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
   atinit'alias zmand="info zsh "' \
     mattmc3/zman \
-    anatolykopyl/doas-zsh-plugin \
-    olets/zsh-abbr
+    anatolykopyl/doas-zsh-plugin
 
 # ]]] === wait'0a' block ===
 
@@ -387,9 +382,6 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   trackbinds bindmap"^R -> ^W" \
     m42e/zsh-histdb-fzf
 #  ]]] === wait'0b' - patched ===
-
-# atuin syncs across computers, keeps own copy
-# histdb is more friendly with manual search
 
 #  === wait'0b' === [[[
 zt 0b light-mode for \
@@ -806,8 +798,6 @@ zt 0c light-mode null for \
     x-motemen/ghq \
   lbin from'gh-r' \
     Songmu/ghg \
-  lbin from'gh-r' \
-    human37/gee \
   lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; mv -f **/**.zsh _tig' \
   make'install' atpull'%atclone' mv"_tig -> $ZINIT[COMPLETIONS_DIR]" \
     jonas/tig \
@@ -1245,7 +1235,7 @@ $FZF_DEFAULT_OPTS
 # source $ZDOTDIR/.zkbd/tmux-256color-:0
 
 zt 0b light-mode null id-as for \
-  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,tmux,git-token,abbreviations}.zsh" \
+  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,tmux,git-token}.zsh" \
     zdharma-continuum/null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";
@@ -1286,6 +1276,9 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
-typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
+# TODO: The deferring here should not be necessary.
+#       Find out what is causing HISTFILE=${XDG_CACHE_HOME}/bash/history
+unset HISTFILE
+defer -a -t 2 -c 'typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"'
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
