@@ -74,31 +74,7 @@ function compctl() {
 function defer_completion() {
 
 zstyle ':completion:*' use-compctl false
-
-zstyle+ ':completion'        ''          ''                                                         \
-      + ':complete:*'        list-colors ${(s.:.)LS_COLORS}                                         \
-      + ':*:options:*'       list-colors '=(#b)(--[^ ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25' \
-      + ':*:commands:*'      list-colors '=*=32'                                                    \
-      + ':*:cpan-module'     list-colors '=(#b)(*)=1;30=37;46'                                      \
-      + ':*:remote-pip'      list-colors '=(#b)(*)=1;30=37;46'                                      \
-      + ':*:remote-gem'      list-colors '=(#b)(*)=1;30=37;46'                                      \
-      + ':*:remote-crate'    list-colors '=(#b)(*)=1;30=1;36;44'                                    \
-      + ':*:processes'       list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'                 \
-      + ':*:processes-names' list-colors '=(#b)(*)=1;30=1;37;43'
-
 zstyle '*' single-ignored show # don't insert single value
-
-# zstyle -e ':completion:*' completer '
-#   if [[ $_last_try != "$HISTNO$BUFFER$CURSOR" ]] ; then
-#     _last_try="$HISTNO$BUFFER$CURSOR"
-#     reply=(_expand_alias _complete _extensions _match _prefix _files)
-#   elif [[ $words[1] == (rm|rip|diff(|sitter)|delta|git-dsf|git-(add|rm)|bat|nvim) ]] ; then
-#     reply=(_complete _files)
-#   else
-#     reply=(_complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist)
-#     # reply=(_oldlist _expand _force_rehash _complete _ignored _correct _approximate _files)
-#     # reply=(_complete _ignored _correct _approximate)
-#   fi'
 
 # + ''                show-completer = debugging
 # + ''                accept-exact '*(N)' \
@@ -106,9 +82,9 @@ zstyle '*' single-ignored show # don't insert single value
 # + ':correct:*'      insert-unambiguous true \
 # + ''                list-dirs-first true \ # Shows directories first in sep group
 # + ':messages'       format ' %F{4} -- %f' \
+# + ''                list-grouped true \
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                list-grouped true \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                special-dirs false \
       + ':(^systemctl):*' group-name '' \
@@ -338,63 +314,76 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 # zstyle ':completion:*:default:*' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=0;38;2;254;128;25'
 # zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==35=35}:${(s.:.)LS_COLORS}")';
 
-zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
-      + ':builtins'                     list-colors '=(#b)(*)=1;30=1;37;4;43' \
-      + ':executables'                  list-colors '=(#b)(*)=1;30=1;37;44'   \
-      + ':parameters'                   list-colors '=(#b)(*)=1;30=1;32;45'   \
-      + ':abs-directories'              list-colors '=(#b)(*)=1;30=1;32;45'   \
-      + ':reserved-words'               list-colors '=(#b)(*)=1;30=1;4;37;45' \
-      + ':functions'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
-      + ':aliases'                      list-colors '=(#b)(*)=1;30=34;42;4'   \
-      + ':alias'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
-      + ':suffix-aliases'               list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
-      + ':users'                        list-colors '=(#b)(*)=1;30=1;37;42'   \
-      + ':hosts'                        list-colors '=(#b)(*)=1;30=1;37;43'   \
-      + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
-      + ':corrections'                  list-colors '=(#b)(*)=0;38;2;160;100;105' \
-      + ':original'                     list-colors '=(#b)(*)=0;38;2;76;150;168'   \
-      + ':*:commits'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
-      + ':heads'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
-      + ':commit-tags'                  list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':cached-files'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':files'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':blobs'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':blob-objects'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':trees'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':tags'                         list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':heads-local'                  list-colors '=(#b)(*)=1;30=1;34;43;4' \
-      + ':heads-remote'                 list-colors '=(#b)(*)=1;30=1;37;46'   \
-      + ':modified-files'               list-colors '=(#b)(*)=1;30=1;37;42'   \
-      + ':revisions'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
-      + ':recent-branches'              list-colors '=(#b)(*)=1;30=1;37;44'   \
-      + ':remote-branch-names-noprefix' list-colors '=(#b)(*)=1;30=1;33;46'   \
-      + ':blobs-and-trees-in-treeish'   list-colors '=(#b)(*)=1;30=1;34;43'   \
-      + ':commit-objects'               list-colors '=(#b)(*)=1;30=1;37;43'   \
-      + ':*(git|git-checkout):*:files'  list-colors '=(#b)(*)=1;30=1;32;43'   \
-      + ':prefixes'                     list-colors '=(#b)(*)=1;30=1;37;43'   \
-      + ':manuals.1'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
-      + ':manuals.2'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
-      + ':manuals.3'                    list-colors '=(#b)(*)=1;30=1;37;43'   \
-      + ':manuals.4'                    list-colors '=(#b)(*)=1;30=37;46'     \
-      + ':manuals.5'                    list-colors '=(#b)(*)=1;30=1;34;43;4' \
-      + ':manuals.6'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
-      + ':manuals.7'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
-      + ':manuals.8'                    list-colors '=(#b)(*)=1;30=1;34;41;4' \
-      + ':manuals.9'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
-      + ':manuals.n'                    list-colors '=(#b)(*)=1;30=1;4;37;45' \
-      + ':manuals.0p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-      + ':manuals.1p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-      + ':manuals.3p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-      + ':npm-search'                   list-colors '=(#b)(*)=1;30=1;36;44'   \
-      + ':npm-cache'                    list-colors '=(#b)(*)=1;30=1;37;46'   \
-    +   ':*:*:*:attached-sessions'      list-colors '=(#b)(*)=1;30=1;37;43'   \
-    +   ':*:*:*:detached-sessions'      list-colors '=(#b)(*)=1;30=1;37;45'   \
-    +   ':*:commands'                   list-colors '=(#b)(*)=1;37;45'        \
-    +   ':*:tmux'                       list-colors '=(#b)(*)=1;37;45'        \
-    +   ':*:last-ten'                   list-colors '=(#b)(*)=1;33;45'        \
-    +   ':*:last-line'                  list-colors '=(#b)(*)=1;37;44'        \
-    +   ':*:last-clip'                  list-colors '=(#b)(*)=1;37;45'
+# zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
+
+# zstyle+ ':completion'        ''          ''                                                         \
+#       + ':complete:*'        list-colors ${(s.:.)LS_COLORS}                                         \
+#       + ':*:options:*'       list-colors '=(#b)(--[^ ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25' \
+#       + ':*:commands:*'      list-colors '=*=32'                                                    \
+#       + ':*:cpan-module'     list-colors '=(#b)(*)=1;30=37;46'                                      \
+#       + ':*:remote-pip'      list-colors '=(#b)(*)=1;30=37;46'                                      \
+#       + ':*:remote-gem'      list-colors '=(#b)(*)=1;30=37;46'                                      \
+#       + ':*:remote-crate'    list-colors '=(#b)(*)=1;30=1;36;44'                                    \
+#       + ':*:processes'       list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'                 \
+#       + ':*:processes-names' list-colors '=(#b)(*)=1;30=1;37;43'
+#
+# zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
+#       + ':builtins'                     list-colors '=(#b)(*)=1;30=1;37;4;43' \
+#       + ':executables'                  list-colors '=(#b)(*)=1;30=1;37;44'   \
+#       + ':parameters'                   list-colors '=(#b)(*)=1;30=1;32;45'   \
+#       + ':abs-directories'              list-colors '=(#b)(*)=1;30=1;32;45'   \
+#       + ':reserved-words'               list-colors '=(#b)(*)=1;30=1;4;37;45' \
+#       + ':functions'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
+#       + ':aliases'                      list-colors '=(#b)(*)=1;30=34;42;4'   \
+#       + ':alias'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
+#       + ':suffix-aliases'               list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
+#       + ':users'                        list-colors '=(#b)(*)=1;30=1;37;42'   \
+#       + ':hosts'                        list-colors '=(#b)(*)=1;30=1;37;43'   \
+#       + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
+#       + ':corrections'                  list-colors '=(#b)(*)=0;38;2;160;100;105' \
+#       + ':original'                     list-colors '=(#b)(*)=0;38;2;76;150;168'   \
+#       + ':*:commits'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
+#       + ':heads'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
+#       + ':commit-tags'                  list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':cached-files'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':files'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':blobs'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':blob-objects'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':trees'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':tags'                         list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':heads-local'                  list-colors '=(#b)(*)=1;30=1;34;43;4' \
+#       + ':heads-remote'                 list-colors '=(#b)(*)=1;30=1;37;46'   \
+#       + ':modified-files'               list-colors '=(#b)(*)=1;30=1;37;42'   \
+#       + ':revisions'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
+#       + ':recent-branches'              list-colors '=(#b)(*)=1;30=1;37;44'   \
+#       + ':remote-branch-names-noprefix' list-colors '=(#b)(*)=1;30=1;33;46'   \
+#       + ':blobs-and-trees-in-treeish'   list-colors '=(#b)(*)=1;30=1;34;43'   \
+#       + ':commit-objects'               list-colors '=(#b)(*)=1;30=1;37;43'   \
+#       + ':*(git|git-checkout):*:files'  list-colors '=(#b)(*)=1;30=1;32;43'   \
+#       + ':prefixes'                     list-colors '=(#b)(*)=1;30=1;37;43'   \
+#       + ':manuals.1'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
+#       + ':manuals.2'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
+#       + ':manuals.3'                    list-colors '=(#b)(*)=1;30=1;37;43'   \
+#       + ':manuals.4'                    list-colors '=(#b)(*)=1;30=37;46'     \
+#       + ':manuals.5'                    list-colors '=(#b)(*)=1;30=1;34;43;4' \
+#       + ':manuals.6'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
+#       + ':manuals.7'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
+#       + ':manuals.8'                    list-colors '=(#b)(*)=1;30=1;34;41;4' \
+#       + ':manuals.9'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
+#       + ':manuals.n'                    list-colors '=(#b)(*)=1;30=1;4;37;45' \
+#       + ':manuals.0p'                   list-colors '=(#b)(*)=1;30=37;46'     \
+#       + ':manuals.1p'                   list-colors '=(#b)(*)=1;30=37;46'     \
+#       + ':manuals.3p'                   list-colors '=(#b)(*)=1;30=37;46'     \
+#       + ':npm-search'                   list-colors '=(#b)(*)=1;30=1;36;44'   \
+#       + ':npm-cache'                    list-colors '=(#b)(*)=1;30=1;37;46'   \
+#     +   ':*:*:*:attached-sessions'      list-colors '=(#b)(*)=1;30=1;37;43'   \
+#     +   ':*:*:*:detached-sessions'      list-colors '=(#b)(*)=1;30=1;37;45'   \
+#     +   ':*:commands'                   list-colors '=(#b)(*)=1;37;45'        \
+#     +   ':*:tmux'                       list-colors '=(#b)(*)=1;37;45'        \
+#     +   ':*:last-ten'                   list-colors '=(#b)(*)=1;33;45'        \
+#     +   ':*:last-line'                  list-colors '=(#b)(*)=1;37;44'        \
+#     +   ':*:last-clip'                  list-colors '=(#b)(*)=1;37;45'
 
 # zstyle -e ':completion:*:local-directories' list-colors '=(#b)(*)=0;38;2;129;156;59'
 # zstyle -e ':completion:*:*:f:*:*' list-colors '=(#b)(*)=0;38;2;129;156;59'

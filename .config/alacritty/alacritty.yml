@@ -304,7 +304,8 @@ schemes:
       - { index: 22, color: '#938AA9' }
       - { index: 23, color: '#EA6962' }
       - { index: 24, color: '#E46876' }
-      - { index: 25, color: '#FF5D62' }
+      # - { index: 25, color: '#FF5D62' }
+      # - { index: 26, color: '#FF5D62' }
       - { index: 27, color: '#CC6666' }
       - { index: 28, color: '#77A172' }
       - { index: 29, color: '#83A598' }

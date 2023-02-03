@@ -74,6 +74,7 @@ function M.setup()
         augend.semver.alias.semver, -- 4.3.0
         augend.hexcolor.new {case = "lower"}, -- color #b4c900
         aug({"above", "below"}),
+        aug({"and", "&"}, false),
         aug({"and", "or"}),
         aug({"True", "False"}),
         aug({"enable", "disable"}),
@@ -118,7 +119,18 @@ function M.setup()
         aug({">>", "<<"}, false),
         aug({"++", "--"}, false),
         aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
-        aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false)
+        aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
+        -- Word => Number. Doesn't work Number => Word
+        aug({"one", "1"}),
+        aug({"two", "2"}),
+        aug({"three", "3"}),
+        aug({"four", "4"}),
+        aug({"five", "5"}),
+        aug({"six", "6"}),
+        aug({"seven", "7"}),
+        aug({"eight", "8"}),
+        aug({"nine", "9"}),
+        aug({"ten", "10"}),
     }
 
     -- Extend the default table

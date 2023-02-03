@@ -13,10 +13,6 @@ function ww() {
     /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
 }
 
-# ??
-# function double-accept() { deploy-code "BUFFER[-1]=''"; }
-# zle -N double-accept
-
 # List all commands
 function allcmds() {
   print -l ${(k)commands[@]} | sk --preview-window=hidden;
@@ -211,17 +207,23 @@ function restore()   { rename    's/^(.*).bak$/$1/g' $@ }
 function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
 function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
 
-# Backup a file
+# Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
 function bk() {
   emulate -L zsh
-  command cp -iv --preserve=all -b $1 ${1:r}_$(date --iso-8601=m).${1:e}
+  command cp -iv --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
+}
+
+# Backup a file with only a date. 'fname' -> 'fname_2023_01_30'
+function bk-today() {
+  emulate -L zsh
+  command cp -iv --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
 }
 
 # Add a date suffix to a file
 function datify() {
   emulate -L zsh
-  # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d').${1:e}
-  f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYY}}_{{mtime.MM}}_{{mtime.DD}}.${1:e}"
+  # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}
+  f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYYY}}_{{mtime.MM}}_{{mtime.DD}}${${${1:e}:+.${1:e}}:-}" "${@:2}"
 }
 
 # Only renames using f2

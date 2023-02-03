@@ -813,7 +813,14 @@ return packer.startup(
                 }
             )
 
-            use({"sQVe/sort.nvim", conf = "sort", cmd = {"Sort"}})
+            use(
+                {
+                    "sQVe/sort.nvim",
+                    conf = "sort",
+                    cmd = {"Sort"},
+                    keys = {{"n", "gW"}, {"x", "gW"}, {"v", "gW"}}
+                }
+            )
 
             use(
                 {
@@ -850,23 +857,23 @@ return packer.startup(
             use(
                 {
                     "mbbill/undotree",
-                    cmd = "UndoTreeToggle",
                     conf = "plugs.undotree",
+                    cmd = "UndoTreeToggle",
                     keys = {{"n", "<Leader>ut"}}
                 }
             )
 
-            use(
-                {
-                    "kevinhwang91/nvim-fundo",
-                    requires = "kevinhwang91/promise-async",
-                    conf = "fundo",
-                    -- run = [[require("fundo").install()]]
-                    run = function()
-                        require("fundo").install()
-                    end
-                }
-            )
+            -- use(
+            --     {
+            --         "kevinhwang91/nvim-fundo",
+            --         requires = "kevinhwang91/promise-async",
+            --         conf = "fundo",
+            --         -- run = [[require("fundo").install()]]
+            --         run = function()
+            --             require("fundo").install()
+            --         end
+            --     }
+            -- )
             -- ]]] === UndoTree ===
 
             -- ============================ Commenter ============================= [[[
@@ -1039,13 +1046,13 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "folke/paint.nvim",
-            --         event = "BufReadPre",
-            --         conf = "plugs.paint"
-            --     }
-            -- )
+            use(
+                {
+                    "folke/paint.nvim",
+                    event = "BufReadPre",
+                    conf = "plugs.paint"
+                }
+            )
 
             use(
                 {

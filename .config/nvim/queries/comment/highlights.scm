@@ -28,16 +28,16 @@
  (#any-of? @text.danger "FIXME" "XXX" "BUG"))
 
 ; Issue number (#123)
-("text" @number (#lua-match? @number "^#[0-9]+$"))
+("text" @number (#lua-match? @number "^#[%d]+$"))
 
 ; User mention (@user)
-("text" @constant (#lua-match? @constant "^[@][a-zA-Z0-9_-]+$"))
+("text" @constant (#lua-match? @constant "^[@][%w_-]+$"))
 
 ; Bold
-("text" @bold (#lua-match? @bold "^\*[a-zA-Z0-9_-]+\*$"))
+("text" @bold (#lua-match? @bold "^\*[%w_-]+\*$"))
 
 ; Underline
-("text" @underline (#lua-match? @underline "^\_[a-zA-Z0-9_-]+\_$"))
+("text" @underline (#lua-match? @underline "^\_[%w%s%p]+\_$"))
 
 ;; FIX: This doesn't work with spaces
 ; Code

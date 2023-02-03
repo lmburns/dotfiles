@@ -1,4 +1,5 @@
 # Author: https://github.com/lmburns
+
 colors:
   # Basic colors
   black: '201F1F' #   #201F1F
@@ -26,6 +27,7 @@ colors:
   bright_yellow: 'F79A32' # #F79A32
 
   bright_green: 'A3B95A' #     #A3B95A
+  citron: '989719' #           #989719
   med_green: '889B4A' #        #889B4A
   sea_green: '77A172' #        #77A172
   dark_seafoam: '24A36A' #     #24A36A
@@ -129,6 +131,10 @@ text:
 
     zshrc:
       foreground: magenta
+      font-style: bold
+
+    vim:
+      foreground: citron
       font-style: bold
 
     snippet:

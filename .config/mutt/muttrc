@@ -43,11 +43,11 @@ set copy          = yes # Always save a copy of outgoing messages
 set sleep_time    = 0   # Pause 0 seconds for informational messages
 set sendmail_wait = 1   # Number of seconds for $sendmail command to wait before giving up
 
+# set meta_key          # Interpret meta key as pressing escape + key
 set virtual_spoolfile # Use first defined virutal mailbox as spool file
-set meta_key          # Interpret meta key as pressing escape + key
 set mail_check_stats  # Periodically check mail stats
 
-set abort_key = "<Esc>"                                        # Cancel prompt
+set abort_key = "\Cx"                                          # Cancel prompt
 set editor    = "nvim"                                         # Editor used by neomutt
 set display_filter = "tac | sed '/\\\[-- Autoview/,+1d' | tac" # Command used to filter messages
 
@@ -218,7 +218,9 @@ bind index,pager ga      noop
 bind editor      <space> noop
 bind index       \Cf     noop
 bind index       z       noop
+bind index       h       noop
 bind index,pager i       noop
+bind index,pager d       noop
 
 bind index za collapse-thread
 bind index zA collapse-all # Missing :folddisable/foldenable
@@ -236,51 +238,47 @@ bind pager,attach h        exit
 bind pager        j        next-line
 bind pager        k        previous-line
 bind pager        l        view-attachments
-# bind  browser,index       \Ce      next-line
-# bind  browser,index       \Cy      previous-line
-# bind index              D delete-message
-bind pager,index d       noop
-bind index       dd      delete-message
-bind index       U       undelete-message
-bind index       L       limit
-bind index       h       noop
-bind index       l       display-message
-bind index,query <space> tag-entry
-#bind browser             h goto-parent
-# bind  index,pager         H        view-raw-message
+bind index        D        delete-message
+bind index        dd       delete-message
+bind index        U        undelete-message
+bind index        L        limit
+bind index        l        display-message
+bind index,query  <space>  tag-entry
+
+# bind browser             h goto-parent
 macro browser             h   '<change-dir><kill-line>..<enter>' "Go to parent folder"
 bind  browser             l   select-entry
 bind  browser             gg  top-page
 bind  browser             G   bottom-page
 bind  pager               gg  top
 bind  pager               G   bottom
-bind  index,pager,browser \Cd half-down
-bind  index,pager,browser \Cu half-up
+bind  pager,index,browser \Cd half-down
+bind  pager,index,browser \Cu half-up
 bind  pager,index         dT  delete-thread
 bind  pager,index         dt  delete-subthread
 bind  pager,index         gt  next-thread
 bind  pager,index         gT  previous-thread
-bind  index,pager         S   sync-mailbox
-bind  index,pager         I   group-reply
+bind  pager,index         S   sync-mailbox
+bind  pager,index         I   group-reply
 
 bind index \031 previous-undeleted # Mouse wheel
 bind index \005 next-undeleted     # Mouse wheel
 bind pager \031 previous-line      # Mouse wheel
 bind pager \005 next-line          # Mouse wheel
 
-bind index,pager   K   sidebar-prev
-bind index,pager   J   sidebar-next
-bind index,pager   O   sidebar-open
 bind pager,generic 0   next-page
-bind index,pager   \Cp sidebar-prev-new
-bind index,pager   \Cn sidebar-next-new
-bind index,pager   .   sidebar-toggle-visible
+bind pager,index   J   sidebar-next
+bind pager,index   K   sidebar-prev
+bind pager,index   O   sidebar-open
+bind pager,index   \Cp sidebar-prev-new
+bind pager,index   \Cn sidebar-next-new
+bind pager,index   .   sidebar-toggle-visible
 
-bind index,pager ]] next-unread
-bind index,pager [[ previous-unread
-bind index,pager N  search-opposite
+bind pager,index ]] next-unread
+bind pager,index [[ previous-unread
+bind pager,index N  search-opposite
+
 bind index       \\ toggle-new
-bind attach      i  exit
 
 # macro index,pager D "<purge-message><sync-mailbox>"
 
@@ -295,6 +293,7 @@ macro generic,pager <F4> "<shell-escape> less /usr/share/doc/neomutt/manual.txt<
 # ]]]
 
 # == Address Book == [[[
+# FIX: Why does this select emails when returning to index?
 macro index,pager a \
   "<enter-command>set my_pipe_decode=\$pipe_decode pipe_decode<return>\
   <pipe-message>abook --add-email<return>\
@@ -306,6 +305,8 @@ macro index,pager A \
     "<pipe-message>khard add-email<return>" \
     "add the sender email address to khard"
 # ]]]
+
+macro index \ef 'T~A<return>' "select all emails"
 
 macro index \Cr "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "mark all messages as read"
 
@@ -341,13 +342,13 @@ macro index,pager ,, \
   <sidebar-next><sidebar-open><enter-command>set sidebar_visible=\$my_old_visible<enter>" \
   "move to next sidebar folder"
 
-# TODO: Trying to find macro to unsubscribe from mailing list
-# macro index X ':set fast_reply=yes^M:set editor="touch %s"^Mv/confirm ^Mrf^A^K^Myqd:reset fast_reply^M:set editor="vim %s"^M'
-# macro pager X ':set fast_reply=yes^M:set editor="touch %s"^Mv/confirm ^Mrf^A^K^Myqd:reset fast_reply^M:set editor="vim %s"^M'
+# TODO: Create a keybinding using the <what-key> function
+# TODO: Create a keybinding to copy only plain text
+macro index,pager,browser ,c "<pipe-message>xsel -i -b\n" "copy message"
 
-# macro index G <last-entry>
-# bind index < first-entry
-# bind index > last-entry
+macro index gn '<change-folder><enter>' "go to next inbox with unread emails"
+
+macro compose a '<attach-file>~/<tab><tab><sort>a' "show home directory sorted"
 
 macro index,pager p "s=Junk<enter>"     "mark as spam"
 macro index,pager x "s!<enter>"         "save to inbox"
@@ -362,13 +363,18 @@ macro index,pager R \
  s=draft_tmp<enter><recall-message><enter-command>set postponed='=INBOX' maildir_trash=\$my_old_maildir_trash<enter>" \
  "recall current message"
 
-# press 'H' on a message to change this setting once and view the HTML part in priority
-macro index H \
-  "<enter-command>unalternative_order *<enter>\
-  <display-message><enter-command>alternative_order text/plain text/enriched text/html<enter>" \
-  "view html"
+bind  index,pager        H        view-raw-message
 
-macro pager H "<exit>H"
+# Find out what keycodes are for a given key press
+bind index \C_ what-key
+
+# press 'H' on a message to change this setting once and view the HTML part in priority
+# macro index H \
+#   "<enter-command>unalternative_order *<enter>\
+#   <display-message><enter-command>alternative_order text/plain text/enriched text/html<enter>" \
+#   "view html"
+
+# macro pager H "<exit>H"
 
 # FIX:
 # bind index,pager \Cx modify-labels
@@ -386,21 +392,30 @@ unhdr_order *
 # With the hdr_order command you can specify an order in which NeoMutt will attempt to present
 # these  headers  to you when viewing messages.
 # -------------------------------------------------------------------------
-hdr_order Date: Delivery-date: To: Envelope-to: Delivered-To: X-Original-To: Cc: Bcc: From From: Reply-To: X-Disposition-Notification-To: Mail-Followup-To: X-URL: Organization: Organisation: X-MimeOLE User-Agent: X-HTTP-UserAgent: X-Mailer: X-Newsreader: X-Editor: X-Operating-System: Subject: X-Spam-Status:
+hdr_order Message-Id: Message-ID: List-Id: List-ID: \
+          Date: Delivery-date: Received: \
+          To: Envelope-To: Delivered-To: X-Original-To: X-Sieve-Destination: Reply-To: In-Reply-To: \
+          Cc: Bcc: From: X-Sender: Return-Path: Return-path: \
+          X-Disposition-Notification-To: Mail-Followup-To: X-URL: \
+          Organization: Organisation: \
+          X-MimeOLE: X-Mime: Mime: User-Agent: X-HTTP-UserAgent: \
+          X-Mailer: X-Newsreader: X-Editor: X-Operating-System: \
+          Subject: X-Spam-Status:
 
 # Add my fingerprint and keyserver to my headers
 my_hdr X-gpg-fingerprint: E93A CCAA AEB0 2478 8C10  6EDE C011 CBEF 6628 B679
 my_hdr X-gpg-key: https://keys.openpgp.org
 
 # Header filtering. Useful with notmuch
-unignore Message-Id
-unignore In-Reply-To
-unignore List-Id X-Original-To # Figure out why receieved
-unignore X-Sieve-Destination   # Figure out where it was originally filed
-unignore From Subject To Cc Bcc
-unignore Reply-To User-Agent Date X-Mailer
-unignore Organization
-unignore List-Id
+unignore Message-ID List-Id List-ID X-Original-To # Figure out why receieved
+unignore Date # Received Delivery-date
+unignore To Envelope-To Delivered-To X-Original-To X-Sieve-Destination Reply-To In-Reply-To # Where originally filed
+unignore Cc Bcc From X-Sender Return-Path Return-path
+unignore X-Disposition-Notification-To Mail-Followup-To X-URL
+unignore Organization Organisation
+unignore X-MimeOLE X-Mime User-Agent X-HTTP-UserAgent
+unignore X-Mailer X-Newsreader X-Editor X-Operating-System
+unignore Subject: X-Spam-Status
 
 # -------------------------------------------------------------------------
 # Name: ignore
@@ -410,7 +425,7 @@ unignore List-Id
 # will ignore all header fields that begin with the pattern “content-”, “ignore *” will ignore all
 # headers.
 # -------------------------------------------------------------------------
-ignore Envelope-to X-OriginalArrivalTime X-ClientAddr X-Originating-IP X-UID
+ignore X-OriginalArrivalTime X-ClientAddr X-Originating-IP X-UID
 ignore Importance X-Keywords Delivery-date X-Apparently-To X-Apparently-From
 ignore X-Authentication-Info List- Mailing-List X-IMAPbase Old-Content-Type
 ignore X-Message-Info X-gotmail-version X-Virus-Scanned Authentication-Results
@@ -422,7 +437,7 @@ ignore X-MS- Thread- X-Priority X-ASG- X-ORBL X-Barracuda-Spam-
 ignore X-DMCA X-Abuse X-AntiAbuse X-RFC2646 X-Postfilter X-Received
 ignore X-ML- X-MLServer X-Mail-Count Posted X-Complaints-To Complaints-To
 ignore Newsgroups NNTP- X-From-Usenet X-Trace Injection-Info X-rubymirror
-ignore Return-Path Message-ID Received Mime-Version Content-Disposition Path
+ignore Received Mime-Version Content-Disposition Path # Return-Path Message-ID
 ignore Content-Type Content-Length Status Lines "From "
 ignore X-Twitter X-Campaignid X-Forwarded-To X-Forwarded-For X-DKIM X-DomainKeys
 # ]]]
@@ -475,8 +490,9 @@ attachments   -I message/external-body
 send-hook . "unmy_hdr From:"
 send-hook . "set pgp_autosign"
 send-hook . "set crypt_opportunistic_encrypt"
-send-hook . "set crypt_autosign=yes"
-send-hook . "set crypt_autoencrypt=no"
+# send-hook . "set crypt_autosign=yes"
+# send-hook . "set crypt_autoencrypt=no"
+
 # Autoencrypt if every recipient has a GPG key
 send-hook '!~G ^%C gpg' 'set crypt_autoencrypt=yes'
 
@@ -566,7 +582,6 @@ spam "X-Spam-Status: (Yes|No), score=(-?[[:digit:]]+\.[[:digit:]]+)" "%2"
 # pattern “*” is a special token which means to clear the color list of all entries.
 # Colors for deleted mail
 
-
 # Default index colors:
 color index yellow default '.*'
 color index_author  red  default ".*"
@@ -578,11 +593,11 @@ color index_tag     bold color23 default ".*"
 color index color15  default "~D"    # Deleted, renders as gray
 color index color5 default "!~(!~D)" # Deleted THREADS
 
-# New mail is boldened:
-color index         bold color17    default "~N"
-color index_author  bold brightred  default "~N"
-color index_flags   bold color19 default "~N"
-color index_subject bold color28  default "~N"
+# New mail is boldened
+color index         bold color17   default "~N"
+color index_author  bold brightred default "~N"
+color index_flags   bold color19   default "~N"
+color index_subject bold color28   default "~N"
 # color index black default ~O # old
 
 # Flagged mail
@@ -595,7 +610,7 @@ color index_subject bold color21    default "~F"
 # Encrypted mail
 color index         bold color17 default "~G"
 color index_author  bold color18 default "~G"
-color index_flags   color20 default "~G"
+color index_flags        color20 default "~G"
 color index_subject bold color18 default "~G"
 
 # Messages from me
@@ -667,35 +682,35 @@ color compose security_encrypt yellow default
 color compose security_both    green  default
 
 # === Regex highlighting === [[[
-color header blue          default ".*"
-color header brightblue    default '^(Received)'
-color header magenta       default '^(Date)'
-color header brightred     default '^(To)'
-color header brightgreen   default '^(Message-ID)'
-color header bold color20 default '^(Subject)'
-color header bold color21  default '^(From)'
+color header blue        default ".*"
+color header color19     default '^(Message-ID)'
+color header color19     default '^(List-ID)'
+color header brightblue  default '^(Received)'
+color header magenta     default '^(Date)'
+color header brightred   default '^(To)'
+color header brightred   default "^(Delivered-|X-Original-|Envelope-)?To"
+color header brightgreen default '^(In-)?(Reply-To)'
+color header bold color20  default '^(Subject)'
+color header bold color21  default '^(From|(X-)?Sender)'
 
-color header brightwhite   default "^(B[cC][cC]|C[cC])"
-color header brightgreen   default "(Return-[Pp]ath)"
-color header brightgreen   default '^(Reply-To)'
-color header brightred     default "^(X-Spam-Status)"
-color header brightgreen   default "^(X-)?Sender:"
+color header color23     default "^(B[cC][cC]|C[cC])"
+color header color21     default "(Return-[Pp]ath)"
+color header brightred   default "^(X-Spam-Status)"
+color header brightgreen default "^(X-)?Sender:"
 
 color header    brightyellow    default   '^(User-Agent)'
 color header    red             default   '^(Content-Length)'
 color header    red             default   '^(Status)'
 color header    red             default   '^(Lines)'
-color header    brightyellow    default   '^(X-)?Mime'
-color header    brightblue      default   "^(Delivered-|X-Original-|Envelope-)?To"
+color header    brightyellow    default   '^(X-)?Mime(OLE)?'
 color header    brightgreen     default   '^(Mail-Followup-To)'
 color header    brightgreen     default   '^(X-Disposition-Notification-To)'
-color header    brightgreen     default   '^(x-url)'
+color header    brightgreen     default   '^(X-URL)'
 color header    magenta         default   '^(Delivery-date)'
 color header    magenta         default   '^(Posted)'
 color header    magenta         default   '^(NNTP-Posting-Date)'
 color header    brightwhite     default   '^(X-All-Your-Base-Are-Belong-To)'
 color header    green           default   '^(References)'
-color header    green           default   '^(In-Reply-To)'
 color header    green           default   '^(Organi[sz]ation)'
 color header    green           default   '^(X-Trace)'
 color header    green           default   '^(Injection-Info)'
@@ -717,16 +732,9 @@ color body color19 default "(\(19|20\)?[0-9]{2}/[01]?[0-9]/[0123]?[0-9]|[0123]?[
 color body color19 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)[ .]+[0-9]{1,2}(st|nd|rd|th)?,?( +(19|20)[0-9]{2}(,?( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?)?"
 color body color19 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?[0-9]{1,2}(st|nd|rd|th)?[ .]+(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?),?( +(19|20)?[0-9]{2})?(( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?"
 
-# URL highlighting
-color body brightblue   default "(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+" # URL
-
 # Email highlighting
 color body brightred default  "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
 mono  body bold               "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
-
-# Bad PGP signature
-color body red          default "(BAD signature)"
-color body brightyellow red     "^gpg: BAD signature from.*"
 
 # Formatting
 color body brightwhite  default "(^| |\t)\\*[a-z0-9]([a-z0-9-]* ){,3}[a-z0-9,.!?-]*\\*"
@@ -746,10 +754,16 @@ color body brightcyan   default "[;:][-o][)/(|]"      # emoticons
 color body brightcyan   default "[;:][)(|]"           # emoticons
 color body brightcyan   default "[ ][*][^*]*[*][ ]?"  # more emoticon?
 color body brightcyan   default "[ ]?[*][^*]*[*][ ]"  # more emoticon?
-color body cyan         default "(Good signature)"
-color body brightblack  default "^gpg: Good signature .*"
+color body color21      default "(Good signature)"
+color body red          default "(BAD signature)"
+color body color21      default "^gpg: Good signature .*"
+color body red          default "^gpg: BAD signature from.*"
 color body brightyellow default "^gpg: "
+
 mono  body bold         "^gpg:  Good signature"
+
+# URL highlighting
+# color body brightblue   default "(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+" # URL
 
 color body red default "([a-z][a-z0-9+-]*://(((([a-z0-9_.!~*'();:&=+$,-]|%[0-9a-f][0-9a-f])*@)?((([a-z0-9]([a-z0-9-]*[a-z0-9])?)\\.)*([a-z]([a-z0-9-]*[a-z0-9])?)\\.?|[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)(:[0-9]+)?)|([a-z0-9_.!~*'()$,;:@&=+-]|%[0-9a-f][0-9a-f])+)(/([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*(;([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*)*(/([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*(;([a-z0-9_.!~*'():@&=+$,-]|%[0-9a-f][0-9a-f])*)*)*)?(\\?([a-z0-9_.!~*'();/?:@&=+$,-]|%[0-9a-f][0-9a-f])*)?(#([a-z0-9_.!~*'();/?:@&=+$,-]|%[0-9a-f][0-9a-f])*)?|(www|ftp)\\.(([a-z0-9]([a-z0-9-]*[a-z0-9])?)\\.)*([a-z]([a-z0-9-]*[a-z0-9])?)\\.?(:[0-9]+)?(/([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*(;([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*)*(/([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*(;([-a-z0-9_.!~*'():@&=+$,]|%[0-9a-f][0-9a-f])*)*)*)?(\\?([-a-z0-9_.!~*'();/?:@&=+$,]|%[0-9a-f][0-9a-f])*)?(#([-a-z0-9_.!~*'();/?:@&=+$,]|%[0-9a-f][0-9a-f])*)?)[^].,:;!)? \t\r\n<>\"]"
 # ]]]

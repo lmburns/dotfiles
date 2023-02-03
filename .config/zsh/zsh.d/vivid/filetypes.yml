@@ -73,7 +73,19 @@ text:
       - .snippet
 
     zshrc:
+      - zshrc
+      - zshenv
       - .zshrc
+      - .zshenv
+      - .zlogin
+      - .zlogout
+      - .zprofile
+
+    vim:
+      - vimrc
+      - gvimrc
+      - .vimrc
+      - .gvimrc
 
     nix:
       - .nix
@@ -97,6 +109,8 @@ text:
 
 markup:
   web:
+    - .asp
+    - .aspx
     - .htm
     - .html
     - .shtml
@@ -104,14 +118,20 @@ markup:
 
   other:
     - .csv
-    - .markdown
-    - .md
-    - .norg
-    - .mdown
-    - .rst
-    - .xml
     - .ctags
     - .grc
+    - .markdown
+    - .md
+    - .mdx
+    - .mdown
+    - .mkd
+    - .rdoc
+    - .rst
+    - .rmd
+    - .norg
+    - .pubxml
+    - .xml
+    - .xul
 
   sublime:
     - .sublime-syntax
@@ -126,46 +146,46 @@ programming:
     awk: [.awk]
     basic: [.vb]
     cabal: [.cabal]
-    clojure: [.clj]
+    clojure: [.clj, .cljc, .cljs, .edn]
     crystal: [.cr]
     csharp: [.cs, .csx]
     css: [.css]
     cxx:
       [
+        .c++,
         .c,
-        .cpp,
         .cc,
         .cp,
+        .cpp,
         .cxx,
-        .c++,
+        .def,
+        .h++,
         .h,
         .hh,
         .hpp,
         .hxx,
-        .h++,
         .inc,
         .inl,
         .ipp,
-        .def,
       ]
     d: [.d, .di]
     dart: [.dart]
     diff: [.diff, .patch]
-    elixir: [.ex, .exs]
+    elixir: [.ex, .exs, .eex, .leex, .heex]
     elm: [.elm]
-    erlang: [.erl]
-    fsharp: [.fs, .fsi, .fsx]
+    erlang: [.erl, .hrl]
+    fsharp: [.fs, .fsi, .fsx, .fsscript, .f#, .fsproj]
     go: [.go]
     graphviz: [.dot, .gv]
     groovy: [.groovy, .gvy, .gradle]
-    haskell: [.hs]
+    haskell: [.hs, .lhs]
     ipython: [.ipynb]
     java: [.java, .bsh]
-    javascript: [.js, .htc]
+    javascript: [.js, .htc, .mjs]
     javascriptreact: [.jsx]
     julia: [.jl]
     kotlin: [.kt, .kts]
-    latex: [.tex, .ltx]
+    latex: [.latex, .tex, .ltx]
     less: [.less]
     llvm: [.ll, .mir]
     lisp: [.lisp, .el]
@@ -184,13 +204,13 @@ programming:
     r: [.r]
     rasi: [.rasi]
     rescript: [.res]
-    ruby: [.rb, .rbs]
+    ruby: [.rb, .rbs, .ru, .rhtml, .erb]
     rust: [.rs]
     scala: [.scala, .sbt]
     scss: [.scss]
     shell: [.sh, .bash, .fish]
     sql: [.sql]
-    swift: [.swift]
+    swift: [.swift, .xcplayground]
     tablegen: [.td]
     tcl: [.tcl]
     typescript: [.ts]
@@ -238,6 +258,7 @@ programming:
       cmake:
         - .cmake
         - CMakeLists.txt
+        - cmakelists.txt
         - .cmake.in
 
       make:
@@ -269,7 +290,15 @@ programming:
       ruby:
         - .gemspec
         - Rakefile
+        - rakefile
         - Gemfile
+        - gemfile
+        - .rubydoc
+        - .rspec
+        - .rspec_parallel
+        - .rspec_status
+        - .rake
+        - .gem
       lua:
         - .rockspec
 
@@ -288,6 +317,9 @@ programming:
         - .pro
       kdevelop:
         - .kdevelop
+      visual-studio:
+        - .sln
+        - .suo
       other:
         - .editorconfig
 
@@ -311,36 +343,75 @@ programming:
 
 media:
   image:
+    - .asf
     - .bmp
+    - .cgm
+    - .dl
+    - .emf
     - .eps
+    - .flc
+    - .fli
+    - .gl
     - .ico
+    - .image
+    - .jfi
+    - .jfif
+    - .jif
+    - .jpe
     - .jpeg
     - .jpg
+    - .m2v
+    - .mjpeg
+    - .mjpg
+    - .mng
+    - .nuv
+    - .ogm
     - .pbm
+    - .pcx
     - .pgm
     - .png
     - .ppm
+    - .psb
     - .psd
+    - .pxm
+    - .qt
+    - .rmvb
     - .svg
+    - .svgz
+    - .tga
     - .tif
     - .tiff
+    - .webp
+    - .xbm
     - .xcf
+    - .xpm
+    - .xwd
+    - .yuv
 
   # Do this so I can change its color specifically
   gif:
     - .gif
 
   audio:
+    - .aac
+    - .au
     - .aif
     - .flac
     - .m4a
     - .mid
+    - .midi
+    - .mka
     - .mp3
+    - .mpc
+    - .oga
     - .ogg
     - .opus
+    - .ra
+    - .spx
     - .wav
     - .wma
     - .wv
+    - .xspf
 
   video:
     - .avi
@@ -350,19 +421,27 @@ media:
     - .mkv
     - .mov
     - .mp4
-    - .webm
+    - .mp4v
     - .mpeg
     - .mpg
+    - .ogv
+    - .ogx
     - .rm
     - .swf
+    - .video
     - .vob
+    - .webm
     - .wmv
 
   fonts:
+    - .eot
+    - .font
     - .fnt
     - .fon
     - .otf
     - .ttf
+    - .woff2
+    - .woff
 
 office:
   document:
@@ -383,12 +462,13 @@ office:
     - .xlr
 
   presentation:
+    - .gslides
+    - .kex
+    - .odp
+    - .pps
     - .ppt
     - .pptx
-    - .odp
     - .sxi
-    - .kex
-    - .pps
 
   calendar:
     - .ics
@@ -459,6 +539,8 @@ unimportant:
       - .rlib
     python:
       - .pyc
+      - .pyo
+      - .pyd
     haskell:
       - .dyn_hi
       - .dyn_o
@@ -495,8 +577,9 @@ unimportant:
   macos:
     - .CFUserTextEncoding
     - .DS_Store
-    - .localized
+    - .apple
     - .icloud
+    - .localized
 
   torrent:
     - .torrent

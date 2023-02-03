@@ -1,10 +1,17 @@
-require 'mp.options'
+require "mp.options"
+
 local opt = {
     patterns = {
-        "OP","[Oo]pening$", "^[Oo]pening:", "[Oo]pening [Cc]redits",
-        "ED","[Ee]nding$", "^[Ee]nding:", "[Ee]nding [Cc]redits",
-        "[Pp]review$",
-    },
+        "OP",
+        "[Oo]pening$",
+        "^[Oo]pening:",
+        "[Oo]pening [Cc]redits",
+        "ED",
+        "[Ee]nding$",
+        "^[Ee]nding:",
+        "[Ee]nding [Cc]redits",
+        "[Pp]review$"
+    }
 }
 read_options(opt)
 

@@ -357,6 +357,7 @@ alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
 alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
 alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
 alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
+alias vwt='$EDITOR $HOME/vimwiki/todos.md'
 
 # === github ====================================================================
 alias h='git'

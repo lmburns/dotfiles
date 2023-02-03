@@ -584,14 +584,16 @@ function M.sort()
 
     sort.setup({delimiters = {",", "|", ";", ":", "s", "t"}})
 
-    map("n", "gS", "Sort", {cmd = true})
+    map("n", "gW", "Sort", {cmd = true})
+    map("x", "gW", ":Sort<CR>", {desc = "Sort selection"})
+    map("v", "gW", "<Esc><Cmd>Sort<CR>", {desc = "Sort selection"})
 
-    -- [!]         = Sort order is reversed
     -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
-    -- [b]         = First binary number in the word
-    -- [i]         = Case is ignored
-    -- [n]         = First decimal number in the word
+    -- [!]         = Sort order is reversed
     -- [o]         = First octal number in the word
+    -- [i]         = Case is ignored
+    -- [b]         = First binary number in the word
+    -- [n]         = First decimal number in the word
     -- [u]         = Keep the first instance of words within selection
 end
 
@@ -663,6 +665,12 @@ end
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
+    -- FIX: Smartcase only works if there are matches before the word you're searching for.
+    --      i.e.,
+    --          1. vm_theme
+    --          2. VM_theme
+    --      If `*` or `#` is pressed when hovering over line 2, only one match
+    --      If `*` or `#` is pressed when hovering over line 1, two matches
     local hlslens = D.npcall(require, "hlslens")
     if not hlslens then
         return
@@ -685,13 +693,7 @@ function M.hlslens()
         }
     )
 
-    command(
-        "HlSearchLensToggle",
-        function()
-            hlslens.toggle()
-        end,
-        {desc = "Togggle HLSLens"}
-    )
+    command("HlSearchLensToggle", D.ithunk(hlslens.toggle), {desc = "Togggle HLSLens"})
 
     map(
         "n",
@@ -1954,7 +1956,8 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.visualmulti()
     -- FIX: 'cw' consumes more than what it used to due to noice.nvim
-    -- FIX: Keep statusline
+    -- TODO: <C-n> smartcase
+
     -- g.VM_theme = "purplegray"
     g.VM_highlight_matches = ""
     g.VM_show_warnings = 0
@@ -1966,6 +1969,11 @@ function M.visualmulti()
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
     g.VM_Cursor_hl = "Visual"
     g.VM_Insert_hl = "DiffChange"
+
+    g.VM_custom_motions = {
+        ["L"] = "$",
+        ["H"] = "^"
+    }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
@@ -2022,13 +2030,6 @@ function M.visualmulti()
         ["Toggle Multiline"] = "<Leader>M"
     }
 
-    g.VM_custom_motions = {
-        ["L"] = "$",
-        ["H"] = "^"
-    }
-
-    -- TODO: <C-n> smartcase
-
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
@@ -2050,28 +2051,24 @@ function M.visualmulti()
         end
     )
 
+    local vm = require("common.vm")
+
     augroup(
         "VisualMulti",
         {
             event = "User",
             pattern = "visual_multi_start",
-            command = function()
-                require("common.vm").start()
-            end
+            command = D.ithunk(vm.start)
         },
         {
             event = "User",
             pattern = "visual_multi_exit",
-            command = function()
-                require("common.vm").exit()
-            end
+            command = D.ithunk(vm.exit)
         },
         {
             event = "User",
             pattern = "visual_multi_mappings",
-            command = function()
-                require("common.vm").mappings()
-            end
+            command = D.ithunk(vm.mappings)
         }
     )
 end
@@ -2100,6 +2097,8 @@ function M.neodev()
             -- for your Neovim config directory, the config.library settings will be used as is
             -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
             -- for any other directory, config.library.enabled will be set to false
+            --
+            ---@diagnostic disable-next-line: unused-local
             override = function(root_dir, options)
             end,
             -- With lspconfig, Neodev will automatically setup your lua-language-server

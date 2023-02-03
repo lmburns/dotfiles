@@ -264,7 +264,6 @@ end
 ---@param opts MapArgs: Options given to keybindings
 ---@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a two keys `dispose` & `map`.
 ---                                        `.dispose()` can be used for temporary keyaps.
----
 --- See: **:map-arguments**
 ---
 --- ## Options
@@ -1403,6 +1402,8 @@ end
 --   %b:
 --     p(("capture {what is inside} these brackets"):gsub("%b{}", ""))
 --     --> capture  these brackets 1
+--
+--   Special characters: ( ) . % + - * ? [ ^ $
 -- ]]] === Tips ===
 
 -- Allows us to use utils globally

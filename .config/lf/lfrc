@@ -238,7 +238,7 @@ cmd trash ${{
 }}
 
 # -- Move: zoxide
-cmd movetojump ${{
+cmd move-file-jump ${{
   local dest x
   clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Move to> ' --no-height +m" zoxide query -i)
@@ -248,7 +248,7 @@ cmd movetojump ${{
 }}
 
 # -- Move: path
-cmd movetopath ${{
+cmd move-file-manual ${{
   zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Move to: " dest
   for x ($fx) { mv -iv $x $~dest } && {
@@ -259,7 +259,7 @@ cmd movetopath ${{
 
 
 # -- Copy: zoxide
-cmd copytojump ${{
+cmd copy-file-jump ${{
   clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Copy to> ' --no-height +m" zoxide query -i)
   for x ($fx) { cp -pivr $x $dest } && {
@@ -269,7 +269,7 @@ cmd copytojump ${{
 }}
 
 # -- Copy: path
-cmd copytopath ${{
+cmd copy-file-manual ${{
   zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Copy to: " dest
   for x ($fx) { cp -pivr $x $~dest } && {
@@ -976,30 +976,34 @@ map Pl :{{ link; unselect; }} # paste a symlink
 map Pp ppaste "copy"          # paste and preview progress
 
 # map y
-map y copy                    # general copy
-map Yp yank-path              # yank file path
-map Yn yank-name              # yank name of file path
-map Yd yank-dir               # yank name of directory
-map Yj copytojump             # copy to directory with zoxide
-# map Yp copytopath             # copy to directory with path entered
-map Mj movetojump             # move to directory with zoxide
-map Mp movetopath             # move to directory with path
+map y copy                                        # general copy
+map Yp yank-path                                  # yank file path
+map Yn yank-name                                  # yank name of file path
+map Yd yank-dir                                   # yank name of directory
+map Yu ${{ ngu | xclip -rmlastnl -selection c; }} # yank name of directory
+map Yj copy-file-jump                             # copy to directory with zoxide
+map Ym copy-file-manual                           # copy to directory with path entered
+
+map Mj move-file-jump   # move to directory with zoxide
+map Mp move-file-manual # move to directory with path
 
 map Mt push :rsyncto<space>        # move things to the server
 map Mf push :rsyncfrom<space>      # move things from the server
 map Ml push :rsync_to_mac<space>   # move things to the macbook
 map Mm push :rsync_from_mac<space> # move things from the macbook
 
-map mf push :mkfile<space>      # create file
-map md push :mkdir<space>       # create dir
-map mt push :take<space>        # create dir and cd into it
-map mD newfold                  # create dir and move selected files into it
-map ms $mksc                    # make script
+map ms $mksc               # create script
+map mf push :mkfile<space> # create file
+map md push :mkdir<space>  # create dir
+map mt push :take<space>   # create dir and cd into it
+map mD newfold             # create dir and move selected files into it
 
+# Move to the top
 map gg top -- []
-map G bottom -- []
-map J half-down
-map K half-up
+map G bottom -- [] # Move to the bottom
+map J half-down    # Move halfway down
+map K half-up      # Move halfway up
+
 map R reload
 map <c-n> redraw
 

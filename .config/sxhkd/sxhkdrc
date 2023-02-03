@@ -304,8 +304,8 @@ mod3 x ; {x,b}
      rofi -show {drun,window}
 
 # Launch applications
-mod3 + {b,v,p,period,s}
-    {$BROWSER &>/dev/null,brave,pcmanfm,thunderbird,signal-desktop}
+mod3 + {b,v,g,p,period,s}
+    {$BROWSER &>/dev/null,brave,ungoogled-chromium,pcmanfm,thunderbird,signal-desktop}
 
 # Run a program in a new terminal
 # alt + space

@@ -50,7 +50,7 @@ function M.setup()
                     row = (api.nvim_win_get_height(0) - 3) / 2,
                     style = "minimal",
                     focusable = false,
-                    border = "rounded",
+                    border = style.current.border,
                     noautocmd = true
                 },
                 title = {

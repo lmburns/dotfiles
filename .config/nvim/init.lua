@@ -2,8 +2,11 @@
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 FIX: Telescope opens file in insert mode
 
-FIX: Urlview problem: Could not navigate link with `xdg-open`:
 FIX: MKDX keybindings for bold
+FIX: Urlview problem: Could not navigate link with `xdg-open`:
+FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
+FIX: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
+FIX: Rg fzf-lua doesn't allow an exit with C-c
 
 TODO: Add keybinding to go to top of current function you're inside of
 TODO: Add keybinding to create a comment of clipboard
