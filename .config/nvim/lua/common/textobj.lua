@@ -51,6 +51,7 @@ function M.select(obj, inner, visual)
                     }
                 )
                 if not err then
+                    utils.cecho("textobjects: coc", "WarningMsg")
                     return
                 end
             end

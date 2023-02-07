@@ -1,4 +1,6 @@
 afew==3.0.1
+aiohttp-socks==0.7.1
+alembic==1.9.2
 ansicolor==0.3.2
 ansiwrap==0.8.4
 aria2p==0.11.1
@@ -33,6 +35,7 @@ html2text==2020.1.16
 inotify==0.2.10
 installer==0.5.1
 isort==5.9.3
+jsonpickle==3.0.1
 jupyter==1.0.0
 jupyterlab==3.2.8
 jupytext==1.13.6
@@ -43,7 +46,8 @@ langdetect==1.0.9
 lazy-object-proxy==1.6.0
 librecaptcha==0.7.3
 lockfile==0.12.2
-m2r2==0.3.2
+m2r2==0.3.3
+mergedeep==1.3.4
 mycli==1.24.3
 natsort==8.1.0
 nb-pdf-template==4.0.0
@@ -70,6 +74,7 @@ requests-unixsocket==0.3.0
 rtv==1.27.0
 scapy==2.4.5
 seaborn==0.11.2
+selenium-wire==2.1.2
 shellingham==1.4.0
 sphinx-automodapi==0.14.1
 sphinx-rtd-theme==1.0.0
@@ -79,13 +84,16 @@ tomlkit==0.8.0
 tox==3.24.5
 typing-extensions==4.0.1
 tzlocal==4.1
+ujson==5.7.0
 urwid-readline==0.13
 urwidtrees==1.0.3
 vext.gi==0.7.4
 virtualenv-clone==0.5.7
 visidata==2.8
+win32-setctime==1.1.0
 xattr==0.9.9
 xkeysnail==0.4.0
 yapf==0.32.0
 yarp==0.4.0
 yq==2.13.0
+ytmdl==2022.3.16

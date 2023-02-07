@@ -5,6 +5,7 @@
 ############################################################################
 
 # === general settings === [[[
+# 0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 
@@ -43,9 +44,9 @@ typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g SAVEHIST=10_000_000
-typeset -g LISTMAX=50                            # Size of asking history
-typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"           # Show non-newline ending
-typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'    # Don't eat space with | with tabs
+typeset -g LISTMAX=50                         # Size of asking history
+typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"        # Show non-newline ending
+typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)' # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g MAILCHECK=0                 # Don't check for mail
 typeset -g KEYTIMEOUT=15               # Key action time
@@ -68,7 +69,7 @@ typeset -ga zle_highlight=(
   paste:none
 )
 
-# [[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
+[[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
 
 () {
   # local i; i=${(@j::):-%\({1..36}"e,$( echoti cuf 2 ),)"}
@@ -173,7 +174,7 @@ zstyle ':completion:*' recent-dirs-insert  both
 # Can be called across sessions to update the dirstack without sourcing
 # This should be fixed to update across sessions without ever needing to be called
 function set-dirstack() {
-  [[ -v dirstack ]] || typeset -ga dirstack
+  [[ -v dirstack ]] || typeset -gaU dirstack
   dirstack=(
     ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
   )
@@ -405,6 +406,7 @@ zt 0b light-mode for \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
+    zsh-vi-more/directory-marks \
     OMZP::systemd/systemd.plugin.zsh
 
 # wait'[[ -n $DISPLAY ]]' atload'
@@ -1070,7 +1072,7 @@ typeset -gx RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/library/
 typeset -gx ZSH_AUTOSUGGEST_USE_ASYNC=set
 typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE="?(#c100,)" # no 100+ char
+typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE=$'(*\n*|?(#c100,))' # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
 typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(histdb_top_here dir_history custom_history match_prev_cmd completion)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
@@ -1092,11 +1094,10 @@ typeset -gx PASSWORD_STORE_ENABLE_EXTENSIONS='true'
 # --color=prompt:#fabd2f,marker:#fe8019,spinner:#b8bb26
 # "
 
-FZF_COLORS="
+FZF_COLORS="\
 --color=fg:-1,fg+:-1,hl:#458588,hl+:#689d6a,bg+:-1
 --color=pointer:#fabd2f,marker:#fe8019,spinner:#b8bb26
---color=header:#fb4934,prompt:#b16286
-"
+--color=header:#fb4934,prompt:#b16286"
 
 declare -a SKIM_COLORS=(
   "fg:-1" "fg+:-1" "hl:#458588" "hl+:#689d6a" "bg+:-1" "marker:#fe8019"
@@ -1123,15 +1124,36 @@ $FZF_COLORS
 --border
 --preview-window=':hidden,right:60%'
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind='?:toggle-preview,alt-w:toggle-preview-wrap'
---bind='alt-a:select-all,ctrl-r:toggle-all'
+--bind='alt-a:toggle-all'
+--bind='ctrl-alt-a:toggle-all+accept'
 --bind='ctrl-b:execute(bat --paging=always -f {+})'
---bind=ctrl-s:toggle-sort
---bind=alt-p:preview-up,alt-n:preview-down
---bind=ctrl-k:preview-up,ctrl-j:preview-down
---bind=ctrl-u:half-page-up,ctrl-d:half-page-down
+--bind='ctrl-s:toggle-sort'
+--bind='alt-,:first'
+--bind='alt-.:last'
+--bind='alt-[:beginning-of-line'
+--bind='alt-]:end-of-line'
+--bind='ctrl-/:jump'
+--bind='esc:abort'
+--bind='ctrl-c:abort'
+--bind='ctrl-q:abort'
+--bind='ctrl-g:cancel'
+--bind='alt-x:unix-line-discard'
+--bind='ctrl-r:clear-selection'
+--bind='ctrl-g:cancel'
+--bind='?:toggle-preview'
+--bind='alt-w:toggle-preview-wrap'
+--bind='alt-p:preview-up'
+--bind='alt-n:preview-down'
+--bind='ctrl-alt-p:preview-page-up'
+--bind='ctrl-alt-n:preview-page-down'
+--bind='shift-up:preview-page-up'
+--bind='shift-down:preview-page-down'
+--bind='ctrl-u:half-page-up'
+--bind='ctrl-d:half-page-down'
+--bind='ctrl-alt-u:page-up'
+--bind='ctrl-alt-d:page-down'
 --bind='ctrl-y:execute-silent(echo {} | xsel --trim -b)'
---bind=alt-,:first,alt-.:last,change:first"
+--bind='change:first'"
 
 SKIM_DEFAULT_OPTIONS="
 --prompt '❱ '

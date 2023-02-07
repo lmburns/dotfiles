@@ -30,7 +30,9 @@ b3sum
 banner
 base
 bat
+bazel
 bc
+bcc
 betterlockscreen
 bfg
 bind
@@ -50,6 +52,7 @@ broot
 bspwm
 cabal-install
 calcurse
+calibre
 cantor
 cargo-bloat
 cargo-cache
@@ -104,6 +107,7 @@ dict-gcide
 dict-wikt-en-all
 dict-wn
 dictd
+didyoumean
 diff-so-fancy
 diffsitter-bin
 direnv
@@ -142,7 +146,8 @@ exfatprogs
 expac
 fakeroot
 fastmod
-fcitx
+fbreader
+fcitx5
 featherwallet-bin
 feh
 ffmpegthumbs
@@ -189,6 +194,7 @@ gotask-taskfile
 gotop-bin
 gparted
 gpg-tui
+gping
 grantlee-editor
 grc
 grip
@@ -204,6 +210,7 @@ gvim
 gwenview
 hawck-git
 hck
+heroic-games-launcher
 hfsprogs
 hnwatch
 hollywood
@@ -211,7 +218,9 @@ hsetroot
 html-xml-utils
 hwinfo
 i2c-tools
-i3-gaps
+i2p
+i2pd
+i3-wm
 i3blocks
 i3lock-color-git
 i3status
@@ -220,6 +229,7 @@ id3tool
 id3v2
 iftop
 imgcat
+imgdiff
 interception-dual-function-keys
 inxi
 iotop
@@ -228,11 +238,13 @@ isync
 itinerary
 iw
 jgmenu
+jhead
 jo
 jpegoptim
 jql
 jre-openjdk
 juk
+julia
 k3b
 kactivitymanagerd
 kalarm
@@ -261,7 +273,7 @@ kdegraphics-thumbnailers
 kdenetwork-filesharing
 kdenlive
 kdeplasma-addons
-kdesdk-kioslaves
+kdesdk-kio
 kdesdk-thumbnailers
 kdf
 kdialog
@@ -282,6 +294,7 @@ kimagemapeditor
 kinfocenter
 kio-extras
 kio-gdrive
+kio-zeroconf
 kipi-plugins
 kirigami-gallery
 kiten
@@ -328,7 +341,6 @@ kwave
 kwayland-integration
 kwin
 kwordquiz
-kwrite
 kwrited
 latte-dock
 layer-shell-qt
@@ -344,6 +356,7 @@ libreoffice-fresh
 libressl
 librewolf-bin
 libvips
+libwbclient
 libxkbcommon-doc
 linux
 linux-docs
@@ -353,6 +366,7 @@ lldb
 lnav
 logkeys-git
 lokalize
+lostfiles
 lowdown
 lsd
 lshw
@@ -363,8 +377,10 @@ lua
 lua-format-git
 lua-language-server
 lua53-lpeg
+luajit
 luarocks
 luau
+lurk
 lutris
 lxappearance
 lximage-qt
@@ -391,6 +407,7 @@ make
 man-pages
 marble
 markdownpart
+mat2
 mate-backgrounds
 mates-git
 maturin
@@ -408,10 +425,11 @@ mousepad
 mp3info
 mpc
 mpd
-mpv
+mplayer
 msmtp
 mtools
 mtr-gtk
+mullvad-vpn-bin
 museeks-bin
 musl
 mutt
@@ -428,6 +446,7 @@ nerd-fonts-complete
 netctl
 network-manager-applet
 networkmanager
+networkmanager-openvpn
 newsboat
 nim
 nitrogen
@@ -447,16 +466,20 @@ ocamlbuild
 octopi
 odt2txt
 okular
+onefetch
 openbox
 openbsd-netcat
 opendoas
 openresolv
 openrgb
+openvpn
 optipng
 os-prober
 osquery
+outguess
 oxygen
 pacgraph
+pakbak-git
 palenight-gtk-theme
 paman
 pamixer
@@ -514,6 +537,7 @@ pngquant
 polkit-kde-agent
 polybar
 postfix
+postgresql
 powerdevil
 poxml
 prettier
@@ -527,6 +551,7 @@ pulsemixer
 pv
 pyenv
 python-pip
+python-pyalsa
 python-xattr
 qeh-git
 qemu-desktop
@@ -544,6 +569,7 @@ rclone
 rclone-browser
 rdrview-git
 rebuild-detector
+redis
 redshift
 redshiftgui-bin
 reptyr
@@ -572,6 +598,7 @@ s-nail
 sad
 sblg
 sc-im
+sccache
 scli-git
 screengrab
 screenkey
@@ -591,6 +618,7 @@ skanlite
 slock
 songrec
 sops
+sox
 spacefm
 spectacle
 speedtest-cli
@@ -627,7 +655,7 @@ task
 task-spooler
 taskd
 tasksh
-tdrop-git
+tdrop
 teip
 telegram-cli-git
 telepathy-kde-accounts-kcm
@@ -644,9 +672,9 @@ telepathy-kde-send-file
 telepathy-kde-text-ui
 telescope
 termite
+texlab
 texlive-core
 texlive-installer
-threadwatcher
 thunar-archive-plugin
 thunar-media-tags-plugin
 thunar-volman
@@ -671,13 +699,16 @@ transmission-cli
 transmission-rss
 tree
 tremc
+trezor-suite-appimage
+trezor-udev
 tslint
 ttf-font-awesome-4
 ttf-liberation
 udiskie
+ugrep
 ulauncher
 umbrello
-ungoogled-chromium
+ungoogled-chromium-bin
 unluac
 unrar
 unrtf
@@ -707,6 +738,7 @@ wavemon
 wezterm
 whois
 wine
+wireguard-tools
 wl-clipboard
 wmctrl
 wmutils-git
@@ -821,6 +853,7 @@ xorg-xwayland
 xorg-xwd
 xorg-xwininfo
 xorg-xwud
+xournalpp
 xrestop
 xscope
 xscreensaver
@@ -828,18 +861,20 @@ xsel
 xsettingsd
 xss-lock
 xstarter
+xsv
 xterm
 xtitle
 xwinfo-git
 yad
 yakuake
 yamllint
+yarn
 zathura
 zathura-pdf-poppler
-zeroconf-ioslave
 zig
 zip
 zls-bin
 zoxide
+zps
 zsh
 zsh-doc

@@ -8,17 +8,24 @@
 ├── coc.nvim@0.0.80
 ├── coinmon@0.0.28
 ├── deno@0.1.1
-├── esbuild@0.14.42
+├── esbuild@0.15.5
 ├── esformatter@0.11.3
 ├── eslint_d@12.2.0
 ├── eslint@8.14.0
 ├── fkill-cli@7.1.0
+├── format-graphql@1.4.0
+├── graphql-config@4.3.6
+├── graphql-language-service-server@2.9.3
 ├── gv@0.1.3
 ├── h2m@0.7.0
 ├── hardhat@2.9.9
 ├── ipfs@0.62.1
 ├── jest@28.1.0
 ├── jsconfig.json@2.3.3
+├── lua-fmt-ext@3.0.5
+├── lua-fmt@2.6.0
+├── lua-format@npm:luafmtter@0.1.0 -> ./../../../../projects/script/typescript/_repos_example/lua-format
+├── luafmtter@0.1.0 -> ./../../../../projects/script/typescript/_repos_example/lua-format
 ├── mdn-cli@0.1.2
 ├── mklicense@0.1.5
 ├── neoss@1.1.3
@@ -43,6 +50,5 @@
 ├── webpack@5.73.0
 ├── webtorrent-mpv-hook@1.3.2
 ├── xo@0.49.0
-├── yarn@1.22.18
 └── zx@6.1.0
 

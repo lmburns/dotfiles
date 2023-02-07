@@ -17,7 +17,9 @@ function M.curr_file()
 end
 
 local function init()
-    g.flog_default_arguments = {max_count = 1000}
+    g.flog_default_opts = {max_count = 1000}
+    g.flog_use_internal_lua = true
+
     if has_forest then
         g.flog_build_log_command_fn = "flog#build_git_forest_log_command"
     end

@@ -179,7 +179,7 @@ end
 ---@return Promise
 function M.action(action, args, timeout)
     local args = vim.deepcopy(F.if_nil(args, {}))
-    return promise.new(
+    return promise:new(
         function(resolve, reject)
             table.insert(
                 args,
@@ -209,11 +209,32 @@ function M.action(action, args, timeout)
     )
 end
 
+---Run a Coc command using Promises
+---@param name string Command to run
+---@vararg any
+---@return Promise
 function M.runCommand(name, ...)
     return M.action("runCommand", {name, ...})
 end
 
--- Code actions
+---Run a Coc command
+---@param name string Command to run
+---@param args table Arguments to the command
+---@param cb function
+---@return string[]
+function M.run_command(name, args, cb)
+    local action_fn
+    args = args or {}
+    if type(cb) == "function" then
+        action_fn = fn.CocActionAsync
+        table.insert(args, cb)
+    else
+        action_fn = fn.CocAction
+    end
+    return action_fn("runCommand", name, unpack(args))
+end
+
+---Code actions
 function M.code_action(mode, only)
     if type(mode) == "string" then
         mode = {mode}
@@ -376,23 +397,6 @@ function M.diagnostic(winid, nr, keep)
     )
 end
 
----Run a Coc command
----@param name string
----@param args table
----@param cb function
----@return string[]
-function M.run_command(name, args, cb)
-    local action_fn
-    args = args or {}
-    if type(cb) == "function" then
-        action_fn = fn.CocActionAsync
-        table.insert(args, cb)
-    else
-        action_fn = fn.CocAction
-    end
-    return action_fn("runCommand", name, unpack(args))
-end
-
 ---Provide a higlighting fallback on cursor hold
 ---i.e., this will show non-treesitter highlighting on cursor hold
 M.hl_fallback =
@@ -413,6 +417,7 @@ M.hl_fallback =
         "rust",
         "sh",
         "typescript",
+        "typescriptreact",
         "vim",
         "xml"
     }
@@ -477,9 +482,6 @@ end
 ---Used with popup completions
 ---@return boolean
 function _G.check_backspace()
-    -- local col = fn.col(".") - 1
-    -- return col or (fn.getline(".")[col - 1]):match([[\s]])
-
     local _, col = unpack(api.nvim_win_get_cursor(0))
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
 end
@@ -488,9 +490,9 @@ end
 function _G.map_cr()
     if fn["coc#pum#visible"]() ~= 0 then
         return fn["coc#pum#confirm"]()
-    else
-        return require("nvim-autopairs").autopairs_cr()
     end
+
+    return require("nvim-autopairs").autopairs_cr()
 end
 
 ---Check whether Coc has been initialized

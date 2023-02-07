@@ -8,8 +8,10 @@ ngu() {
   # )"
   confu="$(git remote get-url origin)"
 
-  echo "${confu}" | xsel -b
-  print -P "%F{14}%b$confu%f%b"
+  print -n "$confu" | xsel -b --trim
+  notify-send "Copied" "$confu"
+
+  # print -P "%F{14}%b$confu%f%b"
 }
 
 ngu

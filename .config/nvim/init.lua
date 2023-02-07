@@ -12,6 +12,8 @@ TODO: Add keybinding to go to top of current function you're inside of
 TODO: Add keybinding to create a comment of clipboard
 TODO: Add keybinding to paste and select
 
+TODO: Highlight dates paint
+
 NOTES:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
 --]]

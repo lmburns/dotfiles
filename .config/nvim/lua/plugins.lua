@@ -185,7 +185,10 @@ end
 
 return packer.startup(
     {
-        function(use)
+        function(use, use_rocks)
+            use_rocks("lpeg")
+            use_rocks("lrexlib-pcre2") -- rex_pcre2
+
             -- Package manager
             use(
                 {
@@ -347,7 +350,6 @@ return packer.startup(
             use({"rktjmp/lush.nvim"})
 
             use({"kvrohit/mellow.nvim"})
-            use({"sam4llis/nvim-tundra"})
             use({"eddyekofo94/gruvbox-flat.nvim"})
             use({"sainnhe/gruvbox-material"})
             use({"sainnhe/edge"})
@@ -381,6 +383,7 @@ return packer.startup(
             -- use({"shaunsingh/oxocarbon.nvim", run = "./install.sh"})
             -- use({"levuaska/levuaska.nvim"})
             -- use({"wadackel/vim-dogrun"})
+            -- use({"sam4llis/nvim-tundra"})
 
             use({"lmburns/kimbox", conf = "plugs.kimbox"})
             -- ]]] === Colorscheme ===
@@ -513,13 +516,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "cbochs/portal.nvim",
-                    conf = "plugs.portal",
-                    requires = {"cbochs/grapple.nvim"}
-                }
-            )
+            -- use(
+            --     {
+            --         "cbochs/portal.nvim",
+            --         conf = "plugs.portal",
+            --         requires = {"cbochs/grapple.nvim"}
+            --     }
+            -- )
             -- ]]] === BetterQuickFix ===
 
             -- ============================ EasyAlign ============================= [[[
@@ -956,7 +959,6 @@ return packer.startup(
                 {
                     "gelguy/wilder.nvim",
                     run = ":UpdateRemotePlugins",
-                    -- rocks = "pcre2",
                     requires = "romgrk/fzy-lua-native",
                     conf = "plugs.wilder"
                 }
@@ -1024,7 +1026,7 @@ return packer.startup(
             use({"mattn/vim-xxdcursor"})
             use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
             use({"jamessan/vim-gnupg"})
-            use({"AndrewRadev/id3.vim"})
+            use({"https://gitlab.com/itaranto/id3.nvim"})
             use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
             use({"HiPhish/info.vim", cmd = "Info"})
             -- ]]] === File Viewer ===
@@ -1104,7 +1106,7 @@ return packer.startup(
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                         {"antoinemadec/coc-fzf", after = "coc.nvim"},
                         {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
-                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install --frozen-lockfile"}
+                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"}
                     }
                 }
             )
@@ -1113,6 +1115,7 @@ return packer.startup(
             -- │                        Treesitter                        │
             -- ╰──────────────────────────────────────────────────────────╯
 
+            -- chrisgrieser/nvim-various-textobjs
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
             use(
                 {
@@ -1186,7 +1189,7 @@ return packer.startup(
                             }
                         },
                         {
-                            "p00f/nvim-ts-rainbow",
+                            "mrjones2014/nvim-ts-rainbow",
                             desc = "Rainbow parenthesis using treesitter",
                             after = "nvim-treesitter"
                         },
@@ -1436,7 +1439,6 @@ return packer.startup(
                 {
                     "TimUntersberger/neogit",
                     conf = "plugs.neogit",
-                    -- commit = "8adf22f103250864171f7eb087046db8ad296f78",
                     requires = {"nvim-lua/plenary.nvim"}
                 }
             )

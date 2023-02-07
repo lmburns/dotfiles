@@ -275,68 +275,6 @@ M.nightfox = function()
     -- cmd [[colorscheme nightfox]]
 end
 
--- === Tundra ===
-M.tundra = function()
-    local tundra = D.npcall(require, "nvim-tundra")
-    if not tundra then
-        return
-    end
-
-    local cp = require("nvim-tundra.palette.arctic")
-
-    tundra.setup(
-        {
-            transparent_background = false,
-            dim_inactive_windows = {
-                enabled = false,
-                color = nil
-            },
-            editor = {
-                search = {},
-                substitute = {}
-            },
-            syntax = {
-                booleans = {},
-                comments = {bold = false, italic = false},
-                conditionals = {},
-                constants = {bold = true},
-                fields = {},
-                functions = {bold = true},
-                keywords = {},
-                loops = {},
-                numbers = {bold = false},
-                operators = {bold = false},
-                punctuation = {},
-                strings = {},
-                types = {italic = false}
-            },
-            diagnostics = {
-                errors = {},
-                warnings = {},
-                information = {},
-                hints = {}
-            },
-            plugins = {
-                lsp = true,
-                treesitter = true,
-                nvimtree = true,
-                cmp = true,
-                context = true,
-                dbui = true,
-                gitsigns = true,
-                telescope = true
-            },
-            overwrite = {
-                colors = {},
-                highlights = {
-                    CocErrorFloat = {fg = cp.red._500, bg = cp.gray._900},
-                    CocInfoFloat = {fg = cp.sky._500, bg = cp.gray._900}
-                }
-            }
-        }
-    )
-end
-
 -- === Meliora ===
 M.meliora = function()
     local meliora = D.npcall(require, "meliora")
@@ -695,7 +633,6 @@ local function init()
     M.rose_pine()
     M.tokyodark()
     M.tokyonight()
-    M.tundra()
     M.vscode()
 
     -- local theme = "jellybeans"

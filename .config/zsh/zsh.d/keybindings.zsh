@@ -48,7 +48,6 @@ builtin bindkey -M vicmd -r 'R'
 autoload -Uz incarg
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 
-
 autoload -Uz surround
 zle -N delete-surround surround
 zle -N add-surround    surround
@@ -94,7 +93,7 @@ zle -N RG_buff
 
 # Copy $BUFFER
 function copyx() {
-  print -rn $BUFFER | tr -d '\n' | xsel -ib
+  print -rn $BUFFER | xsel -ib --trim
   zle -M "copied: ${BUFFER}"
 }
 zle -N copyx
@@ -190,21 +189,21 @@ fi
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 declare -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
-# 'M-q'             push-line-or-edit     # zsh-edit
-# 'F1'                    dotbare-fstat
-# 'F2'                    db-faddf
-# 'F3'                    _wbmux
-# 'ga'                    what-cursor-position
-  'Home'                  beginning-of-line
-  'End'                   end-of-line
-  'Delete'                delete-char
+  # 'M-q'             push-line-or-edit     # zsh-edit
+  # 'F1'                    dotbare-fstat
+  # 'F2'                    db-faddf
+  # 'ga'                    what-cursor-position
+  # 'Home'                  beginning-of-line
+  # 'End'                   end-of-line
+  # 'Delete'                delete-char
   ';z'                    zbrowse
   'Esc-f'                 wfxr::fzf-file-edit-widget
   'Esc-i'                 fe
   'M-\'                   list-keys             # list keybindings in mode
   'M-r'                   per-dir-fzf
+  'M-v'                   describe-key-briefly  # describe what key does
   'M-S-R'                 fzf-history-widget
-  'C-o'                   clipboard-fzf            # greenclip fzf
+  'C-o'                   clipboard-fzf         # greenclip fzf
   'M-p'                   pw                    # fzf pueue
   'M-u'                   __unicode_translate   # translate 0000 to unicode
   'M-x'                   cd-fzf-ghqlist-widget # cd ghq fzf
@@ -221,18 +220,18 @@ declare -gA keybindings; keybindings=(
   'C-x C-f'               fz-find
   'C-x C-u'               RG_buff                  # RG with $BUFFER
   'C-x C-x'               execute-command          # Execute ZLE command
+  'mode=vicmd :'          execute-named-cmd
   'mode=vicmd 0'          vi-digit-or-beginning-of-line
   'mode=vicmd u'          vi-undo-change
   'mode=vicmd R'          replace-pattern
   'mode=vicmd U'          redo
-  'mode=vicmd E'          backward-kill-line
+  'mode=vicmd S'          backward-kill-line
   # 'mode=vicmd L'    end-of-line # Move to end of line, even on another line
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
   'mode=vicmd H'          vi-beginning-of-line
   'mode=vicmd Q'          src-locate # search for something placing results in $candidates[@]
   'mode=vicmd ?'          which-command
-  # 'mode=vicmd ?'          which-command
   'mode=vicmd K'          run-help
   'mode=vicmd yy'         copyx                    # copy text, display message
   'mode=vicmd ;v'         clipboard-fzf            # greenclip fzf
@@ -255,12 +254,12 @@ declare -gA keybindings; keybindings=(
   'mode=str M-S-O'        lfub                     # lf ueberzug
   'mode=str C-u'          lf                       # regular lf
   'mode=str ;o'           noptions                 # edit zsh options
-  'mode=@ C-b'            bow2                     # surfraw open w3m
   'mode=+ M-.'            kf                       # a formarks like thing in rust
   'mode=+ M-,'            frd                      # cd interactively recent dir
   'mode=+ M-;'            fcd                      # cd interactively
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi
+  'mode=@ C-b'            bow2                     # surfraw open w3m
   'mode=@ M-['            fstat
   'mode=@ M-]'            fadd
 

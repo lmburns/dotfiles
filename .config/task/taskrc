@@ -10,31 +10,273 @@
 # Use the command 'task show' to see all defaults and overrides
 # Use the command 'tash _zshcommands' to see all available commands
 
-# Files
-data.location=$XDG_CONFIG_HOME/task/
-# hooks.location
-locking=on
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                    Files                                     │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 
-# Terminal
-curses=on
-confirmation=yes
-# next=2                                  # Number of tasks per project report
-bulk=2                                  # More than 2 tasks confirmation
+# Path to the directory containing all the Taskwarrior files
+# Default: $HOME/.task
+data.location=$XDG_CONFIG_HOME/task
+
+# Path to the hook scripts directory
+# Default: $HOME/.task/hooks
+hooks.location=$XDG_CONFIG_HOME/task/hooks
+
+# Whether to use file locking when accessing the pending.data and completed.data files
+# Default: 1
+locking=1
+
+# Can be used to temporarily suspend garbage collection (gc), so that task IDs don't change.
+# Note that this should be used in the form of a command line override (task rc.gc=0 ...), and not
+# permanently used in the .taskrc file, as this significantly affects performance in the long term.
+# Default: 1
+gc=1
+
+# Enables/disables hook script processing
+# Default: 1
+hooks=1
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Terminal                                   │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+
+# Whether to use ioctl to establish size of window for text wrapping
+# Default: 1
+detection=1
+
+# Width of output used when auto-detection support is not available.
+# If set to 0, it is interpreted as infinite width, therefore with no word-wrapping; this is useful
+# when redirecting report output to a file for subsequent handling.
+# Default: 80
+defaultwidth=80
+
+# Height of output used when auto-detection support is not available.
+# If set to 0, it is interpreted as infinite height.
+# Default: 24
+defaultheight=24
+
+# Causes the width of the terminal minus one to be used as the full width.
+# This avoids placing color codes in the last column which can cause problems for Cygwin users.
+# Default: 0
+avoidlastcolumn=0
+
+# Hyphenates lines when wrapping breaks occur mid-word.
+# Default: 1
+hyphenate=1
+
+# Which text editor you wish to use for when the task edit <ID> command is used
+# Default: vi
+# editor=vi
+
+# Number of lines reserved at bottom of screen for shell prompt.
+# This is only referenced when 'limit:page' is used.
+# Default: 1
+reserved.lines=1
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                Miscellaneous                                 │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+
+# Helpful explanatory comments are added to output
+#
+# Possibilities: 1 | 0 | list | empty
+#
+# Where list is:
+# blank    Insert extra blank lines in output, for clarity
+# header   Messages that appear before report output (includes overrides & "[task next]" message)
+# footnote Messages that appear after report output (mostly status messages & change descriptions)
+# label    Column labels on tabular reports
+# new-id   Provides feedback of any new task IDs
+# new-uuid Provides feedback of any new task UUIDs. Deprecated, to be merged with new-id.
+# affected Reports 'N tasks affected' and similar
+# edit     Used the verbose template for the 'edit' command
+# special  Feedback when applying special tags
+# project  Feedback about project status changes
+# sync     Feedback about sync
+# filter   Shows the filter used in the command
+# unwait   Notification when a task leaves the 'waiting' state
+# override Notification when configuration options are overridden
+# recur    Notification when a new recurring task instance is created
+verbose=blank,footnote,label,new-id,new-uuid,affected,edit,special,project,sync,filter,unwait,override,recur
+
+# Whether Taskwarrior will ask for confirmation before deleting/undoing task
+# Default: 1
+confirmation=1
+
+# Empty filter combined with a write command is a way to modify all tasks by mistake.
+# When detected, confirmation is required.
+# Default: 1
+allow.empty.filter=0
+
+# Number of spaces to indent annotations when shown beneath the description field
+# Default: 2
+indent.annotation=2
+
+# Indentation of the entire report output
+# Default: 0
+indent.report=0
+
+# Left and right padding around each row of report output
+# Default: 0
+row.padding=0
+
+# Padding between columns of the report output
+# Default: 1
+column.padding=1
+
+# When this number or greater of tasks are modified in a single command, confirmation will be
+# required, regardless of the value of confirmation variable. The special value bulk=0 is treated as
+# an infinity. Useful for preventing large-scale unintended changes.
+# Default: 3
+bulk=2
+
+# Prompt when a task is started of completed, when there are other tasks with a higher urgency
 nag=
 
-# Header and footer are missing
-verbose=blank,footnote,label,new-id,affected,edit,special,project,sync,unwait
+# Whether 'projects' command lists all project names you've used, or just ones in active tasks
+# Default: 0
+list.all.projects=0
 
-# Date
-report.long.dateformat=a M-D-Y
-report.list.dateformat=a M-D H:M
-dateformat=M-D-Y
-weekstart=Sunday
-displayweeknumber=yes
-due=7
+# Shows all projects in the summary report, even if there are no pending tasks
+# Default: 0
+summary.all.projects=0
 
-# Other
-search.case.sensitive=no
+# Whether tab completion scripts consider all tag names you've used, or just ones in active tasks
+# Default: 0
+complete.all.tags=1
+
+# Whether 'tags' command lists all tag names you've used, or just ones in active tasks
+# Default: 0
+list.all.tags=0
+
+# Determines whether columns with no data for any task are printed
+# Default: 0
+print.empty.columns=0
+
+# Search with case insensitivity
+# Default: 1
+search.case.sensitive=0
+
+# Whether regular expression support is enabled
+# Default: 1
+regex=1
+
+# Sets the xterm window title when reports are run
+# Default: 0
+xterm.title=0
+
+# Sets a preference for infix expressions (1 + 2) or postfix expressions (1 2 +)
+# Default: infix
+expressions=infix
+
+# Whether export command encloses the JSON output in '[...]' and adds ',' after each exported task to
+# create a properly-formed JSON array.
+# With json.array=0, export writes raw JSON objects to STDOUT, one per line
+# Default: 1
+json.array=1
+
+# Whether export command encodes dependencies as an array of string UUIDs, or one comma-separated string
+# Default: 1
+json.depends.array=1
+
+_forcecolor=0
+# Taskwarrior shuts off color automatically when the output is not sent directly to a TTY. For example, this command:
+#     $ task list > file
+# will not use any color. To override this, use:
+#     $ task rc._forcecolor=yes list > file
+# Default: 0
+
+# Character or string to show in the start.active column
+# Default: *
+active.indicator=
+
+# Character or string to show in the tag.indicator column
+# Default: +
+tag.indicator=+
+
+# Character or string to show in the depends.indicator column
+# Default: +
+dependency.indicator=D
+
+# Character or string to show in the <uda>.indicator column
+# Default: U
+# uda.<name>.indicator=U
+
+# Whether recurrence is enabled, & whether recurring tasks continue to generate new task instances
+#
+# If you are syncing multiple clients, then it is advised that you set 'recurrence=1' on your
+# primary client, and 'recurrence=0' on ALL other clients. Workaround for a duplication bug.
+# Default: 1
+recurrence=1
+
+# Whether changes to recurring tasks propagates to child tasks with or without confirmation.
+#   yes    = propagate changes without confirmation
+#   no     = do not propagate changes and don't ask for confirmation
+#   prompt = prompts every time
+# Default: prompt
+recurrence.confirmation=prompt
+
+# Character or string to show in the recurrence_indicator column
+# Default: R
+recurrence.indicator=R
+
+# Number of future recurring tasks to show.
+# For example, if a weekly recurring task is added with a due date of tomorrow, and recurrence.limit
+# is set to 2, then a report will list 2 pending recurring tasks, one for tomorrow, and one for
+# a week from tomorrow.
+# Default: 1
+recurrence.limit=1
+
+# When 'undo' command is run, Taskwarrior presents a before and after comparison of the data.
+#   side = compares values side-by-side in a table
+#   diff = uses a format similar to the 'diff' command
+# Default: side
+undo.style=side
+
+# Minimum length of any abbreviated command/value.
+# This means that "ve", "ver", "vers", "versi", "versio" will all equate to "version", but "v" will not.
+# Default: 2
+abbreviation.minimum=2
+
+# Taskwarrior has a debug mode that causes diagnostic output to be displayed. Typically this is not something anyone would
+# want, but when reporting a bug, debug output can be useful. It can also help explain how the command line is being
+# parsed, but the information is displayed in a developer-friendly, not a user-friendly way.
+#
+# Turning debug on automatically sets debug.hooks=1, debug.parser=1 and debug.tls=2 if they do not already have assigned
+# values.
+# Default: 0
+debug=0
+
+# Controls the hook system diagnostic level.
+#   Level 0 = no diagnostics.
+#   Level 1 = hook calls.
+#   Level 2 = exit status and I/O.
+# Default: 0
+debug.hooks=0
+
+# Controls parser diagnostic level.
+#   Level 0 = no diagnostics.
+#   Level 1 = the final parse tree.
+#   Level 2 = the parse tree from all phases of the parse.
+#   Level 3 = expression evaluation details.
+# Default: 0
+debug.parser=0
+
+# Controls the GnuTLS diagnostic level. For 'sync' debugging.
+#   Level 0 = no diagnostics.
+#   Level 9 = the highest.
+#   Level 2 = good setting for debugging.
+# Default: 0
+debug.tls=0
+
+# When set to '1', will replace all report text with 'xxx'.
+# This is useful for sharing report output in bug reports.
+# Default: 0
+obfuscate=0
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Aliases                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 alias.burndown=burndown.daily
 alias.rm=delete
 alias.p=project
@@ -42,46 +284,280 @@ alias.e=edit
 alias.d=done
 alias.a=add
 alias.m=modify
+alias.i=info
 alias.cal=calendar
 alias.open=execute zsh -lc 'taskopen "$1"'
-active.indicator=
-uda.priority.values=H,M,L,
 
-# Color controls.
-color=1                               # Use color
-color.uda.priority.H=green bold                       # Color of priority:H tasks
-color.uda.priority.M=yellow                 # Color of priority:M tasks
-color.uda.priority.L=magenta                  # Color of priority:L tasks
-color.uda.priority.none=white          # Color of priority:  tasks
-color.active=green              # Color of active tasks
-color.due=yellow                  # Color of due tasks
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                     Date                                     │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+
+dateformat=M-D-Y
+dateformat.report=a M-D-Y H:N:S
+dateformat.holiday=YMD
+dateformat.edit=M-D-Y H:N:S
+dateformat.info=M-D-Y H:N:S
+# dateformat.annotation=
+
+# This is a string of characters that defines how Taskwarrior formats date values. The precedence
+# order for the configura‐ tion variable is report.X.dateformat then dateformat.report then
+# dateformat for formatting the due dates in reports. If both report.X.dateformat and
+# dateformat.report are not set then dateformat will be applied to the date. Entered dates as well
+# as all other displayed dates in reports are formatted according to dateformat.
+#
+# 'a D b Y H:N:S' = "Mon 24 Jan 2011 11:19:42"
+report.long.dateformat=a M-D-Y
+report.list.dateformat=a M-D H:N
+
+# Enables ISO-8601 date support.
+# Default: 1
+date.iso=1
+
+# Determines the day a week starts.
+# Valid values are Sunday or Monday only.
+# Default: Sunday
+weekstart=Sunday
+
+# Determines if week numbers are displayed when using the "task calendar" command.
+# The week number is dependent on the day a week starts.
+# Default: 1
+displayweeknumber=1
+
+# Number of days into the future that define when a task is considered due, and is colored accordingly.
+# Default: 7
+due=7
+
+# When running "task calendar":
+#   full   = display the details of tasks with due dates that fall into the calendar period.
+#            The corresponding days will be color-coded in the calendar.
+#   sparse = only the corresponding days will be color coded and no details will be displayed.
+#   none   = displaying of due dates with details is turned off.
+# Default: sparse
+calendar.details=sparse
+
+# Report to run when displaying details of tasks with due dates when running the "task calendar".
+# Default: list
+calendar.details.report=list
+
+# If "1" the first month in the calendar report is effectively changed by the offset value specified
+# in calendar.offset.value.
+# Default: 0
+calendar.offset=0
+
+# Offset value to apply to the first month in the calendar report.
+# Default: -1
+calendar.offset.value=-1
+
+# When running "task calendar":
+#   full   = display holidays in the calendar by color-coding the corresponding days.
+#            A detailed list with the dates and names of the holidays is also shown.
+#   sparse = only the days are color-coded & no details on the holidays will be displayed.
+#   none   = displaying of due dates with details is turned off.
+# Default: none
+calendar.holidays=full
+
+# Determines whether the calendar legend is displayed.
+# Default: 1
+calendar.legend=1
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Journal                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+
+# Determines whether the 'start' and 'stop' commands should record an annotation when being executed.
+# Default: 0
+journal.time=0
+
+# Text of annotation that is recorded when executing the start command and having set journal.time.
+journal.time.start.annotation=Started task
+
+# Text of annotation that is recorded when executing the stop command and having set journal.time.
+journal.time.stop.annotation=Stopped task
+
+# Causes a changelog of each task to be displayed by the 'info' command.
+# Default: 1
+journal.info=1
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Holiday                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+# holiday.towel.name=Day of the towel
+# holiday.towel.date=20100525
+# holiday.sysadmin.name=System Administrator Appreciation Day
+# holiday.sysadmin.date=20100730
+
+# Determines how many months the "task calendar" command renders across the screen.
+# Defaults to however many will fit.
+# If more months than will fit are specified, Taskwarrior will only show as many that will fit.
+# monthsperline=3
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                 Dependencies                                 │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+# Determines whether dependency chain violations generate reminders.
+dependency.reminder=1
+
+# Determines whether dependency chain repair requires confirmation.
+dependency.confirmation=1
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                    Color                                     │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+# color.due.today Task is due today
+# color.active Task is started, therefore active.
+# color.scheduled Task is scheduled, therefore ready for work.
+# color.until Task has an expiration date.
+# color.blocking Task is blocking another in a dependency.
+# color.blocked Task is blocked by a dependency.
+# color.overdue Task is overdue (due some time prior to now).
+# color.due Task is coming due.
+# color.tagged Task has at least one tag.
+# color.recurring Task is recurring.
+# color.completed Task is completed.
+# color.deleted Task is deleted.
+# color.project.none Task does not have an assigned project.
+# color.tag.none Task has no tags.
+
+# Checkout 'task colors'
+
+# Enable/disables merging of colors produced by different color rules.
+# Use if your color scheme  produces unpleasing foreground and background combinations.
+rule.color.merge=1
+
+color=1         # Use color
+fontunderline=1 # Underline text
+
+# color.until=yellow
+# color.blocking=yellow
+# color.blocked=yellow
 color.due.today=cyan
-color.overdue=red                 # Color of overdue tasks
-color.tagged=white
-# color.tagged=yellow                    # Color of tagged tasks
+color.active=green
 color.scheduled=yellow
+color.overdue=red
+color.due=yellow
+color.recurring=underline magenta # Color of recur.any: tasks
+color.tagged=rgb042
+
 # color.completed
 # color.blocked
 # color.blocking
 # color.deleted
-color.recurring=underline magenta                # Color of recur.any: tasks
 
-color.project.important=bold magenta #  Color of important project tasks
-color.project.appt=bold cyan         #  Color of appt project tasks
-color.project.rust=yellow            #  Color of appt project tasks
-color.tag.github=green               #  Color of +github tasks
-color.tag.important=bold magenta     #  Color of +bug tasks
-color.tag.bug=yellow                 #  Color of +bug tasks
-#color.keyword.car=on_blue           #  Color of description.contains:car tasks
-color.header=bold yellow             #  Color of header messages
-color.footnote=on blue               #  Color of footnote messages
+color.project.appt=color14      # Color of appt project tasks
+color.project.cli=rgb004        # Color of cli project tasks
+color.project.curr=rgb003       # Color of curr project tasks
+color.project.github=rgb101     # Color of github project tasks
+color.project.health=rgb053     # Color of health project tasks
+color.project.important=rgb005  # Color of important project tasks
+color.project.job=rgb044        # Color of job project tasks
+color.project.lua=rgb013        # Color of lua project tasks
+color.project.pc_curr=rgb051    # Color of pc_curr project tasks
+color.project.rust=rgb052       # Color of rust project tasks
+color.project.today_only=rgb011 # Color of today_only project tasks
+color.project.vim=rgb054        # Color of vim project tasks
+color.project.want=rgb022       # Color of want project tasks
+color.project.wutag=rgb100      # Color of wutag project tasks
+color.project.zsh=rgb130        # Color of zsh project tasks
 
-default.project=general                # Unless otherwise specified
-# default.priority=M                    # Unless otherwise specified
-default.command=list                   # Unless otherwise specified
+# color.tag.github=color4          # Color of +github tasks
+# color.tag.important=bold color13 # Color of +bug tasks
+color.tag.bug=rgb020             # Color of +bug tasks
 
+# color.keyword.car=on blue # Color of description.contains:car tasks
+color.header=bold rgb015  # Color of header messages
+color.footnote=on blue    # Color of footnote messages
+
+color.uda.priority.H=bold green   # Color of priority:H
+color.uda.priority.M=bold color13 # Color of priority:M
+color.uda.priority.L=bold rgb055  # Color of priority:L
+color.uda.priority.none=white     # Color of priority:
+
+# color.tag.X=yellow
+#       Colors any task that has the tag X.
+# color.project.X=on green
+#       Colors any task assigned to project X.
+# color.keyword.X=on blue
+#       Colors any task where the description or any annotation contains X.
+# color.uda.X=on green
+#       Colors any task that has the user defined attribute X.
+# color.uda.X.VALUE=on green
+#       Colors any task that has the user defined attribute X set to VALUE.
+# color.uda.X.none=on green
+#       Colors any task that does not have the user defined attribute X.
+# color.error=white on red
+#       Colors any of the error messages.
+# color.warning=bold red
+#       Colors any of the warning messages.
+# color.header=green
+#       Colors any of the messages printed prior to the report output.
+# color.footnote=green
+#       Colors any of the messages printed last.
+# color.summary.bar=on green
+#       Colors the summary progress bar. Should consist of a background color.
+# color.summary.background=on black
+#       Colors the summary progress bar. Should consist of a background color.
+# color.calendar.today=black on cyan
+#       Color of today in calendar.
+# color.calendar.due=black on green
+#       Color of days with due tasks in calendar.
+# color.calendar.due.today=black on magenta
+#       Color of today in calendar.
+# color.calendar.due=black on green
+#       Color of days with due tasks in calendar.
+# color.calendar.due.today=black on magenta
+#       Color of today with due tasks in calendar.
+# color.calendar.overdue=black on red
+#       Color of days with overdue tasks in calendar.
+# color.calendar.weekend=bright white on black
+#       Color of weekend days in calendar.
+# color.calendar.holiday=black on bright yellow
+#       Color of holidays in calendar.
+# color.calendar.weeknumber=black on white
+#       Color of weeknumbers in calendar.
+# color.label=
+#       Colors the report labels. Defaults to not use color.
+# color.label.sort=
+#       Colors the report labels for sort columns. Defaults to color.label.
+# color.alternate=on rgb253
+#       Color of alternate tasks.  This is to apply a specific color to every other task in
+#       a report, which can make it easier to visually separate tasks. This is especially useful
+#       when tasks are displayed over multiple lines due to long  descriptions or annotations.
+# color.history.add=on red
+# color.history.done=on green
+# color.history.delete=on yellow
+#       Colors the bars on the ghistory report graphs. Defaults to red, green and yellow bars.
+# color.burndown.pending=on red
+# color.burndown.started=on yellow
+# color.burndown.done=on green
+#       Colors the bars on the burndown reports graphs. Defaults to red, green and yellow bars.
+# color.undo.before=red
+# color.undo.after=green
+#       Colors used by the undo command, to indicate the values both before and after a change that is to be reverted.
+# color.sync.added=green
+# color.sync.changed=yellow
+# color.sync.rejected=red
+#       Colors the output of the sync command.
+# rule.precedence.color=due.today,active,blocking,blocked,overdue,due,
+#       scheduled,keyword.,project.,tag.,uda.,recurring, tagged,completed,deleted This setting
+#       specifies the precedence of the color rules, from highest to lowest. Note that the prefix
+#       'color.' is omit‐ ted (for brevity), and that any wildcard value (color.tag.XXX) is
+#       shortened to 'tag.', which places all specific tag rules at the same precedence, again
+#       for brevity.
+# color.debug=green
+#       Colors all debug output, if enabled.
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Defaults                                   │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+# default.priority=M
+default.project=general
+default.command=list
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Reports                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 # Fields: id,uuid,project,priority,entry,start,due,recur,recur_ind,age,
-#          age_compact,active,tags,description,description_only
+#         age_compact,active,tags,description,description_only
 # Description:   This report is ...
 # Sort:          due+,priority-,project+
 # Filter:        pro:x pri:H +bug limit:10
@@ -187,24 +663,25 @@ report.next.labels= ,Project,Pri,Due,Active,Age,Description
 report.next.sort=due+,priority-,project+
 report.next.filter=status:pending -WAITING project.isnt:store
 
-# Other
+# task scheduled
 # report.scheduled.description=Scheduled tasks
 # report.scheduled.columns=id,start.age,entry.age,priority,project,tags,recur.indicator,scheduled.relative,due.relative,until.remaining,description.count,urgency
 # report.scheduled.labels=ID,Active,Age,P,Project,Tags,R,S,Due,Until,Description,Urg
 # report.scheduled.sort=scheduled
 # report.scheduled.filter=+SCHEDULED -COMPLETED -DELETED
 
+# task list
 # report.list.columns=start.active,id,project,priority,due,description,entry.age
 # report.list.labels= , ,Project,Pri,Due,Description,Age
 
-# Hooks
-# Enable hooks for Kusarigama
-# https://github.com/yanick/Taskwarrior-Kusarigama#name
-# hooks=on
-# debug.hooks=0
-# kusarigama.plugins=GitCommit,Renew
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                    Other                                     │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+uda.priority.values=H,M,L,
 
-# TASKWARRIOR TUI
+# ╭─────────────────╮
+# │ Taskwarrior TUI │
+# ╰─────────────────╯
 uda.taskwarrior-tui.keyconfig.quit=q
 uda.taskwarrior-tui.keyconfig.refresh=r
 uda.taskwarrior-tui.keyconfig.go-to-bottom=G
@@ -260,7 +737,6 @@ uda.taskwarrior-tui.style.command=red
 uda.taskwarrior-tui.background_process=task sync
 uda.taskwarrior-tui.background_process_period=60
 
-# TODO: Change white titlebar
 uda.taskwarrior-tui.style.report.selection=
 uda.taskwarrior-tui.style.report.scrollbar=blue
 uda.taskwarrior-tui.style.report.scrollbar.area=blue
@@ -273,16 +749,26 @@ uda.taskwarrior-tui.style.calendar.title=
 # uda.taskwarrior-tui.task-report.next.filter=$(task show report.next.filter)
 
 uda.taskwarrior-tui.shortcuts.1=~/.config/taskwarrior-tui/scripts/runtaskn
-uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/scripts/add-tag.sh
+uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/scripts/add-tag
 
 # uda.taskwarrior-tui.shortcuts.2=~/.config/taskwarrior-tui/shortcut-scripts/sync.sh
 
-# TASKN
+# ╭───────╮
+# │ Taskn │
+# ╰───────╯
 uda.taskn_reminder_uuid.type=string
 uda.estimate.type=numeric
 uda.estimate.label=Estimate
 # uda.estimate.values=huge,large,medium,small,trivial
 
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                   Context                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
+context.work=project:Work or +urgent
+
+# ╭──────────────────────────────────────────────────────────────────────────────╮
+# │                                    Server                                    │
+# ╰──────────────────────────────────────────────────────────────────────────────╯
 taskd.certificate=\/home\/lucas\/.config\/task\/lucas.cert.pem
 taskd.key=\/home\/lucas\/.config\/task\/lucas.key.pem
 taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
@@ -290,7 +776,6 @@ taskd.server=lmburns.com:53589
 taskd.credentials=Self\/Lucas\/b82378f9-c7b4-4e78-9fb7-89fad80c4182
 taskd.trust=strict
 
-context.work=project:Work or +urgent
 news.version=2.6.0
 
 # vim: ft=taskrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

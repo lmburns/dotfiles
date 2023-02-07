@@ -7,6 +7,7 @@ local gittool = require("common.gittool")
 local coc = require("plugs.coc")
 local log = require("common.log")
 
+local promise = require("promise")
 local backends = require("aerial.backends")
 local config = require("aerial.config")
 local data = require("aerial.data")
@@ -48,6 +49,23 @@ local cmd = vim.cmd
 ---@field filter_kind SymbolKind
 ---@field fzf boolean
 ---@field bufnr number?
+
+local function activate_qf(opts)
+    local winid = fn.getloclist(0, {winid = 0}).winid
+    if winid == 0 then
+        if opts.fzf then
+            cmd("abo lw")
+        else
+            cmd("bel lw")
+        end
+    else
+        api.nvim_set_current_win(winid)
+    end
+
+    if vim.w.bqf_enabled and opts.fzf then
+        utils.normal("m", "zf")
+    end
+end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Aerial                          │
@@ -140,12 +158,14 @@ function M.outline_aerial(args)
         )
     end
 
+    local title = fn.getloclist(0, {title = 0, nr = "$"}).title
+    local new_title = ("Outline Bufnr (Aerial): %d"):format(bufnr)
     fn.setloclist(
         0,
         {},
-        " ",
+        title == new_title and "r" or " ",
         {
-            title = ("Outline Bufnr (Aerial): %d"):format(bufnr),
+            title = title,
             id = "$",
             context = {
                 bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
@@ -191,16 +211,7 @@ function M.outline_aerial(args)
         }
     )
 
-    local winid = fn.getloclist(0, {winid = 0}).winid
-    if winid == 0 then
-        cmd("bel lw")
-    else
-        api.nvim_set_current_win(winid)
-    end
-
-    if vim.w.bqf_enabled and opts.fzf then
-        utils.normal("m", "zf")
-    end
+    activate_qf(opts)
 
     -- TODO: How to clear sign column on close?
     --
@@ -222,7 +233,7 @@ end
 function M.outline(args)
     if not coc.did_init() then
         log.err("Coc not ready yet ...", true)
-        return
+        return promise.resolve()
     end
 
     local opts = args or {}
@@ -280,21 +291,21 @@ function M.outline(args)
 
     local bufnr = api.nvim_get_current_buf()
     if vim.bo[bufnr].bt == "quickfix" then
-        bufnr = fn.bufnr("#")
+        -- bufnr = fn.bufnr("#")
+        return promise.resolve()
     end
-    coc.run_command(
-        "kvs.symbol.docSymbols",
-        {bufnr, opts.filter_kind},
-        function(e, r)
-            if e ~= vim.NIL or type(r) ~= "table" or #r == 0 then
+
+    coc.runCommand("kvs.symbol.docSymbols", bufnr, opts.filter_kind):thenCall(
+        function(value)
+            if type(value) ~= "table" or #value == 0 then
                 return
             end
 
             local items = {}
             local text_fmt = "%-32s│%5d:%-3d│%10s%s%s"
-            for _, s in ipairs(r) do
-                local range = s.selectionRange
-                local rs, re = range.start, range["end"]
+
+            for _, s in ipairs(value) do
+                local rs, re = s.range.start, s.range["end"]
                 local lnum, col = rs.line + 1, rs.character + 1
                 table.insert(
                     items,
@@ -304,16 +315,19 @@ function M.outline(args)
                         col = col,
                         end_lnum = re.line + 1,
                         end_col = re.character + 1,
-                        text = text_fmt:format(s.kind, lnum, col, " ", ("| "):rep(s.level), s.text)
+                        text = text_fmt:format(s.kind, lnum, col, " ", ("| "):rep(s.level), s.name)
                     }
                 )
             end
+
+            local title = fn.getloclist(0, {title = 0, nr = "$"}).title
+            local new_title = ("Outline Bufnr: %d"):format(bufnr)
             fn.setloclist(
                 0,
                 {},
-                " ",
+                title == new_title and "r" or " ",
                 {
-                    title = ("Outline Bufnr: %d"):format(bufnr),
+                    title = new_title,
                     context = {
                         bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
                     },
@@ -330,20 +344,11 @@ function M.outline(args)
                 }
             )
 
-            local winid = fn.getloclist(0, {winid = 0}).winid
-            if winid == 0 then
-                if opts.fzf then
-                    cmd("abo lw")
-                else
-                    cmd("bel lw")
-                end
-            else
-                api.nvim_set_current_win(winid)
-            end
-
-            if vim.w.bqf_enabled and opts.fzf then
-                utils.normal("m", "zf")
-            end
+            activate_qf(opts)
+        end
+    ):catch(
+        function(reason)
+            vim.notify(reason, log.levels.WARN)
         end
     )
 end
@@ -379,6 +384,12 @@ function M.outline_treesitter(args)
             fzf = false
         }
     )
+
+    if vim.bo[opts.bufnr].bt == "quickfix" then
+        -- bufnr = fn.bufnr("#")
+        return
+    end
+
     local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
         vim.notify("No parser for the current buffer", log.levels.ERROR, {title = "builtin.treesitter"})
@@ -404,27 +415,29 @@ function M.outline_treesitter(args)
     local text_fmt = "%-32s│%5d:%-3d│%10s%s"
 
     for _, entry in pairs(results) do
-        local start_row, start_col, end_row, end_col = ts_utils.get_node_range(entry.node)
+        local srow, scol, erow, ecol = ts_utils.get_node_range(entry.node)
         local node_text = vim.treesitter.get_node_text(entry.node, opts.bufnr)
 
         table.insert(
             items,
             {
                 bufnr = opts.bufnr,
-                lnum = start_row + 1,
-                col = start_col,
-                end_lnum = end_row,
-                end_col = end_col,
-                text = text_fmt:format(entry.kind, start_row, start_col, " ", vim.trim(node_text)),
+                lnum = srow + 1,
+                col = scol,
+                end_lnum = erow,
+                end_col = ecol,
+                text = text_fmt:format(entry.kind, srow, scol, " ", vim.trim(node_text)),
                 kind = entry.kind
             }
         )
     end
 
+    local title = fn.getloclist(0, {title = 0, nr = "$"}).title
+    local new_title = ("Outline Bufnr (Treesitter): %d"):format(opts.bufnr)
     fn.setloclist(
         0,
         {},
-        " ",
+        title == new_title and "r" or " ",
         {
             title = ("Outline Bufnr (Treesitter): %d"):format(opts.bufnr),
             id = "$",
@@ -446,16 +459,7 @@ function M.outline_treesitter(args)
         }
     )
 
-    local winid = fn.getloclist(0, {winid = 0}).winid
-    if winid == 0 then
-        cmd("bel lw")
-    else
-        api.nvim_set_current_win(winid)
-    end
-
-    if vim.w.bqf_enabled and opts.fzf then
-        utils.normal("m", "zf")
-    end
+    activate_qf(opts)
 end
 
 ---Turn conflict markers into a quickfix list
@@ -479,7 +483,7 @@ function M.conflicts2qf()
 
             cmd(("badd +%d %s"):format(lnum, fname))
             local bufnr = fn.bufnr(fname)
-            local text = nvim.buf.get_lines(bufnr, tonumber(lnum), tonumber(lnum) + 1, false)[1]
+            local text = api.nvim_buf_get_lines(bufnr, tonumber(lnum), tonumber(lnum) + 1, false)[1]
 
             table.insert(
                 conflicts,
@@ -498,7 +502,7 @@ function M.conflicts2qf()
         fn.setqflist(conflicts, "r")
 
         if #conflicts > 0 then
-            cmd.copen()
+            cmd("abo lw")
         end
     end
 end

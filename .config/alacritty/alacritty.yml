@@ -304,8 +304,8 @@ schemes:
       - { index: 22, color: '#938AA9' }
       - { index: 23, color: '#EA6962' }
       - { index: 24, color: '#E46876' }
-      # - { index: 25, color: '#FF5D62' }
-      # - { index: 26, color: '#FF5D62' }
+      - { index: 25, color: '#418292' }
+      - { index: 26, color: '#2AB074' }
       - { index: 27, color: '#CC6666' }
       - { index: 28, color: '#77A172' }
       - { index: 29, color: '#83A598' }
@@ -323,12 +323,16 @@ schemes:
       - { index: 41, color: '#665C54' }
       - { index: 42, color: '#D9AE80' }
       - { index: 43, color: '#7DAEA3' }
-      - { index: 44, color: '#EA6962' }
+      - { index: 44, color: '#F79A32' }
       - { index: 45, color: '#F06431' }
       - { index: 46, color: '#C2A383' }
-      # - { index: 46, color: '#D9AE80' }
-      # - { index: 47, color: '#D9AE80' }
-      # - { index: 48, color: '#D9AE80' }
+      - { index: 47, color: '#A25BC4' }
+      - { index: 48, color: '#FF5813' }
+      - { index: 49, color: '#A83232' }
+      - { index: 50, color: '#989719' }
+      - { index: 51, color: '#98676A' }
+      - { index: 52, color: '#A06469' }
+      - { index: 53, color: '#A3B95A' }
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:

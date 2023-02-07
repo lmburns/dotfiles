@@ -437,10 +437,10 @@ function M.table_mode()
         }
     )
 
-    -- Make table-mode global
-    g.loaded_table_mode = 1 -- Enable/disable plugin
-    g.table_mode_always_active = 1 -- permanently enable the table mode
-    g.table_mode_disable_mappings = 0 -- disable all mappings
+    -- g.loaded_table_mode = 1 -- enable/disable plugin
+    -- g.table_mode_always_active = 1 -- permanently enable the table mode
+    -- g.table_mode_disable_mappings = 0 -- disable all mappings
+
     g.table_mode_delete_column_map = "<Leader>tdc"
     g.table_mode_sort_map = "<Leader>ts"
 
@@ -489,7 +489,7 @@ function M.table_mode()
             ["<Leader>tiC"] = "Insert a table column before the column you are within, can use `[count]`",
             ["<Leader>tic"] = "Insert a table column after the column you are within, can use `[count]`",
             ["<Leader>tfa"] = "Add formula for current table cell. Invokes `TableAddFormula`",
-            ["<Leader>tfe"] = "Evaluate formula line commented after table beginning with 'tmf:'. Invokes the `TableEvalFormulaLine`",
+            ["<Leader>tfe"] = "Evaluate formula line commented after table beginning with 'tmf:'",
             ["<Leader>ts"] = "Sort a column under the cursor. Invokes `TableSort`"
         }
     )
@@ -615,9 +615,10 @@ function M.neogen()
     )
     map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
     map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
-    map("n", "<Leader>dg", [[:Neogen<Space>]])
+    map("n", "<Leader>dg", [[:Neogen<Space>]], {desc = "Neogen <text>"})
+    map("n", "<Leader>dn", [[<Cmd>Neogen<CR>]], {desc = "Neogen default"})
     map("n", "<Leader>df", [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]])
-    map("n", "<Leader>dc", [[<cmd>lua require("neogen").generate({ type = "class" })<CR>]])
+    map("n", "<Leader>dc", [[<Cmd>lua require("neogen").generate({ type = "class" })<CR>]])
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -655,7 +656,7 @@ function M.luapad()
             arr = {"abc", "def", "ghi", "jkl"},
             tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
             shout = function(str)
-                return (string.upper(str) .. "!")
+                return ((str):upper() .. "!")
             end
         }
     }
@@ -669,8 +670,8 @@ function M.hlslens()
     --      i.e.,
     --          1. vm_theme
     --          2. VM_theme
-    --      If `*` or `#` is pressed when hovering over line 2, only one match
     --      If `*` or `#` is pressed when hovering over line 1, two matches
+    --      If `*` or `#` is pressed when hovering over line 2, only one match
     local hlslens = D.npcall(require, "hlslens")
     if not hlslens then
         return
@@ -944,7 +945,7 @@ function M.sandwhich()
       \   },
       \   {
       \     'buns':   ['|', '|'],
-      \     'nesting':      1,
+      \     'nesting': 1,
       \     'kind':   ['add', 'replace', 'delete'],
       \     'action': ['add'],
       \     'input':  ['|', 'V'],
@@ -1534,6 +1535,7 @@ function M.colorizer()
                 "xml",
                 "css",
                 "typescript",
+                "typescriptreact",
                 "javascript",
                 "conf",
                 "toml",
@@ -1707,7 +1709,7 @@ function M.registers()
             symbols = {
                 newline = "⏎",
                 space = " ",
-                tab = "·",
+                tab = "‣",
                 register_type_charwise = "ᶜ",
                 register_type_linewise = "ˡ",
                 register_type_blockwise = "ᵇ"

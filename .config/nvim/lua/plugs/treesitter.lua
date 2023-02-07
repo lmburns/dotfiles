@@ -10,7 +10,7 @@ local utils = require("common.utils")
 local map = utils.map
 local hl = require("common.color")
 
--- local theme = require("kimbox.colors")
+local colors = require("kimbox.colors")
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -81,7 +81,7 @@ M.setup_hlargs = function()
     end
 
     hlargs.setup {
-        color = g.colors_name == "kimbox" and "#ea6962" or nil,
+        color = g.colors_name == "kimbox" and colors.salmon or nil,
         excluded_filetypes = BLACKLIST_FT,
         paint_arg_declarations = true,
         paint_arg_usages = true,
@@ -117,7 +117,7 @@ M.setup_iswap = function()
         return
     end
 
-    hl.set("ISwapSwap", {bg = "#957FB8"})
+    hl.set("ISwapSwap", {bg = colors.oni_violet})
 
     iswap.setup {
         keys = "asdfghjkl;",
@@ -881,7 +881,7 @@ M.setup = function()
                 keymaps = {
                     goto_definition = ";D", -- mapping to go to definition of symbol under cursor
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
-                    list_definitions_toc = "gO",
+                    list_definitions_toc = "<Leader>fo",
                     goto_next_usage = "]x",
                     goto_previous_usage = "[x"
                 }
@@ -1161,7 +1161,6 @@ local function init()
         {
             ["todo"] = "Todo",
             ["require_call"] = "RequireCall",
-            ["function.call"] = "TSFunction",
             ["function.bracket"] = "Type",
             ["namespace.type"] = "TSNamespaceType",
             ["function_definition"] = "FunctionDefinition",
@@ -1286,8 +1285,8 @@ local function init()
         {
             ["<A-r>"] = "Smart rename",
             [";D"] = "Go to definition under cursor",
-            ["<Leader>fd"] = "List all definitions in file",
-            ["gO"] = "List all definitions in TOC",
+            ["<Leader>fd"] = "Quickfix definitions (Treesitter)",
+            ["<Leader>fo"] = "Quickfix definitions TOC (Treesitter)",
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",

@@ -20,7 +20,7 @@ alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
 alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time
 alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 
-alias %= \$=
+alias {\$,%}=
 
 alias RGV='RG -g "*.lua" -g "*.vim"'
 alias RGL='RG -g "*.lua"'
@@ -135,9 +135,9 @@ alias __='doas'
   # Sort by modified
   alias lsm='exa -Flhb --git --sort=modified --modified --icons'
   # 10 oldest files
-  alias lsm10O='lsm *(D.Om[1,10])'
+  alias lsfo='lsm *(D.Om[1,10])'
   # 10 newest files
-  alias lsm10N='lsm *(D.om[1,10])'
+  alias lsfn='lsm *(D.om[1,10])'
   # Sort by size
   alias lsz='exa -Flhb --git --sort=size --icons'
   # 10 biggest files
@@ -149,7 +149,7 @@ alias __='doas'
 
   alias lsD='exa -D --icons --git'
   # 10 newest directories
-  alias lsd10N='ll -d --sort=modified -- *(/om[1,10])'
+  alias lsdn='ll -d --sort=modified -- *(/om[1,10])'
   # Empty directories
   alias lsde='ll -d -- *(/^F)'
 
@@ -410,7 +410,7 @@ alias taske='t edit'
 
 # xclip -in -selection clipboard -rmlastnl
 # xclip -out -selection clipboard
-alias pbcopy="xsel --clipboard --input"
+alias pbcopy="xsel --clipboard --input --trim"
 alias pbpaste="xsel --clipboard --output"
 alias pbc='pbcopy'
 alias pbp='pbpaste'
@@ -443,7 +443,6 @@ alias .fnq='FNQDIR=/tmp/fnq1 fnq'
 # alias srg='sr -browser="$BROWSER"'
 
 alias getmime='file --dereference --brief --mime-type'
-alias cleanzsh='sudo rm -rf /private/var/log/asl/*.asl'
 
 alias zath='zathura'
 alias n='man'

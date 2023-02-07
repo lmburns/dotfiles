@@ -106,10 +106,6 @@ wk.register(
     }
 )
 
--- https://vi.stackexchange.com/questions/27571/how-do-i-copy-the-url-under-the-cursor
--- https://lmburns.com/academic/file.pdf
--- https://riptutorial.com/lua/example/20315/lua-pattern-matching
-
 -- TODO: Finish keybinding. Paste comment on line below
 -- map("n", "gjp", "<Cmd>norm! j+p<CR>")
 
@@ -187,8 +183,8 @@ wk.register(
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
 
-map("n", "gJ", ":norm! }<CR>", {desc = "Move to next blank line"})
-map("n", "gK", ":norm! {<CR>", {desc = "Move to previous blank line"})
+-- map("n", "gJ", ":norm! }<CR>", {desc = "Move to next blank line"})
+-- map("n", "gK", ":norm! {<CR>", {desc = "Move to previous blank line"})
 
 -- Move selected text up down
 -- map("v", "J", ":m '>+1<CR>gv=gv")

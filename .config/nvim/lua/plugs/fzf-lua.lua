@@ -6,15 +6,16 @@ if not fzf_lua then
     return
 end
 
+local dirs = require("common.global").dirs
+
 local cmd = vim.cmd
 local fn = vim.fn
-local dirs = require("common.global").dirs
 
 function M.setup()
     local actions = require("fzf-lua.actions")
 
     fzf_lua.setup {
-        fzf_bin = "fzf", -- use skim instead of fzf?
+        fzf_bin = "fzf",
         global_resume = true, -- enable global `resume`?
         -- can also be sent individually:
         -- `<any_function>.({ gl ... })`
@@ -39,20 +40,26 @@ function M.setup()
             fullscreen = false, -- start fullscreen?
             hl = {
                 normal = "Normal", -- window normal color (fg+bg)
-                border = "Normal", -- border color (try 'FloatBorder')
-                -- Only valid with the builtin previewer:
+                border = "FloatBorder", -- border color
+                help_normal = "Normal", -- <F1> window normal
+                help_border = "FloatBorder", -- <F1> window border
+                -- Only used with the builtin previewer:
                 cursor = "Cursor", -- cursor highlight (grep/LSP matches)
                 cursorline = "CursorLine", -- cursor line
-                search = "Search" -- search matches (ctags)
-                -- title       = 'Normal',        -- preview border title (file/buffer)
-                -- scrollbar_f = 'PmenuThumb',    -- scrollbar "full" section highlight
-                -- scrollbar_e = 'PmenuSbar',     -- scrollbar "empty" section highlight
+                cursorlinenr = "CursorLineNr", -- cursor line number
+                search = "IncSearch", -- search matches (ctags|help)
+                title = "Normal", -- preview border title (file/buffer)
+                -- Only used with 'winopts.preview.scrollbar = 'float'
+                scrollfloat_e = "PmenuSbar", -- scrollbar "empty" section highlight
+                scrollfloat_f = "PmenuThumb", -- scrollbar "full" section highlight
+                -- Only used with 'winopts.preview.scrollbar = 'border'
+                scrollborder_e = "FloatBorder", -- scrollbar "empty" section highlight
+                scrollborder_f = "FloatBorder" -- scrollbar "full" section highlight
             },
             preview = {
-                -- default     = 'bat',           -- override the default previewer?
-                -- default uses the 'builtin' previewer
-                border = "noborder", -- border|noborder, applies only to
-                -- native fzf previewers (bat/cat/git/etc)
+                -- override the default previewer? default uses the 'builtin' previewer
+                -- default     = 'bat',
+                border = "noborder", -- border|noborder, applies only to native fzf previewers (bat/cat/git/etc)
                 wrap = "nowrap", -- wrap|nowrap
                 hidden = "nohidden", -- hidden|nohidden
                 vertical = "down:45%", -- up|down:size
@@ -61,15 +68,14 @@ function M.setup()
                 flip_columns = 120, -- #cols to switch to horizontal on flex
                 -- Only valid with the builtin previewer:
                 title = true, -- preview border title (file/buf)?
-                scrollbar = "float", -- `false` or string:'float|border'
+                title_align = "left", -- left|center|right, title alignment
+                -- `false` or string:'float|border'
                 -- float:  in-window floating border
                 -- border: in-border chars (see below)
-                scrolloff = "-2", -- float scrollbar offset from right
-                -- applies only when scrollbar = 'float'
-                scrollchars = {"█", ""}, -- scrollbar chars ({ <full>, <empty> }
-                -- applies only when scrollbar = 'border'
-                delay = 100, -- delay(ms) displaying the preview
-                -- prevents lag on fast scrolling
+                scrollbar = "float",
+                scrolloff = "-2", -- float scrollbar offset from right applies only when scrollbar = 'float'
+                scrollchars = {"█", ""}, -- scrollbar chars ({ <full>, <empty> } applies only when scrollbar = 'border'
+                delay = 100, -- delay(ms) displaying the preview prevents lag on fast scrolling
                 winopts = {
                     -- builtin previewer window options
                     number = true,
@@ -121,27 +127,38 @@ function M.setup()
                 ["<F4>"] = "toggle-preview",
                 -- Rotate preview clockwise/counter-clockwise
                 ["<F5>"] = "toggle-preview-ccw",
-                ["<F6>"] = "toggle-preview-cw",
-                ["<S-down>"] = "preview-page-down",
-                ["<S-up>"] = "preview-page-up",
-                ["<S-left>"] = "preview-page-reset"
+                ["<F6>"] = "toggle-preview-cw"
             },
             fzf = {
                 -- fzf '--bind=' options
-                ["ctrl-z"] = "abort",
-                ["esc"] = "abort",
-                ["alt-d"] = "unix-line-discard",
-                ["ctrl-d"] = "half-page-down",
-                ["ctrl-u"] = "half-page-up",
-                ["ctrl-a"] = "beginning-of-line",
-                ["ctrl-e"] = "end-of-line",
                 ["alt-a"] = "toggle-all",
+                ["ctrl-alt-a"] = "toggle-all+accept",
+                ["ctrl-s"] = "toggle-sort",
+                ["ctrl-/"] = "jump",
+                ["esc"] = "abort",
+                ["ctrl-c"] = "abort", -- Doesn't work
+                ["ctrl-z"] = "abort",
+                ["ctrl-q"] = "abort",
+                ["ctrl-g"] = "cancel",
+                ["alt-x"] = "unix-line-discard",
+                ["ctrl-r"] = "clear-selection",
+                ["ctrl-u"] = "half-page-up",
+                ["ctrl-d"] = "half-page-down",
+                ["ctrl-alt-u"] = "page-up",
+                ["ctrl-alt-d"] = "page-down",
+                ["alt-["] = "beginning-of-line",
+                ["alt-]"] = "end-of-line",
+                ["ctrl-y"] = "execute-silent(echo {} | xsel --trim -b)",
+                ["alt-,"] = "first",
+                ["alt-."] = "last",
+                ["change"] = "first",
                 -- Only valid with fzf previewers (bat/cat/git/etc)
-                ["f3"] = "toggle-preview-wrap",
-                ["f4"] = "toggle-preview",
                 ["?"] = "toggle-preview",
-                ["shift-down"] = "preview-page-down",
-                ["shift-up"] = "preview-page-up"
+                ["alt-w"] = "toggle-preview-wrap",
+                ["alt-p"] = "preview-up",
+                ["alt-n"] = "preview-down",
+                ["ctrl-alt-p"] = "preview-page-up",
+                ["ctrl-alt-n"] = "preview-page-down"
             }
         },
         actions = {
@@ -162,7 +179,8 @@ function M.setup()
                 ["ctrl-s"] = actions.file_split,
                 ["ctrl-v"] = actions.file_vsplit,
                 ["ctrl-t"] = actions.file_tabedit,
-                ["alt-q"] = actions.file_sel_to_qf
+                ["alt-q"] = actions.file_sel_to_qf,
+                ["alt-l"] = actions.file_sel_to_ll
             },
             buffers = {
                 -- providers that inherit these actions:
@@ -178,11 +196,15 @@ function M.setup()
             -- set to `false` to remove a flag
             -- set to '' for a non-value flag
             -- for raw args use `fzf_args` instead
-            ["--ansi"] = "",
-            ["--prompt"] = "> ",
-            ["--info"] = "inline",
-            ["--height"] = "100%",
+            ["--prompt"] = "❱ ",
+            ["--pointer"] = "➤",
+            ["--marker"] = "┃",
+            ["--cycle"] = "",
             ["--layout"] = "reverse",
+            ["--height"] = "100%",
+            ["--ansi"] = "",
+            ["--info"] = "inline",
+            ["--multi"] = "",
             ["--border"] = "none"
         },
         -- fzf '--color=' options (optional)
@@ -202,19 +224,25 @@ function M.setup()
       ["gutter"]      = { "bg", "Normal" },
   }, ]]
         previewers = {
-            cat = {cmd = "cat", args = "--number"},
+            cat = {
+                cmd = "cat",
+                args = "--number"
+            },
             bat = {
                 cmd = "bat",
                 args = "--style=numbers,changes --color always",
                 theme = "kimbro", -- bat preview theme (bat --list-themes)
                 config = nil -- nil uses $BAT_CONFIG_PATH
             },
-            head = {cmd = "head", args = nil},
+            head = {
+                cmd = "head",
+                args = nil
+            },
             git_diff = {
                 cmd_deleted = "git diff --color HEAD --",
                 cmd_modified = "git diff --color HEAD",
-                cmd_untracked = "git diff --color --no-index /dev/null"
-                -- pager        = "delta",      -- if you have `delta` installed
+                cmd_untracked = "git diff --color --no-index /dev/null",
+                pager        = "delta --width=$COLUMNS",      -- if you have `delta` installed
             },
             -- === Man
             man = {
@@ -233,7 +261,10 @@ function M.setup()
                 extensions = {
                     -- neovim terminal only supports `viu` block output
                     ["png"] = {"viu", "-b"},
-                    ["jpg"] = {"ueberzug"}
+                    ["gif"] = {"viu", "-b"},
+                    ["jpg"] = {"viu", "-b"},
+                    ["jpeg"] = {"viu", "-b"},
+                    ["svg"] = {"chafa"},
                 },
                 -- if using `ueberzug` in the above extensions map
                 -- set the default image scaler, possible scalers:
@@ -281,14 +312,14 @@ function M.setup()
                 git_icons = true, -- show git icons?
                 file_icons = true, -- show file icons?
                 color_icons = true -- colorize file|git icons
-                -- force display the cwd header line regardles of your current working
+                -- force display the cwd header line regardless of your current working
                 -- directory can also be used to hide the header when not wanted
                 -- show_cwd_header = true
             },
             -- === Git Status
             status = {
                 prompt = "GitStatus❯ ",
-                cmd = "git status -s",
+                cmd = "git status -su",
                 previewer = "git_diff",
                 file_icons = true,
                 git_icons = true,
@@ -383,7 +414,7 @@ function M.setup()
             actions = {
                 -- actions inherit from 'actions.files' and merge
                 -- this action toggles between 'grep' and 'live_grep'
-                ["ctrl-g"] = {actions.grep_lgrep}
+                ["ctrl-alt-g"] = {actions.grep_lgrep}
             },
             no_header = false, -- hide grep|cwd header?
             no_header_i = false -- hide interactive header?
@@ -484,7 +515,7 @@ function M.setup()
             actions = {
                 -- actions inherit from 'actions.files' and merge
                 -- this action toggles between 'grep' and 'live_grep'
-                ["ctrl-g"] = {actions.grep_lgrep}
+                ["ctrl-alt-g"] = {actions.grep_lgrep}
             },
             no_header = false, -- hide grep|cwd header?
             no_header_i = false -- hide interactive header?
@@ -555,7 +586,11 @@ function M.setup()
         -- padding can help kitty term users with
         -- double-width icon rendering
         file_icon_padding = "",
-        file_icon_colors = {lua = "blue", rust = "orange"}
+        file_icon_colors = {
+            lua = "blue",
+            rust = "orange",
+            sh = "green"
+        }
         -- uncomment if your terminal/font does not support unicode character
         -- 'EN SPACE' (U+2002), the below sets it to 'NBSP' (U+00A0) instead
         -- nbsp = '\xc2\xa0',
@@ -585,7 +620,7 @@ M.branch_compare = function(opts)
         -- this enables you to run:
         -- branch_compare({ cwd = "~/Sources/nvim/fzf-lua" })
         o.cmd =
-            require "fzf-lua.path".git_cwd(
+            require("fzf-lua.path").git_cwd(
             -- change this to whaetever command works best for you:
             -- git diff --name-only $(git merge-base HEAD [SELECTED_BRANCH])
             ("git diff --name-only %s"):format(branch),

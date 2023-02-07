@@ -94,9 +94,8 @@ end
 F.tern = function(condition, is_if, is_else)
     if condition then
         return is_if
-    else
-        return is_else
     end
+    return is_else
 end
 
 ---Similar to `vim.F.nil` except that an alternate default value can be given
@@ -293,7 +292,7 @@ M.map = function(modes, lhs, rhs, opts)
     -- TODO: Add an unmap feature
 
     opts = vim.deepcopy(opts) or {}
-    modes = type(modes) == "string" and {modes} or modes
+    modes = type(modes) == "string" and {modes} or modes --[[@as string[]]
 
     if opts.remap == nil then
         if opts.noremap ~= false then
@@ -429,7 +428,7 @@ M.del_keymap = function(modes, lhs, opts)
     }
 
     opts = vim.deepcopy(opts) or {}
-    modes = type(modes) == "string" and {modes} or modes
+    modes = type(modes) == "string" and {modes} or modes --[[@as string[]]
 
     local bufnr = false
     if opts.buffer ~= nil then
@@ -1397,13 +1396,30 @@ end
 
 -- Patterns
 --   http://lua-users.org/wiki/PatternsTutorial
+--   http://lua-users.org/wiki/FrontierPattern
 --   https://www.lua.org/pil/20.2.html
+--   https://riptutorial.com/lua/example/20315/lua-pattern-matching
 --
 --   %b:
---     p(("capture {what is inside} these brackets"):gsub("%b{}", ""))
---     --> capture  these brackets 1
+--     p(("capture {what is inside} these brackets"):match("%b{}"))
+--     --> {what is inside}
+--
+--   %f:
+--     - Detects transition from "not set in" to "in set"
+--     - %f[%a]: Find transition from non-letter to letter
+--     - %u+:    Find multiple uppercase letters after previous transition
+--     - %f[%A]: Find transition from letter to non-letter
+--
+--     p(("THE (QUICK) brOWN FOx JUMPS"):match("%f[%a]%u+%f[%A]"))
+--     --> THE
+--         QUICK
+--         JUMPS
 --
 --   Special characters: ( ) . % + - * ? [ ^ $
+--
+-- LPEG:
+--    https://www.inf.puc-rio.br/~roberto/lpeg/
+--    https://www.inf.puc-rio.br/~roberto/lpeg/re.html
 -- ]]] === Tips ===
 
 -- Allows us to use utils globally

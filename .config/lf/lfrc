@@ -980,7 +980,7 @@ map y copy                                        # general copy
 map Yp yank-path                                  # yank file path
 map Yn yank-name                                  # yank name of file path
 map Yd yank-dir                                   # yank name of directory
-map Yu ${{ ngu | xclip -rmlastnl -selection c; }} # yank name of directory
+map Yu ${{ ngu | xsel -i -b --trim; }} # yank name of directory
 map Yj copy-file-jump                             # copy to directory with zoxide
 map Ym copy-file-manual                           # copy to directory with path entered
 

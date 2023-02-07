@@ -49,13 +49,14 @@ text:
       - .cfg
       - .conf
       - .config
+      - .hjson
       - .ini
       - .json
-      - .hjson
+      - .properties
+      - .ron
       - .tml
       - .toml
       - .yaml
-      - .ron
       - .yml
 
     metadata:
@@ -457,6 +458,7 @@ office:
 
   spreadsheet:
     - .xls
+    - .xlsm
     - .xlsx
     - .ods
     - .xlr

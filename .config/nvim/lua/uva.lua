@@ -10,7 +10,7 @@ local compat = require("promise-async.compat")
 local function wrap(name, argc)
     return function(...)
         local argv = {...}
-        return promise.new(
+        return promise:new(
             function(resolve, reject)
                 argv[argc] = function(err, data)
                     if err then
@@ -274,7 +274,7 @@ M.copyfile = wrap("copyfile", 4)
 ---@param entries number
 ---@return Promise
 M.opendir = function(path, entries)
-    return promise.new(
+    return promise:new(
         function(resolve, reject)
             uv.fs_opendir(
                 path,

@@ -94,8 +94,8 @@ export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
-# export CCACHE_CONFIGPATH="${XDG_CONFIG_HOME}/ccache/ccache.config"
 export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
+# export CCACHE_CONFIGPATH="${XDG_CONFIG_HOME}/ccache/ccache.config"
 # export CCACHE_COMPRESS=1
 # export CCACHE_SLOPPINESS=time_macros,file_macro
 # export CCACHE_BASEDIR="$TRAVIS_BUILD_DIR"

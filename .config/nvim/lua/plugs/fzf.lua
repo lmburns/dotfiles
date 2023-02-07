@@ -373,11 +373,16 @@ local function init()
     g.rg_format = "%f:%l:%c:%m,%f:%l:%m"
 
     -- g.fzf_layout = { window = "call FloatingFZF()" }
-    g.fzf_layout = {window = {width = 0.8, height = 0.8}}
-
+    g.fzf_layout = {
+        window = {
+            width = 0.8,
+            height = 0.8,
+            highlight = "Comment",
+            border = "none",
+            relative = true
+        }
+    }
     g.fzf_history_dir = "~/.local/share/fzf-history"
-    g.fzf_vim_opts = {options = {"--no-border"}}
-    g.fzf_buffers_jump = 1
     g.fzf_action = {
         ["ctrl-t"] = "tab drop",
         ["ctrl-s"] = "split",
@@ -388,7 +393,11 @@ local function init()
     }
 
     vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
-    g.fzf_preview_window = {"right:50%,border-left", "ctrl-/"}
+    -- Floating window doesn't have its own border anymore
+    g.fzf_vim_opts = {options = {"--border"}}
+    g.fzf_commands_expect = "enter"
+    g.fzf_buffers_jump = 1 -- [Buffers] Jump to the existing window if possible
+    g.fzf_preview_window = {"right:50%:+{2}-/2,nohidden", "?"}
 
     g.fzf_preview_quit_map = 1
     g.fzf_preview_use_dev_icons = 1
@@ -410,16 +419,16 @@ local function init()
     cmd.packadd("fzf.vim")
 
     -- Hide status and ruler for fzf
-    api.nvim_create_autocmd(
-        "User",
-        {
-            pattern = "FzfStatusLine",
-            callback = function()
-                -- Lualine picks this up and does a nice statusline
-                -- require("plugs.fzf").fzf_statusline()
-            end
-        }
-    )
+    -- api.nvim_create_autocmd(
+    --     "User",
+    --     {
+    --         pattern = "FzfStatusLine",
+    --         callback = function()
+    --             -- Lualine picks this up and does a nice statusline
+    --             -- require("plugs.fzf").fzf_statusline()
+    --         end
+    --     }
+    -- )
 
     -- Colors
     command(
@@ -562,7 +571,7 @@ local function init()
             fn["fzf#complete"](
                 {
                     source = [[greenclip print 2>/dev/null | grep -v "^\s*$" | nl -w2 -s" "]],
-                    options = "--no-border",
+                    options = {"--no-border"},
                     reducer = function(line)
                         local mod = line[1]:gsub("^%s*[0-9]+%s", "")
                         mod = mod:gsub(" ", "\n") -- Replace non-breakable space
@@ -644,6 +653,7 @@ local function init()
             pattern = "fzf",
             command = function()
                 require("plugs.fzf").prepare_ft()
+                map("t", "<Esc>", "<C-c>", {buffer = true, desc = "Use escape with FZF"})
             end
         },
         {
@@ -682,8 +692,8 @@ local function init()
                 "Files Git (fzf)"
             },
             ["<Leader>f,"] = {[[:lua require('common.gittool').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
-            ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
             ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
+            -- ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
             -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
             -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
             ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
@@ -694,8 +704,8 @@ local function init()
         }
     )
 
-    -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
     map("n", "<Leader>cm", ":Commands<CR>", {silent = true, desc = "Commands (fzf)"})
+    -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 
     -- Tags

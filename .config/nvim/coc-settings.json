@@ -241,6 +241,7 @@
     "--header-insertion=iwyu",
     "--suggest-missing-includes"
   ],
+  "clangd.checkUpdates": true,
   "clangd.trace.server": "off",
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust

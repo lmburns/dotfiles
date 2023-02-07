@@ -7,7 +7,6 @@ if not ng then
 end
 
 local wk = require("which-key")
-local hl = require("common.color")
 
 local fn = vim.fn
 
@@ -70,20 +69,6 @@ function M.setup()
 end
 
 local function init()
-    hl.plugin(
-        "Neogit",
-        {
-            NeogitNotificationInfo = {fg = "#4C96A8"},
-            NeogitNotificationWarning = {fg = "#FF9500"},
-            NeogitNotificationError = {fg = "#c44323"},
-            NeogitDiffAddHighlight = {fg = "#819C3B"},
-            NeogitDiffDeleteHighlight = {fg = "#DC3958"},
-            NeogitDiffContextHighlight = {fg = "#b2b2b2"},
-            NeogitHunkHeader = {fg = "#A06469"},
-            NeogitHunkHeaderHighlight = {fg = "#FF5813"}
-        }
-    )
-
     M.setup()
 
     wk.register(

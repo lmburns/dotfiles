@@ -33,15 +33,18 @@
 ; User mention (@user)
 ("text" @constant (#lua-match? @constant "^[@][%w_-]+$"))
 
-; Bold
-("text" @bold (#lua-match? @bold "^\*[%w_-]+\*$"))
+;; FIX: These doesn't work with spaces
+; *Bold* *bold two*
+("text" @bold (#lua-match? @bold "^%*[%w%W_-]+%*$"))
+; ("text" @bold (#lua-match? @bold "%b**"))
 
-; Underline
-("text" @underline (#lua-match? @underline "^\_[%w%s%p]+\_$"))
+; _Underline_ _underline two_
+("text" @underline (#lua-match? @underline "^_[%w%s%p]+_$"))
+; ("text" @underline (#lua-match? @underline "%b__"))
 
-;; FIX: This doesn't work with spaces
-; Code
-("text" @code (#lua-match? @code "^`[%w%s%p]*`$"))
+; `Code` `code two` `g<`
+("text" @code (#lua-match? @code "^`[%w%s%p]+`$"))
+; ("text" @code (#lua-match? @code "%b``"))
 
 ; (tag
 ;    "*" @conceal (#set! conceal "")
