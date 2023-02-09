@@ -34,11 +34,11 @@ zmc() { man -P "less -p'^${@}'" zshcompsys; }
 zmp() { man -P "less -p'^${@}'" zshall; }
 zmo() { man -P "less -p'^${@}'" zshmodules; }
 zlm() { man -P "less -p'^${@}'" zshzle; }
-zd() { man -P "less -p'^THE ZSH/$1 MODULE$'" zshmodules; }
-zb() { man -P "less -p'^       "$1" '" zshbuiltins; }
-zo() { man -P "less -p'^       "$1"'" zshoptions; }
-zp() { man -P "less -p'^       ${1/#[ewspfrRiInbkK]/"${1}"} '" zshexpn; }
-zs() { man -P "less -p'^       ${1/#[AacCefFikLnoOPqQtuUvVwWXzpjslrSIBEMNR]/"${1}"} '" zshparam; }
+zd()  { man -P "less -p'^THE ZSH/$1 MODULE$'" zshmodules; }
+zb()  { man -P "less -p'^       "$1" '" zshbuiltins; }
+zo()  { man -P "less -p'^       "$1"'" zshoptions; }
+zp()  { man -P "less -p'^       ${1/#[ewspfrRiInbkK]/"${1}"} '" zshexpn; }
+zs()  { man -P "less -p'^       ${1/#[AacCefFikLnoOPqQtuUvVwWXzpjslrSIBEMNR]/"${1}"} '" zshparam; }
 
 usage() {
   print -Pr -- "%F{2}-t, --test -- [[ -e ]]%f"

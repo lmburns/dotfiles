@@ -352,15 +352,6 @@ cmd archive ${{
   xcompress a -o "$archive" -- $fx
 }}
 
-# -- Git: branch
-cmd git_branch ${{
-    git branch | fzf | xargs git checkout
-    pwd_shell=$(pwd)
-    lf -remote "send $id updir"
-    lf -remote "send $id cd \"$pwd_shell\""
-}}
-
-
 # -- Symlinks:
 # y (select for copy) and P to paste soft-link
 # d (select for cut) and P to paste hard-link
@@ -1064,6 +1055,12 @@ map Tl wutag-list
 # == Git == [[[
 cmd dotbare_add $for x ($fx) { dotbare add "$x" }
 cmd git_add $for x ($fx) { git add "$x" }
+cmd git_branch ${{
+  git branch | fzf | xargs git checkout
+  pwd_shell=$(pwd)
+  lf -remote "send $id updir"
+  lf -remote "send $id cd \"$pwd_shell\""
+}}
 
 map gta :{{ git_add; unselect; }}
 
@@ -1074,17 +1071,16 @@ map gtr ${{
   t=$PWD:t
   command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
-map gtc ${{clear; gclp}}
 map gtb :git_branch
-map gtp !{{clear; git pull }}
-map gtP !{{clear; git pull --rebase }}
-map gtz !{{clear; git status }}
-map gtl ${{clear; git log --graph --abbrev-commit --decorate --pretty=lg --all}}
-map gtL ${{clear; git log --abbrev-commit --graph --all}}
-map gts ${{clear; git show --show-signature}}
-
+map gtc ${{clear; gclp}}
+map gtp !{{clear; git pull}}
+map gtP !{{clear; git pull --rebase}}
+map gtz !{{clear; git status}}
+map gtl !{{clear; git la}}
+map gtL !{{clear; git lo}}
 map gl  ${{clear; git log -p}}
-map go &git brws
+map gts !{{clear; git show --show-signature}}
+map go  &git brws
 
 # map gttr ${{clear; git ls-tree -r master --name-only | bat}}
 # map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
@@ -1092,15 +1088,15 @@ map go &git brws
 
 # map gFd ${{clear; f::diff}}
 # map gFc ${{clear; f::clean}}
-map gFs ${{clear; fstat}}
-map gFa ${{clear; fadd}}
-map gFl ${{clear; flog}}
-map gFu ${{clear; funtrack}}
+map gfs ${{clear; fstat}}
+map gfa ${{clear; fadd}}
+map gfl ${{clear; flog}}
+map gfu ${{clear; funtrack}}
 
-map gfa :{{ dotbare_add; unselect; }}
-map gfai ${{clear; dotbare fadd -f}}
-map gfs ${{clear; dotbare fstat}}
-map gfu ${{clear; dotbare funtrack}}
+map gFa :{{ dotbare_add; unselect; }}
+map gFai ${{clear; dotbare fadd -f}}
+map gFs ${{clear; dotbare fstat}}
+map gFu ${{clear; dotbare funtrack}}
 # map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
 # map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
 # map gftu ${{clear; dotbare ls-files --other | bat}}

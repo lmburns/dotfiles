@@ -67,7 +67,10 @@ fi
 export GIT_EDITOR="${EDITOR}"
 export RTV_EDITOR="${EDITOR}"
 export RGV_EDITOR="${EDITOR} $file +$line"
+
+export SYSTEMD_EDITOR="$EDITOR"
 export SYSTEMD_COLORS=1
+export SYSTEMD_LOG_COLOR=1
 
 # -z-4
 # -i -n -w -g -M -X -F -R -f

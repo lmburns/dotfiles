@@ -407,6 +407,8 @@ zt 0b light-mode for \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
     zsh-vi-more/directory-marks \
+    zsh-vi-more/vi-motions \
+    zsh-vi-more/vi-quote \
     OMZP::systemd/systemd.plugin.zsh
 
 # wait'[[ -n $DISPLAY ]]' atload'

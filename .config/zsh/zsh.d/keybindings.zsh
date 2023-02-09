@@ -192,7 +192,6 @@ declare -gA keybindings; keybindings=(
   # 'M-q'             push-line-or-edit     # zsh-edit
   # 'F1'                    dotbare-fstat
   # 'F2'                    db-faddf
-  # 'ga'                    what-cursor-position
   # 'Home'                  beginning-of-line
   # 'End'                   end-of-line
   # 'Delete'                delete-char
@@ -222,10 +221,9 @@ declare -gA keybindings; keybindings=(
   'C-x C-x'               execute-command          # Execute ZLE command
   'mode=vicmd :'          execute-named-cmd
   'mode=vicmd 0'          vi-digit-or-beginning-of-line
-  'mode=vicmd u'          vi-undo-change
   'mode=vicmd R'          replace-pattern
+  'mode=vicmd u'          undo
   'mode=vicmd U'          redo
-  'mode=vicmd S'          backward-kill-line
   # 'mode=vicmd L'    end-of-line # Move to end of line, even on another line
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
@@ -237,11 +235,20 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd ;v'         clipboard-fzf            # greenclip fzf
   'mode=vicmd ;e'         edit-command-line-as-zsh # edit command in editor
   'mode=vicmd ;x'         vi-backward-kill-word    # kill word backwards
+  # 'mode=vicmd S'          backward-kill-line
+  'mode=vicmd C'          vi-change-eol            # kill text to end of line & start in insert
+  'mode=vicmd S'          vi-change-whole-line     # change all text to start over
   'mode=vicmd cc'         vi-change-whole-line     # change all text to start over
   'mode=vicmd ds'         delete-surround          # delete 'surrounders'
   'mode=vicmd cs'         change-surround          # change 'surrounders'
+  'mode=vicmd ys'         add-surround             # add 'surrounders'
   'mode=visual S'         add-surround             # add 'surrounders'
   'mode=vicmd M-\'        list-keys                # list keybindings in mode
+  'mode=vicmd ='          list-choices             # list choices of command
+  'mode=vicmd ga'         what-cursor-position
+  # 'mode=vicmd K'          vi-up-line-or-history
+  # 'mode=vicmd J'          vi-down-line-or-history
+  # 'mode=vicmd /'          vi-history-search-backward
   'mode=vicmd /'          history-incremental-pattern-search-backward
   'mode=vicmd \$'         expand-all               # expand alias etc under keyboard
   'mode=vicmd \-'         zvm_switch_keyword       # decrement item under keyboard
@@ -290,12 +297,6 @@ builtin bindkey -s '\e1' "!:0 \t"        # last command
 # bindkey -s '\e`' "!:0- \t"       # all but the last argument
 # bindkey -s '\e9' "!:0 !:2* \t"   # all but the 1st argument (aka 2nd word)
 
-# 'mod=vicmd ZZ'  accept-line
-# 'mode=vicmd M-a' yank-pop
-# 'mode=vicmd M-s' reverse-yank-pop
-# 'M-c'     _call_navi
-# 'M-n'     _navi_next_pos
-
 # expand-history     _expand_alias    _expand_word
 # spell-word         _correct_word    exchange-point-and-mark
 # neg-argument       _list_expansions list-expand
@@ -309,15 +310,12 @@ builtin bindkey -s '\e1' "!:0 \t"        # last command
 local m c
 # ci", ci', ci`, di", etc
 autoload -U select-quoted; zle -N select-quoted
+# ci{, ci(, ci<, di{, etc
+autoload -U select-bracketed; zle -N select-bracketed
 foreach m (visual viopp) {
   foreach c ({a,i}{\',\",\`}) {
     bindkey -M $m $c select-quoted
   }
-}
-
-# ci{, ci(, ci<, di{, etc
-autoload -U select-bracketed; zle -N select-bracketed
-foreach m (visual viopp) {
   foreach c ({a,i}${(s..)^:-'()[]{}<>bB'}) {
     bindkey -M $m $c select-bracketed
   }

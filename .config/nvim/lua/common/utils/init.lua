@@ -1286,6 +1286,88 @@ M.highlight =
     end
 end)()
 
+---Trims whitespace on left and right side
+---@param self string
+---@return string
+string.trim = function(self)
+    return self:match("^%s*(.-)%s*$")
+end
+
+---Trims whitespace on right side
+---@param self string
+---@return string
+string.rtrim = function(self)
+    return self:match("^(.-)%s*$")
+end
+
+---Trims whitespace on left side
+---@param self string
+---@return string
+string.ltrim = function(self)
+    return self:match("^%s*(.-)$")
+end
+
+---Replace multiple spaces with a single space
+---@param self string
+---@return string, integer
+string.compact = function(self)
+    return self:gsub("%s+", " ")
+end
+
+---Capitalizes the first letter of a string
+---@param self string
+---@return string
+string.capitalize = function(self)
+    local ret = self:sub(1, 1):upper() .. self:sub(2):lower()
+    return ret
+end
+
+---Use PCRE regular expressions in Lua. Does the same as `string.gmatch`
+---@param self string
+---@param pattern string
+---@return function(): string[]
+string.rxmatch = function(self, pattern)
+    return require("rex_pcre2").gmatch(self, pattern)
+end
+
+---Use PCRE regular expressions in Lua. Does the same as `string.gsub`
+---
+---`print(('what up'):rxsub('(\\w+)', '%1 %1')) => what what up up`
+---`print(('what  up dude'):rxsub('\\s{2,}', 'XX')) => whatXXup dude`
+---@param self string
+---@param pattern string
+---@param repl string|string[]|function(s: string)
+---@param n? number Maximum number of matches to  search for
+---@return string
+string.rxsub = function(self, pattern, repl, n)
+    return require("rex_pcre2").gsub(self, pattern, repl, n)
+end
+
+---Use PCRE regular expressions in Lua. Does the same as `string.find`
+---@param self string
+---@param pattern string
+---@param init? number Start offset in the subject (can be negative)
+---@return string
+string.rxfind = function(self, pattern, init)
+    return require("rex_pcre2").find(self, pattern, init)
+end
+
+---Use PCRE regular expressions in Lua to split a string
+---@param self string
+---@param sep string
+---@return function(): string[]
+string.rxsplit = function(self, sep)
+    return require("rex_pcre2").split(self, sep)
+end
+
+---Use PCRE regular expressions in Lua to count number of matches in string
+---@param self string
+---@param pattern string
+---@return string
+string.rxcount = function(self, pattern)
+    return require("rex_pcre2").count(self, pattern)
+end
+
 ---Write a file using libuv
 ---@param path string
 ---@param data string

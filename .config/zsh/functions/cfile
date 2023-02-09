@@ -1,9 +1,10 @@
-# vim:ft=zsh:
-
 # Desc: copy contents of file to clipboard
 
-cfile() {
-  print -l ${(f)"$(<$1)"} | xsel -b
+function cfile() {
+  # print -l ${(f)"$(<$1)"} | xsel -b
+  xsel -ib --trim < "$1"
 }
 
 cfile "$@"
+
+# vim:ft=zsh:

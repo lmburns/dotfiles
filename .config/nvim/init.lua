@@ -9,7 +9,6 @@ FIX: Switching to recent files. The saving of files isn't triggered anymore when
 FIX: Rg fzf-lua doesn't allow an exit with C-c
 
 TODO: Add keybinding to go to top of current function you're inside of
-TODO: Add keybinding to create a comment of clipboard
 TODO: Add keybinding to paste and select
 
 TODO: Highlight dates paint

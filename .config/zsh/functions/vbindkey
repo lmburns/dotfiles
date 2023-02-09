@@ -22,7 +22,7 @@
 emulate -L zsh
 zmodload zsh/complist
 zmodload zsh/parameter
-zmodload -Fa zsh/zutil b:zparseopts
+zmodload -Fa zsh/zutil b:zparseopts b:zformat
 zmodload -Fa zsh/terminfo p:terminfo
 zmodload -Fa zsh/zleparameter p:widgets
 
@@ -31,16 +31,72 @@ setopt extendedglob nolistbeep noshortloops warncreateglobal
 local -i single
 local -a opts remove array mode
 
+# -h = help menu
 # -U = duplicates
 # -u = unused
 # -c = command
-# -b = debug
+# -d = debug
 # -r = remove binding
 # -A = bind an array
 # -M = specify mode
-zparseopts -D -A opts - U u c b r=remove A:=array M:=mode
+zparseopts -D -A opts -   \
+  -help          h        \
+  -debug         d        \
+  -duplicates    U        \
+  -unused        u        \
+  -command       c        \
+  -remove=remove r=remove \
+  -array:=array  A:=array \
+  -mode:=mode    M:=mode
 
-(( ${+opts[-b]} )) && local -i DEBUG=1
+function print::help() {
+  print -Pr -- "  %F{$1}$2%f"
+}
+function print::header() {
+  print -Pr -- "%F{$1}%B$2:%f%b"
+}
+function print::error()   { print -Pru2 -- "%F{1}%B[ERROR]%f%b: $*"; }
+
+function print_help() {
+  print::header 19 "HELP"
+  print::help 20 "-h, --help = Show help menu"
+  print::help 20 "-d, --debug = Debug the execution of this program"
+  print::help 20 "-U, --duplicates = Show duplicate bound keys"
+  print::help 20 "-u, --unused = Show unused keybindings"
+  print::help 20 "-c, --command = Bind a command"
+  print::help 20 "-r, --remove = Remove a keybinding"
+  print::help 20 "-A, --array = Bind an array of keybindings"
+  print::help 20 "-M, --mode = Bind a key in a given mode"
+
+  print::header 19 "MODES"
+  print::help 20 "command: Read a command name"
+  print::help 20 "isearch: Incremental search mode"
+  print::help 20 "emacs: Emacs emulation"
+  print::help 20 "viins: Vi emulation - insert mode"
+  print::help 20 "vicmd: Vi emulation - command mode"
+  print::help 20 "viopp: Vi emulation - operator-pending mode"
+  print::help 20 "visual: Vi emulation - active selection"
+  print::help 20 "str: Bind a command following a newline (no need to add newline)"
+  print::help 20 "+: Hide command and print output below command line"
+  print::help 20 "@: Hide command and leave prompt unmodified if possible"
+  print::help 20 "-: Hide command and update prompt in place"
+
+  print::header 19 "EXAMPLES"
+  print -Pr -- "  %F{2}vbindkey%f -M vicmd %F{3}'0'%f marks %F{35}# Bind single key in vicmd mode%f"
+  print -Pr -- "  %F{2}vbindkey%f -M str %F{3}'^o' 'lc'%f == %F{2}bindkey%f -s %F{3}'^o' 'lc\\n' %F{35}# Bind key as string%f"
+  print -Pr -- '  %F{2}vbindkey%f -A \\
+    (
+      %F{3}"C-x C-x"         %F{12}execute-command    %F{35}# Bind key sequence%f
+      %F{3}"mode=vicmd :"    %F{12}execute-named-cmd  %F{35}# Bind key in "vicmd" mode%f
+      %F{3}"mode=visual S"   %F{12}add-surround       %F{35}# Bind key in "visual" mode%f
+      %F{3}"mode=str C-u"    %F{12}lf                 %F{35}# Bind key as a command with <Enter> following it%f
+      %F{3}"mode=+ M-."      %F{12}kf                 %F{35}# Bind key and print output below%f
+      %F{3}"mode=@ C-b"      %F{12}bow                %F{35}# Bind key and leave prompt unmodified%f
+    )'
+}
+
+(( ${+opts[-d]} + ${+opts[--debug]} )) && local -i DEBUG=1
+(( ${+opts[-h]} + ${+opts[--help]} )) && { print_help; return 0; }
 
 function escape-single-key() {
   local -A name=(
@@ -129,33 +185,71 @@ function escape-mod-key() {
 }
 
 function ___unused() {
+  # local -a args=( $@ $mode )
+  # local -a control=( {$'\0'..$'\C-B'} {$'\C-D'..$'\C-_'} $'\C-?' )
+  # local -a printable=( {' '..'~'} )
+  # local -a termkeys=( kbs kich1 kdch1 khome kend kpp knp kcuu1 kcub1 kcud1 kcuf1 )
+  # termkeys=( ${(vn)terminfo[(I)(${(~j:|:)termkeys})]} )
+  # local -a fkeys=( ${(vn)terminfo[(I)kf<1-20>]} )
+  # local -a val=()
+  # local key
+  # for key in $printable $control $'\e'$^printable $'\e'$^control \
+  #   $termkeys $'\e'$^termkeys $fkeys $'\e'$^fkeys; do
+  #     [[ $(builtin bindkey $args[@] - $key)$(builtin bindkey $args[@] -p - $key)
+  #           == *'undefined-key' ]] &&
+  #       val+=( ${${${${${(q+)key}//'\C-'/^}//'\\'/\\}#(|\$)[\']}%[\']} )
+  # done
+  # (( $#val )) &&
+  #   print -cr - ${(q-)val}
+
   local -a args=( $@ $mode )
-  local -a control=( {$'\0'..$'\C-B'} {$'\C-D'..$'\C-_'} $'\C-?' )
-  local -a printable=( {' '..'~'} )
   local -a termkeys=( kbs kich1 kdch1 khome kend kpp knp kcuu1 kcub1 kcud1 kcuf1 )
-  termkeys=( ${(vn)terminfo[(I)(${(~j:|:)termkeys})]} )
   local -a fkeys=( ${(vn)terminfo[(I)kf<1-20>]} )
   local -a val=()
-  local key
-  for key in $printable $control $'\e'$^printable $'\e'$^control \
-    $termkeys $'\e'$^termkeys $fkeys $'\e'$^fkeys; do
-      [[ $(builtin bindkey $args[@] - $key)$(builtin bindkey $args[@] -p - $key)
-            == *'undefined-key' ]] &&
-        val+=( ${${${${${(q+)key}//'\C-'/^}//'\\'/\\}#(|\$)[\']}%[\']} )
+
+  local -a keys=(
+    ' ' {a..z} \; \' \, \. \/ \[ \] \\ \` {1..9}                      0 \- \= $'\C-?'
+    $'\e'{O,\[}{A,B,C,D,F,H} $'\e['{2,3,5,6}\~
+    {A..Z} \: \" \< \> \? \{ \} \| \~ \! \@ \# \$ \% \^ \& \* \( \) \_ \+ $'\e[Z'
+    {$'\C-@'..$'\C-_'}
+    ${(vn)terminfo[(I)(${(~j:|:)termkeys})]}
+    ${(vn)terminfo[(I)kf<1-20>]}
+  )
+  local k
+  for k in $keys $'\e'$^keys; do
+    [[ $(builtin bindkey $args[@] - $k)$(builtin bindkey $args[@] -p - $k) == *'undefined-key' ]] &&
+      val+=( ${${${${${(q+)k}//'\C-'/^}//'\\'/\\}#(|\$)[\']}%[\']} )
   done
-  (( $#val )) &&
-    print -cr - ${(q-)val}
+  print::header 19 "${(@U)mode[-1]:-NORMAL} UNBOUND KEYS"
+  if (( $#val )) {
+    print -cr -- ${(q-)val}
+  } else {
+    print -r -- "NONE"
+  }
 }
 
 function ___duplicates() {
-  local -a bindings dup_bindings=() all_bindings=( ${(f)"$(bindkey ${@:-$mode})"} )
+  local -a bindings dup_bindings all_bindings
+  dup_bindings=()
+  all_bindings=( ${(f)"$(builtin bindkey ${@:-$mode})"} )
+
   local w
   for w in "${(@ko)widgets}"; do
     bindings=( ${(M)all_bindings:#* $w}  )
     (( $#bindings > 1 )) &&
-        dup_bindings+=( $w "\t${(j:\t:)bindings[@]% $w}" )
+        # dup_bindings+=( $w "\t${(j:\t:)bindings[@]% $w}" )
+        dup_bindings+=( ${w}:${(j.:.)${${(n)bindings[@]:/(#m)*/${#MATCH}$'\0'${MATCH}}[@]#*$'\0'}[@]% $w} )
   done
-  print -aC2 $dup_bindings[@]
+  while [[ $dup_bindings[(I)*:*] -gt 0 ]]; do
+    zformat -a dup_bindings ' ' "$dup_bindings[@]"
+  done
+
+  print::header 19 "${(@U)mode[-1]:-NORMAL} DUPLICATE KEYS"
+  if (( $#dup_bindings )) {
+    print -lr "$dup_bindings[@]"
+  } else {
+    print -r -- "NONE"
+  }
 }
 
 function ___bind() {
@@ -164,7 +258,7 @@ function ___bind() {
   # local -a modes=( ${(f)"$(builtin bindkey -l)"} )
 
   # For arrays
-  if (( ${+opts[-A]} )) && [[ ${(M)sequence:#mode*} ]]; then
+  if (( ${+opts[-A]} + ${+opts[--array]} )) && [[ ${(M)sequence:#mode*} ]]; then
     local qmode=${${(ws:=:)${(M)sequence:#mode*}}[-1]}
     if [[ $qmode = ${(~j:|:)keymaps} ]]; then
       mode=( -M $qmode )
@@ -180,8 +274,10 @@ function ___bind() {
     fi
     sequence=( ${sequence:#mode*} )
   # For a single command. i.e., vbindkey -M vicmd '0' marks
-  elif (( ${+opts[-M]} )); then
-    mode=( $mode )
+  elif (( ${+opts[-M]} + ${+opts[--mode]} )); then
+    if (( ${+mode[(r)str]} )); then
+      mode=( -s )
+    fi
     single=1
   else
     mode=()
@@ -198,9 +294,10 @@ function ___bind() {
   }
 
   if (( ${+mode[(r)-s]} )); then
-    # allow: bindkey -s '^o' 'lc\n'
+    # Allow: bindkey -s '^o' 'lc\n' commands
+    # Which is executed like: vbindkey -M str '^o' 'lc'
     builtin bindkey $remove $mode $escaped "${2}\n"
-    (( DEBUG )) && print -P -- "%F{2}Mode:string%f -- bindkey $remove $mode $escaped "${2}$'\n'""
+    (( DEBUG )) && print -P -- "%F{2}Mode:string%f -- bindkey $remove $mode $escaped $2"
   elif (( ${(@s::)+mode[(r)(+|@|-)(#c1,2)]} )); then
     (( DEBUG )) && print -P -- "%F{2}Mode:@-+:%f -- bindkey "$escaped" ".${mode[1]}${2}""
     zle -N ".${mode[1]}${2}" _ex_cmd
@@ -209,20 +306,21 @@ function ___bind() {
     (( DEBUG )) && print -P -- "%F{2}Mode:$mode[2,-1] -- bindkey $remove $mode $escaped $2"
   else
     builtin bindkey $remove $mode $escaped $2
-    (( DEBUG )) && print -P -- "%F{2}Mode:norm/nonef -- bindkey $remove $mode $escaped $2"
+    (( DEBUG )) && print -P -- "%F{2}Mode:norm/none -- bindkey $remove $mode $escaped $2"
   fi
 }
 
+(( DEBUG )) && print -P -- "%F{2}Opts%f:\n${(kv)opts[@]}"
 if [[ $array ]]; then
   local k v
   for k v in ${(Pkv)${array[2]}}; do
     ___bind $k $v
   done
-elif (( ${+opts[-u]} )); then
+elif (( ${+opts[-u]} + ${+opts[--unused]} )); then
   ___unused "$@"
-elif (( ${+opts[-U]} )); then
+elif (( ${+opts[-U]} + ${+opts[--duplicates]} )); then
   ___duplicates "$@"
-elif (( ${+opts[-c]} )); then
+elif (( ${+opts[-c]} + ${+opts[--command]} )); then
   zle -N ".$@[-1]" _ex_cmd
   builtin bindkey "$@[1,-2]" ".$@[-1]"
 else

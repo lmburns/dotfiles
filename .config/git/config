@@ -92,9 +92,9 @@
   compactionHeuristic = true
 #  renames = copies
 [diff "ruby"]
-	funcname = "^ *\\(\\(def\\) .*\\)"
+  funcname = "^ *\\(\\(def\\) .*\\)"
 [diff "image"]
-	textconv = identify
+  textconv = identify
 
 [log]
   decorate = auto
@@ -247,19 +247,23 @@
 
   l = log -p
   lc = log ORIG_HEAD.. --stat --no-merges
-  lo = "log --oneline --decorate --stat --graph --format=format:'%C(bold #FF9500)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #98676A)[%C(reset)%C(#7EB2B1)%an%C(bold #98676A)]%C(reset)'"
-  lgs = log --graph --abbrev-commit --decorate --pretty=lg --all
-  lgf = log --graph --abbrev-commit --decorate --all --stat --pretty=l
+  ; lgs = log --graph --abbrev-commit --decorate --pretty=lg --all
+  ; lgf = log --graph --abbrev-commit --decorate --all --stat --pretty=l
   ; lol = log --graph --decorate --pretty=oneline --abbrev-commit
   ; lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
   ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
   ; lhist = log --pretty=format:"%Cred%h %Cgreen%d | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
-  lp = log --graph --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-  ll = "log --graph --abbrev-commit --decorate --date=relative -10 --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
-  la = "log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
+  lp = "log --graph --abbrev-commit --date=relative \
+        --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset'"
+  lo = "log --oneline --decorate --stat --graph \
+        --format=format:'%C(bold #FF9500)%h%C(reset) %C(auto)%d%C(reset) %C(green)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #98676A)[%C(reset)%C(#7EB2B1)%an%C(bold #98676A)]%C(reset)'"
+  lt = "log --graph --abbrev-commit --decorate --date=relative -10 \
+        --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
+  la = "log --graph --abbrev-commit --decorate --date=relative \
+        --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
+  ls = "l --stat --graph --date=relative"
   # ll   = lp --numstat
   lpa  = lp --patch
-  # preferred git log view
   lss = log --show-signature
   # View the log and diff for a commit (previous if no SHA1 provided)
   details = log -n1 -p --format=fuller
@@ -269,6 +273,7 @@
   ms = merge --squash
 
   pl = pull
+  plr = pull --rebase
   # Push to all remotes
   pa = !git remote | xargs -L1 git push --all
 

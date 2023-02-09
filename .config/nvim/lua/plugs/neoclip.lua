@@ -12,6 +12,7 @@ local map = utils.map
 local augroup = utils.augroup
 local hl = require("common.color")
 local yank = require("common.yank")
+
 local telescope = require("telescope")
 
 local uv = vim.loop
@@ -19,6 +20,16 @@ local api = vim.api
 local fn = vim.fn
 local v = vim.v
 local cmd = vim.cmd
+
+---@class NeoclipEntryInner
+---@field contents string[]
+---@field filetype string
+---@field regtype string
+
+---@class NeoclipEntry
+---@field entry NeoclipEntryInner
+---@field register_names string[]
+---@field typ string
 
 M.timeout = 165
 
@@ -68,21 +79,71 @@ M.setup = function()
                 return not D.all(data.event.regcontents, is_whitespace)
             end,
             preview = true,
+            prompt = "Paste: ",
             default_register = "+",
             default_register_macros = "q",
             enable_macro_history = true,
             content_spec_column = false,
-            on_paste = {set_reg = false},
-            on_replay = {set_reg = true},
+            on_select = {
+                move_to_front = false,
+                close_telescope = true
+            },
+            on_paste = {
+                set_reg = false,
+                move_to_front = false,
+                close_telescope = true
+            },
+            on_replay = {
+                set_reg = true,
+                move_to_front = false,
+                close_telescope = true
+            },
+            on_custom_action = {
+                close_telescope = true
+            },
             keys = {
                 telescope = {
                     i = {
                         select = "<C-n>",
                         paste = "<C-j>",
-                        paste_behind = "<c-k>",
-                        delete = "<c-d>", -- delete an entry
-                        replay = "<c-q>",
+                        paste_behind = "<C-k>",
+                        delete = "<C-d>", -- delete an entry
+                        edit = "<C-e>", -- edit an entry
+                        replay = "<C-q>",
                         custom = {
+                            ["<A-[>"] = function(opts)
+                                p(opts)
+                            end,
+                            ["gcp"] = function(opts)
+                                M.charwise(opts, "p", true)
+                            end,
+                            ["gcP"] = function(opts)
+                                M.charwise(opts, "P", true)
+                            end,
+                            ["glp"] = function(opts)
+                                M.linewise(opts, "p", true)
+                            end,
+                            ["glP"] = function(opts)
+                                M.linewise(opts, "P", true)
+                            end,
+                            ["ghp"] = function(opts)
+                                M.linewise(opts, "p", false)
+                            end,
+                            ["ghP"] = function(opts)
+                                M.linewise(opts, "P", false)
+                            end,
+                            ["gbp"] = function(opts)
+                                M.blockwise(opts, "p", false)
+                            end,
+                            ["gbP"] = function(opts)
+                                M.blockwise(opts, "P", false)
+                            end,
+                            ["g#p"] = function(opts)
+                                M.linewise(opts, "p", false, true)
+                            end,
+                            ["g#P"] = function(opts)
+                                M.linewise(opts, "P", false, true)
+                            end,
                             ["<C-y>"] = function(opts)
                                 yank.yank_reg(v.register, opts.entry.contents[1])
                             end,
@@ -101,16 +162,120 @@ M.setup = function()
                         paste_behind = "P",
                         replay = "q",
                         delete = "d",
+                        edit = "e",
                         custom = {
                             ["<CR>"] = function(opts)
                                 yank.yank_reg(v.register, opts.entry.contents[1])
-                            end
+                            end,
+                            ["gcp"] = function(opts)
+                                M.charwise(opts, "p", true)
+                            end,
+                            ["gcP"] = function(opts)
+                                M.charwise(opts, "P", true)
+                            end,
+                            ["glp"] = function(opts)
+                                M.linewise(opts, "p", true)
+                            end,
+                            ["glP"] = function(opts)
+                                M.linewise(opts, "P", true)
+                            end,
+                            ["ghp"] = function(opts)
+                                M.linewise(opts, "p", false)
+                            end,
+                            ["ghP"] = function(opts)
+                                M.linewise(opts, "P", false)
+                            end,
+                            ["gbp"] = function(opts)
+                                M.blockwise(opts, "p", false)
+                            end,
+                            ["gbP"] = function(opts)
+                                M.blockwise(opts, "P", false)
+                            end,
+                            ["g#p"] = function(opts)
+                                M.linewise(opts, "p", false, true)
+                            end,
+                            ["g#P"] = function(opts)
+                                M.linewise(opts, "P", false, true)
+                            end,
                         }
                     }
                 }
             }
         }
     )
+end
+
+---Trim and join lines of text
+---@param str string
+---@return string, integer
+local function trim_lines(str)
+    return str:gsub("%s*\r?\n%s*", " "):gsub("^%s*", ""):gsub("%s*$", "")
+end
+
+---Paste joined lines in a characterwise fashion
+---line1   =>   line1 line2
+---line2
+---@param opts NeoclipEntry
+---@param action 'p'|'P'
+---@param joined boolean Whether the lines should be joined
+function M.charwise(opts, action, joined)
+    local handlers = require("neoclip.handlers")
+    local new_entries = {}
+    if joined then
+        for _, entry in ipairs(opts.entry.contents) do
+            local txt = trim_lines(entry)
+            table.insert(new_entries, txt)
+        end
+        opts.entry.contents = {table.concat(new_entries, " ")}
+    end
+    opts.entry.regtype = "c"
+    handlers.paste(opts.entry, action)
+end
+
+---Paste text in a linewise fashion
+---@param opts NeoclipEntry
+---@param action 'p'|'P'
+---@param trim boolean Whether space at the beginning should be trimmed
+---@param comment boolean Whether line should be commented
+function M.linewise(opts, action, trim, comment)
+    local handlers = require("neoclip.handlers")
+    local new_entries = {}
+    if trim then
+        for _, entry in ipairs(opts.entry.contents) do
+            local txt = entry:gsub("^%s*", "")
+            table.insert(new_entries, txt)
+        end
+        opts.entry.contents = new_entries
+    end
+    if comment then
+        for _, entry in ipairs(opts.entry.contents) do
+            local bufnr = api.nvim_get_current_buf()
+            local commentstring = vim.trim(fn.split(vim.bo[bufnr].commentstring, "%s")[1] or "#")
+            local txt = commentstring .. entry
+            table.insert(new_entries, txt)
+        end
+        opts.entry.contents = new_entries
+    end
+    opts.entry.regtype = "l"
+    handlers.paste(opts.entry, action)
+end
+
+---Paste text in a blockwise fashion
+---@param opts NeoclipEntry
+---@param action 'p'|'P'
+---@param joined boolean Whether the lines should be joined
+function M.blockwise(opts, action, joined)
+    local handlers = require("neoclip.handlers")
+    local new_entries = {}
+    if joined then
+        for _, entry in ipairs(opts.entry.contents) do
+            local txt = trim_lines(entry)
+            table.insert(new_entries, txt)
+        end
+        opts.entry.contents = new_entries
+    end
+    opts.entry.regtype = "b"
+    handlers.paste(opts.entry, action)
 end
 
 function M.setup_hl()

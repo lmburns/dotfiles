@@ -101,6 +101,10 @@ text:
       - passwd
       - shadow
 
+    systemd:
+      - .timer
+      - .service
+
   gpg:
     - .gpg
     - .asc

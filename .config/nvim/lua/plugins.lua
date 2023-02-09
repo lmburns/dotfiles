@@ -187,6 +187,7 @@ return packer.startup(
     {
         function(use, use_rocks)
             use_rocks("lpeg")
+            -- https://rrthomas.github.io/lrexlib/manual.html
             use_rocks("lrexlib-pcre2") -- rex_pcre2
 
             -- Package manager
@@ -270,18 +271,19 @@ return packer.startup(
                     "vim-scripts/UnconditionalPaste",
                     patch = true,
                     keys = {
-                        -- These have been removed from my patch
                         {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
                         {"n", "gcP"},
                         {"n", "glp"}, -- Paste linewise (even if not complete)
                         {"n", "glP"},
                         {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
                         {"n", "gbP"},
-                        {"n", "ghp"}, -- Paste linewise above (like glp but adjust indent) (MODIFIED)
-                        {"n", "ghP"}, -- Paste linewise below (like glp but adjust indent) (MODIFIED)
-                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
-                        {"n", "g]P"},
-                        {"n", "g[p"}, -- Paste linewise below (like glp but adjust indent)
+                        {"n", "ghp"}, -- Paste linewise (like glp but adjust indent) (MODIFIED)
+                        {"n", "ghP"},
+                        {"n", "g#p"}, -- Paste commented out
+                        {"n", "g#P"},
+                        {"n", "g>p"}, -- Paste shifted
+                        {"n", "g>P"},
+                        {"n", "g[p"}, -- Paste linewise (like glp but adjust indent)
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
                         {"n", "gsP"}
@@ -1320,6 +1322,7 @@ return packer.startup(
                 }
             )
 
+            -- gbprod/yanky.nvim
             use(
                 {
                     "AckslD/nvim-neoclip.lua",

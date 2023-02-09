@@ -20,7 +20,7 @@ function M.setup()
                 complete_word = false,
                 motion1 = false,
                 motion2 = false
-            },
+            }
             -- exchange = {
             --     motion = false
             -- }
@@ -44,12 +44,14 @@ local function init()
             ["sx"] = {"<Cmd>lua require('substitute.exchange').operator()<CR>", "Substitute exchange operator"},
             ["sxx"] = {"<Cmd>lua require('substitute.exchange').line()<CR>", "Substitute exchange line"},
             ["sxc"] = {"<Cmd>lua require('substitute.exchange').cancel()<CR>", "Substitute cancel"},
-            -- ["<Leader>sr"] = {"<Cmd>lua require('substitute.range').operator({ prefix = 'S' })<CR>", "Substitute range word"},
             ["<Leader>sr"] = {
                 "<Cmd>lua require('substitute.range').operator()<CR>",
                 "Substitute <motion><motion> operator"
             },
-            ["sr"] = {"<Cmd>lua require('substitute.range').word()<CR>", "Substitute range word"},
+            ["sr"] = {
+                "<Cmd>lua require('substitute.range').word()<CR>",
+                "Substitute <motion> range word"
+            },
             -- line word line line
             ["sS"] = {
                 "<Cmd>lua require('substitute.range').operator({confirm = true})<CR>",
