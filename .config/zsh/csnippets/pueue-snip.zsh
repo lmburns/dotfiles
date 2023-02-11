@@ -96,10 +96,10 @@ start" ;
   fi ;
 }
 
-pr() {
+pwr() {
   pw restart -ik ;
 }
 
-pk() {
+pwk() {
   pw kill ;
 }

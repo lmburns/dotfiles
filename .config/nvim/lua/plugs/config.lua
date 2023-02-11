@@ -425,14 +425,18 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.table_mode()
     augroup(
-        "TableMode",
+        "lmb__MarkdownAdditions",
         {
             event = "FileType",
             pattern = {"markdown", "vimwiki"},
-            command = function()
-                -- Use <Leader>tm to start
-                -- Expand snippets in VimWiki
-                map("i", "<right>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>"]], {expr = true})
+            command = function(args)
+                -- Expand snippets/pum item in VimWiki
+                map(
+                    "i",
+                    "<Right>",
+                    [[coc#pum#visible() ? coc#pum#confirm() : "\<Right>"]],
+                    {expr = true, silent = true, buffer = args.buf}
+                )
             end
         }
     )

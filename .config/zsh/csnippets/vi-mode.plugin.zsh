@@ -98,7 +98,7 @@ function wrap_clipboard_widgets() {
   done
 }
 
-wrap_clipboard_widgets copy vi-yank{,-eol} vi-backward-kill-word vi-change-whole-line
+wrap_clipboard_widgets copy vi-yank{,-eol} vi-backward-kill-word vi-change-whole-line vi-yank-whole-line
 wrap_clipboard_widgets paste vi-put-{before,after}
 unfunction wrap_clipboard_widgets
 

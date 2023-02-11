@@ -1,3 +1,5 @@
+---@diagnostic disable:undefined-field
+
 local M = {}
 
 local hl = require("common.color")

@@ -890,16 +890,3 @@ augroup(
         end
     }
 )
-
--- ============================== Unused ============================== [[[
--- augroup(
---     {"filetypedetect", false},
---     {
---         event = {"BufRead", "BufNewFile"},
---         pattern = "*",
---         command = function()
---             vim.filetype.match(vim.fn.expand("<afile>"))
---         end
---     }
--- )
--- ]]] === Unused ===

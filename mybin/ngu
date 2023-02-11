@@ -1,11 +1,13 @@
 #!/usr/bin/env zsh
 
-ngu() {
+function ngu() {
   # confu="$(\
   #   sed -n '/\[remote\s.*/{n;s/\t//g;s/url = //p}' \
   #   $(git rev-parse --show-toplevel)/.git/config \
   #   | head -n1
   # )"
+
+  local confu
   confu="$(git remote get-url origin)"
 
   print -n "$confu" | xsel -b --trim

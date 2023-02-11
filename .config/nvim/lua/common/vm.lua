@@ -129,7 +129,7 @@ function M.mappings()
         "<Esc>",
         function()
             if M.mode() == MODE.VISUAL then
-                vim.cmd("call b:VM_Selection.Global.cursor_mode()")
+                cmd("call b:VM_Selection.Global.cursor_mode()")
             else
                 utils.normal("n", "<Plug>(VM-Exit)")
             end

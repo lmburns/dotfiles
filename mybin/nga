@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+function nga() {
+  local author
+  author="$(command git remote get-url origin | perl -F'/' -lne 'print $F[3]')"
+  # print -n "$author" | xsel -b --trim
+  notify-send "Author:" "$author"
+}
+
+nga "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

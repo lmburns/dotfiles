@@ -1,6 +1,6 @@
 function detect-clip() {
   emulate -L zsh
-  function ccopy() { xsel -bi < "${1:-/dev/stdin}"; }
+  function ccopy() { xsel -bi --trim < "${1:-/dev/stdin}"; }
   function cpaste() { xsel -b; }
 }
 

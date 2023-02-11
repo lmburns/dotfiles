@@ -90,8 +90,8 @@ end
 ---@param groups Color[]|Color @highlight group list
 ---@return ColorFormat
 local function fallback(groups)
-    groups = type(groups) == "string" and {groups} or groups
-    groups = groups == nil and {} or groups
+    groups = type(groups) == "string" and {groups} or groups --[[@as Color[]]
+    groups = groups == nil and {} or groups --[[@as Color[]]
 
     for _, group in ipairs(groups) do
         local ok, hl = pcall(api.get, group, true)

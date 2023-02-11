@@ -5,17 +5,12 @@
 ############################################################################
 
 # === general settings === [[[
-# 0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
-0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
-0="${${(M)0:#/*}:-$PWD/$0}"
+0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
+# 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+# 0="${${(M)0:#/*}:-$PWD/$0}"
 
 umask 022
 # limit coredumpsize 0
-
-if [[ $ZSH_PROFILE_RC -gt 0 ]] ; then
-    zmodload zsh/zprof
-    zprof
-fi
 
 typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
@@ -39,11 +34,11 @@ function zflai-zprof() {
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
 typeset -g DIRSTACKSIZE=20
-typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
-typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
-typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g SAVEHIST=10_000_000
+typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
+typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
+typeset -g HIST_STAMPS="yyyy-mm-dd"
 typeset -g LISTMAX=50                         # Size of asking history
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f"        # Show non-newline ending
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)' # Don't eat space with | with tabs
@@ -89,16 +84,16 @@ typeset -ga zle_highlight=(
   )
 }
 
-setopt hist_ignore_space    # don't add if starts with space
-setopt hist_reduce_blanks   # remove superfluous blanks from each command
-setopt hist_ignore_all_dups # replace duplicate commands in history file
+setopt hist_ignore_space      # don't add if starts with space
+setopt hist_reduce_blanks     # remove superfluous blanks from each command
+setopt hist_ignore_all_dups   # replace duplicate commands in history file
 setopt hist_expire_dups_first # if the internal history needs to be trimmed, trim oldest
-setopt hist_ignore_dups     # do not enter command lines into the history list if they are duplicates
-setopt hist_fcntl_lock      # use fcntl to lock hist file
-setopt extended_history     # add beginning time, and duration to history
-setopt append_history       # all zsh sessions append to history, not replace
-setopt share_history        # imports commands and appends, can't be used with inc_append_history
-setopt no_hist_no_functions # don't remove function defs from history
+setopt hist_ignore_dups       # do not enter command lines into the history list if they are duplicates
+setopt hist_fcntl_lock        # use fcntl to lock hist file
+setopt extended_history       # add beginning time, and duration to history
+setopt append_history         # all zsh sessions append to history, not replace
+setopt share_history          # imports commands and appends, can't be used with inc_append_history
+setopt no_hist_no_functions   # don't remove function defs from history
 # setopt inc_append_history # append to history file immediately, not when shell exits
 
 # cd settings
@@ -158,6 +153,8 @@ typeset -gA ZINIT=(
     ZCOMPDUMP_PATH  ${0:h}/.zcompdump-${HOST/.*/}-${ZSH_VERSION}
     COMPINIT_OPTS   -C
 )
+
+alias ziu='zi update'
 
 zmodload -F zsh/parameter p:dirstack
 autoload -Uz chpwd_recent_dirs add-zsh-hook cdr zstyle+
@@ -300,7 +297,6 @@ add-zsh-hook chpwd chpwd_ls
 # ]]] === annex, prompt ===
 
 # === trigger-load block ===[[[
-# unsure why only works with number
 zt 0a light-mode for \
   is-snippet trigger-load'!x' blockf svn \
     OMZ::plugins/extract \
@@ -357,7 +353,6 @@ zt 0a light-mode for \
   atinit'alias zmand="info zsh "' \
     mattmc3/zman \
     anatolykopyl/doas-zsh-plugin
-
 # ]]] === wait'0a' block ===
 
 #  === wait'0b' - patched === [[[
@@ -374,7 +369,7 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   add-zsh-hook zshaddhistory @append_dir-history-var; @chwpd_dir-history-var now' \
     kadaan/per-directory-history \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
-  atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- ${f}};}' \
+  atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
   atload'vbindkey "Up" history-substring-search-up;
@@ -406,6 +401,9 @@ zt 0b light-mode for \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
+  atinit'alias marks::sync="vi-dir-marks::sync"  marks::list="vi-dir-marks::list"
+         alias marks::mark="vi-dir-marks::mark"  marks::jump="vi-dir-marks::jump"
+         bindkey -a "gl" marks' \
     zsh-vi-more/directory-marks \
     zsh-vi-more/vi-motions \
     zsh-vi-more/vi-quote \
@@ -554,7 +552,7 @@ zt 0c light-mode null for \
     @mvdan/sh \
   lbin'q-* -> q' from'gh-r' \
     harelba/q \
-  lbin lman make"YANKCMD='xsel -b' PREFIX=$ZPFX install" \
+  lbin lman make"YANKCMD='xsel -ib --trim' PREFIX=$ZPFX install" \
     mptre/yank \
   lbin'uni* -> uni' from'gh-r' \
     arp242/uni \
@@ -588,8 +586,7 @@ zt 0c light-mode null for \
   atload"source $ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet
 
-# lbin \
-#   syndbg/goenv \
+# lbin syndbg/goenv \
 #
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 #   greymd/teip
@@ -598,6 +595,7 @@ zt 0c light-mode null for \
 zt 0c light-mode for \
   pipx'jrnl' id-as'jrnl' \
     zdharma-continuum/null
+
 # gem'!kramdown' id-as'kramdown' null \
 #   zdharma-continuum/null \
 # binary cargo'!viu' id-as"$(id_as viu)" \
@@ -856,7 +854,6 @@ autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 
 # === Helper Functions === [[[
 # Shorten command length
-add-zsh-hook zshaddhistory max_history_len
 function max_history_len() {
   if (( $#1 > 240 )) {
     return 2
@@ -871,6 +868,8 @@ function zshaddhistory() {
   # whence ${${(z)1}[1]} >| /dev/null || return 1 # doesn't add setting arrays
   [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
 }
+
+add-zsh-hook zshaddhistory max_history_len
 
 # Based on directory history
 function _zsh_autosuggest_strategy_dir_history() {
@@ -1024,8 +1023,6 @@ zt 0c light-mode run-atpull nocompile'!' for \
   id-as'pipx_comp' has'pipx' nocd eval"register-python-argcomplete pipx" \
   atload'zicdreplay -q' \
     zdharma-continuum/null \
-  id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
-    zdharma-continuum/null \
   id-as'pyenv_init' has'pyenv' nocd eval'pyenv init - zsh' \
     zdharma-continuum/null \
   id-as'pipenv_comp' has'pipenv' nocd eval'_PIPENV_COMPLETE=zsh_source pipenv' \
@@ -1033,8 +1030,6 @@ zt 0c light-mode run-atpull nocompile'!' for \
   id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
     zdharma-continuum/null \
   id-as'go_env' has'goenv' nocd eval'goenv init -' \
-    zdharma-continuum/null \
-  id-as'thefuck_alias' has'thefuck' nocd eval'thefuck --alias' \
     zdharma-continuum/null \
   id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-aliases zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
@@ -1047,6 +1042,8 @@ zt 0c light-mode run-atpull nocompile'!' for \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
       zdharma-continuum/null
 
+# id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
+#   zdharma-continuum/null \
 # id-as'ruby_env' has'rbenv' nocd eval'rbenv init - | sed "s|source .*|source $ZDOTDIR/extra/rbenv.zsh|"' \
 #   zdharma-continuum/null \
 
@@ -1258,9 +1255,11 @@ zt 0b light-mode null id-as for \
 # local first=${${${(M)${(%):-%l}:#*01}:+1}:-0}
 [[ -f "$ZINIT[PLUGINS_DIR]/keychain_init"/eval*~*.zwc(#qN.ms+45000) ]] || [[ "$TTY" = /dev/tty1 ]] && {
   zinit recache keychain_init
-  print -Pr "%F{13}===========================%f"
-  print -Pr "%F{12}===> %BKeychain recached%b <===%f"
-  print -Pr "%F{13}===========================%f"
+  local msg="Keychain recached"
+  local len="${(l:(COLUMNS-$#msg-4)/2::=:):-}"
+  print -Pr "%F{13}${(l:COLUMNS::=:):-}%f"
+  print -Pr "%F{12}$len> %B$msg%b <$len%f"
+  print -Pr "%F{13}${(l:COLUMNS::=:):-}%f"
   zle && zle reset-prompt
 }
 # ]]]
@@ -1274,10 +1273,5 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
-
-# TODO: The deferring here should not be necessary.
-#       Find out what is causing HISTFILE=${XDG_CACHE_HOME}/bash/history
-unset HISTFILE
-defer -a -t 2 -c 'typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"'
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

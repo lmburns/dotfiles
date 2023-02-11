@@ -223,9 +223,8 @@ cmd open ${{
 
 # -- Trash: (rip)
 cmd trash ${{
-  builtin setopt extendedglob
-  local MATCH
-  local -a arr short
+  emulate -L zsh -o extendedglob
+  local MATCH; local -a arr short
   # Turn into an array
   arr=( "${(f)fx}" )
   # Since brackets are only able to be used once in lf, get tail here
@@ -239,8 +238,7 @@ cmd trash ${{
 
 # -- Move: zoxide
 cmd move-file-jump ${{
-  local dest x
-  clear
+  local dest x; clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Move to> ' --no-height +m" zoxide query -i)
   for x ($fx) { mv -iv $x $dest } && {
     dunstify -a lf "🚚 File(s) copied" "${fx:t} => $dest"
@@ -250,7 +248,8 @@ cmd move-file-jump ${{
 # -- Move: path
 cmd move-file-manual ${{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Move to: " dest
+  local x dest; clear
+  vared -cp "Move to: " dest
   for x ($fx) { mv -iv $x $~dest } && {
     dunstify -a lf "🚚 File(s) moved" "${fx:t} => $dest"
   }
@@ -260,7 +259,7 @@ cmd move-file-manual ${{
 
 # -- Copy: zoxide
 cmd copy-file-jump ${{
-  clear
+  local x dest; clear
   dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Copy to> ' --no-height +m" zoxide query -i)
   for x ($fx) { cp -pivr $x $dest } && {
     dunstify -a lf "🚚 File(s) copied" "${fx:t} => $dest"
@@ -271,7 +270,8 @@ cmd copy-file-jump ${{
 # -- Copy: path
 cmd copy-file-manual ${{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Copy to: " dest
+  local x dest; clear
+  vared -cp "Copy to: " dest
   for x ($fx) { cp -pivr $x $~dest } && {
     dunstify -a lf "🚚 File(s) copied." "${fx:t} => $dest"
   }
@@ -299,35 +299,9 @@ cmd ppaste &{{
 }}
 
 
-# -- CD: broot
-cmd br_dir ${{
-  clear
-  f=$(mktemp)
-  res="$(broot --only-folders)"
-  rm -f "$f"
-  if [[ -f "$res" ]]; then
-    cmd="select"
-  elif [[ -d "$res" ]]; then
-    cmd="cd"
-  fi
-  lf -remote "send $id $cmd \"$res\""
-}}
-
-# -- Jump: broot
-cmd broot_jump ${{
-  f=$(mktemp)
-  res="$(broot --outcmd $f && cat $f | sed 's/cd //')"
-  rm -f "$f"
-  if [ -f "$res" ]; then
-    cmd="select"
-  elif [ -d "$res" ]; then
-    cmd="cd"
-  fi
-  lf -remote "send $id $cmd \"$res\""
-}}
-
 # -- Jump: zoxide
 cmd fzf_zoxide ${{
+  local sel
   sel="$(zoxide query -i)"
   [[ -d "$sel" ]] && lf -remote "send $id cd \"$sel\""
 }}
@@ -347,7 +321,8 @@ cmd unarchive ${{ xcompress x "$f" }}
 # -- Archive: archive
 cmd archive ${{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Archive out: " archive
+  local archive; clear
+  vared -cp "Archive out: " archive
   # quotes around "$fx" don't work here
   xcompress a -o "$archive" -- $fx
 }}
@@ -356,40 +331,43 @@ cmd archive ${{
 # y (select for copy) and P to paste soft-link
 # d (select for cut) and P to paste hard-link
 cmd link %{{
-    zmodload -Fa zsh/files b:zf_rm
-    set ${(@f)"$(<$XDG_DATA_HOME/lf/files)"}
-    mode="$1"
-    shift
-    if (( $# < 1 )); then
-      lf -remote "send $id echo no files to link"
-      exit 0
-    fi
-    case "$mode" in
-      copy)
-        ln -sr -t . "$@"
-        dunstify -a lf "Created Symlink" "${@:t3} => $PWD"
-      ;;
-      move)
-        ln -t . "$@"
-        dunstify -a lf "Created Hardlink" "${@:t3} => $PWD"
-      ;;
-    esac
-    zf_rm "${XDG_DATA_HOME}/lf/files"
-    lf -remote "send clear"
+  zmodload -Fa zsh/files b:zf_rm
+  local mode
+  set ${(@f)"$(<$XDG_DATA_HOME/lf/files)"}
+  mode="$1"
+  shift
+  if (( $# < 1 )); then
+    lf -remote "send $id echo no files to link"
+    exit 0
+  fi
+  case "$mode" in
+    (copy)
+      ln -sr -t . "$@"
+      dunstify -a lf "Created Symlink" "${@:t3} => $PWD"
+    ;;
+    (move)
+      ln -t . "$@"
+      dunstify -a lf "Created Hardlink" "${@:t3} => $PWD"
+    ;;
+  esac
+  zf_rm "${XDG_DATA_HOME}/lf/files"
+  lf -remote "send clear"
 }}
 
 
 # -- Preview: video thumbnails
 cmd video_preview ${{
-    cache="$(mktemp "${TMPDIR:-/tmp}/thumb_cache.XXXXX")"
-    ffmpegthumbnailer -i "$f" -o "$cache" -s 0
-    ~/.config/lf/other/draw_img.sh "$cache"
+  local cache
+  cache="$(mktemp "${TMPDIR:-/tmp}/thumb_cache.XXXXX")"
+  ffmpegthumbnailer -i "$f" -o "$cache" -s 0
+  ~/.config/lf/other/draw_img.sh "$cache"
 }}
 
 # -- Permissions: change
 cmd chmod ${{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Change permissions: " perm
+  local perm; clear
+  vared -cp "Change permissions: " perm
   chmod -- $perm $fx
   lf -remote 'send reload'
   lf -remote 'send clear'
@@ -398,7 +376,8 @@ cmd chmod ${{
 # === Ownership: change ========================================
 cmd chown ${{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Ownership: " owner
+  local owner; clear
+  vared -cp "Ownership: " owner
   chown -- $owner $fx
   lf -remote 'send reload'
   lf -remote 'send clear'
@@ -408,10 +387,11 @@ cmd chown ${{
 # === GPG: encrypt recipient ===================================
 cmd gpg_encrypt_recipient %{{
   zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Recipient: " recipient
+  local recipient; clear
+  vared -cp "Recipient: " recipient
   case "$recipient" in
-    "") printf "Cancelled.";;
-    *) gpg --encrypt --sign --recipient "$recipient" $f;;
+    ("") printf "Cancelled.";;
+    (*) gpg --encrypt --sign --recipient "$recipient" $f;;
   esac
 }}
 
@@ -501,12 +481,11 @@ cmd chksum ${{
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
-  vared -cp "Possibilities: MD5, SHA1, SHA224, SHA256, SHA384, SHA512, BLAKE3
-Create MD5 (m), SHA256 (s), SHA512 (S), BLAKE3 (b) (or type one of the above) [default=b]: " chksum_resp
+  vared -cp "Possibilities: MD5, SHA1, SHA224, SHA256, SHA384, SHA512, BLAKE3 Create MD5 (m), SHA256 (s), SHA512 (S), BLAKE3 (b) (or type one of the above) [default=b]: " chksum_resp
 
-  if [ "$chsum_resp" = "s" ]; then
+  if [[ $chsum_resp = "s" ]]; then
     chsum=sha256
-  elif [ "$chsum_resp" = "S" ]; then
+  elif [[ $chsum_resp = "S" ]]; then
     chsum=sha512
   fi
 
@@ -522,7 +501,7 @@ map C chksum
 
 # -- Select: all files
 cmd select-files ${{
-  typeset -a files; files=( ${(@f)"$(fd . -L -d1 -tf)"} )
+  local -a files; files=( ${(@f)"$(fd . -L -d1 -tf)"} )
   for fi in "${files[@]}"; do
     lf -remote "send $id toggle $fi"
   done
@@ -532,7 +511,7 @@ map sf select-files
 
 # -- Select: all dirs
 cmd select-dirs ${{
-  typeset -a dirs; dirs=( ${(@f)"$(fd . -L -d1 -td)"} )
+  local -a dirs; dirs=( ${(@f)"$(fd . -L -d1 -td)"} )
   for d in "${dirs[@]}"; do
     lf -remote "send $id toggle $d"
   done
@@ -542,7 +521,7 @@ map sd select-dirs
 
 # -- Select: all executables
 cmd select-exec ${{
-  typeset -a xx; xx=( ${(@f)"$(fd . -L -d1 -tx)"} )
+  local -a xx; xx=( ${(@f)"$(fd . -L -d1 -tx)"} )
   for x in "${xx[@]}"; do
     lf -remote "send $id toggle $x"
   done
@@ -634,8 +613,9 @@ cmd jumpInteractive ${{
 
 # -- Symlink: cd follow
 cmd cd-followlink &{{
-    origin="$(realpath -s -- "$(readlink -- "$f")")"
-    lf -remote "send $id toggle '$origin'"
+  # origin=${${:-"$f"}:A}
+  origin="$(realpath -s -- "$(readlink -- "$f")")"
+  lf -remote "send $id toggle '$origin'"
 }}
 
 # === TAGS === [[[
@@ -971,7 +951,8 @@ map y copy                                        # general copy
 map Yp yank-path                                  # yank file path
 map Yn yank-name                                  # yank name of file path
 map Yd yank-dir                                   # yank name of directory
-map Yu ${{ ngu | xsel -i -b --trim; }} # yank name of directory
+map Yu ${{ ngu }}                                 # yank URL of git repo
+map Ya ${{ nga }}                                 # yank author of git repo
 map Yj copy-file-jump                             # copy to directory with zoxide
 map Ym copy-file-manual                           # copy to directory with path entered
 
@@ -1056,21 +1037,31 @@ map Tl wutag-list
 cmd dotbare_add $for x ($fx) { dotbare add "$x" }
 cmd git_add $for x ($fx) { git add "$x" }
 cmd git_branch ${{
+  local pwd_shell
   git branch | fzf | xargs git checkout
   pwd_shell=$(pwd)
   lf -remote "send $id updir"
   lf -remote "send $id cd \"$pwd_shell\""
 }}
 
-map gta :{{ git_add; unselect; }}
-
-map gtr ${{
+cmd git_reclone_repo ${{
   ngu | xsel -ib
   rip -- *
   gh c $(xsel -b)
   t=$PWD:t
   command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
+
+cmd mgit_pull_rebase !{{
+  emulate -L zsh -o extendedglob
+  zmodload -Fa zsh/zle b:vared
+  local ans; clear
+  vared -cp 'Confirm rebase [Y/n]: ' ans
+  [[ $ans == (#i)y(es|) ]] && mgit pull --rebase
+}}
+
+map gta :{{ git_add; unselect; }}
+map gtr :git_reclone_repo
 map gtb :git_branch
 map gtc ${{clear; gclp}}
 map gtp !{{clear; git pull}}
@@ -1081,6 +1072,8 @@ map gtL !{{clear; git lo}}
 map gl  ${{clear; git log -p}}
 map gts !{{clear; git show --show-signature}}
 map go  &git brws
+
+map gm :mgit_pull_rebase
 
 # map gttr ${{clear; git ls-tree -r master --name-only | bat}}
 # map gttt ${{clear; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
@@ -1093,10 +1086,10 @@ map gfa ${{clear; fadd}}
 map gfl ${{clear; flog}}
 map gfu ${{clear; funtrack}}
 
-map gFa :{{ dotbare_add; unselect; }}
-map gFai ${{clear; dotbare fadd -f}}
-map gFs ${{clear; dotbare fstat}}
-map gFu ${{clear; dotbare funtrack}}
+map gda :{{ dotbare_add; unselect; }}
+map gdai ${{clear; dotbare fadd -f}}
+map gds ${{clear; dotbare fstat}}
+map gdu ${{clear; dotbare funtrack}}
 # map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
 # map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
 # map gftu ${{clear; dotbare ls-files --other | bat}}

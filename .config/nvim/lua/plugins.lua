@@ -662,7 +662,7 @@ return packer.startup(
 
             use(
                 {
-                    "SmiteshP/nvim-gps",
+                    "lmburns/nvim-gps",
                     requires = {"nvim-treesitter/nvim-treesitter"},
                     after = "nvim-treesitter",
                     config = [[require("nvim-gps").setup()]]

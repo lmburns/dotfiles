@@ -146,7 +146,7 @@ function filtera() {
 # =============================== Fold ===============================
 # ====================================================================
 
-function fold() {
+function foldf() {
   (( $# < 2 )) && {
     __print_start "fold" "[func-list]"
     __print_func_call "bar" "{ print "'\$(( \$1 + \$2 ))'" }"
@@ -206,9 +206,4 @@ function fold_() {
 function folde_() {
   local acc=$2 body=$3
   eval "${(e)==body}"
-}
-
-
-map_() {
-  echo ${(e)==f}
 }

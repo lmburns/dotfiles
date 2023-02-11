@@ -24,8 +24,8 @@ let g:mkdx#settings = {
       \ 'image_extension_pattern': 'a\?png\|jpe\?g\|gif',
       \ 'insert_indent_mappings':  0,
       \ 'gf_on_steroids':          0,
-      \ 'restore_visual':          1,
-      \ 'enter':                   { 'enable': 1, 'shift': 0, 'o': 1,
+      \ 'restore_visual':          0,
+      \ 'enter':                   { 'enable': 0, 'shift': 0, 'o': 1,
       \                              'shifto': 1, 'malformed': 1 },
       \ 'map':                     { 'prefix': 'M', 'enable': 1 },
       \ 'tokens':                  { 'enter':  ['-', '*', '>'],
@@ -82,8 +82,8 @@ let g:mkdx#settings = {
       \                                'json': 0
       \                              }
       \                            },
-      \ 'auto_update':             { 'enable': 1 },
-      \ 'fold':                    { 'enable': 0, 'components': ['toc', 'fence'] }
+      \ 'auto_update':             { 'enable': 0 },
+      \ 'fold':                    { 'enable': 0, 'components': ['toc'] }
     \ }
 
 function! <SID>MkdxGoToHeader(header)
@@ -112,8 +112,8 @@ endfunction
 
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
 
-imap <buffer><silent><unique> <<Tab> <kbd></kbd><C-o>2h<C-o>cit
-inoremap <buffer><silent><unique> ~~~ ```<Enter>```<C-o>k<C-o>A
+" imap <buffer><silent><unique> <<Tab> <kbd></kbd><C-o>2h<C-o>cit
+" inoremap <buffer><silent><unique> ~~~ ```<Enter>```<C-o>k<C-o>A
 
 " vnoremap <buffer><silent> mb <Plug>(mkdx-text-bold-v)
 " nmap Mb <Plug>(mkdx-text-bold-n)

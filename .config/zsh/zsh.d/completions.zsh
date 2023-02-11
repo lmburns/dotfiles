@@ -143,7 +143,8 @@ zstyle+ ':completion:*' '' '' \
       + ':xcompress:*'    file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|git-(add|rm)|bat|nvim):*'   sort false \
-      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|git-(add,rm)|bat|nvim):*' ignore-line other
+      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|git-(add,rm)|bat|nvim):*' ignore-line other \
+      + ':(comm):*' ignore-line other
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access

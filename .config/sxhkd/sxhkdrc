@@ -305,7 +305,7 @@ mod3 x ; {x,b}
 
 # Launch applications
 mod3 + {b,v,g,p,period,s}
-    {$BROWSER &>/dev/null,brave,ungoogled-chromium,pcmanfm,thunderbird,signal-desktop}
+    {$BROWSER &>/dev/null,brave,chromium,pcmanfm,thunderbird,signal-desktop}
 
 # Run a program in a new terminal
 # alt + space

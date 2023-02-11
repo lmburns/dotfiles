@@ -1,6 +1,5 @@
 local M = {}
 
--- local t = require("common.utils").t
 local utils = require("common.utils")
 local map = utils.map
 

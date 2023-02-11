@@ -755,7 +755,7 @@ M.setup = function()
             -- "norg_meta",
             -- "norg_table",
             "ninja",
-            "perl", -- Syntax isn't parsed the greatest
+            -- "perl", -- Syntax isn't parsed the greatest
             "python",
             "query",
             "rasi",

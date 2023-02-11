@@ -189,7 +189,6 @@ alias plr='pl $reply[@]'
 alias plR='pl $REPLY'
 # alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
 alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
-# alias ..='cd .. 2>/dev/null || cd "$(dirname $PWD)"' # Allows leaving from deleted directories
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ngl="noglob"
@@ -465,7 +464,8 @@ alias litecli='LESS="-S $LESS" litecli'
   alias pn="paru --noconfirm"
 }
 
-alias pat='bat --style=header'
+alias pat='bat --style=snip'
+alias hat='bat --style=header'
 alias duso='du -hsx * | sort -rh | bat --paging=always'
 
 alias dic='trans -d'

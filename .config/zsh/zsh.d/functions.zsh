@@ -246,7 +246,7 @@ function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 
 # ============================= Typescript ===========================
 # ====================================================================
-# Hardlink relevant files to a Rust project
+# Hardlink relevant files to a Typescript project
 function linkts() {
   command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
   command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
@@ -289,18 +289,15 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 
 # ============================== Files ===============================
 # Shred and delete file
-function sshred() { shred -v -n 1 -z -u  $1;  }
-
-# Move items out of a directory
-function mvout-clean() { command rsync -vua --delete-after ${1:?Invalid directory} . ; }
-function mvout() { command rsync -vua ${1:?Invalid directory} . ; }
+# dd f=/dev/random of="$1"
+function shredd() { shred -v -n 1 -z -u  $1;  }
 
 # Copy directory
 function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
 # Create file from clipboard
 function pbpf() { xsel -b > "$1"; }
 # Copy file to clipboard
-function pbcf() { xsel -b < "${1:-/dev/stdin}"; }
+function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
 # === Moving Files ===
 # Rsync from local pc to server
@@ -310,7 +307,7 @@ function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}
 
 # Link unlink file from mybin to $PATH
 function lnbin() { ln -siv $HOME/mybin/$1 $XDG_BIN_HOME; }
-function unlbin() { rm -v /$XDG_BIN_HOME/$1; }
+function unlbin() { rm -v $XDG_BIN_HOME/$1; }
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
@@ -328,11 +325,8 @@ function upp() { cat $1 | up; }
 # Crypto information
 function ratesx() { curl rate.sx/$1; }
 
-# Latex documentation serch (as best I can)
+# Latex documentation search (as best I can)
 function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
-
-# HTML to Markdown
-function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
 
 # Monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
@@ -355,8 +349,30 @@ function ofd() { handlr open $PWD ; }
 
 # Convert hexadecimal to base 10
 function h2d() { print $(( $1 )); }
+# Convert hexadecimal to octal
+function h2o() { print $(( [##8] 0x$1 )); }
 # Convert base 10 to hexadecimal
-function d2h() { printf 0x%X\\n $1; }
+function d2h() { print $(( [##16] $1 )); } # printf 0x%X\\n $1;
+# Convert base 10 to octal
+function d2o() { print $(( [##8] $1 )); }
+# Convert octal to base 10
+function o2d() { print $(( 0$1 )); }
+# Convert octal to hexadecimal
+function o2h() { print $(( [##16] 0$1 )); } # print 'obase=16; ibase=8; $1' | bc
+
+# HTML to Markdown
+function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
+
+# Move items out of a directory
+function mvout-clean() { command rsync -vua --delete-after ${1:?Invalid directory} . ; }
+function mvout() { command rsync -vua ${1:?Invalid directory} . ; }
+
+# Create 'gif' and 'video' dirs, then move those filetypes into the directory
+function mvmedia() {
+  mkd gif video
+  fd -e gif -d1 -x mv {} gif &&
+    fd -e webm -d1 -x mv {} video
+}
 
 # ================================ Git ===============================
 # ====================================================================
