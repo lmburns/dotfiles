@@ -90,7 +90,7 @@ local function preview_fugitive(bufnr, ...)
 end
 
 function M.setup()
-    hl.link("BqfPreviewBorder", "Parameter")
+    hl.link("BqfPreviewBorder", "goTSNamespace")
 
     bqf.setup(
         {

@@ -369,7 +369,7 @@ function mvout() { command rsync -vua ${1:?Invalid directory} . ; }
 
 # Create 'gif' and 'video' dirs, then move those filetypes into the directory
 function mvmedia() {
-  mkd gif video
+  mkdir -p gif video
   fd -e gif -d1 -x mv {} gif &&
     fd -e webm -d1 -x mv {} video
 }

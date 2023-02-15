@@ -3,37 +3,42 @@ local cmd
 
 if (( $+commands[grc] )); then
   cmds=(
-    ping
-    traceroute
-    cc gcc g++ c++
-    make gmake bear
-    stat
-    ss
-    mount
-    findmnt
-    ps
-    df
-    du
-    ip
-    env
-    systemctl
-    iptables
-    lspci
-    lsblk
-    lsof
     blkid
+    cc gcc g++ c++
+    configure
+    curl
+    df
+    docker docker-compose
+    du
+    env
+    fdisk
+    findmnt
+    free
     id
     iostat sar
-    fdisk
-    docker docker-compose
-    sysctl
-    lsmod
+    ip
+    iptables
+    # iwconfig
+    # journalctl
     lsattr
-    vmstat
-    free
+    lsblk
+    lsmod
+    lsof
+    lspci
+    make gmake bear
+    mount
     nmap
-    uptime
+    ping
+    ps
+    ss
+    stat
+    sysctl
+    systemctl
+    traceroute
     trash-list
+    uptime
+    vmstat
+    # whois
   )
 
   for cmd ($cmds) {

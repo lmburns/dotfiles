@@ -86,6 +86,7 @@ map("n", "<S-Tab>", "<<")
 map("v", "<Tab>", ">><Esc>gv")
 map("v", "<S-Tab>", "<<<Esc>gv")
 -- map("i", "<S-Tab>", "<C-d>")
+
 -- Don't lose selection when shifting sidewards
 map("x", "<", "<gv")
 map("x", ">", ">gv")
@@ -106,15 +107,21 @@ wk.register(
     }
 )
 
--- TODO: Finish keybinding. Paste comment on line below
--- map("n", "gjp", "<Cmd>norm! j+p<CR>")
-
 -- Yank mappings
 wk.register(
     {
-        ["yd"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>", "Copy directory"},
-        ["yn"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>", "Copy file name"},
-        ["yp"] = {":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>", "Copy full path"}
+        ["yd"] = {
+            ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>",
+            "Copy directory"
+        },
+        ["yn"] = {
+            ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>",
+            "Copy file name"
+        },
+        ["yp"] = {
+            ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>",
+            "Copy full path"
+        }
     }
 )
 
@@ -150,7 +157,7 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 wk.register(
     {
         ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
-        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
         -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
@@ -163,36 +170,21 @@ wk.register(
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"},
         ["<C-g>"] = {[[g<C-g>]], "Show word count"},
         ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
-        ["<Leader>/"] = {"<Esc>/\\%V", "Search visual selection"},
+        ["<Leader>/"] = {"<Esc>/\\%V", "Search visual selection"}
         -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
     {mode = "v"}
 )
 
--- map("x", "p", "_c<Esc>p", {desc = "Paste over selected text"})
--- map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste before})
--- map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Paste after"})
-
--- map("n", "j", "(v:count == 0 ? 'gj' : 'j')", { expr = true })
--- map("n", "k", "(v:count == 0 ? 'gk' : 'k')", { expr = true })
--- map({ "n", "x", "o" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', { expr = true })
--- map({ "n", "x", "o" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', { expr = true })
+map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
 
--- map("n", "gJ", ":norm! }<CR>", {desc = "Move to next blank line"})
--- map("n", "gK", ":norm! {<CR>", {desc = "Move to previous blank line"})
-
--- Move selected text up down
--- map("v", "J", ":m '>+1<CR>gv=gv")
--- map("v", "K", ":m '<-2<CR>gv=gv")
--- map("i", "<C-J>", "<C-o><Cmd>m +1<CR>")
--- map("i", "<C-K>", "<C-o><Cmd>m -2<CR>")
--- map("n", "<C-,>", "<Cmd>m +1<CR>")
--- map("n", "<C-.>", "<Cmd>m -2<CR>")
+map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
+map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})
 
 -- Remap mark jumping
 map({"n", "x", "o"}, "'", "`")
@@ -201,9 +193,6 @@ map({"n", "x", "o"}, "`", "'")
 map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
 -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
 -- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
-
--- TODO: Finish this
--- map("i", "<C-CR>", "<Cmd>set fo+=o<CR><CR><Cmd>set fo-=o<CR>")
 
 wk.register(
     {
@@ -333,8 +322,6 @@ wk.register(
         }
     }
 )
-
-map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 -- ]]] === Other ===
 
 -- ============== Function Mappings ============= [[[

@@ -148,6 +148,7 @@ alias __='doas'
   alias lss='exa -Flhb --git --group-directories-first --icons'
 
   alias lsD='exa -D --icons --git'
+  alias lsDl='ll -D'
   # 10 newest directories
   alias lsdn='ll -d --sort=modified -- *(/om[1,10])'
   # Empty directories
@@ -161,7 +162,7 @@ alias __='doas'
   alias lssym='ll -d -- *(@N)'
 
   alias tree='exa --icons --git -TL'
-  alias lm='tree 1 -@'
+  alias lt='tree 1 -@'
   alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   alias lsb='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='exa -l  --no-user --no-permissions --no-time -@'
@@ -187,8 +188,8 @@ alias plm='pl $match[@]'
 alias plM='pl $MATCH'
 alias plr='pl $reply[@]'
 alias plR='pl $REPLY'
-# alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
 alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
+# alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
 
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias ngl="noglob"

@@ -4,22 +4,22 @@
 setopt extendedglob
 zmodload -Fa zsh/parameter p:commands p:functions
 
-local Z fullp
+local fdir fullp
 
 # ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
 
-Z="${ZDOTDIR}/functions/${argv}"
+fdir="${ZDOTDIR}/functions/${argv}"
 fullp=$commands[$argv]
 
 if { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
   $EDITOR "$fullp"
-elif [[ -f "$Z" ]]; then
-  $EDITOR "$Z"
+elif [[ -f "$fdir" ]]; then
+  $EDITOR "$fdir"
 # elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
 elif [[ -n $functions[$argv] ]]; then
   "$EDITOR" ${$(whence -va "$argv")[-1]}
 else
-  echo "$argv ($(which $argv)) is not a text file"
+  print -Pr -- "%F{14}$fullp%f ($(which $fullp)) is not a text file"
 fi
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

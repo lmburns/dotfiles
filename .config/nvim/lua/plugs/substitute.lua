@@ -72,9 +72,9 @@ local function init()
 
     wk.register(
         {
-            ["ss"] = {":lua require('substitute').visual()<CR>", "Substitute visual"},
-            ["X"] = {":lua require('substitute.exchange').visual()<CR>", "Substitute exchange line"},
-            ["sr"] = {"<cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
+            ["ss"] = {"<Cmd>lua require('substitute').visual()<CR>", "Substitute visual"},
+            ["X"] = {"<Cmd>lua require('substitute.exchange').visual()<CR>", "Substitute exchange line"},
+            ["sr"] = {"<Cmd>lua require('substitute.range').visual()<cr>", "Substitute <motion>"}
         },
         {mode = "x"}
     )

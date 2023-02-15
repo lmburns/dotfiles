@@ -1,16 +1,15 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 FIX: Telescope opens file in insert mode
-
-FIX: Urlview problem: Could not navigate link with `xdg-open`:
 FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
-FIX: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
-FIX: Rg fzf-lua doesn't allow an exit with C-c
+FIX: Substitute command doesn't work with multiple lines in visual mode
+
+FIX: Folds close automatically if every fold in file is closed then opened
 
 TODO: Add keybinding to go to top of current function you're inside of
-TODO: Add keybinding to paste and select
-
 TODO: Highlight dates paint
+
+DONE: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
 
 NOTES:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)

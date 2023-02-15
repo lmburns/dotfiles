@@ -196,7 +196,7 @@ M.setup = function()
                             end,
                             ["g#P"] = function(opts)
                                 M.linewise(opts, "P", false, true)
-                            end,
+                            end
                         }
                     }
                 }
@@ -323,7 +323,11 @@ function M.highlight_put(register)
     )
 end
 
-function M.do_put(binding, reg)
+---Wrapper around pasting
+---@param binding string Paste command to run
+---@param reg string Register to use
+---@param command? string Command to run after pasting
+function M.do_put(binding, reg, command)
     reg = utils.get_default(reg, v.register)
     local cnt = v.count1
     -- local is_visual = fn.visualmode():match("[vV]")
@@ -332,6 +336,10 @@ function M.do_put(binding, reg)
 
     if ok then
         M.highlight_put(reg)
+    end
+
+    if command then
+        cmd(command)
     end
 end
 
@@ -345,6 +353,8 @@ local function init()
     map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>")
     map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>")
     map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>")
+
+    map("n", "gZ", ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>", {desc = "Paste and reselect text"})
 
     augroup(
         "lmb__HighlightYankClip",

@@ -697,7 +697,7 @@ function M.init()
 
     M.sumneko_ls()
 
-    g.coc_fzf_opts = {"--no-border", "--layout=reverse-list"}
+    g.coc_fzf_opts = {"--layout=reverse-list"}
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 

@@ -348,7 +348,7 @@ function M.outline(args)
         end
     ):catch(
         function(reason)
-            vim.notify(reason, log.levels.WARN)
+            log.warn(reason)
         end
     )
 end

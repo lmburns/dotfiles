@@ -65,30 +65,6 @@ vim.tbl_map(
 -- g.loaded_gtags_cscope = 1
 g.load_black = 1
 
-g.markdown_fenced_languages = {
-    "bash=sh",
-    "c",
-    "console=sh",
-    "go",
-    "help",
-    "html",
-    "javascript",
-    "js=javascript",
-    "json",
-    "lua",
-    "py=python",
-    "python",
-    "rs=rust",
-    "rust",
-    "sh",
-    "shell=sh",
-    "toml",
-    "ts=typescript",
-    "typescript",
-    "vim",
-    "yaml"
-}
-
 if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
 end

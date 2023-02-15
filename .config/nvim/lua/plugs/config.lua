@@ -10,9 +10,10 @@ local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
 local dirs = require("common.global").dirs
+-- local coc = require("plugs.coc")
+
 local wk = require("which-key")
 local telescope = require("telescope")
--- local coc = require("plugs.coc")
 
 local utils = require("common.utils")
 local bmap = utils.bmap
@@ -403,146 +404,6 @@ function M.floaterm()
 
     -- Stackoverflow helper
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Markdown                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.markdown()
-    -- g.vim_markdown_folding_disabled = 1
-    g.vim_markdown_conceal = 0
-    g.vim_markdown_conceal_code_blocks = 0
-    g.vim_markdown_fenced_languages = g.markdown_fenced_languages
-    g.vim_markdown_folding_level = 10
-    g.vim_markdown_folding_style_pythonic = 1
-    g.vim_markdown_follow_anchor = 1
-    g.vim_markdown_frontmatter = 1
-    g.vim_markdown_strikethrough = 1
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                        TableMode                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.table_mode()
-    augroup(
-        "lmb__MarkdownAdditions",
-        {
-            event = "FileType",
-            pattern = {"markdown", "vimwiki"},
-            command = function(args)
-                -- Expand snippets/pum item in VimWiki
-                map(
-                    "i",
-                    "<Right>",
-                    [[coc#pum#visible() ? coc#pum#confirm() : "\<Right>"]],
-                    {expr = true, silent = true, buffer = args.buf}
-                )
-            end
-        }
-    )
-
-    -- g.loaded_table_mode = 1 -- enable/disable plugin
-    -- g.table_mode_always_active = 1 -- permanently enable the table mode
-    -- g.table_mode_disable_mappings = 0 -- disable all mappings
-
-    g.table_mode_delete_column_map = "<Leader>tdc"
-    g.table_mode_sort_map = "<Leader>ts"
-
-    g.table_mode_tableize_map = "<Leader>tt"
-    g.table_mode_tableize_d_map = "<Leader>T"
-    g.table_mode_realign_map = "<Leader>tr"
-    g.table_mode_echo_cell_map = "<Leader>t?"
-    g.table_mode_map_prefix = "<Leader>t"
-    g.table_mode_delete_row_map = "<Leader>tdd"
-    g.table_mode_insert_column_after_map = "<Leader>tic"
-
-    g.table_mode_tableize_auto_border = 1 -- add row borders to when using tableize
-    g.table_mode_disable_tableize_mappings = 0 -- disables mappings for tableize
-
-    g.table_mode_syntax = 1 -- should define table syntax definitions or not
-    g.table_mode_auto_align = 1 -- auto align as you type when table mode is active
-
-    g.table_mode_corner = "|"
-    g.table_mode_fillchar = "-"
-    g.table_mode_separator = "|"
-    g.table_mode_separator_map = "<Bar>"
-    g.table_mode_header_fillchar = "="
-    g.table_mode_align_char = ":" -- alignments for cols in table header border
-
-    g.table_mode_motion_up_map = "{<Bar>" -- move up a cell vertically
-    g.table_mode_motion_down_map = "}<Bar>" -- move down a cell vertically
-    g.table_mode_motion_left_map = "[<Bar>" -- move to the left cell
-    g.table_mode_motion_right_map = "]<Bar>" -- move to the right cell
-    g.table_mode_cell_text_object_a_map = "a<Bar>" -- text object for around cell object
-    g.table_mode_cell_text_object_i_map = "i<Bar>" -- text object for inner cell object
-
-    wk.register(
-        {
-            ["[|"] = "Move to previous cell",
-            ["]|"] = "Move to next cell",
-            ["{|"] = "Move to the cell above",
-            ["}|"] = "Move to the cell below",
-            ["<Leader>tm"] = "Toggle table mode for the current buffer",
-            ["<Leader>tS"] = {"<Cmd>TableModeDisable<CR>", "Disable table mode for the current buffer"},
-            ["<Leader>tt"] = "Triggers 'tableize' on visually selected content",
-            ["<Leader>T"] = "Triggers 'tableize' on visually selected asking for input of the delimiter",
-            ["<Leader>tr"] = "Realigns table columns",
-            ["<Leader>t?"] = "Echo current table cells representation for defining formulas",
-            ["<Leader>tdd"] = "Delete entire table row you are on or multiple `[count]`",
-            ["<Leader>tdc"] = "Delete entire table column you are within, can use `[count]",
-            ["<Leader>tiC"] = "Insert a table column before the column you are within, can use `[count]`",
-            ["<Leader>tic"] = "Insert a table column after the column you are within, can use `[count]`",
-            ["<Leader>tfa"] = "Add formula for current table cell. Invokes `TableAddFormula`",
-            ["<Leader>tfe"] = "Evaluate formula line commented after table beginning with 'tmf:'",
-            ["<Leader>ts"] = "Sort a column under the cursor. Invokes `TableSort`"
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         VimWiki                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.vimwiki()
-    hl.all(
-        {
-            VimwikiBold = {fg = "#a25bc4", bold = true},
-            VimwikiCode = {fg = "#d3869b"},
-            VimwikiItalic = {fg = "#83a598", italic = true},
-            VimwikiHeader1 = {fg = "#F14A68", bold = true},
-            VimwikiHeader2 = {fg = "#F06431", bold = true},
-            VimwikiHeader3 = {fg = "#689d6a", bold = true},
-            VimwikiHeader4 = {fg = "#819C3B", bold = true},
-            VimwikiHeader5 = {fg = "#98676A", bold = true},
-            VimwikiHeader6 = {fg = "#458588", bold = true}
-        }
-    )
-
-    augroup(
-        "VimwikiMarkdownFix",
-        {
-            event = "FileType",
-            pattern = {"markdown", "vimwiki"},
-            command = function(args)
-                local bufnr = args.buf
-                map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
-                map("n", "<Leader>vw", ":VimwikiIndex<CR>", {buffer = bufnr})
-            end
-        }
-    )
-end
-
-function M.vimwiki_setup()
-    g.vimwiki_ext2syntax = {
-        [".Rmd"] = "markdown",
-        [".rmd"] = "markdown",
-        [".md"] = "markdown",
-        [".markdown"] = "markdown",
-        [".mdown"] = "markdown"
-    }
-    g.vimwiki_list = {{path = "~/vimwiki", syntax = "markdown", ext = ".md"}}
-    g.vimwiki_key_mappings = {
-        table_mappings = 0
-    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1393,8 +1254,8 @@ function M.move()
 
     wk.register(
         {
-            ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>", "Move line down"},
-            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>", "Move line up"}
+            ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>i", "Move line down"},
+            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>i", "Move line up"}
         },
         {mode = "i"}
     )

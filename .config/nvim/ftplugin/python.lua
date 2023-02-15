@@ -1,5 +1,17 @@
 local map = require("common.utils").map
 
+-- Pyright
+-- # type: ignore
+
+-- Flake8
+-- # flake8: noqa: E731 -- Global
+-- # noqa: E731         -- Inline
+
+-- Pylint
+-- # pylint: disable-next=
+-- # pylint: disable=
+-- # pylint: enable=
+
 map("n", "<LocalLeader>l", "<Plug>SlimeLineSend", {buffer = true, desc = "Slime send"})
 map("x", "<LocalLeader>l", "<Plug>SlimeRegionSend", {buffer = true, desc = "Slime region send"})
 map("n", "<LocalLeader>p", "<Plug>SlimeParagraphSend", {buffer = true, desc = "Slime paragraph send"})

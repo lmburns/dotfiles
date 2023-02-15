@@ -3,6 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local dirs = require("common.global").dirs
 local debounce = require("common.debounce")
+local log = require("common.log")
 -- local uva = require("uva")
 -- local async = require("async")
 
@@ -53,12 +54,32 @@ local function list(file)
         end
         fd:close()
     end
+
+    -- utils.readFile(file):thenCall(
+    --     function(data)
+    --         for _, fname in ipairs(vim.split(data, "\n")) do
+    --             if not add_list(fname) then
+    --                 break
+    --             end
+    --         end
+    --     end
+    -- ):catch(
+    --     function(e)
+    --         log.err(e)
+    --     end
+    -- )
+
     return mru_list
 end
 
 function M.list()
     local mru_list = list(mru.db)
     utils.write_file(mru.db, table.concat(mru_list, "\n"))
+    -- utils.writeFile(mru.db, table.concat(mru_list, "\n")):catch(
+    --     function(e)
+    --         vim.notify(e)
+    --     end
+    -- )
     return mru_list
 end
 
@@ -67,15 +88,25 @@ M.flush =
     local debounced
     return function(force)
         if force then
-            -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
             utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
+
+            -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n")):catch(
+            --     function(e)
+            --         vim.notify(e)
+            --     end
+            -- )
         else
             if not debounced then
                 debounced =
                     debounce:new(
                     function()
                         utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
-                        -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n"))
+
+                        -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n")):catch(
+                        --     function(e)
+                        --         vim.notify(e)
+                        --     end
+                        -- )
                     end,
                     50
                 )
@@ -135,7 +166,10 @@ local function init()
         db = ("%s/%s"):format(dirs.data, "mru_file")
     }
 
-    M.store_buf()
+    if M.list()[1] ~= fn.expand("%:p") then
+        M.store_buf()
+    end
+
     nvim.autocmd.Mru = {
         {
             event = {"BufEnter", "BufAdd", "FocusGained"},

@@ -1,7 +1,7 @@
 directory: ~/Music
 library: ~/.config/beets/library.db
 
-plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info duplicates ydl
+plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info ydl
 
 ydl:
   download: True # download files from sources after getting information,

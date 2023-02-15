@@ -713,6 +713,7 @@ end
 M.setup = function()
     return {
         ensure_installed = {
+            "awk",
             "bash",
             "bibtex",
             "c",
@@ -1148,9 +1149,9 @@ function M.install_extra_parsers()
     -- }
 end
 
-M.setup_query_secretary = function()
-    map("n", "<Leader>qu", "require('query-secretary').query_window_initiate()", {luacmd = true})
-end
+-- M.setup_query_secretary = function()
+--     map("n", "<Leader>qu", "require('query-secretary').query_window_initiate()", {luacmd = true})
+-- end
 
 local function init()
     cmd.packadd("nvim-treesitter")
@@ -1198,6 +1199,7 @@ local function init()
 
     -- M.setup_comment_frame()
     -- M.setup_context()
+    -- M.setup_query_secretary()
 
     M.setup_iswap()
     M.setup_hlargs()
@@ -1205,7 +1207,6 @@ local function init()
     M.setup_context_vt()
     M.setup_treesurfer()
     M.setup_autotag()
-    M.setup_query_secretary()
 
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]], {silent = true})

@@ -4,13 +4,11 @@ local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
 
-local hl = require("common.color")
-
 local g = vim.g
 
 function M.setup()
+    -- g.vista_fzf_opt = {"--no-border"}
     g.vista_fzf_preview = {"down:50%"}
-    g.vista_fzf_opt = {"--no-border"}
     g.vista_default_executive = "coc"
     g.vista_sidebar_position = "vertical botright"
     g.vista_echo_cursor_strategy = "both"
@@ -28,8 +26,6 @@ end
 
 local function init()
     M.setup()
-
-    hl.link("VistaFloat", "CocFloating")
 
     augroup(
         "lmb__VistaNearest",

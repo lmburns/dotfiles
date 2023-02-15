@@ -1,0 +1,28 @@
+# Desc: open script in editor (this one does functions) with FZF
+# 'wim' cannot do functions
+
+setopt extendedglob
+zmodload -Fa zsh/parameter p:commands p:functions
+
+local fdir fullp
+
+# ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
+
+fullp="$(print -rl -- "$commands[@] ${(k)functions[@]}" | lscolors | fzf +m)"
+fdir="${ZDOTDIR}/functions/${fullp}"
+
+[[ -n "$fullp" ]] && {
+  if [[ -f "$fdir" ]]; then
+    $EDITOR "$fdir"
+  # elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
+  elif { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
+    $EDITOR "$fullp"
+  elif [[ -n $functions[$fullp] ]]; then
+    dunstify "$fullp"
+    "$EDITOR" ${$(whence -va "$fullp")[-1]}
+  else
+    print -Pr -- "%F{14}$fullp%f ($(which $fullp)) is not a text file"
+  fi
+}
+
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:

@@ -30,8 +30,8 @@ local opt = {
     map_c_w = true, -- map <c-w> to delete a pair if possible
     fast_wrap = {
         map = "<M-,>", -- (|foo -> (|foo)
-        chars = {"{", "[", "(", '"', "'", "`"},
-        pattern = ([[ [%'%"%)%>%]%)%}%,] ]]):gsub("%s+", ""),
+        chars = {"{", "[", "(", '"', "'", "`", "<"},
+        pattern = [==[[%'%"%)%>%]%)%}%,%>]]==],
         offset = -1, -- Offset from pattern match
         end_key = "$",
         keys = "qwertyuiopzxcvbnmasdfghjkl",

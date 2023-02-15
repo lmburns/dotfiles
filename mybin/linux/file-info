@@ -2,7 +2,7 @@
 
 ansi --red ${(l:COLUMNS::=:):-}
 
-print -l -- "$(ansi --bold --blue '  stat: ')\n$(stat $1)"
+print -l -- "$(ansi --bold --blue '  stat: ')\n$(grc --colour=on stat $1)"
 print -l -- "$(ansi --bold --blue 'diskus: ')$(diskus $1)"
 print -l -- "$(ansi --bold --blue '  mime: ')$(file --mime -b -p $1)"
 print -l -- "$(ansi --bold --blue 'lsattr: ')$(lsattr $1)"

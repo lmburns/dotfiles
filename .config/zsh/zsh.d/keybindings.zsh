@@ -48,10 +48,10 @@ builtin bindkey -M vicmd -r 'R'
 autoload -Uz incarg
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 
-autoload -Uz surround
-zle -N delete-surround surround
-zle -N add-surround    surround
-zle -N change-surround surround
+autoload -Uz cst-surround
+zle -N delete-surround cst-surround
+zle -N add-surround    cst-surround
+zle -N change-surround cst-surround
 
 # =========================== zle Functions ==========================
 # ====================================================================
@@ -309,15 +309,15 @@ builtin bindkey -s '\e1' "!:0 \t"        # last command
 
 local m c
 # ci", ci', ci`, di", etc
-autoload -U select-quoted; zle -N select-quoted
+autoload -U cst-select-quoted; zle -N cst-select-quoted
 # ci{, ci(, ci<, di{, etc
-autoload -U select-bracketed; zle -N select-bracketed
+autoload -U cst-select-bracketed; zle -N cst-select-bracketed
 foreach m (visual viopp) {
   foreach c ({a,i}{\',\",\`}) {
-    bindkey -M $m $c select-quoted
+    bindkey -M $m $c cst-select-quoted
   }
-  foreach c ({a,i}${(s..)^:-'()[]{}<>bB'}) {
-    bindkey -M $m $c select-bracketed
+  foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
+    bindkey -M $m $c cst-select-bracketed
   }
 }
 

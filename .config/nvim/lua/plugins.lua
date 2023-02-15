@@ -682,13 +682,7 @@ return packer.startup(
             -- ]]] === Statusline ===
 
             -- =========================== Indentline ============================= [[[
-            use(
-                {
-                    "lukas-reineke/indent-blankline.nvim",
-                    after = colorscheme,
-                    conf = "plugs.indent_blankline"
-                }
-            )
+            use({"lukas-reineke/indent-blankline.nvim", conf = "plugs.indent_blankline"})
             -- ]]] === Indentline ===
 
             -- use(
@@ -868,17 +862,17 @@ return packer.startup(
                 }
             )
 
-            -- use(
-            --     {
-            --         "kevinhwang91/nvim-fundo",
-            --         requires = "kevinhwang91/promise-async",
-            --         conf = "fundo",
-            --         -- run = [[require("fundo").install()]]
-            --         run = function()
-            --             require("fundo").install()
-            --         end
-            --     }
-            -- )
+            use(
+                {
+                    "kevinhwang91/nvim-fundo",
+                    requires = "kevinhwang91/promise-async",
+                    conf = "fundo",
+                    -- run = [[require("fundo").install()]]
+                    run = function()
+                        require("fundo").install()
+                    end
+                }
+            )
             -- ]]] === UndoTree ===
 
             -- ============================ Commenter ============================= [[[
@@ -922,26 +916,22 @@ return packer.startup(
                 {
                     "plasticboy/vim-markdown",
                     ft = {"markdown", "vimwiki"},
-                    conf = "markdown"
+                    config = [[require('plugs.markdown').markdown()]]
                 }
             )
 
-            use({"dhruvasagar/vim-table-mode", conf = "table_mode"})
-
-            use(
-                {
-                    "SidOfc/mkdx",
-                    -- ft = {"markdown", "vimwiki"},
-                    config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]
-                }
-            )
+            -- use({"vim-pandoc/vim-pandoc-syntax", config = [[require('plugs.markdown').pandoc()]]})
+            use({"dhruvasagar/vim-table-mode", config = [[require('plugs.markdown').table_mode()]]})
+            use({"SidOfc/mkdx", config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]})
 
             use(
                 {
                     "vimwiki/vimwiki",
-                    setup = [[require("plugs.config").vimwiki_setup()]],
+                    -- After this commit `\` or **\** are no longer highlighted
+                    commit = "63af6e72",
+                    setup = [[require("plugs.markdown").vimwiki_setup()]],
                     ft = {"markdown", "vimwiki"},
-                    conf = "vimwiki",
+                    config = [[require('plugs.markdown').vimwiki()]],
                     after = colorscheme
                 }
             )
@@ -1028,7 +1018,20 @@ return packer.startup(
             use({"mattn/vim-xxdcursor"})
             use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
             use({"jamessan/vim-gnupg"})
-            use({"https://gitlab.com/itaranto/id3.nvim"})
+            use(
+                {
+                    "https://gitlab.com/itaranto/id3.nvim",
+                    tag = "*",
+                    config = function()
+                        require("id3").setup(
+                            {
+                                mp3_tool = "id3",
+                                flac_tool = "metaflac"
+                            }
+                        )
+                    end
+                }
+            )
             use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
             use({"HiPhish/info.vim", cmd = "Info"})
             -- ]]] === File Viewer ===
@@ -1050,13 +1053,13 @@ return packer.startup(
                 }
             )
 
-            use(
-                {
-                    "folke/paint.nvim",
-                    event = "BufReadPre",
-                    conf = "plugs.paint"
-                }
-            )
+            -- use(
+            --     {
+            --         "folke/paint.nvim",
+            --         event = "BufReadPre",
+            --         conf = "plugs.paint"
+            --     }
+            -- )
 
             use(
                 {
@@ -1207,11 +1210,11 @@ return packer.startup(
                             desc = "Surf through your document and move elements around",
                             after = "nvim-treesitter"
                         },
-                        {
-                            "ziontee113/query-secretary",
-                            desc = "Help create treesitter queries",
-                            after = "nvim-treesitter"
-                        },
+                        -- {
+                        --     "ziontee113/query-secretary",
+                        --     desc = "Help create treesitter queries",
+                        --     after = "nvim-treesitter"
+                        -- },
                         {
                             "vigoux/architext.nvim",
                             desc = "Create treesitter queries",

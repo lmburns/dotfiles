@@ -108,7 +108,7 @@ setopt no_case_glob      # case insensitive globbing
 setopt extended_glob     # extension of glob patterns
 setopt glob_complete     # generate glob matches as completions
 setopt glob_dots         # do not require leading '.' for dotfiles
-# setopt glob_star_short   # ** = **/*; *** = ***/*
+setopt glob_star_short   # ** = **/*; *** = ***/*
 
 setopt complete_in_word # cursor stays in same spot with completion
 setopt always_to_end    # cursor moves to end of word if completion is executed

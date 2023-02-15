@@ -2333,7 +2333,7 @@ Metrics/MethodLength:
   StyleGuide: '#short-methods'
   Enabled: true
   CountComments: false  # count full line comments?
-  Max: 10
+  Max: 40
   CountAsOne: []
   AllowedMethods: []
   AllowedPatterns: []
