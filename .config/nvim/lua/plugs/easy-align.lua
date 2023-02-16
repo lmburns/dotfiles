@@ -110,6 +110,12 @@ function M.setup()
             pattern = [==[\t]==],
             left_margin = 0,
             right_margin = 0,
+            ignore_groups = {"Comment", "String"}
+        },
+        T = {
+            pattern = [==[\t]==],
+            left_margin = 0,
+            right_margin = 0,
             ignore_groups = {"!Comment"}
         },
         s = {

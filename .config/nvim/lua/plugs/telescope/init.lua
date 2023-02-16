@@ -203,7 +203,7 @@ telescope.setup(
             selection_strategy = "reset",
             layout_strategy = "horizontal", -- "flex"
             scroll_strategy = "cycle",
-            cycle_layout_list = { "horizontal", "vertical" },
+            cycle_layout_list = {"horizontal", "vertical"},
             color_devicons = true,
             border = {},
             borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
@@ -876,11 +876,6 @@ M.keymaps = function(mode)
     }
 end
 
-map("n", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
-map("i", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('i')<CR>")
-map("x", "<C-,>i", ":lua require('plugs.telescope').keymaps({'x', 'v', 's'})<CR>")
-map("o", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
-
 -- ========================== Builtin ============================
 builtin.cst_mru = function(opts)
     opts = opts or {}
@@ -1256,13 +1251,22 @@ end
 --     telescope.extensions.aerial.aerial(opts)
 -- end
 
-command(
-    "Ghq",
-    function()
-        telescope.extensions.ghq.list()
-    end,
-    {nargs = 0, desc = "GHQ (github)"}
-)
+local function init()
+    map("n", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
+    map("i", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('i')<CR>")
+    map("x", "<C-,>i", ":lua require('plugs.telescope').keymaps({'x', 'v', 's'})<CR>")
+    map("o", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('o')<CR>")
+
+    command(
+        "Ghq",
+        function()
+            telescope.extensions.ghq.list()
+        end,
+        {nargs = 0, desc = "GHQ (github)"}
+    )
+end
+
+init()
 
 -- ========================== Mappings ===========================
 
@@ -1375,7 +1379,7 @@ color.plugin(
         TelescopePromptPrefix = {fg = c.red},
         TelescopeResultsBorder = {fg = c.magenta},
         TelescopeSelection = {fg = c.yellow, bold = true},
-        TelescopeSelectionCaret = {fg = c.blue},
+        TelescopeSelectionCaret = {fg = c.blue}
     }
 )
 

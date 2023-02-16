@@ -45,7 +45,8 @@ set tagfmt "\033[1;38;5;018m%s\033[0m"
 set errorfmt "\033[7;38;5;017m%s\033[0m"
 
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
-set tempmarks 'abcdefghijklmnopqrstuvwxzy' # set all lowercase to temp marks, sorta like vim, upper case are permanent
+# set tempmarks 'abcdefghijklmnopqrstuvwxzy'
+set tempmarks '1234567890'
 
 # -- Previewer: custom
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
@@ -1040,8 +1041,8 @@ map tos $stig                          # transmisison TUI
 # == Tagging == [[[
 map <c-_> mark-save
 map ma mark-save
-map "'" mark-load
-map '"' mark-remove
+# map "'" mark-load
+# map '"' mark-remove
 
 map ; push :tag<space>
 map X tag-toggle

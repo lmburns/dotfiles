@@ -259,6 +259,15 @@ return packer.startup(
 
             use(
                 {
+                    "jedrzejboczar/possession.nvim",
+                    requires = "nvim-lua/plenary.nvim",
+                    conf = "plugs.possession",
+                    desc = "Session management"
+                }
+            )
+
+            use(
+                {
                     "AndrewRadev/linediff.vim",
                     conf = "linediff",
                     cmd = "Linediff",
@@ -978,12 +987,13 @@ return packer.startup(
                             "go",
                             "gomod",
                             "html",
+                            "ini",
                             "java",
                             "julia",
                             -- "lua",
                             -- "json",
                             -- "kotlin",
-                            -- "lua",
+                            "lua",
                             "make",
                             -- "perl",
                             "python",
@@ -994,11 +1004,9 @@ return packer.startup(
                             "vim",
                             -- "solidity",
                             "teal",
-                            -- "tsx",
-                            -- "vue",
+                            "tsx",
+                            "typescript",
                             "zig"
-                            -- "zsh"
-                            -- "typescript",
                         }
                     end
                 }

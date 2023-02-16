@@ -10,8 +10,9 @@
   // "coc.preferences.formatOnSaveFiletypes": [
   //   "go"
   // ],
-  "coc.preferences.formatOnType": true,
-  "coc.preferences.snippetHighlight": false,
+  "coc.preferences.formatOnType": false,
+  "coc.preferences.bracketEnterImprove": false,
+  "coc.preferences.enableMessageDialog": true,
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
   "coc.source.file.shortcut": "", // "", "FIL"
@@ -38,24 +39,15 @@
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
   // Filetypes that enable semanticTokens highlighting
-  "semanticTokens.filetypes": [
-    // "c",
-    // "cpp",
-    "go",
-    "html",
-    "java"
-    // "javascript",
-    // "lua",
-    // "rust",
-    // "typescript"
-  ],
+  "[go][html][java]": {
+    "semanticTokens.enable": true
+  },
   "pullDiagnostic.onChange": true,
   "pullDiagnostic.onSave": false,
   "pullDiagnostic.workspace": false,
   // ╭───────────╮
   // │ InlayHint │
   // ╰───────────╯
-  // "inlayHint.filetypes": ["*"],
   "inlayHint.display": true,
   "inlayHint.refreshOnInsertMode": false,
   "inlayHint.enableParameter": true,
@@ -65,6 +57,9 @@
   // ╭────────────╮
   // │ Diagnostic │
   // ╰────────────╯
+  "diagnostic.enable": true,
+  "diagnostic.enableSign": true,
+  "diagnostic.signPriority": 50,
   "diagnostic.errorSign": "", //  ••
   "diagnostic.warningSign": "", //  •
   "diagnostic.hintSign": "", // •
@@ -75,35 +70,70 @@
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.virtualTextLineSeparator": " \\ ",
   "diagnostic.virtualTextPrefix": " | ",
-  // "diagnostic.virtualTextCurrentLineOnly": true,
+  "diagnostic.virtualTextFormat": "%message",
   "diagnostic.format": "%message [%source%code]", // %source code severity message
-  "diagnostic.signPriority": 50,
-  "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.messageTarget": "float",
+  "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.separateRelatedInformationAsDiagnostics": true,
+  "diagnostic-languageserver.filetypes": {
+    "cmake": ["cmake-lint"],
+    "systemd": "systemd-analyze"
+  },
+  "diagnostic-languageserver.formatFiletypes": {
+    // "sh": "shfmt"
+    // "zsh": "shfmt"
+  },
+  "codeLens.enable": true,
+  "codeLens.separator": "‣",
+  "codeLens.subseparator": " | ",
+  "codeLens.position": "eol",
+  "list.indicator": ">",
+  "list.floatPreview": true,
+  "signature.enable": true,
+  "signature.target": "float",
+  "signature.hideOnTextChange": false,
+  "signature.preferShownAbove": true,
+  "snippets.priority": 99,
+  "snippets.shortcut": "",
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "snippets.extends": {
+    "cpp": ["c"],
+    "typescript": ["javascript"]
+  },
+
+  // "dialog.floatHighlight": "Normal",
+  "dialog.floatBorderHighlight": "Normal",
+  "dialog.rounded": true,
+  "dialog.floatHighlight": "CocFloating",
+  "notification.border": true,
+  "notification.focusable": true,
+  "notification.highlightGroup": "CocFloating",
+  "notification.statusLineProgress": false,
+
   // Float
   "floatFactory.floatConfig": {
     "border": true,
     "rounded": true,
-    "highlight": "CocSuggestFloating",
     "borderhighlight": "FloatBorder",
+    "highlight": "CocSuggestFloating",
     "maxWidth": 120,
     "focusable": true
   },
   "suggest.floatConfig": {
     "border": true,
     "rounded": true,
-    "borderhighlight": "FloatBorder",
+    "borderhighlight": "Tag",
     "highlight": "CocSuggestFloating",
     "maxWidth": 120,
-    "focusable": true
   },
   "diagnostic.floatConfig": {
     "border": true,
     "rounded": true,
-    "borderhighlight": "FloatBorder",
+    "borderhighlight": "ErrorMsg",
     "highlight": "CocFloating",
     "maxWidth": 120,
     "focusable": true
@@ -114,7 +144,7 @@
     "borderhighlight": "SpellCap",
     "highlight": "CocFloating",
     "maxWidth": 120,
-    "focusable": true
+    "focusable": true,
   },
   "signature.floatConfig": {
     "border": true,
@@ -122,55 +152,17 @@
     "borderhighlight": "Normal",
     "highlight": "CocFloating",
     "maxWidth": 120,
-    "focusable": true
+    "focusable": true,
   },
-  // "dialog.floatHighlight": "Normal",
-  "dialog.floatBorderHighlight": "Normal",
-  "dialog.rounded": true,
-  "notification.border": true,
-  "notification.focusable": true,
-  "notification.highlightGroup": "CocFloating",
-  "diagnostic-languageserver.filetypes": {
-    // "zsh": "shellcheck"
-    // "sh": "shellcheck",
-    // "yaml": ["yamllint"],
-    // "lua": "selene",
-    "cmake": ["cmake-lint"],
-    "systemd": "systemd-analyze"
-  },
-  "diagnostic-languageserver.formatFiletypes": {
-    // "sh": "shfmt"
-    //   "zsh": "shfmt"
-  },
-  "codeLens.enable": true,
-  "codeLens.separator": "‣",
-  "codeLens.subseparator": " | ",
-  "codeLens.position": "eol",
-  "list.indicator": ">",
-  "signature.enable": true,
-  "signature.target": "float",
-  "snippets.priority": 99,
-  "snippets.shortcut": "",
-  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
-  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
-  "snippets.extends": {
-    "cpp": ["c"],
-    "typescript": ["javascript"]
-  },
-  // Gone after pum is merged
-  // "suggest.disableMenu": true,
-  // "suggest.enablePreview": true,
-  // "suggest.noselect": false,
-
+  // Items within the suggest window
   "suggest.pumFloatConfig": {
     "border": true,
     "rounded": true,
-    "highlight": "CocSuggestFloating",
     "borderhighlight": "FloatBorder",
-    "maxWidth": 120,
-    "focusable": true
+    "highlight": "CocSuggestFloating",
   },
 
+  "suggest.enableFloat": true,
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,
@@ -256,12 +248,28 @@
   "rust-analyzer.procMacro.attributes.enable": true,
   "rust-analyzer.cargo.buildScripts.enable": true,
   "rust-analyzer.updates.prompt": true,
+  "rust-analyzer.notifications.cargoTomlNotFound": true,
+  "rust-analyzer.debug.vimspector.configuration.name": "launch",
+  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.joinLines.joinAssignments": true,
+  "rust-analyzer.joinLines.joinElseIf": true,
+  "rust-analyzer.joinLines.removeTrailingComma": true,
+  "rust-analyzer.joinLines.unwrapTrivialBlock": true,
+
   "rust-analyzer.completion.autoimport.enable": true,
   "rust-analyzer.completion.autoself.enable": true,
   "rust-analyzer.completion.callable.snippets": "fill_arguments",
-  "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.completion.postfix.enable": true,
-  "rust-analyzer.diagnostics.enable": true,
+
+  "rust-analyzer.hover.documentation.enable": true,
+  "rust-analyzer.hover.documentation.keywords.enable": true,
+  "rust-analyzer.hover.links.enable": true,
+
+  "rust-analyzer.highlightRelated.breakPoints.enable": true,
+  "rust-analyzer.highlightRelated.exitPoints.enable": true,
+  "rust-analyzer.highlightRelated.references.enable": true,
+  "rust-analyzer.highlightRelated.yieldPoints.enable": true,
+
   "rust-analyzer.lens.enable": true,
   "rust-analyzer.lens.implementations.enable": true,
   "rust-analyzer.lens.references.adt.enable": true,
@@ -270,22 +278,26 @@
   "rust-analyzer.lens.references.trait.enable": true,
   "rust-analyzer.lens.run.enable": true,
   "rust-analyzer.lens.debug.enable": true,
-  "rust-analyzer.debug.vimspector.configuration.name": "launch",
-  "rust-analyzer.inlayHints.enable": true,
+
   "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
   "rust-analyzer.inlayHints.chainingHints.enable": true,
   "rust-analyzer.inlayHints.closingBraceHints.enable": false, // Shows things slike 'fn fname'
   "rust-analyzer.inlayHints.closingBraceHints.minLines": 25,
-  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "never",
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "with_block",
+  "rust-analyzer.inlayHints.discriminantHints.enable": "fieldless",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.enable": "never",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.mode": "prefix",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.hideOutsideUnsafe": false,
   "rust-analyzer.inlayHints.lifetimeElisionHints.enable": "skip_trivial",
   "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": true,
-  "rust-analyzer.inlayHints.maxLength": 30,
-  "rust-analyzer.inlayHints.parameterHints.enable": true,
-  "rust-analyzer.inlayHints.reborrowHints.enable": "always",
+  "rust-analyzer.inlayHints.maxLength": 35,
+  "rust-analyzer.inlayHints.parameterHints.enable": false,
+  "rust-analyzer.inlayHints.reborrowHints.enable": "never",
   "rust-analyzer.inlayHints.renderColons": false,
   "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
+
   // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
   // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
   // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
@@ -328,10 +340,6 @@
   "sumneko-lua.enable": true,
   "sumneko-lua.enableNvimLuaDev": true,
   "sumneko-lua.checkUpdate": true,
-  "sumneko-lua.inlayHints.refreshOnInsertMode": false,
-  "sumneko-lua.inlayHints.trimSemicolon": false,
-  "sumneko-lua.inlayHints.typeHintsPrefix": "« ",
-  "sumneko-lua.inlayHints.paramHintsPrefix": "» ",
   "Lua.misc.parameters": [],
   "Lua.telemetry.enable": false,
   "Lua.runtime.version": "LuaJIT",
@@ -341,7 +349,7 @@
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 10000,
   "Lua.workspace.library": [
-    "/home/lucas/.config/nvim/lua"
+    "/home/lucas/.config/nvim/lua",
     // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start"
   ],

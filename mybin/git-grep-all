@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+local -A opts
+local gitcmd='git'
+local fullpath
+
+zmodload -Fa zsh/zutil b:zparseopts
+zparseopts -E -D -A opts -dotfiles d
+
+(( $+opts[-d] + $+opts[--dotfiles] )) && { gitcmd='dotbare'; fullpath=true; }
+
+$gitcmd rev-list --all "${${fullpath:+$PWD/$2}:-$2}" | \
+    while { read revision } {
+        $gitcmd grep -F "$1" $revision -- "${${fullpath:+$PWD/$2}:-$2}"
+    }

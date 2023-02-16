@@ -742,7 +742,7 @@ function init()
             ["<LocalLeader>e"] = {":lua require('fzf-lua').live_grep()<CR>", "Live grep (fzf-lua)"},
             ["<Leader>hh"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
-            ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
+            -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
             ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
             ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
             ["<Leader>cl"] = {":lua require('fzf-lua').highlights()<CR>", "Highlights (fzf-lua)"},

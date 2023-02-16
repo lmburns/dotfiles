@@ -111,6 +111,10 @@ function! <SID>MkdxFzfQuickfixHeaders()
 endfunction
 
 nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
+nnoremap <silent> MB :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>
+nnoremap <silent> M, :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>
+nnoremap <silent> M: :<C-U>call mkdx#WrapText('n', ':', ':', 'custom-tag')<CR>
+nnoremap <silent> Mc <Plug>(mkdx-text-inline-code-n)
 
 " imap <buffer><silent><unique> <<Tab> <kbd></kbd><C-o>2h<C-o>cit
 " inoremap <buffer><silent><unique> ~~~ ```<Enter>```<C-o>k<C-o>A

@@ -1389,23 +1389,24 @@ function M.colorizer()
     colorizer.setup(
         {
             filetypes = {
-                "gitconfig",
-                "vim",
-                "sh",
-                "zsh",
-                "markdown",
-                "tmux",
-                "yaml",
-                "json",
-                "xml",
+                "conf",
                 "css",
+                "gitconfig",
+                "javascript",
+                "json",
+                "lua",
+                "markdown",
+                "python",
+                "ron",
+                "sh",
+                "tmux",
+                "toml",
                 "typescript",
                 "typescriptreact",
-                "javascript",
-                "conf",
-                "toml",
-                "lua",
-                "python"
+                "vim",
+                "xml",
+                "yaml",
+                "zsh",
             },
             user_default_options = {
                 RGB = true, -- #RGB hex codes

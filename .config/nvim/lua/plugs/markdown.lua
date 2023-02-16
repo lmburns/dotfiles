@@ -170,9 +170,18 @@ end
 function M.vimwiki_setup()
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
     g.vimwiki_folding = ""
-    g.vimwiki_hl_headers = 1
-    g.vimwiki_conceallevel = 2
+    g.vimwiki_hl_headers = 1 -- Highlight headers with VimWikiHeader1...
+    g.vimwiki_global_ext = 1 -- Enable/disable temporary wikis
+    g.vimwiki_auto_header = 1 -- Auto gen level 1 header
+    g.vimwiki_conceallevel = 0
+    g.vimwiki_conceal_onechar_markers = 1
+    g.vimwiki_dir_link = "index" -- Open index.md if given a direcory
+    g.vimwiki_map_prefix = "<Leader>w"
     g.vimwiki_commentstring = "<!--%s-->"
+    g.vimwiki_toc_header = "Table of Contents"
+    g.vimwiki_toc_header_level = 1
+    g.vimwiki_toc_link_format = 0 -- 0 = Extended, 1 = Brief
+    g.vimwiki_html_header_numbering_sym = "." -- End in '.' or ')'
 
     g.vimwiki_ext2syntax = {
         [".Rmd"] = "markdown",
@@ -183,10 +192,13 @@ function M.vimwiki_setup()
     }
     g.vimwiki_list = {
         {
+            name = "My Wiki",
             path = "~/vimwiki",
             syntax = "markdown",
             ext = ".md",
-            bullet_types = {"-", "*", "+"}
+            bullet_types = {"-", "*", "+"},
+            nested_syntax = {python = "python", ["c++"] = "cpp"},
+            auto_toc = 0
         }
     }
     g.vimwiki_key_mappings = {

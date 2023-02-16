@@ -273,7 +273,6 @@ o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
 
--- o.diffopt:append(",vertical,internal,algorithm:patience")
 o.diffopt =
     o.diffopt +
     {
@@ -282,7 +281,7 @@ o.diffopt =
         "hiddenoff",
         "foldcolumn:0",
         "context:4",
-        "algorithm:histogram",
+        "algorithm:patience",
         "indent-heuristic",
         "linematch:60"
     }

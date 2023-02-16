@@ -726,17 +726,20 @@ M.setup = function()
             "diff",
             "dockerfile",
             "fennel",
-            -- "gitcommit",
             -- "gitconfig",
             "git_rebase",
             "gitattributes",
+            "gitcommit",
             "gitignore",
             "go",
             "gomod",
+            "gosum",
+            "gowork",
             "graphql",
             "help",
             "hjson",
             "html",
+            "ini",
             "java",
             "javascript",
             "jq",
@@ -761,7 +764,7 @@ M.setup = function()
             "query",
             "rasi",
             "regex",
-            -- "ron",
+            "ron",
             "ruby",
             "rust",
             "scheme",
@@ -1059,7 +1062,7 @@ function M.install_extra_parsers()
             branch = "main", -- default branch in case of git repo if different from master
             generate_requires_npm = false -- if stand-alone parser without npm dependencies
         },
-        filetype = "luap" -- if filetype does not match the parser name
+        filetype = {"luap", "lua"} -- if filetype does not match the parser name
     }
 
     -- Log files
@@ -1074,16 +1077,16 @@ function M.install_extra_parsers()
         filetype = "log"
     }
 
-    parser_config.jq = {
-        install_info = {
-            url = "https://github.com/flurie/tree-sitter-jq",
-            files = {"src/parser.c"},
-            branch = "main", -- default branch in case of git repo if different from master
-            generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-            requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
-        },
-        filetype = "jq"
-    }
+    -- parser_config.jq = {
+    --     install_info = {
+    --         url = "https://github.com/flurie/tree-sitter-jq",
+    --         files = {"src/parser.c"},
+    --         branch = "main", -- default branch in case of git repo if different from master
+    --         generate_requires_npm = false, -- if stand-alone parser without npm dependencies
+    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+    --     },
+    --     filetype = "jq"
+    -- }
 
     -- Norg
     -- parser_config.norg = {
@@ -1112,18 +1115,6 @@ function M.install_extra_parsers()
     --     }
     -- }
 
-    -- Git commits
-    -- parser_config.gitcommit = {
-    --     install_info = {
-    --         url = "https://github.com/the-mikedavis/tree-sitter-git-commit",
-    --         -- url = "https://github.com/gbprod/tree-sitter-git-commit",
-    --         files = {"src/parser.c"},
-    --         branch = "main",
-    --         generate_requires_npm = false -- if stand-alone parser without npm dependencies
-    --     },
-    --     filetype = "gitcommit"
-    -- }
-
     -- Git config
     -- parser_config.gitconfig = {
     --     install_info = {
@@ -1134,18 +1125,6 @@ function M.install_extra_parsers()
     --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
     --     },
     --     filetype = "gitconfig"
-    -- }
-
-    -- Rusty object notation
-    -- https://cppdig.com/c/rusty-object-notation-ron-grammar-for-treesitter
-    -- parser_config.ron = {
-    --     install_info = {
-    --         url = "~/projects/treesitter/tree-sitter-ron",
-    --         files = {"src/parser.c"},
-    --         generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
-    --     },
-    --     filetype = "ron"
     -- }
 end
 
