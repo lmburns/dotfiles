@@ -8,31 +8,6 @@ function execute-command() {
 zle -N execute-command
 
 
-function fz-history-widget() {
-  local query="
-SELECT commands.argv
-FROM   history
-  LEFT JOIN commands
-    ON history.command_id = commands.rowid
-  LEFT JOIN places
-    ON history.place_id = places.rowid
-GROUP BY commands.argv
-ORDER BY places.dir != '${PWD//'/''}',
-    commands.argv LIKE '${BUFFER//'/''}%' DESC,
-    Count(*) DESC
-"
-  local selected=$(_histdb_query "$query" | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
-
-  # local selected=$(fc -rl 1 | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
-  # if [[ "$selected" != "" ]] {
-  #   zle vi-fetch-history -n $selected
-  # }
-
-  BUFFER=${selected}
-  CURSOR=${#BUFFER}
-}
-zle -N fz-history-widget
-
 function fz-find() {
   local selected dir cut
   cut=$(grep -oP '[^* ]+(?=\*{1,2}$)' <<< $BUFFER)

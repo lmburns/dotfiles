@@ -33,13 +33,14 @@ local dirs = require("common.global").dirs
 local log = require("common.log")
 local b_utils = require("common.utils") -- "builtin" utils
 local command = b_utils.command
-
 local map = b_utils.map
+
 local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 local uv = vim.loop
 local F = vim.F
+local env = vim.env
 
 -- local extensions_loaded = false
 -- local function load_extensions()
@@ -718,24 +719,26 @@ end
 ---Custom files function. If it is in a git directory, use that as root, else use CWD
 ---Note that there should be no need for `lcd`. The `cwd` option should be enough
 M.cst_files = function()
-    local cwd = fn.expand("%:p:h")
-    local root = require("common.gittool").root(cwd)
-    cmd.lcd(cwd)
-    -- Override this so it gets ran on each file
-    options.cwd = cwd
-
-    if #root == 0 then
-        -- Use the current filename instead of the directory
-        builtin.find_files(options)
-    else
+    if env.GIT_WORK_TREE == env.DOTBARE_TREE then
         builtin.git_files(options)
+    else
+        local cwd = fn.expand("%:p:h")
+        local root = require("common.gittool").root(cwd)
+        cmd.lcd(cwd)
+        options.cwd = cwd
+
+        if #root == 0 then
+            -- Use the current filename instead of the directory
+            builtin.find_files(options)
+        else
+            builtin.git_files(options)
+        end
     end
 end
 
 M.cst_fd = function()
     local cwd = fn.expand("%:p:h")
     cmd.lcd(cwd)
-    -- Override this so it gets ran on each file
     options.cwd = cwd
     options.sorting_strategy = "descending"
 
@@ -1276,10 +1279,8 @@ wk.register(
         [";c"] = {":Telescope commands<CR>", "Telescope commands"},
         ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
         [";h"] = {":Telescope man_pages<CR>", "Telescope man pages"},
-        [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
         [";H"] = {":Telescope heading<CR>", "Telescope heading"},
         ["<Leader>rm"] = {":Telescope reloader<CR>", "Telescope reload Lua module"},
-        ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
         [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
         [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
         [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},
@@ -1287,8 +1288,8 @@ wk.register(
         ["<Leader>;"] = {":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>", "Telescope buffer lines"},
         -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
         -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
-        ["<A-.>"] = {":Telescope frecency<CR>", "Telescope frecency files"},
-        ["<A-,>"] = {":Telescope oldfiles<CR>", "Telescope old files"},
+        ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
+        ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
         -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
             function()
@@ -1333,6 +1334,7 @@ wk.register(
         -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
         -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
         ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
+        ["q."] = {"<Cmd>lua require('plugs.neoclip').dropdown_macroclip()<CR>", "Telescope macro"},
         ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
     }
 )
@@ -1351,7 +1353,9 @@ wk.register(
     {
         ["<LocalLeader>b"] = {":lua require('plugs.telescope').cst_buffers()<CR>", "Telescope buffers (cst)"},
         ["<LocalLeader>f"] = {":lua require('plugs.telescope').cst_files()<CR>", "Telescope files (cst)"},
-        [";e"] = {":lua R('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
+        ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
+        [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
+        [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
         ["<Leader>e."] = {"<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>", "Telescope dotfiles (cst)"},
         ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
         ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},

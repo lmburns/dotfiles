@@ -1,0 +1,26 @@
+#compdef zsh-defer
+
+local arguments
+
+# 1 | Redirect standard output to `/dev/null`.
+# 2 | Redirect standard error to `/dev/null`.
+# d | Call `chpwd` hooks.
+# m | Call `precmd` hooks.
+# s | Invalidate suggestions from zsh-autosuggestions.
+# z | Invalidate highlighting from zsh-syntax-highlighting.
+# p | Call `zle reset-prompt`.
+# r | Call `zle -R`.
+# a | Shorthand for all options: `12dmszpr`.
+#
+# -t delay -c list
+# -t delay word
+
+arguments=(
+  {-h,--help}'[help for antidot]'
+  {-r,--rules}'[rules file path (default "/home/lucas/.local/share/antidot/rules.yaml")]'
+  {-v,--verbose}'[output verbosity]'
+  '--version[version for antidot]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

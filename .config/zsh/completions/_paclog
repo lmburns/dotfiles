@@ -1,0 +1,25 @@
+#compdef paclog
+
+local arguments
+
+arguments=(
+  '--config[set an alternate configuration file]'
+  '--root[set an alternate installation root]'
+  '--sysroot[set an alternate installation system root]'
+  '--debug[enable extra debugging messages]'
+  '--logfile[set an alternate log file]'
+  '--pkglist[list installed packages (EXPERIMENTAL)]'
+  '--action[show <action> entries]'
+  '--after[show entries after <date>]'
+  '--before[show entries before <date>]'
+  '--caller[show entries from program <name>]'
+  '--commandline[show command line entries]'
+  '--grep[show entries matching <regex>]'
+  '--package[show entries affecting <pkg>]'
+  '--warnings[show notes/warnings/errors]'
+  '--color[show colored output]'
+  "--no-color[don't show colored output]"
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

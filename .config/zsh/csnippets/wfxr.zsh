@@ -110,46 +110,6 @@ function unicode-map() {
   | fzf -m
 }
 
-##################################################################################
-# FZF
-##################################################################################
-
-# ALT-E - Edit selected file
-function wfxr::fzf-file-edit-widget() {
-  setopt localoptions pipefail
-  local files
-  files=$(eval "$FZF_ALT_E_COMMAND" |
-    FZF_DEFAULT_OPTS="--height ${FZF_TMUX_HEIGHT:-40%} --reverse $FZF_DEFAULT_OPTS $FZF_ALT_E_OPTS" fzf -m |
-      sed 's/^\s\+.\s//')
-  local ret=$?
-
-  [[ $ret -eq 0 ]] && echo $files | xargs sh -c "$EDITOR \$@ </dev/tty" $EDITOR
-
-  zle redisplay
-  typeset -f zle-line-init >/dev/null && zle zle-line-init
-  return $ret
-}
-zle     -N    wfxr::fzf-file-edit-widget
-# bindkey '\ee' wfxr::fzf-file-edit-widget
-
-function fe() {
-  local -a files sel
-  files=$(command fd -Hi -tf -d2 --strip-cwd-prefix)
-  sel=("$(
-    print -rl -- "$files[@]" | \
-      lscolors | \
-      fzf --query="$1" \
-        --multi \
-        --select-1 \
-        --exit-0 \
-        --bind=ctrl-x:toggle-sort \
-        --preview-window=':nohidden,right:65%:wrap' \
-        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
-    )"
-  )
-  [[ -n "$sel" ]] && ${EDITOR:-vim} "${sel[@]}" || zle redisplay
-}
-
 #  ╭──────────────────────────────────────────────────────────╮
 #  │                        greenclip                         │
 #  ╰──────────────────────────────────────────────────────────╯

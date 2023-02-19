@@ -1,0 +1,25 @@
+#compdef pacinfo
+
+# zsh completions for 'pacinfo'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--cachedir[set an alternate cache location]'
+  '--config[set an alternate configuration file]'
+  '--dbext[set an alternate sync database extension]'
+  '--dbpath[set an alternate database location]'
+  '--no-timeout[disable low speed timeouts for downloads]'
+  '--debug[enable extra debugging messages]'
+  '--null[parse stdin as <sep> separated values (default NUL)]'
+  '--short[display brief package information]'
+  '--raw[display raw numeric values]'
+  '--root[set an alternate installation root]'
+  '--removable-size[include removable dependencies in size]'
+  '--verbose[display additional package information]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

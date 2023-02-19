@@ -673,8 +673,7 @@ return packer.startup(
                 {
                     "lmburns/nvim-gps",
                     requires = {"nvim-treesitter/nvim-treesitter"},
-                    after = "nvim-treesitter",
-                    config = [[require("nvim-gps").setup()]]
+                    after = "nvim-treesitter"
                 }
             )
 
@@ -974,7 +973,7 @@ return packer.startup(
                         vim.g.polyglot_disabled = {
                             "ftdetect",
                             -- "sensible",
-                            "markdown",
+                            -- "markdown",
                             "rustpeg",
                             "lf",
                             "ron",
@@ -993,15 +992,15 @@ return packer.startup(
                             -- "lua",
                             -- "json",
                             -- "kotlin",
-                            "lua",
+                            -- "lua",
                             "make",
                             -- "perl",
-                            "python",
+                            -- "python",
                             "query",
-                            "ruby",
+                            -- "ruby",
                             "rust",
                             "scss",
-                            "vim",
+                            -- "vim",
                             -- "solidity",
                             "teal",
                             "tsx",

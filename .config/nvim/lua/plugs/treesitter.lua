@@ -73,6 +73,58 @@ function M.hijack_synset()
     end
 end
 
+M.setup_gps = function()
+    cmd.packadd("nvim-gps")
+    local gps = D.npcall(require, "nvim-gps")
+    if not gps then
+        return
+    end
+
+    gps.setup(
+        {
+            enabled = true,
+            disable_icons = false,
+            icons = {
+                ["action-name"] = " ",
+                ["array-name"] = " ",
+                ["augment-path"] = " ",
+                ["boolean-name"] = "ﰰﰴ ",
+                ["class-name"] = " ",
+                ["container-name"] = "ﮅ ", -- 
+                ["date-name"] = " ",
+                ["date-time-name"] = " ",
+                ["float-name"] = " ",
+                ["function-name"] = " ",
+                ["grouping-name"] = " ",
+                ["hook-name"] = "ﯠ ",
+                ["identity-name"] = " ",
+                ["inline-table-name"] = " ",
+                ["integer-name"] = "# ", -- 
+                ["label-name"] = " ",
+                ["leaf-list-name"] = " ",
+                ["leaf-name"] = " ",
+                ["list-name"] = " ",
+                ["mapping-name"] = " ",
+                ["method-name"] = " ",
+                ["module-name"] = " ", -- 
+                ["null-name"] = "[] ",
+                ["number-name"] = "# ",
+                ["object-name"] = " ",
+                ["sequence-name"] = " ",
+                ["string-name"] = " ",
+                ["table-name"] = " ",
+                ["tag-name"] = "炙",
+                ["time-name"] = " ",
+                ["title-name"] = "# ",
+                ["typedef-name"] = " "
+            },
+            separator = " » ", --  淪輪‣ »
+            depth = 4,
+            depth_limit_indicator = ".."
+        }
+    )
+end
+
 M.setup_hlargs = function()
     cmd.packadd("hlargs.nvim")
     local hlargs = D.npcall(require, "hlargs")
@@ -131,7 +183,8 @@ M.setup_iswap = function()
 
     wk.register(
         {
-            ["vs"] = {"<Cmd>ISwap<CR>", "Swap parameters"}
+            ["vs"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"},
+            ["sv"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"}
         }
     )
 end
@@ -745,6 +798,7 @@ M.setup = function()
             "jq",
             "jsdoc",
             "json",
+            "json5",
             "jsonc",
             "julia",
             "kotlin",
@@ -945,7 +999,7 @@ M.setup = function()
                     ["@parameter.outer"] = "v", -- charwise
                     ["@function.outer"] = "V", -- linewise
                     ["@class.outer"] = "<c-v>" -- blockwise
-                },
+                }
             },
             -- @attribute.inner
             -- @attribute.outer
@@ -1157,13 +1211,15 @@ local function init()
             "help",
             "html",
             "comment",
-            "zsh",
-            -- "markdown",
-            "solidity",
+            "markdown",
             "yaml",
-            "toml",
             "css",
-            "latex"
+            "latex",
+            "make",
+            "cmake",
+            "zsh",
+            "solidity"
+            -- "toml",
         }
     )
 
@@ -1180,6 +1236,7 @@ local function init()
     -- M.setup_context()
     -- M.setup_query_secretary()
 
+    M.setup_gps()
     M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()

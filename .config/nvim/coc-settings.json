@@ -15,24 +15,44 @@
   "coc.preferences.enableMessageDialog": true,
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
-  "coc.source.file.shortcut": "", // "", "FIL"
-  "coc.source.around.shortcut": "ARO", // "",
-  "coc.source.buffer.shortcut": "BUF", // "",
-  "coc.source.tag.shortcut": "TAG", // "",
-  "coc.source.word.shortcut": "WRD",
-  "coc.source.syntax.shortcut": "SYN",
-  "coc.source.file.priority": 13,
+  "coc.source.around.enable": true,
   "coc.source.around.priority": 11,
+  "coc.source.around.shortcut": "ARO", // "",
+  "coc.source.buffer.enable": true,
   "coc.source.buffer.priority": 12,
-  "coc.source.tag.priority": 3,
-  "coc.source.word.priority": 10,
+  "coc.source.buffer.shortcut": "BUF", // "",
+  "coc.source.file.enable": true,
+  "coc.source.file.priority": 13,
+  "coc.source.file.shortcut": "", // "", "FIL"
+  "coc.source.syntax.enable": true,
   "coc.source.syntax.priority": 10,
+  "coc.source.syntax.shortcut": "SYN",
+  "coc.source.tag.enable": true,
+  "coc.source.tag.priority": 3,
+  "coc.source.tag.shortcut": "TAG", // "",
+  "coc.source.word.enable": true,
+  "coc.source.word.priority": 10,
+  "coc.source.word.shortcut": "WRD",
+
+  "tabnine.priority": 99,
+  "tabnine.shortcut": "TN",
+
+  "snippets.priority": 99,
+  "snippets.shortcut": "",
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "snippets.extends": {
+    "cpp": ["c"],
+    "typescript": ["javascript"]
+  },
+
   "outline.keepWindow": true,
   "outline.sortBy": "position",
   "outline.splitCommand": "botright 40vs",
   "outline.showLineNumber": true,
   "outline.followCursor": true,
   "outline.switchSortKey": "<C-s>",
+
   "tree.key.activeFilter": "zf",
   "tree.key.close": "qq",
   "tree.key.toggle": "t",
@@ -42,9 +62,10 @@
   "[go][html][java]": {
     "semanticTokens.enable": true
   },
+
   "pullDiagnostic.onChange": true,
   "pullDiagnostic.onSave": false,
-  "pullDiagnostic.workspace": false,
+  "pullDiagnostic.workspace": true,
   // ╭───────────╮
   // │ InlayHint │
   // ╰───────────╯
@@ -60,15 +81,19 @@
   "diagnostic.enable": true,
   "diagnostic.enableSign": true,
   "diagnostic.signPriority": 50,
-  "diagnostic.errorSign": "", //  ••
-  "diagnostic.warningSign": "", //  •
-  "diagnostic.hintSign": "", // •
-  "diagnostic.infoSign": "", // •
+  "diagnostic.errorSign": "", //   ••
+  "diagnostic.warningSign": "", //   •
+  "diagnostic.infoSign": "", //  •
+  "diagnostic.hintSign": "", //  •
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
   "diagnostic.autoRefresh": true,
   "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
+  "diagnostic.enableMessage": "always",
+  "diagnostic.enableHighlightLineNumber": true,
+  "diagnostic.highlightLimit": 1000,
+  "diagnostic.separateRelatedInformationAsDiagnostics": true,
   "diagnostic.virtualText": true,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.virtualTextLineSeparator": " \\ ",
@@ -76,43 +101,32 @@
   "diagnostic.virtualTextFormat": "%message",
   "diagnostic.format": "%message [%source%code]", // %source code severity message
   "diagnostic.messageTarget": "float",
-  "diagnostic.enableHighlightLineNumber": true,
-  "diagnostic.separateRelatedInformationAsDiagnostics": true,
-  "diagnostic-languageserver.filetypes": {
-    "cmake": ["cmake-lint"],
-    "systemd": "systemd-analyze"
-  },
-  "diagnostic-languageserver.formatFiletypes": {
-    // "sh": "shfmt"
-    // "zsh": "shfmt"
-  },
+  // ╭──────────╮
+  // │ CodeLens │
+  // ╰──────────╯
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
   "codeLens.position": "eol",
-  "list.indicator": ">",
+
+  "list.indicator": "»",
   "list.floatPreview": true,
+
   "signature.enable": true,
   "signature.target": "float",
   "signature.hideOnTextChange": false,
   "signature.preferShownAbove": true,
-  "snippets.priority": 99,
-  "snippets.shortcut": "",
-  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
-  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
-  "snippets.extends": {
-    "cpp": ["c"],
-    "typescript": ["javascript"]
-  },
 
   // "dialog.floatHighlight": "Normal",
-  "dialog.floatBorderHighlight": "Normal",
   "dialog.rounded": true,
+  "dialog.floatBorderHighlight": "Normal",
   "dialog.floatHighlight": "CocFloating",
+
   "notification.border": true,
   "notification.focusable": true,
   "notification.highlightGroup": "CocFloating",
   "notification.statusLineProgress": false,
+  "notification.timeout": 5000,
 
   // Float
   "floatFactory.floatConfig": {
@@ -128,7 +142,7 @@
     "rounded": true,
     "borderhighlight": "Tag",
     "highlight": "CocSuggestFloating",
-    "maxWidth": 120,
+    "maxWidth": 120
   },
   "diagnostic.floatConfig": {
     "border": true,
@@ -144,7 +158,7 @@
     "borderhighlight": "SpellCap",
     "highlight": "CocFloating",
     "maxWidth": 120,
-    "focusable": true,
+    "focusable": true
   },
   "signature.floatConfig": {
     "border": true,
@@ -152,14 +166,14 @@
     "borderhighlight": "Normal",
     "highlight": "CocFloating",
     "maxWidth": 120,
-    "focusable": true,
+    "focusable": true
   },
   // Items within the suggest window
   "suggest.pumFloatConfig": {
     "border": true,
     "rounded": true,
     "borderhighlight": "FloatBorder",
-    "highlight": "CocSuggestFloating",
+    "highlight": "CocSuggestFloating"
   },
 
   "suggest.enableFloat": true,
@@ -173,32 +187,32 @@
   "suggest.selection": "first", // recentlyUsed
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
-    "default": "",
-    "text": "", // 
+    "default": "θ", // 
+    "folder": "", // 
+    "file": "", // 
+    "module": "", //  
+    "class": "", // ﴯ  
     "method": "", // 
-    "function": "", // ƒ
-    "constructor": "", // 
+    "property": "", // ﰠ 
     "field": "", // 料  
-    "variable": "", //  
-    "class": "", // ﴯ 
+    "constructor": "", //  
+    "struct": "פּ", //  
+    "enum": "練", //  
+    "enumMember": "", // 
     "interface": "", // 
-    "module": "", // 
-    "property": "", // ﰠ
-    "unit": "", //  塞
+    "function": "", // ƒ
+    "variable": "", //  
+    "constant": "", //    󰐀
+    "text": "", //  
     "value": "",
-    "enum": "", // 
+    "event": "", // 鬒
+    "typeParameter": "", //   
+    "reference": "", //  渚
+    "operator": "Ψ", // 
+    "unit": "", //  塞
     "keyword": "", // 
     "snippet": "", //    
-    "color": "",
-    "file": "", // 
-    "reference": "", //  渚
-    "folder": "", // 
-    "enumMember": "", // 
-    "constant": "", // 
-    "struct": "פּ", // 
-    "event": "", // 鬒
-    "operator": "Ψ", // 
-    "typeParameter": "" //   
+    "color": ""
   },
   // ╒══════════════════════════════════════════════════════════╕
   //                           Prettier
@@ -208,17 +222,18 @@
   "prettier.semi": true,
   "prettier.trailingComma": "es5",
 
-  // "lightbulb.excludeFiletypes": [],
-  // "lightbulb.enableVirtualText": true,
-  // "lightbulb.virtualText": "💡",
-  // "lightbulb.text": "Code action",
-  // "lightbulb.enableSign": false,
-
   // ╒══════════════════════════════════════════════════════════╕
-  //                           Tabnine
+  //                           Lighbulb
   // ╘══════════════════════════════════════════════════════════╛
-  "tabnine.priority": 99,
-  "tabnine.shortcut": "TN",
+  "lightbulb.text": { "quickfix": "", "default": "" }, // 💡
+  "lightbulb.enableSign": false,
+  "lightbulb.signPriority": 20,
+  "lightbulb.enableVirtualText": true,
+  "lightbulb.virtualTextPriority": 50,
+  "lightbulb.virtualTextPosition": "eol",
+  "lightbulb.followDiagnostic": true,
+  "lightbulb.excludeFiletypes": [],
+
   // ╒══════════════════════════════════════════════════════════╕
   //                            Clangd
   // ╘══════════════════════════════════════════════════════════╛
@@ -340,8 +355,9 @@
   "sumneko-lua.enable": true,
   "sumneko-lua.enableNvimLuaDev": true,
   "sumneko-lua.checkUpdate": true,
-  "Lua.misc.parameters": [],
+  "sumneko-lua.prompt": true,
   "Lua.telemetry.enable": false,
+  "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
   "Lua.workspace.checkThirdParty": false,
@@ -350,19 +366,25 @@
   "Lua.workspace.preloadFileSize": 10000,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
+    "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim"
     // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start"
   ],
   "Lua.format.enable": false,
   "Lua.completion.enable": true,
-  "Lua.completion.showParams": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace",
+  "Lua.completion.displayContext": 1,
+  "Lua.completion.keywordSnippet": "Both",
   "Lua.completion.postfix": ".",
-  // sumneko-lua.inlayHints already does this (though it is displayed the same color as CodeLens)
-  "Lua.hint.enable": false,
+  "Lua.completion.requireSeparator": ".",
+  "Lua.completion.showParams": true,
+  "Lua.completion.showWord": "Enable",
+  "Lua.completion.workspaceWord": true,
+  "Lua.signatureHelp.enable": true,
+  "Lua.hint.enable": true,
   "Lua.hint.await": true,
-  "Lua.hint.paramName": "All",
+  "Lua.hint.paramName": "Literal",
   "Lua.hint.arrayIndex": "Enable",
   "Lua.hint.setType": true,
   "Lua.hint.paramType": true,
@@ -371,16 +393,18 @@
   "Lua.hover.enumsLimit": 5,
   "Lua.hover.viewString": true,
   "Lua.hover.viewNumber": true,
+  "Lua.hover.previewFields": 50,
+  "Lua.hover.viewStringMax": 1000,
   "Lua.window.statusBar": false,
-  "Lua.window.progressBar": false, // FIX: I like having this but somehow it cancels startup
+  "Lua.window.progressBar": true,
   "Lua.type.castNumberToInteger": true,
+  "Lua.semantic.enable": false,
   "Lua.semantic.annotation": true,
   "Lua.semantic.variable": true,
-  "Lua.semantic.enable": true,
   "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
-  // "Lua.diagnostics.workspaceDelay": -1,
   "Lua.diagnostics.libraryFiles": "Opened",
+  "Lua.diagnostics.disableScheme": ["git"],
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
     "different-requires": "None",
@@ -390,7 +414,7 @@
     "redefined-local": "None",
     "missing-parameter": "None",
     "redundant-parameter": "None",
-    "lowercase-global": "None",
+    "lowercase-global": "None!",
 
     "ambiguity-1": "Opened",
     "circle-doc-class": "Opened",
@@ -458,30 +482,42 @@
     "after_each",
     "await",
     "async",
-    "Promise"
+    "promise"
   ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             Ruby
   // ╘══════════════════════════════════════════════════════════╛
-  "solargraph.diagnostics": true,
-  "solargraph.autoformat": true,
-  "solargraph.formatting": true,
   "solargraph.trace.server": "off",
-  "solargraph.folding": true,
+  "solargraph.diagnostics": true,
+  "solargraph.autoformat": false,
+  "solargraph.formatting": true,
+  "solargraph.folding": false,
   "solargraph.symbols": true,
   "solargraph.references": true,
   "solargraph.definitions": true,
+  "solargraph.hover": true,
+  "solargraph.completion": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                            Python
   // ╘══════════════════════════════════════════════════════════╛
-  // "python.jediEnabled": true,
   "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "100"],
   "python.linting.enabled": true,
   "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": ["--config=/home/lucas/.config/python/flake8"],
+  "python.linting.mypyEnabled": false,
+  "python.linting.mypyCategorySeverity.error": "Error",
+  "python.linting.mypyCategorySeverity.note": "Information",
   "python.linting.pylintEnabled": true,
-  "python.linting.pylintPath": "pylint",
+  "python.linting.pylintArgs": ["--rcfile=/home/lucas/.config/python/pylintrc"],
   "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
   "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useLibraryCodeForTypes": true,
+  //https://github.com/microsoft/pyright/blob/main/docs/configuration.md
+  // "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.typeCheckingMode": "basic",
   // "python.analysis.diagnosticMode": "openFilesOnly",
   // ╒══════════════════════════════════════════════════════════╕
   //                             Java
@@ -626,21 +662,12 @@
   "yaml.validate": true,
   "yaml.schemaStore.enable": true,
   "yaml.schemas": {
-    // file:// shouldn't be needed but it seems like it is
     "file:///home/lucas/projects/conf_filetypes/yaml/schemas/none.json": [
       "alacritty.yml",
       "alacritty.yaml",
       ".alacritty.yml",
       ".alacritty.yaml"
     ]
-    // ╭──────────╮
-    // │ Examples │
-    // ╰──────────╯
-    // "http://json.schemastore.org/composer": ["/*"],
-    // "file:///home/johnd/some-schema.json": ["some.yaml"],
-    // "../relative/path/schema.json": ["/config*.yaml"],
-    // "/Users/johnd/some-schema.json": ["some.yaml"],
-    // "kubernetes": ["filePattern1.yaml", "filePattern2.yaml"]
   },
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
@@ -650,8 +677,8 @@
   "eslint.trace.server": "off",
   "eslint.autoFixOnSave": false,
   "eslint.format.enable": true,
-  "tsserver.trace.server": "off",
   // Typescript
+  "tsserver.trace.server": "off",
   "typescript.preferences.quoteStyle": "double",
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.format.enable": true,
@@ -662,8 +689,10 @@
   // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
   "typescript.referencesCodeLens.enabled": false,
   "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.parameterNames.enabled": "literals",
   "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.enumMemberValues.enabled": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
@@ -679,6 +708,7 @@
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
   "javascript.inlayHints.parameterNames.enabled": "all",
   "javascript.inlayHints.variableTypes.enabled": true,
+  "javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
   "javascript.inlayHints.parameterTypes.enabled": true,
   "javascript.inlayHints.enumMemberValues.enabled": true,
   "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
@@ -687,8 +717,11 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             Vim
   // ╘══════════════════════════════════════════════════════════╛
-  "vimlsp.diagnostic.enable": true,
   "vimlsp.trace.server": "off",
+  "vimlsp.diagnostic.enable": true,
+  "vimlsp.indexes.runtimepath": true,
+  "vimlsp.suggest.fromVimruntime": true,
+  "vimlsp.suggest.fromRuntimepath": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                             XML
   // ╘══════════════════════════════════════════════════════════╛
@@ -705,16 +738,121 @@
   "css.trace.server": "off",
   "zig.path": "/usr/bin/zls",
 
-  // "sh.enable": true,
-  // "yank.highlight.duration": 100,
-  // "yank.enableCompletion": false,
-
   // ╒══════════════════════════════════════════════════════════╕
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
   "markdownlint.config": {
     "default": true,
     "line-length": false
+  },
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                  Diagnostic Language Server
+  // ╘══════════════════════════════════════════════════════════╛
+  "diagnostic-languageserver.enable": true,
+  "diagnostic-languageserver.trace.server": "off",
+  "diagnostic-languageserver.mergeConfig": true,
+  "diagnostic-languageserver.linters": {
+    "jq": {
+      "command": "jq",
+      "args": ["-nf", "%file"],
+      "isStdout": false,
+      "isStderr": true,
+      "debounce": 100,
+      "offsetLine": 0,
+      "offsetColumn": 0,
+      "sourceName": "jq",
+      "formatLines": 1,
+      "formatPattern": [
+        "^jq: (error): syntax error, (.*) at <.*>, line (\\d+):$",
+        {
+          "security": 1,
+          "message": 2,
+          "line": 3
+        }
+      ]
+    },
+    "perl": {
+      "command": "perl",
+      "args": ["-w", "%file"],
+      "sourceName": "perl",
+      "isStderr": true,
+      "isStdout": false,
+      "debounce": 100,
+      "formatLines": 1,
+      "formatPattern": [
+        "^(.*) at .* line (\\d+)(.)(.*)$",
+        {
+          "message": [1, 4],
+          "line": 2,
+          "security": "3"
+        }
+      ],
+      "securities": {
+        ",": "error",
+        ".": "warning"
+      },
+      "offsetColumn": 0,
+      "offsetLine": 0
+    },
+    "mypy": {
+      "sourceName": "mypy",
+      "command": "mypy",
+      "args": [
+        "--no-color-output",
+        "--no-error-summary",
+        "--show-column-numbers",
+        "--follow-imports=silent",
+        "%file"
+      ],
+      // "rootPatterns": ["mypy.ini", ".mypy.ini", "setup.cfg"],
+      "formatPattern": [
+        "^.*:(\\d+?):(\\d+?): ([a-z]+?): (.*)$",
+        {
+          "line": 1,
+          "column": 2,
+          "security": 3,
+          "message": 4
+        }
+      ],
+      "securities": {
+        "error": "error"
+      }
+    },
+  },
+  "diagnostic-languageserver.formatters": {
+    "shfmt": {
+      "command": "shfmt",
+      "args": ["-i", "2"],
+      "sourceName": "shfmt",
+      "isStdout": false,
+      "isStderr": true,
+      "debounce": 100,
+      "offsetLine": 0,
+      "offsetColumn": 0,
+      "formatLines": 1,
+      "formatPattern": [
+        ".*?:(\\d+):(\\d+): (.*)",
+        {
+          "line": 1,
+          "column": 2,
+          "message": 3
+        }
+      ]
+    }
+  },
+  "diagnostic-languageserver.filetypes": {
+    "cmake": ["cmake-lint"],
+    "systemd": "systemd-analyze",
+    "jq": "jq",
+    "vim": "vint",
+    "email": "languagetool",
+    "dockerfile": "hadolint",
+    // "python": "mypy",
+    "sh": []
+  },
+  "diagnostic-languageserver.formatFiletypes": {
+    "sh": []
   },
 
   // ╒══════════════════════════════════════════════════════════╕
@@ -744,31 +882,152 @@
       "args": ["--stdio"],
       "filetypes": ["crystal"]
     },
-    // "selene": {
-    //   "command": "selene",
-    //   "rootPatterns": [".git/", ".luacheckrc", "selene.toml", ".luarc.json"],
-    //   "filetypes": ["lua"]
-    // },
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "rootPatterns": [
+        ".ccls",
+        ".ccls-root",
+        "compile_commands.json",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
+      "initializationOptions": {
+        "cache": {
+          // "directory": "/tmp/ccls"
+          "directory": ".ccls-cache"
+        },
+        "client": {
+          "snippetSupport": true
+        }
+      }
+    },
+    "selene": {
+      "enable": false,
+      "command": "selene",
+      "args": ["--config", "/home/lucas/.config/nvim/selene.toml"],
+      "rootPatterns": [".git/", ".luacheckrc", "selene.toml", ".luarc.json"],
+      "filetypes": ["lua"]
+      // diagnostics_format = '[#{c}] #{m} https://kampfkarren.github.io/selene/lints/#{c}.html',
+    },
+    // ╭─────╮
+    // │ EFM │
+    // ╰─────╯
+    // ============ Config ============
+    // int                    logLevel
+    // []Command              commands
+    // map[string][]Language  languages
+    // []string               rootMarkers
+    // []string               triggerChars
+    // Duration               lintDebounce
+    // Duration               formatDebounce
+    // =========== Language ===========
+    // string            prefix
+    // []string          lintFormats
+    // bool              lintStdin
+    // int               lintOffset
+    // int               lintOffsetColumns
+    // string            lintCommand
+    // bool              lintIgnoreExitCode
+    // map[string]string lintCategoryMap
+    // string            lintSource
+    // int               lintSeverity
+    // bool              lintWorkspace
+    // string            formatCommand
+    // bool              formatStdin
+    // string            symbolCommand
+    // bool              symbolStdin
+    // []string          symbolFormats
+    // string            completionCommand
+    // bool              completionStdin
+    // string            hoverCommand
+    // bool              hoverStdin
+    // string            hoverType
+    // string            hoverChars
+    // []string          env
+    // []string          rootMarkers
+    // bool              requireMarker
+    // []Command         commands
+    // =========== Variables ==========
+    // ${INPUT}  ${FILEEXT}  ${FILENAME}  ${ROOT}
+    // ============ Formats ===========
+    //  F string   (%f) file name
+    //  N int      (%n) error number
+    //  L int      (%l) line number
+    //  C int      (%c) column number
+    //  T byte     (%t) error type
+    //  M string   (%m) error message
+    //  R string   (%r) the "rest" of a single-line file message
+    //  P string   (%p) pointer line
+    //  V int      (%v) virtual column number
+    //  S string   (%s) search text
+    //  === Extensions ===
+    //  E int      (%e) end line number
+    //  K int      (%k) end column number
+    "efm": {
+      "initializationOptions": {
+        "documentFormatting": true,
+        "hover": true,
+        "documentSymbol": true,
+        "codeAction": true,
+        "completion": true
+      },
+      "command": "efm-langserver",
+      "args": [
+        // "-c",
+        // "~/.config/nvim/efm-config.yml"
+      ],
+      "filetypes": ["sh", "python"],
+      "settings": {
+        "rootMarkers": [".git/"],
+        "languages": {
+          "sh": [
+            {
+              "lintCommand": "shellcheck -f gcc -x",
+              "lintSource": "shellcheck",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tarning: %m"
+              ],
+              "formatCommand": "shfmt -i 2",
+              "formatStdin": true
+            }
+          ],
+          "teal": [
+            {
+              "formatCommand": "lua-format -i",
+              "formatStdin": true
+            }
+          ],
+          "lua": [
+            {
+              "lintCommand": "luacheck --codes --formatter plain --std luajit --filename ${INPUT} -",
+              "lintSource": "luacheck",
+              "lintIgnoreExitCode": true,
+              "lintStdin": true,
+              "lintFormats": ["%f:%l:%c: %m"]
+            }
+          ],
+          "python": [
+            {
+              "lintCommand": "mypy --show-column-numbers",
+              "lintSource": "mypy",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tote: %m"
+              ]
+            }
+          ]
+        }
+      }
+    }
     // "golang": {
     //   "command": "gopls",
     //   "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
     //   "filetypes": ["go"]
-    // },
-    // "ccls": {
-    //   "command": "ccls",
-    //   "filetypes": ["c", "cpp", "objc", "objcpp"],
-    //   "rootPatterns": [
-    //     ".ccls",
-    //     "compile_commands.json",
-    //     ".vim/",
-    //     ".git/",
-    //     ".hg/"
-    //   ],
-    //   "initializationOptions": {
-    //     "cache": {
-    //       "directory": "/tmp/ccls"
-    //     }
-    //   }
     // },
     // "R": {
     //   "command": "/usr/bin/R",
@@ -788,53 +1047,6 @@
     //   "args": ["start"],
     //   "filetypes": ["sh"]
     // },
-    "efm": {
-      "initializationOptions": {
-        "documentFormatting": true,
-        "hover": true,
-        "documentSymbol": true,
-        "codeAction": true,
-        "completion": true
-      },
-      "command": "efm-langserver",
-      "args": [],
-      "filetypes": ["sh"],
-      "settings": {
-        "rootMarkers": [".git/"],
-        "languages": {
-          "sh": [
-            {
-              "lintCommand": "shellcheck -f gcc -x",
-              "lintSource": "shellcheck",
-              "lintFormats": [
-                "%f:%l:%c: %trror: %m",
-                "%f:%l:%c: %tarning: %m",
-                "%f:%l:%c: %tarning: %m"
-              ],
-              "formatCommand": "shfmt -i 2",
-              "formatStdin": true
-            }
-          ]
-          // "python": [
-          //   {
-          //     "lintCommand": "mypy --show-column-numbers",
-          //     "lintSource": "mypy",
-          //     "lintFormats": [
-          //       "%f:%l:%c: %trror: %m",
-          //       "%f:%l:%c: %tarning: %m",
-          //       "%f:%l:%c: %tote: %m"
-          //     ]
-          //   }
-          // ]
-          // "teal": [
-          //   {
-          //     "formatCommand": "lua-format -i",
-          //     "formatStdin": true
-          //   }
-          // ]
-        }
-      }
-    }
     // "rescript": {
     //   "enable": true,
     //   "module": "~/.local/share/nvim/site/pack/packer/start/vim-rescript/server/out/server.js",

@@ -1,0 +1,18 @@
+#compdef bc
+
+# zsh completions for 'bc'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print this usage and exit]'
+  {-i,--interactive}'[force interactive mode]'
+  {-l,--mathlib}'[use the predefined math routines]'
+  {-q,--quiet}'[dont print initial banner]'
+  {-s,--standard}'[non-standard bc constructs are errors]'
+  {-w,--warn}'[warn about non-standard bc constructs]'
+  {-v,--version}'[print version information and exit]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

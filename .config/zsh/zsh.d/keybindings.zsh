@@ -106,7 +106,6 @@ zle -N toggle-right-prompt
 
 zle -N fcq
 zle -N pw
-zle -N fe
 zle -N macho-zle
 zle -N __unicode_translate # translate unicode to symbol
 
@@ -189,32 +188,36 @@ fi
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 declare -gA keybindings; keybindings=(
 # ========================== Bindings ==========================
-  # 'M-q'             push-line-or-edit     # zsh-edit
   # 'F1'                    dotbare-fstat
   # 'F2'                    db-faddf
   # 'Home'                  beginning-of-line
   # 'End'                   end-of-line
   # 'Delete'                delete-char
-  ';z'                    zbrowse
-  'Esc-f'                 wfxr::fzf-file-edit-widget
-  'Esc-i'                 fe
-  'M-\'                   list-keys             # list keybindings in mode
-  'M-r'                   per-dir-fzf
-  'M-v'                   describe-key-briefly  # describe what key does
-  'M-S-R'                 fzf-history-widget
-  'C-o'                   clipboard-fzf         # greenclip fzf
-  'M-p'                   pw                    # fzf pueue
-  'M-u'                   __unicode_translate   # translate 0000 to unicode
-  'M-x'                   cd-fzf-ghqlist-widget # cd ghq fzf
-  'M-S-P'                 toggle-right-prompt
-  'C-]'                   macho-zle
-  'C-a'                   autosuggest-execute
-  'C-y'                   yank
-  'C-z'                   fancy-ctrl-z
-  'C-x r'                 fz-history-widget
-  'C-x t'                 pick_torrent             # fzf torrent
-  'C-x C-b'               fcq                      # copyq fzf
-  'C-x C-g'               fcq-zle                  # copyq zle
+  ';z'                    zbrowse               # Bring up zbrowse TUI
+  'Esc-f'                 fzf-file-edit-widget  # Edit file with fzf
+  'Esc-i'                 fe                    # Edit file with fzf
+  'M-\'                   list-keys             # List keybindings in mode
+  'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
+  'M-r'                   per-dir-fzf           # Toggle per-dir hist & bring up Fzf
+  'M-v'                   describe-key-briefly  # Describe what key does
+  'M-S-R'                 fzf-history-widget    # Builtin fzf history widget
+  'C-o'                   clipboard-fzf         # Greenclip fzf (insert into cli)
+  'M-p'                   pw                    # Fzf pueue
+  'M-g'                   get-line           # Get line from buffer-stack
+  'M-q'                   push-line-or-edit     # Push line onto buffer stack
+  'M-u'                   __unicode_translate   # Translate 0000 to unicode
+  'M-x'                   cd-fzf-ghqlist-widget # CD GHQ with fzf
+  'M-S-P'                 toggle-right-prompt   # Toggle p10k right promp
+  'C-]'                   macho-zle             # Fzf man pages
+  'C-a'                   autosuggest-execute   # Execute the autosuggestion
+  'C-h'                   backward-delete-char  # Execute the autosuggestion
+  'C-t'                   fzf-file-widget # Insert file into cli
+  'C-y'                   yank            # Insert the contents of the kill buffer at the cursor position
+  'C-z'                   fancy-ctrl-z    # Bring up jobs with fzf
+  'C-x r'                 fzf-histdb-widget # Fzf histdb
+  'C-x t'                 pick_torrent             # Fzf torrent
+  'C-x C-b'               fcq                      # Copyq fzf (copy contents)
+  'C-x C-g'               fcq-zle                  # Copyq zle (insert contents)
   'C-x C-e'               edit-command-line-as-zsh # Edit command in editor
   'C-x C-f'               fz-find
   'C-x C-u'               RG_buff                  # RG with $BUFFER
@@ -228,45 +231,48 @@ declare -gA keybindings; keybindings=(
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
   'mode=vicmd H'          vi-beginning-of-line
-  'mode=vicmd M'          src-locate # search for something placing results in $candidates[@]
-  'mode=vicmd ?'          which-command
-  'mode=vicmd K'          run-help
-  'mode=vicmd yy'         copyx                    # copy text, display message
-  'mode=vicmd ;v'         clipboard-fzf            # greenclip fzf
-  'mode=vicmd ;e'         edit-command-line-as-zsh # edit command in editor
-  'mode=vicmd ;x'         vi-backward-kill-word    # kill word backwards
+  'mode=vicmd M'          src-locate    # Search for something placing results in $candidates[@]
+  'mode=vicmd K'          run-help      # Open man-page
+  'mode=vicmd Y'          vi-yank-whole-line
+  'mode=vicmd ye'         vi-yank-eol
+  'mode=vicmd yy'         copyx                    # Copy text, display message
+  'mode=vicmd ;v'         clipboard-fzf            # Greenclip fzf
+  'mode=vicmd ;e'         edit-command-line-as-zsh # Edit command in editor
+  'mode=vicmd ;x'         vi-backward-kill-word    # Kill word backwards
   # 'mode=vicmd S'          backward-kill-line
-  'mode=vicmd C'          vi-change-eol            # kill text to end of line & start in insert
-  'mode=vicmd S'          vi-change-whole-line     # change all text to start over
-  'mode=vicmd cc'         vi-change-whole-line     # change all text to start over
-  'mode=vicmd ds'         delete-surround          # delete 'surrounders'
-  'mode=vicmd cs'         change-surround          # change 'surrounders'
-  'mode=vicmd ys'         add-surround             # add 'surrounders'
-  'mode=visual S'         add-surround             # add 'surrounders'
-  'mode=vicmd M-\'        list-keys                # list keybindings in mode
-  'mode=vicmd ='          list-choices             # list choices of command
+  'mode=vicmd C'          vi-change-eol        # Kill text to end of line & start in insert
+  'mode=vicmd S'          vi-change-whole-line # Change all text to start over
+  'mode=vicmd cc'         vi-change-whole-line # Change all text to start over
+  'mode=vicmd ds'         delete-surround      # Delete 'surrounders'
+  'mode=vicmd cs'         change-surround      # Change 'surrounders'
+  'mode=vicmd ys'         add-surround         # Add 'surrounders'
+  'mode=visual S'         add-surround         # Add 'surrounders'
+  'mode=vicmd ?'          which-command        # Display info about a command
+  'mode=vicmd M-\'        list-keys            # List keybindings in mode
+  'mode=vicmd ='          list-choices         # List choices (i.e., alias, command, vars, etc)
   'mode=vicmd ga'         what-cursor-position
+  'mode=vicmd %'          vi-match-bracket
   'mode=vicmd <'          vi-up-line-or-history
   'mode=vicmd >'          vi-down-line-or-history
   # 'mode=vicmd /'          vi-history-search-backward
   'mode=vicmd /'          history-incremental-pattern-search-backward
-  'mode=vicmd \$'         expand-all               # expand alias etc under keyboard
-  'mode=vicmd \-'         zvm_switch_keyword       # decrement item under keyboard
-  'mode=vicmd \+'         zvm_switch_keyword       # increment item under keyboard
-  'mode=vicmd ,.'         get-line                 # get line from buffer-stack
-  'mode=vicmd ..'         push-line                # push line to buffer-stack
-  'mode=viins jk'         vi-cmd-mode              # switch to vi-cmd mode
-  'mode=viins kj'         vi-cmd-mode              # switch to vi-cmd mode
-  'mode=str M-o'          lc                       # lf change dir
-  'mode=str M-S-O'        lfub                     # lf ueberzug
-  'mode=str C-u'          lf                       # regular lf
-  'mode=str ;o'           noptions                 # edit zsh options
-  'mode=+ M-.'            kf                       # a formarks like thing in rust
-  'mode=+ M-,'            frd                      # cd interactively recent dir
-  'mode=+ M-;'            fcd                      # cd interactively
+  'mode=vicmd \$'         expand-all         # Expand alias etc under keyboard
+  'mode=vicmd \-'         zvm_switch_keyword # Decrement item under keyboard
+  'mode=vicmd \+'         zvm_switch_keyword # Increment item under keyboard
+  'mode=vicmd ,.'         get-line           # Get line from buffer-stack
+  'mode=vicmd ,,'         push-line-or-edit  # Push line to buffer-stack
+  'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
+  'mode=viins kj'         vi-cmd-mode        # Switch to vi-cmd mode
+  'mode=str M-o'          lc                 # Lf change dir
+  'mode=str M-S-O'        lfub               # Lf ueberzug
+  'mode=str C-u'          lf                 # Regular lf
+  'mode=str ;o'           noptions           # Edit zsh options
+  'mode=+ M-.'            kf                 # Formarks like thing in rust
+  'mode=+ M-,'            frd                # Cd interactively recent dirs
+  'mode=+ M-;'            fcd                # Cd interactively
   # 'mode=@ M-;'          skim-cd-widget
-  'mode=+ M-/'            __zoxide_zi
-  'mode=@ C-b'            bow2                     # surfraw open w3m
+  'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
+  'mode=@ C-b'            bow2               # Surfraw open w3m
   'mode=@ M-['            fstat
   'mode=@ M-]'            fadd
 

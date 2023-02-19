@@ -10,6 +10,7 @@ local fs = vim.fs
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
+local env = vim.env
 
 ---Execute a git command
 ---@param args table arguments to pass to git
@@ -51,9 +52,9 @@ function M.root(path)
     if path then
         path = fn.fnamemodify(path, ":p")
     else
-        local git_dir = vim.b.git_dir
+        local git_dir = vim.b.git_dir or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.gitdir)
         if git_dir then
-            return fs.dirname(git_dir)
+            return (env.GIT_WORK_TREE == env.DOTBARE_TREE and git_dir) or fs.dirname(git_dir)
         else
             path = api.nvim_buf_get_name(0)
         end

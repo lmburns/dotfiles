@@ -1,0 +1,23 @@
+#compdef pacreport
+
+# zsh completions for 'pacreport'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--root[set an alternate installation root]'
+  '--sysroot[set an alternate system root]'
+  '--cachedir[set an alternate cache location]'
+  '--config[set an alternate pacman configuration file]'
+  '--dbext[set an alternate sync database extension]'
+  '--dbpath[set an alternate database location]'
+  '--backups[list .pac{save,orig,new} files]'
+  '--group[list missing group packages]'
+  '--missing-files[list missing package files]'
+  '--unowned-files[list unowned files]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

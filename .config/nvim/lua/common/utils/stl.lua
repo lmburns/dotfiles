@@ -35,7 +35,7 @@ M.other.only_pad_right = {left = 1, right = 0}
 M.conditions = {
     -- Show function in statusbar
     is_available_gps = function()
-        if require("nvim-gps") then
+        if D.plugin_loaded("nvim-gps") then
             return require("nvim-gps").is_available()
         end
         return false
@@ -330,9 +330,6 @@ M.plugins.gps = {
     fn = function()
         local opts = {
             disable_icons = false,
-            separator = " > ",
-            depth = 4,
-            dept_limit_indicator = ".."
         }
         return require("nvim-gps").get_location(opts)
     end

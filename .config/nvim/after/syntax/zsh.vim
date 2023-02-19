@@ -102,7 +102,7 @@ syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|svn\|aliases\|trigger-loa
 syntax match ZinitIceModifiers  /\s\<\%(light-mode\|is-snippet\|countdown\|ps-on-unload\|ps-on-update\)\>/ms=s+1
 
 " Include also ices added by the existing annexes
-syntax match ZinitIceModifiers  /\s\<\%(test\|zman\|submod\|dl\|patch\|fbin\|sbin\|fsrc\|ferc\|pip\|fmod\|gem\|node\|rustup\|cargo\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(test\|zman\|submod\|dl\|patch\|fbin\|sbin\|fsrc\|ferc\|pip\|fmod\|gem\|pipx\|node\|rustup\|cargo\)\>/ms=s+1
 syntax match ZinitIceModifiers /\s\<\%(lbin\|lman\|submods\|binary\|null\|eval\|check\)\>/ms=s+1
 
 " Additional Zsh and Zinit functions
@@ -125,10 +125,3 @@ highlight def link ZinitSnippetUrl2        Macro
 highlight def link ZinitSnippetUrl3        Macro
 highlight def link ZinitSnippetUrl4        Macro
 highlight def link ZinitTrailingWhiteSpace Error
-
-" Add other zsh keywords that aren't added by default
-syn keyword zshCommands += coproc zgetattr zsetattr zlistattr zdelattr zcurses strftime ztie zuntie zgdbmpath
-  \ zf_chgrp zf_chmod zf_chown zf_ln zf_mkdir zf_mv zf_rm zf_rmdir zf_sync pcre_compile pcre_study pcre_match
-  \ zstat syserror sysopen sysread sysseek syswrite zsystem systell zselect defer zsh-defer zsh abbr add-zsh-hook
-
-syn keyword shStatement += sxhkd bspwm bspc perl

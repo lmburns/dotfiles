@@ -60,15 +60,13 @@ local function init()
         }
     )
 
-    -- map("n", "s", ":lua require('substitute').operator()<CR>")
-    -- map("n", "ss", ":lua require('substitute').line()<CR>")
-    -- map("n", "se", ":lua require('substitute').eol()<CR>")
-    -- map("x", "s", ":lua require('substitute').visual()<CR>")
+    -- `:h pattern-overview`
+    -- {-}: matches 0 or more of the preceding atom, as few as possible
+    --
+    -- Replace Nth occurence:        s/\v(.{-}\zsPATT.){N}/REPL/
+    -- Replace every Nth occurrence: s/\v(\zsPATT.{-}){N}/REPL/g
 
-    -- map("n", "sx", ":lua require('substitute.exchange').operator()<CR>")
-    -- map("n", "sxx", ":lua require('substitute.exchange').line()<CR>")
-    -- map("x", "X", ":lua require('substitute.exchange').visual()<CR>")
-    -- map("n", "sxc", ":lua require('substitute.exchange').cancel()<CR>")
+    -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
 
     wk.register(
         {

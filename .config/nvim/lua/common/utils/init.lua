@@ -1460,7 +1460,7 @@ M.stat = function(path)
     )
 end
 
--- ================= Tips ================== [[[
+-- TIP: ======================================= [[[
 -- Search global variables:
 --    filter <pattern> let g:
 

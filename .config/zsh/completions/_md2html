@@ -1,0 +1,37 @@
+#compdef md2html
+
+# zsh completions for 'md2html'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-o,--output}'[output file (default is standard output)]'
+  {-f,--full-html}'[generate full HTML document, including header]'
+  {-x,--xhtml}'[generate XHTML instead of HTML]'
+  {-s,--stat}'[measure time of input parsing]'
+  {-h,--help}'[display this help and exit]'
+  {-v,--version}'[display version and exit]'
+  '--commonmark[commonMark (this is default)]'
+  '--github[github Flavored Markdown]'
+  '--fcollapse-whitespace[collapse non-trivial whitespace]'
+  '--flatex-math[enable LaTeX style mathematics spans]'
+  '--fpermissive-atx-headers[allow ATX headers without delimiting space]'
+  '--fpermissive-url-autolinks[allow URL autolinks without <, >]'
+  '--fpermissive-www-autolinks[allow WWW autolinks without any scheme (e.g. www.example.com)]'
+  '--fpermissive-email-autolinks[allow e-mail autolinks without <, > and mailto:]'
+  '--fpermissive-autolinks[same as --fpermissive-url-autolinks --fpermissive-www-autolinks]'
+  '--fpermissive-email-autolinks[]'
+  '--fstrikethrough[strike-through spans]'
+  '--ftables[enable tables]'
+  '--ftasklists[enable task lists]'
+  '--funderline[enable underline spans]'
+  '--fwiki-links[enable wiki links]'
+  '--fno-html-blocks[disable raw HTML blocks]'
+  '--fno-html-spans[disable raw HTML spans]'
+  '--fno-html[same as --fno-html-blocks --fno-html-spans]'
+  '--fno-indented-code[disable indented code blocks]'
+  '--fverbatim-entities[do not translate entities]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

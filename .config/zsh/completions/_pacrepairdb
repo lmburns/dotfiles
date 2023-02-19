@@ -1,0 +1,28 @@
+#compdef pacrepairdb
+
+# zsh completions for 'pacrepairdb'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--cachedir[set an alternate cache location]'
+  '--config[set an alternate configuration file]'
+  '--dbonly[update database without reinstalling packages]'
+  '--dbpath[set an alternate database location]'
+  '--debug[enable extra debugging messages]'
+  '--hookdir[add additional user hook directory]'
+  '--logfile[set an alternate log file]'
+  '--no-confirm[assume default responses to all prompts]'
+  '--no-hooks[do not run transaction hooks]'
+  '--no-scriptlet[do not run package install scripts]'
+  '--no-timeout[disable low speed timeouts for downloads]'
+  '--print-only[show steps without performing them]'
+  '--root[set an alternate installation root]'
+  '--sysroot[set an alternate system root]'
+  '--verbose[display additional progress information]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

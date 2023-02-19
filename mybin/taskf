@@ -72,12 +72,12 @@ if [ -n "$_TASKFZF_TASK_ACT" ]; then
   clear
   # checks if the arguments given to the task are numbers only
   if [ "$_TASKFZF_REPORT" = "all" ]; then
-    tasks_args=$(grep -o '[0-9a-f]\{8\}' $@ | tr '\n' ' ')
+    tasks_args=$(grep -o '[0-9a-f]\{8\}' "$@" | tr '\n' ' ')
   # elif [ "$_TASKFZF_TASK_ACT" = "stop" ]; then
   #   task_args=$(grep -Eo '([0-9]+)' $@ | head -1)
     # terminal-notifier -title "x" -message "$task_args"
   else
-    tasks_args=$(awk '{printf $1" "} END {printf "\n"}' $@)
+    tasks_args=$(awk '{printf $1" "} END {printf "\n"}' "$@")
   fi
   case "$tasks_args" in
     ^[a-f0-9])
@@ -98,8 +98,8 @@ if [ -n "$_TASKFZF_TASK_ACT" ]; then
         tasks_args="${tasks_args%% *}"
         clear
         echo "${basename}: WARNING: Only the first task ($tasks_args) will be used when $_TASKFZF_TASK_ACT -ing it."
-        echo ---------------------------------------------------------------------------
-        echo Press any key to continue
+        echo '---------------------------------------------------------------------------'
+        echo 'Press any key to continue'
         read
       fi
       ;;
@@ -219,7 +219,7 @@ while [ $? != 130 ]; do
     tw_args="$(cat $current_filter)"
   else
     # otherwise, we can rest assure this is the initial run of this program and so:
-    tw_args="$@"
+    tw_args="$*"
     # Save the current filter used as in our marker file for the next execution
     echo "$tw_args" > $current_filter
   fi

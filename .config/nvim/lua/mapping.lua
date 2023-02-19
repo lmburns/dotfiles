@@ -156,10 +156,9 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 
 wk.register(
     {
-        ["<Leader>S"] = {":%S//g<Left><Left>", "Global replace"},
+        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
         ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
-        -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     },
     {silent = false}
 )
@@ -170,11 +169,11 @@ wk.register(
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"},
         ["<C-g>"] = {[[g<C-g>]], "Show word count"},
         ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
-        ["<Leader>/"] = {"<Esc>/\\%V", "Search visual selection"}
+        ["/"] = {"<Esc>/\\%V", "Search visual selection"}
         -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
-    {mode = "v"}
+    {mode = "x"}
 )
 
 map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
@@ -222,7 +221,7 @@ map("n", "<LocalLeader>z", [[zMzvzz]])
 map(
     "n",
     "zz",
-    ([[(winline() == (winheight (0) + 1)/ 2) ?  %s : %s]]):format([['zt' : (winline() == 1) ? 'zb']], [['zz']]),
+    ([[(winline() == (winheight(0) + 1)/ 2) ?  %s : %s]]):format([['zt' : (winline() == 1) ? 'zb']], [['zz']]),
     {expr = true, desc = "Center or top current line"}
 )
 

@@ -63,7 +63,7 @@ end
 
 M.dropdown_macroclip = function()
     local dropdown = require("telescope.themes").get_dropdown(opts)
-    telescope.extensions.macroclip.default(dropdown)
+    telescope.extensions.macroscope.default(dropdown)
 end
 
 M.setup = function()

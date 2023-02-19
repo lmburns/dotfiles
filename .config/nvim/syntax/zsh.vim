@@ -140,22 +140,28 @@ syn match zshDollarVar        '\$\h\w*'
 syn match zshDeref            '\$[=^~]*[#+]*\h\w*\>'
 
 syn match   zshCommands         '\%(^\|\s\)[.:]\ze\s'
-syn keyword zshCommands         alias autoload bg bindkey break bye cap cd
-                                \ chdir clone comparguments compcall compctl
-                                \ compdescribe compfiles compgroups compquote
-                                \ comptags comptry compvalues continue dirs
-                                \ disable disown echo echotc echoti emulate
-                                \ enable eval exec exit export false fc fg
-                                \ functions getcap getln getopts hash history
-                                \ jobs kill let limit log logout popd print
-                                \ printf prompt pushd pushln pwd r read
-                                \ rehash return sched set setcap shift
-                                \ source stat suspend test times trap true
-                                \ ttyctl type ulimit umask unalias unfunction
-                                \ unhash unlimit unset  vared wait
-                                \ whence where which zcompile zformat zftp zle
-                                \ zmodload zparseopts zprof zpty zrecompile
-                                \ zregexparse zsocket zstyle ztcp
+syn keyword zshCommands         alias        autoload     bg          bindkey       break      bye cap
+                              \ cd           chdir        clone       comparguments compcall   compctl
+                              \ compdescribe compfiles    compgroups  compquote     comptags   comptry
+                              \ compvalues   continue     dirs        disable       disown     echo
+                              \ echotc       echoti       emulate     enable        eval       exec
+                              \ exit         export       false       fc            fg         functions
+                              \ getcap       getln        getopts     hash          history    jobs
+                              \ kill         let          limit       log           logout     popd
+                              \ print        printf       prompt      pushd         pushln     pwd
+                              \ r            read         rehash      return        sched      set
+                              \ setcap       shift        source      stat          suspend    test
+                              \ times        trap         true        ttyctl        type       ulimit
+                              \ umask        unalias      unfunction  unhash        unlimit    unset
+                              \ vared        wait         whence      where         which      zcompile
+                              \ zformat      zftp         zle         zmodload      zparseopts zprof
+                              \ zpty         zrecompile   zregexparse zsocket       zstyle     ztcp
+                              \ coproc       zgetattr     zsetattr    zlistattr     zdelattr   zcurses
+                              \ strftime     ztie         zuntie      zgdbmpath     zf_chgrp   zf_chmod
+                              \ zf_chown     zf_ln        zf_mkdir    zf_mv         zf_rm      zf_rmdir
+                              \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
+                              \ sysopen      sysread      sysseek     syswrite      zsystem    systell
+                              \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
 
 syn case ignore
 

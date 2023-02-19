@@ -1,0 +1,129 @@
+#!/bin/sh
+#
+# AUTHOR: René Reigel based on piratebay by J.R. Mauro
+#         Ivy Foster added additional search options
+#
+# DESC: Search the Arch User Repository
+# $ID$
+# elvis: aur		-- Search aur.archlinux.org for PKGBUILDs
+. surfraw || exit 1
+
+w3_config_hook () {
+    def   SURFRAW_aur_action   "Search=Go"
+    def   SURFRAW_aur_order    "a"
+    def   SURFRAW_aur_language en
+    defyn SURFRAW_aur_outdated 0
+    def   SURFRAW_aur_protocol "https"
+    def   SURFRAW_aur_results  "$SURFRAW_results"
+    def   SURFRAW_aur_search   name
+    def   SURFRAW_aur_sort     name
+}
+
+w3_usage_hook () {
+    cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search aur.archlinux.org for PKGBUILDS
+Local options
+  -language                     Search in your your language
+                                See aur.archlinux.org for available languages
+                                Default: en
+  -no-https                     Connect using HTTP, rather than HTTPS.
+                                This disables logging in.
+                                Default: use $SURFRAW_aur_protocol
+  -order=ascending|descending   Organize in ascending or descending order
+                                Default: ascending
+  -orphans                      Search orphaned packages
+  -outdated                     Search for out-of-date packages
+  -results=NUM                  Number of search results returned
+                                Default: $SURFRAW_aur_results
+                                Must be in range 25-100
+  -search=                      Search for one of...
+          name          |       Package name
+          maintainer    |       Maintainer
+          submitter     |       Submitter
+                                Default: name
+  -sort=                        Sort by...
+        name            |       Package name
+        location        |       Package location
+        votes           |       Number of votes
+        maintainer      |       Package maintainer
+        age             |       Package age
+                                Default: name
+EOF
+    w3_global_usage
+}
+mkopts language= no-https order= orphans outdated results= search= sort=
+w3_complete_hook_opt ()
+{
+        local opt="$1"
+        case "$opt" in
+		# What are the categories for the AUR?  It seems to have been removed from the web interface.
+		-language=*) echo ca cs de en es fr hr hu it nb_no nb_NO pl pt ro ru sr tr uk zh_cn zh_CN ;;
+		-order=*) echo ascending descending ;;
+		-search=*) echo name maintainer submitter ;;
+		-sort=*) echo name location votes maintainer age ;;
+                *) return 1 ;;
+        esac
+}
+
+w3_parse_option_hook () {
+    opt="$1"
+    optarg="$2"
+    case "$opt" in
+        -language=*) setopt   SURFRAW_aur_language "$optarg" ;;
+        -no-https)   setopt   SURFRAW_aur_protocol "http" ;;
+        -orphans*)   setopt   SURFRAW_aur_action   "Orphans=Orphans" ;;
+        -order=d*)   setopt   SURFRAW_aur_order    d ;;
+        -order=*)    setopt   SURFRAW_aur_order    a ;;
+        -outdated*)  setoptyn SURFRAW_aur_outdated 1 ;;
+        -results=*)  setopt   SURFRAW_aur_results  "$optarg" ;;
+        -search=*)   setopt   SURFRAW_aur_search   "$optarg" ;;
+        -sort=*)     setopt   SURFRAW_aur_sort     "$optarg" ;;
+        *) return 1 ;;
+    esac
+    return 0
+}
+
+w3_config
+w3_parse_args "$@"
+
+case "$SURFRAW_aur_search" in
+  n*) aur_search_by=nd ;;
+  m*) aur_search_by=m ;;
+  s*) aur_search_by=s ;;
+  *)  aur_search_by=nd ;;
+esac
+
+case "$SURFRAW_aur_sort" in
+  n*) aur_sort_by=n ;;
+  c*) aur_sort_by=c ;;
+  l*) aur_sort_by=l ;;
+  v*) aur_sort_by=v ;;
+  m*) aur_sort_by=m ;;
+  a*) aur_sort_by=a ;;
+  *)  aur_sort_by=n ;;
+esac
+
+# Use SURFRAW_lang if present and the country has not been changed
+# More or less verbatim from the google elvis
+if test -n "$SURFRAW_lang" -a "$SURFRAW_aur_language" = "en"; then
+    SURFRAW_aur_language="$SURFRAW_lang";
+fi
+
+case "$SURFRAW_aur_language" in
+  ca|cs|de|en|es|fr|hr|hu|it|nb_no|nb_NO|pl|pt|ro|ru|sr|tr|uk|zh_cn|zh_CN) aur_lang="$SURFRAW_aur_language" ;;
+  *) aur_lang=en ;;
+esac
+
+# w3_args now contains a list of arguments
+if test -z "$w3_args" && test "$SURFRAW_aur_action" = "Search=Go"; then
+    w3_browse_url "${SURFRAW_aur_protocol}://aur.archlinux.org/packages.php?setlang=${aur_lang}"
+else
+    escaped_args=$(w3_url_of_arg $w3_args)
+    if [ "$SURFRAW_aur_outdated" = 1 ]; then
+        w3_browse_url "${SURFRAW_aur_protocol}://aur.archlinux.org/packages.php?O=0&L=0&detail=1&&K=${escaped_args}&SeB=${aur_search_by}&SB=${aur_sort_by}&SO=${SURFRAW_aur_order}&PP=${SURFRAW_aur_results}&do_${SURFRAW_aur_action}&outdated=on&setlang=${aur_lang}"
+    else
+        w3_browse_url "${SURFRAW_aur_protocol}://aur.archlinux.org/packages.php?O=0&L=0&detail=1&&K=${escaped_args}&SeB=${aur_search_by}&SB=${aur_sort_by}&SO=${SURFRAW_aur_order}&PP=${SURFRAW_aur_results}&do_${SURFRAW_aur_action}&setlang=${aur_lang}"
+    fi
+fi

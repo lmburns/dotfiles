@@ -1,0 +1,23 @@
+# https://mypy.readthedocs.io/en/stable/config_file.html#config-file
+
+[mypy]
+show_error_codes = True
+# ignore_missing_imports = True
+warn_return_any = True
+warn_unused_configs = True
+
+# disable_error_code = name-defined attr-defined
+
+
+# Per-module options:
+
+# [mypy-mycode.foo.*]
+# disallow_untyped_defs = True
+#
+# [mypy-mycode.bar]
+# warn_return_any = False
+#
+# [mypy-somelibrary]
+# ignore_missing_imports = True
+
+# vim: ft=dosini:et:sw=0:ts=2:sts=2:tw=100

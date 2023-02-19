@@ -69,7 +69,7 @@ _G.List = require("plenary.collections.py_list")
 -- _G.async = require("plenary.async")
 -- _G.a = require("plenary.async_lib")
 
-_G.Promise = require("promise")
+_G.promise = require("promise")
 _G.async = require("async")
 _G.await = require("async").wait
 
@@ -124,6 +124,8 @@ _G.BLACKLIST_FT = {
     "log",
     "lsp-installer",
     "luapad",
+    -- "make",
+    -- "cmake",
     "man",
     "markdown",
     "minimap",

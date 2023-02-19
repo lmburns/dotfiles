@@ -305,7 +305,7 @@ function M.link_visitor()
                         bufnr,
                         function()
                             bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-                            bmap(bufnr, "n", "L", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+                            bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
                         end
                     )
                 end
@@ -891,7 +891,8 @@ function M.sandwhich()
             -- ['m"'] = {'<Plug>(sandwich-add)"', 'Surround with double quote (")'},
             -- ["mi"] = {"<Plug>(sandwich-add)*", "Surround with italics (*)"},
             -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
-            ["```"] = {"<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```)"}
+            ["```"] = {"<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```)"},
+            ["``;"] = {"<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```zsh)"},
         },
         {mode = "v"}
     )

@@ -1,0 +1,112 @@
+# https://beta.ruff.rs/docs/settings
+# https://beta.ruff.rs/docs/rules/
+select = [
+  "F",   # pyflakes
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "N",   # pep8 naming
+  "I",   # isort
+  "UP",  # pyupgrade
+  "FBT", # boolean trap
+  "PLE", # error
+  "PLR", # refactor
+  "PLW", # warning
+  "RUF", # ruff specific
+  "B",   # flake8-bugbear
+  "YTT", # flake8-2020
+  "S",   # flake8-bandit
+  "B",   # flake8-bugbear
+  "A",   # flake8-builtins
+  "C4",  # flake8-comprehensions
+  "G",   # flake8-logging-format
+  "PIE", # flake8-pie
+  "PYI", # flake8-pyi
+  "RET", # flake8-return
+  "SLF", # flake8-self
+  "SIM", # flake8-simplify
+  "PTH", # flake8-use-pathlib
+  # "ANN", # flake8-annotations (TURN ON WHEN WRITING OWN PROJECT)
+  # "TCH", # flake8-type-checking
+
+  # "TRY", # tryceratops
+
+  # "BLE", # flake8-blind-except
+  # "DTZ", # flake8-datetiemz
+  # "COM", # flake8-commas
+  # "T10", # flake8-debugger
+  # "DJ",  # flake8-django
+  # "EM",  # flake8-errmsg
+  # "EXE", # flake8-executable
+  # "FBT", # flake8-boolean-trap
+  # "ISC", # flake8-implicit-str-concat
+  # "ICN", # flake8-import-conventions
+  # "INP", # flake8-no-pep420
+  # "T20", # flake8-print
+  # "PT",  # flake8-pytest-style
+  # "Q",   # flake8-quotes
+  # "RSE", # flake8-raise
+  # "TID", # flake8-tidy-imports
+  # "ARG", # flake8-unused-arguments
+  # "D",   # pydocstyle
+  # "C90", # mccabe
+  # "ERA", # eradicate
+  # "PD",  # pandas-vet
+  # "NPY", # numpy-specific
+  # "PGH", # pygrep-hooks
+  # "PL",  # pylint
+]
+ignore = [
+  "E501",    # line too long, handled by black
+  # "E731",    # don't assign lambda
+  "UP032",   # use f-string instead of `format` call (PIE803, G001 do the same)
+  "N801",    # class name shoulde use cap names
+  "N802",    # function name should be lowercase
+  "FBT002",  # Boolean default value in function definition
+  "B904",    # raise from error (Pylint covers)
+  "I001",    # unsorted import block
+  "PLR0913", # Too many arguments to function call
+  "PLR0912", # Too many branches
+  # "PLR0915", # Too many statements
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+# fixable = ["A", "B", "C", "D", "E", "F", "..."]
+# unfixable = []
+
+exclude = [
+  ".ruff_cache",
+  "venv",
+  ".venv",
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+]
+
+per-file-ignores = {}
+
+# [per-file-ignores]
+# "__init__.py" = ["E402"]
+# "path/to/file.py" = ["E402"]
+
+line-length = 110
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"

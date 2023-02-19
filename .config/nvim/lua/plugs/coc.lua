@@ -22,8 +22,22 @@ local F = vim.F
 
 local diag_qfid
 
-M.get_config = fn["coc#util#get_config"]
-M.set_config = fn["coc#config"]
+-- M.get_config = fn["coc#util#get_config"]
+-- M.set_config = fn["coc#config"]
+
+---Get an item from Coc's config
+---@param section string
+---@return any
+M.get_config = function(section)
+    return fn["coc#util#get_config"](section)
+end
+
+---Set an item in Coc's config
+---@param section string
+---@param value { [string]: string }|{ [string]: table<string, string> }
+M.set_config = function(section, value)
+    fn["coc#config"](section, value)
+end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Other                           │
@@ -472,7 +486,7 @@ function M.post_open_float()
 
                 if lv then
                     bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-                    bmap(bufnr, "n", "L", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+                    bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
                 end
             end
         )
@@ -589,7 +603,7 @@ end
 ---@return table
 M.get_lua_runtime = function()
     local result = {}
-    local filter = {"kimbox"}
+    local types_filter = {"neodev.nvim", "promise-async"}
 
     ---Add a path to the Lua runtime
     ---@param lib string
@@ -607,25 +621,36 @@ M.get_lua_runtime = function()
 
         for _, path in ipairs(fn.expand(lib .. "/lua", false, true)) do
             path = uv.fs_realpath(path)
-            -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
-
             if path then
-                -- local stat = uv.fs_stat(path)
-                -- if stat and stat.type == "directory" then
-                --     result[path] = true
-                -- end
+                local stat = uv.fs_stat(path)
+                if stat and stat.type == "directory" then
+                    result[path] = true
+                end
 
-                path = fn.fnamemodify(path, ":h")
-                result[path] = true
+            -- path = fn.fnamemodify(path, ":h")
+            -- result[path] = true
             end
         end
+
+        -- Not sure which is faster: fn.isdirectory() or uv.fs_stat()
 
         -- Add types for plugins that have them
         if types then
             for _, path in pairs(fn.expand(lib .. "/types", false, true)) do
+                if path and not _t(filter):contains(fn.fnamemodify(path, ":h:t")) then
+                    path = uv.fs_realpath(path)
+                    if path and fn.isdirectory(path) then
+                        result[path] = true
+                    end
+                end
+            end
+
+            for _, path in pairs(fn.expand(("%s/lua/*/types"):format(lib), false, true)) do
                 path = uv.fs_realpath(path)
-                if path and fn.isdirectory(path) then
-                    result[path] = true
+                if path then
+                    if fn.isdirectory(path) then
+                        result[path] = true
+                    end
                 end
             end
         end
@@ -643,8 +668,8 @@ M.get_lua_runtime = function()
     -- end
 
     for _, site in pairs(vim.split(vim.o.packpath, ",")) do
-        add(site .. "/pack/*/opt/*", filter, true)
-        add(site .. "/pack/*/start/*", filter, true)
+        add(site .. "/pack/*/opt/*", types_filter, true)
+        add(site .. "/pack/*/start/*", types_filter, true)
     end
 
     -- add("$VIMRUNTIME")
@@ -695,7 +720,12 @@ function M.init()
 
     local shexpr = {expr = true, silent = true}
 
-    M.sumneko_ls()
+    vim.defer_fn(
+        function()
+            M.sumneko_ls()
+        end,
+        10
+    )
 
     g.coc_fzf_opts = {"--layout=reverse-list"}
     g.coc_snippet_next = "<C-j>"
@@ -865,7 +895,6 @@ function M.init()
 
     wk.register(
         {
-            -- ["<A-'>"] = {":CocFzfList yank<CR>", "List coc-yank (fzf)"},
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
             ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},

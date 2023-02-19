@@ -10,6 +10,7 @@ local dirs = require("common.global").dirs
 
 local cmd = vim.cmd
 local fn = vim.fn
+local env = vim.env
 
 function M.setup()
     local actions = require("fzf-lua.actions")
@@ -242,7 +243,7 @@ function M.setup()
                 cmd_deleted = "git diff --color HEAD --",
                 cmd_modified = "git diff --color HEAD",
                 cmd_untracked = "git diff --color --no-index /dev/null",
-                pager        = "delta --width=$COLUMNS",      -- if you have `delta` installed
+                pager = "delta --width=$COLUMNS" -- if you have `delta` installed
             },
             -- === Man
             man = {
@@ -264,7 +265,7 @@ function M.setup()
                     ["gif"] = {"viu", "-b"},
                     ["jpg"] = {"viu", "-b"},
                     ["jpeg"] = {"viu", "-b"},
-                    ["svg"] = {"chafa"},
+                    ["svg"] = {"chafa"}
                 },
                 -- if using `ueberzug` in the above extensions map
                 -- set the default image scaler, possible scalers:
@@ -677,15 +678,19 @@ end
 
 M.cst_files = function(opts)
     opts = opts or {}
-    local cwd = fn.expand("%:p:h")
-    local root = require("common.gittool").root(cwd)
-    cmd.lcd(cwd)
-    opts.cwd = cwd
-
-    if #root == 0 then
-        fzf_lua.files(opts)
-    else
+    if env.GIT_WORK_TREE == env.DOTBARE_TREE then
         fzf_lua.git_files(opts)
+    else
+        local cwd = fn.expand("%:p:h")
+        local root = require("common.gittool").root(cwd)
+        cmd.lcd(cwd)
+        opts.cwd = cwd
+
+        if #root == 0 then
+            fzf_lua.files(opts)
+        else
+            fzf_lua.git_files(opts)
+        end
     end
 end
 
@@ -751,12 +756,13 @@ function init()
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
             -- I prefer oldfiles with FZF, but buffers aren't added immediately
-            -- ["<A-,>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Packadd (fzf-lua)"},
+            ["<A-'>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
             ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
             ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
             ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Git/Files (fzf-lua)"},
-            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"}
+            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
+            ["<Leader>eh"] = {":lua require('plugs.fzf-lua').edit_zsh()<CR>", "Edit zsh (fzf-lua)"},
         }
     )
 

@@ -1,0 +1,22 @@
+#compdef pacsync
+
+# zsh completions for 'pacsync'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--config[set an alternate configuration file]'
+  '--dbext[set an alternate sync database extension]'
+  '--dbpath[set an alternate database location]'
+  '--sysroot[set an alternate system root]'
+  '--force[sync repos even if already up-to-date]'
+  '--debug[enable extra debugging messages]'
+  '--logfile[set an alternate log file]'
+  '--no-timeout[disable low speed timeouts for downloads]'
+  '--updated[return false unless a database was updated]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

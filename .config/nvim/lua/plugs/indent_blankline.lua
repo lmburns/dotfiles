@@ -56,7 +56,7 @@ function M.setup()
             --     "IndentBlanklineIndent6"
             -- },
             buftype_exclude = {"nofile", "terminal"},
-            filetype_exclude = _t(BLACKLIST_FT):merge({"json", "jsonc"})
+            filetype_exclude = _t(BLACKLIST_FT):merge({"json", "jsonc", "make", "cmake"})
         }
     )
 end

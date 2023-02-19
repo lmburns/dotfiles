@@ -1,0 +1,29 @@
+#compdef hadolint
+
+# zsh completions for 'hadolint'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help text]'
+  {-v,--version}'[show version]'
+  {-c,--config}'[path to the configuration file]'
+  '--file-path-in-report[the file path referenced in the generated report.]'
+  '--no-fail[dont exit with a failure status code when any rule]'
+  '--no-color[dont colorize output]'
+  {-V,--verbose}'[enables verbose logging of hadolints output to]'
+  {-f,--format}'[the output format for the results \[tty | json |]'
+  '--error[make the rule `RULECODE` have the level `error`]'
+  '--warning[make the rule `RULECODE` have the level `warning`]'
+  '--info[make the rule `RULECODE` have the level `info`]'
+  '--style[make the rule `RULECODE` have the level `style`]'
+  '--ignore[A rule to ignore. If present, the ignore list in the]'
+  '--trusted-registry[(e.g. docker.io)]'
+  '--require-label[(e.g. maintainer:text)]'
+  '--strict-labels[do not permit labels other than specified in]'
+  '--disable-ignore-pragma[disable inline ignore pragmas `# hadolint]'
+  {-t,--failure-threshold}'[exit with failure code only when rules with a]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

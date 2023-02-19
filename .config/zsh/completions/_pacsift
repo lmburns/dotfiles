@@ -1,0 +1,49 @@
+#compdef pacsift
+
+# zsh completions for 'pacsift'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--config[set an alternate configuration file]'
+  '--dbext[set an alternate sync database extension]'
+  '--dbpath[set an alternate database location]'
+  '--root[set an alternate installation root]'
+  '--sysroot[set an alternate system root]'
+  '--null[use <sep> to separate values (default NUL)]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '--exists[exit with a non-zero value if no matches were found]'
+  '--not-exists[exit with a non-zero value if matches were found]'
+  '--invert[display packages which DO NOT match search criteria]'
+  '--any[display packages matching any search criteria]'
+  '--exact[match search terms exactly]'
+  '--regex[use regular expressions for matching]'
+  '--cache[search packages in cache (EXPERIMENTAL)]'
+  '--local[search installed packages]'
+  '--sync[search packages in all sync repositories]'
+  '--architecture[search package architecture]'
+  '--repo[search packages in repo <name>]'
+  '--name[search package names]'
+  '--base[search package bases]'
+  '--description[search package descriptions]'
+  '--packager[search package packager field]'
+  '--group[search package group field]'
+  '--owns-file[search package file lists]'
+  '--license[search package licenses]'
+  '--provides[search package provides]'
+  '--depends[search package dependencies]'
+  '--optdepends[search package dependencies]'
+  '--conflicts[search package conflicts]'
+  '--replaces[search package replaces]'
+  '--installed-size[search package installed size]'
+  '--download-size[search package download size]'
+  '--size[search package size]'
+  '--url[search package url]'
+  '--build-date[search package build date]'
+  '--install-date[search package install date]'
+  '--satisfies[find packages satisfying dependency <val>]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -16,8 +16,9 @@ set hostname = "archbox"
 
 set use_domain=no                        # Qualify all local addresses (ones that end with @host)
 set reverse_alias                        # Display personal name for your aliases in index menu
-set attribution="On %D, %n wrote:"       # String that precedes message that is included in reply
 set smtp_authenticators = 'gssapi:login' # Authentication methods neomutt will try to login to SMTP
+set attribution="On %D, %n wrote:"       # String that precedes message that is included in reply
+set smileys="(>From )|(:[-^]?[][)(><}{|/DP])"
 
 set abort_nosubject            # No subject = abort
 set abort_noattach = ask-yes   # Compose message matching $abort_noattach_regex & no attachments, composition aborted
@@ -31,8 +32,6 @@ set nowait_key                 # Mutt won't ask "press key to continue"
 set nocollapse_unread          # Don't collapse thread if unread
 set fast_reply                 # skip to compose when replying
 set fcc_attach                 # Save attachments with the body
-set forward_format = "Fwd: %s" # Format of subject when forwarding
-set forward_quote              # Include message in forwards
 set reverse_name               # Reply as whomever it was to
 
 set rfc2047_parameters = yes # Decode RFC2047-encoded MIME parameters
@@ -56,6 +55,7 @@ set edit_headers        # Include headers in composition
 set include             # Include message in replies
 set mime_forward=ask-no # Attachments are forwarded with mail
 set mime_forward_rest   # When attachments are being forwarded and can't be dcoeded, attach to new message
+set forward_quote       # Include message in forwards
 
 # == Mailbox handling ==
 # set maildir_trash    # Keep old mail around to complete threads
@@ -99,22 +99,33 @@ set sort_aux=date-received # last-date
 set sort_browser=reverse-date
 set strict_threads
 
+# === Size ===
+set size_show_bytes=yes     # display bytes for values < 1KB
+set size_show_fractions=yes # display single decimal for sizes 0-10KB and 1-10MB
+set size_show_mb=yes        # display MB for values >= 1MB
+set size_units_on_left=no
+
 # === Sidebar mappings === [[[
 set sidebar_visible = yes
 set sidebar_width = 20
-set sidebar_divider_char = "¦"
 set sidebar_short_path = yes
 set sidebar_next_new_wrap = yes
-set sidebar_format = '%D%?F? [%F]?%* %?N?%N/? %?S?%S?'
+set sidebar_divider_char = "¦"
+set sidebar_format = "%D%?F? [%F]?%* %?N?%N/? %?S?%S?"
 # ]]]
 
 # === Formats === [[[
-set date_format  = "%y/%m/%d %I:%M%p"
-set index_format = "%<[y?%<[m?%<[d?%[#%H:%M]&%[%a %d]>&%[%b %d]>&%[%Y%m]> %Z %-15.15L %?M?<#%03M>&? %s"
-# set index_format="%8H %{%d/%m %H:%M}%Z %-15.15L %?M?<#%03M>&?%s"
-# set index_format="%4C %Z %(%b %d %H:%M) %-15.15F (%?l?%4l&%4c?) %s"
+# %?<sequence_char>?<optional_string>?
+# %?<sequence_char>?<if_string>&<else_string>?
+set date_format="%y/%m/%d %I:%M%p"
+# %2C %t %N %F %2l %-8.8u %-8.8g %8s %d %i
+set folder_format="%2C %18D %6s %?n?%6n&%6 ? %6m %i"
+set forward_format="Fwd: %s"
+set attach_format="%u%D%I %t%4n %T%.40d%> [%.7m/%.10M, %.6e%?C?, %C?, %s]"
+set index_format="%2C %<[y?%<[m?%<[d?%[#%H:%M]&%[%a %d]>&%[%b %d]>&%[%Y%m]> %Z %Gx %-15.15L %?M?<#%03M>&? %s"
 set pager_format="%4c -%Z- %C/%m: %-20.20n %s"
-set status_format="%r%f %?l?%l? %?M?%M/?%m:%?n? N%n?%?o? O%o?%?d? D%d?%?F? !%F?%?t? *%t?%>  %h (%s/%S%?V?-%V?)  (%P)"
+set status_chars="U*%A" # %r in status_format -- unchanged, changed, read-only, attach-message mode
+set status_format="%r%f %?l?%l? [M:%?M?%M/?%m:%?n?  N:%n?%?o?  O:%o?%?d?  D:%d?%?F?  !:%F?%?t?  *:%t?%?b?  MBOX:%b?]%>  %h (%s/%S%?V?-%V?)  (%P)"
 # ]]]
 
 # === GPG === [[[
@@ -239,7 +250,7 @@ bind pager        j        next-line
 bind pager        k        previous-line
 bind pager        l        view-attachments
 bind index        D        delete-message
-bind index        dd       delete-message
+bind index        dd       delete-pattern
 bind index        U        undelete-message
 bind index        L        limit
 bind index        l        display-message
@@ -270,8 +281,8 @@ bind pager,generic 0   next-page
 bind pager,index   J   sidebar-next
 bind pager,index   K   sidebar-prev
 bind pager,index   O   sidebar-open
-bind pager,index   \Cp sidebar-prev-new
 bind pager,index   \Cn sidebar-next-new
+bind pager,index   \Cp sidebar-prev-new
 bind pager,index   .   sidebar-toggle-visible
 
 bind pager,index ]] next-unread
@@ -342,6 +353,7 @@ macro index,pager ,, \
   <sidebar-next><sidebar-open><enter-command>set sidebar_visible=\$my_old_visible<enter>" \
   "move to next sidebar folder"
 
+# TODO: Create a binding D which delete message with pattern
 # TODO: Create a keybinding using the <what-key> function
 # TODO: Create a keybinding to copy only plain text
 macro index,pager,browser ,c "<pipe-message>xsel -i -b\n" "copy message"
@@ -646,12 +658,12 @@ color indicator  brightblack   white   # currently selected message
 color markers    red           white   # the + for wrapped pager lines
 color message    cyan          default # informational messages, not mail
 color search     brightmagenta default # highlight search patterns in the pager
-color signature  brightgreen   default # signature (after "-- ") is red
-color status     brightyellow  default # status bar is yellow on dark blue
+color status     bold color27  default # status bar is yellow on dark blue -- 52,27
+color tree       red           default # thread tree in index menu is magenta
+color normal     white         default # message
+color signature  bold color47  default # signature (after "-- ") is red
 color tilde      default       default # ~'s after message body
 mono  tilde      bold
-color tree       red           default   # thread tree in index menu is magenta
-color normal     white         default   # message
 
 # coloring quoted text - coloring the first 7 levels:
 color quoted  green     default
@@ -675,13 +687,29 @@ color underline black   default
 color normal    default default
 
 # compose menu colors (mutt 1.9)
-color compose header           cyan   default
-color compose security_none    red    default
-color compose security_sign    red    default
-color compose security_encrypt yellow default
-color compose security_both    green  default
+color compose header           cyan    default
+color compose security_none    red     default
+color compose security_sign    color45 default
+color compose security_encrypt color53 default
+color compose security_both    color19 default
+
+# security_encrypt, security_sign, security_both, security_none
 
 # === Regex highlighting === [[[
+
+# Too bad this doesn't support PCRE
+# \y   Matches the empty string at either the beginning or the end of a word
+# \B   Matches the empty string within a word
+# \<   Matches the empty string at the beginning of a word
+# \>   Matches the empty string at the end of a word
+# \w   Matches any word-constituent character (letter, digit, or underscore)
+# \W   Matches any character that is not word-constituent
+# \`   Matches the empty string at the beginning of a buffer (string)
+# \'   Matches the empty string at the end of a buffer
+
+
+# color attachment color47 default "Begin signature information"
+
 color header blue        default ".*"
 color header color19     default '^(Message-ID)'
 color header color19     default '^(List-ID)'
@@ -727,14 +755,13 @@ color header    brightblack     default   '^(X-HotPOP-Delivered-To)'
 color header    brightblack     default   '^(X-Face)'
 
 # Date formats
-color body color19 default "[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?"
-color body color19 default "(\(19|20\)?[0-9]{2}/[01]?[0-9]/[0123]?[0-9]|[0123]?[0-9][/.][01]?[0-9][/.]\(19|20\)?[0-9]{2})(( at)? +[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?"
-color body color19 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)[ .]+[0-9]{1,2}(st|nd|rd|th)?,?( +(19|20)[0-9]{2}(,?( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?)?"
-color body color19 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?[0-9]{1,2}(st|nd|rd|th)?[ .]+(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?),?( +(19|20)?[0-9]{2})?(( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?"
+color body color43 default "[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?"
+color body color43 default "(\(19|20\)?[0-9]{2}/[01]?[0-9]/[0123]?[0-9]|[0123]?[0-9][/.][01]?[0-9][/.]\(19|20\)?[0-9]{2})(( at)? +[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?"
+color body color43 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)[ .]+[0-9]{1,2}(st|nd|rd|th)?,?( +(19|20)[0-9]{2}(,?( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?)?"
+color body color43 default "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?[0-9]{1,2}(st|nd|rd|th)?[ .]+(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?),?( +(19|20)?[0-9]{2})?(( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm)( CST)?)?( +[+-][0-9]{4})?)?"
 
 # Email highlighting
-color body brightred default  "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
-mono  body bold               "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
+color body bold color52 default  "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email addresses
 
 # Formatting
 color body brightwhite  default "(^| |\t)\\*[a-z0-9]([a-z0-9-]* ){,3}[a-z0-9,.!?-]*\\*"
@@ -742,8 +769,8 @@ color body brightyellow default "(^| |\t)_[a-z0-9]([a-z0-9-]* ){,6}[a-z0-9,.!?-]
 color body brightyellow default "(^| |\t)_[a-z0-9][a-z0-9,.!?_-]*_"
 
 # Misc
-color body brightblack black "^[-_=*]{3,}\n"
-color body color31     black "^SPAM:"
+color body brightblack default "^[-_=*]{3,}\n"
+color body color31     default "^SPAM:"
 
 color body green        default "\`[^\`]*\`"          # Green text between ` and `
 color body brightblue   default "^# \.*"              # Headings as bold blue
@@ -754,13 +781,15 @@ color body brightcyan   default "[;:][-o][)/(|]"      # emoticons
 color body brightcyan   default "[;:][)(|]"           # emoticons
 color body brightcyan   default "[ ][*][^*]*[*][ ]?"  # more emoticon?
 color body brightcyan   default "[ ]?[*][^*]*[*][ ]"  # more emoticon?
-color body color21      default "(Good signature)"
-color body red          default "(BAD signature)"
-color body color21      default "^gpg: Good signature .*"
-color body red          default "^gpg: BAD signature from.*"
-color body brightyellow default "^gpg: "
+color body red          default "\[\.\.\.?\]"         # [..] or [...]
 
-mono  body bold         "^gpg:  Good signature"
+color body brightyellow default "^gpg: "
+color body color53      default "(Good signature from:)"
+# color body color53      default "Good signature from:\K.*"
+# color body color53      default "(?<=Good signature from:).*(?=<[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+>)"
+color body red          default "BAD signature from:"
+color body yellow       default "WARNING:"
+color body color53      default "Fingerprint: ([[:xdigit:]]{4} ?){5}(  )?([[:xdigit:]]{4} ?){5}"
 
 # URL highlighting
 # color body brightblue   default "(https?|ftp)://[\-\.,/%~_:?&=\#a-zA-Z0-9]+" # URL
@@ -769,10 +798,65 @@ color body red default "([a-z][a-z0-9+-]*://(((([a-z0-9_.!~*'();:&=+$,-]|%[0-9a-
 # ]]]
 # ]]]
 
-source /home/lucas/.config/mutt/accounts/burnsac@me.com.muttrc
 source /home/lucas/.config/mutt/emails.muttrc
 
-# Other
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                          Other                           │
+#  ╰──────────────────────────────────────────────────────────╯
+
 # Can search for PGP using: ~g, ~G, and ~k
+
+# https://neomutt.org/guide/advancedusage#3-%C2%A0patterns-searching-limiting-and-tagging
+
+# ~A              all messages
+# ~b EXPR         messages which contain EXPR in the message body
+# ~B EXPR         messages which contain EXPR in the whole message
+# ~C EXPR         messages either to: or cc: EXPR
+# %C GROUP        messages either to: or cc: to any member of GROUP
+# ~d [MIN]-[MAX]  messages with “date-sent” in a Date range
+# ~D              deleted messages
+# ~e EXPR         messages which contains EXPR in the “Sender” field
+# ~F              flagged messages
+# ~f EXPR         messages originating from EXPR
+# ~g              cryptographically signed messages
+# ~G              cryptographically encrypted messages
+# ~h EXPR         messages which contain EXPR in the message header
+# ~H EXPR         messages with a spam attribute matching EXPR
+# ~i EXPR         messages which match EXPR in the “Message-ID” field
+# ~k              messages which contain PGP key material
+# ~L EXPR         messages either originated or received by EXPR
+# ~l              messages addressed to a known mailing list
+# ~m [MIN]-[MAX]  messages with numbers in the range MIN to MAX
+# ~m <[MAX]       messages with numbers less than MAX
+# ~m >[MIN]       messages with numbers greater than MIN
+# ~m [M]          just message number M
+# ~m [MIN],[MAX]  messages with offsets (from selected message) in the range MIN to MAX
+# ~M EXPR         messages which contain a mime Content-Type matching EXPR
+# ~n [MIN]-[MAX]  messages with a score in the range MIN to MAX
+# ~N              new messages
+# ~O              old messages
+# ~p              messages addressed to you
+# ~P              messages from you
+# ~Q              messages which have been replied to
+# ~r [MIN]-[MAX]  messages with “date-received” in a Date range
+# ~R              read messages
+# ~s EXPR         messages having EXPR in the “Subject” field.
+# ~t EXPR         messages addressed to EXPR
+# ~T              tagged messages
+# ~u              messages addressed to a subscribed mailing list
+# ~U              unread messages
+# ~V              cryptographically verified messages
+# ~w EXPR         newsgroups matching EXPR
+# ~x EXPR         messages which contain EXPR in the “References” or “In-Reply-To” field
+# ~X [MIN]-[MAX]  messages with MIN to MAX attachments
+# ~y EXPR         messages which contain EXPR in their keywords
+# ~Y EXPR         messages whose tags match EXPR
+# ~z [MIN]-[MAX]  messages with a size in the range MIN to MAX
+# ~=              duplicated messages (see $duplicate_threads)
+# ~$              unreferenced messages (requires threaded view)
+# ~( PATTERN )    msgs in threads containing msgs matching PATTERN , e.g. all threads containing msgs from you: ~(~P)
+# ~<( PATTERN )   msgs whose immediate parent matches PATTERN , e.g. replies to your msgs: ~<(~P)
+# ~>( PATTERN )   msgs having an immediate child matching PATTERN , e.g. msgs you replied to: ~>(~P)
 
 # vim: ft=neomuttrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -8,8 +8,7 @@ FIX: Folds close automatically if every fold in file is closed then opened
 
 TODO: Add keybinding to go to top of current function you're inside of
 TODO: Highlight dates paint
-
-DONE: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
+TODO: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
 
 NOTES:
     * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
@@ -228,11 +227,11 @@ vim.schedule(
                     -- "coc-rescript",
                     -- "coc-dlang",
                     -- "coc-yank",
-                    -- "coc-lightbulb",
                     --
                     -- RLS is not needed with rust-analyzer
                     -- However, I've noticed that diagnostics are better and quicker
                     "coc-rls",
+                    "coc-rust-analyzer",
                     "coc-sumneko-lua",
                     "coc-json",
                     "coc-clangd",
@@ -246,7 +245,6 @@ vim.schedule(
                     "coc-perl",
                     "coc-pyright",
                     "coc-r-lsp",
-                    "coc-rust-analyzer",
                     "coc-solargraph",
                     "coc-solidity",
                     "coc-sql",
@@ -269,7 +267,8 @@ vim.schedule(
                     "coc-marketplace",
                     "coc-tabnine",
                     "coc-tag",
-                    "coc-word"
+                    "coc-word",
+                    "coc-lightbulb",
                     -- "coc-highlight" -- Highlight words under cursor without language server
                 }
 

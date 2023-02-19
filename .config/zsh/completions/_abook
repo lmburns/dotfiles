@@ -1,0 +1,24 @@
+#compdef abook
+
+# zsh completions for 'abook'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show usage]'
+  {-C,--config}'[<file>		use an alternative configuration file]'
+  {-f,--datafile}'[<file>		use an alternative addressbook file]'
+  '--mutt-query[<string>	make a query for mutt]'
+  '--add-email[read an e-mail message from stdin and]'
+  '--add-email-quiet[same as --add-email but doesnt]'
+  '--convert[convert address book files]'
+  '--informat[<format>	format for input file]'
+  '--infile[<file>		source file]'
+  '--outformat[<format>	format for output file]'
+  '--outfile[<file>		destination file]'
+  '--outformatstr[<str>   	format to use for "custom" --outformat]'
+  '--formats[list available formats]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

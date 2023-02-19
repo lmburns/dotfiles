@@ -1,0 +1,32 @@
+#compdef paccheck
+
+# zsh completions for 'paccheck'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--config[set an alternate configuration file]'
+  '--dbpath[set an alternate database location]'
+  '--root[set an alternate installation root]'
+  '--sysroot[set an alternate system root]'
+  '--null[parse stdin as <sep> separated values (default NUL)]'
+  '--list-broken[only print packages that fail checks]'
+  '--quiet[only display error messages]'
+  '--help[display this help information]'
+  '--version[display version information]'
+  '--recursive[perform checks on package \[opt-\]depends]'
+  '--require-mtree[treat packages missing MTREE data as an error]'
+  '--depends[check for missing dependencies]'
+  '--opt-depends[check for missing optional dependencies]'
+  '--files[check installed files against package database]'
+  '--file-properties[check installed files against MTREE data]'
+  '--md5sum[check file md5sums against MTREE data]'
+  '--sha256sum[check file sha256sums against MTREE data]'
+  '--backup[include backup files in modification checks]'
+  '--noextract[include NoExtract files in modification checks]'
+  '--noupgrade[include NoUpgrade files in modification checks]'
+  '--db-files[include database files in checks]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

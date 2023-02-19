@@ -1,0 +1,31 @@
+#compdef blkid
+
+# zsh completions for 'blkid'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--cache-file}'[read from <file> instead of reading from the default]'
+  {-d,--no-encoding}'[dont encode non-printing characters]'
+  {-g,--garbage-collect}'[garbage collect the blkid cache]'
+  {-o,--output}'[output format; can be one of:]'
+  {-k,--list-filesystems}'[list all known filesystems/RAIDs and exit]'
+  {-s,--match-tag}'[show specified tag(s) (default show all tags)]'
+  {-t,--match-token}'[find device with a specific token (NAME=value pair)]'
+  {-l,--list-one}'[look up only first device with token specified by -t]'
+  {-L,--label}'[convert LABEL to device name]'
+  {-U,--uuid}'[convert UUID to device name]'
+  {-p,--probe}'[low-level superblocks probing (bypass cache)]'
+  {-i,--info}'[gather information about I/O limits]'
+  {-H,--hint}'[set hint for probing function]'
+  {-S,--size}'[overwrite device size]'
+  {-O,--offset}'[probe at the given offset]'
+  {-u,--usages}'[filter by "usage" (e.g. -u filesystem,raid)]'
+  {-n,--match-types}'[filter by filesystem type (e.g. -n vfat,ext3)]'
+  {-D,--no-part-details}'[dont print info from partition table]'
+  {-h,--help}'[display this help]'
+  {-V,--version}'[display version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
