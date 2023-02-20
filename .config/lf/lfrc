@@ -5,9 +5,6 @@
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
 
-# TODO: copy realpath
-# TODO: ppaste
-
 set shell zsh
 set shellopts '-euy'
 set ifs "\n"
@@ -100,17 +97,16 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # │                         Builtins                         │
 # ╰──────────────────────────────────────────────────────────╯
 
-# cmd recol ${{
-#   w=$(tput cols)
-#   if [[ $w -le 80 ]]; then
-#     lf -remote "send $id set ratios 1:2"
-#   elif [[ $w -le 160 ]]; then
-#     lf -remote "send $id set ratios 1:2:3"
-#   else
-#     lf -remote "send $id set ratios 1:2:3:5"
-#   fi
-# }}
-# recol
+cmd recol ${{
+  if [[ $COLUMNS -le 90 ]]; then
+    lf -remote "send $id set ratios 1:2"
+  elif [[ $COLUMNS -le 160 ]]; then
+    lf -remote "send $id set ratios 1:2:3"
+  else
+    lf -remote "send $id set ratios 1:2:3:5"
+  fi
+}}
+recol
 # map 0
 # map 0 recol
 
@@ -128,6 +124,26 @@ cmd on-cd &{{
   git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
   fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
 
+  # case "$PWD" in
+  #   (/mnt/movies*)
+  #     lf -remote "send $id set user_prev_sortby $lf_sortby"
+  #     lf -remote "send $id set sortby natural"
+  #     lf -remote "send $id set noreverse"
+  #
+  #     lf -remote "send $id echomsg changed sort to natural"
+  #     ;;
+  #   (*)
+  #     # restore sorting on directory exit
+  #     if [[ "$lf_user_prev_sortby" != "" ]]; then
+  #       lf -remote "send $id set sortby $lf_user_prev_sortby"
+  #       lf -remote "send $id set reverse"
+  #
+  #       lf -remote "send $id echomsg restored sort to $lf_user_prev_sortby"
+  #       lf -remote "send $id set user_prev_sortby ''"
+  #     fi
+  #     ;;
+  # esac
+
   [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
 
   # add-zsh-hook chpwd chpwd_recent_dirs
@@ -140,6 +156,7 @@ cmd on-cd &{{
 
   lf -remote "send $id set promptfmt \"$fmt\""
 }}
+on-cd
 
 
 # ┌───────────────────────────────────────────────────────────────────────────┐
@@ -307,26 +324,6 @@ cmd copy-file-manual ${{
 }}
 
 
-# === Paste: view progress =====================================
-cmd ppaste &{{
-  set -- $(lf -remote load)
-  mode="$1"
-  shift
-  case "$mode" in
-    (copy)
-      rsync -avX --ignore-existing --progress -- "$@" . |
-      stdbuf -i0 -o0 -e0 tr '\r' '\n' |
-      while IFS= read -r line; do
-        lf -remote "send $id echo $line"
-      done
-      ;;
-    (move) mv -n -- "$@" .;;
-  esac
-  lf -remote "send load"
-  lf -remote "send clear"
-}}
-
-
 # === Jump: zoxide =============================================
 cmd fzf_zoxide ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -385,12 +382,19 @@ cmd link %{{
 }}
 
 
+# === Symlinks: harden =========================================
+# Turn a symlink into a real file
+cmd harden ${{
+  harden "$fx"
+}}
+
+
 # === Preview: video thumbnails ================================
 cmd video_preview ${{
   local cache
   cache="$(mktemp "${TMPDIR:-/tmp}/thumb_cache.XXXXX")"
   ffmpegthumbnailer -i "$f" -o "$cache" -s 0
-  ~/.config/lf/other/draw_img.sh "$cache"
+  ~/.config/lf/scripts/draw_img "$cache"
 }}
 
 # === Permissions: change ======================================
@@ -645,14 +649,6 @@ cmd jumpInteractive ${{
   }
 }}
 
-# === CD: follow symlink =======================================
-cmd cd-followlink &{{
-  # origin=${${:-"$f"}:A}
-  local origin
-  origin="$(realpath -s -- "$(readlink -- "$f")")"
-  lf -remote "send $id toggle '$origin'"
-}}
-
 # === CD: using FZF (depth=1) ==================================
 cmd fzf_cd ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -672,6 +668,17 @@ cmd fzf_cd_depth ${{
         || { dunstify "No directory selected"; exit }))"
   lf -remote "send $id cd '$ret'"
 }}
+
+# === CD: follow symlink =======================================
+cmd cd-realpath ${{
+  # origin=${${:-"$f"}:A}
+  local origin
+  # origin="$(realpath -- "$(readlink -f -- "$fx")")"
+  origin="$(realpath -- "$fx")"
+  lf -remote "send $id select '$origin'"
+}}
+
+# === Copy: follow symlink =====================================
 
 # === TAGS === [[[
 # === Tag: tmsu set ============================================
@@ -823,10 +830,16 @@ cmd yank-name ${{
 }}
 cmd yank-dir ${{
   print -r "${fx:h}" \
-    | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h}\nCopied to clipboard"
+    | xclip -r -selection c && dunstify -a lf "Directory" "${fx:h}\nCopied to clipboard"
+}}
+cmd yank-realpath ${{
+  local origin
+  origin="$(realpath -- "$fx")"
+  print -r "$origin" \
+    | xclip -r -selection c && dunstify -a lf "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 
-cmd usage !clear; dust; diskus
+cmd disk-info !clear; dust; diskus
 
 # Basic operations
 cmd take %mkdir -p "${@}" && lf -remote "send $id cd \"$@\""
@@ -955,7 +968,7 @@ map Qg !{{
 }}
 # map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
-map ad usage                # get disk information
+map ad disk-info                # get disk information
 map as !{{
   # directory info
   clear; du -hsx * | sort -rh | bat --paging=always
@@ -1081,13 +1094,42 @@ map . set hidden!
 map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
-map Pp ppaste "copy"          # paste and preview progress
+
+# TODO: Finish
+cmd copy-realpath ${{
+  local origin
+  origin="$(realpath -- "$fx")"
+  lf -remote "send $id copy '$origin'"
+}}
+
+# paste a file and make sure its not a symlink
+map Ph ${{
+  zmodload -Fa zsh/files b:zf_rm
+  local ofile nfile
+  lf -remove load
+  lf -remote "send $id paste"
+  # ofile=${${(@f)"$(<$XDG_DATA_HOME/lf/files)"}[2]}
+  # nfile="${PWD}/${ofile:t}"
+  # lf -remote "send $id select '$nfile'"
+  # harden "$nfile"
+
+  # zf_rm "${XDG_DATA_HOME}/lf/files"
+  # lf -remote "send clear"
+}}
+
+map - ${{
+  # turn a symlink into a real file
+  harden "$fx"
+}}
 
 # map y
-map y copy                                        # general copy
-map Yp yank-path                                  # yank file path
-map Yn yank-name                                  # yank name of file path
-map Yd yank-dir                                   # yank name of directory
+map y copy           # general copy
+map Yr copy-realpath # general copy absolute path
+
+map YR yank-realpath # yank absolute path
+map Yp yank-path     # yank file path
+map Yn yank-name     # yank name of file path
+map Yd yank-dir      # yank name of directory
 map Yu ${{
   # yank URL of git repo
   ngu
@@ -1122,7 +1164,8 @@ map K half-up      # Move halfway up
 map R reload
 map <c-n> redraw
 
-map <c-l> cd-followlink
+map <c-l> cd-realpath
+map } cd-realpath
 map H jump-prev
 map L jump-next
 map ] # Default

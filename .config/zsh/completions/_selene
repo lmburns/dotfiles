@@ -1,0 +1,21 @@
+#compdef selene
+
+# zsh completions for 'selene'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--allow-warnings[pass when only warnings occur]'
+  {-h,--help}'[prints help information]'
+  {-n,--no-summary}'[suppress summary information]'
+  {-q,--quiet}'[display only the necessary information. Equivalent to --display-style="quiet"]'
+  {-V,--version}'[prints version information]'
+  '--color[\[default: auto\]  \[possible values: Always, Auto, Never\]]'
+  '--config[A toml file to configure the behavior of selene \[default: selene.toml\]]'
+  '--display-style[sets the display method \[possible values: Json, Json2, Rich, Quiet\]]'
+  '--num-threads[number of threads to run on, default to the numbers of logical cores on your]'
+  '--pattern[...             A glob to match files with to check]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
