@@ -12,7 +12,7 @@ w3_usage_hook () {
     cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search manned (www.manned.org) for man pages
+  Search manned (www.rdocumentation.org) for man pages
 EOF
     w3_global_usage
 }

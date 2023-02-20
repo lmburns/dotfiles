@@ -198,15 +198,17 @@ function M.setup()
             -- set to '' for a non-value flag
             -- for raw args use `fzf_args` instead
             ["--prompt"] = "❱ ",
-            ["--pointer"] = "➤",
-            ["--marker"] = "┃",
+            ["--pointer"] = "》",
+            ["--marker"] = "▍",
+            ["--no-separator"] = "",
             ["--cycle"] = "",
             ["--layout"] = "reverse",
             ["--height"] = "100%",
             ["--ansi"] = "",
-            ["--info"] = "inline",
+            ["--info"] = "inline: ❰ ",
             ["--multi"] = "",
-            ["--border"] = "none"
+            ["--border"] = "none",
+            ["--history"] = "/dev/null"
         },
         -- fzf '--color=' options (optional)
         --[[ fzf_colors = {

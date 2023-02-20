@@ -550,6 +550,7 @@ ex=:\
 # Roman numerals
 # 󱂉 2 󱂊 3 󱂋 4 󱂍 6 󱂎 7 󱂏 8 󱂐 9
 
+export LF_FZF_OPTS="$FZF_DEFAULT_OPTS --height=100% +m"
 export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
 # LS_COLORS=${LS_COLORS//(#m)(<90-97>|<100-107>)/$(( MATCH / 10 - 6 ))8\;5\;$(( MATCH % 10 + 8 ))}
 

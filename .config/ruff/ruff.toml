@@ -83,6 +83,7 @@ exclude = [
   ".git",
   ".hg",
   ".mypy_cache",
+  "__pycache__",
   ".nox",
   ".pants.d",
   ".pytype",

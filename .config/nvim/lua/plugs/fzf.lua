@@ -394,7 +394,7 @@ local function init()
 
     vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
     -- Floating window doesn't have its own border anymore
-    g.fzf_vim_opts = {options = {"--border"}}
+    g.fzf_vim_opts = {options = {"--border", "--no-separator", "--history=/dev/null"}}
     g.fzf_commands_expect = "enter"
     g.fzf_buffers_jump = 1 -- [Buffers] Jump to the existing window if possible
     g.fzf_preview_window = {"right:50%:+{2}-/2,nohidden", "?"}
@@ -410,8 +410,10 @@ local function init()
 
     -- g.fzf_preview_fzf_preview_window_option = 'nohidden'
     g.fzf_preview_default_fzf_options = {
+        ["--no-separator"] = true,
         ["--no-border"] = true,
         ["--reverse"] = true,
+        ["--history"] = "/dev/null",
         ["--preview-window"] = "wrap"
     }
 

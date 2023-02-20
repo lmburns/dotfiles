@@ -2,6 +2,10 @@
 ---@description: Utility functions that are used in multiple files
 ---              They are a higher-level set than `dev`
 
+-- Some vim options and `uv.fs_*` are undefined after recent udpate
+---@diagnostic disable: undefined-doc-name
+---@diagnostic disable: undefined-field
+
 local M = {}
 
 local D = require("dev")

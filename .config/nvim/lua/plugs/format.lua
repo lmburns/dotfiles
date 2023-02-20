@@ -239,6 +239,13 @@ local function init()
         args = {"--stdin-filepath", '"%:p"', "--tab-width=2"},
         stdin = 1
     }
+    g.neoformat_enabled_ruby = {"rubocop"}
+    g.neoformat_ruby_rubocop = {
+        exe = "rubocop",
+        args = {"--auto-correct", "--stdin", '"%:p"', "2>/dev/null", "|", 'sed "1,/^====================$/d"'},
+        stdin = 1,
+        stderr = 1
+    }
     g.neoformat_enabled_sql = {"sqlformatter"}
     g.neoformat_sql_sqlformatter = {
         exe = "sql-formatter",
@@ -271,36 +278,7 @@ local function init()
                 map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
             end
         }
-        -- {
-        --     event = "FileType",
-        --     pattern = "typescript",
-        --     command = function()
-        --         map("n", ";ff", "<Cmd>Neoformat! typescript prettier<CR>", {buffer = true})
-        --     end
-        -- },
-        -- {
-        --     event = "FileType",
-        --     pattern = "javascript",
-        --     command = function()
-        --         map("n", ";ff", "<Cmd>Neoformat! javascript prettier<CR>", {buffer = true})
-        --     end
-        -- }
-        -- {
-        --     event = "FileType",
-        --     pattern = "lua",
-        --     command = function()
-        --         map("n", ";ff", "<Cmd>Neoformat! lua luafmt<CR>")
-        --         -- map("n", ";ff", "<Cmd>Neoformat! lua luaformat<CR>")
-        --     end
-        -- }
     )
-
-    -- [[FileType java       nmap ;ff :Neoformat! java   prettier<CR>]],
-    -- [[FileType perl       nmap ;ff :Neoformat! perl<CR>]],
-    -- [[FileType sh         nmap ;ff :Neoformat! sh<CR>]],
-    -- [[FileType python     nmap ;ff :Neoformat! python black<CR>]],
-    -- [[FileType md,vimwiki nmap ;ff :Neoformat!<CR>]],
-    -- [[FileType zsh        nmap ;ff :Neoformat  expand<CR>]],
 end
 
 init()

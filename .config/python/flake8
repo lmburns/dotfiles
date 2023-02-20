@@ -1,5 +1,32 @@
+# https://flake8.pycqa.org/en/latest/user/configuration.html
+
 [flake8]
 max-line-length = 110
+
+exclude =
+    .ruff_cache,
+    venv,
+    .venv,
+    .bzr,
+    .direnv,
+    .eggs,
+    .git,
+    .hg,
+    .mypy_cache,
+    __pycache__,
+    .nox,
+    .pants.d,
+    .pytype,
+    .ruff_cache,
+    .svn,
+    .tox,
+    __pypackages__,
+    _build,
+    buck-out,
+    build,
+    dist,
+    node_modules
+
 
 # select =
 #     E1,

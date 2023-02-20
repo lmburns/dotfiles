@@ -1,6 +1,13 @@
 # ╭──────────────────────────────────────────────────────────╮
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
+
+# Comments may be found in functions like ${{}} or !{{}} to provide
+# documention in the popup menu when pressing keybindings
+
+# TODO: copy realpath
+# TODO: ppaste
+
 set shell zsh
 set shellopts '-euy'
 set ifs "\n"
@@ -15,6 +22,7 @@ set incsearch o       # jump to first match after each keystroke in search
 set incfilter o       # apply filter after each keystroke
 set smartcase         # if capital letter then case sensitive
 set dirfirst          # show directories before regular files
+# set dirpreviews       # pass directories to the previewer script
 set dircounts on      # show number of items in directory instead of size
 set info "size"       # list directory information on the right
 set sortby "natural"  # don't sort files in any special way
@@ -40,9 +48,14 @@ set ratios '1:2:3'    # ratio of pane widths
 # \033[34;1m%d\033[0m
 # \033[1;38;2;42;176;116m%d\033[0m
 
+# set cursorfmt="\033[4m"
+# set cursorpreviewfmt="\033[4m"
+# set cursorfmt="%s"
+# set cursorpreviewfmt="%s"
+
 set promptfmt "\033[32;1m%u\033[0m\033[1;38;2;234;105;98m@\033[0m\033[1;38;2;76;150;168m%h\033[0m\033[1;38;5;21m:\033[0m\033[1;38;2;42;176;116m%d\033[0m\033[1m%f\033[0m %F"
-set tagfmt "\033[1;38;5;018m%s\033[0m"
-set errorfmt "\033[7;38;5;017m%s\033[0m"
+set tagfmt "\033[1;38;5;018m"
+set errorfmt "\033[7;38;5;017m"
 
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 # set tempmarks 'abcdefghijklmnopqrstuvwxzy'
@@ -128,40 +141,41 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 }}
 
+
 # ┌───────────────────────────────────────────────────────────────────────────┐
 # │ Tmux                                                                      │
 # └───────────────────────────────────────────────────────────────────────────┘
 
 # === Tmux: quit with :q =======================================
 cmd q ${{
-    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit"
-    lf -remote "send $id quit"
+  emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit"
+  lf -remote "send $id quit"
 }}
 
 # === Tmux: quit all with :q! ==================================
 cmd q! ${{
-    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit-all"
-    lf -remote "send $id quit"
+  emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --quit-all"
+  lf -remote "send $id quit"
 }}
 
 # === Tmux: toggle a second lf file manager pane ===============
 cmd split ${{
-    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --split"
+  emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --split"
 }}
 
 # === Tmux: swap first and second lf file manager pane =========
 cmd swap ${{
-    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --swap"
+  emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --swap"
 }}
 
 # === Tmux: open a new lf file manager (in new tab) ============
 cmd new-tab ${{
-   emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --new-tab"
+ emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --new-tab"
 }}
 
 # === Tmux: open a split screen terminal =======================
 cmd terminal ${{
-    emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --terminal"
+  emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --terminal"
 }}
 
 # === Tmux: open neovim in a split window ======================
@@ -229,10 +243,11 @@ cmd open ${{
   # *) for f in $fx; do setsid -f $OPENER $f >/dev/null 2>/dev/null & done;;
 }}
 
+cmd open-with %"$@" $fx
 
 # === Trash: (rip) =============================================
 cmd trash ${{
-  builtin setopt extendedglob
+  setopt extendedglob
   local MATCH
   local -a arr short
   # Turn into an array
@@ -248,9 +263,10 @@ cmd trash ${{
 
 # === Move: zoxide =============================================
 cmd move-file-jump ${{
-  local dest x
-  clear
-  dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Move to> ' --no-height +m" zoxide query -i)
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local dest x; clear
+  dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Move to> '" \
+      zoxide query -i || { dunstify "No file selected"; exit })
   for x ($fx) { mv -iv $x $dest } && {
     dunstify -a lf " File(s) copied" "${fx:t} => $dest"
   }
@@ -270,10 +286,12 @@ cmd move-file-manual ${{
 
 # === Copy: zoxide =============================================
 cmd copy-file-jump ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
   local x dest; clear
-  dest=$(_ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --prompt ' Copy to> ' --no-height +m" zoxide query -i)
+  dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Copy to> '" \
+      zoxide query -i || { dunstify "No file selected"; exit })
   for x ($fx) { cp -pivr $x $dest } && {
-    dunstify -a lf "🚚 File(s) copied" "${fx:t} => $dest"
+    dunstify -a lf " File(s) copied" "${fx:t} => $dest"
   }
   # cp -pivr -- $fx "$dest"
 }}
@@ -284,13 +302,12 @@ cmd copy-file-manual ${{
   local x dest; clear
   vared -cp "Copy to: " dest
   for x ($fx) { cp -pivr $x $~dest } && {
-    dunstify -a lf "🚚 File(s) copied." "${fx:t} => $dest"
+    dunstify -a lf " File(s) copied." "${fx:t} => $dest"
   }
 }}
 
 
 # === Paste: view progress =====================================
-# FIX: IFS
 cmd ppaste &{{
   set -- $(lf -remote load)
   mode="$1"
@@ -300,7 +317,7 @@ cmd ppaste &{{
       rsync -avX --ignore-existing --progress -- "$@" . |
       stdbuf -i0 -o0 -e0 tr '\r' '\n' |
       while IFS= read -r line; do
-          lf -remote "send $id echo $line"
+        lf -remote "send $id echo $line"
       done
       ;;
     (move) mv -n -- "$@" .;;
@@ -312,11 +329,11 @@ cmd ppaste &{{
 
 # === Jump: zoxide =============================================
 cmd fzf_zoxide ${{
-  local sel
-  sel="$(zoxide query -i)"
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local sel; clear
+  sel="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { dunstify "No directory selected"; exit })"
   [[ -d "$sel" ]] && lf -remote "send $id cd \"$sel\""
 }}
-# zoxide query -l | fzf
 
 
 # === Unmount: unmount archivemount ============================
@@ -476,6 +493,14 @@ cmd nvim_diff ${{
 map D diff_files
 map df nvim_diff
 
+cmd node_script ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local script; clear
+  script=$(cat package.json | jq -r '.scripts | keys[] ' | sort \
+      | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf))
+  [[ -n "$script" ]] && npm run $(print -r -- "$script")
+}}
+
 # TODO: FINISH
 # -- Checksum: get the checksum of a file or directory
 cmd chksum ${{
@@ -534,16 +559,18 @@ cmd select-exec ${{
 
 # === Tag Jump: builtin lf tags ================================
 cmd jump_tag ${{
-  clear
-  local tags="${XDG_DATA_HOME}/lf/tags"
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local tags="${XDG_DATA_HOME}/lf/tags"; clear
   [[ ! -r $tags ]] && {
-    print "No tag file found"
+    dunstify "No tag file found"
     return
   }
 
-  local target=$(column -t -s':' $tags | sort -k 2,2 \
-    | fzf --prompt="Tags> " --info=inline \
-    | hck -f1
+  local target=$(\
+    column -t -s':' $tags | sort -k 2,2 \
+      | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Jump> '" fzf \
+        || { dunstify "No tag selected"; exit }) \
+      | hck -f1
   )
 
   if [[ -d "$target" ]]; then
@@ -586,10 +613,12 @@ cmd ndel-bookmark ${{
 }}
 
 
-# === Jump: wfxr plugin ========================================
+# === Jump: ====================================================
 cmd jumpInteractive ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  zmodload -Fa zsh/parameter p:commands
   clear
-  local field esc N R G Y B pattern PTH
+  local field esc N R G Y B pattern res
   local -a bmark_dirs
   field='\(\S\+\s*\)'
   esc=$'\e'
@@ -601,37 +630,47 @@ cmd jumpInteractive ${{
   pattern="s#^${field}${field}${field}${field}#$Y\1$R\2$N\3$B\4$N#"
 
   [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
-    PTH=$(\
+    res=$(\
       dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases' \
         | perl -pe 's{ = }{ → }; s/"//g' | nl | column -t \
         | sed "${pattern}" \
-        | fzf --ansi \
-            --height '40%' \
-            --preview='\
-              f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
-            --preview-window="right:50%" \
+        | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
+            fzf --ansi \
+                --preview='\
+                f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+              --preview-window="right:50%" \
+            || { dunstify 'No bookmark selected'; exit }) \
         | sed 's#.*→  ##')
-    [[ -d "$PTH" ]] && lf -remote "send $id cd \"$PTH\""
+    [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
   }
 }}
 
 # === CD: follow symlink =======================================
 cmd cd-followlink &{{
   # origin=${${:-"$f"}:A}
+  local origin
   origin="$(realpath -s -- "$(readlink -- "$f")")"
   lf -remote "send $id toggle '$origin'"
 }}
 
 # === CD: using FZF (depth=1) ==================================
 cmd fzf_cd ${{
-  clear
-  lf -remote "send $id cd '$(fd . -d1 -td -HiL | fzf --no-height --pointer="cd")'"
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local ret; clear
+  ret="$(fd . -d1 -td -HiL \
+    | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
+        || { dunstify "No directory selected"; exit }))"
+  lf -remote "send $id cd '$ret'"
 }}
 
 # === CD: using FZF (depth=~) ==================================
 cmd fzf_cd_depth ${{
-  clear
-  lf -remote "send $id cd '$(fd . -d4 -td -HiL | fzf --no-height --pointer="cd")'"
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local ret; clear
+  ret="$(fd . -d4 -td -HiL \
+    | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
+        || { dunstify "No directory selected"; exit }))"
+  lf -remote "send $id cd '$ret'"
 }}
 
 # === TAGS === [[[
@@ -730,23 +769,27 @@ cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height) # Find file with pa
 cmd fd !clear; fd -Hi "$@"     # Find file at any depth
 cmd fD !clear; fd -Hi -d1 "$@" # Find file current depth
 cmd rg !clear; rg "$1"         # Normal grep
-cmd rgu !clear; rgu "$1"       # Grep with FZF
+# Grep with FZF
+cmd rgu ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear;
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu "$1"
+}}
 
 # === FZF: edit file ===========================================
 cmd fd_edit ${{
-  clear
-  files=$(command fd -Hi -tf .)
-  sel=("$(
-    print -rl -- "$files[@]" | \
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local -a files; clear
+  files=( ${(@f):-"$(command fd -Hi -tf .)"} )
+  print -rl -- "$files[@]" | lscolors \
+    | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
     fzf --multi \
       --select-1 \
       --exit-0 \
-      --bind=ctrl-x:toggle-sort \
+      --bind='ctrl-e:become($EDITOR {})' \
+      --bind='enter:become($EDITOR {})' \
       --preview-window=':nohidden,right:65%:wrap' \
       --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
-    )"
-  )
-  [[ -n "$sel" ]] && ${EDITOR:-vim} "${sel[@]}"
 }}
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -770,11 +813,19 @@ cmd rmspace !f2 -f '\s' -r '_' -RFx
 cmd wim $wim "$1"
 
 # Yanking
-cmd yank-path $print -r "$fx" | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
-cmd yank-name $print -r "${fx:t}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
-cmd yank-dir $print -r "${fx:h}" | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h}\nCopied to clipboard"
+cmd yank-path ${{
+  print -r "$fx" \
+    | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
+}}
+cmd yank-name ${{
+  print -r "${fx:t}" \
+    | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
+}}
+cmd yank-dir ${{
+  print -r "${fx:h}" \
+    | xclip -r -selection c && dunstify -a lf "File Name" "${fx:h}\nCopied to clipboard"
+}}
 
-cmd open-with %"$@" $fx
 cmd usage !clear; dust; diskus
 
 # Basic operations
@@ -799,7 +850,7 @@ cmd dlfile %dlfile
 # ]]]
 
 # ========================== ZLE ========================== [[[
-# === ZLE: chang directories ===================================
+# === ZLE: change directories ===================================
 cmd zle-cd %{{
   print -l -- "_p9k_precmd; builtin cd "$PWD"; zle reset-prompt; zle -R" >&$ZLE_FIFO
 }}
@@ -867,29 +918,64 @@ map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh  # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh      # edit lf colors/icons
 map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit tmux conf
 
-# map V push :!nvim<space>                            # enter filename for nvim
-map v $clear; LESS='-iWQMXR~' bat --paging=always --theme=kimbro "$f"
-map ? $clear; batman lf                             # open lfrc docs
-map gH $clear; bat -l bash -f ~/.config/lf/mappings # open these mappings
+map v ${{
+  # bat view file
+  clear; LESS='-iWQMXR~' bat --paging=always --theme=kimbro "$f"
+}}
+map ? ${{
+  # open lfrc docs
+  clear; batman lf
+}}
+map gH ${{
+  # open lf mappings
+  clear; bat -l bash -f ~/.config/lf/mappings
+}}
 map Ow push :open-with<space>                       # open w/ specified program
-map Op $handlr open $PWD                            # open curr directory in finder
-map o  $clear; handlr ask --config $f
-map Oa $mimeopen --ask $f
+map Op &{{
+  # open curr directory in pcmanfm
+  pcmanfm $PWD
+}}
+map o  ${{
+  # handlr open ask
+  clear; handlr ask --config $f
+}}
+map Oa ${{
+  # mimeopen ask
+  mimeopen --ask $f
+}}
 # map Oa $mimeopen $f
 
-map Qm !clear; mdcat -p $fx                   # preview in mdcat
-map Qg !clear; glow -p $fx                    # preview in glow
+map Qm !{{
+  # preview in mdcat
+  clear; mdcat -p $fx
+}}
+map Qg !{{
+  # preview in glow
+  clear; glow -p $fx
+}}
 # map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
-map as !clear; du -hsx * | sort -rh | bat --paging=always # directory info
-map ai !clear; file-info $f # info
 map ad usage                # get disk information
-map aI $dua i               # dua interactive, similar to ncdu
+map as !{{
+  # directory info
+  clear; du -hsx * | sort -rh | bat --paging=always
+}}
+map ai !{{
+  # file information
+  clear; file-info $f
+}}
+map aI ${{
+  # dua interactive
+  dua i
+}}
 
 map <c-f> push :rg<space> # search with rg
 map F push :rgu<space>    # search interactively with fzf
 
-map Tk !clear; tokei
+map Tk !{{
+  # tokei
+  clear; tokei
+}}
 # ]]]
 
 # == Archive Mappings == [[[
@@ -900,10 +986,22 @@ map au unmount
 
 # == Trash Mappings == [[[
 map dd trash                  # rip
-map de %rip -d                # empty trash
-map dl $clear; rip -as  | fzf # list in fzf
-map dm $frip                  # fzf trash delete script
-map dr $fripu                 # fzf trash restore script
+map de %{{
+  # empty trash
+  rip -d
+}}
+map dl ${{
+  # list trash with fzf
+  clear; rip -as | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf
+}}
+map dm ${{
+  # trash delete with fzf
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" frip
+}}
+map dr ${{
+  # fzf trash restore script
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fripu
+}}
 
 # map Dp $dump -p -s       # dump - interactive delete
 # map Dr $dump -u -s       # dump - restore interactive
@@ -957,7 +1055,16 @@ map V invert
 map sf select-files
 map sd select-dirs
 map sx select-exec
-map sF $for f ($(print -ln -- *(ND) | fzf)) { lf -remote "send $id toggle $f" } # select files fzf
+map sF ${{
+  # select files fzf
+  setopt localtraps err_exit; trap "return 0" EXIT
+  for f ($(\
+      print -ln -- *(ND) \
+        | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m" fzf || { dunstify "No files selected"; exit })
+  )) {
+    lf -remote "send $id toggle $f"
+  }
+}}
 map ss set globsearch!            # change search type
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
@@ -981,8 +1088,14 @@ map y copy                                        # general copy
 map Yp yank-path                                  # yank file path
 map Yn yank-name                                  # yank name of file path
 map Yd yank-dir                                   # yank name of directory
-map Yu ${{ ngu }}                                 # yank URL of git repo
-map Ya ${{ nga }}                                 # yank author of git repo
+map Yu ${{
+  # yank URL of git repo
+  ngu
+}}
+map Ya ${{
+  # yank author of git repo
+  nga
+}}
 map Yj copy-file-jump                             # copy to directory with zoxide
 map Ym copy-file-manual                           # copy to directory with path entered
 
@@ -1015,11 +1128,23 @@ map L jump-next
 map ] # Default
 map [ # Default
 
-map sr :{{ set nopreview; set ratios 1:3; }}     # set display (preview)
-map sp :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
-map sP :{{ set preview;   set ratios 1:2; }}     # set display (no preview)
+map s1 :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
+map s2 :{{ set preview;   set ratios 1:2; }}     # set display (no preview)
+map s3 :{{ set nopreview; set ratios 1:3; }}     # set display (preview)
+
 map sR :{{ set reverse!; }}                      # reverse file order
-map sN :{{ set sortby natural; set info size; }} # revert back to normal
+
+map sn :{{ set sortby natural; set info size; set noreverse; }} # revert back to normal sort
+map sa :{{ set sortby atime; set info atime; set reverse; }}
+map sc :{{ set sortby ctime; set info ctime; set reverse; }}
+map st :{{ set sortby time; set info time; set reverse; }}
+map se :{{ set sortby ext; set info; set noreverse; }}
+
+map S :{{
+  # revert sort back to normal
+  set sortby natural; set info size;     set noreverse ;
+  set preview;        set ratios 1:2:3;
+}}
 # ]]]
 
 # == Shell == [[[
@@ -1059,11 +1184,17 @@ map Tl wutag-list
 # ]]]
 
 # == Git == [[[
-cmd dotbare_add $for x ($fx) { dotbare add "$x" }
+cmd dotbare_add ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  for x ($fx) { FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare add "$x" }
+}}
 cmd git_add $for x ($fx) { git add "$x" }
 cmd git_branch ${{
-  local pwd_shell
-  git branch | fzf | xargs git checkout
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local pwd_shell; clear
+  git branch \
+    | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf) \
+    | xargs git checkout
   pwd_shell=$(pwd)
   lf -remote "send $id updir"
   lf -remote "send $id cd \"$pwd_shell\""
@@ -1088,15 +1219,42 @@ cmd mgit_pull_rebase !{{
 map gta :{{ git_add; unselect; }}
 map gtr :git_reclone_repo
 map gtb :git_branch
-map gtc ${{clear; gclp}}
-map gtp !{{clear; git pull}}
-map gtP !{{clear; git pull --rebase}}
-map gtz !{{clear; git status}}
-map gtl !{{clear; git la}}
-map gtL !{{clear; git lo}}
-map gl  ${{clear; git log -p}}
-map gts !{{clear; git show --show-signature}}
-map go  &git brws
+map gtc ${{
+  # git clone repo from clipboard
+  clear; gclp
+}}
+map gtp !{{
+  # git pull
+  clear; git pull
+}}
+map gtP !{{
+  # git pull --rebase
+  clear; git pull --rebase
+}}
+map gtz !{{
+  # git status
+  clear; git status
+}}
+map gtl !{{
+  # git log oneline
+  clear; git la
+}}
+map gtL !{{
+  # git log oneline stat
+  clear; git lo
+}}
+map gl  ${{
+  # git log full diff
+  clear; git log -p
+}}
+map gts !{{
+  # git log full diff+signature
+  clear; git show --show-signature
+}}
+map go  &{{
+  # open git repo URL
+  git brws
+}}
 
 map gm :mgit_pull_rebase
 
@@ -1106,15 +1264,44 @@ map gm :mgit_pull_rebase
 
 # map gFd ${{clear; f::diff}}
 # map gFc ${{clear; f::clean}}
-map gfs ${{clear; fstat}}
-map gfa ${{clear; fadd}}
-map gfl ${{clear; flog}}
-map gfu ${{clear; funtrack}}
+map gfs ${{
+  # fstat
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fstat
+}}
+map gfa ${{
+  # fadd
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fadd
+}}
+map gfl ${{
+  # flog
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" flog
+}}
+map gfu ${{
+  # funtrack
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" funtrack
+}}
 
 map gda :{{ dotbare_add; unselect; }}
-map gdai ${{clear; dotbare fadd -f}}
-map gds ${{clear; dotbare fstat}}
-map gdu ${{clear; dotbare funtrack}}
+map gdai ${{
+  # dotbare fadd
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare fadd -f
+}}
+map gds ${{
+  # dotbare fstat
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare fstat
+}}
+map gdu ${{
+  # dotbare funtrack
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare funtrack
+}}
+
 # map gftr ${{clear; dotbare ls-tree -r master --name-only | bat}}
 # map gftt ${{clear; dotbare ls-tree -r master --name-only | as-tree --color always | bat -p}}
 # map gftu ${{clear; dotbare ls-files --other | bat}}
@@ -1147,12 +1334,12 @@ map bh cd ~
 
 # -- Print lf id
 cmd get-id %{{
-    echo "lf-id: $id"
+  echo "lf-id: $id"
 }}
 
 # -- Rename/change the pane title
 cmd rename-title ${{
-    printf "\033]2;%s\033\\" "$@"
+  printf "\033]2;%s\033\\" "$@"
 }}
 
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

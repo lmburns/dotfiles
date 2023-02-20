@@ -419,12 +419,44 @@ function lswindows() {
 
 # ============================== Helper ==============================
 # ====================================================================
-function print::warning() { print -Pru2 -- "%F{3}[WARNING]%f: $*"; }
-function print::error()   { print -Pru2 -- "%F{1}%B[ERROR]%f%b: $*"; }
-function print::debug()   { print -Pru2 -- "%F{4}[DEBUG]%f: $*"; }
-function print::info()    { print -Pru2 -- "%F{5}[INFO]%f: $*"; }
-function print::notice()  { print -Pru2 -- "%F{13}[NOTICE]%f: $*"; }
-function print::success() { print -Pru2 -- "%F{2}%B[SUCCESS]%f%b: $*"; }
+# ${${${(D)${${${a[1]#_}%:*}:A}}//\~config\/zsh/ZSH}//\~config/CONFIG}
+
+function print::warning() {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{13}[WARNING]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::error()   {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{12}%B[ERROR]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::debug()   {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{18}[DEBUG]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::info()    {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{52}[INFO]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::notice()  {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{22}[NOTICE]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::success() {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=${${functrace[1]#_}%:*}
+  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{53}%B[SUCCESS]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
 
 function zsh::log() {
   setopt localoptions nopromptsubst

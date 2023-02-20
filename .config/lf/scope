@@ -10,6 +10,7 @@ local WIDTH="${2}"
 local HEIGHT="${3}"
 local X_COORD="${4}"
 local Y_COORD="${5}"
+integer unhandled=0
 
 local FILE_ABSPATH="${FILE_PATH:A}"
 local FILE_EXTENSION="${FILE_PATH##*.}"
@@ -67,8 +68,11 @@ prev-image() {
 handle_mime() {
   local mimetype="${1}"
   case "${mimetype}" in
+    (inode/directory)
+      exa -T -- "${FILE_PATH}"
+    ;;
     (text/html)
-      w3m -dump "${FILE_PATH}"
+      w3m -dump -- "${FILE_PATH}"
       # bat -Pf --theme kimbro --style auto -l html -- "${FILE_PATH}" ;;
     ;;
     (text/troff)
@@ -83,7 +87,7 @@ handle_mime() {
       bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}"
     ;;
     (application/pgp-encrypted)
-      bat -Pf --theme KimbieDark --style auto "${FILE_PATH}"
+      bat -Pf --theme kimbro --style auto --j "${FILE_PATH}"
     ;;
     (application/zip)
       atool --list -- "${FILE_PATH}"
@@ -108,7 +112,10 @@ handle_mime() {
       prev-image "$CACHE.jpg"
     ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-      docx2txt "${FILE_PATH}"
+      docx2txt -- "${FILE_PATH}"
+    ;;
+    (*)
+      unhandled=1
     ;;
   esac
 }
@@ -116,29 +123,30 @@ handle_mime() {
 
 handle_other() {
   case "${FILE_PATH}" in
-    (*.tar)   tar tf "${FILE_PATH}";;
-    (*.rar)   unrar l "${FILE_PATH}";;
-    (*.7z) 7z l "${FILE_PATH}";;
-    (*.[1-8]) man "${FILE_PATH}" | col -b ;;
-    (*.o)     nm "${FILE_PATH}" | less ;;
-    (*.iso)   iso-info --no-header -l "${FILE_PATH}";;
-    (*.doc)   catdoc "${FILE_PATH}" ;;
+    (*.tar)   tar tf -- "${FILE_PATH}";;
+    (*.rar)   unrar l -- "${FILE_PATH}";;
+    (*.7z) 7z l -- "${FILE_PATH}";;
+    (*.[1-8]) man -- "${FILE_PATH}" | col -b ;;
+    (*.o)     nm -- "${FILE_PATH}" | less ;;
+    (*.iso)   iso-info --no-header -l -- "${FILE_PATH}";;
+    (*.doc)   catdoc -- "${FILE_PATH}" ;;
     (*.docx)  docx2txt "${FILE_PATH}" - ;;
-    (*.json)  jq --color-output . "${FILE_PATH}";;
-    (*.asc|*.log)   bat -Pf --theme KimbieDark --style auto "${FILE_PATH}";;
-    (*.ipynb) jupview -t KimbieDark "${FILE_PATH}" ;;
-    (*.torrent) transmission-show "${FILE_PATH}";;
-    (*.tgz|*.tar.gz)   tar tzf "${FILE_PATH}";;
-    (*.tar.bz2|*.tbz2) tar tjf "${FILE_PATH}";;
-    (*.tar.txz|*.txz)  xz --list "${FILE_PATH}";;
-    (*.jar|*.war|*.ear|*.oxt)        unzip -l "${FILE_PATH}";;
-    (*.odt|*.ods|*.odp|*.sxw)        odt2txt "${FILE_PATH}";;
-    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c "${FILE_PATH}" ;;
+    (*.json)  jq --color-output . -- "${FILE_PATH}";;
+    (*.asc|*.log)   bat -Pf --theme kimbro --style auto -- "${FILE_PATH}";;
+    (*.ipynb) jupview -t KimbieDark -- "${FILE_PATH}" ;;
+    (*.torrent) transmission-show -- "${FILE_PATH}";;
+    (*.tgz|*.tar.gz)   tar tzf -- "${FILE_PATH}";;
+    (*.tar.bz2|*.tbz2) tar tjf -- "${FILE_PATH}";;
+    (*.tar.txz|*.txz)  xz --list -- "${FILE_PATH}";;
+    (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${FILE_PATH}";;
+    (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${FILE_PATH}";;
+    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${FILE_PATH}" ;;
+    (*) (( unhandled )) && bat -Pf --theme kimbro --style auto -- "${FILE_PATH}" ;;
   esac
 }
 
-typeset -A CO
-CO=(
+typeset -A C
+C=(
   red    $'\e[38;5;1m'  bred   $'\e[01;31m' brred   $'\e[38;5;9m'
   green  $'\e[38;5;2m'  bgreen $'\e[01;32m' brgreen $'\e[38;5;10m'
   yell   $'\e[38;5;3m'  byell  $'\e[01;33m' bryell  $'\e[38;5;11m'
@@ -151,10 +159,10 @@ CO=(
 
 handle_fallback() {
   local mime mime2
-  print -rl "$CO[nl]$CO[brblue]$CO[bold]==========$CO[res] File Type Classification $CO[brblue]$CO[bold]==========$CO[res]" && {
+  print -rl "$C[nl]$C[brblue]$C[bold]==========$C[res] File Type Classification $C[brblue]$C[bold]==========$C[res]" && {
     mime=$(file --dereference --brief -- "${FILE_PATH}")
     mime2=$(mimetype -b -- "${FILE_PATH}")
-    stat -c "$CO[green]$CO[bold]${mime} (${mime2})$CO[res] $CO[nl]%F $CO[nl]$CO[bcyan]inode: %i$CO[res]" -- "${FILE_PATH}"
+    stat -c "$C[green]$C[bold]${mime} (${mime2})$C[res] $C[nl]%F $C[nl]$C[bcyan]inode: %i$C[res]" -- "${FILE_PATH}"
   }
     exit 1
 }

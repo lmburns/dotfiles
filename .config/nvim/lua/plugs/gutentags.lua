@@ -211,13 +211,13 @@ local function init()
         --         require("plugs.gutentags").setup_rusttags()
         --     end
         -- },
-        {
-            event = "FileType",
-            pattern = "perl",
-            command = function()
-                require("plugs.gutentags").setup_perltags()
-            end
-        },
+        -- {
+        --     event = "FileType",
+        --     pattern = "perl",
+        --     command = function()
+        --         require("plugs.gutentags").setup_perltags()
+        --     end
+        -- },
         {
             event = "FileType",
             pattern = "ruby",

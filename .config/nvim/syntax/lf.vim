@@ -29,8 +29,8 @@ syn keyword  lfKeyword        set cmd map cmap skipwhite
 "{{{ Options Keywords
 syn keyword  lfOptions        anchorfind autoquit
     \ bottom
-    \ cd clear copy cut cleaner
-    \ delete down draw dircounts dirfirst drawbox
+    \ cd clear copy cursorfmt cursorpreviewfmt cut cleaner
+    \ delete down draw dircounts dirfirst dirpreviews drawbox
     \ echo echoerr echomsg errorfmt
     \ filesep findlen
     \ find find-back find-next find-prev

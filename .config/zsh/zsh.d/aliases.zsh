@@ -64,7 +64,7 @@ alias :q='exit'
   alias srg='sr -g'
   alias srh='srg github'
   alias srl='BROWSER=$BROWSERCLI sr'
-  alias srb='BROWSER=brave srg'
+  alias srB='BROWSER=brave srg'
   alias srgg='BROWSER=$BROWSER srg google'
 }
 

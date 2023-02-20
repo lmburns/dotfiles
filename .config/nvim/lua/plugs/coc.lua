@@ -192,7 +192,7 @@ end
 ---@param timeout number?
 ---@return Promise
 function M.action(action, args, timeout)
-    local args = vim.deepcopy(F.if_nil(args, {}))
+    args = vim.deepcopy(F.if_nil(args, {}))
     return promise:new(
         function(resolve, reject)
             table.insert(
@@ -362,7 +362,7 @@ function M.diagnostic(winid, nr, keep)
                 local text =
                     ("[%s%s] %s"):format(
                     (d.source == "" and "coc.nvim" or d.source),
-                    (d.code == vim.NIL and "" or " " .. d.code),
+                    ((d.code == vim.NIL or d.code == nil) and "" or " " .. d.code),
                     d.message:match("([^\n]+)\n*")
                 )
                 local item = {
@@ -727,7 +727,7 @@ function M.init()
         10
     )
 
-    g.coc_fzf_opts = {"--layout=reverse-list"}
+    g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null"}
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 
