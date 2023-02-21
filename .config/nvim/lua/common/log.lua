@@ -4,6 +4,18 @@ local log = require("plenary.log")
 
 local api = vim.api
 
+-- TODO: Finish this when feature is available
+---@enum LogLevelsFinish
+---| TRACE = 0 # Trace level
+---| DEBUG = 1 # Debug level
+---| INFO = 2 # Info level
+---| WARN = 3 # Warn level
+---| ERROR = 4 # Error level
+---| OFF = 5 # Off level
+
+---@alias LogLevels { TRACE: 0, DEBUG: 1, INFO: 2, WARN: 3, ERROR: 4, OFF: 5 }
+
+---@type LogLevels
 M.levels = vim.log.levels
 
 -- _G.__FILE__ = function() return debug.getinfo(3, 'S').source end

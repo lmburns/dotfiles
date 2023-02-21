@@ -774,9 +774,9 @@ Plug 'antoinemadec/coc-fzf'
   nnoremap ;n :Telescope coc locations<CR>
   " type_definitions
 
+  " \  "coc-rls",
   let g:coc_fzf_opts = ['--no-border', '--layout=reverse-list']
   let g:coc_global_extensions = [
-    \  "coc-rls",
     \  "coc-sumneko-lua",
     \  "coc-json",
     \  "coc-clangd",

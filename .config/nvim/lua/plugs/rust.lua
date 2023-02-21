@@ -1,10 +1,13 @@
 local M = {}
 
+local D = require("dev")
 local utils = require("common.utils")
 local augroup = utils.augroup
--- local map = utils.map
+local map = utils.map
 local bmap = utils.bmap
+
 local coc = require("plugs.coc")
+local wk = require("which-key")
 
 local g = vim.g
 
@@ -13,6 +16,91 @@ function M.setup()
     -- g.rustfmt_autosave_if_config_present = 1
     g.rust_recommended_style = 1
     g.rust_fold = 1
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          Crates                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.crates()
+    local crates = D.npcall(require, "crates")
+    if not crates then
+        return
+    end
+
+    crates.setup(
+        {
+            smart_insert = true,
+            insert_closing_quote = true,
+            avoid_prerelease = true,
+            autoload = true,
+            autoupdate = true,
+            loading_indicator = true,
+            date_format = "%Y-%m-%d",
+            thousands_separator = ".",
+            notification_title = "Crates",
+            disable_invalid_feature_diagnostic = false,
+            popup = {
+                autofocus = false,
+                copy_register = '"',
+                style = "minimal",
+                border = "none",
+                show_version_date = false,
+                show_dependency_version = true,
+                max_height = 30,
+                min_width = 20,
+                padding = 1,
+                keys = {
+                    hide = {"q", "<esc>"},
+                    open_url = {"<cr>"},
+                    select = {"<cr>"},
+                    select_alt = {"s"},
+                    toggle_feature = {"<cr>"},
+                    copy_value = {"yy"},
+                    goto_item = {"gd", "K", "<C-LeftMouse>"},
+                    jump_forward = {"<c-i>"},
+                    jump_back = {"<c-o>", "<C-RightMouse>"}
+                }
+            }
+        }
+    )
+
+    augroup(
+        "lmb__CratesBindings",
+        {
+            event = "BufEnter",
+            pattern = "Cargo.toml",
+            command = function(args)
+                local bufnr = args.buf
+                map("n", "<Leader>ca", crates.upgrade_all_crates, {buffer = bufnr})
+                map("n", "<Leader>cu", crates.upgrade_crate, {buffer = bufnr})
+                map("n", "<Leader>ch", crates.open_homepage, {buffer = bufnr})
+                map("n", "<Leader>cr", crates.open_repository, {buffer = bufnr})
+                map("n", "<Leader>cd", crates.open_documentation, {buffer = bufnr})
+                map("n", "<Leader>co", crates.open_crates_io, {buffer = bufnr})
+
+                map("n", "vd", crates.show_dependencies_popup, {buffer = bufnr})
+                map("n", "vv", crates.show_versions_popup, {buffer = bufnr})
+                map("n", "vf", crates.show_features_popup, {buffer = bufnr})
+
+                map("n", "[g", vim.diagnostic.goto_prev, {buffer = bufnr})
+                map("n", "]g", vim.diagnostic.goto_next, {buffer = bufnr})
+
+                wk.register(
+                    {
+                        ["<Leader>ca"] = "Upgrade all crates",
+                        ["<Leader>cu"] = "Upgrade crate",
+                        ["<Leader>ch"] = "Open homepage",
+                        ["<Leader>cr"] = "Open repository",
+                        ["<Leader>cd"] = "Open documentation",
+                        ["<Leader>co"] = "Open crates.io",
+                        ["vd"] = "Dependencies popup",
+                        ["vv"] = "Version popup",
+                        ["vf"] = "Show features"
+                    }
+                )
+            end
+        }
+    )
 end
 
 local function init()

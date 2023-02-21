@@ -43,6 +43,8 @@ _arguments "${_arguments_options[@]}" \
 ;;
 (show)
 _arguments "${_arguments_options[@]}" \
+'-v[Enable verbose output with rustc information for all installed toolchains]' \
+'--verbose[Enable verbose output with rustc information for all installed toolchains]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -107,6 +109,7 @@ _arguments "${_arguments_options[@]}" \
 '--profile=[]: :(minimal default complete)' \
 '--no-self-update[Don'\''t perform self-update when running the `rustup install` command]' \
 '--force[Force an update, even if some components are missing]' \
+'--force-non-host[Install toolchains that require an emulator. See https://github.com/rust-lang/rustup/wiki/Non-host-toolchains]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -199,6 +202,7 @@ _arguments "${_arguments_options[@]}" \
 '--no-self-update[Don'\''t perform self update when running the`rustup toolchain install` command]' \
 '--force[Force an update, even if some components are missing]' \
 '--allow-downgrade[Allow rustup to downgrade the toolchain to satisfy your component choice]' \
+'--force-non-host[Install toolchains that require an emulator. See https://github.com/rust-lang/rustup/wiki/Non-host-toolchains]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -216,6 +220,7 @@ _arguments "${_arguments_options[@]}" \
 '--no-self-update[Don'\''t perform self update when running the`rustup toolchain install` command]' \
 '--force[Force an update, even if some components are missing]' \
 '--allow-downgrade[Allow rustup to downgrade the toolchain to satisfy your component choice]' \
+'--force-non-host[Install toolchains that require an emulator. See https://github.com/rust-lang/rustup/wiki/Non-host-toolchains]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \
@@ -233,6 +238,7 @@ _arguments "${_arguments_options[@]}" \
 '--no-self-update[Don'\''t perform self update when running the`rustup toolchain install` command]' \
 '--force[Force an update, even if some components are missing]' \
 '--allow-downgrade[Allow rustup to downgrade the toolchain to satisfy your component choice]' \
+'--force-non-host[Install toolchains that require an emulator. See https://github.com/rust-lang/rustup/wiki/Non-host-toolchains]' \
 '-h[Prints help information]' \
 '--help[Prints help information]' \
 '-V[Prints version information]' \

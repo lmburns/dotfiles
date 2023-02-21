@@ -1,7 +1,3 @@
-if polyglot#init#is_disabled(expand('<sfile>:p'), 'mail', 'syntax/mail.vim')
-  finish
-endif
-
 " Vim syntax file
 " Language:		Mail file
 " Previous Maintainer:	Felix von Leitner <leitner@math.fu-berlin.de>

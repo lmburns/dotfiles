@@ -3,6 +3,9 @@ local M = {}
 local fn = vim.fn
 local uv = vim.loop
 
+---@class array<T>: { [integer]: T }
+---@class dict<T>: { [string]: T }
+
 -- ╓                                                          ╖
 -- ║                          Global                          ║
 -- ╙                                                          ╜

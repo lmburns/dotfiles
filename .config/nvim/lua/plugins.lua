@@ -99,7 +99,10 @@ PATCH_DIR = ("%s/patches"):format(dirs.config)
 local handlers = {
     ---@diagnostic disable-next-line: unused-local
     conf = function(plugins, plugin, value)
-        if value:match("^plugs%.") then
+        if value:match("^plugs%..+%.") then
+            local _, _, m1, m2 = value:find("^plugs%.(.+)%.(.+)")
+            plugin.config = ([[require('plugs.%s').%s()]]):format(m1, m2)
+        elseif value:match("^plugs%.") then
             plugin.config = ([[require('%s')]]):format(value)
         else
             plugin.config = ([[require('plugs.config').%s()]]):format(value)
@@ -920,16 +923,8 @@ return packer.startup(
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
-            use(
-                {
-                    "plasticboy/vim-markdown",
-                    ft = {"markdown", "vimwiki"},
-                    config = [[require('plugs.markdown').markdown()]]
-                }
-            )
-
-            -- use({"vim-pandoc/vim-pandoc-syntax", config = [[require('plugs.markdown').pandoc()]]})
-            use({"dhruvasagar/vim-table-mode", config = [[require('plugs.markdown').table_mode()]]})
+            use({"plasticboy/vim-markdown", ft = {"markdown", "vimwiki"}, conf = "plugs.markdown.markdown"})
+            use({"dhruvasagar/vim-table-mode", conf = "plugs.markdown.table_mode"})
             use({"SidOfc/mkdx", config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]})
 
             use(
@@ -939,7 +934,7 @@ return packer.startup(
                     commit = "63af6e72",
                     setup = [[require("plugs.markdown").vimwiki_setup()]],
                     ft = {"markdown", "vimwiki"},
-                    config = [[require('plugs.markdown').vimwiki()]],
+                    conf = "plugs.markdown.vimwiki",
                     after = colorscheme
                 }
             )
@@ -1093,7 +1088,7 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
 
             use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
-            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "crates"})
+            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "plugs.rust.crates"})
 
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
@@ -1129,6 +1124,7 @@ return packer.startup(
 
             -- chrisgrieser/nvim-various-textobjs
             use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
+            -- use({"cshuaimin/ssr.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter" })
             use(
                 {
                     -- conf = "plugs.treesitter"

@@ -20,7 +20,8 @@ local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
 local HIGHLIGHT_SIZE_MAX=262143  # 256KiB
 local HIGHLIGHT_TABWIDTH=8
 local MAXLN=200
-local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}")"
+# local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}")"
+local MIMETYPE="$(mimetype -b -- "${FILE_PATH}")"
 
 # Functions:
 try() { output=$(eval '"$@"'); }
@@ -141,7 +142,7 @@ handle_other() {
     (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${FILE_PATH}";;
     (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${FILE_PATH}";;
     (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${FILE_PATH}" ;;
-    (*) (( unhandled )) && bat -Pf --theme kimbro --style auto -- "${FILE_PATH}" ;;
+    (*) (( unhandled )) && { bat -Pf --theme kimbro --style auto -- "${FILE_PATH}" } ;;
   esac
 }
 
@@ -158,11 +159,18 @@ C=(
 )
 
 handle_fallback() {
-  local mime mime2
-  print -rl "$C[nl]$C[brblue]$C[bold]==========$C[res] File Type Classification $C[brblue]$C[bold]==========$C[res]" && {
-    mime=$(file --dereference --brief -- "${FILE_PATH}")
+  local mime mime2 equals class
+  class="File Type Classification"
+  # The ratios of Lf's screen are 1:2:3 by default, and preview is in 3rd screen
+  equals=${${${(M)lf_ratios:#*3}:+(($COLUMNS * 3/6) - ($#class + 2)) / 2}:-18}
+  print -rl "$C[nl]\
+$C[brblue]$C[bold]${(l:$(( equals ))::=:):-}$C[res] \
+$class \
+$C[brblue]$C[bold]${(l:$(( equals ))::=:):-}$C[res]" && {
+    mime0=$(file --dereference --brief -- "${FILE_PATH}")
+    mime1=$(file --dereference --mime-type --brief -- "${FILE_PATH}")
     mime2=$(mimetype -b -- "${FILE_PATH}")
-    stat -c "$C[green]$C[bold]${mime} (${mime2})$C[res] $C[nl]%F $C[nl]$C[bcyan]inode: %i$C[res]" -- "${FILE_PATH}"
+    stat -c "$C[green]$C[bold]${mime0} (${mime1}|${mime2})$C[res] $C[nl]%F $C[nl]$C[bcyan]inode: %i$C[res]" -- "${FILE_PATH}"
   }
     exit 1
 }

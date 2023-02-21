@@ -652,7 +652,7 @@ mono indicator reverse
 mono error     bold
 
 color normal     default       default # message
-color attachment brightmagenta default
+color attachment bold color13  default
 color hdrdefault brightgreen   default # headers
 color indicator  brightblack   white   # currently selected message
 color markers    red           white   # the + for wrapped pager lines
@@ -710,14 +710,14 @@ color compose security_both    color19 default
 
 # color attachment color47 default "Begin signature information"
 
-color header blue        default ".*"
-color header color19     default '^(Message-ID)'
-color header color19     default '^(List-ID)'
-color header brightblue  default '^(Received)'
-color header magenta     default '^(Date)'
-color header brightred   default '^(To)'
-color header brightred   default "^(Delivered-|X-Original-|Envelope-)?To"
-color header brightgreen default '^(In-)?(Reply-To)'
+color header blue         default ".*"
+color header color19      default '^(Message-ID)'
+color header color19      default '^(List-ID)'
+color header brightblue   default '^(Received)'
+color header bold color52 default '^(Date)'
+color header brightred    default '^(To)'
+color header brightred    default "^(Delivered-|X-Original-|Envelope-)?To"
+color header brightgreen  default '^(In-)?(Reply-To)'
 color header bold color20  default '^(Subject)'
 color header bold color21  default '^(From|(X-)?Sender)'
 

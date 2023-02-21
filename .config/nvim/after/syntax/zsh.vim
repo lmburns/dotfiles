@@ -1,7 +1,3 @@
-if polyglot#init#is_disabled(expand('<sfile>:p'), 'zinit', 'after/syntax/zsh.vim')
-  finish
-endif
-
 " Copyright (c) 2019 Sebastian Gniazdowski
 "
 " Syntax highlighting for Zinit commands in any file of type `zsh'.

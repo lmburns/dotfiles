@@ -94,7 +94,7 @@ end
 ---@param condition boolean|nil Statement to be tested
 ---@param is_if T Return if condition is truthy
 ---@param is_else V Return if condition is not truthy
----@return T|V
+---@return T | V
 F.tern = function(condition, is_if, is_else)
     if condition then
         return is_if
@@ -103,9 +103,11 @@ F.tern = function(condition, is_if, is_else)
 end
 
 ---Similar to `vim.F.nil` except that an alternate default value can be given
+---@generic T, V
 ---@param x any: Value to check if `nil`
----@param is_nil any: Value to return if `x` is `nil`
----@param is_not_nil any: Value to return if `x` is not `nil`
+---@param is_nil T: Value to return if `x` is `nil`
+---@param is_not_nil V: Value to return if `x` is not `nil`
+---@return T | V
 M.ife_nil = function(x, is_nil, is_not_nil)
     return F.tern(x == nil, is_nil, is_not_nil)
 end
@@ -114,7 +116,7 @@ end
 ---@generic T, V
 ---@param x T: Value to check if not `nil`
 ---@param default V: Default value to return if `x` is `nil`
----@return T|V
+---@return T | V
 M.get_default = function(x, default)
     return M.ife_nil(x, default, x)
 end
@@ -717,13 +719,6 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
----@alias NotifyLevels
----| '0' # Trace level
----| '1' # Debug level
----| '2' # Info level
----| '3' # Warn level
----| '4' # Error level
-
 -- ---Correctly assign this to be an enum
 -- ---@enum NotifyLevels
 -- NotifyLevels = {
@@ -738,7 +733,7 @@ end
 ---@field icon? string Icon to add to notification
 ---@field title? string Title to add
 ---@field message? string Notification message
----@field level? NotifyLevels Notification level
+---@field level? LogLevels Notification level
 ---@field hl? string Highlight group
 ---@field on_open fun(winnr: number): nil
 ---@field once boolean Only send notification one time

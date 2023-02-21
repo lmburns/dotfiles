@@ -33,9 +33,14 @@ function zflai-zprof() {
 
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
+setopt c_bases              # 0xFF instead of 16#FF
+setopt c_precedences        # use precendence of operators found in C
+setopt octal_zeroes         # 077 instead of 8#77
+
 typeset -g DIRSTACKSIZE=20
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
-typeset -g SAVEHIST=10_000_000
+# typeset -g SAVEHIST=10_000_000
+typeset -g SAVEHIST=$(( [#_] 10 ** 7 ))
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g HIST_STAMPS="yyyy-mm-dd"
@@ -131,9 +136,6 @@ setopt short_loops          # allow short forms of for, repeat, select, if, func
 # setopt brace_ccl           # expand in braces, which would not otherwise, into a sorted list
 # setopt list_types          # show type of file with indicator at end
 
-setopt c_bases              # 0xFF instead of 16#FF
-setopt c_precedences        # use precendence of operators found in C
-setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
 setopt no_flow_control # don't output flow control chars (^S/^Q)
@@ -998,8 +1000,8 @@ path=(
   $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim/bin(N-/)
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
+  $XDG_DATA_HOME/neovim/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/bin                   # add again to be ahead of /bin
@@ -1118,10 +1120,6 @@ export FZF_DEFAULT_OPTS="
 --prompt='❱ '
 --pointer='》'
 --marker='▍'
---separator='━'
---info='inline: ❰ '
---scrollbar='█'
---ellipsis=''
 --cycle
 $FZF_COLORS
 --reverse
@@ -1169,7 +1167,7 @@ $FZF_COLORS
 --bind='ctrl-d:half-page-down'
 --bind='ctrl-alt-u:page-up'
 --bind='ctrl-alt-d:page-down'
---bind='alt-i:replace-query+print-query'
+--bind='alt-o:replace-query+print-query'
 --bind='ctrl-e:become($EDITOR {+})'
 --bind='ctrl-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'

@@ -34,23 +34,42 @@ local api = {
 ---@field bold boolean
 ---@field standout boolean
 ---@field underline boolean
----@field undercurl boolean
----@field underdouble boolean
----@field underdotted boolean
----@field underdashed boolean
+---@field undercurl boolean Curly underline
+---@field underdouble boolean Double underline
+---@field underdotted boolean Dotted underline
+---@field underdashed boolean Dashed underline
 ---@field strikethrough boolean
 ---@field italic boolean
 ---@field reverse boolean
----@field nocombine boolean
+---@field nocombine boolean Override attributes instead of combining them
 ---@field link boolean|string
----@field inherit string
----@field from string   Not here by default
----@field gui string    Not here by default
----@field cond string   Not here by default. Conditional colorscheme name
---                      i.e., do not execute highlight command if colorscheme differs from 'cond'
+---@field ctermfg string Sets foreground of cterm color
+---@field ctermbg string Sets background of cterm color
+---@field cterm CtermMap cterm attribute map
+---@field inherit string Not here by default
+---@field from string    Not here by default
+---@field gui string     Not here by default
+---@field cond string    Not here by default. Conditional colorscheme name
+--                       i.e., do not execute highlight command if colorscheme differs from 'cond'
 ---@deprecated @field guifg string
 ---@deprecated @field guibg string
 ---@deprecated @field guisp string
+
+---@alias CtermMap
+---| '"bold"'
+---| '"underline"'
+---| '"undercurl"' # Curly underline
+---| '"underdouble"' # Double underline
+---| '"underdotted"' # Dotted underline
+---| '"underdashed"' # Dashed underline
+---| '"strikethrough"'
+---| '"reverse"'
+---| '"inverse"' # Same as revers
+---| '"italic"'
+---| '"standout"'
+---| '"altfont"'
+---| '"nocombine"' # Override attributes instead of combining them
+---| '"none"' # No attributes used (used to reset it)
 
 ---Convert a hexidecimal color (#RRGGBB) to RGB
 ---@param color Color

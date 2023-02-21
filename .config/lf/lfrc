@@ -106,7 +106,7 @@ cmd recol ${{
     lf -remote "send $id set ratios 1:2:3:5"
   fi
 }}
-recol
+# recol
 # map 0
 # map 0 recol
 
@@ -917,6 +917,8 @@ map <c-l>
 map H
 map L
 map v
+map ]
+map [
 # ]]]
 
 # == File Openers == [[[
@@ -1090,18 +1092,12 @@ map <lt> find-prev
 # ]]]
 
 # == General == [[[
-map . set hidden!
-map x cut                     # general cut
-map p paste                   # regular
-map Pl :{{ link; unselect; }} # paste a symlink
-
-# TODO: Finish
-cmd copy-realpath ${{
-  local origin
-  origin="$(realpath -- "$fx")"
-  lf -remote "send $id copy '$origin'"
+map - ${{
+  # turn a symlink into a real file
+  harden "$fx"
 }}
 
+# TODO: Finish
 # paste a file and make sure its not a symlink
 map Ph ${{
   zmodload -Fa zsh/files b:zf_rm
@@ -1117,10 +1113,17 @@ map Ph ${{
   # lf -remote "send clear"
 }}
 
-map - ${{
-  # turn a symlink into a real file
-  harden "$fx"
+# TODO: Finish
+cmd copy-realpath ${{
+  local origin
+  origin="$(realpath -- "$fx")"
+  lf -remote "send $id copy '$origin'"
 }}
+
+
+map x cut                     # general cut
+map p paste                   # regular
+map Pl :{{ link; unselect; }} # paste a symlink
 
 # map y
 map y copy           # general copy
@@ -1162,14 +1165,14 @@ map J half-down    # Move halfway down
 map K half-up      # Move halfway up
 
 map R reload
-map <c-n> redraw
+map <c-n> :{{ redraw; echomsg 'succes'; }}
 
 map <c-l> cd-realpath
 map } cd-realpath
 map H jump-prev
 map L jump-next
-map ] # Default
-map [ # Default
+
+map . set hidden!
 
 map s1 :{{ set preview;   set ratios 1:2:3; }}   # set display (preview)
 map s2 :{{ set preview;   set ratios 1:2; }}     # set display (no preview)
@@ -1192,7 +1195,7 @@ map S :{{
 
 # == Shell == [[[
 # map <c-s> shell                       # enter shell command
-map <enter> shell-wait                  # enter shell cmd
+map <c-x>s shell-wait                  # enter shell cmd
 map <c-x>x $$f                          # execute file
 map <c-x>X !$f                          # execute file and $PAGER output
 map <c-x>l $$f | bat --paging=always -f # execute file and bat output
@@ -1207,12 +1210,15 @@ map tos $stig                          # transmisison TUI
 # ]]]
 
 # == Tagging == [[[
-map <c-_> mark-save
-map ma mark-save
-# map "'" mark-load
-# map '"' mark-remove
+# map <c-_> mark-save
+# map ma mark-save
+map <a-.> mark-save
+map <a-'> mark-save
+map "'" mark-load
+map '"' mark-remove
 
-map ; push :tag<space>
+# map ; push :tag<space>
+map <a-,> push :tag<space>
 map X tag-toggle
 map Tj jump_tag
 

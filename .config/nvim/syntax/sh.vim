@@ -1,7 +1,3 @@
-if polyglot#init#is_disabled(expand('<sfile>:p'), 'sh', 'syntax/sh.vim')
-  finish
-endif
-
 " Shebang
 syn match shShebang "^#!.*$" containedin=shComment
 

@@ -205,7 +205,7 @@ function M.setup()
             ["--layout"] = "reverse",
             ["--height"] = "100%",
             ["--ansi"] = "",
-            ["--info"] = "inline: ❰ ",
+            ["--info"] = "inline",
             ["--multi"] = "",
             ["--border"] = "none",
             ["--history"] = "/dev/null"
