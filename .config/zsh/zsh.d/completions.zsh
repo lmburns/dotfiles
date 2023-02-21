@@ -4,6 +4,8 @@
 #   Created: 2022-02-18 13:43
 #===========================================================================
 
+# TODO: Select first group on startup with fzf-tab
+
 # ============================== zinit ===============================
 # ====================================================================
 autoload -Uz zstyle+
@@ -42,7 +44,6 @@ ZINIT+=(
 # ====================================================================
 
 # === completion === [[[
-# $desc, $word, $group, $realpath
 
 # ========================================================================
 
@@ -87,7 +88,6 @@ zstyle '*' single-ignored show # don't insert single value
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                special-dirs false \
-      + ':(^systemctl):*' group-name '' \
       + ''                file-sort access \
       + ''                use-cache true \
       + ''                cache-path "${ZSH_CACHE_DIR}/.zcompcache" \
@@ -98,6 +98,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                ignore-parents parent pwd \
       + ''                matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|[._-,]=* r:|=*' 'l:|=* r:|=*' 'r:|?=** m:{a-z\-}={A-Z\_}' \
       + ''                muttrc "$XDG_CONFIG_HOME/mutt/muttrc" \
+      + ':(^systemctl):*' group-name '' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ':default'        list-colors ${(s.:.)LS_COLORS} \
       + ':matches'        group true \
@@ -121,26 +122,30 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
       + ':*:-command-:*:*'                       group-order path-directories functions commands builtins \
       + ':*:-subscript-:*'                       tag-order indexes parameters \
-      + ':*:-subscript-:*'                       group-order indexes parameters \
-      + ':*:-redirect-,2(>|)>,*:*'               file-patterns '*.(log|txt)' '%p:all_files'
+      + ':*:-subscript-:*'                       group-order indexes parameters
 
 zstyle+ ':completion:' '' '' \
       + ':complete:*'                  gain-privileges 1 \
       + ':*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
-      + ':(^approximate*):*:functions' ignored-patterns '_*'
+      + ':(^approximate*):*:functions' ignored-patterns '_*' \
+      + '*:processes'                  command "ps -u $USER -o pid,user,comm -w -w"
 }
 
+# pattern:tag:description
+#  - Description adds them to another group
 zstyle+ ':completion:*' '' '' \
       + ':feh:*'          file-patterns    '*.{png,jpg,svg}:images:images *(-/):directories:dirs' \
       + ':sxiv:*'         file-patterns    '*.{png,gif,jpg}:images:images *(-/):directories:dirs' \
-      + ':*:perl:*'       file-patterns    '*.(#i)pl:perl(-.) *(-/):directories' '*:all-files'    \
+      + ':*:perl:*'       file-patterns    '*.(#i)pl:perl(-.) *(-/):directories *((^-/)|(^(#i)pl)):globbed-files' '*:all-files'    \
       + ':*:python:*'     file-patterns    '*.(#i)py:python(-.) *(-/):directories' '*:all-files'  \
       + ':*:ruby:*'       file-patterns    '*.(#i)rb:ruby(-.) *(-/):directories'  '*:all-files'   \
       + ':(rm|rip):*'     file-patterns    '*:all-files'                                          \
+      + ':jq:*'           file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs' \
       + ':git-checkout:*' sort             false                                                  \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
       + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
       + ':xcompress:*'    file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
+      + ':*:-redirect-,2(>|)>,*:*'  file-patterns '*.(log|txt)' '%p:all_files' \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|git-(add|rm)|bat|nvim):*'   sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|git-(add,rm)|bat|nvim):*' ignore-line other \
@@ -197,6 +202,28 @@ zstyle+ ':plugin:zui' log_append above \
 # ========================================================================
 
 # === fzf-tab === [[[
+### `$desc`
+# This is the string fzf shows to you.
+# Example: `--accessed     use the accessed timestamp field`, `README.md`
+
+### `$word`
+# This is the real string to be insert into your commandline.
+# For example, if the `$desc` is `--accessed     use the accessed timestamp field`, the `$word` is `--accessed`.
+
+### `$group`
+# This is the description of the group which the `$word` belongs to.
+# For example, `--accessed` belongs to group named `[option]`, and `README.md` belongs to `[filename]`.
+# `README.md` belongs to `[filename]` to completing `exa`, but belongs to `[files]` when completing `ls`.
+# NOTE: To use this variable, please make sure you have set `zstyle ':completion:*:descriptions' format '[%d]'`.
+
+### `$realpath`
+# If you are completing a path and want to access this path when previewing, then you should use `$realpath`.
+# For example, if you are completing directories in `/usr/`, `$word` will be something like `bin`, `lib`,
+# but `$realpath` will be `/usr/bin`, `/usr/lib`.
+
+### `$words`
+# Any array of your current input.
+
 typeset -ga FZF_TAB_GROUP_COLORS=(
     $'\e[38;5;1m'  $'\e[38;5;17m' $'\e[38;5;3m'   $'\e[38;5;4m'  \
     $'\e[38;5;5m'  $'\e[38;5;6m'  $'\e[38;5;16m'  $'\e[38;5;19m' \
@@ -221,9 +248,9 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
       + ''           group-colors $FZF_TAB_GROUP_COLORS \
       + ''           fzf-bindings \
-                        'enter:accept,backward-eof:abort,ctrl-a:toggle-all' \
-                        'alt-shift-down:preview-down,alt-shift-up:preview-up' \
-                        'alt-e:execute-silent({_FTB_INIT_}nvim "$realpath" < /dev/tty > /dev/tty)'
+                        'enter:accept' \
+                        'backward-eof:abort' \
+                        'ctrl-e:execute-silent({_FTB_INIT_}nvim "$realpath" < /dev/tty > /dev/tty)'
 
 zstyle+ \
   ':fzf-tab:complete' '' '' \
@@ -236,30 +263,54 @@ zstyle+ \
                       ([[ -f $r ]] && bat --style=numbers --terminal-width=$w --color=always $r) \
                         || ([[ -d $r ]] && tree -C $r | less) || (echo $r 2> /dev/null | head -200)' \
     + ':systemctl-*:*'           fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word' \
-    + ':systemctl-*:*'           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
+    + ':systemctl-*:*'           fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
     + ':figlet:option-f-1'       fzf-preview 'figlet -f $word Hello world' \
-    + ':figlet:option-f-1'       fzf-flags '--preview-window=nohidden,right:65%:wrap' \
+    + ':figlet:option-f-1'       fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
     + ':run-help:*'              fzf-preview 'autoload +X -Uz run-help; eval "() { $functions[run-help] } $word"' \
-    + ':run-help:*'              fzf-flags '--preview-window=nohidden,right:65%:wrap' \
-    + ':man:*'                   fzf-preview 'man $word' \
+    + ':run-help:*'              fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
+    + ':man:*'                   fzf-preview 'man $word | bat --color=always -l man' \
     + ':man:(^options)'          fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':ssh:*'                   fzf-preview 'dig $desc' \
-    + ':ssh:*'                   fzf-flags '--preview-window=nohidden,right:65%:wrap' \
+    + ':ssh:*'                   fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
+    + ':jq:argument-rest'           fzf-preview 'jq --color-output . "$desc"' \
+    + ':jq:argument-rest'           fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
     + ':kill:*'                  popup-pad 0 3 \
     + ':(kill|ps):argument-rest' fzf-flags '--preview-window=down:3:wrap' \
-    + ':(kill|ps):argument-rest' fzf-preview '[[ $group == "[process ID]" ]] && ps -p $word -o comm="" -w -w' \
+    + ':(kill|ps):argument-rest' fzf-preview '[[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w' \
     + ':cdr:*'                   fzf-preview 'exa -TL 3 --color=always ${~desc}' \
     + ':(exa|cd):*'              popup-pad 30 0 \
-    + ':(exa|cd|cdr|cd_):*'      fzf-flags '--preview-window=nohidden,right:45%:wrap' \
-    + ':(exa|cd|cd_):*' \
-          fzf-preview '[[ -d $realpath ]] && bkt -- exa -TL 4 --color=always $(readlink -f $realpath)' \
+    + ':((cd|cdr|cd_):*|exa:argument-*)' fzf-flags '--preview-window=nohidden,right:45%:nowrap' \
+    + ':exa:argument-*' \
+          fzf-preview '[[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "$(readlink -f $realpath)"' \
+    + ':(cd|cd_):*' \
+          fzf-preview 'zmodload -Fa zsh/parameter p:nameddirs; \
+                       nameddirs=( '"${(kv)nameddirs}"' ); local named=${(e)~${${(@s: → :)desc}[2]}}; \
+                       ([[ -d $named ]] && bkt -- exa -TL 4 --color=always -- "$named") \
+                         || ([[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "$(readlink -f $realpath)")' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-preview 'r=$(readlink -f $realpath); w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --color=always --terminal-width=$w -- $r) \
                         || ([[ -d $r ]] && bkt -- ls --color=always -- $r)' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
-    + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}'
+    + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}' \
+    + ':git-(add|dif|restore):*' fzf-preview 'git diff $word | delta' \
+    + ':git-log:*'               fzf-preview 'git log --color=always $word' \
+    + ':git-help:*'              fzf-preview 'git help $word | bat -plman --color=always'
+    # + ':git-show:*'              fzf-preview 'case "$group" in \
+    #                                            ("commit tag") git show --color=always $word ;; \
+    #                                            (*) git show --color=always $word | delta    ;; \
+    #                                           esac' \
+    # + ':git-checkout:*'          fzf-preview  'case "$group" in
+    #                                             ("modified file") git diff $word | delta                            ;;
+    #                                             ("recent commit object name") git show --color=always $word | delta ;;
+    #                                             (*) git log --color=always $word                                    ;;
+    #                                            esac' \
+    # + ':tldr:argument-1'         fzf-preview 'tldr --color always $word'
+
+# zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
+#   '(out=$(tldr --color always "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'
+
 
 # + ':updatelocal:argument-rest' \
 #       fzf-flags '--preview-window=down:5:wrap' \

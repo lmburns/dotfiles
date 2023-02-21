@@ -134,6 +134,7 @@ markup:
     - .rst
     - .rmd
     - .norg
+    - .opml
     - .pubxml
     - .xml
     - .xul

@@ -635,7 +635,7 @@ cmd jumpInteractive ${{
 
   [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
     res=$(\
-      dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases' \
+      dasel -f $XDG_DATA_HOME/rualdi/rualdi.toml -s '.aliases' \
         | perl -pe 's{ = }{ → }; s/"//g' | nl | column -t \
         | sed "${pattern}" \
         | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
@@ -815,7 +815,7 @@ cmd rsync_from_mac ${{ rsync -uvrP macbook:/Users/lucasburns/"$1" "$2" }}
 cmd massren $massren $fx
 cmd mmv $mmv -- ${${(@f)fx}:t}
 cmd f2 !f2 -f "$1"
-cmd rmspace !f2 -f '\s' -r '_' -RFx
+cmd rmspace $f2 -f '\s' -r '_' -RFx
 
 cmd wim $wim "$1"
 
@@ -1001,6 +1001,10 @@ map au unmount
 
 # == Trash Mappings == [[[
 map dd trash                  # rip
+map du %{{
+  # undo last delete
+  rip -u
+}}
 map de %{{
   # empty trash
   rip -d

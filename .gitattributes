@@ -5,7 +5,8 @@
 /.config/redshift/redshift.conf filter=git-crypt diff=git-crypt
 /.config/zsh/zsh.d/git-token.zsh filter=git-crypt diff=git-crypt
 /.config/nvim/spell/** filter=git-crypt diff=git-crypt
-
 /.config/afew/config filter=git-crypt diff=git-crypt
+/.local/share/zoxide/db.zo filter=git-crypt diff=git-crypt
+/.local/share/buku/bookmarks.db filter=git-crypt diff=git-crypt
 /.local/share/zoxide/db.zo filter=git-crypt diff=git-crypt
 /.local/share/mail/.notmuch/hooks/** filter=git-crypt diff=git-crypt

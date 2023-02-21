@@ -341,7 +341,7 @@
   # add bookmark icon for list of 'rualdi' bookmarks
   ### NEW METHOD ###
   [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && \
-    bmark_dirs=(${(@f)"$(dasel select -f $XDG_DATA_HOME/rualdi/rualdi.toml -m '.aliases.[*]')"}) || \
+    bmark_dirs=(${(@f)"$(dasel -f $XDG_DATA_HOME/rualdi/rualdi.toml -s '.aliases.all()')"}) || \
     bmark_dirs=()
 
   typeset -g POWERLEVEL9K_DIR_CLASSES=(

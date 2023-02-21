@@ -132,7 +132,7 @@ handle_other() {
     (*.iso)   iso-info --no-header -l -- "${FILE_PATH}";;
     (*.doc)   catdoc -- "${FILE_PATH}" ;;
     (*.docx)  docx2txt "${FILE_PATH}" - ;;
-    (*.json)  jq --color-output . -- "${FILE_PATH}";;
+    (*.json)  jq --color-output . -- "${FILE_PATH}" || bat -Pf --style auto -l json -- "${FILE_PATH}" ;;
     (*.asc|*.log)   bat -Pf --theme kimbro --style auto -- "${FILE_PATH}";;
     (*.ipynb) jupview -t KimbieDark -- "${FILE_PATH}" ;;
     (*.torrent) transmission-show -- "${FILE_PATH}";;
@@ -146,31 +146,41 @@ handle_other() {
   esac
 }
 
-typeset -A C
+local -A C
 C=(
-  red    $'\e[38;5;1m'  bred   $'\e[01;31m' brred   $'\e[38;5;9m'
-  green  $'\e[38;5;2m'  bgreen $'\e[01;32m' brgreen $'\e[38;5;10m'
-  yell   $'\e[38;5;3m'  byell  $'\e[01;33m' bryell  $'\e[38;5;11m'
-  blue   $'\e[38;5;4m'  bblue  $'\e[01;34m' brblue  $'\e[38;5;12m'
-  magen  $'\e[38;5;5m'  bmagen $'\e[01;35m' brmagen $'\e[38;5;13m'
-  cyan   $'\e[38;5;6m'  bcyan  $'\e[01;36m' brcyan  $'\e[38;5;14m'
-  und    $'\e[4m'       bold   $'\e[1m'     bg      $'\e[3m'
-  tb     $' \t '        nl     $'\n'        res     $'\e[0m'
+  3  $'\e[38;5;3m'  12 $'\e[38;5;12m' 13  $'\e[38;5;13m'
+  14 $'\e[38;5;14m' 16 $'\e[38;5;16m' 17  $'\e[38;5;17m'
+  18 $'\e[38;5;18m' 19 $'\e[38;5;19m' 20  $'\e[38;5;20m'
+  21 $'\e[38;5;21m' 22 $'\e[38;5;22m' 42  $'\e[38;5;42m'
+  43 $'\e[38;5;43m' 45 $'\e[38;5;45m' 47  $'\e[38;5;47m'
+  51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
+  U  $'\e[4m'       B  $'\e[1m'       bg  $'\e[3m'
+  tb $' \t '        nl $'\n'          res $'\e[0m'
+  rnl $'\e[0m\n'
 )
 
 handle_fallback() {
+  # for z ($a[@]) { match=(); pl ${z/(#b)(*[,]#)(,|)(*)/$match[1]}; pl '--'; pl $match; pl '==============' }
   local mime mime2 equals class
   class="File Type Classification"
   # The ratios of Lf's screen are 1:2:3 by default, and preview is in 3rd screen
-  equals=${${${(M)lf_ratios:#*3}:+(($COLUMNS * 3/6) - ($#class + 2)) / 2}:-18}
+  # equals=${${${(M)lf_ratios:#*3}:+(($COLUMNS * 3/6) - ($#class + 2)) / 2}:-18}
+  equals=$(( ${lf_ratios##*:} == 3 ? (($COLUMNS * 3/6) - ($#class + 2)) / 2 : 18 ))
   print -rl "$C[nl]\
-$C[brblue]$C[bold]${(l:$(( equals ))::=:):-}$C[res] \
-$class \
-$C[brblue]$C[bold]${(l:$(( equals ))::=:):-}$C[res]" && {
+$C[B]$C[52]${(l:equals::=:):-}$C[res] \
+$C[B]$C[42]${class}$C[res] \
+$C[B]$C[52]${(l:equals::=:):-}$C[res]" && {
     mime0=$(file --dereference --brief -- "${FILE_PATH}")
     mime1=$(file --dereference --mime-type --brief -- "${FILE_PATH}")
     mime2=$(mimetype -b -- "${FILE_PATH}")
-    stat -c "$C[green]$C[bold]${mime0} (${mime1}|${mime2})$C[res] $C[nl]%F $C[nl]$C[bcyan]inode: %i$C[res]" -- "${FILE_PATH}"
+    stat -c "\
+$C[B]$C[16]info:     $C[17]${mime0}$C[rnl]\
+$C[B]$C[16]mimetype: $C[18]${mime1}$C[res] $C[B]$C[12]|$C[res] $C[B]$C[18]${mime2}$C[rnl]\
+$C[B]$C[16]filetype: $C[43]%F$C[rnl]\
+$C[B]$C[16]inode:    $C[53]%i$C[rnl]\
+$C[B]$C[16]created:  $C[45]%w$C[rnl]\
+$C[B]$C[16]access:   $C[19]%x$C[rnl]\
+$C[B]$C[16]modified: $C[12]%z$C[rnl]" -- "${FILE_PATH}"
   }
     exit 1
 }

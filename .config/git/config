@@ -200,8 +200,8 @@
   subp = submodule foreach git pull
   subc = submodule foreach git co master
 
-  aliases = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\ \t => \\2/' | sort | bat
-  alias-grep = !git config --list | grep ^alias\\. | cut -c 7- | grep -Ei --color \"$1\" "#"
+  aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort | bat
+  alias-grep = !git config --list | rg '^alias\\.' | cut -c 7- | grep -Ei --color \"$1\" "#"
   a = add
   # Add origin url
   addurl = remote set-url --add origin
@@ -295,9 +295,10 @@
   # List tracked files
   tr = !git ls-tree -r $(git branch --show-current) --name-only
   # List tracked files in an actual tree with 'as-tree'
-  trr = !git ls-tree -r $(git branch --show-current) --name-only | as-tree --color always
+  trr = !git ls-tree -r $(git branch --show-current) --name-only | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
+
   # List untracked files
-  utr = ls-files --other
+  utr = !git ls-files --other | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
   ls-del = ls-files -d
   ls-mod = ls-files -m
   ls-new = ls-files --exclude-standard -o
@@ -312,8 +313,8 @@
   chg = !git changelog -x > CHANGELOG.md
   # Fzfgit
   fs = !fstat
-  fad = !fadd
-  fun = !funtrack
+  fa = !fadd
+  fu = !funtrack
   # Grab a pull request
   pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
   # Open repository in the browser

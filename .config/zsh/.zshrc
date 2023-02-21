@@ -33,14 +33,10 @@ function zflai-zprof() {
 
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
-setopt c_bases              # 0xFF instead of 16#FF
-setopt c_precedences        # use precendence of operators found in C
-setopt octal_zeroes         # 077 instead of 8#77
-
 typeset -g DIRSTACKSIZE=20
 typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
 # typeset -g SAVEHIST=10_000_000
-typeset -g SAVEHIST=$(( [#_] 10 ** 7 ))
+typeset -g SAVEHIST=$(( 10 ** 7 ))
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
 typeset -g HIST_STAMPS="yyyy-mm-dd"
@@ -136,6 +132,9 @@ setopt short_loops          # allow short forms of for, repeat, select, if, func
 # setopt brace_ccl           # expand in braces, which would not otherwise, into a sorted list
 # setopt list_types          # show type of file with indicator at end
 
+setopt c_bases              # 0xFF instead of 16#FF
+setopt c_precedences        # use precendence of operators found in C
+setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
 setopt no_flow_control # don't output flow control chars (^S/^Q)
@@ -489,10 +488,11 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
   atclone'mv -f **/*.zsh _bat' atpull'%atclone' \
     @sharkdp/bat \
     @sharkdp/hyperfine \
+  atclone'./fd --gen-completions zsh > _fd' atpull'%atclone' \
     @sharkdp/fd \
     @sharkdp/diskus \
     @sharkdp/pastel \
-  atclone'mv rip*/* .' \
+  atclone'mv rip*/* .' atpull'%atclone' \
     BurntSushi/ripgrep \
   atclone'mv -f **/**.zsh _exa' atpull'%atclone' \
     ogham/exa \
@@ -516,12 +516,11 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
 
 #  ]]] === wait'0c' - programs + man ===
 
-
 #  === wait'0c' - programs === [[[
 zt 0c light-mode null for \
   lbin'sk' dl"$(grman man/man1/ -r sk)" lman atclone'cargo br' atclone"$(mv_clean sk)" atpull'%atclone' \
     lotabout/skim \
-  id-as'skim_comp' multisrc'shell/{completion,key-bindings}.zsh' pick'/dev/null' \
+  id-as'skim_comp' multisrc'shell/key-bindings.zsh' pick'/dev/null' \
     lotabout/skim \
   id-as'sk-tmux' lbin \
   atclone"xh --download https://raw.githubusercontent.com/lotabout/skim/master/bin/sk-tmux -o sk-tmux" \
@@ -574,7 +573,7 @@ zt 0c light-mode null for \
    lbin from'gh-r' mv'yq_* -> yq' atclone'./yq shell-completion zsh > _yq' \
   atpull'%atclone' \
     mikefarah/yq \
-  lbin'das* -> dasel' from'gh-r' \
+  lbin'das* -> dasel' from'gh-r' atclone'./dasel completion zsh > _dasel' \
     TomWright/dasel \
   lbin'yj* -> yj' from'gh-r' \
     sclevine/yj \
@@ -1120,6 +1119,10 @@ export FZF_DEFAULT_OPTS="
 --prompt='❱ '
 --pointer='》'
 --marker='▍'
+--separator='━'
+--info='inline: ❰ '
+--scrollbar='█'
+--ellipsis=''
 --cycle
 $FZF_COLORS
 --reverse
@@ -1167,7 +1170,7 @@ $FZF_COLORS
 --bind='ctrl-d:half-page-down'
 --bind='ctrl-alt-u:page-up'
 --bind='ctrl-alt-d:page-down'
---bind='alt-o:replace-query+print-query'
+--bind='alt-i:replace-query+print-query'
 --bind='ctrl-e:become($EDITOR {+})'
 --bind='ctrl-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
@@ -1241,7 +1244,7 @@ export FZF_ALT_C_OPTS="
 --preview-window default:right:60%
 "
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:become(nvim {2})'"
-export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview='(exa -T {2} | less) 2>/dev/null | head -200' --scheme=path"
+export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview='(exa -T {2} | less) 2>/dev/null | head -200'"
 
 alias db='dotbare'
 export DOTBARE_DIR="${XDG_DATA_HOME}/dotfiles"
