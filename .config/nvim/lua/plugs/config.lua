@@ -793,13 +793,12 @@ function M.sandwhich()
             ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
             ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
             ["yss"] = "Surround text on line",
-            ["ygs"] = {"<Plug>(sandwich-add):normal! V<CR>", "Surround entire line"}
+            ["ygs"] = {"<Plug>(sandwich-add):normal! V<CR>", "Surround entire line"},
+            ["dss"] = "Delete automatic delimiter",
+            ["dsf"] = "Delete surrounding function"
         }
     )
 
-    -- ygv<Esc>
-
-    -- TODO: Create some insert mode mappings for these too
     wk.register(
         {
             -- ["m'"] = {"<Plug>(sandwich-add)'", "Surround with single quote (')"},
@@ -807,7 +806,7 @@ function M.sandwhich()
             -- ["mi"] = {"<Plug>(sandwich-add)*", "Surround with italics (*)"},
             -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
             ["```"] = {"<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```)"},
-            ["``;"] = {"<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```zsh)"},
+            ["``;"] = {"<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```zsh)"}
         },
         {mode = "v"}
     )
@@ -892,8 +891,10 @@ function M.targets()
         {
             ["ir"] = "Inner brace",
             ["ar"] = "Around brace",
-            ["ia"] = "Inner angle bracket",
-            ["aa"] = "Around angle bracket",
+            -- ["ia"] = "Inner angle bracket",
+            -- ["aa"] = "Around angle bracket",
+            -- ["iA"] = "Inner any bracket",
+            -- ["aA"] = "Around any bracket",
             ["iq"] = "Inner quote",
             ["aq"] = "Around quote",
             ["in"] = "Next object",
@@ -902,8 +903,6 @@ function M.targets()
             ["am"] = "Previous object",
             ["i2"] = "Inner nearest object",
             ["a2"] = "Around nearest object",
-            ["iA"] = "Inner any bracket",
-            ["aA"] = "Around any bracket",
             ["iJ"] = "Inner parameter (comma)",
             ["aJ"] = "Around parameter (comma)"
         },
@@ -919,20 +918,16 @@ function M.targets()
     -- B: below cursor off screen
     g.targets_seekRanges = "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
     -- g.targets_jumpRanges = g.targets_seekRanges
-    -- g.targets_aiAI = "aIAi"
-    --
-    -- -- Seeking next/last objects
-    -- g.targets_nl = "nN"
+    g.targets_aiAI = "aIAi"
+    -- g.targets_mapped_aiAI = 'aiAI'
+
+    -- Seeking next/last objects
     g.targets_nl = "nm"
 
-    -- map("o", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
-    -- map("x", "I", [[targets#e('o', 'i', 'I')]], { expr = true })
-    -- map("o", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
-    -- map("x", "a", [[targets#e('o', 'a', 'a')]], { expr = true })
-    -- map("o", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
-    -- map("x", "i", [[targets#e('o', 'I', 'i')]], { expr = true })
-    -- map("o", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
-    -- map("x", "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+    -- map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], { expr = true })
+    -- map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], { expr = true })
+    -- map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], { expr = true })
+    -- map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], { expr = true })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1103,7 +1098,7 @@ function M.tmux()
             ignore_buffers = {empty = false},
             -- TMUX >= 3.2: yanks (and deletes) will get redirected to system
             -- clipboard by tmux
-            redirect_to_clipboard = false,
+            redirect_to_clipboard = true,
             -- offset controls where register sync starts
             -- e.g. offset 2 lets registers 0 and 1 untouched
             register_offset = 0,
@@ -1116,7 +1111,7 @@ function M.tmux()
             -- syncs deletes with tmux clipboard as well, it is adviced to
             -- do so. Nvim does not allow syncing registers 0 and 1 without
             -- overwriting the unnamed register. Thus, ddp would not be possible.
-            sync_deletes = false,
+            sync_deletes = true,
             -- syncs the unnamed register with the first buffer entry from tmux.
             sync_unnamed = false
         },
@@ -1322,7 +1317,7 @@ function M.colorizer()
                 "vim",
                 "xml",
                 "yaml",
-                "zsh",
+                "zsh"
             },
             user_default_options = {
                 RGB = true, -- #RGB hex codes
@@ -1978,6 +1973,25 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.eregex()
     map("n", "<Leader>es", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                       SmartColumn                        │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.smartcolumn()
+    local sc = D.npcall(require, "smartcolumn")
+    if not sc then
+        return
+    end
+
+    sc.setup(
+        {
+            colorcolumn = 100,
+            disabled_filetypes = BLACKLIST_FT,
+            custom_colorcolumn = {},
+            limit_to_window = false
+        }
+    )
 end
 
 return M

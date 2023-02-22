@@ -31,7 +31,8 @@ function M.create()
                 row = 0,
                 col = 0,
                 style = "minimal",
-                zindex = 1
+                zindex = 1,
+                border = "rounded"
             }
         )
         vim.wo[shadow_winid].winhl = "Normal:Normal"

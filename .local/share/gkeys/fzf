@@ -1,0 +1,45 @@
+alt-a      : toggle-all
+ctrl-alt-a : toggle-all+accept
+ctrl-s     : toggle-sort
+alt-,      : first
+alt-.      : last
+<          : beginning-of-line
+>          : end-of-line
+page-up    : prev-history
+page-down  : next-history
+alt-(      : prev-history
+alt-)      : next-history
+alt-{      : prev-selected
+alt-}      : next-selected
+ctrl-/     : jump
+esc        : abort
+ctrl-c     : abort
+ctrl-q     : abort
+ctrl-g     : cancel
+alt-x      : unix-line-discard
+alt-c      : unix-word-rubout
+ctrl-r     : clear-selection
+alt-d      : kill-word
+?          : toggle-preview
+alt-[      : toggle-preview
+alt-]      : change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview
+alt-w      : toggle-preview-wrap
+alt-p      : preview-up
+alt-n      : preview-down
+ctrl-alt-p : preview-page-up
+ctrl-alt-n : preview-page-down
+shift-up   : preview-page-up
+shift-down : preview-page-down
+ctrl-u     : half-page-up
+ctrl-d     : half-page-down
+ctrl-alt-u : page-up
+ctrl-alt-d : page-down
+alt-o      : replace-query+print-query
+ctrl-e     : become($EDITOR {+})
+ctrl-b     : become(bat --paging=always -f {+})
+ctrl-y     : execute-silent(xsel --trim -b <<< {+})
+ctrl-]     : preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")
+alt-?      : unbind(?)
+alt-<      : unbind(<)
+alt->      : unbind(>)
+ctrl-\\    : rebind(?)+rebind(<)+rebind(>)

@@ -263,13 +263,15 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd ,,'         push-line-or-edit  # Push line to buffer-stack
   'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
   'mode=viins kj'         vi-cmd-mode        # Switch to vi-cmd mode
+  # "mode=str M-S-'"          ncd                 # Lf change dir
   'mode=str M-o'          lc                 # Lf change dir
   'mode=str M-S-O'        lfub               # Lf ueberzug
   'mode=str C-u'          lf                 # Regular lf
   'mode=str ;o'           noptions           # Edit zsh options
   'mode=+ M-.'            kf                 # Formarks like thing in rust
   'mode=+ M-,'            frd                # Cd interactively recent dirs
-  'mode=+ M-;'            fcd                # Cd interactively
+  'mode=+ M-;'            'fcd 4'            # Cd interactively depth 4
+  "mode=+ M-'"            fcd                # Cd interactively depth 1
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
   'mode=@ C-b'            bow2               # Surfraw open w3m
@@ -293,7 +295,7 @@ vbindkey -A keybindings
 
 # Surround text under cursor with quotes
 builtin bindkey -M vicmd -s ' o' 'viwS"'
-builtin bindkey -s "^[\'" 'ncd\n'
+# builtin bindkey -s '^[\"' 'ncd\n'
 
 builtin bindkey -s '\e1' "!:0 \t"        # last command
 # bindkey -s '\e2' "!:0-1 \t"      # last command + 1st argument

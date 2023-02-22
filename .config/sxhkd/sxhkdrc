@@ -155,6 +155,11 @@ mod3 + shift + bracket{left,right}
 ctrl + alt + {h,j,k,l}
     bspwm_resize {west,south,north,east} 20
 
+# Resize windows with bigger increments
+# For floating windows one can use Alt + Right Mouse click to
+super + ctrl + {h,j,k,l}
+    bspwm_resize {west,south,north,east} 50
+
 # Resize windows
 # When floating, moves sides out
 super + ctrl + alt + {h,j,k,l}
@@ -224,10 +229,6 @@ alt + {Left,Right}
 mod3 + bracket{left,right}
     bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
 
-# Toggle between fullscreen and tiled
-# super + f
-#     bspc node -t tiled || bspc node -t fullscreen
-
 mod3 + f
     bspc node -t tiled || bspc node -t fullscreen
 
@@ -243,10 +244,6 @@ mod3 + space
 # Toggle fullscreen, floating, and tiled
 # mod3 + {shift + space,space}
 #    bspc node -t {tiled,floating}
-
-# For floating windows one can use Alt + Right Mouse click to
-super + ctrl + {h,j,k,l}
-    bspwm_resize {west,south,north,east} 50
 
 # Move a floating window with the arrow keys (else use Alt + Left Mouse
 # Click to drag).  I seldom use floating windows.
@@ -279,13 +276,13 @@ mod3 + c : {Left,Down,Up,Right}
     bspc node -v {-20 0,0 20,0 -20,20 0}
 
 # ========================== Launch ==========================
-# Launch terminal
+# Launch alacritty
 super + Return
     alacritty
 
 # Launch alacritty
-super + ctrl + Return
-    alacritty
+# super + ctrl + Return
+#     alacritty
 
 # Launch tdrop
 super + alt + Return
@@ -307,10 +304,6 @@ mod3 x ; {x,b}
 mod3 + {b,v,g,p,period,s}
     {$BROWSER &>/dev/null,brave,chromium,pcmanfm,thunderbird,signal-desktop}
 
-# Run a program in a new terminal
-# alt + space
-#     dmenu-run
-
 # prs-copy
 
 # Password manager dmenu script
@@ -320,9 +313,6 @@ ctrl + alt + super + p
 # Clipboard history
 ctrl + alt + y
     rofi-greenclip
-
-# super + F9
-#   thunderbird
 
 # Media Controls
 super + F1
@@ -366,8 +356,8 @@ super + F8
     mailsync
 
 # Mount a USB drive or Android device
-super + {F9,F10}
-    {dmenumount,dmenuumount}
+# super + {F9,F10}
+#     {dmenumount,dmenuumount}
 
 Print
     flameshot full -p ~/Pictures/screenshot
@@ -418,11 +408,6 @@ mod3 + {_,shift + }n
 # mod4 + Print
 #   scrot -m -z '%Y-%m-%d_%H:%M:%S_$wx$h.png' -e 'mv $f ~/Pictures' \
 #     && notify-send -i gnome-screenshot "Screen view screenshot" "Saved image to Pictures"
-
-# Not a laptop
-XF86MonBrightness{Down,Up}
-    xbacklight {-dec 15,-inc 15}
-
 
 # =============
 # === EXTRA ===

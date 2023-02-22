@@ -544,7 +544,6 @@ ex=:\
 
 # Appears as a question mark with current font
 #
-# Hidden file icon
 # 󰘓
 #
 # Roman numerals

@@ -11,7 +11,7 @@
 
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
-alias -g W="!"
+# alias -g W="!"
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '
 alias -g CW='| cw'      RE='| tac '      F='| fzf'
@@ -43,6 +43,7 @@ alias jor="journalctl"
 alias jortoday="journalctl -xe --since=today"
 alias xmm="xmodmap"
 alias s="systemctl"
+alias se="systemctl --user"
 alias bctl="bluetoothctl"
 alias plast="last -20"
 

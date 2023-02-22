@@ -178,8 +178,8 @@ end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string|table: Augroup name. If a table, `true` can be passed to clear the group
----@param ... Autocommand[]
+---@param name string|{ [1]: string, [2]: boolean } Augroup name. If a table, `true` can be passed to clear the group
+---@param ... Autocommand|Autocommand[]
 ---@return number: Group ID of the autocommand
 M.augroup = function(name, ...)
     local id

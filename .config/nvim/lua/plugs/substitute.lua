@@ -41,9 +41,18 @@ local function init()
             ["s"] = {"<Cmd>lua require('substitute').operator()<CR>", "Substitute operator"},
             ["ss"] = {"<Cmd>lua require('substitute').line()<CR>", "Substitute line"},
             ["se"] = {"<Cmd>lua require('substitute').eol()<CR>", "Substitute EOL"},
-            ["sx"] = {"<Cmd>lua require('substitute.exchange').operator()<CR>", "Substitute exchange operator"},
-            ["sxx"] = {"<Cmd>lua require('substitute.exchange').line()<CR>", "Substitute exchange line"},
-            ["sxc"] = {"<Cmd>lua require('substitute.exchange').cancel()<CR>", "Substitute cancel"},
+            ["sx"] = {
+                "<Cmd>lua require('substitute.exchange').operator()<CR>",
+                "Substitute exchange operator"
+            },
+            ["sxx"] = {
+                "<Cmd>lua require('substitute.exchange').line()<CR>",
+                "Substitute exchange line"
+            },
+            ["sxc"] = {
+                "<Cmd>lua require('substitute.exchange').cancel()<CR>",
+                "Substitute cancel"
+            },
             ["<Leader>sr"] = {
                 "<Cmd>lua require('substitute.range').operator()<CR>",
                 "Substitute <motion><motion> operator"
@@ -51,6 +60,10 @@ local function init()
             ["sr"] = {
                 "<Cmd>lua require('substitute.range').word()<CR>",
                 "Substitute <motion> range word"
+            },
+            ["sa"] = {
+                "<Cmd>lua require('substitute.range').word()<CR>ie<CR>",
+                "Substitute range word entire file"
             },
             -- line word line line
             ["sS"] = {

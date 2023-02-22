@@ -144,7 +144,17 @@ cmd on-cd &{{
   #     ;;
   # esac
 
+  # Add to zoxide
   [[ -d "${fx:h}" ]] && zoxide add "${fx:h}"
+
+  # typeset -gx LF_LAUNCH_MARK
+  #
+  # Save a mark of the opening directory
+  # if (( ! LF_LAUNCH_MARK )) {
+  #   lf -remote "send $id mark-save 'a'"
+  #   LF_LAUNCH_MARK=1
+  #   export LF_LAUNCH_MARK
+  # }
 
   # add-zsh-hook chpwd chpwd_recent_dirs
   # zstyle ':chpwd:*' recent-dirs-file "${ZDOTDIR}/chpwd-recent-dirs"
@@ -158,10 +168,33 @@ cmd on-cd &{{
 }}
 on-cd
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                     Helper Functions                     │
+# ╰──────────────────────────────────────────────────────────╯
 
-# ┌───────────────────────────────────────────────────────────────────────────┐
-# │ Tmux                                                                      │
-# └───────────────────────────────────────────────────────────────────────────┘
+cmd echom ${{
+  local textl equals f2 f3 res B
+  f2=$'\e[38;5;52m' f3=$'\e[38;5;53m'
+  res=$'\e[0m'      B=$'\e[1m'
+  textl=${(c)#*}
+  equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
+  lf -remote "send $id echomsg \"${f2}${equals}${res} ${B}${f3}${*}${res} ${f2}${equals}${res}\""
+}}
+
+# -- Print lf id
+cmd get-id %{{
+  lf -remote "send $id echomsg \"lf-id: $id\""
+}}
+
+# -- Rename/change the pane title
+cmd rename-title ${{
+  printf "\033]2;%s\033\\" "$@"
+}}
+
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                           Tmux                           │
+# ╰──────────────────────────────────────────────────────────╯
 
 # === Tmux: quit with :q =======================================
 cmd q ${{
@@ -210,9 +243,9 @@ map @ :terminal
 map Et :nvim-tmux
 map Ev $vim "$fx"
 
-# ┌───────────────────────────────────────────────────────────────────────────┐
-# │ Commands / Functions                                                      │
-# └───────────────────────────────────────────────────────────────────────────┘
+# ╭──────────────────────────────────────────────────────────╮
+# │                   Commands / Functions                   │
+# ╰──────────────────────────────────────────────────────────╯
 # === Open: any file ===========================================
 cmd open ${{
   emulate -L zsh
@@ -1169,7 +1202,10 @@ map J half-down    # Move halfway down
 map K half-up      # Move halfway up
 
 map R reload
-map <c-n> :{{ redraw; echomsg 'succes'; }}
+map <c-n> &{{
+  lf -remote "send $id redraw"
+  lf -remote "send $id echom 'Redrawn'"
+}}
 
 map <c-l> cd-realpath
 map } cd-realpath
@@ -1380,19 +1416,5 @@ map bo $bow       # buku bookmarks
 map bc cd ~/.config
 map bi cd /run/media/lucas
 map bh cd ~
-
-# ╭──────────────────────────────────────────────────────────╮
-# │                     Helper Functions                     │
-# ╰──────────────────────────────────────────────────────────╯
-
-# -- Print lf id
-cmd get-id %{{
-  echo "lf-id: $id"
-}}
-
-# -- Rename/change the pane title
-cmd rename-title ${{
-  printf "\033]2;%s\033\\" "$@"
-}}
 
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

@@ -21,11 +21,9 @@ local api = vim.api
 local fn = vim.fn
 local env = vim.env
 local g = vim.g
-local b = vim.bo
+-- local b = vim.bo
 local o = vim.opt
 local ol = vim.opt_local
-
-local has_sourced
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                 Setting git environment                  │
@@ -44,6 +42,9 @@ local has_sourced
 --
 -- This version runs a command on every event
 -- Wilder doesn't trigger a BufWinEnter when coming back like telescope does
+
+local has_sourced
+
 nvim.autocmd.lmb__GitEnv = {
     event = {"BufRead", "BufEnter"},
     pattern = "*",
@@ -146,7 +147,7 @@ nvim.autocmd.lmb__RestoreCursor = {
                 }
             )
 
-            if fn.expand("%") == "" or types:contains(b.ft) or b.bt == "nofile" or D.is_floating_window(0) then
+            if fn.expand("%") == "" or types:contains(vim.bo.ft) or vim.bo.bt == "nofile" or D.is_floating_window(0) then
                 return
             end
 
@@ -222,13 +223,12 @@ nvim.autocmd.lmb__FormatOptions = {
             function()
                 -- Bufnr has to be captured in here, not args.buf
                 local bufnr = api.nvim_get_current_buf()
-                local ft = api.nvim_buf_get_option(bufnr, "filetype")
 
-                -- o.conceallevel = 2
-                -- o.concealcursor = "vc"
+                o.conceallevel = 2
+                o.concealcursor = "vc"
 
                 -- Allows a shared statusline
-                if ft ~= "fzf" then
+                if vim.bo[bufnr].ft ~= "fzf" then
                     ol.laststatus = 3
                 end
             end
@@ -247,25 +247,6 @@ nvim.autocmd.lmb__ColorschemeSetup = {
     command = function()
         vim.defer_fn(
             function()
-                hl.all(
-                    {
-                        TSVariableBuiltin = {default = true, gui = "none"},
-                        TSTypeBuiltin = {default = true, gui = "none"},
-                        TSProperty = {default = true, gui = "none"},
-                        TSVariable = {default = true, gui = "none"},
-                        TSKeyword = {default = true, gui = "none"},
-                        TSConditional = {default = true, gui = "none"},
-                        TSString = {default = true, gui = "none"},
-                        TSKeywordFunction = {default = true, gui = "none"},
-                        Function = {default = true, gui = "bold"},
-                        Todo = {default = true, bg = "none"},
-                        QuickFixLine = {default = true, fg = "none"}
-                        -- TSConstBuiltin = {default = true, gui = "none"},
-                        -- TSMethod = {default = true, gui = "bold"},
-                        -- Hlargs = {link = "TSParameter"} -- This overrides TSParameter
-                    }
-                )
-
                 if g.colors_name ~= "kimbox" then
                     hl.all(
                         {
@@ -277,7 +258,17 @@ nvim.autocmd.lmb__ColorschemeSetup = {
                         {
                             Function = {default = true, bold = true},
                             TSFunction = {default = true, bold = true},
-                            TSFuncBuiltin = {link = "TSFunction", bold = true}
+                            TSFuncBuiltin = {link = "TSFunction", bold = true},
+                            TSVariableBuiltin = {default = true, gui = "none"},
+                            TSTypeBuiltin = {default = true, gui = "none"},
+                            TSProperty = {default = true, gui = "none"},
+                            TSVariable = {default = true, gui = "none"},
+                            TSKeyword = {default = true, gui = "none"},
+                            TSConditional = {default = true, gui = "none"},
+                            TSString = {default = true, gui = "none"},
+                            TSKeywordFunction = {default = true, gui = "none"},
+                            Todo = {default = true, bg = "none"},
+                            QuickFixLine = {default = true, fg = "none"}
                         }
                     )
                 end
@@ -308,9 +299,9 @@ nvim.autocmd.lmb__DisableUndofile = {
         command = function(args)
             vim.bo[args.buf].undofile = false
 
-            -- if D.plugin_loaded('fundo') then
-            --     require('fundo').disable()
-            -- end
+            if D.plugin_loaded("fundo") then
+                require("fundo").disable()
+            end
         end
     },
     {
@@ -319,9 +310,9 @@ nvim.autocmd.lmb__DisableUndofile = {
         command = function(args)
             vim.bo[args.buf].undofile = false
 
-            -- if D.plugin_loaded('fundo') then
-            --     require('fundo').disable()
-            -- end
+            if D.plugin_loaded("fundo") then
+                require("fundo").disable()
+            end
         end
     }
 }
@@ -418,31 +409,74 @@ local split_should_return = function()
     return false
 end
 
+local debounced
 nvim.autocmd.lmb__Help = {
     {
         event = "BufEnter",
         pattern = "*.txt",
         command = function(args)
             local bufnr = args.buf
-            if b[bufnr].bt == "help" then
+            if vim.bo[bufnr].bt == "help" then
                 if split_should_return() then
                     return
                 end
 
-                -- Fix, somwhere this is not allowing me to resize window
-                local width = math.floor(vim.o.columns * 0.75)
-                -- pcall needed when opening a TOC inside a help page and returning to help page
-                pcall(cmd.wincmd, "L")
-                cmd("vertical resize " .. width)
-                map("n", "qq", "helpclose", {cmd = true, buffer = bufnr})
+                -- map("n", "qq", "helpclose", {cmd = true, buffer = bufnr})
+                map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
         end,
-        desc = "Equalize and create mapping for help pages"
+        desc = "Create mapping for help pages"
     },
     {
-        -- This is ran more than once
-        -- NOTE: Using help for this won't open vertical when opening the same thing twice in a row
-        --      since the FileType autocmd is only ran once
+        event = "BufEnter",
+        pattern = "*.txt",
+        once = false,
+        command = function(args)
+            local bufnr = args.buf
+            if vim.bo[bufnr].bt == "help" then
+                if not debounced then
+                    debounced =
+                        debounce:new(
+                        function()
+                            -- pcall needed when opening a TOC inside a help page and returning to help page
+                            pcall(cmd.wincmd, "L")
+                            local width = math.floor(vim.o.columns * 0.75)
+                            cmd("vertical resize " .. width)
+                        end,
+                        0
+                    )
+                end
+                debounced()
+            end
+        end,
+        desc = "Equalize help page window"
+    },
+    {
+        event = "BufLeave",
+        pattern = "*.txt",
+        command = function(args)
+            -- Prevents resize from happening when going from Help buffer => Other buffer
+            local bufnr = args.buf
+            if vim.bo[bufnr].bt == "help" then
+                debounced = function()
+                end
+            end
+        end,
+        desc = "Equalize help page window (set debounce to empty)"
+    },
+    {
+        event = "BufWinLeave",
+        pattern = "*.txt",
+        command = function(args)
+            -- Allows resize to happen when closing Help buffer & opening it again
+            local bufnr = args.buf
+            if vim.bo[bufnr].bt == "help" then
+                debounced = nil
+            end
+        end,
+        desc = "Equalize help page window (reset debounce)"
+    },
+    {
         event = "FileType",
         pattern = {"man"},
         once = false,
@@ -549,7 +583,7 @@ nvim.autocmd.lmb__SmartClose = {
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
                 ol.cursorline = false
-                -- vim.wo.cursorline = true
+            -- vim.wo.cursorline = true
             end
 
             -- if bufname:match("%[Wilder Float %d%]") then
@@ -724,21 +758,6 @@ do
         desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
     }
 end
-
--- === Auto Resize on Resize Event === [[[
-do
-    local o = vim.o
-
-    nvim.autocmd.lmb__VimResize = {
-        {
-            event = {"VimEnter", "VimResized"},
-            command = function()
-                o.previewheight = math.floor(o.lines / 3)
-            end,
-            desc = "Update previewheight as per the new Vim size"
-        }
-    }
-end -- ]]]
 
 -- === Custom file type settings === [[[
 nvim.autocmd.lmb__CustomFileType = {

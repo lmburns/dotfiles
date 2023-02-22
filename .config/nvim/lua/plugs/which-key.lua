@@ -11,7 +11,7 @@ local utils = require("common.utils")
 local map = utils.map
 
 function M.setup()
-    -- Workaround until WhichKey has autocmds to disable it for certain filetypes
+    -- This still allows to check variables, etc.
     local show = wk.show
     wk.show = function(keys, opts)
         ---@diagnostic disable-next-line: undefined-field
@@ -36,7 +36,6 @@ function M.setup()
                 suggestions = 20 -- how many suggestions should be shown in the list?
             },
             presets = {
-                -- adds help for a bunch of default keybindings
                 operators = true, -- adds help for operators like d, y, ... and registers them for motion
                 motions = true, -- adds help for motions
                 text_objects = true, -- help for text objects triggered after entering an operator
@@ -46,22 +45,23 @@ function M.setup()
                 g = true -- bindings for prefixed with g
             }
         },
-        -- NOTE: Only gq works here
+        -- NOTE: Only gq/s works here
         operators = {
             -- add operators that will trigger motion and text object completion
+            -- s = "Substitue",
+            -- sx = "Substitue",
             gq = "Format",
-            y = "Yank",
+            -- y = "Yank",
             gc = "Comments",
-            ga = "Easy align",
-            ys = "Surround",
-            -- s = "Substitute",
+            ga = "EasyAlign",
+            -- ys = "Surround",
             ['"_d'] = "Delete"
         },
         key_labels = {},
         icons = {
             breadcrumb = "»", -- symbol used in the command line area that shows active key combo
-            separator = "➜", -- symbol used between a key and it's label
-            group = "+" -- symbol prepended to a group
+            separator = "", -- 輪淪‣ symbol used between a key and it's label
+            group = "󰫢" -- 󰫢 symbol prepended to a group
         },
         popup_mappings = {
             scroll_down = "<c-d>", -- binding to scroll down inside the popup
@@ -80,18 +80,25 @@ function M.setup()
             spacing = 3, -- spacing between columns
             align = "left" -- align columns left, center or right
         },
+        ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
         -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
         hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"}, -- hide mapping boilerplate
         show_help = true, -- show help message on the command line when the popup is visible
-        ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
-        triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
+        show_keys = true, -- show the currently pressed key and its label as a message in the command line
         triggers = "auto",
+        triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            c = {},
-            n = {"s"}
+            c = {}
+            -- n = {"s"}
             -- o = {"d", '"_d'}
+        },
+        -- disable the WhichKey popup for certain buf types and file types.
+        -- Disabled by deafult for Telescope
+        disable = {
+            buftypes = {"terminal"},
+            filetypes = {"TelescopePrompt", "Telescope", "toggleterm", "floaterm"}
         }
     }
 end
@@ -105,7 +112,7 @@ local function init()
 
     -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
     map("n", "d", '"_d', {desc = "Delete blackhole"})
-    map("i", "<C-A-w>", "<Esc><Cmd>WhichKey '' i<CR>")
+    map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>")
     map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
 
     -- The reason why some of these are here is because they don't always trigger (some never do)

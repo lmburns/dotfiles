@@ -138,18 +138,20 @@ local function init()
     -- Insert mode tips
     -- <,'>:EasyAlign **/[\t]\+/
 
-    map("n", "ga", "<Plug>(EasyAlign)")
-    map("x", "ga", "<Plug>(EasyAlign)")
-    map("x", "<Leader>ga", "<Plug>(LiveEasyAlign)")
+    map("n", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})
+    map("x", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})
+    map("x", "<Leader>ga", "<Plug>(LiveEasyAlign)", {desc = "LiveEasyAlign"})
     map(
         "x",
         "<Leader>gi",
-        [[:EasyAlign//ig['Comment']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]]
+        [[:EasyAlign//ig['Comment']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]],
+        {desc = "EasyAlign ig['Comment']"}
     )
     map(
         "x",
         "<Leader>gs",
-        [[:EasyAlign//ig['String']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]]
+        [[:EasyAlign//ig['String']<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>]],
+        {desc = "EasyAlign ig['String']"}
     )
 end
 

@@ -461,12 +461,6 @@ local function init()
         {nargs = "?", complete = "dir", bang = true}
     )
 
-    -- LS
-    cmd [[
-  command! -bang -complete=dir -nargs=? LS
-    \ call fzf#run(fzf#wrap({'source': 'ls', 'dir': <q-args>}, <bang>0))
-  ]]
-
     -- Conf
     cmd [[
   command! -bang Conf
@@ -478,26 +472,6 @@ local function init()
   command! -bang Proj
     \ call fzf#vim#files('~/projects', fzf#vim#with_preview(), <bang>0)
   ]]
-
-    -- AF
-    cmd [[
-  command! -nargs=? -complete=dir AF
-    \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
-      \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore
-      \ . '.expand(<q-args>) })))
-  ]]
-
-    -- Rg
-    --   cmd [[
-    -- command! -bang -nargs=* Rg
-    --   \ call fzf#vim#grep(
-    --     \ 'rg --column --line-number --hidden --smart-case '
-    --       \ . '--no-heading --color=always '
-    --       \ . shellescape(<q-args>),
-    --       \ 1,
-    --       \ {'options':  '--delimiter : --nth 4..'},
-    --       \ 0)
-    -- ]]
 
     -- RipgrepFzf
     cmd [[
@@ -653,9 +627,11 @@ local function init()
         {
             event = "FileType",
             pattern = "fzf",
-            command = function()
+            command = function(args)
+                local bufnr = args.buf
                 require("plugs.fzf").prepare_ft()
-                map("t", "<Esc>", "<C-c>", {buffer = true, desc = "Use escape with FZF"})
+                map("t", "<Esc>", "<C-c>", {buffer = bufnr, desc = "Use escape with FZF"})
+                utils.del_keymap("t", "<C-c>", {buffer = bufnr})
             end
         },
         {

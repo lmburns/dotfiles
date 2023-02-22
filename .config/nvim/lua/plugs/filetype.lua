@@ -74,7 +74,8 @@ function M.setup()
                 [".rgignore"] = "gitignore",
                 [".npmignore"] = "gitignore",
                 [".clang-format"] = "yaml",
-                [".lua-format"] = "yaml"
+                [".lua-format"] = "yaml",
+                ["fonts.conf"] = "xml"
             },
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},

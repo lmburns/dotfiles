@@ -1,27 +1,28 @@
 #!/usr/bin/env zsh
 
-setopt noclobber noglob nounset
-
-# IFS="${$(printf '%b_' '\n')%_}"
+setopt noclobber noglob nounset extendedglob
 
 # Arguments:
-local FILE_PATH="${1}"         # Full path of the highlighted file
-local WIDTH="${2}"
-local HEIGHT="${3}"
-local X_COORD="${4}"
+local filepath="${1}"         # Full path of the highlighted file
+local width="${2}"
+local height="${3}"
+local x_coord="${4}"
 local Y_COORD="${5}"
 integer unhandled=0
 
-local FILE_ABSPATH="${FILE_PATH:A}"
-local FILE_EXTENSION="${FILE_PATH##*.}"
+local FILE_ABSPATH="${filepath:A}"
+local FILE_EXTENSION="${filepath##*.}"
 local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
 
 # Settings:
 local HIGHLIGHT_SIZE_MAX=262143  # 256KiB
-local HIGHLIGHT_TABWIDTH=8
+local HIGHLIGHT_TABwidth=8
 local MAXLN=200
-# local MIMETYPE="$(file --dereference --brief --mime-type -- "${FILE_PATH}")"
-local MIMETYPE="$(mimetype -b -- "${FILE_PATH}")"
+
+# This gives way more specific mimetypes
+# i.e., `.lua` = text/x-lua, not text/plain
+local MIMETYPE="$(mimetype -b -- "${filepath}")"
+# local MIMETYPE="$(file --dereference --brief --mime-type -- "${filepath}")"
 
 # Functions:
 try() { output=$(eval '"$@"'); }
@@ -43,24 +44,24 @@ prev-image() {
     command rjo \
       "action=add" \
       "identifier=PREVIEW" \
-      "x=\"$X_COORD\"" \
+      "x=\"$x_coord\"" \
       "y=\"$Y_COORD\"" \
-      "width=\"$(( WIDTH - 1 ))\"" \
-      "height=\"$(( HEIGHT - 1 ))\"" \
+      "width=\"$(( width - 1 ))\"" \
+      "height=\"$(( height - 1 ))\"" \
       "scaler=contain" \
       "path=$1" >"$FIFO_UEBERZUG"
   else
     # Handle non-ueberzug
     case "${MIMETYPE}" in
       (image/*)
-        chafa --fill=block --symbols=block --size "$(( WIDTH - 4 ))"x"${HEIGHT}" -- "$1"
+        chafa --fill=block --symbols=block --size "$(( width - 4 ))"x"${height}" -- "$1"
       ;;
       (video/*)
         mediainfo -- "$1"
       ;;
      (pdf/*)
         pdftotext -l 10 -nopgbrk -q -- "$1" - && \
-          { dump | trim | fmt -s -w $WIDTH; exit 0; }
+          { dump | trim | fmt -s -w $width; exit 0; }
       ;;
     esac
   fi
@@ -70,40 +71,40 @@ handle_mime() {
   local mimetype="${1}"
   case "${mimetype}" in
     (inode/directory)
-      exa -T -- "${FILE_PATH}"
+      exa -T -- "${filepath}"
     ;;
     (text/html)
-      w3m -dump -- "${FILE_PATH}"
-      # bat -Pf --theme kimbro --style auto -l html -- "${FILE_PATH}" ;;
+      w3m -dump -- "${filepath}"
+      # bat -Pf --theme kimbro --style auto -l html -- "${filepath}" ;;
     ;;
     (text/troff)
       # color isn't shown
-      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${FILE_PATH}"
+      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${filepath}"
     ;;
     (text/csv)
-      tidy-viewer -n 30 <$FILE_PATH
-      # bat -Pf -l csv ${FILE_PATH} ;;
+      tidy-viewer -n 30 <$filepath
+      # bat -Pf -l csv ${filepath} ;;
     ;;
     (text/* | */xml | application/javascript)
-      bat -Pf --tabs "${HIGHLIGHT_TABWIDTH}" --theme kimbro --style auto -- "${FILE_PATH}"
+      bat -Pf --tabs "${HIGHLIGHT_TABwidth}" --theme kimbro --style auto -- "${filepath}"
     ;;
     (application/pgp-encrypted)
-      bat -Pf --theme kimbro --style auto --j "${FILE_PATH}"
+      bat -Pf --theme kimbro --style auto --j "${filepath}"
     ;;
     (application/zip)
-      atool --list -- "${FILE_PATH}"
+      atool --list -- "${filepath}"
     ;;
     (image/*)
-      prev-image "$FILE_PATH"
-      # prev-image "$FILE_PATH" "$WIDTH" "$HEIGHT" "$X_COORD" "$Y_COORD"
+      prev-image "$filepath"
+      # prev-image "$filepath" "$width" "$height" "$x_coord" "$Y_COORD"
     ;;
     (audio/*|application/octet-stream)
-      mediainfo -- "$FILE_PATH"
+      mediainfo -- "$filepath"
     ;;
     (video/*)
       CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
         stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
-      [[ ! -f "$CACHE" ]] && command ffmpegthumbnailer -i "$FILE_PATH" -o "$CACHE" -s 0
+      [[ ! -f "$CACHE" ]] && command ffmpegthumbnailer -i "$filepath" -o "$CACHE" -s 0
       prev-image "$CACHE"
     ;;
     (*/pdf)
@@ -113,7 +114,7 @@ handle_mime() {
       prev-image "$CACHE.jpg"
     ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-      docx2txt -- "${FILE_PATH}"
+      docx2txt -- "${filepath}"
     ;;
     (*)
       unhandled=1
@@ -123,26 +124,26 @@ handle_mime() {
 
 
 handle_other() {
-  case "${FILE_PATH}" in
-    (*.tar)   tar tf -- "${FILE_PATH}";;
-    (*.rar)   unrar l -- "${FILE_PATH}";;
-    (*.7z) 7z l -- "${FILE_PATH}";;
-    (*.[1-8]) man -- "${FILE_PATH}" | col -b ;;
-    (*.o)     nm -- "${FILE_PATH}" | less ;;
-    (*.iso)   iso-info --no-header -l -- "${FILE_PATH}";;
-    (*.doc)   catdoc -- "${FILE_PATH}" ;;
-    (*.docx)  docx2txt "${FILE_PATH}" - ;;
-    (*.json)  jq --color-output . -- "${FILE_PATH}" || bat -Pf --style auto -l json -- "${FILE_PATH}" ;;
-    (*.asc|*.log)   bat -Pf --theme kimbro --style auto -- "${FILE_PATH}";;
-    (*.ipynb) jupview -t KimbieDark -- "${FILE_PATH}" ;;
-    (*.torrent) transmission-show -- "${FILE_PATH}";;
-    (*.tgz|*.tar.gz)   tar tzf -- "${FILE_PATH}";;
-    (*.tar.bz2|*.tbz2) tar tjf -- "${FILE_PATH}";;
-    (*.tar.txz|*.txz)  xz --list -- "${FILE_PATH}";;
-    (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${FILE_PATH}";;
-    (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${FILE_PATH}";;
-    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${FILE_PATH}" ;;
-    (*) (( unhandled )) && { bat -Pf --theme kimbro --style auto -- "${FILE_PATH}" } ;;
+  case "${filepath}" in
+    (*.tar)   tar tf -- "${filepath}";;
+    (*.rar)   unrar l -- "${filepath}";;
+    (*.7z) 7z l -- "${filepath}";;
+    (*.[1-8]) man -- "${filepath}" | col -b ;;
+    (*.o)     nm -- "${filepath}" | less ;;
+    (*.iso)   iso-info --no-header -l -- "${filepath}";;
+    (*.doc)   catdoc -- "${filepath}" ;;
+    (*.docx)  docx2txt "${filepath}" - ;;
+    (*.json)  jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}" ;;
+    (*.asc|*.log)   bat -Pf --theme kimbro --style auto -- "${filepath}";;
+    (*.ipynb) jupview -t KimbieDark -- "${filepath}" ;;
+    (*.torrent) transmission-show -- "${filepath}";;
+    (*.tgz|*.tar.gz)   tar tzf -- "${filepath}";;
+    (*.tar.bz2|*.tbz2) tar tjf -- "${filepath}";;
+    (*.tar.txz|*.txz)  xz --list -- "${filepath}";;
+    (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${filepath}";;
+    (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${filepath}";;
+    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${filepath}" ;;
+    (*) (( unhandled )) && { bat -Pf --theme kimbro --style auto -- "${filepath}" } ;;
   esac
 }
 
@@ -160,8 +161,8 @@ C=(
 )
 
 handle_fallback() {
-  # for z ($a[@]) { match=(); pl ${z/(#b)(*[,]#)(,|)(*)/$match[1]}; pl '--'; pl $match; pl '==============' }
-  local mime mime2 equals class
+  local t mime1 mime2 equals class sep
+  local -a mime0
   class="File Type Classification"
   # The ratios of Lf's screen are 1:2:3 by default, and preview is in 3rd screen
   # equals=${${${(M)lf_ratios:#*3}:+(($COLUMNS * 3/6) - ($#class + 2)) / 2}:-18}
@@ -170,17 +171,19 @@ handle_fallback() {
 $C[B]$C[52]${(l:equals::=:):-}$C[res] \
 $C[B]$C[42]${class}$C[res] \
 $C[B]$C[52]${(l:equals::=:):-}$C[res]" && {
-    mime0=$(file --dereference --brief -- "${FILE_PATH}")
-    mime1=$(file --dereference --mime-type --brief -- "${FILE_PATH}")
-    mime2=$(mimetype -b -- "${FILE_PATH}")
+    sep=" $C[18]|$C[17] "
+    t="$(file --dereference --brief -- "${filepath}")"
+    mime0=( ${${${(@s:,:)t}##[[:space:]]##}%%[[:space:]]##} )
+    mime1="$(file --dereference --mime-type --brief -- "${filepath}")"
+    mime2="$(mimetype -b -- "${filepath}")"
     stat -c "\
-$C[B]$C[16]info:     $C[17]${mime0}$C[rnl]\
+$C[B]$C[16]info:     $C[17]${(pj:$sep:)mime0}$C[rnl]\
 $C[B]$C[16]mimetype: $C[18]${mime1}$C[res] $C[B]$C[12]|$C[res] $C[B]$C[18]${mime2}$C[rnl]\
 $C[B]$C[16]filetype: $C[43]%F$C[rnl]\
 $C[B]$C[16]inode:    $C[53]%i$C[rnl]\
 $C[B]$C[16]created:  $C[45]%w$C[rnl]\
 $C[B]$C[16]access:   $C[19]%x$C[rnl]\
-$C[B]$C[16]modified: $C[12]%z$C[rnl]" -- "${FILE_PATH}"
+$C[B]$C[16]modified: $C[12]%z$C[rnl]" -- "${filepath}"
   }
     exit 1
 }

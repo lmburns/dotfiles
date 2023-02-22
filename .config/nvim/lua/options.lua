@@ -140,7 +140,7 @@ o.formatoptions = {
     t = false, -- Autowrap lines using text width value
     p = true, -- Don't break lines at single spaces that follow periods
     o = false, --- Automatically insert comment leader after <enter>
-    ["/"] = true, -- When 'o' included: don't insert comment leader for a // comment after statement
+    ["/"] = true, -- When 'o' included: don't insert comment leader for // comment after statement
 }
 
 -- A pattern that is used to recognize a list header. This is used for the "n"

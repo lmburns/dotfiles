@@ -262,7 +262,10 @@ zstyle+ \
           fzf-preview 'r=$realpath; w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --style=numbers --terminal-width=$w --color=always $r) \
                         || ([[ -d $r ]] && tree -C $r | less) || (echo $r 2> /dev/null | head -200)' \
-    + ':systemctl-*:*'           fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word' \
+    + ':systemctl-*:*' \
+          fzf-preview 'local user; \
+                       [[ $words == *--user* || $words == ^se ]] && user="--user"; \
+                       SYSTEMD_COLORS=1 systemctl $user status $word' \
     + ':systemctl-*:*'           fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
     + ':figlet:option-f-1'       fzf-preview 'figlet -f $word Hello world' \
     + ':figlet:option-f-1'       fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
@@ -294,6 +297,7 @@ zstyle+ \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}' \
+    + ':tldr:argument-1'         fzf-preview 'tldr --color always $word' \
     + ':git-(add|dif|restore):*' fzf-preview 'git diff $word | delta' \
     + ':git-log:*'               fzf-preview 'git log --color=always $word' \
     + ':git-help:*'              fzf-preview 'git help $word | bat -plman --color=always'
@@ -306,7 +310,6 @@ zstyle+ \
     #                                             ("recent commit object name") git show --color=always $word | delta ;;
     #                                             (*) git log --color=always $word                                    ;;
     #                                            esac' \
-    # + ':tldr:argument-1'         fzf-preview 'tldr --color always $word'
 
 # zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
 #   '(out=$(tldr --color always "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'

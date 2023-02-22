@@ -1,5 +1,7 @@
 local M = {}
 
+-- TODO: Change quickfix view to show mark in first column
+
 local D = require("dev")
 local marks = D.npcall(require, "marks")
 if not marks then
@@ -30,7 +32,7 @@ function M.setup()
         -- can be either a table with all/none of the keys, or a single number, in which case
         -- the priority applies to all marks.
         -- default 10.
-        sign_priority = {lower = 10, upper = 15, builtin = 8, bookmark = 20},
+        sign_priority = {lower = 10, upper = 15, builtin = 9, bookmark = 20},
         -- disables mark tracking for specific filetypes. default {}
         excluded_filetypes = _t(BLACKLIST_FT):filter(
             function(i)
@@ -41,20 +43,20 @@ function M.setup()
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
         -- default virt_text is "".
-        bookmark_0 = {sign = "", virt_text = "Group0"},
-        bookmark_1 = {sign = "◉"},
-        bookmark_2 = {sign = "○"},
-        bookmark_3 = {sign = "✸"},
-        bookmark_4 = {sign = "✿"},
-        bookmark_5 = {sign = ""},
-        mappings = {}
-        -- mappings = {
-        --   set_next = "m,",
-        --   next = "m]",
-        --   preview = "m;",
-        --   set_bookmark0 = "m0",
-        --   prev = "m[",
-        -- },
+        bookmark_0 = {sign = "", virt_text = " Bookmark 0 ", annotate = false},
+        bookmark_1 = {sign = "", virt_text = " Bookmark 1 "},
+        bookmark_2 = {sign = "○", virt_text = "○ Bookmark 2 ○"},
+        bookmark_3 = {sign = "◉", virt_text = "◉ Bookmark 3 ◉"},
+        bookmark_4 = {sign = "✿", virt_text = "✿ Bookmark 4 ✿"},
+        bookmark_5 = {sign = "", virt_text = " Bookmark 5 "},
+        bookmark_6 = {sign = "", virt_text = " Bookmark 6 "},
+        bookmark_7 = {sign = "", virt_text = " Bookmark 7 "},
+        bookmark_8 = {sign = "󰸕", virt_text = "󰸕 Bookmark 8 󰸕"},
+        bookmark_9 = {sign = "", virt_text = " Bookmark 9 "},
+        bookmark_10 = {sign = "󰫢", virt_text = "󰫢 Bookmark 10 󰫢"},
+        mappings = {
+            annotate = "m'"
+        }
     }
 end
 
@@ -79,7 +81,30 @@ local function init()
         {
             ["qm"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
             ["qM"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
-            ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"}
+            ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
+            ["dm="] = "Marks: delete mark under cursor",
+            ["dm-"] = "Marks: delete all marks on line",
+            ["dm<Space>"] = "Marks: delete all marks in buffer",
+            ["m,"] = "Marks: set next alphabetically",
+            ["m;"] = "Marks: toggle next alphabetically",
+            ["m]"] = "Marks: go to next",
+            ["m["] = "Marks: go to prev",
+            ["m:"] = "Marks: show preview",
+            ["m/"] = {"<Plug>(Marks-preview)", "Marks: show preview"},
+            ["m}"] = "Marks: go to next bookmark",
+            ["m{"] = "Marks: go to prev bookmark",
+            ["m'"] = "Marks: annotate bookmark",
+            ["m0"] = "Marks: set bookmark0",
+            ["m1"] = "Marks: set bookmark1",
+            ["m2"] = "Marks: set bookmark2",
+            ["m3"] = "Marks: set bookmark3",
+            ["m4"] = "Marks: set bookmark4",
+            ["m5"] = "Marks: set bookmark5",
+            ["m6"] = "Marks: set bookmark6",
+            ["m7"] = "Marks: set bookmark7",
+            ["m8"] = "Marks: set bookmark8",
+            ["m9"] = "Marks: set bookmark9",
+            ["m10"] = "Marks: set bookmark10",
         }
     )
 
@@ -92,6 +117,7 @@ init()
 -- m,              Set the next available alphabetical (lowercase) mark
 -- m;              Toggle the next available mark at the current line
 -- dmx             Delete mark x
+-- dm=             Delete the bookmark under the cursor.
 -- dm-             Delete all marks on the current line
 -- dm<space>       Delete all marks in the current buffer
 -- m]              Move to next mark
@@ -105,6 +131,5 @@ init()
 --                 the cursor. Works across buffers.
 -- m{              Move to the previous bookmark having the same type as the bookmark under
 --                 the cursor. Works across buffers.
--- dm=             Delete the bookmark under the cursor.
 
 return M

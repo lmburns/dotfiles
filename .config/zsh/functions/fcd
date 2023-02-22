@@ -7,7 +7,7 @@ local dir=$(\
   [[ "$1" = <-> ]] && {
     fd ${2:-.} -d${1} --strip-cwd-prefix --follow -td
   } || {
-    fd ${2:-.} -d1 --prune --strip-cwd-prefix --follow -td
+    fd ${1:-.} -d1 --prune --strip-cwd-prefix --follow -td
   }
 } \
   | lscolors \

@@ -394,21 +394,23 @@ local function init()
             }
         },
         filetypes = {
-            "packer",
-            "vista",
-            "coctree",
+            -- aerial
+            "DiffViewFileStatus",
             "NeogitStatus",
-            "undotree",
             "TelescopePrompt",
-            "tsplayground",
-            "dapui_scopes",
+            "coctree",
             "dapui_breakpoints",
+            "dapui_scopes",
             "dapui_stacks",
             "dapui_watches",
+            "floaterm",
             "man",
             "neoterm",
-            "floaterm"
-        } -- aerial
+            "packer",
+            "tsplayground",
+            "undotree",
+            "vista"
+        }
     }
 
     lualine.setup(

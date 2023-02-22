@@ -259,6 +259,7 @@ return packer.startup(
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+            use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
 
             use(
                 {
@@ -747,7 +748,8 @@ return packer.startup(
             use({"wellle/targets.vim", conf = "targets"})
             use({"andymass/vim-matchup", conf = "matchup"})
 
-            -- "AckslD/nvim-trevJ.lua",
+            -- bennypowers/splitjoin.nvim
+            -- "AckslD/nvim-trevJ.lua"
             use(
                 {
                     "aarondiel/spread.nvim",
@@ -797,6 +799,7 @@ return packer.startup(
                         {"n", "ss"},
                         {"n", "se"},
                         {"n", "sr"},
+                        {"n", "sa"},
                         {"n", "<Leader>sr"},
                         {"n", "sS"},
                         {"n", "sx"},

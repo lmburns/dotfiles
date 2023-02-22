@@ -1158,6 +1158,7 @@ $FZF_COLORS
 --bind='ctrl-r:clear-selection'
 --bind='alt-d:kill-word'
 --bind='?:toggle-preview'
+--bind='alt-[:toggle-preview'
 --bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
 --bind='alt-w:toggle-preview-wrap'
 --bind='alt-p:preview-up'
@@ -1170,7 +1171,7 @@ $FZF_COLORS
 --bind='ctrl-d:half-page-down'
 --bind='ctrl-alt-u:page-up'
 --bind='ctrl-alt-d:page-down'
---bind='alt-i:replace-query+print-query'
+--bind='alt-o:replace-query+print-query'
 --bind='ctrl-e:become($EDITOR {+})'
 --bind='ctrl-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
@@ -1178,6 +1179,7 @@ $FZF_COLORS
 --bind='alt-?:unbind(?)'
 --bind='alt-<:unbind(<)'
 --bind='alt->:unbind(>)'
+--bind='ctrl-\\:rebind(?)+rebind(<)+rebind(>)'
 --bind='change:first'"
 
 # --bind=\"alt-':beginning-of-line\"

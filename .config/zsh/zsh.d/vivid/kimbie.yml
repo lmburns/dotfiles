@@ -122,13 +122,13 @@ core:
     font-style: bold
 
   character_device:
-    foreground: yellow
-    background: black
+    foreground: orange
+    # background: black
     font-style: bold
 
   block_device:
-    foreground: yellow
-    background: black
+    foreground: orange
+    # background: black
     font-style: bold
 
   normal_text:
@@ -136,10 +136,13 @@ core:
 
   other_writable: {}
 
-  sticky: {}
+  sticky:
+    foreground: light_red
+    font-style: bold
 
   sticky_other_writable:
-    {}
+    foreground: light_red
+    font-style: bold
     # foreground; black
     # background: green
 
