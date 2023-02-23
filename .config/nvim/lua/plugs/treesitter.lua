@@ -714,13 +714,13 @@ M.setup_treesurfer = function()
 
     -- map("n", "<C-A-.>", _(sts.targeted_jump, filter), {desc = "Jump to a main node"})
     map("n", "<C-A-,>", _(sts.targeted_jump, filter), {desc = "Jump to any node"})
-    map("n", "<C-A-[>", _(sts.filtered_jump, filter, false), {desc = "Jump to previous important node"})
-    map("n", "<C-A-]>", _(sts.filtered_jump, filter, true), {desc = "Jump to next important node"})
-    map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Jump previous main node"})
-    map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Jump next main node"})
+    map("n", "<C-A-[>", _(sts.filtered_jump, filter, false), {desc = "Prev important node"})
+    map("n", "<C-A-]>", _(sts.filtered_jump, filter, true), {desc = "Next important node"})
+    map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Prev main node"})
+    map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Next main node"})
 
-    map("n", "<Left>", _(sts.filtered_jump, vars, false), {desc = "Jump to previous variable dec"})
-    map("n", "<Right>", _(sts.filtered_jump, vars, true), {desc = "Jump to next variable dec"})
+    map("n", "<Left>", _(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
+    map("n", "<Right>", _(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 
     map(
         "n",
@@ -769,7 +769,7 @@ M.setup_treesurfer = function()
     map("n", "vm", '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>', {desc = "Select current node"})
 
     map("x", "<A-]>", '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>', {desc = "Next node"})
-    map("x", "<A-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Previous node"})
+    map("x", "<A-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Prev node"})
     map("x", "<C-k>", '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>', {desc = "Parent node"})
     map("x", "<C-j>", '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>', {desc = "Child node"})
 

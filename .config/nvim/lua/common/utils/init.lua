@@ -732,11 +732,32 @@ end
 ---@class NotifyOpts
 ---@field icon? string Icon to add to notification
 ---@field title? string Title to add
+---@field timeout? string|boolean Time to show notification. (`false` = disable)
 ---@field message? string Notification message
 ---@field level? LogLevels Notification level
+---@field once? boolean Only send notification one time
 ---@field hl? string Highlight group
----@field on_open fun(winnr: number): nil
----@field once boolean Only send notification one time
+---@field on_open? fun(winnr: number): nil Callback for when window opens
+---@field on_close? fun(winnr: number): nil Callback for when window closes
+---@field keep? fun(): boolean Keep window open after timeout
+---@field render? fun(): nil Render a notification buffer
+
+--         {replace}           (integer|notify.Record)  Notification record or
+--                                                      the record `id` field.
+--                                                      Replace an existing
+--                                                      notification if still
+--                                                      open. All arguments not
+--                                                      given are inherited from
+--                                                      the replaced notification
+--                                                      including message and
+--                                                      level.
+--         {hide_from_history} (boolean)                Hide this notification
+--                                                      from the history
+--         {animate}           (boolean)                If false, the window will
+--                                                      jump to the timed stage.
+--                                                      Intended for use in
+--                                                      blocking events (e.g.
+--                                                      vim.fn.input)
 
 do
     local notifications = {}

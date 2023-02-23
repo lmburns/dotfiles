@@ -371,7 +371,7 @@ end
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     M.autocmds()
-    map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true})
+    map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true, desc = "Change Lualine"})
 
     local my_extension = {
         sections = {

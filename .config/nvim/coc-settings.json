@@ -7,12 +7,13 @@
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
-  // "coc.preferences.formatOnSaveFiletypes": [
-  //   "go"
-  // ],
   "coc.preferences.formatOnType": false,
   "coc.preferences.bracketEnterImprove": false,
-  "coc.preferences.enableMessageDialog": true,
+  "coc.preferences.enableMessageDialog": false, // MAYBE: change
+  "coc.preferences.promptInput": true,
+  "coc.preferences.watchmanPath": "/usr/bin/watchman",
+  // "coc.preferences.formatOnSaveFiletypes": [],
+
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
   "coc.source.around.enable": true,
@@ -63,18 +64,6 @@
     "semanticTokens.enable": true
   },
 
-  "pullDiagnostic.onChange": true,
-  "pullDiagnostic.onSave": false,
-  "pullDiagnostic.workspace": true,
-  // ╭───────────╮
-  // │ InlayHint │
-  // ╰───────────╯
-  "inlayHint.display": true,
-  "inlayHint.refreshOnInsertMode": false,
-  "inlayHint.enableParameter": true,
-  "inlayHint.typeSeparator": "« ", // "‣
-  "inlayHint.parameterSeparator": "» ",
-  "inlayHint.subSeparator": " ",
   // ╭────────────╮
   // │ Diagnostic │
   // ╰────────────╯
@@ -101,6 +90,23 @@
   "diagnostic.virtualTextFormat": "%message",
   "diagnostic.format": "%message [%source%code]", // %source code severity message
   "diagnostic.messageTarget": "float",
+
+  "pullDiagnostic.onChange": false,
+  "pullDiagnostic.onSave": true,
+  "pullDiagnostic.workspace": true,
+
+  // ╭───────────╮
+  // │ InlayHint │
+  // ╰───────────╯
+  "inlayHint.enable": true,
+  "inlayHint.display": true,
+  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.enableParameter": true,
+  "inlayHint.typeSeparator": "« ", // "‣
+  "inlayHint.parameterSeparator": "» ",
+  // "inlayHint.subSeparator": " | ",
+  "inlayHint.subSeparator": " ",
+
   // ╭──────────╮
   // │ CodeLens │
   // ╰──────────╯

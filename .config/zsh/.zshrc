@@ -1115,11 +1115,12 @@ FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a b
 
 export FZF_HISTFILE FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
 
+# --separator='━'
 export FZF_DEFAULT_OPTS="
 --prompt='❱ '
 --pointer='》'
 --marker='▍'
---separator='━'
+--separator=''
 --info='inline: ❰ '
 --scrollbar='█'
 --ellipsis=''

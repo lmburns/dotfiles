@@ -7,33 +7,28 @@ local filepath="${1}"         # Full path of the highlighted file
 local width="${2}"
 local height="${3}"
 local x_coord="${4}"
-local Y_COORD="${5}"
-integer unhandled=0
+local y_coord="${5}"
 
-local FILE_ABSPATH="${filepath:A}"
-local FILE_EXTENSION="${filepath##*.}"
-local FILE_EXTENSION_LOWER="${(L)FILE_EXTENSION}"
+local file_abspath="${filepath:A}"
+local file_ext="${(L)${filepath:e}}"
 
 # Settings:
-local HIGHLIGHT_SIZE_MAX=262143  # 256KiB
-local HIGHLIGHT_TABwidth=8
-local MAXLN=200
+local hl_max_size=262143  # 256KiB
+local hl_tabwidth=8
+local maxlen=200
+
+local output
+integer unhandled=0
 
 # This gives way more specific mimetypes
 # i.e., `.lua` = text/x-lua, not text/plain
-local MIMETYPE="$(mimetype -b -- "${filepath}")"
-# local MIMETYPE="$(file --dereference --brief --mime-type -- "${filepath}")"
-
-# Functions:
-try() { output=$(eval '"$@"'); }
-
-# writes the output of the previously used "try" command
-dump() { /bin/echo -E "$output"; }
+local mime2="$(mimetype -b -- "${filepath}")"
+local mime1="$(file --dereference --brief --mime-type -- "${filepath}")"
 
 # a common post-processing function used after most commands
-trim() { head -n "$MAXLN"; }
+function trim() { head -n "$maxlen"; }
 
-prev-image() {
+function prev-image() {
   if [[ -n $DISPLAY && -v FIFO_UEBERZUG ]]; then
     #   "scaling_position_x": 0.5,
     #   "scaling_position_y": 0.5,
@@ -45,73 +40,76 @@ prev-image() {
       "action=add" \
       "identifier=PREVIEW" \
       "x=\"$x_coord\"" \
-      "y=\"$Y_COORD\"" \
+      "y=\"$y_coord\"" \
       "width=\"$(( width - 1 ))\"" \
       "height=\"$(( height - 1 ))\"" \
       "scaler=contain" \
       "path=$1" >"$FIFO_UEBERZUG"
   else
     # Handle non-ueberzug
-    case "${MIMETYPE}" in
+    case "$mime2" in
       (image/*)
-        chafa --fill=block --symbols=block --size "$(( width - 4 ))"x"${height}" -- "$1"
+        chafa --fill=block --symbols=block --size "$(( width - 4 ))"x"${height}" -- "$filepath"
       ;;
       (video/*)
-        mediainfo -- "$1"
+        # mediainfo -- "$filepath"
+        integer h_pct=$(( height * 0.8 ))
+        chafa --fill=block --symbols=block --size "$(( width - 4 ))"x"${h_pct}" -- "$1"
       ;;
-     (pdf/*)
-        pdftotext -l 10 -nopgbrk -q -- "$1" - && \
-          { dump | trim | fmt -s -w $width; exit 0; }
+     (*/pdf)
+        # pdftotext -l 10 -nopgbrk -q -- "$filepath" -
+        chafa --fill=block --symbols=block --size "$(( width - 4 ))"x"${height}" -- "$1"
       ;;
     esac
   fi
 }
 
-handle_mime() {
-  local mimetype="${1}"
+function handle_mime() {
+  local mimetype="${1}" cache
   case "${mimetype}" in
     (inode/directory)
       exa -T -- "${filepath}"
     ;;
     (text/html)
-      w3m -dump -- "${filepath}"
-      # bat -Pf --theme kimbro --style auto -l html -- "${filepath}" ;;
+      w3m -dump "${filepath}" - | bat -Pf --style auto
+      # bat -Pf --style auto -l html -- "${filepath}" ;;
     ;;
     (text/troff)
       # color isn't shown
-      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --theme kimbro --color=always -l man -p'" man -- "${filepath}"
+      MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --color=always -l man -p'" man -- "${filepath}"
     ;;
     (text/csv)
       tidy-viewer -n 30 <$filepath
       # bat -Pf -l csv ${filepath} ;;
     ;;
     (text/* | */xml | application/javascript)
-      bat -Pf --tabs "${HIGHLIGHT_TABwidth}" --theme kimbro --style auto -- "${filepath}"
+      bat -Pf --tabs "${hl_tabwidth}" --style auto -- "${filepath}"
     ;;
     (application/pgp-encrypted)
-      bat -Pf --theme kimbro --style auto --j "${filepath}"
+      gpg -d "${filepath}" - | bat -Pf --style auto
+      # bat -Pf --style auto -- "${filepath}"
     ;;
     (application/zip)
       atool --list -- "${filepath}"
     ;;
     (image/*)
       prev-image "$filepath"
-      # prev-image "$filepath" "$width" "$height" "$x_coord" "$Y_COORD"
+      # prev-image "$filepath" "$width" "$height" "$x_coord" "$y_coord"
     ;;
     (audio/*|application/octet-stream)
       mediainfo -- "$filepath"
     ;;
     (video/*)
-      CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
-        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
-      [[ ! -f "$CACHE" ]] && command ffmpegthumbnailer -i "$filepath" -o "$CACHE" -s 0
-      prev-image "$CACHE"
+      cache="${XDG_CACHE_HOME}/lf/thumb.$(\
+        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$file_abspath" | b3sum --no-names)"
+      [[ ! -f "${cache}.png" ]] && command ffmpegthumbnailer -s 0 -i "$filepath" -o "${cache}.png" -c png -f
+      prev-image "${cache}.png"
     ;;
     (*/pdf)
-      CACHE="${XDG_CACHE_HOME}/lf/thumb.$(\
-        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$FILE_ABSPATH" | sha256sum | hck -f1)"
-      [[ ! -f "$CACHE.jpg" ]] && command pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
-      prev-image "$CACHE.jpg"
+      cache="${XDG_CACHE_HOME}/lf/thumb.$(\
+        stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$file_abspath" | b3sum --no-names)"
+      [[ ! -f "${cache}.jpg" ]] && command pdftoppm -jpeg -f 1 -singlefile "$file_abspath" "$cache"
+      prev-image "${cache}.jpg"
     ;;
     (application/vnd.openxmlformats-officedocument.wordprocessingml.document)
       docx2txt -- "${filepath}"
@@ -123,8 +121,8 @@ handle_mime() {
 }
 
 
-handle_other() {
-  case "${filepath}" in
+function handle_other() {
+  case "$filepath" in
     (*.tar)   tar tf -- "${filepath}";;
     (*.rar)   unrar l -- "${filepath}";;
     (*.7z) 7z l -- "${filepath}";;
@@ -134,7 +132,7 @@ handle_other() {
     (*.doc)   catdoc -- "${filepath}" ;;
     (*.docx)  docx2txt "${filepath}" - ;;
     (*.json)  jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}" ;;
-    (*.asc|*.log)   bat -Pf --theme kimbro --style auto -- "${filepath}";;
+    (*.asc|*.log)   bat -Pf --style auto -- "${filepath}";;
     (*.ipynb) jupview -t KimbieDark -- "${filepath}" ;;
     (*.torrent) transmission-show -- "${filepath}";;
     (*.tgz|*.tar.gz)   tar tzf -- "${filepath}";;
@@ -143,7 +141,7 @@ handle_other() {
     (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${filepath}";;
     (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${filepath}";;
     (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${filepath}" ;;
-    (*) (( unhandled )) && { bat -Pf --theme kimbro --style auto -- "${filepath}" } ;;
+    (*) (( unhandled )) && { bat -Pf --style auto -- "${filepath}" } ;;
   esac
 }
 
@@ -160,8 +158,8 @@ C=(
   rnl $'\e[0m\n'
 )
 
-handle_fallback() {
-  local t mime1 mime2 equals class sep
+function handle_fallback() {
+  local t equals class sep
   local -a mime0
   class="File Type Classification"
   # The ratios of Lf's screen are 1:2:3 by default, and preview is in 3rd screen
@@ -174,8 +172,6 @@ $C[B]$C[52]${(l:equals::=:):-}$C[res]" && {
     sep=" $C[18]|$C[17] "
     t="$(file --dereference --brief -- "${filepath}")"
     mime0=( ${${${(@s:,:)t}##[[:space:]]##}%%[[:space:]]##} )
-    mime1="$(file --dereference --mime-type --brief -- "${filepath}")"
-    mime2="$(mimetype -b -- "${filepath}")"
     stat -c "\
 $C[B]$C[16]info:     $C[17]${(pj:$sep:)mime0}$C[rnl]\
 $C[B]$C[16]mimetype: $C[18]${mime1}$C[res] $C[B]$C[12]|$C[res] $C[B]$C[18]${mime2}$C[rnl]\
@@ -188,8 +184,8 @@ $C[B]$C[16]modified: $C[12]%z$C[rnl]" -- "${filepath}"
     exit 1
 }
 
-handle_mime "${MIMETYPE}"
+handle_mime "$mime2"
 handle_other
-[[ ! -v FIFO_UEBERZUG || $MIMETYPE != (image|video|pdf)/* ]] && handle_fallback
+[[ ! -v FIFO_UEBERZUG || $mime1 != (image|video|pdf)/* ]] && handle_fallback
 
 exit 1

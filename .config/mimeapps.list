@@ -1,10 +1,13 @@
 [Added Associations]
 application/x-yaml=neovide.desktop;nvim.desktop;
-inode/directory=lf.desktop;
+inode/directory=spacefm.desktop;pcmanfm-qt.desktop;lf.desktop;
+text/csv=nvim.desktop;libreoffice-calc.desktop;org.kde.kate.desktop;org.kde.kwrite.desktop;libreoffice-writer.desktop;okularApplication_txt.desktop;sample.desktop;vim.desktop;sublime_text.desktop;org.gnome.gedit.desktop;org.xfce.mousepad.desktop;neovide.desktop;code-oss.desktop;gvim.desktop;
+x-scheme-handler/geo=openstreetmap-geo-handler.desktop;
 x-scheme-handler/http=librewolf.desktop;
 x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
+x-scheme-handler/tel=org.kde.kdeconnect.handler.desktop;
 
 [Default Applications]
 application/javascript=nvim.desktop;
@@ -23,6 +26,7 @@ image/jpeg=sxiv.desktop;
 image/png=sxiv.desktop;
 inode/directory=pcmanfm.desktop;
 message/rfc822=mail.desktop;
+text/csv=nvim.desktop;
 text/javascript=nvim.desktop;
 text/markdown=nvim.desktop;
 text/plain=nvim.desktop;
@@ -33,9 +37,11 @@ text/x-lua=nvim.desktop;
 text/x-matlab=nvim.desktop;
 text/x-shellscript=nvim.desktop;
 video/mp2t=nvim.desktop;
+x-scheme-handler/geo=openstreetmap-geo-handler.desktop;
 x-scheme-handler/http=librewolf.desktop;
 x-scheme-handler/https=librewolf.desktop;
 x-scheme-handler/magnet=torrent.desktop;
 x-scheme-handler/mailto=mail.desktop;
 x-scheme-handler/mid=mail.desktop;
+x-scheme-handler/tel=org.kde.kdeconnect.handler.desktop;
 x-scheme-handler/terminal=alacritty.desktop;

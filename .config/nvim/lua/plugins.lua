@@ -794,20 +794,20 @@ return packer.startup(
                 {
                     "gbprod/substitute.nvim",
                     conf = "plugs.substitute",
-                    keys = {
-                        {"n", "s"},
-                        {"n", "ss"},
-                        {"n", "se"},
-                        {"n", "sr"},
-                        {"n", "sa"},
-                        {"n", "<Leader>sr"},
-                        {"n", "sS"},
-                        {"n", "sx"},
-                        {"n", "sxx"},
-                        {"n", "sxc"},
-                        {"x", "s"},
-                        {"x", "X"}
-                    }
+                    -- keys = {
+                    --     {"n", "s"},
+                    --     {"n", "ss"},
+                    --     {"n", "se"},
+                    --     {"n", "sr"},
+                    --     {"n", "s;"},
+                    --     {"n", "<Leader>sr"},
+                    --     {"n", "sS"},
+                    --     {"n", "sx"},
+                    --     {"n", "sxx"},
+                    --     {"n", "sxc"},
+                    --     {"x", "s"},
+                    --     {"x", "X"}
+                    -- }
                 }
             )
 

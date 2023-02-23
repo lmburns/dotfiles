@@ -223,12 +223,17 @@ nvim.autocmd.lmb__FormatOptions = {
             function()
                 -- Bufnr has to be captured in here, not args.buf
                 local bufnr = api.nvim_get_current_buf()
+                local ft = vim.bo[bufnr].ft
 
                 o.conceallevel = 2
                 o.concealcursor = "vc"
 
+                if ft == "jsonc" then
+                    o.conceallevel = 0
+                end
+
                 -- Allows a shared statusline
-                if vim.bo[bufnr].ft ~= "fzf" then
+                if ft ~= "fzf" then
                     ol.laststatus = 3
                 end
             end

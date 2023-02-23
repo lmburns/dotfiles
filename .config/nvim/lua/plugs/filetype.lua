@@ -80,6 +80,7 @@ function M.setup()
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
                 -- [".*/completions/_.*"] = "zsh",
+                [".*/fontconfig/conf%.d/.*"] = "xml",
                 [".*/fd/ignore"] = "gitignore",
                 ["calcurse-note.*"] = "markdown",
                 ["~/.local/share/calcurse/notes/.*"] = "markdown",

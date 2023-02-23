@@ -24,7 +24,7 @@ let g:mkdx#settings = {
       \ 'image_extension_pattern': 'a\?png\|jpe\?g\|gif',
       \ 'insert_indent_mappings':  0,
       \ 'gf_on_steroids':          0,
-      \ 'restore_visual':          0,
+      \ 'restore_visual':          1,
       \ 'enter':                   { 'enable': 0, 'shift': 0, 'o': 1,
       \                              'shifto': 1, 'malformed': 1 },
       \ 'map':                     { 'prefix': 'M', 'enable': 1 },

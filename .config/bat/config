@@ -1,6 +1,4 @@
-# --theme="KimbieDark"
-# --theme="gruvbox-dark"
---theme="kimbro"
+--theme="kimbox"
 --italic-text=always
 
 # Disable automatic paging:
@@ -8,8 +6,9 @@
 # --style="auto"
 --style="header,grid"
 
+# --map-syntax "_*:zsh"
 --map-syntax ".(zshrc|zshenv):zsh"
 --map-syntax "*.ino:C++"
 --map-syntax ".ignore:Git Ignore"
---map-syntax ".h:cpp"
---map-syntax ".t:perl"
+--map-syntax "*.h:cpp"
+--map-syntax "*.t:perl"

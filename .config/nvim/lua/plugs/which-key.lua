@@ -11,6 +11,20 @@ local utils = require("common.utils")
 local map = utils.map
 
 function M.setup()
+    local presets = require("which-key.plugins.presets")
+    presets.operators["!"] = nil
+    presets.operators["<lt>"] = nil
+    presets.operators["<gt>"] = nil
+    presets.operators['"_d'] = "Delete blackhole"
+    presets.operators["d"] = presets.operators['"_d']
+    presets.operators["gc"] = "Commenter (line)"
+    presets.operators["gb"] = "Commenter (block)"
+    presets.operators["gq"] = "Formatter"
+    presets.operators["ga"] = "EasyAlign"
+    presets.operators["ys"] = "Surround"
+    presets.operators["sx"] = "Exchange"
+    presets.operators["s"] = "Substitue"
+
     -- This still allows to check variables, etc.
     local show = wk.show
     wk.show = function(keys, opts)
@@ -20,12 +34,6 @@ function M.setup()
         end
         show(keys, opts)
     end
-
-    -- local presets = require("which-key.plugins.presets")
-    -- presets.operators["gc"] = "Commenter"
-    -- presets.operators["d"] = nil
-    -- presets.operators['"_d'] = "Delete blackhole"
-    -- presets.operators["s"] = "Substitute"
 
     wk.setup {
         plugins = {
@@ -49,13 +57,15 @@ function M.setup()
         operators = {
             -- add operators that will trigger motion and text object completion
             -- s = "Substitue",
-            -- sx = "Substitue",
-            gq = "Format",
+            -- sx = "Exchange",
+            -- gq = "Formatter",
             -- y = "Yank",
-            gc = "Comments",
-            ga = "EasyAlign",
+            -- gc = "Comments",
+            -- ga = "EasyAlign",
             -- ys = "Surround",
-            ['"_d'] = "Delete"
+            -- ['"_d'] = "Delete",
+            -- d = "Delete",
+            -- ["!"] = nil,
         },
         key_labels = {},
         icons = {

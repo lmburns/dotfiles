@@ -88,8 +88,8 @@ map("v", "<S-Tab>", "<<<Esc>gv")
 -- map("i", "<S-Tab>", "<C-d>")
 
 -- Don't lose selection when shifting sidewards
-map("x", "<", "<gv")
-map("x", ">", ">gv")
+-- map("x", "<", "<gv")
+-- map("x", ">", ">gv")
 
 map("n", "v", "m`v")
 map("n", "V", "m`V")
@@ -102,8 +102,6 @@ wk.register(
         [";u"] = {":execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
         ["gI"] = {":norm! gi<CR>", "Goto last insert spot"}
-        -- ["g;"] = {":norm! g;<CR>", "Goto previous change"},
-        -- ["g,"] = {":norm! g,<CR>", "Goto next change"}
     }
 )
 
@@ -145,8 +143,6 @@ wk.register(
         ["cn"] = {[[*``cgn]], "Change text, start search forward"},
         ["cN"] = {[[*``cgN]], "Change text, start search backward"},
         ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"}
-        -- ["ghp"] = {[[m`o<Esc>p``]], "Paste line below (linewise)"},
-        -- ["ghP"] = {[[m`O<Esc>p``]], "Paste line above (linewise)"},
     }
 )
 
@@ -182,8 +178,10 @@ map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
 
-map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line"})
-map("n", "gk", ":norm! {<CR>", {desc = "Move to previous blank line"})
+map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line", silent = true})
+map("n", "gk", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true})
+map("n", ">", ":norm! }<CR>", {desc = "Move to next blank line", silent = true, nowait = true})
+map("n", "<", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true, nowait = true})
 
 -- Remap mark jumping
 map({"n", "x", "o"}, "'", "`")

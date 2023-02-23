@@ -1042,15 +1042,15 @@ map de %{{
   # empty trash
   rip -d
 }}
-map dl ${{
+map dFl ${{
   # list trash with fzf
   clear; rip -as | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf
 }}
-map dm ${{
+map dFm ${{
   # trash delete with fzf
   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" frip
 }}
-map dr ${{
+map dFr ${{
   # fzf trash restore script
   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fripu
 }}
