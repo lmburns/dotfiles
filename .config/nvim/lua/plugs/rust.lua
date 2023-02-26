@@ -4,8 +4,8 @@ local D = require("dev")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local map = utils.map
-local bmap = utils.bmap
 
+local style = require("style")
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
@@ -34,16 +34,37 @@ function M.crates()
             avoid_prerelease = true,
             autoload = true,
             autoupdate = true,
+            autoupdate_throttle = 250,
             loading_indicator = true,
             date_format = "%Y-%m-%d",
-            thousands_separator = ".",
+            thousands_separator = ",",
             notification_title = "Crates",
+            curl_args = { "-sL", "--retry", "1" },
             disable_invalid_feature_diagnostic = false,
+            text = {
+                loading = "   Loading",
+                version = "   %s",
+                prerelease = "   %s",
+                yanked = "   %s",
+                nomatch = "   No match",
+                upgrade = "   %s",
+                error = "   Error fetching crate",
+            },
+            highlight = {
+                loading = "CratesNvimLoading",
+                version = "CratesNvimVersion",
+                prerelease = "CratesNvimPreRelease",
+                yanked = "CratesNvimYanked",
+                nomatch = "CratesNvimNoMatch",
+                upgrade = "CratesNvimUpgrade",
+                error = "CratesNvimError",
+            },
             popup = {
                 autofocus = false,
+                hide_on_select = false,
                 copy_register = '"',
                 style = "minimal",
-                border = "none",
+                border = style.current.border,
                 show_version_date = false,
                 show_dependency_version = true,
                 max_height = 30,
@@ -71,31 +92,37 @@ function M.crates()
             pattern = "Cargo.toml",
             command = function(args)
                 local bufnr = args.buf
-                map("n", "<Leader>ca", crates.upgrade_all_crates, {buffer = bufnr})
-                map("n", "<Leader>cu", crates.upgrade_crate, {buffer = bufnr})
-                map("n", "<Leader>ch", crates.open_homepage, {buffer = bufnr})
-                map("n", "<Leader>cr", crates.open_repository, {buffer = bufnr})
-                map("n", "<Leader>cd", crates.open_documentation, {buffer = bufnr})
-                map("n", "<Leader>co", crates.open_crates_io, {buffer = bufnr})
 
-                map("n", "vd", crates.show_dependencies_popup, {buffer = bufnr})
-                map("n", "vv", crates.show_versions_popup, {buffer = bufnr})
-                map("n", "vf", crates.show_features_popup, {buffer = bufnr})
+                local bmap = function(...)
+                    utils.bmap(bufnr, ...)
+                end
 
-                map("n", "[g", vim.diagnostic.goto_prev, {buffer = bufnr})
-                map("n", "]g", vim.diagnostic.goto_next, {buffer = bufnr})
+                bmap("n", "<Leader>ca", crates.upgrade_all_crates)
+                bmap("n", "<Leader>cu", crates.upgrade_crate)
+                bmap("n", "<Leader>ch", crates.open_homepage)
+                bmap("n", "<Leader>cr", crates.open_repository)
+                bmap("n", "<Leader>cd", crates.open_documentation)
+                bmap("n", "<Leader>co", crates.open_crates_io)
+
+                bmap("n", "vd", crates.show_dependencies_popup)
+                bmap("n", "vf", crates.show_features_popup)
+
+                local dargs = {wrap = true, float = true}
+                bmap("n", "[g", D.ithunk(vim.diagnostic.goto_prev, dargs))
+                bmap("n", "]g", D.ithunk(vim.diagnostic.goto_next, dargs))
 
                 wk.register(
                     {
-                        ["<Leader>ca"] = "Upgrade all crates",
-                        ["<Leader>cu"] = "Upgrade crate",
-                        ["<Leader>ch"] = "Open homepage",
-                        ["<Leader>cr"] = "Open repository",
-                        ["<Leader>cd"] = "Open documentation",
-                        ["<Leader>co"] = "Open crates.io",
-                        ["vd"] = "Dependencies popup",
-                        ["vv"] = "Version popup",
-                        ["vf"] = "Show features"
+                        ["<Leader>ca"] = "Crates: upgrade all",
+                        ["<Leader>cu"] = "Crates: upgrade",
+                        ["<Leader>ch"] = "Crates: open homepage",
+                        ["<Leader>cr"] = "Crates: open repo",
+                        ["<Leader>cd"] = "Crates: open docus",
+                        ["<Leader>co"] = "Crates: open crates.io",
+                        ["vd"] = "Crates: view dependencies",
+                        ["vf"] = "Crates: view features",
+                        ["[g"] = "Prev diagnostic",
+                        ["]g"] = "Next diagnostic",
                     }
                 )
             end
@@ -111,24 +138,23 @@ local function init()
         {
             event = "FileType",
             pattern = "rust",
-            command = function()
+            command = function(args)
                 -- Rust analyzer really slows things down, so this needs more time
                vim.opt_local.timeoutlen = 500
-                local bufnr = nvim.get_current_buf()
+                local bufnr = args.buf
 
                 local bmap = function(...)
-                    bmap(bufnr, ...)
+                    utils.bmap(bufnr, ...)
                 end
-
 
                 bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})
                 bmap("n", "<Leader>h<CR>", ":T cargo clippy<CR>")
-                bmap("n", "<Leader>n<CR>", ":T cargo run -q<CR>")
-                bmap("n", "<Leader><Leader>n", ":T cargo run -q<space>")
-                bmap("n", "<Leader>b<CR>", ":T cargo build -q<CR>")
-                bmap("n", "<Leader>r<CR>", ":VT cargo play %<CR>")
-                bmap("n", "<Leader>v<CR>", ":T rust-script %<CR>")
-                bmap("n", "<Leader>e<CR>", ":T cargo eval %<CR>")
+                -- bmap("n", "<Leader>n<CR>", ":T cargo run -q<CR>")
+                -- bmap("n", "<Leader><Leader>n", ":T cargo run -q<space>")
+                -- bmap("n", "<Leader>b<CR>", ":T cargo build -q<CR>")
+                -- bmap("n", "<Leader>r<CR>", ":VT cargo play %<CR>")
+                -- bmap("n", "<Leader>v<CR>", ":T rust-script %<CR>")
+                -- bmap("n", "<Leader>e<CR>", ":T cargo eval %<CR>")
 
                 bmap(
                     "n",
@@ -140,8 +166,8 @@ local function init()
                     {desc = "Reload Rust workspace"}
                 )
 
-                bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true})
-                bmap("v", ";ff", "RustFmtRange", {cmd = true})
+                bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true, desc = "Rustfmt: file"})
+                bmap("x", ";ff", "RustFmtRange", {cmd = true, desc = "Rustfmt: selected"})
             end
         }
     )

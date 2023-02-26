@@ -2,6 +2,8 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
+# TODO: Change filename is status bar header
+
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
 
@@ -50,29 +52,16 @@ set ratios '1:2:3'    # ratio of pane widths
 # set cursorfmt="%s"
 # set cursorpreviewfmt="%s"
 
-set promptfmt "\033[32;1m%u\033[0m\033[1;38;2;234;105;98m@\033[0m\033[1;38;2;76;150;168m%h\033[0m\033[1;38;5;21m:\033[0m\033[1;38;2;42;176;116m%d\033[0m\033[1m%f\033[0m %F"
+set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 set tagfmt "\033[1;38;5;018m"
 set errorfmt "\033[7;38;5;017m"
 
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
-# set tempmarks 'abcdefghijklmnopqrstuvwxzy'
 set tempmarks '1234567890'
 
 # -- Previewer: custom
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
 $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
-
-# set previewer '~/.config/lf/scope'
-# set cleaner '~/.config/lf/scripts/cleaner'
-
-# -- Previewer: lfimg
-# $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/others/preview"
-# $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/others/cleaner"
-
-# -- Previewer: stpv
-# set previewer stpv
-# set cleaner stpvimgclr
-# &stpvimg --listen $id
 # ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -122,7 +111,9 @@ cmd on-cd &{{
   GIT_PS1_SHOWUPSTREAM=auto
   GIT_PS1_COMPRESSSPARSESTATE=auto
   git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
-  fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
+  # fmt="\033[32;1m%u@%h\033[0m:\033[34;1m%w\033[0m\033[33;1m$git\033[0m"
+  fmt="\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
+  # fmt="\033[32;1m%u\033[0m\033[1;38;2;234;105;98m@\033[0m\033[1;38;2;76;150;168m%h\033[0m\033[1;38;5;21m:\033[0m\033[1;38;2;42;176;116m%d\033[0m\033[1m%f\033[0m %F"
 
   # case "$PWD" in
   #   (/mnt/movies*)
@@ -172,6 +163,7 @@ on-cd
 # │                     Helper Functions                     │
 # ╰──────────────────────────────────────────────────────────╯
 
+# Echo a message
 cmd echom ${{
   local textl equals f2 f3 res B
   f2=$'\e[38;5;52m' f3=$'\e[38;5;53m'
@@ -179,6 +171,13 @@ cmd echom ${{
   textl=${(c)#*}
   equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
   lf -remote "send $id echomsg \"${f2}${equals}${res} ${B}${f3}${*}${res} ${f2}${equals}${res}\""
+}}
+
+# Display an error
+cmd echoe ${{
+  local c1 B res
+  c1=$'\e[38;5;1m' res=$'\e[0m' B=$'\e[1m'
+  lf -remote "send $id echomsg \"${B}${c1}[ERROR]${res}: ${*}\""
 }}
 
 # -- Print lf id
@@ -259,7 +258,7 @@ cmd open ${{
       |application/vnd.ms-excel\
       |text/rtf) handlr open $fx ;;
     (application/vnd.sqlite3) litecli $fx ;;
-    (text/*|application/pgp-encrypted) $EDITOR $fx ;;
+    (text/*|application/pgp-(encrypted|keys)) $EDITOR $fx ;;
     (image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
     (image/svg+xml) display -- $f ;;
     (image/*) rotdir $f \
@@ -548,7 +547,7 @@ cmd chksum ${{
 
   clear
   print -nPr "%F{21}"
-  print -f "%s" "$(figlet checksum)"
+  print -f "%s" "$(figlet -t checksum)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -719,7 +718,7 @@ cmd tmsu-set ${{
   zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
-  print -f "%s" "$(figlet tmsu)"
+  print -f "%s" "$(figlet -t tmsu)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -732,7 +731,7 @@ cmd tmsu-remove ${{
   zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
-  print -f "%s" "$(figlet tmsu)"
+  print -f "%s" "$(figlet -t tmsu)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -751,7 +750,7 @@ cmd wutag-set ${{
   zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
-  print -f "%s" "$(figlet wutag)"
+  print -f "%s" "$(figlet -t wutag)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -767,7 +766,7 @@ cmd wutag-add ${{
   zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
-  print -f "%s" "$(figlet wutag)"
+  print -f "%s" "$(figlet -t wutag)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -783,7 +782,7 @@ cmd wutag-remove ${{
   zmodload -Fa zsh/zle b:vared
   clear
   print -nPr "%F{2}"
-  print -f "%s" "$(figlet wutag)"
+  print -f "%s" "$(figlet -t wutag)"
   print -Pr "%f"
   print -r ${(l:COLUMNS::=:):-}
   print
@@ -862,8 +861,8 @@ cmd yank-name ${{
     | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
 }}
 cmd yank-dir ${{
-  print -r "${fx:h}" \
-    | xclip -r -selection c && dunstify -a lf "Directory" "${fx:h}\nCopied to clipboard"
+  print -r "$PWD" \
+    | xclip -r -selection c && dunstify -a lf "Directory" "$PWD\nCopied to clipboard"
 }}
 cmd yank-realpath ${{
   local origin
@@ -872,18 +871,36 @@ cmd yank-realpath ${{
     | xclip -r -selection c && dunstify -a lf "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 
-cmd disk-info !clear; dust; diskus
+cmd disk-info %{{
+  clear;
+  dust | sed '1 s/\r//g; s/^\s//' | bat --paging=always -f --plain
+  # diskus
+}}
 
-# Basic operations
-cmd take %mkdir -p "${@}" && lf -remote "send $id cd \"$@\""
-cmd mkdir %[[ -n "${1}" ]] && mkdir -p "${@}" || echo "Argument needed"
-cmd mkfile %[[ -n "${1}" ]] && touch "${@}" || echo "Argument needed"
+cmd mkdir %{{
+  # Create a directory/directories
+  setopt unset
+  [[ -n "${1}" ]] && command mkdir -p "${@}" || lf -remote "send $id echoe 'No argument given'"
+}}
+cmd mkfile %{{
+  # Create a file/files
+  setopt unset
+  [[ -n "${1}" ]] && touch "${@}" || lf -remote "send $id echoe 'No argument given'"
+}}
 
-# Create dir and move selected files into it
+cmd take %{{
+  # Create a folder & cd into it
+  setopt unset
+  [[ -n "${1}" ]] && {
+    command mkdir -p "${@}" && lf -remote "send $id cd \"$@\""
+  } || lf -remote "send $id echoe 'No argument given'"
+}}
+
 cmd newfold ${{
+# Create dir and move selected files into it
   zmodload -Fa zsh/zle b:vared
   clear; vared -cp "Folder: " fold
-  mkdir -p -- "$fold" && mv -- $fx "$fold"
+  [[ -n "$fold" ]] && command mkdir -p -- "$fold" && command mv -- $fx "$fold"
 }}
 
 # Dragon [[[
@@ -1289,20 +1306,49 @@ cmd git_branch ${{
   lf -remote "send $id cd \"$pwd_shell\""
 }}
 
+# Delete a git repo and reclone it
 cmd git_reclone_repo ${{
-  ngu | xsel -ib
+  ngu
   rip -- *
   gh c $(xsel -b)
   t=$PWD:t
   command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
 
+# Needs some work
+# Display a message with `figlet`
+cmd figlet ${{
+  local idx; clear
+  print -Pr "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  print -nPr "%F{52}%B"
+  idx=1; for arg ("$@") {
+    if (( idx == $# )) {
+      print -rn "$(figlet -tc "$arg")"
+    } else {
+      print -r "$(figlet -tc "$arg")"
+    }
+    (( idx ++ ))
+  }
+  print -Pr "%b%f"
+  print -Pr "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  print
+}}
+
+# Pull and rebase all git directories under the current dir
 cmd mgit_pull_rebase !{{
   emulate -L zsh -o extendedglob
   zmodload -Fa zsh/zle b:vared
-  local ans; clear
-  vared -cp 'Confirm rebase [Y/n]: ' ans
-  [[ $ans == (#i)y(es|) ]] && mgit pull --rebase
+  local ans
+  # print -Pr "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  # print -nPr "%F{52}%B"
+  # print -r "$(figlet -tc Confirm)"
+  # print -rn "$(figlet -tc Rebase)"
+  # print -Pr "%b%f"
+  # print -Pr "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  # print
+  lf -remote "send $id figlet Confirm Rebase"
+  # vared -cp 'Confirm rebase [Y/n]: ' ans
+  # [[ $ans == (#i)y(es|) ]] && mgit pull --rebase || return 0
 }}
 
 map gta :{{ git_add; unselect; }}

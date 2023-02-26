@@ -3,11 +3,12 @@ local M = {}
 local D = require("dev")
 local palette = require("kimbox.palette").colors
 local style = require("style")
-local utils = require("common.utils")
 local hl = require("common.color")
--- local coc = require("plugs.coc")
--- local augroup = utils.augroup
+local utils = require("common.utils")
 local map = utils.map
+
+---@module "ufo.main"
+local ufo
 
 local api = vim.api
 local fn = vim.fn
@@ -43,28 +44,38 @@ end
 ---Navigate folds
 ---@param forward boolean should move forward?
 M.nav_fold = function(forward)
-    local cnt = v.count1
-    local wv = utils.save_win_positions()
-    cmd.norm({"m`", bang = true})
+    local function get_cur_lnum()
+        return api.nvim_win_get_cursor(0)[1]
+    end
 
-    local cur_l, cur_c
+    local cnt = v.count1
+    local wv = utils.save_win_positions(0)
+    local cur_l = get_cur_lnum()
+    cmd.norm({"m`", bang = true})
+    -- local prev_lnum
+    -- local prev_lnum_list = {}
+
     while cnt > 0 do
         if forward then
+            -- End of current fold
             cmd("keepj norm! ]z")
         else
+            -- End of previous fold
             cmd("keepj norm! zk")
         end
-        cur_l, cur_c = unpack(api.nvim_win_get_cursor(0))
+        cur_l = get_cur_lnum()
         if forward then
+            -- Top of next fold
             cmd("keepj norm! zj_")
         else
+            -- Top of current fold
             cmd("keepj norm! [z_")
         end
         cnt = cnt - 1
     end
 
-    local cur_l1, cur_c1 = unpack(api.nvim_win_get_cursor(0))
-    if cur_l == cur_l1 and cur_c == cur_c1 then
+    local cur_l1 = get_cur_lnum()
+    if cur_l == cur_l1 then
         if forward or fn.foldclosed(cur_l) == -1 then
             wv.restore()
         end
@@ -163,7 +174,8 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
     local foldlvl = ("+"):rep(v.foldlevel)
     local filler_right = ("•"):rep(3)
     -- This extra 1 comes from the space added on the line below the following
-    local filler = ("•"):rep(target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1)
+    local filler =
+        ("•"):rep(target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1)
     table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
     table.insert(new_virt_text, {foldlvl, "UFOFoldLevel"})
     table.insert(new_virt_text, {percentage, "ErrorMsg"})
@@ -174,7 +186,8 @@ end
 
 ---Setup 'ultra-fold'
 M.setup_ufo = function()
-    local ufo = D.npcall(require, "ufo")
+    ---@module "ufo.main"
+    ufo = D.npcall(require, "ufo")
     if not ufo then
         return
     end
@@ -209,8 +222,7 @@ M.setup_ufo = function()
                     trace = "<CR>"
                 }
             },
-            ---@diagnostic disable-next-line:unused-local
-            provider_selector = function(bufnr, filetype)
+            provider_selector = function(_bufnr, filetype)
                 -- return a string type use internal providers
                 -- return a string in a table like a string type
                 -- return empty string '' will disable any providers
@@ -225,15 +237,14 @@ M.setup_ufo = function()
 end
 
 local function go_prev_and_peek()
-    require('ufo').goPreviousClosedFold()
-    require('ufo').peekFoldedLinesUnderCursor()
+    ufo.goPreviousClosedFold()
+    ufo.peekFoldedLinesUnderCursor()
 end
 
 local function go_next_and_peek()
-    require('ufo').goNextClosedFold()
-    require('ufo').peekFoldedLinesUnderCursor()
+    ufo.goNextClosedFold()
+    ufo.peekFoldedLinesUnderCursor()
 end
-
 
 local function init()
     -- vim.opt.fillchars:append("fold:•")
@@ -275,40 +286,66 @@ local function init()
             vim.o.foldlevel = 99
             vim.o.foldlevelstart = 99
             vim.o.foldcolumn = "1"
+
+            -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
+            map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top of open fold"})
+            map({"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>", {desc = "Bottom of open fold"})
+
+            -- map("n", "zl", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
+            map({"n", "x"}, "zl", "<Cmd>norm! zj_<CR>", {desc = "Start next fold"})
+            map({"n", "x"}, "zh", "<Cmd>norm! zk_<CR>", {desc = "Bottom previous fold"})
+
+            map({"n", "x"}, "z]", "<Cmd>norm! zj_<CR>", {desc = "Next start fold"})
+            map(
+                "n",
+                "z[",
+                [[require('ufo').goPreviousStartFold()]],
+                {luacmd = true, desc = "Previous start fold"}
+            )
+            -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
+            -- map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
+
+            map(
+                "n",
+                "z,",
+                [[require('ufo').goPreviousClosedFold()]],
+                {luacmd = true, desc = "Previous closed fold"}
+            )
+            map(
+                "n",
+                "z.",
+                [[require('ufo').goNextClosedFold()]],
+                {luacmd = true, desc = "Next closed fold"}
+            )
+
+            map({"n", "x"}, "zL", D.ithunk(go_next_and_peek), {desc = "Go next closed fold & peek"})
+            map({"n", "x"}, "zH", D.ithunk(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
+
+            -- map("n", "za", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
+            -- map("n", "zA", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
+            -- map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
+            -- map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
+            -- map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
+            -- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
+            -- map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
+
+            map("n", "zR", ufo.openAllFolds)
+            map("n", "zM", ufo.closeAllFolds)
+            map(
+                "n",
+                "z;",
+                "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>",
+                {silent = true, desc = "Toggle fold"}
+            )
+            map(
+                "n",
+                "z'",
+                "&foldlevel ? 'zM' :'zR'",
+                {silent = true, expr = true, desc = "Open/close all folds in file"}
+            )
         end,
         50
     )
-
-    -- Folding
-    -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
-    map({"n", "x"}, "[z", "[z_", {desc = "Top of open fold"})
-    map({"n", "x"}, "]z", "]z_", {desc = "Bottom of open fold"})
-
-    map({"n", "x"}, "zl", "zj_", {desc = "Top next fold"})
-    map({"n", "x"}, "zh", "zk_", {desc = "Bottom previous fold"})
-
-    map({"n", "x"}, "zL", D.ithunk(go_next_and_peek), {desc = "Go next closed fold & peek"})
-    map({"n", "x"}, "zH", D.ithunk(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
-
-    -- map("n", "za", [[<Cmd>lua require('plugs.fold').with_highlight('a')<CR>]], {silent = false})
-    -- map("n", "zA", [[<Cmd>lua require('plugs.fold').with_highlight('A')<CR>]])
-    -- map("n", "zo", [[<Cmd>lua require('plugs.fold').with_highlight('o')<CR>]])
-    -- map("n", "zO", [[<Cmd>lua require('plugs.fold').with_highlight('O')<CR>]])
-    -- map("n", "zv", [[<Cmd>lua require('plugs.fold').with_highlight('v')<CR>]])
-    -- map("n", "zR", [[<Cmd>lua require('plugs.fold').with_highlight('CzO')<CR>]])
-    -- map("n", "z,", ":lua require('plugs.fold').open_fold()<CR>", {desc = "Open/close all folds under cursor"})
-
-    map("n", "zR", require("ufo").openAllFolds)
-    map("n", "zM", require("ufo").closeAllFolds)
-    map("n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>", {silent = true})
-    map("n", "z'", "&foldlevel ? 'zM' :'zR'", {silent = true, expr = true, desc = "Open/close all folds in file"})
-
-    -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
-    map("n", "z[", [[require('ufo').goPreviousStartFold()]], {luacmd = true, desc = "Previous start fold"})
-    map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
-
-    map("n", "z,", [[require('ufo').goPreviousClosedFold()]], {luacmd = true, desc = "Previous closed fold"})
-    map("n", "z.", [[require('ufo').goNextClosedFold()]], {luacmd = true, desc = "Next closed fold"})
 end
 
 init()

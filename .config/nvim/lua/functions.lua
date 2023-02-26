@@ -165,7 +165,13 @@ end
 function M.print_syn_group()
     local id = fn.synID(fn.line("."), fn.col("."), 1)
     nvim.echo({{"Synstack: ", "WarningMsg"}, {vim.inspect(M.name_syn_stack())}})
-    nvim.echo({{fn.synIDattr(id, "name"), "WarningMsg"}, {" => "}, {fn.synIDattr(fn.synIDtrans(id), "name")}})
+    nvim.echo(
+        {
+            {fn.synIDattr(id, "name"), "WarningMsg"},
+            {" => "},
+            {fn.synIDattr(fn.synIDtrans(id), "name")}
+        }
+    )
 end
 
 ---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
@@ -232,20 +238,35 @@ augroup(
         event = "FileType",
         pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
         command = function()
-            map("n", "<Leader>r<CR>", "require('functions').execute_buffer()", {desc = "Execute file", luacmd = true})
-            map("n", "<Leader>lru", ":FloatermNew --autoclose=0 ./%<CR>", {desc = "Execute file in Floaterm"})
-        end
-    },
-    {
-        event = "FileType",
-        pattern = {"lua", "vim"},
-        command = function()
-            map("n", "<Leader>xl", ":luafile %<CR>")
-            map("n", "<Leader>xx", ":lua require('functions').lua_executor()<CR>")
-            map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
-            map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
+            map(
+                "n",
+                "<Leader>r<CR>",
+                "require('functions').execute_buffer()",
+                {desc = "Execute file", luacmd = true}
+            )
+            map(
+                "n",
+                "<Leader>lru",
+                ":FloatermNew --autoclose=0 ./%<CR>",
+                {desc = "Execute file in Floaterm"}
+            )
         end
     }
+    -- {
+    --     event = "FileType",
+    --     pattern = {"lua", "vim"},
+    --     command = function()
+    --         map("n", "<Leader>xl", ":luafile %<CR>", {desc = "`luafile` current file"})
+    --         map(
+    --             "n",
+    --             "<Leader>xx",
+    --             ":lua require('functions').lua_executor()<CR>",
+    --             {desc = "Execute Lua/Vim got"}
+    --         )
+    --         map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
+    --         map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
+    --     end
+    -- }
 )
 
 function M.execute_macro_over_visual_range()

@@ -84,11 +84,13 @@ end
 local function mappings(bufnr)
     wk.register(
         {
-            ["<Leader>he"] = {"<Cmd>Gitsigns stage_hunk<CR>", "Stage hunk (git)"},
             ["<Leader>hp"] = {"<Cmd>Gitsigns preview_hunk<CR>", "Preview hunk (git)"},
-            ["<Leader>hS"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
-            ["<Leader>hu"] = {"<Cmd>Gitsigns reset_hunk<CR>", "Reset hunk (git)"},
-            ["<Leader>hr"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
+            ["<Leader>hi"] = {"<Cmd>Gitsigns preview_hunk_inline<CR>", "Preview hunk inline (git)"},
+            ["<Leader>hs"] = {"<Cmd>Gitsigns stage_hunk<CR>", "Stage hunk (git)"},
+            ["<Leader>hS"] = {"<Cmd>Gitsigns stage_buffer<CR>", "Stage buffer (git)"},
+            ["<Leader>hu"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
+            ["<Leader>hr"] = {"<Cmd>Gitsigns reset_hunk<CR>", "Reset hunk (git)"},
+            ["<Leader>hR"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
             ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
             ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
@@ -97,7 +99,7 @@ local function mappings(bufnr)
             ["<Leader>hl"] = {"<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>", "Toggle line highlight (git)"},
             ["<Leader>hw"] = {"<Cmd>lua require('plugs.gitsigns').toggle_word_diff()<CR>", "Toggle word diff (git)"},
             ["<Leader>hB"] = {"<Cmd>lua require('plugs.gitsigns').toggle_blame()<CR>", "Toggle blame line virt (git)"},
-            ["<Leader>hs"] = {"<Cmd>lua require('plugs.gitsigns').toggle_signs()<CR>", "Toggle sign column (git)"},
+            ["<Leader>hc"] = {"<Cmd>lua require('plugs.gitsigns').toggle_signs()<CR>", "Toggle sign column (git)"},
             ["<Leader>hn"] = {"<Cmd>lua require('plugs.gitsigns').toggle_numhl()<CR>", "Toggle number highlight (git)"},
             ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}
         },
@@ -111,20 +113,20 @@ local function mappings(bufnr)
 
     map(
         "x",
-        "<Leader>he",
+        "<Leader>hs",
         function()
             gs.stage_hunk {fn.line("."), fn.line("v")}
         end,
-        {buffer = bufnr, desc = "Stage hunk"}
+        {buffer = bufnr, desc = "Stage hunk (g)"}
     )
 
     map(
         "x",
-        "<Leader>hu",
+        "<Leader>hr",
         function()
             gs.reset_hunk {fn.line("."), fn.line("v")}
         end,
-        {buffer = bufnr, desc = "Reset hunk"}
+        {buffer = bufnr, desc = "Reset hunk (git)"}
     )
 
     bmap(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
@@ -168,6 +170,7 @@ function M.setup()
             -- Always refresh the staged file on each update.
             -- Disabling will cause staged file to be refreshed when an update to the index is detected
             _refresh_staged_on_update = false,
+            _signs_staged_enable = true,
             signs = {
                 add = {
                     hl = "GitSignsAdd",

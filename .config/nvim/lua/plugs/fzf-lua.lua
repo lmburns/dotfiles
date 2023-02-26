@@ -398,7 +398,18 @@ function M.setup()
             -- default options are controlled by 'rg|grep_opts'
             -- cmd            = "rg --vimgrep",
             grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp",
-            rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=512",
+            rg_opts = D.list(
+                {
+                    "--column",
+                    "--line-number",
+                    "--no-heading",
+                    "--color=always",
+                    "--smart-case",
+                    "--max-columns=512",
+                    "--pcre2"
+                },
+                " "
+            ),
             -- set to 'true' to always parse globs in both 'grep' and 'live_grep'
             -- search strings will be split using the 'glob_separator' and translated
             -- to '--iglob=' arguments, requires 'rg'
@@ -706,6 +717,15 @@ M.cst_fd = function()
     fzf_lua.files(opts)
 end
 
+M.cst_grep = function()
+    local opts = {}
+    local cwd = fn.expand("%:p:h")
+    cmd.lcd(cwd)
+    opts.cwd = cwd
+
+    fzf_lua.live_grep(opts)
+end
+
 -- local function map_fzf(mode, key, f, opts, buffer)
 --     local rhs = function()
 --         if not pcall(require, "fzf-lua") then
@@ -746,12 +766,15 @@ function init()
             ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
             ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
             ["<Leader>t;"] = {":lua require('fzf-lua').tabs()<CR>", "Tab list (fzf-lua)"},
-            ["<LocalLeader>e"] = {":lua require('fzf-lua').live_grep()<CR>", "Live grep (fzf-lua)"},
+            ["<LocalLeader>e"] = {":lua require('plugs.fzf-lua').cst_grep()<CR>", "Live grep (fzf-lua)"},
             ["<Leader>hh"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
             -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
             ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
-            ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
+            ["<Leader>cs"] = {
+                ":lua require('fzf-lua').colorschemes()<CR>",
+                "Colorschemes (fzf-lua)"
+            },
             ["<Leader>cl"] = {":lua require('fzf-lua').highlights()<CR>", "Highlights (fzf-lua)"},
             ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},
             ["<C-,>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
@@ -762,9 +785,15 @@ function init()
             ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
             ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
-            ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Git/Files (fzf-lua)"},
-            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
-            ["<Leader>eh"] = {":lua require('plugs.fzf-lua').edit_zsh()<CR>", "Edit zsh (fzf-lua)"},
+            ["<LocalLeader>r"] = {
+                ":lua require('plugs.fzf-lua').cst_files()<CR>",
+                "Git/Files (fzf-lua)"
+            },
+            ["<LocalLeader>w"] = {
+                ":lua require('plugs.fzf-lua').cst_fd()<CR>",
+                "Files CWD (fzf-lua)"
+            },
+            ["<Leader>eh"] = {":lua require('plugs.fzf-lua').edit_zsh()<CR>", "Edit zsh (fzf-lua)"}
         }
     )
 

@@ -23,7 +23,8 @@ function M.setup()
             height = 15, -- height of the trouble list when position is top or bottom
             width = 50, -- width of the list when position is left or right
             icons = true, -- use devicons for filenames
-            mode = "workspace_diagnostics", -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
+            -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
+            mode = "workspace_diagnostics",
             fold_open = "", -- icon used for open folds
             fold_closed = "", -- icon used for closed folds
             group = true, -- group results by file
@@ -125,8 +126,24 @@ local function init()
         {desc = "Trouble first"}
     )
 
-    map("n", "<Leader>xd", "<cmd>TroubleToggle coc_definitions<cr>", {silent = true, desc = "Trouble definitions"})
-    map("n", "<Leader>xR", "<cmd>TroubleToggle coc_references<cr>", {silent = true, desc = "Trouble references"})
+    map(
+        "n",
+        "<Leader>xx",
+        "<cmd>TroubleToggle<cr>",
+        {silent = true, desc = "Trouble resume"}
+    )
+    map(
+        "n",
+        "<Leader>xd",
+        "<cmd>TroubleToggle coc_definitions<cr>",
+        {silent = true, desc = "Trouble definitions"}
+    )
+    map(
+        "n",
+        "<Leader>xR",
+        "<cmd>TroubleToggle coc_references<cr>",
+        {silent = true, desc = "Trouble references"}
+    )
 
     map(
         "n",

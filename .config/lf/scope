@@ -86,8 +86,8 @@ function handle_mime() {
       bat -Pf --tabs "${hl_tabwidth}" --style auto -- "${filepath}"
     ;;
     (application/pgp-encrypted)
-      gpg -d "${filepath}" - | bat -Pf --style auto
-      # bat -Pf --style auto -- "${filepath}"
+      # gpg -d "${filepath}" - | bat -Pf --style auto
+      bat -Pf --style auto -- "${filepath}"
     ;;
     (application/zip)
       atool --list -- "${filepath}"

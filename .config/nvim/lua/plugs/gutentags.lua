@@ -8,9 +8,7 @@ local o = vim.opt
 local g = vim.g
 
 function M.setup()
-    -- cmd [[set tags=tags,./.tags,.tags]]
-    -- o.tags:append({"tags", "./.tags", ".tags"})
-    o.tags = {"tags", "./.tags", "./.tags;", ".tags"}
+    o.tags = {"tags", "./tags", "./.tags", ".tags"}
 
     g.gutentags_enabled = 1
     g.gutentags_define_advanced_commands = 1

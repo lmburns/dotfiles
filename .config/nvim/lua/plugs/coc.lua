@@ -1,3 +1,6 @@
+---@diagnostic disable:param-type-mismatch
+---@diagnostic disable:redundant-parameter
+---@diagnostic disable:missing-parameter
 ---@diagnostic disable:undefined-field
 
 local M = {}
@@ -11,6 +14,7 @@ local map = utils.map
 local augroup = utils.augroup
 
 local wk = require("which-key")
+---@module "promise-async"
 local promise = require("promise")
 
 local fn = vim.fn
@@ -234,7 +238,7 @@ end
 ---Run a Coc command
 ---@param name string Command to run
 ---@param args table Arguments to the command
----@param cb function
+---@param cb? function
 ---@return string[]
 function M.run_command(name, args, cb)
     local action_fn
@@ -485,8 +489,20 @@ function M.post_open_float()
                 vim.wo[winid].showbreak = "NONE"
 
                 if lv then
-                    bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-                    bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+                    bmap(
+                        bufnr,
+                        "n",
+                        "K",
+                        D.ithunk(lv.link_under_cursor),
+                        {desc = "Link under cursor"}
+                    )
+                    bmap(
+                        bufnr,
+                        "n",
+                        "M",
+                        D.ithunk(lv.link_near_cursor),
+                        {desc = "Link near cursor"}
+                    )
                 end
             end
         )
@@ -693,16 +709,18 @@ function M.sumneko_ls()
     local runtime = _t(M.get_lua_runtime()):keys()
     library = vim.list_extend(library, runtime)
 
-    if D.plugin_loaded("promise-async") then
-        local promise = ("%s/typings"):format(_G.packer_plugins["promise-async"].path)
-        library = vim.list_extend(library, {promise})
-    end
+    -- These aren't appearing in auto completion
+    -- if D.plugin_loaded("promise-async") then
+    --     local promise = {
+    --         ("%s/typings"):format(_G.packer_plugins["promise-async"].path),
+    --     }
+    --     library = vim.list_extend(library, promise)
+    -- end
 
-    -- TODO: Find a way to only get these to show, not coc-sumneko-lua
-    if D.plugin_loaded("neodev.nvim") then
-        local typings = require("neodev.config").types()
-        library = vim.list_extend(library, {typings})
-    end
+    -- if D.plugin_loaded("neodev.nvim") then
+    --     local typings = require("neodev.config").types()
+    --     library = vim.list_extend(library, {typings})
+    -- end
 
     M.set_config("Lua.workspace", {library = library})
 
@@ -723,6 +741,15 @@ function M.init()
     vim.defer_fn(
         function()
             M.sumneko_ls()
+            -- Without this, not everything loads correctly
+            pcall(
+                function()
+                    M.runCommand("sumneko-lua.restart"):catch(
+                        function(_)
+                        end
+                    )
+                end
+            )
         end,
         10
     )
@@ -897,17 +924,29 @@ function M.init()
         {
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
-            ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type definition"},
-            ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
+            ["gy"] = {
+                ":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>",
+                "Goto type definition"
+            },
+            ["gi"] = {
+                ":call CocActionAsync('jumpImplementation', 'drop')<CR>",
+                "Goto implementation"
+            },
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
             ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
             ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
-            ["<C-x><C-d>"] = {":CocCommand fzf-preview.CocTypeDefinition<CR>", "List coc definitions"},
+            ["<C-x><C-d>"] = {
+                ":CocCommand fzf-preview.CocTypeDefinition<CR>",
+                "List coc definitions"
+            },
             ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},
-            ["<C-x><C-]>"] = {":CocCommand fzf-preview.CocImplementations<CR>", "List coc implementations"},
+            ["<C-x><C-]>"] = {
+                ":CocCommand fzf-preview.CocImplementations<CR>",
+                "List coc implementations"
+            },
             -- ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
             ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
             -- ["<LocalLeader>t"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
@@ -920,9 +959,15 @@ function M.init()
                 ":lua vim.notify(require'plugs.coc'.getsymbol(), vim.log.levels.WARN)<CR>",
                 "Get current symbol"
             },
-            ["<Leader>j;"] = {":lua require('plugs.coc').diagnostic()<CR>", "Coc diagnostics (project)"},
+            ["<Leader>j;"] = {
+                ":lua require('plugs.coc').diagnostic()<CR>",
+                "Coc diagnostics (project)"
+            },
             ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-            ["<Leader>jr"] = {":call CocActionAsync('diagnosticRefresh', 'drop')<CR>", "Coc diagnostics refresh"},
+            ["<Leader>jr"] = {
+                ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
+                "Coc diagnostics refresh"
+            },
             ["<Leader>jt"] = {
                 ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
                 "Coc toggle diagnostic target"
@@ -946,8 +991,16 @@ function M.init()
     )
 
     -- === CodeActions ===
-    map("n", "<A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>")
-    map("n", "<C-A-CR>", "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>")
+    map(
+        "n",
+        "<A-CR>",
+        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>"
+    )
+    map(
+        "n",
+        "<C-A-CR>",
+        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>"
+    )
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
 
     map("x", "<Leader>fm", "<Plug>(coc-format-selected)", {desc = "Format selected"})
@@ -978,13 +1031,18 @@ function M.init()
     map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], shexpr)
 
     -- Popup
-    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], {expr = true, silent = true})
-    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], {expr = true, silent = true})
-    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true, silent = true})
-    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true, silent = true})
+    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], shexpr)
+    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], shexpr)
+    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], shexpr)
+    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], shexpr)
 
     -- Snippet
-    map("i", "<C-]>", [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]], {expr = true, noremap = false})
+    map(
+        "i",
+        "<C-]>",
+        [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
+        {expr = true, noremap = false}
+    )
     map("s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]], {expr = true})
 
     -- Fzf
@@ -1000,10 +1058,10 @@ function M.init()
     )
 
     -- map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
-    map({"n", "s"}, "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], {expr = true, silent = true})
-    map({"n", "s"}, "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], {expr = true, silent = true})
-    map("i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]], {expr = true, silent = true})
-    map("i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]], {expr = true, silent = true})
+    map({"n", "s"}, "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], shexpr)
+    map({"n", "s"}, "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], shexpr)
+    map("i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]], shexpr)
+    map("i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]], shexpr)
 
     map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
 end

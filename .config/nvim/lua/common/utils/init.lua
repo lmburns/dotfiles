@@ -3,8 +3,11 @@
 ---              They are a higher-level set than `dev`
 
 -- Some vim options and `uv.fs_*` are undefined after recent udpate
----@diagnostic disable: undefined-doc-name
----@diagnostic disable: undefined-field
+---@diagnostic disable:undefined-doc-name
+---@diagnostic disable:undefined-field
+---@diagnostic disable:param-type-mismatch
+---@diagnostic disable:redundant-parameter
+---@diagnostic disable:missing-parameter
 
 local M = {}
 
@@ -92,9 +95,9 @@ end
 ---Return a value based on two values
 ---@generic T, V
 ---@param condition boolean|nil Statement to be tested
----@param is_if T Return if condition is truthy
----@param is_else V Return if condition is not truthy
----@return T | V
+---@param is_if `T` Return if condition is truthy
+---@param is_else `V` Return if condition is not truthy
+---@return `T` | `V`
 F.tern = function(condition, is_if, is_else)
     if condition then
         return is_if
@@ -105,20 +108,50 @@ end
 ---Similar to `vim.F.nil` except that an alternate default value can be given
 ---@generic T, V
 ---@param x any: Value to check if `nil`
----@param is_nil T: Value to return if `x` is `nil`
----@param is_not_nil V: Value to return if `x` is not `nil`
----@return T | V
+---@param is_nil `T`: Value to return if `x` is `nil`
+---@param is_not_nil `V`: Value to return if `x` is not `nil`
+---@return `T` | `V`
 M.ife_nil = function(x, is_nil, is_not_nil)
     return F.tern(x == nil, is_nil, is_not_nil)
 end
 
 ---Return a default value if `x` is nil
 ---@generic T, V
----@param x T: Value to check if not `nil`
----@param default V: Default value to return if `x` is `nil`
----@return T | V
+---@param x `T`: Value to check if not `nil`
+---@param default `V`: Default value to return if `x` is `nil`
+---@return `T` | `V`
 M.get_default = function(x, default)
     return M.ife_nil(x, default, x)
+end
+
+---Will determine whether:
+---  - `string` == ""
+---  - `table` == {}
+---  - `number` == 0
+---A number can be given to this function, with `{buffer = true}`,
+---and the text in the buffer number as `item` will be checked to see if it is empty.
+---
+---@param item string|table|buffer Item to check if empty
+---@param buf? { buffer?: boolean|number }
+---@return boolean?
+M.empty = function(item, buf)
+    local item_t = type(item)
+
+    if item_t == "string" then
+        return item == ""
+    elseif item_t == "table" then
+        return vim.tbl_isempty(item)
+    elseif item_t == "number" then
+        buf = M.get_default(buf, {})
+        if buf.buffer == true then
+            local lines = api.nvim_buf_get_lines(item, 0, -1, false)
+            return #lines == 1 and lines[1] == ""
+        else
+            return item == 0
+        end
+    ---All values have been covered
+    ---@diagnostic disable-next-line:missing-return
+    end
 end
 
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
@@ -149,7 +182,7 @@ end
 
 ---Create an augroup with the lua api
 ---@param name string
----@param clear boolean
+---@param clear? boolean
 ---@return number
 M.create_augroup = function(name, clear)
     clear = clear == nil and true or clear
@@ -266,7 +299,7 @@ end
 ---@param modes string|string[]: Modes the keymapping should be bound
 ---@param lhs string: Keybinding that is mapped
 ---@param rhs string|function: String or Lua function that will be bound to a key
----@param opts MapArgs: Options given to keybindings
+---@param opts? MapArgs: Options given to keybindings
 ---@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a two keys `dispose` & `map`.
 ---                                        `.dispose()` can be used for temporary keyaps.
 --- See: **:map-arguments**
@@ -295,10 +328,8 @@ M.map = function(modes, lhs, rhs, opts)
         opts = {opts, "t", true}
     }
 
-    -- TODO: Add an unmap feature
-
-    opts = vim.deepcopy(opts) or {}
-    modes = type(modes) == "string" and {modes} or modes --[[@as string[]]
+    opts = vim.deepcopy(opts) or {} --[[@as MapArgs]]
+    modes = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
 
     if opts.remap == nil then
         if opts.noremap ~= false then
@@ -351,7 +382,7 @@ M.map = function(modes, lhs, rhs, opts)
     end)()
 
     local bufnr = (function()
-        local b = F.tern(opts.buffer, 0, opts.buffer)
+        local b = F.tern(opts.buffer, 0, opts.buffer) --[[@as number]]
         opts.buffer = nil
         return b
     end)()
@@ -403,7 +434,12 @@ M.map = function(modes, lhs, rhs, opts)
         {
             map = function()
                 local mode = modes[1]
-                return M.get_keymap(mode, lhs, true, F.tern(bufnr or type(bufnr) == "number", true, false))
+                return M.get_keymap(
+                    mode,
+                    lhs,
+                    true,
+                    F.tern(bufnr or type(bufnr) == "number", true, false)
+                )
             end
         }
     )
@@ -417,7 +453,7 @@ end
 ---@param opts MapArgs Options given to keybindings
 ---@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
-    opts = opts or {}
+    opts = opts or {} --[[@as MapArgs]]
     opts.buffer = bufnr
     return M.map(modes, lhs, rhs, opts)
 end
@@ -433,8 +469,8 @@ M.del_keymap = function(modes, lhs, opts)
         opts = {opts, "t", true}
     }
 
-    opts = vim.deepcopy(opts) or {}
-    modes = type(modes) == "string" and {modes} or modes --[[@as string[]]
+    opts = vim.deepcopy(opts) or {} --[[@as DelMapArgs]]
+    local modes_tbl = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
 
     local bufnr = false
     if opts.buffer ~= nil then
@@ -443,14 +479,14 @@ M.del_keymap = function(modes, lhs, opts)
     end
 
     if bufnr == false then
-        for _, mode in ipairs(modes) do
+        for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_del_keymap, mode, lhs)
             if not ok and opts.notify then
                 log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
             end
         end
     else
-        for _, mode in ipairs(modes) do
+        for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_buf_del_keymap, bufnr, mode, lhs)
             if not ok and opts.notify then
                 log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
@@ -505,26 +541,32 @@ end
 
 -- Replace termcodes; e.g., t'<C-n>'
 ---@param str string: String to be converted
----@param from_part boolean: Legacy vim parameter. Usually true
----@param do_lt boolean: Also translate `<lt>` (Ignored if special is false)
----@param special boolean: Replace keycodes, e.g., `<CR>` => `\r`
+---@param from_part? boolean: Legacy vim parameter. Usually true
+---@param do_lt? boolean: Also translate `<lt>` (Ignored if special is false)
+---@param special? boolean: Replace keycodes, e.g., `<CR>` => `\r`
 ---@return string
 M.t = function(str, from_part, do_lt, special)
     ---@diagnostic disable-next-line:return-type-mismatch
-    return api.nvim_replace_termcodes(str, F.if_nil(from_part, true), F.if_nil(do_lt, true), F.if_nil(special, true))
+    return api.nvim_replace_termcodes(
+        str,
+        F.if_nil(from_part, true),
+        F.if_nil(do_lt, true),
+        F.if_nil(special, true)
+    )
 end
 
 ---Debug helper
----@vararg any: Anything to dump
+---@param ... any: Anything to dump
 M.dump = function(...)
-    local objects = vim.tbl_map(D.inspect, {...})
+    local objects = vim.tbl_map(D.inspect, {...}) --[==[@as any[]]==]
     print(unpack(objects))
 end
 
 ---Get a Vim option. If present in buffer, return that, else global
+---@generic T: string|number|table
 ---@param option string option to get
----@param default string|number fallback option
----@return string|number
+---@param default T fallback option
+---@return `T`
 M.get_option = function(option, default)
     local ok, opt = pcall(nvim.buf.get_option, 0, option)
     if not ok then
@@ -562,7 +604,7 @@ end
 ---Create an `nvim` command
 ---@param name string
 ---@param rhs string|fun(args: CommandArgs): nil
----@param opts CommandOpts
+---@param opts? CommandOpts
 M.command = function(name, rhs, opts)
     vim.validate {
         name = {name, "string"},
@@ -585,7 +627,12 @@ M.command = function(name, rhs, opts)
         M.prequire(
             "legendary",
             function(lgnd)
-                lgnd.command({(":%s"):format(name), opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}})
+                lgnd.command(
+                    {
+                        (":%s"):format(name),
+                        opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}
+                    }
+                )
             end
         )
     end
@@ -616,6 +663,41 @@ M.del_command = function(name, buffer)
     else
         api.nvim_del_user_command(name)
     end
+end
+
+---Call the function `fn` with autocommands disabled.
+---@generic T: fun(), V: any
+---@param fn T<fun(v: V)>
+---@param ... V
+M.noautocmd = function(fn, ...)
+    local last_eventignore = vim.o.eventignore
+    vim.o.eventignore = "all"
+    fn(...)
+    vim.o.eventignore = last_eventignore
+end
+
+---Call the function `f`, ignoring most window/buffer autocmds
+---@param f fun(v?: any)
+---@return boolean, any
+M.no_win_event_call = function(f)
+    local ei = vim.o.eventignore
+
+    vim.opt.eventignore:prepend(
+        D.list {
+            "WinEnter",
+            "WinLeave",
+            "WinNew",
+            "WinClosed",
+            "BufWinEnter",
+            "BufWinLeave",
+            "BufEnter",
+            "BufLeave"
+        }
+    )
+    local ok, err = pcall(f)
+    vim.opt.eventignore = ei
+
+    return ok, err
 end
 
 ---Check that the current version is greater than or equal to the given version
@@ -719,16 +801,6 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
--- ---Correctly assign this to be an enum
--- ---@enum NotifyLevels
--- NotifyLevels = {
---     Trace = log.levels.TRACE,
---     Debug = log.levels.DEBUG,
---     Info = log.levels.INFO,
---     Warn = log.levels.WARN,
---     Error = log.levels.ERROR
--- }
-
 ---@class NotifyOpts
 ---@field icon? string Icon to add to notification
 ---@field title? string Title to add
@@ -741,31 +813,17 @@ end
 ---@field on_close? fun(winnr: number): nil Callback for when window closes
 ---@field keep? fun(): boolean Keep window open after timeout
 ---@field render? fun(): nil Render a notification buffer
-
---         {replace}           (integer|notify.Record)  Notification record or
---                                                      the record `id` field.
---                                                      Replace an existing
---                                                      notification if still
---                                                      open. All arguments not
---                                                      given are inherited from
---                                                      the replaced notification
---                                                      including message and
---                                                      level.
---         {hide_from_history} (boolean)                Hide this notification
---                                                      from the history
---         {animate}           (boolean)                If false, the window will
---                                                      jump to the timed stage.
---                                                      Intended for use in
---                                                      blocking events (e.g.
---                                                      vim.fn.input)
+---@field replace? integer|notify.Record Notification record or record `id` field
+---@field hide_from_history? boolean Hide this notification from history
+---@field animate? boolean If false, window will jump to the timed stage
 
 do
     local notifications = {}
 
     ---Wrapper to send a notification
-    ---@param msg string? Message to notify
+    ---@param msg string Message to notify
     ---@param level number
-    ---@param opts NotifyOpts
+    ---@param opts? NotifyOpts
     M.notify = function(msg, level, opts)
         level = F.if_nil(level, log.levels.INFO)
         local keep = function()
@@ -781,8 +839,7 @@ do
             [log.levels.ERROR] = {timeout = 5000, keep = keep}
         })[level]
 
-        ---@diagnostic disable-next-line:cast-local-type
-        opts = vim.tbl_extend("force", _opts or {}, opts or {})
+        opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as NotifyOpts]]
 
         local function notify()
             if vim.g.nvim_focused then
@@ -819,7 +876,11 @@ end
 ---@param level number?
 ---@param title string?
 _G.N = function(msg, level, title)
-    M.notify(vim.inspect(msg), M.get_default(level, log.levels.INFO) --[[@as number]], {title = title})
+    M.notify(
+        vim.inspect(msg),
+        M.get_default(level, log.levels.INFO) --[[@as number]],
+        {title = title}
+    )
 end
 
 ---Preserve cursor position when executing command
@@ -982,26 +1043,6 @@ M.executable = function(exec)
     return fn.executable(exec) == 1
 end
 
----Will determine whether a string or table is empty
----A number can be given to this function and it will assume that is it as buffer
----
----@param item string|table|buffer
----@return boolean?
-M.empty = function(item)
-    local item_t = type(item)
-
-    if item_t == "string" then
-        return item == ""
-    elseif item_t == "table" then
-        return vim.tbl_isempty(item)
-    elseif item_t == "number" then
-        local lines = api.nvim_buf_get_lines(b, 0, -1, false)
-        return #lines == 1 and lines[1] == ""
-    ---All values have been covered
-    ---@diagnostic disable-next-line:missing-return
-    end
-end
-
 ---@param str string
 ---@param max_len integer
 ---@return string
@@ -1011,7 +1052,11 @@ M.truncate = function(str, max_len)
         max_len = {max_len, "n", false}
     }
 
-    return api.nvim_strwidth(str) > max_len and str:sub(1, max_len) .. style.icons.misc.ellipsis or str
+    return F.tern(
+        api.nvim_strwidth(str) > max_len,
+        str:sub(1, max_len) .. style.icons.misc.ellipsis,
+        str
+    )
 end
 
 ---Escape a string correctly
@@ -1108,7 +1153,11 @@ M.render_str =
             }
         )
         local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
-        if not ok or not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
+        if
+            not ok or
+                not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or
+                    hl.underline)
+         then
             return str
         end
         local fg, bg
@@ -1120,7 +1169,11 @@ M.render_str =
             bg = hl.background
         end
         local escape_prefix =
-            ("\x1b[%s%s%s"):format(hl.bold and ";1" or "", hl.italic and ";3" or "", hl.underline and ";4" or "")
+            ("\x1b[%s%s%s"):format(
+            hl.bold and ";1" or "",
+            hl.italic and ";3" or "",
+            hl.underline and ";4" or ""
+        )
 
         local escape_fg, escape_bg = "", ""
         if fg and type(fg) == "number" then
@@ -1207,7 +1260,7 @@ M.cecho =
     ---@param history boolean? add message to history
     ---@param wait number? amount of time to wait
     return function(msg, hl, history, wait)
-        history = history == nil and true or history
+        history = history == nil and true or history --[[@as boolean]]
         vim.schedule(
             function()
                 api.nvim_echo({{msg, hl}}, history, {})
@@ -1231,8 +1284,8 @@ end)()
 
 ---Expand a tab in a string
 ---@param str string
----@param ts integer
----@param start integer
+---@param ts number
+---@param start? number
 ---@return string
 M.expandtab = function(str, ts, start)
     start = start or 1
@@ -1286,7 +1339,7 @@ M.highlight =
     ---@param hl_group string
     ---@param start number
     ---@param finish number
-    ---@param opt table
+    ---@param opt? table
     ---@param delay number
     return function(bufnr, hl_group, start, finish, opt, delay)
         local row, col = do_unpack(start)

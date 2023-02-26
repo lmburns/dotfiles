@@ -3,7 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local dirs = require("common.global").dirs
 local debounce = require("common.debounce")
-local log = require("common.log")
+-- local log = require("common.log")
 -- local uva = require("uva")
 -- local async = require("async")
 
@@ -88,13 +88,12 @@ M.flush =
     local debounced
     return function(force)
         if force then
-            utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
-
             -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n")):catch(
             --     function(e)
             --         vim.notify(e)
             --     end
             -- )
+            utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
         else
             if not debounced then
                 debounced =
@@ -119,12 +118,14 @@ end)()
 M.store_buf = (function()
     local count = 0
     return function()
-        local bufnr = fn.expand("<abuf>", 1)
-        bufnr = bufnr and tonumber(bufnr) or api.nvim_get_current_buf()
-        table.insert(bufs, bufnr)
-        count = (count + 1) % 10
-        if count == 0 then
-            M.list()
+        local ok, bufnr = pcall(fn.expand, "<abuf>", 1)
+        if ok then
+            bufnr = bufnr and tonumber(bufnr) or api.nvim_get_current_buf()
+            table.insert(bufs, bufnr)
+            count = (count + 1) % 10
+            if count == 0 then
+                M.list()
+            end
         end
     end
 end)()

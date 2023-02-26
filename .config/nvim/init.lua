@@ -2,7 +2,6 @@
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 FIX: Telescope opens file in insert mode
 FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
-FIX: Substitute command doesn't work with multiple lines in visual mode
 
 FIX: Folds close automatically if every fold in file is closed then opened
 
@@ -97,6 +96,7 @@ require("mapping")
 require("abbr")
 require("functions")
 require("autocmds")
+require("lsp")
 require("common.qf")
 require("common.mru")
 require("common.grepper")
@@ -228,9 +228,7 @@ vim.schedule(
                     -- "coc-dlang",
                     -- "coc-yank",
                     --
-                    -- RLS is not needed with rust-analyzer
-                    -- However, I've noticed that diagnostics are better and quicker
-                    "coc-rls",
+                    -- "coc-rls",
                     "coc-rust-analyzer",
                     "coc-sumneko-lua",
                     "coc-json",

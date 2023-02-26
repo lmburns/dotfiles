@@ -1,28 +1,43 @@
----@class Plugin
----@field after string | string[]: Specifies plugins to load before this plugin.
----@field as string: Specifies an alias under which to install the plugin
----@field branch string: Specifies a git branch to use
----@field cmd string | string[]: Specifies commands which load this plugin.  Can be an autocmd pattern.
----@field commit string: Specifies a git commit to use
----@field cond string | function | string[]: Specifies a conditional test to load this plugin
----@field config string | function: Specifies code to run after this plugin is loaded.
----@field disable boolean: Mark a plugin as inactive
----@field event string | string[]: Specifies autocommand events which load this plugin.
----@field fn string | string[]: Specifies functions which load this plugin.
----@field ft string | string[]: Specifies filetypes which load this plugin.
----@field installer function: Specifies custom installer
----@field keys string | string[]: Specifies maps which load this plugin
----@field lock boolean: Skip updating this plugin in updates/syncs. Still cleans.
----@field module string | string[]: Specifies Lua module names for require. When requiring a string which starts
----@field module_pattern string | string[]: Specifies Lua pattern of Lua module names for require. When requiring a string
----@field opt boolean: Manually marks a plugin as optional.
----@field requires string string[]: Specifies plugin dependencies
----@field rocks string | string[]: Specifies Luarocks dependencies for the plugin
----@field rtp string: Specifies a subdirectory of the plugin to add to runtimepath.
----@field run string | function | table: Post-update/install hook
----@field setup string | function: Specifies code to run before this plugin is loaded.
----@field tag string: Specifies a git tag to use. Supports '*' for "latest tag"
----@field updater function: Specifies custom updater
+---@class PackerPlugin
+---@field name string Name of plugin
+---@field after string|string[] Specifies plugins to load before this plugin.
+---@field requires string|string[]|string[][] Specifies plugin dependencies
+---@field wants string|string[] Load the plugins if they're not already
+---@field rocks string|string[] Specifies Luarocks dependencies for the plugin
+---@field as string Specifies an alias under which to install the plugin
+---@field config string|fun() Specifies code to run after this plugin is loaded.
+---@field conf string [CUSTOM]: Specifies code to run after this plugin is loaded.
+---@field setup string|fun() Specifies code to run before this plugin is loaded.
+---@field run string|string[]|fun(v: PackerPlugin)|fun(v: PackerPlugin)[] Post-update/install hook
+---@field installer fun() Specifies custom installer
+---@field updater fun() Specifies custom updater
+---@field lock boolean Skip updating this plugin in updates/syncs. Still cleans.
+---@field frozen boolean Unsure: possibly same as lock
+---@field opt boolean Manually marks a plugin as optional.
+---@field cond string|fun(): boolean|string[] Specifies a conditional test to load this plugin
+---@field cmd string|string[] Specifies commands which load this plugin.  Can be an autocmd pattern.
+---@field ft string|string[] Specifies filetypes which load this plugin.
+---@field keys string|string[]|string[][] Specifies maps which load this plugin
+---@field event string|string[] Specifies autocommand events which load this plugin.
+---@field fn string|string[] Specifies functions which load this plugin.
+---@field module string|string[] Specifies Lua module names for require
+---@field module_pattern string|string[] Specifies Lua pattern of Lua module names for require
+---@field disable boolean Mark a plugin as inactive
+---@field disablep boolean [CUSTOM]: Mark a plugin as inactive if it is disabled in `common.control`
+---@field rtp string Specifies a subdirectory of the plugin to add to runtimepath.
+---@field patch boolean|string [CUSTOM]: Specifies a patch to apply to the plugin
+---@field branch string Specifies a git branch to use
+---@field commit string Specifies a git commit to use
+---@field rev string Specifies a git commit to use
+---@field tag string Specifies a git tag to use. Supports '*' for "latest tag"
+---@field bufread boolean Manually specifying if a plugin needs BufRead after being loaded
+---@field simple_load boolean Unsure: only load the plugin as if no args were passed
+---@field url string URL to the Git repository
+---@field install_path string Directory where plugin is to be installed
+---@field manual_opt boolean Unsure
+---@field only_config boolean Unsure
+---@field short_name string Name of plugin minus the user
+---@field desc string [CUSTOM]: Just a way of writing a description of the plugin
 
 -- local control = {}
 -- for plugin, tbl in pairs(_G.packer_plugins) do
@@ -35,16 +50,12 @@ local M = {
     ["FixCursorHold.nvim"] = false,
     ["JuliaFormatter.vim"] = false,
     ScratchPad = false,
-    ["Spacegray.vim"] = false,
     UnconditionalPaste = false,
     ["aerial.nvim"] = false,
     ["architext.nvim"] = false,
-    ["arctic.nvim"] = false,
     ["arshlib.nvim"] = false,
     ["asyncrun.vim"] = false,
     ["better-escape.nvim"] = false,
-    ["blue-moon"] = false,
-    bogster = false,
     ["bufferize.vim"] = false,
     ["bufferline.nvim"] = false,
     catppuccin = false,
@@ -55,7 +66,6 @@ local M = {
     ["coc.nvim"] = false,
     ["comment-box.nvim"] = false,
     ["crates.nvim"] = false,
-    ["daycula-vim"] = false,
     ["desktop-notify.nvim"] = false,
     ["dial.nvim"] = false,
     ["diffview.nvim"] = false,
@@ -64,6 +74,7 @@ local M = {
     ["editorconfig-vim"] = false,
     ["eregex.vim"] = false,
     everforest = false,
+    ["fsread.nvim"] = false,
     fzf = false,
     ["fzf-floaterm"] = false,
     ["fzf-lua"] = false,
@@ -78,7 +89,7 @@ local M = {
     ["hop.nvim"] = false,
     ["hotpot.nvim"] = false,
     ["iceberg.vim"] = false,
-    ["id3.vim"] = false,
+    ["id3.nvim"] = false,
     ["impatient.nvim"] = false,
     ["incline.nvim"] = false,
     ["indent-blankline.nvim"] = false,
@@ -100,9 +111,12 @@ local M = {
     ["marks.nvim"] = false,
     ["material.nvim"] = false,
     melange = false,
+    ["mellow.nvim"] = false,
     miramare = false,
+    mkdx = false,
     ["move.nvim"] = false,
     ["neodark.vim"] = false,
+    ["neodev.nvim"] = false,
     neoformat = false,
     neogen = false,
     neogit = false,
@@ -112,7 +126,6 @@ local M = {
     ["neotest-python"] = false,
     ["neotest-vim-test"] = false,
     neovim = false,
-    ["night-owl.vim"] = false,
     ["nightfox.nvim"] = false,
     ["nlua.nvim"] = false,
     ["nui.nvim"] = false,
@@ -123,6 +136,7 @@ local M = {
     ["nvim-dap-python"] = false,
     ["nvim-dap-ui"] = false,
     ["nvim-dap-virtual-text"] = false,
+    ["nvim-fundo"] = false,
     ["nvim-gps"] = false,
     ["nvim-hlslens"] = false,
     ["nvim-luapad"] = false,
@@ -144,15 +158,14 @@ local M = {
     nvim_context_vt = false,
     ["oceanic-material"] = false,
     ["one-small-step-for-vimkind"] = false,
-    ["onenord.nvim"] = false,
     ["open-browser.vim"] = false,
-    ["overseer.nvim"] = false,
     ["package-info.nvim"] = false,
     ["packer.nvim"] = false,
     ["paperplanes.nvim"] = false,
     playground = false,
     ["plenary.nvim"] = false,
     ["popup.nvim"] = false,
+    ["possession.nvim"] = false,
     ["project.nvim"] = false,
     ["promise-async"] = false,
     ["registers.nvim"] = false,
@@ -161,6 +174,7 @@ local M = {
     ["rose-pine"] = false,
     ["rust.vim"] = false,
     ["smart-splits.nvim"] = false,
+    ["smartcolumn.nvim"] = false,
     sonokai = false,
     ["sort.nvim"] = false,
     spaceduck = false,
@@ -191,7 +205,6 @@ local M = {
     ["tmux.nvim"] = false,
     ["todo-comments.nvim"] = false,
     ["toggleterm.nvim"] = false,
-    ["tokyodark.nvim"] = false,
     ["tokyonight.nvim"] = false,
     ["treesitter-unit"] = false,
     ["trouble.nvim"] = false,
@@ -205,7 +218,6 @@ local M = {
     ["vim-cargo-make"] = false,
     ["vim-caser"] = false,
     ["vim-crystal"] = false,
-    ["vim-deep-space"] = false,
     ["vim-devicons"] = false,
     ["vim-easy-align"] = false,
     ["vim-floaterm"] = false,
@@ -221,7 +233,6 @@ local M = {
     ["vim-just"] = false,
     ["vim-markdown"] = false,
     ["vim-matchup"] = false,
-    ["vim-nightfly-guicolors"] = false,
     ["vim-perl"] = false,
     ["vim-polyglot"] = false,
     ["vim-repeat"] = false,

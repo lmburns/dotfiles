@@ -68,10 +68,11 @@ packer.init(
         -- snapshot_path = ("%s/snapshot/packer.nvim"):format(dirs.cache),
         -- opt_default = false,
         auto_clean = true,
-        auto_reload_compiled = true,
+        auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
         autoremove = false,
-        ensure_dependencies = true,
-        compile_on_sync = true,
+        compile_on_sync = true, -- During sync(), run packer.compile()
+        ensure_dependencies = true, -- Should packer install plugin dependencies?
+        transitive_disable = true, -- Automatically disable dependencies of disabled plugins
         display = {
             non_interactive = false,
             header_lines = 2,
@@ -84,7 +85,13 @@ packer.init(
             show_all_info = true,
             prompt_border = "rounded",
             open_cmd = [[tabedit]],
-            keybindings = {prompt_revert = "R", diff = "D", retry = "r", quit = "q", toggle_info = "<CR>"},
+            keybindings = {
+                prompt_revert = "R",
+                diff = "D",
+                retry = "r",
+                quit = "q",
+                toggle_info = "<CR>"
+            },
             open_fn = function()
                 return require("packer.util").float({border = "rounded"})
             end
@@ -97,8 +104,7 @@ packer.init(
 PATCH_DIR = ("%s/patches"):format(dirs.config)
 
 local handlers = {
-    ---@diagnostic disable-next-line: unused-local
-    conf = function(plugins, plugin, value)
+    conf = function(_plugins, plugin, value)
         if value:match("^plugs%..+%.") then
             local _, _, m1, m2 = value:find("^plugs%.(.+)%.(.+)")
             plugin.config = ([[require('plugs.%s').%s()]]):format(m1, m2)
@@ -108,11 +114,13 @@ local handlers = {
             plugin.config = ([[require('plugs.config').%s()]]):format(value)
         end
     end,
-    disable = function(_, plugin, _)
+    disablep = function(_, plugin, _)
         plugin.disable = require("common.control")[plugin.short_name]
     end,
-    ---@diagnostic disable-next-line: unused-local
-    patch = function(plugins, plugin, value)
+    deb = function(_, plugin, _)
+        p(plugin)
+    end,
+    patch = function(_plugins, plugin, value)
         -- local run_hook = plugin_utils.post_update_hook
 
         -- This is preferred because you can provide own error message
@@ -143,7 +151,10 @@ local handlers = {
                         args = {"-s", "-N", "-p1", "-i", value},
                         on_exit = function(_, ret)
                             if ret ~= 0 then
-                                nvim.p(("Unable to apply patch to %s"):format(plugin.name), "ErrorMsg")
+                                nvim.p(
+                                    ("Unable to apply patch to %s"):format(plugin.name),
+                                    "ErrorMsg"
+                                )
                             end
                         end
                     }
@@ -155,19 +166,22 @@ local handlers = {
     end
 }
 
+packer.set_handler("deb", handlers.deb)
+
 ---Specify a configuration in `common.config` or its own file
 packer.set_handler("conf", handlers.conf)
 
+-- FIX: This doesn't work anymore
 ---Specify the disable marker for each plugin
 ---Can be disabled easier in the `control.lua` file
-packer.set_handler(1, handlers.disable)
+packer.set_handler(1, handlers.disablep)
 
 ---Apply a patch to the given plugin
 packer.set_handler("patch", handlers.patch)
 
 ---Use a local plugin found on the filesystem
 ---@param url string link to repo
----@param path string path to repo
+---@param path? string path to repo
 ---@return string
 local function prefer_local(url, path)
     if not path then
@@ -192,6 +206,9 @@ return packer.startup(
             use_rocks("lpeg")
             -- https://rrthomas.github.io/lrexlib/manual.html
             use_rocks("lrexlib-pcre2") -- rex_pcre2
+
+            ---@type fun(v: PackerPlugin)
+            local use = use
 
             -- Package manager
             use(
@@ -253,9 +270,21 @@ return packer.startup(
             -- ========================== Fixes / Addons ========================== [[[
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
-            use({"mrjones2014/smart-splits.nvim", conf = "smartsplits", desc = "Navigate split panes"})
+            use(
+                {
+                    "mrjones2014/smart-splits.nvim",
+                    conf = "smartsplits",
+                    desc = "Navigate split panes"
+                }
+            )
             use({"aserowy/tmux.nvim", conf = "tmux"})
-            use({"fedepujol/move.nvim", conf = "move", desc = "Move line/character in various modes"})
+            use(
+                {
+                    "fedepujol/move.nvim",
+                    conf = "move",
+                    desc = "Move line/character in various modes"
+                }
+            )
             use({"tversteeg/registers.nvim", conf = "registers"})
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
@@ -265,6 +294,7 @@ return packer.startup(
                 {
                     "jedrzejboczar/possession.nvim",
                     requires = "nvim-lua/plenary.nvim",
+                    after = "telescope.nvim",
                     conf = "plugs.possession",
                     desc = "Session management"
                 }
@@ -373,28 +403,29 @@ return packer.startup(
             use({"glepnir/oceanic-material"})
             use({"franbach/miramare"})
             use({"pineapplegiant/spaceduck"})
-            -- Need to make a new theme for this
-            use({"tyrannicaltoucan/vim-deep-space"})
-            -- Need to make a new theme for this
-            use({"ackyshake/Spacegray.vim"})
-            use({"vv9k/bogster"})
             use({"cocopon/iceberg.vim"})
             use({"savq/melange"})
             use({"folke/tokyonight.nvim"})
-            use({"tiagovla/tokyodark.nvim"})
-            use({"bluz71/vim-nightfly-guicolors"})
-            use({"haishanh/night-owl.vim"})
             use({"rebelot/kanagawa.nvim"})
             use({"KeitaNakamura/neodark.vim"})
             use({"EdenEast/nightfox.nvim"})
             use({"catppuccin/nvim", as = "catppuccin"})
             use({"rose-pine/neovim", as = "rose-pine"})
             use({"marko-cerovac/material.nvim"})
-            use({"ghifarit53/daycula-vim"})
-            use({"rmehri01/onenord.nvim"})
-            use({"kyazdani42/blue-moon"})
             use({"meliora-theme/neovim"})
-            use({"rockyzhang24/arctic.nvim"})
+            -- use({"tiagovla/tokyodark.nvim"})
+            -- use({"bluz71/vim-nightfly-guicolors"})
+            -- use({"haishanh/night-owl.vim"})
+            -- Need to make a new theme for this
+            -- use({"tyrannicaltoucan/vim-deep-space"})
+            -- Need to make a new theme for this
+            -- use({"ackyshake/Spacegray.vim"})
+            -- use({"vv9k/bogster"})
+            -- use({"ghifarit53/daycula-vim"})
+            -- use({"rmehri01/onenord.nvim"})
+            -- use({"kyazdani42/blue-moon"})
+            -- use({"rockyzhang24/arctic.nvim"})
+
             -- use({"shaunsingh/oxocarbon.nvim", run = "./install.sh"})
             -- use({"levuaska/levuaska.nvim"})
             -- use({"wadackel/vim-dogrun"})
@@ -793,7 +824,7 @@ return packer.startup(
             use(
                 {
                     "gbprod/substitute.nvim",
-                    conf = "plugs.substitute",
+                    conf = "plugs.substitute"
                     -- keys = {
                     --     {"n", "s"},
                     --     {"n", "ss"},
@@ -902,11 +933,11 @@ return packer.startup(
             -- ]]] === Commenter ===
 
             -- =============================== Python ============================== [[[
-            -- fdschmidt93/resin.nvim
             use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
             -- ]]] === Python ===
 
             -- ============================= Javascript ============================ [[[
+            -- use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
             use(
                 {
                     "axelvc/template-string.nvim",
@@ -914,7 +945,6 @@ return packer.startup(
                     requires = "nvim-treesitter/nvim-treesitter"
                 }
             )
-            use({"editorconfig/editorconfig-vim", conf = "plugs.editorconf"})
             use(
                 {
                     "vuki656/package-info.nvim",
@@ -926,9 +956,20 @@ return packer.startup(
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
-            use({"plasticboy/vim-markdown", ft = {"markdown", "vimwiki"}, conf = "plugs.markdown.markdown"})
+            use(
+                {
+                    "plasticboy/vim-markdown",
+                    ft = {"markdown", "vimwiki"},
+                    conf = "plugs.markdown.markdown"
+                }
+            )
             use({"dhruvasagar/vim-table-mode", conf = "plugs.markdown.table_mode"})
-            use({"SidOfc/mkdx", config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]})
+            use(
+                {
+                    "SidOfc/mkdx",
+                    config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]
+                }
+            )
 
             use(
                 {
@@ -1021,8 +1062,13 @@ return packer.startup(
 
             -- ============================= File-Viewer =========================== [[[
             use({"mattn/vim-xxdcursor"})
-            use({"fidian/hexmode", config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]})
             use({"jamessan/vim-gnupg"})
+            use(
+                {
+                    "fidian/hexmode",
+                    config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]
+                }
+            )
             use(
                 {
                     "https://gitlab.com/itaranto/id3.nvim",
@@ -1126,7 +1172,13 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
 
             -- chrisgrieser/nvim-various-textobjs
-            use({"mizlan/iswap.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter"})
+            use(
+                {
+                    "mizlan/iswap.nvim",
+                    requires = "nvim-treesitter/nvim-treesitter",
+                    after = "nvim-treesitter"
+                }
+            )
             -- use({"cshuaimin/ssr.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter" })
             use(
                 {
@@ -1520,12 +1572,18 @@ return packer.startup(
             --  │                          Notify                          │
             --  ╰──────────────────────────────────────────────────────────╯
 
-            use({"rcarriga/nvim-notify", conf = "plugs.notify", after = colorscheme})
+            use(
+                {
+                    "rcarriga/nvim-notify",
+                    conf = "plugs.notify",
+                    after = {colorscheme, "telescope.nvim"}
+                }
+            )
             use(
                 {
                     "simrat39/desktop-notify.nvim",
                     setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-                    config = [[vim.cmd'command! Notifications :lua require("notify")._print_history()<CR>']]
+                    config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
                 }
             )
         end

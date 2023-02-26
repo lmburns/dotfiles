@@ -627,7 +627,9 @@ telescope.setup(
                         keepinsert = true,
                         -- FIX:
                         action = function(selection)
-                            R("telescope").extensions.file_browser.file_browser({cwd = selection.path})
+                            R("telescope").extensions.file_browser.file_browser(
+                                {cwd = selection.path}
+                            )
                         end
                     },
                     ["<C-f>"] = {
@@ -639,7 +641,10 @@ telescope.setup(
                     ["<A-x>"] = {
                         keepinsert = true,
                         action = function(selection)
-                            builtin.live_grep {search_dirs = selection.path, initial_mode = "insert"}
+                            builtin.live_grep {
+                                search_dirs = selection.path,
+                                initial_mode = "insert"
+                            }
                         end
                     }
                 }
@@ -1269,124 +1274,164 @@ local function init()
         end,
         {nargs = 0, desc = "GHQ (github)"}
     )
+
+    -- ========================== Mappings ===========================
+
+    wk.register(
+        {
+            [";b"] = {":Telescope builtin<CR>", "Builtins (telescope)"},
+            [";c"] = {":Telescope commands<CR>", "Commands (telescope)"},
+            ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
+            [";h"] = {":Telescope man_pages<CR>", "Man pages (telescope)"},
+            [";H"] = {":Telescope heading<CR>", "Heading (telescope)"},
+            ["<Leader>rm"] = {":Telescope reloader<CR>", "Reload Lua module (telescope)"},
+            [";g"] = {":Telescope git_files<CR>", "Find git files (telescope)"},
+            [";k"] = {":Telescope keymaps<CR>", "Keymaps (telescope)"},
+            [";z"] = {":Telescope zoxide list<CR>", "Zoxide (telescope)"},
+            -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
+            ["<Leader>;"] = {
+                ":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
+                "Buffer lines (telescope)"
+            },
+            -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
+            -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
+            ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
+            ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
+            -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
+            ["<LocalLeader>s"] = {
+                function()
+                    -- {layout_config = {prompt_position = "top"}}
+                    require("telescope").extensions.aerial.aerial(
+                        {layout_config = {prompt_position = "bottom"}}
+                    )
+                end,
+                "Symbols: Aerial"
+            },
+            ["<LocalLeader>S"] = {
+                function()
+                    -- {layout_config = {prompt_position = "top"}}
+                    require("telescope.builtin").treesitter(
+                        {layout_config = {prompt_position = "bottom"}}
+                    )
+                end,
+                "Symbols: Treesitter"
+            },
+            ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Resume (telescope)"}
+        }
+    )
+
+    -- Coc
+    wk.register(
+        {
+            ["<LocalLeader>c"] = {":Telescope coc<CR>", "Coc: menu (telescope)"},
+            ["<A-c>"] = {":Telescope coc commands<CR>", "Coc: commands (telescope)"},
+            [";s"] = {":Telescope coc document_symbols<CR>", "Symbols: Coc Document"},
+            [";S"] = {":Telescope coc workspace_symbols<CR>", "Symbols: Coc Workspace"},
+            ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Coc: diagnostics (telescope)"},
+            ["<C-x><C-h>"] = {
+                ":Telescope coc workspace_diagnostics<CR>",
+                "Coc: workspace diagnostics (telescope)"
+            },
+            ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
+            ["<Leader>ky"] = {
+                ":Telescope coc type_definitions<CR>",
+                "Coc: type_definitions (telescope)"
+            },
+            ["<Leader>kD"] = {":Telescope coc declarations<CR>", "Coc: declarations (telescope)"},
+            ["<Leader>ki"] = {
+                ":Telescope coc implementations<CR>",
+                "Coc: implementations (telescope)"
+            },
+            ["<Leader>kr"] = {
+                ":Telescope coc references_used<CR>",
+                "Coc: references_used (telescope)"
+            },
+            ["<Leader>kR"] = {":Telescope coc references<CR>", "Coc: references (telescope)"},
+            [";l"] = {":Telescope coc locations<CR>", "Coc: locations (telescope)"}
+        }
+    )
+
+    -- Plugins
+    wk.register(
+        {
+            -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
+            -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
+            ["<A-;>"] = {
+                "<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>",
+                "Clipboard (telescope)"
+            },
+            ["q."] = {
+                "<Cmd>lua require('plugs.neoclip').dropdown_macroclip()<CR>",
+                "Macro (telescope)"
+            },
+            ["<Leader>si"] = {":Telescope ultisnips<CR>", "Snippets (telescope)"}
+        }
+    )
+
+    wk.register(
+        {
+            -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Clipboard (telescope)"}
+            -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Clipboard (telescope)"}
+            ["<A-;>"] = {
+                "<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>",
+                "Clipboard (telescope)"
+            }
+        },
+        {mode = "i"}
+    )
+
+    -- Custom
+    wk.register(
+        {
+            ["<LocalLeader>b"] = {
+                ":lua require('plugs.telescope').cst_buffers()<CR>",
+                "Buffers (cst) (telescope)"
+            },
+            ["<LocalLeader>f"] = {
+                ":lua require('plugs.telescope').cst_files()<CR>",
+                "Git/Files (telescope)"
+            },
+            ["<LocalLeader>a"] = {
+                ":lua require('plugs.telescope').cst_fd()<CR>",
+                "Files CWD (telescope)"
+            },
+            [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
+            [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Grep CWD (telescope)"},
+            ["<Leader>e."] = {
+                "<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>",
+                "Dotfiles (telescope)"
+            },
+            ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Nvim files (telescope)"},
+            ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Nvim grep (telescope)"},
+            ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Rualdi (telescope)"}
+            -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
+        }
+    )
+
+    -- ========================== Highlight ==========================
+    local c = require("kimbox.colors")
+    local color = require("common.color")
+
+    color.plugin(
+        "Telescope",
+        {
+            TelescopeBorder = {fg = c.magenta},
+            TelescopeBufferLoaded = {fg = c.red},
+            TelescopeFrecencyScores = {fg = c.green},
+            TelescopeMatching = {fg = c.orange},
+            TelescopeMultiSelection = {fg = c.aqua},
+            TelescopePathSeparator = {fg = c.magenta},
+            TelescopePreviewBorder = {fg = c.magenta},
+            TelescopePrompt = {fg = c.fg1},
+            TelescopePromptBorder = {fg = c.magenta},
+            TelescopePromptPrefix = {fg = c.red},
+            TelescopeResultsBorder = {fg = c.magenta},
+            TelescopeSelection = {fg = c.yellow, bold = true},
+            TelescopeSelectionCaret = {fg = c.blue}
+        }
+    )
 end
 
 init()
-
--- ========================== Mappings ===========================
-
-wk.register(
-    {
-        [";b"] = {":Telescope builtin<CR>", "Telescope builtins"},
-        [";c"] = {":Telescope commands<CR>", "Telescope commands"},
-        ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Telescope bookmarks (buku)"},
-        [";h"] = {":Telescope man_pages<CR>", "Telescope man pages"},
-        [";H"] = {":Telescope heading<CR>", "Telescope heading"},
-        ["<Leader>rm"] = {":Telescope reloader<CR>", "Telescope reload Lua module"},
-        [";g"] = {":Telescope git_files<CR>", "Telescope find git files"},
-        [";k"] = {":Telescope keymaps<CR>", "Telescope keymaps"},
-        [";z"] = {":Telescope zoxide list<CR>", "Telescope zoxide"},
-        -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
-        ["<Leader>;"] = {":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>", "Telescope buffer lines"},
-        -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
-        -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
-        ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
-        ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
-        -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
-        ["<LocalLeader>s"] = {
-            function()
-                -- require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "top"}})
-                require("telescope").extensions.aerial.aerial({layout_config = {prompt_position = "bottom"}})
-            end,
-            "List aerial symbols"
-        },
-        ["<LocalLeader>S"] = {
-            function()
-                -- require("telescope.builtin").treesitter({layout_config = {prompt_position = "top"}})
-                require("telescope.builtin").treesitter({layout_config = {prompt_position = "bottom"}})
-            end,
-            "List treesitter symbols"
-        },
-        ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Telescope resume"}
-    }
-)
-
--- Coc
-wk.register(
-    {
-        ["<LocalLeader>c"] = {":Telescope coc<CR>", "Telescope coc menu"},
-        ["<A-c>"] = {":Telescope coc commands<CR>", "Telescope coc commands"},
-        [";s"] = {":Telescope coc document_symbols<CR>", "Telescope coc doc symbols"},
-        [";S"] = {":Telescope coc workspace_symbols<CR>", "Telescope coc workspace symbols"},
-        ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Telescope coc diagnostics"},
-        ["<C-x><C-h>"] = {":Telescope coc workspace_diagnostics<CR>", "Telescope workspace coc diagnostics"},
-        ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Telescope coc definitions"},
-        ["<Leader>ky"] = {":Telescope coc type_definitions<CR>", "Telescope coc type_definitions"},
-        ["<Leader>kD"] = {":Telescope coc declarations<CR>", "Telescope coc declarations"},
-        ["<Leader>ki"] = {":Telescope coc implementations<CR>", "Telescope coc implementations"},
-        ["<Leader>kr"] = {":Telescope coc references_used<CR>", "Telescope coc references_used"},
-        ["<Leader>kR"] = {":Telescope coc references<CR>", "Telescope coc references"},
-        [";l"] = {":Telescope coc locations<CR>", "Telescope coc locations"}
-    }
-)
-
--- Plugins
-wk.register(
-    {
-        -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
-        -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
-        ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"},
-        ["q."] = {"<Cmd>lua require('plugs.neoclip').dropdown_macroclip()<CR>", "Telescope macro"},
-        ["<Leader>si"] = {":Telescope ultisnips<CR>", "Telescope snippets"}
-    }
-)
-
-wk.register(
-    {
-        -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"}
-        -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"}
-        ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Telescope clipboard"}
-    },
-    {mode = "i"}
-)
-
--- Custom
-wk.register(
-    {
-        ["<LocalLeader>b"] = {":lua require('plugs.telescope').cst_buffers()<CR>", "Telescope buffers (cst)"},
-        ["<LocalLeader>f"] = {":lua require('plugs.telescope').cst_files()<CR>", "Telescope files (cst)"},
-        ["<LocalLeader>a"] = {":lua require('plugs.telescope').cst_fd()<CR>", "Telescope files CWD"},
-        [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
-        [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Telescope grep (cst)"},
-        ["<Leader>e."] = {"<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>", "Telescope dotfiles (cst)"},
-        ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Telescope edit nvim (cst)"},
-        ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Telescope grep nvim (cst)"},
-        ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Telescope rualdi (cst)"}
-        -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
-    }
-)
-
--- ========================== Highlight ==========================
-local c = require("kimbox.colors")
-local color = require("common.color")
-
-color.plugin(
-    "Telescope",
-    {
-        TelescopeBorder = {fg = c.magenta},
-        TelescopeBufferLoaded = {fg = c.red},
-        TelescopeFrecencyScores = {fg = c.green},
-        TelescopeMatching = {fg = c.orange},
-        TelescopeMultiSelection = {fg = c.aqua},
-        TelescopePathSeparator = {fg = c.magenta},
-        TelescopePreviewBorder = {fg = c.magenta},
-        TelescopePrompt = {fg = c.fg1},
-        TelescopePromptBorder = {fg = c.magenta},
-        TelescopePromptPrefix = {fg = c.red},
-        TelescopeResultsBorder = {fg = c.magenta},
-        TelescopeSelection = {fg = c.yellow, bold = true},
-        TelescopeSelectionCaret = {fg = c.blue}
-    }
-)
 
 return M

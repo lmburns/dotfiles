@@ -983,6 +983,7 @@ hash -d config=$XDG_CONFIG_HOME
 manpath=(
   $XDG_DATA_HOME/man
   $NPM_PACKAGES/share/man
+  $(rustc --print=sysroot)/share/man
   "${manpath[@]}"
 )
 

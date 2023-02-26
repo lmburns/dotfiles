@@ -50,6 +50,9 @@ local function disable_cmoved_au()
     end
 end
 
+---
+---@param height number
+---@param width number
 local function refresh_win(height, width)
     if win then
         api.nvim_win_set_config(
@@ -60,6 +63,10 @@ local function refresh_win(height, width)
             }
         )
     else
+        if height == 0 then
+            return
+        end
+
         win =
             api.nvim_open_win(
             buf,

@@ -11,7 +11,10 @@ local uv = vim.loop
 local env = vim.env
 local F = vim.F
 
+---@class Array<T>: { [integer]: T }
 ---@class Vector<T>: { [integer]: T }
+---@class Dict<T>: { [string]: T }
+
 ---@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias module table
 
@@ -20,6 +23,7 @@ local F = vim.F
 -- ╘══════════════════════════════════════════════════════════╛
 
 ---Print text nicely, joined with newlines
+---@param ... any
 _G.pln = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
@@ -32,6 +36,7 @@ _G.pln = function(...)
 end
 
 ---Print text nicely, joined with spaces
+---@param ... any
 _G.p = function(...)
     local argc = select("#", ...)
     local msg_tbl = {}
@@ -50,9 +55,10 @@ _G.pp = vim.pretty_print
 -- ╘══════════════════════════════════════════════════════════╛
 
 ---Use in combination with pcall
+---@generic T
 ---@param status boolean
----@param ... any
----@return any?
+---@param ... `T`
+---@return `T`?
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
@@ -67,28 +73,44 @@ end
 
 ---Nil `pcall`.
 ---If `pcall` succeeds, return result of `fn`, else `nil`
----@param fn fun(v: any)
----@param ... any
----@return any?
+---## Example:
+---```lua
+---require('dev').npcall(require, 'ufo')
+---```
+---@generic V, R
+---@generic T: fun()
+---@param fn T<fun(v: V): R?>
+---@param ... V
+---@return R?
 M.npcall = function(fn, ...)
     return M.ok_or_nil(pcall(fn, ...))
 end
 
 ---Wrap a function to return `nil` if it fails, otherwise the value
----@param fn fun(v: any)
----@return fun(v: any)
+---## Example:
+---```lua
+---require('dev').nil_wrap(require)('ufo')
+---```
+---@generic T: fun()
+---@param fn `T`
+---@return `T`<fun(v: any): any?>
 M.nil_wrap = function(fn)
     return function(...)
         return M.npcall(fn, ...)
     end
 end
 
+--@generic T, V: ...
+--@param fn fun(v1: T, v2?: V)
+--@param ... T
+--@return fun(v2: V)
+
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later
 ---Useful for setting up callbacks without anonymous functions
----@generic T
----@param fn fun(v: T)
----@vararg T
----@return fun(v: T)
+---@generic T, V: ...
+---@param fn fun(v1: T, v2?: V)
+---@param ... T
+---@return fun(v2: V)
 M.thunk = function(fn, ...)
     local bound = {...}
     return function(...)
@@ -120,7 +142,7 @@ end
 ---```
 ---@generic T
 ---@param fn fun(v: T)
----@vararg T
+---@param ... T
 ---@return fun()
 M.ithunk = function(fn, ...)
     local bound = {...}
@@ -132,7 +154,7 @@ end
 ---Same as `ithunk()`, except prefixed with a `pcall`
 ---@generic T
 ---@param fn fun(v: T)
----@vararg T
+---@param ... T
 ---@return fun()
 M.pithunk = function(fn, ...)
     return M.ithunk(pcall, fn, ...)
@@ -146,7 +168,7 @@ M.get_system_output = function(cmd)
 end
 
 ---Get the output of a vim command in a *table*
----@param cmd string|table
+---@param cmd string
 ---@return Vector<string>
 M.get_vim_output = function(cmd)
     local out = api.nvim_exec(cmd, true)
@@ -209,7 +231,7 @@ end
 
 ---Pack a table. Same as `table.pack`. Sets number of elements to `.n`
 ---@generic T
----@vararg T Any number of items to pack
+---@param ... T Any number of items to pack
 ---@return { n: number, [any]: T }
 M.tbl_pack = function(...)
     return {n = select("#", ...), ...}
@@ -242,7 +264,7 @@ end
 ---Determine whether two tables/vectors are equivalent
 ---@param t1 table|any[]
 ---@param t2 table|any[]
----@param ignore_mt boolean Ignore metatable
+---@param ignore_mt? boolean Ignore metatable
 ---@return boolean
 M.tbl_equivalent = function(t1, t2, ignore_mt)
     -- vim.deep_equal(t1, t2)
@@ -338,12 +360,17 @@ M.tbl_deep_clone = function(t)
 end
 
 ---Deep extend a table, while performing a union on all the sub-tables.
----@param t table<any>
----@param ... table<any>
----@return table<any>
+---@generic K, V: any
+---@param t table<K, V>
+---@param ... any
+---@return table<K, V>
 M.tbl_union_extend = function(t, ...)
     local res = M.tbl_clone(t)
 
+    ---@generic K, V
+    ---@param ours table<K, V>
+    ---@param theirs table<K, V>
+    ---@return table<K, V>
     local function recurse(ours, theirs)
         -- Get the union of the two tables
         local sub = M.vec_union(ours, theirs)
@@ -506,7 +533,7 @@ end
 
 ---Join multiple vectors into one.
 ---@generic T
----@vararg T[]
+---@param ... T[]
 ---@return T[]
 M.vec_join = function(...)
     local result = {}
@@ -532,7 +559,7 @@ end
 
 ---Get the result of the union of the given vectors.
 ---@generic T
----@vararg T[]
+---@param ... T[]
 ---@return T[]
 M.vec_union = function(...)
     local result = {}
@@ -560,7 +587,7 @@ end
 
 ---Get the result of the difference of the given vectors.
 ---@generic T
----@vararg T[]
+---@param ... T[]
 ---@return T[]
 M.vec_diff = function(...)
     local args = {...}
@@ -591,7 +618,7 @@ end
 
 ---Get the result of the symmetric difference of the given vectors.
 ---@generic T
----@vararg T[]
+---@param ... T[]
 ---@return T[]
 M.vec_symdiff = function(...)
     local result = {}
@@ -635,14 +662,14 @@ M.find = function(haystack, matcher)
     return found
 end
 
----Search for a value in a table
+---Search for a value in a vector
 ---@generic T
----@param tbl T[]: Vector to search
+---@param vec Vector<T>: Vector to search
 ---@param val T Item to find
 ---@return boolean
-M.vec_contains = function(tbl, val)
+M.vec_contains = function(vec, val)
     -- return vim.tbl_contains(t, value)
-    for _, value in ipairs(tbl) do
+    for _, value in ipairs(vec) do
         if value == val then
             return true
         end
@@ -654,11 +681,11 @@ end
 ---Return first index a given object can be found in a vector,
 ---or -1 if it's not present.
 ---@generic T
----@param tbl T[]: Vector to search
+---@param vec Vector<T>: Vector to search
 ---@param val T Item to find
----@return integer
-M.vec_indexof = function(tbl, val)
-    for i, vt in ipairs(tbl) do
+---@return number
+M.vec_indexof = function(vec, val)
+    for i, vt in ipairs(vec) do
         if vt == val then
             return i
         end
@@ -668,21 +695,33 @@ end
 
 ---Append any number of objects to the end of a vector.
 ---@generic T
----@param t T[] Vector to push to
+---@param vec Vector<T> Vector to push to
 ---@return T[] vec #Vector with the pushed value
-M.vec_push = function(t, ...)
+M.vec_push = function(vec, ...)
     for _, v in ipairs({...}) do
-        t[#t + 1] = v
+        vec[#vec + 1] = v
     end
-    return t
+    return vec
 end
 
+--@generic T: table|any[], K: string|number, V: any
+--@param tbl `T`
+--@param func fun(acc: T<K, V>, val: V, key?: K): T<K, V>
+--@param acc T<K, V>
+--@return T<K, V>
+
+--@generic K: string|number, V: any
+--@param tbl table<K, V>|Vector<V>
+--@param func fun(acc: table<`K`, `V`>|Vector<`V`>, val: `V`, key?: `K`): table<`K`, `V`>|Vector<`V`>
+--@param acc table<K, V>|Vector<V>
+--@return table<K, V>|Vector<V>
+
 ---Execute a function across a table, keeping an accumulation of results
----@generic T: table
----@param tbl T[]
----@param func fun(T, T, key: string|number): T
----@param acc T
----@return T
+---@generic T, K: string|number, V: any
+---@param tbl T<table<K, V>|Vector<V>>
+---@param func fun(acc: `T`, val: `V`, key?: `K`): `T`
+---@param acc `T`
+---@return `T`
 M.fold = function(tbl, func, acc)
     acc = acc or {}
     for k, v in pairs(tbl) do
@@ -693,10 +732,10 @@ M.fold = function(tbl, func, acc)
 end
 
 ---Apply a function to each value in a `vector`. Return the `vector`
----@generic T: table
----@param tbl T[]
----@param func fun(T, key: string|number): T
----@return T[]
+---@generic T, K: string|number, V: any
+---@param tbl T<table<K, V>|Vector<V>>
+---@param func fun(val: `V`, key?: `K`, acc?: `T`): `T`
+---@return `T`
 M.map = function(tbl, func)
     -- return vim.tbl_map(func, tbl)
 
@@ -845,9 +884,12 @@ M.list_bufs = function(opts)
     local bufs
 
     if opts.no_hidden or opts.tabpage then
-        local wins = opts.tabpage and api.nvim_tabpage_list_wins(opts.tabpage) or api.nvim_list_wins()
+        local wins =
+            opts.tabpage and api.nvim_tabpage_list_wins(opts.tabpage) or api.nvim_list_wins()
         local bufnr
+        ---@type { [number]: boolean }
         local seen = {}
+        ---@type number[]
         bufs = {}
         for _, winid in ipairs(wins) do
             bufnr = api.nvim_win_get_buf(winid)
@@ -857,6 +899,7 @@ M.list_bufs = function(opts)
             seen[bufnr] = true
         end
     else
+        ---@type number[]
         bufs = api.nvim_list_bufs()
     end
 
@@ -941,7 +984,7 @@ M.buf_info = function(opts)
     return M.map(
         M.list_bufs(opts),
         function(bufnr)
-            return fn.getbufinfo(bufnr) --[==[@as number[]]==]
+            return fn.getbufinfo(bufnr) --[==[@as Array<Dict<any>>]==]
         end
     )
 end
@@ -950,7 +993,7 @@ end
 ---@param bufnr number?
 ---@return string
 M.buf_lines = function(bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
+    bufnr = bufnr or api.nvim_get_current_buf() --[==[@as number]==]
     local buftext = api.nvim_buf_get_lines(bufnr, 0, -1, false)
     if vim.bo[bufnr].ff == "dos" then
         for i = 1, #buftext do
@@ -994,38 +1037,14 @@ end
 -- │                          Window                          │
 -- ╰──────────────────────────────────────────────────────────╯
 
----Call the function `f`, ignoring most window/buffer autocmds
----@param f function
----@return boolean, any
-M.no_win_event_call = function(f)
-    local ei = vim.o.eventignore
-
-    vim.opt.eventignore:prepend(
-        M.list {
-            "WinEnter",
-            "WinLeave",
-            "WinNew",
-            "WinClosed",
-            "BufWinEnter",
-            "BufWinLeave",
-            "BufEnter",
-            "BufLeave"
-        }
-    )
-    local ok, err = pcall(f)
-    vim.opt.eventignore = ei
-
-    return ok, err
-end
-
 ---Sets the current buffer in a window, without side effects
 ---@param win number
 ---@param buf number
 M.win_set_buf_noautocmd = function(win, buf)
-  local ei = vim.o.eventignore
-  vim.o.eventignore = "all"
-  api.nvim_win_set_buf(win, buf)
-  vim.o.eventignore = ei
+    local ei = vim.o.eventignore
+    vim.o.eventignore = "all"
+    api.nvim_win_set_buf(win, buf)
+    vim.o.eventignore = ei
 end
 
 ---Determine if the window is the only open one
@@ -1203,10 +1222,10 @@ end
 ---Really only useful for setting options
 ---
 ---@param value table: Table to concatenate
----@param str string: String to concatenate to the table
----@param sep string: Separator to concatenate the table
+---@param sep? string: Separator to concatenate the table
+---@param str? string: String to concatenate to the table
 ---@return string|table
-M.list = function(value, str, sep)
+M.list = function(value, sep, str)
     sep = sep or ","
     str = str or ""
     value = F.tern(type(value) == "table", table.concat(value, sep), value)

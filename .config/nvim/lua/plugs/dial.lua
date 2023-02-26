@@ -144,7 +144,8 @@ function M.setup()
             aug({"true", "false", "nil"}),
             aug({"elseif", "if"}),
             aug({"==", "~="}, false),
-            aug({"pairs", "ipairs"})
+            aug({"pairs", "ipairs"}),
+            aug({"number", "integer"}),
         }
     )
 

@@ -262,7 +262,7 @@ local function init()
     g.neoformat_enabled_lua = {"luafmtext", "stylua", "luaformat"}
     g.neoformat_lua_luafmtext = {
         exe = "lua-fmt-ext",
-        args = {"--stdin"},
+        args = {"--stdin", "--line-width", "100"},
         stdin = 1
     }
 

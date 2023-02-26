@@ -2,13 +2,13 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                           General
   // ╘══════════════════════════════════════════════════════════╛
-  // If false, CocFzf and Bqf-fzf open
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily",
   "coc.preferences.messageLevel": "error",
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "coc.preferences.formatOnType": false,
-  "coc.preferences.bracketEnterImprove": false,
+  "coc.preferences.bracketEnterImprove": false, // Autopairs does this
+  "coc.preferences.willSaveHandlerTimeout": 1000,
   "coc.preferences.enableMessageDialog": false, // MAYBE: change
   "coc.preferences.promptInput": true,
   "coc.preferences.watchmanPath": "/usr/bin/watchman",
@@ -35,7 +35,7 @@
   "coc.source.word.priority": 10,
   "coc.source.word.shortcut": "WRD",
 
-  "tabnine.priority": 99,
+  "tabnine.priority": 98,
   "tabnine.shortcut": "TN",
 
   "snippets.priority": 99,
@@ -59,6 +59,12 @@
   "tree.key.toggle": "t",
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
+
+  "colors.enable": true,
+  "colors.highlightPriority": 1000,
+  "documentHighlight.priority": 1,
+  "documentHighlight.timeout": 300,
+
   // Filetypes that enable semanticTokens highlighting
   "[go][html][java]": {
     "semanticTokens.enable": true
@@ -76,13 +82,11 @@
   "diagnostic.hintSign": "", //  •
   "diagnostic.checkCurrentLine": false,
   "diagnostic.level": "hint",
-  "diagnostic.autoRefresh": true,
-  "diagnostic.refreshOnInsertMode": false,
   "diagnostic.locationlistUpdate": true,
   "diagnostic.enableMessage": "always",
   "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.highlightLimit": 1000,
-  "diagnostic.separateRelatedInformationAsDiagnostics": true,
+  // "diagnostic.separateRelatedInformationAsDiagnostics": true,
   "diagnostic.virtualText": true,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.virtualTextLineSeparator": " \\ ",
@@ -91,7 +95,9 @@
   "diagnostic.format": "%message [%source%code]", // %source code severity message
   "diagnostic.messageTarget": "float",
 
-  "pullDiagnostic.onChange": false,
+  "diagnostic.autoRefresh": true,
+  "diagnostic.refreshOnInsertMode": false,
+  "pullDiagnostic.onChange": true,
   "pullDiagnostic.onSave": true,
   "pullDiagnostic.workspace": true,
 
@@ -186,11 +192,11 @@
   "suggest.snippetIndicator": "",
   "suggest.languageSourcePriority": 99,
   "suggest.removeDuplicateItems": true,
-  "suggest.detailField": "preview",
+  "suggest.detailField": "abbr",
   "suggest.labelMaxLength": 100,
   "suggest.defaultSortMethod": "none",
+  "suggest.selection": "recentlyUsedByPrefix", // first
   "suggest.virtualText": false,
-  "suggest.selection": "first", // recentlyUsed
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.completionItemKindLabels": {
     "default": "θ", // 
@@ -244,6 +250,8 @@
   //                            Clangd
   // ╘══════════════════════════════════════════════════════════╛
   "clangd.enabled": true,
+  "clangd.trace.server": "off",
+  "clangd.checkUpdates": true,
   // "clangd.inlayHints.enable": true,
   // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
   "clangd.arguments": [
@@ -253,29 +261,55 @@
     "--completion-style=detailed",
     "--fallback-style=google",
     "--header-insertion=iwyu",
+    "--header-insertion-decorators=false",
     "--suggest-missing-includes"
   ],
-  "clangd.checkUpdates": true,
-  "clangd.trace.server": "off",
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust
   // ╘══════════════════════════════════════════════════════════╛
+  // "rust.clippy_preference": "on",
   "rust-analyzer.enable": true,
-  "rust-analyzer.trace.server": "off",
+  "rust-analyzer.trace.server": "verbose",
   "rust-analyzer.updates.channel": "nightly",
-  "rust-analyzer.updates.checkOnStartup": true,
+  "rust-analyzer.updates.checkOnStartup": false,
   "rust-analyzer.updates.prompt": true,
-  "rust.clippy_preference": "on",
-  "rust-analyzer.checkOnSave": true,
-  "rust-analyzer.check.command": "clippy",
-  "rust-analyzer.check.overrideCommand": ["cargo", "clippy", "--message-format=json"],
+  // "rust-analyzer.server.extraEnv": {
+  //   // "RA_LOG": "project_model=debug",
+  //   // "RA_LOG": "rust_analyzer=info",
+  // },
+  // "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.check.invocationLocation": "workspace",
+  "rust-analyzer.check.invocationStrategy": "per_workspace",
+  // "rust-analyzer.check.command": "clippy",
   // "rust-analyzer.check.overrideCommand": ["cargo", "clippy", "--message-format=json-diagnostic-rendered-ansi"],
-  "rust-analyzer.notifications.cargoTomlNotFound": true,
-  "rust-analyzer.debug.vimspector.configuration.name": "launch",
-  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.check.overrideCommand": [
+    "cargo",
+    "clippy",
+    "--no-deps",
+    "--workspace",
+    "--all-features",
+    "--all-targets",
+    "--message-format=json",
+    // "--message-format=json-render-diagnostics",
+    // "--target-dir=./target",
+    "--",
+    "--deny=clippy::all",
+    "--deny=clippy::complexity",
+    "--deny=clippy::correctness",
+    "--deny=clippy::nursery",
+    "--deny=clippy::pedantic",
+    "--deny=clippy::perf",
+    "--deny=clippy::style"
+  ],
   "rust-analyzer.cargo.autoreload": true,
   "rust-analyzer.cargo.buildScripts.enable": true,
   "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+  "rust-analyzer.rustfmt.rangeFormatting.enable": true,
+
+  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.notifications.cargoTomlNotFound": true,
+  "rust-analyzer.debug.vimspector.configuration.name": "launch",
   "rust-analyzer.procMacro.enable": true,
   "rust-analyzer.procMacro.attributes.enable": true,
 
@@ -292,6 +326,8 @@
   "rust-analyzer.hover.documentation.enable": true,
   "rust-analyzer.hover.documentation.keywords.enable": true,
   "rust-analyzer.hover.links.enable": true,
+
+  "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": true,
 
   "rust-analyzer.highlightRelated.breakPoints.enable": true,
   "rust-analyzer.highlightRelated.exitPoints.enable": true,
@@ -336,19 +372,20 @@
   "go.goplsPath": "gopls",
   "go.goplsUseDaemon": false,
   "go.goplsOptions": {
-    "codelenses": {
-      "generate": true,
-      "gc_details": false,
-      "tidy": true,
-      "upgrade_dependency": true
-    },
     "gofumpt": true,
     "usePlaceholders": true,
     "semanticTokens": true,
     "experimentalPostfixCompletions": true,
     "staticcheck": true,
+    "linksInHover": true,
     "analyses": {
       "unusedparams": true
+    },
+    "codelenses": {
+      "generate": true,
+      "gc_details": false,
+      "tidy": true,
+      "upgrade_dependency": true
     },
     "hints": {
       "assignVariableTypes": true,
@@ -381,14 +418,17 @@
   "Lua.workspace.preloadFileSize": 10000,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
-    "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim"
+    "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/typings",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua"
+    // "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly"
     // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start"
   ],
   "Lua.format.enable": false,
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
-  "Lua.completion.callSnippet": "Replace",
+  "Lua.completion.callSnippet": "Both",
   "Lua.completion.displayContext": 1,
   "Lua.completion.keywordSnippet": "Both",
   "Lua.completion.postfix": ".",
@@ -420,49 +460,70 @@
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.disableScheme": ["git"],
+  "Lua.diagnostics.unusedLocalExclude": ["_*"],
+  "Lua.diagnostics.groupFileStatus": {
+    "ambiguity": "Opened",
+    "await": "Opened",
+    "codestyle": "None",
+    "duplicate": "Opened",
+    "global": "Fallback",
+    "luadoc": "Opened",
+    "redefined": "Opened",
+    "strict": "Opened",
+    "strong": "Fallback",
+    "type-check": "Fallback",
+    "unbalanced": "Opened",
+    "unused": "Opened"
+  },
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
     "different-requires": "None",
     "codestyle-check": "None",
-    "param-type-mismatch": "None",
-    "need-check-nil": "None",
     "redefined-local": "None",
-    "missing-parameter": "None",
-    "redundant-parameter": "None",
-    "lowercase-global": "None!",
+    "lowercase-global": "None",
+    "no-unknown": "None",
+    // "param-type-mismatch": "None",
+    // "need-check-nil": "None",
+    // "missing-parameter": "None",
+    // "redundant-parameter": "None",
 
-    "ambiguity-1": "Opened",
-    "circle-doc-class": "Opened",
-    "close-non-object": "Opened",
-    "count-down-loop": "Opened",
-    "doc-field-no-class": "Opened",
-    "duplicate-doc-alias": "Opened",
-    "duplicate-doc-field": "Opened",
-    "duplicate-doc-param": "Opened",
-    "duplicate-index": "Opened",
-    "duplicate-set-field": "Opened",
-    "global-in-nil-env": "Opened",
-    "newfield-call": "Opened",
-    "newline-call": "Opened",
-    "unbalanced-assignments": "Opened",
-    "undefined-doc-class": "Opened",
-    "undefined-doc-name": "Opened",
-    "undefined-doc-param": "Opened",
-    "undefined-env-child": "Opened",
-    "undefined-field": "Opened",
-    "undefined-global": "Opened",
-    "unknown-diag-code": "Opened",
-    "unknown-cast-variable": "Opened"
+    // "assign-type-mismatch": "Opened",
+    // "cast-local-type": "Opened",
+    // "undefined-field": "Any",
+    //
+    // "ambiguity-1": "Opened",
+    // "circle-doc-class": "Opened",
+    // "close-non-object": "Opened",
+    // "count-down-loop": "Opened",
+    // "doc-field-no-class": "Opened",
+    // "duplicate-doc-alias": "Opened",
+    // "duplicate-doc-field": "Opened",
+    // "duplicate-doc-param": "Opened",
+    // "duplicate-index": "Opened",
+    // "duplicate-set-field": "Opened",
+    // "global-in-nil-env": "Opened",
+    // "newfield-call": "Opened",
+    // "newline-call": "Opened",
+    // "unbalanced-assignments": "Opened",
+    // "undefined-doc-class": "Opened",
+    // "undefined-doc-name": "Opened",
+    // "undefined-doc-param": "Opened",
+    // "undefined-env-child": "Opened",
+    // "undefined-global": "Opened",
+    // "unknown-diag-code": "Opened",
+    // "unknown-cast-variable": "Opened"
   },
   "Lua.diagnostics.disable": [
+    "codestyle-check",
+    "different-requires",
     "lowercase-global",
+    "redefined-local",
+    "no-unknown",
+    //
     "redundant-parameter",
     "missing-parameter",
-    "redefined-local",
-    // New
-    "codestyle-check",
-    "need-check-nil",
-    "param-type-mismatch" // Until the builtin functions are updated totally, this should be off
+    "param-type-mismatch",
+    "need-check-nil"
   ],
   "Lua.diagnostics.globals": [
     "dev",
@@ -525,8 +586,9 @@
   "python.linting.mypyEnabled": false,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintArgs": ["--rcfile=/home/lucas/.config/python/pylintrc"],
-  "python.pythonPath": "/home/lucas/.local/share/pyenv/shims/python",
+  "python.pythonPath": "~/.local/share/pyenv/shims/python",
   "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.stubPath": "~/projects/python/stub-types",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoSearchPaths": true,
   "python.analysis.useLibraryCodeForTypes": true,
@@ -576,107 +638,92 @@
   "json.schemaDownload.enable": true,
   "json.format.enable": true,
   "json.format.keepLines": true,
-  // "json.schemas": [
-  //   {
-  //     "description": "Snippet files",
-  //     "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
-  //     "url": "https://raw.githubusercontent.com/kevinhwang91/dotfiles/main/nvim/snippets/snippets.json"
-  //   },
-  //   {
-  //     "description": "TypeScript compiler configuration file",
-  //     "fileMatch": ["tsconfig.json", "tsconfig.*.json"],
-  //     "url": "https://json.schemastore.org/tsconfig.json"
-  //   },
-  //   {
-  //     "description": "Babel configuration",
-  //     "fileMatch": [".babelrc.json", ".babelrc", "babel.config.json"],
-  //     "url": "https://json.schemastore.org/babelrc.json"
-  //   },
-  //   {
-  //     "description": "ESLint config",
-  //     "fileMatch": [".eslintrc.json", ".eslintrc"],
-  //     "url": "https://json.schemastore.org/eslintrc.json"
-  //   },
-  //   {
-  //     "description": "Prettier config",
-  //     "fileMatch": [".prettierrc", ".prettierrc.json", "prettier.config.json"],
-  //     "url": "https://json.schemastore.org/prettierc"
-  //   },
-  //   {
-  //     "description": "Bucklescript config",
-  //     "fileMatch": ["bsconfig.json"],
-  //     "url": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/8.2.0/docs/docson/build-schema.json"
-  //   },
-  //   {
-  //     "description": "Lerna config",
-  //     "fileMatch": ["lerna.json"],
-  //     "url": "https://json.schemastore.org/lerna.json"
-  //   },
-  //   {
-  //     "description": "Stylelint config",
-  //     "fileMatch": [
-  //       ".stylelintrc",
-  //       ".stylelintrc.json",
-  //       "stylelint.config.json"
-  //     ],
-  //     "url": "https://json.schemastore.org/stylelintrc"
-  //   },
-  //   {
-  //     "description": "A JSON schema for the ASP.NET LaunchSettings.json files",
-  //     "fileMatch": ["launchsettings.json"],
-  //     "url": "https://json.schemastore.org/launchsettings.json"
-  //   },
-  //   {
-  //     "description": "Schema for CMake Presets",
-  //     "fileMatch": ["CMakePresets.json", "CMakeUserPresets.json"],
-  //     "url": "https://raw.githubusercontent.com/Kitware/CMake/master/Help/manual/presets/schema.json"
-  //   },
-  //   {
-  //     "description": "Config file for Command Task Runner",
-  //     "fileMatch": ["commands.json"],
-  //     "url": "https://json.schemastore.org/commands.json"
-  //   },
-  //   {
-  //     "description": "LLVM compilation database",
-  //     "fileMatch": ["compile_commands.json"],
-  //     "url": "https://json.schemastore.org/compile-commands.json"
-  //   },
-  //   {
-  //     "description": "AWS CloudFormation infrastructure resources in your cloud environment",
-  //     "fileMatch": ["*.cf.json", "cloudformation.json"],
-  //     "url": "https://raw.githubusercontent.com/awslabs/goformation/v5.2.9/schema/cloudformation.schema.json"
-  //   },
-  //   {
-  //     "description": "JSON schema for properties JSON file for a GitHub Workflow template",
-  //     "fileMatch": [".github/workflow-templates/**.properties.json"],
-  //     "url": "https://json.schemastore.org/github-workflow-template-properties.json"
-  //   },
-  //   {
-  //     "description": "golangci-lint configuration file",
-  //     "fileMatch": [".golangci.toml", ".golangci.json"],
-  //     "url": "https://json.schemastore.org/golangci-lint.json"
-  //   },
-  //   {
-  //     "description": "Packer template JSON configuration",
-  //     "fileMatch": ["packer.json"],
-  //     "url": "https://json.schemastore.org/packer.json"
-  //   },
-  //   {
-  //     "description": "NPM configuration file",
-  //     "fileMatch": ["package.json"],
-  //     "url": "https://json.schemastore.org/package.json"
-  //   },
-  //   {
-  //     "description": "JSON schema for nodemon.json configuration files",
-  //     "fileMatch": ["nodemon.json"],
-  //     "url": "https://json.schemastore.org/nodemon.json"
-  //   },
-  //   {
-  //     "description": "Sumneko_lua config file",
-  //     "fileMatch": [".luarc.json"],
-  //     "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json"
-  //   }
-  // ],
+  "json.schemas": [
+    {
+      "description": "Snippet files",
+      "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
+      "url": "https://raw.githubusercontent.com/kevinhwang91/dotfiles/main/nvim/snippets/snippets.json"
+    },
+    {
+      "description": "TypeScript compiler configuration file",
+      "fileMatch": ["tsconfig.json", "tsconfig.*.json"],
+      "url": "https://json.schemastore.org/tsconfig.json"
+    },
+    {
+      "description": "Babel configuration",
+      "fileMatch": [".babelrc.json", ".babelrc", "babel.config.json"],
+      "url": "https://json.schemastore.org/babelrc.json"
+    },
+    {
+      "description": "ESLint config",
+      "fileMatch": [".eslintrc.json", ".eslintrc"],
+      "url": "https://json.schemastore.org/eslintrc.json"
+    },
+    {
+      "description": "Prettier config",
+      "fileMatch": [".prettierrc", ".prettierrc.json", "prettier.config.json"],
+      "url": "https://json.schemastore.org/prettierc"
+    },
+    {
+      "description": "Bucklescript config",
+      "fileMatch": ["bsconfig.json"],
+      "url": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/8.2.0/docs/docson/build-schema.json"
+    },
+    {
+      "description": "Lerna config",
+      "fileMatch": ["lerna.json"],
+      "url": "https://json.schemastore.org/lerna.json"
+    },
+    {
+      "description": "Stylelint config",
+      "fileMatch": [
+        ".stylelintrc",
+        ".stylelintrc.json",
+        "stylelint.config.json"
+      ],
+      "url": "https://json.schemastore.org/stylelintrc"
+    },
+    {
+      "description": "Schema for CMake Presets",
+      "fileMatch": ["CMakePresets.json", "CMakeUserPresets.json"],
+      "url": "https://raw.githubusercontent.com/Kitware/CMake/master/Help/manual/presets/schema.json"
+    },
+    {
+      "description": "LLVM compilation database",
+      "fileMatch": ["compile_commands.json"],
+      "url": "https://json.schemastore.org/compile-commands.json"
+    },
+    {
+      "description": "JSON schema for properties JSON file for a GitHub Workflow template",
+      "fileMatch": [".github/workflow-templates/**.properties.json"],
+      "url": "https://json.schemastore.org/github-workflow-template-properties.json"
+    },
+    {
+      "description": "golangci-lint configuration file",
+      "fileMatch": [".golangci.toml", ".golangci.json"],
+      "url": "https://json.schemastore.org/golangci-lint.json"
+    },
+    {
+      "description": "Packer template JSON configuration",
+      "fileMatch": ["packer.json"],
+      "url": "https://json.schemastore.org/packer.json"
+    },
+    {
+      "description": "NPM configuration file",
+      "fileMatch": ["package.json"],
+      "url": "https://json.schemastore.org/package.json"
+    },
+    {
+      "description": "JSON schema for nodemon.json configuration files",
+      "fileMatch": ["nodemon.json"],
+      "url": "https://json.schemastore.org/nodemon.json"
+    },
+    {
+      "description": "Sumneko_lua config file",
+      "fileMatch": [".luarc.json"],
+      "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json"
+    }
+  ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             YAML
   // ╘══════════════════════════════════════════════════════════╛
@@ -712,13 +759,18 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
-  "eslint.packageManager": "yarn",
-  "eslint.run": "onSave",
   "eslint.trace.server": "off",
+  "eslint.packageManager": "yarn",
+  "eslint.run": "onType",
   "eslint.autoFixOnSave": false,
   "eslint.format.enable": true,
   // Typescript
+  "tsserver.enable": true,
   "tsserver.trace.server": "off",
+  "tsserver.useLocalTsdk": true,
+  "tsserver.implicitProjectConfig.checkJs": true,
+  "tsserver.experimental.enableProjectDiagnostics": true,
+  "typescript.showUnused": true,
   "typescript.preferences.quoteStyle": "double",
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.format.enable": true,
@@ -993,7 +1045,13 @@
       "debounce": 100,
       // "rootPatterns": ["selene.toml"],
       // "requiredFiles": ["selene.toml"],
-      "args": ["--display-style", "quiet", "--config", "/home/lucas/.config/nvim/selene.toml", "-"],
+      "args": [
+        "--display-style",
+        "quiet",
+        "--config",
+        "/home/lucas/.config/nvim/selene.toml",
+        "-"
+      ],
       "formatPattern": [
         "^[^:]+:(\\d+):(\\d+):\\s(\\w+)\\[\\w+\\]:\\s(.*)$",
         {
@@ -1008,7 +1066,7 @@
       "securities": {
         "error": "error",
         "warning": "warning"
-      },
+      }
       // "args": [
       //   "--display-style",
       //   "json",
@@ -1042,7 +1100,7 @@
         "endLine": "endLine",
         "endColumn": "endColumn",
         "message": "${message} [${code}]",
-        "security": "level",
+        "security": "level"
       },
       "securities": {
         "error": "error",
@@ -1050,7 +1108,7 @@
         "info": "info",
         "style": "hint"
       }
-    },
+    }
   },
   "diagnostic-languageserver.formatters": {},
   "diagnostic-languageserver.filetypes": {
@@ -1061,7 +1119,7 @@
     "email": "languagetool",
     "dockerfile": "hadolint",
     "ruby": ["rubocop"],
-    "lua": "selene",
+    // "lua": "selene"
     // "perl": "perl",
     // "python": ["ruff"],
     // "python": ["mypy"],

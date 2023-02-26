@@ -13,7 +13,6 @@ local dirs = require("common.global").dirs
 -- local coc = require("plugs.coc")
 
 local wk = require("which-key")
-local telescope = require("telescope")
 
 local utils = require("common.utils")
 local bmap = utils.bmap
@@ -1105,15 +1104,15 @@ function M.tmux()
             -- sync clipboard overwrites vim.g.clipboard to handle * and +
             -- registers. If you sync your system clipboard without tmux, disable
             -- this option!
-            sync_clipboard = true,
+            sync_clipboard = false,
             -- synchronizes registers *, +, unnamed, and 0 till 9 with tmux buffers.
-            sync_registers = true,
+            sync_registers = false,
             -- syncs deletes with tmux clipboard as well, it is adviced to
             -- do so. Nvim does not allow syncing registers 0 and 1 without
             -- overwriting the unnamed register. Thus, ddp would not be possible.
-            sync_deletes = true,
+            sync_deletes = false,
             -- syncs the unnamed register with the first buffer entry from tmux.
-            sync_unnamed = false
+            sync_unnamed = true
         },
         navigation = {
             -- cycles to opposite pane while navigating into the border
@@ -1202,7 +1201,7 @@ function M.lazygit()
     --     }
     -- )
 
-    telescope.load_extension("lazygit")
+    require("telescope").load_extension("lazygit")
     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
@@ -1726,7 +1725,7 @@ function M.project()
         }
     )
 
-    telescope.load_extension("projects")
+    require("telescope").load_extension("projects")
     map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
 end
 

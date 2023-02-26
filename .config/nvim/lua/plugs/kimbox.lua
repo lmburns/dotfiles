@@ -486,13 +486,6 @@ M.tokyonight = function()
     }
 end
 
--- === VSCode ===
-M.vscode = function()
-    g.vscode_style = "dark"
-    g.vscode_transparent = 0
-    g.vscode_italic_comment = 0
-end
-
 -- === OneNord ===
 M.onenord = function()
     local onenord = D.npcall(require, "onenord")
@@ -626,14 +619,13 @@ local function init()
     M.material()
     M.meliora()
     M.miramare()
-    M.nightfly()
+    -- M.nightfly()
     M.nightfox()
     M.oceanic_material()
-    M.onenord()
+    -- M.onenord()
     M.rose_pine()
     M.tokyodark()
-    M.tokyonight()
-    M.vscode()
+    -- M.tokyonight()
 
     -- local theme = "jellybeans"
     -- local theme = "vscode"
