@@ -200,11 +200,17 @@ function M.link_visitor()
     lv.setup(
         {
             open_cmd = "handlr open",
-            silent = false
+            silent = true, -- disable all prints
+            skip_confirmation = false -- Skip the confirmation step, default: false
         }
     )
 
     map("n", "gw", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+
+    local function link_visitor_map(bufnr)
+        bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+        bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+    end
 
     augroup(
         "lmb__LinkVisitor",
@@ -218,8 +224,22 @@ function M.link_visitor()
                     api.nvim_buf_call(
                         bufnr,
                         function()
-                            bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-                            bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+                            link_visitor_map(bufnr)
+                        end
+                    )
+                end
+            end
+        },
+        {
+            event = "WinEnter",
+            pattern = "*",
+            command = function(args)
+                local bufnr = args.buf
+                if vim.bo[bufnr].ft == "crates.nvim" then
+                    api.nvim_buf_call(
+                        bufnr,
+                        function()
+                            link_visitor_map(bufnr)
                         end
                     )
                 end
@@ -346,7 +366,12 @@ function M.slime()
             event = "FileType",
             pattern = "perl",
             command = function()
-                map("n", "<LocalLeader>l", "<Plug>SlimeLineSend", {buffer = true, desc = "Slime send"})
+                map(
+                    "n",
+                    "<LocalLeader>l",
+                    "<Plug>SlimeLineSend",
+                    {buffer = true, desc = "Slime send"}
+                )
             end
         }
     }
@@ -498,8 +523,18 @@ function M.hlslens()
 
     map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]])
-    map("n", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    map("n", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
+    map(
+        "n",
+        "g*",
+        [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]],
+        {noremap = false}
+    )
+    map(
+        "n",
+        "g#",
+        [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]],
+        {noremap = false}
+    )
 
     map("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
     map("x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
@@ -804,8 +839,14 @@ function M.sandwhich()
             -- ['m"'] = {'<Plug>(sandwich-add)"', 'Surround with double quote (")'},
             -- ["mi"] = {"<Plug>(sandwich-add)*", "Surround with italics (*)"},
             -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
-            ["```"] = {"<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```)"},
-            ["``;"] = {"<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|", "Surround with code block (```zsh)"}
+            ["```"] = {
+                "<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|",
+                "Surround with code block (```)"
+            },
+            ["``;"] = {
+                "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
+                "Surround with code block (```zsh)"
+            }
         },
         {mode = "v"}
     )
@@ -915,7 +956,8 @@ function M.targets()
     -- b: below cursor on screen
     -- A: above cursor off screen
     -- B: below cursor off screen
-    g.targets_seekRanges = "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+    g.targets_seekRanges =
+        "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
     -- g.targets_jumpRanges = g.targets_seekRanges
     g.targets_aiAI = "aIAi"
     -- g.targets_mapped_aiAI = 'aiAI'
@@ -1437,9 +1479,24 @@ function M.comment_box()
     map({"n", "v"}, "<Leader>bd", _(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
     map({"n", "v"}, "<Leader>bh", _(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
 
-    map({"n", "v"}, "<Leader>cc", _(cb.cbox, 21), {desc = "Left fixed box, center text (top/bottom)"})
-    map({"n", "v"}, "<Leader>cb", _(cb.cbox, 8), {desc = "Left fixed box, center text (thick/single)"})
-    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Left center box, center text (top/bottom)"})
+    map(
+        {"n", "v"},
+        "<Leader>cc",
+        _(cb.cbox, 21),
+        {desc = "Left fixed box, center text (top/bottom)"}
+    )
+    map(
+        {"n", "v"},
+        "<Leader>cb",
+        _(cb.cbox, 8),
+        {desc = "Left fixed box, center text (thick/single)"}
+    )
+    map(
+        {"n", "v"},
+        "<Leader>ca",
+        _(cb.acbox, 21),
+        {desc = "Left center box, center text (top/bottom)"}
+    )
 
     map({"n", "v"}, "<Leader>be", cb.lbox, {desc = "Left fixed box, left text (round)"})
     map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
@@ -1960,8 +2017,20 @@ function M.git_conflict()
                 bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)", {desc = "Conflict: both"})
                 bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)", {desc = "Conflict: theirs"})
                 bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)", {desc = "Conflict: none"})
-                bmap(bufnr, "n", "[n", "<Plug>(git-conflict-next-conflict)", {desc = "Next conflict"})
-                bmap(bufnr, "n", "]n", "<Plug>(git-conflict-prev-conflict)", {desc = "Previous conflict"})
+                bmap(
+                    bufnr,
+                    "n",
+                    "[n",
+                    "<Plug>(git-conflict-next-conflict)",
+                    {desc = "Next conflict"}
+                )
+                bmap(
+                    bufnr,
+                    "n",
+                    "]n",
+                    "<Plug>(git-conflict-prev-conflict)",
+                    {desc = "Previous conflict"}
+                )
             end
         }
     )

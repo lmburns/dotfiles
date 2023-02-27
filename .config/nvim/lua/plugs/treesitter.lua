@@ -531,8 +531,7 @@ M.setup_context_vt = function()
             -- Same as above but only for spesific filetypes
             min_rows_ft = {},
             -- Custom virtual text node parser callback
-            ---@diagnostic disable:unused-local
-            custom_parser = function(node, ft, opts)
+            custom_parser = function(node, _ft, _opts)
                 if api.nvim_buf_line_count(0) >= context_vt_max_lines then
                     return nil
                 end
@@ -1349,8 +1348,8 @@ local function init()
         {
             ["<A-r>"] = "Smart rename",
             [";D"] = "Go to definition under cursor",
-            ["<Leader>fd"] = "Quickfix definitions (Treesitter)",
-            ["<Leader>fo"] = "Quickfix definitions TOC (Treesitter)",
+            ["<Leader>fd"] = "Quickfix definitions (treesitter)",
+            ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",
@@ -1392,48 +1391,17 @@ local function init()
     map("n", "<Leader>sh", "TSHighlightCapturesUnderCursor", {cmd = true, desc = "Highlight capture group"})
 
     queries = require("nvim-treesitter.query")
-    local cfhl = conf.highlight.disable
-    local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
-    ft_enabled = {telescope = true}
-    for _, lang in ipairs(conf.ensure_installed) do
-        if not vim.tbl_contains(hl_disabled, lang) then
-            local parser = parsers.list[lang]
-            local used_by, filetype = parser.used_by, parser.filetype
-            if used_by then
-                for _, ft in ipairs(used_by) do
-                    ft_enabled[ft] = true
-                end
-            end
-            ft_enabled[filetype or lang] = true
-        end
-    end
+    -- local cfhl = conf.highlight.disable
+    -- local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
+    -- ft_enabled = {telescope = true}
+    -- for _, lang in ipairs(conf.ensure_installed) do
+    --     if not vim.tbl_contains(hl_disabled, lang) then
+    --         local parser = parsers.list[lang]
+    --         local filetype = parser.filetype
+    --         ft_enabled[filetype or lang] = true
+    --     end
+    -- end
 end
-
--- function M.init_hl()
---     local ts = vim.treesitter
---     local bufnr = api.nvim_get_current_buf()
---     local ok, parser = pcall(ts.get_parser, bufnr)
---     if not ok then
---         return
---     end
---     local get_query = require("nvim-treesitter.query").get_query
---     local query
---     ok, query = pcall(get_query, parser._lang, "highlights")
---     if ok and query then
---         ts.highlighter.new(parser, query)
---         api.nvim_buf_attach(
---             bufnr,
---             false,
---             {
---                 on_detach = function(_, b)
---                     if ts.highlighter.active[b] then
---                         ts.highlighter.active[b]:destroy()
---                     end
---                 end
---             }
---         )
---     end
--- end
 
 init()
 

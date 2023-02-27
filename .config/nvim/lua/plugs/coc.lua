@@ -142,6 +142,7 @@ function M.show_documentation()
             if err then
                 if res == "timeout" then
                     log.warn("Show documentation timeout", true)
+                    return
                 end
                 cmd("norm! K")
             end
@@ -475,35 +476,12 @@ end)()
 function M.post_open_float()
     local winid = g.coc_last_float_win
 
-    local lv = D.npcall(require, "link-visitor")
-    if not lv then
-        return
-    end
-
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
         api.nvim_buf_call(
             bufnr,
             function()
-                local bmap = utils.bmap
                 vim.wo[winid].showbreak = "NONE"
-
-                if lv then
-                    bmap(
-                        bufnr,
-                        "n",
-                        "K",
-                        D.ithunk(lv.link_under_cursor),
-                        {desc = "Link under cursor"}
-                    )
-                    bmap(
-                        bufnr,
-                        "n",
-                        "M",
-                        D.ithunk(lv.link_near_cursor),
-                        {desc = "Link near cursor"}
-                    )
-                end
             end
         )
     end

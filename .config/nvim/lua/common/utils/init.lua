@@ -65,33 +65,6 @@ M.prequire = function(name, cb)
     end
 end
 
----Call the given function and use `vim.notify` to notify of any errors
----this function is a wrapper around `xpcall` which allows having a single
----error handler for all errors
----@param msg string|fun()|nil
----@param func function
----@vararg any
----@return boolean, any
----@overload fun(fun: function, ...): boolean, any
-M.wrap_err = function(msg, func, ...)
-    local args = {...}
-    if type(msg) == "function" then
-        args, func, msg = {func, unpack(args)}, msg, nil
-    end
-    return xpcall(
-        func,
-        function(err)
-            msg = msg and ("%s:\n%s"):format(msg, err) or err
-            vim.schedule(
-                function()
-                    vim.notify(msg, log.levels.ERROR, {title = "ERROR"})
-                end
-            )
-        end,
-        unpack(args)
-    )
-end
-
 ---Return a value based on two values
 ---@generic T, V
 ---@param condition boolean|nil Statement to be tested
@@ -185,7 +158,7 @@ end
 ---@param clear? boolean
 ---@return number
 M.create_augroup = function(name, clear)
-    clear = clear == nil and true or clear
+    clear = M.get_default(clear, true)
     return api.nvim_create_augroup(name, {clear = clear})
 end
 
@@ -213,7 +186,7 @@ end
 ---returns the group ID so that it can be cleared or manipulated.
 ---@param name string|{ [1]: string, [2]: boolean } Augroup name. If a table, `true` can be passed to clear the group
 ---@param ... Autocommand|Autocommand[]
----@return number: Group ID of the autocommand
+---@return number, Disposable[]: Group ID of the augroup and table of autocmd ID's
 M.augroup = function(name, ...)
     local id
     -- If name is a table, user wants to probably not clear the augroup
@@ -223,11 +196,12 @@ M.augroup = function(name, ...)
         id = M.create_augroup(name)
     end
 
+    local cmd_ids = {}
     for _, autocmd in ipairs({...}) do
-        M.autocmd(autocmd, id)
+        table.insert(cmd_ids, M.autocmd(autocmd, id))
     end
 
-    return id
+    return id, cmd_ids
 end
 
 ---Create a single autocmd
@@ -259,6 +233,24 @@ M.autocmd = function(autocmd, id)
             id = autocmd_id
         }
     )
+end
+
+---Delete an augroup. Uses `pcall`
+---@param name_id string|number
+---@return boolean
+M.del_augroup = function(name_id)
+    vim.validate {
+        name_id = {
+            name_id,
+            {"s", "n"},
+            "augroup name must be a string or number"
+        }
+    }
+
+    local api_call =
+        F.tern(type(name_id) == "string", api.nvim_del_augroup_by_name, api.nvim_del_augroup_by_id)
+    local ok, _ = pcall(api_call, name_id)
+    return ok
 end
 
 ---@class Keymap_t
@@ -732,7 +724,7 @@ end
 M.messages = function(count, str)
     -- local messages = api.nvim_exec("messages", true)
     local messages = fn.execute("messages")
-    local lines = vim.split(messages, "\n")
+    local lines = messages:split()
     lines =
         D.filter(
         lines,
@@ -1358,88 +1350,6 @@ M.highlight =
         )
     end
 end)()
-
----Trims whitespace on left and right side
----@param self string
----@return string
-string.trim = function(self)
-    return self:match("^%s*(.-)%s*$")
-end
-
----Trims whitespace on right side
----@param self string
----@return string
-string.rtrim = function(self)
-    return self:match("^(.-)%s*$")
-end
-
----Trims whitespace on left side
----@param self string
----@return string
-string.ltrim = function(self)
-    return self:match("^%s*(.-)$")
-end
-
----Replace multiple spaces with a single space
----@param self string
----@return string, integer
-string.compact = function(self)
-    return self:gsub("%s+", " ")
-end
-
----Capitalizes the first letter of a string
----@param self string
----@return string
-string.capitalize = function(self)
-    local ret = self:sub(1, 1):upper() .. self:sub(2):lower()
-    return ret
-end
-
----Use PCRE regular expressions in Lua. Does the same as `string.gmatch`
----@param self string
----@param pattern string
----@return function(): string[]
-string.rxmatch = function(self, pattern)
-    return require("rex_pcre2").gmatch(self, pattern)
-end
-
----Use PCRE regular expressions in Lua. Does the same as `string.gsub`
----
----`print(('what up'):rxsub('(\\w+)', '%1 %1')) => what what up up`
----`print(('what  up dude'):rxsub('\\s{2,}', 'XX')) => whatXXup dude`
----@param self string
----@param pattern string
----@param repl string|string[]|function(s: string)
----@param n? number Maximum number of matches to  search for
----@return string
-string.rxsub = function(self, pattern, repl, n)
-    return require("rex_pcre2").gsub(self, pattern, repl, n)
-end
-
----Use PCRE regular expressions in Lua. Does the same as `string.find`
----@param self string
----@param pattern string
----@param init? number Start offset in the subject (can be negative)
----@return string
-string.rxfind = function(self, pattern, init)
-    return require("rex_pcre2").find(self, pattern, init)
-end
-
----Use PCRE regular expressions in Lua to split a string
----@param self string
----@param sep string
----@return function(): string[]
-string.rxsplit = function(self, sep)
-    return require("rex_pcre2").split(self, sep)
-end
-
----Use PCRE regular expressions in Lua to count number of matches in string
----@param self string
----@param pattern string
----@return string
-string.rxcount = function(self, pattern)
-    return require("rex_pcre2").count(self, pattern)
-end
 
 ---Write a file using libuv
 ---@param path string

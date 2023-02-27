@@ -233,6 +233,7 @@ alias vimdiff='nvim -d'
 alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config'
 alias nx='$EDITOR $HOME/.xinitrc'
 
+alias nafew='$EDITOR $XDG_CONFIG_HOME/afew/config'
 alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
 alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
 alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'

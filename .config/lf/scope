@@ -122,27 +122,32 @@ function handle_mime() {
 
 
 function handle_other() {
-  case "$filepath" in
-    (*.tar)   tar tf -- "${filepath}";;
-    (*.rar)   unrar l -- "${filepath}";;
-    (*.7z) 7z l -- "${filepath}";;
-    (*.[1-8]) man -- "${filepath}" | col -b ;;
-    (*.o)     nm -- "${filepath}" | less ;;
-    (*.iso)   iso-info --no-header -l -- "${filepath}";;
-    (*.doc)   catdoc -- "${filepath}" ;;
-    (*.docx)  docx2txt "${filepath}" - ;;
-    (*.json)  jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}" ;;
-    (*.asc|*.log)   bat -Pf --style auto -- "${filepath}";;
-    (*.ipynb) jupview -t KimbieDark -- "${filepath}" ;;
-    (*.torrent) transmission-show -- "${filepath}";;
-    (*.tgz|*.tar.gz)   tar tzf -- "${filepath}";;
-    (*.tar.bz2|*.tbz2) tar tjf -- "${filepath}";;
-    (*.tar.txz|*.txz)  xz --list -- "${filepath}";;
-    (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${filepath}";;
-    (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${filepath}";;
-    (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${filepath}" ;;
-    (*) (( unhandled )) && { bat -Pf --style auto -- "${filepath}" } ;;
-  esac
+  (( unhandled )) && {
+    case "$filepath" in
+      (*.tar)   tar tf -- "${filepath}";;
+      (*.rar)   unrar l -- "${filepath}";;
+      (*.7z)    7z l -- "${filepath}";;
+      (*.[1-8]) man -- "${filepath}" | col -b ;;
+      (*.o)     nm -- "${filepath}" | less ;;
+      (*.iso)   iso-info --no-header -l -- "${filepath}";;
+      (*.doc)   catdoc -- "${filepath}" ;;
+      (*.docx)  docx2txt "${filepath}" - ;;
+      (*.json)  jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}" ;;
+      (*.asc|*.log)   bat -Pf --style auto -- "${filepath}";;
+      (*.ipynb) jupview -t KimbieDark -- "${filepath}" ;;
+      (*.torrent) transmission-show -- "${filepath}";;
+      (*.tgz|*.tar.gz)   tar tzf -- "${filepath}";;
+      (*.tar.bz2|*.tbz2) tar tjf -- "${filepath}";;
+      (*.tar.txz|*.txz)  xz --list -- "${filepath}";;
+      (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${filepath}";;
+      (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${filepath}";;
+      (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${filepath}" ;;
+      (*)
+        # dunstify 'OTHER'
+        bat -Pf --style auto -- "${filepath}"
+        ;;
+    esac
+  }
 }
 
 local -A C

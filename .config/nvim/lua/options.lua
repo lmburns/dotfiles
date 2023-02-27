@@ -1,6 +1,6 @@
 local M = {}
 
--- local global = require("common.global")
+local D = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 local list = require("dev").list
@@ -63,7 +63,7 @@ vim.tbl_map(
 -- g.loaded_fzf = 1
 -- g.loaded_gtags = 1
 -- g.loaded_gtags_cscope = 1
-g.load_black = 1
+-- g.load_black = 1
 
 if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
@@ -83,17 +83,14 @@ o.rtp:remove("/etc/xdg/nvim")
 
 -- Base
 env.LANG = "en_US.UTF-8"
-o.shell = os.getenv("SHELL")
-
--- set_option_value / set_option
-
+o.shell = env.SHELL
 o.encoding = "utf-8"
 o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
 o.fileformats = {"unix", "mac", "dos"}
 
 -- Settings
-o.path:append("**")
+-- o.path:append("**")
 o.number = true
 o.relativenumber = true
 o.cursorline = true
@@ -120,9 +117,6 @@ o.foldcolumn = "1"
 
 -- o.indentexpr = "nvim_treesitter#indent()"
 
--- This does not work globally for whatever reason (didn't in vim either)
--- o.formatoptions:remove({"c", "r", "o"})
-
 o.formatoptions = {
     ["1"] = true, -- Don't break a line after a one-letter word; break before
     ["2"] = true, -- Use indent from 2nd line of a paragraph
@@ -140,7 +134,7 @@ o.formatoptions = {
     t = false, -- Autowrap lines using text width value
     p = true, -- Don't break lines at single spaces that follow periods
     o = false, --- Automatically insert comment leader after <enter>
-    ["/"] = true, -- When 'o' included: don't insert comment leader for // comment after statement
+    ["/"] = true -- When 'o' included: don't insert comment leader for // comment after statement
 }
 
 -- A pattern that is used to recognize a list header. This is used for the "n"
@@ -167,7 +161,7 @@ o.listchars:append(
         tab = "‣ ",
         trail = "•",
         precedes = "«",
-        extends = "»",
+        extends = "…", -- »
         nbsp = "␣"
     }
 )
@@ -181,8 +175,10 @@ o.cpoptions:append("A") -- ":write" sets alternate file name
 o.showtabline = 2
 o.incsearch = true -- incremental search highlight
 
--- o.mouse = "a" -- enable mouse all modes
--- o.mousefocus = true
+o.mouse = "a" -- enable mouse all modes
+o.mousefocus = true
+o.mousemoveevent = true
+o.mousescroll = {"ver:1", "hor:6"}
 
 o.backspace = {"indent", "eol", "start"}
 o.breakindentopt = "sbr" -- shift:2,min:20
@@ -219,9 +215,34 @@ o.shiftwidth = 0
 o.textwidth = 100
 -- o.shiftround = true
 
--- o.wildoptions:append("pum")
-o.wildoptions = "pum"
-o.wildignore = {"*.o", "*~", "*.pyc", "*.git", "node_modules"}
+o.wildoptions = {"pum", "fuzzy"}
+o.wildignore = {
+    "*.git",
+    "node_modules",
+    "*.aux",
+    "*.out",
+    "*.toc",
+    "*.o",
+    "*.obj",
+    "*.dll",
+    "*.jar",
+    "*.pyc",
+    "*.rbc",
+    "*.class",
+    "*.gif",
+    "*.ico",
+    "*.jpg",
+    "*.jpeg",
+    "*.png",
+    "*.avi",
+    "*.wav",
+    "*.*~",
+    "*~ ",
+    "*.swp",
+    ".lock",
+    ".DS_Store",
+    "tags.lock"
+}
 o.wildmenu = true
 o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true -- ignore case when completing file names and directories
@@ -257,14 +278,14 @@ if not uv.fs_stat(vim.o.undodir) then
 end
 
 o.shada = {
-    "!",     -- save and restore global variables starting with uppercase
+    "!", -- save and restore global variables starting with uppercase
     "'1000", -- previously edited files
-    "<50",   -- lines saved in each register
-    "s100",  -- maximum size of an item in KiB
+    "<50", -- lines saved in each register
+    "s100", -- maximum size of an item in KiB
     "/5000", -- search pattern history
     "@1000", -- input line history
     ":5000", -- command line history
-    "h"      -- disable `hlsearch` on loading
+    "h" -- disable `hlsearch` on loading
 }
 o.shadafile = dirs.data .. "/shada/main.shada"
 
@@ -324,21 +345,52 @@ o.showcmd = true -- show command
 o.signcolumn = "yes:1"
 o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
--- shorten message in prompt window
 
--- xOlcTstfoiISanFA
+-- TOaxSsIinfcFlotA
 o.shortmess:append("a") -- enable shorter flags ('filmnrwx')
 o.shortmess:append("c") -- don't give ins-completion-menu messages
 o.shortmess:append("s") -- don't give "search hit BOTTOM
 o.shortmess:append("I") -- don't give the intro message when starting Vim
 o.shortmess:append("S") -- do not show search count message when searching (HLSLens)
--- o.shortmess:append("T") -- truncate messages if they're too long
--- A = true, -- don't give the "ATTENTION" message when an existing swap file
+o.shortmess:append("T") -- truncate messages if they're too long
+o.shortmess:append("A") -- don't give the "ATTENTION" message when an existing swap file
+
+-- o.shortmess = {
+--     T = true, -- truncate non-file messages in middle
+--     O = true, -- file-read message overwrites previous
+--     a = true, -- enable shorter flags ('filmnrwx')
+--     S = true, -- don't show search count message when searching (HLSLens)
+--     s = true, -- don't give "search hit BOTTOM"
+--     I = true, -- don't give intro message when starting vim
+--     c = true, -- don't give ins-completion messages
+--     t = true, -- truncate file messages at start
+--     A = true, -- don't give the "ATTENTION" message when an existing swap file
+--     o = true, -- file-read message overwrites previous
+--     f = true, -- (file x of x) instead of just (x of x
+--     F = true, -- don't give file info when editing a file
+--     W = true -- don't show [w] or written when writing
+-- }
 
 o.cedit = "<C-c>" -- Key used to open command window on the CLI
 o.tagfunc = "CocTagFunc"
 
-o.grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never --glob '!.git'"
+o.grepprg =
+    D.list(
+    {
+        "rg",
+        "--with-filename",
+        "--no-heading",
+        "--max-columns=200",
+        "--vimgrep",
+        "--smart-case",
+        "--color=never",
+        "--follow",
+        "--glob='!.git'",
+        "--glob='!target'",
+        "--glob='!node_modules'"
+    },
+    " "
+)
 -- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 o.grepformat = o.grepformat:prepend({"%f:%l:%c:%m"})
 
@@ -378,11 +430,10 @@ o.completeopt:append({"menuone", "preview"})
 o.complete:append({"kspell"})
 o.complete:remove({"w", "b", "u", "t"})
 o.spelllang:append("en_us")
-o.spelloptions = "camel"
--- o.spelloptions:append({"camel", "noplainbuffer"})
+o.spelloptions:append({"camel", "noplainbuffer"})
 o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest = "12"
-o.spellfile = ("%s%s"):format(dirs.config,  "/spell/en.utf-8.add")
+o.spellfile = ("%s%s"):format(dirs.config, "/spell/en.utf-8.add")
 -- ]]] === Spell Check ===
 
 -- =============== Clipboard =============== [[[
@@ -396,7 +447,7 @@ if env.DISPLAY and fn.executable("xsel") == 1 then
         },
         paste = {
             ["+"] = {"xsel", "-o", "-b"},
-            ["*"] = {"xsel", "-o", "-p"},
+            ["*"] = {"xsel", "-o", "-p"}
         },
         cache_enabled = true
     }
@@ -415,10 +466,10 @@ o.clipboard:append("unnamedplus")
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
-if nvim.executable("nvr") then
-    env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
---     env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-end
+-- if nvim.executable("nvr") then
+--     env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+-- --     env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+-- end
 
 env.MANWIDTH = 80
 

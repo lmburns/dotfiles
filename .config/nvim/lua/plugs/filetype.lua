@@ -22,6 +22,7 @@ function M.setup()
     vim.filetype.add(
         {
             extension = {
+                lock = "yaml",
                 gitignore = "gitignore",
                 tmTheme = "xml",
                 pn = "potion",

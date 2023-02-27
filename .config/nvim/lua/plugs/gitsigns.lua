@@ -12,12 +12,11 @@ local map = utils.map
 local bmap = utils.bmap
 local augroup = utils.augroup
 
-local hl = require("common.color")
+local log = require("common.log")
 local wk = require("which-key")
 
 local cmd = vim.cmd
 local fn = vim.fn
-local api = vim.api
 local env = vim.env
 local F = vim.F
 
@@ -54,12 +53,15 @@ function M.toggle_blame()
     local status = F.tern(config.current_line_blame, "enable", "disable")
     echo(status, "current_line_blame")
 
-    if F.tern(status == "enable", true, false) then
+    if status == "enable" then
         if not autocmd_id then
             autocmd_id = M.setup_autocmd()
         end
     else
-        api.nvim_del_augroup_by_id(autocmd_id)
+        local ok = utils.del_augroup(autocmd_id)
+        if not ok then
+            log.err("Gitsigns: failed to delete autocommand")
+        end
     end
 end
 
@@ -95,12 +97,30 @@ local function mappings(bufnr)
             ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
             ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
             ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
-            ["<Leader>hv"] = {[[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]], "Toggle deleted hunks (git)"},
-            ["<Leader>hl"] = {"<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>", "Toggle line highlight (git)"},
-            ["<Leader>hw"] = {"<Cmd>lua require('plugs.gitsigns').toggle_word_diff()<CR>", "Toggle word diff (git)"},
-            ["<Leader>hB"] = {"<Cmd>lua require('plugs.gitsigns').toggle_blame()<CR>", "Toggle blame line virt (git)"},
-            ["<Leader>hc"] = {"<Cmd>lua require('plugs.gitsigns').toggle_signs()<CR>", "Toggle sign column (git)"},
-            ["<Leader>hn"] = {"<Cmd>lua require('plugs.gitsigns').toggle_numhl()<CR>", "Toggle number highlight (git)"},
+            ["<Leader>hv"] = {
+                [[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]],
+                "Toggle deleted hunks (git)"
+            },
+            ["<Leader>hl"] = {
+                "<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>",
+                "Toggle line highlight (git)"
+            },
+            ["<Leader>hw"] = {
+                "<Cmd>lua require('plugs.gitsigns').toggle_word_diff()<CR>",
+                "Toggle word diff (git)"
+            },
+            ["<Leader>hB"] = {
+                "<Cmd>lua require('plugs.gitsigns').toggle_blame()<CR>",
+                "Toggle blame line virt (git)"
+            },
+            ["<Leader>hc"] = {
+                "<Cmd>lua require('plugs.gitsigns').toggle_signs()<CR>",
+                "Toggle sign column (git)"
+            },
+            ["<Leader>hn"] = {
+                "<Cmd>lua require('plugs.gitsigns').toggle_numhl()<CR>",
+                "Toggle number highlight (git)"
+            },
             ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}
         },
         {buffer = bufnr}
@@ -170,7 +190,7 @@ function M.setup()
             -- Always refresh the staged file on each update.
             -- Disabling will cause staged file to be refreshed when an update to the index is detected
             _refresh_staged_on_update = false,
-            _signs_staged_enable = true,
+            -- _signs_staged_enable = true,
             signs = {
                 add = {
                     hl = "GitSignsAdd",
@@ -325,20 +345,6 @@ local function init()
     cmd.packadd("plenary.nvim")
 
     M.setup()
-
-    local gitsigns_hlights = {
-        GitSignsChangeLn = {link = "DiffText"},
-        GitSignsAddInline = {link = "GitSignsAddLn"},
-        GitSignsDeleteInline = {link = "GitSignsDeleteLn"},
-        GitSignsChangeInline = {link = "GitSignsChangeLn"}
-    }
-
-    if vim.g.colors_name == "kimbox" then
-        local colors = require("kimbox.colors")
-        gitsigns_hlights["GitSignsChange"] = {fg = colors.yellow}
-    end
-
-    hl.plugin("GitSigns", gitsigns_hlights)
 
     if config.current_line_blame then
         autocmd_id = M.setup_autocmd()

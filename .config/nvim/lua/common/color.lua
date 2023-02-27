@@ -2,7 +2,7 @@
 
 local M = {}
 
--- local D = require("dev")
+local D = require("dev")
 local utils = require("common.utils")
 local log = require("common.log")
 
@@ -71,9 +71,19 @@ local api = {
 ---| '"nocombine"' # Override attributes instead of combining them
 ---| '"none"' # No attributes used (used to reset it)
 
+---@class GuiAttrs
+---@field bold boolean
+---@field italic boolean
+---@field underline boolean
+---@field undercurl boolean
+---@field underdouble boolean
+---@field underdotted boolean
+---@field underdashed boolean
+---@field strikethrough boolean
+
 ---Convert a hexidecimal color (#RRGGBB) to RGB
 ---@param color Color
----@return table<number, number, number>
+---@return {[1]: number, [2]: number, [3]: number}
 local function hex2rgb(color)
     local hex = color:gsub("#", ""):gsub("0x", "")
     return {
@@ -140,7 +150,7 @@ end
 
 ---Convert a `gui=...` into valid arguments for `api.nvim_set_hl`
 ---@param guistr string
----@return table
+---@return GuiAttrs
 local function convert_gui(guistr)
     local gui = {}
     guistr = guistr:gsub(".*", string.lower)
@@ -384,7 +394,7 @@ function M.set(name, opts)
     --     log.err(("Failed to set %s: %s"):format(name, msg))
     -- end
 
-    utils.wrap_err(("Failed to set %s"):format(name), api.set, 0, name, M.parse(opts))
+    D.wrap_err(("Failed to set %s"):format(name), api.set, 0, name, M.parse(opts))
 end
 
 ---Get the value a highlight group whilst handling errors

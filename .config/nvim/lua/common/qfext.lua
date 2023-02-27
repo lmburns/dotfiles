@@ -50,6 +50,8 @@ local cmd = vim.cmd
 ---@field fzf boolean
 ---@field bufnr number?
 
+---
+---@param opts Outline
 local function activate_qf(opts)
     local winid = fn.getloclist(0, {winid = 0}).winid
     if winid == 0 then
@@ -90,13 +92,15 @@ function M.outline_aerial(args)
                 "Struct",
                 "Type"
             },
-            fzf = false
+            fzf = false,
+            bufnr = api.nvim_get_current_buf()
         }
     )
     local results = {}
-    local bufnr = nvim.buf.nr()
+    local bufnr = opts.bufnr
     if vim.bo[bufnr].bt == "quickfix" then
-        bufnr = fn.bufnr("#")
+        -- bufnr = fn.bufnr("#")
+        return
     end
 
     config.setup({filter_kind = opts.filter_kind})
@@ -121,37 +125,27 @@ function M.outline_aerial(args)
     end
 
     local items = {}
-    local text_fmt = "%-32s│%5d:%-3d│%10s%s%s"
-    -- local hl_defs = api.nvim__get_hl_defs(0)
-    -- local hl_def_keys = _t(hl_defs):keys()
-
-    -- local ns = api.nvim_create_namespace("aerial-sign")
-    -- for name, icon in pairs(config.icons) do
-    --     -- Choose a random highlight group
-    --     local rand = math.random(1, #hl_defs)
-    --
-    --     fn.sign_define(
-    --         "aerial-sign-" .. name,
-    --         {
-    --             text = icon,
-    --             texthl = hl_defs[name] and name or hl_def_keys[rand]
-    --         }
-    --     )
-    -- end
+    local text_fmt = "%s%-32s│%5d:%-3d│%s%s%s"
 
     for _, s in pairs(results) do
-        local col = s.col + 1
-        local icon = config.get_icon(s.kind)
-
+        local icon = config.get_icon(bufnr, s.kind)
         table.insert(
             items,
             {
                 bufnr = bufnr,
                 lnum = s.lnum,
-                col = col,
+                col = s.col + 1,
                 end_lnum = s.end_lnum,
-                end_col = s.end_col,
-                text = text_fmt:format(s.kind, s.lnum, col, " ", ("| "):rep(s.level), s.name),
+                end_col = s.end_col + 1,
+                text = text_fmt:format(
+                    icon,
+                    s.kind,
+                    s.lnum,
+                    s.col + 1,
+                    " ",
+                    ("| "):rep(s.level),
+                    s.name
+                ),
                 icon = icon, -- Not needed
                 kind = s.kind
             }
@@ -174,37 +168,9 @@ function M.outline_aerial(args)
             quickfixtextfunc = function(qinfo)
                 local ret = {}
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
-                bufnr = api.nvim_get_current_buf()
-
-                -- api.nvim_buf_clear_namespace(bufnr, ns, qinfo.start_idx, qinfo.end_idx + 1)
-
-                -- for _, sign in pairs(fn.sign_getplaced(bufnr, {group = "aerial-sign"})[1].signs) do
-                --     if sign.lnum - 1 >= qinfo.start_idx and sign.lnum - 1 <= qinfo.end_idx then
-                --         fn.sign_unplace("aerial-sign", {buffer = bufnr, id = sign.id})
-                --     end
-                -- end
-
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
-
-                    -- for j = 1, #items do
-                    --     local item = items[j]
-                    --     if item.text == ele.text then
-                    --         if type(item.kind) == "string" then
-                    --             fn.sign_place(
-                    --                 0,
-                    --                 "aerial-sign",
-                    --                 "aerial-sign-" .. item.kind,
-                    --                 bufnr,
-                    --                 {
-                    --                     lnum = j,
-                    --                     priority = 90
-                    --                 }
-                    --             )
-                    --         end
-                    --     end
-                    -- end
                 end
                 return ret
             end
@@ -285,11 +251,15 @@ function M.outline(args)
                 "Struct",
                 "Type"
             },
-            fzf = false
+            fzf = false,
+            bufnr = api.nvim_get_current_buf()
         }
     ) or {} -- NOTE: This is needed to prevent diagnostic warning on casting 'Outline' to table|nil
 
-    local bufnr = api.nvim_get_current_buf()
+    -- Aerial icon works for Coc too
+    config.setup({filter_kind = opts.filter_kind})
+
+    local bufnr = opts.bufnr
     if vim.bo[bufnr].bt == "quickfix" then
         -- bufnr = fn.bufnr("#")
         return promise.resolve()
@@ -302,9 +272,10 @@ function M.outline(args)
             end
 
             local items = {}
-            local text_fmt = "%-32s│%5d:%-3d│%10s%s%s"
+            local text_fmt = "%s%-32s│%5d:%-3d│%s%s%s"
 
             for _, s in ipairs(value) do
+                local icon = config.get_icon(bufnr, s.kind)
                 local rs, re = s.range.start, s.range["end"]
                 local lnum, col = rs.line + 1, rs.character + 1
                 table.insert(
@@ -315,7 +286,7 @@ function M.outline(args)
                         col = col,
                         end_lnum = re.line + 1,
                         end_col = re.character + 1,
-                        text = text_fmt:format(s.kind, lnum, col, " ", ("| "):rep(s.level), s.name)
+                        text = text_fmt:format(F.if_nil(icon, ""), s.kind, lnum, col, " ", ("| "):rep(s.level), s.name)
                     }
                 )
             end
@@ -392,7 +363,7 @@ function M.outline_treesitter(args)
 
     local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
-        vim.notify("No parser for the current buffer", log.levels.ERROR, {title = "builtin.treesitter"})
+        log.err("No parser for the current buffer", true, {title = "qfext.treesitter"})
         return
     end
 
@@ -410,12 +381,11 @@ function M.outline_treesitter(args)
         return
     end
 
-    local ts_utils = require("nvim-treesitter.ts_utils")
     local items = {}
-    local text_fmt = "%-32s│%5d:%-3d│%10s%s"
+    local text_fmt = "%-32s│%5d:%-3d│%s%s"
 
     for _, entry in pairs(results) do
-        local srow, scol, erow, ecol = ts_utils.get_node_range(entry.node)
+        local srow, scol, erow, ecol = vim.treesitter.get_node_range(entry.node)
         local node_text = vim.treesitter.get_node_text(entry.node, opts.bufnr)
 
         table.insert(
@@ -423,11 +393,12 @@ function M.outline_treesitter(args)
             {
                 bufnr = opts.bufnr,
                 lnum = srow + 1,
-                col = scol,
-                end_lnum = erow,
-                end_col = ecol,
-                text = text_fmt:format(entry.kind, srow, scol, " ", vim.trim(node_text)),
+                col = scol + 1,
+                end_lnum = erow + 1,
+                end_col = ecol + 1,
+                text = text_fmt:format(entry.kind, srow + 1, scol + 1, " ", node_text),
                 kind = entry.kind
+                -- text = text_fmt:format(entry.kind, srow + 1, col, " ", ("| "):rep(s.???), node_text)
             }
         )
     end
@@ -439,7 +410,7 @@ function M.outline_treesitter(args)
         {},
         title == new_title and "r" or " ",
         {
-            title = ("Outline Bufnr (Treesitter): %d"):format(opts.bufnr),
+            title = new_title,
             id = "$",
             context = {
                 bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}}
@@ -448,8 +419,6 @@ function M.outline_treesitter(args)
             quickfixtextfunc = function(qinfo)
                 local ret = {}
                 local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
-                -- local bufnr = api.nvim_get_current_buf()
-
                 for i = qinfo.start_idx, qinfo.end_idx do
                     local ele = _items[i]
                     table.insert(ret, ele.text)
@@ -510,10 +479,10 @@ end
 function M.outline_syntax()
     cmd(
         [[
-        syn match @function /^\(Function\)\s*/ nextgroup=qfSeparator
-        syn match @method /^\(Method\)\s*/ nextgroup=qfSeparator
-        syn match @keyword /^\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
-        syn match @constructor /^\(Constructor\)\s*/ nextgroup=qfSeparator
+        syn match @function /^.\?\s\?\(Function\)\s*/ nextgroup=qfSeparator
+        syn match @method /^.\?\s\?\(Method\)\s*/ nextgroup=qfSeparator
+        syn match @keyword /^.\?\s\?\(Interface\|Struct\|Class\)\s*/ nextgroup=qfSeparator
+        syn match @constructor /^.\?\s\?\(Constructor\)\s*/ nextgroup=qfSeparator
 
         syn match @constant /^\(associated\|constant\)\s*/ nextgroup=qfSeparator
         syn match @field /^\(field\)\s*/ nextgroup=qfSeparator

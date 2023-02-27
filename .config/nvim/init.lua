@@ -4,6 +4,12 @@ FIX: Telescope opens file in insert mode
 FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
 
 FIX: Folds close automatically if every fold in file is closed then opened
+FIX: Plugins cannot be disabled with `disable = true`
+
+FIX: All crash with SEGV
+     .config/newsboat/urls
+     .config/afew/config
+     .local/share/mail/.notmuch/hooks/post-new
 
 TODO: Add keybinding to go to top of current function you're inside of
 TODO: Highlight dates paint
@@ -31,10 +37,9 @@ local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
 
-
 -- Lua utilities
-require("common.nvim")
 local D = require("dev")
+require("common.nvim")
 require("options")
 
 local conf_dir = dirs.config
@@ -101,9 +106,6 @@ require("common.qf")
 require("common.mru")
 require("common.grepper")
 require("common.jump")
--- require("plugs.fold")
--- require("common.stl")
--- require("common.reg")
 
 ---@diagnostic disable-next-line:duplicate-set-field
 vim.notify = function(...)
@@ -266,7 +268,7 @@ vim.schedule(
                     "coc-tabnine",
                     "coc-tag",
                     "coc-word",
-                    "coc-lightbulb",
+                    "coc-lightbulb"
                     -- "coc-highlight" -- Highlight words under cursor without language server
                 }
 

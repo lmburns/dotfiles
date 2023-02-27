@@ -62,18 +62,6 @@ local nvim = require("nvim")
 ---@diagnostic disable-next-line:assign-type-mismatch
 _G.nvim = require("nvim")
 
--- local nvim: Nvim {
---     mode: unknown,
---     p: table,
---     plugins: table,
---     reg: table,
---     t: table,
---     tab: table,
---     termcodes: table,
---     ui: table,
---     win: table,
--- }
-
 ---Get an autocmd
 ---@param opts RetrieveAutocommand
 ---@return table
@@ -133,21 +121,6 @@ local function clear_augroup(name)
     utils.create_augroup(name, true)
 end
 
----Delete an augroup
----@param name_id string|number
-local function del_augroup(name_id)
-    vim.validate {
-        name_id = {
-            name_id,
-            {"s", "n"},
-            "Augroup name string or id number"
-        }
-    }
-
-    local api_call = type(name_id) == "string" and api.nvim_del_augroup_by_name or api.nvim_del_augroup_by_id
-    pcall(api_call, name_id)
-end
-
 nvim.plugins =
     setmetatable(
     {},
@@ -205,7 +178,7 @@ nvim.has =
     exists_tbl,
     {
         __call = function(_, feature)
-            return api.nvim_call_function("has", {feature}) == 1
+            return fn.has(feature) > 0
         end
     }
 )
@@ -216,7 +189,7 @@ nvim.exists =
     exists_tbl,
     {
         __call = function(_, feature)
-            return api.nvim_call_function("exists", {feature}) == 1
+            return fn.exists(feature) > 0
         end
     }
 )
@@ -372,12 +345,12 @@ nvim.reg =
     {},
     {
         __index = function(_, k)
-            local ok, value = pcall(api.nvim_call_function, "getreg", {k})
+            local ok, value = pcall(fn.getreg, k)
             return ok and value or nil
         end,
         __newindex = function(_, k, v)
             if v == nil then
-                error("Can't clear registers")
+                error("can't clear registers")
             end
             pcall(api.nvim_call_function, "setreg", {k, v})
         end
@@ -439,12 +412,12 @@ nvim.keymap =
             )
 
             if not modes:contains(mode) then
-                error("Invalid mode")
+                error(("'%s' is an invalid mode"):format(F.if_nil(mode, "")))
             end
             return self.get(mode)
         end,
-        __call = function(self, bufnr, modes, lhs, rhs, opts)
-            self.add(bufnr, modes, lhs, rhs, opts)
+        __call = function(self, modes, lhs, rhs, opts)
+            self.add(modes, lhs, rhs, opts)
         end
     }
 )
@@ -454,7 +427,7 @@ nvim.augroup =
     setmetatable(
     {
         add = add_augroup,
-        del = del_augroup,
+        del = utils.del_augroup,
         get = get_augroup,
         get_id = get_augroup_id,
         clear = clear_augroup
