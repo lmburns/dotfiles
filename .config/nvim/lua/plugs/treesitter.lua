@@ -599,19 +599,29 @@ M.setup_context = function()
                 -- 'if',
                 -- 'switch',
                 -- 'case',
+            },
+            rust = {
+                "impl_item"
+            },
+            json = {
+                "pair"
+            },
+            typescript = {
+                "export_statement"
+            },
+            yaml = {
+                "block_mapping_pair"
             }
-            -- Example for a specific filetype.
-            -- If a pattern is missing, *open a PR* so everyone can benefit.
-            --   rust = {
-            --       'impl_item',
-            --   },
         },
         exact_patterns = {},
         -- [!] The options below are exposed but shouldn't require your attention,
         --     you can safely ignore them.
 
         zindex = 20, -- The Z-index of the context window
-        mode = "cursor" -- Line used to calculate context. Choices: 'cursor', 'topline'
+        mode = "cursor", -- Line used to calculate context. Choices: 'cursor', 'topline'
+        -- Separator between context and content. Should be a single character string, like '-'.
+        -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+        separator = nil,
     }
 end
 
@@ -624,7 +634,8 @@ M.setup_treesurfer = function()
 
     local vars = {
         "variable_declaration",
-        "let_declaration"
+        "let_declaration",
+        "VarDecl" -- zig Variable declaration
     }
 
     local default =
@@ -635,18 +646,23 @@ M.setup_treesurfer = function()
             "function_definition",
             "function_declaration",
             "function_item",
+            "FnProto", -- zig Function
             "method_definition",
             "macro_definition",
             "closure_expression",
+            "IfPrefix", -- zig If
             "if_statement",
             "if_expression",
             "if_let_expression",
             "else_clause",
             "else_statement",
             "elseif_statement",
+            "ForPrefix", -- zig For
             "for_statement",
             "for_expression",
             "while_statement",
+            "SwitchExpr", -- zig Switch
+            "SwitchCase", -- zig Switch else
             "switch_statement",
             "match_expression",
             "struct_item",
@@ -656,7 +672,8 @@ M.setup_treesurfer = function()
             "class_name",
             "impl_item",
             "try_statement",
-            "catch_clause"
+            "catch_clause",
+            "ContainerDecl"
         }
     )
 
@@ -680,12 +697,16 @@ M.setup_treesurfer = function()
                 ["if_statement"] = "",
                 ["if_expression"] = "",
                 ["if_let_expression"] = "",
+                ["IfPrefix"] = "", -- zig If
                 ["else_clause"] = "",
                 ["else_statement"] = "",
                 ["elseif_statement"] = "",
+                ["ForPrefix"] = "", -- zig For
                 ["for_statement"] = "",
                 ["for_expression"] = "",
                 ["while_statement"] = "菱",
+                ["SwitchExpr"] = "", -- zig Switch
+                ["SwitchCase"] = "", -- zig Switch else
                 ["switch_statement"] = "",
                 ["match_expression"] = "",
                 ["macro_definition"] = "",
@@ -693,10 +714,13 @@ M.setup_treesurfer = function()
                 ["function_item"] = "",
                 ["function_definition"] = "",
                 ["function"] = "",
+                ["FnProto"] = "", -- zig Function
                 ["arrow_function"] = "",
                 ["method_definition"] = "",
                 ["variable_declaration"] = "",
                 ["let_declaration"] = "",
+                ["VarDecl"] = "", -- zig Variable Declaration
+                ["ContainerDecl"] = "פּ", -- zig Enum/Struct
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
                 ["enum_variant"] = "",
@@ -765,12 +789,37 @@ M.setup_treesurfer = function()
     -- map("n", "vu", '<cmd>lua require("syntax-tree-surfer").move("n", true)<cr>', {desc = "Swap previous node"})
 
     map("n", "vn", '<cmd>lua require("syntax-tree-surfer").select()<cr>', {desc = "Select node"})
-    map("n", "vm", '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>', {desc = "Select current node"})
+    map(
+        "n",
+        "vm",
+        '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>',
+        {desc = "Select current node"}
+    )
 
-    map("x", "<A-]>", '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>', {desc = "Next node"})
-    map("x", "<A-[>", '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>', {desc = "Prev node"})
-    map("x", "<C-k>", '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>', {desc = "Parent node"})
-    map("x", "<C-j>", '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>', {desc = "Child node"})
+    map(
+        "x",
+        "<A-]>",
+        '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>',
+        {desc = "Next node"}
+    )
+    map(
+        "x",
+        "<A-[>",
+        '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>',
+        {desc = "Prev node"}
+    )
+    map(
+        "x",
+        "<C-k>",
+        '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>',
+        {desc = "Parent node"}
+    )
+    map(
+        "x",
+        "<C-j>",
+        '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>',
+        {desc = "Child node"}
+    )
 
     map(
         "x",
@@ -867,7 +916,10 @@ M.setup = function()
         highlight = {
             enable = true, -- false will disable the whole extension
             disable = function(ft, bufnr)
-                if ts_hl_disabled:contains(ft) or api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines then
+                if
+                    ts_hl_disabled:contains(ft) or
+                        api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines
+                 then
                     return true
                 end
 
@@ -881,7 +933,15 @@ M.setup = function()
         autotag = {enable = true},
         autopairs = {
             enable = true,
-            disable = {"help", "comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
+            disable = {
+                "help",
+                "comment",
+                "log",
+                "gitignore",
+                "git_rebase",
+                "gitattributes",
+                "markdown"
+            }
         },
         indent = {
             enable = true,
@@ -974,11 +1034,19 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = 1500,
-            disable = {"html", "help", "comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
+            disable = {
+                "html",
+                "help",
+                "comment",
+                "log",
+                "gitignore",
+                "git_rebase",
+                "gitattributes",
+                "markdown"
+            }
         },
         textobjects = {
             lsp_interop = {enable = false},
-            lookahead = true,
             select = {
                 enable = true,
                 -- If you set this to `true` (default is `false`) then any textobject is
@@ -993,6 +1061,7 @@ M.setup = function()
                 include_surrounding_whitespace = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
+                lookbehind = true,
                 disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
                 keymaps = {
                     ["af"] = "@function.outer",
@@ -1003,13 +1072,15 @@ M.setup = function()
                     ["ic"] = "@call.inner",
                     ["ao"] = "@block.outer",
                     ["io"] = "@block.inner",
-                    ["ad"] = "@comment.outer",
-                    ["id"] = "@comment.inner",
-                    ["ag"] = "@conditional.outer",
-                    ["ig"] = "@conditional.inner",
+                    ["ag"] = "@comment.outer",
+                    ["ig"] = "@comment.inner",
+                    ["ad"] = "@conditional.outer",
+                    ["id"] = "@conditional.inner",
                     ["aj"] = "@parameter.outer",
                     ["ij"] = "@parameter.inner",
                     ["aS"] = "@statement.outer",
+                    ["ix"] = "@assignment.lhs",
+                    ["ax"] = "@assignment.rhs",
                     ["al"] = "@loop.outer",
                     ["il"] = "@loop.inner"
                 },
@@ -1026,8 +1097,14 @@ M.setup = function()
                     ["@class.outer"] = "<c-v>" -- blockwise
                 }
             },
+            -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
+
             -- @attribute.inner
             -- @attribute.outer
+            -- @assignment.inner
+            -- @assignment.outer
+            -- @assignment.lhs
+            -- @assignment.rhs
             -- @block.inner
             -- @block.outer
             -- @call.inner
@@ -1043,8 +1120,12 @@ M.setup = function()
             -- @function.outer
             -- @loop.inner
             -- @loop.outer
+            -- @number.inner
+            -- @number.outer
             -- @parameter.inner
             -- @parameter.outer
+            -- @return.inner
+            -- @return.outer
             -- @scopename.inner
             -- @statement.outer
             move = {
@@ -1052,9 +1133,8 @@ M.setup = function()
                 set_jumps = true, -- Whether to set jumps in the jumplist
                 disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
                 goto_next_start = {
-                    -- ["]]"] = "@function.outer",
                     ["]f"] = "@function.outer",
-                    ["]m"] = "@class.outer",
+                    ["]k"] = "@class.outer",
                     ["]r"] = "@block.outer",
                     ["]C"] = "@comment.outer",
                     ["]j"] = "@parameter.inner",
@@ -1064,14 +1144,13 @@ M.setup = function()
                 },
                 goto_next_end = {
                     ["]F"] = "@function.outer",
-                    ["]M"] = "@class.outer",
+                    ["]K"] = "@class.outer",
                     ["]R"] = "@block.outer",
                     ["]A"] = "@call.outer"
                 },
                 goto_previous_start = {
-                    -- ["[["] = "@function.outer",
                     ["[f"] = "@function.outer",
-                    ["[m"] = "@class.outer",
+                    ["[k"] = "@class.outer",
                     ["[r"] = "@block.outer",
                     ["[C"] = "@comment.outer",
                     ["[j"] = "@parameter.inner",
@@ -1082,8 +1161,14 @@ M.setup = function()
                 goto_previous_end = {
                     ["[F"] = "@function.outer",
                     ["[R"] = "@block.outer",
-                    ["[M"] = "@class.outer",
+                    ["[K"] = "@class.outer",
                     ["[A"] = "@call.outer"
+                },
+                goto_next = {
+                    ["]X"] = "@return.inner"
+                },
+                goto_previous = {
+                    ["[X"] = "@return.inner"
                 }
             },
             swap = {
@@ -1258,11 +1343,11 @@ local function init()
     configs.setup(conf)
 
     -- M.setup_comment_frame()
-    -- M.setup_context()
     -- M.setup_query_secretary()
 
+    M.setup_ssr()
+    M.setup_context()
     M.setup_gps()
-    -- M.setup_ssr()
     M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()
@@ -1321,10 +1406,10 @@ local function init()
             ["ic"] = "Inner call",
             ["ao"] = "Around block",
             ["io"] = "Inner block",
-            ["ad"] = "Around comment",
-            ["id"] = "Inner comment",
-            ["ag"] = "Around conditional",
-            ["ig"] = "Inner conditional",
+            ["ag"] = "Around comment",
+            ["ig"] = "Inner comment",
+            ["ad"] = "Around conditional",
+            ["id"] = "Inner conditional",
             ["aj"] = "Around parameter",
             ["ij"] = "Inner parameter",
             ["al"] = "Around loop",
@@ -1335,6 +1420,8 @@ local function init()
             ["if"] = "Inner function",
             ["ak"] = "Around class",
             ["ik"] = "Inner class",
+            ["ax"] = "Assignment RHS",
+            ["ix"] = "Assignment LHS",
             ["ai"] = "Indentation level and line above",
             ["ii"] = "Inner Indentation level (no line above)",
             ["aI"] = "Indention level and lines above/below",
@@ -1354,29 +1441,31 @@ local function init()
             ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",
             ["]f"] = "Next function start",
-            ["]m"] = "Next class start",
-            ["]r"] = "Next block start",
-            ["]C"] = "Next comment start",
-            ["]j"] = "Next parameter start",
-            ["]a"] = "Next call start",
-            ["]l"] = "Next loop start",
-            ["]d"] = "Next conditional start",
-            ["]F"] = "Next function end",
-            ["]M"] = "Next class end",
-            ["]R"] = "Next block end",
-            ["]A"] = "Next call end",
             ["[f"] = "Previous function start",
-            ["[m"] = "Previous class start",
-            ["[r"] = "Previous block start",
-            ["[d"] = "Previous conditional start",
-            ["[j"] = "Previous parameter start",
-            ["[a"] = "Previous call start",
-            ["[l"] = "Previous loop start",
-            ["[C"] = "Previous comment start",
+            ["]F"] = "Next function end",
             ["[F"] = "Previous function end",
+            ["]k"] = "Next class start",
+            ["[k"] = "Previous class start",
+            ["]r"] = "Next block start",
+            ["[r"] = "Previous block start",
+            ["]R"] = "Next block end",
             ["[R"] = "Previous block end",
-            ["[M"] = "Previous class end",
-            ["[A"] = "Previous call end"
+            ["]C"] = "Next comment start",
+            ["[C"] = "Previous comment start",
+            ["]j"] = "Next parameter start",
+            ["[j"] = "Previous parameter start",
+            ["]a"] = "Next call start",
+            ["[a"] = "Previous call start",
+            ["]l"] = "Next loop start",
+            ["[l"] = "Previous loop start",
+            ["]d"] = "Next conditional start",
+            ["[d"] = "Previous conditional start",
+            ["]K"] = "Next class end",
+            ["[K"] = "Previous class end",
+            ["]A"] = "Next call end",
+            ["[A"] = "Previous call end",
+            ["]X"] = "Next return",
+            ["[X"] = "Previous return",
         },
         {mode = "n"}
     )
@@ -1388,7 +1477,12 @@ local function init()
     -- map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
     -- hl.set("TSNodeUnmatched", {fg = "#666666"})
 
-    map("n", "<Leader>sh", "TSHighlightCapturesUnderCursor", {cmd = true, desc = "Highlight capture group"})
+    map(
+        "n",
+        "<Leader>sh",
+        "TSHighlightCapturesUnderCursor",
+        {cmd = true, desc = "Highlight capture group"}
+    )
 
     queries = require("nvim-treesitter.query")
     -- local cfhl = conf.highlight.disable

@@ -4,12 +4,6 @@ FIX: Telescope opens file in insert mode
 FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
 
 FIX: Folds close automatically if every fold in file is closed then opened
-FIX: Plugins cannot be disabled with `disable = true`
-
-FIX: All crash with SEGV
-     .config/newsboat/urls
-     .config/afew/config
-     .local/share/mail/.notmuch/hooks/post-new
 
 TODO: Add keybinding to go to top of current function you're inside of
 TODO: Highlight dates paint

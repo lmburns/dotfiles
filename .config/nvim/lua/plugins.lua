@@ -114,11 +114,16 @@ local handlers = {
             plugin.config = ([[require('plugs.config').%s()]]):format(value)
         end
     end,
-    disablep = function(_, plugin, _)
-        plugin.disable = require("common.control")[plugin.short_name]
+    disablep = function(_, plugin, _value)
+        -- Do not override plugins that have been disabled with the `disable` key
+        if plugin.disable == nil then
+            plugin.disable = require("common.control")[plugin.short_name]
+        end
     end,
     deb = function(_, plugin, _)
-        p(plugin)
+        if plugin.disable == true then
+            p(plugin)
+        end
     end,
     patch = function(_plugins, plugin, value)
         -- local run_hook = plugin_utils.post_update_hook
@@ -166,15 +171,15 @@ local handlers = {
     end
 }
 
-packer.set_handler("deb", handlers.deb)
-
 ---Specify a configuration in `common.config` or its own file
 packer.set_handler("conf", handlers.conf)
 
--- FIX: This doesn't work anymore
 ---Specify the disable marker for each plugin
 ---Can be disabled easier in the `control.lua` file
 packer.set_handler(1, handlers.disablep)
+
+-- packer.set_handler("deb", handlers.deb)
+packer.set_handler(1, handlers.deb)
 
 ---Apply a patch to the given plugin
 packer.set_handler("patch", handlers.patch)
@@ -198,7 +203,6 @@ end
 -- smjonas/live-command.nvim
 -- smjonas/inc-rename.nvim
 -- gorbit99/codewindow.nvim
--- cshuaimin/ssr.nvim
 
 return packer.startup(
     {
@@ -869,15 +873,15 @@ return packer.startup(
             use(
                 {
                     "monaqa/dial.nvim",
-                    conf = "plugs.dial",
-                    keys = {
-                        {"n", "+"},
-                        {"n", "_"},
-                        {"v", "+"},
-                        {"v", "_"},
-                        {"v", "g+"},
-                        {"v", "g_"}
-                    }
+                    conf = "plugs.dial"
+                    -- keys = {
+                    --     {"n", "+"},
+                    --     {"n", "_"},
+                    --     {"v", "+"},
+                    --     {"v", "_"},
+                    --     {"v", "g+"},
+                    --     {"v", "g_"}
+                    -- }
                 }
             )
             -- ]]] === Operator ===
@@ -1179,7 +1183,7 @@ return packer.startup(
                     after = "nvim-treesitter"
                 }
             )
-            -- use({"cshuaimin/ssr.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter" })
+            use({"cshuaimin/ssr.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter" })
             use(
                 {
                     -- conf = "plugs.treesitter"
@@ -1211,13 +1215,13 @@ return packer.startup(
                             after = "nvim-treesitter"
                         },
                         {
-                            "JoosepAlviste/nvim-ts-context-commentstring",
-                            desc = "Embedded language comment strings",
+                            "michaeljsmith/vim-indent-object",
+                            desc = "ai ii aI iI text objects",
                             after = "nvim-treesitter"
                         },
                         {
-                            "michaeljsmith/vim-indent-object",
-                            desc = "ai ii aI iI text objects",
+                            "nvim-treesitter/nvim-treesitter-context",
+                            desc = "Ability to see current context on top line",
                             after = "nvim-treesitter"
                         },
                         {
@@ -1226,12 +1230,18 @@ return packer.startup(
                             after = "nvim-treesitter"
                         },
                         {
+                            "JoosepAlviste/nvim-ts-context-commentstring",
+                            desc = "Embedded language comment strings",
+                            after = "nvim-treesitter"
+                        },
+                        {
                             "David-Kunz/treesitter-unit",
                             desc = "Adds unit text object",
                             after = "nvim-treesitter"
                         },
                         {
-                            "m-demare/hlargs.nvim",
+                            -- "m-demare/hlargs.nvim",
+                            "lmburns/hlargs.nvim",
                             desc = "Highlight argument definitions",
                             after = "nvim-treesitter"
                         },

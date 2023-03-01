@@ -55,7 +55,7 @@ function M.setup()
         bookmark_9 = {sign = "", virt_text = " Bookmark 9 "},
         bookmark_10 = {sign = "󰫢", virt_text = "󰫢 Bookmark 10 󰫢"},
         mappings = {
-            annotate = "m'"
+            annotate = "m?"
         }
     }
 end
@@ -93,7 +93,7 @@ local function init()
             ["m/"] = {"<Plug>(Marks-preview)", "Marks: show preview"},
             ["m}"] = "Marks: go to next bookmark",
             ["m{"] = "Marks: go to prev bookmark",
-            ["m'"] = "Marks: annotate bookmark",
+            ["m?"] = "Marks: annotate bookmark",
             ["m0"] = "Marks: set bookmark0",
             ["m1"] = "Marks: set bookmark1",
             ["m2"] = "Marks: set bookmark2",

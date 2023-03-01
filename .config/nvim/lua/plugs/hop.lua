@@ -18,7 +18,7 @@ local jump_target = require("hop.jump_target")
 function M.setup()
     -- "etovxqpdygfblzhckisuran"
     -- "asdfjklhmnwertzxcvbuio"
-    hop.setup({keys = "abcdefghijklmnopqrstuvwxyz"})
+    hop.setup({keys = "abcdefghijklmnopqrstuvwxyz;',."})
 end
 
 local function wrap_targets(targets)
@@ -51,8 +51,7 @@ local treesitter_queries = function(query, inners, outers, queryfile)
         outers = true
     end
 
-    ---@diagnostic disable-next-line:unused-local
-    return function(hint_opts)
+    return function(_hint_opts)
         local context = window.get_window_context()
         local queries = require("nvim-treesitter.query")
         local tsutils = require("nvim-treesitter.utils")
@@ -125,9 +124,6 @@ local function init()
     map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Next brace", luacmd = true})
 
     -- ========================== f-Mapping ==========================
-
-    -- f => |word here  :  Press 'fe'  =>  word h|re
-    -- t => |word here  :  Press 'te'  =>  word |ere
 
     -- Normal
     map(
@@ -233,7 +229,7 @@ local function init()
         "o",
         "t",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
                     direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
@@ -249,7 +245,7 @@ local function init()
         "o",
         "T",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
                     direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true,
@@ -265,7 +261,7 @@ local function init()
         "x",
         "t",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
                     direction = hint_direction.AFTER_CURSOR,
                     current_line_only = true,
@@ -281,7 +277,7 @@ local function init()
         "x",
         "T",
         function()
-            require("hop").hint_char1(
+            hop.hint_char1(
                 {
                     direction = hint_direction.BEFORE_CURSOR,
                     current_line_only = true,

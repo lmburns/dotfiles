@@ -57,6 +57,10 @@
   "tree.key.activeFilter": "zf",
   "tree.key.close": "qq",
   "tree.key.toggle": "t",
+  "tree.key.toggleSelection": "T",
+  "tree.key.actions": "<Tab>",
+  "tree.key.invoke": "<CR>",
+  "tree.key.collapseAll": "zM",
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
 

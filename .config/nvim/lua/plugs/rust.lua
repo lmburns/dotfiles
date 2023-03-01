@@ -3,7 +3,6 @@ local M = {}
 local D = require("dev")
 local utils = require("common.utils")
 local augroup = utils.augroup
-local map = utils.map
 
 local style = require("style")
 local coc = require("plugs.coc")

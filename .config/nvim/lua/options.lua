@@ -178,7 +178,7 @@ o.incsearch = true -- incremental search highlight
 o.mouse = "a" -- enable mouse all modes
 o.mousefocus = true
 o.mousemoveevent = true
-o.mousescroll = {"ver:1", "hor:6"}
+o.mousescroll = {"ver:3", "hor:6"}
 
 o.backspace = {"indent", "eol", "start"}
 o.breakindentopt = "sbr" -- shift:2,min:20
@@ -304,7 +304,7 @@ o.diffopt =
         "context:4",
         "algorithm:patience",
         "indent-heuristic",
-        "linematch:60"
+        -- "linematch:60"
     }
 
 o.inccommand = "split" -- nosplit

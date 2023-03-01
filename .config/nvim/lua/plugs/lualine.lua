@@ -32,29 +32,6 @@ local conds = stl.conditions
 local plugs = stl.plugins
 local only_pad_right = stl.other.only_pad_right
 
--- map("", "J", function()
---     api.nvim_echo({{vim.inspect(api.nvim_get_mode()), "WarningMsg"}}, true, {})
--- end
--- )
-
----@param trunc_width number trunctates component when screen width is less then trunc_width
----@param trunc_len number truncates component to trunc_len number of chars
----@param hide_width number hides component when window width is smaller then hide_width
----@param no_ellipsis boolean whether to disable adding '' at end after truncation
----return function that can format the component accordingly
----@diagnostic disable-next-line:unused-function, unused-local
-local function trunc(trunc_width, trunc_len, hide_width, no_ellipsis)
-    return function(str)
-        local win_width = fn.winwidth(0)
-        if hide_width and win_width < hide_width then
-            return ""
-        elseif trunc_width and trunc_len and win_width < trunc_width and #str > trunc_len then
-            return str:sub(1, trunc_len) .. (F.tern(no_ellipsis, "", ""))
-        end
-        return str
-    end
-end
-
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
 -- ╘══════════════════════════════════════════════════════════╛
@@ -66,7 +43,10 @@ local sections_1 = {
                 -- if api.nvim_get_mode().mode == "no" then
                 --     return "OP"
                 -- end
-                return ("%s %s"):format((str == "V-LINE" and "VL") or (str == "V-BLOCK" and "VB") or str:sub(1, 1), "")
+                return ("%s %s"):format(
+                    (str == "V-LINE" and "VL") or (str == "V-BLOCK" and "VB") or str:sub(1, 1),
+                    ""
+                )
             end,
             padding = only_pad_right
         }
@@ -109,12 +89,15 @@ local sections_1 = {
                 unnamed = icons.misc.unnamed,
                 shorting_target = 40
             },
-            ---@diagnostic disable:unused-local
-            color = function(section)
+            color = function(_section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                 return {
                     gui = F.tern(vim.bo.modified, "bold", "none"),
-                    fg = F.tern(vim.b.fugitive_fname, colors.orange, "none")
+                    fg = F.tern(
+                        vim.b.fugitive_fname,
+                        colors.orange,
+                        F.tern(vim.bo.readonly, colors.beaver, "none")
+                    )
                 }
             end,
             fmt = function(str)
@@ -199,7 +182,11 @@ local sections_1 = {
             cond = function()
                 return conds.check_git_workspace()
             end,
-            color = F.tern(g.colors_name == "kimbox", {fg = colors.dyellow, gui = "bold"}, {gui = "bold"})
+            color = F.tern(
+                g.colors_name == "kimbox",
+                {fg = colors.dyellow, gui = "bold"},
+                {gui = "bold"}
+            )
         },
         {
             plugs.quickfix_count.fn,
@@ -258,7 +245,11 @@ local sections_2 = {
             "filename",
             file_status = 1,
             path = 1,
-            symbols = {modified = icons.misc.modified, readonly = icons.misc.readonly, unnamed = icons.misc.unnamed}
+            symbols = {
+                modified = icons.misc.modified,
+                readonly = icons.misc.readonly,
+                unnamed = icons.misc.unnamed
+            }
         }
     },
     lualine_c = {},
@@ -371,7 +362,12 @@ end
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     M.autocmds()
-    map("n", "!", ":lua require('plugs.lualine').toggle_mode()<CR>", {silent = true, desc = "Change Lualine"})
+    map(
+        "n",
+        "!",
+        ":lua require('plugs.lualine').toggle_mode()<CR>",
+        {silent = true, desc = "Change Lualine"}
+    )
 
     local my_extension = {
         sections = {
@@ -459,8 +455,7 @@ local function init()
                             readonly = icons.misc.readonly,
                             unnamed = icons.misc.unnamed
                         },
-                        ---@diagnostic disable:unused-local
-                        color = function(section)
+                        color = function(_section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                             return {gui = F.tern(vim.bo.modified, "bold", "none")}
                         end
@@ -475,7 +470,6 @@ local function init()
             inactive_winbar = {},
             tabline = {},
             extensions = {
-                -- "quickfix",
                 stl.extensions.qf,
                 stl.extensions.toggleterm,
                 stl.extensions.trouble,

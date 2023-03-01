@@ -71,7 +71,6 @@ local M = {
     ["diffview.nvim"] = false,
     ["dressing.nvim"] = false,
     edge = false,
-    ["editorconfig-vim"] = false,
     ["eregex.vim"] = false,
     everforest = false,
     ["fsread.nvim"] = false,

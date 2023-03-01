@@ -675,15 +675,18 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
+-- vim.opt.cursorline = false
+--
 -- nvim.autocmd.lmb__CursorLineControl = {
 --     {
 --         event = {"BufWinEnter", "WinEnter", "FocusGained", "CmdlineLeave"},
 --         pattern = "*",
 --         command = function()
 --             local winid = api.nvim_get_current_win()
+--             -- Initial cursorline needs to be set to false
 --             vim.wo[winid].cursorline = not vim.wo[winid].cursorline
 --         end,
---         desc = "Control cursorline when re-focusing"
+--         desc = "Control cursorline when (re|)focusing"
 --     },
 --     {
 --         event = {"WinLeave", "FocusLost", "CmdlineEnter"},
@@ -712,7 +715,6 @@ if env.TMUX ~= nil and env.NORENAME == nil then
                 local bufnr = args.buf
 
                 if vim.bo[bufnr].bt == "" then
-                    -- o.titlestring = fn.expand("%:t")
                     o.titlestring = funcs.title_string()
                 elseif vim.bo[bufnr].bt == "terminal" then
                     if vim.bo[bufnr].ft == "toggleterm" then
@@ -765,23 +767,23 @@ do
 end
 
 -- === Custom file type settings === [[[
-nvim.autocmd.lmb__CustomFileType = {
-    {
-        event = "BufWritePre",
-        pattern = {"*.odt", "*.rtf"},
-        command = [[silent set ro]]
-    },
-    {
-        event = "BufWritePre",
-        pattern = "*.odt",
-        command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
-    },
-    {
-        event = "BufWritePre",
-        pattern = "*.rt",
-        command = [[silent %!unrtf --text]]
-    }
-}
+-- nvim.autocmd.lmb__CustomFileType = {
+--     {
+--         event = "BufWritePre",
+--         pattern = {"*.odt", "*.rtf"},
+--         command = [[silent set ro]]
+--     },
+--     {
+--         event = "BufWritePre",
+--         pattern = "*.odt",
+--         command = [[%!pandoc --columns=78 -f odt -t markdown "%"]]
+--     },
+--     {
+--         event = "BufWritePre",
+--         pattern = "*.rt",
+--         command = [[silent %!unrtf --text]]
+--     }
+-- }
 
 a.async_void(
     vim.schedule_wrap(
@@ -834,7 +836,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
         event = "FileChangedShellPost",
         pattern = "*",
         command = function()
-            nvim.p("File changed on disk. Buffer reloaded!", "WarningMsg")
+            nvim.p.WarningMsg("File changed on disk. Buffer reloaded!")
         end,
         desc = "Display a message if the buffer is changed outside of instance"
     }

@@ -7,9 +7,9 @@ update:
   days: 14
   method: 'prompt'
 
-os:
-  editCommand: "nvr -d"
-  openCommand: 'nvim {{filename}}'
+# os:
+#   editCommand: "nvr -d"
+#   openCommand: 'nvim {{filename}}'
 
 gui:
   showIcons: true # Show nerdfont icons
@@ -60,10 +60,6 @@ git:
     args: ''
   skipHookPrefix: 'WIP'
   branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium --oneline {{branchName}} --"
-
-update:
-  method: prompt # can be: prompt | background | never
-  days: 14 # how often a update is checked for
 
 keybinding:
   universal:

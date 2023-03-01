@@ -1,5 +1,6 @@
 local M = {}
 
+local D = require("dev")
 local utils = require("common.utils")
 local augroup = utils.augroup
 
@@ -20,7 +21,20 @@ function M.setup()
     g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
     -- g.gutentags_file_list_command = "rg --files --hidden"
-    g.gutentags_file_list_command = "fd --hidden --strip-cwd-prefix --type f -E .git"
+    g.gutentags_file_list_command =
+        D.list(
+        {
+            "--color=never",
+            "--strip-cwd-prefix",
+            "--type f",
+            "--hidden",
+            "--follow",
+            "--exclude .git",
+            "--exclude target",
+            "--exclude node_modules"
+        },
+        " "
+    )
 
     -- g.gutentags_file_list_command = {
     --     markers = {
@@ -35,7 +49,13 @@ function M.setup()
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
 
-    g.gutentags_ctags_extra_args = {"--fields=+niazS", "--extras=+q", "--c++-kinds=+px", "--c-kinds=+px"}
+    g.gutentags_ctags_extra_args = {
+        "--fields=+niazS",
+        "--extras=+q",
+        "--c++-kinds=+px",
+        "--c-kinds=+px",
+        "--rust-kinds=fPM"
+    }
 
     -- --tag-relative=yes
     -- g.gutentags_ctags_extra_args = {
@@ -135,11 +155,13 @@ function M.setup()
 end
 
 function M.setup_ctags()
-    g.gutentags_ctags_extra_args = vim.list_extend(g.gutentags_ctags_extra_args, {"/usr/include", "/usr/local/include"})
+    g.gutentags_ctags_extra_args =
+        vim.list_extend(g.gutentags_ctags_extra_args, {"/usr/include", "/usr/local/include"})
 end
 
 function M.setup_cpptags()
-    g.gutentags_ctags_extra_args = vim.list_extend(g.gutentags_ctags_extra_args, {"/home/lucas/.config/tags/cpp_src"})
+    g.gutentags_ctags_extra_args =
+        vim.list_extend(g.gutentags_ctags_extra_args, {"/home/lucas/.config/tags/cpp_src"})
 end
 
 function M.setup_rubytags()

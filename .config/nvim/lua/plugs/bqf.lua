@@ -148,9 +148,11 @@ function M.setup()
                         ["enter"] = "drop",
                         ["ctrl-s"] = "split",
                         ["ctrl-t"] = "tab drop",
-                        ["ctrl-x"] = ""
+                        ["ctrl-x"] = "",
+                        ["ctrl-q"] = "signtoggle",
+                        ["ctrl-c"] = "closeall"
                     },
-                    extra_opts = {"--delimiter", "│"}
+                    extra_opts = {"--delimiter", "│", "--bind", "alt-a:toggle-all"}
                 }
             }
         }

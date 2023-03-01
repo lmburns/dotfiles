@@ -87,7 +87,10 @@ local function mappings(bufnr)
     wk.register(
         {
             ["<Leader>hp"] = {"<Cmd>Gitsigns preview_hunk<CR>", "Preview hunk (git)"},
-            ["<Leader>hi"] = {"<Cmd>Gitsigns preview_hunk_inline<CR>", "Preview hunk inline (git)"},
+            ["<Leader>hi"] = {
+                "<Cmd>Gitsigns preview_hunk_inline<CR>",
+                "Preview hunk inline (git)"
+            },
             ["<Leader>hs"] = {"<Cmd>Gitsigns stage_hunk<CR>", "Stage hunk (git)"},
             ["<Leader>hS"] = {"<Cmd>Gitsigns stage_buffer<CR>", "Stage buffer (git)"},
             ["<Leader>hu"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
@@ -121,7 +124,10 @@ local function mappings(bufnr)
                 "<Cmd>lua require('plugs.gitsigns').toggle_numhl()<CR>",
                 "Toggle number highlight (git)"
             },
-            ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"}
+            ["<Leader>hb"] = {
+                D.ithunk(gs.blame_line, {full = true}),
+                "Blame line virt (git)"
+            }
         },
         {buffer = bufnr}
     )
@@ -135,7 +141,7 @@ local function mappings(bufnr)
         "x",
         "<Leader>hs",
         function()
-            gs.stage_hunk {fn.line("."), fn.line("v")}
+            gs.stage_hunk({fn.line("."), fn.line("v")})
         end,
         {buffer = bufnr, desc = "Stage hunk (g)"}
     )
@@ -144,7 +150,7 @@ local function mappings(bufnr)
         "x",
         "<Leader>hr",
         function()
-            gs.reset_hunk {fn.line("."), fn.line("v")}
+            gs.reset_hunk({fn.line("."), fn.line("v")})
         end,
         {buffer = bufnr, desc = "Reset hunk (git)"}
     )
@@ -178,7 +184,7 @@ function M.setup()
         {
             -- Enables debug logging and makes the following functions
             -- available: `dump_cache`, `debug_messages`, `clear_debug`.
-            debug_mode = false,
+            debug_mode = true,
             -- More verbose debug message. Requires debug_mode=true.
             _verbose = false,
             -- Use extmarks for placing signs
@@ -255,11 +261,12 @@ function M.setup()
                     gitdir = env.DOTBARE_DIR
                 }
             },
-            -- on_attach_pre = function(bufnr, cb)
+            -- _on_attach_pre = function(bufnr, cb)
             --     cb {
             --         toplevel = env.DOTBARE_TREE,
             --         gitdir = env.DOTBARE_DIR
             --     }
+            --     -- gs.debug_messages()
             -- end,
             watch_gitdir = {
                 enable = true,
@@ -277,23 +284,23 @@ function M.setup()
             linehl = false,
             word_diff = false,
             show_deleted = false,
-            diff_opts = {
-                -- Diff algorithm to use. Values:
-                -- • "myers"      the default algorithm
-                -- • "minimal"    spend extra time to generate the smallest possible diff
-                -- • "patience"   patience diff algorithm
-                -- • "histogram"  histogram diff algorithm
-                algorithm = "patience",
-                -- Use Neovim's built in xdiff library for running diffs
-                internal = true,
-                -- Use the indent heuristic for the internal diff library.
-                indent_heuristic = true,
-                -- Start diff mode with vertical splits.
-                vertical = true,
-                -- Enable second-stage diff on hunks to align lines.
-                -- Requires `internal=true`.
-                linematch = 60
-            },
+            -- diff_opts = {
+            --     -- Diff algorithm to use. Values:
+            --     -- • "myers"      the default algorithm
+            --     -- • "minimal"    spend extra time to generate the smallest possible diff
+            --     -- • "patience"   patience diff algorithm
+            --     -- • "histogram"  histogram diff algorithm
+            --     algorithm = "patience",
+            --     -- Use Neovim's built in xdiff library for running diffs
+            --     internal = true,
+            --     -- Use the indent heuristic for the internal diff library.
+            --     indent_heuristic = true,
+            --     -- Start diff mode with vertical splits.
+            --     vertical = true,
+            --     -- Enable second-stage diff on hunks to align lines.
+            --     -- Requires `internal=true`.
+            --     linematch = false
+            -- },
             current_line_blame = false,
             current_line_blame_opts = {
                 virt_text = true,
@@ -338,6 +345,16 @@ function M.setup()
             yadm = {enable = false}
         }
     )
+
+    -- gs.setup({
+    --     debug_mode = true, -- You must add this to enable debug messages
+    --     worktrees = {
+    --         {
+    --             toplevel = vim.env.DOTBARE_TREE,
+    --             gitdir = vim.env.DOTBARE_DIR,
+    --         },
+    --     },
+    -- })
     config = require("gitsigns.config").config
 end
 

@@ -149,7 +149,7 @@ function M.setup()
                 ["ctrl-alt-d"] = "page-down",
                 ["alt-["] = "beginning-of-line",
                 ["alt-]"] = "end-of-line",
-                ["ctrl-y"] = "execute-silent(echo {} | xsel --trim -b)",
+                ["ctrl-y"] = "execute-silent(xsel --trim -b <<< {+})",
                 ["alt-,"] = "first",
                 ["alt-."] = "last",
                 ["change"] = "first",
@@ -282,7 +282,7 @@ function M.setup()
             -- previewer      = "bat",          -- uncomment to override previewer
             -- (name from 'previewers' table)
             -- set to 'false' to disable
-            prompt = "Files❯ ",
+            prompt = "Files❱ ",
             multiprocess = true, -- run command in a separate process
             git_icons = true, -- show git icons?
             file_icons = true, -- show file icons?
@@ -294,7 +294,18 @@ function M.setup()
             -- cmd            = "find . -type f -printf '%P\n'",
             find_opts = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
             rg_opts = "--color=never --files --hidden --follow -g '!.git'",
-            fd_opts = "--color=never --type f --hidden --follow --exclude .git",
+            fd_opts = D.list(
+                {
+                    "--color=never",
+                    "--type f",
+                    "--hidden",
+                    "--follow",
+                    "--exclude .git",
+                    "--exclude target",
+                    "--exclude node_modules"
+                },
+                " "
+            ),
             actions = {
                 -- inherits from 'actions.files', here we can override
                 -- or set bind to 'false' to disable a default action
@@ -309,7 +320,7 @@ function M.setup()
         git = {
             -- === Git Files
             files = {
-                prompt = "GitFiles❯ ",
+                prompt = "GitFiles❱ ",
                 cmd = "git ls-files --exclude-standard",
                 multiprocess = true, -- run command in a separate process
                 git_icons = true, -- show git icons?
@@ -321,7 +332,7 @@ function M.setup()
             },
             -- === Git Status
             status = {
-                prompt = "GitStatus❯ ",
+                prompt = "GitStatus❱ ",
                 cmd = "git status -su",
                 previewer = "git_diff",
                 file_icons = true,
@@ -335,14 +346,14 @@ function M.setup()
             },
             -- === Git Commits
             commits = {
-                prompt = "Commits❯ ",
+                prompt = "Commits❱ ",
                 cmd = "git log --pretty=oneline --abbrev-commit --color",
                 preview = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
                 actions = {["default"] = actions.git_checkout}
             },
             -- === Git Bcommits
             bcommits = {
-                prompt = "BCommits❯ ",
+                prompt = "BCommits❱ ",
                 cmd = "git log --pretty=oneline --abbrev-commit --color",
                 preview = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
                 actions = {
@@ -354,13 +365,13 @@ function M.setup()
             },
             -- === Git Branches
             branches = {
-                prompt = "Branches❯ ",
+                prompt = "Branches❱ ",
                 cmd = "git branch --all --color",
                 preview = "git log --graph --pretty=oneline --abbrev-commit --color {1}",
                 actions = {["default"] = actions.git_switch}
             },
             stash = {
-                prompt = "Stash> ",
+                prompt = "Stash❱ ",
                 cmd = "git --no-pager stash list",
                 preview = "git --no-pager stash show --patch --color {1}",
                 actions = {
@@ -387,8 +398,8 @@ function M.setup()
         },
         -- === Grep
         grep = {
-            prompt = "Rg❯ ",
-            input_prompt = "Grep For❯ ",
+            prompt = "Rg❱ ",
+            input_prompt = "Grep For❱ ",
             multiprocess = true, -- run command in a separate process
             git_icons = true, -- show git icons?
             file_icons = true, -- show file icons?
@@ -397,7 +408,16 @@ function M.setup()
             -- otherwise auto-detect prioritizes `rg` over `grep`
             -- default options are controlled by 'rg|grep_opts'
             -- cmd            = "rg --vimgrep",
-            grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp",
+            grep_opts = D.list(
+                {
+                    "--binary-files=without-match",
+                    "--line-number",
+                    "--recursive",
+                    "--color=auto",
+                    "--perl-regexp"
+                },
+                " "
+            ),
             rg_opts = D.list(
                 {
                     "--column",
@@ -435,14 +455,14 @@ function M.setup()
         },
         -- === Args
         args = {
-            prompt = "Args❯ ",
+            prompt = "Args❱ ",
             files_only = true,
             -- actions inherit from 'actions.files' and merge
             actions = {["ctrl-x"] = {actions.arg_del, actions.resume}}
         },
         -- === Oldfiles
         oldfiles = {
-            prompt = "History❯ ",
+            prompt = "History❱ ",
             cwd_only = false,
             stat_file = true, -- verify files exist on disk
             include_current_session = false, -- include bufs from current session
@@ -450,7 +470,7 @@ function M.setup()
         },
         -- === Buffers
         buffers = {
-            prompt = "Buffers❯ ",
+            prompt = "Buffers❱ ",
             file_icons = true, -- show file icons?
             color_icons = true, -- colorize file|git icons
             sort_lastused = true, -- sort buffers() by last used
@@ -465,7 +485,7 @@ function M.setup()
         },
         -- === Tabs
         tabs = {
-            prompt = "Tabs❯ ",
+            prompt = "Tabs❱ ",
             tab_title = "Tab",
             tab_marker = "<<",
             file_icons = true, -- show file icons?
@@ -483,8 +503,8 @@ function M.setup()
         },
         -- === Lines
         lines = {
+            prompt = "Lines❱ ",
             previewer = "builtin", -- set to 'false' to disable
-            prompt = "Lines❯ ",
             show_unlisted = false, -- exclude 'help' buffers
             no_term_buffers = true, -- exclude 'term' buffers
             fzf_opts = {
@@ -503,8 +523,8 @@ function M.setup()
         },
         -- === Blines
         blines = {
+            prompt = "BLines❱ ",
             previewer = "builtin", -- set to 'false' to disable
-            prompt = "BLines❯ ",
             show_unlisted = true, -- include 'help' buffers
             no_term_buffers = false, -- include 'term' buffers
             fzf_opts = {
@@ -517,7 +537,7 @@ function M.setup()
         },
         -- === Tags
         tags = {
-            prompt = "Tags❯ ",
+            prompt = "Tags❱ ",
             ctags_file = "tags",
             multiprocess = true,
             file_icons = true,
@@ -536,7 +556,7 @@ function M.setup()
         },
         -- === BTags
         btags = {
-            prompt = "BTags❯ ",
+            prompt = "BTags❱ ",
             ctags_file = "tags",
             multiprocess = true,
             file_icons = true,
@@ -553,7 +573,7 @@ function M.setup()
         },
         -- === Colorschems
         colorschemes = {
-            prompt = "Colorschemes❯ ",
+            prompt = "Colorschemes❱ ",
             live_preview = true, -- apply the colorscheme on preview?
             actions = {["default"] = actions.colorscheme},
             winopts = {height = 0.55, width = 0.30},
@@ -567,7 +587,7 @@ function M.setup()
         quickfix = {file_icons = true, git_icons = true},
         -- === LSP
         lsp = {
-            prompt_postfix = "❯ ", -- will be appended to the LSP label
+            prompt_postfix = "❱ ", -- will be appended to the LSP label
             -- to override use 'prompt' instead
             cwd_only = false, -- LSP/diagnostics for cwd only?
             async_or_timeout = 5000, -- timeout(ms) or 'true' for async calls
@@ -766,7 +786,10 @@ function init()
             ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
             ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
             ["<Leader>t;"] = {":lua require('fzf-lua').tabs()<CR>", "Tab list (fzf-lua)"},
-            ["<LocalLeader>e"] = {":lua require('plugs.fzf-lua').cst_grep()<CR>", "Live grep (fzf-lua)"},
+            ["<LocalLeader>e"] = {
+                ":lua require('plugs.fzf-lua').cst_grep()<CR>",
+                "Live grep (fzf-lua)"
+            },
             ["<Leader>hh"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
             ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
             -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},

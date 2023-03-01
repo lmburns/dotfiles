@@ -11,7 +11,7 @@
 --console-title
 --prefer-free-formats
 # speed things up a bit
-# --external-downloader aria2c
+# --downloader aria2c
 --audio-quality 0
 --xattrs
 # --merge-output-format mkv

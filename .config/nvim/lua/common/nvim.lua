@@ -218,27 +218,34 @@ nvim.p =
         __index = function(super, group)
             group = utils.get_default(rawget(super, group), group)
 
+            -- This provides something cool that allows one to do something like:
+            -- `nvim.p.MoreMsg('this is colored with MoreMsg')`
             return setmetatable(
                 {},
                 {
                     ---@param msg string message to echo
-                    ---@param history boolean? add message to history
-                    ---@param wait number? amount of time to wait
+                    ---@param history? boolean add message to history
+                    ---@param wait? number amount of time to wait
                     __call = function(_, msg, history, wait)
-                        utils.cecho(msg, group, history, wait)
+                        -- utils.cecho(msg, group, history, wait)
+                        super(msg, group, history, wait)
                     end
                 }
             )
         end,
+        ---
+        ---@param ... any
         __call = function(_, ...)
             utils.cecho(...)
         end
     }
 )
 
+_G.pc = nvim.p
+
 ---Equivalent to `api.nvim_echo`. Allows multiple commands
 ---@param chunks { [string]: string }[]
----@param history boolean
+---@param history? boolean
 nvim.echo = function(chunks, history)
     vim.validate(
         {

@@ -96,7 +96,10 @@ function M.format_doc(save)
                         "",
                         function(e, res)
                             -- Now, result has to be checked as false here
-                            if e ~= vim.NIL or _t(prefer_neoformat):contains(vim.bo[bufnr].ft) or res == false then
+                            if
+                                e ~= vim.NIL or _t(prefer_neoformat):contains(vim.bo[bufnr].ft) or
+                                    res == false
+                             then
                                 api.nvim_buf_call(
                                     bufnr,
                                     function()
@@ -226,6 +229,7 @@ local function init()
     g.neoformat_basic_format_trim = 1
     g.neoformat_basic_format_align = 1
 
+    g.neoformat_enabled_lua = {"luafmtext"}
     g.neoformat_enabled_python = {"black"}
     g.neoformat_enabled_zsh = {"expand"}
     g.neoformat_enabled_java = {"prettier"}
@@ -242,7 +246,14 @@ local function init()
     g.neoformat_enabled_ruby = {"rubocop"}
     g.neoformat_ruby_rubocop = {
         exe = "rubocop",
-        args = {"--auto-correct", "--stdin", '"%:p"', "2>/dev/null", "|", 'sed "1,/^====================$/d"'},
+        args = {
+            "--auto-correct",
+            "--stdin",
+            '"%:p"',
+            "2>/dev/null",
+            "|",
+            'sed "1,/^====================$/d"'
+        },
         stdin = 1,
         stderr = 1
     }
