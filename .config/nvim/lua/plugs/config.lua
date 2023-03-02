@@ -1656,7 +1656,7 @@ function M.urlview()
             -- Ensure links shown in the picker are sorted alphabetically
             sorted = true,
             -- Minimum log level (recommended at least `vim.log.levels.WARN` for error detection warnings)
-            log_level_min = vim.log.levels.INFO,
+            log_level_min = log.levels.INFO,
             -- Keymaps for jumping to previous / next URL in buffer
             jump = {
                 prev = "[u",
@@ -2010,7 +2010,6 @@ function M.git_conflict()
                     function()
                         log.warn(
                             ("Conflict detected in %s"):format(fs.basename(bufname)),
-                            true,
                             {title = "GitConflict"}
                         )
                     end,

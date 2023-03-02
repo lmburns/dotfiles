@@ -46,7 +46,7 @@ M.prequire = function(name, cb)
         end
         return ret
     else
-        M.notify(("Invalid module %s"):format(name), log.levels.WARN)
+        log.warn(("Invalid module %s"):format(name))
         -- Return a dummy item that returns functions, so we can do things like
         -- prequire("module").setup()
         local dummy = {}
@@ -474,14 +474,14 @@ M.del_keymap = function(modes, lhs, opts)
         for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_del_keymap, mode, lhs)
             if not ok and opts.notify then
-                log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
+                log.warn(("%s is not mapped"):format(lhs), {title = "Delete Keymap"})
             end
         end
     else
         for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_buf_del_keymap, bufnr, mode, lhs)
             if not ok and opts.notify then
-                log.warn(("%s is not mapped"):format(lhs), true, {title = "Delete Keymap"})
+                log.warn(("%s is not mapped"):format(lhs), {title = "Delete Keymap"})
             end
         end
     end
@@ -724,7 +724,7 @@ end
 M.messages = function(count, str)
     -- local messages = api.nvim_exec("messages", true)
     local messages = fn.execute("messages")
-    local lines = messages:split()
+    local lines = messages:split("\n")
     lines =
         D.filter(
         lines,
@@ -793,21 +793,28 @@ M.get_visual_selection = function()
     return table.concat(lines, "\n")
 end
 
+---@alias RenderType
+---| "'default'"
+---| "'minimal'"
+---| "'simple'"
+---| "'compact'"
+
 ---@class NotifyOpts
 ---@field icon? string Icon to add to notification
----@field title? string Title to add
+---@field title? string|string[][2] Title to add
 ---@field timeout? string|boolean Time to show notification. (`false` = disable)
 ---@field message? string Notification message
 ---@field level? LogLevels Notification level
 ---@field once? boolean Only send notification one time
----@field hl? string Highlight group
 ---@field on_open? fun(winnr: number): nil Callback for when window opens
 ---@field on_close? fun(winnr: number): nil Callback for when window closes
 ---@field keep? fun(): boolean Keep window open after timeout
----@field render? fun(): nil Render a notification buffer
+---@field render? RenderType|fun(): nil Render a notification buffer
 ---@field replace? integer|notify.Record Notification record or record `id` field
 ---@field hide_from_history? boolean Hide this notification from history
 ---@field animate? boolean If false, window will jump to the timed stage
+---@field print? boolean [Custom]: Print message instead of notify
+---@field hl? string [Custom]: Highlight group
 
 do
     local notifications = {}
@@ -825,7 +832,7 @@ do
         local _opts =
             ({
             [log.levels.TRACE] = {timeout = 500},
-            [log.levels.DEBUG] = {timeout = 500},
+            [log.levels.DEBUG] = {timeout = 1000},
             [log.levels.INFO] = {timeout = 1000},
             [log.levels.WARN] = {timeout = 3000},
             [log.levels.ERROR] = {timeout = 5000, keep = keep}

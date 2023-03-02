@@ -319,7 +319,7 @@ command(
 ---Generic open function used with other functions
 function M.open(path)
     fn.jobstart({"handlr", "open", path}, {detach = true})
-    vim.notify(("Opening %s"):format(path), log.levels.WARN)
+    log.warn(("Opening %s"):format(path))
 end
 
 ---Open a directory or a link

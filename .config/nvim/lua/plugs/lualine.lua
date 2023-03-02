@@ -11,6 +11,7 @@ end
 local colors = require("kimbox.colors")
 local style = require("style")
 local icons = style.icons
+local llicons = style.plugins.lualine
 
 -- local overseer = require("overseer")
 
@@ -45,7 +46,7 @@ local sections_1 = {
                 -- end
                 return ("%s %s"):format(
                     (str == "V-LINE" and "VL") or (str == "V-BLOCK" and "VB") or str:sub(1, 1),
-                    ""
+                    plugs.sep()
                 )
             end,
             padding = only_pad_right
@@ -375,7 +376,7 @@ local function init()
                 {
                     "mode",
                     fmt = function(str)
-                        return ("%s %s"):format(str, "")
+                        return ("%s %s"):format(str, plugs.sep())
                     end,
                     padding = only_pad_right
                 }
@@ -416,8 +417,8 @@ local function init()
                 theme = "auto",
                 globalstatus = true,
                 always_divide_middle = true,
-                section_separators = {left = "", right = ""},
-                component_separators = {left = "", right = ""},
+                section_separators = {left = llicons.sep.tri_left, right = llicons.sep.tri_right},
+                component_separators = {left = llicons.sep.slant, right = llicons.sep.slant},
                 ignore_focus = {},
                 refresh = {
                     statusline = 1000,

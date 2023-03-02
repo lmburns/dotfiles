@@ -2,8 +2,6 @@ local M = {}
 
 local log = require("plenary.log")
 
-local api = vim.api
-
 ---@enum LogLevels
 M.levels = {
     TRACE = 0,
@@ -14,8 +12,8 @@ M.levels = {
     OFF = 5
 }
 
----@type LogLevels
-vim.log.levels = vim.log.levels
+-- ---@type LogLevels
+-- vim.log.levels = vim.log.levels
 
 -- _G.__FILE__ = function() return debug.getinfo(3, 'S').source end
 -- _G.__LINE__ = function() return debug.getinfo(3, 'l').currentline end
@@ -54,42 +52,88 @@ M.logger = built
 
 -- api.nvim_err_writeln()
 
+---TRACE message
+---@param msg string
+---@param opts? NotifyOpts
+M.trace = function(msg, opts)
+    opts = opts or {}
+    if opts.print then
+        nvim.echo(
+            {
+                {"[DEBUG]: ", "@text.trace"},
+                {msg, F.if_nil(opts.hl, "NotifyTRACEBody")}
+            }
+        )
+    else
+        require("common.utils").notify(msg, M.levels.TRACE, opts)
+    end
+end
+
+---DEBUG message
+---@param msg string
+---@param opts? NotifyOpts
+M.debug = function(msg, opts)
+    opts = opts or {}
+    if opts.print then
+        nvim.echo(
+            {
+                {"[DEBUG]: ", "@text.debug"},
+                {msg, F.if_nil(opts.hl, "NotifyDEBUGBody")}
+            }
+        )
+    else
+        require("common.utils").notify(msg, M.levels.DEBUG, opts)
+    end
+end
+
 ---INFO message
 ---@param msg string
----@param notify? boolean
 ---@param opts? NotifyOpts
-M.info = function(msg, notify, opts)
+M.info = function(msg, opts)
     opts = opts or {}
-    if notify then
-        vim.notify(msg, M.levels.INFO, opts)
+    if opts.print then
+        nvim.echo(
+            {
+                {"[INFO]: ", "@text.info"},
+                {msg, F.if_nil(opts.hl, "NotifyINFOBorder")}
+            }
+        )
     else
-        api.nvim_echo({{msg, F.if_nil(opts.hl, "SpellCap")}}, true, {})
+        require("common.utils").notify(msg, M.levels.INFO, opts)
     end
 end
 
 ---WARN message
 ---@param msg string
----@param notify? boolean
 ---@param opts? NotifyOpts
-M.warn = function(msg, notify, opts)
+M.warn = function(msg, opts)
     opts = opts or {}
-    if notify then
-        vim.notify(msg, M.levels.WARN, opts)
+    if opts.print then
+        nvim.echo(
+            {
+                {"[WARN]: ", "@text.warning"},
+                {msg, F.if_nil(opts.hl, "NotifyWARNBorder")}
+            }
+        )
     else
-        api.nvim_echo({{msg, F.if_nil(opts.hl, "WarningMsg")}}, true, {})
+        require("common.utils").notify(msg, M.levels.WARN, opts)
     end
 end
 
 ---ERROR message
 ---@param msg string
----@param notify? boolean
 ---@param opts? NotifyOpts
-M.err = function(msg, notify, opts)
+M.err = function(msg, opts)
     opts = opts or {}
-    if notify then
-        vim.notify(msg, M.levels.ERROR, opts)
+    if opts.print then
+        nvim.echo(
+            {
+                {"[ERROR]: ", "@text.error"},
+                {msg, F.if_nil(opts.hl, "NotifyERRORBorder")}
+            }
+        )
     else
-        api.nvim_echo({{msg, F.if_nil(opts.hl, "ErrorMsg")}}, true, {})
+        require("common.utils").notify(msg, M.levels.ERROR, opts)
     end
 end
 

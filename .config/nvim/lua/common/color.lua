@@ -391,7 +391,7 @@ function M.set(name, opts)
     -- local ok, msg = pcall(api.set, 0, name, M.parse(opts))
     --
     -- if not ok then
-    --     log.err(("Failed to set %s: %s"):format(name, msg))
+    --     log.err(("Failed to set %s: %s"):format(name, msg), {print = true})
     -- end
 
     D.wrap_err(("Failed to set %s"):format(name), api.set, 0, name, M.parse(opts))
@@ -401,11 +401,11 @@ end
 ---Fallbacks are returned as well as the gui value in the right format
 ---@param group Group
 ---@param attribute string
----@param fallback Color?
+---@param fallback? Color
 ---@return string
 function M.get(group, attribute, fallback)
     if not group then
-        log.err("Need a group to get a highlight")
+        log.err("Need a group to get a highlight", {print = true})
         return "NONE"
     end
 
@@ -416,7 +416,7 @@ function M.get(group, attribute, fallback)
     if not color then
         vim.schedule(
             function()
-                log.warn(("%s %s does not exist"):format(group, attribute))
+                log.warn(("%s %s does not exist"):format(group, attribute), {print = true})
             end
         )
         return "NONE"

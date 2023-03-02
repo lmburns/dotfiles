@@ -75,7 +75,7 @@ function M.toggle_workspace()
     if #coc.workspace > 0 then
         cmd.TroubleToggle("coc_workspace_diagnostics")
     else
-        log.warn("No workspace diagnostics", true, {title = "Trouble"})
+        log.warn("No workspace diagnostics", {title = "Trouble"})
     end
 end
 
@@ -83,7 +83,7 @@ function M.toggle_document()
     if #coc.document > 0 then
         cmd.TroubleToggle("coc_document_diagnostics")
     else
-        log.warn("No document diagnostics", true, {title = "Trouble"})
+        log.warn("No document diagnostics", {title = "Trouble"})
     end
 end
 

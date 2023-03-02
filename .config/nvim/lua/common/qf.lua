@@ -110,7 +110,7 @@ function M.batch_sub(is_loc, pat_rep)
     silent_setqf(old)
 
     if not ok then
-        log.err(res, true)
+        log.err(res)
     end
 end
 

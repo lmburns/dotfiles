@@ -1011,7 +1011,7 @@ builtin.git_grep = function(opts)
     }[1]
 
     if utils.empty(opts.search_dirs) or utils.empty(opts.search_dirs[1]) then
-        log.err("Not in a git directory", true)
+        log.err("Not in a git directory")
         return
     end
 

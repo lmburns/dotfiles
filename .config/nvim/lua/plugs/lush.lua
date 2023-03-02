@@ -55,11 +55,11 @@ let g:colors_name = '%s'
             fp:close()
             cmd.so(theme_path)
         else
-            log.err(res)
+            log.err(res, {print = true})
         end
     else
         res = type(res) == "table" and res.res or res:match("[^\n]+")
-        log.err(res)
+        log.err(res, {print = true})
     end
 end
 

@@ -452,7 +452,7 @@ nvim.augroup =
         __newindex = function(_, k, v)
             if type(k) == type "" and k ~= "" then
                 if v == nil then
-                    del_augroup(k)
+                    utils.del_augroup(k)
                 elseif type(v) == type {} then
                     local autocmds
                     if vim.tbl_islist(v) then

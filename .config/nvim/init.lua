@@ -20,6 +20,7 @@ end
 local dirs = require("common.global").dirs
 local _ = require("common.global")
 
+local D = require("dev")
 local utils = require("common.utils")
 local augroup = utils.augroup
 local autocmd = utils.autocmd
@@ -31,8 +32,6 @@ local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
 
--- Lua utilities
-local D = require("dev")
 require("common.nvim")
 require("options")
 

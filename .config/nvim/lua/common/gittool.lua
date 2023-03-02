@@ -102,7 +102,7 @@ function M.root_exe(exec, path)
         ok, res = pcall(exec)
     end
     if not ok then
-        log.err(res)
+        log.err(res, {print = true})
     end
 
     if r ~= "" then

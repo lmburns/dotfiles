@@ -8,7 +8,7 @@ local cmd = vim.cmd
 ---@param name string
 M.reinstall = function(name)
     if package.loaded["packer"] == nil then
-        log.err("Packer not installed or not loaded", true)
+        log.err("Packer not installed or not loaded")
         return
     end
 

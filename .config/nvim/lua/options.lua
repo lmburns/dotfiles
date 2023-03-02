@@ -23,10 +23,7 @@ g.treesitter_highlight_maxlines = 12 * 1024
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
-vim.tbl_map(
-    function(p)
-        g["loaded_" .. p] = vim.endswith(p, "provider") and 0 or 1
-    end,
+_t(
     {
         "2html_plugin",
         -- "ftplugin",
@@ -58,6 +55,10 @@ vim.tbl_map(
         "ruby_provider"
         -- "python3_provider",
     }
+):map(
+    function(p)
+        g["loaded_" .. p] = F.tern(vim.endswith(p, "provider"), 0, 1)
+    end
 )
 
 -- g.loaded_fzf = 1

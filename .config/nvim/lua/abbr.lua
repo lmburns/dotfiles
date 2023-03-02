@@ -75,7 +75,7 @@ function M.abbr(mode, lhs, rhs, args)
             table.insert(command, rhs)
         end
     else
-        log.err(("Invalid mode: %s"):format(vim.inspect(mode)), true, {title = "Abbrs"})
+        log.err(("Invalid mode: %s"):format(vim.inspect(mode)), {title = "Abbrs"})
         return false
     end
 
@@ -105,7 +105,7 @@ M =
             )
         end,
         __newindex = function(_, k, _)
-            log.err(("invalid mode given: %s"):format(k), true, {title = "Abbrs"})
+            log.err(("invalid mode given: %s"):format(k), {title = "Abbrs"})
         end,
         ---Can be used like so: `require("abbr").c(lhs, rhs, opts)`
         ---Can be used like so: `require("abbr")(mode, lhs, rhs, opts)`

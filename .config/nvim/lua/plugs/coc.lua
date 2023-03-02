@@ -86,7 +86,7 @@ function M.go2def()
         if not err then
             by = "coc"
         elseif res == "timeout" then
-            log.warn("Go to reference timeout", true)
+            log.warn("Go to reference timeout")
         else
             local cword = fn.expand("<cword>")
             if
@@ -141,7 +141,7 @@ function M.show_documentation()
             local err, res = M.a2sync("definitionHover")
             if err then
                 if res == "timeout" then
-                    log.warn("Show documentation timeout", true)
+                    log.warn("Show documentation timeout")
                     return
                 end
                 cmd("norm! K")
@@ -263,7 +263,7 @@ function M.code_action(mode, only)
         local err, ret = M.a2sync("codeActions", {m, only}, 1000)
         if err then
             if ret == "timeout" then
-                log.warn("codeAction timeout", true)
+                log.warn("codeAction timeout")
                 break
             end
         else
@@ -275,7 +275,7 @@ function M.code_action(mode, only)
         end
     end
     if no_actions then
-        log.warn("No code Action available", true)
+        log.warn("No code Action available")
     end
 end
 
@@ -509,7 +509,7 @@ end
 function M.did_init(silent)
     if g.coc_service_initialized == 0 then
         if silent then
-            log.warn([[coc.nvim hasn't initialized]], true)
+            log.warn("coc.nvim hasn't initialized")
         end
         return false
     end
@@ -526,9 +526,9 @@ function M.organize_import()
     local err, ret = M.a2sync("organizeImport", {}, 1000)
     if err then
         if ret == "timeout" then
-            log.warn("organizeImport timeout", true)
+            log.warn("organizeImport timeout")
         else
-            log.warn("No action for organizeImport", true)
+            log.warn("No action for organizeImport")
         end
     end
 end

@@ -8,7 +8,20 @@ if not marks then
     return
 end
 
+local icons = require("style").icons
 local wk = require("which-key")
+
+---
+---@param sign string
+---@param num number
+---@return {sign: string, virt_text: string, annotate: boolean}
+local function bookmark_vt(sign, num)
+    return {
+        sign = sign,
+        virt_text = ("%s Bookmark %d %s"):format(sign, num, sign),
+        annotate = false
+    }
+end
 
 function M.setup()
     marks.setup {
@@ -43,17 +56,17 @@ function M.setup()
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
         -- default virt_text is "".
-        bookmark_0 = {sign = "", virt_text = " Bookmark 0 ", annotate = false},
-        bookmark_1 = {sign = "", virt_text = " Bookmark 1 "},
-        bookmark_2 = {sign = "○", virt_text = "○ Bookmark 2 ○"},
-        bookmark_3 = {sign = "◉", virt_text = "◉ Bookmark 3 ◉"},
-        bookmark_4 = {sign = "✿", virt_text = "✿ Bookmark 4 ✿"},
-        bookmark_5 = {sign = "", virt_text = " Bookmark 5 "},
-        bookmark_6 = {sign = "", virt_text = " Bookmark 6 "},
-        bookmark_7 = {sign = "", virt_text = " Bookmark 7 "},
-        bookmark_8 = {sign = "󰸕", virt_text = "󰸕 Bookmark 8 󰸕"},
-        bookmark_9 = {sign = "", virt_text = " Bookmark 9 "},
-        bookmark_10 = {sign = "󰫢", virt_text = "󰫢 Bookmark 10 󰫢"},
+        bookmark_0 = bookmark_vt(icons.misc.star, 0),
+        bookmark_1 = bookmark_vt(icons.ui.bookmark_filled, 1),
+        bookmark_2 = bookmark_vt(icons.ui.circle_hollow, 2),
+        bookmark_3 = bookmark_vt(icons.ui.circle_bullseye, 3),
+        bookmark_4 = bookmark_vt(icons.misc.flower, 4),
+        bookmark_5 = bookmark_vt(icons.misc.lilst, 5),
+        bookmark_6 = bookmark_vt(icons.misc.star_unfilled, 6),
+        bookmark_7 = bookmark_vt(icons.ui.bookmark_unfilled, 7),
+        bookmark_8 = bookmark_vt(icons.ui.bookmark_double, 8),
+        bookmark_9 = bookmark_vt(icons.ui.bookmark_star, 9),
+        bookmark_10 = bookmark_vt(icons.misc.star_small, 10),
         mappings = {
             annotate = "m?"
         }
@@ -104,7 +117,7 @@ local function init()
             ["m7"] = "Marks: set bookmark7",
             ["m8"] = "Marks: set bookmark8",
             ["m9"] = "Marks: set bookmark9",
-            ["m10"] = "Marks: set bookmark10",
+            ["m10"] = "Marks: set bookmark10"
         }
     )
 

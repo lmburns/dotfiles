@@ -65,7 +65,7 @@ local function list(file)
     --     end
     -- ):catch(
     --     function(e)
-    --         log.err(e)
+    --         log.err(e, {print = true})
     --     end
     -- )
 

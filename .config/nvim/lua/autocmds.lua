@@ -113,7 +113,7 @@ nvim.autocmd.lmb__MacroRecording = {
         pattern = "*",
         command = function()
             local msg = (" 壘Recording @%s"):format(fn.reg_recording())
-            vim.notify(msg, log.levels.INFO, {title = "Macro", icon = ""})
+            log.info(msg, {title = "Macro", icon = ""})
         end
     },
     {
@@ -122,7 +122,7 @@ nvim.autocmd.lmb__MacroRecording = {
         command = function()
             local event = vim.v.event
             local msg = ("  Recorded @%s\n%s"):format(event.regname, event.regcontents)
-            vim.notify(msg, log.levels.INFO, {title = "Macro", icon = ""})
+            log.info(msg, {title = "Macro", icon = ""})
         end
     }
 }

@@ -17,7 +17,7 @@ M.table = function(cb)
     ---This check doesn't seem to do anything
     ---My neovim setup allows goto to be set, but it is a valid keyword
     if loadstring("local goto = true")() ~= nil then
-        log.err("LuaJIT 5.2 is required", true, {title = "Lazy"})
+        log.err("LuaJIT 5.2 is required", {title = "Lazy"})
         return cb()
     end
 

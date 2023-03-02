@@ -6,11 +6,11 @@ if not notify then
     return
 end
 
+local log = require("common.log")
 local style = require("style")
-local hl = require("common.color")
--- local utils = require("common.utils")
 local wk = require("which-key")
 
+local F = vim.F
 local api = vim.api
 
 function M.setup()
@@ -20,10 +20,13 @@ function M.setup()
 
     notify.setup(
         {
+            level = log.levels.INFO,
             stages = "fade_in_slide_out", -- slide
             top_down = true,
             fps = 60,
             timeout = 3000,
+            max_width = nil,
+            max_height = nil,
             minimum_width = 30,
             background_color = "NormalFloat",
             -- max_width = math.floor(vim.o.columns * 0.4),
@@ -52,37 +55,26 @@ function M.setup()
                 )
             end,
             render = function(bufnr, notif, highlights, config)
-                local style = notif.title[1] == "" and "minimal" or "default"
+                ---@type RenderType
+                local style =
+                    F.tern(
+                    notif.title[1] == "",
+                    "minimal",
+                    (F.tern(
+                        (#(notif.title[1]:split()) > 1) or
+                            (notif.title[2] and not notif.title[2]:match("%d%d:%d%d")),
+                        "default",
+                        "compact"
+                    ))
+                )
                 renderer[style](bufnr, notif, highlights, config)
             end,
-            icons = {
-                ERROR = " ",
-                WARN = " ",
-                INFO = " ",
-                DEBUG = " ",
-                TRACE = " "
-            }
+            icons = style.plugins.notify
         }
     )
 end
 
 local function init()
-    hl.plugin(
-        "notify",
-        {
-            NotifyERRORBorder = {bg = {from = "NormalFloat"}},
-            NotifyWARNBorder = {bg = {from = "NormalFloat"}},
-            NotifyINFOBorder = {bg = {from = "NormalFloat"}},
-            NotifyDEBUGBorder = {bg = {from = "NormalFloat"}},
-            NotifyTRACEBorder = {bg = {from = "NormalFloat"}},
-            NotifyERRORBody = {link = "NormalFloat"},
-            NotifyWARNBody = {link = "NormalFloat"},
-            NotifyINFOBody = {link = "NormalFloat"},
-            NotifyDEBUGBody = {link = "NormalFloat"},
-            NotifyTRACEBody = {link = "NormalFloat"}
-        }
-    )
-
     M.setup()
 
     wk.register(

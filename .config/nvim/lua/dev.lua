@@ -50,6 +50,10 @@ end
 
 _G.pp = vim.pretty_print
 
+--  ╭────────╮
+--  │ String │
+--  ╰────────╯
+
 ---Escape a string correctly
 ---@param s string
 ---@return string
@@ -118,11 +122,12 @@ string.capitalize = function(self)
     return ret
 end
 
----Split a string on `\n`
+---Split a string on ` ` by default. Optional delimiter.
 ---@param self string
+---@param delim? string
 ---@return string[]
-string.split = function(self)
-    return vim.split(self, "\n")
+string.split = function(self, delim)
+    return vim.split(self, delim or " ")
 end
 
 ---Use PCRE regular expressions in Lua. Does the same as `string.gmatch`
@@ -182,6 +187,10 @@ M.dostring = function(str)
     return assert((loadstring or load)(str))()
 end
 
+--  ╭───────╮
+--  │ Other │
+--  ╰───────╯
+
 ---Cache the output of lambda expressions
 local lambda_cache = {}
 
@@ -202,6 +211,24 @@ M.lambda = function(str)
     return lambda_cache[str]
 end
 
+local ripairs_iter = function(t, i)
+    i = i - 1
+    local v = t[i]
+    if v ~= nil then
+        return i, v
+    end
+end
+
+---Reverse `ipairs`
+---@generic T: table, V
+---@param t T
+---@return fun(table: V[], i?: number): number, V
+---@return T
+---@return number i
+_G.ripairs = function(t)
+    return ripairs_iter, t, (#t + 1)
+end
+
 -- ╒══════════════════════════════════════════════════════════╕
 --                      Development tools
 -- ╘══════════════════════════════════════════════════════════╛
@@ -217,7 +244,7 @@ M.ok_or_nil = function(status, ...)
         local info = debug.getinfo(1, "S")
         local msg = vim.split(table.concat(args, "\n"), "\n")
         local mod = msg[1]:match("module '(%w.*)'")
-        log.err(msg, true, {title = ('Failed to require("%s"): %s'):format(mod, info)})
+        log.err(msg, {title = ('Failed to require("%s"): %s'):format(mod, info)})
         return
     end
     return ...
@@ -271,7 +298,7 @@ M.wrap_err = function(msg, func, ...)
             msg = msg and ("%s:\n%s"):format(msg, err) or err
             vim.schedule(
                 function()
-                    vim.notify(msg, log.levels.ERROR, {title = msg:split()[1]})
+                    log.err(msg, {title = msg:split("\n")[1]})
                 end
             )
         end,

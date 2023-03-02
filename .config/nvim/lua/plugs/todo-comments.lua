@@ -43,62 +43,62 @@ function M.setup()
                     alt = {"FIXME", "BUG", "FIXIT", "FIX", "ISSUE"}
                 },
                 TODO = {
-                    icon = pad(icons.ui.CheckThick),
+                    icon = pad(icons.ui.check_thick),
                     color = "#d16d9e",
                     alt = {"TODOS"}
                 },
                 TEST = {
-                    icon = pad(icons.ui.CheckThick),
+                    icon = pad(icons.ui.check_thick),
                     color = "#819c3b",
                     alt = {"TESTING"}
                 },
                 HACK = {
-                    icon = pad(icons.ui.Fire),
+                    icon = pad(icons.ui.fire),
                     color = "#fe8019",
                     alt = {}
                 },
                 WARN = {
-                    icon = pad(icons.ui.Warning),
+                    icon = pad(icons.ui.warning),
                     color = "#EC5f67",
                     alt = {"WARNING", "XXX"}
                 },
                 TIP = {
-                    icon = pad(icons.ui.Tip),
+                    icon = pad(icons.ui.tip),
                     color = "#9a9a9a",
                     alt = {"HINT"}
                 },
                 FEATURE = {
-                    icon = pad(icons.ui.Plus),
+                    icon = pad(icons.ui.plus),
                     color = "#957FB8",
                     alt = {"NEW"}
                 },
                 MAYBE = {
-                    icon = pad(icons.ui.CircleHollow),
+                    icon = pad(icons.ui.circle_hollow),
                     color = "#FF5D62",
                     alt = {"POSSIBLY", "TODO_MAYBE"}
                 },
                 DONE = {
-                    icon = pad(icons.ui.CheckBox),
+                    icon = pad(icons.ui.check_box),
                     color = "#98BB6C",
                     alt = {"FINISHED"}
                 },
                 -- ["???"] = {icon = "", color = "#38A89D"},
                 CHANGED = {
-                    icon = pad(icons.ui.ArrowSwap),
+                    icon = pad(icons.ui.arrow_swap),
                     color = "#89b482",
                     alt = {"ALTERED", "ALTER", "MOD", "MODIFIED"}
                 },
                 PERF = {
-                    icon = pad(icons.ui.Clock),
+                    icon = pad(icons.ui.clock),
                     alt = {"#a7c777", "PERFORMANCE", "OPTIMIZE", "FUNCTION"}
                 },
                 NOTE = {
-                    icon = pad(icons.ui.TextOutline),
+                    icon = pad(icons.ui.text_outline),
                     color = "#62b3b2",
                     alt = {"INFO", "NOTES", "SUBSECTION"}
                 },
                 CHECK = {
-                    icon = pad(icons.ui.CheckCircle),
+                    icon = pad(icons.ui.check_circle),
                     color = "#e78a4e",
                     alt = {"EXPLAIN", "DISCOVER", "SECTION"}
                 }

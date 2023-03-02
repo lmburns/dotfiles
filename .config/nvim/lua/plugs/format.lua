@@ -165,7 +165,7 @@ function M.format_selected(mode, save)
                     mode,
                     function(e, _)
                         if e ~= vim.NIL then
-                            log.warn(e, true)
+                            log.warn(e)
                         else
                             -- if vim.bo[bufnr].ft == "lua" then
                             --     M.neoformat()

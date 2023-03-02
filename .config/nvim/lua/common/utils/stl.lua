@@ -15,7 +15,9 @@ local devicons = require("nvim-web-devicons")
 local coc = require("plugs.coc")
 local hl = require("common.color")
 local colors = require("kimbox.colors")
-local icons = require("style").icons
+local style = require("style")
+local icons = style.icons
+local llicons = style.plugins.lualine
 
 local api = vim.api
 local fn = vim.fn
@@ -73,13 +75,13 @@ M.conditions = {
 -- ╘══════════════════════════════════════════════════════════╛
 
 M.plugins.sep = function()
-    return ""
+    return llicons.sep.slant
 end
 
 M.plugins.keymap = {
     fn = function()
         if vim.o.iminsert > 0 and vim.b.keymap_name then
-            return "⌨ " .. vim.b.keymap_name
+            return ("%s %s"):format(icons.misc.keyboard, vim.b.keymap_name)
         end
         return ""
     end
@@ -228,7 +230,7 @@ M.plugins.gps = {
     end,
     fn = function()
         local opts = {
-            disable_icons = false,
+            disable_icons = false
         }
         return require("nvim-gps").get_location(opts)
     end
@@ -367,8 +369,10 @@ end
 local function terminal_status()
     -- vim.trim(ex.filter(("/%s/ ls! uaF"):format(fn.escape(api.nvim_buf_get_name(api.nvim_get_current_buf()), "~/"))))
     if
-        api.nvim_exec([[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaF"))]], true) ~=
-            ""
+        api.nvim_exec(
+            [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaF"))]],
+            true
+        ) ~= ""
      then
         local result = get_exit_status()
         if result == nil then
@@ -381,8 +385,10 @@ local function terminal_status()
         return "Finished"
     end
     if
-        api.nvim_exec([[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaR"))]], true) ~=
-            ""
+        api.nvim_exec(
+            [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaR"))]],
+            true
+        ) ~= ""
      then
         return "Running"
     end
@@ -394,7 +400,10 @@ local function get_terminal_status()
         return ""
     end
     local status = terminal_status()
-    hl.set("LualineToggleTermStatus", {fg = terminal_status_color(status), bg = colors.bg0, bold = true})
+    hl.set(
+        "LualineToggleTermStatus",
+        {fg = terminal_status_color(status), bg = colors.bg0, bold = true}
+    )
     return status
 end
 
@@ -524,7 +533,7 @@ M.extensions.trouble = {
             {
                 "mode",
                 fmt = function(str)
-                    return ("%s %s"):format(str, "")
+                    return ("%s %s"):format(str, M.plugins.sep())
                 end,
                 padding = M.other.only_pad_right
             }

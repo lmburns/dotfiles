@@ -69,11 +69,11 @@ function M.setup()
                 ---@diagnostic disable-next-line: unused-local
                 -- after_save = function(name, user_data, aborted)
                 --     -- These are warn because I like yellow more than green
-                --     log.warn(("Saved: %s"):format(name), true, {title = "Possession"})
+                --     log.warn(("Saved: %s"):format(name), {title = "Possession"})
                 -- end,
                 ---@diagnostic disable-next-line: unused-local
                 after_load = function(name, user_data)
-                    log.warn(("Loaded: %s"):format(name), true, {title = "Possession"})
+                    log.warn(("Loaded: %s"):format(name), {title = "Possession"})
                 end
                 -- before_load = function(name, user_data)
                 -- 	return user_data

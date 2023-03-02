@@ -198,7 +198,7 @@ end
 ---@param args Outline
 function M.outline(args)
     if not coc.did_init() then
-        log.err("Coc not ready yet ...", true)
+        log.err("Coc not ready yet ...")
         return promise.resolve()
     end
 
@@ -319,7 +319,7 @@ function M.outline(args)
         end
     ):catch(
         function(reason)
-            log.warn(reason)
+            log.warn(reason, {print = true})
         end
     )
 end
@@ -363,7 +363,7 @@ function M.outline_treesitter(args)
 
     local parsers = require("nvim-treesitter.parsers")
     if not parsers.has_parser(parsers.get_buf_lang(opts.bufnr)) then
-        log.err("No parser for the current buffer", true, {title = "qfext.treesitter"})
+        log.err("No parser for the current buffer", {title = "qfext.treesitter"})
         return
     end
 
