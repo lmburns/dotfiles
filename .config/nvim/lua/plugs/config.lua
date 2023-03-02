@@ -1635,7 +1635,7 @@ function M.urlview()
 
     local actions = require("urlview.actions")
     actions["handlr"] = function(raw_url)
-        fn.system(("handlr open '%s'"):format(raw_url))
+        fn.system(("handlr open %q"):format(raw_url))
     end
 
     urlview.setup(

@@ -50,25 +50,57 @@ end
 
 _G.pp = vim.pretty_print
 
----Trims whitespace on left and right side
----@param self string
+---Escape a string correctly
+---@param s string
 ---@return string
-string.trim = function(self)
-    return self:match("^%s*(.-)%s*$")
+M.escape = function(s)
+    return (s:gsub("[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
 end
 
----Trims whitespace on right side
+---Escape a string correctly
 ---@param self string
 ---@return string
-string.rtrim = function(self)
-    return self:match("^(.-)%s*$")
+string.escape = function(self)
+    return M.escape(self)
 end
 
----Trims whitespace on left side
+---Trims whitespace on left and right side by default.
+---Can trim characters from both sides as well.
 ---@param self string
+---@param chars? string
 ---@return string
-string.ltrim = function(self)
-    return self:match("^%s*(.-)$")
+string.trim = function(self, chars)
+    if not chars then
+        return self:match("^[%s]*(.-)[%s]*$")
+    end
+    chars = chars:escape()
+    return self:match("^[" .. chars .. "]*(.-)[" .. chars .. "]*$")
+end
+
+---Trims whitespace on right side by default.
+---Can trim characters from right as well.
+---@param self string
+---@param chars? string
+---@return string
+string.rtrim = function(self, chars)
+    if not chars then
+        return self:match("^(.-)[%s]*$")
+    end
+    chars = chars:escape()
+    return self:match("^(.-)[" .. chars .. "]*$")
+end
+
+---Trims whitespace on left side by default.
+---Can trim characters from left as well.
+---@param self string
+---@param chars? string
+---@return string
+string.ltrim = function(self, chars)
+    if not chars then
+        return self:match("^[%s]*(.-)$")
+    end
+    chars = chars:escape()
+    return self:match("^[" .. chars .. "]*(.-)$")
 end
 
 ---Replace multiple spaces with a single space
@@ -96,20 +128,22 @@ end
 ---Use PCRE regular expressions in Lua. Does the same as `string.gmatch`
 ---@param self string
 ---@param pattern string
----@return function(): string[]
+---@return fun(): string[]
 string.rxmatch = function(self, pattern)
     return require("rex_pcre2").gmatch(self, pattern)
 end
 
 ---Use PCRE regular expressions in Lua. Does the same as `string.gsub`
----
----`print(('what up'):rxsub('(\\w+)', '%1 %1')) => what what up up`
----`print(('what  up dude'):rxsub('\\s{2,}', 'XX')) => whatXXup dude`
+---## Example
+---```lua
+---print(('what up'):rxsub('(\\w+)', '%1 %1'))      -- => what what up up
+---print(('what  up dude'):rxsub('\\s{2,}', 'XX'))  -- => whatXXup dude
+---```
 ---@param self string
 ---@param pattern string
 ---@param repl string|string[]|function(s: string)
 ---@param n? number Maximum number of matches to  search for
----@return string
+---@return string, number
 string.rxsub = function(self, pattern, repl, n)
     return require("rex_pcre2").gsub(self, pattern, repl, n)
 end
@@ -118,25 +152,54 @@ end
 ---@param self string
 ---@param pattern string
 ---@param init? number Start offset in the subject (can be negative)
----@return string
+---@return number start
+---@return number end
+---@return any ... captured
 string.rxfind = function(self, pattern, init)
     return require("rex_pcre2").find(self, pattern, init)
 end
 
----Use PCRE regular expressions in Lua to split a string
+---Use PCRE regular expressions to split a string
 ---@param self string
 ---@param sep string
----@return function(): string[]
+---@return fun(): string[]
 string.rxsplit = function(self, sep)
     return require("rex_pcre2").split(self, sep)
 end
 
----Use PCRE regular expressions in Lua to count number of matches in string
+---Use PCRE regular expressions to count number of matches in string
 ---@param self string
 ---@param pattern string
----@return string
+---@return number
 string.rxcount = function(self, pattern)
     return require("rex_pcre2").count(self, pattern)
+end
+
+---Load or `loadstring`
+---@param str string
+---@return fun(s: string): any
+M.dostring = function(str)
+    return assert((loadstring or load)(str))()
+end
+
+---Cache the output of lambda expressions
+local lambda_cache = {}
+
+---Execute a lambda expression
+---## Example
+---```lua
+---print(D.lambda("x -> x + 2")(2)) -- prints: 4
+---```
+---@param str string
+---@return function
+M.lambda = function(str)
+    if not lambda_cache[str] then
+        local args, body = str:match([[^([%w,_ ]-)%->(.-)$]])
+        assert(args and body, "bad string lambda")
+        local s = "return function(" .. args .. ")\nreturn " .. body .. "\nend"
+        lambda_cache[str] = M.dostring(s)
+    end
+    return lambda_cache[str]
 end
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -1231,9 +1294,10 @@ M.get_qfwin = function()
     return M.get_wins_of_type("quickfix")[1]
 end
 
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Reload                          │
--- ╰──────────────────────────────────────────────────────────╯
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                    Modules / Plugins                     │
+--  ╰──────────────────────────────────────────────────────────╯
+
 ---Reload all lua modules
 M.reload_config = function()
     -- Handle impatient.nvim automatically.
@@ -1319,7 +1383,7 @@ M.plugin_installed = function(plugin_name)
     return vim.tbl_contains(installed, plugin_name)
 end
 
--- defer_plugin: defer loading plugin until timeout passes
+---defer_plugin: defer loading plugin until timeout passes
 ---@param plugin string
 ---@param timeout number
 M.defer_plugin = function(plugin, timeout)

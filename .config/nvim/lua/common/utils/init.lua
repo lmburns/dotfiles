@@ -1051,13 +1051,6 @@ M.truncate = function(str, max_len)
     )
 end
 
----Escape a string correctly
----@param s string
----@return string
-M.escape = function(s)
-    return (s:gsub("[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
-end
-
 ---Table of escaped termcodes
 M.termcodes =
     setmetatable(
