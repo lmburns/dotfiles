@@ -19,7 +19,7 @@ local pickers = require("telescope.pickers")
 local previewers = require("telescope.previewers")
 local themes = require("telescope.themes")
 local sorters = require("telescope.sorters")
-local utils = require("telescope.utils")
+local tutils = require("telescope.utils")
 
 -- local fb_utils = require "telescope._extensions.file_browser.utils"
 local z_utils = require("telescope._extensions.zoxide.utils")
@@ -31,9 +31,9 @@ local wk = require("which-key")
 
 local dirs = require("common.global").dirs
 local log = require("common.log")
-local b_utils = require("common.utils") -- "builtin" utils
-local command = b_utils.command
-local map = b_utils.map
+local utils = require("common.utils") -- "builtin" utils
+local command = utils.command
+local map = utils.map
 
 local fn = vim.fn
 local api = vim.api
@@ -103,6 +103,14 @@ local c_actions = {
         end
 
         action_state.get_current_picker(prompt_bufnr):reset_prompt(entry.ordinal)
+    end,
+    yank = function(_prompt_bufnr)
+        local entry = action_state.get_selected_entry()
+        require('common.yank').yank_reg(vim.v.register, entry.display)
+    end,
+    debug = function(_prompt_bufnr)
+        local entry = action_state.get_selected_entry()
+        N(entry)
     end,
     qf_multi_select = function(prompt_bufnr)
         local picker = action_state.get_current_picker(prompt_bufnr)
@@ -237,7 +245,8 @@ telescope.setup(
                     --     keymap_opts = {nowait = true}
                     -- },
                     ["<C-h>"] = c_actions.single_selection_hop,
-                    ["<M-;>"] = c_actions.multi_selection_hop
+                    ["<M-;>"] = c_actions.multi_selection_hop,
+                    ["<C-y>"] = c_actions.yank,
                 },
                 n = {
                     ["j"] = actions.move_selection_next,
@@ -256,7 +265,8 @@ telescope.setup(
                     ["<C-q>"] = actions.send_selected_to_qflist,
                     ["<M-q>"] = c_actions.qf_multi_select,
                     ["<M-,>"] = actions.smart_send_to_qflist,
-                    ["<C-o>"] = c_actions.which_key()
+                    ["<C-o>"] = c_actions.which_key(),
+                    ["<C-y>"] = c_actions.yank,
                 }
             },
             vimgrep_arguments = {
@@ -266,7 +276,8 @@ telescope.setup(
                 "--with-filename",
                 "--line-number",
                 "--column",
-                "--smart-case"
+                "--smart-case",
+                "--pcre2"
             },
             find_command = {
                 "fd",
@@ -444,7 +455,7 @@ telescope.setup(
                             R("telescope.actions").close(prompt_bufnr)
                             local value = action_state.get_selected_entry().value
                             local rev =
-                                utils.get_os_command_output(
+                                tutils.get_os_command_output(
                                 {"git", "rev-parse", "upstream/master"},
                                 fn.expand("%:p:h") or uv.cwd()
                             )[1]
@@ -929,7 +940,7 @@ builtin.cst_mru = function(opts)
         show_untracked and "--others" or nil,
         recurse_submodules and "--recurse-submodules" or nil
     }
-    local results_git = utils.get_os_command_output(cmd)
+    local results_git = tutils.get_os_command_output(cmd)
 
     local results = join_uniq(results_mru_cur, results_git)
 
@@ -987,36 +998,28 @@ builtin.cst_grep_in_dir = function(opts)
     )
 end
 
+-- TODO: Get this to work for dotbare git
 ---Grep in the base of a git directory
 ---@param opts table
 builtin.git_grep = function(opts)
     opts.search_dirs = {}
     opts.search_dirs[1] =
-        utils.get_os_command_output {
+        tutils.get_os_command_output {
         "git",
         "rev-parse",
         "--show-toplevel"
     }[1]
 
-    if #opts.search_dirs == 0 then
+    if utils.empty(opts.search_dirs) or utils.empty(opts.search_dirs[1]) then
         log.err("Not in a git directory", true)
         return
     end
 
-    opts.vimgrep_arguments = {
-        "rg",
-        "--color=never",
-        "--no-heading",
-        "--with-filename",
-        "--line-number",
-        "--column",
-        "--smart-case"
-    }
     builtin.live_grep(
         {
             mappings = conf.mappings,
             opts = opts,
-            prompt_title = "Git Grep",
+            prompt_title = "~ Git Grep ~",
             search_dirs = opts.search_dirs,
             path_display = {"smart"}
         }
@@ -1067,16 +1070,7 @@ builtin.grep_nvim = function()
         initial_mode = "insert",
         path_display = {"smart"},
         search_dirs = {"~/.config/nvim"},
-        prompt_title = "Nvim Grep",
-        vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case"
-        }
+        prompt_title = "~ Nvim Grep ~"
     }
 end
 
@@ -1085,8 +1079,9 @@ builtin.edit_zsh = function()
     builtin.fd {
         theme = "ivy",
         path_display = {"smart"},
-        prompt_prefix = "  ",
         search_dirs = {"~/.config/zsh"},
+        prompt_prefix = "  ",
+        prompt_title = "~ Edit ZSH ~",
         find_command = {
             "fd",
             "--type=f",
@@ -1145,16 +1140,7 @@ M.grep_tags = function()
         initial_mode = "insert",
         path_display = {"smart"},
         search_dirs = search_dirs,
-        prompt_title = "Grep Tags",
-        vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case"
-        }
+        prompt_title = "Grep Tags"
     }
 end
 
@@ -1395,7 +1381,7 @@ local function init()
                 ":lua require('plugs.telescope').cst_fd()<CR>",
                 "Files CWD (telescope)"
             },
-            [";r"] = {":Telescope git_grep<CR>", "Telescope grep git repo"},
+            [";r"] = {":Telescope git_grep<CR>", "Grep git repo (telescope)"},
             [";e"] = {":lua require('plugs.telescope').cst_grep()<CR>", "Grep CWD (telescope)"},
             ["<Leader>e."] = {
                 "<cmd>lua require('plugs.telescope').edit_dotfiles()<CR>",

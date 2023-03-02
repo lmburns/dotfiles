@@ -1,0 +1,122 @@
+#compdef fd
+
+autoload -U is-at-least
+
+_fd() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'*--and=[Additional search patterns that need to be matched]:pattern: ' \
+'-d+[Set maximum search depth (default: none)]:depth: ' \
+'--max-depth=[Set maximum search depth (default: none)]:depth: ' \
+'--min-depth=[Only show search results starting at the given depth.]:depth: ' \
+'(-d --max-depth --min-depth)--exact-depth=[Only show search results at the exact given depth]:depth: ' \
+'*-E+[Exclude entries that match the given glob pattern]:pattern: ' \
+'*--exclude=[Exclude entries that match the given glob pattern]:pattern: ' \
+'*-t+[Filter by type: file (f), directory (d), symlink (l), executable (x), empty (e), socket (s), pipe (p)]:filetype:((file\:""
+directory\:""
+symlink\:""
+executable\:"A file which is executable by the current effective user"
+empty\:""
+socket\:""
+pipe\:""))' \
+'*--type=[Filter by type: file (f), directory (d), symlink (l), executable (x), empty (e), socket (s), pipe (p)]:filetype:((file\:""
+directory\:""
+symlink\:""
+executable\:"A file which is executable by the current effective user"
+empty\:""
+socket\:""
+pipe\:""))' \
+'*-e+[Filter by file extension]:ext: ' \
+'*--extension=[Filter by file extension]:ext: ' \
+'*-S+[Limit results based on the size of files]:size: ' \
+'*--size=[Limit results based on the size of files]:size: ' \
+'--changed-within=[Filter by file modification time (newer than)]:date|dur: ' \
+'--changed-before=[Filter by file modification time (older than)]:date|dur: ' \
+'-o+[Filter by owning user and/or group]:user:group: ' \
+'--owner=[Filter by owning user and/or group]:user:group: ' \
+'(-l --list-details)*-x+[Execute a command for each search result]:cmd: ' \
+'(-l --list-details)*--exec=[Execute a command for each search result]:cmd: ' \
+'(-x --exec -l --list-details)*-X+[Execute a command with all search results at once]:cmd: ' \
+'(-x --exec -l --list-details)*--exec-batch=[Execute a command with all search results at once]:cmd: ' \
+'--batch-size=[Max number of arguments to run as a batch size with -X]:size: ' \
+'*--ignore-file=[Add a custom ignore-file in '\''.gitignore'\'' format]:path:_files' \
+'-c+[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
+always\:"always use colorized output"
+never\:"do not use colorized output"))' \
+'--color=[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
+always\:"always use colorized output"
+never\:"do not use colorized output"))' \
+'-j+[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
+'--threads=[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
+'--max-buffer-time=[Milliseconds to buffer before streaming search results to console]:MAX_BUFFER_TIME: ' \
+'--max-results=[Limit the number of search results]:count: ' \
+'--base-directory=[Change current working directory]:path:_files' \
+'--path-separator=[Set path separator when printing file paths]:separator: ' \
+'()*--search-path=[Provides paths to search as an alternative to the positional <path> argument]:search-path:_files' \
+'--gen-completions=[]' \
+'-H[Search hidden files and directories]' \
+'--hidden[Search hidden files and directories]' \
+'--no-hidden[Overrides --hidden]' \
+'-I[Do not respect .(git|fd)ignore files]' \
+'--no-ignore[Do not respect .(git|fd)ignore files]' \
+'--ignore[Overrides --no-ignore]' \
+'--no-ignore-vcs[Do not respect .gitignore files]' \
+'--ignore-vcs[Overrides --no-ignore-vcs]' \
+'--no-ignore-parent[Do not respect .(git|fd)ignore files in parent directories]' \
+'--no-global-ignore-file[Do not respect the global ignore file]' \
+'*-u[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
+'*--unrestricted[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
+'-s[Case-sensitive search (default: smart case)]' \
+'--case-sensitive[Case-sensitive search (default: smart case)]' \
+'-i[Case-insensitive search (default: smart case)]' \
+'--ignore-case[Case-insensitive search (default: smart case)]' \
+'(-F --fixed-strings)-g[Glob-based search (default: regular expression)]' \
+'(-F --fixed-strings)--glob[Glob-based search (default: regular expression)]' \
+'--regex[Regular-expression based search (default)]' \
+'-F[Treat pattern as literal string stead of regex]' \
+'--fixed-strings[Treat pattern as literal string stead of regex]' \
+'-a[Show absolute instead of relative paths]' \
+'--absolute-path[Show absolute instead of relative paths]' \
+'--relative-path[Overrides --absolute-path]' \
+'(-a --absolute-path)-l[Use a long listing format with file metadata]' \
+'(-a --absolute-path)--list-details[Use a long listing format with file metadata]' \
+'-L[Follow symbolic links]' \
+'--follow[Follow symbolic links]' \
+'--no-follow[Overrides --follow]' \
+'-p[Search full abs. path (default: filename only)]' \
+'--full-path[Search full abs. path (default: filename only)]' \
+'(-l --list-details)-0[Separate search results by the null character]' \
+'(-l --list-details)--print0[Separate search results by the null character]' \
+'(-S --size --exact-depth)--prune[Do not traverse into directories that match the search criteria. If you want to exclude specific directories, use the '\''--exclude=…'\'' option]' \
+'-1[Limit search to a single result]' \
+'(--max-results)-q[Print nothing, exit code 0 if match found, 1 otherwise]' \
+'(--max-results)--quiet[Print nothing, exit code 0 if match found, 1 otherwise]' \
+'--show-errors[Show filesystem errors]' \
+'(--search-path)--strip-cwd-prefix[By default, relative paths are prefixed with '\''./'\'' when -x/--exec, -X/--exec-batch, or -0/--print0 are given, to reduce the risk of a path starting with '\''-'\'' being treated as a command line option. Use this flag to disable this behaviour]' \
+'--one-file-system[By default, fd will traverse the file system tree as far as other options dictate. With this flag, fd ensures that it does not descend into a different file system than the one it started in. Comparable to the -mount or -xdev filters of find(1)]' \
+'-h[Print help information (use `--help` for more detail)]' \
+'--help[Print help information (use `--help` for more detail)]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'::pattern -- the search pattern (a regular expression, unless '\''--glob'\'' is used; optional):' \
+'*::path -- the root directories for the filesystem search (optional):_files' \
+&& ret=0
+}
+
+(( $+functions[_fd_commands] )) ||
+_fd_commands() {
+    local commands; commands=()
+    _describe -t commands 'fd commands' commands "$@"
+}
+
+_fd "$@"

@@ -143,6 +143,22 @@ command(
     }
 )
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                         Unicode                          │
+--  ╰──────────────────────────────────────────────────────────╯
+-- cmd [[
+--     command! -range Codepoint2Icon
+--           \  let s:save = @a
+--           \| if <count> is# -1
+--           \|   let @a = strcharpart(strpart(getline('.'), col('.') - 1), 0, 1)
+--           \| else
+--           \|   exe 'normal! gv"ay'
+--           \| endif
+--           \| echo system('uni -c i', @a)[:-2]
+--           \| let @a = s:save
+--           \| unlet s:save
+-- ]]
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Syntax                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -320,7 +336,7 @@ end
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("http[s]?://") then
-        return cmd.norm("gx")
+        return cmd.norm({"gx", bang = true})
     end
 
     -- Check whether it is a file

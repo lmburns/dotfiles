@@ -116,8 +116,6 @@ require("plugs.filetype")
 
 vim.schedule(
     function()
-        local hl = require("common.color")
-
         -- === Treesitter
         vim.defer_fn(
             function()
@@ -286,16 +284,6 @@ vim.schedule(
                         command = function()
                             require("plugs.coc").init()
                         end
-                    }
-                )
-
-                hl.plugin(
-                    "CocInit",
-                    {
-                        CocUnderline = {gui = "none"},
-                        CocSemStatic = {gui = "bold"},
-                        CocSemDefaultLibrary = {link = "Constant"},
-                        CocSemDocumentation = {link = "Number"}
                     }
                 )
 

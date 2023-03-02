@@ -1177,15 +1177,17 @@ M.setup = function()
                     ["s."] = "@element",
                     ["sp"] = "@parameter.inner",
                     ["sf"] = "@function.outer",
-                    ["sc"] = "@class.outer",
-                    ["sb"] = "@block.outer"
+                    ["sk"] = "@class.outer",
+                    ["sb"] = "@block.outer",
+                    ["sc"] = "@call.outer",
                 },
                 swap_previous = {
                     ["s,"] = "@element",
                     ["sP"] = "@parameter.inner",
                     ["sF"] = "@function.outer",
-                    ["sC"] = "@class.outer",
-                    ["sB"] = "@block.outer"
+                    ["sk"] = "@class.outer",
+                    ["sB"] = "@block.outer",
+                    ["sC"] = "@call.outer",
                 }
             }
         }
@@ -1389,8 +1391,10 @@ local function init()
             ["sP"] = "Swap previous parameter",
             ["sb"] = "Swap next block",
             ["sB"] = "Swap previous block",
-            ["sc"] = "Swap next class",
-            ["sC"] = "Swap previous class",
+            ["sk"] = "Swap next class",
+            ["sK"] = "Swap previous class",
+            ["sc"] = "Swap next call",
+            ["sC"] = "Swap previous call",
             ["s."] = "Swap next element",
             ["s,"] = "Swap previous element"
         }

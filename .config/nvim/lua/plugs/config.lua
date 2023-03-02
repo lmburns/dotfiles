@@ -174,8 +174,8 @@ function M.open_browser()
         {
             -- ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"},
             ["gX"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
-            ["gx"] = {":lua R('functions').open_link()<CR>", "Open link or file under cursor"},
-            ["gf"] = {":lua R('functions').open_path()<CR>", "Open path under cursor"},
+            ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
+            ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
             ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         }
     )
@@ -1633,6 +1633,11 @@ function M.urlview()
         return
     end
 
+    local actions = require("urlview.actions")
+    actions["handlr"] = function(raw_url)
+        fn.system(("handlr open '%s'"):format(raw_url))
+    end
+
     urlview.setup(
         {
             -- Prompt title (`<context> <default_title>`, e.g. `Buffer Links:`)
@@ -1645,8 +1650,7 @@ function M.urlview()
             -- Command or method to open links with
             -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
             -- By default, this is "netrw", or "system" if netrw is disabled
-            -- Can also be "clipboard"
-            default_action = "clipboard",
+            default_action = "handlr", -- "clipboard",
             -- Ensure links shown in the picker are unique (no duplicates)
             unique = true,
             -- Ensure links shown in the picker are sorted alphabetically

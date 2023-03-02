@@ -234,7 +234,7 @@ end
 -- TODO: Use this result as a statusbar item
 
 ---Display tokei output similar to
----@param path string
+---@param path? string
 ---@param full? boolean whether to display full tokei output
 ---@return table|number
 function M.tokei(path, full)

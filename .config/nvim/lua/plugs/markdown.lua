@@ -1,6 +1,5 @@
 local M = {}
 
-local hl = require("common.color")
 local utils = require("common.utils")
 local map = utils.map
 local augroup = utils.augroup
@@ -113,7 +112,10 @@ function M.table_mode()
             ["{|"] = "Move to the cell above",
             ["}|"] = "Move to the cell below",
             ["<Leader>tm"] = "Toggle table mode for the current buffer",
-            ["<Leader>tS"] = {"<Cmd>TableModeDisable<CR>", "Disable table mode for the current buffer"},
+            ["<Leader>tS"] = {
+                "<Cmd>TableModeDisable<CR>",
+                "Disable table mode for the current buffer"
+            },
             ["<Leader>tt"] = "Triggers 'tableize' on visually selected content",
             ["<Leader>T"] = "Triggers 'tableize' on visually selected asking for input of the delimiter",
             ["<Leader>tr"] = "Realigns table columns",
@@ -158,7 +160,7 @@ function M.vimwiki()
                         ["]="] = {"<Plug>VimwikiGoToNextSiblingHeader"},
                         ["[="] = {"<Plug>VimwikiGoToPrevSiblingHeader"},
                         ["{"] = {"<Plug>VimwikiGoToParentHeader"},
-                        ["<Leader>-"] = {"<Plug>VimwikiToggleListItem"}
+                        ["<Leader>-"] = {"<Plug>VimwikiToggleListItem"},
                     },
                     {mode = "n", buffer = bufnr}
                 )

@@ -1,0 +1,16 @@
+#compdef bustd
+
+# zsh completions for 'bustd'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-V,--verbose}'[toggles on verbose output]'
+  {-n,--no-daemon}'[when set, the process will not be daemonized]'
+  {-g,--kill-pgroup}'[set, the victims entire process group will be killed]'
+  {-p,--psi}'[sets the PSI value on which, if surpassed, a process will be]'
+  '--help[display usage information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

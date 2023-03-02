@@ -90,13 +90,11 @@ local function init()
 
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
 
-    -- "<Cmd>lua require('substitute.range').operator({motion1 = 'iw', motion2 = 'ie')<CR>",
-
     map(
         "n",
         "s;",
         D.ithunk(range.word, {motion2 = "ie"}),
-        {desc = "Substitute Range: <word><file>", silent = false, noremap = true}
+        {desc = "Substitute Range: <word><file>", silent = false}
     )
 
     -- map("x", "p", "<cmd>lua require('substitute').visual()<cr>")

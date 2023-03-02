@@ -758,8 +758,11 @@ function M.init()
         -- {
         --     event = "BufEnter",
         --     pattern = "*",
-        --     command = function()
+        --     command = function(args)
+        --         local bufnr = args.buf
         --         require("plugs.coc").diagnostics_tracker()
+        --         vim.b[bufnr].coc_trim_trailing_whitespace = 1
+        --         vim.b[bufnr].coc_trim_final_newlines = 1
         --     end
         -- },
         -- {
@@ -834,6 +837,8 @@ function M.init()
         }
     )
 
+    -- :CocCommand semanticTokens.checkCurrent
+    -- :CocCommand semanticTokens.inspect
     hl.plugin(
         "Coc",
         {
@@ -841,7 +846,11 @@ function M.init()
             CocSemNamespace = {link = "Namespace"},
             CocSemClass = {link = "Function"},
             CocSemEnum = {link = "Number"},
-            CocSemEnumMember = {link = "Enum"}
+            CocSemEnumMember = {link = "Enum"},
+            CocUnderline = {gui = "none"},
+            CocSemStatic = {gui = "bold"},
+            CocSemDefaultLibrary = {link = "Constant"},
+            CocSemDocumentation = {link = "Number"}
         }
     )
 
@@ -950,18 +959,13 @@ function M.init()
                 ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
                 "Coc toggle diagnostic target"
             },
-            -- ["<Leader>jd"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
-            [";fx"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
-            -- ["[c"] = {"<Plug>(coc-git-prevconflict)", "Goto previous conflict"},
-            -- ["]c"] = {"<Plug>(coc-git-nextconflict)", "Goto next conflict"},
-            -- ["gC"] = {"<Plug>(coc-git-commit)", "Show commits in current position"},
+            [";x"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
             ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-            -- FIX: Empty one doesn't fit popup window correctly and messes up scrolloff
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"}
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},

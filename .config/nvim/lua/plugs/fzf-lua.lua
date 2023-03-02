@@ -424,8 +424,8 @@ function M.setup()
                     "--line-number",
                     "--no-heading",
                     "--color=always",
-                    "--smart-case",
                     "--max-columns=512",
+                    "--smart-case",
                     "--pcre2"
                 },
                 " "

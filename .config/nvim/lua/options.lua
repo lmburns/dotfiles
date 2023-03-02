@@ -104,6 +104,8 @@ o.startofline = false
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15
 
+o.indentexpr = "nvim_treesitter#indent()"
+
 -- o.foldmethod = "marker"
 -- o.foldmarker = "[[[,]]]"
 -- o.foldmethod = "expr"
@@ -114,8 +116,6 @@ o.foldopen = o.foldopen:append("search")
 o.foldlevelstart = 99
 o.foldcolumn = "1"
 -- o.foldlevel = 1
-
--- o.indentexpr = "nvim_treesitter#indent()"
 
 o.formatoptions = {
     ["1"] = true, -- Don't break a line after a one-letter word; break before
@@ -217,8 +217,9 @@ o.textwidth = 100
 
 o.wildoptions = {"pum", "fuzzy"}
 o.wildignore = {
-    "*.git",
-    "node_modules",
+    "*.o",
+    "*.pyc",
+    "*.swp",
     "*.aux",
     "*.out",
     "*.toc",
@@ -236,12 +237,10 @@ o.wildignore = {
     "*.png",
     "*.avi",
     "*.wav",
-    "*.*~",
-    "*~ ",
-    "*.swp",
-    ".lock",
-    ".DS_Store",
-    "tags.lock"
+    "*.lock",
+    "*~",
+    "*.git",
+    "node_modules/*"
 }
 o.wildmenu = true
 o.wildmode = "longest:full,full" -- Shows a menu bar as opposed to an enormous list
@@ -303,7 +302,7 @@ o.diffopt =
         "foldcolumn:0",
         "context:4",
         "algorithm:patience",
-        "indent-heuristic",
+        "indent-heuristic"
         -- "linematch:60"
     }
 

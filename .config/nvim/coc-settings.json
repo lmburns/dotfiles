@@ -689,7 +689,7 @@
     "reportUnusedClass": "information",
     "reportUnusedFunction": "information",
     "reportUnusedImport": "information",
-    "reportUnusedVariable": "none"
+    "reportUnusedVariable": "none",
   },
 
   "pyright.enable": true,

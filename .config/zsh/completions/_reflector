@@ -1,0 +1,37 @@
+#compdef reflector
+
+# zsh completions for 'reflector'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--connection-timeout[the number of seconds to wait before a connection]'
+  '--download-timeout[the number of seconds to wait before a download times]'
+  '--list-countries[display a table of the distribution of servers by]'
+  '--cache-timeout[the cache timeout in seconds for the data retrieved]'
+  '--url[the URL from which to retrieve the mirror data in JSON]'
+  '--save[save the mirrorlist to the given path.]'
+  '--sort[rate,country,score,delay}]'
+  '--threads[use n threads for rating mirrors. This option will]'
+  '--verbose[print extra information to STDERR. Only works with]'
+  '--info[print mirror information instead of a mirror list.]'
+  {-a,--age}'[only return mirrors that have synchronized in the last]'
+  '--delay[only return mirrors with a reported sync delay of n]'
+  '-c[name or code>, --country <country name or code>]'
+  '-c[). Use "--list-countries" to display a table of]'
+  {-f,--fastest}'[return the n fastest mirrors that meet the other]'
+  {-i,--include}'[include servers that match <regex>, where <regex> is a]'
+  {-x,--exclude}'[exclude servers that match <regex>, where <regex> is a]'
+  {-l,--latest}'[limit the list to the n most recently synchronized]'
+  '--score[limit the list to the n servers with the highest]'
+  {-n,--number}'[return at most n mirrors.]'
+  {-p,--protocol}'[match one of the given protocols, e.g. "https" or]'
+  '--completion-percent[0-100\]]'
+  '--isos[only return mirrors that host ISOs.]'
+  '--ipv4[only return mirrors that support IPv4.]'
+  '--ipv6[only return mirrors that support IPv6.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
