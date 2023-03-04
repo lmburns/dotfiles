@@ -1,0 +1,20 @@
+#compdef xtitle
+
+local arguments
+
+arguments=(
+  '-t[truncate title after N characters (accepts negative)]:truncation start:'
+  '-f[printf style format]:format:((
+      %s\:"title"
+      %u\:"window ID"
+      \\n\:"newline"
+  )):'
+  '-i[try to retrieve title from _NET_WM_VISIBLE_NAME atom]'
+  '-e[escape these chars: ''",\\]'
+  '-s[activate snoop mode]'
+  '-v[display version]'
+  '-h[display this help message]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

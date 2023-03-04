@@ -1,0 +1,54 @@
+#compdef xdriinfo
+
+autoload -U is-at-least
+
+_xdriinfo_cmds() {
+  typeset -a cmds
+  cmds=(
+    'nscreens:print the number of screens on display'
+    'driver:print the DRI driver name of screen'
+    'options:print configuration information about screen or driver'
+  )
+  _describe -t xdriinfo-cmds "commands" cmds
+}
+
+_xdriinfo() {
+  local curcontext="$curcontext" state line context
+  typeset -a arguments argopts
+  integer ret=1
+
+  arguments=(
+    '-display[display]:dpy:'
+    '-version[show version message]'
+    ":: :_xdriinfo_cmds" \
+    '*::: :->xdriinfo'
+  )
+
+  if is-at-least 5.2; then
+      argopts=(-s -S -C)
+  else
+      argopts=(-s -C)
+  fi
+
+  _arguments "$argopts[@]" "$arguments[@]" \
+    && ret=0
+
+  case $state in
+    (xdriinfo)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:xdriinfo-command-$line[1]:"
+      case $line[1] in
+        (driver)
+          _arguments "${argopts[@]}" "*:screen number:" \
+            && ret=0
+        ;;
+        (options)
+          _arguments "${argopts[@]}" "*:screen | driver number:" \
+            && ret=0
+        ;;
+      esac
+  esac
+}
+
+_xdriinfo "$@"

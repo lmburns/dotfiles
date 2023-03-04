@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+# Desc: standard `bat` command to use with LF file manager
+
+bat \
+  --paging=always \
+  --pager="$LF_LESS" \
+  --force-colorization \
+  --style=grid,numbers \
+  "$@"

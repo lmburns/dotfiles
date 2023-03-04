@@ -1,0 +1,11 @@
+#compdef killw
+
+local arguments
+
+arguments=(
+  '-h[display this help]'
+  '-p[kill the parent application of the window instead of the window itself]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

@@ -274,7 +274,10 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           fzf-bindings \
                         'enter:accept' \
                         'backward-eof:abort' \
-                        'ctrl-e:execute-silent({_FTB_INIT_}nvim "$realpath" < /dev/tty > /dev/tty)'
+                        'ctrl-e:become({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
+                        'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
+                        'ctrl-b:become(bat --paging=always -f {+})' \
+                        'ctrl-y:execute(xsel -b --trim <<<{+})'
 
 zstyle+ \
   ':fzf-tab:complete' '' '' \
@@ -308,7 +311,9 @@ zstyle+ \
     + ':(exa|cd):*'              popup-pad 30 0 \
     + ':((cd|cdr|cd_):*|exa:argument-*)' fzf-flags '--preview-window=nohidden,right:45%:nowrap' \
     + ':exa:argument-*' \
-          fzf-preview '[[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "$(readlink -f $realpath)"' \
+          fzf-preview 'r=$(readlink -f $realpath); \
+                      ([[ -d $r ]] && bkt -- exa -TL 4 --color=always -- $r) \
+                        || ([[ -f $r ]] && stdbuf -oL grc --colour=on stat $r)' \
     + ':(cd|cd_):*' \
           fzf-preview 'zmodload -Fa zsh/parameter p:nameddirs; \
                        nameddirs=( '"${(kv)nameddirs}"' ); local named=${(e)~${${(@s: → :)desc}[2]}}; \

@@ -1,0 +1,13 @@
+#compdef chwso
+
+local arguments
+
+arguments=(
+  '-h[display this help]'
+  '-i[invert wid’s position in the window stack]'
+  '-l[put wid at the bottom of the window stack]'
+  '-r[put wid on top of the window stack]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

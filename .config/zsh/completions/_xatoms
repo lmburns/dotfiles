@@ -1,0 +1,17 @@
+#compdef xatoms
+
+# zsh completions for 'xatoms'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print this message]'
+  {-v,--version}'[program version information]'
+  {-f,--format}'[format the output using printf style]'
+  {-n,--name=}'[optional. Name of atom to look for]:name:'
+  {-p,--partial}'[partial match mode. Combine with --name]'
+  {-r,--range=}'[range of atoms to search for (e.g., -20, 300-, 300-400)]:-]num-[num'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

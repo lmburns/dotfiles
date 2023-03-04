@@ -1,0 +1,47 @@
+#compdef xdpr
+
+local arguments
+
+arguments=(
+  '-help[show help]'
+  '-nobdrs[unknown]'
+  '-psfig[unknown]'
+  '-noposition[unknown]'
+  '-noff[unknown]'
+  '-x[unknown]'
+  '-y[unknown]'
+  '-v[unknown]'
+  '-slide[slide]'
+  '-add[add value]:value:'
+  '-render[algorithm]:algorithm:'
+  '-gamma[correction]:correction:'
+  '-cutoff[level]:level:'
+  '-density[dpi]:dpi:'
+  '-plane[number]:number:'
+  '-gray[number]:number:'
+  '-compact[compact]'
+  '-frame[frame]'
+  '-portrait[portrait]'
+  '-landscape[landscape]'
+  '-trailer[trailer]:trailer:'
+  '-header[header]:header:'
+  '-split[n]:n:'
+  '-top[inches]:inches:'
+  '-left[inches]:inches:'
+  '-width[inches]:inches:'
+  '-height[inches]:inches:'
+  '-scale[scale]:scale:'
+  '-name[name]:name:'
+  '-id[id]:id:'
+  '-root[use root]'
+  '-device[device type]:devtype:'
+  '-d+[printer name]:printer:'
+  '-P+[printer name]:printer:'
+  '-out[out file]:_files'
+  '-display[display]:host\:display[.screen]:'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

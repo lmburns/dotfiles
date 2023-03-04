@@ -1,0 +1,12 @@
+#compdef chwb
+
+local arguments
+
+arguments=(
+  '-h[display this help]'
+  {-c,--color}'[set border color of wid to color (numerical)]:color (numerical):'
+  {-s,--size}'[set border width of wid to size]:size:'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,14 @@
+#compdef lsw
+
+local arguments
+
+arguments=(
+  '-a[list all windows]'
+  '-r[print the ID of the root window]'
+  '-o[list windows whose override_redirect attribute is set to 1]'
+  '-u[list unmapped (invisible) windows]'
+  '-h[display this help]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

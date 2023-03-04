@@ -1,0 +1,14 @@
+#compdef xrestop
+
+local arguments
+
+arguments=(
+  {-d,--display}'[specify X Display to monitor]'
+  {-t,--delay-time}'[specify time in seconds between sampling]'
+  {-b,--batch}'[run in batch mode]'
+  {-m--max-samples}'[maximum overall readings to take]'
+  {-h,--help}'[display this help message]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,14 @@
+#compdef chwb2
+
+local arguments
+
+arguments=(
+  '-h[display this help]'
+  '-I[inner border color (hex triplet without "#")]'
+  '-O[outer border color (hex triplet without "#")]'
+  '-i[inner border width]'
+  '-o[inner border width]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

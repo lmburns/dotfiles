@@ -1,0 +1,13 @@
+#compdef wtp
+
+local arguments
+
+arguments=(
+    '1:X-position:'
+    '2:Y-position:'
+    '3:width:'
+    '4:height:'
+    '*:WINID:'
+)
+
+_arguments -s $arguments

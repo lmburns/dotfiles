@@ -1,0 +1,101 @@
+#compdef wmctl
+
+autoload -U is-at-least
+
+_wmctl_cmds() {
+  typeset -a cmds
+  cmds=(
+    'help:prints this message or the help of the given subcommand(s)'
+    'info:list out X11 information'
+    'list:list out windows'
+    'move:move the active window'
+    'place:shape and move the window'
+    'shape:shape the window'
+    'static:resize and move the window'
+    'version:print version information'
+  )
+  _describe -t wmctl-cmds "commands" cmds
+}
+
+_wmctl() {
+  local curcontext="$curcontext" state line context
+  typeset -a arguments argopts
+  integer ret=1
+
+  arguments=(
+    '--log-level[sets the log level]:level:(error warn info debug trace)'
+    {-w,--window}'[window to operate against]:WINID:'
+    {-d,--debug}'[enable debug logging]'
+    {-q,--quiet}'[disable all logging]'
+    {-t,--test}'[enable test mode]'
+    {-h,--help}'[prints help information]'
+    {-V,--version}'[prints version information]'
+    ":: :_wmctl_cmds" \
+    '*::: :->wmctl'
+  )
+
+  if is-at-least 5.2; then
+      argopts=(-s -S -C)
+  else
+      argopts=(-s -C)
+  fi
+
+  _arguments "$argopts[@]" "$arguments[@]" \
+    && ret=0
+
+  case $state in
+    (wmctl)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:wmctl-command-$line[1]:"
+      case $line[1] in
+        (info)
+          _arguments "${argopts[@]}" \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            && ret=0
+        ;;
+        (list)
+          _arguments "${argopts[@]}" \
+            {-a,--all}'[show all X windows, not just VM]' \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            && ret=0
+        ;;
+        (move)
+          _arguments "${argopts[@]}" \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            "::position to move active window to:(center left right top bottom top-left top-right bottom-right bottom-left left-center right-center top-center bottom-center)" \
+            && ret=0
+        ;;
+        (place)
+          _arguments "${argopts[@]}" \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            "1:shape directive to use against the window:(4x3 halfh halfw small medium large grow max shrink unmax)" \
+            "2:position to move the window to:(center left right top bottom top-left top-right bottom-right bottom-left left-center right-center top-center bottom-center)" \
+            && ret=0
+        ;;
+        (shape)
+          _arguments "${argopts[@]}" \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            "1:shape directive to use against the window:(4x3 halfh halfw small medium large grow max shrink unmax)" \
+            && ret=0
+        ;;
+        (static)
+          _arguments "${argopts[@]}" \
+            {-h,--help}'[prints help information]' \
+            {-V,--version}'[prints version information]' \
+            '1:width of window:' \
+            '2:height of window:' \
+            '3::X location of window:' \
+            '4::Y location of window:' \
+            && ret=0
+        ;;
+      esac
+  esac
+}
+
+_wmctl "$@"

@@ -1,0 +1,12 @@
+#compdef ignw
+
+local arguments
+
+arguments=(
+  '-h[display this help]'
+  '-r[reset wid’s override_redirect value to 0, unignoring the window]'
+  '-s[set wid’s override_redirect value to 1, ignoring the window]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

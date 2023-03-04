@@ -1,0 +1,7 @@
+#compdef chwn
+
+local arguments
+
+arguments=( '1:WM_NAME:' '2:WINID:' )
+
+_arguments -s $arguments

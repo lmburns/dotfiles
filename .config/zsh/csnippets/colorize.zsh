@@ -1,6 +1,8 @@
 local -a cmds
 local cmd
 
+# ccze -A
+
 if (( $+commands[grc] )); then
   cmds=(
     blkid
@@ -8,6 +10,7 @@ if (( $+commands[grc] )); then
     configure
     curl
     df
+    dig
     docker docker-compose
     du
     env
@@ -18,8 +21,10 @@ if (( $+commands[grc] )); then
     iostat sar
     ip
     iptables
-    # iwconfig
+    iwconfig
     # journalctl
+    last
+    # lolcat
     lsattr
     lsblk
     lsmod
@@ -30,6 +35,7 @@ if (( $+commands[grc] )); then
     nmap
     ping
     ps
+    sensors
     ss
     stat
     sysctl
@@ -38,7 +44,7 @@ if (( $+commands[grc] )); then
     trash-list
     uptime
     vmstat
-    # whois
+    whois
   )
 
   for cmd ($cmds) {
@@ -46,6 +52,8 @@ if (( $+commands[grc] )); then
        eval "function $cmd() { stdbuf -oL grc --colour=auto $cmd \$@ }"
     fi
   }
+
+  function journalctlc() { stdbuf -oL grc --colour=on journalctl $@ }
 fi
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:tw=100

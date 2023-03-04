@@ -1,0 +1,29 @@
+#compdef wattr
+
+_wattr_attrs() {
+  typeset -a attrs; attrs=(
+     'i[print wid]'
+     'b[print wid’s border width]'
+     'x[print wid’s x offset]'
+     'y[print wid’s y offset]'
+     'w[print wid’s width]'
+     'h[print wid’s height]'
+     'o[wattr returns 0 if the override_redirect attribute is set on the window]'
+     'm[wattr returns 0 if wid is mapped on screen, and 1 otherwise]'
+  )
+   _values -s '' 'attribute' "$attrs[@]"
+}
+
+_wattr() {
+  local arguments
+
+  arguments=(
+    '-h[display this help]'
+    '1::attribute:_wattr_attrs'
+    '2:WINID:'
+  )
+
+  _arguments -s -S $arguments
+}
+
+_wattr "$@"

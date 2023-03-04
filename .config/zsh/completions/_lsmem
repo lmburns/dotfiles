@@ -1,7 +1,5 @@
 #compdef lsmem
 
-# zsh completions for 'lsmem'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
 local arguments
 
 arguments=(

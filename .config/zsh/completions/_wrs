@@ -1,0 +1,12 @@
+#compdef wrs
+
+local arguments
+
+arguments=(
+    '-a[absolute mode. window will be resized up to the x and y coordinates]'
+    '1:X-position:'
+    '2:Y-position:'
+    '*:WINID:'
+)
+
+_arguments -s $arguments

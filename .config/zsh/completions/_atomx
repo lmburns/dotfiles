@@ -1,0 +1,23 @@
+#compdef atomx
+
+_atomx() {
+  local -a arguments atoms
+  local curcontext="$curcontext" state state_descr line expl
+  integer ret=1
+
+  arguments=(
+    '-d[delete atom from window]:atom:->atoms'
+    '1::atom:->atoms'
+    '*:WINID:'
+  )
+
+  _arguments -s -S -C $arguments
+
+  if [[ $state == atoms ]]; then
+    atoms=( ${${(@f)"$(_call_program atoms xlsatoms 2> /dev/null)"}#*$'\t'} )
+    _describe -t atoms "$state_descr" atoms \
+      && ret=0
+  fi
+}
+
+_atomx "$@"

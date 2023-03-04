@@ -1,0 +1,7 @@
+#compdef xmrs
+
+local arguments
+
+arguments=( '*:WINID:' )
+
+_arguments -s $arguments

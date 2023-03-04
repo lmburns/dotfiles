@@ -1,0 +1,17 @@
+#compdef xwinfo
+
+local arguments
+
+arguments=(
+  '-c[print the class name]'
+  '-i[print the instance name]'
+  '-n[print the window title]'
+  '-t[print the window type]'
+  '-s[print the window state]'
+  '-g[print the geometry (as width height x y)]'
+  '-v[display version]'
+  '-h[display this help message]'
+  '*:WINID:'
+)
+
+_arguments -s $arguments

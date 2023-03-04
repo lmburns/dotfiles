@@ -1,0 +1,7 @@
+#compdef xmmv
+
+local arguments
+
+arguments=( '*:WINID:' )
+
+_arguments -s $arguments

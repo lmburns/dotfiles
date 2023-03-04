@@ -1,0 +1,78 @@
+#!/usr/bin/env zsh
+
+# Desc: Close ad notifications from Brave
+
+#  ╭───────────╮
+#  │ Variables │
+#  ╰───────────╯
+# DUNST_APP_NAME
+# DUNST_SUMMARY
+# DUNST_BODY
+# DUNST_ICON_PATH,
+# DUNST_URGENCY
+# DUNST_ID
+# DUNST_PROGRESS
+# DUNST_CATEGORY
+# DUNST_STACK_TAG
+# DUNST_URLS
+# DUNST_TIMEOUT,
+# DUNST_TIMESTAMP
+# DUNST_DESKTOP_ENTRY
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                    Printing Variables                    │
+#  ╰──────────────────────────────────────────────────────────╯
+# App: notify-send
+# Summary: hello
+# Body: NOW
+# IconPath: /home/lucas/.config/dunst/icons/GruvboxIcon.png
+# Urgency: NORMAL
+# Id: 2
+# Progress: -1
+# Category:
+# Stack tag:
+# URLS:
+# Timeout: 5000
+# Timestamp: 9608913
+# Desktop:
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                       dunstlogger                        │
+#  ╰──────────────────────────────────────────────────────────╯
+# {
+#         appname: 'Brave'
+#         summary: 'Ledger Nano S'
+#         body: '
+#
+# The world’s most popular hardware wallet'
+#         icon: 'file:///tmp/.org.chromium.Chromium.0XxCl6'
+#         raw_icon set: false
+#         icon_id: '(null)'
+#         desktop_entry: 'brave-browser'
+#         category:
+#         timeout: 0
+#         urgency: NORMAL
+#         transient: 0
+#         formatted: '<b>Ledger Nano S</b>
+#
+#
+# The world’s most popular hardware wallet'
+#         fg: #ebdbb2
+#         bg: #221a02
+#         highlight: #1745d1
+#         frame: #7e5053
+#         fullscreen: show
+#         format: <b>%s</b>\n%b
+#         progress: -1
+#         stack_tag:
+#         id: 3
+#         actions: {
+#                 "default": "Activate"
+#         }
+#         script_count: 1
+#         scripts: '/home/lucas/mybin/linux/dunstlogger'
+# }
+
+if [[ $DUNST_APP_NAME == "Brave" ]]; then
+    dunstctl close
+fi

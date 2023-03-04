@@ -83,8 +83,8 @@ map("i", '<M-S-">', "<Home>", {desc = "Move to of line"})
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")
 map("n", "<S-Tab>", "<<")
-map("v", "<Tab>", ">><Esc>gv")
-map("v", "<S-Tab>", "<<<Esc>gv")
+map("x", "<Tab>", ">><Esc>gv", {silent = true})
+map("x", "<S-Tab>", "<<<Esc>gv", {silent = true})
 -- map("i", "<S-Tab>", "<C-d>")
 
 -- Don't lose selection when shifting sidewards

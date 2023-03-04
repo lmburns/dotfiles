@@ -1,0 +1,21 @@
+diff --git i/lua/nvim-treesitter-refactor/navigation.lua w/lua/nvim-treesitter-refactor/navigation.lua
+index 6003310..bf1dd7a 100644
+--- i/lua/nvim-treesitter-refactor/navigation.lua
++++ w/lua/nvim-treesitter-refactor/navigation.lua
+@@ -153,7 +153,15 @@ function M.goto_adjacent_usage(bufnr, delta)
+   local def_node, scope = locals.find_definition(node_at_point, bufnr)
+   local usages = locals.find_usages(def_node, scope, bufnr)
+ 
+-  local index = utils.index_of(usages, node_at_point)
++
++  local index = (function()
++    for i, o in ipairs(usages) do
++      if o == node_at_point then
++        return i
++      end
++    end
++  end)()
++
+   if not index then
+     return
+   end

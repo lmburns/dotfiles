@@ -73,21 +73,21 @@ export SYSTEMD_COLORS=1
 export SYSTEMD_LOG_COLOR=1
 
 # -z-4
-# -i -n -w -g -M -X -F -R -f
+# -ingMXf -x4 --mouse --wheel-lines=3 --prompt=?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]
 # export LESS="--mouse --wheel-lines=3 -r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+# --quit-if-one-screen -F \
 export LESS="\
   --ignore-case \
   --line-numbers \
   --hilite-search \
   --LONG-PROMPT \
   --no-init \
-  --quit-if-one-screen \
   --RAW-CONTROL-CHARS \
   --mouse \
   --wheel-lines=3 \
   --tabs 4 \
   --force \
-  --prompt ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+  --prompt=?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
 
 # export PAGER="${commands[less]:-$PAGER}"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
@@ -143,6 +143,7 @@ export PYENV_ROOT="${XDG_DATA_HOME}/pyenv"
 export PIPX_BIN_DIR="${XDG_DATA_HOME:h}/bin"
 export PIPX_HOME="${XDG_DATA_HOME:h}/pipx"
 export IPYTHONDIR="${XDG_CACHE_HOME}/ipython"
+export MYPY_CACHE_DIR="${XDG_CACHE_HOME}/mypy"
 # export PTPYTHON_CONFIG_HOME="${XDG_CONFIG_HOME}/ptpython/config.py"
 export R_ENVIRON_USER="${XDG_CONFIG_HOME}/r/Renviron"
 export R_MAKE_VARS_USER="${XDG_CONFIG_HOME}/r/Makevars"

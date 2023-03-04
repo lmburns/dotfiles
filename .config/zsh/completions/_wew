@@ -1,0 +1,48 @@
+#compdef wew
+
+local arguments state
+
+_wew_events() {
+  typeset -a events; events=(
+     CREATE
+     DESTROY
+     BUTTON_PRESS
+     BUTTON_RELEASE
+     MOTION
+     ENTER
+     LEAVE
+     CONFIGURE
+     KEY_PRESS
+     FOCUS_IN
+     FOCUS_OUT
+     KEYMAP
+     EXPOSE
+     GRAPHICS_EXPOSURE
+     NO_EXPOSURE
+     VISIBILITY
+     UNMAP
+     MAP
+     MAP_REQUEST
+     REPARENT
+     CONFIGURE_REQUEST
+     GRAVITY
+     RESIZE_REQUEST
+     CIRCULATE
+     PROPERTY
+     SELECTION_CLEAR
+     SELECTION_REQUEST
+     SELECTION
+     COLORMAP
+     CLIENT_MESSAGE
+     MAPPING
+  )
+   _sequence -s '|' compadd "$@" -a events
+}
+
+arguments=(
+  '-l[list event mask values]'
+  '-r[unknown: possibly remove window event mask]'
+  '-m[set new window event mask (default: STRUCTURE_NOTIFY|ENTER_NOTIFY|FOCUS_CHANGE)]:mask:_wew_events'
+)
+
+_arguments -s -S -C $arguments

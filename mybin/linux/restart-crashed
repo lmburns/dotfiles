@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: When programs crash from an overloaded CPU
+# Desc: When programs crash from an overloaded CPU when using `bustd`
 
 # Basically the same as .xinitrc
 # Really need to fix things from crashing all of these items

@@ -67,7 +67,7 @@ function check_tabbed {
   wid_tabbed=$1
   if [ "$(get_class $wid_tabbed)" != "tabbed" ]; then
     if ! $TAB_NON_TABBED; then
-      echo "Not an instance of tabbed" 2>&1
+      echo "Not an instance of bsptab" 2>&1
       exit 1
     else
       $0 tab $wid_tabbed

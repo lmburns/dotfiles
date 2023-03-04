@@ -1193,6 +1193,7 @@ return packer.startup(
                     requires = {
                         {
                             "nvim-treesitter/nvim-treesitter-refactor",
+                            patch = true,
                             after = "nvim-treesitter",
                             desc = "Refactor module"
                         },

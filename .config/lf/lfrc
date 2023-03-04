@@ -2,7 +2,8 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
-# TODO: Change filename is status bar header
+# TODO: craete file  from clipboard
+# TODO: fix MYCOLORS not importing
 
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
@@ -202,6 +203,11 @@ cmd figlet ${{
 # -- Print lf id
 cmd get-id %{{
   lf -remote "send $id echomsg \"lf-id: $id\""
+}}
+
+# -- Dump the environment
+cmd dump-env ${{
+  command env | bat --paging=always
 }}
 
 # -- Rename/change the pane title
@@ -415,7 +421,7 @@ cmd link %{{
   mode="$1"
   shift
   if (( $# < 1 )); then
-    lf -remote "send $id echo no files to link"
+    lf -remote "send $id echoe 'no files to link'"
     exit 0
   fi
   case "$mode" in
@@ -427,6 +433,28 @@ cmd link %{{
       command ln -t . "$@"
       dunstify -a lf "Created hardlink" "${@:t3} => $PWD"
     ;;
+  esac
+  zf_rm "${XDG_DATA_HOME}/lf/files"
+  lf -remote "send clear"
+}}
+
+
+# === Paste: asynchronously ====================================
+cmd paste-async &{{
+  zmodload -Fa zsh/files b:zf_rm
+  local mode
+  set ${(@f)"$(<$XDG_DATA_HOME/lf/files)"}
+  mode="$1"
+  shift
+  case "$mode" in
+    (copy)
+      rsync -av --ignore-existing --progress -- "$@" . \
+        | stdbuf -i0 -o0 -e0 tr '\r' '\n' \
+        | while IFS= read -r line {
+            lf -remote "send $id echo $line"
+        }
+      ;;
+    (move) command mv -n -- "$@" .;;
   esac
   zf_rm "${XDG_DATA_HOME}/lf/files"
   lf -remote "send clear"
@@ -634,6 +662,11 @@ cmd select-exec ${{
   done
 }}
 
+# === Select: all files and dirs ===============================
+cmd select-all :{{
+  unselect; invert
+}}
+
 # === Tag Jump: builtin lf tags ================================
 cmd jump_tag ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -783,7 +816,7 @@ cmd tmsu-remove ${{
 # === Tag: tmsu remove =========================================
 cmd tmsu-list !{{
   clear
-  tmsu tags "$fx" | bat -l bash --paging=always
+  tmsu tags "$fx" | bat -pfl bash --paging=always
 }}
 
 # === Tag: wutag set ===========================================
@@ -835,9 +868,9 @@ cmd wutag-remove ${{
 }}
 
 # === Tag: wutag list ==========================================
-cmd wutag-list !{{
+cmd wutag-list ${{
   clear
-  noglob wutag --color=always list files -tf | bat -f
+  noglob wutag --color=always list files -tf | bat -pf --paging=always
 }}
 # ]]] === TAGS ===
 
@@ -845,10 +878,20 @@ cmd wutag-list !{{
 # │ Finding │
 # ╰─────────╯
 
-cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height) # Find file with pattern
-cmd fd !clear; fd -Hi "$@"     # Find file at any depth
-cmd fD !clear; fd -Hi -d1 "$@" # Find file current depth
-cmd rg !clear; rg "$1"         # Normal grep
+# Find file with pattern
+cmd fzf $clear; nvim $(fd -Hi -tf "$1" . |  fzf --no-height)
+# Find file with fd
+cmd fd ${{
+  clear; fd --color=always -Hi "$@" | bat -fp --paging=always
+}}
+# Find recently changed file
+cmd fdr ${{
+  clear; fd --color=always -Hi -d1 --changed-within="$1" | bat -fp --paging=always
+}}
+# Normal grep command
+cmd rg ${{
+  clear; rg --color=always "$@" | bat -fp --paging=always
+}}
 # Grep with FZF
 cmd rgu ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -912,9 +955,17 @@ cmd yank-realpath ${{
     | xclip -r -selection c && dunstify -a lf "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 
-cmd disk-info %{{
+cmd disk-info ${{
   clear;
-  dust | sed '1 s/\r//g; s/^\s//' | bat --paging=always -f --plain
+
+  env | bat --paging=always
+
+  # local cwd="${(l:(COLUMNS-$#PWD)/2:: :):-}$PWD"
+  # print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
+  #   | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
+
+  # print -- "$(pwd | lscolors)\n$(dust | sed -E '1 s/^\s+//g')" \
+  #   | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
   # diskus
 }}
 
@@ -1034,7 +1085,7 @@ map ? ${{
 }}
 map gH ${{
   # open lf mappings
-  clear; bat -l bash -f ~/.config/lf/mappings
+  clear; bat -f --paging=always -l bash ~/.config/lf/mappings
 }}
 map Ow push :open-with<space>                       # open w/ specified program
 map Op &{{
@@ -1062,7 +1113,7 @@ map Qg !{{
 # map Sa $$XDG_CONFIG_HOME/lf/sxiv-preview "$f" # attempt to preview all imgs
 
 map ad disk-info                # get disk information
-map as !{{
+map as ${{
   # directory info
   clear; du -hsx * | sort -rh | bat --paging=always
 }}
@@ -1145,7 +1196,7 @@ map Bs rmspace              # remove spaces from filenames
 # == File selection / Directory Movement == [[[
 map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
-map fr push :fd<space>-d1<space>--changed-within<space> # use fd to find recent file
+map fr push :fdr<space> # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit (with preview)
 
 map cc fzf_zoxide         # fzf zioxide
@@ -1165,16 +1216,19 @@ map V invert
 map sf select-files
 map sd select-dirs
 map sx select-exec
+map sA select-all
 map sF ${{
   # select files fzf
   setopt localtraps err_exit; trap "return 0" EXIT
   for f ($(\
       print -ln -- *(ND) \
+        | lscolors \
         | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m" fzf || { dunstify "No files selected"; exit })
   )) {
     lf -remote "send $id toggle $f"
   }
 }}
+
 map ss set globsearch!            # change search type
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
@@ -1219,6 +1273,7 @@ cmd copy-realpath ${{
 map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
+map Pa paste-async            # paste a file asynchronously (used for big files)
 
 # map y
 map y copy           # general copy
