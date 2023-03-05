@@ -1,0 +1,10 @@
+[Unit]
+Description=Redshift
+
+[Service]
+ExecStart=/usr/bin/redshift -c /home/lucas/.config/redshift/redshift.conf
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target

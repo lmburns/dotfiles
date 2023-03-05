@@ -458,7 +458,7 @@ zt 0c light-mode binary for \
   lbin atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
   make'install' atpull'%atclone' lman \
     KoffeinFlummi/htop-vim \
-  wait"$(has tmux)" lbin patch"${pchf}/%PLUGIN%.patch" lman \
+  lbin patch"${pchf}/%PLUGIN%.patch" lman \
   atclone'./autogen.sh && ./configure --prefix=$ZPFX' make"install PREFIX=$ZPFX" atpull'%atclone' \
     tmux/tmux \
     tmux-plugins/tpm \

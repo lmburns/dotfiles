@@ -1,0 +1,10 @@
+[Unit]
+Description=Flashfocus
+
+[Service]
+ExecStart=/home/lucas/.local/bin/flashfocus
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target

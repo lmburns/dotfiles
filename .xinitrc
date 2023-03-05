@@ -15,9 +15,12 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 # Kill process if it hangs
 # bustd &
 
-# clipit &
+#  ╭───────────╮
+#  │ clipboard │
+#  ╰───────────╯
 # greenclip daemon &
 setsid -f greenclip daemon > /dev/null 2>&1 &!
+
 ulauncher --hide-window &
 
 # spotifyd &
@@ -28,12 +31,19 @@ ulauncher --hide-window &
 
 xrandr --dpi 96
 
+# Set screensaver settings
 xset s on
 xset s 900 180
 # xset dpms 0 0 0
 # xset s 1200
 
-# numlockx &
+# Update font path
+xset +fp ~/.local/share/fonts
+xset fp rehash
+fc-cache -fv &
+
+# Start X with numlock enabled
+numlockx &
 
 # Auto lock screen
 # xscreensaver &
@@ -41,6 +51,9 @@ xset s 900 180
 # xss-lock -- xscreensaver-command -lock &
 # xss-lock -n /usr/share/doc/xss-lock/dim-screen.sh -- screenlock &
 
+#  ╭───────────╮
+#  │ xidlehook │
+#  ╰───────────╯
 # 'xrandr --output "DP-1" --brightness .1' \
 # 'xrandr --output "DP-1" --brightness 1' \
 
@@ -59,20 +72,27 @@ xidlehook \
     --socket "/tmp/xidlehook.sock" &
 
 # flashfocus &
+
 mpd &
+
 # transmission-daemon &
 # transmission-rss -f &
 
 # xrdb ~/.Xresources &
 
-# Night mode
-redshift -c "$HOME/.config/redshift/redshift.conf" &
-# redshift -l 38.95:-92.32 &
+#  ╭──────────╮
+#  │ redshift │
+#  ╰──────────╯
+# Now used as a systemd service
+# redshift -c "$HOME/.config/redshift/redshift.conf" &
 # redshift-gtk &
 
-# Compositor
+#  ╭────────────╮
+#  │ compositor │
+#  ╰────────────╯
+# Now used as a systemd service
 # picom -b --experimental-backends &
-picom-rounded -b --experimental-backends &
+# picom-rounded -b --experimental-backends &
 
 # use x11 compositor (transparent windows, blur background, ...) if not inside a VM
 # if ! grep -q "^flags.* hypervisor" /proc/cpuinfo ; then

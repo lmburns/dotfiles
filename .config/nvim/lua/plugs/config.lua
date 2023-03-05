@@ -1206,8 +1206,8 @@ function M.move()
 
     wk.register(
         {
-            ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>i", "Move line down"},
-            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>i", "Move line up"}
+            ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>", "Move line down"},
+            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>", "Move line up"}
         },
         {mode = "i"}
     )
@@ -1794,69 +1794,120 @@ end
 -- │                       VisualMulti                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.visualmulti()
-    -- FIX: 'cw' consumes more than what it used to due to noice.nvim
-    -- TODO: <C-n> smartcase
-
-    -- g.VM_theme = "purplegray"
     g.VM_highlight_matches = ""
     g.VM_show_warnings = 0
     g.VM_silent_exit = 1
-    g.VM_default_mappings = 1
+    g.VM_default_mappings = 0
     g.VM_set_statusline = 0 -- 3 if you want to use this STL
+    g.VM_case_setting = "smart"
 
     g.VM_Mono_hl = "DiffText" -- ErrorMsg DiffText
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
     g.VM_Cursor_hl = "Visual"
     g.VM_Insert_hl = "DiffChange"
 
+    -- { c -> index(split('hljkwebWEB$^0{}()%nN', '\zs'), c) >= 0 }
+    -- { c -> index(split('iafFtTg', '\zs'), c) >= 0              }
     g.VM_custom_motions = {
         ["L"] = "$",
-        ["H"] = "^"
+        ["H"] = "^",
+        w = "iw",
+        W = "aw",
+        -- iq = "iq",
+        -- ["aw"] = "aw", -- These don't work
+        -- ["iw"] = "iw",
     }
+
+    g.VM_custom_noremaps = {
+        ["=="] = "==",
+        ["<<"] = "<<",
+        [">>"] = ">>",
+    }
+
+    g.VM_user_operators = {
+        "dss", -- delete surround automatic detection
+        {css = 1}, -- change surround automatic detection
+        {yss = 1}, -- surround line
+        {cs = 2}, -- change surround
+        {ds = 1}, -- delete surround
+        "gc", -- comment
+        {da = 1}, -- FIX: delete around
+        {di = 1}, -- FIX: delete inner
+        {ys = 3}, -- FIX: add surround
+        {cr = 3} -- FIX: change case
+        -- {s = 2}, -- substitute
+        -- {d = 2}, -- delete
+        -- {y = 2}, -- yank
+    }
+
+    -- g.VM_custom_remaps = {
+    --   -- ["<C-c>"] = "<Esc>"
+    -- }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
     g.VM_maps = {
         Delete = "d",
+        Yank = "y",
+        ["Select Operator"] = "",
+        ["Find Operator"] = "m",
         Undo = "u",
         Redo = "U",
         ["Switch Mode"] = ",",
-        ["Select Operator"] = "s",
-        ["Find Operator"] = "m",
+        -- ["Exit"] = "<C-c>", -- common.vm also defines <Esc>
+
+        i = "i",
+        I = "I",
+
+        ["Add Cursor Up"] = "<C-Up>",
+        ["Add Cursor Down"] = "<C-Down>",
+        ["Add Cursor At Pos"] = [[<Leader>\]],
+        ["Select Cursor Up"] = "<M-S-i>",
+        ["Select Cursor Down"] = "<M-S-o>",
+        ["Slash Search"] = "g/", -- Extend/move cursors with /
+        ["Move Left"] = "<M-C-Left>", -- Move region left
+        ["Move Right"] = "<M-C-Right>", -- Move region right
+        -- Region cycling and removal
+        ["Find Next"] = "]", -- Same as "n"
+        ["Find Prev"] = "[", -- Same as "N"
+        ["Goto Next"] = "}", -- Go to next selected region
+        ["Goto Prev"] = "{", -- Go to prev selected region
+        ["Seek Next"] = "<C-f>", -- Fast go to next (from next page)
+        ["Seek Prev"] = "<C-b>", -- Fast go to previous (from previous page)
+        ["Skip Region"] = "q", -- Skip and find to next
+        ["Remove Region"] = "Q", -- Remove region under cursor
+        ["Remove Last Region"] = "<Leader>q", -- Remove last added region
+        ["Remove Every n Regions"] = "<Leader>R",
+        -- Special Commands
         ["Surround"] = "S",
         ["Replace Pattern"] = "R",
-        ["Select Cursor Up"] = "<M-C-Up>", -- start selecting up
-        ["Select Cursor Down"] = "<M-C-Down>", -- start selecting down
-        ["Move Left"] = "<M-C-Left>",
-        ["Move Right"] = "<M-C-Right>",
-        ["Find Next"] = "]",
-        ["Find Prev"] = "[",
-        ["Goto Next"] = "}", -- already selected
-        ["Goto Prev"] = "{", -- already selected
-        ["Seek Next"] = "<C-f>",
-        ["Seek Prev"] = "<C-b>",
-        ["Skip Region"] = "q",
-        ["Remove Region"] = "Q",
-        ["Remove Last Region"] = "<Leader>q",
-        ["Merge Regions"] = "<Leader>m",
-        ["Split Regions"] = "<Leader>s",
-        ["Tools Menu"] = "<Leader>`",
-        ["Search Menu"] = "<Leader>S",
-        ["Case Conversion Menu"] = "<Leader>C",
-        ["Invert Direction"] = "o",
-        ["Show Registers"] = '<Leader>"',
-        ["Visual Subtract"] = "<Leader>s",
-        ["Case Setting"] = "<Leader>c",
-        ["Toggle Whole Word"] = "<Leader>w",
-        ["Transpose"] = "<Leader>t",
-        ["Align"] = "<Leader>a",
-        ["Align Char"] = "<Leader><",
-        ["Align Regex"] = "<Leader>>",
-        ["Numbers"] = "<Leader>n",
-        ["Numbers Append"] = "<Leader>N",
-        ["Duplicate"] = "<Leader>d",
-        ["Shrink"] = "-",
-        ["Enlarge"] = "+",
+        ["Increase"] = "<C-A-i>", -- Increase numbers
+        ["Decrease"] = "<C-A-o>", -- Decrease numbers
+        ["gIncrease"] = "<C-S-i>", -- Progressively increase numbers
+        ["gDecrease"] = "<C-S-o>", -- Progressively decrease numbers
+        -- ["Alpha-Increase"] = "<C-S-i>",
+        -- ["Alpha-Decrease"] = "<C-S-o>",
+
+        -- Commands
+        ["Invert Direction"] = "o", -- Change direction cursor is within region
+        ["Shrink"] = "<", -- Reduce regions from the sides
+        ["Enlarge"] = ">", -- Enlarge regions from the sides
+        ["Transpose"] = "<Leader>t", -- Transpose selected regions
+        ["Align"] = "<Leader>a", -- Align regions
+        ["Align Char"] = "<Leader><", -- Align by character
+        ["Align Regex"] = "<Leader>>", -- Align by regex
+        ["Split Regions"] = "<Leader>s", -- Subtract pattern from regions
+        ["Filter Regions"] = "<Leader>f", -- Filter regions by pattern/expression
+        ["Merge Regions"] = "<Leader>m", -- Merge overlapping regions
+        ["Transform Regions"] = "<Leader>e", -- Transform regions with expression
+        ["Rewrite Last Search"] = "<Leader>r", -- Rewrite last pattern to match current region
+        ["Duplicate"] = "<Leader>d", -- Duplicate regions
+        ["One Per Line"] = "<Leader>L", -- Keep at most one region per line
+        ["Numbers"] = "<Leader>n", -- Insert numbers before cursor
+        ["Numbers Append"] = "<Leader>N", -- Insert numbers after cursor
+        ["Zero Numbers"] = "<Leader>0n", -- Insert numbers before cursor
+        ["Zero Numbers Append"] = "<Leader>0N", -- Insert numbers after cursor
+        --
         ["Run Normal"] = "<Leader>z",
         ["Run Last Normal"] = "<Leader>Z",
         ["Run Visual"] = "<Leader>v",
@@ -1864,23 +1915,60 @@ function M.visualmulti()
         ["Run Ex"] = "<Leader>x",
         ["Run Last Ex"] = "<Leader>X",
         ["Run Macro"] = "<Leader>@",
+        ["Run Dot"] = "<Leader>.",
+        --
+        ["Tools Menu"] = "<Leader>`", -- Filter lines to buffer, etc
+        ["Case Setting"] = "<Leader>c", -- Cycle case setting ('scs' -> 'noic' -> 'ic')
+        ["Case Conversion Menu"] = "<Leader>C", -- Works better in extend mode
+        ["Search Menu"] = "<Leader>S",
+        ["Show Registers"] = '<Leader>"', -- Show VM registers in the command line
+        ["Show Infoline"] = "<Leader>l", -- Shows information about current regions and patterns and modes
+        --
+        ["Toggle Whole Word"] = "<Leader>w", -- Toggle whole word search
         ["Toggle Block"] = "<Leader><BS>",
-        ["Toggle Single Region"] = "<Leader><CR>",
-        ["Toggle Multiline"] = "<Leader>M"
+        ["Toggle Multiline"] = "<Leader>M",
+        ["Toggle Single Region"] = "<Leader><CR>", -- Toggle single region mode
+        ["Toggle Mappings"] = "<Leader><Leader>", -- Toggle VM buffer mappings
+        -- Visual
+        ["Visual Subtract"] = "<Leader>s", -- Remove visual from region
+        ["Visual Find"] = "<Leader>f", -- Find from visually selection region
+        ["Visual Add"] = "<Leader>a",
+        ["Visual All"] = "<Leader>A",
+        -- Insert Mode
+        ["I Arrow w"] = "<C-Right>",
+        ["I Arrow b"] = "<C-Left>",
+        ["I Arrow W"] = "<C-S-Right>",
+        ["I Arrow B"] = "<C-S-Left>",
+        ["I Arrow ge"] = "<C-Up>",
+        ["I Arrow e"] = "<C-Down>",
+        ["I Arrow gE"] = "<C-S-Up>",
+        ["I Arrow E"] = "<C-S-Down>"
+        -- ["I Prev"] = "<C-k>", -- Insert mode to go prev cursor
+        -- ["I Next"] = "<C-j>", -- Insert mode to go next cursor
     }
 
     map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
     map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
+    map("n", "<C-M-S-l>", "<Plug>(VM-Select-l)")
+    map("n", "<C-M-S-h>", "<Plug>(VM-Select-h)")
+    map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
+
+    map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
+    map("x", "<Leader>/", "<Plug>(VM-Visual-Regex)")
     map("n", "<C-n>", "<Plug>(VM-Find-Under)")
     map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
-    map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
-    map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
+
     map("n", "<Leader>A", "<Plug>(VM-Select-All)")
     map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
-    map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)")
-    map("n", "g/", "<Cmd>VMSearch<CR>")
+    map("x", ";A", "<Plug>(VM-Visual-All)")
+    map("x", ";a", "<Plug>(VM-Visual-Add)")
+    map("x", ";F", "<Plug>(VM-Visual-Find)")
+    map("x", ";C", "<Plug>(VM-Visual-Cursors)")
+
+    map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)", {desc = "VM: Select last"})
+    map("n", "g/", "<Cmd>VMSearch<CR>", {desc = "Start VM with last search"})
 
     command(
         "VMFixStl",

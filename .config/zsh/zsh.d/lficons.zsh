@@ -549,8 +549,7 @@ ex=:\
 # Roman numerals
 # 󱂉 2 󱂊 3 󱂋 4 󱂍 6 󱂎 7 󱂏 8 󱂐 9
 
-typeset -gxA MYCOLORS
-MYCOLORS=(
+export LF_COLOR_ARRAY="typeset -gxA COLORS; COLORS=(
   1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
   4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
   7  $'\e[38;5;7m'  8  $'\e[38;5;8m'  9   $'\e[38;5;9m'
@@ -566,12 +565,11 @@ MYCOLORS=(
   45 $'\e[38;5;45m' 46 $'\e[38;5;46m' 47  $'\e[38;5;47m'
   48 $'\e[38;5;48m' 49 $'\e[38;5;49m' 50  $'\e[38;5;50m'
   51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
-  U  $'\e[4m'       B  $'\e[1m'       bg  $'\e[3m'
-  tb $' \t '        nl $'\n'          res $'\e[0m'
-  it $'\e[3m'       st $'\e[9m'       rnl $'\e[0m\n'
-)
-
-export MYCOLORS
+ 'U' $'\e[4m'      'B' $'\e[1m'      'bg' $'\e[3m'
+'tb' $' \t '      'nl' $'\n'        'res' $'\e[0m'
+'it' $'\e[3m'     'st' $'\e[9m'     'rnl' $'\e[0m\n'
+  0  $'\e[0m'
+)"
 
 # Remove --quit-if-one-screen | -F
 export LF_LESS="less -ingMXfR -x4 --mouse --wheel-lines=3 --prompt='?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'"

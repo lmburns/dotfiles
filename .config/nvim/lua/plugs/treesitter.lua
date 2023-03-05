@@ -1330,7 +1330,8 @@ local function init()
             "make",
             "cmake",
             "zsh",
-            "solidity"
+            "solidity",
+            "sxhkdrc"
             -- "toml",
         }
     )

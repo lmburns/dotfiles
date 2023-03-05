@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+integer h w
+local -a ret
+
+# fwid=$(bspc query -N -n focused)
+
+ret=( ${(@s: :)$(wattr xh $(pfw))} )
+w=ret[1] h=ret[2]
+
+if (( w > h )) {
+  bspc node -p '~east'
+} else {
+  bspc node -p '~south'
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

@@ -38,7 +38,7 @@ function M.crates()
             date_format = "%Y-%m-%d",
             thousands_separator = ",",
             notification_title = "Crates",
-            curl_args = { "-sL", "--retry", "1" },
+            curl_args = {"-sL", "--retry", "1"},
             disable_invalid_feature_diagnostic = false,
             text = {
                 loading = "   Loading",
@@ -47,7 +47,7 @@ function M.crates()
                 yanked = "   %s",
                 nomatch = "   No match",
                 upgrade = "   %s",
-                error = "   Error fetching crate",
+                error = "   Error fetching crate"
             },
             highlight = {
                 loading = "CratesNvimLoading",
@@ -56,7 +56,7 @@ function M.crates()
                 yanked = "CratesNvimYanked",
                 nomatch = "CratesNvimNoMatch",
                 upgrade = "CratesNvimUpgrade",
-                error = "CratesNvimError",
+                error = "CratesNvimError"
             },
             popup = {
                 autofocus = false,
@@ -121,7 +121,7 @@ function M.crates()
                         ["vd"] = "Crates: view dependencies",
                         ["vf"] = "Crates: view features",
                         ["[g"] = "Prev diagnostic",
-                        ["]g"] = "Next diagnostic",
+                        ["]g"] = "Next diagnostic"
                     }
                 )
             end
@@ -139,7 +139,7 @@ local function init()
             pattern = "rust",
             command = function(args)
                 -- Rust analyzer really slows things down, so this needs more time
-               vim.opt_local.timeoutlen = 500
+                vim.opt_local.timeoutlen = 500
                 local bufnr = args.buf
 
                 local bmap = function(...)
@@ -154,6 +154,25 @@ local function init()
                 -- bmap("n", "<Leader>r<CR>", ":VT cargo play %<CR>")
                 -- bmap("n", "<Leader>v<CR>", ":T rust-script %<CR>")
                 -- bmap("n", "<Leader>e<CR>", ":T cargo eval %<CR>")
+
+                bmap(
+                    "n",
+                    "vd",
+                    "<Cmd>CocCommand rust-analyzer.moveItemDown<CR>",
+                    {desc = "Move item down"}
+                )
+                bmap(
+                    "n",
+                    "vu",
+                    "<Cmd>CocCommand rust-analyzer.moveItemUp<CR>",
+                    {desc = "Move item up"}
+                )
+                bmap(
+                    "n",
+                    "<Leader>ex",
+                    "<Cmd>CocCommand rust-analyzer.expandMacro<CR>",
+                    {desc = "Expand macro"}
+                )
 
                 bmap(
                     "n",

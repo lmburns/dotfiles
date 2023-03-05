@@ -1059,8 +1059,19 @@ key_bindings:
   # Scancodes
   # https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
   #
+  # Example to get this info for double quote:
+  #
+  #   { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" }:
+  #
+  #  1. key:   Output of `sudo showkey --scancode`.
+  #  2. chars: Output of `xev`'s 'keysym' (0x22).
+  #            Convert 0x22 to decimal.
+  #  3. chars: After the semicolon, see table below.
+  #
   # https://www.eso.org/~ndelmott/ascii.html
-  # This chart seems to be off by one
+  # The actual modifier is a result of 1 + modifier
+  # For example, Control|Alt = 4 + 2 + 1
+  #
   # shift     0b1         (1)
   # alt       0b10        (2)
   # ctrl      0b100       (4)
@@ -1082,13 +1093,37 @@ key_bindings:
   - { key: Semicolon, mods: Control|Alt, chars: "\x1b[59;7u" }
 
   - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
-  - { key: 0x28, mods: Control|Shift|Alt, chars: "\x1b[34;8u" } # Double quote
 
-  # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
-  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
-  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
-  # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
-  # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
+  # Control + Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: A, mods: Control|Alt|Shift, chars: "\x1b[97;8u" }
+  - { key: B, mods: Control|Alt|Shift, chars: "\x1b[98;8u" }
+  - { key: C, mods: Control|Alt|Shift, chars: "\x1b[99;8u" }
+  - { key: D, mods: Control|Alt|Shift, chars: "\x1b[100;8u" }
+  - { key: E, mods: Control|Alt|Shift, chars: "\x1b[101;8u" }
+  - { key: F, mods: Control|Alt|Shift, chars: "\x1b[102;8u" }
+  - { key: G, mods: Control|Alt|Shift, chars: "\x1b[103;8u" }
+  - { key: H, mods: Control|Alt|Shift, chars: "\x1b[104;8u" }
+  - { key: I, mods: Control|Alt|Shift, chars: "\x1b[105;8u" }
+  - { key: J, mods: Control|Alt|Shift, chars: "\x1b[106;8u" }
+  - { key: K, mods: Control|Alt|Shift, chars: "\x1b[107;8u" }
+  - { key: L, mods: Control|Alt|Shift, chars: "\x1b[108;8u" }
+  - { key: M, mods: Control|Alt|Shift, chars: "\x1b[109;8u" }
+  - { key: N, mods: Control|Alt|Shift, chars: "\x1b[110;8u" }
+  - { key: O, mods: Control|Alt|Shift, chars: "\x1b[111;8u" }
+  - { key: P, mods: Control|Alt|Shift, chars: "\x1b[112;8u" }
+  - { key: Q, mods: Control|Alt|Shift, chars: "\x1b[113;8u" }
+  - { key: R, mods: Control|Alt|Shift, chars: "\x1b[114;8u" }
+  - { key: S, mods: Control|Alt|Shift, chars: "\x1b[115;8u" }
+  - { key: T, mods: Control|Alt|Shift, chars: "\x1b[116;8u" }
+  - { key: U, mods: Control|Alt|Shift, chars: "\x1b[117;8u" }
+  - { key: V, mods: Control|Alt|Shift, chars: "\x1b[118;8u" }
+  - { key: W, mods: Control|Alt|Shift, chars: "\x1b[119;8u" }
+  - { key: X, mods: Control|Alt|Shift, chars: "\x1b[120;8u" }
+  - { key: Y, mods: Control|Alt|Shift, chars: "\x1b[121;8u" }
+  - { key: Z, mods: Control|Alt|Shift, chars: "\x1b[122;8u" }
+  - { key: Colon, mods: Control|Alt|Shift, chars: "\x1b[58;8u" }
+  - { key: Period, mods: Control|Alt|Shift, chars: "\x1b[46;8u" }
+  - { key: 0x28, mods: Control|Alt|Shift, chars: "\x1b[34;8u" } # Double quote
 
   # Control + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: Return, mods: Control, chars: "\x1b[13;5u" }
@@ -1104,35 +1139,40 @@ key_bindings:
   - { key: 0x61, mods: Control, chars: "\x1b[47;5u" } # Forward slash (/)
 
   # Control + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-
   # Control + B ⇒ SearchBackward
   # Control + C ⇒ Copy
   # Control + F ⇒ SearchForward
   # Control + N ⇒ CreateNewWindow
-  # Control + U ⇒ “EnterHintsMode”
   # Control + P ⇒ Paste
+  # Control + U ⇒ “EnterHintsMode”
 
-  - { key: A, mods: Control|Shift, chars: "\x1b[65;6u" }
-  - { key: D, mods: Control|Shift, chars: "\x1b[68;6u" }
-  - { key: E, mods: Control|Shift, chars: "\x1b[69;6u" }
-  - { key: G, mods: Control|Shift, chars: "\x1b[71;6u" }
-  - { key: H, mods: Control|Shift, chars: "\x1b[72;6u" }
-  - { key: I, mods: Control|Shift, chars: "\x1b[73;6u" }
-  - { key: J, mods: Control|Shift, chars: "\x1b[74;6u" }
-  - { key: K, mods: Control|Shift, chars: "\x1b[75;6u" }
-  - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
-  - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
-  - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
-  # - { key: O,      mods: Control|Shift, chars: "\x1b[79;6u" }
-  # - { key: P,      mods: Control|Shift, chars: "\x1b[80;6u" }
-  - { key: Q, mods: Control|Shift, chars: "\x1b[81;6u" }
-  - { key: R, mods: Control|Shift, chars: "\x1b[82;6u" }
-  - { key: S, mods: Control|Shift, chars: "\x1b[83;6u" }
-  - { key: T, mods: Control|Shift, chars: "\x1b[84;6u" }
-  - { key: W, mods: Control|Shift, chars: "\x1b[87;6u" }
-  - { key: X, mods: Control|Shift, chars: "\x1b[88;6u" }
-  # - { key: Y,      mods: Control|Shift, chars: "\x1b[89;6u" }
-  - { key: Z, mods: Control|Shift, chars: "\x1b[90;6u" }
+  - { key: A, mods: Control|Shift, chars: "\x1b[97;6u" }
+  - { key: B, mods: Control|Shift, chars: "\x1b[98;6u" }
+  # - { key: C, mods: Control|Shift, chars: "\x1b[99;6u" }
+  - { key: D, mods: Control|Shift, chars: "\x1b[100;6u" }
+  - { key: E, mods: Control|Shift, chars: "\x1b[101;6u" }
+  # - { key: F, mods: Control|Shift, chars: "\x1b[102;6u" }
+  - { key: G, mods: Control|Shift, chars: "\x1b[103;6u" }
+  - { key: H, mods: Control|Shift, chars: "\x1b[104;6u" }
+  - { key: I, mods: Control|Shift, chars: "\x1b[105;6u" }
+  - { key: J, mods: Control|Shift, chars: "\x1b[106;6u" }
+  - { key: K, mods: Control|Shift, chars: "\x1b[107;6u" }
+  - { key: L, mods: Control|Shift, chars: "\x1b[108;6u" }
+  - { key: M, mods: Control|Shift, chars: "\x1b[109;6u" }
+  # - { key: N, mods: Control|Shift, chars: "\x1b[110;6u" }
+  - { key: O, mods: Control|Shift, chars: "\x1b[111;6u" }
+  # - { key: P, mods: Control|Shift, chars: "\x1b[112;6u" }
+  - { key: Q, mods: Control|Shift, chars: "\x1b[113;6u" }
+  - { key: R, mods: Control|Shift, chars: "\x1b[114;6u" }
+  - { key: S, mods: Control|Shift, chars: "\x1b[115;6u" }
+  - { key: T, mods: Control|Shift, chars: "\x1b[116;6u" }
+  # - { key: U, mods: Control|Shift, chars: "\x1b[117;6u" }
+  - { key: V, mods: Control|Shift, chars: "\x1b[118;6u" }
+  - { key: W, mods: Control|Shift, chars: "\x1b[119;6u" }
+  - { key: X, mods: Control|Shift, chars: "\x1b[120;6u" }
+  - { key: Y, mods: Control|Shift, chars: "\x1b[121;6u" }
+  - { key: Z, mods: Control|Shift, chars: "\x1b[122;6u" }
+
   - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
   - { key: Period, mods: Control|Shift, chars: "\x1b[46;6u" }
   - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
@@ -1146,8 +1186,13 @@ key_bindings:
 
   - { key: 0x0A, mods: Control, chars: "\x1b[57;5u" } # Equals
 
-  # Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
+  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
+  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
+  # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
+  # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
 
+  # Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: A, mods: Alt|Shift, chars: "\x1bA" }
   - { key: B, mods: Alt|Shift, chars: "\x1bB" }
   - { key: C, mods: Alt|Shift, chars: "\x1bC" }
@@ -1176,16 +1221,16 @@ key_bindings:
   - { key: Z, mods: Alt|Shift, chars: "\x1bZ" }
 
   # Alt + <number> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  # - { key: Key0, mods: Alt, chars: "\x1b0" }
-  # - { key: Key1, mods: Alt, chars: "\x1b1" }
-  # - { key: Key2, mods: Alt, chars: "\x1b2" }
-  # - { key: Key3, mods: Alt, chars: "\x1b3" }
-  # - { key: Key4, mods: Alt, chars: "\x1b4" }
-  # - { key: Key5, mods: Alt, chars: "\x1b5" }
-  # - { key: Key6, mods: Alt, chars: "\x1b6" }
-  # - { key: Key7, mods: Alt, chars: "\x1b7" }
-  # - { key: Key8, mods: Alt, chars: "\x1b8" }
-  # - { key: Key9, mods: Alt, chars: "\x1b9" }
+  - { key: Key0, mods: Alt, chars: "\x1b0" }
+  - { key: Key1, mods: Alt, chars: "\x1b1" }
+  - { key: Key2, mods: Alt, chars: "\x1b2" }
+  - { key: Key3, mods: Alt, chars: "\x1b3" }
+  - { key: Key4, mods: Alt, chars: "\x1b4" }
+  - { key: Key5, mods: Alt, chars: "\x1b5" }
+  - { key: Key6, mods: Alt, chars: "\x1b6" }
+  - { key: Key7, mods: Alt, chars: "\x1b7" }
+  - { key: Key8, mods: Alt, chars: "\x1b8" }
+  - { key: Key9, mods: Alt, chars: "\x1b9" }
 
   # Alt + <character> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   # - { key: Grave,      mods: Alt, chars: "\x1b`"  }

@@ -1,0 +1,17 @@
+[Unit]
+Description=Xidlehook
+
+[Service]
+ExecStart=/usr/bin/xidlehook \
+                  --not-when-fullscreen \
+                  --not-when-audio \
+                  --timer 500 \
+                      'screensaver' '' \
+                  --timer 240 \
+                      'xset dpms force off; pidof i3lock || screenlock' '' \
+                  --socket "/tmp/xidlehook.sock"
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target

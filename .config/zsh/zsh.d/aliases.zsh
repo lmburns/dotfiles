@@ -15,6 +15,7 @@
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '
 alias -g CW='| cw'      RE='| tac '      F='| fzf'
+alias -g C='| xsel -b --trim'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
 alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
 alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time

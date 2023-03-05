@@ -44,15 +44,14 @@ super + shift + d
     killandnotify dunst "Dunst reloaded" && dunst &
 
 # Restart bspwm
-ctrl + alt + super + r
+super + alt + shift + r
     notify-send "bpswm" "Configuration reloaded" && bspc wm -r
+# bspc quit
 
 # Restart crashed items
 # Happens when using `bustd`
 super + shift + c
     notify-send "Crashed" "Items were reloaded" && restart-crashed
-
-# bspc wm -r
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Screen                          │
@@ -76,12 +75,14 @@ super + Delete
 #      [.[!]leaf][.[!]window][.[!]STATE][.[!]FLAG][.[!]LAYER][.[!]SPLIT_TYPE]
 #      [.[!]same_class][.[!]descendant_of][.[!]ancestor_of]
 #
-# STATE      := tiled|pseudo_tiled|floating|fullscreen
-# FLAG       := hidden|sticky|private|locked|marked|urgent
-# LAYER      := below|normal|above
-# SPLIT_TYPE := horizontal|vertical
+# STATE      := tiled | pseudo_tiled | floating | fullscreen
+# FLAG       := hidden | sticky | private | locked | marked | urgent
+# LAYER      := below | normal | above
+# SPLIT_TYPE := horizontal | vertical
 # PATH       := @[DESKTOP_SEL:][[/]JUMP](/JUMP)*
-# JUMP       := first|1|second|2|brother|parent|DIR
+# JUMP       := first | 1 | second | 2 | brother | parent | DIR
+# DIR        := north | west | south | east
+# CYCLE_DIR  := next | prev
 
 # Closing/Killing Windows
 # super + {_,shift + }q
@@ -107,9 +108,18 @@ super + shift + m
 super + ctrl + m
     whid last
 
+# super + {t,shift + t,s,f}
+#   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
 # ╭──────────────╮
 # │ Tiled Window │
 # ╰──────────────╯
+
+# TODO: Get to work with monocle
+# Force all windows of the desktop to tile
+super + ctrl + t
+    bspcp tile
+# bspc node @/ -t tiled
 
 # Focus a (pseudo_)tiled window / Cycle (pseudo_)tiled windows.
 super + {_,shift + }t
@@ -120,7 +130,14 @@ super + {_,shift + }t
 # Rotate tree
 mod3 + {_,shift +}r
     bspc node @/ --rotate {90,-90}
-#   bspc node @/ -C forward # backward
+
+# Circulate tree backward/forward
+super + alt + {_,ctrl + } + r
+    bspc node @/ --circulate {backward,forward}
+
+# Mirror and flip leaves of tree
+super + alt + {comma,period}
+    bspc node @/ --flip {vertical,horizontal}
 
 # Focus on window in direction (tiled)
 alt + {h,j,k,l}
@@ -129,15 +146,15 @@ alt + {h,j,k,l}
 # Swap window in direction (tiled)
 alt + shift + {h,j,k,l}
     bspc node -s {west,south,north,east}
-# bspwm_smart_move {west,south,north,east}
+# bspwm-smart-move {west,south,north,east}
 
-# alt + {_,shift + } + r
-#     bspc node @/ --circulate {backward,forward}
+# Swap current largest, smallest space
+alt + shift + b
+    bspc node -s '{biggest,smallest}.!focused.local.window'
 
-# Equalize window sizes
-ctrl + alt + 0
-    bspc node @/ -B
-# bspc node @/ -E
+# Equalize/reset equalize window sizes
+ctrl + alt + {_, shift +}0
+    bspc node @/ -{B,E}
 
 # Dynamic gaps
 mod3 + shift + bracket{left,right}
@@ -210,9 +227,11 @@ super + shift + j
 # │ Fullscreen Window │
 # ╰───────────────────╯
 
-# Rotates full screen
+# FIX:
+# Rotates and make full screen
 mod3 + bracket{left,right}
-    bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
+    bspc node -f '{prev,next}.!focused.window' && bspc node focused.focused -t fullscreen
+# bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
 
 # Toggle between tiled/fullscreen
 mod3 + f
@@ -225,7 +244,6 @@ mod3 + f
 # Toggle floating on and off
 mod3 + space
     bspc node focused.tiled -t floating || bspc node focused.floating -t tiled
-# bspc node -t tiled || bspc node -t floating
 
 # Focus a floating window / cycle floating windows
 super + {_,shift + }f
@@ -246,7 +264,7 @@ super + {_,shift + }f
 # │ Any Window │
 # ╰────────────╯
 
-# Rotate between any window (monocle|floating|fullscreen) windows
+# Rotate between floating|tiled windows
 super + {j,k}
     bspc node -f 'focused.window#{next,prev}.local.!hidden.window' \
         || bspc node -f 'last.local.!focused.!hidden.window' \
@@ -259,12 +277,33 @@ super + {o,i}
     bspc node -f {older,newer}; \
     bspc wm -h on
 
-# Focus last window (works for monocle windows)
+# Focus last window (works for any window)
 super + comma
-    bspc node -f last.local.!hidden.window
+    bspc node -f 'last.local.!hidden.window'
 
 # mod3 + e
 #     bspc node -f {next.floating,next.tiled}
+
+# ╭──────────────╮
+# │ Preselection │
+# ╰──────────────╯
+
+# Preselect the direction or insert again to cancel the preselection.
+# This enters the manual tiling mode that splits the currently focused window.
+super + control + shift + {h,j,k,l}
+    bspc node --presel-dir {west,south,north,east}
+
+# Cancel preselection
+super + control + shift + c
+    bspc node -p cancel
+
+# Automatically detect preselection direction
+super + control + Return
+    bspwm-auto-presel
+
+# Set splitting ratio of node
+super + ctrl + shift + {1-9}
+  bspc node -o 0.{1-9}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Desktop                          │
@@ -282,7 +321,7 @@ super + comma
 # super + {p,b, comma, period}
 #     bspc node -f @{parent,brother,first,second}
 
-# focus the last node/desktop
+# Focus the last node/desktop
 super + {grave,Tab}
     bspc -f {node,desktop} last
 
@@ -290,21 +329,21 @@ super + {grave,Tab}
 super + {_,shift + }{1-9,0}
     bspc {desktop -f,node -d} '^{1-9,10}'
 
-# focus the next/previous desktop in the current monitor
+# Focus the next/previous desktop
 super + bracket{left,right}
     bspc desktop -f {prev,next}.local
-# bspc desktop -f {prev.occupied,next.occupied}
 
-# move desktops in another way
+# Focus the next/previous occupied desktop
+super + shift + bracket{left,right}
+    bspc desktop -f {prev.occupied,next.occupied}
+
+# Focus the next/previous desktop
 alt + {Left,Right}
-    bspc desktop -f {prev,next}
+    bspc desktop -f {prev,next}.local
 
-# super + h
-#   bspc window -p down
-#
-# # Split window vertically
-# super + v
-#   bspc window -p right
+# Focus the next/previous occupied desktop
+alt + shift + {Left,Right}
+    bspc desktop -f {prev.occupied,next.occupied}
 
 # ╭─────────╮
 # │ Monitor │
@@ -350,10 +389,6 @@ mod3 + c : {Left,Down,Up,Right}
 # Launch alacritty
 super + Return
     alacritty
-
-# Launch alacritty
-# super + ctrl + Return
-#     alacritty
 
 # Launch tdrop
 super + alt + Return
@@ -406,30 +441,26 @@ shift + XF86Audio{Mute,LowerVolume,RaiseVolume}
 # pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
 
-ctrl + alt + shift + b
+super + F7
     $TERMINAL -e "fzf-bluetooth" &
-
-# Toggle caffeinate on/off
-F10
-    togglecaffeine
-
-# Remap keys
-F11
-    remaps && dunstify "remaps" "remapped"
-
-# ??
-# XF86Mail
-F12
-    $TERMINAL -e neomutt
 
 # Sync email
 super + F8
     mailsync
 
-# Mount a USB drive or Android device
-# super + {F9,F10}
-#     {dmenumount,dmenuumount}
+# Toggle caffeinate on/off
+super + F10
+    togglecaffeine
 
+# Remap keys
+super + F11
+    remaps && dunstify "remaps" "remapped"
+
+# Open neomutt
+super + F12
+    $TERMINAL -e neomutt
+
+# Take full screenshot (flameshot)
 Print
     flameshot full -p ~/Pictures/screenshot
 
@@ -443,15 +474,19 @@ Print + super
 Print + ctrl
     maimpick
 
+# Take screenshot of whole screen
 ctrl + shift + 3
     prtscr
 
+# Take screenshot of selected region
 ctrl + shift + 4
     prtregion --disk
 
+# Take screenshot of focused window
 ctrl + shift + 5
     prtwindow
 
+# Take screenshot of focused window
 control + super + alt + u
     prtwindow
 
@@ -469,10 +504,6 @@ mod3 + XF86Audio{Play,Prev,Next}
 mod3 + {_,shift + }n
     dunstctl {history-pop,close-all}
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                          Addons                          │
-# ╰──────────────────────────────────────────────────────────╯
-
 # Print
 #   scrot -u -z '%Y-%m-%d_%H:%M:%S_$wx$h$n.png' -e 'mv $f ~/Pictures' \
 #     && notify-send -i gnome-screenshot "Window view screenshot" "Saved image to Pictures"
@@ -485,19 +516,6 @@ mod3 + {_,shift + }n
 # │                          Extra                           │
 # ╰──────────────────────────────────────────────────────────╯
 
-# Preselect the direction or insert again to cancel the preselection.
-# This enters the manual tiling mode that splits the currently focused
-# window.
-alt + control + shift + {h,j,k,l}
-    bspc node --presel-dir {west,south,north,east}
-
-alt + control + shift + c
-    bspc node -p cancel
-
-# Preselect the ratio.  The default value is 0.5, defined in `bspwmrc`.
-# mod4 + alt + {1-9}
-#   bspc node -o 0.{1-9}
-
 # Set the node flags.  Locked is a node that cannot be closed with `bspc
 # node --close`.  Marked is a specific selector that allows operating on
 # the given item (such as sending the marked item to the newest
@@ -505,6 +523,3 @@ alt + control + shift + c
 # keep its dimensions and tiling position.
 # mod4 + x ; f ; {l,m,s,p}
 # bspc node -g {locked,marked,sticky,private}
-
-# super + {t,shift + t,s,f}
-#   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}

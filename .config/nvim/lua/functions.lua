@@ -336,7 +336,7 @@ end
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("http[s]?://") then
-        return cmd.norm({"gx", bang = true})
+        return cmd.norm("gx")
     end
 
     -- Check whether it is a file

@@ -100,7 +100,7 @@ function M.setup()
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
-            c = {}
+            c = {},
             -- n = {"s"}
             -- o = {"d", '"_d'}
         },

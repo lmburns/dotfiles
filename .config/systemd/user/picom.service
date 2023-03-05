@@ -1,0 +1,10 @@
+[Unit]
+Description=Picom rounded
+
+[Service]
+ExecStart=/home/lucas/bin/picom-rounded --experimental-backends
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target

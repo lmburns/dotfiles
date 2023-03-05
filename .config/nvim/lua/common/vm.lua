@@ -14,9 +14,9 @@ local hlslens
 local config
 local lens_backup
 
-local dispose1
-local dispose2
-local n_keymap
+local dispose0, dispose1, dispose2, dispose3, dispose4, dispose5, dispose6, dispose7
+local dispose8
+local n_keymap, s_keymap, y_keymap
 local debounced
 
 local MODE = {
@@ -78,11 +78,18 @@ function M.exit()
         hlslens.start()
     end
 
+    dispose0:dispose()
     dispose1:dispose()
     dispose2:dispose()
+    dispose3:dispose()
+    dispose4:dispose()
+    dispose5:dispose()
+    dispose6:dispose()
+    dispose7:dispose()
+    dispose8:dispose()
     map("n", "n", n_keymap, {silent = true})
-    -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
-    -- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
+    map("n", "s", s_keymap, {silent = true})
+    -- map("n", "y", y_keymap, {silent = true, expr = true})
 
     -- Sometimes this doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
@@ -98,33 +105,34 @@ function M.mappings()
             debounce(
             function()
                 n_keymap = utils.get_keymap("n", "n").rhs
-                -- utils.del_keymap("n", "[")
-                -- utils.del_keymap("n", "]")
+                s_keymap = utils.get_keymap("n", "s").rhs
+                -- y_keymap = utils.get_keymap("n", "y").rhs
             end,
             10
         )
         debounced()
     end
 
+    dispose0 = bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
     dispose1 = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
-
-    -- dispose2 =
-    --     bmap(
-    --     "n",
-    --     "v",
-    --     function()
-    --         local bufnr = api.nvim_get_current_buf()
-    --         p(tostring(vim.b[bufnr].VM_Selection.Global.extend_mode))
-    --     end,
-    --     {silent = true, noremap = false}
-    -- )
-
-    -- FIX: Unsure why you can call b:VM_Selection in Vim but not Lua
-    --      Dispose2 needs to be used to reset the keybinding when exiting
-    -- dispose2 = bmap("n", "v", ":lua p(vim.b.VM_Selection)<CR>", {silent = true, noremap = false})
-    dispose2 = bmap("n", "v", ":call b:VM_Selection.Global.extend_mode()<CR>", {silent = true, noremap = false})
-
-    bmap(
+    dispose2 =
+        bmap(
+        "n",
+        "v",
+        ":call b:VM_Selection.Global.extend_mode()<CR>",
+        {silent = true, noremap = false}
+    )
+    dispose3 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
+    dispose4 =
+        bmap(
+        "i",
+        "<CR>",
+        [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
+        {expr = true, noremap = false}
+    )
+    dispose5 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
+    dispose6 =
+        bmap(
         "n",
         "<Esc>",
         function()
@@ -136,8 +144,14 @@ function M.mappings()
         end,
         {nowait = true}
     )
+    dispose7 = bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
+    dispose8 = bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
 
-    bmap("i", "<CR>", [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]], {expr = true, noremap = false})
+    -- dispose7 = bmap("n", "<Leader>y", '"+y', {silent = true})
+    -- dispose8 = bmap("n", "y", "<Plug>(VM-Yank)", {silent = true})
+
+    -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
+    -- bmap("n", "m", "<Plug>(VM-Find-Operator)", {silent = true, nowait = true})
 end
 
 local function init()
