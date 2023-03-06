@@ -1,0 +1,25 @@
+#compdef dumpkeys
+
+# zsh completions for 'dumpkeys'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-i,--short-info}'[display information about keyboard driver.]'
+  {-l,-s,--long-info}'[display above and symbols known to loadkeys.]'
+  {-n,--numeric}'[display keytable in hexadecimal notation.]'
+  {-f,--full-table}'[dont use short-hand notations, one row per keycode.]'
+  {-1,--separate-lines}'[one line per (modifier,keycode) pair.]'
+  {-S,--shape}'[2|4|8|16}]'
+  {-t,--funcs-only}'[display only the function key strings.]'
+  {-k,--keys-only}'[display only key bindings.]'
+  {-d,--compose-only}'[display only compose key combinations.]'
+  {-c,--charset}'[interpret character action codes to be from the specified character set.]'
+  {-C,--console}'[the console device to be used.]'
+  {-v,--verbose}'[be more verbose.]'
+  {-V,--version}'[print version number.]'
+  {-h,--help}'[print this usage message.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -780,7 +780,7 @@ zt 0c light-mode null for \
   lbin from'gh-r' \
   atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
     sayanarijit/xplr \
-  lbin from'gh-r' atload'alias ld="lazydocker"' \
+  lbin from'gh-r' atload'alias lD="lazydocker"' \
     jesseduffield/lazydocker \
   lbin from'gh-r' atload'alias lnpm="lazynpm"' \
     jesseduffield/lazynpm
@@ -850,6 +850,7 @@ alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 # autoload -Uz sticky-note regexp-replace
 
 [[ -v aliases[run-help] ]] && unalias run-help
+# print --long
 autoload +X -Uz run-help
 autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 

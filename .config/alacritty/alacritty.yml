@@ -638,9 +638,7 @@ hints:
         mods: None
       binding:
         key: O
-        mods: Control|Shift
-
-        # https://github.com
+        mods: Control|Alt|Shift
 
     - regex:
         "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)\
@@ -652,7 +650,7 @@ hints:
         mods: None
       binding:
         key: Y
-        mods: Control|Shift
+        mods: Control|Alt|Shift
 
     # - regex: "((/|~|\\$[\\w_]+)[^/\0 ]*)+/?"
     - regex: "((/|~)[^/\0 ]*)+/?"
@@ -663,7 +661,7 @@ hints:
         mods: None
       binding:
         key: C
-        mods: Control|Shift
+        mods: Control|Alt|Shift
 
 # /home/lucas
 # /home/lucas/
@@ -939,133 +937,113 @@ mouse_bindings:
 #
 # If the same trigger is assigned to multiple actions, all of them are executed
 # in the order they were defined in.
-#key_bindings:
-#- { key: Paste,                                       action: Paste          }
-#- { key: Copy,                                        action: Copy           }
-#- { key: L,         mods: Control,                    action: ClearLogNotice }
-#- { key: L,         mods: Control, mode: ~Vi|~Search, chars: "\x0c"          }
-#- { key: PageUp,    mods: Shift,   mode: ~Alt,        action: ScrollPageUp   }
-#- { key: PageDown,  mods: Shift,   mode: ~Alt,        action: ScrollPageDown }
-#- { key: Home,      mods: Shift,   mode: ~Alt,        action: ScrollToTop    }
-#- { key: End,       mods: Shift,   mode: ~Alt,        action: ScrollToBottom }
-
-# Vi Mode
-#- { key: Space,  mods: Shift|Control, mode: ~Search,    action: ToggleViMode            }
-#- { key: Space,  mods: Shift|Control, mode: Vi|~Search, action: ScrollToBottom          }
-#- { key: Escape,                      mode: Vi|~Search, action: ClearSelection          }
-#- { key: I,                           mode: Vi|~Search, action: ToggleViMode            }
-#- { key: I,                           mode: Vi|~Search, action: ScrollToBottom          }
-#- { key: C,      mods: Control,       mode: Vi|~Search, action: ToggleViMode            }
-#- { key: Y,      mods: Control,       mode: Vi|~Search, action: ScrollLineUp            }
-#- { key: E,      mods: Control,       mode: Vi|~Search, action: ScrollLineDown          }
-#- { key: G,                           mode: Vi|~Search, action: ScrollToTop             }
-#- { key: G,      mods: Shift,         mode: Vi|~Search, action: ScrollToBottom          }
-#- { key: B,      mods: Control,       mode: Vi|~Search, action: ScrollPageUp            }
-#- { key: F,      mods: Control,       mode: Vi|~Search, action: ScrollPageDown          }
-#- { key: U,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageUp        }
-#- { key: D,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageDown      }
-#- { key: Y,                           mode: Vi|~Search, action: Copy                    }
-#- { key: Y,                           mode: Vi|~Search, action: ClearSelection          }
-#- { key: Copy,                        mode: Vi|~Search, action: ClearSelection          }
-#- { key: V,                           mode: Vi|~Search, action: ToggleNormalSelection   }
-#- { key: V,      mods: Shift,         mode: Vi|~Search, action: ToggleLineSelection     }
-#- { key: V,      mods: Control,       mode: Vi|~Search, action: ToggleBlockSelection    }
-#- { key: V,      mods: Alt,           mode: Vi|~Search, action: ToggleSemanticSelection }
-#- { key: Return,                      mode: Vi|~Search, action: Open                    }
-#- { key: Z,                           mode: Vi|~Search, action: CenterAroundViCursor    }
-#- { key: K,                           mode: Vi|~Search, action: Up                      }
-#- { key: J,                           mode: Vi|~Search, action: Down                    }
-#- { key: H,                           mode: Vi|~Search, action: Left                    }
-#- { key: L,                           mode: Vi|~Search, action: Right                   }
-#- { key: Up,                          mode: Vi|~Search, action: Up                      }
-#- { key: Down,                        mode: Vi|~Search, action: Down                    }
-#- { key: Left,                        mode: Vi|~Search, action: Left                    }
-#- { key: Right,                       mode: Vi|~Search, action: Right                   }
-#- { key: Key0,                        mode: Vi|~Search, action: First                   }
-#- { key: Key4,   mods: Shift,         mode: Vi|~Search, action: Last                    }
-#- { key: Key6,   mods: Shift,         mode: Vi|~Search, action: FirstOccupied           }
-#- { key: H,      mods: Shift,         mode: Vi|~Search, action: High                    }
-#- { key: M,      mods: Shift,         mode: Vi|~Search, action: Middle                  }
-#- { key: L,      mods: Shift,         mode: Vi|~Search, action: Low                     }
-#- { key: B,                           mode: Vi|~Search, action: SemanticLeft            }
-#- { key: W,                           mode: Vi|~Search, action: SemanticRight           }
-#- { key: E,                           mode: Vi|~Search, action: SemanticRightEnd        }
-#- { key: B,      mods: Shift,         mode: Vi|~Search, action: WordLeft                }
-#- { key: W,      mods: Shift,         mode: Vi|~Search, action: WordRight               }
-#- { key: E,      mods: Shift,         mode: Vi|~Search, action: WordRightEnd            }
-#- { key: Key5,   mods: Shift,         mode: Vi|~Search, action: Bracket                 }
-#- { key: Slash,                       mode: Vi|~Search, action: SearchForward           }
-#- { key: Slash,  mods: Shift,         mode: Vi|~Search, action: SearchBackward          }
-#- { key: N,                           mode: Vi|~Search, action: SearchNext              }
-#- { key: N,      mods: Shift,         mode: Vi|~Search, action: SearchPrevious          }
-
-# Search Mode
-#- { key: Return,                mode: Search|Vi,  action: SearchConfirm         }
-#- { key: Escape,                mode: Search,     action: SearchCancel          }
-#- { key: C,      mods: Control, mode: Search,     action: SearchCancel          }
-#- { key: U,      mods: Control, mode: Search,     action: SearchClear           }
-#- { key: W,      mods: Control, mode: Search,     action: SearchDeleteWord      }
-#- { key: P,      mods: Control, mode: Search,     action: SearchHistoryPrevious }
-#- { key: N,      mods: Control, mode: Search,     action: SearchHistoryNext     }
-#- { key: Up,                    mode: Search,     action: SearchHistoryPrevious }
-#- { key: Down,                  mode: Search,     action: SearchHistoryNext     }
-#- { key: Return,                mode: Search|~Vi, action: SearchFocusNext       }
-#- { key: Return, mods: Shift,   mode: Search|~Vi, action: SearchFocusPrevious   }
-
-# (Windows, Linux, and BSD only)
-#- { key: V,              mods: Control|Shift, mode: ~Vi,        action: Paste            }
-#- { key: C,              mods: Control|Shift,                   action: Copy             }
-#- { key: F,              mods: Control|Shift, mode: ~Search,    action: SearchForward    }
-#- { key: B,              mods: Control|Shift, mode: ~Search,    action: SearchBackward   }
-#- { key: C,              mods: Control|Shift, mode: Vi|~Search, action: ClearSelection   }
-#- { key: Insert,         mods: Shift,                           action: PasteSelection   }
-#- { key: Key0,           mods: Control,                         action: ResetFontSize    }
-#- { key: Equals,         mods: Control,                         action: IncreaseFontSize }
-#- { key: Plus,           mods: Control,                         action: IncreaseFontSize }
-#- { key: NumpadAdd,      mods: Control,                         action: IncreaseFontSize }
-#- { key: Minus,          mods: Control,                         action: DecreaseFontSize }
-#- { key: NumpadSubtract, mods: Control,                         action: DecreaseFontSize }
-# Bindings are always filled by default, but will be replaced when a new
-# binding with the same triggers is defined. To unset a default binding, it can
-# be mapped to the `ReceiveChar` action. Alternatively, you can use `None` for
-# a no-op if you do not wish to receive input characters for that binding.
-#
-# If the same trigger is assigned to multiple actions, all of them are executed
-# at once.
 key_bindings:
-  # - { key: Y,         mods: Control,              action:  Copy             }
-  # - { key: M,         mods: Control|Shift,        action: Minimize         }
-  - { key: P, mods: Control, action: Paste }
-  - { key: Insert, mods: Shift, action: Paste }
-  - { key: Key0, mods: Control, action: ResetFontSize }
-  - { key: Equals, mods: Control, action: IncreaseFontSize }
-  - { key: Plus, mods: Control|Shift, action: IncreaseFontSize }
-  - { key: NumpadAdd, mods: Control, action: IncreaseFontSize }
-  - { key: Minus, mods: Control, action: DecreaseFontSize }
-  - { key: NumpadSubtract, mods: Control, action: DecreaseFontSize }
-  - { key: Semicolon, mods: Control|Alt|Super, action: ClearLogNotice }
-  - { key: Minus, mods: Control|Alt|Super, action: ClearHistory }
-  - { key: Period, mods: Control|Alt|Super, action: CreateNewWindow }
-  - { key: Comma, mods: Control|Alt|Super, action: SpawnNewInstance }
-  - {
-      key: B,
-      mods: Control|Option,
-      command: { program: 'alacritty', args: ['-e', 'btm'] },
-    }
+  #- { key: Paste,                                       action: Paste          }
+  #- { key: Copy,                                        action: Copy           }
+  #- { key: L,         mods: Control,                    action: ClearLogNotice }
+  #- { key: L,         mods: Control, mode: ~Vi|~Search, chars: "\x0c"          }
+  #- { key: PageUp,    mods: Shift,   mode: ~Alt,        action: ScrollPageUp   }
+  #- { key: PageDown,  mods: Shift,   mode: ~Alt,        action: ScrollPageDown }
+  #- { key: Home,      mods: Shift,   mode: ~Alt,        action: ScrollToTop    }
+  #- { key: End,       mods: Shift,   mode: ~Alt,        action: ScrollToBottom }
+
+  # Vi Mode
+  #- { key: Space,  mods: Shift|Control, mode: ~Search,    action: ToggleViMode            }
+  #- { key: Space,  mods: Shift|Control, mode: Vi|~Search, action: ScrollToBottom          }
+  #- { key: Escape,                      mode: Vi|~Search, action: ClearSelection          }
+  #- { key: I,                           mode: Vi|~Search, action: ToggleViMode            }
+  #- { key: I,                           mode: Vi|~Search, action: ScrollToBottom          }
+  #- { key: C,      mods: Control,       mode: Vi|~Search, action: ToggleViMode            }
+  #- { key: Y,      mods: Control,       mode: Vi|~Search, action: ScrollLineUp            }
+  #- { key: E,      mods: Control,       mode: Vi|~Search, action: ScrollLineDown          }
+  #- { key: G,                           mode: Vi|~Search, action: ScrollToTop             }
+  #- { key: G,      mods: Shift,         mode: Vi|~Search, action: ScrollToBottom          }
+  #- { key: B,      mods: Control,       mode: Vi|~Search, action: ScrollPageUp            }
+  #- { key: F,      mods: Control,       mode: Vi|~Search, action: ScrollPageDown          }
+  #- { key: U,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageUp        }
+  #- { key: D,      mods: Control,       mode: Vi|~Search, action: ScrollHalfPageDown      }
+  #- { key: Y,                           mode: Vi|~Search, action: Copy                    }
+  #- { key: Y,                           mode: Vi|~Search, action: ClearSelection          }
+  #- { key: Copy,                        mode: Vi|~Search, action: ClearSelection          }
+  #- { key: V,                           mode: Vi|~Search, action: ToggleNormalSelection   }
+  #- { key: V,      mods: Shift,         mode: Vi|~Search, action: ToggleLineSelection     }
+  #- { key: V,      mods: Control,       mode: Vi|~Search, action: ToggleBlockSelection    }
+  #- { key: V,      mods: Alt,           mode: Vi|~Search, action: ToggleSemanticSelection }
+  #- { key: Return,                      mode: Vi|~Search, action: Open                    }
+  #- { key: Z,                           mode: Vi|~Search, action: CenterAroundViCursor    }
+  #- { key: K,                           mode: Vi|~Search, action: Up                      }
+  #- { key: J,                           mode: Vi|~Search, action: Down                    }
+  #- { key: H,                           mode: Vi|~Search, action: Left                    }
+  #- { key: L,                           mode: Vi|~Search, action: Right                   }
+  #- { key: Up,                          mode: Vi|~Search, action: Up                      }
+  #- { key: Down,                        mode: Vi|~Search, action: Down                    }
+  #- { key: Left,                        mode: Vi|~Search, action: Left                    }
+  #- { key: Right,                       mode: Vi|~Search, action: Right                   }
+  #- { key: Key0,                        mode: Vi|~Search, action: First                   }
+  #- { key: Key4,   mods: Shift,         mode: Vi|~Search, action: Last                    }
+  #- { key: Key6,   mods: Shift,         mode: Vi|~Search, action: FirstOccupied           }
+  #- { key: H,      mods: Shift,         mode: Vi|~Search, action: High                    }
+  #- { key: M,      mods: Shift,         mode: Vi|~Search, action: Middle                  }
+  #- { key: L,      mods: Shift,         mode: Vi|~Search, action: Low                     }
+  #- { key: B,                           mode: Vi|~Search, action: SemanticLeft            }
+  #- { key: W,                           mode: Vi|~Search, action: SemanticRight           }
+  #- { key: E,                           mode: Vi|~Search, action: SemanticRightEnd        }
+  #- { key: B,      mods: Shift,         mode: Vi|~Search, action: WordLeft                }
+  #- { key: W,      mods: Shift,         mode: Vi|~Search, action: WordRight               }
+  #- { key: E,      mods: Shift,         mode: Vi|~Search, action: WordRightEnd            }
+  #- { key: Key5,   mods: Shift,         mode: Vi|~Search, action: Bracket                 }
+  #- { key: Slash,                       mode: Vi|~Search, action: SearchForward           }
+  #- { key: Slash,  mods: Shift,         mode: Vi|~Search, action: SearchBackward          }
+  #- { key: N,                           mode: Vi|~Search, action: SearchNext              }
+  #- { key: N,      mods: Shift,         mode: Vi|~Search, action: SearchPrevious          }
+
+  # Search Mode
+  #- { key: Return,                mode: Search|Vi,  action: SearchConfirm         }
+  #- { key: Escape,                mode: Search,     action: SearchCancel          }
+  #- { key: C,      mods: Control, mode: Search,     action: SearchCancel          }
+  #- { key: U,      mods: Control, mode: Search,     action: SearchClear           }
+  #- { key: W,      mods: Control, mode: Search,     action: SearchDeleteWord      }
+  #- { key: P,      mods: Control, mode: Search,     action: SearchHistoryPrevious }
+  #- { key: N,      mods: Control, mode: Search,     action: SearchHistoryNext     }
+  #- { key: Up,                    mode: Search,     action: SearchHistoryPrevious }
+  #- { key: Down,                  mode: Search,     action: SearchHistoryNext     }
+  #- { key: Return,                mode: Search|~Vi, action: SearchFocusNext       }
+  #- { key: Return, mods: Shift,   mode: Search|~Vi, action: SearchFocusPrevious   }
+
+  # (Windows, Linux, and BSD only)
+  #- { key: V,              mods: Control|Shift, mode: ~Vi,        action: Paste            }
+  #- { key: C,              mods: Control|Shift,                   action: Copy             }
+  #- { key: C,              mods: Control|Shift, mode: Vi|~Search, action: ClearSelection   }
+  #- { key: Insert,         mods: Shift,                           action: PasteSelection   }
+  #- { key: NumpadAdd,      mods: Control,                         action: IncreaseFontSize }
+  #- { key: NumpadSubtract, mods: Control,                         action: DecreaseFontSize }
+  - { key: Key0, mods: Control, action: ReceiveChar }
+  - { key: Equals, mods: Control, action: ReceiveChar }
+  - { key: Plus, mods: Control, action: ReceiveChar }
+  - { key: Minus, mods: Control, action: ReceiveChar }
+  - { key: F, mods: Control|Shift, mode: ~Search, action: ReceiveChar }
+  - { key: B, mods: Control|Shift, mode: ~Search, action: ReceiveChar }
+
+  #  ╭──────────────────────────────────────────────────────────╮
+  #  │                          Custom                          │
+  #  ╰──────────────────────────────────────────────────────────╯
 
   # VirtualKeyCodes
-  # https://docs.rs/winit/*/winit/event/enum.VirtualKeyCode.html#variants
+  # https://docs.rs/winit/latest/winit/event/enum.VirtualKeyCode.html
   #
   # Scancodes
   # https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+  #
+  # Keycodes
+  #  - sudo dumpkeys -l
   #
   # Example to get this info for double quote:
   #
   #   { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" }:
   #
   #  1. key:   Output of `sudo showkey --scancode`.
-  #  2. chars: Output of `xev`'s 'keysym' (0x22).
-  #            Convert 0x22 to decimal.
+  #  2. chars: Output of `sudo showkey --ascii`. First column
+  #            Output of `xev`'s 'keysym' (0x22). Convert 0x22 to decimal
   #  3. chars: After the semicolon, see table below.
   #
   # https://www.eso.org/~ndelmott/ascii.html
@@ -1081,23 +1059,84 @@ key_bindings:
   # caps_lock 0b1000000   (64)
   # num_lock  0b10000000  (128)
 
-  - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
+  # - { key: Y, mods: Control, action: Copy }
+  # - { key: M, mods: Control|Shift, action: Minimize }
+  # - { key: Insert, mods: Shift, action: Paste }
+  - { key: P, mods: Control, action: Paste }
 
-  # Control + Alt + <letter> / <symbol> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: Key0, mods: Control, action: ResetFontSize }
+  - { key: Equals, mods: Control|Alt, action: ResetFontSize }
+  - { key: Plus, mods: Control|Shift, action: IncreaseFontSize }
+  - { key: 0x0c, mods: Control|Shift, action: DecreaseFontSize } # Underscore
+  - { key: NumpadAdd, mods: Control, action: IncreaseFontSize }
+  - { key: NumpadSubtract, mods: Control, action: DecreaseFontSize }
+
+  - { key: Minus, mods: Control|Alt|Super, action: ClearHistory }
+  - { key: Comma, mods: Control|Alt|Super, action: ClearLogNotice }
+  - { key: Period, mods: Control|Alt|Super, action: CreateNewWindow }
+  # - { key: Comma, mods: Control|Alt|Super, action: SpawnNewInstance }
+  # - {
+  #     key: B,
+  #     mods: Control|Alt,
+  #     command: { program: 'alacritty', args: ['-e', 'btm'] },
+  #   }
+
+  #  ╭─────────────────────╮
+  #  │ Shift + <character> │
+  #  ╰─────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
+  - { key: 0x39, mods: Shift, chars: "\x1b[32;2u" } # Space
+
+  #  ╭────────────────────╮
+  #  │ Control + <letter> │
+  #  ╰────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: H, mods: Control, chars: "\x1b[104;5u" }
+  - { key: I, mods: Control, chars: "\x1b[105;5u" }
+  - { key: J, mods: Control, chars: "\x1b[106;5u" }
+  - { key: M, mods: Control, chars: "\x1b[109;5u" }
+  # - { key: Space, mods: Control, chars: "\x1b[32;5u" }
+  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
+  - { key: Grave, mods: Control, chars: "\x1b[96;5u" }
+  - { key: Minus, mods: Control, chars: "\x1b[45;5u" }
+  - { key: Equals, mods: Control, chars: "\x1b[61;5u" }
+  - { key: LBracket, mods: Control, chars: "\x1b[91;5u" }
+  - { key: RBracket, mods: Control, chars: "\x1b[93;5u" }
+  - { key: Backslash, mods: Control, chars: "\x1b[92;5u" }
+  # - { key: Semicolon, mods: Control, chars: "\x1b[59;5u" }
+  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
+  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
+  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
+  - { key: 0x35, mods: Control, chars: "\x1b[47;5u" } # Forward slash (/)
+
+  #  ╭──────────────────────────╮
+  #  │ Control + Alt + <letter> │
+  #  ╰──────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: I, mods: Control|Alt, chars: "\x1b[105;7u" }
   - { key: O, mods: Control|Alt, chars: "\x1b[111;7u" }
+  # - { key: Space, mods: Control|Alt, chars: "\x1b[32;7u" }
   - { key: Return, mods: Control|Alt, chars: "\x1b[13;7u" }
-  - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
-  - { key: Comma, mods: Control|Alt, chars: "\x1b[44;7u" }
-  - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
+  - { key: Grave, mods: Control|Alt, chars: "\x1b[96;7u" }
+  - { key: Minus, mods: Control|Alt, chars: "\x1b[45;7u" }
+  - { key: Equals, mods: Control|Alt, chars: "\x1b[61;7u" }
+  - { key: LBracket, mods: Control|Alt, chars: "\x1b[91;7u" }
+  - { key: RBracket, mods: Control|Alt, chars: "\x1b[93;7u" }
+  - { key: Backslash, mods: Control|Alt, chars: "\x1b[92;7u" }
   - { key: Semicolon, mods: Control|Alt, chars: "\x1b[59;7u" }
+  - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
+  - { key: Comma, mods: Control|Alt, chars: "\x1b[44;7u" }
+  - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
+  - { key: 0x35, mods: Control|Alt, chars: "\x1b[47;7u" } # Forward slash (/)
 
-  - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
+  #  ╭──────────────────────────────────╮
+  #  │ Control + Alt + Shift + <letter> │
+  #  ╰──────────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # Control + Alt + C ⇒ Copy link
+  # Control + Alt + O ⇒ Open link
+  # Control + Alt + Y ⇒ Copy path
 
-  # Control + Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: A, mods: Control|Alt|Shift, chars: "\x1b[97;8u" }
   - { key: B, mods: Control|Alt|Shift, chars: "\x1b[98;8u" }
-  - { key: C, mods: Control|Alt|Shift, chars: "\x1b[99;8u" }
+  # - { key: C, mods: Control|Alt|Shift, chars: "\x1b[99;8u" }
   - { key: D, mods: Control|Alt|Shift, chars: "\x1b[100;8u" }
   - { key: E, mods: Control|Alt|Shift, chars: "\x1b[101;8u" }
   - { key: F, mods: Control|Alt|Shift, chars: "\x1b[102;8u" }
@@ -1109,7 +1148,7 @@ key_bindings:
   - { key: L, mods: Control|Alt|Shift, chars: "\x1b[108;8u" }
   - { key: M, mods: Control|Alt|Shift, chars: "\x1b[109;8u" }
   - { key: N, mods: Control|Alt|Shift, chars: "\x1b[110;8u" }
-  - { key: O, mods: Control|Alt|Shift, chars: "\x1b[111;8u" }
+  # - { key: O, mods: Control|Alt|Shift, chars: "\x1b[111;8u" }
   - { key: P, mods: Control|Alt|Shift, chars: "\x1b[112;8u" }
   - { key: Q, mods: Control|Alt|Shift, chars: "\x1b[113;8u" }
   - { key: R, mods: Control|Alt|Shift, chars: "\x1b[114;8u" }
@@ -1119,39 +1158,42 @@ key_bindings:
   - { key: V, mods: Control|Alt|Shift, chars: "\x1b[118;8u" }
   - { key: W, mods: Control|Alt|Shift, chars: "\x1b[119;8u" }
   - { key: X, mods: Control|Alt|Shift, chars: "\x1b[120;8u" }
-  - { key: Y, mods: Control|Alt|Shift, chars: "\x1b[121;8u" }
+  # - { key: Y, mods: Control|Alt|Shift, chars: "\x1b[121;8u" }
   - { key: Z, mods: Control|Alt|Shift, chars: "\x1b[122;8u" }
-  - { key: Colon, mods: Control|Alt|Shift, chars: "\x1b[58;8u" }
-  - { key: Period, mods: Control|Alt|Shift, chars: "\x1b[46;8u" }
+
+  - { key: 0x39, mods: Control|Alt|Shift, chars: "\x1b[32;8u" } # FIX: Space
+  - { key: Return, mods: Control|Alt|Shift, chars: "\x1b[13;8u" } # Return
+  - { key: 0x29, mods: Control|Alt|Shift, chars: "\x1b[126;8u" } # Tilde
+  - { key: 0x02, mods: Control|Alt|Shift, chars: "\x1b[33;8u" } # Exclamation
+  - { key: 0x03, mods: Control|Alt|Shift, chars: "\x1b[64;8u" } # @
+  - { key: 0x04, mods: Control|Alt|Shift, chars: "\x1b[35;8u" } # Pound
+  - { key: 0x05, mods: Control|Alt|Shift, chars: "\x1b[36;8u" } # Dollar
+  - { key: 0x06, mods: Control|Alt|Shift, chars: "\x1b[37;8u" } # Percent
+  - { key: 0x07, mods: Control|Alt|Shift, chars: "\x1b[94;8u" } # Caret
+  - { key: 0x08, mods: Control|Alt|Shift, chars: "\x1b[38;8u" } # Ampersand
+  - { key: 0x09, mods: Control|Alt|Shift, chars: "\x1b[42;8u" } # Asterisk
+  - { key: 0x0a, mods: Control|Alt|Shift, chars: "\x1b[40;8u" } # LParenthesis
+  - { key: 0x0b, mods: Control|Alt|Shift, chars: "\x1b[41;8u" } # RParenthesis
+  - { key: 0x0c, mods: Control|Alt|Shift, chars: "\x1b[95;8u" } # Underscore
+  - { key: Plus, mods: Control|Alt|Shift, chars: "\x1b[43;8u" } # Plus
+  - { key: 0x1a, mods: Control|Alt|Shift, chars: "\x1b[123;8u" } # LBrace
+  - { key: 0x1b, mods: Control|Alt|Shift, chars: "\x1b[125;8u" } # RBrace
+  - { key: 0x2b, mods: Control|Alt|Shift, chars: "\x1b[124;8u" } # Bar
+  - { key: Colon, mods: Control|Alt|Shift, chars: "\x1b[58;8u" } # Colon
   - { key: 0x28, mods: Control|Alt|Shift, chars: "\x1b[34;8u" } # Double quote
+  - { key: 0x33, mods: Control|Alt|Shift, chars: "\x1b[60;8u" } # Less than
+  - { key: 0x34, mods: Control|Alt|Shift, chars: "\x1b[62;8u" } # Greater than
+  - { key: 0x35, mods: Control|Alt|Shift, chars: "\x1b[63;8u" } # FIX: Question mark
 
-  # Control + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
-  - { key: H, mods: Control, chars: "\x1b[104;5u" }
-  - { key: I, mods: Control, chars: "\x1b[105;5u" }
-  - { key: J, mods: Control, chars: "\x1b[106;5u" }
-  - { key: M, mods: Control, chars: "\x1b[109;5u" }
-  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
-  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
-  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
-  - { key: Grave, mods: Control, chars: "\x1b[96;5u" }
-  # The keys used by alacritty's library switch Slash/Backslash
-  - { key: 0x61, mods: Control, chars: "\x1b[47;5u" } # Forward slash (/)
-
-  # Control + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  # Control + B ⇒ SearchBackward
-  # Control + C ⇒ Copy
-  # Control + F ⇒ SearchForward
-  # Control + N ⇒ CreateNewWindow
-  # Control + P ⇒ Paste
-  # Control + U ⇒ “EnterHintsMode”
-
+  #  ╭────────────────────────────╮
+  #  │ Control + Shift + <letter> │
+  #  ╰────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: A, mods: Control|Shift, chars: "\x1b[97;6u" }
   - { key: B, mods: Control|Shift, chars: "\x1b[98;6u" }
-  # - { key: C, mods: Control|Shift, chars: "\x1b[99;6u" }
+  - { key: C, mods: Control|Shift, chars: "\x1b[99;6u" }
   - { key: D, mods: Control|Shift, chars: "\x1b[100;6u" }
   - { key: E, mods: Control|Shift, chars: "\x1b[101;6u" }
-  # - { key: F, mods: Control|Shift, chars: "\x1b[102;6u" }
+  - { key: F, mods: Control|Shift, chars: "\x1b[102;6u" }
   - { key: G, mods: Control|Shift, chars: "\x1b[103;6u" }
   - { key: H, mods: Control|Shift, chars: "\x1b[104;6u" }
   - { key: I, mods: Control|Shift, chars: "\x1b[105;6u" }
@@ -1159,80 +1201,84 @@ key_bindings:
   - { key: K, mods: Control|Shift, chars: "\x1b[107;6u" }
   - { key: L, mods: Control|Shift, chars: "\x1b[108;6u" }
   - { key: M, mods: Control|Shift, chars: "\x1b[109;6u" }
-  # - { key: N, mods: Control|Shift, chars: "\x1b[110;6u" }
+  - { key: N, mods: Control|Shift, chars: "\x1b[110;6u" }
   - { key: O, mods: Control|Shift, chars: "\x1b[111;6u" }
-  # - { key: P, mods: Control|Shift, chars: "\x1b[112;6u" }
+  - { key: P, mods: Control|Shift, chars: "\x1b[112;6u" }
   - { key: Q, mods: Control|Shift, chars: "\x1b[113;6u" }
   - { key: R, mods: Control|Shift, chars: "\x1b[114;6u" }
   - { key: S, mods: Control|Shift, chars: "\x1b[115;6u" }
   - { key: T, mods: Control|Shift, chars: "\x1b[116;6u" }
-  # - { key: U, mods: Control|Shift, chars: "\x1b[117;6u" }
+  - { key: U, mods: Control|Shift, chars: "\x1b[117;6u" }
   - { key: V, mods: Control|Shift, chars: "\x1b[118;6u" }
   - { key: W, mods: Control|Shift, chars: "\x1b[119;6u" }
   - { key: X, mods: Control|Shift, chars: "\x1b[120;6u" }
   - { key: Y, mods: Control|Shift, chars: "\x1b[121;6u" }
   - { key: Z, mods: Control|Shift, chars: "\x1b[122;6u" }
 
-  - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" }
-  - { key: Period, mods: Control|Shift, chars: "\x1b[46;6u" }
+  # TODO: differentiate ctrl+_ ctrl+/
+  - { key: 0x39, mods: Control|Shift, chars: "\x1b[32;6u" } # FIX: Space
+  - { key: Return, mods: Control|Shift, chars: "\x1b[13;6u" } # Return
+  - { key: 0x29, mods: Control|Shift, chars: "\x1b[126;6u" } # Tilde (works: chars: "\x1b[96;6u")
+  - { key: 0x02, mods: Control|Shift, chars: "\x1b[33;6u" } # Exclamation
+  - { key: 0x03, mods: Control|Shift, chars: "\x1b[64;6u" } # @
+  - { key: 0x04, mods: Control|Shift, chars: "\x1b[35;6u" } # Pound
+  - { key: 0x05, mods: Control|Shift, chars: "\x1b[36;6u" } # Dollar
+  - { key: 0x06, mods: Control|Shift, chars: "\x1b[37;6u" } # Percent
+  - { key: 0x07, mods: Control|Shift, chars: "\x1b[94;6u" } # Caret
+  - { key: 0x08, mods: Control|Shift, chars: "\x1b[38;6u" } # Ampersand
+  - { key: 0x09, mods: Control|Shift, chars: "\x1b[42;6u" } # Asterisk
+  - { key: 0x0a, mods: Control|Shift, chars: "\x1b[40;6u" } # LParenthesis
+  - { key: 0x0b, mods: Control|Shift, chars: "\x1b[41;6u" } # RParenthesis
+  # - { key: 0x0c, mods: Control|Shift, chars: "\x1b[95;6u" } # Underscore
+  # - { key: Plus, mods: Control|Shift, chars: "\x1b[43;6u" } # Plus
+  - { key: 0x1a, mods: Control|Shift, chars: "\x1b[123;6u" } # LBrace
+  - { key: 0x1b, mods: Control|Shift, chars: "\x1b[125;6u" } # RBrace
+  - { key: 0x2b, mods: Control|Shift, chars: "\x1b[124;6u" } # Bar
+  - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" } # Colon
   - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
   - { key: 0x33, mods: Control|Shift, chars: "\x1b[60;6u" } # Less than
   - { key: 0x34, mods: Control|Shift, chars: "\x1b[62;6u" } # Greater than
-  - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # Question mark
-  - { key: 0x0a, mods: Control|Shift, chars: "\x1b[40;6u" } # Left parenthesis
-  - { key: 0x0b, mods: Control|Shift, chars: "\x1b[41;6u" } # Right parenthesis
-  - { key: 0x1a, mods: Control|Shift, chars: "\x1b[123;6u" } # Left curly brace
-  - { key: 0x1b, mods: Control|Shift, chars: "\x1b[125;6u" } # Right curly brace
+  - { key: 0x35, mods: Control|Shift, chars: "\x1b[63;6u" } # FIX: Question mark
 
-  - { key: 0x0A, mods: Control, chars: "\x1b[57;5u" } # Equals
+  # - { key: Grave,      mods: Control|Shift, chars: "\x1b~"  }
+  # - { key: Key1,       mods: Control|Shift, chars: "\x1b!"  }
+  # - { key: Key2,       mods: Control|Shift, chars: "\x1b@"  }
+  # - { key: Key3,       mods: Control|Shift, chars: "\x1b#"  }
+  # - { key: Key4,       mods: Control|Shift, chars: "\x1b$"  }
+  # - { key: Key5,       mods: Control|Shift, chars: "\x1b%"  }
+  # - { key: Key6,       mods: Control|Shift, chars: "\x1b^"  }
+  # - { key: Key7,       mods: Control|Shift, chars: "\x1b&"  }
+  # - { key: Key8,       mods: Control|Shift, chars: "\x1b*"  }
+  # - { key: Key9,       mods: Control|Shift, chars: "\x1b("  }
+  # - { key: Key0,       mods: Control|Shift, chars: "\x1b)"  }
+  # - { key: Minus,      mods: Control|Shift, chars: "\x1b_"  }
+  # - { key: Equals,     mods: Control|Shift, chars: "\x1b+"  }
+  # - { key: LBracket,   mods: Control|Shift, chars: "\x1b{"  }
+  # - { key: RBracket,   mods: Control|Shift, chars: "\x1b}"  }
+  # - { key: Backslash,  mods: Control|Shift, chars: "\x1b|"  }
+  # - { key: Semicolon,  mods: Control|Shift, chars: "\x1b:"  }
+  # - { key: Apostrophe, mods: Control|Shift, chars: "\x1b\"" }
+  # - { key: Comma,      mods: Control|Shift, chars: "\x1b<"  }
+  # - { key: Period,     mods: Control|Shift, chars: "\x1b>"  }
+  # - { key: Slash,      mods: Control|Shift, chars: "\x1b?"  }
 
-  # - { key: Comma, mods: Control|Shift, chars: "\x1b[60;6u" }
-  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
-  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
-  # - { key: 0, mods: Control, chars: "\x1b[48;5u" }
-  # - { key: 9, mods: Control, chars: "\x1b[57;5u" }
+  #  ╭───────────────────╮
+  #  │ Alt + <character> │
+  #  ╰───────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: Space, mods: Alt, chars: "\x1b[32;3u" }
+  - { key: Return, mods: Alt, chars: "\x1b[13;3u" }
+  - { key: Grave, mods: Alt, chars: "\x1b[96;3u" }
+  - { key: Minus, mods: Alt, chars: "\x1b[45;3u" }
+  - { key: Equals, mods: Alt, chars: "\x1b[61;3u" }
+  - { key: LBracket, mods: Alt, chars: "\x1b[91;3u" }
+  - { key: RBracket, mods: Alt, chars: "\x1b[93;3u" }
+  - { key: Backslash, mods: Alt, chars: "\x1b[92;3u" }
+  - { key: Semicolon, mods: Alt, chars: "\x1b[59;3u" }
+  - { key: Apostrophe, mods: Alt, chars: "\x1b[39;3u" }
+  - { key: Comma, mods: Alt, chars: "\x1b[44;3u" }
+  - { key: Period, mods: Alt, chars: "\x1b[46;3u" }
+  - { key: 0x35, mods: Alt, chars: "\x1b[47;3u" } # Forward slash (/)
 
-  # Alt + Shift + <letter> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: A, mods: Alt|Shift, chars: "\x1bA" }
-  - { key: B, mods: Alt|Shift, chars: "\x1bB" }
-  - { key: C, mods: Alt|Shift, chars: "\x1bC" }
-  - { key: D, mods: Alt|Shift, chars: "\x1bD" }
-  - { key: E, mods: Alt|Shift, chars: "\x1bE" }
-  - { key: F, mods: Alt|Shift, chars: "\x1bF" }
-  - { key: G, mods: Alt|Shift, chars: "\x1bG" }
-  - { key: H, mods: Alt|Shift, chars: "\x1bH" }
-  - { key: I, mods: Alt|Shift, chars: "\x1bI" }
-  - { key: J, mods: Alt|Shift, chars: "\x1bJ" }
-  - { key: K, mods: Alt|Shift, chars: "\x1bK" }
-  - { key: L, mods: Alt|Shift, chars: "\x1bL" }
-  - { key: M, mods: Alt|Shift, chars: "\x1bM" }
-  - { key: N, mods: Alt|Shift, chars: "\x1bN" }
-  - { key: O, mods: Alt|Shift, chars: "\x1bO" }
-  - { key: P, mods: Alt|Shift, chars: "\x1bP" }
-  - { key: Q, mods: Alt|Shift, chars: "\x1bQ" }
-  - { key: R, mods: Alt|Shift, chars: "\x1bR" }
-  - { key: S, mods: Alt|Shift, chars: "\x1bS" }
-  - { key: T, mods: Alt|Shift, chars: "\x1bT" }
-  - { key: U, mods: Alt|Shift, chars: "\x1bU" }
-  - { key: V, mods: Alt|Shift, chars: "\x1bV" }
-  - { key: W, mods: Alt|Shift, chars: "\x1bW" }
-  - { key: X, mods: Alt|Shift, chars: "\x1bX" }
-  - { key: Y, mods: Alt|Shift, chars: "\x1bY" }
-  - { key: Z, mods: Alt|Shift, chars: "\x1bZ" }
-
-  # Alt + <number> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: Key0, mods: Alt, chars: "\x1b0" }
-  - { key: Key1, mods: Alt, chars: "\x1b1" }
-  - { key: Key2, mods: Alt, chars: "\x1b2" }
-  - { key: Key3, mods: Alt, chars: "\x1b3" }
-  - { key: Key4, mods: Alt, chars: "\x1b4" }
-  - { key: Key5, mods: Alt, chars: "\x1b5" }
-  - { key: Key6, mods: Alt, chars: "\x1b6" }
-  - { key: Key7, mods: Alt, chars: "\x1b7" }
-  - { key: Key8, mods: Alt, chars: "\x1b8" }
-  - { key: Key9, mods: Alt, chars: "\x1b9" }
-
-  # Alt + <character> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   # - { key: Grave,      mods: Alt, chars: "\x1b`"  }
   # - { key: Minus,      mods: Alt, chars: "\x1b-"  }
   # - { key: Equals,     mods: Alt, chars: "\x1b="  }
@@ -1245,7 +1291,67 @@ key_bindings:
   # - { key: Period,     mods: Alt, chars: "\x1b."  }
   # - { key: Slash,      mods: Alt, chars: "\x1b/"  }
 
-  # Alt + Shift + <character> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  #  ╭────────────────────────╮
+  #  │ Alt + Shift + <letter> │
+  #  ╰────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: A, mods: Alt|Shift, chars: "\x1b[97;4u" }
+  - { key: B, mods: Alt|Shift, chars: "\x1b[98;4u" }
+  - { key: C, mods: Alt|Shift, chars: "\x1b[99;4u" }
+  - { key: D, mods: Alt|Shift, chars: "\x1b[100;4u" }
+  - { key: E, mods: Alt|Shift, chars: "\x1b[101;4u" }
+  - { key: F, mods: Alt|Shift, chars: "\x1b[102;4u" }
+  - { key: G, mods: Alt|Shift, chars: "\x1b[103;4u" }
+  - { key: H, mods: Alt|Shift, chars: "\x1b[104;4u" }
+  - { key: I, mods: Alt|Shift, chars: "\x1b[105;4u" }
+  - { key: J, mods: Alt|Shift, chars: "\x1b[106;4u" }
+  - { key: K, mods: Alt|Shift, chars: "\x1b[107;4u" }
+  - { key: L, mods: Alt|Shift, chars: "\x1b[108;4u" }
+  - { key: M, mods: Alt|Shift, chars: "\x1b[109;4u" }
+  - { key: N, mods: Alt|Shift, chars: "\x1b[110;4u" }
+  - { key: O, mods: Alt|Shift, chars: "\x1b[111;4u" }
+  - { key: P, mods: Alt|Shift, chars: "\x1b[112;4u" }
+  - { key: Q, mods: Alt|Shift, chars: "\x1b[113;4u" }
+  - { key: R, mods: Alt|Shift, chars: "\x1b[114;4u" }
+  - { key: S, mods: Alt|Shift, chars: "\x1b[115;4u" }
+  - { key: T, mods: Alt|Shift, chars: "\x1b[116;4u" }
+  - { key: U, mods: Alt|Shift, chars: "\x1b[117;4u" }
+  - { key: V, mods: Alt|Shift, chars: "\x1b[118;4u" }
+  - { key: W, mods: Alt|Shift, chars: "\x1b[119;4u" }
+  - { key: X, mods: Alt|Shift, chars: "\x1b[120;4u" }
+  - { key: Y, mods: Alt|Shift, chars: "\x1b[121;4u" }
+  - { key: Z, mods: Alt|Shift, chars: "\x1b[122;4u" }
+
+  # - { key: A, mods: Alt|Shift, chars: "\x1bA" }
+  # - { key: B, mods: Alt|Shift, chars: "\x1bB" }
+  # - { key: C, mods: Alt|Shift, chars: "\x1bC" }
+
+  #  ╭───────────────────────────╮
+  #  │ Alt + Shift + <character> │
+  #  ╰───────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: 0x39, mods: Alt|Shift, chars: "\x1b[32;4u" } # Space
+  - { key: Return, mods: Alt|Shift, chars: "\x1b[13;4u" } # Return
+  - { key: 0x29, mods: Alt|Shift, chars: "\x1b[126;4u" } # Tilde (works: chars: "\x1b[96;4u")
+  - { key: 0x02, mods: Alt|Shift, chars: "\x1b[33;4u" } # Exclamation
+  - { key: 0x03, mods: Alt|Shift, chars: "\x1b[64;4u" } # @
+  - { key: 0x04, mods: Alt|Shift, chars: "\x1b[35;4u" } # Pound
+  - { key: 0x05, mods: Alt|Shift, chars: "\x1b[36;4u" } # Dollar
+  - { key: 0x06, mods: Alt|Shift, chars: "\x1b[37;4u" } # Percent
+  - { key: 0x07, mods: Alt|Shift, chars: "\x1b[94;4u" } # Caret
+  - { key: 0x08, mods: Alt|Shift, chars: "\x1b[38;4u" } # Ampersand
+  - { key: 0x09, mods: Alt|Shift, chars: "\x1b[42;4u" } # Asterisk
+  - { key: 0x0a, mods: Alt|Shift, chars: "\x1b[40;4u" } # LParenthesis
+  - { key: 0x0b, mods: Alt|Shift, chars: "\x1b[41;4u" } # RParenthesis
+  - { key: 0x0c, mods: Alt|Shift, chars: "\x1b[95;4u" } # Underscore
+  - { key: Plus, mods: Alt|Shift, chars: "\x1b[43;4u" } # Plus
+  - { key: 0x1a, mods: Alt|Shift, chars: "\x1b[123;4u" } # LBrace
+  - { key: 0x1b, mods: Alt|Shift, chars: "\x1b[125;4u" } # RBrace
+  - { key: 0x2b, mods: Alt|Shift, chars: "\x1b[124;4u" } # Bar
+  - { key: Colon, mods: Alt|Shift, chars: "\x1b[58;4u" } # Colon
+  - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
+  - { key: 0x33, mods: Alt|Shift, chars: "\x1b[60;4u" } # Less than
+  - { key: 0x34, mods: Alt|Shift, chars: "\x1b[62;4u" } # Greater than
+  - { key: 0x35, mods: Alt|Shift, chars: "\x1b[63;4u" } # FIX: Question mark
+
   # - { key: Grave,      mods: Alt|Shift, chars: "\x1b~"  }
   # - { key: Key1,       mods: Alt|Shift, chars: "\x1b!"  }
   # - { key: Key2,       mods: Alt|Shift, chars: "\x1b@"  }
@@ -1268,33 +1374,35 @@ key_bindings:
   # - { key: Period,     mods: Alt|Shift, chars: "\x1b>"  }
   # - { key: Slash,      mods: Alt|Shift, chars: "\x1b?"  }
 
-  # Map Control-([1-9]|[0;']) to Control-[F1-F12] (F25-F36)
-  - { key: Key1, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x50" }
-  - { key: Key2, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x51" }
-  - { key: Key3, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x52" }
-  - { key: Key4, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x53" }
-  - { key: Key5, mods: Control, chars: "\x1b\x5b\x31\x35\x3b\x35\x7e" }
-  - { key: Key6, mods: Control, chars: "\x1b\x5b\x31\x37\x3b\x35\x7e" }
-  - { key: Key7, mods: Control, chars: "\x1b\x5b\x31\x38\x3b\x35\x7e" }
-  - { key: Key8, mods: Control, chars: "\x1b\x5b\x31\x39\x3b\x35\x7e" }
-  - { key: Key9, mods: Control, chars: "\x1b\x5b\x32\x30\x3b\x35\x7e" }
-  - { key: Key0, mods: Control, chars: "\x1b\x5b\x32\x31\x3b\x35\x7e" }
-  # - { key: Semicolon, mods: Control,       chars: "\x1b\x5b\x32\x33\x3b\x35\x7e" }
-  # - { key: Apostrophe,mods: Control,       chars: "\x1b\x5b\x32\x34\x3b\x35\x7e" }
+  #  ╭────────────────╮
+  #  │ Alt + <number> │
+  #  ╰────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: Key0, mods: Alt, chars: "\x1b[48;3u" }
+  - { key: Key1, mods: Alt, chars: "\x1b[49;3u" }
+  - { key: Key2, mods: Alt, chars: "\x1b[50;3u" }
+  - { key: Key3, mods: Alt, chars: "\x1b[51;3u" }
+  - { key: Key4, mods: Alt, chars: "\x1b[52;3u" }
+  - { key: Key5, mods: Alt, chars: "\x1b[53;3u" }
+  - { key: Key6, mods: Alt, chars: "\x1b[54;3u" }
+  - { key: Key7, mods: Alt, chars: "\x1b[55;3u" }
+  - { key: Key8, mods: Alt, chars: "\x1b[56;3u" }
+  - { key: Key9, mods: Alt, chars: "\x1b[57;3u" }
 
-  # Map Control-Alt-([1-9]) and Control-[,.] to Control-Shift-[F1-F12] (F37-F48)
-  # - { key: Key1, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x50" }
-  # - { key: Key2, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x51" }
-  # - { key: Key3, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x52" }
-  # - { key: Key4, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x53" }
-  # - { key: Key5, mods: Control|Alt, chars: "\x1b\x5b\x31\x35\x3b\x36\x7e" }
-  # - { key: Key6, mods: Control|Alt, chars: "\x1b\x5b\x31\x37\x3b\x36\x7e" }
-  # - { key: Key7, mods: Control|Alt, chars: "\x1b\x5b\x31\x38\x3b\x36\x7e" }
-  # - { key: Key8, mods: Control|Alt, chars: "\x1b\x5b\x31\x39\x3b\x36\x7e" }
-  # - { key: Key9, mods: Control|Alt, chars: "\x1b\x5b\x32\x30\x3b\x36\x7e" }
-  # - { key: Key0, mods: Control|Alt, chars: "\x1b\x5b\x32\x31\x3b\x36\x7e" }
+  # - { key: Key0, mods: Alt, chars: "\x1b0" }
+  # - { key: Key1, mods: Alt, chars: "\x1b1" }
+  # - { key: Key2, mods: Alt, chars: "\x1b2" }
+  # - { key: Key3, mods: Alt, chars: "\x1b3" }
+  # - { key: Key4, mods: Alt, chars: "\x1b4" }
+  # - { key: Key5, mods: Alt, chars: "\x1b5" }
+  # - { key: Key6, mods: Alt, chars: "\x1b6" }
+  # - { key: Key7, mods: Alt, chars: "\x1b7" }
+  # - { key: Key8, mods: Alt, chars: "\x1b8" }
+  # - { key: Key9, mods: Alt, chars: "\x1b9" }
 
-  # Control + <number> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  #  ╭────────────────────╮
+  #  │ Control + <number> │
+  #  ╰────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: Key0, mods: Control, chars: "\x1b[48;5u" }
   # - { key: Key1, mods: Control, chars: "\x1b[49;5u" }
   # - { key: Key2, mods: Control, chars: "\x1b[50;5u" }
   # - { key: Key3, mods: Control, chars: "\x1b[51;5u" }
@@ -1305,7 +1413,62 @@ key_bindings:
   # - { key: Key8, mods: Control, chars: "\x1b[56;5u" }
   # - { key: Key9, mods: Control, chars: "\x1b[57;5u" }
 
-  # Control + Shift + <number> ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # https://aperiodic.net/phil/archives/Geekery/term-function-keys/
+
+  #  ╭─────────────────────────────────────────────────────╮
+  #  │ Control-([1-9]|[0-=]) => Control-[F1-F12] (F25-F36) │
+  #  ╰─────────────────────────────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  - { key: Key1, mods: Control, chars: "\x1bOP" }
+  - { key: Key2, mods: Control, chars: "\x1bOQ" }
+  - { key: Key3, mods: Control, chars: "\x1bOR" }
+  - { key: Key4, mods: Control, chars: "\x1bOS" }
+  - { key: Key5, mods: Control, chars: "\x1b[15~" }
+  - { key: Key6, mods: Control, chars: "\x1b[17~" }
+  - { key: Key7, mods: Control, chars: "\x1b[18~" }
+  - { key: Key8, mods: Control, chars: "\x1b[19~" }
+  - { key: Key9, mods: Control, chars: "\x1b[20~" }
+  - { key: Key0, mods: Control, chars: "\x1b[21~" }
+  - { key: Minus, mods: Control, chars: "\x1b[23~" }
+  - { key: Equals, mods: Control, chars: "\x1b[24~" }
+
+  # - { key: Key1, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x50" }
+  # - { key: Key2, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x51" }
+  # - { key: Key3, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x52" }
+  # - { key: Key4, mods: Control, chars: "\x1b\x5b\x31\x3b\x35\x53" }
+  # - { key: Key5, mods: Control, chars: "\x1b\x5b\x31\x35\x3b\x35\x7e" }
+  # - { key: Key6, mods: Control, chars: "\x1b\x5b\x31\x37\x3b\x35\x7e" }
+  # - { key: Key7, mods: Control, chars: "\x1b\x5b\x31\x38\x3b\x35\x7e" }
+  # - { key: Key8, mods: Control, chars: "\x1b\x5b\x31\x39\x3b\x35\x7e" }
+  # - { key: Key9, mods: Control, chars: "\x1b\x5b\x32\x30\x3b\x35\x7e" }
+  # - { key: Key0, mods: Control, chars: "\x1b\x5b\x32\x31\x3b\x35\x7e" }
+  # - { key: Semicolon, mods: Control, chars: "\x1b\x5b\x32\x33\x3b\x35\x7e" }
+  # - { key: Apostrophe, mods: Control, chars: "\x1b\x5b\x32\x34\x3b\x35\x7e" }
+
+  #  ╭──────────────────────────────────────────────────────────────╮
+  #  │ Control-Alt-([1-9]|[,.]) => Control-Shift-[F1-F12] (F37-F48) │
+  #  ╰──────────────────────────────────────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: Key1, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x50" }
+  # - { key: Key2, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x51" }
+  # - { key: Key3, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x52" }
+  # - { key: Key4, mods: Control|Alt, chars: "\x1b\x5b\x31\x3b\x36\x53" }
+  # - { key: Key5, mods: Control|Alt, chars: "\x1b\x5b\x31\x35\x3b\x36\x7e" }
+  # - { key: Key6, mods: Control|Alt, chars: "\x1b\x5b\x31\x37\x3b\x36\x7e" }
+  # - { key: Key7, mods: Control|Alt, chars: "\x1b\x5b\x31\x38\x3b\x36\x7e" }
+  # - { key: Key8, mods: Control|Alt, chars: "\x1b\x5b\x31\x39\x3b\x36\x7e" }
+  # - { key: Key9, mods: Control|Alt, chars: "\x1b\x5b\x32\x30\x3b\x36\x7e" }
+  # - { key: Key0, mods: Control|Alt, chars: "\x1b\x5b\x32\x31\x3b\x36\x7e" }
+  # - { key: Comma, mods: Control, chars: "\x1b\x5b\x32\x33\x3b\x36\x7e" }
+  # - { key: Period, mods: Control, chars: "\x1b\x5b\x32\x34\x3b\x36\x7e" }
+
+  #  ╭──────────────────────────────────────────────────────╮
+  #  │ Control-[ / Control-m => Alt-Shift-[F1-F2] (F61-F62) │
+  #  ╰──────────────────────────────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+  # - { key: LBracket, mods: Control, chars: "\x1b\x5b\x31\x3b\x34\x50" }
+  # - { key: M, mods: Control, chars: "\x1b\x5b\x31\x3b\x34\x51" }
+
+  #  ╭────────────────────────────╮
+  #  │ Control + Shift + <number> │
+  #  ╰────────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: Key0, mods: Control|Shift, chars: "\x1b[48;6u" }
   - { key: Key1, mods: Control|Shift, chars: "\x1b[49;6u" }
   - { key: Key2, mods: Control|Shift, chars: "\x1b[50;6u" }
@@ -1320,7 +1483,7 @@ key_bindings:
   #  ╭──────────────────────────────────────────────────────────╮
   #  │                         Vi Mode                          │
   #  ╰──────────────────────────────────────────────────────────╯
-  # - { key: Space, mods: Control|Shift, action: ToggleViMode }
+  - { key: Space, mods: Shift|Control, mode: ~Search, action: ReceiveChar }
   - { key: Space, mods: Control, action: ToggleViMode }
   - { key: C, mods: Control, mode: Vi|~Search, action: ToggleViMode }
   - { key: Q, mode: Vi|~Search, action: ToggleViMode }

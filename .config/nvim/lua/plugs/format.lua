@@ -87,7 +87,6 @@ function M.format_doc(save)
                 --     return
                 -- end
 
-                -- FIX: This somehow brings up HLSLens
                 local err, res = coc.a2sync("hasProvider", {"format"}, 2000)
 
                 if not err and res == true then

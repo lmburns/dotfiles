@@ -266,6 +266,7 @@ end
 ---@field script number
 ---@field sid number
 ---@field silent number
+---@field callback fun()
 
 ---@class MapArgs
 ---@field unique boolean

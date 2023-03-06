@@ -3,7 +3,7 @@
     "userCodeDir": null,
     "settings": {
         "isFirstRun": true,
-        "serviceRunning": true,
+        "serviceRunning": false,
         "menuTakesFocus": false,
         "showTrayIcon": true,
         "sortByUsageCount": true,

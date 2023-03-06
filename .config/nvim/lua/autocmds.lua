@@ -147,7 +147,10 @@ nvim.autocmd.lmb__RestoreCursor = {
                 }
             )
 
-            if fn.expand("%") == "" or types:contains(vim.bo.ft) or vim.bo.bt == "nofile" or D.is_floating_window(0) then
+            if
+                fn.expand("%") == "" or types:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
+                    D.is_floating_window(0)
+             then
                 return
             end
 
@@ -228,7 +231,7 @@ nvim.autocmd.lmb__FormatOptions = {
                 o.conceallevel = 2
                 o.concealcursor = "vc"
 
-                if ft == "jsonc" then
+                if ft == "jsonc" or ft == "json" then
                     o.conceallevel = 0
                 end
 
@@ -403,7 +406,10 @@ nvim.autocmd.lmb__TermMappings = {
 local split_should_return = function()
     -- do nothing for floating windows
     local cfg = api.nvim_win_get_config(0)
-    if cfg and (cfg.external or cfg.relative and #cfg.relative > 0) or api.nvim_win_get_height(0) == 1 then
+    if
+        cfg and (cfg.external or cfg.relative and #cfg.relative > 0) or
+            api.nvim_win_get_height(0) == 1
+     then
         return true
     end
     -- do not run if Diffview is open
@@ -565,7 +571,8 @@ nvim.autocmd.lmb__SmartClose = {
             local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
             local is_eligible =
-                is_unmapped or vim.wo.previewwindow or _t(smart_close_filetypes):contains(vim.bo[bufnr].ft) or
+                is_unmapped or vim.wo.previewwindow or
+                _t(smart_close_filetypes):contains(vim.bo[bufnr].ft) or
                 _t(smart_close_buftypes):contains(vim.bo[bufnr].bt)
 
             if is_eligible then
@@ -828,7 +835,12 @@ nvim.autocmd.lmb__AutoReloadFile = {
                 return
             end
 
-            cmd(bufnr .. "checktime")
+            -- targets.vim throws an error here
+            pcall(
+                function()
+                    cmd(bufnr .. "checktime")
+                end
+            )
         end,
         desc = "Reload file when modified outside of the instance"
     },

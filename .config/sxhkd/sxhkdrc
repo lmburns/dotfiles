@@ -20,7 +20,7 @@
 #     xdotool keyup l key --clearmodifiers Right
 
 # Get help for keybindings
-super + shift + h
+super + shift + question
     sxhkd_help &
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -108,6 +108,19 @@ super + shift + m
 super + ctrl + m
     whid last
 
+# Hide current window
+super + shift + u
+    bspc node -g hidden
+
+# Reopen every hidden window
+super + ctrl + u
+    bspc node any.hidden -g hidden=off
+
+# Set the node flags
+super + ctrl + {m,x,y,z}
+    bspc node -g {marked,locked,sticky,private}
+
+# Set the window state
 # super + {t,shift + t,s,f}
 #   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
@@ -115,17 +128,20 @@ super + ctrl + m
 # │ Tiled Window │
 # ╰──────────────╯
 
-# TODO: Get to work with monocle
-# Force all windows of the desktop to tile
+# Force all windows of the desktop to tile (floating|fullscreen|monocle)
 super + ctrl + t
     bspcp tile
-# bspc node @/ -t tiled
+# bspc desktop --layout tiled || bspcp tile
 
 # Focus a (pseudo_)tiled window / Cycle (pseudo_)tiled windows.
 super + {_,shift + }t
     bspc node -f 'focused.!floating.!fullscreen.window#{next,prev}.local.!hidden.!floating.!fullscreen.window' \
         || bspc node -f 'last.local.!focused.!hidden.!floating.!fullscreen.window' \
         || bspc node -f 'any.local.!focused.!hidden.!floating.!fullscreen.window'
+
+# Focus on window in direction (tiled)
+alt + {h,j,k,l}
+    bspc node -f {west,south,north,east}
 
 # Rotate tree
 mod3 + {_,shift +}r
@@ -139,10 +155,6 @@ super + alt + {_,ctrl + } + r
 super + alt + {comma,period}
     bspc node @/ --flip {vertical,horizontal}
 
-# Focus on window in direction (tiled)
-alt + {h,j,k,l}
-    bspc node -f {west,south,north,east}
-
 # Swap window in direction (tiled)
 alt + shift + {h,j,k,l}
     bspc node -s {west,south,north,east}
@@ -150,11 +162,17 @@ alt + shift + {h,j,k,l}
 
 # Swap current largest, smallest space
 alt + shift + b
-    bspc node -s '{biggest,smallest}.!focused.local.window'
+    bspc node -s 'biggest.!focused.!hidden.local.window'
+# bspc node -s '{biggest,smallest}.!focused.!hidden.local.window'
 
-# Equalize/reset equalize window sizes
-ctrl + alt + {_, shift +}0
+# Equalize/balance window sizes
+super + ctrl + {_,shift + }0
     bspc node @/ -{B,E}
+# bspc node {@/,_} --equalize
+
+# Make split ratios balanced
+# super + alt + {_,shift + }0
+#     bspc node {@/,_} --balance
 
 # Dynamic gaps
 mod3 + shift + bracket{left,right}
@@ -185,52 +203,33 @@ super + ctrl + {h,j,k,l}
 # ╰─────────╯
 
 # Toggle monocle layout (maximise focused node).
-# If you use `-l monocle` you lose the toggle functionality.
 mod3 + m
     bspc desktop -l next
-
-# super + {_,shift + }p
-#     bspc node -f {next,prev}
-
-# This command fixed above from not focusing?
-# bspc node -l below -f next.local
 
 # super + {h,j,k,l}
 #     m='.local'; \
 #     bspwm-monocle {west$m next$m,south$m prev$m,north$m next$m,east$m prev$m}
 
 # Alternate layers (doesn't switch focus)
-# super + shift + {h,j,k}
-#     bspc node -l {normal,below,above}
-
-# Alternate layers (doesn't switch focus)
 super + shift + j
     bspc node -l below || bspc node -l above
 
-# ??
-# mod3 + {comma,period}
-#     bspc desktop -C {backward,forward}
+# super + less
+#     bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "above" then "normal" else "below" end')"
+# super + greater
+#     bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "below" then "normal" else "above" end')"
 
-# set manual preselect split direction on current window
-# ctrl + alt + shift {h,j,k,l}
-#     bspc node -p {west,south,north,east}
-
-# cancel the manual preselect direction on the current window or all windows on the desktop
-# ctrl + alt + shift + {_,shift + }space
-#     bspc {node -p cancel,desktop -c}
-
-# set the node flags
-# super + ctrl + {m,x,y,z}
-#   bspc node -g {marked,locked,sticky,private}
+# Bring any unfocused hidden layer to the front
+super + shift + k
+    bspc node any.{above,below} -l normal -f
 
 # ╭───────────────────╮
 # │ Fullscreen Window │
 # ╰───────────────────╯
 
-# FIX:
 # Rotates and make full screen
 mod3 + bracket{left,right}
-    bspc node -f '{prev,next}.!focused.window' && bspc node focused.focused -t fullscreen
+    bspc node -f '{prev,next}.!focused.window' && bspc node focused -t fullscreen
 # bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
 
 # Toggle between tiled/fullscreen
@@ -251,10 +250,6 @@ super + {_,shift + }f
         || bspc node -f 'last.local.!focused.!hidden.floating' \
         || bspc node -f  'any.local.!focused.!hidden.floating'
 
-# Toggle fullscreen, floating, and tiled
-# mod3 + {shift + space,space}
-#    bspc node -t {tiled,floating}
-
 # Move a floating window with the arrow keys (else use Alt + Left Mouse
 # Click to drag).  I seldom use floating windows.
 # ctrl + shift + {Left,Down,Up,Right}
@@ -264,7 +259,7 @@ super + {_,shift + }f
 # │ Any Window │
 # ╰────────────╯
 
-# Rotate between floating|tiled windows
+# Rotate between tiled|floating|monocle windows
 super + {j,k}
     bspc node -f 'focused.window#{next,prev}.local.!hidden.window' \
         || bspc node -f 'last.local.!focused.!hidden.window' \
@@ -277,16 +272,25 @@ super + {o,i}
     bspc node -f {older,newer}; \
     bspc wm -h on
 
-# Focus last window (works for any window)
+# Focus parent/child nodes
+# super + {less,greater}
+#     bspc node -f @{parent,/}
+
+# Focus last window (tiled|floating|monocle)
 super + comma
     bspc node -f 'last.local.!hidden.window'
 
-# mod3 + e
-#     bspc node -f {next.floating,next.tiled}
+# Focus the node for the given path jump
+# super + ctrl + {p,b,comma,period}
+#     bspc node -f @{parent,brother,first,second}
 
 # ╭──────────────╮
 # │ Preselection │
 # ╰──────────────╯
+
+# Send the current window to preselected area
+super + shift + y
+    bspc node -n last.!automatic.local
 
 # Preselect the direction or insert again to cancel the preselection.
 # This enters the manual tiling mode that splits the currently focused window.
@@ -305,6 +309,14 @@ super + control + Return
 super + ctrl + shift + {1-9}
   bspc node -o 0.{1-9}
 
+# set manual preselect split direction on current window
+# ctrl + alt + shift {h,j,k,l}
+#     bspc node -p {west,south,north,east}
+
+# cancel the manual preselect direction on the current window or all windows on the desktop
+# ctrl + alt + shift + {_,shift + }space
+#     bspc {node -p cancel,desktop -c}
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Desktop                          │
 # ╰──────────────────────────────────────────────────────────╯
@@ -317,17 +329,13 @@ super + ctrl + shift + {1-9}
 #         <desktop_id>|<desktop_name>
 #     )[.[!]focused][.[!]active][.[!]occupied][.[!]urgent][.[!]local]
 
-# focus the node for the given path jump
-# super + {p,b, comma, period}
-#     bspc node -f @{parent,brother,first,second}
-
-# Focus the last node/desktop
-super + {grave,Tab}
-    bspc -f {node,desktop} last
-
-# focus or send to the given desktop
-super + {_,shift + }{1-9,0}
+# Focus or send to the given desktop
+super + {_,alt + }{1-9,0}
     bspc {desktop -f,node -d} '^{1-9,10}'
+
+# Send to the given desktop and follow
+super + alt + ctrl + {1-9,0}
+    bspc node -d '^{1-9,10}' --follow
 
 # Focus the next/previous desktop
 super + bracket{left,right}
@@ -338,11 +346,11 @@ super + shift + bracket{left,right}
     bspc desktop -f {prev.occupied,next.occupied}
 
 # Focus the next/previous desktop
-alt + {Left,Right}
+super + {Left,Right}
     bspc desktop -f {prev,next}.local
 
 # Focus the next/previous occupied desktop
-alt + shift + {Left,Right}
+super + shift + {Left,Right}
     bspc desktop -f {prev.occupied,next.occupied}
 
 # ╭─────────╮
@@ -428,6 +436,24 @@ super + F1
 # │                        Additions                         │
 # ╰──────────────────────────────────────────────────────────╯
 
+# ╭────────╮
+# │ Tabbed │
+# ╰────────╯
+# Add to tabbed container
+# ctrl + alt + {Left,Down,Up,Right}
+#     tabc attach $(bspc query -N -n) {$(bspc query -N -n west),$(bspc query -N -n south),$(bspc query -N -n north),$(bspc query -N -n east)}
+
+# Create/remove from tabbed container
+# super + z
+#     id=$(bspc query -N -n); \
+#     [[ "$(tabc printclass $id)" == "tabbed" ]] \
+#     && tabc detach $id \
+#     || tabc create $id
+
+# Toggle autoattach in tabbed container
+# super + shift + z
+#     tabc autoattach $(bspc query -N -n)
+
 # Speaker/output volume.  Requires `amixer` and dedicated keys.
 XF86Audio{Mute,LowerVolume,RaiseVolume}
     volume-notify '' {toggle,-5%,+5%}
@@ -504,6 +530,10 @@ mod3 + XF86Audio{Play,Prev,Next}
 mod3 + {_,shift + }n
     dunstctl {history-pop,close-all}
 
+# Perform dunst action
+mod3 + a
+    dunstctl action
+
 # Print
 #   scrot -u -z '%Y-%m-%d_%H:%M:%S_$wx$h$n.png' -e 'mv $f ~/Pictures' \
 #     && notify-send -i gnome-screenshot "Window view screenshot" "Saved image to Pictures"
@@ -511,15 +541,3 @@ mod3 + {_,shift + }n
 # mod4 + Print
 #   scrot -m -z '%Y-%m-%d_%H:%M:%S_$wx$h.png' -e 'mv $f ~/Pictures' \
 #     && notify-send -i gnome-screenshot "Screen view screenshot" "Saved image to Pictures"
-
-# ╭──────────────────────────────────────────────────────────╮
-# │                          Extra                           │
-# ╰──────────────────────────────────────────────────────────╯
-
-# Set the node flags.  Locked is a node that cannot be closed with `bspc
-# node --close`.  Marked is a specific selector that allows operating on
-# the given item (such as sending the marked item to the newest
-# preselection).  Sticky stays in the focused desktop.  Private tries to
-# keep its dimensions and tiling position.
-# mod4 + x ; f ; {l,m,s,p}
-# bspc node -g {locked,marked,sticky,private}

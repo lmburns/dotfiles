@@ -289,7 +289,14 @@ return packer.startup(
                     desc = "Move line/character in various modes"
                 }
             )
-            use({"tversteeg/registers.nvim", conf = "registers"})
+            use(
+                {
+                    "tversteeg/registers.nvim",
+                    conf = "registers",
+                    keys = {{"n", '"'}, {"i", "<C-r>"}},
+                    cmd = "Registers"
+                }
+            )
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
             use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
@@ -364,15 +371,22 @@ return packer.startup(
                     keys = {
                         {"n", "<C-n>"},
                         {"x", "<C-n>"},
-                        {"n", [[<Leader>\]]},
-                        {"n", [[<Leader>/]]},
-                        {"n", "<Leader>A"},
-                        {"n", "<Leader>gs"},
-                        {"x", "<Leader>A"},
+                        {"n", "<C-S-Up>"},
+                        {"n", "<C-S-Down>"},
                         {"n", "<M-S-i>"},
                         {"n", "<M-S-o>"},
-                        {"n", "<C-Up>"},
-                        {"n", "<C-Down>"},
+                        {"n", "<C-M-S-l>"},
+                        {"n", "<C-M-S-h>"},
+                        {"n", [[<Leader>\]]},
+                        {"n", [[<Leader>/]]},
+                        {"x", [[<Leader>/]]},
+                        {"n", "<Leader>A"},
+                        {"x", "<Leader>A"},
+                        {"x", ";A"},
+                        {"x", ";a"},
+                        {"x", ";F"},
+                        {"x", ";C"},
+                        {"n", "<Leader>gs"},
                         {"n", "g/"}
                     },
                     cmd = {"VMSearch"},
@@ -1048,7 +1062,8 @@ return packer.startup(
                             "teal",
                             "tsx",
                             "typescript",
-                            "zig"
+                            "zig",
+                            "zsh"
                         }
                     end
                 }
@@ -1183,7 +1198,13 @@ return packer.startup(
                     after = "nvim-treesitter"
                 }
             )
-            use({"cshuaimin/ssr.nvim", requires = "nvim-treesitter/nvim-treesitter", after = "nvim-treesitter" })
+            use(
+                {
+                    "cshuaimin/ssr.nvim",
+                    requires = "nvim-treesitter/nvim-treesitter",
+                    after = "nvim-treesitter"
+                }
+            )
             use(
                 {
                     -- conf = "plugs.treesitter"
@@ -1271,6 +1292,7 @@ return packer.startup(
                             -- "max397574/nvim-treehopper",
                             "mfussenegger/nvim-treehopper",
                             desc = "Region selection with hints on the AST nodes",
+                            wants = "hop.nvim",
                             after = "nvim-treesitter",
                             requires = "nvim-treesitter/nvim-treesitter"
                         },

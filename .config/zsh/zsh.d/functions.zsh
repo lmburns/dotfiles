@@ -145,12 +145,12 @@ function lsnmap()    { nmap --iflist; }
 function mem()      { sudo px $$; }
 # List file descriptors
 function lsfd()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
-# List deleted items?
+# List deleted items
 function lsdelete() { lsof -n | rg -i --color=always deleted }
 # List users on the computer
-function lsusers()  {  hck -d':' -f1 <<< "$(</etc/passwd)"; }
+function lsusers()  { hck -d':' -f1 <<< "$(</etc/passwd)"; }
 # List the fonts
-function lsfont() { fc-list -f '%{family}\n' | awk '!x[$0]++'; }
+function lsfont()   { fc-list -f '%{family}\n' | awk '!x[$0]++'; }
 
 # List functions
 function lsfuncs {
@@ -421,64 +421,80 @@ function lswindows() {
 # ====================================================================
 # ${${${(D)${${${a[1]#_}%:*}:A}}//\~config\/zsh/ZSH}//\~config/CONFIG}
 
-function print::warning() {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{13}[WARNING]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
 function print::error()   {
   local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  # local func=${${functrace[1]#_}%:*}
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   print -Pru2 -- "%F{12}%B[ERROR]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
 }
-function print::debug()   {
+function print::warning() {
   local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{18}[DEBUG]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{13}%B[WARNING]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
 }
 function print::info()    {
   local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{52}[INFO]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{52}%B[INFO]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::debug()   {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{18}%B[DEBUG]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+}
+function print::trace()   {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{47}%B[TRACE]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
 }
 function print::notice()  {
   local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{22}[NOTICE]%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{22}%B[NOTICE]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
 }
 function print::success() {
   local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=${${functrace[1]#_}%:*}
-  local file=${${${(D)${${${functrace[2]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   print -Pru2 -- "%F{53}%B[SUCCESS]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
 }
 
 function zsh::log() {
   setopt localoptions nopromptsubst
-  zmodload -Fa zsh/parameter p:functrace
+  zmodload -Fa zsh/parameter p:functrace p:funcsourcetrace
+  zmodload -Fa zsh/zutil b:zparseopts
+  local -A opts; zparseopts -E -D -A opts n:
 
   local logtype=$1
-  local logname=${3:-${${functrace[1]#_}%:*}}
+  local logname=${opts[-n]:-}
 
   case $logtype in
-    (normal) print -Pn "%U%F{white}$logname%f%u: $2" ;;
-    (debug) print -Pn "%U%F{4}$logname%f%u ";   print::debug   "$2" ;;
-    (info)  print -Pn "%U%F{5}$logname%f%u ";   print::info    "$2" ;;
-    (warn)  print -Pn "%S%F{3}$logname%f%s ";   print::warning "$2" ;;
-    (error) print -Pn "%S%F{red}$logname%f%s "; print::error   "$2" ;;
+    (success|0) print -Pn "%U%F{53}${logname:+${logname}:}%f%u";  print::success "$2" ;;
+    (notice)    print -Pn "%U%F{54}${logname:+${logname}:}%f%u:"; print::notice  "$2" ;;
+    (trace|1)   print -Pn "%U%F{54}${logname:+${logname}:}%f%u:"; print::trace   "$2" ;;
+    (debug|2)   print -Pn "%U%F{54}${logname:+${logname}:}%f%u "; print::debug   "$2" ;;
+    (info|3)    print -Pn "%U%F{54}${logname:+${logname}:}%f%u "; print::info    "$2" ;;
+    (warn|4)    print -Pn "%S%F{54}${logname:+${logname}:}%f%s "; print::warning "$2" ;;
+    (error|5)   print -Pn "%S%F{12}${logname:+${logname}:}%f%s "; print::error   "$2" ;;
   esac >&2
 }
 
 # Dump all kinds of info
 function log::dump() {
   zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
-  print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
-  print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
-  print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
-  print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
+  local t tl eq
+  t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "%F{13}%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
+  t='Func Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
+  t='Func Stack' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
+  t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
 }

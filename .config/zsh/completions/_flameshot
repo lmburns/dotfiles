@@ -1,0 +1,103 @@
+#compdef flameshot
+
+autoload -U is-at-least
+
+_flameshot_cmds() {
+  typeset -a cmds; cmds=(
+    'gui:start a manual capture in GUI mode'
+    'screen:capture a single screen'
+    'full:capture the entire desktop'
+    'launcher:open the capture launcher'
+    'config:configure flameshot'
+  )
+  _describe -t flameshot-cmds "commands" cmds
+}
+
+_flameshot() {
+    local curcontext="$curcontext" state line context
+    typeset -a arguments argopts
+    local ret=1
+
+    if is-at-least 5.2; then
+        argopts=(-s -S -C)
+    else
+        argopts=(-s -C)
+    fi
+
+  arguments=(
+    {-h,--help}'[displays this help]'
+    {-v,--version}'[displays version information]'
+    "::subcommand:_flameshot_cmds" \
+    "*::: :->flameshot" \
+  )
+
+  _arguments "$argopts[@]" $arguments \
+    && ret=0
+
+  case $state in
+    (flameshot)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:flameshot-command-$line[1]:"
+      case $line[1] in
+        (gui)
+          _arguments "$argopts[@]" \
+            {-h,--help}'[display help about the subcommand]' \
+            {-p,--path}'[existing directory or new file to save to]:file:_files' \
+            {-c,--clipboard}'[save the capture to the clipboard]' \
+            {-d,--delay}'[delay time in milliseconds]:milliseconds:' \
+            '--region[screenshot region to selection]:WxH+X+Y or string:' \
+            '--last-region[repeat screenshot with previously selected region]' \
+            {-r,--raw}'[print raw PNG capture]' \
+            {-g,--print-geometry}'[print geometry of the selection in format W H X Y (does nothing with --raw)]' \
+            {-u,--upload}'[upload a screenshot]' \
+            '--pin[pin the capture to the screen]' \
+            {-s,--accept-on-select}'[accept capture as soon as a selection is made]' \
+            && ret=0
+        ;;
+        (screen)
+          _arguments "$argopts[@]" \
+            {-h,--help}'[display help about the subcommand]' \
+            {-n,--number}'[define the screen to capture (starting from 0) (default: screen with cursor)]:screen number:' \
+            {-c,--clipboard}'[save the capture to the clipboard]' \
+            {-p,--path}'[existing directory or new file to save to]:file:_files' \
+            {-d,--delay}'[delay time in milliseconds]:milliseconds:' \
+            '--region[screenshot region to selection]:WxH+X+Y or string:' \
+            {-r,--raw}'[print raw PNG capture]' \
+            {-u,--upload}'[upload a screenshot]' \
+            '--pin[pin the capture to the screen]' \
+            && ret=0
+        ;;
+        (full)
+          _arguments "$argopts[@]" \
+            {-h,--help}'[display help about the subcommand]' \
+            {-p,--path}'[existing directory or new file to save to]:file:_files' \
+            {-c,--clipboard}'[save the capture to the clipboard]' \
+            {-d,--delay}'[delay time in milliseconds]:milliseconds:' \
+            '--region[screenshot region to selection]:WxH+X+Y or string:' \
+            {-r,--raw}'[print raw PNG capture]' \
+            {-u,--upload}'[upload a screenshot]' \
+            && ret=0
+        ;;
+        (config)
+          _arguments "$argopts[@]" \
+            {-h,--help}'[display help about the subcommand]' \
+            {-a,--autostart}'[enable / disable run at startup]:boolean:(true false)' \
+            {-f,--filename}'[set the filename pattern]:filename:_files' \
+            {-t,--trayicon}'[enable / disable the trayicon]:boolean:(true false)' \
+            {-s,--showhelp}'[show help message in capture mode]:boolean:(true false)' \
+            {-m,--maincolor}'[define the main UI color]:color code:' \
+            {-k,--contrastcolor}'[define the contrast UI color]:color code:' \
+            '--check[check the configuration for errors]' \
+            && ret=0
+        ;;
+        (launcher)
+          _arguments "$argopts[@]" \
+            {-h,--help}'[display help about the subcommand]' \
+            && ret=0
+        ;;
+      esac
+  esac
+
+  return ret
+}

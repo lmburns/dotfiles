@@ -390,14 +390,15 @@ function M.sort()
 
     map("n", "gW", "Sort", {cmd = true})
     map("x", "gW", ":Sort<CR>", {desc = "Sort selection"})
-    map("v", "gW", "<Esc><Cmd>Sort<CR>", {desc = "Sort selection"})
+    -- map("v", "gW", "<Esc><Cmd>Sort<CR>", {desc = "Sort selection"})
 
     -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
     -- [!]         = Sort order is reversed
-    -- [o]         = First octal number in the word
+    -- [n]         = First decimal number
+    -- [b]         = First binary number
+    -- [o]         = First octal number
+    -- [x]         = First hexadecimal number
     -- [i]         = Case is ignored
-    -- [b]         = First binary number in the word
-    -- [n]         = First decimal number in the word
     -- [u]         = Keep the first instance of words within selection
 end
 
@@ -958,17 +959,18 @@ function M.targets()
     -- B: below cursor off screen
     g.targets_seekRanges =
         "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
-    -- g.targets_jumpRanges = g.targets_seekRanges
+    g.targets_jumpRanges = g.targets_seekRanges
     g.targets_aiAI = "aIAi"
     -- g.targets_mapped_aiAI = 'aiAI'
 
     -- Seeking next/last objects
     g.targets_nl = "nm"
 
-    -- map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], { expr = true })
-    -- map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], { expr = true })
-    -- map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], { expr = true })
-    -- map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], { expr = true })
+    -- FIX: I here triggers unable to change text in window with coc with progress enabled
+    map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
+    map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
+    map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
+    map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1527,18 +1529,29 @@ function M.registers()
             trim_whitespace = true,
             hide_only_whitespace = true,
             show_register_types = true,
-            -- bind_keys = {
-            --     normal = registers.show_window({ mode = "motion" }),
-            --     visual = registers.show_window({ mode = "motion" }),
-            --     insert = registers.show_window({ mode = "insert" }),
-            --     registers = registers.apply_register({ delay = 0.1 }),
-            --     return_key = registers.apply_register(),
-            --     escape = registers.close_window(),
-            --     ctrl_n = registers.move_cursor_down(),
-            --     ctrl_p = registers.move_cursor_up(),
-            --     ctrl_j = registers.move_cursor_down(),
-            --     ctrl_k = registers.move_cursor_up(),
-            -- },
+            bind_keys = {
+                normal = registers.show_window({mode = "motion"}),
+                visual = registers.show_window({mode = "motion"}),
+                insert = registers.show_window({mode = "insert"}),
+                registers = registers.apply_register({delay = 0.1}),
+                return_key = registers.apply_register(),
+                escape = registers.close_window(),
+                --     ctrl_n = registers.move_cursor_down(),
+                --     ctrl_p = registers.move_cursor_up(),
+                --     ctrl_j = registers.move_cursor_down(),
+                --     ctrl_k = registers.move_cursor_up(),
+                -- Clear the register of the highlighted line when pressing <DEL>
+                delete = registers.clear_highlighted_register(),
+                -- Clear the register of the highlighted line when pressing <BS>
+                backspace = registers.clear_highlighted_register()
+            },
+            events = {
+                -- When a register line is highlighted, show a preview in the main buffer with how
+                -- the register will be applied, but only if the register will be inserted or pasted
+                on_register_highlighted = registers.preview_highlighted_register(
+                    {if_mode = {"insert", "paste"}}
+                )
+            },
             symbols = {
                 newline = "⏎",
                 space = " ",
@@ -1550,7 +1563,7 @@ function M.registers()
             window = {
                 max_width = 100,
                 highlight_cursorline = true,
-                border = "rounded",
+                border = style.current.border,
                 transparency = 10
             },
             sign_highlights = {
@@ -1800,29 +1813,34 @@ function M.visualmulti()
     g.VM_default_mappings = 0
     g.VM_set_statusline = 0 -- 3 if you want to use this STL
     g.VM_case_setting = "smart"
+    g.VM_recursive_operations_at_cursors = true
 
     g.VM_Mono_hl = "DiffText" -- ErrorMsg DiffText
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
     g.VM_Cursor_hl = "Visual"
     g.VM_Insert_hl = "DiffChange"
 
-    -- { c -> index(split('hljkwebWEB$^0{}()%nN', '\zs'), c) >= 0 }
-    -- { c -> index(split('iafFtTg', '\zs'), c) >= 0              }
+    -- g.VM_plugins_compatibilty = {
+    --     plugin_name = {
+    --         test = function()
+    --         end,
+    --         enable = ":PluginEnableCommand",
+    --         disable = ":PluginDisableCommand"
+    --     }
+    -- }
+
     g.VM_custom_motions = {
         ["L"] = "$",
         ["H"] = "^",
-        w = "iw",
-        W = "aw",
-        -- iq = "iq",
-        -- ["aw"] = "aw", -- These don't work
-        -- ["iw"] = "iw",
     }
 
     g.VM_custom_noremaps = {
         ["=="] = "==",
         ["<<"] = "<<",
-        [">>"] = ">>",
+        [">>"] = ">>"
     }
+
+    -- g.VM_custom_commands = {}
 
     g.VM_user_operators = {
         "dss", -- delete surround automatic detection
@@ -1831,13 +1849,9 @@ function M.visualmulti()
         {cs = 2}, -- change surround
         {ds = 1}, -- delete surround
         "gc", -- comment
-        {da = 1}, -- FIX: delete around
-        {di = 1}, -- FIX: delete inner
-        {ys = 3}, -- FIX: add surround
-        {cr = 3} -- FIX: change case
-        -- {s = 2}, -- substitute
-        -- {d = 2}, -- delete
-        -- {y = 2}, -- yank
+        {ys = 3},
+        {cr = 3}, -- FIX: change case
+        {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
     -- g.VM_custom_remaps = {
@@ -1849,18 +1863,15 @@ function M.visualmulti()
     g.VM_maps = {
         Delete = "d",
         Yank = "y",
-        ["Select Operator"] = "",
+        ["Select Operator"] = "s",
         ["Find Operator"] = "m",
         Undo = "u",
         Redo = "U",
         ["Switch Mode"] = ",",
-        -- ["Exit"] = "<C-c>", -- common.vm also defines <Esc>
-
         i = "i",
         I = "I",
-
-        ["Add Cursor Up"] = "<C-Up>",
-        ["Add Cursor Down"] = "<C-Down>",
+        ["Add Cursor Up"] = "<C-S-Up>",
+        ["Add Cursor Down"] = "<C-S-Down>",
         ["Add Cursor At Pos"] = [[<Leader>\]],
         ["Select Cursor Up"] = "<M-S-i>",
         ["Select Cursor Down"] = "<M-S-o>",
@@ -1947,8 +1958,8 @@ function M.visualmulti()
         -- ["I Next"] = "<C-j>", -- Insert mode to go next cursor
     }
 
-    map("n", "<C-Up>", "<Plug>(VM-Add-Cursor-Up)")
-    map("n", "<C-Down>", "<Plug>(VM-Add-Cursor-Down)")
+    map("n", "<C-S-Up>", "<Plug>(VM-Add-Cursor-Up)")
+    map("n", "<C-S-Down>", "<Plug>(VM-Add-Cursor-Down)")
     map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
     map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
     map("n", "<C-M-S-l>", "<Plug>(VM-Select-l)")

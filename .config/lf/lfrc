@@ -2,6 +2,51 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
+# TODO: add diffsitter
+
+## Backup files
+#function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
+#function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
+
+## Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
+#function bk() {
+#  emulate -L zsh
+#  command cp -iv --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
+#}
+
+## Backup a file with only a date. 'fname' -> 'fname_2023_01_30'
+#function bk-today() {
+#  emulate -L zsh
+#  command cp -iv --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
+#}
+
+## Add a date suffix to a file
+#function datify() {
+#  emulate -L zsh
+#  # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}
+#  f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYYY}}_{{mtime.MM}}_{{mtime.DD}}${${${1:e}:+.${1:e}}:-}" "${@:2}"
+#}
+
+## Only renames using f2
+#function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
+#function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
+#function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
+#function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
+#function rmsym() { command rm -- *(-@D); }
+#function rmsymr() { command rm -- **/*(-@D); }
+#function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
+#function shredd() { shred -v -n 1 -z -u  $1;  }
+#function pbpf() { xsel -b > "$1"; }
+#function lnbin() { ln -siv $HOME/mybin/$1 $XDG_BIN_HOME; }
+#function unlbin() { rm -v $XDG_BIN_HOME/$1; }
+#function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
+#function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
+#function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
+#function ng() {
+#  command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
+#}
+
+
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
 
@@ -313,9 +358,9 @@ cmd open ${{
         (bz|bz2|tbz|tbz2|gz|tgz|xz|txz|zip|rar|iso)
           mntdir="${f}-archivemount"
           [[ ! -d "$mntdir" ]] && {
-            mkdir "$mntdir"
+            command mkdir "$mntdir"
             archivemount "$f" "$mntdir"
-            echo "$mntdir" >> "/tmp/__lf_archivemount_$id"
+            builtin print -R "$mntdir" >> "${TMPPREFIX}/__lf_archivemount_${id}"
           }
           lf -remote "send $id cd \"$mntdir\""
           lf -remote "send $id reload"
@@ -431,7 +476,7 @@ cmd rsync_from_mac ${{ rsync -uvrP macbook:/Users/lucasburns/"$1" "$2" }}
 # === Unmount: unmount archivemount ============================
 cmd unmount ${{
   fusermount -u "$f" && dunstify -a lf " Unmounted" "${f:t3}"
-  rmdir "$f"
+  command rmdir "$f"
   lf -remote "send $id reload"
 }}
 
@@ -574,14 +619,13 @@ cmd rmspace $f2 -f '\s' -r '_' -RFx
 cmd disk-info ${{
   clear;
 
-  env | bat --paging=always
-
   # local cwd="${(l:(COLUMNS-$#PWD)/2:: :):-}$PWD"
   # print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
   #   | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
 
-  # print -- "$(pwd | lscolors)\n$(dust | sed -E '1 s/^\s+//g')" \
-  #   | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
+  print -- "$(pwd | lscolors)\n$(dust | sed -E '1 s/^\s+//g')" \
+    | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
+
   # diskus
 }}
 # ]]] File Attributes
@@ -611,11 +655,20 @@ cmd take %{{
 }}
 
 # === Creation: directory & move selected files into it ========
-cmd newfold ${{
+# TODO: Finish
+cmd newfold %{{
   # Create dir and move selected files into it
-  zmodload -Fa zsh/zle b:vared
-  clear; vared -cp "Folder: " fold
-  [[ -n "$fold" ]] && command mkdir -p -- "$fold" && command mv -- $fx "$fold"
+  print -Prn "%F{52}%BFolder%b%f: "
+  read -r fold
+  [[ -n "$fold" ]] && {
+    command mkdir -p -- "$fold" && command mv -- $fx "$fold"
+  } || lf -remote "send $id echoe 'No argument given'"
+
+  # read -rq "?Overwrite? [y/n]? " answer
+
+  # zmodload -Fa zsh/zle b:vared
+  # clear; vared -cp "Folder: " fold
+  # [[ -n "$fold" ]] && command mkdir -p -- "$fold" && command mv -- $fx "$fold"
 }}
 # ]]] File / Directory Creation
 

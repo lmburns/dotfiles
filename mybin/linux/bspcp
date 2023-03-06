@@ -42,11 +42,12 @@ case $1 in
       ;;
     esac
   ;;
-  (tile) # Force every existing window to tile (the opposite is dumb IMHO)
-    # for window (${(@f)"$(bspc query -N -d focused)"}) {
+  (tile) # Force every existing window to tile
     for window (${(@f)"$(bspc query -N -d focused)"}) {
       bspc node $window -t tiled
     }
+    # This is required for monocle
+    bspc desktop focused.local --layout tiled
   ;;
   (float) # Force every existing window to float and place the windows
     for window ( ${(@f)"$(bspc query -N -d focused)"} ) {
@@ -54,8 +55,7 @@ case $1 in
       let i++
     }
   ;;
-
-  *)
+  (*)
     exit
   ;;
 esac

@@ -618,10 +618,10 @@ M.setup_context = function()
         --     you can safely ignore them.
 
         zindex = 20, -- The Z-index of the context window
-        mode = "cursor", -- Line used to calculate context. Choices: 'cursor', 'topline'
+        mode = "topline", -- Line used to calculate context. Choices: 'cursor', 'topline'
         -- Separator between context and content. Should be a single character string, like '-'.
         -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-        separator = nil,
+        separator = '-',
     }
 end
 
@@ -833,6 +833,21 @@ M.setup_treesurfer = function()
         '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
         {desc = "Swap previous node"}
     )
+end
+
+---Setup nvim-treehopper
+M.setup_treehopper = function()
+    cmd.packadd("nvim-treehopper")
+    local tsht = D.npcall(require, "tsht")
+    if not tsht then
+        return
+    end
+
+    tsht.config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
+
+    map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    map("o", ",", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
+    map("n", "vx", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
 end
 
 ---Setup treesitter
@@ -1356,6 +1371,7 @@ local function init()
     M.setup_aerial()
     M.setup_context_vt()
     M.setup_treesurfer()
+    M.setup_treehopper()
     M.setup_autotag()
 
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]], {silent = true})
@@ -1474,13 +1490,6 @@ local function init()
         },
         {mode = "n"}
     )
-
-    require("tsht").config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
-    map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("o", ",", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
-    map("n", "vx", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
-    -- map("n", '<C-S-">', [[<Cmd>lua require('tsht').jump_nodes()<CR>]], {desc = "Treesiter jump node"})
-    -- hl.set("TSNodeUnmatched", {fg = "#666666"})
 
     map(
         "n",

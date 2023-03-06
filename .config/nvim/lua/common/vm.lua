@@ -15,8 +15,8 @@ local config
 local lens_backup
 
 local dispose0, dispose1, dispose2, dispose3, dispose4, dispose5, dispose6, dispose7
-local dispose8
-local n_keymap, s_keymap, y_keymap
+local dispose8, dispose9
+local n_keymap, s_keymap
 local debounced
 
 local MODE = {
@@ -87,9 +87,11 @@ function M.exit()
     dispose6:dispose()
     dispose7:dispose()
     dispose8:dispose()
+    dispose9:dispose()
     map("n", "n", n_keymap, {silent = true})
     map("n", "s", s_keymap, {silent = true})
-    -- map("n", "y", y_keymap, {silent = true, expr = true})
+
+    require("plugs.config").registers()
 
     -- Sometimes this doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
@@ -106,13 +108,16 @@ function M.mappings()
             function()
                 n_keymap = utils.get_keymap("n", "n").rhs
                 s_keymap = utils.get_keymap("n", "s").rhs
-                -- y_keymap = utils.get_keymap("n", "y").rhs
+
+                require("registers").setup({bind_keys = {false}})
+                utils.del_keymap("n", '"')
             end,
             10
         )
         debounced()
     end
 
+    -- Adding keymaps
     dispose0 = bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
     dispose1 = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
     dispose2 =
@@ -146,12 +151,9 @@ function M.mappings()
     )
     dispose7 = bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     dispose8 = bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
-
-    -- dispose7 = bmap("n", "<Leader>y", '"+y', {silent = true})
-    -- dispose8 = bmap("n", "y", "<Plug>(VM-Yank)", {silent = true})
+    dispose9 = bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})
 
     -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
-    -- bmap("n", "m", "<Plug>(VM-Find-Operator)", {silent = true, nowait = true})
 end
 
 local function init()

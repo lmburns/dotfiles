@@ -15,8 +15,7 @@ function M.setup()
     presets.operators["!"] = nil
     presets.operators["<lt>"] = nil
     presets.operators["<gt>"] = nil
-    presets.operators['"_d'] = "Delete blackhole"
-    presets.operators["d"] = presets.operators['"_d']
+    presets.operators["d"] = "Delete blackhole"
     presets.operators["gc"] = "Commenter (line)"
     presets.operators["gb"] = "Commenter (block)"
     presets.operators["gq"] = "Formatter"
@@ -26,14 +25,14 @@ function M.setup()
     presets.operators["s"] = "Substitue"
 
     -- This still allows to check variables, etc.
-    local show = wk.show
-    wk.show = function(keys, opts)
-        ---@diagnostic disable-next-line: undefined-field
-        if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi then
-            return
-        end
-        show(keys, opts)
-    end
+    -- local show = wk.show
+    -- wk.show = function(keys, opts)
+    --     ---@diagnostic disable-next-line: undefined-field
+    --     if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi then
+    --         return
+    --     end
+    --     show(keys, opts)
+    -- end
 
     wk.setup {
         plugins = {
@@ -101,7 +100,7 @@ function M.setup()
             i = {"j", "k"},
             v = {"j", "k"},
             c = {},
-            -- n = {"s"}
+            n = {'"'}, -- "s"
             -- o = {"d", '"_d'}
         },
         -- disable the WhichKey popup for certain buf types and file types.

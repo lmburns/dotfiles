@@ -542,13 +542,7 @@ ex=:\
 # .scm
 # .re
 
-# Appears as a question mark with current font
-#
-# 󰘓
-#
-# Roman numerals
-# 󱂉 2 󱂊 3 󱂋 4 󱂍 6 󱂎 7 󱂏 8 󱂐 9
-
+# This string is later evaluated to be used as an array
 export LF_COLOR_ARRAY="typeset -gxA COLORS; COLORS=(
   1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
   4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
@@ -588,13 +582,13 @@ function lc() {
   emulate -L zsh
   local tmp==()
   local fid==()
-  trap "command rm -rf $tmp $fid" EXIT
+  trap "command rm -rf $tmp $fid" EXIT INT
   command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
   local id="${"$(<$fid)"}"
-  local archivemount_dir="/tmp/__lf_archivemount_${id}"
+  local archivemount_dir="${TMPDIR}/__lf_archivemount_${id}"
   if [[ -f "$archivemount_dir" ]] {
     while read -r line; do
-      notify-send "Unmounted" "${line:h:t}/${line:t}"
+      dunstify "Unmounted" "${line:h:t}/${line:t}"
       fusermount -u "$line"
       command rmdir "$line"
     done <<< ${"$(<$archivemount_dir)"}

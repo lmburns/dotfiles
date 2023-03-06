@@ -6,7 +6,7 @@ syn match shOperator '||'
 syn match shOperator '&&'
 
 " Match semicolons as Delimiter rather than Operator
-syn match shSemicolon ';' containedin=shOperator,zshOperator
+syn match shSemicolon ';' containedin=shOperator
 
 " Highlight braces, brackets and parens as Delimiters in zsh
 syn match zshDelim '\v(\(|\))' containedin=zshParentheses
