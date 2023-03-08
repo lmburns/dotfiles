@@ -1,0 +1,41 @@
+#!/usr/bin/env zsh
+
+emulate -L zsh
+setopt extendedglob
+
+# Desc: display a notification of the state of given state
+
+local focused state icon icondir title
+icondir="/usr/share/icons/Gruvbox-Material-Dark/22x22/panel"
+focused="$(pfw)"
+
+case "$1" in
+  (marked)
+    bspc node -g marked
+    state="$(bspc query -T -n focused | jq -r .marked)"
+  ;;
+  (locked)
+    bspc node -g locked
+    state="$(bspc query -T -n focused | jq -r .locked)"
+  ;;
+  (sticky)
+    bspc node -g sticky
+    state="$(bspc query -T -n focused | jq -r .sticky)"
+  ;;
+  (private)
+    bspc node -g private
+    state="$(bspc query -T -n focused | jq -r .private)"
+  ;;
+esac
+
+icon=${${${(M)state:#true}:+${icondir}/state-ok.svg}:-${icondir}/state-error.svg}
+title=${(S)${${:-"$(xwinfo -n $focused)"}}/(#b)(*)([^[:alpha:]]-[^[:alpha:]])(*)(#e)/${${${${match[1]}%% }## }[1,25]}}
+
+dunstify \
+  -i "$icon" \
+  -a bspwm \
+  -h 'string:bgcolor:#A06469' \
+  "$(xwinfo -i $focused)" \
+  "${title}\n<b>${(C)1}</b>: $state"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]

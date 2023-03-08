@@ -60,4 +60,4 @@ done
 PATH="$PATH" command sudo "${@}"
 unset -f _do_sudo
 
-# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

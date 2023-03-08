@@ -229,7 +229,7 @@ nvim.autocmd.lmb__FormatOptions = {
                 local ft = vim.bo[bufnr].ft
 
                 o.conceallevel = 2
-                o.concealcursor = "vc"
+                o.concealcursor = "c"
 
                 if ft == "jsonc" or ft == "json" then
                     o.conceallevel = 0

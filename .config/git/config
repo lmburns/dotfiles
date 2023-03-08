@@ -180,6 +180,8 @@
   # Allows use of git:// for public repositories with push access
   pushInsteadOf = git://github.com/
 
+[url "http://github.com/"]
+
 [url "https://github.com/"]
   # Use HTTP for GitHub instead of git:// or git@
   # Enable this in networks where git:// or git@ are blocked.
@@ -190,7 +192,7 @@
 [url "git@github.com:"]
   # Use SSH for GitHub instead of https://
   # Enable this in networks where https:// has issues.
-  #insteadOf = https://github.com/
+  insteadOf = https://github.com/
 
 [alias]
   # https://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git/2222920#2222920

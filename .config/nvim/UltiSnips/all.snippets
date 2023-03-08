@@ -99,12 +99,20 @@ snippet yesterday "date of today" b
 `[[ "$OSTYPE" =~ darwin ]] && date -v -1d +%m-%d-%4Y || date --date=yesterday +%m-%d-%4Y`
 endsnippet
 
-snippet vimsf "Vim modeline fdm=marker"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
+snippet vims "Vim modeline (no tab)"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}:et:sw=0:ts=2:sts=2
 endsnippet
 
-snippet vims "Vim modeline"
+snippet vimsf "Vim modeline (no tab) + fdm=marker"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v printf(':et:sw=0:ts=2:sts=2:fdm=marker:fmr=%s', &fmr)`
+endsnippet
+
+snippet vimt "Vim modeline (with tab)"
 `!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'')`
+endsnippet
+
+snippet vimtf "Vim modeline (with tab) + fdm=marker"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
 endsnippet
 
 snippet H "A header box" b

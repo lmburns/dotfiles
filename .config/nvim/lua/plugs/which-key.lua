@@ -16,13 +16,29 @@ function M.setup()
     presets.operators["<lt>"] = nil
     presets.operators["<gt>"] = nil
     presets.operators["d"] = "Delete blackhole"
-    presets.operators["gc"] = "Commenter (line)"
+    -- presets.operators["gc"] = "Commenter (line)"
     presets.operators["gb"] = "Commenter (block)"
     presets.operators["gq"] = "Formatter"
     presets.operators["ga"] = "EasyAlign"
     presets.operators["ys"] = "Surround"
     presets.operators["sx"] = "Exchange"
     presets.operators["s"] = "Substitue"
+
+    ---@class WKRegisterOpts
+    ---@field mode string Default "n"
+    ---@field prefix string: Use "<Leader>f" example. Prepended to every mapping
+    ---@field buffer number Buffer local mappings
+    ---@field silent boolean Use `silent` when creating keymaps
+    ---@field noremap boolean Use `noremap` when creating keymaps
+    ---@field nowait boolean Use `nowait` when creating keymaps
+
+    -- ---@param mappings table<string, string|string[]>
+    -- ---@param opts? WKRegisterOpts
+    -- local function register(mappings, opts)
+    --     wk.register(mappings, opts)
+    -- end
+    --
+    -- wk.register = register
 
     -- This still allows to check variables, etc.
     -- local show = wk.show
@@ -53,20 +69,11 @@ function M.setup()
             }
         },
         -- NOTE: Only gq/s works here
-        operators = {
-            -- add operators that will trigger motion and text object completion
-            -- s = "Substitue",
-            -- sx = "Exchange",
-            -- gq = "Formatter",
-            -- y = "Yank",
-            -- gc = "Comments",
-            -- ga = "EasyAlign",
-            -- ys = "Surround",
-            -- ['"_d'] = "Delete",
-            -- d = "Delete",
-            -- ["!"] = nil,
-        },
+        operators = {gc = "Comments"},
         key_labels = {},
+        motions = {
+            count = true
+        },
         icons = {
             breadcrumb = "»", -- symbol used in the command line area that shows active key combo
             separator = "", -- 輪淪‣ symbol used between a key and it's label
@@ -95,12 +102,23 @@ function M.setup()
         show_help = true, -- show help message on the command line when the popup is visible
         show_keys = true, -- show the currently pressed key and its label as a message in the command line
         triggers = "auto",
-        triggers_nowait = {}, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
+        triggers_nowait = {
+            -- marks
+            "`",
+            "'",
+            "g`",
+            "g'",
+            -- registers
+            '"',
+            "<c-r>",
+            -- spelling
+            "z="
+        }, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers_blacklist = {
             i = {"j", "k"},
             v = {"j", "k"},
             c = {},
-            n = {'"'}, -- "s"
+            n = {'"'} -- "s"
             -- o = {"d", '"_d'}
         },
         -- disable the WhichKey popup for certain buf types and file types.
@@ -190,7 +208,10 @@ local function init()
     -- <F-3> to show which-key help in any relevant mode
     local _modes = {"n", "i", "t", "v", "x", "o"}
     for m = 1, #_modes do
-        wk.register({["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}}, {mode = _modes[m]})
+        wk.register(
+            {["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}},
+            {mode = _modes[m]}
+        )
     end
 
     -- Workaround until custom operator gets fixed

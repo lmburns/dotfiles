@@ -3,35 +3,10 @@
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
 # TODO: add diffsitter
-
-## Backup files
-#function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
-#function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
-
-## Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
-#function bk() {
-#  emulate -L zsh
-#  command cp -iv --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
-#}
-
-## Backup a file with only a date. 'fname' -> 'fname_2023_01_30'
-#function bk-today() {
-#  emulate -L zsh
-#  command cp -iv --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
-#}
-
-## Add a date suffix to a file
-#function datify() {
-#  emulate -L zsh
-#  # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}
-#  f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYYY}}_{{mtime.MM}}_{{mtime.DD}}${${${1:e}:+.${1:e}}:-}" "${@:2}"
-#}
+# TODO: add make / cargo
+# TODO: Add dirstack like thing to lf
 
 ## Only renames using f2
-#function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
-#function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
-#function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
-#function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
 #function rmsym() { command rm -- *(-@D); }
 #function rmsymr() { command rm -- **/*(-@D); }
 #function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
@@ -613,18 +588,46 @@ cmd massren $massren $fx
 cmd mmv $mmv -- ${${(@f)fx}:t}
 cmd f2 !f2 -f "$1"
 cmd rmspace $f2 -f '\s' -r '_' -RFx
+
+# === Backup: using numbered and simple VCS =========
+cmd backup ${{
+  local fl
+  for fl ($=fx) {
+    command cp -vruT --preserve=all --force --backup=existing -- $fl $fl
+  }
+}}
+
+# === Backup: 'fname_2023-01-30T14:23-06:00' ========
+cmd backup_date_iso ${{
+  local fl ext
+  for fl ($=fx) {
+    ext=${fl:e}
+    ext=${ext:+.$ext}
+    ext=${ext:-}
+    command cp -ivuT --preserve=links,mode,ownership,xattr "$fl" "${fl:r}_$(date --iso-8601=m)${ext}"
+  }
+}}
+
+# === Backup: 'fname_2023_01_30' ====================
+cmd backup_date_today ${{
+  local fl ext
+  for fl ($=fx) {
+    ext=${fl:e}
+    ext=${ext:+.$ext}
+    ext=${ext:-}
+  }
+  # --preserve=all timestamp
+  command cp -iv --preserve=links,mode,ownership,xattr "$fl" "${fl:r}_$(date '+%Y_%m_%d')${ext}"
+}}
 # ]]] Renaming
 
 # === Attributes: directory size, etc. =========================
 cmd disk-info ${{
   clear;
-
-  # local cwd="${(l:(COLUMNS-$#PWD)/2:: :):-}$PWD"
-  # print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
-  #   | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
-
-  print -- "$(pwd | lscolors)\n$(dust | sed -E '1 s/^\s+//g')" \
-    | bat --paging=always --pager="$LF_LESS" -f --style=grid,numbers
+  local pth=$(pwd | lscolors)
+  local cwd=${(l:(COLUMNS-$#PWD)/2:: :):-}$pth
+  print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
+    | bat --paging=always --pager="$LF_LESS" -f --style=grid
 
   # diskus
 }}
@@ -865,7 +868,6 @@ cmd jumpInteractive ${{
   zmodload -Fa zsh/parameter p:commands
   clear
   local field esc N R G Y B pattern res
-  local -a bmark_dirs
   field='\(\S\+\s*\)'
   esc=$'\e'
   N="${esc}[0m"
@@ -896,6 +898,7 @@ cmd fzf_cd ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local ret; clear
   ret="$(fd . -d1 -td -HiL \
+    | lscolors \
     | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
         || { dunstify "No directory selected"; exit }))"
   lf -remote "send $id cd '$ret'"
@@ -906,9 +909,24 @@ cmd fzf_cd_depth ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local ret; clear
   ret="$(fd . -d4 -td -HiL \
+    | lscolors \
     | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
         || { dunstify "No directory selected"; exit }))"
   lf -remote "send $id cd '$ret'"
+}}
+
+# === CD: using FZF find file and CD dir =======================
+cmd fzf_cd_file ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  local ret parent; clear
+  ret="$(fd . -tf -HiL \
+    | lscolors \
+    | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
+        || { dunstify "No directory selected"; exit }))"
+  [[ -f "$ret" ]] && {
+    parent="${ret:h}"
+    lf -remote "send $id cd '$parent'"
+  }
 }}
 
 # === CD: follow symlink =======================================
@@ -1391,12 +1409,16 @@ map Bf push :f2<space>      # use f2 to rename
 map Bm massren              # bulk rename with massren
 map Bv mmv                  # bulk rename only with selected
 map Bs rmspace              # remove spaces from filenames
+map Bc backup               # backup file with `cp`
+map Bdi backup_date_iso     # backup using ISO suffix
+map Bdt backup_date_today   # backup using today's date
 # ]]] Renaming
 
 # === CD ======================================================= [[[
 map cc fzf_zoxide      # fzf zioxide
 map ci jumpInteractive # rualdi fzf
-map w fzf_cd           # fzf cd
+map wd fzf_cd          # fzf cd (only lists directories)
+map wf fzf_cd_file     # fzf cd to file parent (only lists files)
 map W fzf_cd_depth     # fzf cd further depth
 
 map <c-l> cd-realpath # cd to directory's realpath

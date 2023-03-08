@@ -10,4 +10,4 @@ local line
         ) && ${EDITOR:-vim} $(cut -f3 <<< "$line") -c "set nocst" \
                             -c "silent tag $(cut -f2 <<< "$line")"
 
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

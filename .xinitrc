@@ -19,7 +19,7 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 #  │ clipboard │
 #  ╰───────────╯
 # greenclip daemon &
-setsid -f greenclip daemon > /dev/null 2>&1 &!
+# setsid -f greenclip daemon > /dev/null 2>&1 &!
 
 ulauncher --hide-window &
 
@@ -62,14 +62,14 @@ numlockx &
     #     'redshift -b 0.1:0.1' \
     #     'redshift -b 1.0:1.0' \
 
-xidlehook \
-    --not-when-fullscreen \
-    --not-when-audio \
-    --timer 500 \
-        'screensaver' '' \
-    --timer 240 \
-        'xset dpms force off; pidof i3lock || screenlock' '' \
-    --socket "/tmp/xidlehook.sock" &
+# xidlehook \
+#     --not-when-fullscreen \
+#     --not-when-audio \
+#     --timer 500 \
+#         'screensaver' '' \
+#     --timer 240 \
+#         'xset dpms force off; pidof i3lock || screenlock' '' \
+#     --socket "/tmp/xidlehook.sock" &
 
 # flashfocus &
 

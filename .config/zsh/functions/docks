@@ -5,4 +5,4 @@ cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
 
 [ -n "$cid" ] && docker stop "$cid"
 
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

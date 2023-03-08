@@ -410,4 +410,4 @@ fi
 
 return 0
 
-# vim: ft=zsh:et:sw=2:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=2:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

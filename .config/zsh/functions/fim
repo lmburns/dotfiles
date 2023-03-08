@@ -22,4 +22,4 @@ else
   print -Pr -- "%F{14}$fullp%f ($(which $fullp)) is not a text file"
 fi
 
-# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

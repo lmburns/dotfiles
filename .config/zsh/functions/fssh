@@ -9,4 +9,4 @@ choice=$(builtin print -rl "$hosts[@]" | fzf +m)
 
 [[ -n $choice ]] && command ssh $choice
 
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -110,11 +110,38 @@ function! <SID>MkdxFzfQuickfixHeaders()
         \ }))
 endfunction
 
-nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>
-nnoremap <silent> MB :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>
-nnoremap <silent> M, :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>
-nnoremap <silent> M: :<C-U>call mkdx#WrapText('n', ':', ':', 'custom-tag')<CR>
-nnoremap <silent> Mc <Plug>(mkdx-text-inline-code-n)
+augroup lmb__MkdxBindings
+  autocmd!
+  autocmd FileType vimwiki,markdown
+      \ nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>|
+      \ nnoremap <silent> Mc <Plug>(mkdx-text-inline-code-n)|
+      \ nnoremap <silent> mB :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>|
+      \ nnoremap <silent> m, :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>|
+      \ nnoremap <silent> m: :<C-U>call mkdx#WrapText('n', ':', ':', 'custom-tag')<CR>|
+      \ nmap <silent> m- <Plug>(mkdx-checkbox-prev-n)|
+      \ nmap <silent> m= <Plug>(mkdx-checkbox-next-n)|
+      \ nmap <silent> m= <Plug>(mkdx-toggle-checkbox-n)|
+      \ nmap <silent> mi <Plug>(mkdx-gen-or-upd-toc)|
+      \ nmap <silent> mj <Plug>(mkdx-jump-to-header)|
+      \ nmap <silent> mk <Plug>(mkdx-toggle-to-kbd-n)|
+      \ nmap <silent> mI <Plug>(mkdx-quickfix-toc)|
+      \ nmap <silent> mL <Plug>(mkdx-quickfix-links)|
+      \ nmap <silent> mb <Plug>(mkdx-text-bold-n)|
+      \ nmap <silent> ms <Plug>(mkdx-text-strike-n)|
+      \ nmap <silent> mc <Plug>(mkdx-text-inline-code-n)|
+      \ nmap <silent> m' <Plug>(mkdx-toggle-quote-n)|
+      \ nmap <silent> m/ <Plug>(mkdx-text-italic-n)|
+      \ vmap <silent> mb <Plug>(mkdx-text-bold-v)|
+      \ vmap <silent> ms <Plug>(mkdx-text-strike-v)|
+      \ vmap <silent> mc <Plug>(mkdx-text-inline-code-v)|
+      \ vmap <silent> m' <Plug>(mkdx-toggle-quote-v)|
+      \ vmap <silent> m/ <Plug>(mkdx-text-italic-v)|
+      \ vmap <silent> mB :<C-U>call mkdx#WrapText('v', '***', '***', 'custom-bold-italic')<CR>|
+      \ vmap <silent> m, :<C-U>call mkdx#WrapText('v', '***', '***', 'custom-bold-italic')<CR>|
+      \ vmap <silent> m: :<C-U>call mkdx#WrapText('v', ':', ':', 'custom-tag')<CR>|
+augroup END
+" \ nunmap M[ |
+" \ nunmap M]
 
 " imap <buffer><silent><unique> <<Tab> <kbd></kbd><C-o>2h<C-o>cit
 " inoremap <buffer><silent><unique> ~~~ ```<Enter>```<C-o>k<C-o>A

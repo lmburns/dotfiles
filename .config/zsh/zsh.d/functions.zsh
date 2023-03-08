@@ -204,7 +204,9 @@ function restore-t() { rename -n 's/^(.*).bak$/$1/g' $@ }
 function restore()   { rename    's/^(.*).bak$/$1/g' $@ }
 
 # Backup files
-function bak()  { command cp -vr --preserve=all --force --suffix=.bak $1 $1 }
+function bak()  {
+  command cp -vruT --preserve=all --force --backup=existing $1 $1
+}
 function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
 
 # Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
@@ -358,7 +360,7 @@ function d2o() { print $(( [##8] $1 )); }
 # Convert octal to base 10
 function o2d() { print $(( 0$1 )); }
 # Convert octal to hexadecimal
-function o2h() { print $(( [##16] 0$1 )); } # print 'obase=16; ibase=8; $1' | bc
+function o2h() { print $(( [##16] 0$1 )); print -- -1 } # print 'obase=16; ibase=8; $1' | bc
 
 # HTML to Markdown
 function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
@@ -498,3 +500,10 @@ function log::dump() {
   t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
   print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
 }
+
+# === TIP: =========================================================== [[[
+# print -P '%15>...>%d' => /home/lucas/...
+# print -P '%15<...<%d' => ...fig/nvim/lua
+# ]]]
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]

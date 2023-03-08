@@ -649,7 +649,7 @@ hints:
         enabled: true
         mods: None
       binding:
-        key: Y
+        key: C
         mods: Control|Alt|Shift
 
     # - regex: "((/|~|\\$[\\w_]+)[^/\0 ]*)+/?"
@@ -660,7 +660,7 @@ hints:
         enabled: true
         mods: None
       binding:
-        key: C
+        key: Y
         mods: Control|Alt|Shift
 
 # /home/lucas

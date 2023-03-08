@@ -286,6 +286,12 @@ local function init()
             vim.o.foldlevel = 99
             vim.o.foldlevelstart = 99
             vim.o.foldcolumn = "1"
+            vim.o.foldmarker = "[[[,]]]"
+
+            -- o.foldmethod = "marker"
+            -- o.foldmarker = "[[[,]]]"
+            -- o.foldmethod = "expr"
+            -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
             -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
             map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top of open fold"})

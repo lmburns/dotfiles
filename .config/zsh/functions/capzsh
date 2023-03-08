@@ -138,4 +138,4 @@ done
 
 return 2
 
-# vim: ft=zsh:et:sw=4:ts=2:sts=-1:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=4:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

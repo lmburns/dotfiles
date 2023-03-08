@@ -5,4 +5,4 @@ name="$(cat $1)"
 
 echo "$date $name" | jrnl
 
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

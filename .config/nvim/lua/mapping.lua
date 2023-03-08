@@ -66,8 +66,27 @@ map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
 
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
+
+map("i", '<M-S-">', "<Home>", {desc = "Move to begin of line"})
 map("i", "<M-'>", "<End>", {desc = "Move to end of line"})
-map("i", '<M-S-">', "<Home>", {desc = "Move to of line"})
+map("i", "<C-t>", "<C-o>:", {desc = "Go into command mode"})
+map("i", "<C-h>", "<BS>", {desc = "Delete character to left"})
+map("i", "<C-l>", "<Del>", {desc = "Delete character to right"})
+map("i", "<C-S-h>", "<S-Left>", {desc = "Move one word left"})
+map("i", "<C-S-l>", "<S-Right>", {desc = "Move one word right"})
+map("i", "<C-S-k>", "<Home>", {desc = "Move to end of line"})
+map("i", "<C-S-j>", "<End>", {desc = "Move to begin of line"})
+-- map("i", "<C-S-k>", "<Up>", {desc = "Move one line up"})
+-- map("i", "<C-S-j>", "<Down>", {desc = "Move one line down"})
+
+wk.register(
+    {
+        ["<C-i>"] = "Delete all text left of cursor",
+        ["<C-t>"] = "Insert one shift level at beginning of line",
+        ["<C-d>"] = "Delete one shift level at beginning of line",
+    },
+    {mode = "i"}
+)
 
 -- Navigate merge conflict markers
 -- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
@@ -94,6 +113,21 @@ map("x", "<S-Tab>", "<<<Esc>gv", {silent = true})
 map("n", "v", "m`v")
 map("n", "V", "m`V")
 map("n", "<C-v>", "m`<C-v>")
+
+map(
+    "n",
+    "<Leader>c;",
+    function()
+        local ol = vim.opt_local
+        local fo = ol.formatoptions:get()
+        if fo.r then
+            ol.formatoptions:append({r = false})
+        else
+            ol.formatoptions:append({r = true})
+        end
+    end,
+    {desc = "Toggle continuation of comment"}
+)
 
 -- Use g- and g+
 wk.register(
@@ -173,6 +207,7 @@ wk.register(
 )
 
 map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
+map("n", "<Leader>h;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
 
 -- Jumps more than 5 modify jumplist
 map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
@@ -180,6 +215,8 @@ map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {e
 
 map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line", silent = true})
 map("n", "gk", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true})
+
+-- These still lag
 map("n", ">", ":norm! }<CR>", {desc = "Move to next blank line", silent = true, nowait = true})
 map("n", "<", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true, nowait = true})
 
@@ -219,7 +256,10 @@ map("n", "<LocalLeader>z", [[zMzvzz]])
 map(
     "n",
     "zz",
-    ([[(winline() == (winheight(0) + 1)/ 2) ?  %s : %s]]):format([['zt' : (winline() == 1) ? 'zb']], [['zz']]),
+    ([[(winline() == (winheight(0) + 1)/ 2) ?  %s : %s]]):format(
+        [['zt' : (winline() == 1) ? 'zb']],
+        [['zz']]
+    ),
     {expr = true, desc = "Center or top current line"}
 )
 
@@ -258,21 +298,36 @@ wk.register(
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
         ["qC"] = {[[:lua require("common.qfext").conflicts2qf()<CR>]], "Conflicts to quickfix"},
-        ["qs"] = {[[:lua require("common.builtin").spellcheck()<CR>]], "Spelling mistakes to quickfix"},
+        ["qs"] = {
+            [[:lua require("common.builtin").spellcheck()<CR>]],
+            "Spelling mistakes to quickfix"
+        },
         ["qz"] = {[[:lua require("common.builtin").changes2qf()<CR>]], "Changes to quickfix"},
         ["qD"] = {
             [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
             "Close diff"
         },
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
-        ["<A-u>"] = {[[:lua require('common.builtin').switch_lastbuf()<CR>]], "Switch to last buffer"},
-        ["<Leader>fk"] = {[[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]], "Quickfix outline (fzf)"},
-        ["<Leader>ff"] = {[[<Cmd>lua require('common.qfext').outline()<CR>]], "Quickfix outline (coc)"},
+        ["<A-u>"] = {
+            [[:lua require('common.builtin').switch_lastbuf()<CR>]],
+            "Switch to last buffer"
+        },
+        ["<Leader>fk"] = {
+            [[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]],
+            "Quickfix outline (fzf)"
+        },
+        ["<Leader>ff"] = {
+            [[<Cmd>lua require('common.qfext').outline()<CR>]],
+            "Quickfix outline (coc)"
+        },
         ["<Leader>fw"] = {
             [[<Cmd>lua require('common.qfext').outline_treesitter()<CR>]],
             "Quickfix outline (treesitter)"
         },
-        ["<Leader>fa"] = {[[<Cmd>lua require('common.qfext').outline_aerial()<CR>]], "Quickfix outline (aerial)"}
+        ["<Leader>fa"] = {
+            [[<Cmd>lua require('common.qfext').outline_aerial()<CR>]],
+            "Quickfix outline (aerial)"
+        }
     }
 )
 

@@ -1,11 +1,9 @@
-local nvim = require("nvim")
-
 vim.opt_local.textwidth = 72
 vim.opt_local.colorcolumn = "50,72"
 vim.opt_local.spell = true
 vim.wo.cursorline = true
 vim.bo.undofile = false
-nvim.ex.startinsert()
+vim.cmd.startinsert()
 
 local formatlistpat = {'^\\s*'}                         --- Optional leading whitespace
 table.insert(formatlistpat, '[')                        --- Start character class

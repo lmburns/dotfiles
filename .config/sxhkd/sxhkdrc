@@ -1,9 +1,15 @@
+# Keys are listed with an ordered preference of:
+#   1. mod3 (hyper)
+#   2. super
+#   3. ctrl
+#   4. alt
+#   5. shift
+
 # ╭──────────────────────────────────────────────────────────╮
-# │                   Key Movement / Keys                    │
-# ╰──────────────────────────────────────────────────────────╯
+# │                           Keys                           │
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
 # xte "keyup h" "key Left"
-
 ## Autokey does this much better
 
 # Modify keys with mod3 to mimic arrow keys
@@ -19,51 +25,53 @@
 # mod3 + l
 #     xdotool keyup l key --clearmodifiers Right
 
-# Get help for keybindings
+# Help: sxhkd keybindings
 super + shift + question
-    sxhkd_help &
+  sxhkhmenu
+# ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Restart                          │
-# ╰──────────────────────────────────────────────────────────╯
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
-# Quit bspwm
-super + shift + Escape
-    prompt "Are you sure you would like to quit this Xsession" "bspc quit"
+# Quit: bspwm
+super + shift + escape
+  prompt "Are you sure you would like to quit this Xsession" "bspc quit"
 
-# Restart hotkey damon
-super + shift + x
-    killandnotify sxhkd "Config reloaded" && sxhkd &
-
-# Restart polybar
-super + shift + p
-    reloadpolybar
-
-# Restart dunst
-super + shift + d
-    killandnotify dunst "Dunst reloaded" && dunst &
-
-# Restart bspwm
+# Restart: bspwm
 super + alt + shift + r
-    notify-send "bpswm" "Configuration reloaded" && bspc wm -r
-# bspc quit
+  notify-send "bpswm" "Configuration reloaded" && bspc wm -r
 
-# Restart crashed items
+# Restart: sxhkd
+super + shift + x
+  killandnotify sxhkd "Config reloaded" && sxhkd &
+
+# Restart: polybar
+super + shift + p
+  reloadpolybar
+
+# Restart: dunst
+super + shift + d
+  killandnotify dunst "Dunst reloaded" && dunst &
+
 # Happens when using `bustd`
+# Restart: crashed items
 super + shift + c
-    notify-send "Crashed" "Items were reloaded" && restart-crashed
+  notify-send "Crashed" "Items were reloaded" && restart-crashed
+# ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Screen                          │
-# ╰──────────────────────────────────────────────────────────╯
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
-# Lock screen
+# Screen: lock
 super + Delete
-    xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
+  xidlehook-client --socket /tmp/xidlehook.sock control --action trigger --timer 1
+# ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Window                          │
-# ╰──────────────────────────────────────────────────────────╯
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
 # NODE_SEL :=
 #
@@ -84,107 +92,76 @@ super + Delete
 # DIR        := north | west | south | east
 # CYCLE_DIR  := next | prev
 
-# Closing/Killing Windows
-# super + {_,shift + }q
-#     bspc node -{c,k}
+# ╭───────────────────────╮
+# │ (Pseudo) Tiled Window │
+# ╰───────────────────────╯ [[[
 
-# Close/kill window
-alt + shift + {_,ctrl + }x
-    bspc node -{c,k}
+# State: toggle (tiled|pseudo_tiled)
+mod3 + t
+  bspc node -t tiled || bspc node -t pseudo_tiled
 
-# Close/kill window
-alt + super + {_,ctrl + }x
-    bspc node -{c,k}
-
-# Open/close windows (functional equivalent of minimize)
-super + m
-    whid dmenu
-
-# Close window (minimize)
-super + shift + m
-    whid hide
-
-# Reopen last closed window
-super + ctrl + m
-    whid last
-
-# Hide current window
-super + shift + u
-    bspc node -g hidden
-
-# Reopen every hidden window
-super + ctrl + u
-    bspc node any.hidden -g hidden=off
-
-# Set the node flags
-super + ctrl + {m,x,y,z}
-    bspc node -g {marked,locked,sticky,private}
-
-# Set the window state
-# super + {t,shift + t,s,f}
-#   bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
-
-# ╭──────────────╮
-# │ Tiled Window │
-# ╰──────────────╯
-
-# Force all windows of the desktop to tile (floating|fullscreen|monocle)
+# (floating|fullscreen|monocle)
+# State: all windows to tile
 super + ctrl + t
-    bspcp tile
+  bspcp tile
 # bspc desktop --layout tiled || bspcp tile
 
-# Focus a (pseudo_)tiled window / Cycle (pseudo_)tiled windows.
+# Focus: cycle {next,prev} (tiled)
 super + {_,shift + }t
-    bspc node -f 'focused.!floating.!fullscreen.window#{next,prev}.local.!hidden.!floating.!fullscreen.window' \
-        || bspc node -f 'last.local.!focused.!hidden.!floating.!fullscreen.window' \
-        || bspc node -f 'any.local.!focused.!hidden.!floating.!fullscreen.window'
+  bspc node -f '{next,prev}.local.!hidden.!floating.!fullscreen.window'
+# bspc node -f 'focused.!floating.!fullscreen.window#{next,prev}.local.!hidden.!floating.!fullscreen.window' \
+#   || bspc node -f 'last.local.!focused.!hidden.!floating.!fullscreen.window' \
+#   || bspc node -f 'any.local.!focused.!hidden.!floating.!fullscreen.window'
 
-# Focus on window in direction (tiled)
+# Focus: in direction {left,down,up,right} (tiled)
 alt + {h,j,k,l}
-    bspc node -f {west,south,north,east}
+  bspc node -f {west,south,north,east}
 
-# Rotate tree
-mod3 + {_,shift +}r
-    bspc node @/ --rotate {90,-90}
+# Rotate: cycle tree {90,-90}
+mod3 + {_,shift +} r
+  bspc node @/ --rotate {90,-90}
 
-# Circulate tree backward/forward
-super + alt + {_,ctrl + } + r
+# Circulate: tree {backward,forward}
+super + {_,shift +} r
     bspc node @/ --circulate {backward,forward}
 
-# Mirror and flip leaves of tree
-super + alt + {comma,period}
-    bspc node @/ --flip {vertical,horizontal}
+# Swap: flip leaves of tree {vertical,horizontal}ly
+alt + shift + {comma,period}
+  bspc node @/ --flip {vertical,horizontal}
 
-# Swap window in direction (tiled)
+# (tiled)
+# Swap: in direction {left,down,up,right}
 alt + shift + {h,j,k,l}
-    bspc node -s {west,south,north,east}
+  bspc node -s {west,south,north,east}
 # bspwm-smart-move {west,south,north,east}
 
-# Swap current largest, smallest space
-alt + shift + b
-    bspc node -s 'biggest.!focused.!hidden.local.window'
-# bspc node -s '{biggest,smallest}.!focused.!hidden.local.window'
+# Swap: size {biggest,smallest} node
+alt + shift + {b,s}
+  bspc node -s '{biggest,smallest}.!focused.!hidden.local.window'
 
-# Equalize/balance window sizes
+# Transplant: in direction {left,down,up,right} (tiled)
+ctrl + alt + shift + {h,j,k,l}
+  bspc node -n {west,south,north,east}
+
+# Transplant: size {biggest,smallest} node
+ctrl + alt + shift + {b,s}
+  bspc node -n '{biggest,smallest}.!focused.!hidden.local.window'
+
+# Resize: {equalize,balance} ratios
 super + ctrl + {_,shift + }0
-    bspc node @/ -{B,E}
+  bspc node @/ -{E,B}
 # bspc node {@/,_} --equalize
+# bspc node {@/,_} --balance
 
-# Make split ratios balanced
-# super + alt + {_,shift + }0
-#     bspc node {@/,_} --balance
+# Resize: {left,down,up,right} by 50 (float: sides in)
+super + ctrl + {h,j,k,l}
+  bspwm-resize {west,south,north,east} 50
 
-# Dynamic gaps
-mod3 + shift + bracket{left,right}
-    bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
-
-# Resize window in any direction
-# When floating, moves sides in
+# Resize: {left,down,up,right} by 20 (float: sides in)
 ctrl + alt + {h,j,k,l}
-    bspwm-resize {west,south,north,east} 20
+  bspwm-resize {west,south,north,east} 20
 
-# Resize window in any direction
-# When floating, moves sides out
+# Resize: {left,down,up,right} by 10 (float: sides out)
 super + ctrl + alt + {h,j,k,l}
   n=10; \
   { d1=left;   d2=right;  dx=-$n; dy=0;   \
@@ -194,132 +171,189 @@ super + ctrl + alt + {h,j,k,l}
   } \
   bspc node --resize $d1 $dx $dy || bspc node --resize $d2 $dx $dy
 
-# Resize windows with bigger increments
-super + ctrl + {h,j,k,l}
-    bspwm-resize {west,south,north,east} 50
+# Gaps: dynamically {-,+}
+mod3 + shift + bracket{left,right}
+  bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
+# ]]]
 
-# ╭─────────╮
-# │ Monocle │
-# ╰─────────╯
+# ╭────────────────╮
+# │ Monocle Window │
+# ╰────────────────╯ [[[
 
-# Toggle monocle layout (maximise focused node).
+# State: toggle (monocle|tiled)
 mod3 + m
-    bspc desktop -l next
+  bspc desktop -l next
 
-# super + {h,j,k,l}
-#     m='.local'; \
-#     bspwm-monocle {west$m next$m,south$m prev$m,north$m next$m,east$m prev$m}
+# Rotate: cycle {left,down,up,right} (monocle)
+super + alt + {Left,Down,Up,Right}
+  m='.local'; \
+  bspwm-monocle {west$m next$m,south$m prev$m,north$m next$m,east$m prev$m}
 
-# Alternate layers (doesn't switch focus)
+# Layer: alternate stacking layer (below|above) (doesn't switch focus)
 super + shift + j
-    bspc node -l below || bspc node -l above
+  bspc node -l below || bspc node -l above
 
-# super + less
-#     bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "above" then "normal" else "below" end')"
-# super + greater
-#     bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "below" then "normal" else "above" end')"
+# Layer: alternate stacking layer (above ? normal : below) (doesn't switch focus)
+super + shift + h
+  bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "above" then "normal" else "below" end')"
 
-# Bring any unfocused hidden layer to the front
+# Layer: alternate stacking layer (below ? normal : above) (doesn't switch focus)
+super + shift + l
+  bspc node -l "$(bspc query -T -n | jq -r 'if .client.layer == "below" then "normal" else "above" end')"
+
+# Layer: focus any (above|below) layer to the front
 super + shift + k
-    bspc node any.{above,below} -l normal -f
+  bspc node any.below -l normal -f || bspc node any.above -l normal -f
+# ]]]
 
 # ╭───────────────────╮
 # │ Fullscreen Window │
-# ╰───────────────────╯
+# ╰───────────────────╯ [[[
 
-# Rotates and make full screen
-mod3 + bracket{left,right}
-    bspc node -f '{prev,next}.!focused.window' && bspc node focused -t fullscreen
-# bspc node -f next.tiled && bspc node focused.tiled -t fullscreen
-
-# Toggle between tiled/fullscreen
+# State: toggle (tiled|fullscreen)
 mod3 + f
-    bspc node -t tiled || bspc node -t fullscreen
+  bspc node -t tiled || bspc node -t fullscreen
+
+# Rotate: cycle {prev,next} (fullscreen)
+mod3 + bracket{left,right}
+  bspc node -f '{prev,next}.!focused.window' && bspc node focused -t fullscreen
+
+# This wont' focus the fullscreen
+#   bspc node -f '{prev,next}.!focused.window' -t fullscreen
+# ]]]
 
 # ╭─────────────────╮
 # │ Floating Window │
-# ╰─────────────────╯
+# ╰─────────────────╯ [[[
 
-# Toggle floating on and off
+# State: toggle (floating|tiled)
 mod3 + space
-    bspc node focused.tiled -t floating || bspc node focused.floating -t tiled
+  bspc node focused.tiled -t floating || bspc node focused.floating -t tiled
 
-# Focus a floating window / cycle floating windows
+# Focus: cycle {next,prev} (floating)
 super + {_,shift + }f
-    bspc node -f 'focused.floating#{next,prev}.local.!hidden.floating' \
-        || bspc node -f 'last.local.!focused.!hidden.floating' \
-        || bspc node -f  'any.local.!focused.!hidden.floating'
+  bspc node -f '{next,prev}.local.!hidden.floating.window'
+# bspc node -f 'focused.floating#{next,prev}.local.!hidden.floating' \
+#    || bspc node -f 'last.local.!focused.!hidden.floating' \
+#    || bspc node -f  'any.local.!focused.!hidden.floating'
 
-# Move a floating window with the arrow keys (else use Alt + Left Mouse
-# Click to drag).  I seldom use floating windows.
-# ctrl + shift + {Left,Down,Up,Right}
-#     bspc node -v {-20 0,0 20,0 -20,20 0}
+# (Alternative: Ctrl + Right Mouse | mod3 + c : {h,j,k,l})
+# Move: {left,down,up,right} arrow key (floating)
+ctrl + alt + {Left,Down,Up,Right}
+  bspc node -v {-20 0,0 20,0 -20,20 0}
+# ]]]
 
 # ╭────────────╮
 # │ Any Window │
-# ╰────────────╯
+# ╰────────────╯ [[[
 
-# Rotate between tiled|floating|monocle windows
+# State: toggle last state
+mod3 + a
+  bspc node -t "$(bspc query -T -n | jq -r '.client.lastState')"
+
+# TODO: Add fullscreen
+# Keeps those layouts
+# Focus: cycle {next,prev} (tiled|floating|monocle)
 super + {j,k}
-    bspc node -f 'focused.window#{next,prev}.local.!hidden.window' \
-        || bspc node -f 'last.local.!focused.!hidden.window' \
-        || bspc node -f 'any.local.!focused.!hidden.window'
-# bspc node -f {next,prev}.local.!hidden.window
+  bspc node -f '{next,prev}.local.!hidden.window'
+  # [[ $(bspc query -T -n last | jq -r '.client.lastState') == 'fullscreen' ]] && bspc node focused -t fullscreen
 
-# Focus the older or newer node in the focus history
+# bspc node -f 'focused.window#{next,prev}.local.!hidden.window' \
+#    || bspc node -f 'last.local.!focused.!hidden.window' \
+#    || bspc node -f 'any.local.!focused.!hidden.window';
+
+# Keeps tiled|floating|monocle layout
+# Focus: cycle {next,prev} (tiled|floating|monocle|hidden)
+super + alt + {j,k}
+  bspc node -f {next,prev}.local.window
+
+# Focus: {older,newer} node history
 super + {o,i}
-    bspc wm -h off; \
-    bspc node -f {older,newer}; \
-    bspc wm -h on
+  bspc wm -h off; \
+  bspc node -f {older,newer}; \
+  bspc wm -h on
 
-# Focus parent/child nodes
-# super + {less,greater}
-#     bspc node -f @{parent,/}
-
-# Focus last window (tiled|floating|monocle)
+# Focus: last window (tiled|floating|monocle)
 super + comma
-    bspc node -f 'last.local.!hidden.window'
+  bspc node -f 'last.local.!hidden.window'
 
-# Focus the node for the given path jump
-# super + ctrl + {p,b,comma,period}
-#     bspc node -f @{parent,brother,first,second}
+# Focus: {parent,first child}
+# super + {less,greater}
+#   bspc node -f @{parent,first}
+
+# Kind of confusing
+# Focus: {parent,brother,first child,second child}
+super + ctrl + {n,m,comma,period}
+  bspc node -f @{parent,brother,first,second}
+
+# Action: {close,kill} window
+alt + shift + {_,ctrl + }x
+  bspc node -{c,k}
+
+# Action: {close,kill} window
+# super + alt + {_,ctrl + }x
+#   bspc node -{c,k}
+
+# (equivalent to minimizing)
+# Action: (open|close) window with menu
+super + m
+  whid dmenu
+
+# (equivalent to minimizing)
+# Action: close window
+super + shift + m
+  whid hide
+
+# Action: reopen last closed window
+super + ctrl + m
+  whid last
+
+# Flag: set hidden=on
+super + ctrl + u
+  bspc node -g hidden
+
+# Flag: set hidden=off (any.hidden)
+super + ctrl + shift + u
+  bspc node any.hidden -g hidden=off
+
+# Flag: toggle {marked,locked,sticky,private}
+super + ctrl + alt + {m,x,y,z}
+  bspwm-toggle-state {marked,locked,sticky,private}
+# bspc node -g {marked,locked,sticky,private}
+
+# bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+# ]]]
 
 # ╭──────────────╮
 # │ Preselection │
-# ╰──────────────╯
+# ╰──────────────╯ [[[
 
-# Send the current window to preselected area
-super + shift + y
-    bspc node -n last.!automatic.local
+# Transplant: current with preselected area
+super + ctrl + shift + y
+  bspc node -n last.!automatic.local
 
-# Preselect the direction or insert again to cancel the preselection.
-# This enters the manual tiling mode that splits the currently focused window.
-super + control + shift + {h,j,k,l}
-    bspc node --presel-dir {west,south,north,east}
+# Enters manual-tiling mode that splits the current node
+# Preselect:  {left,down,up,right}
+super + ctrl + shift + {h,j,k,l}
+  bspc node --presel-dir {west,south,north,east}
 
-# Cancel preselection
-super + control + shift + c
-    bspc node -p cancel
+# Preselect: cancel {current node,desktop}
+super + ctrl + {_,shift +} c
+  {bspc node -p cancel,bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel}
 
-# Automatically detect preselection direction
-super + control + Return
-    bspwm-auto-presel
+# Preselect: automatically detect direction
+super + ctrl + Return
+  bspwm-auto-presel
 
-# Set splitting ratio of node
+# Preselect: set splitting ratio {1-9}
 super + ctrl + shift + {1-9}
   bspc node -o 0.{1-9}
-
-# set manual preselect split direction on current window
-# ctrl + alt + shift {h,j,k,l}
-#     bspc node -p {west,south,north,east}
-
-# cancel the manual preselect direction on the current window or all windows on the desktop
-# ctrl + alt + shift + {_,shift + }space
-#     bspc {node -p cancel,desktop -c}
+# ]]]
+# ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Desktop                          │
-# ╰──────────────────────────────────────────────────────────╯
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
 # DESKTOP_SEL :=
 #
@@ -329,33 +363,34 @@ super + ctrl + shift + {1-9}
 #         <desktop_id>|<desktop_name>
 #     )[.[!]focused][.[!]active][.[!]occupied][.[!]urgent][.[!]local]
 
-# Focus or send to the given desktop
+# Desktop: {focus,send to} ({1-9,0})
 super + {_,alt + }{1-9,0}
-    bspc {desktop -f,node -d} '^{1-9,10}'
+  bspc {desktop -f,node -d} '^{1-9,10}'
 
-# Send to the given desktop and follow
-super + alt + ctrl + {1-9,0}
-    bspc node -d '^{1-9,10}' --follow
+# Desktop: send and follow ({1-9,0})
+super + ctrl + alt + {1-9,0}
+  bspc node -d '^{1-9,10}' --follow
 
-# Focus the next/previous desktop
+# Desktop: focus {prev,next}
 super + bracket{left,right}
-    bspc desktop -f {prev,next}.local
+  bspc desktop -f {prev,next}.local
 
-# Focus the next/previous occupied desktop
+# Desktop: focus {prev,next} occupied
 super + shift + bracket{left,right}
-    bspc desktop -f {prev.occupied,next.occupied}
+  bspc desktop -f {prev.occupied,next.occupied}
 
-# Focus the next/previous desktop
+# Desktop: focus {prev,next}
 super + {Left,Right}
-    bspc desktop -f {prev,next}.local
+  bspc desktop -f {prev,next}.local
 
-# Focus the next/previous occupied desktop
+# Desktop: focus {prev,next} occupied
 super + shift + {Left,Right}
-    bspc desktop -f {prev.occupied,next.occupied}
+  bspc desktop -f {prev.occupied,next.occupied}
+# ]]]
 
-# ╭─────────╮
-# │ Monitor │
-# ╰─────────╯
+# ╭──────────────────────────────────────────────────────────╮
+# │                         Monitor                          │
+# ╰──────────────────────────────────────────────────────────╯ [[[
 
 # MONITOR_SEL :=
 #
@@ -363,10 +398,15 @@ super + shift + {Left,Right}
 #     (DIR|CYCLE_DIR|any|last|newest|older|newer|focused|pointed|primary|^<n>|
 #      <monitor_id>|<monitor_name>
 #     )[.[!]focused][.[!]occupied]
+# ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
-# │                       Receptacles                        │
-# ╰──────────────────────────────────────────────────────────╯
+# │                          Other                           │
+# ╰──────────────────────────────────────────────────────────╯ [[[
+
+# ╭─────────────╮
+# │ Receptacles │
+# ╰─────────────╯ [[[
 
 # A leaf node that doesn’t hold any window.
 # When a node is inserted on a receptacle in automatic mode, it will replace the receptacle.
@@ -374,71 +414,119 @@ super + shift + {Left,Right}
 
 # mod3 + x ; n ; r
 #     bspc node -i
+# ]]]
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                     Continuous Input                     │
-# ╰──────────────────────────────────────────────────────────╯
+# ╭──────────────────╮
+# │ Continuous Input │
+# ╰──────────────────╯ [[[
 
+# Resize: {left,down,up,right} by 50 (float: sides in)
 mod3 + c : {h,j,k,l}
-    bspwm-resize {west,south,north,east} 50
+  bspwm-resize {west,south,north,east} 50
 
-# Mode for dynamic gaps.
+# Gaps: dynamically {-,+} (continous)
 mod3 + c : bracket{left,right}
-    bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
+  bspc config -d focused window_gap "$(($(bspc config -d focused window_gap) {-,+} 5 ))"
 
-# Move floating windows with the arrow keys
+# (Alternative: Ctrl + Right Mouse | ctrl + alt + {h,j,k,l})
+# Move: {left,down,up,right} arrow key (floating)
 mod3 + c : {Left,Down,Up,Right}
-    bspc node -v {-20 0,0 20,0 -20,20 0}
+  bspc node -v {-20 0,0 20,0 -20,20 0}
+# ]]]
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                          Launch                          │
-# ╰──────────────────────────────────────────────────────────╯
+# ╭────────╮
+# │ Launch │
+# ╰────────╯ [[[
 
-# Launch alacritty
+# Launch: alacritty
 super + Return
-    alacritty
+  alacritty
 
-# Launch tdrop
+# Launch: tdrop
 super + alt + Return
-    tdrop -ma -w 1916 -y 0 alacritty
+  tdrop -ma -w 1916 -y 0 alacritty
 
-# Open URL in clipboard
-control + alt + super + o
-    handlr open "$(xsel -b)"
+# Launch: open URL in clipboard
+super + ctrl + alt + o
+  handlr open "$(xsel -b)"
 
-# Launch rofi application
+# Launch: rofi application launcher
 mod3 + d
-    rofi -show drun
+  rofi -show drun
 
-# Launch rofi
-mod3 x ; {x,b}
-     rofi -show {drun,window}
+# Launch: rofi
+# mod3 x ; {x,b}
+#    rofi -show {drun,window}
 
-# Launch applications
+# Launch: {librewolf,brave,chromium,pcmanfm,thunderbird,signal}
 mod3 + {b,v,g,p,period,s}
-    {$BROWSER &>/dev/null,brave,chromium,pcmanfm,thunderbird,signal-desktop}
+  {librewolf,brave,chromium,pcmanfm,thunderbird,signal-desktop}
 
-# prs-copy
+# Launch: prs rofi script
+super + ctrl + alt + p
+  prs-copy
 
-# Password manager dmenu script
-ctrl + alt + super + p
-    prs-dmenu
+# # Launch: prs dmenu script
+# super + ctrl + alt + p
+#   prs-dmenu
 
-# Clipboard history
+# Launch: greenclip history
 ctrl + alt + y
-    rofi-greenclip
+  rofi-greenclip
 
-# Media Controls
+# Launch: ncmpcpp
 super + F1
-    $TERMINAL -e ncmpcpp
+  $TERMINAL -e ncmpcpp
 
-# ╭──────────────────────────────────────────────────────────╮
-# │                        Additions                         │
-# ╰──────────────────────────────────────────────────────────╯
+# amixer-notify "toggle"
+# amixer-notify "set" "{5%-,5%+}"
+# pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
+# pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
+
+# Launch: mpd toggle {previous,stop,play/pause,next}
+super + {F4,shift + F5,F5,F6}
+  playerctl -p "mpd" {previous,stop,play-pause,next}
+
+# Launch: [last] active player toggle {play/pause,previous,next}
+mod3 + XF86Audio{Play,Prev,Next}
+  playerctl {play-pause,previous,next}
+
+# Launch: dunst {toggle,close} history
+mod3 + {_,shift + }n
+  dunstctl {history-pop,close-all}
+
+# Launch: dunst action
+mod3 + a
+  dunstctl action
+
+# Launch: fzf-bluetooth
+super + F7
+  $TERMINAL -e "fzf-bluetooth" &
+
+# Launch: mailsync
+super + F8
+  mailsync
+
+# Launch: toggle caffeinate
+super + F10
+  togglecaffeine
+
+# Launch: remap keys
+super + F11
+  remaps && dunstify "remaps" "remapped"
+
+# Launch: neomutt
+super + F12
+  $TERMINAL -e neomutt
+# ]]]
+
+# ╭───────────────╮
+# │ Miscellaneous │
+# ╰───────────────╯ [[[
 
 # ╭────────╮
 # │ Tabbed │
-# ╰────────╯
+# ╰────────╯ [[[
 # Add to tabbed container
 # ctrl + alt + {Left,Down,Up,Right}
 #     tabc attach $(bspc query -N -n) {$(bspc query -N -n west),$(bspc query -N -n south),$(bspc query -N -n north),$(bspc query -N -n east)}
@@ -453,91 +541,52 @@ super + F1
 # Toggle autoattach in tabbed container
 # super + shift + z
 #     tabc autoattach $(bspc query -N -n)
+# ]]]
 
-# Speaker/output volume.  Requires `amixer` and dedicated keys.
+# Volume: computer speaker {toggle,-5%,+5%}
 XF86Audio{Mute,LowerVolume,RaiseVolume}
-    volume-notify '' {toggle,-5%,+5%}
+  volume-notify '' {toggle,-5%,+5%}
 
-# Speaker/output volume.  Requires `amixer` and dedicated keys.
+# Volume: bluetooth speaker {toggle,-5%,+5%}
 shift + XF86Audio{Mute,LowerVolume,RaiseVolume}
-    volume-notify 'bluetooth' {toggle,-5%,+5%}
+  volume-notify 'bluetooth' {toggle,-5%,+5%}
 
-# amixer-notify "toggle"
-# amixer-notify "set" "{5%-,5%+}"
-# pulsevolctrl-notify "output-vol" "alsa_output.pci-0000_00_1f.3.hdmi-stereo" {+2%, -2%}
-# pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
-
-super + F7
-    $TERMINAL -e "fzf-bluetooth" &
-
-# Sync email
-super + F8
-    mailsync
-
-# Toggle caffeinate on/off
-super + F10
-    togglecaffeine
-
-# Remap keys
-super + F11
-    remaps && dunstify "remaps" "remapped"
-
-# Open neomutt
-super + F12
-    $TERMINAL -e neomutt
-
-# Take full screenshot (flameshot)
-Print
-    flameshot full -p ~/Pictures/screenshot
-
-# Gui screenshot
-Print + shift
-    flameshot gui
-
-Print + super
-    flameshot screen -p ~/Pictures/screenshot
-
-Print + ctrl
-    maimpick
-
-# Take screenshot of whole screen
-ctrl + shift + 3
-    prtscr
-
-# Take screenshot of selected region
-ctrl + shift + 4
-    prtregion --disk
-
-# Take screenshot of focused window
-ctrl + shift + 5
-    prtwindow
-
-# Take screenshot of focused window
-control + super + alt + u
-    prtwindow
-
-# super + {F5,F6,F7,F8}
-#     playerctl -p "mpd" {stop,previous,play-pause,next}
-
-super + {F4,F5,F6}
-    playerctl -p "mpd" {previous,play-pause,next}
-
-# Control the [last] currently active player.
-mod3 + XF86Audio{Play,Prev,Next}
-    playerctl {play-pause,previous,next}
-
-# Hide/show dunst
-mod3 + {_,shift + }n
-    dunstctl {history-pop,close-all}
-
-# Perform dunst action
-mod3 + a
-    dunstctl action
-
+# Scrot:
 # Print
-#   scrot -u -z '%Y-%m-%d_%H:%M:%S_$wx$h$n.png' -e 'mv $f ~/Pictures' \
-#     && notify-send -i gnome-screenshot "Window view screenshot" "Saved image to Pictures"
+#   scrot -u -z '%Y-%m-%d_%H:%M:%S_$wx$h$n.png' -e 'mv $f ~/Pictures'
 
-# mod4 + Print
-#   scrot -m -z '%Y-%m-%d_%H:%M:%S_$wx$h.png' -e 'mv $f ~/Pictures' \
-#     && notify-send -i gnome-screenshot "Screen view screenshot" "Saved image to Pictures"
+# Screenshot: flameshot capture entire screen
+Print
+  flameshot full -p ~/Pictures/screenshot
+
+# Screenshot: flameshot GUI
+Print + shift
+  flameshot gui
+
+# Screenshot: flameshot capture single screen
+Print + super
+  flameshot screen -p ~/Pictures/screenshot
+
+# Screenshot: maimpick
+Print + ctrl
+  maimpick
+
+# Screenshot: entire screen
+ctrl + shift + 3
+  prtscr
+
+# Screenshot: selected region
+ctrl + shift + 4
+  prtregion --disk
+
+# Screenshot: focused window
+ctrl + shift + 5
+  prtwindow
+
+# Screenshot: focused window
+super + ctrl + alt + u
+  prtwindow
+# ]]]
+# ]]]
+
+# vim: ft=sxhkdrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

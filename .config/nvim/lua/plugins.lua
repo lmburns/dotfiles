@@ -299,7 +299,7 @@ return packer.startup(
             )
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
-            use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
+            -- use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
 
             use(
                 {
@@ -1063,7 +1063,8 @@ return packer.startup(
                             "tsx",
                             "typescript",
                             "zig",
-                            "zsh"
+                            "zsh",
+                            "sh"
                         }
                     end
                 }

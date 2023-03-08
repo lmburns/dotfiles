@@ -850,7 +850,6 @@ alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 # autoload -Uz sticky-note regexp-replace
 
 [[ -v aliases[run-help] ]] && unalias run-help
-# print --long
 autoload +X -Uz run-help
 autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 

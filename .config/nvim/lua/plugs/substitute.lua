@@ -87,6 +87,7 @@ local function init()
     --
     -- Replace Nth occurence:        s/\v(.{-}\zsPATT.){N}/REPL/
     -- Replace every Nth occurrence: s/\v(\zsPATT.{-}){N}/REPL/g
+    -- Sort on a given column:       :sort f /\v^(.{-},){2}/
 
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
 

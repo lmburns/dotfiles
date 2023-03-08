@@ -3,7 +3,6 @@ local M = {}
 local D = require("dev")
 local utils = require("common.utils")
 local map = utils.map
-local list = require("dev").list
 local dirs = require("common.global").dirs
 
 local env = vim.env
@@ -203,7 +202,17 @@ o.matchtime = 5 -- ms to blink when matching brackets
 -- o.autoread = true
 -- o.autowriteall = true -- automatically :write before running commands and changing files
 
-o.whichwrap:append(list({"<", ">", "h", "l", "[", "]"}))
+-- keys that move the cursor to the next line on last char
+o.whichwrap = {
+    ["<"] = true, -- <Left>  (NV)
+    [">"] = true, -- <Right> (NV)
+    ["["] = true, -- <Left>  (IR)
+    ["]"] = true, -- <Right> (IR)
+    b = true, --    <BS> (NV)
+    h = true, --       h (NV)
+    l = true, --       l (NV)
+    s = true -- <Space> (NV) (this is leader)
+}
 o.wrap = true
 o.wrapmargin = 2
 
