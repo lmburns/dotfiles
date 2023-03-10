@@ -91,8 +91,8 @@ function M.listish()
 
     wk.register(
         {
-            ["]e"] = {":cnewer<CR>", "Next quickfix list"},
-            ["[e"] = {":colder<CR>", "Previous quickfix list"},
+            ["]e"] = {"<Cmd>cnewer<CR>", "Next quickfix list"},
+            ["[e"] = {"<Cmd>colder<CR>", "Previous quickfix list"},
             ["]w"] = "Next item in loclist",
             ["[w"] = "Previous item in loclist"
         }
@@ -174,7 +174,10 @@ function M.open_browser()
         {
             -- ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"},
             ["gX"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
-            ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
+            ["gx"] = {
+                ":lua require('functions').open_link()<CR>",
+                "Open link or file under cursor"
+            },
             ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
             ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         }
@@ -430,9 +433,9 @@ end
 -- │                         VCooler                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.vcoolor()
-    map("n", "<Leader>pc", ":VCoolor<CR>")
-    map("n", "<Leader>yb", ":VCoolIns b<CR>")
-    map("n", "<Leader>yr", ":VCoolIns r<CR>")
+    map("n", "<Leader>pc", ":VCoolor<CR>", {desc = "Insert hex color"})
+    map("n", "<Leader>yb", ":VCoolIns h<CR>", {desc = "Insert HSL color"})
+    map("n", "<Leader>yr", ":VCoolIns r<CR>", {desc = "Insert RGB color"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -444,39 +447,35 @@ function M.luapad()
         return
     end
 
-    luapad.setup {
-        count_limit = 150000,
-        preview = true,
-        error_indicator = true,
-        print_highlight = "Comment",
-        error_highlight = "ErrorMsg",
-        eval_on_move = false,
-        eval_on_change = true,
-        split_orientation = "vertical",
-        on_init = function()
-            print("Luapad initialized")
-        end,
-        -- Global variables provided on startup
-        context = {
-            arr = {"abc", "def", "ghi", "jkl"},
-            tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
-            shout = function(str)
-                return ((str):upper() .. "!")
-            end
+    luapad.setup(
+        {
+            count_limit = 150000,
+            preview = true,
+            error_indicator = true,
+            print_highlight = "Comment",
+            error_highlight = "ErrorMsg",
+            eval_on_move = false,
+            eval_on_change = true,
+            split_orientation = "vertical",
+            on_init = function()
+                print("Luapad initialized")
+            end,
+            -- Global variables provided on startup
+            context = {
+                arr = {"abc", "def", "ghi", "jkl"},
+                tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
+                shout = function(str)
+                    return ((str):upper() .. "!")
+                end
+            }
         }
-    }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
-    -- FIX: Smartcase only works if there are matches before the word you're searching for.
-    --      i.e.,
-    --          1. vm_theme
-    --          2. VM_theme
-    --      If `*` or `#` is pressed when hovering over line 1, two matches
-    --      If `*` or `#` is pressed when hovering over line 2, only one match
     local hlslens = D.npcall(require, "hlslens")
     if not hlslens then
         return
@@ -522,19 +521,29 @@ function M.hlslens()
 
     g["asterisk#keeppos"] = 1
 
-    map("n", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    map("n", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]])
+    map(
+        "n",
+        "*",
+        [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
+        {noremap = false, desc = "Search forward <word>"}
+    )
+    map(
+        "n",
+        "#",
+        [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
+        {noremap = false, desc = "Search forward <word>"}
+    )
     map(
         "n",
         "g*",
         [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false}
+        {noremap = false, desc = "Search forward word"}
     )
     map(
         "n",
         "g#",
         [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false}
+        {noremap = false, desc = "Search backward word"}
     )
 
     map("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
@@ -555,7 +564,7 @@ function M.hlslens()
             )
             return ":noh<CR>"
         end,
-        {expr = true, desc = "Export last search to QF"}
+        {silent = true, expr = true, desc = "Export last search to QF"}
     )
 end
 
@@ -638,7 +647,8 @@ function M.sandwhich()
 
     cmd.runtime("macros/sandwich/keymap/surround.vim")
 
-    cmd [[
+    cmd(
+        [[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
       let g:sandwich#recipes += [
@@ -808,6 +818,7 @@ function M.sandwhich()
       \   },
       \ ]
     ]]
+    )
 
     -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
     -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
@@ -1063,16 +1074,18 @@ function M.better_esc()
         return
     end
 
-    esc.setup {
-        mapping = {"jk", "kj"}, -- a table with mappings to use
-        -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
-        timeout = 375,
-        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-        keys = "<Esc>" -- keys used for escaping, if it is a function will use the result everytime
-        -- keys = function()
-        --   return api.nvim_win_get_cursor(0)[2] > 1 and "<esc>l" or "<esc>"
-        -- end,
-    }
+    esc.setup(
+        {
+            mapping = {"jk", "kj"}, -- a table with mappings to use
+            -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
+            timeout = 375,
+            clear_empty_lines = false, -- clear line after escaping if there is only whitespace
+            keys = "<Esc>" -- keys used for escaping, if it is a function will use the result everytime
+            -- keys = function()
+            --   return api.nvim_win_get_cursor(0)[2] > 1 and "<esc>l" or "<esc>"
+            -- end,
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1130,51 +1143,53 @@ function M.tmux()
         return
     end
 
-    tmux.setup {
-        copy_sync = {
-            -- enables copy sync and overwrites all register actions to
-            -- sync registers *, +, unnamed, and 0 till 9 from tmux in advance
-            enable = false,
-            -- ignore specific tmux buffers e.g. buffer0 = true to ignore the
-            -- first buffer or named_buffer_name = true to ignore a named tmux
-            -- buffer with name named_buffer_name :)
-            ignore_buffers = {empty = false},
-            -- TMUX >= 3.2: yanks (and deletes) will get redirected to system
-            -- clipboard by tmux
-            redirect_to_clipboard = true,
-            -- offset controls where register sync starts
-            -- e.g. offset 2 lets registers 0 and 1 untouched
-            register_offset = 0,
-            -- sync clipboard overwrites vim.g.clipboard to handle * and +
-            -- registers. If you sync your system clipboard without tmux, disable
-            -- this option!
-            sync_clipboard = false,
-            -- synchronizes registers *, +, unnamed, and 0 till 9 with tmux buffers.
-            sync_registers = false,
-            -- syncs deletes with tmux clipboard as well, it is adviced to
-            -- do so. Nvim does not allow syncing registers 0 and 1 without
-            -- overwriting the unnamed register. Thus, ddp would not be possible.
-            sync_deletes = false,
-            -- syncs the unnamed register with the first buffer entry from tmux.
-            sync_unnamed = true
-        },
-        navigation = {
-            -- cycles to opposite pane while navigating into the border
-            cycle_navigation = true,
-            -- enables default keybindings (C-hjkl) for normal mode
-            enable_default_keybindings = false,
-            -- prevents unzoom tmux when navigating beyond vim border
-            persist_zoom = true
-        },
-        resize = {
-            -- enables default keybindings (A-hjkl) for normal mode
-            enable_default_keybindings = false,
-            -- sets resize steps for x axis
-            resize_step_x = 1,
-            -- sets resize steps for y axis
-            resize_step_y = 1
+    tmux.setup(
+        {
+            copy_sync = {
+                -- enables copy sync and overwrites all register actions to
+                -- sync registers *, +, unnamed, and 0 till 9 from tmux in advance
+                enable = false,
+                -- ignore specific tmux buffers e.g. buffer0 = true to ignore the
+                -- first buffer or named_buffer_name = true to ignore a named tmux
+                -- buffer with name named_buffer_name :)
+                ignore_buffers = {empty = false},
+                -- TMUX >= 3.2: yanks (and deletes) will get redirected to system
+                -- clipboard by tmux
+                redirect_to_clipboard = true,
+                -- offset controls where register sync starts
+                -- e.g. offset 2 lets registers 0 and 1 untouched
+                register_offset = 0,
+                -- sync clipboard overwrites vim.g.clipboard to handle * and +
+                -- registers. If you sync your system clipboard without tmux, disable
+                -- this option!
+                sync_clipboard = false,
+                -- synchronizes registers *, +, unnamed, and 0 till 9 with tmux buffers.
+                sync_registers = false,
+                -- syncs deletes with tmux clipboard as well, it is adviced to
+                -- do so. Nvim does not allow syncing registers 0 and 1 without
+                -- overwriting the unnamed register. Thus, ddp would not be possible.
+                sync_deletes = false,
+                -- syncs the unnamed register with the first buffer entry from tmux.
+                sync_unnamed = true
+            },
+            navigation = {
+                -- cycles to opposite pane while navigating into the border
+                cycle_navigation = true,
+                -- enables default keybindings (C-hjkl) for normal mode
+                enable_default_keybindings = false,
+                -- prevents unzoom tmux when navigating beyond vim border
+                persist_zoom = true
+            },
+            resize = {
+                -- enables default keybindings (A-hjkl) for normal mode
+                enable_default_keybindings = false,
+                -- sets resize steps for x axis
+                resize_step_x = 1,
+                -- sets resize steps for y axis
+                resize_step_y = 1
+            }
         }
-    }
+    )
 
     wk.register(
         {
@@ -1429,7 +1444,7 @@ end
 -- ║                        CommentBox                        ║
 -- ╙                                                          ╜
 function M.comment_box()
-    local cb = D.npcall(require, "comment-box.impl")
+    local cb = D.npcall(require, "comment-box")
     if not cb then
         return
     end
@@ -1479,30 +1494,15 @@ function M.comment_box()
     map({"n", "v"}, "<Leader>bb", cb.cbox, {desc = "Left fixed box, center text (round)"})
     map({"n", "v"}, "<Leader>bs", _(cb.cbox, 19), {desc = "Left fixed box, center text (sides)"})
     map({"n", "v"}, "<Leader>bd", _(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
-    map({"n", "v"}, "<Leader>bh", _(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
-
-    map(
-        {"n", "v"},
-        "<Leader>cc",
-        _(cb.cbox, 21),
-        {desc = "Left fixed box, center text (top/bottom)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>cb",
-        _(cb.cbox, 8),
-        {desc = "Left fixed box, center text (thick/single)"}
-    )
-    map(
-        {"n", "v"},
-        "<Leader>ca",
-        _(cb.acbox, 21),
-        {desc = "Left center box, center text (top/bottom)"}
-    )
-
-    map({"n", "v"}, "<Leader>be", cb.lbox, {desc = "Left fixed box, left text (round)"})
+    map({"n", "v"}, "<Leader>bS", _(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
     map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
     map({"n", "v"}, "<Leader>bc", cb.accbox, {desc = "Center center box, center text (round)"})
+    map({"n", "v"}, "<Leader>bC", cb.lbox, {desc = "Left fixed box, left text (round)"})
+
+    -- {"n", "v"},
+    map({"n", "v"}, "<Leader>cc", _(cb.cbox, 21), {desc = "Left fixed box, center text (t/b)"})
+    map({"n", "v"}, "<Leader>cb", _(cb.cbox, 8), {desc = "Left fixed box, center text (thick)"})
+    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Left center box, center text (t/b)"})
 
     -- cline
     -- 2 6 7
@@ -1536,10 +1536,10 @@ function M.registers()
                 registers = registers.apply_register({delay = 0.1}),
                 return_key = registers.apply_register(),
                 escape = registers.close_window(),
-                --     ctrl_n = registers.move_cursor_down(),
-                --     ctrl_p = registers.move_cursor_up(),
-                --     ctrl_j = registers.move_cursor_down(),
-                --     ctrl_k = registers.move_cursor_up(),
+                ctrl_n = registers.move_cursor_down(),
+                ctrl_p = registers.move_cursor_up(),
+                ctrl_j = registers.move_cursor_down(),
+                ctrl_k = registers.move_cursor_up(),
                 -- Clear the register of the highlighted line when pressing <DEL>
                 delete = registers.clear_highlighted_register(),
                 -- Clear the register of the highlighted line when pressing <BS>
@@ -1549,7 +1549,9 @@ function M.registers()
                 -- When a register line is highlighted, show a preview in the main buffer with how
                 -- the register will be applied, but only if the register will be inserted or pasted
                 on_register_highlighted = registers.preview_highlighted_register(
-                    {if_mode = {"insert", "paste"}}
+                    {
+                        if_mode = {"insert", "paste"}
+                    }
                 )
             },
             symbols = {
@@ -1831,7 +1833,7 @@ function M.visualmulti()
 
     g.VM_custom_motions = {
         ["L"] = "$",
-        ["H"] = "^",
+        ["H"] = "^"
     }
 
     g.VM_custom_noremaps = {
@@ -1851,7 +1853,7 @@ function M.visualmulti()
         "gc", -- comment
         {ys = 3},
         {cr = 3}, -- FIX: change case
-        {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
+        {["<C-s>"] = 2} -- FIX: substitute (replaces with second letter or only last line)
     }
 
     -- g.VM_custom_remaps = {
@@ -1873,11 +1875,11 @@ function M.visualmulti()
         ["Add Cursor Up"] = "<C-S-Up>",
         ["Add Cursor Down"] = "<C-S-Down>",
         ["Add Cursor At Pos"] = [[<Leader>\]],
-        ["Select Cursor Up"] = "<M-S-i>",
-        ["Select Cursor Down"] = "<M-S-o>",
+        ["Select Cursor Up"] = "<A-S-i>",
+        ["Select Cursor Down"] = "<A-S-o>",
         ["Slash Search"] = "g/", -- Extend/move cursors with /
-        ["Move Left"] = "<M-C-Left>", -- Move region left
-        ["Move Right"] = "<M-C-Right>", -- Move region right
+        ["Move Left"] = "<C-A-Left>", -- Move region left
+        ["Move Right"] = "<C-A-Right>", -- Move region right
         -- Region cycling and removal
         ["Find Next"] = "]", -- Same as "n"
         ["Find Prev"] = "[", -- Same as "N"
@@ -1960,10 +1962,10 @@ function M.visualmulti()
 
     map("n", "<C-S-Up>", "<Plug>(VM-Add-Cursor-Up)")
     map("n", "<C-S-Down>", "<Plug>(VM-Add-Cursor-Down)")
-    map("n", "<M-S-i>", "<Plug>(VM-Select-Cursor-Up)")
-    map("n", "<M-S-o>", "<Plug>(VM-Select-Cursor-Down)")
-    map("n", "<C-M-S-l>", "<Plug>(VM-Select-l)")
-    map("n", "<C-M-S-h>", "<Plug>(VM-Select-h)")
+    map("n", "<A-S-i>", "<Plug>(VM-Select-Cursor-Up)")
+    map("n", "<A-S-o>", "<Plug>(VM-Select-Cursor-Down)")
+    map("n", "<C-A-S-l>", "<Plug>(VM-Select-l)")
+    map("n", "<C-A-S-h>", "<Plug>(VM-Select-h)")
     map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
 
     map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
@@ -2146,6 +2148,27 @@ function M.eregex()
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
+--  │                        NerdIcons                         │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.nerdicons()
+    local nerd = D.npcall(require, "nerdicons")
+    if not nerd then
+        return
+    end
+
+    nerd.setup(
+        {
+            border = style.current.border, -- Border
+            prompt = " ", -- Prompt Icon
+            preview_prompt = " ", -- Preview Prompt Icon
+            up = "<C-u>", -- Move up in preview
+            down = "<C-d>", -- Move down in preview
+            copy = "<C-y>" -- Copy to the clipboard
+        }
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.smartcolumn()
@@ -2162,6 +2185,58 @@ function M.smartcolumn()
             limit_to_window = false
         }
     )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                     VariousTextobjs                      │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.various_textobjs()
+    local vobjs = D.npcall(require, "various-textobjs")
+    if not vobjs then
+        return
+    end
+
+    vobjs.setup {
+        lookForwardLines = 5, -- set to 0 to only look in the current line
+        useDefaultKeymaps = false -- use suggested keymaps (see README)
+    }
+
+    -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
+
+    -- exclude start exclude end
+    map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
+    map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, true))
+    map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))
+    map({"o", "x"}, "aI", D.ithunk(vobjs.indentation, false, false))
+
+    wk.register(
+        {
+            ["ai"] = "Indentation level (+ line above)",
+            ["aI"] = "Indention level (+ lines above/below)",
+            ["iI"] = "Inner Indentation level (+ line below)",
+            ["ii"] = "Inner Indentation level"
+        },
+        {mode = "o"}
+    )
+
+    nvim.autocmd.VariousTextobjs = {
+        event = "FileType",
+        pattern = {"lua", "zsh", "sh", "bash"},
+        command = function(args)
+            local buf = args.buf
+
+            map({"o", "x"}, "iD", D.ithunk(vobjs.doubleSquareBrackets, true), {buffer = buf})
+            map({"o", "x"}, "aD", D.ithunk(vobjs.doubleSquareBrackets, false), {buffer = buf})
+
+            wk.register(
+                {
+                    ["iD"] = "Inner [[",
+                    ["aD"] = "Outer [["
+                },
+                {mode = "o"}
+            )
+        end
+    }
 end
 
 return M

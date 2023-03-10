@@ -4,6 +4,7 @@ local D = require("dev")
 local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
+local funcs = require("functions")
 
 -- local ex = nvim.ex
 -- local api = vim.api
@@ -62,7 +63,6 @@ map("n", "q", "<Nop>", {silent = true})
 
 -- Repeat last command
 map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
--- map("c", "<CR>", [[pumvisible() ? "\<C-y>" : "\<CR>"]], {noremap = true, expr = true})
 
 map({"n", "x", "o"}, "H", "g^")
 map({"n", "x", "o"}, "L", "g_")
@@ -79,14 +79,35 @@ map("i", "<C-S-j>", "<End>", {desc = "Move to begin of line"})
 -- map("i", "<C-S-k>", "<Up>", {desc = "Move one line up"})
 -- map("i", "<C-S-j>", "<Down>", {desc = "Move one line down"})
 
+map("i", "<C-S-u>", "<C-g>u", {desc = "Start new undo sequence"})
+
 wk.register(
     {
         ["<C-i>"] = "Delete all text left of cursor",
         ["<C-t>"] = "Insert one shift level at beginning of line",
         ["<C-d>"] = "Delete one shift level at beginning of line",
+        ["<C-u>"] = "Delete everything typed in insert mode",
+        ["<C-o>"] = "Run command, resume insert mode"
     },
     {mode = "i"}
 )
+
+map("c", "<C-b>", "<Left>")
+map("c", "<C-f>", "<Right>")
+map("c", "<C-,>", "<Home>")
+map("c", "<C-.>", "<End>")
+map("c", "<C-S-k>", "<Home>")
+map("c", "<C-S-j>", "<End>")
+map("c", "<C-h>", "<BS>")
+map("c", "<C-l>", "<Del>")
+map("c", "<C-d>", "<Del>")
+map("c", "<M-[>", "<Up>")
+map("c", "<M-]>", "<Down>")
+map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
+map("c", "<M-b>", "<C-Left>", {desc = "Move one word left"})
+map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
+map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
+map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
 
 -- Navigate merge conflict markers
 -- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
@@ -104,38 +125,48 @@ map("n", "<Tab>", ">>")
 map("n", "<S-Tab>", "<<")
 map("x", "<Tab>", ">><Esc>gv", {silent = true})
 map("x", "<S-Tab>", "<<<Esc>gv", {silent = true})
--- map("i", "<S-Tab>", "<C-d>")
+-- map("i", "<S-Tab>", "<C-d>") hello sir okj
 
 -- Don't lose selection when shifting sidewards
 -- map("x", "<", "<gv")
 -- map("x", ">", ">gv")
 
-map("n", "v", "m`v")
-map("n", "V", "m`V")
-map("n", "<C-v>", "m`<C-v>")
-
 map(
     "n",
     "<Leader>c;",
-    function()
-        local ol = vim.opt_local
-        local fo = ol.formatoptions:get()
-        if fo.r then
-            ol.formatoptions:append({r = false})
-        else
-            ol.formatoptions:append({r = true})
-        end
-    end,
+    D.ithunk(funcs.toggle_formatopts_r),
     {desc = "Toggle continuation of comment"}
 )
+
+map("n", "<Leader>h;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
+
+-- map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
+map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
+map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true, noremap = true})
+
+wk.register(
+    {
+        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
+        -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
+    },
+    {silent = false}
+)
+
+map("n", "<Leader>rt", "<Cmd>setl et<CR>", {desc = "Set expandtab"})
+map("n", "<Leader>re", "<Cmd>setl et<CR><Cmd>retab<CR>", {desc = "Retab whole file"})
+map("x", "<Leader>re", "<Cmd>retab<CR>", {desc = "Retab selection"})
+map("n", "<Leader>cd", "<Cmd>lcd %:p:h<CR><Cmd>pwd<CR>", {desc = "lcd to filename directory"})
 
 -- Use g- and g+
 wk.register(
     {
-        ["U"] = {"<C-r>", "Redo action"},
-        [";u"] = {":execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
-        [";U"] = {":execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
-        ["gI"] = {":norm! gi<CR>", "Goto last insert spot"}
+        -- ["U"] = {"<C-r>", "Redo action"},
+        ["U"] = {"<Plug>(RepeatRedo)", "Redo action"},
+        ["<C-S-u>"] = {"<Plug>(RepeatUndoLine)", "Undo entire line"},
+        [";U"] = {"<Cmd>execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
+        [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
+        ["gI"] = {"<Cmd>sil! norm! `^<CR>", "Goto last insert spot"}
     }
 )
 
@@ -174,24 +205,16 @@ wk.register(
         ["Y"] = {[[y$]], "Yank to EOL (without newline)"},
         ["x"] = {[["_x]], "Cut letter (blackhole)"},
         ["vv"] = {[[^vg_]], "Select entire line (without newline)"},
+        ["<A-a>"] = {[[VggoG]], "Select entire file"},
         ["cn"] = {[[*``cgn]], "Change text, start search forward"},
         ["cN"] = {[[*``cgN]], "Change text, start search backward"},
-        ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"}
+        ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"},
+        ["&"] = "Repeat last substitution"
     }
 )
 
--- map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
-map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
-map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
-
-wk.register(
-    {
-        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
-        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
-        -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
-    },
-    {silent = false}
-)
+map("n", "<Leader>cd", "<Cmd>lcd %:p:h<CR><Cmd>pwd<CR>", {desc = "lcd to current directory"})
+map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 
 wk.register(
     {
@@ -199,30 +222,23 @@ wk.register(
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"},
         ["<C-g>"] = {[[g<C-g>]], "Show word count"},
         ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
-        ["/"] = {"<Esc>/\\%V", "Search visual selection"}
+        ["/"] = {"<Esc>/\\%V", "Search visual selection"},
+        ["&"] = {":&&<CR>", "Repeat last substitution"}
         -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
     {mode = "x"}
 )
 
-map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
-map("n", "<Leader>h;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
-
--- Jumps more than 5 modify jumplist
-map("n", "j", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj']], {expr = true})
-map("n", "k", [[v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk']], {expr = true})
+-- map("n", "j", [[v:count ? (v:count > 5 ? "m`" . v:count : '') . 'j' : 'gj']], {expr = true})
+-- map("n", "k", [[v:count ? (v:count > 5 ? "m`" . v:count : '') . 'k' : 'gk']], {expr = true})
+map("n", "j", [[(v:count > 1 ? 'm`' . v:count : '') . 'j']], {noremap = true, expr = true})
+map("n", "k", [[(v:count > 1 ? 'm`' . v:count : '') . 'k']], {noremap = true, expr = true})
 
 map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line", silent = true})
 map("n", "gk", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true})
-
--- These still lag
-map("n", ">", ":norm! }<CR>", {desc = "Move to next blank line", silent = true, nowait = true})
-map("n", "<", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true, nowait = true})
-
--- Remap mark jumping
-map({"n", "x", "o"}, "'", "`")
-map({"n", "x", "o"}, "`", "'")
+-- map("n", ">", ":norm! }<CR>", {desc = "Move to next blank line", silent = true, nowait = true})
+-- map("n", "<", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true, nowait = true})
 
 map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
 -- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
@@ -288,10 +304,6 @@ wk.register(
         }
     }
 )
-
-map("n", "<Leader>rt", "<cmd>setl et<CR>", {desc = "Set extendedtab"})
-map("x", "<Leader>re", "<cmd>retab!<CR>", {desc = "Retab selection"})
-map("n", "<Leader>cd", "<cmd>lcd %:p:h<CR><cmd>pwd<CR>", {desc = "lcd to filename directory"})
 
 wk.register(
     {
@@ -368,10 +380,12 @@ wk.register(
                 -- c = {":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>", "Edit coc-settings"},
                 c = {"<cmd>CocConfig<CR>", "Edit coc-settings"},
                 v = {":e $NVIMRC<CR>", "Edit neovim config"},
-                z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"}
+                z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"},
+                p = {":e $NVIMD/lua/plugins.lua<CR>", "Edit plugins"}
             },
             ["sv"] = {":luafile $NVIMRC<CR>", "Source neovim config"}
-        }
+        },
+        ["<C-S-N>"] = {require("notify").dismiss, "Dismiss notification"}
     }
 )
 -- ]]] === Other ===

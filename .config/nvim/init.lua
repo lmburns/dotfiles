@@ -1,16 +1,12 @@
 --[[
 FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
 FIX: Telescope opens file in insert mode
-FIX: Paste first time when pressing `p`. Some reason it takes two times when first opening a file
 
-FIX: Folds close automatically if every fold in file is closed then opened
-
-TODO: Add keybinding to go to top of current function you're inside of
-TODO: Highlight dates paint
 TODO: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
-
-NOTES:
-    * Tab character hides part of the line when file doesn't have tabs on (indent-blankline)
+      delete text and copy
+      copy text and comment
+      lua cs ' => [[
+      when formatoptions changed, dont change back on bufenter
 --]]
 local ok, impatient = pcall(require, "impatient")
 if ok then
@@ -118,6 +114,9 @@ vim.schedule(
         -- === Treesitter
         vim.defer_fn(
             function()
+                -- cmd("doau filetypedetect BufRead")
+                cmd.syntax("on")
+                cmd.filetype("on")
                 require("plugs.treesitter")
 
                 augroup(
@@ -130,10 +129,6 @@ vim.schedule(
                         end
                     }
                 )
-
-                cmd.syntax("on")
-                cmd.filetype("on")
-                -- cmd("doau filetypedetect BufRead")
             end,
             15
         )

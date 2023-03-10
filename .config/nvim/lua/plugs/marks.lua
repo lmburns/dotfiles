@@ -8,6 +8,8 @@ if not marks then
     return
 end
 
+local utils = require("common.utils")
+local map = utils.map
 local icons = require("style").icons
 local wk = require("which-key")
 
@@ -28,10 +30,21 @@ function M.setup()
         -- whether to map keybinds or not. default true
         default_mappings = true,
         -- which builtin marks to show. default {}
-        -- builtin_marks = {},
-        builtin_marks = {".", "^"},
-        -- builtin_marks = {".", "<", ">", "^"},
-        -- builtin_marks = {"<", ">", "'", '"', "^", "."},
+        builtin_marks = {
+            "<", -- first char/line of last selected with visual
+            ">", -- last char/line of last selected with visual
+            "'", -- last position before latest jump
+            -- "`", -- last position before latest jump
+            '"', -- cursor position when last exiting buf
+            "^", -- cursor position when last in insert
+            "." -- position where last change
+            -- "[", -- cursor position of last changed/yanked
+            -- "]" -- cursor position of last changed/yanked
+            -- "(", -- start of current sentence
+            -- ")", -- end of current sentence
+            -- "{", -- start of current paragraph
+            -- "}" -- end of current paragraph
+        },
         -- whether movements cycle back to the beginning/end of buffer. default true
         cyclic = true,
         -- whether the shada file is updated after modifying uppercase marks. default false
@@ -75,6 +88,14 @@ end
 
 local function init()
     M.setup()
+
+    map("n", "v", "m`v")
+    map("n", "V", "m`V")
+    map("n", "<C-v>", "m`<C-v>")
+
+    -- Remap mark jumping to jump to column instead of start of line
+    map({"n", "x", "o"}, "'", "`")
+    map({"n", "x", "o"}, "`", "'")
 
     wk.register(
         {

@@ -1,7 +1,5 @@
 #compdef aria2c
 
-# zsh completions for 'aria2c'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
 local arguments
 
 arguments=(

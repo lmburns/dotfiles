@@ -4,7 +4,6 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
-setopt no_global_rcs
 skip_global_compinit=1
 
 export DO_NOT_TRACK=1
@@ -56,13 +55,13 @@ export BROWSERCLI="w3m"
 export SR_BROWSER="$BROWSERCLI"
 export RTV_BROWSER="$BROWSERCLI"
 
-if [[ -n "$NVIM_LISTEN_ADDRESS" ]]; then
-  export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
-  export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
-else
-  export VISUAL="nvim"
-  export EDITOR="nvim"
-fi
+# if [[ -n "$NVIM_LISTEN_ADDRESS" ]]; then
+#   export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+#   export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+# else
+export VISUAL="nvim"
+export EDITOR="nvim"
+# fi
 
 export GIT_EDITOR="${EDITOR}"
 export RTV_EDITOR="${EDITOR}"
@@ -111,10 +110,14 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 # export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_STYLE_OVERRIDE=kvantum
 
+# Smooth scrolling
+export MOZ_USE_XINPUT2=1
+
 export XINITRC="${HOME}/.xinitrc"
 export VIMRC="${HOME}/vim/.vimrc"
 export MYVIMRC="${HOME}/vim/.vimrc"
-export NVIMRC="${XDG_CONFIG_HOME}/nvim/init.lua"
+export NVIMD="${XDG_CONFIG_HOME}/nvim"
+export NVIMRC="${NVIMD}/init.lua"
 export PACKDIR="${XDG_DATA_HOME}/nvim/site/pack/packer"
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME}/notmuch/notmuch-config"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"

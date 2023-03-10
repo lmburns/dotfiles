@@ -8,7 +8,6 @@ end
 
 local log = require("common.log")
 local style = require("style")
-local wk = require("which-key")
 
 local F = vim.F
 local api = vim.api
@@ -77,11 +76,9 @@ end
 local function init()
     M.setup()
 
-    wk.register(
-        {
-            ["<C-S-N>"] = {notify.dismiss, "Dismiss notification"}
-        }
-    )
+    -- Mappings are set in mappings.lua
+    -- They need to be set earlier in case there is an error loading modules
+    -- So that way I can actually close the notification
 
     require("telescope").load_extension("notify")
 end

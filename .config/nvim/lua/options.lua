@@ -74,6 +74,7 @@ g.c_comment_strings = 1
 g.c_no_if0 = 0
 
 g.no_man_maps = 1
+g.vimsyn_embed = 1
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -89,33 +90,33 @@ o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
 o.fileformats = {"unix", "mac", "dos"}
 
--- Settings
--- o.path:append("**")
-o.number = true
-o.relativenumber = true
-o.cursorline = true
-o.cursorlineopt = {"number", "screenline"}
-
 o.infercase = true -- change case inference with completions
 o.ignorecase = true
 o.smartcase = true
 o.wrapscan = true -- searches wrap around the end of the file
-o.startofline = false
+o.startofline = false -- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", gg go to start of line
 o.scrolloff = 5 -- cursor 5 lines from bottom of page
-o.sidescrolloff = 15
-
-o.indentexpr = "nvim_treesitter#indent()"
+o.sidescrolloff = 15 -- minimal number of screen columns to keep to the let
 
 -- o.foldmethod = "marker"
 -- o.foldmarker = "[[[,]]]"
 -- o.foldmethod = "expr"
 -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
+-- o.foldlevel = 1
+-- o.formatexpr
 o.foldenable = true
+-- commands that open a fold
 o.foldopen = o.foldopen:append("search")
 o.foldlevelstart = 99
 o.foldcolumn = "1"
--- o.foldlevel = 1
+
+o.signcolumn = "yes:1"
+o.number = true -- print the line number in front of each line
+o.relativenumber = true -- show the line number relative to the line with the cursor
+o.numberwidth = 4 -- minimal number of columns to use for the line number
+o.textwidth = 100
+o.winminwidth = 10
 
 o.formatoptions = {
     ["1"] = true, -- Don't break a line after a one-letter word; break before
@@ -154,7 +155,7 @@ o.titleold = fs.basename(os.getenv("SHELL")) -- This doesn't seem to work
 -- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
 
 o.list = true -- display tabs and trailing spaces visually
--- Tab hides actual text when used with indent blankline
+-- tab hides actual text when used with indent blankline
 o.listchars:append(
     {
         eol = nil,
@@ -165,32 +166,21 @@ o.listchars:append(
         nbsp = "␣"
     }
 )
-o.showbreak = [[↳ ]] -- ↪  ⌐
 
 -- o.cpoptions = 'aAceFs_B'
--- o.cpoptions:append("n") -- cursorcolumn used for wraptext
+-- o.cpoptions:append("n") -- signcolumn used for wraptext
 o.cpoptions:append("_") -- do not include whitespace with 'cw'
 o.cpoptions:append("a") -- ":read" sets alternate file name
 o.cpoptions:append("A") -- ":write" sets alternate file name
-o.showtabline = 2
-o.incsearch = true -- incremental search highlight
 
 o.mouse = "a" -- enable mouse all modes
 o.mousefocus = true
 o.mousemoveevent = true
 o.mousescroll = {"ver:3", "hor:6"}
 
-o.backspace = {"indent", "eol", "start"}
-o.breakindentopt = "sbr" -- shift:2,min:20
-o.smartindent = true
--- o.copyindent = true
-o.cindent = true
--- o.autoindent = true
-o.linebreak = true -- lines wrap at words rather than random characters
-
-o.magic = true
+o.magic = true -- :h pattern-overview
 o.joinspaces = false -- prevent inserting two spaces with J
-o.lazyredraw = false
+o.lazyredraw = true -- screen not redrawn with macros, registers
 o.redrawtime = 2000
 -- I like to have a differeniation between CursorHold and updatetime
 -- Also, when only using updatetime, CursorHold doesn't seem to fire
@@ -199,6 +189,7 @@ o.updatetime = 2000
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
 o.matchtime = 5 -- ms to blink when matching brackets
+
 -- o.autoread = true
 -- o.autowriteall = true -- automatically :write before running commands and changing files
 
@@ -216,14 +207,98 @@ o.whichwrap = {
 o.wrap = true
 o.wrapmargin = 2
 
-o.smarttab = true -- insert blanks spaces for tabs
-o.tabstop = 2
-o.expandtab = true
-o.softtabstop = 2
-o.shiftwidth = 0
+local indent = 2
+o.shiftwidth = indent -- # of spaces to use for each step
+o.tabstop = indent -- # of spaces a <Tab> in the file counts for
+o.softtabstop = indent -- # of spaces a <Tab> counts for while performing editing operations
+o.expandtab = true -- use the appropriate number of spaces to insert a <Tab>
+o.smarttab = true -- line start insert blanks equal to 'sw'. 'ts'/'sts' for other places
 -- o.shiftround = true -- round </> indenting
-o.textwidth = 100
--- o.shiftround = true
+o.backspace = {"indent", "eol", "start"} -- <BS>, <Del>, CTRL-W and CTRL-U in insert
+
+o.autoindent = true -- copy indent from current line when starting a new line (<CR>, o, O)
+-- o.indentexpr = "nvim_treesitter#indent()" -- (overrules 'smartindent', 'cindent')
+o.smartindent = true -- smart autoindenting when starting a new line (C-like progs)
+o.cindent = true -- automatic C program indenting
+-- o.preserveindent = true -- preserve most indent structure as possible when reindenting line
+-- o.copyindent = true -- copy structure of existing lines indent when autoindenting a new line
+o.showbreak = [[↳ ]] -- ↪  ⌐
+o.breakindent = true -- each wrapped line will continue same indent level
+o.breakindentopt = { -- TODO: get to ignore comment start
+    -- settings of 'breakindent'
+    "sbr", -- display 'showbreak' value before applying indent
+    "list:2", -- add additional indent for lines matching 'formatlistpat'
+    "min:20", --- min width kept after breaking line
+    "shift:2" -- all lines after break are shifted N
+}
+o.linebreak = true -- lines wrap at words rather than random characters
+o.breakat = {
+    -- which chars cause break with 'linebreak'
+    ["\t"] = true,
+    [" "] = true,
+    ["!"] = true,
+    ["*"] = true,
+    ["+"] = true,
+    [","] = true,
+    ["-"] = true,
+    ["."] = true,
+    ["/"] = true,
+    [":"] = true,
+    [";"] = true,
+    ["?"] = true,
+    ["@"] = true
+}
+
+-- Builtin
+-- vim.o.cinoptions =
+--     "s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,N0,E0,ps,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,k0,m0,j0,J0,)20,*70,#0,P0"
+-- vim.o.cino = "s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,N0,E0,p0,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,k0,m0,j0,J0,)20,*70,#0,P0"
+
+o.cinoptions = {
+    ">1s", -- any: amount added for "normal" indent
+    "L0", -- placement of jump labels
+    "=1s", --? case: statement after case label: N chars from indent of label
+    "l1", -- N!=0 case: align w/ case label instead of statement after it on same line
+    "b1", -- N!=0 case: align final "break" w/ case label so it looks like block (0=break cinkeys)
+    "g1s", --? C++ scope decls: N chars from indent of block they're in
+    "h1s", --? C++: after scope decl: N chars from indent of label
+    "N0", --? C++: inside namespace: N chars extra
+    "E0", --? C++: inside linkage specifications: N chars extra
+    "p1s", --? K&R: function decl: N chars from margin
+    "t0", -- K&R: return type of function decl: N chars from margin
+    "i1s", --? C++: base class decl/constructor init if they start on newline
+    "+0", -- line continuation: N chars extra inside function; 2*N outside func if line end = '\'
+    "c1s", -- comment lines: N chars from comment opener if no other text to align with
+    "(1s", -- inside unclosed paren: N chars from line ('sw' for every unclosed paren)
+    "u1s", -- same as (N but one level deeper
+    "U1", -- N!=0 : do not ignore nested parens that are on line by themselves
+    -- "wN", "WN" --
+    "k1s", -- unclosed paren in 'if' 'for' 'while' override '(N'
+    "m1", -- N!=0 line up line starting w/ closing paren w/ 1st char of line w/ opening
+    "j1", -- java: anon classes
+    "J1", --javascript: object classes
+    ")40", -- search for parens N lines away
+    "*70", -- search for unclosed comments N lines away
+    "#0", -- N!=0 recognized '#' comments otherwise preproc (toggle this for files)
+    "P1" -- N!=0 format C pragmas
+}
+
+-- keys in insert mode that cause reindenting of current line
+-- 0#
+o.cinkeys = {"0{", "0}", "0)", "0]", ":", "!^F", "o", "O", "e"}
+
+o.comments = {
+    "n:>", -- nested comment prefix
+    "b:#", -- blank (<Space>, <Tab>, or <EOL>) required after prefix
+    "fb:-", -- only first line has comment string (e.g., a bullet-list)
+    "fb:*", -- only first line has comment string (e.g., a bullet-list)
+    "s1:/*", -- start of three-piece comment
+    "mb:*", -- middle of three-piece comment
+    "ex:*/", -- end of three-piece comment
+    "://",
+    ":%",
+    ":XCOMM"
+}
 
 o.wildoptions = {"pum", "fuzzy"}
 o.wildignore = {
@@ -258,21 +333,26 @@ o.wildignorecase = true -- ignore case when completing file names and directorie
 -- o.wildcharm = fn.char2nr(utils.termcodes["<Tab>"])
 o.wildcharm = ("\t"):byte()
 
-o.winminwidth = 10
+o.cmdheight = 2 -- number of screen lines to use for the command-line
 o.pumheight = 10 -- number of items in popup menu
-o.pumblend = 3 -- Make popup window translucent
+o.pumblend = 3 -- make popup window translucent
 
 -- o.secure = true -- Disable autocmd etc for project local vimrc files.
 -- o.exrc = true -- Allow project local vimrc files example .nvimrc see :h exrc
 
-o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
+o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.viewdir = dirs.data .. "views"
 if not uv.fs_stat(vim.o.viewdir) then
     fn.mkdir(vim.o.viewdir, "p")
 end
-o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
+o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"}
 o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
-o.jumpoptions = {"stack", "view"}
+o.jumpoptions = {
+    -- change behavior of 'jumplist'
+    -- behave like tagstack - relloc is preserved (sumneko jumps to top clearing a bunch)
+    "stack",
+    "view" -- try to restore mark-view
+}
 
 o.history = 10000
 o.backup = false
@@ -316,15 +396,20 @@ o.diffopt =
         -- "linematch:60"
     }
 
-o.inccommand = "split" -- nosplit
+o.incsearch = true -- incremental search highlight
+o.inccommand = "split"
+
+-- o.eadirection = "hor" -- when equalsalways option applies
+o.equalalways = false -- don't always make windows equal size
 o.splitright = true
 o.splitbelow = true
--- o.eadirection = "hor" -- when equalsalways option applies
 
 -- exclude usetab as we do not want to jump to buffers in already open tabs
 -- do not use split or vsplit to ensure we don't open any new windows
 o.switchbuf = "useopen,uselast"
 
+o.cursorline = true
+o.cursorlineopt = {"number", "screenline"}
 o.conceallevel = 2
 o.concealcursor = "c"
 o.fillchars = {
@@ -345,15 +430,13 @@ o.fillchars = {
     verthoriz = "╋"
 }
 
-o.cmdheight = 2
 o.ruler = false
-o.equalalways = false -- don't always make windows equal size
+o.showtabline = 2
 o.showmatch = true -- show matching brackets when text indicator is over them
 o.showmode = false -- hide file, it's in lightline
 o.showcmd = true -- show command
-o.signcolumn = "yes:1"
-o.synmaxcol = 300 -- do not highlight long lines
 o.hidden = true -- enable modified buffers in background
+o.synmaxcol = 300 -- do not highlight long lines
 
 -- TOaxSsIinfcFlotA
 o.shortmess:append("a") -- enable shorter flags ('filmnrwx')
@@ -380,7 +463,7 @@ o.shortmess:append("A") -- don't give the "ATTENTION" message when an existing s
 --     W = true -- don't show [w] or written when writing
 -- }
 
-o.cedit = "<C-c>" -- Key used to open command window on the CLI
+o.cedit = "<C-c>" -- key used to open command window on the CLI
 o.tagfunc = "CocTagFunc"
 
 o.grepprg =

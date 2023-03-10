@@ -14,6 +14,7 @@ local augroup = utils.augroup
 
 local Path = require("plenary.path")
 
+local ol = vim.opt_local
 local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
@@ -218,21 +219,6 @@ function M.lua_executor()
     end
 end
 
-cmd [[
- if !exists('*SaveAndExec')
-    function! SaveAndExec() abort
-      if &filetype == 'vim'
-        :silent! write
-        :source %
-      elseif &filetype == 'lua'
-        :silent! write
-        :luafile %
-      endif
-      return
-    endfunction
-  endif
-]]
-
 ---Execute the buffer. Used for interpreted languages
 function M.execute_buffer()
     local f = fn.expand("%")
@@ -268,46 +254,6 @@ augroup(
             )
         end
     }
-    -- {
-    --     event = "FileType",
-    --     pattern = {"lua", "vim"},
-    --     command = function()
-    --         map("n", "<Leader>xl", ":luafile %<CR>", {desc = "`luafile` current file"})
-    --         map(
-    --             "n",
-    --             "<Leader>xx",
-    --             ":lua require('functions').lua_executor()<CR>",
-    --             {desc = "Execute Lua/Vim got"}
-    --         )
-    --         map("v", "<Leader>xx", [[:<C-w>exe join(getline("'<","'>"),'<Bar>')<CR>]])
-    --         map("n", "<Leader><Leader>x", ":call SaveAndExec()<CR>")
-    --     end
-    -- }
-)
-
-function M.execute_macro_over_visual_range()
-    print("@" .. fn.getcmdline())
-    fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
-end
-
----Show changes since last save
-function M.diffsaved()
-    local bufnr = api.nvim_get_current_buf()
-    local ft = vim.bo[bufnr].ft
-    cmd.diffthis()
-    cmd.vnew()
-    cmd.r("#")
-    cmd.norm({"1Gdd", bang = true})
-    cmd(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
-    cmd.diffthis()
-end
-
-command(
-    "DS",
-    function()
-        M.diffsaved()
-    end,
-    {desc = "Show diff of saved file"}
 )
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -451,31 +397,9 @@ map(
     {expr = true, desc = "Insert empty line below"}
 )
 
----Run a command like `n`/`N` and center the screen
----Can be used to just center the screen
----@param command string? Option command to run
-function M.center_next(command)
-    local view = fn.winsaveview()
-
-    if command then
-        cmd.norm({command, mods = {silent = true}})
-    end
-
-    if view.topline ~= fn.winsaveview().topline then
-        cmd.norm({"zz", mods = {silent = true}, bang = true})
-    end
-
-    -- fn.line("w$") ~= row
-end
-
----When not to use the `mkview` command for an autocmd
-function M.makeview()
-    local bufnr = api.nvim_get_current_buf()
-    if vim.bo[bufnr].bt ~= "" or fn.empty(fn.expand("%:p")) == 1 or not vim.o.modifiable then
-        return false
-    end
-    return true
-end
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                           TMUX                           │
+--  ╰──────────────────────────────────────────────────────────╯
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()
@@ -553,6 +477,88 @@ if fn.executable("xsel") then
     }
 
     map({"n", "v"}, "<C-z>", D.ithunk(M.preserve_clipboard_and_suspend))
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Other                           │
+--  ╰──────────────────────────────────────────────────────────╯
+
+---@class WinSaveViewRet
+---@field lnum number cursor line number
+---@field col number  cursor column (first col=0)
+---@field coladd number  cursor column offset for 'virtualedit'
+---@field curswant number column for vertical movement
+---@field topline number line in the window
+---@field topfill number lines, only in diff mode
+---@field leftcol number column displayed; only used when 'wrap' is off
+---@field skipcol number skipped
+
+-- ---@return WinSaveViewRet
+-- fn.winsaveview = fn.winsaveview
+
+---Run a command like `n`/`N` and center the screen
+---@param command string Command to run
+function M.center_next(command)
+    -- local view = fn.winsaveview()
+    -- if view.topline ~= fn.winsaveview().topline then
+
+    local topline = fn.line("w0")
+
+    local ok, msg = pcall(cmd.norm, {command, mods = {silent = true}, bang = true})
+
+    if topline ~= fn.line("w0") then
+        cmd.norm({"zz", mods = {silent = true}, bang = true})
+    elseif not ok then
+        local err = (msg:match "Vim:E486: Pattern not found:.*")
+        log.err(err or msg, {print = true})
+    end
+end
+
+---Toggle 'r' in 'formatoptions'.
+---This is the continuation of a comment on the next line
+function M.toggle_formatopts_r()
+    if ol.formatoptions:get().r then
+        ol.formatoptions:append({r = false})
+        log.info("state: false", {title = "Comment Continuation"})
+    else
+        ol.formatoptions:append({r = true})
+        log.warn("state: true", {title = "Comment Continuation"})
+    end
+end
+
+---Execute a macro over a given selection
+function M.execute_macro_over_visual_range()
+    print("@" .. fn.getcmdline())
+    fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
+end
+
+---Show changes since last save
+function M.diffsaved()
+    local bufnr = api.nvim_get_current_buf()
+    local ft = vim.bo[bufnr].ft
+    cmd.diffthis()
+    cmd.vnew()
+    cmd.r("#")
+    cmd.norm({"1Gdd", bang = true})
+    cmd(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
+    cmd.diffthis()
+end
+
+command(
+    "DS",
+    function()
+        M.diffsaved()
+    end,
+    {desc = "Show diff of saved file"}
+)
+
+---When not to use the `mkview` command for an autocmd
+function M.makeview()
+    local bufnr = api.nvim_get_current_buf()
+    if vim.bo[bufnr].bt ~= "" or fn.empty(fn.expand("%:p")) == 1 or not vim.o.modifiable then
+        return false
+    end
+    return true
 end
 -- ]]] === Functions ===
 

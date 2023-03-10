@@ -85,6 +85,7 @@ typeset -ga zle_highlight=(
   )
 }
 
+setopt no_global_rcs
 setopt hist_ignore_space      # don't add if starts with space
 setopt hist_reduce_blanks     # remove superfluous blanks from each command
 setopt hist_ignore_all_dups   # replace duplicate commands in history file
@@ -352,6 +353,7 @@ zt 0a light-mode for \
   pick'async.zsh' \
     mafredri/zsh-async \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' blockf \
+  wait'[[ -n ${ZLAST_COMMANDS[(r)n-#(alias|c|en|func|hel|hist|kil|opt|panel)]} ]]' \
     psprint/zsh-navigation-tools \
     zdharma-continuum/zflai \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
@@ -1117,6 +1119,9 @@ FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a b
 export FZF_HISTFILE FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
 
 # --separator='━'
+# --bind='shift-up:preview-page-up'
+# --bind='shift-down:preview-page-down'
+# alt-shift-right alt-shift-left
 export FZF_DEFAULT_OPTS="
 --prompt='❱ '
 --pointer='》'
@@ -1137,47 +1142,46 @@ $FZF_COLORS
 --jump-labels='abcdefghijklmnopqrstuvwxyz'
 --preview-window=':hidden,right:60%:border-double'
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
---bind='alt-a:toggle-all'
---bind='ctrl-alt-a:toggle-all+accept'
---bind='ctrl-s:toggle-sort'
---bind='alt-,:first'
---bind='alt-.:last'
---bind='<:beginning-of-line'
---bind='>:end-of-line'
---bind='page-up:prev-history'
---bind='page-down:next-history'
---bind='alt-(:prev-history'
---bind='alt-):next-history'
---bind='alt-{:prev-selected'
---bind='alt-}:next-selected'
---bind='ctrl-/:jump'
 --bind='esc:abort'
 --bind='ctrl-c:abort'
 --bind='ctrl-q:abort'
 --bind='ctrl-g:cancel'
+--bind='<:beginning-of-line'
+--bind='>:end-of-line'
 --bind='alt-x:unix-line-discard'
 --bind='alt-c:unix-word-rubout'
---bind='ctrl-r:clear-selection'
 --bind='alt-d:kill-word'
---bind='?:toggle-preview'
---bind='alt-[:toggle-preview'
---bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
---bind='alt-w:toggle-preview-wrap'
---bind='alt-p:preview-up'
---bind='alt-n:preview-down'
---bind='ctrl-alt-p:preview-page-up'
---bind='ctrl-alt-n:preview-page-down'
---bind='shift-up:preview-page-up'
---bind='shift-down:preview-page-down'
+--bind='alt-a:toggle-all'
+--bind='ctrl-alt-a:toggle-all+accept'
+--bind='ctrl-s:toggle-sort'
+--bind='ctrl-r:clear-selection'
+--bind='alt-left:first'
+--bind='alt-right:last'
+--bind='page-up:prev-history'
+--bind='page-down:next-history'
+--bind='alt-{:prev-history'
+--bind='alt-}:next-history'
+--bind='alt-(:prev-selected'
+--bind='alt-):next-selected'
 --bind='ctrl-u:half-page-up'
 --bind='ctrl-d:half-page-down'
 --bind='ctrl-alt-u:page-up'
 --bind='ctrl-alt-d:page-down'
 --bind='alt-o:replace-query+print-query'
+--bind='ctrl-/:jump'
+--bind='?:toggle-preview'
+--bind='alt-[:toggle-preview'
+--bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
+--bind='alt-w:toggle-preview-wrap'
+--bind='ctrl-b:preview-up'
+--bind='ctrl-f:preview-down'
+--bind='ctrl-alt-b:preview-page-up'
+--bind='ctrl-alt-f:preview-page-down'
 --bind='ctrl-e:become($EDITOR {+})'
---bind='ctrl-b:become(bat --paging=always -f {+})'
+--bind='alt-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
 --bind='ctrl-]:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
+--bind='alt-/:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
 --bind='alt-?:unbind(?)'
 --bind='alt-<:unbind(<)'
 --bind='alt->:unbind(>)'
@@ -1196,11 +1200,11 @@ SKIM_DEFAULT_OPTIONS="
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
 --bind='?:toggle-preview,alt-w:toggle-preview-wrap'
 --bind='alt-a:select-all,ctrl-r:toggle-all'
---bind='ctrl-b:execute(bat --paging=always -f {+})'
+--bind='alt-b:execute(bat --paging=always -f {+})'
 --bind=\"ctrl-y:execute-silent(ruby -e 'puts ARGV' {+} | xsel --trim -b)+abort\"
 --bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
 --bind='ctrl-s:toggle-sort'
---bind='alt-p:preview-up,alt-n:preview-down'
+--bind='ctrl-b:preview-up,ctrl-f:preview-down'
 --bind='ctrl-k:preview-up,ctrl-j:preview-down'
 --bind='ctrl-u:half-page-up,ctrl-d:half-page-down'"
 # SKIM_DEFAULT_OPTIONS=${(F)${(M)${(@f)FZF_DEFAULT_OPTS}/(#m)*info*/${${(@s. .)MATCH}:#--info*}}:#--(bind=change:top|pointer*|marker*|color*)}
@@ -1303,3 +1307,5 @@ zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
+
+alias luamake=/home/lucas/ghq/github.com/actboy168/luamake/luamake

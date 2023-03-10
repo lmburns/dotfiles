@@ -610,7 +610,7 @@ _stig () {
         {-T,--notui,--no-tui}'[Inhibit the TUI]' \
         {-C,--norcfile,--no-rc-file}'[Do not run commands from any rc file]' \
         {-c,--rcfile=,--rc-file=}'[Run commands from FILE upon startup]:CONFIG:_files' \
-        {-h,--help=}'[Display help about TOPIC]:TOPIC:_stig_topics'} \
+        {-h,--help=}'[Display help about TOPIC]:TOPIC:_stig_topics' \
         ":: :_stig_commands" \
         "*::: :->stig" \
         && ret=0

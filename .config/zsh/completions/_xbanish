@@ -1,0 +1,23 @@
+#compdef xbanish
+
+local arguments
+
+arguments=(
+  '-a[always keep mouse cursor hidden while xbanish is running]'
+  '-d[print debugging messages]'
+  '-s[ignore scrolling events]'
+  '-i[ignore pressed key if modifier is used]:modifier:(shift lock control mod1 mod2 mod3 mod4 mod5 all)'
+  '-t[hide cursor after N seconds have passed without mouse movement]:seconds:'
+  '-m[when hiding cursor, move it to corner of the screen or current window]:direction:((
+      wnw\:"northwest corner of current window"
+      wne\:"northeast corner of current window"
+      wsw\:"southwest corner of current window"
+      wse\:"southeast corner of current window"
+      nw\:"northwest corner of screen"
+      ne\:"northeast corner of screen"
+      sw\:"southwest corner of screen"
+      se\:"southeast corner of screen"
+  ))'
+)
+
+_arguments -s $arguments

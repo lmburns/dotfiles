@@ -249,6 +249,7 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
             use({"tpope/vim-repeat"})
             use({"ryanoasis/vim-devicons"})
+            use({"glepnir/nerdicons.nvim", conf = "nerdicons", cmd = "NerdIcons"})
 
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
@@ -299,6 +300,8 @@ return packer.startup(
             )
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
             use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+
+            -- FIX: causes error when viewing command window
             -- use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
 
             use(
@@ -833,9 +836,28 @@ return packer.startup(
                         {"n", "<Leader><Leader>K"},
                         {"n", "<Leader><Leader>/"},
                         {"n", "<Leader><Leader>o"},
-                        {"n", "<C-S-:>"},
-                        {"n", "<C-S-<>"}
+                        {"n", "<C-S-<>"},
+                        {"n", "<C-S-:>"}, -- for nvim-treehopper
+                        {"n", "[n"}, -- for nvim-treehopper
+                        {"n", "]n"}, -- for nvim-treehopper
+                        {"n", "vx"}, -- for nvim-treehopper
+                        {"o", ","}, -- for nvim-treehopper
+                        {"x", ","} -- for nvim-treehopper
                     }
+                }
+            )
+            use(
+                {
+                    "mfussenegger/nvim-treehopper",
+                    desc = "Region selection with hints on the AST nodes",
+                    wants = "nvim-treesitter",
+                    after = "hop.nvim",
+                    requires = {"nvim-treesitter/nvim-treesitter", "phaazon/hop.nvim"}
+                    -- keys = {
+                    --     {"n", "<C-S-:>"},
+                    --     {"n", "[n"},
+                    --     {"n", "]n"}
+                    -- }
                 }
             )
 
@@ -1191,7 +1213,7 @@ return packer.startup(
             -- │                        Treesitter                        │
             -- ╰──────────────────────────────────────────────────────────╯
 
-            -- chrisgrieser/nvim-various-textobjs
+            use({"chrisgrieser/nvim-various-textobjs", conf = "various_textobjs"})
             use(
                 {
                     "mizlan/iswap.nvim",
@@ -1208,8 +1230,6 @@ return packer.startup(
             )
             use(
                 {
-                    -- conf = "plugs.treesitter"
-                    -- commit = "2a63ea56",
                     "nvim-treesitter/nvim-treesitter",
                     run = ":TSUpdate",
                     requires = {
@@ -1235,16 +1255,6 @@ return packer.startup(
                         {
                             "windwp/nvim-ts-autotag",
                             desc = "Html/CSS/JSX tagging",
-                            after = "nvim-treesitter"
-                        },
-                        {
-                            "michaeljsmith/vim-indent-object",
-                            desc = "ai ii aI iI text objects",
-                            after = "nvim-treesitter"
-                        },
-                        {
-                            "nvim-treesitter/nvim-treesitter-context",
-                            desc = "Ability to see current context on top line",
                             after = "nvim-treesitter"
                         },
                         {
@@ -1290,23 +1300,10 @@ return packer.startup(
                             after = "nvim-treesitter"
                         },
                         {
-                            -- "max397574/nvim-treehopper",
-                            "mfussenegger/nvim-treehopper",
-                            desc = "Region selection with hints on the AST nodes",
-                            wants = "hop.nvim",
-                            after = "nvim-treesitter",
-                            requires = "nvim-treesitter/nvim-treesitter"
-                        },
-                        {
                             "ziontee113/syntax-tree-surfer",
                             desc = "Surf through your document and move elements around",
                             after = "nvim-treesitter"
                         },
-                        -- {
-                        --     "ziontee113/query-secretary",
-                        --     desc = "Help create treesitter queries",
-                        --     after = "nvim-treesitter"
-                        -- },
                         {
                             "vigoux/architext.nvim",
                             desc = "Create treesitter queries",
@@ -1316,6 +1313,22 @@ return packer.startup(
                     }
                 }
             )
+
+            -- {
+            --     "ziontee113/query-secretary",
+            --     desc = "Help create treesitter queries",
+            --     after = "nvim-treesitter"
+            -- },
+            -- {
+            --     "michaeljsmith/vim-indent-object",
+            --     desc = "ai ii aI iI text objects",
+            --     after = "nvim-treesitter"
+            -- },
+            -- {
+            --     "nvim-treesitter/nvim-treesitter-context",
+            --     desc = "Ability to see current context on top line",
+            --     after = "nvim-treesitter"
+            -- },
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                        Telescope                         │

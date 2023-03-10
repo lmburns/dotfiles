@@ -73,6 +73,6 @@
 #         scripts: '/home/lucas/mybin/linux/dunstlogger'
 # }
 
-if [[ $DUNST_APP_NAME == "Brave" ]]; then
+if [[ $DUNST_SUMMARY != *4chan* && $DUNST_BODY != *4chan* && $DUNST_APP_NAME == "Brave" ]]; then
     dunstctl close
 fi

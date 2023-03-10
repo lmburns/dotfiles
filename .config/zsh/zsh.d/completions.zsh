@@ -85,6 +85,11 @@ zstyle '*' single-ignored show # don't insert single value
 # + ':messages'       format ' %F{4} -- %f' \
 # + ''                list-grouped true \
 
+# zstyle ':completion:*'               matcher-list '' \
+#        'm:{a-z\-}={A-Z\_}' \
+#        'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
+#        'r:|?=** m:{a-z\-}={A-Z\_}'
+
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
       + ''                special-dirs false \
@@ -242,7 +247,7 @@ typeset -ga FZF_TAB_GROUP_COLORS=(
 zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           accept-line space \
       + ''           prefix '' \
-      + ''           switch-group ',' '.' \
+      + ''           switch-group 'alt-,' 'alt-.' \
       + ''           single-group header color \
       + ''           fzf-pad 4 \
       + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
@@ -252,7 +257,7 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
                         'backward-eof:abort' \
                         'ctrl-e:become({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
                         'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
-                        'ctrl-b:become(bat --paging=always -f {+})' \
+                        'alt-b:become(bat --paging=always -f {+})' \
                         'ctrl-y:execute(xsel -b --trim <<<{+})'
 
 zstyle+ \
@@ -521,6 +526,10 @@ zstyle ':completion:*:cd:*' group-order local-directories path-directories
 
 # ============================== Compdef =============================
 # ====================================================================
+# zicompdef _gnu_generic
+
+compdef _hub           g
+compdef _git           h
 compdef _aliases       ealias
 compdef _functions     efunc
 compdef _command_names from-where
@@ -529,5 +538,8 @@ compdef _command_names wim
 compdef _functions     fim
 compdef _functions     freload
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
+compdef _gnu_generic \
+  bandwhich dunst ffprobe histdb notify-send pamixer rofi tlmgr zstd \
+  brotli
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

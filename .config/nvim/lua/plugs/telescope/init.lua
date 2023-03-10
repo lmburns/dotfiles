@@ -106,7 +106,7 @@ local c_actions = {
     end,
     yank = function(_prompt_bufnr)
         local entry = action_state.get_selected_entry()
-        require('common.yank').yank_reg(vim.v.register, entry.display)
+        require("common.yank").yank_reg(vim.v.register, entry.display)
     end,
     debug = function(_prompt_bufnr)
         local entry = action_state.get_selected_entry()
@@ -207,11 +207,16 @@ telescope.setup(
             winblend = 3,
             wrap_results = false,
             set_env = {["COLORTERM"] = "truecolor"},
-            --
+            -- Direction "better" results are sorted towards
+            --     ascending, descending
             sorting_strategy = "descending",
+            -- How the cursor acts after each sort iteration
+            --     reset, follow, row, closest, none
             selection_strategy = "reset",
-            layout_strategy = "horizontal", -- "flex"
+            -- What happens if you try to scroll past the view of the picker
+            -- cycle, limit
             scroll_strategy = "cycle",
+            layout_strategy = "horizontal", -- "flex"
             cycle_layout_list = {"horizontal", "vertical"},
             color_devicons = true,
             border = {},
@@ -223,19 +228,18 @@ telescope.setup(
                     ["<C-Left>"] = actions.move_selection_next,
                     ["<C-Right>"] = actions.move_selection_previous,
                     -- ["<C-g>"] = actions.add_selection,
-                    ["<M-a>"] = actions.select_all,
+                    ["<A-a>"] = actions.select_all,
                     ["<C-k>"] = actions.cycle_history_next,
                     ["<C-j>"] = actions.cycle_history_prev,
-                    -- ["<C-m>"] = action_layout.toggle_mirror,
                     ["<C-t>"] = action_layout.toggle_preview,
-                    ["<M-p>"] = action_layout.toggle_prompt_position,
+                    ["<A-p>"] = action_layout.toggle_prompt_position,
                     ["<C-s>"] = actions.select_horizontal,
                     ["<C-d>"] = actions.results_scrolling_down,
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
                     ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-q>"] = actions.smart_send_to_qflist,
-                    ["<M-,>"] = c_actions.qf_multi_select,
+                    ["<A-q>"] = actions.smart_send_to_qflist,
+                    ["<A-,>"] = c_actions.qf_multi_select,
                     ["<C-o>"] = c_actions.which_key(),
                     -- ["<Space>"] = c_actions.insert_space,
                     -- ["<Space>"] = {
@@ -245,8 +249,8 @@ telescope.setup(
                     --     keymap_opts = {nowait = true}
                     -- },
                     ["<C-h>"] = c_actions.single_selection_hop,
-                    ["<M-;>"] = c_actions.multi_selection_hop,
-                    ["<C-y>"] = c_actions.yank,
+                    ["<A-;>"] = c_actions.multi_selection_hop,
+                    ["<C-y>"] = c_actions.yank
                 },
                 n = {
                     ["j"] = actions.move_selection_next,
@@ -263,10 +267,13 @@ telescope.setup(
                     ["<C-d>"] = actions.results_scrolling_down,
                     ["<C-u>"] = actions.results_scrolling_up,
                     ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-q>"] = c_actions.qf_multi_select,
-                    ["<M-,>"] = actions.smart_send_to_qflist,
+                    ["<A-q>"] = c_actions.qf_multi_select,
+                    ["<A-,>"] = actions.smart_send_to_qflist,
                     ["<C-o>"] = c_actions.which_key(),
                     ["<C-y>"] = c_actions.yank,
+                    ["<A-)>"] = actions.cycle_history_next,
+                    ["<A-(>"] = actions.cycle_history_prev,
+                    ["-"] = action_layout.toggle_mirror
                 }
             },
             vimgrep_arguments = {
@@ -594,8 +601,8 @@ telescope.setup(
                     --   end
                     -- end
                     --
-                    -- map("i", "<M-=>", modify_depth(1))
-                    -- map("i", "<M-+>", modify_depth(-1))
+                    -- map("i", "<A-=>", modify_depth(1))
+                    -- map("i", "<A-+>", modify_depth(-1))
 
                     map(
                         "n",
@@ -690,12 +697,19 @@ telescope.setup(
 
 local options = {
     hidden = true,
-    path_display = {},
+    mappings = conf.mappings,
+    theme = "ivy",
+    path_display = {"smart"},
     layout_strategy = "horizontal",
+    sorting_strategy = "descending",
     layout_config = {preview_width = 0.65},
-    border = {},
-    borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
-    cwd = fn.expand("%:p:h")
+    border = true,
+    borderchars = {
+        prompt = {"─", " ", " ", " ", "─", "─", " ", " "},
+        results = {" "},
+        preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
+    },
+    cwd = D.thunk(fn.expand, "%:p:h")
 }
 
 -- ========================== Helper ==========================
@@ -788,43 +802,50 @@ M.cst_buffers = function()
     )
 end
 
-M.cst_grep = function(opts)
+-- TODO: Finish
+-- TODO: Don't add help text to frecency
+
+---Return grep arguments for custom grep function
+---@param cwd string current directory
+---@param exclude_curfile? boolean if true don't grep in currently open file
+---@return table arguments #opts passed to `telescope.builtin.live_grep(...)`
+local function grep_args(cwd, exclude_curfile)
     local default = {
-        prompt_title = "Grep",
-        mappings = conf.mappings,
-        opts = opts or {},
-        path_display = {"smart"},
+        prompt_title = ("Grep [ %s ]"):format(cwd),
+        -- cwd = cwd,
         grep_open_files = false,
+        sorting_strategy = "ascending",
+        layout_strategy = "bottom_pane",
+        layout_config = { height = 25 },
         on_input_filter_cb = function(prompt)
             -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
             return {prompt = prompt:gsub("%s", ".*")}
         end,
-        theme = "ivy",
-        sorting_strategy = "ascending",
-        layout_strategy = "bottom_pane",
-        layout_config = {
-            height = 25
-        },
-        border = true,
-        borderchars = {
-            prompt = {"─", " ", " ", " ", "─", "─", " ", " "},
-            results = {" "},
-            preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
+        vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--pcre2"
         }
     }
 
-    default.cwd = fn.expand("%:p:h")
+    -- default = vim.tbl_deep_extend
+
     default.attach_mappings = function(_, map)
         map(
             "n",
-            "<M-i>",
+            "<A-i>",
             function(prompt_bufnr)
                 c_actions.cd_parent(prompt_bufnr, default)
             end
         )
         map(
             "i",
-            "<M-i>",
+            "<A-i>",
             function(prompt_bufnr)
                 c_actions.cd_parent(prompt_bufnr, default)
             end
@@ -833,7 +854,29 @@ M.cst_grep = function(opts)
         return true
     end
 
-    builtin.live_grep(default)
+    if exclude_curfile then
+        table.insert(default.vimgrep_arguments, ("--glob=%s"):format(fn.expand("%")))
+    end
+
+    return default
+end
+
+---Custom grep current working directory (including open file)
+---@param opts table
+M.cst_grep = function(opts)
+    local cwd = fn.expand("%:p:h")
+    local args = grep_args(cwd, false)
+
+    builtin.live_grep(args)
+end
+
+---Custom grep current working directory (excluding open file)
+---@param opts table
+M.cst_grepe = function(opts)
+    local cwd = fn.expand("%:p:h")
+    local args = grep_args(cwd, false)
+
+    builtin.live_grep(args)
 end
 
 M.cst_buffer_fuzzy_find = function()

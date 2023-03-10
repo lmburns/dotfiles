@@ -44,23 +44,42 @@ local ol = vim.opt_local
 -- Wilder doesn't trigger a BufWinEnter when coming back like telescope does
 
 local has_sourced
+local exclude_ft = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= ''"))
+local exclude_bt = _t({"nofile"})
+
+---
+---@param bufnr number
+---@return boolean
+local function should_exclude(bufnr)
+    if
+        fn.expand("%") == "" or exclude_ft:contains(vim.bo[bufnr].ft) or
+            exclude_bt:contains(vim.bo[bufnr].bt) or
+            D.is_floating_window()
+     then
+        return true
+    end
+    return false
+end
 
 nvim.autocmd.lmb__GitEnv = {
-    event = {"BufRead", "BufEnter"},
+    event = {"BufEnter"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
     command = function()
         -- Has to be deferred otherwise something like a terminal buffer doesn't show
-        -- Also, I think the API call instead of vim.bo[bufnr].bt is needed for the deferring to happen
         vim.defer_fn(
             function()
                 local curr_file = fn.expand("%")
-                -- Can't use the buffer from args passed to this function
                 local bufnr = api.nvim_get_current_buf()
+                -- Can't use the buffer from args passed to this function
                 local ft = api.nvim_buf_get_option(bufnr, "filetype")
-                if not fn.filereadable(curr_file) or _t(BLACKLIST_FT):contains(ft) then
+                if not fn.filereadable(curr_file) or exclude_ft:contains(ft) then
                     return
                 end
+
+                -- if not fn.filereadable(curr_file) or should_exclude(bufnr) == true then
+                --     return
+                -- end
 
                 local _, ret =
                     Job:new(
@@ -87,18 +106,6 @@ nvim.autocmd.lmb__GitEnv = {
 
                     -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
                     has_sourced()
-                -- else
-
-                -- if env.GIT_WORK_TREE == os.getenv("DOTBARE_TREE") and env.GIT_DIR == os.getenv("DOTBARE_DIR") then
-                --             local bt = api.nvim_buf_get_option(bufnr, "buftype")
-                --             if bt == "" then
-                --                 nvim.p(("bufnr: %d has unset DOTBARE"):format(bufnr), "TSNote")
-                --             end
-                --
-                --             env.GIT_WORK_TREE = nil
-                --             env.GIT_DIR = nil
-                --         end,
-                -- end
                 end
             end,
             1
@@ -133,7 +140,12 @@ nvim.autocmd.lmb__RestoreCursor = {
     {
         event = "BufReadPost",
         pattern = "*",
-        command = function()
+        command = function(args)
+            -- local bufnr = args.buf
+            -- if should_exclude(bufnr) == true then
+            --     return
+            -- end
+
             local types =
                 _t(
                 {
@@ -148,7 +160,7 @@ nvim.autocmd.lmb__RestoreCursor = {
             )
 
             if
-                fn.expand("%") == "" or types:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
+                fn.expand("%") == "" or exclude_ft:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
                     D.is_floating_window(0)
              then
                 return
@@ -157,8 +169,7 @@ nvim.autocmd.lmb__RestoreCursor = {
             local row, col = unpack(nvim.buf.get_mark(0, '"'))
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 utils.set_cursor(0, row, 0)
-
-                funcs.center_next()
+                cmd.norm({[[g`"zv']], bang = true})
             end
         end
     },
@@ -204,7 +215,7 @@ nvim.autocmd.lmb__RestoreCursor = {
 nvim.autocmd.lmb__FormatOptions = {
     event = {"BufEnter", "FileType"},
     pattern = "*",
-    command = function()
+    command = function(args)
         ol.formatoptions = {
             ["1"] = true,
             ["2"] = true, -- Use indent from 2nd line of a paragraph
@@ -428,7 +439,7 @@ nvim.autocmd.lmb__Help = {
         command = function(args)
             local bufnr = args.buf
             if vim.bo[bufnr].bt == "help" then
-                if split_should_return() then
+                if split_should_return() == true then
                     return
                 end
 
@@ -493,7 +504,7 @@ nvim.autocmd.lmb__Help = {
         once = false,
         command = function(args)
             local bufnr = args.buf
-            if split_should_return() then
+            if split_should_return() == true then
                 return
             end
 
@@ -526,32 +537,35 @@ nvim.autocmd.lmb__Help = {
 -- ]]] === Help ===
 
 -- === Smart Close === [[[
-local smart_close_filetypes = {
-    -- 'help',
-    -- 'qf',
-    "LuaTree",
-    "Outline",
-    "aerial", -- has its own mapping but is slow
-    "bufferize",
-    "dbui",
-    "floggraph",
-    "fugitive",
-    "fugitiveblame",
-    "git",
-    "git-log",
-    "git-status",
-    "gitcommit",
-    "godoc",
-    "log",
-    "lspinfo",
-    "neotest-summary",
-    "scratchpad",
-    "startuptime",
-    "tsplayground",
-    "vista"
-}
+local smart_close_filetypes =
+    _t(
+    {
+        -- 'help',
+        -- 'qf',
+        "LuaTree",
+        "Outline",
+        "aerial", -- has its own mapping but is slow
+        "bufferize",
+        "dbui",
+        "floggraph",
+        "fugitive",
+        "fugitiveblame",
+        "git",
+        "git-log",
+        "git-status",
+        "gitcommit",
+        "godoc",
+        "log",
+        "lspinfo",
+        "neotest-summary",
+        "scratchpad",
+        "startuptime",
+        "tsplayground",
+        "vista"
+    }
+)
 
-local smart_close_buftypes = {}
+local smart_close_buftypes = _t({})
 
 local function smart_close()
     if fn.winnr("$") ~= 1 then
@@ -572,8 +586,8 @@ nvim.autocmd.lmb__SmartClose = {
             local is_unmapped = fn.hasmapto("q", "n") == 0
             local is_eligible =
                 is_unmapped or vim.wo.previewwindow or
-                _t(smart_close_filetypes):contains(vim.bo[bufnr].ft) or
-                _t(smart_close_buftypes):contains(vim.bo[bufnr].bt)
+                smart_close_filetypes:contains(vim.bo[bufnr].ft) or
+                smart_close_buftypes:contains(vim.bo[bufnr].bt)
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
@@ -644,10 +658,6 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
     desc = "Optimize the viewing of larger files",
     command = function(args)
         local bufnr = args.buf
-        if vim.bo[bufnr].ft == "help" then
-            return
-        end
-
         local size = fn.getfsize(fn.expand("%"))
         if size > 1024 * 1024 * 5 then
             local winid = fn.bufwinid(bufnr)
@@ -720,7 +730,6 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             once = false,
             command = function(args)
                 local bufnr = args.buf
-
                 if vim.bo[bufnr].bt == "" then
                     o.titlestring = funcs.title_string()
                 elseif vim.bo[bufnr].bt == "terminal" then
@@ -800,7 +809,7 @@ a.async_void(
                 {
                     event = "BufWritePre",
                     pattern = "*",
-                    command = function()
+                    command = function(args)
                         -- Delete trailing spaces
                         utils.preserve("keepj keepp %s/\\s\\+$//ge")
 

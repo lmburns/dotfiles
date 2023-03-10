@@ -16,20 +16,9 @@ opt.textwidth = 85
 
 map("n", "<CR>", "<C-]>", {buffer = true, desc = "Go to definition"})
 map("n", "<BS>", "<C-^>", {buffer = true, desc = "Go to previous buffer"})
-map("n", "[t", "<C-T>", {buffer = true, desc = "Go to previous tag"})
 
-map(
-    "n",
-    "o",
-    [[:<C-u>call search('''\l\{2,}''', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Next quoted word"}
-)
-map(
-    "n",
-    "O",
-    [[:<C-u>call search('''\l\{2,}''', 'wb')<CR>]],
-    {silent = true, buffer = true, desc = "Prev quoted word"}
-)
+map("n", "]t", "<Cmd>norm! ta<CR>", {buffer = true, desc = "Go to next tag"})
+map("n", "[t", "<C-T>", {buffer = true, desc = "Go to previous tag"})
 
 map(
     "n",
@@ -42,6 +31,19 @@ map(
     "[x",
     [[:<C-u>call search('\<<C-R><C-W>\>', 'w')<CR>]],
     {silent = true, buffer = true, desc = "Prev occurrence of word"}
+)
+
+map(
+    "n",
+    "o",
+    [[:<C-u>call search('''\l\{2,}''', 'w')<CR>]],
+    {silent = true, buffer = true, desc = "Next quoted word"}
+)
+map(
+    "n",
+    "O",
+    [[:<C-u>call search('''\l\{2,}''', 'wb')<CR>]],
+    {silent = true, buffer = true, desc = "Prev quoted word"}
 )
 
 map(
@@ -60,14 +62,27 @@ map(
 map(
     "n",
     "}",
-    [[<Cmd>norm! }<CR>]],
-    {silent = true, buffer = true, desc = "Next blank line"}
+    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'w')<CR>]],
+    {silent = true, buffer = true, desc = "Next link", nowait = true}
 )
 map(
     "n",
     "{",
+    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'wb')<CR>]],
+    {silent = true, buffer = true, desc = "Prev link", nowait = true}
+)
+
+map(
+    "n",
+    ">",
+    [[<Cmd>norm! }<CR>]],
+    {silent = true, buffer = true, desc = "Next blank line", nowait = true}
+)
+map(
+    "n",
+    "<",
     [[<Cmd>norm! {<CR>]],
-    {silent = true, buffer = true, desc = "Prev blank line"}
+    {silent = true, buffer = true, desc = "Prev blank line", nowait = true}
 )
 
 --   nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>

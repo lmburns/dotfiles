@@ -378,7 +378,7 @@
     "--allow=clippy::too_many_lines",
     "--allow=clippy::upper_case_acronyms",
     "--allow=clippy::single_char_lifetime_names",
-    "--allow=clippy::unwrap_in_result",
+    "--allow=clippy::unwrap_in_result"
     //
     // "--allow=clippy::pattern_type_mismatch",
     // "--allow=clippy::redundant_pub_crate",
@@ -499,6 +499,7 @@
   "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  // "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 10000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
@@ -689,7 +690,7 @@
     "reportUnusedClass": "information",
     "reportUnusedFunction": "information",
     "reportUnusedImport": "information",
-    "reportUnusedVariable": "none",
+    "reportUnusedVariable": "none"
   },
 
   "pyright.enable": true,
@@ -1265,10 +1266,29 @@
       "initializationOptions": {
         "cache": {
           // "directory": "/tmp/ccls"
-          "directory": ".ccls-cache"
+          // "directory": ".ccls-cache"
+          "directory": "/home/lucas/.cache/ccls"
+        },
+        "cacheFormat": "json",
+        "clang": {
+          "extraArgs": [
+            "-fms-extensions",
+            "-fms-compatibility",
+            "-fdelayed-template-parsing"
+          ],
+          "excludeArgs": []
         },
         "client": {
           "snippetSupport": true
+        },
+        "completion": {
+          "placeholder": false,
+          "detailedLabel": false,
+          "filterAndSort": false
+        },
+        "index": {
+          "onChange": false,
+          "trackDependency": 1
         }
       }
     },

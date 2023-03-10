@@ -6,7 +6,7 @@
 
 " Main Zinit command.
 " Should be the only TOP rule for the whole syntax.
-syntax match ZinitCommand     /\<\(zinit\|zt\)\>\s/me=e-1
+syntax match ZinitCommand     /\<\(zinit\|zt\|zi\)\>\s/me=e-1
             \ skipwhite
             \ nextgroup=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
             \ contains=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands

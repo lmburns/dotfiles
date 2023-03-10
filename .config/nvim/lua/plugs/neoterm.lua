@@ -7,7 +7,6 @@ if not terminal then
 end
 
 local utils = require("common.utils")
--- local bmap = utils.bmap
 local map = utils.map
 local command = utils.command
 
@@ -83,18 +82,18 @@ end
 -- ========================= Custom Terminals =========================
 -- ====================================================================
 
-function M.set_terminal_keymaps()
-    map("t", "<Esc>", [[<C-\><C-n>]], {buffer = true})
-    -- Why does this need to be remapped to work?
-    map("t", ":", ":", {buffer = true})
-    map("t", ":q!", [[<C-\><C-n>:q!<CR>]], {buffer = true})
+local function bmap(...)
+    utils.bmap(0, ...)
+end
 
-    -- bmap(0, "t", "jk", [[<C-\><C-n>]])
-    -- bmap(0, "t", "kj", [[<C-\><C-n>]])
-    -- bmap(0, "t", "<C-h>", [[<C-\><C-n><C-W>h]])
-    -- bmap(0, "t", "<C-j>", [[<C-\><C-n><C-W>j]])
-    -- bmap(0, "t", "<C-k>", [[<C-\><C-n><C-W>k]])
-    -- bmap(0, "t", "<C-l>", [[<C-\><C-n><C-W>l]])
+function M.set_terminal_keymaps()
+    bmap("t", ":", ":")
+    bmap("t", "<Esc>", [[<C-\><C-n>]])
+    bmap("t", ":q!", [[<C-\><C-n>:q!<CR>]])
+    bmap("t", "<C-h>", [[<cmd>wincmd h<CR>]])
+    bmap("t", "<C-j>", [[<cmd>wincmd j<CR>]])
+    bmap("t", "<C-k>", [[<cmd>wincmd k<CR>]])
+    bmap("t", "<C-l>", [[<cmd>wincmd l<CR>]])
 end
 
 -- Sample on how a command can be ran
@@ -169,27 +168,72 @@ local function init()
     )
 
     -- Terminal repl
+    command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*", desc = "Terminal split"})
+    command("VT", [[vsp | term <args>]], {nargs = "*", desc = "Terminal vertical split"})
+
     command(
         "TR",
-        function(tbl)
-            term_exec(tbl.args, tbl.count)
+        function(args)
+            term_exec(args.args, args.count)
         end,
         {nargs = "*", count = 1, desc = "Terminal REPL"}
     )
 
-    command("TP", [[botright sp | resize 20 | term <args>]], {nargs = "*", desc = "Terminal split"})
-    command("VT", [[vsp | term <args>]], {nargs = "*", desc = "Terminal vertical split"})
-
     -- Equivalent to neoterms `T`
     command(
         "T",
-        function(tbl)
-            M.neoterm(tbl.args, tbl.count)
+        function(args)
+            M.neoterm(args.args, args.count)
         end,
         {nargs = "*", count = 1, desc = "Neoterm"}
     )
 
     map("n", "gzo", "<Cmd>T<CR>", {desc = "Open terminal"})
+
+    local Terminal = require("toggleterm.terminal").Terminal
+
+    -- local lazygit =
+    --     Terminal:new(
+    --     {
+    --         cmd = "lazygit",
+    --         dir = "git_dir",
+    --         hidden = true,
+    --         direction = "float",
+    --         on_open = float_handler
+    --     }
+    -- )
+
+    -- TaskWarrior TUI
+    local tw_tui =
+        Terminal:new(
+        {
+            cmd = "taskwarrior-tui",
+            hidden = true,
+            direction = "float",
+            on_open = M.set_terminal_keymaps,
+            highlights = {
+                FloatBorder = {link = "FloatBorder"},
+                NormalFloat = {link = "NormalFloat"}
+            }
+        }
+    )
+
+    map(
+        "n",
+        "<Leader>tw",
+        function()
+            tw_tui:toggle()
+        end,
+        {desc = "Term: Taskwarrior TUI"}
+    )
+
+    command(
+        "TaskwarriorTUI",
+        function()
+            tw_tui:toggle()
+        end,
+        {nargs = "*", count = 1, desc = "Term: TaskwarriorTUI"}
+    )
 end
 
 init()

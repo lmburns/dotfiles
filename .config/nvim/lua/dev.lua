@@ -14,6 +14,7 @@ local F = vim.F
 ---@class Array<T>: { [integer]: T }
 ---@class Vector<T>: { [integer]: T }
 ---@class Dict<T>: { [string]: T }
+---@class Hash<T>: { [string]: T }
 
 ---@diagnostic disable-next-line:duplicate-doc-alias
 ---@alias module table
@@ -26,10 +27,10 @@ local F = vim.F
 ---@param ... any
 _G.pln = function(...)
     local argc = select("#", ...)
-    local msg_tbl = {}
+    local msg_tbl = _t({})
     for i = 1, argc do
         local arg = select(i, ...)
-        table.insert(msg_tbl, M.inspect(arg))
+        msg_tbl:insert(M.inspect(arg))
     end
 
     print(table.concat(msg_tbl, "\n\n"))
@@ -435,6 +436,16 @@ end
 -- │                          Table                           │
 -- ╰──────────────────────────────────────────────────────────╯
 
+---Sort a table's keys
+---@generic T, V
+---@param tbl table<T, V>
+---@return table<T, V>
+M.keys = function(tbl)
+  local ret = vim.tbl_keys(tbl)
+  table.sort(ret)
+  return ret
+end
+
 ---Pack a table. Same as `table.pack`. Sets number of elements to `.n`
 ---@generic T
 ---@param ... T Any number of items to pack
@@ -683,6 +694,10 @@ M.tbl_ensure = function(t, path)
     end
 end
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Vector                          │
+--  ╰──────────────────────────────────────────────────────────╯
+
 ---Turn a *vector* into a new *table*
 ---@generic T
 ---@param v Vector<T>
@@ -852,9 +867,9 @@ M.vec_symdiff = function(...)
     return result
 end
 
----Find an item in a vector
+---Find an item in a vector or table's values
 ---@generic T
----@param haystack T[]
+---@param haystack T[]|table<any, T>
 ---@param matcher fun(v: T): boolean
 ---@return T
 M.find = function(haystack, matcher)
@@ -1273,10 +1288,10 @@ M.is_last_win = function(win_id)
 end
 
 ---Determine whether the window is floating
----@param winid number
+---@param winid? number
 ---@return boolean
 M.is_floating_window = function(winid)
-    return fn.win_gettype() == "popup" or api.nvim_win_get_config(winid).relative ~= ""
+    return fn.win_gettype() == "popup" or api.nvim_win_get_config(winid or 0).relative ~= ""
     --
     -- These two commands here are not equivalent as the docs might suggest
     -- In the function below `M.find_win_except_float`,

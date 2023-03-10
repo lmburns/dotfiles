@@ -732,7 +732,7 @@ function M.init()
         10
     )
 
-    g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null"}
+    g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 
@@ -922,21 +922,6 @@ function M.init()
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
-            ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
-            ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
-            ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
-            ["<C-x><C-d>"] = {
-                ":CocCommand fzf-preview.CocTypeDefinition<CR>",
-                "List coc definitions"
-            },
-            ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},
-            ["<C-x><C-]>"] = {
-                ":CocCommand fzf-preview.CocImplementations<CR>",
-                "List coc implementations"
-            },
-            -- ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
-            ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
-            -- ["<LocalLeader>t"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
             ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
             ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
             ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
@@ -987,10 +972,6 @@ function M.init()
 
     map("x", "<Leader>fm", "<Plug>(coc-format-selected)", {desc = "Format selected"})
 
-    -- map("n", "<A-c>", ":CocFzfList commands<CR>")
-    -- map("n", "<C-x><C-r>", ":CocCommand fzf-preview.CocReferences<CR>")
-    -- map("n", "<A-]>", ":CocCommand fzf-preview.VistaBufferCtags<CR>")
-
     -- map("s", "<C-h>", '<C-g>"_c')
     -- map("s", "<C-w>", "<Esc>a")
     -- map("s", "<C-o>", "<Nop>")
@@ -1028,11 +1009,29 @@ function M.init()
     map("s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]], {expr = true})
 
     -- Fzf
+    -- add_list_source(name, description, command)
+    --    call coc_fzf#common#add_list_source('fzf-buffers', 'display open buffers', 'Buffers')
+    -- delete_list_source(name)
+    --    call coc_fzf#common#delete_list_source('fzf-buffers')
     wk.register(
         {
-            ["<Leader>ab"] = {":CocCommand fzf-preview.AllBuffers<CR>", "All buffers (fzf)"},
-            ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
-            ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"}
+            -- ["<Leader>ab"] = {":CocCommand fzf-preview.AllBuffers<CR>", "All buffers (fzf)"},
+            -- ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
+            ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
+            ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
+            ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
+            ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
+            ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
+            ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},
+            ["<C-x><C-d>"] = {
+                ":CocCommand fzf-preview.CocTypeDefinition<CR>",
+                "List coc definitions"
+            },
+            ["<C-x><C-]>"] = {
+                ":CocCommand fzf-preview.CocImplementations<CR>",
+                "List coc implementations"
+            },
+            -- ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
             -- ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
             -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
             -- ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}

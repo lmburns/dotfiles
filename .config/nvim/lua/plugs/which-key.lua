@@ -118,7 +118,7 @@ function M.setup()
             i = {"j", "k"},
             v = {"j", "k"},
             c = {},
-            n = {'"'} -- "s"
+            n = {} -- "s"
             -- o = {"d", '"_d'}
         },
         -- disable the WhichKey popup for certain buf types and file types.
@@ -139,8 +139,11 @@ local function init()
 
     -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
     map("n", "d", '"_d', {desc = "Delete blackhole"})
-    map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>")
-    map("v", "<Leader>wh", "<Esc><Cmd>WhichKey '' v<CR>")
+    map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>", {desc = "WhichKey insert mode"})
+    map("x", "<Leader>wh", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
+    map("x", "<CR>", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
+    map("v", "<CR>", "<Esc><Cmd>WhichKey '' v<CR>", {desc = "WhichKey visual mode"})
+    map("o", "?", "<Cmd>WhichKey '' o<CR>", {desc = "WhichKey operator"})
 
     -- The reason why some of these are here is because they don't always trigger (some never do)
     wk.register(
@@ -157,13 +160,13 @@ local function init()
             ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
             ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
             ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
-            ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-            ["''"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
             ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
             ["s<CR>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
             ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
             ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
-            ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"}
+            ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
+            ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+            ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"}
         }
     )
 
@@ -213,14 +216,6 @@ local function init()
             {mode = _modes[m]}
         )
     end
-
-    -- Workaround until custom operator gets fixed
-    wk.register(
-        {
-            ["?"] = {"<Cmd>WhichKey '' o<CR>", "WhichKey operator"}
-        },
-        {mode = "o"}
-    )
 end
 
 init()

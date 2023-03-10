@@ -31,30 +31,33 @@ function RG() {
   setopt extendedglob
 
   local RG_PREFIX INITIAL_QUERY
-  local -a selected opts filtered
+  local -a glob opts filtered
+  local -a fopts ffiltered
 
   # -D = remove from positional array
   # -F = error out if wrong flag is given
   # -E = dont' stop at first not found (needed with -F?)
   zmodload -Fa zsh/zutil b:zparseopts
-  zparseopts -E -F -D -a opts - {g,-glob}+:-=glob {p,-pcre,-pcre2}+
+  zparseopts -E -F -D -a opts - {g,-glob}+:-=glob {h,-height}+:-=fopts p -pcre -pcre2
   filtered=( ${${${${(@)glob##-(g|-glob(=|))}//=/}}//(#m)*/--glob=${(qq)MATCH}} )
   filtered+=${${${(M)${+opts[(r)-(p|-pcre(2|))]}:#1}:+--pcre2}:-}
+
+  ffiltered=( ${${${${(@)fopts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )
 
   RG_PREFIX="rg --column --hidden --line-number --no-heading --color=always --smart-case ${(j: :)filtered}"
   INITIAL_QUERY="${*:-}"
   FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY} || true" \
-    fzf --ansi \
-        --disabled \
-        --query="$INITIAL_QUERY" \
-        --delimiter : \
-        --bind="focus:transform-border-label:echo [ {1} ]" \
-        --bind='ctrl-e:become($EDITOR {1} +{2})' \
-        --bind='enter:become($EDITOR {1} +{2})' \
-        --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
-        --bind="change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
-        --preview='bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}' \
-        --preview-window='default:right:60%:+{2}+3/2:border-left'
+  fzf ${(j: :)ffiltered} --ansi \
+      --disabled \
+      --query="$INITIAL_QUERY" \
+      --delimiter : \
+      --bind="focus:transform-border-label:echo [ {1} ]" \
+      --bind='ctrl-e:become($EDITOR {1} +{2})' \
+      --bind='enter:become($EDITOR {1} +{2})' \
+      --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+      --bind="change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
+      --preview='bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}' \
+      --preview-window='default:right:60%:+{2}+3/2:border-left'
 
         # --bind="change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
         # --preview='bat --style=numbers,header,changes,snip --color=always --highlight-line {2} -- {1}' \

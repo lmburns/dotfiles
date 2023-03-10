@@ -27,9 +27,16 @@ syn keyword  lfKeyword        set cmd map cmap skipwhite
 "}}}
 
 "{{{ Options Keywords
-syn keyword  lfOptions        anchorfind autoquit
+syn keyword  lfOptions
+    \ anchorfind autoquit noanchorfind noautoquit
     \ bottom
     \ cd clear copy cursorfmt cursorpreviewfmt cut cleaner
+    \ cmd-escape cmd-complete cmd-menu-complete cmd-menu-complete-back
+    \ cmd-menu-accept cmd-enter cmd-interrupt cmd-history-next cmd-history-prev
+    \ cmd-left cmd-right cmd-home cmd-end cmd-delete cmd-delete-back
+    \ cmd-delete-home cmd-delete-end cmd-delete-unix-word cmd-yank
+    \ cmd-transpose cmd-transpose-word cmd-word cmd-word-back cmd-delete-word
+    \ cmd-capitalize-word cmd-uppercase-word cmd-lowercase-word
     \ delete down draw dircounts dirfirst dirpreviews drawbox
     \ echo echoerr echomsg errorfmt
     \ filesep findlen

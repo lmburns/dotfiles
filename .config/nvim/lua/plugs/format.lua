@@ -57,9 +57,9 @@ function M.neoformat()
                 {}
             ) > 0
      then
-        cmd.Neoformat("stylua")
+        cmd("lockmarks keepjumps Neoformat stylua")
     else
-        cmd.Neoformat()
+        cmd("lockmarks keepjumps Neoformat")
     end
 
     -- cmd("sil! up")

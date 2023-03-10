@@ -1036,6 +1036,8 @@ key_bindings:
   #
   # Keycodes
   #  - sudo dumpkeys -l
+  # Keycodes
+  #  - sed -n l
   #
   # Example to get this info for double quote:
   #

@@ -366,6 +366,7 @@ local function init()
     if config.current_line_blame then
         autocmd_id = M.setup_autocmd()
     end
+
 end
 
 init()

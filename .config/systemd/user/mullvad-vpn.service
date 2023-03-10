@@ -1,0 +1,10 @@
+[Unit]
+Description=Mullvad VPN GUI
+
+[Service]
+ExecStart=/usr/bin/mullvad-vpn
+Restart=on-failure
+RestartSec=3s
+
+[Install]
+WantedBy=default.target

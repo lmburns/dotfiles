@@ -212,13 +212,13 @@ function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
 # Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
 function bk() {
   emulate -L zsh
-  command cp -iv --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
+  command cp -ivrT --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
 }
 
 # Backup a file with only a date. 'fname' -> 'fname_2023_01_30'
 function bk-today() {
   emulate -L zsh
-  command cp -iv --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
+  command cp -ivruT --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
 }
 
 # Add a date suffix to a file

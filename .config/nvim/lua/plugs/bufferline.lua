@@ -192,8 +192,10 @@ function M.setup()
                             icon = "",
                             highlight = {fg = require("kimbox.colors").yellow},
                             matcher = function(buf)
-                                return vim.startswith(buf.path, ("%s/site/pack/packer"):format(dirs.data)) or
-                                    vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
+                                return vim.startswith(
+                                    buf.path,
+                                    ("%s/site/pack/packer"):format(dirs.data)
+                                ) or vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
                             end
                         },
                         {
@@ -253,7 +255,7 @@ function M.setup_close_buffers()
             filetype_ignore = {}, -- Filetype to ignore when running deletions
             file_glob_ignore = {}, -- File name glob pattern to ignore when running deletions (e.g. '*.md')
             file_regex_ignore = {}, -- File name regex pattern to ignore when running deletions (e.g. '.*[.]md')
-            preserve_window_layout = {"this"},
+            preserve_window_layout = {"this", "nameless"},
             next_buffer_cmd = function(windows)
                 bufferline.cycle(-1)
                 local bufnr = api.nvim_get_current_buf()
@@ -318,12 +320,14 @@ local function init()
                 -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
                 -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
                 -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
+                -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
+                -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
                 q = {
-                    pithunk(require("close_buffers").cmd, "this", "delete"),
+                    pithunk(require("close_buffers").delete, {type = "this"}),
                     "Delete this buffer"
                 },
-                w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
-                Q = {":bufdo bd! #<CR>", "Close all buffers"}
+                w = {pithunk(require("close_buffers").wipe, {type = "other"}), "Delete all buffers except this"},
+                Q = {pithunk(require("close_buffers").wipe, {type = "all"}), "Close all buffers"}
             }
         }
     )
@@ -332,7 +336,6 @@ local function init()
     -- map("n", "]b", [[:execute(v:count1 . 'bnext')<CR>]])
 
     for i = 1, 9 do
-        i = tostring(i)
         wk.register(
             {
                 [("<Leader><Leader>%d"):format(i)] = {

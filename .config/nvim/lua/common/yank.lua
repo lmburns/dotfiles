@@ -54,8 +54,8 @@ end
 ---Yank an item to a given register and notify
 ---@param regname string register to copy to
 ---@param context string text to copy
----@param level number?
----@param opts table?
+---@param level? number
+---@param opts? NotifyOpts
 function M.yank_reg(regname, context, level, opts)
     nvim.reg[regname] = context
     vim.notify(context, level, opts)

@@ -46,7 +46,7 @@ local g = vim.g
 -- `:EasyAlign/#/ig['String']iu0`
 --  `:'<,'>EasyAlign**/[\t]\+/ig['Comment']`
 
--- EXAMPLE 3: Exampl format
+-- EXAMPLE 3: Example format
 -- `:EasyAlign * /[:;]\+/ { 'stick_to_left': 1, 'left_margin': 0 }`
 
 

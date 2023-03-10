@@ -81,6 +81,7 @@ function M.setup()
             }
         ),
         aug({"above", "below"}),
+        aug({"forward", "backward"}),
         aug({"and", "&"}, false),
         aug({"and", "or"}),
         aug({"True", "False"}),
@@ -91,6 +92,9 @@ function M.setup()
         aug({"top", "bottom"}),
         aug({"read", "write"}),
         aug({"open", "close"}),
+        aug({"previous", "next"}),
+        aug({"start", "beginning", "end"}),
+        aug({"capitalize", "uppercase", "lowercase"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
         aug(
             {

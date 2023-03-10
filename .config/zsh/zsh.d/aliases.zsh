@@ -126,47 +126,54 @@ alias __='doas'
 
 (( ${+commands[exa]} )) && {
   # --ignore-glob=".DS_Store|__*
-  alias l='exa -FHb --git --icons'
-  alias lp='exa -1F'
-  alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions'
+
   alias ls='exa -Fhb --git --icons'
-  alias lsd='ls -d'
-  alias lse='exa -Flhb --git --sort=extension --icons'
+  alias lss='ls --group-directories-first'
+
+  alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions'
+  alias lls='ll --group-directories-first'
   # Reverse
-  alias llr='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions --reverse'
+  alias llr='ll --reverse'
+  # One per line + indicator
+  alias lp='exa -1F'
+
+  # Sort by extension
+  alias lse='exa -Flhb --git --sort=extension --icons'
+
   # Sort by modified
-  alias lsm='exa -Flhb --git --sort=modified --modified --icons'
-  # 10 oldest files
-  alias lsfo='lsm *(D.Om[1,10])'
-  # 10 newest files
-  alias lsfn='lsm *(D.om[1,10])'
+  # alias lsm='exa -Flhb --git --sort=modified --modified --icons'
+  alias lsm='ll --sort=modified --modified'
+  # 10 oldest files (modified)
+  alias lsmo='lsm *(D.Om[1,10])'
+  # 10 newest files (modified)
+  alias lsmn='lsm *(D.om[1,10])'
+
   # Sort by size
-  alias lsz='exa -Flhb --git --sort=size --icons'
+  # alias lsz='exa -Flhb --git --sort=size --icons'
+  alias lsz='ll --sort=size'
   # 10 biggest files
-  alias lsbig='lsz *(.OL[1,10])'
+  alias lszb='lsz *(.OL[1,10])'
   # 10 smallest files
-  alias lssmall='lsz *(.oL[1,10])'
+  alias lszs='lsz *(.oL[1,10])'
 
-  alias lss='exa -Flhb --git --group-directories-first --icons'
-
-  alias lsD='exa -D --icons --git'
-  alias lsDl='ll -D'
+  alias lsd='exa -D --icons --git'
+  alias lsdl='ll -D'
   # 10 newest directories
   alias lsdn='ll -d --sort=modified -- *(/om[1,10])'
   # Empty directories
   alias lsde='ll -d -- *(/^F)'
 
   # Setgid/setuid/sticky flag
-  alias lssticky='ll -- *(s,S,t)'
+  alias lsS='ll -- *(s,S,t)'
   # Executables
   alias lsx='ll -- *(*)'
   # Symlinks
-  alias lssym='ll -d -- *(@N)'
+  alias lsl='ll -d -- *(@N)'
 
   alias tree='exa --icons --git -TL'
   alias lt='tree 1 -@'
-  alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
-  alias lsb='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  alias ls@='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  # alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='exa -l  --no-user --no-permissions --no-time -@'
 
   # Dotfiles
@@ -199,7 +206,9 @@ alias ngl="noglob"
 alias chx='chmod ug+x'
 alias chmx='chmod -x'
 alias cp='command cp -ivp'
-alias cpxattr='command cp -ivp --preserve=xattr'
+alias cpl='command cp -ivpa'
+alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
+alias cpx='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
 alias kall='killall'
@@ -330,6 +339,7 @@ alias nvimd='cd /usr/local/share/nvim/runtime'
 # === internet / vpn / etc ======================================================
 # alias b='buku --suggest --colors gMclo'
 alias b='buku --suggest --colors cJelo'
+alias bw='b -w'
 alias dl='aria2c -x 4 --dir="${HOME}/Downloads/Aria"'
 alias dlpaste='aria2c "$(pbpaste)"'
 # alias toilet='toilet -d /usr/local/figlet/2.2.5/share/figlet/fonts'

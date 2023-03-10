@@ -125,6 +125,10 @@ mod3 + {_,shift +} r
 super + {_,shift +} r
     bspc node @/ --circulate {backward,forward}
 
+# Circulate: tree {backward,forward}
+super + shift + {comma,period}
+    bspc node @/ --circulate {backward,forward}
+
 # Swap: flip leaves of tree {vertical,horizontal}ly
 alt + shift + {comma,period}
   bspc node @/ --flip {vertical,horizontal}
@@ -256,6 +260,7 @@ mod3 + a
 # Focus: cycle {next,prev} (tiled|floating|monocle)
 super + {j,k}
   bspc node -f '{next,prev}.local.!hidden.window'
+  # bspc node -f '{next,prev}.local.window'
   # [[ $(bspc query -T -n last | jq -r '.client.lastState') == 'fullscreen' ]] && bspc node focused -t fullscreen
 
 # bspc node -f 'focused.window#{next,prev}.local.!hidden.window' \
@@ -474,6 +479,10 @@ super + ctrl + alt + p
 ctrl + alt + y
   rofi-greenclip
 
+# Launch: color picker
+super + alt + c
+  epick
+
 # Launch: ncmpcpp
 super + F1
   $TERMINAL -e ncmpcpp
@@ -484,12 +493,12 @@ super + F1
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
 
 # Launch: mpd toggle {previous,stop,play/pause,next}
-super + {F4,shift + F5,F5,F6}
-  playerctl -p "mpd" {previous,stop,play-pause,next}
+shift + XF86Audio{Prev,Play,Next}
+  playerctl -p "mpd" {previous,play-pause,next}
 
 # Launch: [last] active player toggle {play/pause,previous,next}
-mod3 + XF86Audio{Play,Prev,Next}
-  playerctl {play-pause,previous,next}
+XF86Audio{Prev,Play,Next}
+  playerctl {previous,play-pause,next}
 
 # Launch: dunst {toggle,close} history
 mod3 + {_,shift + }n
@@ -512,11 +521,11 @@ super + F10
   togglecaffeine
 
 # Launch: remap keys
-super + F11
+F11
   remaps && dunstify "remaps" "remapped"
 
 # Launch: neomutt
-super + F12
+alt + F12
   $TERMINAL -e neomutt
 # ]]]
 

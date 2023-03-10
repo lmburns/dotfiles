@@ -504,6 +504,7 @@ archives:
     - .bz2
     - .gz
     - .lzma
+    - .lz4
     - .jar
     - .pkg
     - .rar
@@ -511,6 +512,8 @@ archives:
     - .tbz
     - .tbz2
     - .tgz
+    - .tlz
+    - .txz
     - .xz
     - .z
     - .zip

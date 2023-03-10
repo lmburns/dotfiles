@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-setopt noclobber noglob nounset extendedglob
+setopt noclobber nounset extendedglob
 
 # Arguments:
 local filepath="${1}"         # Full path of the highlighted file
@@ -120,32 +120,84 @@ function handle_mime() {
   esac
 }
 
+# zip lz4 lz lzma zst
 
+# # This requires atool
 function handle_other() {
   (( unhandled )) && {
     case "$filepath" in
-      (*.tar)   tar tf -- "${filepath}";;
-      (*.rar)   unrar l -- "${filepath}";;
-      (*.7z)    7z l -- "${filepath}";;
-      (*.[1-8]) man -- "${filepath}" | col -b ;;
-      (*.o)     nm -- "${filepath}" | less ;;
-      (*.iso)   iso-info --no-header -l -- "${filepath}";;
-      (*.doc)   catdoc -- "${filepath}" ;;
-      (*.docx)  docx2txt "${filepath}" - ;;
-      (*.json)  jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}" ;;
-      (*.asc|*.log)   bat -Pf --style auto -- "${filepath}";;
-      (*.ipynb) jupview -t KimbieDark -- "${filepath}" ;;
-      (*.torrent) transmission-show -- "${filepath}";;
-      (*.tgz|*.tar.gz)   tar tzf -- "${filepath}";;
-      (*.tar.bz2|*.tbz2) tar tjf -- "${filepath}";;
-      (*.tar.txz|*.txz)  xz --list -- "${filepath}";;
-      (*.jar|*.war|*.ear|*.oxt)        unzip -l -- "${filepath}";;
-      (*.odt|*.ods|*.odp|*.sxw)        odt2txt -- "${filepath}";;
-      (*.sha1|*.sha256|*.sha512|*.md5) rhash -c -- "${filepath}" ;;
+      (*.7z)
+        7z -p l "${filepath}"
+      ;;
+      (*.(tar|tar.gz|tgz|tar.bz2|tbz2|tar.xz|txz|tar.lz))
+        ouch list -- "${filepath}" | as-tree --color always | bat --style=grid --color=always
+      ;;
+      (*.tar.z)
+        tar tv "${filepath}" | lscolors | bat --style=grid --color=always
+      ;;
+      (*.(tar.lzma|tlz))
+        tar --lzma -xvf "${filepath}" | lscolors | bat --style=grid --color=always
+      ;;
+      (*.(zip|jar|war|ear|oxt))
+        unzip -l -- "${filepath}"
+      ;;
+      (*.(odt|ods|odp|sxw))
+        odt2txt -- "${filepath}" | bat --style=grid --color=always
+      ;;
+      (*.gz)
+        acat -- "${filepath}"
+      ;;
+      (*.tar)
+        tar tf "${filepath}"
+      ;;
+      (*.rar)
+        unrar l -- "${filepath}"
+      ;;
+      (*.iso)
+        iso-info --no-header -l -- "${filepath}"
+      ;;
+      (*.(a|ace|alz|ar|arc|arj|bz|bz2|cab|cpio|deb|cpt|deb|dgc|dgm|iso)\
+      |.*(jar|lha|lz|lzh|lzma|lzo|msi|pkg|rar|rpm|rz|shar|t7z|tar|tbz|tbz2|tgz)\
+      |.*(tlz|txz|tZ|tzo|war|xar|xpi|xz|Z|zip))
+         atool --list --each -- "${filepath}" | bat --style=grid
+         # bsdtar --list --file "${filepath}" | bat --style=grid
+       ;;
+
+      (*.sha1|*.sha256|*.sha512|*.md5)
+        rhash -c -- "${filepath}"
+      ;;
+      (*.[1-8])
+        man -- "${filepath}" | col -b
+      ;;
+      (*.o)
+        nm -- "${filepath}" | bat --style=grid
+      ;;
+      (*.doc)
+        catdoc -- "${filepath}"
+      ;;
+      (*.docx)
+        docx2txt "${filepath}" -
+      ;;
+      (*.json)
+        jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}"
+      ;;
+      (*.asc|*.log)
+        bat -Pf --style auto -- "${filepath}"
+      ;;
+      (*.ipynb)
+        jupview -t KimbieDark -- "${filepath}"
+      ;;
+      (*.torrent)
+        transmission-show -- "${filepath}"
+      ;;
+
+      # (*.tgz|*.tar.gz)   tar tzf "${filepath}" ;;
+      # (*.tar.bz2|*.tbz2) tar tjf "${filepath}" ;;
+      # (*.tar.txz|*.txz|*.xz)  xz --list -- "${filepath}" ;;
       (*)
         # dunstify 'OTHER'
         bat -Pf --style auto -- "${filepath}"
-        ;;
+      ;;
     esac
   }
 }

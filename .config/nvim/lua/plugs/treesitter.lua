@@ -8,6 +8,7 @@ end
 local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
+local augroup = utils.augroup
 local hl = require("common.color")
 
 local colors = require("kimbox.colors")
@@ -20,8 +21,8 @@ local api = vim.api
 local F = vim.F
 
 local custom_captures
-local ts_hl_disabled
-local ft_enabled
+local ts_hl_disabled, ft_enabled
+local ts_indent_disabled, indent_enabled
 local queries
 local parsers
 local configs
@@ -621,7 +622,7 @@ M.setup_context = function()
         mode = "topline", -- Line used to calculate context. Choices: 'cursor', 'topline'
         -- Separator between context and content. Should be a single character string, like '-'.
         -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-        separator = '-',
+        separator = "-"
     }
 end
 
@@ -833,21 +834,6 @@ M.setup_treesurfer = function()
         '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
         {desc = "Swap previous node"}
     )
-end
-
----Setup nvim-treehopper
-M.setup_treehopper = function()
-    cmd.packadd("nvim-treehopper")
-    local tsht = D.npcall(require, "tsht")
-    if not tsht then
-        return
-    end
-
-    tsht.config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
-
-    map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("o", ",", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
-    map("n", "vx", [[require('tsht').nodes()]], {desc = "Treesitter node select", luacmd = true})
 end
 
 ---Setup treesitter
@@ -1064,16 +1050,6 @@ M.setup = function()
             lsp_interop = {enable = false},
             select = {
                 enable = true,
-                -- If you set this to `true` (default is `false`) then any textobject is
-                -- extended to include preceding or succeeding whitespace. Succeeding
-                -- whitespace has priority in order to act similarly to eg the built-in
-                -- `ap`.
-                --
-                -- Can also be a function which gets passed a table with the keys
-                -- * query_string: eg '@function.inner'
-                -- * selection_mode: eg 'v'
-                -- and should return true of false
-                include_surrounding_whitespace = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
                 lookbehind = true,
@@ -1088,7 +1064,7 @@ M.setup = function()
                     ["ao"] = "@block.outer",
                     ["io"] = "@block.inner",
                     ["ag"] = "@comment.outer",
-                    ["ig"] = "@comment.inner",
+                    -- ["ig"] = "@comment.inner",
                     ["ad"] = "@conditional.outer",
                     ["id"] = "@conditional.inner",
                     ["aj"] = "@parameter.outer",
@@ -1110,7 +1086,17 @@ M.setup = function()
                     ["@parameter.outer"] = "v", -- charwise
                     ["@function.outer"] = "V", -- linewise
                     ["@class.outer"] = "<c-v>" -- blockwise
-                }
+                },
+                -- If you set this to `true` (default is `false`) then any textobject is
+                -- extended to include preceding or succeeding whitespace. Succeeding
+                -- whitespace has priority in order to act similarly to eg the built-in
+                -- `ap`.
+                --
+                -- Can also be a function which gets passed a table with the keys
+                -- * query_string: eg '@function.inner'
+                -- * selection_mode: eg 'v'
+                -- and should return true of false
+                include_surrounding_whitespace = true
             },
             -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
 
@@ -1147,43 +1133,45 @@ M.setup = function()
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
                 disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
+                -- ["]o"] = "@loop.*",
+                -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
                 goto_next_start = {
-                    ["]f"] = "@function.outer",
-                    ["]k"] = "@class.outer",
-                    ["]r"] = "@block.outer",
-                    ["]C"] = "@comment.outer",
-                    ["]j"] = "@parameter.inner",
-                    ["]a"] = "@call.inner",
-                    ["]l"] = "@loop.inner",
-                    ["]d"] = "@conditional.inner"
+                    ["]f"] = {query = "@function.outer", desc = "Next function start"},
+                    ["]k"] = {query = "@class.outer", desc = "Next class start"},
+                    ["]r"] = {query = "@block.outer", desc = "Next block start"},
+                    ["]C"] = {query = "@comment.outer", desc = "Next comment start"},
+                    ["]j"] = {query = "@parameter.inner", desc = "Next parameter start"},
+                    ["]a"] = {query = "@call.inner", desc = "Next call start"},
+                    ["]l"] = {query = "@loop.inner", desc = "Next loop start"},
+                    ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"}
                 },
                 goto_next_end = {
-                    ["]F"] = "@function.outer",
-                    ["]K"] = "@class.outer",
-                    ["]R"] = "@block.outer",
-                    ["]A"] = "@call.outer"
+                    ["]F"] = {query = "@function.outer", desc = "Next function end"},
+                    ["]K"] = {query = "@class.outer", desc = "Next class end"},
+                    ["]R"] = {query = "@block.outer", desc = "Next block end"},
+                    ["]A"] = {query = "@call.outer", desc = "Next call end"}
                 },
                 goto_previous_start = {
-                    ["[f"] = "@function.outer",
-                    ["[k"] = "@class.outer",
-                    ["[r"] = "@block.outer",
-                    ["[C"] = "@comment.outer",
-                    ["[j"] = "@parameter.inner",
-                    ["[a"] = "@call.inner",
-                    ["[l"] = "@loop.inner",
-                    ["[d"] = "@conditional.inner"
+                    ["[f"] = {query = "@function.outer", desc = "Previous function start"},
+                    ["[k"] = {query = "@class.outer", desc = "Previous class start"},
+                    ["[r"] = {query = "@block.outer", desc = "Previous block start"},
+                    ["[C"] = {query = "@comment.outer", desc = "Previous comment start"},
+                    ["[j"] = {query = "@parameter.inner", desc = "Previous parameter start"},
+                    ["[a"] = {query = "@call.inner", desc = "Previous call start"},
+                    ["[l"] = {query = "@loop.inner", desc = "Previous loop start"},
+                    ["[d"] = {query = "@conditional.inner", desc = "Previous conditional start"}
                 },
                 goto_previous_end = {
-                    ["[F"] = "@function.outer",
-                    ["[R"] = "@block.outer",
-                    ["[K"] = "@class.outer",
-                    ["[A"] = "@call.outer"
+                    ["[F"] = {query = "@function.outer", desc = "Previous function end"},
+                    ["[R"] = {query = "@block.outer", desc = "Previous block end"},
+                    ["[K"] = {query = "@class.outer", desc = "Previous class end"},
+                    ["[A"] = {query = "@call.outer", desc = "Previous call end"}
                 },
                 goto_next = {
-                    ["]X"] = "@return.inner"
+                    ["]X"] = {query = "@return.inner", desc = "Next return"}
                 },
                 goto_previous = {
-                    ["[X"] = "@return.inner"
+                    ["[X"] = {query = "@return.inner", desc = "Previous return"}
                 }
             },
             swap = {
@@ -1194,7 +1182,7 @@ M.setup = function()
                     ["sf"] = "@function.outer",
                     ["sk"] = "@class.outer",
                     ["sb"] = "@block.outer",
-                    ["sc"] = "@call.outer",
+                    ["sc"] = "@call.outer"
                 },
                 swap_previous = {
                     ["s,"] = "@element",
@@ -1202,7 +1190,7 @@ M.setup = function()
                     ["sF"] = "@function.outer",
                     ["sk"] = "@class.outer",
                     ["sB"] = "@block.outer",
-                    ["sC"] = "@call.outer",
+                    ["sC"] = "@call.outer"
                 }
             }
         }
@@ -1351,27 +1339,26 @@ local function init()
         }
     )
 
+    ts_indent_disabled = _t({})
+
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
 
     M.install_extra_parsers()
     local conf = M.setup()
-
-    -- require("nvim-treesitter.highlight").set_custom_captures(custom_captures)
     configs.setup(conf)
 
     -- M.setup_comment_frame()
     -- M.setup_query_secretary()
+    -- M.setup_context()
 
     M.setup_ssr()
-    M.setup_context()
     M.setup_gps()
     M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
     M.setup_treesurfer()
-    M.setup_treehopper()
     M.setup_autotag()
 
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]], {silent = true})
@@ -1428,7 +1415,7 @@ local function init()
             ["ao"] = "Around block",
             ["io"] = "Inner block",
             ["ag"] = "Around comment",
-            ["ig"] = "Inner comment",
+            -- ["ig"] = "Inner comment",
             ["ad"] = "Around conditional",
             ["id"] = "Inner conditional",
             ["aj"] = "Around parameter",
@@ -1443,10 +1430,6 @@ local function init()
             ["ik"] = "Inner class",
             ["ax"] = "Assignment RHS",
             ["ix"] = "Assignment LHS",
-            ["ai"] = "Indentation level and line above",
-            ["ii"] = "Inner Indentation level (no line above)",
-            ["aI"] = "Indention level and lines above/below",
-            ["iI"] = "Inner Indentation level (no lines above/below)",
             ["aS"] = "Around statement"
         },
         {mode = "o"}
@@ -1461,32 +1444,6 @@ local function init()
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment",
-            ["]f"] = "Next function start",
-            ["[f"] = "Previous function start",
-            ["]F"] = "Next function end",
-            ["[F"] = "Previous function end",
-            ["]k"] = "Next class start",
-            ["[k"] = "Previous class start",
-            ["]r"] = "Next block start",
-            ["[r"] = "Previous block start",
-            ["]R"] = "Next block end",
-            ["[R"] = "Previous block end",
-            ["]C"] = "Next comment start",
-            ["[C"] = "Previous comment start",
-            ["]j"] = "Next parameter start",
-            ["[j"] = "Previous parameter start",
-            ["]a"] = "Next call start",
-            ["[a"] = "Previous call start",
-            ["]l"] = "Next loop start",
-            ["[l"] = "Previous loop start",
-            ["]d"] = "Next conditional start",
-            ["[d"] = "Previous conditional start",
-            ["]K"] = "Next class end",
-            ["[K"] = "Previous class end",
-            ["]A"] = "Next call end",
-            ["[A"] = "Previous call end",
-            ["]X"] = "Next return",
-            ["[X"] = "Previous return",
         },
         {mode = "n"}
     )
@@ -1494,21 +1451,39 @@ local function init()
     map(
         "n",
         "<Leader>sh",
-        "TSHighlightCapturesUnderCursor",
+        "TSHighlightCapturesUnderCursor", -- "Inspect"
         {cmd = true, desc = "Highlight capture group"}
     )
 
     queries = require("nvim-treesitter.query")
-    -- local cfhl = conf.highlight.disable
-    -- local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
-    -- ft_enabled = {telescope = true}
-    -- for _, lang in ipairs(conf.ensure_installed) do
-    --     if not vim.tbl_contains(hl_disabled, lang) then
-    --         local parser = parsers.list[lang]
-    --         local filetype = parser.filetype
-    --         ft_enabled[filetype or lang] = true
-    --     end
-    -- end
+    local cfhl = conf.highlight.disable
+    local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
+    ft_enabled = {telescope = true}
+    indent_enabled = {}
+    for _, lang in ipairs(conf.ensure_installed) do
+        if not vim.tbl_contains(hl_disabled, lang) then
+            local parser = parsers.list[lang]
+            local filetype = parser.filetype
+            ft_enabled[filetype or lang] = true
+        end
+
+        if not vim.tbl_contains(ts_indent_disabled, lang) then
+            local parser = parsers.list[lang]
+            local filetype = parser.filetype
+            indent_enabled[filetype or lang] = true
+        end
+    end
+
+    -- This doesn't get loaded until the second file is opened
+    -- Need to fix lazy loading treesitter
+    nvim.autocmd.lmb__TreesitterIndent = {
+        event = "FileType",
+        pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(indent_enabled)), ","),
+        command = function(args)
+            local bufnr = args.buf
+            vim.bo[bufnr].indentexpr = "nvim_treesitter#indent()"
+        end
+    }
 end
 
 init()

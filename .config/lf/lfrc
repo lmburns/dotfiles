@@ -2,13 +2,11 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
+# TODO: toggle anchorfind for find command only
 # TODO: add diffsitter
-# TODO: add make / cargo
 # TODO: Add dirstack like thing to lf
+# TODO: add clone dir and select
 
-## Only renames using f2
-#function rmsym() { command rm -- *(-@D); }
-#function rmsymr() { command rm -- **/*(-@D); }
 #function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 #function shredd() { shred -v -n 1 -z -u  $1;  }
 #function pbpf() { xsel -b > "$1"; }
@@ -17,10 +15,7 @@
 #function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
 #function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
 #function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
-#function ng() {
-#  command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
-#}
-
+#function ng() { command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()" }
 
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
@@ -30,23 +25,24 @@ set shellopts '-euy:--rcquotes'
 set ifs "\n"
 set filesep "\n"  # default already
 
-set tabstop 4         # number of spaces for a tab
-set scrolloff 10      # space on top and bottom of screen
-set icons on          # show icons next to files
-set history on        # save history across sessions
-set period 1          # interval to check for directory updates
-set hidden on         # show hidden files by default
-set incsearch o       # jump to first match after each keystroke in search
-set incfilter o       # apply filter after each keystroke
-set smartcase         # if capital letter then case sensitive
-set dirfirst          # show directories before regular files
-# set dirpreviews       # pass directories to the previewer script
-set dircounts on      # show number of items in directory instead of size
-set info "size"       # list directory information on the right
-set sortby "natural"  # don't sort files in any special way
-set preview on        # preview file on the right pane
-set drawbox on        # draw a border around all panes
-set ratios '1:2:3'    # ratio of pane widths
+set tabstop 4        # number of spaces for a tab
+set scrolloff 10     # space on top and bottom of screen
+set icons            # show icons next to files
+set history          # save history across sessions
+set period 1         # interval to check for directory updates
+set hidden           # show hidden files by default
+set incsearch        # jump to first match after each keystroke in search
+set incfilter        # apply filter after each keystroke
+set smartcase        # if capital letter then case sensitive
+set dirfirst         # show directories before regular files
+set dircounts        # show number of items in directory instead of size
+# set dirpreviews      # pass directories to the previewer script
+set info "size"      # list directory information on the right
+set sortby "natural" # don't sort files in any special way
+set preview          # preview file on the right pane
+set drawbox          # draw a border around all panes
+set ratios '1:2:3'   # ratio of pane widths
+
 # set number on         # show number of items index in dir
 # set globsearch        # search with globs
 
@@ -86,20 +82,28 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # ╭──────────────────────────────────────────────────────────╮
 # │                 Environmental Variables                  │
 # ╰──────────────────────────────────────────────────────────╯ [[[
-# *  f  = full path
-# *  fs = selected files separated with the value of 'filesep', full path
-# *  fx = selected files
-# * lf_{option}
-# * lf_user_{option}
-# * lf_width
-# * lf_height
+# f  = full path
+# fs = selected files separated with the value of 'filesep', full path
+# fx = selected files
+# lf_{option}
+# lf_user_{option}
+# lf_width
+# lf_height
 
-# *  :  read (default)  builtin/custom command
-# *  $  shell           shell command
-# *  %  shell-pipe      shell command running with the ui
-# *  !  shell-wait      shell command waiting for key press
-# *  &  shell-async     shell command running asynchronously
-# ]]]
+# :  read (default)  builtin/custom command
+# $  shell           shell command
+# %  shell-pipe      shell command running with the ui
+# !  shell-wait      shell command waiting for key press
+# &  shell-async     shell command running asynchronously
+
+# open      : override default 'open' command when current file is not a directory
+# paste     : override default 'paste' command
+# rename    : override the default 'rename' command
+# delete    : override the default 'delete' command
+# pre-cd    : executed before changing a directory
+# on-cd     : executed after changing a directory
+# on-select : executed after the selection changes
+# on-quit   : executed before quit
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Builtins                         │
@@ -188,33 +192,25 @@ on-cd
 # === Helper: echo a message ===================================
 cmd echom ${{
   unsetopt shwordsplit
-  local textl equals f2 f3 res B
-  eval -- $(print -r -- ${LF_COLOR_ARRAY})
-  local -A C; C=( ${(kv)COLORS} )
-  f2=$C[52] f3=$C[53] res=$C[0]  B=$C[B]
+  local textl equals str
   textl=${(c)#*}
   equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
-  lf -remote "send $id echomsg \"${f2}${equals}${res} ${B}${f3}${*}${res} ${f2}${equals}${res}\""
+  str="%F{52}$equals%f %F{53}%B${*}%b%f %F{52}$equals%f"
+  lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
 # === Helper: display an error =================================
 cmd echoe ${{
   unsetopt shwordsplit
-  local c1 B res
-  eval -- $(print -r -- ${LF_COLOR_ARRAY})
-  local -A C; C=( ${(kv)COLORS} )
-  c1=$C[1] res=$C[0] B=$C[B]
-  lf -remote "send $id echomsg \"${B}${c1}[ERROR]${res}: ${*}\""
+  local str; str="%B%F{1}[ERROR]%f%b: $*"
+  lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
 # === Helper: display a warning ================================
 cmd echow ${{
   unsetopt shwordsplit
-  local c1 B res
-  eval -- $(print -r -- ${LF_COLOR_ARRAY})
-  local -A C; C=( ${(kv)COLORS} )
-  c1=$C[11] res=$C[0] B=$C[B]
-  lf -remote "send $id echomsg \"${B}${c1}[WARN]${res}: ${*}\""
+  local str; str="%B%F{11}[WARN]%f%b: $*"
+  lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
 # Needs some work. This is always called after the function it's called within.
@@ -277,7 +273,7 @@ cmd split ${{
 }}
 
 # === Tmux: swap first and second lf file manager pane =========
-cmd swap ${{
+cmd swap-tmux ${{
   emulate zsh -R -c "${XDG_CONFIG_HOME}/lf/scripts/tmux_helper --swap"
 }}
 
@@ -319,25 +315,27 @@ cmd open ${{
     (application/vnd.sqlite3) litecli $fx ;;
     (text/*|application/pgp-(encrypted|keys)) $EDITOR $fx ;;
     (image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
-    (image/svg+xml) display -- $f ;;
-    (image/*) rotdir $f \
-      | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\)\(_large\)*$" \
-      | setsid -f sxiv -aio 2>/dev/null | lf-select ;;
+    (image/svg+xml|image/*) rotdir $f \
+      | grep -i "\.\(png\|jpg\|jpeg\|gif\|webp\|tif\|ico\|svg\)\(_large\)*$" \
+      | setsid -f nsxiv -aio 2>/dev/null | lf-select ;;
     (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback  $f >/dev/null ;;
     (video/*) setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
     (application/x-bittorrent) handlr open $fx ;;
     (application/zlib) handlr open $fx ;;
     (*)
-      case ${f:e} in
-        (dmg) (( $+commands[hdiutil] )) && hdiutil attach "$fx" ;;
-        (bz|bz2|tbz|tbz2|gz|tgz|xz|txz|zip|rar|iso)
+      # (*.(a|ace|alz|ar|arc|arj|bz|bz2|cab|cpio|deb|cpt|deb|dgc|dgm|iso)\
+      # |.*(jar|lha|lz|lzh|lzma|lzo|msi|pkg|rar|rpm|rz|shar|t7z|tar|tbz|tbz2|tgz)\
+      # |.*(tlz|txz|tZ|tzo|war|xar|xpi|xz|Z|zip))
+      case "$f" in
+        (*.dmg) (( $+commands[hdiutil] )) && hdiutil attach "$fx" ;;
+        (*.(tar.bz|tar.bz2|tbz|tbz2|tar.gz|tgz|tar.xz|txz|zip|rar|iso))
           mntdir="${f}-archivemount"
           [[ ! -d "$mntdir" ]] && {
             command mkdir "$mntdir"
             archivemount "$f" "$mntdir"
-            builtin print -R "$mntdir" >> "${TMPPREFIX}/__lf_archivemount_${id}"
+            builtin print -R "$mntdir" >> "/tmp/__lf_archivemount_${id}"
           }
-          lf -remote "send $id cd \"$mntdir\""
+          lf -remote "send $id cd '$mntdir'"
           lf -remote "send $id reload"
         ;;
         (*)
@@ -396,8 +394,9 @@ cmd move-file-jump ${{
   local dest x; clear
   dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Move to> '" \
       zoxide query -i || { dunstify "No file selected"; exit })
-  for x ($fx) { mv -iv $x $dest } && {
-    dunstify -a lf " File(s) copied" "${fx:t} => $dest"
+  for x (${=fx}) {
+    command mv -iv -- "$x" $dest && \
+      dunstify -a lf " File(s) moved" "${x:t} => $dest"
   }
 }}
 
@@ -406,10 +405,10 @@ cmd move-file-manual ${{
   zmodload -Fa zsh/zle b:vared
   local x dest; clear
   vared -cp "Move to: " dest
-  for x ($fx) { mv -iv $x $~dest } && {
-    dunstify -a lf " File(s) moved" "${fx:t} => $dest"
+  for x (${=fx}) {
+    command mv -iv -- "$x" $~dest && \
+      dunstify -a lf " File(s) moved" "${x:t} => $dest"
   }
-  # mv -iv -- $fx "${~dest}"
 }}
 
 # === Copy: zoxide =============================================
@@ -418,10 +417,11 @@ cmd copy-file-jump ${{
   local x dest; clear
   dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Copy to> '" \
       zoxide query -i || { dunstify "No file selected"; exit })
-  for x ($fx) { cp -pivr $x $dest } && {
-    dunstify -a lf " File(s) copied" "${fx:t} => $dest"
+  for x (${=fx}) {
+    command cp -pivr -- "$x" $dest && \
+      dunstify -a lf " File(s) copied" "${x:t} => $dest"
   }
-  # cp -pivr -- $fx "$dest"
+  lf -remote "send clear"
 }}
 
 # === Copy: path ===============================================
@@ -429,44 +429,80 @@ cmd copy-file-manual ${{
   zmodload -Fa zsh/zle b:vared
   local x dest; clear
   vared -cp "Copy to: " dest
-  for x ($fx) { cp -pivr $x $~dest } && {
-    dunstify -a lf " File(s) copied." "${fx:t} => $dest"
+  for x (${=fx}) {
+    command cp -pivr -- "$x" $~dest && \
+      dunstify -a lf " File(s) copied" "${x:t} => $dest"
   }
+  lf -remote "send clear"
+}}
+
+# === Link: script to home's bin ===============================
+cmd link-homebin ${{
+  for file (${=fx}) {
+    [[ ! -x "$file" ]] && {
+      lf -remote "send $id echoe '%B$file%b is not executable'"
+      continue
+    }
+    command ln -siv -- "$file" "$HOME/bin/" && \
+      dunstify -a lf " Linked to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+  }
+  lf -remote "send clear"
 }}
 
 # === Rsync ========================================= [[[
 # === Rsync: copy files to my server ===========================
-cmd rsyncto ${{ rsync -uvrP $fx root@lmburns.com:"$1" }}
+cmd rsyncto ${{
+  for file (${=fx}) {
+    rsync -uvrP "$file" root@lmburns.com:"$1" && \
+      dunstify -a lf " Copied to server" "${file:t} => root@lmburns.com:$1"
+  }
+}}
 # === Rsync: copy files from my server =========================
-cmd rsyncfrom ${{ rsync -uvrP root@lmburns.com:"$1" "$2" }}
+cmd rsyncfrom ${{
+  rsync -uvrP root@lmburns.com:"$1" "${2:-$PWD}" && \
+      dunstify -a lf " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
+}}
 
 # === Rsync: copy files to my mac ==============================
-cmd rsync_to_mac ${{ rsync -uvrP "$fx" macbook:/Users/lucasburns/"$1" }}
+cmd rsync_to_mac ${{
+  for file (${=fx}) {
+    rsync -uvrP "$file" macbook:/Users/lucasburns/"$1" && \
+      dunstify -a lf " Copied to macbook" "${file:t} => macbook:/Users/lucasburns/$1"
+  }
+  lf -remote "send clear"
+}}
 # === Rsync: copy files from my mac ============================
-cmd rsync_from_mac ${{ rsync -uvrP macbook:/Users/lucasburns/"$1" "$2" }}
+cmd rsync_from_mac ${{
+  rsync -uvrP macbook:/Users/lucasburns/"$1" "${2:-$PWD}" && \
+      dunstify -a lf " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
+}}
 # ]]] Rsync
 # ]]] File Movement
 
 # === Archive ================================================== [[[
 # === Unmount: unmount archivemount ============================
 cmd unmount ${{
-  fusermount -u "$f" && dunstify -a lf " Unmounted" "${f:t3}"
+  fusermount -uz "$f" && dunstify -a lf " Unmounted Archive" "${f:t3}"
   command rmdir "$f"
   lf -remote "send $id reload"
 }}
 
 # === Archive: unarchive =======================================
 cmd unarchive ${{
-  xcompress x "$f"
+  xcompress x -- "${=fx}"
 }}
 
 # === Archive: archive =========================================
-cmd archive ${{
-  zmodload -Fa zsh/zle b:vared
-  local archive; clear
-  vared -cp "Archive out: " archive
-  # quotes around "$fx" don't work here
-  xcompress a -o "$archive" -- $fx
+cmd archive %{{
+  local archive_t
+  print -Prn "%F{52}%BArchive%b%f: "
+  read -r archive_t
+  [[ -n "$archive_t" ]] && {
+    xcompress a -o "$archive_t" -- $fx && {
+      lf -remote "send $id unselect"
+      lf -remote "send $id reload"
+    }
+  } || lf -remote "send $id echoe 'argument is required'"
 }}
 # ]]] Archive
 
@@ -487,11 +523,11 @@ cmd link %{{
   case "$mode" in
     (copy)
       command ln -sr -t . "$@"
-      dunstify -a lf "Created symlink" "${@:t3} => $PWD"
+      dunstify -a lf "Created symlink" "${@:t3}\n=> $PWD"
     ;;
     (move)
       command ln -t . "$@"
-      dunstify -a lf "Created hardlink" "${@:t3} => $PWD"
+      dunstify -a lf "Created hardlink" "${@:t3}\n=> $PWD"
     ;;
   esac
   zf_rm "${XDG_DATA_HOME}/lf/files"
@@ -521,7 +557,7 @@ cmd paste-async &{{
 }}
 
 # === Copy: follow symlink =====================================
-# TODO: Finish
+# TODO: Finish when copy accepts argument
 cmd copy-realpath ${{
   local origin
   origin="$(realpath -- "$fx")"
@@ -554,23 +590,31 @@ cmd yank-realpath ${{
 
 # === File Attributes ========================================== [[[
 # === Permissions: change ======================================
-cmd chmod ${{
-  zmodload -Fa zsh/zle b:vared
-  local perm; clear
-  vared -cp "Change permissions: " perm
-  chmod -- $perm $fx
-  lf -remote 'send reload'
-  lf -remote 'send clear'
+cmd chmod %{{
+  # zmodload -Fa zsh/zle b:vared
+  # local perm; clear
+  # vared -cp "Change permissions: " perm
+
+  local perm
+  print -Prn "%F{52}%BPermission%b%f: "
+  read -r perm
+  [[ -n "$perm" ]] && {
+    chmod -- $perm $fx && {
+      lf -remote "send $id reload"
+      lf -remote 'send clear'
+    }
+  } || lf -remote "send $id echoe 'argument is required'"
 }}
 
 # === Ownership: change ========================================
-cmd chown ${{
-  zmodload -Fa zsh/zle b:vared
-  local owner; clear
-  vared -cp "Ownership: " owner
-  chown -- $owner $fx
-  lf -remote 'send reload'
-  lf -remote 'send clear'
+cmd chown %{{
+  local owner
+  print -Prn "%F{52}%BOwner%b%f: "
+  read -r owner
+  [[ -n "$owner" ]] && {
+      chown -- $owner $fx && {
+    }
+  } || lf -remote "send $id echoe 'argument is required'"
 }}
 
 # === Symlinks: harden =========================================
@@ -588,6 +632,13 @@ cmd massren $massren $fx
 cmd mmv $mmv -- ${${(@f)fx}:t}
 cmd f2 !f2 -f "$1"
 cmd rmspace $f2 -f '\s' -r '_' -RFx
+
+# === Rename: swap filenames ========================
+cmd swap ${{
+  local -a files; files=( ${(@f)fx} )
+  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'" }
+  renameat2 -e $files[1] $files[2]
+}}
 
 # === Backup: using numbered and simple VCS =========
 cmd backup ${{
@@ -638,14 +689,14 @@ cmd disk-info ${{
 cmd mkdir %{{
   # Create a directory/directories
   setopt unset
-  [[ -n "${1}" ]] && command mkdir -p "${@}" || lf -remote "send $id echoe 'No argument given'"
+  [[ -n "${1}" ]] && command mkdir -p "${@}" || lf -remote "send $id echoe 'no argument given'"
 }}
 
 # === Creation: 1+ files =======================================
 cmd mkfile %{{
   # Create a file/files
   setopt unset
-  [[ -n "${1}" ]] && touch "${@}" || lf -remote "send $id echoe 'No argument given'"
+  [[ -n "${1}" ]] && touch "${@}" || lf -remote "send $id echoe 'no argument given'"
 }}
 
 # === Creation: directory & CD into it =========================
@@ -654,18 +705,19 @@ cmd take %{{
   setopt unset
   [[ -n "${1}" ]] && {
     command mkdir -p "${@}" && lf -remote "send $id cd \"$@\""
-  } || lf -remote "send $id echoe 'No argument given'"
+  } || lf -remote "send $id echoe 'no argument given'"
 }}
 
 # === Creation: directory & move selected files into it ========
-# TODO: Finish
 cmd newfold %{{
   # Create dir and move selected files into it
+  local fold
   print -Prn "%F{52}%BFolder%b%f: "
   read -r fold
+  dunstify "$fold"
   [[ -n "$fold" ]] && {
     command mkdir -p -- "$fold" && command mv -- $fx "$fold"
-  } || lf -remote "send $id echoe 'No argument given'"
+  } || lf -remote "send $id echoe 'no argument given'"
 
   # read -rq "?Overwrite? [y/n]? " answer
 
@@ -684,51 +736,53 @@ cmd gpg_encrypt_recipient %{{
   case "$recipient" in
     ("") lf -remote "send $id echom 'no recipient given'";;
     (*)
-      [[ -d "$fx" ]] && {
-        gpgtar --encrypt --create --output "${fx}.asc" --recipient "$recipient" "$fx"
-      } || gpg --encrypt --sign --recipient "$recipient" "$fx"
+      for file (${=fx}) {
+        [[ -d "$file" ]] && {
+          gpgtar --encrypt --create --output "${fx}.asc" --recipient "$recipient" -- "$file"
+        } || gpg --encrypt --sign --recipient "$recipient" -- "$file"
+      }
       ;;
   esac
 }}
 
 # === GPG: encrypt symmetric ===================================
 cmd gpg_encrypt_pass ${{
-  gpg --symmetric "$fx"
+  for file (${=fx}) { gpg --symmetric -- "$file" }
 }}
 
 # === GPG: encrypt self ========================================
 cmd gpg_encrypt_self ${{
-  gpg --encrypt "$fx"
+  for file (${=fx}) { gpg --encrypt -- "$file" }
 }}
 
 # === GPG: decrypt =============================================
 cmd gpg_decrypt ${{
-  gpg --output "${f%.*}.txt" --decrypt "$fx"
+  for file (${=fx}) { gpg --output "${f%.*}.txt" --decrypt -- "$file" }
 }}
 
 # === GPG: sign ================================================
 cmd gpg_sign ${{
-  gpg --sign "$fx"
+  for file (${=fx}) { gpg --sign -- "$file" }
 }}
 
 # === GPG: sign detach =========================================
 cmd gpg_sign_detach ${{
-  gpg --sign --detach-sign "$fx"
+  for file (${=fx}) { gpg --sign --detach-sign -- "$file" }
 }}
 
 # === GPG: clearsign file ======================================
 cmd gpg_sign_clear ${{
-  gpg --clearsign "$fx"
+  for file (${=fx}) { gpg --clearsign -- "$file" }
 }}
 
 # === GPG: encrypt dir self ====================================
 cmd gpg_encrypt_dir_self ${{
-  gpgtar --encrypt --output "${fx:t}.asc" ${f:t}
+  for dir (${=fx}) { gpgtar --encrypt --output "${dir:t}.asc" -- ${dir:t} }
 }}
 
 # === GPG: decrypt dir =========================================
 cmd gpg_decrypt_dir ${{
-  gpgtar --decrypt "$fx"
+  for dir (${=fx}) { gpgtar --decrypt "$dir" }
 }}
 
 map ter gpg_encrypt_recipient
@@ -748,17 +802,15 @@ map tT $gpg-tui # gpg-tui
 # === Diff: between two files ==================================
 cmd diff_files ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files == 2 )) && {
-    clear; delta $files[1] $files[2]
-  }
+  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'" }
+  clear; delta $files[1] $files[2]
 }}
 
 # === Diff: nvim ===============================================
 cmd nvim_diff ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files == 2 )) && {
-    clear; nvim -d +0 $files
-  }
+  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'" }
+  clear; nvim -d +0 $files
 }}
 
 map D diff_files
@@ -776,16 +828,16 @@ cmd select-files ${{
 
 # === Select: all dirs =========================================
 cmd select-dirs ${{
-  local -a dirs; dirs=( ${(@f)"$(fd . -L -d1 -td)"} )
-  for d in "${dirs[@]}"; do
+  local -a files; files=( ${(@f)"$(fd . -L -d1 -td)"} )
+  for d in "${files[@]}"; do
     lf -remote "send $id toggle $d"
   done
 }}
 
 # === Select: all executables ==================================
 cmd select-exec ${{
-  local -a xx; xx=( ${(@f)"$(fd . -L -d1 -tx)"} )
-  for x in "${xx[@]}"; do
+  local -a files; files=( ${(@f)"$(fd . -L -d1 -tx)"} )
+  for x in "${files[@]}"; do
     lf -remote "send $id toggle $x"
   done
 }}
@@ -793,6 +845,35 @@ cmd select-exec ${{
 # === Select: all files and dirs ===============================
 cmd select-all :{{
   unselect; invert
+}}
+
+# === Select: any file interactively ===========================
+cmd select-files-fzf ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  for f ($(\
+      print -ln -- *(ND) \
+        | lscolors \
+        | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m" fzf || { dunstify "No files selected"; exit })
+  )) {
+    lf -remote "send $id toggle $f"
+  }
+}}
+
+# === Select: follow symlink ===================================
+cmd select-realpath ${{
+  local origin
+  local -a files; files=( ${(@f)fx} )
+  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
+  origin=${files[1]:A}
+  lf -remote "send $id select '$origin'"
+}}
+
+# === Select: builtin find (match can be anywhere in fname) ====
+# cmd find-noanchor :{{ set noanchorfind; find; set anchorfind; }}
+cmd find-noanchor ${{
+  setopt localtraps; trap "lf -remote 'send $id set anchorfind'" EXIT
+  lf -remote "send $id set noanchorfind"
+  lf -remote "send $id find"
 }}
 # ]]] Selecting
 
@@ -814,10 +895,10 @@ cmd njump ${{
 cmd nbookmark ${{
   bookmarks_file="${XDG_DATA_HOME}/lf/bookmarks"
   bookmark_path="${f%/*}"
-  mkdir -p "$(dirname -- "$bookmarks_file)")"
+  command mkdir -p "$(dirname -- "$bookmarks_file)")"
   echo "${bookmark_path}" >> "$bookmarks_file"
   sort -u "$bookmarks_file" > "$bookmarks_file.$$"
-  mv -f "$bookmarks_file.$$" "$bookmarks_file"
+  command mv -f "$bookmarks_file.$$" "$bookmarks_file"
   lf -remote "send $id echomsg Bookmark to '$bookmark_path' created."
 }}
 
@@ -931,11 +1012,12 @@ cmd fzf_cd_file ${{
 
 # === CD: follow symlink =======================================
 cmd cd-realpath ${{
-  # origin=${${:-"$f"}:A}
   local origin
-  # origin="$(realpath -- "$(readlink -f -- "$fx")")"
-  origin="$(realpath -- "$fx")"
-  lf -remote "send $id select '$origin'"
+  local -a files; files=( ${(@f)fx} )
+  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
+  # origin="$(realpath -- "$fx")"
+  origin=${files[1]:A}
+  lf -remote "send $id cd '$origin'"
 }}
 # ]]] CD
 
@@ -1048,6 +1130,10 @@ cmd rgu ${{
   clear;
   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu "$1"
 }}
+# Grep through many kinds of files
+cmd rga ${{
+  clear; rga --color=always "$@" | bat -fp --paging=always
+}}
 
 # === FZF: edit file ===========================================
 cmd fd_edit ${{
@@ -1064,19 +1150,19 @@ cmd fd_edit ${{
       --preview-window=':nohidden,right:65%:wrap' \
       --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
 }}
+
+cmd packer ${{
+  # fpath=( ${0:h}/{functions,completions} "${fpath[@]}" )
+  # autoload -Uz $fpath[1]/*(:t)
+
+  dunstify "$Z"
+}}
+
+map fp packer
 # ]]] Finding
 
-# === Dragon =================================================== [[[
-cmd dragon %dragon -a -x $fx
-cmd dragon-stay %dragon -a $fx
-cmd dragon-individual %dragon $fx
-cmd cpdragon %cpdragon
-cmd mvdragon %mvdragon
-cmd dlfile %dlfile
-# ]]] Dragon
-
 # === Miscellaneous ============================================ [[[
-# TODO: USE
+# TODO: Use and add make / cargo
 # === Script: run a node script ================================
 cmd node_script ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -1118,6 +1204,24 @@ cmd chksum ${{
 
 map C chksum
 # ]]] Miscellaneous
+
+
+# === External ================================================= [[[
+# === Dragon ======================================== [[[
+cmd dragon %dragon -a -x $fx
+cmd dragon-stay %dragon -a $fx
+cmd dragon-individual %dragon $fx
+cmd cpdragon %cpdragon
+cmd mvdragon %mvdragon
+cmd dlfile %dlfile
+# ]]] Dragon
+
+
+# === Download: with xh =============================
+cmd download-file ${{
+  xh --pretty=all --style=auto --timeout=10 --download "$(xsel -b)"
+}}
+# ]]] External
 
 # === ZLE ====================================================== [[[
 # === ZLE: change directories ===================================
@@ -1180,7 +1284,11 @@ map [
 # ]]] Unmappings
 
 # === General ================================================== [[[
-map . set hidden!                              # show hidden files
+map . set hidden!         # toggle hidden files
+map <space> :toggle; down # toggle selection and move down
+map <tab> :toggle; down   # toggle selection and move down
+map <backtab> :toggle; up # toggle selection and move up
+
 map @ :terminal
 map <a-$> :dump-env
 map <esc> quit # quit lf
@@ -1226,13 +1334,16 @@ map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
 map Pa paste-async            # paste a file asynchronously (used for big files)
 
-map y copy           # general copy
-map Yr copy-realpath # general copy absolute path
+map y copy           # copy file
+map Yr copy-realpath # copy file from absolute path
+
+map Yb link-homebin  # link file to ~/bin
 
 map YR yank-realpath # yank absolute path
 map Yp yank-path     # yank file path
 map Yn yank-name     # yank name of file path
 map Yd yank-dir      # yank name of directory
+
 map Yu ${{
   # yank URL of git repo
   ngu
@@ -1260,17 +1371,19 @@ map Ph ${{
 # ]]] Cut / Copy / Paste
 
 # === File Openers ============================================= [[[
-map ee $$EDITOR "$f"                            # open file in editor
-map Ev $vim "$fx"                               # edit a file with vim
-map ec edit_config                              # edit & source lfrc
-map es edit_scope                               # edit lfrc scope
-map ev $$EDITOR $NVIMRC                         # open nvim config
-map ew $$EDITOR $HOME/vimwiki/index.md          # open vimwiki
-map ez $$EDITOR $ZDOTDIR/.zshrc                 # edit zshrc
-map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh      # edit zsh aliases
-map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh  # edit zsh bindings
-map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh      # edit lf colors/icons
-map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf # edit tmux conf
+map ee $$EDITOR "$f"                                    # open file in editor
+map Ev $vim "$fx"                                       # edit a file with vim
+map ec edit_config                                      # edit & source lfrc
+map es edit_scope                                       # edit lfrc scope
+map ev $$EDITOR $NVIMRC                                 # open nvim config
+map ew $$EDITOR $HOME/vimwiki/index.md                  # open vimwiki
+map ez $$EDITOR $ZDOTDIR/.zshrc                         # edit zshrc
+map eZ $$EDITOR $HOME/.zshenv                           # edit zshenv
+map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh              # edit zsh aliases
+map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh          # edit zsh bindings
+map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh              # edit lf colors/icons
+map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf         # edit tmux conf
+map eo $$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json # open coc-settings
 map Et :nvim-tmux                               # edit file by opening split of tmux
 
 map v ${{
@@ -1315,6 +1428,7 @@ map fo push :fzf<space>   # fzf search and open
 map fd push :fd<space>    # use fd to find file
 map fr push :fdr<space>   # use fd to find recent file
 map fe fd_edit            # find files with fzf and edit (with preview)
+map fa push :rga<space>   # search all files (including pdf etc) with rg
 map <c-f> push :rg<space> # search with rg
 map F push :rgu<space>    # search interactively with rg and fzf
 
@@ -1326,27 +1440,18 @@ map sf select-files
 map sd select-dirs
 map sx select-exec
 map sA select-all
-map sF ${{
-  # select files fzf
-  setopt localtraps err_exit; trap "return 0" EXIT
-  for f ($(\
-      print -ln -- *(ND) \
-        | lscolors \
-        | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m" fzf || { dunstify "No files selected"; exit })
-  )) {
-    lf -remote "send $id toggle $f"
-  }
-}}
+map sF select-files-fzf
+map sr select-realpath
 
-map ss set globsearch!            # change search type
+map ss set globsearch!            # toggle glob search
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
 map ff push :filter<space>
 map rl find
 map rh find-back
-map <gt> find-next
-map <lt> find-prev
+map ] find-next
+map [ find-prev
 # ]]] File Selection
 
 # === File Movement ============================================ [[[
@@ -1405,13 +1510,14 @@ map I push A<c-a>           # cursor at the beginning
 map i push A<a-b><a-b><a-f> # cursor before extention
 map aa push A<a-b>          # cursor after extention
 
-map Bf push :f2<space>      # use f2 to rename
-map Bm massren              # bulk rename with massren
-map Bv mmv                  # bulk rename only with selected
-map Bs rmspace              # remove spaces from filenames
-map Bc backup               # backup file with `cp`
-map Bdi backup_date_iso     # backup using ISO suffix
-map Bdt backup_date_today   # backup using today's date
+map bf push :f2<space>      # use f2 to rename
+map bm massren              # bulk rename with massren
+map bv mmv                  # bulk rename only with selected
+map bs swap                 # swap two filenames
+map bp rmspace              # remove spaces from filenames
+map bc backup               # backup file with `cp`
+map bdi backup_date_iso     # backup using ISO suffix
+map bdt backup_date_today   # backup using today's date
 # ]]] Renaming
 
 # === CD ======================================================= [[[
@@ -1426,8 +1532,11 @@ map } cd-realpath     # cd to directory's realpath
 map H jump-prev       # go to previous directory in history
 map L jump-next       # go to next directory in history
 
-map bc cd ~/.config
-map bi cd /run/media/lucas
+map <lt> jump-prev       # go to previous directory in history
+map <gt> jump-next       # go to next directory in history
+
+map Bc cd ~/.config
+map Bi cd /run/media/lucas
 map bh cd ~
 # ]]] CD
 
@@ -1459,6 +1568,14 @@ map dFr ${{
   # fzf trash restore script
   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fripu
 }}
+
+cmd rmsym ${{
+  command rm -- *(-@D);
+}}
+cmd rmsymr ${{
+command rm -- **/*(-@D);
+
+}}
 # ]]] Trash
 
 # === Dragon =================================================== [[[
@@ -1467,7 +1584,8 @@ map drs dragon-stay
 map dri dragon-individual
 map drm mvdragon
 map drc cpdragon
-map drl dlfile
+map drl dlfile        # download file by dragging & dropping
+map dl  download-file # download file from clipboard
 # ]]] Dragon
 
 # === Shell ==================================================== [[[
@@ -1487,8 +1605,8 @@ map <a-.> mark-save
 map <a-'> mark-save
 map "'" mark-load
 map '"' mark-remove
+# map ; :{{ mark-save "'"; }}
 
-# map ; push :tag<space>
 map <a-,> push :tag<space>
 map X tag-toggle
 map Tj jump_tag
@@ -1664,6 +1782,79 @@ map gdu ${{
 # ]]] Dotbare Mappings
 # ]]] Dotbare (dotfiles)
 # ]]] Git
+
+# === Command Mode Mappings ==================================== [[[
+cmap <c-j>
+cmap <c-k>
+
+cmap <a-i> set incsearch!     # toggle incremental search
+cmap <a-g> set globsearch!    # toggle glob search
+cmap <right> :cmd-enter; open # accept command and open file
+
+cmap <esc>  cmd-escape             # quit command line mode
+cmap <c-c>  cmd-interrupt          # end current shell-pipe command
+cmap <tab>  cmd-complete           # show completion menu
+cmap <a-.>  cmd-menu-complete      # show completion menu and select forward
+cmap <a-,>  cmd-menu-complete-back # show completion menu and select backward
+cmap <down> cmd-history-next       # scroll forward in history
+cmap <up>   cmd-history-prev       # scroll backward in history
+cmap <c-j>  cmd-history-next       # scroll forward in history
+cmap <c-k>  cmd-history-prev       # scroll backward in history
+
+cmap <c-b>  cmd-left  # move cursor left
+cmap <c-f>  cmd-right # move cursor right
+cmap <a-o>  cmd-left  # move cursor left
+# cmap <a-i>  cmd-right # move cursor right
+cmap <home> cmd-home  # move cursor beginning of line
+cmap <end>  cmd-end   # move cursor end of line
+cmap <c-s>  cmd-home  # move cursor beginning of line
+cmap <c-e>  cmd-end   # move cursor end of line
+cmap <lt>   cmd-home  # move cursor beginning of line
+cmap <gt>   cmd-end   # move cursor end of line
+
+cmap <a-f> cmd-word      # move forward one word
+cmap <a-b> cmd-word-back # move backward one word
+
+cmap <delete>    cmd-delete      # delete char to right of cursor
+cmap <backspace> cmd-delete-back # delete char to left of cursor
+cmap <c-h>       cmd-delete      # delete char to right of cursor
+cmap <c-l>       cmd-delete-back # delete char to left of cursor
+
+cmap <a-[> cmd-delete-home # delete all text to left of cursor
+cmap <a-]> cmd-delete-end  # delete all text to right of cursor
+
+cmap <a-c> cmd-delete-unix-word # delete word to left of cursor
+cmap <c-w> cmd-delete-unix-word # delete word to left of cursor
+cmap <a-d> cmd-delete-word      # delete word to right of cursor
+
+cmap <c-y>   cmd-yank # yank cli text
+
+cmap <a-p> cmd-capitalize-word # capitalize word
+cmap <a-u> cmd-uppercase-word  # uppercase word
+cmap <a-l> cmd-lowercase-word  # lowercase word
+
+cmap <c-t> cmd-transpose      # transpose last two chars
+cmap <a-t> cmd-transpose-word # transpose last two words
+# ]]] Command Mode Mappings
+
+# === Mouse Mappings =========================================== [[[
+# map <m-1>
+# map <m-2>
+# map <m-3>
+# map <m-4>
+# map <m-5>
+# map <m-6>
+# map <m-7>
+# map <m-8>
+
+# map <m-1> down  # primary
+# map <m-2> down  # secondary
+# map <m-3> down  # middle
+
+ # map <m-up>    down
+ # map <m-down>  down
+ # map <m-left>  down
+# ]]] Mouse Mappings
 # ]]] Mappings
 
 # vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

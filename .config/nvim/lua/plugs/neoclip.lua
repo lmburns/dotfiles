@@ -148,7 +148,8 @@ M.setup = function()
                                 yank.yank_reg(v.register, opts.entry.contents[1])
                             end,
                             ["<CR>"] = function(opts)
-                                yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
+                                -- yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
+                                nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
                                 local handlers = require("neoclip.handlers")
 
                                 -- handlers.set_registers(opts.register_names, opts.entry)
@@ -165,7 +166,8 @@ M.setup = function()
                         edit = "e",
                         custom = {
                             ["<CR>"] = function(opts)
-                                yank.yank_reg(v.register, opts.entry.contents[1])
+                                -- yank.yank_reg(v.register, opts.entry.contents[1])
+                                nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
                             end,
                             ["gcp"] = function(opts)
                                 M.charwise(opts, "p", true)

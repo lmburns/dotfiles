@@ -29,7 +29,10 @@ case "$1" in
 esac
 
 icon=${${${(M)state:#true}:+${icondir}/state-ok.svg}:-${icondir}/state-error.svg}
-title=${(S)${${:-"$(xwinfo -n $focused)"}}/(#b)(*)([^[:alpha:]]-[^[:alpha:]])(*)(#e)/${${${${match[1]}%% }## }[1,25]}}
+# Split tmux window title
+title=${(S)${${:-"$(xwinfo -n $focused)"}}/(#b)(*)([^[:alpha:]]-[^[:alpha:]])(*)(#e)/${${${${match[1]}%% }## }}}
+title=${(%)${:-%25>...>$title}}
+# title=${(S)${${:-"$(xwinfo -n $focused)"}}/(#b)(*)([^[:alpha:]]-[^[:alpha:]])(*)(#e)/${${${${match[1]}%% }## }[1,25]}}
 
 dunstify \
   -i "$icon" \
