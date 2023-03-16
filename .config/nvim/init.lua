@@ -1,13 +1,3 @@
---[[
-FIX: Changelist is overridden somewhat when re-opening a file (I think coc-lua?)
-FIX: Telescope opens file in insert mode
-
-TODO: Switching to recent files. The saving of files isn't triggered anymore when exiting & coming back
-      delete text and copy
-      copy text and comment
-      lua cs ' => [[
-      when formatoptions changed, dont change back on bufenter
---]]
 local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()

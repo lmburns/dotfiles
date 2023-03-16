@@ -147,7 +147,7 @@ local function init()
             },
             ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
             ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},
-            ["<Leader>gu"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
+            ["<LocalLeader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
         }
     )
 

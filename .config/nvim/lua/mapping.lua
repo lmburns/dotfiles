@@ -8,8 +8,8 @@ local funcs = require("functions")
 
 -- local ex = nvim.ex
 -- local api = vim.api
-local fn = vim.fn
-local F = vim.F
+-- local fn = vim.fn
+-- local F = vim.F
 
 -- Legendary needs to be called again in this file for the keybindings to register
 -- Not sure why these options only work from here
@@ -30,67 +30,115 @@ wk.register(
 -- Map '-' to blackhole register
 map("n", "-", '"_', {desc = "Black hole register"})
 map("x", "-", '"_', {desc = "Black hole register"})
-map("n", "<Backspace>", "<C-^>", {desc = "Alternate file"})
+map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
 
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
 -- ╙                                                          ╜
 -- Use qq to record, q to stop, Q to play a macro
-map("n", "Q", "@q")
--- map("v", "Q", ":normal @q")
+-- map("n", "Q", "@q", {desc = "Play 'q' macro"})
+
+-- Repeat last command
+map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
+
 map(
     "x",
     "@",
     ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>",
-    {silent = false, desc = "Execute amcro visually"}
+    {silent = false, desc = "Execute macro visually"}
 )
 
-map("v", ".", ":normal .<CR>", {desc = "Perform dot commands over visual blocks"})
+map("x", ".", ":norm .<CR>", {desc = "Perform dot commands over visual blocks"})
 
 -- Use qq to record and stop (only records q)
-map(
-    "n",
-    "qq",
-    function()
-        return F.tern(fn.reg_recording() == "", "qq", "q")
-    end,
-    {expr = true, desc = "Record macro"}
-)
+map("n", "qq", D.ithunk(funcs.record_macro, "q"), {expr = true, desc = "Record macro"})
+map("n", "qj", D.ithunk(funcs.record_macro, "j"), {expr = true, desc = "Record macro"})
+map("n", "qk", D.ithunk(funcs.record_macro, "k"), {expr = true, desc = "Record macro"})
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
 map("n", "q", "<Nop>", {silent = true})
 
--- Repeat last command
-map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
+-- map("v", "J", ":m '>+1<CR>gv=gv")
+-- map("v", "K", ":m '<-2<CR>gv=gv")
+-- map("n", "<C-,>", "<Cmd>m +1<CR>")
+-- map("n", "<C-.>", "<Cmd>m -2<CR>")
 
-map({"n", "x", "o"}, "H", "g^")
-map({"n", "x", "o"}, "L", "g_")
+map("i", '<M-S-">', "<Home>", {desc = "Goto begin of lne"})
+map("i", "<M-'>", "<End>", {desc = "Goto end of line"})
+map("i", "<C-S-h>", "<C-Left>", {desc = "Go one word left"})
+map("i", "<C-S-l>", "<C-Right>", {desc = "Go one word right"})
+map("i", "<C-S-n>", "<Left>", {desc = "Go one char left"})
+map("i", "<C-S-m>", "<Right>", {desc = "Go one char right"})
+map("i", "<C-S-k>", "<C-o>gk", {desc = "Go one line up"})
+map("i", "<C-S-j>", "<C-o>gj", {desc = "Go one line down"})
+map("i", "<Down>", "<C-o>gj", {desc = "Goto next screen-line"})
+map("i", "<Up>", "<C-o>gk", {desc = "Goto prev screen-line"})
 
-map("i", '<M-S-">', "<Home>", {desc = "Move to begin of line"})
-map("i", "<M-'>", "<End>", {desc = "Move to end of line"})
-map("i", "<C-t>", "<C-o>:", {desc = "Go into command mode"})
-map("i", "<C-h>", "<BS>", {desc = "Delete character to left"})
-map("i", "<C-l>", "<Del>", {desc = "Delete character to right"})
-map("i", "<C-S-h>", "<S-Left>", {desc = "Move one word left"})
-map("i", "<C-S-l>", "<S-Right>", {desc = "Move one word right"})
-map("i", "<C-S-k>", "<Home>", {desc = "Move to end of line"})
-map("i", "<C-S-j>", "<End>", {desc = "Move to begin of line"})
--- map("i", "<C-S-k>", "<Up>", {desc = "Move one line up"})
--- map("i", "<C-S-j>", "<Down>", {desc = "Move one line down"})
+map("i", "<M-/>", "<C-a>", {desc = "Insert last inserted text"})
+map("i", "<C-S-p>", "<C-o>p", {desc = "Paste from normal mode"})
+map("i", "<C-M-p>", "<C-o>ghp", {desc = "Paste formatted", noremap = false})
+map("i", "<M-p>", "<C-o>g2p", {desc = "Paste commented", noremap = false})
 
+-- map("i", "<C-M-n>", "<C-n>", {desc = "Complete word (search forward)"})
+-- map("i", "<C-M-p>", "<C-p>", {desc = "Complete word (search backward)"})
+-- map("i", "<C-j>", "<C-o><Cmd>m +1<CR>")
+-- map("i", "<C-k>", "<C-o><Cmd>m -2<CR>")
+-- map("i", "<C-o>", "<C-o>", {desc = "Run command, resume insert mode"})
+map("i", "<C-n>", "<C-o>:", {desc = "Command mode"})
+
+-- Start new undo sequence
+-- map("i", "<C-r>", "<C-g>u<C-r>", {desc = "Show registers"})
 map("i", "<C-S-u>", "<C-g>u", {desc = "Start new undo sequence"})
+map("i", "<C-/>", "<C-g>u", {desc = "Start new undo sequence"})
+map("i", "<C-o>u", "<C-g>u<C-o>u", {desc = "Undo typed text"})
+-- map("i", "<C-o>U", "<C-g>u<C-o><Cmd>redo<CR>", {desc = "Redo"})
+map("i", "<C-o>U", "<C-g>u<C-o><C-r>", {desc = "Redo"})
+map("i", "<M-u>", "<C-g>u<C-o>u", {desc = "Undo typed text"})
+map("i", "<M-S-u>", "<C-g>u<C-o><C-r>", {desc = "Redo"})
+-- map("i", "<C-Left>", [[<C-o>u]], {desc = "Undo"})
+-- map("i", "<C-Right>", [[<C-o><Cmd>norm! ".p<CR>]], {desc = "Redo"})
+
+map("i", ".", ".<C-g>u")
+map("i", ",", ",<C-g>u")
+map("i", "!", "!<C-g>u")
+map("i", "?", "?<C-g>u")
+map("i", "<CR>", "<CR><C-g>u")
+map("i", "<M-BS>", "<C-g>u<C-w>", {desc = "Delete previous word"})
+map("i", "<C-w>", "<C-g>u<C-w>", {desc = "Delete previous word"})
+map("i", "<C-u>", "<C-g>u<C-u>", {desc = "Delete all typed in insert (before cursor)"})
+map("i", "<C-h>", "<C-g>u<C-h>", {desc = "Delete character to left"})
+map("i", "<C-l>", "<C-g>u<Del>", {desc = "Delete character to right"})
+map("i", "<M-d>", "<C-g>u<C-o>de", {desc = "Delete to end of word"})
+map("i", "<M-[>", "<C-g>u<C-o>dg^", {desc = "Left kill line"})
+map("i", "<M-]>", "<C-g>u<C-o>dg$", {desc = "Right kill line"})
+map("i", "<M-x>", "<C-g>u<C-o>cc", {desc = "Kill whole line"})
+-- map("i", "<M-,>", "<C-w>", {desc = "Delete previous word", noremap = false})
+
+map("i", "<M-o>", "<C-g>u<C-o>o", {desc = "Equivalent: 'norm! o'"})
+map("i", "<M-CR>", "<C-g>u<C-o>o", {desc = "Equivalent: 'norm! o'"})
+map("i", "<M-i>", "<C-g>u<C-o>O", {desc = "Move current line down"})
+map("i", "<M-S-o>", "<C-g>u<C-o>O", {desc = "Move current line down"})
+map("i", "<C-M-i>", "<C-g>u<C-o>zk", {desc = "Insert line above", noremap = false})
+map("i", "<C-M-o>", "<C-g>u<C-o>zj", {desc = "Insert line below", noremap = false})
 
 wk.register(
     {
-        ["<C-i>"] = "Delete all text left of cursor",
         ["<C-t>"] = "Insert one shift level at beginning of line",
         ["<C-d>"] = "Delete one shift level at beginning of line",
-        ["<C-u>"] = "Delete everything typed in insert mode",
-        ["<C-o>"] = "Run command, resume insert mode"
+        ["<C-o>"] = "Run command, resume insert mode",
+        ["<C-e>"] = "Insert char from line below",
+        ["<C-y>"] = "Insert char from line above",
+        ["<C-b>"] = "Move one char left",
+        ["<C-f>"] = "Move one char right"
     },
     {mode = "i"}
 )
+
+-- imap <C-F> <C-R>=expand("%")<CR>
+-- cnoremap <M-e>  <C-R>=expand("%:p:h") . "/" <CR>
+-- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+-- cnoremap <expr> * getcmdline() =~ '.*\*\*$' ? '/*' : '*' what
 
 map("c", "<C-b>", "<Left>")
 map("c", "<C-f>", "<Right>")
@@ -108,17 +156,6 @@ map("c", "<M-b>", "<C-Left>", {desc = "Move one word left"})
 map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
 map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
 map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
-
--- Navigate merge conflict markers
--- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
--- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
-
--- Jump back and forth jumplist
--- map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
--- map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
--- This works if Alacritty is configured correctly and Tmux is recompiled
--- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
--- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
 
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")
@@ -140,17 +177,38 @@ map(
 
 map("n", "<Leader>h;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
 
--- map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
+map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
 map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
 map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true, noremap = true})
 
 wk.register(
     {
         ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
-        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"}
+        ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
+        ["cm"] = {[[:%s/<C-r>///g<Left><Left>]], "Change all matches"}
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
+        -- ["z/"] = {[[/\%><C-r>=line("w0")-1<CR>l\%<<C-r>=line("w$")+1<CR>l]], "Search in visible screen"},
     },
     {silent = false}
+)
+
+map(
+    "n",
+    "z/",
+    function()
+        local scrolloff = vim.wo.scrolloff
+        vim.wo.scrolloff = 0
+        -- utils.normal("n", "VHoLo0<Esc>/\\%V")
+        utils.normal("n", "HVL<Esc>/\\%V")
+
+        vim.defer_fn(
+            function()
+                vim.wo.scrolloff = scrolloff
+            end,
+            10
+        )
+    end,
+    {desc = "Search in visible screen"}
 )
 
 map("n", "<Leader>rt", "<Cmd>setl et<CR>", {desc = "Set expandtab"})
@@ -164,7 +222,7 @@ wk.register(
         -- ["U"] = {"<C-r>", "Redo action"},
         ["U"] = {"<Plug>(RepeatRedo)", "Redo action"},
         ["<C-S-u>"] = {"<Plug>(RepeatUndoLine)", "Undo entire line"},
-        [";U"] = {"<Cmd>execute('later' . v:count1 . 'f')<CR>", "Return to later state"},
+        [";U"] = {"<Cmd>execute('later' . v:count1 . 'f' : )<CR>", "Return to later state"},
         [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         ["gI"] = {"<Cmd>sil! norm! `^<CR>", "Goto last insert spot"}
     }
@@ -210,10 +268,10 @@ wk.register(
         ["cN"] = {[[*``cgN]], "Change text, start search backward"},
         ["g."] = {[[/\V<C-r>"<CR>cgn<C-a><Esc>]], "Make last change as initiation for cgn"},
         ["&"] = "Repeat last substitution"
+        -- ["J"] = {"mzJ`z", "Join lines, keep curpos"}
     }
 )
 
-map("n", "<Leader>cd", "<Cmd>lcd %:p:h<CR><Cmd>pwd<CR>", {desc = "lcd to current directory"})
 map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 
 wk.register(
@@ -230,36 +288,75 @@ wk.register(
     {mode = "x"}
 )
 
--- map("n", "j", [[v:count ? (v:count > 5 ? "m`" . v:count : '') . 'j' : 'gj']], {expr = true})
--- map("n", "k", [[v:count ? (v:count > 5 ? "m`" . v:count : '') . 'k' : 'gk']], {expr = true})
-map("n", "j", [[(v:count > 1 ? 'm`' . v:count : '') . 'j']], {noremap = true, expr = true})
-map("n", "k", [[(v:count > 1 ? 'm`' . v:count : '') . 'k']], {noremap = true, expr = true})
+-- map("n", "j", [[(v:count > 1 ? 'm`' . v:count : '') . 'j']], {noremap = true, expr = true})
+-- map("n", "k", [[(v:count > 1 ? 'm`' . v:count : '') . 'k']], {noremap = true, expr = true})
 
-map("n", "gj", ":norm! }<CR>", {desc = "Move to next blank line", silent = true})
-map("n", "gk", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true})
--- map("n", ">", ":norm! }<CR>", {desc = "Move to next blank line", silent = true, nowait = true})
--- map("n", "<", ":norm! {<CR>", {desc = "Move to prev blank line", silent = true, nowait = true})
+-- map({"n", "x", "o"}, "H", "g0", {desc = "Start of screen-line"})
+-- map({"n", "x", "o"}, "L", "g_", {desc = "End of line"})
+map({"n", "x", "o"}, "H", "g^", {desc = "Start of line"})
+map(
+    "n",
+    "L",
+    [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.') - 1] == ' ' ? 'norm! ge' : '')<CR>]],
+    {desc = "End of line"}
+)
+map(
+    "x",
+    "L",
+    [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.') - 2] == ' ' ? 'norm! ge' : '')<CR>]],
+    {desc = "End of line"}
+)
+map("o", "L", "g$", {desc = "End of screen-line"})
+-- fn.nr2char(fn.strgetchar(fn.getline('.'):sub(fn.col('.')), 0))
 
-map({"n", "x", "o"}, "0", [[v:lua.require'common.builtin'.jump0()]], {expr = true})
--- map({"n", "x"}, "[", [[v:lua.require'common.builtin'.prefix_timeout('[')]], {expr = true})
--- map({"n", "x"}, "]", [[v:lua.require'common.builtin'.prefix_timeout(']')]], {expr = true})
+map("n", "j", [[v:count ? (v:count > 1 ? "m`" . v:count : '') . 'j' : 'gj']], {expr = true})
+map("n", "k", [[v:count ? (v:count > 1 ? "m`" . v:count : '') . 'k' : 'gk']], {expr = true})
+map("x", "j", "<Cmd>norm! gj<CR>", {desc = "Next screen-line", silent = true})
+map("x", "k", "<Cmd>norm! gk<CR>", {desc = "Prev screen-line", silent = true})
+map({"n", "x"}, "gj", "<Cmd>norm! j<CR>", {desc = "Next line", silent = true})
+map({"n", "x"}, "gk", "<Cmd>norm! k<CR>", {desc = "Prev line", silent = true})
+
+map("n", "<Down>", "<Cmd>norm! }<CR>", {desc = "Next blank line", silent = true})
+map("n", "<Up>", "<Cmd>norm! {<CR>", {desc = "Prev blank line", silent = true})
+
+map(
+    {"n", "x", "o"},
+    "0",
+    [[v:lua.require'common.builtin'.jump0()]],
+    {expr = true, desc = "Toggle first (non-blank) char"}
+)
 
 wk.register(
     {
+        ["gm"] = "Half screenwidth to right (screen-line)",
+        ["gM"] = "Halfway screen-line (count = % of line)",
+        ["g^"] = "First non-blank char of screen-line",
+        ["g_"] = "Last non-blank char",
+        ["g0"] = "First char of screen-line",
+        ["g<Home>"] = "First char of screen-line",
+        ["g$"] = "Last char of screen-line",
+        ["g<End>"] = "Last char of screen-line",
+        ["|"] = "Screen column (count)",
+        -- Quickfix
         ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
         ["]q"] = {[[<Cmd>execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
         ["[Q"] = {"<Cmd>cfirst<CR>", "First item in quickfix"},
         ["]Q"] = {"<Cmd>clast<CR>", "Last item in quickfix"},
-        ["[S"] = {"<Cmd>lfirst<CR>", "First location list"},
-        ["]S"] = {"<Cmd>llast<CR>", "Last location list"},
+        ["]e"] = {"<Cmd>cnewer<CR>", "Next quickfix list"},
+        ["[e"] = {"<Cmd>colder<CR>", "Prev quickfix list"},
+        -- Loclist
+        ["qw"] = {"<Cmd>lopen<CR>", "Open loclist"},
+        ["[w"] = {[[<Cmd>execute(v:count1 . 'lprev')<CR>]], "Previous item in loclist"},
+        ["]w"] = {[[<Cmd>execute(v:count1 . 'lnext')<CR>]], "Next item in loclist"},
+        ["[W"] = {"<Cmd>lfirst<CR>", "First item in loclist"},
+        ["]W"] = {"<Cmd>llast<CR>", "Last item in loclist"},
+        ["]E"] = {"<Cmd>lnewer<CR>", "Next loclist"},
+        ["[E"] = {"<Cmd>lolder<CR>", "Prev loclist"},
+        -- Tab
         ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
         ["]t"] = {"<Cmd>tabn<CR>", "Next tab"}
     }
 )
-
--- Location list
--- map("n", "[s", [[<Cmd>execute(v:count1 . 'lprev')<CR>]])
--- map("n", "]s", [[<Cmd>execute(v:count1 . 'lnext')<CR>]])
 
 map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
 map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
@@ -267,7 +364,7 @@ map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
 map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
 
 -- Refocus folds
-map("n", "<LocalLeader>z", [[zMzvzz]])
+map("n", "<LocalLeader>z", [[zMzvzz]], {noremap = false})
 
 map(
     "n",
@@ -278,6 +375,10 @@ map(
     ),
     {expr = true, desc = "Center or top current line"}
 )
+
+-- Keep focused in center of screen when searching
+-- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
+-- map("n", "N", "(v:searchforward ? 'Nzzzv' : 'nzzzv')", { expr = true })
 
 -- Window/Buffer
 -- Grepping for keybindings is more difficult with this
@@ -343,10 +444,6 @@ wk.register(
     }
 )
 
--- Keep focused in center of screen when searching
--- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
--- map("n", "N", "(v:searchforward ? 'Nzzzv' : 'nzzzv')", { expr = true })
-
 -- ]]] === General mappings ===
 
 -- ================== Spelling ================== [[[
@@ -394,15 +491,26 @@ wk.register(
 -- Allow the use of extended function keys
 local fkey = 1
 for i = 13, 24, 1 do
-    map({"n", "x"}, ("<F%d>"):format(i), ("<S-F%d>"):format(fkey), {silent = true})
+    map({"n", "x"}, ("<F%d>"):format(i), ("<S-F%d>"):format(fkey), {silent = true, desc = "ignore"})
     fkey = fkey + 1
 end
 
 fkey = 1
 for i = 25, 36, 1 do
-    map({"n", "x"}, ("<F%d>"):format(i), ("<C-F%d>"):format(fkey), {silent = true})
+    map({"n", "x"}, ("<F%d>"):format(i), ("<C-F%d>"):format(fkey), {silent = true, desc = "ignore"})
     fkey = fkey + 1
 end
 -- ]]] === Function Mappings ===
+
+-- Navigate merge conflict markers
+-- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
+-- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
+
+-- Jump back and forth jumplist
+-- map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
+-- map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
+-- This works if Alacritty is configured correctly and Tmux is recompiled
+-- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
+-- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
 
 return M

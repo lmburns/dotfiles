@@ -483,18 +483,12 @@ end
 --  │                          Other                           │
 --  ╰──────────────────────────────────────────────────────────╯
 
----@class WinSaveViewRet
----@field lnum number cursor line number
----@field col number  cursor column (first col=0)
----@field coladd number  cursor column offset for 'virtualedit'
----@field curswant number column for vertical movement
----@field topline number line in the window
----@field topfill number lines, only in diff mode
----@field leftcol number column displayed; only used when 'wrap' is off
----@field skipcol number skipped
-
--- ---@return WinSaveViewRet
--- fn.winsaveview = fn.winsaveview
+---Record a macro with same keypress
+---@param register string
+---@return string
+function M.record_macro(register)
+    return F.tern(fn.reg_recording() == "", "q" .. register, "q")
+end
 
 ---Run a command like `n`/`N` and center the screen
 ---@param command string Command to run
@@ -503,25 +497,28 @@ function M.center_next(command)
     -- if view.topline ~= fn.winsaveview().topline then
 
     local topline = fn.line("w0")
-
     local ok, msg = pcall(cmd.norm, {command, mods = {silent = true}, bang = true})
 
     if topline ~= fn.line("w0") then
         cmd.norm({"zz", mods = {silent = true}, bang = true})
     elseif not ok then
         local err = (msg:match "Vim:E486: Pattern not found:.*")
-        log.err(err or msg, {print = true})
+        log.err(err or msg, {dprint = true})
     end
 end
+
+M.set_formatopts = false
 
 ---Toggle 'r' in 'formatoptions'.
 ---This is the continuation of a comment on the next line
 function M.toggle_formatopts_r()
     if ol.formatoptions:get().r then
-        ol.formatoptions:append({r = false})
+        ol.formatoptions:append({r = false, o = false})
+        M.set_formatopts = false
         log.info("state: false", {title = "Comment Continuation"})
     else
-        ol.formatoptions:append({r = true})
+        ol.formatoptions:append({r = true, o = true})
+        M.set_formatopts = true
         log.warn("state: true", {title = "Comment Continuation"})
     end
 end
@@ -544,13 +541,7 @@ function M.diffsaved()
     cmd.diffthis()
 end
 
-command(
-    "DS",
-    function()
-        M.diffsaved()
-    end,
-    {desc = "Show diff of saved file"}
-)
+command("DiffSaved", D.ithunk(M.diffsaved), {desc = "Show diff of saved file"})
 
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()

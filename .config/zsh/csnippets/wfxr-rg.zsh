@@ -39,7 +39,7 @@ function RG() {
   # -E = dont' stop at first not found (needed with -F?)
   zmodload -Fa zsh/zutil b:zparseopts
   zparseopts -E -F -D -a opts - {g,-glob}+:-=glob {h,-height}+:-=fopts p -pcre -pcre2
-  filtered=( ${${${${(@)glob##-(g|-glob(=|))}//=/}}//(#m)*/--glob=${(qq)MATCH}} )
+  filtered=( ${${${${(@)glob##-(g|-glob(=|))}//=/}}//(#m)*/--glob=${(qq)MATCH:Q}} )
   filtered+=${${${(M)${+opts[(r)-(p|-pcre(2|))]}:#1}:+--pcre2}:-}
 
   ffiltered=( ${${${${(@)fopts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )

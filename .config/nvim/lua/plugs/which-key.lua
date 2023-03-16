@@ -130,8 +130,11 @@ function M.setup()
     }
 end
 
-local function wk_help()
-    return wk.show_command("", utils.mode())
+---
+---@param mode string
+local function wk_help(mode)
+    -- wk.show_command("", utils.mode())
+    wk.show_command("", mode)
 end
 
 local function init()
@@ -173,24 +176,23 @@ local function init()
     -- Addition to builtin which-key
     wk.register(
         {
-            ["gq"] = "Format operator",
+            ["gq"] = "Format operator (formatexpr, formatprg)",
+            ["="] = "Format operator (equalprg, indentexpr)",
+            ["zQ"] = "Equivalent to ':q!'",
+            ["zG"] = "Add word to internal spell-list",
             ["zW"] = "Mark word as bad internal wordlist",
             ["zuw"] = "Remove from spellfile",
             ["zuW"] = "Remove from internal wordlist",
             ["zug"] = "Remove from spellfile",
             ["zuG"] = "Remove from internal wordlist",
-            ["zQ"] = "Equivalent to ':q!'",
-            ["zG"] = "Add word to internal spell-list",
-            ["zd"] = "Delete one fold at the cursor",
-            ["zD"] = "Delete folds recursively",
-            ["zE"] = "Eliminate all folds",
-            ["zf"] = "Operator to create fold",
-            ["zF"] = "Create fold for [count] lines",
-            ["zX"] = "Undo manual folds, reapply foldlevel",
-            ["zn"] = "Fold none, open all folds",
-            ["zN"] = "Fold normal, all folds remain",
-            ["zi"] = "Invert 'foldenable'"
         }
+    )
+
+    wk.register(
+        {
+            ["="] = "Format operator (equalprg, indentexpr)",
+        },
+        {mode = "v"}
     )
 
     wk.register(
@@ -209,7 +211,7 @@ local function init()
     )
 
     -- <F-3> to show which-key help in any relevant mode
-    local _modes = {"n", "i", "t", "v", "x", "o"}
+    local _modes = {"n", "i", "t", "v", "x", "s", "o"}
     for m = 1, #_modes do
         wk.register(
             {["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}},

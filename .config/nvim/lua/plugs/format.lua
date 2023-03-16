@@ -39,7 +39,8 @@ local function save_doc(bufnr)
 end
 
 ---Run `Neoformat` on the buffer
-function M.neoformat()
+---@param save boolean Should file be saved
+function M.neoformat(save)
     local bufnr = api.nvim_get_current_buf()
     -- This is a little dense
     if
@@ -62,7 +63,9 @@ function M.neoformat()
         cmd("lockmarks keepjumps Neoformat")
     end
 
-    -- cmd("sil! up")
+    if save then
+        save_doc(0)
+    end
 end
 
 ---@return string
@@ -76,16 +79,17 @@ end
 function M.format_doc(save)
     save = utils.get_default(save, true)
     local view = utils.save_win_positions(0)
+    local bufnr = api.nvim_get_current_buf()
 
     gittool.root_exe(
         function()
             if coc.did_init() then
-                local bufnr = api.nvim_get_current_buf()
 
-                -- if _t({"typescript", "javascript"}):contains(vim.bo[bufnr].ft) then
-                --     neoformat()
-                --     return
-                -- end
+                -- Takes to long to respond. Lua's format is disabled
+                if _t({"lua"}):contains(vim.bo[bufnr].ft) then
+                    M.neoformat(save)
+                    return
+                end
 
                 local err, res = coc.a2sync("hasProvider", {"format"}, 2000)
 
@@ -127,10 +131,10 @@ function M.format_doc(save)
                     --         {("\n%s"):format(output), "TSNote"}
                     --     }
                     -- )
-                    M.neoformat()
+                    M.neoformat(save)
                 end
             else
-                M.neoformat()
+                M.neoformat(save)
             end
         end
     )

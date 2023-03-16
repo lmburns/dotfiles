@@ -1,7 +1,12 @@
 [Unit]
 Description=Flashfocus
+# After=graphical.target
+# After=multi-user.target
+# After=xdg-desktop-autostart.target
 
 [Service]
+Environment=DISPLAY=:0
+# Environment=XAUTHORITY=/home/lucas/.Xauthority
 ExecStart=/home/lucas/.local/bin/flashfocus
 Restart=on-failure
 RestartSec=3s

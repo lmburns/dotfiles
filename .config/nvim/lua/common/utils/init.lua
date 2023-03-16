@@ -16,13 +16,11 @@ local log = require("common.log")
 local debounce = require("common.debounce")
 local disposable = require("common.disposable")
 local style = require("style")
-local dirs = require("common.global").dirs
 
 local wk = require("which-key")
 local uva = require("uva")
 local async = require("async")
 
-local ex = nvim.ex
 local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
@@ -127,8 +125,15 @@ M.empty = function(item, buf)
     end
 end
 
+---@alias NormalArgs
+---| "'m'" Remap keys
+---| "'n'" Do not remap keys
+---| "'t'" Handle keys as if typed
+---| "'i'" Insert string instead of append
+---| "'x'" Execute command similar to `:normal!`
+
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
----@param mode string
+---@param mode NormalArgs
 ---@param motion string
 M.normal = function(mode, motion)
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
@@ -151,6 +156,15 @@ M.set_cursor = function(winid, line, column)
             math.max(0, column or 0)
         }
     )
+end
+
+---Easier cursor retrieval
+---@param winnr? number
+---@return number row
+---@return number col
+M.get_cursor = function(winnr)
+    winnr = M.get_default(winnr, 0)
+    return unpack(api.nvim_win_get_cursor(winnr))
 end
 
 ---Create an augroup with the lua api
@@ -281,20 +295,24 @@ end
 ---@field cmd boolean
 ---@field luacmd boolean
 ---@field desc string
+---@field ignore boolean
+---@field cond any|fun(): boolean
+---@field ft string|string[]
 
 ---@class DelMapArgs
 ---@field buffer boolean|number
 ---@field notify boolean
 
+-- TODO: implement filetype @field ft string|string[]
+
 ---Create a key mapping
 ---If the `rhs` is a function, and a `bufnr` is given, the argument is instead moved into the `opts`
 ---
----@param modes string|string[]: Modes the keymapping should be bound
----@param lhs string: Keybinding that is mapped
----@param rhs string|function: String or Lua function that will be bound to a key
+---@param modes string|string[]: Mode(s) the keymapping should be bound
+---@param lhs string|string[]: Keybinding(s) that is mapped
+---@param rhs string|fun(): string? String or Lua function that will be bound to a key
 ---@param opts? MapArgs: Options given to keybindings
----@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a two keys `dispose` & `map`.
----                                        `.dispose()` can be used for temporary keyaps.
+---@return { map: fun(): Keymap_t, dispose: fun() }?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
 --- See: **:map-arguments**
 ---
 --- ## Options
@@ -313,16 +331,45 @@ end
 --- - `cmd`: (boolean, default false) Make the mapping a `<Cmd>` mapping (do not use `<Cmd>`..<CR> with this)
 --- - `luacmd`: (boolean, default false) Make the mapping a `<Cmd>lua` mapping (do not use `<Cmd>`..<CR> with this)
 --- - `desc`: (string) Describe the keybinding, this hooks to `which-key`
+--- - `ignore`: (boolean, default false) Pass `which_key_ignore` to `which-key`. Overrides `desc`
+--- - `cond`: (any|fun(): boolean) Condition must be met to have mapping set
+--- - `ft`: (string|string[]) A filetype or list of filetypes where keybinding will be created
 M.map = function(modes, lhs, rhs, opts)
-    vim.validate {
-        mode = {modes, {"s", "t"}},
-        lhs = {lhs, "s"},
-        rhs = {rhs, {"s", "f"}},
-        opts = {opts, "t", true}
-    }
+    local ok, err =
+        pcall(
+        vim.validate,
+        {
+            mode = {modes, {"s", "t"}},
+            lhs = {lhs, {"s", "t"}},
+            rhs = {rhs, {"s", "f"}},
+            opts = {opts, "t", true}
+        }
+    )
+
+    local l = type(l) == "string" and {l} or l --[==[@as string[]]==]
+
+    if not ok then
+        log.err(("%s: %s"):format(err, lhs), {debug = true})
+        return
+    end
 
     opts = vim.deepcopy(opts) or {} --[[@as MapArgs]]
     modes = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
+
+    if opts.cond ~= nil then
+        if type(opts.cond) == "function" then
+            if not opts.cond() then
+                return
+            end
+        elseif not opts.cond then
+            return
+        end
+    end
+
+    if opts.ignore or opts.desc == "ignore" then
+        opts.desc = "which_key_ignore"
+        opts.ignore = nil
+    end
 
     if opts.remap == nil then
         if opts.noremap ~= false then
@@ -358,15 +405,15 @@ M.map = function(modes, lhs, rhs, opts)
             end
 
             if opts.cmd then
-                opts.cmd = nil
                 rhs = ("<Cmd>%s<CR>"):format(rhs)
+                opts.cmd = nil
             end
 
             -- This is placed after `cmd`
             -- If `cmd` and `luacmd` are both used, `luacmd` overrules
             if opts.luacmd then
-                opts.luacmd = nil
                 rhs = ("<Cmd>lua %s<CR>"):format(rhs)
+                opts.luacmd = nil
             end
         end
 
@@ -444,7 +491,7 @@ end
 ---@param lhs string Keybinding that is mapped
 ---@param rhs string|function String or Lua function that will be bound to a key
 ---@param opts MapArgs Options given to keybindings
----@return { map: fun(): Keymap_t, dispose: fun() }: Returns a table with a single key `dispose` which can be ran to remove
+---@return { map: fun(): Keymap_t, dispose: fun() }?: Returns a table with a single key `dispose` which can be ran to remove
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {} --[[@as MapArgs]]
     opts.buffer = bufnr
@@ -707,21 +754,10 @@ M.version = function(major, minor, _)
     return major >= v.major and minor >= v.minor
 end
 
----Source a lua or vimscript file
----@param path string path relative to the nvim directory
----@param prefix boolean?
-M.source = function(path, prefix)
-    if not prefix then
-        cmd.source(path)
-    else
-        cmd.source(("%s/%s"):format(dirs.config, path))
-    end
-end
-
 ---Get the latest messages from `messages` command
 ---@param count number? of messages to get
 ---@param str boolean whether to return as a string or table
----@return string
+---@return string|string[]
 M.messages = function(count, str)
     -- local messages = api.nvim_exec("messages", true)
     local messages = fn.execute("messages")
@@ -814,8 +850,11 @@ end
 ---@field replace? integer|notify.Record Notification record or record `id` field
 ---@field hide_from_history? boolean Hide this notification from history
 ---@field animate? boolean If false, window will jump to the timed stage
----@field print? boolean [Custom]: Print message instead of notify
----@field hl? string [Custom]: Highlight group
+---@field style? RenderType [Custom]: Alias for render
+---@field print boolean [Custom]: Print message instead of notify
+---@field hl string [Custom]: Highlight group
+---@field debug boolean [Custom]: Display function name and line number
+---@field dprint boolean [Custom]: Combination of debug and print
 
 do
     local notifications = {}
@@ -840,6 +879,11 @@ do
         })[level]
 
         opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as NotifyOpts]]
+
+        if opts.style and not opts.render then
+            opts.render = opts.style
+            opts.style = nil
+        end
 
         local function notify()
             if vim.g.nvim_focused then
@@ -872,16 +916,47 @@ end
 
 ---Global notify function.
 ---This must be defined here instead of `global.lua` due to loading order.
----@param msg string
----@param level number?
----@param title string?
-_G.N = function(msg, level, title)
-    M.notify(
-        vim.inspect(msg),
-        M.get_default(level, log.levels.INFO) --[[@as number]],
-        {title = title}
-    )
-end
+_G.N =
+    setmetatable(
+    {},
+    {
+        __index = function(super, level)
+            level = M.get_default(rawget(super, level), level)
+
+            return setmetatable(
+                {},
+                {
+                    ---@param msg string
+                    ---@param title? string
+                    __call = function(_, msg, title)
+                        super(msg, title, level)
+                    end
+                }
+            )
+        end,
+        ---
+        ---@param msg string
+        ---@param title? string
+        ---@param level? string|number
+        __call = function(_, msg, title, level)
+            level =
+                ({
+                ["trace"] = 0,
+                ["debug"] = 1,
+                ["info"] = 2,
+                ["warn"] = 3,
+                ["error"] = 4,
+                ["err"] = 4
+            })[level] or level
+
+            M.notify(
+                vim.inspect(msg),
+                M.get_default(level, log.levels.INFO) --[[@as number]],
+                {title = title}
+            )
+        end
+    }
+)
 
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
@@ -912,49 +987,6 @@ M.squeeze_blank_lines = function()
             M.set_cursor(0, (line - result), col)
         end
         nvim.reg["/"] = old_query
-    end
-end
-
----Get specified builtin marks
----
----This is to be used when formatting a file. When formattinga a file, the last line
----is shown to be the line that was last modified regardless of whether or not keepj,
----keepp, lockmarks, or keepmarks is used.
----However, this does not work! So, perhaps it can be used for something else
----
----@param marks table? builtin marks to be saved
----@param bufnr number? buffer where marks should be saved
----@diagnostic disable-next-line:unused-local
-M.get_marks = function(bufnr, marks, tbl)
-    -- local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
-    marks = marks or require("marks").mark_state.builtin_marks
-    bufnr = bufnr or api.nvim_get_current_buf()
-    local saved = {}
-
-    for _, mark in pairs(fn.getmarklist("%")) do
-        for _, builtin in pairs(marks) do
-            if mark.mark:sub(2, 2) == builtin then
-                table.insert(saved, mark)
-            end
-        end
-    end
-
-    return function()
-        for _, mark in pairs(marks) do
-            local _, lnum, col, _ = unpack(mark.pos)
-            api.nvim_buf_set_mark(bufnr, mark.mark:sub(2, 2), lnum, col, {})
-        end
-    end
-end
-
----Set a list of marks
----@param marks table builtin marks to be set
----@param bufnr number? buffer where marks should be set
-M.set_marks = function(marks, bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
-    for _, mark in pairs(marks) do
-        local _, lnum, col, _ = unpack(mark.pos)
-        api.nvim_buf_set_mark(bufnr, mark.mark:sub(2, 2), lnum, col, {})
     end
 end
 
@@ -1209,10 +1241,8 @@ end
 ---Bufwipe buffers that aren't modified and haven't been saved (i.e., don't have a titlestring)
 M.clean_empty_bufs = function()
     local bufnrs = {}
-    for _, bufnr in ipairs(api.nvim_list_bufs()) do
-        if not vim.bo[bufnr].modified and api.nvim_buf_get_name(bufnr) == "" then
-            table.insert(bufnrs, bufnr)
-        end
+    for _, bufnr in ipairs(D.list_bufs({modified = false, bufname = ""})) do
+        table.insert(bufnrs, bufnr)
     end
     if #bufnrs > 0 then
         cmd("bw " .. table.concat(bufnrs, " "))
@@ -1234,7 +1264,7 @@ M.close_diff = function()
             local ok, msg = pcall(api.nvim_win_close, winid, false)
             if not ok and (msg and msg:match("^Vim:E444:")) then
                 if api.nvim_buf_get_name(0):match("^fugitive://") then
-                    ex.Gedit() -- FIX: cmd ex: Why doesn't cmd.Gedit work?
+                    cmd("Gedit")
                 end
             end
         end
@@ -1448,11 +1478,8 @@ end
 -- Search global variables:
 --    filter <pattern> let g:
 
--- Switching from Vimscript to Lua
---   https://github.com/nanotee/nvim-lua-guide
-
 -- EmmyLua
---   https://github.com/sumneko/lua-language-server/wiki/Annotations
+--   https://github.com/LuaLS/lua-language-server/wiki/Annotations
 
 -- Metatable Events
 --   http://lua-users.org/wiki/MetatableEvents

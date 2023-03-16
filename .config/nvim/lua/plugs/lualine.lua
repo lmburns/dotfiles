@@ -150,7 +150,7 @@ local sections_1 = {
                 hint = icons.lsp.sb.hint
             }
         },
-        -- FIX: When gps isn't show there's a white seperator shown
+        -- FIX: When gps isn't shown there's a white seperator visible
         {
             "diff",
             colored = true,
@@ -191,25 +191,30 @@ local sections_1 = {
         },
         {
             plugs.quickfix_count.fn,
-            separator = {left = plugs.sep()}
+            separator = {left = plugs.sep()},
+            color = {fg = colors.oni_violet, gui = "bold"}
         },
-        plugs.loclist_count.fn,
+        {
+            plugs.loclist_count.fn,
+            separator = {left = plugs.sep()},
+            color = {fg = colors.oni_violet, gui = "bold"}
+        },
         {
             "%3l %3v",
             fmt = function(s)
                 return ("%s %s"):format(icons.misc.line, s)
-            end
+            end,
+            color = {fg = colors.slate_grey, gui = "bold"}
+        },
+        {
+            plugs.foldlevel.fn,
+            color = {fg = colors.yellow, gui = "bold"}
         },
         F.tern(
             g.colors_name == "kimbox",
-            {
-                "%p%%/%-3L",
-                color = {fg = colors.light_red, gui = "bold"}
-            },
-            {
-                "%p%%/%-3L"
-            }
-        )
+            {"%p%%/%-3L", color = {fg = colors.light_red, gui = "bold"}},
+            {"%p%%/%-3L"}
+        ),
         -- {
         --     "overseer",
         --     label = "", -- Prefix for task counts
@@ -239,8 +244,8 @@ local sections_2 = {
     lualine_a = {"mode"},
     lualine_b = {
         {"filetype", icon_only = true},
-        "fileformat",
         {"filesize", cond = conds.hide_in_width},
+        -- "fileformat",
         {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
         {
             "filename",

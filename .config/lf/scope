@@ -167,7 +167,7 @@ function handle_other() {
         rhash -c -- "${filepath}"
       ;;
       (*.[1-8])
-        man -- "${filepath}" | col -b
+        man -- "${filepath}" | col -b | bat --style=grid --color=always -l man
       ;;
       (*.o)
         nm -- "${filepath}" | bat --style=grid

@@ -62,14 +62,14 @@ numlockx &
     #     'redshift -b 0.1:0.1' \
     #     'redshift -b 1.0:1.0' \
 
-# xidlehook \
-#     --not-when-fullscreen \
-#     --not-when-audio \
-#     --timer 500 \
-#         'screensaver' '' \
-#     --timer 240 \
-#         'xset dpms force off; pidof i3lock || screenlock' '' \
-#     --socket "/tmp/xidlehook.sock" &
+xidlehook \
+    --not-when-fullscreen \
+    --not-when-audio \
+    --timer 500 \
+        'screensaver' '' \
+    --timer 240 \
+        'xset dpms force off; pidof i3lock || screenlock' '' \
+    --socket "/tmp/xidlehook.sock" &
 
 # flashfocus &
 
@@ -114,7 +114,8 @@ hsetroot -cover ~/Pictures/wallpapers/LakeSideDark.jpg &
 pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml" &
 
 # Screenshot
-flameshot &
+# flameshot &
+
 # Input handler
 # fcitx -d &
 

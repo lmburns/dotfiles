@@ -41,28 +41,30 @@ if get(g:, 'zsh_fold_enable', 0)
     setlocal foldmethod=syntax
 endif
 
-" syn match   zshQuoted           '\\.'
-" syn match   zshPOSIXQuoted      '\\[xX][0-9a-fA-F]\{1,2}'
-" syn match   zshPOSIXQuoted      '\\[0-7]\{1,3}'
-" syn match   zshPOSIXQuoted      '\\u[0-9a-fA-F]\{1,4}'
-" syn match   zshPOSIXQuoted      '\\U[1-9a-fA-F]\{1,8}'
+syn match   zshQuoted           '\\.'
+syn match   zshPOSIXQuoted      '\\[xX][0-9a-fA-F]\{1,2}'
+syn match   zshPOSIXQuoted      '\\[0-7]\{1,3}'
+syn match   zshPOSIXQuoted      '\\u[0-9a-fA-F]\{1,4}'
+syn match   zshPOSIXQuoted      '\\U[1-9a-fA-F]\{1,8}'
 
-syn match   zshQuoted              '\\[abcfnrtv0e\\]' " TODO: highlight different
-syn match   zshPOSIXQuotedHex      '\\[xX][0-9a-fA-F]\{1,2}'
-syn match   zshPOSIXQuotedOct      '\\[0-7]\{1,3}'
-syn match   zshPOSIXQuotedUni      '\\u[0-9a-fA-F]\{1,4}'
-syn match   zshPOSIXQuotedUni      '\\U[1-9a-fA-F]\{1,8}'
-syn cluster zshPOSIXQuoted         contains=zshPOSIXQuotedHex,zshPOSIXQuotedOct,zshPOSIXQuotedUni
+" syn match   zshQuoted              '\\[abcfnrtv0e\\]' " TODO: highlight different
+" syn match   zshPOSIXQuotedHex      '\\[xX][0-9a-fA-F]\{1,2}'
+" syn match   zshPOSIXQuotedOct      '\\[0-7]\{1,3}'
+" syn match   zshPOSIXQuotedUni      '\\u[0-9a-fA-F]\{1,4}'
+" syn match   zshPOSIXQuotedUni      '\\U[1-9a-fA-F]\{1,8}'
+" syn cluster zshPOSIXQuoted         contains=zshPOSIXQuotedHex,zshPOSIXQuotedOct,zshPOSIXQuotedUni
+"
+" " syn match   zshStringEscDate
+" "             \ '\v\%D\{0|a|A|b|B|c|C|d|D|e|E|f|F|g|G|h|H|I|j|k|K|l|L|m|M|n|N|O|p|P|r|R|s|S|t|T|u|U|V|w|W|x|X|y|Y|z|Z|^|-|\.|_\%|#}'
+" syn match   zshStringEsc     '\v\%(\%|\)|l|M|n|y|#|\?|^|e|h|!|i|I|j|L|N|x|D|T|t|\@|\*|w|W)'
+" syn match   zshStringEsc     '\v\%(-=\d)=(m|d|\/|_|\~|c|\.|C)'
+"
+" syn match   zshStringEscDateOther '[^{}]' contained
+" syn match   zshStringEscDateChars '\v\%(0|\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz])' contained
+" syn match   zshStringEscDate     '\v\%D\{((\%(\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz]))|[^}])+}'
+"                                  \ contains=zshStringEscDateChars,zshStringEscDateOther
 
-" syn match   zshStringEscDate
-"             \ '\v\%D\{0|a|A|b|B|c|C|d|D|e|E|f|F|g|G|h|H|I|j|k|K|l|L|m|M|n|N|O|p|P|r|R|s|S|t|T|u|U|V|w|W|x|X|y|Y|z|Z|^|-|\.|_\%|#}'
-syn match   zshStringEsc     '\v\%(\%|\)|l|M|n|y|#|\?|^|e|h|!|i|I|j|L|N|x|D|T|t|\@|\*|w|W)'
-syn match   zshStringEsc     '\v\%(-=\d)=(m|d|\/|_|\~|c|\.|C)'
 
-syn match   zshStringEscDateOther '[^{}]' contained
-syn match   zshStringEscDateChars '\v\%(0|\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz])' contained
-syn match   zshStringEscDate     '\v\%D\{((\%(\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz]))|[^}])+}'
-                                 \ contains=zshStringEscDateChars,zshStringEscDateOther
 " syn match   zshStringEscDate      '\v\%D\{\zs[^}]+\ze}' contains=zshStringEscDateChars " %D{%H:%M:%S.%.}
 
 

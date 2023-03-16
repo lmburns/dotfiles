@@ -500,6 +500,8 @@ function _G.map_cr()
         return fn["coc#pum#confirm"]()
     end
 
+    -- Start new undo sequence
+    utils.normal("n", "<C-]><C-g>u")
     return require("nvim-autopairs").autopairs_cr()
 end
 
@@ -994,8 +996,8 @@ function M.init()
     map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], shexpr)
 
     -- Popup
-    map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], shexpr)
-    map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], shexpr)
+    -- map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], shexpr)
+    -- map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], shexpr)
     map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], shexpr)
     map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], shexpr)
 

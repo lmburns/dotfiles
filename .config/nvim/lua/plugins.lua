@@ -338,12 +338,16 @@ return packer.startup(
                         {"n", "ghP"},
                         {"n", "g#p"}, -- Paste commented out
                         {"n", "g#P"},
+                        {"n", "g2p"}, -- Paste commented out
+                        {"n", "g2P"},
                         {"n", "g>p"}, -- Paste shifted
                         {"n", "g>P"},
                         {"n", "g[p"}, -- Paste linewise (like glp but adjust indent)
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
-                        {"n", "gsP"}
+                        {"n", "gsP"},
+                        {"i", "<C-M-p>"},
+                        {"i", "<M-p>"},
                     }
                 }
             )
@@ -434,6 +438,8 @@ return packer.startup(
             use({"rose-pine/neovim", as = "rose-pine"})
             use({"marko-cerovac/material.nvim"})
             use({"meliora-theme/neovim"})
+            -- use({"arturgoms/moonbow.nvim"})
+
             -- use({"tiagovla/tokyodark.nvim"})
             -- use({"bluz71/vim-nightfly-guicolors"})
             -- use({"haishanh/night-owl.vim"})
@@ -553,7 +559,8 @@ return packer.startup(
                     -- cmd = {"T", "TR", "TP", "VT"}
                 }
             )
-            -- use({ "kassio/neoterm", conf = "neoterm" })
+
+            use({"willothy/flatten.nvim", conf = "plugs.neoterm.flatten"})
             -- ]]] === Floaterm ===
 
             -- ============================ File Manager =========================== [[[
@@ -797,9 +804,6 @@ return packer.startup(
             -- ]]] === Fzf ===
 
             -- ============================= Operator ============================== [[[
-            use({"wellle/targets.vim", conf = "targets"})
-            use({"andymass/vim-matchup", conf = "matchup"})
-
             -- bennypowers/splitjoin.nvim
             -- "AckslD/nvim-trevJ.lua"
             use(
@@ -882,10 +886,11 @@ return packer.startup(
                 }
             )
 
-            use({"machakann/vim-sandwich", conf = "sandwhich"})
+            use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
+            use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
+            use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
+            use({"andymass/vim-matchup", conf = "matchup"})
 
-            -- use({"anuvyklack/pretty-fold.nvim", requires = "anuvyklack/nvim-keymap-amend"})
-            -- use({"Raimondi/delimitMate", event = "InsertEnter", conf = "delimitmate"})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
             use(
@@ -1062,6 +1067,7 @@ return packer.startup(
                             "d",
                             "dart",
                             "dockerfile",
+                            "gitconfig",
                             "go",
                             "gomod",
                             "html",
@@ -1069,7 +1075,7 @@ return packer.startup(
                             "java",
                             "julia",
                             -- "lua",
-                            -- "json",
+                            "json",
                             -- "kotlin",
                             -- "lua",
                             "make",
@@ -1125,8 +1131,16 @@ return packer.startup(
                     end
                 }
             )
-            use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-            use({"HiPhish/info.vim", cmd = "Info"})
+
+            -- use(
+            --     {
+            --         "Remich/vim-tmsu",
+            --         config = [[vim.g.vimtmsu_plugin_dir = vim.env.PACKDIR .. '/start/vim-tmsu']]
+            --     }
+            -- )
+
+            -- use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
+            -- use({"HiPhish/info.vim", cmd = "Info"})
             -- ]]] === File Viewer ===
 
             -- ============================== Snippets ============================= [[[
@@ -1213,7 +1227,7 @@ return packer.startup(
             -- │                        Treesitter                        │
             -- ╰──────────────────────────────────────────────────────────╯
 
-            use({"chrisgrieser/nvim-various-textobjs", conf = "various_textobjs"})
+            use({"chrisgrieser/nvim-various-textobjs", conf = "plugs.textobj.various_textobjs"})
             use(
                 {
                     "mizlan/iswap.nvim",

@@ -3,6 +3,7 @@
 local M = {}
 
 local utils = require("common.utils")
+local log = require("common.log")
 
 local api = vim.api
 local F = vim.F
@@ -360,6 +361,64 @@ nvim.reg =
                 error("can't clear registers")
             end
             pcall(api.nvim_call_function, "setreg", {k, v})
+        end
+    }
+)
+
+---@class NvimMark
+---@field name string
+---@field row number
+---@field col number
+---@field bufnr number
+---@field bufname string
+
+---Access to marks
+nvim.mark =
+    setmetatable(
+    {},
+    {
+        ---@param _ any
+        ---@param k string
+        ---@return NvimMark?
+        __index = function(_, k)
+            local ok, mark
+            if k:match("%a") and k == k:upper() then
+                -- {row, col, buffer, buffername}
+                ok, mark = pcall(api.nvim_get_mark, k, {})
+                if ok then
+                    local row, col, bufnr, bufname = unpack(mark)
+                    return {name = k, row = row, col = col, bufnr = bufnr, bufname = bufname}
+                else
+                    log.err(("failed to get mark '%s': %s"):format(k, mark), {dprint = true})
+                end
+            else
+                -- {row, col}
+                ok, mark = pcall(api.nvim_buf_get_mark, 0, k)
+                if ok then
+                    local row, col = unpack(mark)
+                    return {
+                        name = k,
+                        row = row,
+                        col = col,
+                        bufnr = 0,
+                        bufname = api.nvim_buf_get_name(0)
+                    }
+                else
+                    log.err(("failed to get mark '%s': %s"):format(k, mark), {dprint = true})
+                end
+            end
+        end,
+        __newindex = function(_, k, v)
+            if type(v) ~= "table" or #v ~= 2 then
+                error("must pass table {row, col}")
+            end
+            if type(k) ~= "string" or #k ~= 1 then
+                error("mark must be a single letter")
+            end
+            local ok, msg = pcall(api.nvim_buf_set_mark, 0, k, v[1], v[2], {})
+            if not ok then
+                log.err(("failed to set mark: %s"):format(msg), {dprint = true})
+            end
         end
     }
 )

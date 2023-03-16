@@ -44,10 +44,12 @@ function M.jump0()
     local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]
     local expr
     if line:sub(1, col):match("^%s+$") then
-        expr = "0"
+        -- expr = "0"
+        expr = "g0" -- screen-line
     else
         nvim.buf.set_mark(0, "`", lnum, col, {})
-        expr = "^"
+        -- expr = "^"
+        expr = "g^" -- screen-line
     end
     return expr
 end

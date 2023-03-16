@@ -98,6 +98,8 @@ local function mappings(bufnr)
             ["<Leader>hR"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
             ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
+            ["<Leader>gu"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
+            ["<Leader>gd"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
             ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
             ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
             ["<Leader>hv"] = {
@@ -143,7 +145,7 @@ local function mappings(bufnr)
         function()
             gs.stage_hunk({fn.line("."), fn.line("v")})
         end,
-        {buffer = bufnr, desc = "Stage hunk (g)"}
+        {buffer = bufnr, desc = "Stage hunk (git)"}
     )
 
     map(
@@ -184,7 +186,7 @@ function M.setup()
         {
             -- Enables debug logging and makes the following functions
             -- available: `dump_cache`, `debug_messages`, `clear_debug`.
-            debug_mode = true,
+            debug_mode = false,
             -- More verbose debug message. Requires debug_mode=true.
             _verbose = false,
             -- Use extmarks for placing signs
@@ -195,8 +197,8 @@ function M.setup()
             _blame_cache = true,
             -- Always refresh the staged file on each update.
             -- Disabling will cause staged file to be refreshed when an update to the index is detected
-            _refresh_staged_on_update = false,
-            -- _signs_staged_enable = true,
+            _refresh_staged_on_update = true,
+            _signs_staged_enable = true,
             signs = {
                 add = {
                     hl = "GitSignsAdd",
@@ -261,13 +263,6 @@ function M.setup()
                     gitdir = env.DOTBARE_DIR
                 }
             },
-            -- _on_attach_pre = function(bufnr, cb)
-            --     cb {
-            --         toplevel = env.DOTBARE_TREE,
-            --         gitdir = env.DOTBARE_DIR
-            --     }
-            --     -- gs.debug_messages()
-            -- end,
             watch_gitdir = {
                 enable = true,
                 -- Interval the watcher waits between polls of the gitdir in milliseconds.
@@ -345,16 +340,6 @@ function M.setup()
             yadm = {enable = false}
         }
     )
-
-    -- gs.setup({
-    --     debug_mode = true, -- You must add this to enable debug messages
-    --     worktrees = {
-    --         {
-    --             toplevel = vim.env.DOTBARE_TREE,
-    --             gitdir = vim.env.DOTBARE_DIR,
-    --         },
-    --     },
-    -- })
     config = require("gitsigns.config").config
 end
 

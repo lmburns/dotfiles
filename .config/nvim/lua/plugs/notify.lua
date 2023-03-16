@@ -12,6 +12,8 @@ local style = require("style")
 local F = vim.F
 local api = vim.api
 
+local max_width = 65
+
 function M.setup()
     ---@type table<string, fun(bufnr: number, notif: table, highlights: table, config: table)>
     local renderer = require("notify.render")
@@ -59,13 +61,18 @@ function M.setup()
                     F.tern(
                     notif.title[1] == "",
                     "minimal",
-                    (F.tern(
-                        (#(notif.title[1]:split()) > 1) or
-                            (notif.title[2] and not notif.title[2]:match("%d%d:%d%d")),
+                    F.tern(
+                        notif.title[2] and not notif.title[2]:match("%d%d:%d%d"),
                         "default",
-                        "compact"
-                    ))
+                        F.tern(
+                            #notif.title[1] + #notif.message[1] <= max_width,
+                            "compact",
+                            "default"
+                        )
+                    )
                 )
+
+                -- local style = notif.title[1] == "" and "minimal" or "default"
                 renderer[style](bufnr, notif, highlights, config)
             end,
             icons = style.plugins.notify

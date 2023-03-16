@@ -1,7 +1,9 @@
 [Unit]
 Description=Redshift
+After=graphical.target
 
 [Service]
+Environment=DISPLAY=:0
 ExecStart=/usr/bin/redshift -c /home/lucas/.config/redshift/redshift.conf
 Restart=on-failure
 RestartSec=3s

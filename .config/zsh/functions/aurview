@@ -1,15 +1,13 @@
 # Desc: Temporarily look at an aur package
 
-# Credit: wfxr on github
-
 function aurview() {
-    [ -d "/tmp/$1" ] || git clone "ssh://aur@aur.archlinux.org/$1" "/tmp/$1"
+    [[ -d "/tmp/$1" ]] || git clone "https://aur@aur.archlinux.org/$1" "/tmp/$1"
 
-    echo "PKGBUILD:"
-    cat "/tmp/$1/PKGBUILD"
+    print -Pr "\n%F{53}%BPKGBUILD%b%f:"
+    bat -Pl --style=grid PKGBUILD "/tmp/$1/PKGBUILD"
 
-    printf "\nFiles in aur repo:\n"
-    ls -a "/tmp/$1"
+    print -P "\n%F{53}%BFiles in $1%b%f:"
+    exa -FlahHgb --git --icons --time-style long-iso --octal-permissions "/tmp/$1"
 }
 
 aurview "$@"

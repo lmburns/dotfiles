@@ -283,6 +283,8 @@ ignore =
     # B904: raise-without-from-inside-except: Within an except clause, raise exceptions with raise ... from err/None (Ruff: B904)
     B905,
     # B905: zip-without-explicit-strict: zip() without an explicit strict= parameter (Ruff: B905)
+    F821,
+    # F821: undefined name 're' (Pylint)
 
 
 # code  sample message

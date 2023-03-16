@@ -67,6 +67,7 @@ M.icons = {
         gear = "",
         history = "",
         flower = "✿",
+        fold = "",
         indent = "Ξ",
         keyboard = "⌨",
         lightbulb = "",

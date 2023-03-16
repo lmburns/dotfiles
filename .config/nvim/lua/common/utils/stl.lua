@@ -164,10 +164,98 @@ M.plugins.wrap = {
     fn = [[%"w]]
 }
 
+---Display 'foldlevel'
+M.plugins.foldlevel = {
+    ---@return string
+    toggle = function()
+        return api.nvim_win_get_option(0, "foldlevel")
+    end,
+    ---@return string
+    fn = function()
+        return ("%s %s"):format(icons.misc.fold, vim.o.foldlevel)
+    end
+}
+
 ---Show space information about the buffer
 M.plugins.space_info = function()
     return "%{&expandtab?'Spc:'.&shiftwidth:'Tab:'.&shiftwidth}"
 end
+
+M.plugins.file_encoding = {
+    ---@return boolean
+    toggle = function()
+        local encoding = vim.o.fileencoding
+        return encoding ~= "utf-8"
+    end,
+    ---@return string
+    fn = function()
+        return vim.o.fileencoding
+    end
+}
+
+M.plugins.search_result = {
+    fn = function()
+        if vim.v.hlsearch == 0 then
+            return ""
+        end
+        local last_search = nvim.reg["/"]
+        if not last_search or last_search == "" then
+            return ""
+        end
+
+        -- If the user searches for ',\)', and 'unmatched' error occurs
+        local searchcount = fn.searchcount({maxcount = 9999})
+        if vim.tbl_isempty(searchcount) then
+            return ""
+        end
+
+        return last_search .. "[" .. searchcount.current .. "/" .. searchcount.total .. "]"
+    end
+}
+
+---Alternate progress indicator
+M.plugins.progress = {
+    fn = function()
+        local current_line = fn.line(".")
+        local total_lines = fn.line("$")
+        local chars = {
+            "__",
+            "▁▁",
+            "▂▂",
+            "▃▃",
+            "▄▄",
+            "▅▅",
+            "▆▆",
+            "▇▇",
+            "██"
+        }
+        local line_ratio = current_line / total_lines
+        local index = math.ceil(line_ratio * #chars)
+        return chars[index]
+    end
+}
+
+---Show number of items in locationlist
+M.plugins.loclist_count = {
+    ---@return string
+    fn = function()
+        local ll = fn.getloclist(fn.winnr(), {idx = 0, size = 0})
+        local count = ll.size
+        local current = ll.idx
+        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.loclist, current, count)
+    end
+}
+
+---Show number of items in quickfix
+M.plugins.quickfix_count = {
+    ---@return string
+    fn = function()
+        local qf = fn.getqflist({idx = 0, size = 0})
+        local count = qf.size
+        local current = qf.idx
+        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.quickfix, current, count)
+    end
+}
 
 -- FIX: Runs way to often
 ---Show number of TODO comments in buffer
@@ -262,80 +350,6 @@ M.plugins.debugger = {
 
         local ok, dap = pcall(require, "dap")
         return ok and dap.status()
-    end
-}
-
-M.plugins.file_encoding = {
-    toggle = function()
-        local encoding = vim.opt.fileencoding:get()
-        return encoding ~= "utf-8"
-    end,
-    fn = function()
-        return vim.opt.fileencoding:get()
-    end
-}
-
-M.plugins.search_result = {
-    fn = function()
-        if vim.v.hlsearch == 0 then
-            return ""
-        end
-        local last_search = nvim.reg["/"]
-        if not last_search or last_search == "" then
-            return ""
-        end
-
-        -- If the user searches for ',\)', and 'unmatched' error occurs
-        local searchcount = fn.searchcount({maxcount = 9999})
-        if vim.tbl_isempty(searchcount) then
-            return ""
-        end
-
-        return last_search .. "[" .. searchcount.current .. "/" .. searchcount.total .. "]"
-    end
-}
-
----Alternate progress indicator
-M.plugins.progress = {
-    fn = function()
-        local current_line = fn.line(".")
-        local total_lines = fn.line("$")
-        local chars = {
-            "__",
-            "▁▁",
-            "▂▂",
-            "▃▃",
-            "▄▄",
-            "▅▅",
-            "▆▆",
-            "▇▇",
-            "██"
-        }
-        local line_ratio = current_line / total_lines
-        local index = math.ceil(line_ratio * #chars)
-        return chars[index]
-    end
-}
-
----arsham/arshamiser
----Show number of items in locationlist
-M.plugins.loclist_count = {
-    fn = function()
-        local ll = fn.getloclist(fn.winnr(), {idx = 0, size = 0})
-        local count = ll.size
-        local current = ll.idx
-        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.loclist, current, count)
-    end
-}
-
----arsham/arshamiser
----Show number of items in quickfix
-M.plugins.quickfix_count = {
-    fn = function()
-        local qf = fn.getqflist({idx = 0, size = 0})
-        local count = qf.size
-        local current = qf.idx
-        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.quickfix, current, count)
     end
 }
 

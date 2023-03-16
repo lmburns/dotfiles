@@ -86,6 +86,26 @@ function M.setup()
     }
 end
 
+---Open a QF list with only lettered marks
+function M.lettered_marks_qf()
+    local builtin = marks.mark_state.builtin_marks
+    local curbuf = marks.mark_state.buffers[1]
+    local old_state = curbuf.placed_marks
+    local new_state = {}
+    for mark, value in pairs(curbuf.placed_marks) do
+        if not vim.tbl_contains(builtin, mark) then
+            new_state[mark] = value
+        end
+    end
+    if #vim.tbl_keys(new_state) > 0 then
+        curbuf.placed_marks = new_state
+    end
+    marks.mark_state:buffer_to_list("quickfixlist")
+    cmd.copen()
+    curbuf.placed_marks = old_state
+    marks.refresh()
+end
+
 local function init()
     M.setup()
 
@@ -102,7 +122,7 @@ local function init()
             m = {
                 name = "+marks",
                 -- ["la"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
-                ["m"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
+                ["m"] = {"<Cmd>MarksQFListBuf<CR>", "List buffer marks"},
                 ["lg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
                 ["fD"] = {"<Cmd>delm a-zA-Z0-9<CR>", "Delete all marks in buffer"},
                 ["fd"] = {"<Cmd>delm A-Z<CR><Cmd>wshada!<CR>", "Delete all capital marks"}
@@ -113,8 +133,12 @@ local function init()
 
     wk.register(
         {
-            ["qm"] = {"<Cmd>MarksListBuf<CR>", "List buffer marks"},
-            ["qM"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
+            ["qm"] = {
+                "<Cmd>lua require('plugs.marks').lettered_marks_qf()<CR>",
+                "List lettered buf marks"
+            },
+            ["qM"] = {"<Cmd>MarksQFListBuf<CR>", "List buf marks"},
+            ["qg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
             ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
             ["dm="] = "Marks: delete mark under cursor",
             ["dm-"] = "Marks: delete all marks on line",

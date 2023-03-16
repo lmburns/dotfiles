@@ -255,10 +255,10 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           fzf-bindings \
                         'enter:accept' \
                         'backward-eof:abort' \
-                        'ctrl-e:become({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
-                        'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
+                        'alt-e:become({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
                         'alt-b:become(bat --paging=always -f {+})' \
                         'ctrl-y:execute(xsel -b --trim <<<{+})'
+# 'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
 
 zstyle+ \
   ':fzf-tab:complete' '' '' \

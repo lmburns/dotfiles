@@ -24,7 +24,7 @@ urls=($(
 ))
 
 for url ($urls[@]) {
-  __bg "$BROWSER $url"
+  __bg "handlr open $url"
 }
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

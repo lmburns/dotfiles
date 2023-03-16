@@ -1,7 +1,9 @@
 [Unit]
 Description=Mullvad VPN GUI
+After=graphical.target
 
 [Service]
+Environment=DISPLAY=:0
 ExecStart=/usr/bin/mullvad-vpn
 Restart=on-failure
 RestartSec=3s

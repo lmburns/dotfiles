@@ -1,7 +1,9 @@
 [Unit]
 Description=Xidlehook
+After=graphical.target
 
 [Service]
+Environment=DISPLAY=:0
 ExecStart=/usr/bin/xidlehook \
                   --not-when-fullscreen \
                   --not-when-audio \

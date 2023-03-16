@@ -15,9 +15,36 @@ M.levels = {
 -- ---@type LogLevels
 -- vim.log.levels = vim.log.levels
 
--- _G.__FILE__ = function() return debug.getinfo(3, 'S').source end
--- _G.__LINE__ = function() return debug.getinfo(3, 'l').currentline end
--- _G.__FUNC__ = function() return debug.getinfo(3, 'n').name end
+---@return string file #calling file name
+_G.__FILE__ = function()
+    return debug.getinfo(3, "S").source
+end
+---@return integer line #calling line
+_G.__LINE__ = function()
+    return debug.getinfo(3, "l").currentline
+end
+---@return string funcname #calling func
+_G.__FUNC__ = function()
+    return debug.getinfo(3, "n").name
+end
+---@return string module #calling module
+_G.__MODULE__ = function()
+    local src = debug.getinfo(2, "S").short_src
+    local fname_p = fn.fnamemodify(src, ":r")
+    local fname = fn.fnamemodify(fname_p, ":t")
+    local dir = fn.fnamemodify(fname_p, ":h:t")
+    return F.tern(fname == "init", dir, F.tern(dir == "nvim", fname, ("%s.%s"):format(dir, fname)))
+end
+---@return string #'<module>.<function>:line'
+_G.__TRACEBACK__ = function()
+    local info = debug.getinfo(3)
+    local fname_p = fn.fnamemodify(info.short_src, ":r")
+    local fname = fn.fnamemodify(fname_p, ":t")
+    local dir = fn.fnamemodify(fname_p, ":h:t")
+    local module =
+        F.tern(fname == "init", dir, F.tern(dir == "nvim", fname, ("%s.%s"):format(dir, fname)))
+    return ("%s.%s:%d"):format(module, info.name, info.currentline)
+end
 
 local default_config = {
     -- Name of the plugin. Prepended to log messages
@@ -91,14 +118,33 @@ end
 ---@param opts? NotifyOpts
 M.info = function(msg, opts)
     opts = opts or {}
-    if opts.print then
-        nvim.echo(
-            {
-                {"[INFO]: ", "@text.info"},
-                {msg, F.if_nil(opts.hl, "NotifyINFOBorder")}
-            }
+    local args = {{msg, F.if_nil(opts.hl, "NotifyINFOorder")}}
+    if opts.dprint then
+        opts.debug = true
+        opts.print = true
+    end
+    if opts.debug and opts.print then
+        args =
+            require("dev").vec_insert(
+            args,
+            {__MODULE__(), "Title"},
+            {".", "Cursor"},
+            {__FUNC__(), "Function"},
+            {":", "Cursor"},
+            {("%d: "):format(__LINE__()), "MoreMsg"}
         )
+    end
+    if opts.print then
+        nvim.echo({{"[INFO]: ", "@text.info"}, unpack(args)})
     else
+        if opts.debug then
+            if not opts.title then
+                opts.title = __TRACEBACK__()
+                opts.debug = nil
+            else
+                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+            end
+        end
         require("common.utils").notify(msg, M.levels.INFO, opts)
     end
 end
@@ -108,14 +154,33 @@ end
 ---@param opts? NotifyOpts
 M.warn = function(msg, opts)
     opts = opts or {}
-    if opts.print then
-        nvim.echo(
-            {
-                {"[WARN]: ", "@text.warning"},
-                {msg, F.if_nil(opts.hl, "NotifyWARNBorder")}
-            }
+    local args = {{msg, F.if_nil(opts.hl, "NotifyWARNorder")}}
+    if opts.dprint then
+        opts.debug = true
+        opts.print = true
+    end
+    if opts.debug and opts.print then
+        args =
+            require("dev").vec_insert(
+            args,
+            {__MODULE__(), "Title"},
+            {".", "Cursor"},
+            {__FUNC__(), "Function"},
+            {":", "Cursor"},
+            {("%d: "):format(__LINE__()), "MoreMsg"}
         )
+    end
+    if opts.print then
+        nvim.echo({{"[WARN]: ", "@text.warning"}, unpack(args)})
     else
+        if opts.debug then
+            if not opts.title then
+                opts.title = __TRACEBACK__()
+                opts.debug = nil
+            else
+                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+            end
+        end
         require("common.utils").notify(msg, M.levels.WARN, opts)
     end
 end
@@ -125,14 +190,33 @@ end
 ---@param opts? NotifyOpts
 M.err = function(msg, opts)
     opts = opts or {}
-    if opts.print then
-        nvim.echo(
-            {
-                {"[ERROR]: ", "@text.error"},
-                {msg, F.if_nil(opts.hl, "NotifyERRORBorder")}
-            }
+    local args = {{msg, F.if_nil(opts.hl, "NotifyERRORBorder")}}
+    if opts.dprint then
+        opts.debug = true
+        opts.print = true
+    end
+    if opts.debug and opts.print then
+        args =
+            require("dev").vec_insert(
+            args,
+            {__MODULE__(), "Title"},
+            {".", "Cursor"},
+            {__FUNC__(), "Function"},
+            {":", "Cursor"},
+            {("%d: "):format(__LINE__()), "MoreMsg"}
         )
+    end
+    if opts.print then
+        nvim.echo({{"[ERROR]: ", "@text.error"}, unpack(args)})
     else
+        if opts.debug then
+            if not opts.title then
+                opts.title = __TRACEBACK__()
+                opts.debug = nil
+            else
+                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+            end
+        end
         require("common.utils").notify(msg, M.levels.ERROR, opts)
     end
 end

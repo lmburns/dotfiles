@@ -32,7 +32,7 @@
 ((function_call
   name: (_) @_vimcmd_identifier
   arguments: (arguments (string content: _ @vim)))
-  (#any-of? @_vimcmd_identifier "cmd" "vim.cmd" "vim.api.nvim_command" "vim.api.nvim_exec"))
+  (#any-of? @_vimcmd_identifier "cmd" "vim.cmd" "vim.api.nvim_command" "vim.api.nvim_exec" "api.nvim_command" "api.nvim_exec"))
 
 ((function_call
   name: (_) @_vimcmd_identifier

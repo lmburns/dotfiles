@@ -11,6 +11,7 @@ local map = utils.map
 local command = utils.command
 
 local fn = vim.fn
+local api = vim.api
 
 local function ft_repl_cmd(ft)
     local repl_map = {
@@ -111,6 +112,67 @@ function M.neoterm(cmd, id)
         end
     end
     return terminal.exec(cmd, id)
+end
+
+---Setup `flatten.nvim`
+function M.flatten()
+    local flatten = D.npcall(require, "flatten")
+    if not flatten then
+        return
+    end
+
+    flatten.setup(
+        {
+            callbacks = {
+                -- Called when a request to edit file(s) is received
+                pre_open = function()
+                    -- Close toggleterm when an external open request is received
+                    terminal.toggle(0)
+                end,
+                -- Called after a file is opened
+                -- Passed the buf id, win id, and filetype of the new window
+                post_open = function(bufnr, winnr, ft)
+                    if ft == "gitcommit" then
+                        -- If the file is a git commit, create one-shot autocmd to delete it on write
+                        -- If you just want the toggleable terminal integration, ignore this bit and only use the
+                        -- code in the else block
+                        api.nvim_create_autocmd(
+                            "BufWritePost",
+                            {
+                                buffer = bufnr,
+                                once = true,
+                                callback = function()
+                                    -- This is a bit of a hack, but if you run bufdelete immediately
+                                    -- the shell can occasionally freeze
+                                    vim.defer_fn(
+                                        function()
+                                            api.nvim_buf_delete(bufnr, {})
+                                        end,
+                                        50
+                                    )
+                                end
+                            }
+                        )
+                    else
+                        -- If it's a normal file, then reopen the terminal, then switch back to the newly opened window
+                        -- This gives the appearance of the window opening independently of the terminal
+                        terminal.toggle(0)
+                        api.nvim_set_current_win(winnr)
+                    end
+                end,
+                -- Called when a file is open in blocking mode, after it's done blocking
+                -- (after bufdelete, bufunload, or quitpre for the blocking buffer)
+                block_end = function()
+                    -- After blocking ends (for a git commit, etc), reopen the terminal
+                    terminal.toggle(0)
+                end
+            },
+            -- <String, Bool> dictionary of filetypes that should be blocking
+            block_for = {
+                gitcommit = true
+            }
+        }
+    )
 end
 
 local function init()
@@ -218,15 +280,6 @@ local function init()
         }
     )
 
-    map(
-        "n",
-        "<Leader>tw",
-        function()
-            tw_tui:toggle()
-        end,
-        {desc = "Term: Taskwarrior TUI"}
-    )
-
     command(
         "TaskwarriorTUI",
         function()
@@ -234,6 +287,8 @@ local function init()
         end,
         {nargs = "*", count = 1, desc = "Term: TaskwarriorTUI"}
     )
+
+    map("n", "<Leader>tw", "<Cmd>TaskwarriorTUI<CR>", {desc = "Term: Taskwarrior TUI"})
 end
 
 init()

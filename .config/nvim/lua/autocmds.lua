@@ -25,24 +25,6 @@ local g = vim.g
 local o = vim.opt
 local ol = vim.opt_local
 
--- ╭──────────────────────────────────────────────────────────╮
--- │                 Setting git environment                  │
--- ╰──────────────────────────────────────────────────────────╯
--- This version uses a pre-built pattern.
--- This also floods autocmds with an additional 1000+
--- local git_pattern =
---     _t(D.get_system_output("dotbare ls-tree --full-tree -r --name-only HEAD")):map(
---     function(path)
---         return ("%s/%s"):format(global.home, path)
---     end
--- )
---
--- -- The first item contains an error because dotbare uses `stty` for a command
--- local _ = git_pattern:remove(1)
---
--- This version runs a command on every event
--- Wilder doesn't trigger a BufWinEnter when coming back like telescope does
-
 local has_sourced
 local exclude_ft = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= ''"))
 local exclude_bt = _t({"nofile"})
@@ -146,18 +128,18 @@ nvim.autocmd.lmb__RestoreCursor = {
             --     return
             -- end
 
-            local types =
-                _t(
-                {
-                    "nofile",
-                    "fugitive",
-                    "gitcommit",
-                    "gitrebase",
-                    "commit",
-                    "rebase",
-                    "help"
-                }
-            )
+            -- local types =
+            --     _t(
+            --     {
+            --         "nofile",
+            --         "fugitive",
+            --         "gitcommit",
+            --         "gitrebase",
+            --         "commit",
+            --         "rebase",
+            --         "help"
+            --     }
+            -- )
 
             if
                 fn.expand("%") == "" or exclude_ft:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
@@ -166,10 +148,11 @@ nvim.autocmd.lmb__RestoreCursor = {
                 return
             end
 
-            local row, col = unpack(nvim.buf.get_mark(0, '"'))
+            local mark = nvim.mark['"']
+            local row, col = mark.row, mark.col
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 utils.set_cursor(0, row, 0)
-                cmd.norm({[[g`"zv']], bang = true})
+                funcs.center_next([[g`"zv']])
             end
         end
     },
@@ -184,7 +167,9 @@ nvim.autocmd.lmb__RestoreCursor = {
         end
     }
 }
+-- ]]] === Restore cursor ===
 
+-- === Folds === [[[
 -- nvim.autocmd.lmb__RememberFolds = {
 --     {
 --         event = {"BufWritePre", "BufWinLeave"},
@@ -207,34 +192,47 @@ nvim.autocmd.lmb__RestoreCursor = {
 --         desc = "Restore folds from previous session"
 --     }
 -- }
--- ]]] === Restore cursor ===
+-- ]]] === Folds ===
 
 -- === Format Options === [[[
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them.
 nvim.autocmd.lmb__FormatOptions = {
-    event = {"BufEnter", "FileType"},
+    event = {"FileType"},
     pattern = "*",
-    command = function(args)
-        ol.formatoptions = {
-            ["1"] = true,
-            ["2"] = true, -- Use indent from 2nd line of a paragraph
-            q = true, -- Continue comments with gq"
-            n = true, -- Recognize numbered lists
-            j = true, -- Remove a comment leader when joining lines.
-            -- Only break if the line was not longer than 'textwidth' when the insert
-            -- started and only at a white character that has been entered during the
-            -- current insert command.
-            l = true,
-            v = true, -- Only break line at blank line I've entered
-            c = true, -- Auto-wrap comments using textwidth
-            r = false, -- Continue comments when pressing Enter
-            t = false, -- Autowrap lines using text width value
-            o = false --- Automatically insert comment leader after <enter>
-        }
-
+    command = function(_args)
         vim.schedule(
             function()
+                ol.formatoptions = {
+                    ["1"] = true, -- don't break a line after a one-letter word; break before
+                    ["2"] = false, -- use indent from 2nd line of a paragraph
+                    q = true, -- format comments with gq"
+                    n = true, -- recognize numbered lists. Indent past formatlistpat not under
+                    M = true, -- when joining lines, don't insert a space before or after a multibyte char
+                    j = true, -- remove a comment leader when joining lines.
+                    -- Only break if the line was not longer than 'textwidth' when the insert
+                    -- started and only at a white character that has been entered during the
+                    -- current insert command.
+                    l = true,
+                    v = true, -- only break line at blank line I've entered
+                    c = true, -- auto-wrap comments using textwidth
+                    t = false, -- autowrap lines using text width value
+                    p = true, -- don't break lines at single spaces that follow periods
+                    ["/"] = true, -- when 'o' included: don't insert comment leader for // comment after statement
+                    -- shouldn't get ran this much
+                    r = funcs.set_formatopts, -- continue comments when pressing Enter
+                    o = funcs.set_formatopts -- automatically insert comment leader after 'o'/'O'
+                }
+
+                ol.comments:append(
+                    {
+                        "n:>", -- nested comment prefix
+                        "b:#", -- blank (<Space>, <Tab>, or <EOL>) required after prefix
+                        "fb:-", -- only first line has comment string (e.g., a bullet-list)
+                        "fb:*" -- only first line has comment string (e.g., a bullet-list)
+                    }
+                )
+
                 -- Bufnr has to be captured in here, not args.buf
                 local bufnr = api.nvim_get_current_buf()
                 local ft = vim.bo[bufnr].ft
@@ -260,43 +258,43 @@ nvim.autocmd.lmb__FormatOptions = {
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                Colorscheme Modifications                 │
 -- ╰──────────────────────────────────────────────────────────╯
-nvim.autocmd.lmb__ColorschemeSetup = {
-    event = "ColorScheme",
-    pattern = "*",
-    command = function()
-        vim.defer_fn(
-            function()
-                if g.colors_name ~= "kimbox" then
-                    hl.all(
-                        {
-                            Hlargs = {link = "TSParameter"}
-                        }
-                    )
-                else
-                    hl.all(
-                        {
-                            Function = {default = true, bold = true},
-                            TSFunction = {default = true, bold = true},
-                            TSFuncBuiltin = {link = "TSFunction", bold = true},
-                            TSVariableBuiltin = {default = true, gui = "none"},
-                            TSTypeBuiltin = {default = true, gui = "none"},
-                            TSProperty = {default = true, gui = "none"},
-                            TSVariable = {default = true, gui = "none"},
-                            TSKeyword = {default = true, gui = "none"},
-                            TSConditional = {default = true, gui = "none"},
-                            TSString = {default = true, gui = "none"},
-                            TSKeywordFunction = {default = true, gui = "none"},
-                            Todo = {default = true, bg = "none"},
-                            QuickFixLine = {default = true, fg = "none"}
-                        }
-                    )
-                end
-            end,
-            1
-        )
-    end,
-    desc = "Override highlight groups"
-}
+-- nvim.autocmd.lmb__ColorschemeSetup = {
+--     event = "ColorScheme",
+--     pattern = "*",
+--     command = function()
+--         vim.defer_fn(
+--             function()
+--                 if g.colors_name ~= "kimbox" then
+--                     hl.all(
+--                         {
+--                             Hlargs = {link = "TSParameter"}
+--                         }
+--                     )
+--                 else
+--                     hl.all(
+--                         {
+--                             Function = {default = true, bold = true},
+--                             TSFunction = {default = true, bold = true},
+--                             TSFuncBuiltin = {link = "TSFunction", bold = true},
+--                             TSVariableBuiltin = {default = true, gui = "none"},
+--                             TSTypeBuiltin = {default = true, gui = "none"},
+--                             TSProperty = {default = true, gui = "none"},
+--                             TSVariable = {default = true, gui = "none"},
+--                             TSKeyword = {default = true, gui = "none"},
+--                             TSConditional = {default = true, gui = "none"},
+--                             TSString = {default = true, gui = "none"},
+--                             TSKeywordFunction = {default = true, gui = "none"},
+--                             Todo = {default = true, bg = "none"},
+--                             QuickFixLine = {default = true, fg = "none"}
+--                         }
+--                     )
+--                 end
+--             end,
+--             1
+--         )
+--     end,
+--     desc = "Override highlight groups"
+-- }
 
 -- === Remove Empty Buffers === [[[
 nvim.autocmd.lmb__FirstBuf = {
@@ -462,8 +460,9 @@ nvim.autocmd.lmb__Help = {
                         function()
                             -- pcall needed when opening a TOC inside a help page and returning to help page
                             pcall(cmd.wincmd, "L")
-                            local width = math.floor(vim.o.columns * 0.75)
-                            cmd("vertical resize " .. width)
+                            -- local width = math.floor(vim.o.columns * 0.75)
+                            -- cmd("vertical resize " .. width)
+                            cmd("vertical resize 82")
                         end,
                         0
                     )
@@ -508,9 +507,10 @@ nvim.autocmd.lmb__Help = {
                 return
             end
 
-            local width = math.floor(vim.o.columns * 0.75)
             pcall(cmd.wincmd, "L")
+            local width = math.floor(vim.o.columns * 0.75)
             cmd("vertical resize " .. width)
+            -- cmd("vertical resize 82")
             map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,
         desc = "Equalize and create mapping for manpages"

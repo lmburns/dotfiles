@@ -690,7 +690,7 @@ local function init()
     -- map("n", "<Leader>t", ":Tags<CR>", {silent = true})
     -- map("n", "<A-t>", ":BTags<CR>", {silent = true})
 
-    map("i", "<C-x><C-z>", "<Plug>(fzf-complete-line)")
+    map("i", "<C-x><C-l>", "<Plug>(fzf-complete-line)")
 
     map("n", "<C-,>m", "<Plug>(fzf-maps-n)")
     map("x", "<C-,>m", "<Plug>(fzf-maps-x)")

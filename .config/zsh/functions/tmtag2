@@ -5,7 +5,7 @@ local file
 
 setopt extendedglob
 
-zmodload -Fa zsh/zutil b:zparseopts b:zformat
+zmodload -Fa zsh/zutil b:zparseopts
 zparseopts -D -A opts -- c -cd p -print
 
 if [[ -z "${@}" ]] {

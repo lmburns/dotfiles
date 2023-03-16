@@ -18,6 +18,41 @@
 [credential "https://github.com"]
   helper = !gh auth git-credential
 
+[url "git@github.com:"]
+  # Always use GitHub SSH protocol to push.
+  # Allows use of git:// for public repositories with push access
+  pushInsteadOf = git://github.com/
+  pushInsteadOf = https://github.com/
+  pushInsteadOf = http://github.com/
+  pushInsteadOf = gh:
+
+# [url "git://github.com:"]
+#   # Has to be git:// instead of git@ for cargo
+#   # Use SSH for GitHub instead of https://
+#   insteadOf = https://github.com/
+
+# [url "ssh://git@github.com:"]
+#   # Use SSH for GitHub instead of https://
+#   insteadOf = https://github.com/
+
+[url "git@github.com:"]
+  # Use SSH for GitHub instead of https://
+  insteadOf = https://github.com/
+
+[url "git://git.suckless.org/"]
+  insteadOf = "suckless:"
+
+[url "git@github.com:"]
+  # Use SSH for GitHub instead of https://
+  insteadOf = gh:
+
+# [url "https://github.com/"]
+  # Use HTTP for GitHub instead of git:// or git@
+  # Enable this in networks where git:// or git@ are blocked.
+  #insteadOf = git://github.com/
+  #insteadOf = git@github.com:
+  # insteadOf = gh:
+
 [help]
   autocorrect = 1
 
@@ -48,6 +83,7 @@
   new = green bold
   old = red bold
   frag = magenta bold
+  func = "#A06469" bold
   ; context =
 
 [color "decorate"]
@@ -174,25 +210,6 @@
 [mergetool "nvim"]
   cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
 ;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-
-# [url "git@github.com:"]
-#   # Always use GitHub SSH protocol to push.
-#   # Allows use of git:// for public repositories with push access
-#   pushInsteadOf = git://github.com/
-#
-# [url "http://github.com/"]
-#
-# [url "https://github.com/"]
-#   # Use HTTP for GitHub instead of git:// or git@
-#   # Enable this in networks where git:// or git@ are blocked.
-#   #insteadOf = git://github.com/
-#   #insteadOf = git@github.com:
-#   insteadOf = gh:
-#
-# [url "git@github.com:"]
-#   # Use SSH for GitHub instead of https://
-#   # Enable this in networks where https:// has issues.
-#   #insteadOf = https://github.com/
 
 [alias]
   # https://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git/2222920#2222920

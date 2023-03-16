@@ -8,7 +8,6 @@ end
 local _ = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
-local augroup = utils.augroup
 local hl = require("common.color")
 
 local colors = require("kimbox.colors")
@@ -743,8 +742,8 @@ M.setup_treesurfer = function()
     map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Prev main node"})
     map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Next main node"})
 
-    map("n", "<Left>", _(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
-    map("n", "<Right>", _(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
+    map("n", "<M-S-{>", _(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
+    map("n", "<M-S-}>", _(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 
     map(
         "n",
@@ -854,7 +853,7 @@ M.setup = function()
             "diff",
             "dockerfile",
             "fennel",
-            -- "gitconfig",
+            "git_config",
             "git_rebase",
             "gitattributes",
             "gitcommit",
@@ -997,18 +996,21 @@ M.setup = function()
             enable_autocmd = false,
             disable = {"help"},
             config = {
-                c = "// %s",
+                c = {__default = "// %s", __multiline = "/* %s */"},
+                cpp = {__default = "// %s", __multiline = "/* %s */"},
                 css = "/* %s */",
-                go = "// %s",
+                go = {__default = "// %s", __multiline = "/* %s */"},
                 html = "<!-- %s -->",
                 json = "",
-                jsonc = "// %s",
-                scss = "/* %s */",
+                jsonc = {__default = "// %s", __multiline = "/* %s */"},
+                lua = {__default = "-- %s", __multiline = "--[[ %s ]]", doc = "---%s"},
+                markdown = "<!-- %s -->",
+                python = {__default = "# %s", __multiline = '""" %s """'},
+                rust = {__default = "// %s", __multiline = "/* %s */", doc = "/// %s"},
                 sql = "-- %s",
-                svelte = "<!-- %s -->",
-                typescript = "// %s",
+                typescript = {__default = "// %s", __multiline = "/* %s */"},
                 vim = '" %s',
-                vue = "<!-- %s -->"
+                vimwiki = "<!-- %s -->"
             }
         },
         refactor = {
@@ -1055,25 +1057,25 @@ M.setup = function()
                 lookbehind = true,
                 disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
                 keymaps = {
-                    ["af"] = "@function.outer",
-                    ["if"] = "@function.inner",
-                    ["ak"] = "@class.outer",
-                    ["ik"] = "@class.inner",
-                    ["ac"] = "@call.outer",
-                    ["ic"] = "@call.inner",
-                    ["ao"] = "@block.outer",
-                    ["io"] = "@block.inner",
-                    ["ag"] = "@comment.outer",
+                    ["af"] = {query = "@function.outer", desc = "Around function"},
+                    ["if"] = {query = "@function.inner", desc = "Inner function"},
+                    ["ak"] = {query = "@class.outer", desc = "Around class"},
+                    ["ik"] = {query = "@class.inner", desc = "Inner class"},
+                    ["ac"] = {query = "@call.outer", desc = "Around call"},
+                    ["ic"] = {query = "@call.inner", desc = "Inner call"},
+                    ["ao"] = {query = "@block.outer", desc = "Around block"},
+                    ["io"] = {query = "@block.inner", desc = "Inner block"},
+                    ["ag"] = {query = "@comment.outer", desc = "Around comment"},
                     -- ["ig"] = "@comment.inner",
-                    ["ad"] = "@conditional.outer",
-                    ["id"] = "@conditional.inner",
-                    ["aj"] = "@parameter.outer",
-                    ["ij"] = "@parameter.inner",
-                    ["aS"] = "@statement.outer",
-                    ["ix"] = "@assignment.lhs",
-                    ["ax"] = "@assignment.rhs",
-                    ["al"] = "@loop.outer",
-                    ["il"] = "@loop.inner"
+                    ["ad"] = {query = "@conditional.outer", desc = "Around conditional"},
+                    ["id"] = {query = "@conditional.inner", desc = "Inner conditional"},
+                    ["aj"] = {query = "@parameter.outer", desc = "Around parameter"},
+                    ["ij"] = {query = "@parameter.inner", desc = "Inner parameter"},
+                    ["aS"] = {query = "@statement.outer", desc = "Around statement"},
+                    ["ix"] = {query = "@assignment.lhs", desc = "Assignment LHS"},
+                    ["ax"] = {query = "@assignment.rhs", desc = "Assignment RHS"},
+                    ["al"] = {query = "@loop.outer", desc = "Around loop"},
+                    ["il"] = {query = "@loop.inner", desc = "Inner loop"}
                 },
                 -- You can choose the select mode (default is charwise 'v')
                 --
@@ -1177,20 +1179,20 @@ M.setup = function()
             swap = {
                 enable = true,
                 swap_next = {
-                    ["s."] = "@element",
-                    ["sp"] = "@parameter.inner",
-                    ["sf"] = "@function.outer",
-                    ["sk"] = "@class.outer",
-                    ["sb"] = "@block.outer",
-                    ["sc"] = "@call.outer"
+                    ["s."] = {query = "@assignment.rhs", desc = "Swap next assignment"},
+                    ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
+                    ["sf"] = {query = "@function.outer", desc = "Swap next function"},
+                    ["sk"] = {query = "@class.outer", desc = "Swap next class"},
+                    ["sb"] = {query = "@block.outer", desc = "Swap next block"},
+                    ["sc"] = {query = "@call.outer", desc = "Swap next call"}
                 },
                 swap_previous = {
-                    ["s,"] = "@element",
-                    ["sP"] = "@parameter.inner",
-                    ["sF"] = "@function.outer",
-                    ["sk"] = "@class.outer",
-                    ["sB"] = "@block.outer",
-                    ["sC"] = "@call.outer"
+                    ["s,"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
+                    ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
+                    ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
+                    ["sK"] = {query = "@class.outer", desc = "Swap prev class"},
+                    ["sB"] = {query = "@block.outer", desc = "Swap prev block"},
+                    ["sC"] = {query = "@call.outer", desc = "Swap prev call"}
                 }
             }
         }
@@ -1200,16 +1202,6 @@ end
 ---Install extra Treesitter parsers
 function M.install_extra_parsers()
     local parser_config = parsers.get_parser_configs()
-
-    -- SQL
-    parser_config.sql = {
-        install_info = {
-            url = "https://github.com/DerekStride/tree-sitter-sql",
-            files = {"src/parser.c"},
-            branch = "main"
-        },
-        filetype = "sql"
-    }
 
     -- Using this parsers own queries does not work
     -- Solidity
@@ -1283,18 +1275,6 @@ function M.install_extra_parsers()
     --         files = {"src/parser.c"}
     --     }
     -- }
-
-    -- Git config
-    -- parser_config.gitconfig = {
-    --     install_info = {
-    --         url = "https://github.com/the-mikedavis/tree-sitter-git-config",
-    --         files = {"src/parser.c"},
-    --         branch = "main",
-    --         generate_requires_npm = true, -- if stand-alone parser without npm dependencies
-    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
-    --     },
-    --     filetype = "gitconfig"
-    -- }
 end
 
 -- M.setup_query_secretary = function()
@@ -1361,48 +1341,36 @@ local function init()
     M.setup_treesurfer()
     M.setup_autotag()
 
+    local ts_repeat = require("nvim-treesitter.textobjects.repeatable_move")
+    -- map({"n", "x", "o"}, "<M-S-}>", ts_repeat.repeat_last_move_next)
+    -- map({"n", "x", "o"}, "<M-S-{>", ts_repeat.repeat_last_move_previous)
+    map({"n", "x", "o"}, "<Left>", ts_repeat.repeat_last_move_previous, {desc = "TS move prev"})
+    map({"n", "x", "o"}, "<Right>", ts_repeat.repeat_last_move_next, {desc = "TS move next"})
+
     map("x", "iu", [[:<C-u>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("x", "au", [[:<C-u>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
 
-    map("x", "iF", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
-    map("x", "aF", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
-    map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
-    map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
+    -- map("x", "iF", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
+    -- map("x", "aF", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
+    -- map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
+    -- map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
 
-    map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
-    map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
-    map("o", "iK", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
-    map("o", "aK", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
+    -- map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
+    -- map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
+    -- map("o", "iK", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
+    -- map("o", "aK", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
 
-    -- map("o", "ie", [[:<C-u>normal! ggVG"<CR>]])
     map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
     map("x", "ie", [[:normal! ggVG"<CR>]])
     map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
     map("x", "ae", [[:normal! HVL"<CR>]])
 
-    map("x", "aL", "$o0")
-    map("o", "aL", "<Cmd>norm vaL<CR>")
-    map("x", "iL", [[<Esc>^vg_]])
-    map("o", "iL", [[<Cmd>norm! ^vg_<CR>]])
-
-    wk.register(
-        {
-            ["sf"] = "Swap next function",
-            ["sF"] = "Swap previous function",
-            ["sp"] = "Swap next parameter",
-            ["sP"] = "Swap previous parameter",
-            ["sb"] = "Swap next block",
-            ["sB"] = "Swap previous block",
-            ["sk"] = "Swap next class",
-            ["sK"] = "Swap previous class",
-            ["sc"] = "Swap next call",
-            ["sC"] = "Swap previous call",
-            ["s."] = "Swap next element",
-            ["s,"] = "Swap previous element"
-        }
-    )
+    -- map("x", "aL", "$o0")
+    -- map("o", "aL", "<Cmd>norm vaL<CR>")
+    -- map("x", "iL", [[<Esc>^vg_]])
+    -- map("o", "iL", [[<Cmd>norm! ^vg_<CR>]])
 
     wk.register(
         {
@@ -1410,27 +1378,8 @@ local function init()
             ["iL"] = "Line (no newline or spaces)",
             ["ie"] = "Entire buffer",
             ["ae"] = "Entire visible buffer",
-            ["ac"] = "Around call",
-            ["ic"] = "Inner call",
-            ["ao"] = "Around block",
-            ["io"] = "Inner block",
-            ["ag"] = "Around comment",
-            -- ["ig"] = "Inner comment",
-            ["ad"] = "Around conditional",
-            ["id"] = "Inner conditional",
-            ["aj"] = "Around parameter",
-            ["ij"] = "Inner parameter",
-            ["al"] = "Around loop",
-            ["il"] = "Inner loop",
             ["au"] = "Around unit",
-            ["iu"] = "Inner unit",
-            ["af"] = "Around function",
-            ["if"] = "Inner function",
-            ["ak"] = "Around class",
-            ["ik"] = "Inner class",
-            ["ax"] = "Assignment RHS",
-            ["ix"] = "Assignment LHS",
-            ["aS"] = "Around statement"
+            ["iu"] = "Inner unit"
         },
         {mode = "o"}
     )
@@ -1443,7 +1392,7 @@ local function init()
             ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
             ["[x"] = "Previous usage",
             ["]x"] = "Next usage",
-            ["<M-n>"] = "Start scope selection/Increment",
+            ["<M-n>"] = "Start scope selection/Increment"
         },
         {mode = "n"}
     )
@@ -1476,14 +1425,14 @@ local function init()
 
     -- This doesn't get loaded until the second file is opened
     -- Need to fix lazy loading treesitter
-    nvim.autocmd.lmb__TreesitterIndent = {
-        event = "FileType",
-        pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(indent_enabled)), ","),
-        command = function(args)
-            local bufnr = args.buf
-            vim.bo[bufnr].indentexpr = "nvim_treesitter#indent()"
-        end
-    }
+    -- nvim.autocmd.lmb__TreesitterIndent = {
+    --     event = "FileType",
+    --     pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(indent_enabled)), ","),
+    --     command = function(args)
+    --         local bufnr = args.buf
+    --         vim.bo[bufnr].indentexpr = "nvim_treesitter#indent()"
+    --     end
+    -- }
 end
 
 init()

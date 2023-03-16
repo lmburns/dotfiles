@@ -3,10 +3,14 @@
 ffmpeg \
   -i $1 \
   -c:v libvpx-vp9 \
-  -crf 30 \
-  -b:v 0 \
-  -b:a 128k \
   -c:a libopus \
-  output.webm \
+  -crf 32 \
+  -b:v 0 \
+  -row-mt 1 \
+  -an \
+  output.webm
+
+# -b:a 128k \
+# -c:a libopus \
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

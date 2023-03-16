@@ -26,17 +26,21 @@ alias {\$,%}=
 alias RGV='RG -g "*.lua" -g "*.vim"'
 alias RGL='RG -g "*.lua"'
 alias sane='stty sane'
+alias clear='clear -x' # don't clear scrollback buffer
 alias nd='neovide'
 alias tm='tmsu'
 alias ja="jaime"
-# alias xq="$PYENV_ROOT/shims/yq"
-alias xp="xplr"
 alias xx="xcompress"
 alias ca='cargo'
 alias cat="bat"
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 alias getcert='openssl s_client -connect'
+
+# --no-children
+alias perlr="rlwrap -Ar -pblue -S'perl> ' perl -wnE'say eval()//\$@'"
+alias luar="rlwrap -Ar -ppurple --always-readline lua"
+alias luajitr="rlwrap -Ar -ppurple --always-readline luajit"
 
 alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias open="handlr open"
@@ -114,15 +118,12 @@ alias :q='exit'
 
 # === zsh-help ==============================================================
 alias lynx="lynx -vikeys -accept-all-cookies"
+alias zman="BROWSER=$BROWSERCLI zman"
 
 # === general ===================================================================
-# alias sudo='doas'
-# alias sudo='sudo '
 alias usudo='sudo -E -s '
 alias _='sudo'
-# alias s='sudo'
 alias __='doas'
-# alias mkd='mkdir -pv'
 
 (( ${+commands[exa]} )) && {
   # --ignore-glob=".DS_Store|__*
@@ -400,6 +401,7 @@ alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
 }
 
 # === Fixes =====================================================================
+alias gdl='gallery-dl'
 alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@lmburns.com:/var/www/lmburns'
 
 alias tornew="echo -e 'AUTHENTICATE \"\"\r\nsignal NEWNYM\r\nQUIT' | nc 127.0.0.1 9051"

@@ -1,45 +1,49 @@
-alt-a      : toggle-all
-ctrl-alt-a : toggle-all+accept
-ctrl-s     : toggle-sort
-alt-,      : first
-alt-.      : last
-<          : beginning-of-line
->          : end-of-line
-page-up    : prev-history
-page-down  : next-history
-alt-(      : prev-history
-alt-)      : next-history
-alt-{      : prev-selected
-alt-}      : next-selected
-ctrl-/     : jump
 esc        : abort
 ctrl-c     : abort
 ctrl-q     : abort
 ctrl-g     : cancel
+home       : beginning-of-line
+end        : end-of-line
+ctrl-s     : beginning-of-line
+ctrl-e     : end-of-line
+ctrl-k     : backward-word
+ctrl-j     : forward-word
+end        : end-of-line
 alt-x      : unix-line-discard
 alt-c      : unix-word-rubout
-ctrl-r     : clear-selection
 alt-d      : kill-word
-?          : toggle-preview
-alt-[      : toggle-preview
-alt-]      : change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview
-alt-w      : toggle-preview-wrap
-alt-p      : preview-up
-alt-n      : preview-down
-ctrl-alt-p : preview-page-up
-ctrl-alt-n : preview-page-down
-shift-up   : preview-page-up
-shift-down : preview-page-down
+ctrl-h     : backward-delete-char
+alt-bs     : backward-kill-word
+alt-a      : toggle-all
+ctrl-alt-a : toggle-all+accept
+alt-s      : toggle-sort
+ctrl-r     : clear-selection
+alt-left   : first
+alt-right  : last
+page-up    : prev-history
+page-down  : next-history
+alt-{      : prev-history
+alt-}      : next-history
+alt-(      : prev-selected
+alt-)      : next-selected
 ctrl-u     : half-page-up
 ctrl-d     : half-page-down
 ctrl-alt-u : page-up
 ctrl-alt-d : page-down
 alt-o      : replace-query+print-query
-ctrl-e     : become($EDITOR {+})
-ctrl-b     : become(bat --paging=always -f {+})
+ctrl-/     : jump
+?          : toggle-preview
+alt-[      : toggle-preview
+alt-]      : change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview
+alt-w      : toggle-preview-wrap
+ctrl-b     : preview-up
+ctrl-f     : preview-down
+ctrl-alt-b : preview-page-up
+ctrl-alt-f : preview-page-down
+alt-e      : become($EDITOR {+})
+alt-b      : become(bat --paging=always -f {+})
 ctrl-y     : execute-silent(xsel --trim -b <<< {+})
 ctrl-]     : preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")
+alt-/      : preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")
 alt-?      : unbind(?)
-alt-<      : unbind(<)
-alt->      : unbind(>)
-ctrl-\\    : rebind(?)+rebind(<)+rebind(>)
+ctrl-\\    : rebind(?)

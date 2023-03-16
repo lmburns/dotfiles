@@ -1,7 +1,9 @@
 [Unit]
 Description=Greenclip Daemon
+After=graphical.target
 
 [Service]
+Environment=DISPLAY=:0
 ExecStart=/usr/bin/greenclip daemon
 Restart=on-failure
 RestartSec=3s

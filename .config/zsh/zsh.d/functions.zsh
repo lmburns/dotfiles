@@ -131,7 +131,7 @@ function creinstall() {
 # lsof open fd
 zmodload -F zsh/system p:sysparams
 # Get your IP address
-function myip()      { curl https://api.myip.com; }
+function myip()      { curl ipinfo.io/ip; }
 # List available Wifi networks
 function lswifi()    { nmcli device wifi; }
 # Get wifi information
@@ -176,7 +176,7 @@ function hyperfine-zsh() { hyperfine "$SHELL -ic 'exit'"; }
 #  Profile zsh: Method 2 (zprof)
 function profile-zsh() { $SHELL -i -c zprof | bat; }
 # Profile zsh: Method 3 (any cmd)
-function profile() { $SHELL "$@"; }
+# function profile() { $SHELL "$@"; }
 
 # ============================= List Ext =============================
 # ====================================================================
@@ -374,6 +374,11 @@ function mvmedia() {
   mkdir -p gif video
   fd -e gif -d1 -x mv {} gif &&
     fd -e webm -d1 -x mv {} video
+}
+
+# Create png from gif
+function create-gif() {
+  convert -verbose -coalesce ${1} ${1:r}.png
 }
 
 # ================================ Git ===============================

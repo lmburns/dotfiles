@@ -85,7 +85,8 @@ typeset -ga zle_highlight=(
   )
 }
 
-setopt no_global_rcs
+setopt no_global_rcs          # startup files in /etc/ won't be ran
+
 setopt hist_ignore_space      # don't add if starts with space
 setopt hist_reduce_blanks     # remove superfluous blanks from each command
 setopt hist_ignore_all_dups   # replace duplicate commands in history file
@@ -353,7 +354,6 @@ zt 0a light-mode for \
   pick'async.zsh' \
     mafredri/zsh-async \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' blockf \
-  wait'[[ -n ${ZLAST_COMMANDS[(r)n-#(alias|c|en|func|hel|hist|kil|opt|panel)]} ]]' \
     psprint/zsh-navigation-tools \
     zdharma-continuum/zflai \
   patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' \
@@ -361,6 +361,8 @@ zt 0a light-mode for \
   atinit'alias zmand="info zsh "' \
     mattmc3/zman \
     anatolykopyl/doas-zsh-plugin
+
+# wait'[[ -n ${ZLAST_COMMANDS[(r)n-#(alias|c|en|func|hel|hist|kil|opt|panel)]} ]]' \
 # ]]] === wait'0a' block ===
 
 #  === wait'0b' - patched === [[[
@@ -1146,14 +1148,20 @@ $FZF_COLORS
 --bind='ctrl-c:abort'
 --bind='ctrl-q:abort'
 --bind='ctrl-g:cancel'
---bind='<:beginning-of-line'
---bind='>:end-of-line'
+--bind='home:beginning-of-line'
+--bind='end:end-of-line'
+--bind='ctrl-s:beginning-of-line'
+--bind='ctrl-e:end-of-line'
+--bind='ctrl-k:backward-word'
+--bind='ctrl-j:forward-word'
 --bind='alt-x:unix-line-discard'
 --bind='alt-c:unix-word-rubout'
 --bind='alt-d:kill-word'
+--bind='ctrl-h:backward-delete-char'
+--bind='alt-bs:backward-kill-word'
 --bind='alt-a:toggle-all'
 --bind='ctrl-alt-a:toggle-all+accept'
---bind='ctrl-s:toggle-sort'
+--bind='alt-s:toggle-sort'
 --bind='ctrl-r:clear-selection'
 --bind='alt-left:first'
 --bind='alt-right:last'
@@ -1177,17 +1185,17 @@ $FZF_COLORS
 --bind='ctrl-f:preview-down'
 --bind='ctrl-alt-b:preview-page-up'
 --bind='ctrl-alt-f:preview-page-down'
---bind='ctrl-e:become($EDITOR {+})'
+--bind='alt-e:become($EDITOR {+})'
 --bind='alt-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
 --bind='ctrl-]:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
---bind='alt-/:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
---bind='alt-?:unbind(?)'
---bind='alt-<:unbind(<)'
---bind='alt->:unbind(>)'
---bind='ctrl-\\:rebind(?)+rebind(<)+rebind(>)'
+--bind='alt-/:unbind(?)'
+--bind='ctrl-\\:rebind(?)'
 --bind='change:first'"
 
+# --bind='ctrl-\\:rebind(?)+rebind(<)+rebind(>)'
+# --bind='alt-!:unbind(<)'
+# --bind='alt-@:unbind(>)'
 # --bind=\"alt-':beginning-of-line\"
 # --bind='alt-\":end-of-line'
 

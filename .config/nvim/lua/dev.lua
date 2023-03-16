@@ -56,17 +56,10 @@ _G.pp = vim.pretty_print
 --  ╰────────╯
 
 ---Escape a string correctly
----@param s string
----@return string
-M.escape = function(s)
-    return (s:gsub("[%-%.%+%[%]%(%)%$%^%%%?%*]", "%%%1"))
-end
-
----Escape a string correctly
 ---@param self string
 ---@return string
 string.escape = function(self)
-    return M.escape(self)
+    return vim.pesc(self)
 end
 
 ---Trims whitespace on left and right side by default.
@@ -436,32 +429,8 @@ end
 -- │                          Table                           │
 -- ╰──────────────────────────────────────────────────────────╯
 
----Sort a table's keys
----@generic T, V
----@param tbl table<T, V>
----@return table<T, V>
-M.keys = function(tbl)
-  local ret = vim.tbl_keys(tbl)
-  table.sort(ret)
-  return ret
-end
-
----Pack a table. Same as `table.pack`. Sets number of elements to `.n`
----@generic T
----@param ... T Any number of items to pack
----@return { n: number, [any]: T }
-M.tbl_pack = function(...)
-    return {n = select("#", ...), ...}
-end
-
----Unpack a table into arguments. Same as `table.unpack`
----@param t table Table to unpack
----@param i number
----@param j number
----@return any
-M.tbl_unpack = function(t, i, j)
-    return unpack(t, i or 1, j or t.n or #t)
-end
+-- vim.spairs => Enumerate a table sorted by its keys
+-- vim.defaulttable => Table members created when accessed (defaultdict)
 
 ---Create table whose keys are now the values, and the values are now the keys
 ---Similar to `vim.tbl_add_reverse_lookup`
@@ -513,23 +482,6 @@ M.tbl_equivalent = function(t1, t2, ignore_mt)
     return true
 end
 
----Merge two tables
----@param a table
----@param b table
----@return table
-M.merge = function(a, b)
-    if type(a) == "table" and type(b) == "table" then
-        for k, v in pairs(b) do
-            if type(v) == "table" and type(a[k] or false) == "table" then
-                M.merge(a[k], v)
-            else
-                a[k] = v
-            end
-        end
-    end
-    return a
-end
-
 ---Clear a table's values in-place
 ---@param t table
 M.tbl_clear = function(t)
@@ -550,27 +502,6 @@ M.tbl_clone = function(t)
 
     for k, v in pairs(t) do
         clone[k] = v
-    end
-
-    return clone
-end
-
----Deep clone a table (i.e., clone nested tables)
----@generic K, V
----@param t table<K, V>: Table to deep clone
----@return table<K, V>?
-M.tbl_deep_clone = function(t)
-    if not t then
-        return
-    end
-    local clone = {}
-
-    for k, v in pairs(t) do
-        if type(v) == "table" then
-            clone[k] = M.tbl_deep_clone(v)
-        else
-            clone[k] = v
-        end
     end
 
     return clone
@@ -616,28 +547,6 @@ M.tbl_union_extend = function(t, ...)
     end
 
     return res
-end
-
----Perform a *map* and *filter* out index values that would become `nil`.
----@generic K, V
----@param t table<K, V>
----@param fn fun(v: V): any?
----@return table<K, V>
-M.tbl_fmap = function(t, fn)
-    local ret = {}
-
-    for key, item in pairs(t) do
-        local v = fn(item)
-        if v ~= nil then
-            if type(key) == "number" then
-                table.insert(ret, v)
-            else
-                ret[key] = v
-            end
-        end
-    end
-
-    return ret
 end
 
 ---Try property access into a table.
@@ -698,7 +607,23 @@ end
 --  │                          Vector                          │
 --  ╰──────────────────────────────────────────────────────────╯
 
----Turn a *vector* into a new *table*
+---Find an item in a vector or table's values
+---@generic T
+---@param haystack T[]|table<any, T>
+---@param matcher fun(v: T): boolean
+---@return T
+M.find = function(haystack, matcher)
+    local found
+    for _, needle in ipairs(haystack) do
+        if matcher(needle) then
+            found = needle
+            break
+        end
+    end
+    return found
+end
+
+---Turn a `vector` into a new `table`
 ---@generic T
 ---@param v Vector<T>
 ---@return table<T, boolean>
@@ -729,30 +654,15 @@ M.vec_filter_dupes = function(vec)
 end
 
 ---Shift a `vector` `n` elements in-place
----@param tbl table Table to shift
+---@param vec Vector<any> Vector to shift
 ---@param n number number of elements to shift
-M.vec_shift = function(tbl, n)
+M.vec_shift = function(vec, n)
     for _ = 1, n do
-        table.insert(tbl, 1, table.remove(tbl, #tbl))
+        table.insert(vec, 1, table.remove(vec, #vec))
     end
 end
 
----Create a shallow copy of a portion of a vector.
----@generic T
----@param t T[]
----@param first? integer First index, inclusive
----@param last? integer Last index, inclusive
----@return T[] sliced vector
-M.vec_slice = function(t, first, last)
-    local slice = {}
-    for i = first or 1, last or #t do
-        table.insert(slice, t[i])
-    end
-
-    return slice
-end
-
----Join multiple vectors into one.
+---Join multiple vectors into one
 ---@generic T
 ---@param ... T[]
 ---@return T[]
@@ -867,20 +777,41 @@ M.vec_symdiff = function(...)
     return result
 end
 
----Find an item in a vector or table's values
+---Create a shallow copy of a portion of a vector.
+---Can index with negative numbers.
 ---@generic T
----@param haystack T[]|table<any, T>
----@param matcher fun(v: T): boolean
----@return T
-M.find = function(haystack, matcher)
-    local found
-    for _, needle in ipairs(haystack) do
-        if matcher(needle) then
-            found = needle
-            break
-        end
+---@param vec Vector<T> Vector to select from
+---@param first? integer First index, inclusive
+---@param last? integer Last index, inclusive
+---@return T[] #sliced vector
+M.vec_slice = function(vec, first, last)
+    -- return vim.list_slice(vec, first, last)
+    local slice = {}
+
+    if first and first < 0 then
+        first = #vec + first + 1
     end
-    return found
+
+    if last and last < 0 then
+        last = #vec + last + 1
+    end
+
+    for i = first or 1, last or #vec do
+        table.insert(slice, vec[i])
+    end
+
+    return slice
+end
+
+---Return all elements in `t` between `first` and `last` index.
+---Can index with negative numbers.
+---@generic T
+---@param vec Vector<T> Vector to select from
+---@param first? number First index, inclusive
+---@param last? number Last index, inclusive
+---@return any ...
+M.vec_select = function(vec, first, last)
+  return unpack(M.vec_slice(vec, first, last))
 end
 
 ---Search for a value in a vector
@@ -889,14 +820,7 @@ end
 ---@param val T Item to find
 ---@return boolean
 M.vec_contains = function(vec, val)
-    -- return vim.tbl_contains(t, value)
-    for _, value in ipairs(vec) do
-        if value == val then
-            return true
-        end
-    end
-
-    return false
+    return vim.tbl_contains(vec, val)
 end
 
 ---Return first index a given object can be found in a vector,
@@ -923,6 +847,37 @@ M.vec_push = function(vec, ...)
         vec[#vec + 1] = v
     end
     return vec
+end
+
+---Insert any number of objects to the beginning of a vector.
+---The items passed will be inserted in the same sequence.
+---```
+---local v = {1, 2, 3}
+---M.vec_insert(v, 4, 5, 6) == {4, 5, 6, 1, 2, 3}
+---```
+---@generic T
+---@param vec Vector<T> Vector to push to
+---@return T[] vec #Vector with the pushed value
+M.vec_insert = function(vec, ...)
+    for _, v in ripairs({...}) do
+        table.insert(vec, 1, v)
+    end
+    return vec
+end
+
+---Remove an object from a vector
+---@generic T
+---@param t Vector<T>
+---@param v T
+---@return boolean success True if the object was removed
+M.vec_remove = function(t, v)
+  local idx = M.vec_indexof(t, v)
+  if idx > -1 then
+    table.remove(t, idx)
+
+    return true
+  end
+  return false
 end
 
 --@generic T: table|any[], K: string|number, V: any
@@ -970,14 +925,26 @@ M.map = function(tbl, func)
     )
 end
 
----Apply function to each element of `vector`
----@generic T
----@param tbl T[] A list of elements
----@param func fun(v: T) Function to be applied
-M.for_each = function(tbl, func)
-    for _, item in ipairs(tbl) do
-        func(item)
+---Perform a `map` and `filter` out index values that would become `nil`.
+---@generic K, V
+---@param t table<K, V>
+---@param fn fun(v: V): any?
+---@return table<K, V>
+M.tbl_fmap = function(t, fn)
+    local ret = {}
+
+    for key, item in pairs(t) do
+        local v = fn(item)
+        if v ~= nil then
+            if type(key) == "number" then
+                table.insert(ret, v)
+            else
+                ret[key] = v
+            end
+        end
     end
+
+    return ret
 end
 
 ---Filter table based on function
@@ -987,6 +954,16 @@ end
 ---@return T[]?
 M.filter = function(tbl, func)
     return vim.tbl_filter(func, tbl)
+end
+
+---Apply function to with each element of `vector` as argument
+---@generic T
+---@param tbl T[] A list of elements
+---@param func fun(v: T) Function to be applied
+M.for_each = function(tbl, func)
+    for _, item in ipairs(tbl) do
+        func(item)
+    end
 end
 
 ---Apply a function to each element of a vector
@@ -1074,8 +1051,8 @@ end
 ---@field empty boolean Filter out buffers that are empty
 ---@field no_hidden boolean Filter out buffers that are hidden
 ---@field tabpage number Filter out buffers that are not displayed in a given tabpage.
----@field bufname string Filter out buffers whose name doesn't match a given Lua pattern
 ---@field buftype string|string[] Filter out buffers that are not of a certain type
+---@field bufname string Filter out buffers whose name doesn't match a given Lua pattern
 ---@field bufpath string Filter out buffers whose *full-path* doesn't match a given Lua pattern
 ---@field options { [string]: any } Filter out buffers that don't match a given map of options
 ---@field vars { [string]: any } Filter out buffers that don't match a given map of variables
@@ -1446,7 +1423,7 @@ end
 ---@param value table: Table to concatenate
 ---@param sep? string: Separator to concatenate the table
 ---@param str? string: String to concatenate to the table
----@return string|table
+---@return string
 M.list = function(value, sep, str)
     sep = sep or ","
     str = str or ""

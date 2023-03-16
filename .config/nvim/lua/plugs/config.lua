@@ -71,12 +71,12 @@ function M.listish()
             },
             locallist = {
                 open = "<Leader>wo",
-                on_cursor = "<leader>wa",
-                add_note = "<leader>wn",
+                on_cursor = "<Leader>wa",
+                add_note = "<Leader>wn",
                 clear = "<Leader>wi",
                 close = "<Nop>",
-                next = "]w",
-                prev = "[w"
+                next = "<Nop>",
+                prev = "<Nop>"
             }
         }
     )
@@ -91,24 +91,26 @@ function M.listish()
 
     wk.register(
         {
-            ["]e"] = {"<Cmd>cnewer<CR>", "Next quickfix list"},
-            ["[e"] = {"<Cmd>colder<CR>", "Previous quickfix list"},
-            ["]w"] = "Next item in loclist",
-            ["[w"] = "Previous item in loclist"
-        }
-    )
-
-    wk.register(
-        {
             q = {
                 name = "+quickfix",
                 o = "Quickfix open",
                 a = "Quickfix add current line",
                 n = "Quickfix add note",
                 i = "Quickfix clear items"
-            }
+            },
+            ["<Leader>wo"] = "Loclist open",
+            ["<Leader>wa"] = "Loclist add current line",
+            ["<Leader>wn"] = "Loclist add note",
+            ["<Leader>wi"] = "Loclist clear items",
         }
     )
+
+    --         ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
+    --         ["]q"] = {[[<Cmd>execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
+    --         ["[Q"] = {"<Cmd>cfirst<CR>", "First item in quickfix"},
+    --         ["]Q"] = {"<Cmd>clast<CR>", "Last item in quickfix"},
+    --         ["[S"] = {"<Cmd>lfirst<CR>", "First item in loclist"},
+    --         ["]S"] = {"<Cmd>llast<CR>", "Last item in loclist"},
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -569,422 +571,6 @@ function M.hlslens()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                        Sandwhich                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.sandwhich()
-    -- dss      = automatic deletion
-    -- css      = automatic change detection
-    -- ySi      = ask head and tail to add
-    -- yS       = surround to end of line
-    -- yss      = surround whole line (add)
-    -- ygs      = surround (\n<line>\n)
-    -- ys{a,i}  = surround delimiter
-    -- ds<CR>   = delete empty line above/below
-
-    -- y{a,i}si = yank head - tail
-    -- yiss = yank inside nearest delimiter
-    -- yaa  = yank inside <here>
-    -- yar  = yank inside [here]
-
-    -- vSi = surround head - tail
-    -- vgS = surround (\n<line>\n)
-
-    -- --Old--                   ---Input---        ---Output---
-    -- "hello"                   ysiwtkey<cr>       "<key>hello</key>"
-    -- "hello"                   ysiwP<cr>          |("hello")
-    -- "hello"                   ysiwfprint<cr>     print("hello")
-    -- print("hello")            dsf                "hello"
-
-    -- TODO: These
-    -- "hello"                   ysWFprint<cr>     print( "hello" )
-    -- "hello"                   ysW<C-f>print<cr> (print "hello")
-
-    -- dsf
-    g["sandwich#magicchar#f#patterns"] = {
-        -- This: func(arg) => arg
-        {
-            header = [[\<\%(\.\|:\{1,2}\)\@<!\h\k*\%(\.\|:\{1,2}\)\@!]],
-            bra = "(",
-            ket = ")",
-            footer = ""
-        },
-        -- This: macro!(arg) => arg
-        {
-            header = [[\<\h\k*!]],
-            bra = "(",
-            ket = ")",
-            footer = ""
-        },
-        -- This: func.method.xx(arg) => arg
-        {
-            header = [[\<\%(\h\k*\.\)\+\h\k*]],
-            bra = "(",
-            ket = ")",
-            footer = ""
-        },
-        -- This: func<T>(generic) => T(generic)
-        {
-            header = [[\<\h\k*]],
-            bra = "<",
-            ket = ">",
-            footer = ""
-        },
-        -- This: Lua:method(arg) => arg
-        {
-            header = [[\<\%(\h\k*:\)\h\k*]],
-            bra = "(",
-            ket = ")",
-            footer = ""
-        },
-        -- This: func::method(arg) => arg
-        {
-            header = [[\<\%(\h\k*::\)\+\h\k*]],
-            bra = "(",
-            ket = ")",
-            footer = ""
-        }
-    }
-
-    cmd.runtime("macros/sandwich/keymap/surround.vim")
-
-    cmd(
-        [[
-      let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
-
-      let g:sandwich#recipes += [
-      \   {
-      \     'buns': ['{ ', ' }'],
-      \     'nesting': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['{']
-      \   },
-      \   {
-      \     'buns': ['[ ', ' ]'],
-      \     'nesting': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['[']
-      \   },
-      \   {
-      \     'buns': ['( ', ' )'],
-      \     'nesting': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['(']
-      \   },
-      \   {
-      \     'buns': ['< ', ' >'],
-      \     'nesting': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['<']
-      \   },
-      \   {
-      \     'buns': ['[`', '`]'],
-      \     'nesting': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['1']
-      \   },
-      \   {
-      \     'buns': ['{\s*', '\s*}'],
-      \     'nesting': 1,
-      \     'regex': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['{']
-      \   },
-      \   {
-      \     'buns': ['\[\s*', '\s*\]'],
-      \     'nesting': 1,
-      \     'regex': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['[']
-      \   },
-      \   {
-      \     'buns': ['(\s*', '\s*)'],
-      \     'nesting': 1,
-      \     'regex': 1,
-      \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['(']
-      \   },
-      \   {
-      \     'buns': ['\s\+', '\s\+'],
-      \     'regex': 1,
-      \     'kind': ['delete', 'replace', 'query'],
-      \     'input': [' ']
-      \   },
-      \   {
-      \     'buns'        : ['{', '}'],
-      \     'motionwise'  : ['line'],
-      \     'kind'        : ['add'],
-      \     'linewise'    : 1,
-      \     'command'     : ["'[+1,']-1normal! >>"],
-      \   },
-      \   {
-      \     'buns'        : ['{', '}'],
-      \     'motionwise'  : ['line'],
-      \     'kind'        : ['delete'],
-      \     'linewise'    : 1,
-      \     'command'     : ["'[,']normal! <<"],
-      \   },
-      \   {
-      \     'buns':         ['', ''],
-      \     'action':       ['add'],
-      \     'motionwise':   ['line'],
-      \     'linewise':     1,
-      \     'input':        ["\<CR>"]
-      \   },
-      \   {
-      \     'buns':         ['^$', '^$'],
-      \     'regex':        1,
-      \     'linewise':     1,
-      \     'input':        ["\<CR>"]
-      \   },
-      \   {
-      \     'buns':         ['{', '}'],
-      \     'nesting':      1,
-      \     'skip_break':   1,
-      \     'input':        ['}', 'B'],
-      \   },
-      \   {
-      \     'buns':         ['[', ']'],
-      \     'nesting':      1,
-      \     'input':        [']', 'r'],
-      \   },
-      \   {
-      \     'buns':         ['(', ')'],
-      \     'nesting':      1,
-      \     'input':        [')', 'b'],
-      \   },
-      \   {
-      \     'buns':   ['|', '|'],
-      \     'nesting': 1,
-      \     'kind':   ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input':  ['|', 'V'],
-      \   },
-      \   {
-      \     'buns':   ['`', '`'],
-      \     'nesting':      1,
-      \     'kind':   ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input':  ['`', 'v'],
-      \   },
-      \   {
-      \     'buns':   ['=== ', ' ==='],
-      \     'nesting':      1,
-      \     'kind':   ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input':  ['='],
-      \   },
-      \   {
-      \     'buns':         ['<', '>'],
-      \     'expand_range': 0,
-      \     'input':        ['>', 'a'],
-      \   },
-      \   {
-      \     'buns': ["(\n", "\n)"],
-      \     'nesting': 1,
-      \     'kind': ['add'],
-      \     'action': ['add'],
-      \     'input':  ["\<C-S-)>"],
-      \   },
-      \   {
-      \     'buns': ["{\n", "\n}"],
-      \     'nesting': 1,
-      \     'kind': ['add'],
-      \     'action': ['add'],
-      \     'input':  ["\<C-S-}>", "U"],
-      \   },
-      \   {
-      \     'buns': ['(', ')'],
-      \     'cursor': 'head',
-      \     'command': ['startinsert'],
-      \     'kind': ['add', 'replace'],
-      \     'action': ['add'],
-      \     'input': ['F']
-      \   },
-      \ ]
-    ]]
-    )
-
-    -- map({"x", "o"}, "im", "<Plug>(textobj-sandwich-literal-query-i)")
-    -- map({"x", "o"}, "am", "<Plug>(textobj-sandwich-literal-query-a)")
-    map({"x", "o"}, "is", "<Plug>(textobj-sandwich-query-i)", {desc = "Query inner delimiter"})
-    map({"x", "o"}, "as", "<Plug>(textobj-sandwich-query-a)", {desc = "Query around delimiter"})
-    map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)", {desc = "Auto delimiter"})
-    map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)", {desc = "Auto delimiter"})
-
-    -- map("o", "if", "<Plug>(textobj-sandwich-function-ip)")
-    -- map("n", "X", "<Plug>(sandwich-delete-auto)")
-    -- map("n", "X", "<Plug>(sandwich-replace-auto)")
-
-    wk.register(
-        {
-            ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
-            ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
-            ["m."] = {"<Plug>(sandwich-add)iw'", "Surround a word"},
-            ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
-            ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
-            ["yss"] = "Surround text on line",
-            ["ygs"] = {"<Plug>(sandwich-add):normal! V<CR>", "Surround entire line"},
-            ["dss"] = "Delete automatic delimiter",
-            ["dsf"] = "Delete surrounding function"
-        }
-    )
-
-    wk.register(
-        {
-            -- ["m'"] = {"<Plug>(sandwich-add)'", "Surround with single quote (')"},
-            -- ['m"'] = {'<Plug>(sandwich-add)"', 'Surround with double quote (")'},
-            -- ["mi"] = {"<Plug>(sandwich-add)*", "Surround with italics (*)"},
-            -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
-            ["```"] = {
-                "<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```)"
-            },
-            ["``;"] = {
-                "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```zsh)"
-            }
-        },
-        {mode = "v"}
-    )
-
-    map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         targets                          │
--- ╰──────────────────────────────────────────────────────────╯
--- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
-function M.targets()
-    -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
-    -- vI) = contents inside pair
-    -- in( an( In( An( il( al( Il( Al( ... next and last pair
-    -- {a,I,A}{,.;+=...} = a/inside/around separator
-    -- inb anb Inb Anb ilb alb Ilb Alb = any block
-    -- inq anq Inq Anq ilq alq Ilq Alq == any quote
-
-    augroup(
-        "lmb__Targets",
-        {
-            event = "User",
-            pattern = "targets#mappings#user",
-            command = function()
-                fn["targets#mappings#extend"](
-                    {
-                        -- Parameter
-                        J = {argument = {{o = "(", c = ")", s = ","}}},
-                        a = {pair = {{o = "<", c = ">"}}},
-                        r = {pair = {{o = "[", c = "]"}}},
-                        B = {pair = {{o = "{", c = "}"}}},
-                        b = {
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "{", c = "}"}
-                            }
-                        },
-                        A = {
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "{", c = "}"},
-                                {o = "[", c = "]"}
-                            }
-                        },
-                        -- Closest delimiter
-                        ["2"] = {
-                            separator = {
-                                {d = ","},
-                                {d = "."},
-                                {d = ";"},
-                                {d = "="},
-                                {d = "+"},
-                                {d = "-"},
-                                {d = "="},
-                                {d = "~"},
-                                {d = "_"},
-                                {d = "*"},
-                                {d = "#"},
-                                {d = "/"},
-                                {d = [[\]]},
-                                {d = "|"},
-                                {d = "&"},
-                                {d = "$"}
-                            },
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "[", c = "]"},
-                                {o = "{", c = "}"},
-                                {o = "<", c = ">"}
-                            },
-                            quote = {{d = "'"}, {d = '"'}, {d = "`"}},
-                            tag = {{}}
-                        }
-                    }
-                )
-            end
-        }
-    )
-
-    wk.register(
-        {
-            ["ir"] = "Inner brace",
-            ["ar"] = "Around brace",
-            -- ["ia"] = "Inner angle bracket",
-            -- ["aa"] = "Around angle bracket",
-            -- ["iA"] = "Inner any bracket",
-            -- ["aA"] = "Around any bracket",
-            ["iq"] = "Inner quote",
-            ["aq"] = "Around quote",
-            ["in"] = "Next object",
-            ["im"] = "Previous object",
-            ["an"] = "Next object",
-            ["am"] = "Previous object",
-            ["i2"] = "Inner nearest object",
-            ["a2"] = "Around nearest object",
-            ["iJ"] = "Inner parameter (comma)",
-            ["aJ"] = "Around parameter (comma)"
-        },
-        {mode = "o"}
-    )
-
-    -- c: on cursor position
-    -- l: left of cursor in current line
-    -- r: right of cursor in current line
-    -- a: above cursor on screen
-    -- b: below cursor on screen
-    -- A: above cursor off screen
-    -- B: below cursor off screen
-    g.targets_seekRanges =
-        "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
-    g.targets_jumpRanges = g.targets_seekRanges
-    g.targets_aiAI = "aIAi"
-    -- g.targets_mapped_aiAI = 'aiAI'
-
-    -- Seeking next/last objects
-    g.targets_nl = "nm"
-
-    -- FIX: I here triggers unable to change text in window with coc with progress enabled
-    map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
-    map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
-    map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
-    map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                          Caser                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.caser()
@@ -1036,11 +622,15 @@ function M.matchup()
     )
 
     map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
+    map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)")
     map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
     map({"n", "x", "o"}, "]5", "<Plug>(matchup-]%)")
     map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
+
     map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
     map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
+    -- map("n", "ds%", "<Plug>(matchup-ds%)")
+    -- map("n", "cs%", "<Plug>(matchup-cs%)")
 
     augroup(
         "lmb__Matchup",
@@ -1206,12 +796,6 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.move()
     -- Move selected text up down
-    -- map("v", "J", ":m '>+1<CR>gv=gv")
-    -- map("v", "K", ":m '<-2<CR>gv=gv")
-    -- map("i", "<C-J>", "<C-o><Cmd>m +1<CR>")
-    -- map("i", "<C-K>", "<C-o><Cmd>m -2<CR>")
-    -- map("n", "<C-,>", "<Cmd>m +1<CR>")
-    -- map("n", "<C-.>", "<Cmd>m -2<CR>")
 
     wk.register(
         {
@@ -1480,31 +1064,25 @@ function M.comment_box()
 
     local _ = D.ithunk
 
-    --        Box | Size | Text
-    -- lbox    L     F      L
-    -- clbox   C     F      L
-    -- cbox    L     F      C
-    -- ccbox   C     F      C
-    -- albox   L     A      L
-    -- aclbox  C     A      L
-    -- acbox   L     A      C
-    -- accbox  C     A      C
-
     -- 21 20 19 18 7
-    map({"n", "v"}, "<Leader>bb", cb.cbox, {desc = "Left fixed box, center text (round)"})
-    map({"n", "v"}, "<Leader>bs", _(cb.cbox, 19), {desc = "Left fixed box, center text (sides)"})
-    map({"n", "v"}, "<Leader>bd", _(cb.cbox, 7), {desc = "Left fixed box, center text (double)"})
-    map({"n", "v"}, "<Leader>bS", _(cb.cbox, 13), {desc = "Left fixed box, center text (side)"})
-    map({"n", "v"}, "<Leader>ba", cb.acbox, {desc = "Left center box, center text (round)"})
-    map({"n", "v"}, "<Leader>bc", cb.accbox, {desc = "Center center box, center text (round)"})
-    map({"n", "v"}, "<Leader>bC", cb.lbox, {desc = "Left fixed box, left text (round)"})
+    map({"n", "v"}, "<Leader>bb", cb.lcbox, {desc = "Left fixed, center text (round)"})
+    map({"n", "v"}, "<Leader>bs", _(cb.lcbox, 19), {desc = "Left fixed, center text (sides)"})
+    map({"n", "v"}, "<Leader>bd", _(cb.lcbox, 7), {desc = "Left fixed, center text (double)"})
+    map({"n", "v"}, "<Leader>blc", _(cb.lcbox, 13), {desc = "Left fixed, center text (side)"})
+    map({"n", "v"}, "<Leader>bll", cb.llbox, {desc = "Left fixed, left text (round)"})
+    map({"n", "v"}, "<Leader>blr", cb.lrbox, {desc = "Left fixed, right text (side)"})
+    map({"n", "v"}, "<Leader>br", cb.rcbox, {desc = "Right fixed, center text (round)"})
+    map({"n", "v"}, "<Leader>bR", cb.rcbox, {desc = "Right fixed, right text (round)"})
 
-    -- {"n", "v"},
-    map({"n", "v"}, "<Leader>cc", _(cb.cbox, 21), {desc = "Left fixed box, center text (t/b)"})
-    map({"n", "v"}, "<Leader>cb", _(cb.cbox, 8), {desc = "Left fixed box, center text (thick)"})
-    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Left center box, center text (t/b)"})
+    map({"n", "v"}, "<Leader>ba", cb.albox, {desc = "Left adapted (round)"})
+    map({"n", "v"}, "<Leader>bA", cb.acbox, {desc = "Center adapted (round)"})
 
-    -- cline
+    map({"n", "v"}, "<Leader>bc", cb.ccbox, {desc = "Center fixed, center text (round)"})
+
+    map({"n", "v"}, "<Leader>cc", _(cb.lcbox, 21), {desc = "Left fixed, center text (top/bottom)"})
+    map({"n", "v"}, "<Leader>cb", _(cb.lcbox, 8), {desc = "Left fixed, center text (thick)"})
+    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Center adapted (top/bottom)"})
+
     -- 2 6 7
     map({"n", "i"}, "<M-w>", _(cb.cline, 6), {desc = "Insert thick line"})
 
@@ -2161,8 +1739,8 @@ function M.nerdicons()
             border = style.current.border, -- Border
             prompt = " ", -- Prompt Icon
             preview_prompt = " ", -- Preview Prompt Icon
-            up = "<C-u>", -- Move up in preview
-            down = "<C-d>", -- Move down in preview
+            up = "<C-k>", -- Move up in preview
+            down = "<C-j>", -- Move down in preview
             copy = "<C-y>" -- Copy to the clipboard
         }
     )
@@ -2185,58 +1763,6 @@ function M.smartcolumn()
             limit_to_window = false
         }
     )
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                     VariousTextobjs                      │
---  ╰──────────────────────────────────────────────────────────╯
-function M.various_textobjs()
-    local vobjs = D.npcall(require, "various-textobjs")
-    if not vobjs then
-        return
-    end
-
-    vobjs.setup {
-        lookForwardLines = 5, -- set to 0 to only look in the current line
-        useDefaultKeymaps = false -- use suggested keymaps (see README)
-    }
-
-    -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
-
-    -- exclude start exclude end
-    map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
-    map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, true))
-    map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))
-    map({"o", "x"}, "aI", D.ithunk(vobjs.indentation, false, false))
-
-    wk.register(
-        {
-            ["ai"] = "Indentation level (+ line above)",
-            ["aI"] = "Indention level (+ lines above/below)",
-            ["iI"] = "Inner Indentation level (+ line below)",
-            ["ii"] = "Inner Indentation level"
-        },
-        {mode = "o"}
-    )
-
-    nvim.autocmd.VariousTextobjs = {
-        event = "FileType",
-        pattern = {"lua", "zsh", "sh", "bash"},
-        command = function(args)
-            local buf = args.buf
-
-            map({"o", "x"}, "iD", D.ithunk(vobjs.doubleSquareBrackets, true), {buffer = buf})
-            map({"o", "x"}, "aD", D.ithunk(vobjs.doubleSquareBrackets, false), {buffer = buf})
-
-            wk.register(
-                {
-                    ["iD"] = "Inner [[",
-                    ["aD"] = "Outer [["
-                },
-                {mode = "o"}
-            )
-        end
-    }
 end
 
 return M

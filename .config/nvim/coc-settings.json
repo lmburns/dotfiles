@@ -263,8 +263,9 @@
     "--background-index",
     "--clang-tidy",
     "--completion-style=detailed",
-    "--fallback-style=google",
-    "--header-insertion=iwyu",
+    "--all-scopes-completion",
+    // "--fallback-style=google",
+    // "--header-insertion=iwyu",
     "--header-insertion-decorators=false",
     "--suggest-missing-includes"
   ],
@@ -499,11 +500,12 @@
   "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  "Lua.workspace.useGitIgnore": true,
   // "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
-  "Lua.workspace.maxPreload": 10000,
+  "Lua.workspace.maxPreload": 7000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
-  "Lua.workspace.preloadFileSize": 10000,
+  "Lua.workspace.preloadFileSize": 3000,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
     // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
@@ -525,12 +527,14 @@
   "Lua.completion.showWord": "Enable",
   "Lua.completion.workspaceWord": true,
   "Lua.signatureHelp.enable": true,
+  "Lua.codeLens.enable": false,
   "Lua.hint.enable": true,
   "Lua.hint.await": true,
-  "Lua.hint.paramName": "Literal",
-  "Lua.hint.arrayIndex": "Enable",
+  "Lua.hint.paramName": "Literal", // "All"
+  "Lua.hint.arrayIndex": "Auto",
   "Lua.hint.setType": true,
   "Lua.hint.paramType": true,
+  "Lua.hint.semicolon": "SameLine",
   "Lua.hover.enable": true,
   "Lua.hover.expandAlias": true,
   "Lua.hover.enumsLimit": 5,
@@ -546,6 +550,10 @@
   "Lua.semantic.variable": true,
   "Lua.semantic.keyword": false,
   "Lua.diagnostics.enable": true,
+  "Lua.diagnostics.workspaceDelay": -1,
+  // "Lua.diagnostics.workspaceDelay": 5000,
+  "Lua.diagnostics.workspaceRate": 85,
+  "Lua.diagnostics.workspaceEvent": "OnSave",
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.disableScheme": ["git"],
   "Lua.diagnostics.unusedLocalExclude": ["_*"],
@@ -690,7 +698,9 @@
     "reportUnusedClass": "information",
     "reportUnusedFunction": "information",
     "reportUnusedImport": "information",
-    "reportUnusedVariable": "none"
+    //
+    "reportUnusedVariable": "none",
+    "reportUndefinedVariable": "none"
   },
 
   "pyright.enable": true,
@@ -1196,7 +1206,31 @@
         "info": "info",
         "style": "hint"
       }
-    }
+    },
+    "systemd-analyze": {
+      "command": "systemd-analyze",
+      "debounce": 100,
+      "args": [
+        // "SYSTEMD_COLORS=0",
+        "verify",
+        "%filepath"
+      ],
+      "isStdout": false,
+      "isStderr": true,
+      "sourceName": "systemd-analyze",
+      "formatLines": 1,
+      "formatPattern": [
+        // "^[^:]+:((\\d+):)?\\s*([^ -~]+)$",
+        // "^[^:]+:((\\d+):)?\\s*([^\\x20-\\x7E]*)$",
+        // "^[^:]+:((\\d+):)?\\s*([^\\p{C}]+)$",
+        // "^[^:]+:((\\d+):)?\\s*(.*(?!\\p{C}))$",
+        "^[^:]+:((\\d+):)?\\s*(.*)$",
+        {
+          "line": 2,
+          "message": 3
+        }
+      ]
+    },
   },
   "diagnostic-languageserver.formatters": {},
   "diagnostic-languageserver.filetypes": {
@@ -1254,7 +1288,8 @@
     },
     "ccls": {
       "command": "ccls",
-      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      // "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "filetypes": [],
       "rootPatterns": [
         ".ccls",
         ".ccls-root",
@@ -1283,7 +1318,7 @@
         },
         "completion": {
           "placeholder": false,
-          "detailedLabel": false,
+          "detailedLabel": true,
           "filterAndSort": false
         },
         "index": {
@@ -1426,7 +1461,7 @@
         // "-c",
         // "~/.config/nvim/efm-config.yml"
       ],
-      "filetypes": ["sh", "python"],
+      "filetypes": ["sh"], // python
       "settings": {
         "rootMarkers": [".git/"],
         "languages": {

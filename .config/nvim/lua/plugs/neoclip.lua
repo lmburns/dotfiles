@@ -9,7 +9,6 @@ end
 local dirs = require("common.global").dirs
 local utils = require("common.utils")
 local map = utils.map
-local augroup = utils.augroup
 local hl = require("common.color")
 local yank = require("common.yank")
 
@@ -356,25 +355,63 @@ local function init()
     map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>")
     map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>")
 
-    map("n", "gZ", ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>", {desc = "Paste and reselect text"})
+    map(
+        "n",
+        "gZ",
+        ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
+        {desc = "Paste and reselect text"}
+    )
 
-    augroup(
-        "lmb__HighlightYankClip",
+    nvim.autocmd.lmb__HighlightYankClip = {
+        event = "TextYankPost",
+        pattern = "*",
+        command = function()
+            hl.set("HighlightedYankRegion", {bg = "#cc6666"})
+            if not vim.b.visual_multi then
+                pcall(
+                    vim.highlight.on_yank,
+                    {higroup = "HighlightedYankRegion", timeout = M.timeout, on_visual = true}
+                )
+            end
+        end,
+        desc = "Highlight a selection on yank"
+    }
+
+    nvim.autocmd.lmb__SyncClipboard = {
         {
-            event = "TextYankPost",
+            event = "FocusLost",
             pattern = "*",
             command = function()
-                hl.set("HighlightedYankRegion", {bg = "#cc6666"})
-                if not vim.b.visual_multi then
-                    pcall(
-                        vim.highlight.on_yank,
-                        {higroup = "HighlightedYankRegion", timeout = M.timeout, on_visual = true}
-                    )
-                end
+                vim.g.system_clipboard = {
+                    regtype = fn.getregtype("+"),
+                    contents = vim.split(fn.getreg("+"), "\n")
+                }
             end,
-            desc = "Highlight a selection on yank"
+            desc = "Sync clipboard when unfocusing"
+        },
+        {
+            event = {"VimEnter", "FocusGained"},
+            pattern = "*",
+            command = function(args)
+                local system_clipboard = {
+                    regtype = fn.getregtype("+"),
+                    contents = vim.split(fn.getreg("+"), "\n")
+                }
+
+                if
+                    args.event == "VimEnter" or
+                        vim.g.system_clipboard ~= nil and
+                            not vim.deep_equal(vim.g.system_clipboard, system_clipboard)
+                 then
+                    require("neoclip")
+                    require("neoclip.storage").insert(system_clipboard, "yanks")
+                end
+
+                vim.g.system_clipboard = nil
+            end,
+            desc = "Sync clipboard when unfocusing"
         }
-    )
+    }
 
     -- telescope.load_extension("neoclip")
 end

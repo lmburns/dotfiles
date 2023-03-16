@@ -697,53 +697,12 @@ telescope.setup(
 
 local options = {
     hidden = true,
-    mappings = conf.mappings,
-    theme = "ivy",
-    path_display = {"smart"},
+    path_display = {},
     layout_strategy = "horizontal",
-    sorting_strategy = "descending",
     layout_config = {preview_width = 0.65},
     border = true,
-    borderchars = {
-        prompt = {"─", " ", " ", " ", "─", "─", " ", " "},
-        results = {" "},
-        preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
-    },
-    cwd = D.thunk(fn.expand, "%:p:h")
+    borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
 }
-
--- ========================== Helper ==========================
-
-local function join_uniq(tbl, tbl2)
-    local res = {}
-    local hash = {}
-    for _, v1 in ipairs(tbl) do
-        res[#res + 1] = v1
-        hash[v1] = true
-    end
-
-    for _, v in pairs(tbl2) do
-        if not hash[v] then
-            table.insert(res, v)
-        end
-    end
-    return res
-end
-
-local function filter_by_cwd_paths(tbl, cwd)
-    local res = {}
-    local hash = {}
-    for _, v in ipairs(tbl) do
-        if v:find(cwd, 1, true) then
-            local v1 = Path:new(v):normalize(cwd)
-            if not hash[v1] then
-                res[#res + 1] = v1
-                hash[v1] = true
-            end
-        end
-    end
-    return res
-end
 
 -- ========================== Builtin ==========================
 
@@ -802,50 +761,56 @@ M.cst_buffers = function()
     )
 end
 
--- TODO: Finish
--- TODO: Don't add help text to frecency
-
----Return grep arguments for custom grep function
----@param cwd string current directory
----@param exclude_curfile? boolean if true don't grep in currently open file
----@return table arguments #opts passed to `telescope.builtin.live_grep(...)`
-local function grep_args(cwd, exclude_curfile)
+---Custom grep current working directory (including open file)
+---@param opts table
+M.cst_grep = function(opts)
     local default = {
         prompt_title = ("Grep [ %s ]"):format(cwd),
-        -- cwd = cwd,
+        mappings = conf.mappings,
+        opts = opts or {},
+        path_display = {"smart"},
         grep_open_files = false,
-        sorting_strategy = "ascending",
-        layout_strategy = "bottom_pane",
-        layout_config = { height = 25 },
         on_input_filter_cb = function(prompt)
             -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
             return {prompt = prompt:gsub("%s", ".*")}
         end,
-        vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-            "--pcre2"
+        theme = "ivy",
+        sorting_strategy = "ascending",
+        layout_strategy = "bottom_pane",
+        layout_config = {
+            height = 25
+        },
+        border = true,
+        borderchars = {
+            prompt = {"─", " ", " ", " ", "─", "─", " ", " "},
+            results = {" "},
+            preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
         }
+        -- vimgrep_arguments = {
+        --     "rg",
+        --     "--color=never",
+        --     "--no-heading",
+        --     "--with-filename",
+        --     "--line-number",
+        --     "--column",
+        --     "--smart-case",
+        --     "--pcre2",
+        --     -- ("--glob=%s"):format(fn.expand("%"))
+        -- }
     }
 
-    -- default = vim.tbl_deep_extend
-
+    default.cwd = fn.expand("%:p:h")
     default.attach_mappings = function(_, map)
         map(
             "n",
-            "<A-i>",
+            "<M-i>",
             function(prompt_bufnr)
                 c_actions.cd_parent(prompt_bufnr, default)
             end
         )
         map(
             "i",
-            "<A-i>",
+            "<M-i>",
             function(prompt_bufnr)
                 c_actions.cd_parent(prompt_bufnr, default)
             end
@@ -854,29 +819,7 @@ local function grep_args(cwd, exclude_curfile)
         return true
     end
 
-    if exclude_curfile then
-        table.insert(default.vimgrep_arguments, ("--glob=%s"):format(fn.expand("%")))
-    end
-
-    return default
-end
-
----Custom grep current working directory (including open file)
----@param opts table
-M.cst_grep = function(opts)
-    local cwd = fn.expand("%:p:h")
-    local args = grep_args(cwd, false)
-
-    builtin.live_grep(args)
-end
-
----Custom grep current working directory (excluding open file)
----@param opts table
-M.cst_grepe = function(opts)
-    local cwd = fn.expand("%:p:h")
-    local args = grep_args(cwd, false)
-
-    builtin.live_grep(args)
+    builtin.live_grep(default)
 end
 
 M.cst_buffer_fuzzy_find = function()
@@ -941,69 +884,6 @@ M.keymaps = function(mode)
 end
 
 -- ========================== Builtin ============================
-builtin.cst_mru = function(opts)
-    opts = opts or {}
-    local get_mru = function(opts)
-        if not pcall(require, "telescope._extensions.frecency") then
-            return vim.tbl_filter(
-                function(val)
-                    return 0 ~= fn.filereadable(val)
-                end,
-                vim.v.oldfiles
-            )
-        else
-            local db_client = require("telescope._extensions.frecency.db_client")
-            db_client.init()
-            -- too slow
-            -- local tbl = db_client.get_file_scores(opts, vim.fn.getcwd())
-
-            local tbl = db_client.get_file_scores(opts)
-            local res = {}
-            for _, v in pairs(tbl) do
-                table.insert(res, v["filename"])
-            end
-
-            return res
-        end
-    end
-
-    local results_mru = get_mru(opts)
-    local results_mru_cur = filter_by_cwd_paths(results_mru, fn.expand("%:p:h") or uv.cwd())
-
-    local show_untracked = utils.get_default(opts.show_untracked, true)
-    local recurse_submodules = utils.get_default(opts.recurse_submodules, false)
-    if show_untracked and recurse_submodules then
-        error("Git does not support both --others and --recurse-submodules")
-    end
-    local cmd = {
-        "git",
-        "ls-files",
-        "--exclude-standard",
-        "--cached",
-        show_untracked and "--others" or nil,
-        recurse_submodules and "--recurse-submodules" or nil
-    }
-    local results_git = tutils.get_os_command_output(cmd)
-
-    local results = join_uniq(results_mru_cur, results_git)
-
-    pickers.new(
-        opts,
-        {
-            prompt_title = "MRU",
-            finder = finders.new_table(
-                {
-                    results = results,
-                    entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
-                }
-            ),
-            -- default_text = vim.fn.getcwd(),
-            sorter = conf.file_sorter(opts),
-            previewer = conf.file_previewer(opts)
-        }
-    ):find()
-end
-
 -- Grep a string with a prompt
 builtin.grep_prompt = function(opts)
     opts.search = fn.input("Grep String > ")

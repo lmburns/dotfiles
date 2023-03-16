@@ -6,26 +6,26 @@ if not comment then
     return
 end
 
+if not D.npcall(require, "ts_context_commentstring") then
+    return
+end
+
 local wk = require("which-key")
 local utils = require("common.utils")
 local map = utils.map
 
+local cmd = vim.cmd
+local fn = vim.fn
+local api = vim.api
+
 local ft = require("Comment.ft")
 local U = require("Comment.utils")
-
-if not D.npcall(require, "nvim-treesitter") then
-    return
-end
-
 local ts_utils = require("ts_context_commentstring.utils")
 local internal = require("ts_context_commentstring.internal")
 
--- local cmd = vim.cmd
-local fn = vim.fn
+-- local state = {}
 
--- TODO: Maybe create an issue
--- Would like to ignore certain lines on comment
--- And ignore others on uncomment
+-- TODO: Doc comments
 
 function M.setup()
     comment.setup(
@@ -34,7 +34,6 @@ function M.setup()
             -- @type boolean
             padding = true,
             -- Whether the cursor should stay at its position
-            -- NOTE: This only affects NORMAL mode mappings and doesn't work with dot-repeat
             -- @type boolean
             sticky = true,
             -- Lines to be ignored while comment/uncomment.
@@ -83,30 +82,65 @@ function M.setup()
                 extended = false
             },
             -- Pre-hook, called before commenting the line
-            -- @type fun(ctx: Ctx):string
+            -- @type fun(ctx: CommentCtx):string
+            ---@return string?
             pre_hook = function(ctx)
-                -- Detemine whether to use linewise or blockwise commentstring
+                -- Determine whether to use linewise or blockwise commentstring
                 local type = ctx.ctype == U.ctype.linewise and "__default" or "__multiline"
 
                 -- Determine the location where to calculate commentstring from
-                -- Comment out nested languages using correct comment character
                 local location = nil
                 if ctx.ctype == U.ctype.blockwise then
-                    location = ts_utils.get_cursor_location()
+                    location = {ctx.range.srow - 1, ctx.range.scol}
                 elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
                     location = ts_utils.get_visual_start_location()
                 end
 
-                return internal.calculate_commentstring(
-                    {
-                        key = type,
-                        location = location
-                    }
-                )
+                -- if ctx.range.ecol > 400 then
+                --     ctx.range.ecol = 1
+                -- end
+
+                -- if ctx.cmotion >= 3 and ctx.cmotion <= 5 then
+                --     local cr, cc = utils.get_cursor()
+                --     local m = {
+                --         ["<"] = {ctx.range.srow, ctx.range.scol},
+                --         [">"] = {ctx.range.erow, ctx.range.ecol}
+                --     }
+                --     if cr == m["<"][1] then
+                --         m = {
+                --             ["<"] = {ctx.range.erow, ctx.range.scol},
+                --             [">"] = {ctx.range.srow, ctx.range.ecol}
+                --         }
+                --     end
+                --     state.marks = m
+                --     state.cursor = {cr, cc}
+                --     state.cursor_line_len = #fn.getline(".")
+                -- else
+                --     state = {}
+                -- end
+
+                return internal.calculate_commentstring {
+                    key = type,
+                    location = location
+                }
             end,
             -- Post-hook, called after commenting is done
-            -- @type fun(ctx: Ctx)
-            post_hook = nil
+            -- @type fun(ctx: CommentCtx)
+            -- post_hook = function(ctx)
+            --     vim.schedule(
+            --         function()
+            --             if state and state.marks and #(vim.tbl_keys(state.marks)) > 0 then
+            --                 nvim.mark["<"] = state.marks["<"]
+            --                 nvim.mark[">"] = state.marks[">"]
+            --                 cmd [[norm! gv]]
+            --                 local cr, cc = unpack(state.cursor)
+            --                 local diff = #fn.getline(".") - state.cursor_line_len
+            --                 utils.set_cursor(0, cr, cc + diff)
+            --                 state = {}
+            --             end
+            --         end
+            --     )
+            -- end
         }
     )
 
@@ -176,8 +210,12 @@ local function init()
     -- )
 
     map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle.linewise.current()<CR>j")
-    map("i", "<C-.>", [[<Esc>:<C-u>lua require('Comment.api').toggle.linewise.current()<CR>]])
-    map("x", "<C-.>", [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise.current")()<CR>]])
+    map("i", "<C-.>", [[<C-o><Cmd>lua require('Comment.api').toggle.linewise.current()<CR>]])
+    map(
+        "x",
+        "<C-.>",
+        [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise.current")()<CR>]]
+    )
 
     map(
         "x",
@@ -186,11 +224,13 @@ local function init()
             local selection = utils.get_visual_selection()
             fn.setreg(vim.v.register, selection)
             utils.normal("n", "gv")
-            cmd("normal! gv")
+            -- cmd("normal! gv")
             require("Comment.api").locked("toggle.linewise.current")()
         end,
         {desc = "Copy text and comment it out"}
     )
+
+    map("n", "g1p", "<Cmd>norm! gcA<Esc>p<CR>", {desc = "Paste as comment at EOL"})
 
     wk.register(
         {

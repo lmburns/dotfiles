@@ -12,16 +12,16 @@ local map = utils.map
 local hint_direction = require("hop.hint").HintDirection
 
 local cmd = vim.cmd
+local fn = vim.fn
+local api = vim.api
 
 -- =============================== Hop ================================
 function M.setup()
-    -- "etovxqpdygfblzhckisuran"
-    -- "asdfjklhmnwertzxcvbuio"
     hop.setup({keys = "abcdefghijklmnopqrstuvwxyz;',."})
 end
 
 ---Setup nvim-treehopper
-M.setup_treehopper = function()
+function M.setup_treehopper()
     cmd.packadd("nvim-treehopper")
     local tsht = D.npcall(require, "tsht")
     if not tsht then
@@ -38,6 +38,64 @@ M.setup_treehopper = function()
     map("n", "]n", D.ithunk(tsht.move, {side = "end"}), {desc = "TS node end"})
 end
 
+--  ╭─────────────────╮
+--  │ Dot repeatable  │
+--  ╰─────────────────╯
+
+local builtin_targets = require("hop.jump_target")
+local last_chars = nil
+
+---@param chars string
+local function repeatable_hop(chars)
+    assert(chars ~= nil)
+    last_chars = chars
+    hop.hint_with(
+        builtin_targets.jump_targets_for_current_line(
+            builtin_targets.regex_by_case_searching(
+                chars,
+                true,
+                {direction = hint_direction.AFTER_CURSOR, current_line_only = true}
+            )
+        ),
+        hop.opts
+    )
+
+    fn["repeat#set"](":lua require'plugs.hop'.repeats()\r")
+end
+
+---Repeat last hop command
+M.repeats = function()
+    if last_chars == nil then
+        return
+    end
+    repeatable_hop(last_chars)
+end
+
+---Rewrite of hop.hint_char1
+M.hint_char1 = function()
+    local char
+    while true do
+        api.nvim_echo({{"hop 1 char:", "Search"}}, false, {})
+        local code = fn.getchar()
+        -- fixme: custom char range by needs
+        if code >= 61 and code <= 0x7a then
+            -- [a-z]
+            char = string.char(code)
+            break
+        elseif code == 0x20 or code == 0x1b then
+            -- press space, esc to cancel
+            char = nil
+            break
+        end
+    end
+    if not char then
+        return
+    end
+
+    repeatable_hop(char)
+end
+
+-- ====================================================================
 local function init()
     M.setup()
     M.setup_treehopper()
@@ -59,6 +117,8 @@ local function init()
     map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Next brace", luacmd = true})
 
     -- ========================== f-Mapping ==========================
+
+    -- map("n", [[f]], [[<Cmd>lua require'plugs.hop'.hint_char1()<CR>]], {desc = "Hop"})
 
     -- Normal
     map(

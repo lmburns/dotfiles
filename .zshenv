@@ -92,6 +92,8 @@ export LESS="\
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
+export AUR_PAGER='lf'
+
 export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
