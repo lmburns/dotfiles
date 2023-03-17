@@ -131,7 +131,7 @@ function creinstall() {
 # lsof open fd
 zmodload -F zsh/system p:sysparams
 # Get your IP address
-function myip()      { curl ipinfo.io/ip; }
+function myip()      { curl ipinfo.io/json | jq .; }
 # List available Wifi networks
 function lswifi()    { nmcli device wifi; }
 # Get wifi information

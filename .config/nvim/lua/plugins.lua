@@ -346,8 +346,8 @@ return packer.startup(
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
                         {"n", "gsP"},
-                        {"i", "<C-M-p>"},
-                        {"i", "<M-p>"},
+                        -- {"i", "<C-M-p>"},
+                        -- {"i", "<M-p>"},
                     }
                 }
             )

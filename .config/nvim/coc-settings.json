@@ -264,10 +264,12 @@
     "--clang-tidy",
     "--completion-style=detailed",
     "--all-scopes-completion",
+    "--header-insertion=iwyu",
+    "--header-insertion-decorators",
+    "--suggest-missing-includes",
+    // "--folding-ranges"
     // "--fallback-style=google",
-    // "--header-insertion=iwyu",
-    "--header-insertion-decorators=false",
-    "--suggest-missing-includes"
+    // "--enable-config"
   ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust

@@ -140,6 +140,21 @@ local function init()
             command = function(args)
                 -- Rust analyzer really slows things down, so this needs more time
                 vim.opt_local.timeoutlen = 500
+                vim.opt_local.comments = {
+                        "sO:* -",
+                        "mO:*  ",
+                        "exO:*/",
+                        "s1:/*",
+                        "mb:*",
+                        "ex:*/",
+                        ":///",
+                        "://!",
+                        "://",
+                    }
+
+                -- sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://
+                -- s0:/*!,ex:*/,s1:/*,mb:*,:///,://!,://
+
                 local bufnr = args.buf
 
                 local bmap = function(...)

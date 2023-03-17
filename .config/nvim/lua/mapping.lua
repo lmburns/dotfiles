@@ -66,19 +66,23 @@ map("n", "q", "<Nop>", {silent = true})
 
 map("i", '<M-S-">', "<Home>", {desc = "Goto begin of lne"})
 map("i", "<M-'>", "<End>", {desc = "Goto end of line"})
-map("i", "<C-S-h>", "<C-Left>", {desc = "Go one word left"})
-map("i", "<C-S-l>", "<C-Right>", {desc = "Go one word right"})
-map("i", "<C-S-n>", "<Left>", {desc = "Go one char left"})
-map("i", "<C-S-m>", "<Right>", {desc = "Go one char right"})
+map("i", "<M-b>", "<C-Left>", {desc = "Go word back"})
+map("i", "<M-f>", "<C-Right>", {desc = "Go word forward"})
+map("i", "<C-S-h>", "<C-Left>", {desc = "Go word back"})
+map("i", "<C-S-l>", "<C-Right>", {desc = "Go word forward"})
+map("i", "<C-S-m>", "<Left>", {desc = "Go one char left"})
+map("i", "<C-S-n>", "<Right>", {desc = "Go one char right"})
 map("i", "<C-S-k>", "<C-o>gk", {desc = "Go one line up"})
 map("i", "<C-S-j>", "<C-o>gj", {desc = "Go one line down"})
 map("i", "<Down>", "<C-o>gj", {desc = "Goto next screen-line"})
 map("i", "<Up>", "<C-o>gk", {desc = "Goto prev screen-line"})
 
 map("i", "<M-/>", "<C-a>", {desc = "Insert last inserted text"})
-map("i", "<C-S-p>", "<C-o>p", {desc = "Paste from normal mode"})
+map("i", "<C-S-p>", "<C-o>p", {desc = "Paste"})
 map("i", "<C-M-p>", "<C-o>ghp", {desc = "Paste formatted", noremap = false})
+map("i", "<C-M-,>", "<C-o>ghp", {desc = "Paste formatted", noremap = false})
 map("i", "<M-p>", "<C-o>g2p", {desc = "Paste commented", noremap = false})
+map("i", "<C-M-.>", "<C-o>g2p", {desc = "Paste commented", noremap = false})
 
 -- map("i", "<C-M-n>", "<C-n>", {desc = "Complete word (search forward)"})
 -- map("i", "<C-M-p>", "<C-p>", {desc = "Complete word (search backward)"})
@@ -92,10 +96,10 @@ map("i", "<C-n>", "<C-o>:", {desc = "Command mode"})
 map("i", "<C-S-u>", "<C-g>u", {desc = "Start new undo sequence"})
 map("i", "<C-/>", "<C-g>u", {desc = "Start new undo sequence"})
 map("i", "<C-o>u", "<C-g>u<C-o>u", {desc = "Undo typed text"})
--- map("i", "<C-o>U", "<C-g>u<C-o><Cmd>redo<CR>", {desc = "Redo"})
 map("i", "<C-o>U", "<C-g>u<C-o><C-r>", {desc = "Redo"})
 map("i", "<M-u>", "<C-g>u<C-o>u", {desc = "Undo typed text"})
 map("i", "<M-S-u>", "<C-g>u<C-o><C-r>", {desc = "Redo"})
+-- map("i", "<C-o>U", "<C-g>u<C-o><Cmd>redo<CR>", {desc = "Redo"})
 -- map("i", "<C-Left>", [[<C-o>u]], {desc = "Undo"})
 -- map("i", "<C-Right>", [[<C-o><Cmd>norm! ".p<CR>]], {desc = "Redo"})
 
@@ -113,6 +117,7 @@ map("i", "<M-d>", "<C-g>u<C-o>de", {desc = "Delete to end of word"})
 map("i", "<M-[>", "<C-g>u<C-o>dg^", {desc = "Left kill line"})
 map("i", "<M-]>", "<C-g>u<C-o>dg$", {desc = "Right kill line"})
 map("i", "<M-x>", "<C-g>u<C-o>cc", {desc = "Kill whole line"})
+-- map("i", "<C-M-u>", "<C-g>u<C-o>ciL", {desc = "Kill whole line (except indent)", noremap = false})
 -- map("i", "<M-,>", "<C-w>", {desc = "Delete previous word", noremap = false})
 
 map("i", "<M-o>", "<C-g>u<C-o>o", {desc = "Equivalent: 'norm! o'"})
@@ -199,10 +204,11 @@ map(
         local scrolloff = vim.wo.scrolloff
         vim.wo.scrolloff = 0
         -- utils.normal("n", "VHoLo0<Esc>/\\%V")
-        utils.normal("n", "HVL<Esc>/\\%V")
+        utils.normal("n", "m`HVL<Esc>/\\%V")
 
         vim.defer_fn(
             function()
+                utils.normal("n", "``zz")
                 vim.wo.scrolloff = scrolloff
             end,
             10
@@ -222,7 +228,7 @@ wk.register(
         -- ["U"] = {"<C-r>", "Redo action"},
         ["U"] = {"<Plug>(RepeatRedo)", "Redo action"},
         ["<C-S-u>"] = {"<Plug>(RepeatUndoLine)", "Undo entire line"},
-        [";U"] = {"<Cmd>execute('later' . v:count1 . 'f' : )<CR>", "Return to later state"},
+        [";U"] = {"<Cmd>execute('later ' . v:count1 . 'f')<CR>", "Return to later state"},
         [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         ["gI"] = {"<Cmd>sil! norm! `^<CR>", "Goto last insert spot"}
     }

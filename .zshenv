@@ -166,6 +166,7 @@ export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
 # export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
 export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
+export CURL_HOME="${XDG_CONFIG_HOME}/curl"
 export PASSWORD_STORE_DIR="${XDG_DATA_HOME}/password-store"
 export TMUXINATOR_CONFIG_DIR="${XDG_CONFIG_HOME}/tmux/tmuxinator"
 

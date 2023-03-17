@@ -1073,7 +1073,7 @@ cmd fzf_cd ${{
   local ret; clear -x
   ret="$(fd . -d1 -td -HiL \
     | lscolors \
-    | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Cd> '" fzf \
+    | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Cd> '" fzf)" \
   lf -remote "send $id cd '$ret'"
 }}
 

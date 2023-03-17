@@ -347,33 +347,35 @@ o.whichwrap = {
 o.wrap = true
 o.wrapmargin = 2
 
+-- https://stackoverflow.com/questions/37149002/vim-indenting-bullet-lists-within-comments-in-python
+
 o.joinspaces = false -- prevent inserting two spaces with J
-o.formatoptions = {
-    ["1"] = true, -- don't break a line after a one-letter word; break before
-    ["2"] = false, -- use indent from 2nd line of a paragraph
-    q = true, -- format comments with gq"
-    n = true, -- recognize numbered lists. Indent past formatlistpat not under
-    M = true, -- when joining lines, don't insert a space before or after a multibyte char
-    j = true, -- remove a comment leader when joining lines.
-    -- Only break if the line was not longer than 'textwidth' when the insert
-    -- started and only at a white character that has been entered during the
-    -- current insert command.
-    l = true,
-    v = true, -- only break line at blank line I've entered
-    c = true, -- auto-wrap comments using textwidth
-    t = true, -- autowrap lines using text width value
-    p = true, -- don't break lines at single spaces that follow periods
-    r = false, -- continue comments when pressing Enter
-    o = false, -- automatically insert comment leader after 'o'/'O'
-    ["/"] = true -- when 'o' included: don't insert comment leader for // comment after statement
-}
+o.formatoptions:append(
+    {
+        ["1"] = true, -- don't break a line after a one-letter word; break before
+        -- ["2"] = false, -- use indent from 2nd line of a paragraph
+        q = true, -- format comments with gq"
+        n = true, -- recognize numbered lists. Indent past formatlistpat not under
+        M = true, -- when joining lines, don't insert a space before or after a multibyte char
+        j = true, -- remove a comment leader when joining lines.
+        -- Only break if the line was not longer than 'textwidth' when the insert
+        -- started and only at a white character that has been entered during the
+        -- current insert command.
+        l = true,
+        v = true, -- only break line at blank line I've entered
+        c = true, -- auto-wrap comments using textwidth
+        t = true, -- autowrap lines using text width value
+        p = true, -- don't break lines at single spaces that follow periods
+        r = false, -- continue comments when pressing Enter
+        o = false, -- automatically insert comment leader after 'o'/'O'
+        ["/"] = true -- when 'o' included: don't insert comment leader for // comment after statement
+    }
+)
 
---                        ┌ recognize numbered lists (default)
---                        ├─────────────┐
-o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\)\s*]] -- recognize list header ('n' flag in 'formatoptions')
---                                          ├───┘
---                                          └ recognize unordered lists
-
+-- recognize list header ('n' flag in 'formatoptions')
+-- o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*]]
+o.formatlistpat = [==[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:]==]
+-- o.formatlistpat=^\s*\w\+[.\)]\s\+\|^\s*[-+*]\+\s\+
 
 -- Indenting
 local indent = 2

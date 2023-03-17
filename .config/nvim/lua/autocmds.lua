@@ -203,35 +203,56 @@ nvim.autocmd.lmb__FormatOptions = {
     command = function(_args)
         vim.schedule(
             function()
-                ol.formatoptions = {
-                    ["1"] = true, -- don't break a line after a one-letter word; break before
-                    ["2"] = false, -- use indent from 2nd line of a paragraph
-                    q = true, -- format comments with gq"
-                    n = true, -- recognize numbered lists. Indent past formatlistpat not under
-                    M = true, -- when joining lines, don't insert a space before or after a multibyte char
-                    j = true, -- remove a comment leader when joining lines.
-                    -- Only break if the line was not longer than 'textwidth' when the insert
-                    -- started and only at a white character that has been entered during the
-                    -- current insert command.
-                    l = true,
-                    v = true, -- only break line at blank line I've entered
-                    c = true, -- auto-wrap comments using textwidth
-                    t = false, -- autowrap lines using text width value
-                    p = true, -- don't break lines at single spaces that follow periods
-                    ["/"] = true, -- when 'o' included: don't insert comment leader for // comment after statement
-                    -- shouldn't get ran this much
-                    r = funcs.set_formatopts, -- continue comments when pressing Enter
-                    o = funcs.set_formatopts -- automatically insert comment leader after 'o'/'O'
-                }
-
-                ol.comments:append(
+                ol.formatoptions:append(
                     {
-                        "n:>", -- nested comment prefix
-                        "b:#", -- blank (<Space>, <Tab>, or <EOL>) required after prefix
-                        "fb:-", -- only first line has comment string (e.g., a bullet-list)
-                        "fb:*" -- only first line has comment string (e.g., a bullet-list)
+                        ["1"] = true, -- don't break a line after a one-letter word; break before
+                        -- ["2"] = false, -- use indent from 2nd line of a paragraph
+                        q = true, -- format comments with gq"
+                        n = true, -- recognize numbered lists. Indent past formatlistpat not under
+                        M = true, -- when joining lines, don't insert a space before or after a multibyte char
+                        j = true, -- remove a comment leader when joining lines.
+                        -- Only break if the line was not longer than 'textwidth' when the insert
+                        -- started and only at a white character that has been entered during the
+                        -- current insert command.
+                        l = true,
+                        v = true, -- only break line at blank line I've entered
+                        c = true, -- auto-wrap comments using textwidth
+                        t = true, -- autowrap lines using text width value
+                        p = true, -- don't break lines at single spaces that follow periods
+                        ["/"] = true, -- when 'o' included: don't insert comment leader for // comment after statement
+                        r = funcs.set_formatopts, -- continue comments when pressing Enter
+                        o = funcs.set_formatopts -- automatically insert comment leader after 'o'/'O'
                     }
                 )
+
+                -- Allow
+                -- * in comments
+                -- * * to autoformat
+                -- ol.comments:prepend(
+                --     {
+                --         "nb:/// *",
+                --         "nb://! *",
+                --         "nb:// *",
+                --         "nb:--- *",
+                --         "nb:-- *",
+                --         "nb:# *",
+                --         "nb:*",
+                --         "nb:/// -",
+                --         "nb://! -",
+                --         "nb:// -",
+                --         "nb:--- -",
+                --         "nb:-- -",
+                --         "nb:# -",
+                --         "nb:-",
+                --         "nb:/// +",
+                --         "nb://! +",
+                --         "nb:// +",
+                --         "nb:--- +",
+                --         "nb:-- +",
+                --         "nb:# +",
+                --         "nb:+",
+                --     }
+                -- )
 
                 -- Bufnr has to be captured in here, not args.buf
                 local bufnr = api.nvim_get_current_buf()
@@ -312,7 +333,14 @@ nvim.autocmd.lmb__FirstBuf = {
 nvim.autocmd.lmb__DisableUndofile = {
     {
         event = "BufWritePre",
-        pattern = {"COMMIT_EDITMSG", "MERGE_MSG", "gitcommit", "*.tmp", "*.log", "/dev/shm/*"},
+        pattern = {
+            "COMMIT_EDITMSG",
+            "MERGE_MSG",
+            "gitcommit",
+            "*.tmp",
+            "*.log",
+            "/dev/shm/*"
+        },
         command = function(args)
             vim.bo[args.buf].undofile = false
 
