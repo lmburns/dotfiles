@@ -49,8 +49,6 @@ ZINIT+=(
 
 # === established === [[[
 
-# 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
-
 function _my-cache-policy() { [[ ! -f $1 && -n "$1"(Nm+14) ]]; }
 zstyle ':completion:complete:*' cache-policy _my-cache-policy
 
@@ -84,6 +82,9 @@ zstyle '*' single-ignored show # don't insert single value
 # + ''                list-dirs-first true \ # Shows directories first in sep group
 # + ':messages'       format ' %F{4} -- %f' \
 # + ''                list-grouped true \
+# + ''                special-dirs false \
+
+# 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 # zstyle ':completion:*'               matcher-list '' \
 #        'm:{a-z\-}={A-Z\_}' \
@@ -91,8 +92,7 @@ zstyle '*' single-ignored show # don't insert single value
 #        'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _complete _match _list _prefix _extensions _expand _ignored _correct _approximate _oldlist \
-      + ''                special-dirs false \
+      + ''                completer _oldlist _extensions _complete _match _expand _prefix _ignored _approximate _correct \
       + ''                file-sort access \
       + ''                use-cache true \
       + ''                cache-path "${ZSH_CACHE_DIR}/.zcompcache" \
@@ -111,29 +111,57 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':approximate:*'  max-errors 1 numeric \
       + ':match:*'        original only \
       + ':options'        description true \
+      + ':options'        auto-description '%d' \
       + ':descriptions'   format '[%d]' \
       + ':warnings'       format ' %F{1}-- no matches found --%f' \
       + ':corrections'    format '%F{5}!- %d (errors: %e) -!%f' \
+      + ':expansions'     format '%F{22}>> %d for %B%o%b <<%f' \
       + ':default'        list-prompt '%S%M matches%s' \
       + ':default'        select-prompt '%F{2}%S-- %p -- [%m]%s%f' \
-      + ':manuals.*'      insert-sections   true \
+      + ':manuals.(^1*)'  insert-sections   true \
       + ':manuals'        separate-sections true \
       + ':jobs'           numbers true \
       + ':sudo:*'         command-path /usr/{local/{sbin,bin},(s|)bin} /sbin /bin \
                                        $CARGO_HOME/bin $ZINIT[BIN_DIR] \
-      + ':sudo::'         environ PATH="$PATH" \
+      + ':sudo::'         environ PATH="$PATH"
+
+zstyle+ ':completion:*' '' '' \
+      + ':complete:*'                  gain-privileges 1 \
+      + ':*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
+      + '*:processes'                  command "ps -u $USER -o pid,user,comm -w -w" \
       + ':expand:*'       tag-order all-expansions \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
       + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
-      + ':*:-command-:*:*'                       group-order path-directories functions commands builtins \
-      + ':*:-subscript-:*'                       tag-order indexes parameters \
-      + ':*:-subscript-:*'                       group-order indexes parameters
+      + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
+      + ':*:-subscript-:*'  tag-order 'indexes parameters' \
+      + ':*:-subscript-:*'  group-order indexes parameters
 
-zstyle+ ':completion:' '' '' \
-      + ':complete:*'                  gain-privileges 1 \
-      + ':*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
-      + ':(^approximate*):*:functions' ignored-patterns '_*' \
-      + '*:processes'                  command "ps -u $USER -o pid,user,comm -w -w"
+# For sudo kill, show all processes except childs of kthreadd (ie, kernel
+# threads), which is assumed to be PID 2. otherwise, show user processes only.
+zstyle -e ':completion:*:*:kill:*:processes' \
+  command '[[ $BUFFER == sudo* ]] \
+             && reply=( "ps --forest -p 2 --ppid 2 --deselect -o pid,user,cmd" ) \
+             || reply=( "ps x --forest -o pid,cmd" )'
+# zstyle ':completion:*:processes-names' command 'ps axho command'
+
+# Ignore all completions starting with '_' in command position
+zstyle+ ':completion:*' '' '' \
+      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
+      + ':*:functions-non-comp' ignored-patterns '_*' \
+     + ':(^approximate*):*:functions' ignored-patterns '_*'
+
+## Complete options for cd with '-'
+zstyle ':completion:*' complete-options true
+# zstyle ':completion::approximate*:*' prefix-needed false
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
+# only if prefix is ../
+zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(..)'
+
+# zstyle ':completion:*:match:*' original only
+# zstyle ':completion::prefix-1:*' completer _complete
+# zstyle ':completion:predict:*' completer _complete
+# zstyle ':completion:incremental:*' completer _complete _correct
+# zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 }
 
 # pattern:tag:description
@@ -148,33 +176,23 @@ zstyle+ ':completion:*' '' '' \
       + ':jq:*'           file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs' \
       + ':git-checkout:*' sort             false                                                  \
       + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
-      + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc)'                                  \
+      + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                     \
       + ':xcompress:*'    file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
       + ':*:-redirect-,2(>|)>,*:*'  file-patterns '*.(log|txt)' '%p:all_files' \
       + ''                sort true                                                     \
-      + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|git-(add|rm)|bat|nvim):*'   sort false \
-      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|git-(add,rm)|bat|nvim):*' ignore-line other \
+      + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
+      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add,rm)|bat|nvim):*' ignore-line other \
       + ':(comm):*' ignore-line other
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
 
-# zstyle ':completion::approximate*:*' prefix-needed false
-
-## Complete options for cd with '-'
-# zstyle ':completion:*' complete-options true
-
 ## Shows ls -la when completing files
 # zstyle ':completion:*' file-list list=20 insert=10
 # zstyle ':completion:*' file-patterns '%p:globbed-files' '*(-/):directories' '*:all-files'
-
-zstyle ':completion:*:*:-command-:*:*' group-order builtins functions commands
-zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
-# zstyle -e ':completion:*'             special-dirs '[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)' # only if prefix is ../
-
-# ADD: completion patterns for others
 # zstyle ':completion:*:*:ogg123:*'  file-patterns '*.(ogg|OGG|flac):ogg\ files *(-/):directories'
 # zstyle ':completion:*:*:mocp:*'    file-patterns '*.(wav|df):ogg\ files *(-/):directories'
+
 # ]]] === established ===
 
 defer -c defer_completion
@@ -373,9 +391,9 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 
 # === ls-colors === [[[
 
-# zstyle ':completion:*:options:*' list-colors '=(#b)(*)/(*)==1;35=1;33'
-# zstyle ':completion:*:options:*'  list-colors '=^(| *)=34'
-# zstyle ':completion:*:options:*'   list-colors '=(#b)(--[^ ]|-[^- ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25'
+# zstyle ':completion:*:options' list-colors '=(#b)(*)/(*)==1;35=1;33'
+# zstyle ':completion:*:options'  list-colors '=^(| *)=34'
+# zstyle ':completion:*:options'   list-colors '=(#b)(--[^ ]|-[^- ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25'
 # zstyle ':completion:*:default:*' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=0;38;2;254;128;25'
 # zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==35=35}:${(s.:.)LS_COLORS}")';
 
@@ -461,30 +479,34 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 
 #zstyle ':completion:*:*:commands' list-colors '=(#b)([a-zA-Z]#)([0-9_.-]#)([a-zA-Z]#)*=0;34=1;37;45=0;34=1;37;45'
 
-
 # zstyle ':completion:*:*:*:*:options' \
 #   list-colors \
 #   '=(#b)([-<)(>]##)[ ]#([a-zA-Z0-9_.,:?@#-]##)[ ]#([<)(>]#)[ ]#([a-zA-Z0-9+?.,()@3-]#)*=1;32=1;31=34=1;31=34'
-
 
 # Highlight typed part of command
 # zstyle -e ':completion:*:-command-:*:commands' \
 #   list-colors \
 #   'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
 
-zstyle ':completion:*:command-descriptions' \
-  command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
+# This is needed to workaround a bug in _setup:12, causing almost 2 seconds delay for bigger LS_COLORS
+# Not sure if this is required anymore, with the -command- style above.. keeping it here just to be sure
+# zstyle ':completion:*:*:-command-:*' list-colors ''
 
 # ]]] === ls-colors ===
 
 # ========================================================================
 
-# === testing ground === [[[
-# Ignore all completions starting with '_' in command position
-zstyle+ ':completion:*' '' '' \
-      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
-      + ':*:functions-non-comp' ignored-patterns '_*'
+# === command specific === [[[
+zstyle ':completion:*:command-descriptions' \
+  command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
 
+# zstyle ':completion:*:hub:argument-1:' tag-order '!files'
+# zstyle ':completion:*:hub:argument-1:' tag-order 'common-commands alias-commands all-commands'
+# ]]]
+
+# ========================================================================
+
+# === testing ground === [[[
 # FIX: Good, but annoying showing with vim and such
 # Separates --long and -s hort flags
 # zstyle+ ':completion:*' tag-order \
@@ -494,10 +516,6 @@ zstyle+ ':completion:*' '' '' \
 #       + ':options-long'          ignored-patterns '[-+](|-|[^-]*)' \
 #       + ':options-short'         ignored-patterns '--*' '[-+]?' \
 #       + ':options-single-letter' ignored-patterns '???*'
-
-# FIX:
-# zstyle ':completion:*:exa:*' tag-order globbed-files options
-# zstyle ':completion:*:cd:*' tag-order globbed-files options
 
 # + ':cd:*'           group-order local-directories path-directories \
 # + ':cd:*'           tag-order local-directories directory-stack path-directories \
@@ -510,36 +528,29 @@ zstyle+ ':completion:*' '' '' \
 #       + ':named-directories-mine' fake-always ~/ghq \
 #       + ':named-directories-mine' ignored-patterns '*'
 
-# DOESNT WORK:
-zstyle ':completion:*:complete:cdh:*:*' group-order local-directories recent-dirs path-directories
-zstyle ':completion:*:complete:cdh:*:*' tag-order local-directories recent-dirs path-directories
+# zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
+# zstyle ':completion:*:cd:*' group-order local-directories directory-stack path-directories
+# zstyle ':completion:*:*:cd:*:directory-stack' menu true=long select
 
-zstyle ':completion:*:cd:*' tag-order local-directories path-directories
-zstyle ':completion:*:cd:*' group-order local-directories path-directories
-
-# zstyle ':completion:*:match:*' original only
-# zstyle ':completion::prefix-1:*' completer _complete
-# zstyle ':completion:predict:*' completer _complete
-# zstyle ':completion:incremental:*' completer _complete _correct
-# zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 # ]]] === testing ground ===
 
 # ============================== Compdef =============================
 # ====================================================================
 # zicompdef _gnu_generic
+# compdef _which         ww
 
+compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _hub           g
 compdef _git           h
 compdef _aliases       ealias
 compdef _functions     efunc
-compdef _command_names from-where
-compdef _command_names whichcomp
-compdef _command_names wim
-compdef _functions     fim
-compdef _functions     freload
-compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
+compdef _command_names from-where whichcomp wim
+compdef _functions     fim freload
 compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer rofi tlmgr zstd \
   brotli
+
+# compdef '_files -g "*.log"' '-redirect-,2>,-default-'
+# zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

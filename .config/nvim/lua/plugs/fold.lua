@@ -292,6 +292,8 @@ local function init()
         typescript = {"lsp", "treesitter"},
         vimwiki = "indent",
         luapad = {"lsp", "treesitter"},
+        vim = {"treesitter"},
+        c = {"lsp", "treesitter"},
         [""] = "",
         man = "",
         git = "",

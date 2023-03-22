@@ -118,99 +118,107 @@ M.kanagawa = function()
     if not kanagawa then
         return
     end
-    local cp = require("kanagawa.colors").setup()
-
-    -- local bg = cp.waveBlue2
-    local ibg = cp.sumiInk1
-
-    local overrides = {
-        BufferLineFill = {bg = ibg},
-        BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
-        BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
-        BufferLineBufferSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4, bold = true, italic = true},
-        --
-        BufferLineTab = {fg = cp.sumiInk0, bg = cp.ibg},
-        BufferLineTabSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineTabClose = {fg = cp.fujiWhite, bg = ibg},
-        --
-        BufferLineIndicatorSelected = {fg = cp.samuraiRed, bg = cp.sumiInk4},
-        BufferLineSeparator = {fg = ibg, bg = ibg},
-        BufferLineSeparatorVisible = {fg = ibg, bg = cp.sumiInk4},
-        BufferLineSeparatorSelected = {fg = ibg, bg = cp.sumiInk4},
-        --
-        BufferLineNumbers = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineNumbersVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineNumbersSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineModified = {fg = cp.white, bg = ibg},
-        BufferLineModifiedVisible = {fg = cp.white, bg = cp.sumiInk4},
-        BufferLineModifiedSelected = {fg = cp.white, bg = cp.sumiInk4},
-        --
-        BufferLineDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineHintDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineHintDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineHintDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineInfoDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineInfoDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineInfoDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineWarningDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineWarningDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineWarningDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineErrorDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineErrorDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineErrorDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineHint = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineHintVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineHintSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineInfo = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineInfoVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineInfoSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineWarning = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineWarningVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineWarningSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        BufferLineError = {fg = cp.fujiWhite, bg = ibg},
-        BufferLineErrorVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-        --
-        -- ["@function"] = {fg = cp.waveRed, bold = true},
-        ["@keyword.operator"] = {fg = cp.sakuraPink, bold = false},
-        ["@boolean"] = {fg = cp.surimiOrange, bold = false},
-        ["@constant"] = {fg = cp.surimiOrange, bold = true},
-        ["@constructor"] = {fg = cp.sakuraPink, bold = true},
-        ["@property"] = {fg = cp.carpYellow, bold = false},
-        ["@property.tsx"] = {fg = cp.carpYellow, bold = false},
-        ["@property.typescript"] = {fg = cp.carpYellow, bold = false},
-        ["@parameter"] = {fg = cp.springGreen},
-        CocHighlightText = {bg = cp.sumiInk4},
-        Visual = {--[[ fg = cp.sumiInk0, ]] bg = cp.katanaGray, bold = false}
-    }
 
     kanagawa.setup(
         {
+            theme = "wave",
+            compile = false,
             undercurl = true,
             commentStyle = {italic = true},
             functionStyle = {bold = true},
             keywordStyle = {bold = false},
-            statementStyle = {},
+            statementStyle = {bold = false},
             typeStyle = {bold = false},
             variablebuiltinStyle = {italic = true},
             specialReturn = true, -- special highlight for the return keyword
             specialException = true, -- special highlight for exception handling keywords
             transparent = false, -- do not set background color
-            dimInactive = false, -- dim inactive window `:h hl-NormalNC`
+            dimInactive = true, -- dim inactive window `:h hl-NormalNC`
             globalStatus = true, -- adjust window separators highlight for laststatus=3
-            colors = {},
-            overrides = overrides
+            colors = {
+                palette = {},
+                theme = {wave = {}, lotus = {}, dragon = {}, all = {ui = {bg_gutter = "none"}}}
+            },
+            overrides = function(colors)
+                local cp = colors.palette
+                local ibg = cp.sumiInk1
+                return {
+                    BufferLineFill = {bg = ibg},
+                    BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
+                    BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
+                    BufferLineBufferSelected = {
+                        fg = cp.fujiWhite,
+                        bg = cp.sumiInk4,
+                        bold = true,
+                        italic = true
+                    },
+                    --
+                    BufferLineTab = {fg = cp.sumiInk0, bg = cp.ibg},
+                    BufferLineTabSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineTabClose = {fg = cp.fujiWhite, bg = ibg},
+                    --
+                    BufferLineIndicatorSelected = {fg = cp.samuraiRed, bg = cp.sumiInk4},
+                    BufferLineSeparator = {fg = ibg, bg = ibg},
+                    BufferLineSeparatorVisible = {fg = ibg, bg = cp.sumiInk4},
+                    BufferLineSeparatorSelected = {fg = ibg, bg = cp.sumiInk4},
+                    --
+                    BufferLineNumbers = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineNumbersVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineNumbersSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineModified = {fg = cp.white, bg = ibg},
+                    BufferLineModifiedVisible = {fg = cp.white, bg = cp.sumiInk4},
+                    BufferLineModifiedSelected = {fg = cp.white, bg = cp.sumiInk4},
+                    --
+                    BufferLineDiagnostic = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineHintDiagnostic = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineHintDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineHintDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineInfoDiagnostic = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineInfoDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineInfoDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineWarningDiagnostic = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineWarningDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineWarningDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineErrorDiagnostic = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineErrorDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineErrorDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineHint = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineHintVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineHintSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineInfo = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineInfoVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineInfoSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineWarning = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineWarningVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineWarningSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    BufferLineError = {fg = cp.fujiWhite, bg = ibg},
+                    BufferLineErrorVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
+                    --
+                    -- ["@function"] = {fg = cp.waveRed, bold = true},
+                    ["@keyword.operator"] = {fg = cp.sakuraPink, bold = false},
+                    ["@boolean"] = {fg = cp.surimiOrange, bold = false},
+                    ["@constant"] = {fg = cp.surimiOrange, bold = true},
+                    ["@constructor"] = {fg = cp.sakuraPink, bold = true},
+                    ["@property"] = {fg = cp.carpYellow, bold = false},
+                    ["@property.tsx"] = {fg = cp.carpYellow, bold = false},
+                    ["@property.typescript"] = {fg = cp.carpYellow, bold = false},
+                    ["@parameter"] = {fg = cp.springGreen},
+                    CocHighlightText = {bg = cp.sumiInk4},
+                    Visual = {bg = cp.katanaGray, bold = false}
+                }
+            end
         }
     )
 
@@ -615,16 +623,16 @@ local function init()
     M.everforest()
     M.gruvbox()
     M.gruvbox_flat()
-    -- M.kanagawa()
+    M.kanagawa()
     M.material()
     M.meliora()
     M.miramare()
-    -- M.nightfly()
     M.nightfox()
     M.oceanic_material()
-    -- M.onenord()
     M.rose_pine()
     M.tokyodark()
+    -- M.nightfly()
+    -- M.onenord()
     -- M.tokyonight()
 
     -- local theme = "jellybeans"

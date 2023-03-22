@@ -1416,6 +1416,7 @@ map <backtab> :toggle; up # toggle selection and move up
 
 map @ :terminal
 map <a-4> dump-env
+map <a-3> get-id
 map <esc> quit # quit lf
 map ZZ quit    # quit lf
 map R reload   # reload lf
@@ -1563,7 +1564,7 @@ map F push :rgu<space>      # search interactively with rg and fzf
 
 map U unselect                # unselect all selected items
 map , :{{ clear; unselect; }} # clear prev selection and unselect all
-map V invert                  # inverset selection
+map V invert                  # invert selection
 
 map sf select-files
 map sd select-dirs

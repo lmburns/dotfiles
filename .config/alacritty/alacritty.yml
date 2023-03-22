@@ -1087,7 +1087,7 @@ key_bindings:
   #  │ Shift + <character> │
   #  ╰─────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
   - { key: Return, mods: Shift, chars: "\x1b[13;2u" }
-  - { key: 0x39, mods: Shift, chars: "\x1b[32;2u" } # Space
+  # - { key: 0x39, mods: Shift, chars: "\x1b[32;2u" } # Space
 
   #  ╭────────────────────╮
   #  │ Control + <letter> │
@@ -1296,32 +1296,32 @@ key_bindings:
   #  ╭────────────────────────╮
   #  │ Alt + Shift + <letter> │
   #  ╰────────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: A, mods: Alt|Shift, chars: "\x1b[97;4u" }
-  - { key: B, mods: Alt|Shift, chars: "\x1b[98;4u" }
-  - { key: C, mods: Alt|Shift, chars: "\x1b[99;4u" }
-  - { key: D, mods: Alt|Shift, chars: "\x1b[100;4u" }
-  - { key: E, mods: Alt|Shift, chars: "\x1b[101;4u" }
-  - { key: F, mods: Alt|Shift, chars: "\x1b[102;4u" }
-  - { key: G, mods: Alt|Shift, chars: "\x1b[103;4u" }
-  - { key: H, mods: Alt|Shift, chars: "\x1b[104;4u" }
-  - { key: I, mods: Alt|Shift, chars: "\x1b[105;4u" }
-  - { key: J, mods: Alt|Shift, chars: "\x1b[106;4u" }
-  - { key: K, mods: Alt|Shift, chars: "\x1b[107;4u" }
-  - { key: L, mods: Alt|Shift, chars: "\x1b[108;4u" }
-  - { key: M, mods: Alt|Shift, chars: "\x1b[109;4u" }
-  - { key: N, mods: Alt|Shift, chars: "\x1b[110;4u" }
-  - { key: O, mods: Alt|Shift, chars: "\x1b[111;4u" }
-  - { key: P, mods: Alt|Shift, chars: "\x1b[112;4u" }
-  - { key: Q, mods: Alt|Shift, chars: "\x1b[113;4u" }
-  - { key: R, mods: Alt|Shift, chars: "\x1b[114;4u" }
-  - { key: S, mods: Alt|Shift, chars: "\x1b[115;4u" }
-  - { key: T, mods: Alt|Shift, chars: "\x1b[116;4u" }
-  - { key: U, mods: Alt|Shift, chars: "\x1b[117;4u" }
-  - { key: V, mods: Alt|Shift, chars: "\x1b[118;4u" }
-  - { key: W, mods: Alt|Shift, chars: "\x1b[119;4u" }
-  - { key: X, mods: Alt|Shift, chars: "\x1b[120;4u" }
-  - { key: Y, mods: Alt|Shift, chars: "\x1b[121;4u" }
-  - { key: Z, mods: Alt|Shift, chars: "\x1b[122;4u" }
+  # - { key: A, mods: Alt|Shift, chars: "\x1b[97;4u" }
+  # - { key: B, mods: Alt|Shift, chars: "\x1b[98;4u" }
+  # - { key: C, mods: Alt|Shift, chars: "\x1b[99;4u" }
+  # - { key: D, mods: Alt|Shift, chars: "\x1b[100;4u" }
+  # - { key: E, mods: Alt|Shift, chars: "\x1b[101;4u" }
+  # - { key: F, mods: Alt|Shift, chars: "\x1b[102;4u" }
+  # - { key: G, mods: Alt|Shift, chars: "\x1b[103;4u" }
+  # - { key: H, mods: Alt|Shift, chars: "\x1b[104;4u" }
+  # - { key: I, mods: Alt|Shift, chars: "\x1b[105;4u" }
+  # - { key: J, mods: Alt|Shift, chars: "\x1b[106;4u" }
+  # - { key: K, mods: Alt|Shift, chars: "\x1b[107;4u" }
+  # - { key: L, mods: Alt|Shift, chars: "\x1b[108;4u" }
+  # - { key: M, mods: Alt|Shift, chars: "\x1b[109;4u" }
+  # - { key: N, mods: Alt|Shift, chars: "\x1b[110;4u" }
+  # - { key: O, mods: Alt|Shift, chars: "\x1b[111;4u" }
+  # - { key: P, mods: Alt|Shift, chars: "\x1b[112;4u" }
+  # - { key: Q, mods: Alt|Shift, chars: "\x1b[113;4u" }
+  # - { key: R, mods: Alt|Shift, chars: "\x1b[114;4u" }
+  # - { key: S, mods: Alt|Shift, chars: "\x1b[115;4u" }
+  # - { key: T, mods: Alt|Shift, chars: "\x1b[116;4u" }
+  # - { key: U, mods: Alt|Shift, chars: "\x1b[117;4u" }
+  # - { key: V, mods: Alt|Shift, chars: "\x1b[118;4u" }
+  # - { key: W, mods: Alt|Shift, chars: "\x1b[119;4u" }
+  # - { key: X, mods: Alt|Shift, chars: "\x1b[120;4u" }
+  # - { key: Y, mods: Alt|Shift, chars: "\x1b[121;4u" }
+  # - { key: Z, mods: Alt|Shift, chars: "\x1b[122;4u" }
 
   # - { key: A, mods: Alt|Shift, chars: "\x1bA" }
   # - { key: B, mods: Alt|Shift, chars: "\x1bB" }

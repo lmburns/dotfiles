@@ -208,6 +208,7 @@ return packer.startup(
     {
         function(use, use_rocks)
             use_rocks("lpeg")
+            -- use_rocks("pcre2")
             -- https://rrthomas.github.io/lrexlib/manual.html
             use_rocks("lrexlib-pcre2") -- rex_pcre2
 
@@ -345,7 +346,7 @@ return packer.startup(
                         {"n", "g[p"}, -- Paste linewise (like glp but adjust indent)
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
-                        {"n", "gsP"},
+                        {"n", "gsP"}
                         -- {"i", "<C-M-p>"},
                         -- {"i", "<M-p>"},
                     }
@@ -354,7 +355,6 @@ return packer.startup(
 
             use({"arthurxavierx/vim-caser", setup = [[vim.g.caser_prefix = "cr"]], conf = "caser"})
 
-            -- TODO: Get completions to work just as regular S does
             -- :E2v = (\d{1,3})(?=(\d\d\d)+($|\D))
             -- Match = :M/<Items\s+attr="media">.+?<\/Items>/Im
             -- Substitute = :'<,'>S/(\d{1,3})(?=(\d\d\d)+($|\D))/\1,/g
@@ -362,10 +362,10 @@ return packer.startup(
             -- :V
             use(
                 {
-                    "othree/eregex.vim",
-                    cmd = {"E2v", "S", "M"},
+                    "ZSaberLv0/eregex.vim",
+                    cmd = {"E2v", "S", "M", "G", "V"},
                     setup = [[vim.g.eregex_default_enable = 0]],
-                    keys = {{"n", "<Leader>es"}},
+                    keys = {{"n", "<Leader>es"}, {"n", "<Leader>S"}, {"n", ",/"}},
                     conf = "eregex",
                     desc = "Ruby/Perl style regex for Vim"
                 }
@@ -382,8 +382,8 @@ return packer.startup(
                         {"n", "<C-S-Down>"},
                         {"n", "<M-S-i>"},
                         {"n", "<M-S-o>"},
-                        {"n", "<C-M-S-l>"},
-                        {"n", "<C-M-S-h>"},
+                        {"n", "<C-M-S-Right>"},
+                        {"n", "<C-M-S-Left>"},
                         {"n", [[<Leader>\]]},
                         {"n", [[<Leader>/]]},
                         {"x", [[<Leader>/]]},
@@ -411,7 +411,7 @@ return packer.startup(
                 }
             )
 
-            use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
+            -- use({"skywind3000/asyncrun.vim", cmd = "AsyncRun"})
             -- ]]] === Fixes ===
 
             -- =========================== Colorscheme ============================ [[[
@@ -432,12 +432,13 @@ return packer.startup(
             use({"savq/melange"})
             use({"folke/tokyonight.nvim"})
             use({"rebelot/kanagawa.nvim"})
-            use({"KeitaNakamura/neodark.vim"})
             use({"EdenEast/nightfox.nvim"})
             use({"catppuccin/nvim", as = "catppuccin"})
             use({"rose-pine/neovim", as = "rose-pine"})
             use({"marko-cerovac/material.nvim"})
             use({"meliora-theme/neovim"})
+
+            -- use({"KeitaNakamura/neodark.vim"})
             -- use({"arturgoms/moonbow.nvim"})
 
             -- use({"tiagovla/tokyodark.nvim"})
@@ -672,6 +673,15 @@ return packer.startup(
                     -- }
                 }
             )
+
+            use(
+                {
+                    "edluffy/specs.nvim",
+                    conf = "specs",
+                    after = "nvim-hlslens",
+                    desc = "Keep an eye on where the cursor moves"
+                }
+            )
             -- ]]] === HlsLens ===
 
             -- ============================ Scrollbar ============================= [[[
@@ -686,14 +696,6 @@ return packer.startup(
             )
 
             -- use({"karb94/neoscroll.nvim", conf = "neoscroll", desc = "Smooth scrolling"})
-
-            use(
-                {
-                    "edluffy/specs.nvim",
-                    conf = "specs",
-                    desc = "Keep an eye on where the cursor moves"
-                }
-            )
             -- ]]] === Scrollbar ===
 
             -- ============================== Grepper ============================= [[[
@@ -714,7 +716,23 @@ return packer.startup(
                 {
                     "lmburns/trouble.nvim",
                     requires = {"kyazdani42/nvim-web-devicons", opt = true},
-                    conf = "plugs.trouble"
+                    conf = "plugs.trouble",
+                    cmd = {"Trouble", "TroubleToggle", "TodoTrouble"},
+                    keys = {
+                        {"n", "]v"},
+                        {"n", "[v"},
+                        {"n", "]V"},
+                        {"n", "[V"},
+                        {"n", "<Leader>xx"},
+                        {"n", "<Leader>xd"},
+                        {"n", "<Leader>xR"},
+                        {"n", "<Leader>xr"},
+                        {"n", "<Leader>xy"},
+                        {"n", "<Leader>xi"},
+                        {"n", "<Leader>x;"},
+                        {"n", "<Leader>x,"},
+                        {"n", "<Leader>xk"}
+                    }
                 }
             )
             -- ]]] === Trouble ===
@@ -868,7 +886,7 @@ return packer.startup(
             use(
                 {
                     "gbprod/substitute.nvim",
-                    conf = "plugs.substitute"
+                    conf = "plugs.substitute",
                     -- keys = {
                     --     {"n", "s"},
                     --     {"n", "ss"},
@@ -889,7 +907,7 @@ return packer.startup(
             use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
             use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
-            use({"andymass/vim-matchup", conf = "matchup"})
+            use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
 
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
@@ -898,7 +916,8 @@ return packer.startup(
                     "windwp/nvim-autopairs",
                     wants = "nvim-treesitter",
                     conf = "plugs.autopairs",
-                    event = "InsertEnter"
+                    event = "InsertEnter",
+                    after = "nvim-treesitter"
                 }
             )
 
@@ -1120,6 +1139,7 @@ return packer.startup(
             use(
                 {
                     "https://gitlab.com/itaranto/id3.nvim",
+                    opt = true,
                     tag = "*",
                     config = function()
                         require("id3").setup(
@@ -1310,6 +1330,7 @@ return packer.startup(
                         },
                         {
                             "mrjones2014/nvim-ts-rainbow",
+                            -- "HiPhish/nvim-ts-rainbow2",
                             desc = "Rainbow parenthesis using treesitter",
                             after = "nvim-treesitter"
                         },

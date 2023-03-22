@@ -1428,6 +1428,18 @@ M.write_file = function(path, data, sync)
     end
 end
 
+---@param path string
+---@return uv_fs_t
+---@return table
+function M.read_file(path)
+  -- 292 == 0x444
+  local fd = assert(uv.fs_open(path, "r", 292))
+  local stat = assert(uv.fs_fstat(fd))
+  local buffer = assert(uv.fs_read(fd, stat.size, 0))
+  uv.fs_close(fd)
+  return buffer, stat
+end
+
 ---Read a file asynchronously (using Promises)
 ---@param path string
 ---@return Promise

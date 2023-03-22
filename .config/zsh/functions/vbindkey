@@ -145,9 +145,14 @@ function escape-mod-key() {
   local -a binding=( ${(ws:-:)@} )
   local -A modifier spkeys
 
-  # M-x = lowercase;    M-S-x = uppercase
-  if [[ (( $#binding > 2)) && "${binding[@]}" = *M*~^*S* ]]; then
-    local mod=${(UM)binding:#(#i)M} key=${(U)binding[-1]}
+  if [[ (( $#binding > 2)) ]]; then
+    # M-x = lowercase;    M-S-x = uppercase
+    if [[ ${(j::)binding} = (MS|SM)[[:alnum:]]## ]]; then
+      local mod=${(UM)binding:#(#i)M} key=${(U)binding[-1]}
+    # C-M or M-C
+    elif [[ ${(j::)binding} = (CM|MC)[[:alnum:]]## ]]; then
+      local mod=${(j::)${(oUM)binding:#(#i)[CM]}} key=${(U)binding[-1]}
+    fi
   else
     local mod=${(U)binding[1]}      key=${(L)binding[2]}
   fi
@@ -156,13 +161,14 @@ function escape-mod-key() {
 
   if [[ $key == "backspace" ]] {
     modifier=(
-      "C" "^h"
-      "M" "^[^?"
+      C "^h"
+      M "^[^?"
     )
     ret="${modifier[$mod]}"
   } elif (( $#key == 1 )) {
     modifier=(
       C   "^"
+      CM  "^[^"
       M   "^["
       ESC '\e'
     )
@@ -177,8 +183,9 @@ function escape-mod-key() {
       home  H
     )
     modifier=(
-      "C" "^[[1;5"
-      "M" "^[[1;3"
+      C  "^[[1;5"
+      CM "^[[1;7"
+      M  "^[[1;3"
     )
     ret="${modifier[$mod]}${spkeys[$key]}"
   }
@@ -259,7 +266,7 @@ function ___bind() {
 
   # For arrays
   if (( ${+opts[-A]} + ${+opts[--array]} )) && [[ ${(M)sequence:#mode*} ]]; then
-    local qmode=${${(ws:=:)${(M)sequence:#mode*}}[-1]}
+    local qmode=${${(ws:=:)${(M)sequence:#mode*}}[ -1 ]}
     if [[ $qmode = ${(~j:|:)keymaps} ]]; then
       mode=( -M $qmode )
     elif [[ $qmode == "str" ]]; then
@@ -316,13 +323,16 @@ if [[ $array ]]; then
   for k v in ${(Pkv)${array[2]}}; do
     ___bind $k $v
   done
+  for x in ${(p)a}; do
+    echo +1
+  done
 elif (( ${+opts[-u]} + ${+opts[--unused]} )); then
   ___unused "$@"
 elif (( ${+opts[-U]} + ${+opts[--duplicates]} )); then
   ___duplicates "$@"
 elif (( ${+opts[-c]} + ${+opts[--command]} )); then
   zle -N ".$@[-1]" _ex_cmd
-  builtin bindkey "$@[1,-2]" ".$@[-1]"
+  builtin bindkey "$@[1,-2]" ".$@[-1,-2]"
 else
   ___bind $1 $2
 fi

@@ -11,28 +11,33 @@ local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
+local utils = require("common.utils")
+local map = utils.map
+
 local api = vim.api
 
 local opt = {
     disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
     disable_in_macro = false,
     disable_in_visualblock = false,
-    ignored_next_char = ([[ [%w%%%'%[%"%.] ]]):gsub("%s+", ""),
-    -- ignored_next_char = [==[[%w%%%'%[%"%.]]==], -- %.
+    disable_in_replace_mode = true,
+    ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
     close_triple_quotes = true,
     enable_moveright = true, -- ?? what is this
     enable_afterquote = true, -- add bracket pairs after quote
     enable_check_bracket_line = true, --- check bracket in same line
     enable_bracket_in_quote = true, --
+    enable_abbr = true, --
+    break_undo = true, -- start new undo sequence
     map_cr = false,
     map_bs = true, -- map the <BS> key
-    map_c_h = true, -- Map the <C-h> key to delete a pair
-    map_c_w = true, -- map <c-w> to delete a pair if possible
+    map_c_h = false, -- Map the <C-h> key to delete a pair
+    map_c_w = false, -- map <c-w> to delete a pair if possible
     fast_wrap = {
-        map = "<M-,>", -- (|foo -> (|foo)
+        -- map = "<Nop>", -- (|foo -> (|foo), added below
+        map = "<M-e>",
         chars = {"{", "[", "(", '"', "'", "`", "<"},
-        pattern = [==[[%'%"%)%>%]%)%}%,%>]]==],
-        offset = -1, -- Offset from pattern match
+        pattern = [=[[%'%"%`%>%]%)%}%,]]=],
         end_key = "$",
         keys = "qwertyuiopzxcvbnmasdfghjkl",
         check_comma = true,
@@ -89,40 +94,6 @@ function M.rules()
     -- Before: (|)
     -- After: ( | )
     autopairs.add_rules {
-        -- Rule(" ", " "):with_pair(
-        --     function(opts)
-        --         local pair = opts.line:sub(opts.col - 1, opts.col)
-        --         return vim.tbl_contains({"()", "{}", "[]"}, pair)
-        --     end
-        -- ):with_move(cond.none()):with_cr(cond.none()):with_del(
-        --     function(opts)
-        --         local col = api.nvim_win_get_cursor(0)[2]
-        --         local context = opts.line:sub(col - 1, col + 2)
-        --         return vim.tbl_contains({"(  )", "{  }", "[  ]"}, context)
-        --     end
-        -- ),
-        -- Rule("", " )"):with_pair(cond.none()):with_move(
-        --     function(opts)
-        --         return opts.char == ")"
-        --     end
-        -- ):with_cr(cond.none()):with_del(cond.none()):use_key ")",
-        -- Rule("", " }"):with_pair(cond.none()):with_move(
-        --     function(opts)
-        --         return opts.char == "}"
-        --     end
-        -- ):with_cr(cond.none()):with_del(cond.none()):use_key "}",
-        -- Rule("", " ]"):with_pair(cond.none()):with_move(
-        --     function(opts)
-        --         return opts.char == "]"
-        --     end
-        -- ):with_cr(cond.none()):with_del(cond.none()):use_key "]"
-
-        -- Rule("", " >"):with_pair(cond.none()):with_move(
-        --     function(opts)
-        --       return opts.char == ">"
-        --     end
-        -- ):with_cr(cond.none()):with_del(cond.none()):use_key(">"),
-
         Rule(" ", " "):with_pair(
             function(opts)
                 local pair = opts.line:sub(opts.col - 1, opts.col)
@@ -152,14 +123,6 @@ function M.rules()
         ):with_cr(cond.none()):with_del(cond.none()):use_key("]")
     }
 
-    -- autopairs.add_rule(
-    --     Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(true):set_end_pair_length(
-    --         2
-    --     )
-    -- )
-
-    autopairs.add_rule(Rule("$", "$", "tex"))
-
     autopairs.add_rules(
         {
             -- Allow matching curly braces in strings
@@ -184,15 +147,55 @@ function M.rules()
             -- Allows matching () in strings
             Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
             -- Allow matching bold in markdown
-            -- Rule("**", "**", {"markdown", "vimwiki"}),
+            Rule("**", "**", {"markdown", "vimwiki"}),
             -- Allow matching r#""# in rust
             Rule('r#"', '"#', {"rust"}),
             -- Allow () when a period proceeds in rust and others
-            Rule("(", ")", {"rust"})
+            Rule("(", ")", {"rust"}),
             -- Allow matching closure pipes in rust
-            -- Rule("|", "|", {"rust"}),
+            Rule("|", "|", {"rust"}),
+            -- Allow matching $$ in latex (maybe add markdown)
+            Rule("$$", "$$", "tex")
         }
     )
+
+    -- Add <> pair
+    autopairs.add_rule(
+        Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(
+            cond.not_before_regex("<")
+        ):with_pair(
+            function(_)
+                local excluded = {"markdown", "vimwiki"}
+                if vim.tbl_contains(excluded, vim.o.ft) then
+                    return false
+                end
+
+                return true
+            end
+        )
+    )
+
+    -- Custom <C-h> binding
+    autopairs.add_rule(
+        Rule("(", ")"):use_key("<C-h>"):replace_endpair(
+            function()
+                return "<C-g>u<BS><Del>"
+            end,
+            true
+        )
+    )
+
+    -- Rule("(", "")
+    --   :use_key("<C-h>")
+    --   :with_pair(cond.after_text(")")) -- check that text after cursor is `)`
+    --   :replace_endpair(function() return "<BS><Del>" end)
+
+    -- Match => {} in typescript
+    -- autopairs.add_rule(
+    --     Rule("%(.*%)%s*%=>$", " {  }", {"typescript", "typescriptreact", "javascript"}):use_regex(
+    --         true
+    --     ):set_end_pair_length(2)
+    -- )
 
     -- Add a semicolon to the bracket pair
     -- autopairs.add_rule(
@@ -205,23 +208,18 @@ function M.rules()
     --     )
     -- )
 
-    -- Add <> pair
-    autopairs.add_rule(
-        Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(cond.not_before_regex("<")):with_pair(
-            function(_)
-                local excluded = {"markdown", "vimwiki"}
-                if vim.tbl_contains(excluded, vim.o.ft) then
-                    return false
-                end
-
-                return true
-            end
-        )
-    )
-
     -- autopairs.add_rule(
     --     Rule("<", ">", "rust"):with_pair(cond.before_regex("%a+")):with_pair(cond.not_after_regex("%a")):with_move(
     --         ts_conds.is_ts_node {"type_arguments", "type_parameters", "string"}
+    --     )
+    -- )
+
+    -- autopairs.add_rule(
+    --     Rule("then", "end", {"ruby", "lua"}):end_wise(
+    --         function(opts)
+    --             -- Add any context checks here, e.g. line starts with "if"
+    --             return string.match(opts.line, "^%s*if") ~= nil
+    --         end
     --     )
     -- )
 end
@@ -229,6 +227,16 @@ end
 local function init()
     M.setup()
     M.rules()
+
+    -- map(
+    --     "i",
+    --     "<M-,>",
+    --     function()
+    --         utils.normal("n", "<C-o><Cmd>lua require('nvim-autopairs.fastwrap').show()<CR>")
+    --     end,
+    --     {desc = "Delete previous word", noremap = false}
+    -- )
+    -- map("i", "<M-,>", "<C-w>", {desc = "Delete previous word", noremap = false})
 end
 
 init()

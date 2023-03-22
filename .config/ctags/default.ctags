@@ -1,9 +1,18 @@
+--exclude=.git
+--exclude=node_modules
+--exclude=target
+--exclude=vendor
+--exclude=package.json
+--exclude=package-lock.json
+
 --c-kinds=+px
 --c++-kinds=+px
 --fields=+niazS
+--rust-kinds=+fPM
 --extras=+q
+--guess-language-eagerly
 
-# === Perl ===
+# === Perl === [[[
 --langmap=perl:.pod.pl.pm.t
 --regex-perl=/with[ \t]+([^;]+)[ \t]*?;/\1/w,role,roles/
 --regex-perl=/extends[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
@@ -17,27 +26,26 @@
 --regex-perl=/^[ \t]*?our[ \t]*?[\$@%](\w+)/\1/o,our,ours/
 --regex-perl=/^\s*package\s+(.+)\s*;/\1/p,package/
 --regex-perl=/^[ \t]*?my[ \t]*?(\$\w+)[ \t]*?=[ \t]*?sub/\1/z,psubroutine,psubroutines/
-# --regex-perl=/->helper\([ \t]?['"]?(\w+)['"]?/\1/h,helper,helpers/
-# --regex-perl=/^\=head1[ \t]+(.+)/\1/d,pod,POD/
-# --regex-perl=/^\=head2[ \t]+(.+)/-- \1/d,pod,POD/
-# --regex-perl=/^\=head[3][ \t]+(.+)/--- \1/d,pod,POD/
-# --regex-perl=/^\=head[4][ \t]+(.+)/---- \1/d,pod,POD/
+--regex-perl=/->helper\([ \t]?['"]?(\w+)['"]?/\1/H,helper,helpers/
+--regex-perl=/^\=head1[ \t]+(.+)/\1/D,pod,POD/
+--regex-perl=/^\=head2[ \t]+(.+)/-- \1/D,pod,POD/
+--regex-perl=/^\=head3[ \t]+(.+)/--- \1/D,pod,POD/
+--regex-perl=/^\=head4[ \t]+(.+)/---- \1/D,pod,POD/
+# ]]]
 
-# --regex-perl=/^\s*has\s+["]?([0-9a-zA-Z_]+)/\1/a,attribute/
-# --regex-perl=/^\s*extends\s+(["])(.+)\1/\2/e,extends/
-# --regex-perl=/^\s*with\s+(["])(.+)\1/\2/r,role/
-
-# === Golang ===
+# === Golang === [[[
 --langmap=Go:.go
 --regex-Go=/func([ \t]+\([^)]+\))?[ \t]+([a-zA-Z0-9_]+)/\2/f,func/
 --regex-Go=/var[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/v,var/
 --regex-Go=/type[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/t,type/
+# ]]]
 
-# === Shell ===
+# === Shell === [[[
 --regex-sh=/^[ \t]*(local|export|private|typeset|declare|integer|float)?[ \t]*([A-Za-z0-9_-]+)=/\2/v,variable,variables/
 --languages=+sh
+# ]]]
 
-# === Solidity ===
+# === Solidity === [[[
 --langdef=Solidity
 --langmap=Solidity:.sol
 --regex-Solidity=/^contract[ \t]+([a-zA-Z0-9_]+)/\1/n,contract/
@@ -45,11 +53,16 @@
 --regex-Solidity=/[ \t]*function[ \t]+([a-zA-Z0-9_]+)*\(/\1/f,function/
 --regex-Solidity=/[ \t]*(emit|event)[ \t]+([a-zA-Z0-9_]+)*\(/\2/e,events/
 --regex-Solidity=/[ \t]*(error|revert)[ \t]+([a-zA-Z0-9_]+)*\(/\2/r,error/
---regex-Solidity=/[ \t]*(struct[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
---regex-Solidity=/[ \t]*(enum[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/v,variable/
-# --regex-Solidity=/[ \t]*mapping[ \t]+\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mappin
+--regex-Solidity=/[ \t]*(struct[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/s,struct/
+--regex-Solidity=/[ \t]*(enum[ \t]+[a-zA-Z0-9_]+)([ \t]*\{)/\1/u,enum/
+--regex-Solidity=/[ \t]*library[ \t]([^\( \t]+)/\1/l,library/
+--regex-Solidity=/[ \t]*import[ \t]['"]([^'"]+)/\1/i,import/
+--regex-solidity=/[ \t]*modifier[ \t]([^\( \t]+)/\1/d,modifier/
+--regex-Solidity=/[ \t]*mapping[ \t]*\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mapping/
+# ]]]
 
-# === Typescript ===
+# === Typescript === [[[
+--map-TypeScript=+.tsx
 # --langmap=typescript:.ts
 # --regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*abstract class[ \t]+([a-zA-Z0-9_]+)/\2/a,abstract classes/
@@ -62,10 +75,29 @@
 # --regex-typescript=/^[ \t]*(export)?[ \t]*(public|private)[ \t]+(static|readonly)?[ \t]*([a-zA-Z0-9_]+)/\4/m,members/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*interface[ \t]+([a-zA-Z0-9_]+)/\2/i,interfaces/
 # --regex-typescript=/^[ \t]*(export)?[ \t]*enum[ \t]+([a-zA-Z0-9_]+)/\2/e,enums/
+# ]]]
+#
+# # === Javascript === [[[
+# --langdef=js
+# --langmap=js:.js
+# --langmap=js:+.jsx
+# --regex-js=/[ \t.]([A-Z][A-Z0-9._$]+)[ \t]*[=:][ \t]*([0-9"'\[\{]|null)/\1/n,constant/
+# --regex-js=/\.([A-Za-z0-9._$]+)[ \t]*=[ \t]*\{/\1/o,object/
+# --regex-js=/['"]*([A-Za-z0-9_$]+)['"]*[ \t]*:[ \t]*\{/\1/o,object/
+# --regex-js=/([A-Za-z0-9._$]+)\[["']([A-Za-z0-9_$]+)["']\][ \t]*=[ \t]*\{/\1\.\2/o,object/
+# --regex-js=/([A-Za-z0-9._$]+)[ \t]*=[ \t]*\(function\(\)/\1/c,class/
+# --regex-js=/['"]*([A-Za-z0-9_$]+)['"]*:[ \t]*\(function\(\)/\1/c,class/
+# --regex-js=/class[ \t]+([A-Za-z0-9._$]+)[ \t]*/\1/c,class/
+# --regex-js=/([A-Za-z$][A-Za-z0-9_$()]+)[ \t]*=[ \t]*[Rr]eact.createClass[ \t]*\(/\1/c,class/
+# --regex-js=/([A-Z][A-Za-z0-9_$]+)[ \t]*=[ \t]*[A-Za-z0-9_$]*[ \t]*[{(]/\1/c,class/
+# --regex-js=/([A-Z][A-Za-z0-9_$]+)[ \t]*:[ \t]*[A-Za-z0-9_$]*[ \t]*[{(]/\1/c,class/
+# --regex-js=/([A-Za-z$][A-Za-z0-9_$]+)[ \t]*=[ \t]*function[ \t]*\(/\1/f,function/
+# --regex-js=/(function)*[ \t]*([A-Za-z$_][A-Za-z0-9_$]+)[ \t]*\([^)]*\)[ \t]*\{/\2/f,function/
+# --regex-js=/['"]*([A-Za-z$][A-Za-z0-9_$]+)['"]*:[ \t]*function[ \t]*\(/\1/m,method/
+# --regex-js=/([A-Za-z0-9_$]+)\[["']([A-Za-z0-9_$]+)["']\][ \t]*=[ \t]*function[ \t]*\(/\2/m,method/
+# ]]]
 
-# === Rust ===
-#   * This is commented out because Rust seems to be the best language to use
-#   * with ctags in finding source files and such
+# === Rust === [[[
 # --langmap=Rust:.rs
 # --regex-Rust=/^[ \t]*(#\[[^\]]\][ \t]*)*(pub[ \t]+)?(extern[ \t]+)?("[^"]+"[ \t]+)?(unsafe[ \t]+)?fn[ \t]+([a-zA-Z0-9_]+)/\6/f,functions,function definitions/
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?type[ \t]+([a-zA-Z0-9_]+)/\2/T,types,type definitions/
@@ -76,5 +108,161 @@
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?trait[ \t]+([a-zA-Z0-9_]+)/\2/t,traits,traits/
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?impl([ \t\n]*<[^>]*>)?[ \t]+(([a-zA-Z0-9_:]+)[ \t]*(<[^>]*>)?[ \t]+(for)[ \t]+)?([a-zA-Z0-9_]+)/\4 \6 \7/i,impls,trait implementations/
 # --regex-Rust=/^[ \t]*macro_rules![ \t]+([a-zA-Z0-9_]+)/\1/d,macros,macro definitions/
+# ]]]
 
-# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:
+# === Zig === [[[
+--langdef=Zig
+--langmap=Zig:.zig
+--regex-Zig=/fn +([a-zA-Z0-9_]+) *\(/\1/f,functions,function definitions/
+--regex-Zig=/(var|const) *([a-zA-Z0-9_]+) *= *(extern|packed)? *struct/\2/s,structs,struct definitions/
+--regex-Zig=/(var|const) *([a-zA-Z0-9_]+) *= *(extern|packed)? *enum/\2/e,enums,enum definitions/
+--regex-Zig=/(var|const) *([a-zA-Z0-9_]+) *= *(extern|packed)? *union/\2/u,unions,union definitions/
+# --regex-Zig=/(var|const) *([a-zA-Z0-9_]+) *= *error/\2/E,errors,error definitions/
+--regex-Zig=/error +([a-zA-Z0-9_]+)/\1/r,errors,error definitions/
+--regex-Zig=/^[ \t]*([a-zA-Z0-9_]+):/\1/m,member/
+# ]]]
+
+# === Ruby === [[[
+# --kinddef-vim=x,rspecx,rspec context
+# --kinddef-vim=d,rspecd,rspec describe
+# --kinddef-vim=i,rspeci,rspec feature/test/scenare
+
+# --regex-ruby=/(^|[:;])[ \t]*([A-Z][[:alnum:]_]+) *=/\2/c,class,constant/
+# --regex-ruby=/^[ \t]*attr_(reader|writer|accessor) (:[a-z0-9_]+, )*:([a-z0-9_]+)/\3/A,attr/
+--regex-ruby=/^[ \t]*create_table[ \t]*"([a-zA-Z0-9_]+)"/\1/t,table/
+--regex-ruby=/^[ \t]*create_table[ \t]*:([a-zA-Z0-9_]+)/\1/t,table/
+--regex-ruby=/^[ \t]*namespace[ \t]*:([a-zA-Z0-9_]+)/--- \1 ---/n,namespace/
+--regex-ruby=/^[ \t]*task[ \t]*([a-zA-Z0-9_]+):/\1/k,task/
+--regex-ruby=/^  (resources?|scope|[A-Za-z0-9_-]*namespace[ \t]*)[ \t]*:([a-zA-Z0-9_]+)/\2/n,namespace/
+--regex-ruby=/^  (resources?|scope|[A-Za-z0-9_-]*namespace[ \t]*)[ \t]*'([^']+)'/\2/n,namespace/
+--regex-ruby=/^  (resources?|scope|[A-Za-z0-9_-]*namespace[ \t]*)[ \t]*"([^"]+)"/\2/n,namespace/
+--regex-ruby=/^  ((get|post|put|patch|delete|match)[ \t]*:[a-zA-Z0-9_]+)/\1/r,route/
+--regex-ruby=/^  ((get|post|put|patch|delete|match)[ \t]*'[^']+')/\1/r,route/
+--regex-ruby=/^  ((get|post|put|patch|delete|match)[ \t]*"[^"]+")/\1/r,route/
+--regex-ruby=/^  ((root|root to:|root :to =>)[ \t]*'[^']+')/\1/r,route/
+--regex-ruby=/^  ((root|root to:|root :to =>)[ \t]*"[^"]+")/\1/r,route/
+--regex-ruby=/^  ((devise_for|devise_scope|authenticated?)[ \t]*:[a-zA-Z0-9_]+)/\1/r,route/
+
+--regex-ruby=/^[ \t]*describe ['"](.*)['"] do/\1/d,RSpecDescribe/
+--regex-ruby=/^[ \t]*context ['"](.*)['"] do/\1/T,RSpecContext/
+--regex-ruby=/^[ \t]*(it|specify|example) ['"](.*)['"] do/\2/i,RSpecExamples/
+--regex-ruby=/^[ \t]*scenario ['"](.*)['"] do/\1/e,FeatureTest/
+# ]]]
+
+# === Lua === [[[
+--regex-lua=/^ *M\.([a-zA-Z0-9_]+) *=/\1/v,variable/
+--regex-lua=/^ *local +([a-zA-Z0-9_]+)/\1/v,variable/
+--regex-lua=/^ *([a-zA-Z0-9_]+) *=/\1/v,variable/
+--regex-lua=/^.*\s*function[ \t]*([a-zA-Z0-9_]+):([a-zA-Z0-9_]+).*$/\2/f,function/
+--regex-lua=/^.*(local)?\s*function[ \t]*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+).*$/\3/f,function/
+--regex-lua=/^.*(local)?\s*function[ \t]*([a-zA-Z0-9_]+)\s*\(.*$/\2/f,function/
+--regex-lua=/([a-zA-Z0-9_]+) = require[ (]"([^"]+)"/\1/r,require/
+--regex-lua=/[ \t]{1}([a-zA-Z0-9_]+)[ \t]*[=][^=]/\1/v,variable/
+# --regex-lua=/[ \t]*([a-zA-Z0-9_]+)[ \t]*=[ \t]*module_define.*$/\1/m,module/
+# ]]]
+
+# === CSS === [[[
+# --langdef=css
+# --langmap=css:.css
+# --langmap=css:+.styl
+# --langmap=css:+.less
+# --regex-css=/^[ \t]*\.([A-Za-z0-9_-]+)/\1/c,class,classes/
+# --regex-css=/^[ \t]*#([A-Za-z0-9_-]+)/\1/i,id,ids/
+# --regex-css=/^[ \t]*(([A-Za-z0-9_-]+[ \t\n,]+)+)\{/\1/t,tag,tags/
+# --regex-css=/^[ \t]*@media\s+([A-Za-z0-9_-]+)/\1/m,media,medias/
+# ]]]
+
+# === SCSS === [[[
+# --langdef=scss
+# --langmap=scss:.sass
+# --langmap=scss:+.scss
+# --regex-scss=/^[ \t]*@mixin ([A-Za-z0-9_-]+)/\1/m,mixin,mixins/
+# --regex-scss=/^[ \t]*@function ([A-Za-z0-9_-]+)/\1/f,function,functions/
+# --regex-scss=/^[ \t]*\$([A-Za-z0-9_-]+)/\1/v,variable,variables/
+# --regex-scss=/^([A-Za-z0-9_-]*)*\.([A-Za-z0-9_-]+) *[,{]/\2/c,class,classes/
+# --regex-scss=/^[ \t]+\.([A-Za-z0-9_-]+) *[,{]/\1/c,class,classes/
+# --regex-scss=/^(.*)*\#([A-Za-z0-9_-]+) *[,{]/\2/i,id,ids/
+# --regex-scss=/^[ \t]*#([A-Za-z0-9_-]+)/\1/i,id,ids/
+# --regex-scss=/(^([A-Za-z0-9_-])*([A-Za-z0-9_-]+)) *[,|\{]/\1/t,tag,tags/
+# --regex-scss=/(^([^\/\/])*)[ \t]+([A-Za-z0-9_-]+)) *[,|\{]/\3/t,tag,tags/
+# --regex-scss=/(^(.*, *)([A-Za-z0-9_-]+)) *[,|\{]/\3/t,tag,tags/
+# --regex-scss=/(^[ \t]+([A-Za-z0-9_-]+)) *[,|\{]/\1/t,tag,tags/
+# --regex-scss=/^[ \t]*@media\s+([A-Za-z0-9_-]+)/\1/d,media,media/
+# ]]]
+
+# === Vim === [[[
+# https://docs.ctags.io/en/latest/man/ctags-optlib.7.html#ctags-optlib-7
+--kinddef-vim=s,section,marker sections
+--kinddef-vim=o,fold,fold marker
+--regex-vim=/^" (.*)\{$/\1/s,section/{scope=push}
+--regex-vim=/^" (.*)\}$///{scope=pop}{placeholder}
+--regex-vim=/^\s*"\s*"?\s*(.*)\s*\{\{\{(\d+)/\2 -- \1/o,fold/
+--regex-vim=/^\s*"\s*"?\s*(.*)\s*\[\[\[(\d+)/\2 -- \1/o,fold/
+--regex-vim=/^function\!?[ \t]*([a-zA-Z0-9_:.#]+)/\1/f,function/
+--regex-vim=/^[ \t]*def[ \t]+([a-zA-Z0-9_$]+)/\1/f,function/
+--regex-vim=/[ \t]*(([nvxsoilc]*)(noremap|map))[ \t]+(<(buffer|silent|special|script|expr|unique)>[ \t]+)*([^   ]*).*/\6 (\1)/m,map/
+# --regex-vim=/^\s*command!?\s+(\S+)\s/\1/c,command/
+# ]]]
+
+# === Vim Help === [[[
+--langdef=help
+--langmap=help:.txt
+--regex-help=/^([0-9]+\. [A-Z].*)\*$/\1/s,section/
+--regex-help=/^([A-Z][A-Za-z0-9 ]*)[ \t]+\*.+\*/\1/h,heading/
+--regex-help=/[\*]([^* \t]+)[\*]$/\1/m,marker/
+# ]]]
+
+# === DosIni === [[[
+--langdef=ini
+--langmap=ini:.cfg.ini.dosini
+--regex-ini=/^\[(.*)\]/\1/s,section/
+# ]]]
+
+# === Dockerfile === [[[
+--langdef=dockerfile
+--langmap=dockerfile:+(Dockerfile)
+--regex-dockerfile=/^(FROM|MAINTAINER|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL)/\1/d,dockerfile,dockerfiles/
+# ]]]
+
+# === zsh === [[[
+--langmap=zsh:.zshrc.zshenv.zlogin.zlogout.zsh
+--kinddef-zsh=v,var,variables
+--_tabledef-zsh=main
+--_tabledef-zsh=vardef
+--_tabledef-zsh=comment
+--_tabledef-zsh=equal
+
+--regex-zsh=/.*source ([^ \t]+)/"\1"/S,source/
+--regex-zsh=/[ \t]*(export )?([A-Z0-9_]+)=([^ \t\n]+)/\2: "\3"/e,envvariable/
+--regex-zsh=/[ \t]*bindkey ['"]([^'"]+)["'] ([^ \t#]+)/\1: \2/m,mapping/
+
+# Feature: Zsh variable detection
+--_mtable-regex-zsh=main/^\s*(local|typeset|declare|integer|float|readonly)\s+(-\w+\s+)*///{tenter=vardef}
+# Feature: Zsh function name detection
+--_mtable-regex-zsh=main/^\s*(function\s+|)([[:alnum:]:@∞.+-]+)\(\s*\)\s*([\{]|[\n]+[\{])/\2/f/
+--_mtable-regex-zsh=main/^\s*[\#][^\n]*///{tenter=comment}
+--_mtable-regex-zsh=main/.//
+
+--_mtable-regex-zsh=comment/[\n]///{tleave}
+--_mtable-regex-zsh=comment/.//
+
+--_mtable-regex-zsh=equal/([\"][^\"]*[\"])///{exclusive}{tleave}
+--_mtable-regex-zsh=equal/([\'][^\']*[\'])///{exclusive}{tleave}
+--_mtable-regex-zsh=equal/([\$][\(][\(])([^\)][^\)])*([^\)]){0,1}([\)][\)])///{exclusive}{tleave}
+--_mtable-regex-zsh=equal/([\$][\(])([^\)]*)([\)])///{exclusive}{tleave}
+--_mtable-regex-zsh=equal/([\(])([^\)]*)([\)])///{exclusive}{tleave}
+# Try to match sequences of ${…}\w${…}…
+--_mtable-regex-zsh=equal/([\$][\{])((([^\}]*[\}][^\s][\$][\{])*[^\}]*)|[^\}]*)([\}])///{exclusive}{tleave}
+--_mtable-regex-zsh=equal/[^\s\n]+///{exclusive}{tleave}{_advanceTo=0start} 
+--_mtable-regex-zsh=equal/[\n\s]///{exclusive}{tleave}{_advanceTo=0start}
+
+# Match with required ="…
+--_mtable-regex-zsh=vardef/([a-zA-Z_]\w*)([\=])/\1/v/{exclusive}{tenter=equal}
+--_mtable-regex-zsh=vardef/([a-zA-Z_]\w*)/\1/v/{exclusive}
+--_mtable-regex-zsh=vardef/[\x5C][\n]///{exclusive}
+--_mtable-regex-zsh=vardef/([\n;\}\)\|\&])///{tleave}{exclusive}
+--_mtable-regex-zsh=vardef/^\s*[\#][^\n]*///{tenter=comment}{exclusive}
+--_mtable-regex-zsh=vardef/.//
+# ]]]
+
+# vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

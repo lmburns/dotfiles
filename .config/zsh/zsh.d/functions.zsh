@@ -407,6 +407,11 @@ function __ngl_compdef() {
   _git-log
 }
 
+# Git change root
+function cr() {
+  builtin cd "$(git rev-parse --show-toplevel)"
+}
+
 # ================================ X11 ===============================
 # ====================================================================
 

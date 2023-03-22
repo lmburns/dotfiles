@@ -1,0 +1,11 @@
+Completion:
+  AllScopes: Yes
+
+InlayHints:
+  Enabled: Yes
+  Designators: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+
+Hover:
+  ShowAKA: Yes

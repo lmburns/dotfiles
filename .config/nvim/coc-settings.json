@@ -261,15 +261,17 @@
   "clangd.arguments": [
     "--query-driver=/usr/bin/clang++",
     "--background-index",
-    "--clang-tidy",
-    "--completion-style=detailed",
+    "--clang-tidy", // show clang-tidy diagnostics
     "--all-scopes-completion",
-    "--header-insertion=iwyu",
-    "--header-insertion-decorators",
+    "--completion-style=detailed",
     "--suggest-missing-includes",
-    // "--folding-ranges"
+    "--header-insertion=iwyu",
+    "--header-insertion-decorators", // prepend dot before completion to show "#include"
+    "--folding-ranges",
+    "--function-arg-placeholders", // add placeholder names when inserting
+    "--enable-config"
+    // "--debug-origin", // show completion source
     // "--fallback-style=google",
-    // "--enable-config"
   ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust
@@ -1232,7 +1234,7 @@
           "message": 3
         }
       ]
-    },
+    }
   },
   "diagnostic-languageserver.formatters": {},
   "diagnostic-languageserver.filetypes": {

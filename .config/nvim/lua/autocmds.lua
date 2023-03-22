@@ -897,9 +897,6 @@ nvim.autocmd.lmb__AutoReloadFile = {
 ---  - Only in the active window
 ---  - Ignore quickfix window
 ---  - Only when searching in cmdline or in insert mode
-
--- FIX: Rnu not working on startup until insert mode (focus not working either)
---      It has worked before
 nvim.autocmd.RnuColumn = {
     {
         event = {"FocusLost", "InsertEnter"},

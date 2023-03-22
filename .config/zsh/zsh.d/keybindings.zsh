@@ -91,6 +91,12 @@ function RG_buff() {
 }
 zle -N RG_buff
 
+function vi-delete-visual() {
+  zle .vi-delete
+  print -rn "$CUTBUFFER" | xsel -ib --trim
+}
+zle -N vi-delete-visual
+
 # Copy $BUFFER
 function copyx() {
   print -rn $BUFFER | xsel -ib --trim
@@ -143,6 +149,7 @@ function save-alias() {
 }
 zle -N save-alias
 
+
 function src-locate() {
   typeset -ga candidates
   local buf start
@@ -155,6 +162,7 @@ function src-locate() {
 }
 zle -N src-locate
 
+
 function fzf-locate-widget() {
   local selected
   if selected=$(locate / | fzf -q "$LBUFFER"); then
@@ -163,6 +171,17 @@ function fzf-locate-widget() {
   zle redisplay
 }
 zle -N fzf-locate-widget
+
+# TODO: Figure out how to set numeric
+function _complete_help_full() {
+  # NUMERIC=2
+  zle universal-argument 2
+  _complete_help
+}
+# zle -N _complete_help_full
+zle -C _complete_help_full complete-word _complete_help_full
+# compdef -k _complete_help_full complete-word \C-x\C-h
+
 
 # TODO: Set this to history file that is similar to per-dir-history
 function stash_buffer() {
@@ -198,9 +217,9 @@ declare -gA keybindings; keybindings=(
   'Esc-i'                 fe                    # Edit file with fzf
   'M-\'                   list-keys             # List keybindings in mode
   'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
-  'M-r'                   per-dir-fzf           # Toggle per-dir hist & bring up Fzf
+  'M-S-R'                 per-dir-fzf           # Toggle per-dir hist & bring up Fzf
   'M-v'                   describe-key-briefly  # Describe what key does
-  'M-S-R'                 fzf-history-widget    # Builtin fzf history widget
+  # 'M-S-R'                 fzf-history-widget    # Builtin fzf history widget
   'C-o'                   clipboard-fzf         # Greenclip fzf (insert into cli)
   'M-p'                   pw                    # Fzf pueue
   'M-g'                   get-line           # Get line from buffer-stack
@@ -210,7 +229,6 @@ declare -gA keybindings; keybindings=(
   'M-S-P'                 toggle-right-prompt   # Toggle p10k right promp
   'C-]'                   macho-zle             # Fzf man pages
   'C-a'                   autosuggest-execute   # Execute the autosuggestion
-  'C-h'                   backward-delete-char  # Execute the autosuggestion
   'C-t'                   fzf-file-widget # Insert file into cli
   'C-y'                   yank            # Insert the contents of the kill buffer at the cursor position
   'C-z'                   fancy-ctrl-z    # Bring up jobs with fzf
@@ -222,6 +240,10 @@ declare -gA keybindings; keybindings=(
   'C-x C-f'               fz-find
   'C-x C-u'               RG_buff                  # RG with $BUFFER
   'C-x C-x'               execute-command          # Execute ZLE command
+  'C-w'                   vi-backward-kill-word    # Kill word backwards
+  'M-['                   backward-kill-line
+  'C-h'                   backward-delete-char  # Execute the autosuggestion
+  # 'C-S-h'                 backward-word
   'mode=vicmd :'          execute-named-cmd
   'mode=vicmd 0'          vi-digit-or-beginning-of-line
   'mode=vicmd R'          replace-pattern
@@ -239,14 +261,12 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd ;v'         clipboard-fzf            # Greenclip fzf
   'mode=vicmd ;e'         edit-command-line-as-zsh # Edit command in editor
   'mode=vicmd ;x'         vi-backward-kill-word    # Kill word backwards
-  # 'mode=vicmd S'          backward-kill-line
   'mode=vicmd C'          vi-change-eol        # Kill text to end of line & start in insert
   'mode=vicmd S'          vi-change-whole-line # Change all text to start over
   'mode=vicmd cc'         vi-change-whole-line # Change all text to start over
   'mode=vicmd ds'         delete-surround      # Delete 'surrounders'
   'mode=vicmd cs'         change-surround      # Change 'surrounders'
   'mode=vicmd ys'         add-surround         # Add 'surrounders'
-  'mode=visual S'         add-surround         # Add 'surrounders'
   'mode=vicmd ?'          which-command        # Display info about a command
   'mode=vicmd M-\'        list-keys            # List keybindings in mode
   'mode=vicmd ='          list-choices         # List choices (i.e., alias, command, vars, etc)
@@ -261,6 +281,10 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd \+'         zvm_switch_keyword # Increment item under keyboard
   'mode=vicmd ,.'         get-line           # Get line from buffer-stack
   'mode=vicmd ,,'         push-line-or-edit  # Push line to buffer-stack
+  'mode=visual M-\'       list-keys            # List keybindings in mode
+  'mode=visual S'         add-surround         # Add 'surrounders'
+  'mode=visual x'         vi-delete-visual     # Cut text
+  'mode=viopp M-\'        list-keys            # List keybindings in mode
   'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
   'mode=viins kj'         vi-cmd-mode        # Switch to vi-cmd mode
   # "mode=str M-S-'"          ncd                 # Lf change dir
@@ -275,8 +299,8 @@ declare -gA keybindings; keybindings=(
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
   'mode=@ C-b'            bow2               # Surfraw open w3m
-  'mode=@ M-['            fstat
-  'mode=@ M-]'            fadd
+  # 'mode=@ M-['            fstat
+  # 'mode=@ M-]'            fadd
 
   'mode=menuselect Space' .accept-line
   'mode=menuselect C-r'   history-incremental-search-backward
@@ -294,7 +318,7 @@ declare -gA keybindings; keybindings=(
 vbindkey -A keybindings
 
 # Surround text under cursor with quotes
-builtin bindkey -M vicmd -s ' o' 'viwS"'
+builtin bindkey -M vicmd -s 'y;' 'viwS'
 # builtin bindkey -s '^[\"' 'ncd\n'
 
 builtin bindkey -s '\e1' "!:0 \t"        # last command

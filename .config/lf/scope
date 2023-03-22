@@ -228,7 +228,7 @@ $C[B]$C[42]${class}$C[res] \
 $C[B]$C[52]${(l:equals::=:):-}$C[res]" && {
     sep=" $C[18]|$C[17] "
     t="$(file --dereference --brief -- "${filepath}")"
-    mime0=( ${${${(@s:,:)t}##[[:space:]]##}%%[[:space:]]##} )
+    mime0=( ${${(@s:,:)t}//((#s)[[:space:]]##|[[:space:]]##(#e))} )
     stat -c "\
 $C[B]$C[16]info:     $C[17]${(pj:$sep:)mime0}$C[rnl]\
 $C[B]$C[16]mimetype: $C[18]${mime1}$C[res] $C[B]$C[12]|$C[res] $C[B]$C[18]${mime2}$C[rnl]\

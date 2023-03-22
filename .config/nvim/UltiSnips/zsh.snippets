@@ -12,7 +12,7 @@ $0
 endsnippet
 
 snippet em "Emulate zsh -LR"
-builtin emulate zsh -LR
+builtin emulate zsh -L
 setopt extendedglob ${1:option}
 endsnippet
 
@@ -22,10 +22,6 @@ endsnippet
 
 snippet hasvar "If variable exists..."
 (( ${+${1:variable}} )) && ${2:Do something $1}
-endsnippet
-
-snippet better_ll "Create common header" b
-(( $+commands[exa] )) && ll='exa -lbhg --git ${1:--time-style long-iso} ${2:--color=always}' || ll='ls -l $1 $2'
 endsnippet
 
 # ========================== Variables ==========================
@@ -78,15 +74,15 @@ done
 endsnippet
 
 snippet fori "for .. in .." b
+for ${1:item} (${2:list}[@]) {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet foril "for .. in .. (long)" b
 for ${1:needle} in ${2:haystack}; do
 	${0:${VISUAL}}
 done
-endsnippet
-
-snippet foree "foreach .. end" b
-foreach ${1:item} (${2:list})
-	${0:${VISUAL}}
-end
 endsnippet
 
 snippet fore "foreach loop" b
@@ -95,10 +91,10 @@ foreach ${1:item} (${2:list}) {
 }
 endsnippet
 
-snippet forea "for loop in $array" b
-for ${1:item} (${2:list}[@]) {
+snippet forel "foreach .. end" b
+foreach ${1:item} (${2:list})
 	${0:${VISUAL}}
-}
+end
 endsnippet
 
 snippet wh "while loop" b
@@ -120,8 +116,16 @@ repeat ${1:integer} {
 endsnippet
 
 snippet case "case statement" b
+case ${1:word} {
+	(${2:pattern})
+		${0}
+	;;
+}
+endsnippet
+
+snippet casel "case statement (long)" b
 case ${1:word} in
-	${2:pattern})
+	(${2:pattern})
 		${0}
 	;;
 esac
@@ -133,12 +137,12 @@ select ${1:answer} in ${2:choices}; do
 done
 endsnippet
 
-snippet ( "parenthesis" b
-( ${0:#statements} )
+snippet pa "parenthesis" b
+(${0:#statements})
 endsnippet
 
-snippet { "curly brace" b
-{ ${0:#statements} }
+snippet pc "curly brace" b
+{${0:#statements}}
 endsnippet
 
 snippet tst "test statement" b
@@ -153,13 +157,13 @@ snippet always "always statement" b
 }
 endsnippet
 
-snippet fun "function def" b
+snippet funs "function def short" b
 ${1:function_name}() {
 	${0:# function_body}
 }
 endsnippet
 
-snippet ffun "'function' def" b
+snippet fun "function def" b
 function ${1:function_name}() {
 	${0:# function_body}
 }

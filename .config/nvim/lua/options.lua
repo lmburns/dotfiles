@@ -25,10 +25,10 @@ g.maplocalleader = [[,]]
 _t(
     {
         "2html_plugin",
-        -- "ftplugin",
+        "ftplugin",
         "getscript",
         "getscriptPlugin",
-        -- "gzip",
+        "gzip",
         "logiPat", -- boolean logical pattern matcher
         -- "man",
         "matchit",
@@ -37,7 +37,6 @@ _t(
         "netrwFileHandlers",
         "netrwPlugin",
         "netrwSettings",
-        "node_provider",
         -- "remote_plugins", -- required for wilder.nvim
         -- "rplugin", -- involved with remote_plugins
         "rrhelper",
@@ -49,10 +48,11 @@ _t(
         "vimballPlugin",
         -- "zip",
         -- "zipPlugin",
-        "perl_provider",
-        "python_provider",
-        "ruby_provider"
-        -- "python3_provider",
+        --
+        -- "perl_provider",
+        -- "python_provider",
+        "ruby_provider",
+        "node_provider"
     }
 ):map(
     function(p)
@@ -90,7 +90,6 @@ o.fileencoding = "utf-8" -- utf-8 files
 o.fileformat = "unix" -- use unix line endings
 o.fileformats = {"unix", "mac", "dos"}
 o.nrformats = {"octal", "hex", "bin", "unsigned", "alpha"} -- increment / decrement
-o.matchpairs:append("<:>") -- allow matching </> with %
 
 -- ================= Files ================= [[[
 o.backup = true -- backup files
@@ -152,20 +151,32 @@ o.spellsuggest = "12"
 o.spellfile = ("%s%s"):format(dirs.config, "/spell/en.utf-8.add")
 -- ]]] === Spell Check ===
 
+o.magic = true -- :h pattern-overview
+o.infercase = true -- change case inference with completions
+o.ignorecase = true
+o.smartcase = true
+o.wrapscan = true -- searches wrap around the end of the file
+o.incsearch = true -- incremental search highlight
+o.inccommand = "split"
+
+o.redrawtime = 2000 -- time it takes to redraw ('hlsearch', 'inccommand')
 o.lazyredraw = true -- screen not redrawn with macros, registers
-o.redrawtime = 2000
 -- I like to have a differeniation between CursorHold and updatetime
 -- Also, when only using updatetime, CursorHold doesn't seem to fire
 g.cursorhold_updatetime = 250
 o.updatetime = 2000
 o.timeoutlen = 375 -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50 -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
+
+o.matchpairs:append({"<:>"}) -- pairs to highlight with showmatch -- "=:;"
 o.matchtime = 5 -- ms to blink when matching brackets
+o.showmatch = true -- when inserting pair, jump to matching one
 
 o.belloff = "all"
 o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
+o.report = 1 -- report if at least 1 line changed
 
 o.title = true
 o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
@@ -180,14 +191,10 @@ o.mousemoveevent = true
 o.mousescroll = {"ver:3", "hor:6"} -- number of cols when scrolling with mouse
 o.mousemodel = "popup" -- what right-click does
 
-o.equalalways = false -- don't always make windows equal size
-o.splitright = true
-o.splitbelow = true
-
 o.tagfunc = "CocTagFunc"
 -- exclude usetab as we do not want to jump to buffers in already open tabs
 -- do not use split or vsplit to ensure we don't open any new windows
-o.switchbuf = "useopen,uselast"
+o.switchbuf = {"useopen", "uselast"}
 -- change behavior of 'jumplist'
 o.jumpoptions = {
     -- behave like tagstack - relloc is preserved (sumneko jumps to top clearing a bunch)
@@ -201,8 +208,7 @@ o.pumblend = 3 -- make popup window translucent
 o.showtabline = 2
 o.synmaxcol = 300 -- do not highlight long lines
 o.ruler = false
-o.showmatch = true -- show matching brackets when text indicator is over them
-o.showmode = false -- hide file, it's in lightline
+o.showmode = false -- hide file, it's in statusline
 o.showcmd = true -- show command
 o.hidden = true -- enable modified buffers in background
 
@@ -212,6 +218,10 @@ o.scrolloff = 5 -- cursor 5 lines from bottom of page
 o.sidescrolloff = 15 -- minimal number of screen columns to keep to the let
 o.textwidth = 100 -- maximum width of text
 o.winminwidth = 2 -- minimal width of a window, when it's not the current window
+o.equalalways = false -- don't always make windows equal size
+o.splitright = true
+o.splitbelow = true
+
 o.numberwidth = 4 -- minimal number of columns to use for the line number
 o.number = true -- print the line number in front of each line
 o.relativenumber = true -- show the line number relative to the line with the cursor
@@ -219,6 +229,7 @@ o.signcolumn = "yes:1"
 
 -- Fold
 o.foldenable = true
+-- want to add 'g;', 'g,'
 o.foldopen = {"block", "hor", "mark", "percent", "quickfix", "search", "tag", "undo"} -- commands that open a fold
 o.foldlevel = 99 -- folds higher than this will be closed (zm, zM, zR)
 o.foldlevelstart = 99 -- sets 'foldlevel' when editing buffer
@@ -256,18 +267,11 @@ o.wildmenu = true
 o.wildmode = {"longest:full", "full"} -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true -- ignore case when completing file names and directories
 o.wildcharm = ("\t"):byte()
+-- o.wildchar = fn.char2nr([[\<M-,>]])
 
 o.cedit = "<C-c>" -- key used to open command window on the CLI
 o.virtualedit = "block" -- allow cursor to move where there is no text in visual block mode
 o.startofline = false -- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", gg go to start of line
-
-o.magic = true -- :h pattern-overview
-o.infercase = true -- change case inference with completions
-o.ignorecase = true
-o.smartcase = true
-o.wrapscan = true -- searches wrap around the end of the file
-o.incsearch = true -- incremental search highlight
-o.inccommand = "split"
 
 o.display = {"lastline"} -- display line instead of continuation '@@@'
 o.list = true -- display tabs and trailing spaces visually
@@ -302,35 +306,48 @@ o.fillchars = {
     lastline = "@" -- 
 }
 
--- o.cpoptions = 'aAceFs_B'
--- o.cpoptions:append("n") -- signcolumn used for wraptext
-o.cpoptions:append("_") -- do not include whitespace with 'cw'
-o.cpoptions:append("a") -- ":read" sets alternate file name
-o.cpoptions:append("A") -- ":write" sets alternate file name
+-- Vi-compatible options
+o.cpoptions:append(
+    {
+        _ = true, -- do not include whitespace with 'cw'
+        a = true, -- ":read" sets alternate file name
+        A = true, -- ":write" sets alternate file name
+        I = true, -- cursor up/down after inserting indent doesn't delete it
+        -- t = true, -- search pattern for tag command is remembered for 'n'/'N'
+        -- ["%"] = true, -- matching pairs inside quotes is different from outside
+        M = false -- "%" matching takes into account backslashes
+        -- n = true, -- signcolumn used for wraptext
+        -- q = true, -- when joining multiple lines, leave cursor position at first spot
+        -- r = true, -- redo uses '/' to repeat search
+    }
+)
 
--- TOaxSsIinfcFlotA
+-- Helps avoid 'hit-enter' prompts (filnxtToOF)
 o.shortmess:append("a") -- enable shorter flags ('filmnrwx')
 o.shortmess:append("c") -- don't give ins-completion-menu messages
 o.shortmess:append("s") -- don't give "search hit BOTTOM
 o.shortmess:append("I") -- don't give the intro message when starting Vim
 o.shortmess:append("S") -- do not show search count message when searching (HLSLens)
 o.shortmess:append("T") -- truncate messages if they're too long
-o.shortmess:append("A") -- don't give the "ATTENTION" message when an existing swap file
 
 -- o.shortmess = {
---     T = true, -- truncate non-file messages in middle
---     O = true, -- file-read message overwrites previous
---     a = true, -- enable shorter flags ('filmnrwx')
---     S = true, -- don't show search count message when searching (HLSLens)
---     s = true, -- don't give "search hit BOTTOM"
---     I = true, -- don't give intro message when starting vim
---     c = true, -- don't give ins-completion messages
---     t = true, -- truncate file messages at start
+--     f = true, -- (x of y) instead of (file x of y)
+--     i = true, -- use "[noeol]" instead of "[Incomplete last line]"
+--     l = true, -- use "999L, 888B" instead of "999 lines, 888 bytes"
+--     m = true, -- use "[+]" instead of "[Modified]"
+--     n = true, -- use "[New]" instead of "[New File]"
+--     x = true, -- "[unix]"-x* instead of "[unix format]"
+--     -- a = true, -- enable shorter flags ('filmnrwx')
 --     A = true, -- don't give the "ATTENTION" message when an existing swap file
---     o = true, -- file-read message overwrites previous
---     f = true, -- (file x of x) instead of just (x of x
+--     c = true, -- don't give ins-completion messages
+--     I = true, -- don't give intro message when starting vim
+--     o = true, -- overwrite msg for writing file with msg for reading file
+--     O = true, -- file-read/quickfix message overwrites previous
+--     s = true, -- don't give "search hit BOTTOM" or "TOP"
+--     t = true, -- truncate file messages at start
+--     T = true, -- truncate other messages in the middle if they are too long "..."
 --     F = true, -- don't give file info when editing a file
---     W = true -- don't show [w] or written when writing
+--     S = true -- don't show search count message when searching (HLSLens)
 -- }
 
 -- keys that move the cursor to the next line on last char
@@ -390,9 +407,9 @@ o.backspace = {"indent", "eol", "start"} -- <BS>, <Del>, CTRL-W and CTRL-U in in
 -- o.indentexpr = "nvim_treesitter#indent()" -- (overrules 'smartindent', 'cindent')
 o.autoindent = true -- copy indent from current line when starting a new line (<CR>, o, O)
 o.smartindent = true -- smart autoindenting when starting a new line (C-like progs)
-o.cindent = false -- automatic C program indenting
--- o.preserveindent = true -- preserve most indent structure as possible when reindenting line
+o.cindent = true -- automatic C program indenting
 -- o.copyindent = true -- copy structure of existing lines indent when autoindenting a new line
+-- o.preserveindent = true -- preserve most indent structure as possible when reindenting line
 o.showbreak = [[↳ ]] -- ↪  ⌐
 o.breakindent = true -- each wrapped line will continue same indent level
 o.breakindentopt = {
@@ -404,22 +421,23 @@ o.breakindentopt = {
     "shift:2" -- all lines after break are shifted N
 }
 o.linebreak = true -- lines wrap at words rather than random characters
-o.breakat = {
-    -- which chars cause break with 'linebreak'
-    ["\t"] = true,
-    [" "] = true,
-    ["!"] = true,
-    ["*"] = true,
-    ["+"] = true,
-    [","] = true,
-    ["-"] = true,
-    ["."] = true,
-    ["/"] = true,
-    [":"] = true,
-    [";"] = true,
-    ["?"] = true,
-    ["@"] = true
-}
+-- which chars cause break with 'linebreak'
+-- vim.o.breakat = "  !@*-+;:,./?"
+-- o.breakat = {
+--     -- ["\t"] = true,
+--     [" "] = true,
+--     ["!"] = true,
+--     ["*"] = true,
+--     ["+"] = true,
+--     [","] = true,
+--     ["-"] = true,
+--     ["."] = true,
+--     ["/"] = true,
+--     [":"] = true,
+--     [";"] = true,
+--     ["?"] = true,
+--     ["@"] = true
+-- }
 
 -- strings that can start a comment line
 -- o.comments = {

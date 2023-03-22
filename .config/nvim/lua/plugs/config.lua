@@ -101,7 +101,7 @@ function M.listish()
             ["<Leader>wo"] = "Loclist open",
             ["<Leader>wa"] = "Loclist add current line",
             ["<Leader>wn"] = "Loclist add note",
-            ["<Leader>wi"] = "Loclist clear items",
+            ["<Leader>wi"] = "Loclist clear items"
         }
     )
 
@@ -527,29 +527,29 @@ function M.hlslens()
         "n",
         "*",
         [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false, desc = "Search forward <word>"}
+        {desc = "Search forward <word>"}
     )
     map(
         "n",
         "#",
         [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false, desc = "Search forward <word>"}
+        {desc = "Search forward <word>"}
     )
     map(
         "n",
         "g*",
         [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false, desc = "Search forward word"}
+        {desc = "Search forward word"}
     )
     map(
         "n",
         "g#",
         [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]],
-        {noremap = false, desc = "Search backward word"}
+        {desc = "Search backward word"}
     )
 
-    map("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
-    map("x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]], {noremap = false})
+    map("x", "*", [[<Plug>(asterisk-z*)<Cmd>lua require('hlslens').start()<CR>]])
+    map("x", "#", [[<Plug>(asterisk-z#)<Cmd>lua require('hlslens').start()<CR>]])
     map("x", "g*", [[<Plug>(asterisk-gz*)<Cmd>lua require('hlslens').start()<CR>]])
     map("x", "g#", [[<Plug>(asterisk-gz#)<Cmd>lua require('hlslens').start()<CR>]])
 
@@ -597,40 +597,64 @@ function M.matchup()
     g.loaded_matchit = 1
     g.matchup_enabled = 1
     g.matchup_mappings_enabled = 0
+    g.matchup_matchparen_enabled = 1
     g.matchup_motion_enabled = 1
     g.matchup_text_obj_enabled = 1
-    g.matchup_matchparen_enabled = 1
-    g.matchup_surround_enabled = 0
+    g.matchup_mouse_enabled = 1
+    g.matchup_surround_enabled = 1
+    g.matchup_transmute_enabled = 0
+
+    g.matchup_motion_override_Npercent = 0
     g.matchup_motion_cursor_end = 0
 
-    g.matchup_transmute_enabled = 0
+    -- g.matchup_matchparen_stopline = 400
     g.matchup_matchparen_timeout = 100
     g.matchup_matchparen_deferred = 1
-    g.matchup_matchparen_hi_surround_always = 1
     g.matchup_matchparen_deferred_show_delay = 50
     g.matchup_matchparen_deferred_hide_delay = 300
-    g.matchup_matchparen_offscreen = {method = "popup", highlight = "CurrentWord"}
-    g.matchup_delim_start_plaintext = 1
-    g.matchup_motion_override_Npercent = 0
+    g.matchup_matchparen_hi_surround_always = 1
+
+    -- This window opens and closes automatically really quickly in Lua
+    --   status_manual -- MatchupStatusOffscreen
+    -- g.matchup_matchparen_offscreen = {}
+    -- g.matchup_matchparen_offscreen = {method = "popup", highlight = "MatchParenCur", border = true}
+    g.matchup_matchparen_offscreen = {method = "status_manual"}
+
+    g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
+    g.matchup_delim_noskips = 2 -- in comments -- 0: All, 1: Brackets
+    -- FIX: THIS ISN'T WORKING
+    g.matchup_delim_nomids = 0 -- match func return end
+
+    -- g.matchup_delim_stopline = 500
 
     hl.plugin(
         "Matchup",
         {
             MatchWord = {link = "Underlined"},
             MatchParen = {bg = "#5e452b", underline = true}
+            -- MatchParen = {
+            --     fg = require("kimbox.colors").bg_red,
+            --     -- bg = "#5e452b",
+            --     bold = true,
+            --     underline = true
+            -- }
         }
     )
 
     map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
     map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)")
+    map("o", "g5", "<Plug>(matchup-g%)")
     map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
     map({"n", "x", "o"}, "]5", "<Plug>(matchup-]%)")
+    map({"n", "x", "o"}, "[%", "<Plug>(matchup-[%)")
+    map({"n", "x", "o"}, "]%", "<Plug>(matchup-]%)")
     map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
+    map({"n", "x", "o"}, "z5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
 
     map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
     map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
-    -- map("n", "ds%", "<Plug>(matchup-ds%)")
-    -- map("n", "cs%", "<Plug>(matchup-cs%)")
+    map("n", "ds%", "<Plug>(matchup-ds%)")
+    map("n", "cs%", "<Plug>(matchup-cs%)")
 
     augroup(
         "lmb__Matchup",
@@ -1450,14 +1474,14 @@ function M.visualmulti()
         ["Switch Mode"] = ",",
         i = "i",
         I = "I",
-        ["Add Cursor Up"] = "<C-S-Up>",
-        ["Add Cursor Down"] = "<C-S-Down>",
         ["Add Cursor At Pos"] = [[<Leader>\]],
-        ["Select Cursor Up"] = "<A-S-i>",
-        ["Select Cursor Down"] = "<A-S-o>",
+        -- ["Add Cursor Up"] = "<A-S-i>",
+        -- ["Add Cursor Down"] = "<A-S-o>",
+        -- ["Select Cursor Up"] = "<C-S-Up>",
+        -- ["Select Cursor Down"] = "<C-S-Down>",
         ["Slash Search"] = "g/", -- Extend/move cursors with /
-        ["Move Left"] = "<C-A-Left>", -- Move region left
-        ["Move Right"] = "<C-A-Right>", -- Move region right
+        ["Move Left"] = "<C-S-i>", -- Move region left
+        ["Move Right"] = "<C-S-o>", -- Move region right
         -- Region cycling and removal
         ["Find Next"] = "]", -- Same as "n"
         ["Find Prev"] = "[", -- Same as "N"
@@ -1474,8 +1498,8 @@ function M.visualmulti()
         ["Replace Pattern"] = "R",
         ["Increase"] = "<C-A-i>", -- Increase numbers
         ["Decrease"] = "<C-A-o>", -- Decrease numbers
-        ["gIncrease"] = "<C-S-i>", -- Progressively increase numbers
-        ["gDecrease"] = "<C-S-o>", -- Progressively decrease numbers
+        -- ["gIncrease"] = "<C-S-i>", -- Progressively increase numbers
+        -- ["gDecrease"] = "<C-S-o>", -- Progressively decrease numbers
         -- ["Alpha-Increase"] = "<C-S-i>",
         -- ["Alpha-Decrease"] = "<C-S-o>",
 
@@ -1538,12 +1562,12 @@ function M.visualmulti()
         -- ["I Next"] = "<C-j>", -- Insert mode to go next cursor
     }
 
-    map("n", "<C-S-Up>", "<Plug>(VM-Add-Cursor-Up)")
-    map("n", "<C-S-Down>", "<Plug>(VM-Add-Cursor-Down)")
-    map("n", "<A-S-i>", "<Plug>(VM-Select-Cursor-Up)")
-    map("n", "<A-S-o>", "<Plug>(VM-Select-Cursor-Down)")
-    map("n", "<C-A-S-l>", "<Plug>(VM-Select-l)")
-    map("n", "<C-A-S-h>", "<Plug>(VM-Select-h)")
+    map("n", "<M-S-i>", "<Plug>(VM-Add-Cursor-Up)")
+    map("n", "<M-S-o>", "<Plug>(VM-Add-Cursor-Down)")
+    map("n", "<C-S-Up>", "<Plug>(VM-Select-Cursor-Up)")
+    map("n", "<C-S-Down>", "<Plug>(VM-Select-Cursor-Down)")
+    map("n", "<C-A-S-Right>", "<Plug>(VM-Select-l)")
+    map("n", "<C-A-S-Left>", "<Plug>(VM-Select-h)")
     map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
 
     map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
@@ -1722,7 +1746,12 @@ end
 -- │                          eregex                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.eregex()
+    g.eregex_forward_delim = "/"
+    g.eregex_backward_delim = "?"
+
     map("n", "<Leader>es", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", ",/", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", "<Leader>S", ":%S//g<Left><Left>", {desc = "Global replace (E2v)"})
 end
 
 --  ╭──────────────────────────────────────────────────────────╮

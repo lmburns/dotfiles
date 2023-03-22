@@ -64,8 +64,6 @@ function M.table_mode()
                     [[coc#pum#visible() ? coc#pum#confirm() : "\<Right>"]],
                     {expr = true, silent = true, buffer = args.buf}
                 )
-
-                map("i", "**", "****<Left><Left>", {buffer = args.buf})
             end
         }
     )
@@ -94,16 +92,16 @@ function M.table_mode()
     g.table_mode_corner = "|"
     g.table_mode_fillchar = "-"
     g.table_mode_separator = "|"
-    g.table_mode_separator_map = "<Bar>"
+    g.table_mode_separator_map = "|"
     g.table_mode_header_fillchar = "="
     g.table_mode_align_char = ":" -- alignments for cols in table header border
 
-    g.table_mode_motion_up_map = "{<Bar>" -- move up a cell vertically
-    g.table_mode_motion_down_map = "}<Bar>" -- move down a cell vertically
-    g.table_mode_motion_left_map = "[<Bar>" -- move to the left cell
-    g.table_mode_motion_right_map = "]<Bar>" -- move to the right cell
-    g.table_mode_cell_text_object_a_map = "a<Bar>" -- text object for around cell object
-    g.table_mode_cell_text_object_i_map = "i<Bar>" -- text object for inner cell object
+    g.table_mode_motion_up_map = "{|" -- move up a cell vertically
+    g.table_mode_motion_down_map = "}|" -- move down a cell vertically
+    g.table_mode_motion_left_map = "[|" -- move to the left cell
+    g.table_mode_motion_right_map = "]|" -- move to the right cell
+    g.table_mode_cell_text_object_a_map = "a|" -- text object for around cell object
+    g.table_mode_cell_text_object_i_map = "i|" -- text object for inner cell object
 
     wk.register(
         {
@@ -148,21 +146,109 @@ function M.vimwiki()
 
                 wk.register(
                     {
-                        ["<Leader>wh"] = {"<Plug>Vimwiki2HTML"},
-                        ["<Leader>w<Leader>i"] = {"<Plug>VimwikiDiaryGenerateLinks"},
-                        ["<Leader>ww"] = {"<Plug>VimwikiIndex"},
-                        ["]u"] = {"<Plug>VimwikiNextLink"},
-                        ["[u"] = {"<Plug>VimwikiPrevLink"},
-                        ["="] = {"<Plug>VimwikiAddHeaderLevel"},
-                        ["-"] = {"<Plug>VimwikiRemoveHeaderLevel"},
-                        ["]]"] = {"<Plug>VimwikiGoToNextHeader"},
-                        ["[["] = {"<Plug>VimwikiGoToPrevHeader"},
-                        ["]="] = {"<Plug>VimwikiGoToNextSiblingHeader"},
-                        ["[="] = {"<Plug>VimwikiGoToPrevSiblingHeader"},
-                        ["{"] = {"<Plug>VimwikiGoToParentHeader"},
-                        ["<Leader>-"] = {"<Plug>VimwikiToggleListItem"},
+                        ["<Leader>wh"] = {"<Plug>Vimwiki2HTML", "Convert page to HTML"},
+                        ["<Leader>w<Leader>i"] = {"<Plug>VimwikiDiaryGenerateLinks", "Update diary"},
+                        ["<Leader>ww"] = {"<Plug>VimwikiIndex", "Goto current index"},
+                        ["]u"] = {"<Plug>VimwikiNextLink", "Goto next link"},
+                        ["[u"] = {"<Plug>VimwikiPrevLink", "Goto prev link"},
+                        ["]h"] = {"<Plug>VimwikiGoToParentHeader", "Goto header parent"},
+                        ["[h"] = {"<Plug>VimwikiGoToParentHeader", "Goto header parent"},
+                        ["="] = {"<Plug>VimwikiAddHeaderLevel", "Add header level"},
+                        ["-"] = {"<Plug>VimwikiRemoveHeaderLevel", "Remove header level"},
+                        ["]]"] = {"<Plug>VimwikiGoToNextHeader", "Goto next header"},
+                        ["[["] = {"<Plug>VimwikiGoToPrevHeader", "Goto prev header"},
+                        ["}"] = {
+                            "<Plug>VimwikiGoToNextSiblingHeader",
+                            "Goto prev header with same level"
+                        },
+                        ["{"] = {
+                            "<Plug>VimwikiGoToPrevSiblingHeader",
+                            "Goto prev header with same level"
+                        },
+                        ["gli"] = {"<Plug>VimwikiToggleListItem", "Toggle checkbox of list"},
+                        ["glx"] = {"<Plug>VimwikiToggleRejectedListItem", "Toggle checkbox status list"},
+                        ["gl<Space>"] = {"<Plug>VimwikiRemoveSingleCB", "Remove checkbox from item"},
+                        ["gL<Space>"] = {
+                            "<Plug>VimwikiRemoveCBInList",
+                            "Remove checkbox from item + sibling"
+                        },
+                        ["gll"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "Increase item level"},
+                        ["gLl"] = {
+                            "<Plug>VimwikiIncreaseLvlWholeItem",
+                            "Increase item + child level"
+                        },
+                        ["glh"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "Decrease item level"},
+                        ["gLh"] = {
+                            "<Plug>VimwikiDecreaseLvlWholeItem",
+                            "Decrease item + child level"
+                        },
+                        ["gnt"] = {"<Plug>VimwikiNextTask", "Goto next unfinished task"},
+                        ["glr"] = {"<Plug>VimwikiRenumberList", "Renumber list"},
+                        ["gLr"] = {"<Plug>VimwikiRenumberAllLists", "Renumber all lists"},
+                        ["gl,"] = {":VimwikiChangeSymbolTo *<CR>", "Create '*' item"},
+                        ["gL,"] = {":VimwikiChangeSymbolInListTo *<CR>", "Change list to '*'"},
+                        ["gl."] = {":VimwikiChangeSymbolTo -<CR>", "Create '-' item"},
+                        ["gL."] = {":VimwikiChangeSymbolInListTo -<CR>", "Change list to '-'"},
+                        ["gl1"] = {":VimwikiChangeSymbolTo 1.<CR>", "Create '1.' item"},
+                        ["gL1"] = {":VimwikiChangeSymbolInListTo -<CR>", "Change list to '1.'"},
+                        ["gla"] = {":VimwikiChangeSymbolTo a)<CR>", "Create 'a)' item"},
+                        ["gLa"] = {":VimwikiChangeSymbolInListTo a)<CR>", "Change list to 'a)'"},
+                        ["glA"] = {":VimwikiChangeSymbolTo A)<CR>", "Create 'A)' item"},
+                        ["gLA"] = {":VimwikiChangeSymbolInListTo A)<CR>", "Change list to 'A)'"},
+                        ["gqq"] = {"<Plug>VimwikiTableAlignQ", "Align table (gq)"},
+                        ["gww"] = {"<Plug>VimwikiTableAlignW", "Align table (gw)"},
+                        ["<Leader>t["] = {"<Plug>VimwikiTableMoveColumnLeft", "Move column left"},
+                        ["<Leader>t]"] = {"<Plug>VimwikiTableMoveColumnRight", "Move column right"},
+                        ["<Tab>"] = {">>", "Indent line"},
+                        ["<S-Tab>"] = {"<<", "De-indent line"}
                     },
                     {mode = "n", buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["<S-CR>"] = "Don't continue list format",
+                        ["<C-t>"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "Increase list level"},
+                        ["<C-d>"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "Decrease list level"},
+                        ["<C-s><C-j>"] = {"<Plug>VimwikiListNextSymbol", "Change to next list type"},
+                        ["<C-s><C-k>"] = {"<Plug>VimwikiListPrevSymbol", "Change to next list type"},
+                        ["<C-s><C-m>"] = {"<Plug>VimwikiListToggle", "Toggle list item"}
+                    },
+                    {mode = "i", buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["aj"] = {"<Plug>VimwikiTextObjHeader", "Around header"},
+                        ["ij"] = {"<Plug>VimwikiTextObjHeaderContent", "Inside header"},
+                        ["ak"] = {"<Plug>VimwikiTextObjHeaderSub", "Around header+child"},
+                        ["ik"] = {"<Plug>VimwikiTextObjHeaderSubContent", "Inside header+child"},
+                        ["ax"] = {"<Plug>VimwikiTextObjTableCell", "Around table cell"},
+                        ["ix"] = {"<Plug>VimwikiTextObjTableCellInner", "Inner table cell"},
+                        ["ac"] = {"<Plug>VimwikiTextObjColumn", "Around table column"},
+                        ["ic"] = {"<Plug>VimwikiTextObjColumnInner", "Inner table column"},
+                        ["al"] = {"<Plug>VimwikiTextObjListChildren", "List item + children"},
+                        ["il"] = {"<Plug>VimwikiTextObjListSingle", "List item"}
+                    },
+                    {mode = "o", buffer = bufnr}
+                )
+
+                wk.register(
+                    {
+                        ["aj"] = {"<Plug>VimwikiTextObjHeaderV", "Around header"},
+                        ["ij"] = {"<Plug>VimwikiTextObjHeaderContentV", "Inside header"},
+                        ["ak"] = {"<Plug>VimwikiTextObjHeaderSubV", "Around header+child"},
+                        ["ik"] = {"<Plug>VimwikiTextObjHeaderSubContentV", "Inside header+child"},
+                        ["ax"] = {"<Plug>VimwikiTextObjTableCellV", "Around table cell"},
+                        ["ix"] = {"<Plug>VimwikiTextObjTableCellInnerV", "Inner table cell"},
+                        ["ac"] = {"<Plug>VimwikiTextObjColumnV", "Around table column"},
+                        ["ic"] = {"<Plug>VimwikiTextObjColumnInnerV", "Inner table column"},
+                        ["al"] = {"<Plug>VimwikiTextObjListChildrenV", "List item + children"},
+                        ["il"] = {"<Plug>VimwikiTextObjListSingleV", "List item"},
+                        ["<Tab>"] = {">><Esc>gv", "Indent line"},
+                        ["<S-Tab>"] = {"<<<Esc>gv", "De-indent line"}
+                    },
+                    {mode = "x", buffer = bufnr}
                 )
             end
         }

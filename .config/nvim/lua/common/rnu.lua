@@ -64,15 +64,14 @@ end
 ---Show the relative line number
 local function set_rnu()
     set_win_rnu(true)
-    hl.set("FoldColumn", {link = "LineNr"})
-    -- cmd("hi! link FoldColumn NONE")
+    -- hl.set("FoldColumn", {link = "LineNr"})
+    hl.set("FoldColumn", {fg = require("kimbox.colors").light_red})
 end
 
 ---Hide the relative line number
 local function unset_rnu()
     set_win_rnu(false)
     hl.set("FoldColumn", {link = "Ignore"})
-    -- cmd("hi! link FoldColumn Ignore")
 end
 
 ---Function to be ran on `WinFocus` event

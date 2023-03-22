@@ -44,15 +44,15 @@ local opts = {
         width = 0.8,
         height = 0.7,
         horizontal = {width = {padding = 0.15}},
-        vertical = {preview_height = 0.70}
+        vertical = {preview_height = 0.70},
     },
     borderchars = {
         prompt = {"─", "│", " ", "│", "╭", "╮", "│", "│"},
         results = {"─", "│", "─", "│", "├", "┤", "╯", "╰"},
-        preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"}
+        preview = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
     },
     border = {},
-    shorten_path = false
+    shorten_path = false,
 }
 
 M.dropdown_clip = function()
@@ -83,23 +83,18 @@ M.setup = function()
             default_register_macros = "q",
             enable_macro_history = true,
             content_spec_column = false,
-            on_select = {
-                move_to_front = false,
-                close_telescope = true
-            },
+            on_select = {move_to_front = false, close_telescope = true},
             on_paste = {
                 set_reg = false,
                 move_to_front = false,
-                close_telescope = true
+                close_telescope = true,
             },
             on_replay = {
                 set_reg = true,
                 move_to_front = false,
-                close_telescope = true
+                close_telescope = true,
             },
-            on_custom_action = {
-                close_telescope = true
-            },
+            on_custom_action = {close_telescope = true},
             keys = {
                 telescope = {
                     i = {
@@ -148,13 +143,16 @@ M.setup = function()
                             end,
                             ["<CR>"] = function(opts)
                                 -- yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
-                                nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
+                                nvim.reg[v.register] = table.concat(
+                                                           opts.entry.contents,
+                                                           "\n"
+                                                       )
                                 local handlers = require("neoclip.handlers")
 
                                 -- handlers.set_registers(opts.register_names, opts.entry)
                                 handlers.paste(opts.entry, "p")
-                            end
-                        }
+                            end,
+                        },
                     },
                     n = {
                         select = "<C-n>",
@@ -166,7 +164,10 @@ M.setup = function()
                         custom = {
                             ["<CR>"] = function(opts)
                                 -- yank.yank_reg(v.register, opts.entry.contents[1])
-                                nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
+                                nvim.reg[v.register] = table.concat(
+                                                           opts.entry.contents,
+                                                           "\n"
+                                                       )
                             end,
                             ["gcp"] = function(opts)
                                 M.charwise(opts, "p", true)
@@ -197,11 +198,11 @@ M.setup = function()
                             end,
                             ["g#P"] = function(opts)
                                 M.linewise(opts, "P", false, true)
-                            end
-                        }
-                    }
-                }
-            }
+                            end,
+                        },
+                    },
+                },
+            },
         }
     )
 end
@@ -251,7 +252,11 @@ function M.linewise(opts, action, trim, comment)
     if comment then
         for _, entry in ipairs(opts.entry.contents) do
             local bufnr = api.nvim_get_current_buf()
-            local commentstring = vim.trim(fn.split(vim.bo[bufnr].commentstring, "%s")[1] or "#")
+            local commentstring = vim.trim(
+                                      fn.split(
+                                          vim.bo[bufnr].commentstring, "%s"
+                                      )[1] or "#"
+                                  )
             local txt = commentstring .. entry
             table.insert(new_entries, txt)
         end
@@ -294,7 +299,7 @@ local function get_region()
         start_row = start[1] - 1,
         start_col = start[2],
         end_row = finish[1] - 1,
-        end_col = finish[2]
+        end_col = finish[2],
     }
 end
 
@@ -305,18 +310,13 @@ function M.highlight_put(register)
     local region = get_region()
 
     vim.highlight.range(
-        0,
-        M.ns,
-        "HighlightedPutRegion",
-        {region.start_row, region.start_col},
+        0, M.ns, "HighlightedPutRegion", {region.start_row, region.start_col},
         {region.end_row, region.end_col},
         {regtype = fn.getregtype(register), inclusive = true}
     )
 
     M.timer:start(
-        M.timeout,
-        0,
-        vim.schedule_wrap(
+        M.timeout, 0, vim.schedule_wrap(
             function()
                 api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
             end
@@ -333,7 +333,7 @@ function M.do_put(binding, reg, command)
     local cnt = v.count1
     -- local is_visual = fn.visualmode():match("[vV]")
     -- local ok = pcall(cmd, ('norm! %s"%s%s%s'):format(F.tern(is_visual, "gv", ""), reg, cnt, binding))
-    local ok = pcall(cmd, ('norm! "%s%d%s'):format(reg, cnt, binding))
+    local ok = pcall(cmd, ("norm! \"%s%d%s"):format(reg, cnt, binding))
 
     if ok then
         M.highlight_put(reg)
@@ -350,16 +350,15 @@ local function init()
 
     -- require('neoclip.fzf')({'a', 'star', 'plus', 'b'})
 
-    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>")
-    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>")
-    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>")
-    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>")
+    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
+    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
+    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
+    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
 
     map(
-        "n",
-        "gZ",
+        "n", "gZ",
         ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
-        {desc = "Paste and reselect text"}
+        {desc = "Paste and reselect text", silent = true}
     )
 
     nvim.autocmd.lmb__HighlightYankClip = {
@@ -369,12 +368,15 @@ local function init()
             hl.set("HighlightedYankRegion", {bg = "#cc6666"})
             if not vim.b.visual_multi then
                 pcall(
-                    vim.highlight.on_yank,
-                    {higroup = "HighlightedYankRegion", timeout = M.timeout, on_visual = true}
+                    vim.highlight.on_yank, {
+                        higroup = "HighlightedYankRegion",
+                        timeout = M.timeout,
+                        on_visual = true,
+                    }
                 )
             end
         end,
-        desc = "Highlight a selection on yank"
+        desc = "Highlight a selection on yank",
     }
 
     nvim.autocmd.lmb__SyncClipboard = {
@@ -384,10 +386,10 @@ local function init()
             command = function()
                 vim.g.system_clipboard = {
                     regtype = fn.getregtype("+"),
-                    contents = vim.split(fn.getreg("+"), "\n")
+                    contents = vim.split(fn.getreg("+"), "\n"),
                 }
             end,
-            desc = "Sync clipboard when unfocusing"
+            desc = "Sync clipboard when unfocusing",
         },
         {
             event = {"VimEnter", "FocusGained"},
@@ -395,22 +397,21 @@ local function init()
             command = function(args)
                 local system_clipboard = {
                     regtype = fn.getregtype("+"),
-                    contents = vim.split(fn.getreg("+"), "\n")
+                    contents = vim.split(fn.getreg("+"), "\n"),
                 }
 
-                if
-                    args.event == "VimEnter" or
-                        vim.g.system_clipboard ~= nil and
-                            not vim.deep_equal(vim.g.system_clipboard, system_clipboard)
-                 then
+                if args.event == "VimEnter" or vim.g.system_clipboard ~= nil
+                    and not vim.deep_equal(
+                        vim.g.system_clipboard, system_clipboard
+                    ) then
                     require("neoclip")
                     require("neoclip.storage").insert(system_clipboard, "yanks")
                 end
 
                 vim.g.system_clipboard = nil
             end,
-            desc = "Sync clipboard when unfocusing"
-        }
+            desc = "Sync clipboard when unfocusing",
+        },
     }
 
     -- telescope.load_extension("neoclip")

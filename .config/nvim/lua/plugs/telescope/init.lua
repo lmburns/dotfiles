@@ -764,8 +764,12 @@ end
 ---Custom grep current working directory (including open file)
 ---@param opts table
 M.cst_grep = function(opts)
+    local cwd = fn.expand("%:p:h")
+    local h1 = fn.fnamemodify(cwd, ":t")
+    local h2 = fn.fnamemodify(cwd, ":h:t")
+    local h3 = fn.fnamemodify(cwd, ":h:h:t")
     local default = {
-        prompt_title = ("Grep [ %s ]"):format(cwd),
+        prompt_title = ("Grep [ %s/%s/%s ]"):format(h3, h2, h1),
         mappings = conf.mappings,
         opts = opts or {},
         path_display = {"smart"},

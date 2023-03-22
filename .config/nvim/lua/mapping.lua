@@ -36,7 +36,7 @@ map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
 -- ║                          Macro                           ║
 -- ╙                                                          ╜
 -- Use qq to record, q to stop, Q to play a macro
--- map("n", "Q", "@q", {desc = "Play 'q' macro"})
+map("n", "Q", "@q", {desc = "Play 'q' macro"})
 
 -- Repeat last command
 map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
@@ -109,9 +109,9 @@ map("i", "!", "!<C-g>u")
 map("i", "?", "?<C-g>u")
 map("i", "<CR>", "<CR><C-g>u")
 map("i", "<M-BS>", "<C-g>u<C-w>", {desc = "Delete previous word"})
-map("i", "<C-w>", "<C-g>u<C-w>", {desc = "Delete previous word"})
+-- map("i", "<C-w>", "<C-g>u<C-w>", {desc = "Delete previous word"})
+-- map("i", "<C-h>", "<C-g>u<C-h>", {desc = "Delete character to left"})
 map("i", "<C-u>", "<C-g>u<C-u>", {desc = "Delete all typed in insert (before cursor)"})
-map("i", "<C-h>", "<C-g>u<C-h>", {desc = "Delete character to left"})
 map("i", "<C-l>", "<C-g>u<Del>", {desc = "Delete character to right"})
 map("i", "<M-d>", "<C-g>u<C-o>de", {desc = "Delete to end of word"})
 map("i", "<M-[>", "<C-g>u<C-o>dg^", {desc = "Left kill line"})
@@ -145,22 +145,22 @@ wk.register(
 -- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 -- cnoremap <expr> * getcmdline() =~ '.*\*\*$' ? '/*' : '*' what
 
-map("c", "<C-b>", "<Left>")
-map("c", "<C-f>", "<Right>")
-map("c", "<C-,>", "<Home>")
-map("c", "<C-.>", "<End>")
-map("c", "<C-S-k>", "<Home>")
-map("c", "<C-S-j>", "<End>")
-map("c", "<C-h>", "<BS>")
-map("c", "<C-l>", "<Del>")
-map("c", "<C-d>", "<Del>")
-map("c", "<M-[>", "<Up>")
-map("c", "<M-]>", "<Down>")
-map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
-map("c", "<M-b>", "<C-Left>", {desc = "Move one word left"})
-map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
-map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
-map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
+-- map("c", "<C-b>", "<Left>")
+-- map("c", "<C-f>", "<Right>")
+-- map("c", "<C-,>", "<Home>")
+-- map("c", "<C-.>", "<End>")
+-- map("c", "<C-S-k>", "<Home>")
+-- map("c", "<C-S-j>", "<End>")
+-- map("c", "<C-h>", "<BS>")
+-- map("c", "<C-l>", "<Del>")
+-- map("c", "<C-d>", "<Del>")
+-- map("c", "<M-[>", "<Up>")
+-- map("c", "<M-]>", "<Down>")
+-- map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
+-- map("c", "<M-b>", "<C-Left>", {desc = "Move one word left"})
+-- map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
+-- map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
+-- map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
 
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")
@@ -180,7 +180,8 @@ map(
     {desc = "Toggle continuation of comment"}
 )
 
-map("n", "<Leader>h;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
+map("n", "<Leader>a;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
+map("n", "<Leader>am", "<Cmd>:h index<CR>", {desc = "Help: mapping overview"})
 
 map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
 map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
@@ -188,7 +189,7 @@ map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true, norema
 
 wk.register(
     {
-        ["<Leader>S"] = {":%s//g<Left><Left>", "Global replace"},
+        ["<Leader>sg"] = {":%s//g<Left><Left>", "Global replace"},
         ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
         ["cm"] = {[[:%s/<C-r>///g<Left><Left>]], "Change all matches"}
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
@@ -220,7 +221,7 @@ map(
 map("n", "<Leader>rt", "<Cmd>setl et<CR>", {desc = "Set expandtab"})
 map("n", "<Leader>re", "<Cmd>setl et<CR><Cmd>retab<CR>", {desc = "Retab whole file"})
 map("x", "<Leader>re", "<Cmd>retab<CR>", {desc = "Retab selection"})
-map("n", "<Leader>cd", "<Cmd>lcd %:p:h<CR><Cmd>pwd<CR>", {desc = "lcd to filename directory"})
+map("n", "<Leader>cd", "<Cmd>lcd %:p:h<CR><Cmd>pwd<CR>", {desc = "'lcd' to filename directory"})
 
 -- Use g- and g+
 wk.register(
@@ -230,7 +231,9 @@ wk.register(
         ["<C-S-u>"] = {"<Plug>(RepeatUndoLine)", "Undo entire line"},
         [";U"] = {"<Cmd>execute('later ' . v:count1 . 'f')<CR>", "Return to later state"},
         [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
-        ["gI"] = {"<Cmd>sil! norm! `^<CR>", "Goto last insert spot"}
+        ["gI"] = {D.ithunk(utils.normal, "n", "`^"), "Goto last insert spot"},
+        ["gA"] = {D.ithunk(utils.normal, "n", "ga"), "Get ASCII value"},
+        ["<C-g>"] = {"2<C-g>", "Show buffer info"},
     }
 )
 
@@ -277,8 +280,6 @@ wk.register(
         -- ["J"] = {"mzJ`z", "Join lines, keep curpos"}
     }
 )
-
-map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
 
 wk.register(
     {
@@ -392,11 +393,11 @@ wk.register(
     {
         ["<C-w>"] = {
             name = "+buffer",
-            s = {
+            ["<C-s>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf()<CR>]],
                 "Split last buffer (horizontally)"
             },
-            v = {
+            ["<C-v>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
                 "Split last buffer (vertically)"
             },

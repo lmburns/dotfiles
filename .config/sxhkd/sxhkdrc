@@ -380,13 +380,13 @@ super + ctrl + alt + {1-9,0}
 super + bracket{left,right}
   bspc desktop -f {prev,next}.local
 
-# Desktop: focus {prev,next} occupied
-super + shift + bracket{left,right}
-  bspc desktop -f {prev.occupied,next.occupied}
-
 # Desktop: focus {prev,next}
 super + {Left,Right}
   bspc desktop -f {prev,next}.local
+
+# Desktop: focus {prev,next} occupied
+super + shift + bracket{left,right}
+  bspc desktop -f {prev.occupied,next.occupied}
 
 # Desktop: focus {prev,next} occupied
 super + shift + {Left,Right}

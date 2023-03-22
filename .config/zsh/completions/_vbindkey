@@ -13,6 +13,6 @@ _arguments -s -S \
     '(-u -U -c -r -M)-A[specify an array to map]: : _wanted arrays expl array _arrays' \
     '(-U -c -r)-u[list unused keybindings]: : _wanted keymaps expl keymap compadd -a keymaps' \
     '(-u -c -r)-U[list duplicate keybindings]: : _wanted keymaps expl keymap compadd -a keymaps' \
-    '(-u -U -r)-c[bind a key to a command]: : _wanted keymaps expl keymap compadd -a keymaps' \
+    '(-u -U -r)-c[bind a key to a command]:string to bind:' \
     '(-u -U -c)-r[remove a keybinding]: : _wanted keymaps expl keymap compadd -a keymaps' \
-    '*::command-string:'
+    '*::widget:_widgets'

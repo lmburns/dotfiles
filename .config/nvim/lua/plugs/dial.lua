@@ -92,6 +92,8 @@ function M.setup()
         aug({"top", "bottom"}),
         aug({"read", "write"}),
         aug({"open", "close"}),
+        aug({"horizontal", "vertical"}),
+        aug({"positive", "negative"}),
         aug({"previous", "next"}),
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),

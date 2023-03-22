@@ -1,3 +1,4 @@
+# Core [[[
 [user]
   name = Lucas Burns
   email = burnsac@me.com
@@ -5,15 +6,26 @@
   # signingkey = E93ACCAAAEB024788C106EDEC011CBEF6628B679
 
 [core]
+  eol = lf
   autocrlf = input
   excludesfile = ~/.config/git/gitignore_global
-  editor = "nvr --remote-wait-silent" # or nvim
+  editor = "nvr --remote-wait-silent"
   pager = delta
   commitGraph = true
+  symlinks = true
+  bigFileThreshold = 512M
+
   # Set attributes on files. Used for general diff improvements.
   # attributesfile = ~/.gitattributes
   # Don't prompt for commit messages for merge commits.
   # mergeoptions = --no-edit
+
+# [include]
+#   path = ~/.config/github/gitconfig
+#   path = ~/.gitconfig-system
+
+[credential]
+  helper = cache
 
 [credential "https://github.com"]
   helper = !gh auth git-credential
@@ -21,10 +33,28 @@
 [url "git@github.com:"]
   # Always use GitHub SSH protocol to push.
   # Allows use of git:// for public repositories with push access
-  pushInsteadOf = git://github.com/
   pushInsteadOf = https://github.com/
   pushInsteadOf = http://github.com/
   pushInsteadOf = gh:
+  insteadOf = gh:
+  insteadOf = https://github.com/
+  insteadOf = http://github.com/
+  # pushInsteadOf = git://github.com/
+
+[url "git@gitlab.com:"]
+  insteadOf = https://gitlab.com/
+  insteadOf = http://gitlab.com/
+  insteadOf = "gl:"
+
+[url "git://git.suckless.org/"]
+  insteadOf = "suckless:"
+
+[url "https://gist.github.com/"]
+  insteadOf = "gist:"
+
+[url "git@github.com:lmburns/"]
+  # Customized reference to my repos
+  insteadOf = "ghl:"
 
 # [url "git://github.com:"]
 #   # Has to be git:// instead of git@ for cargo
@@ -35,16 +65,9 @@
 #   # Use SSH for GitHub instead of https://
 #   insteadOf = https://github.com/
 
-[url "git@github.com:"]
-  # Use SSH for GitHub instead of https://
-  insteadOf = https://github.com/
-
-[url "git://git.suckless.org/"]
-  insteadOf = "suckless:"
-
-[url "git@github.com:"]
-  # Use SSH for GitHub instead of https://
-  insteadOf = gh:
+# [url "git@github.com:"]
+#   # Use SSH for GitHub instead of https://
+#   insteadOf = https://github.com/
 
 # [url "https://github.com/"]
   # Use HTTP for GitHub instead of git:// or git@
@@ -58,87 +81,90 @@
 
 [init]
   defaultBranch = master
+# ]]]
 
-[color]
-  ui = auto
-  ; grep = auto
+[color] # [[[
+  ui = true
+  remote = true
+  push = true
+  showBranch = true
+  status = true
+  transport = true
 
 [color "branch"]
-  current = "#4c96a8" bold
-  upstream = "#fe8019" bold
-  local = "#dc3958"
-  remote = "#819c3b"
-  plain = "#733e8b"
+  current = "bold #7DAEA3"
+  upstream = "bold #FE8019"
+  local = "#EA6962"
+  remote = "#819C3B"
+  plain = "#957FB8"
 
-[color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold 52
-  newNormal = green bold
-  newHighlight = green bold 22
+[color "blame"]
+  highlightRecent = "blue,12 month ago,white,1 month ago,bold #7E82CC"
+  repeatedLines = "#7DAEA3"
+
+[color "push"]
+  error = "bold #dc3958"
+
+[color "status"]
+  header = "bold #7E82CC"
+  added = "bold #819C3B"
+  updated = "#4C96A8"
+  changed = "#689D6A"
+  untracked = "#EF1D55"
+  branch = "bold #7DAEA3"
+  nobranch = "bold #dc3958"
+  localBranch = "bold #EA6962"
+  remoteBranch = "bold #819C3B"
+  unmerged = "#fe8019"
 
 [color "diff"]
   meta = 39
-  commit = "#FF5813" bold
+  commit = "bold #FF5813"
   whitespace = red reverse
-  new = green bold
+  new = "bold #819C3B"
   old = red bold
   frag = magenta bold
-  func = "#A06469" bold
-  ; context =
+  func = "bold #A06469"
+
+[color "remote"]
+  hint = "bold #4C96A8"
+  warning = "bold #FF9500"
+  success = "bold #819C3B"
+  error = "bold #EF1D55"
 
 [color "decorate"]
-  branch = "#819C3B" bold
-  remoteBranch = 12 bold
-  HEAD = 14 bold
-  tag = "#98676A" bold
-  stash = "#7EB2B1" bold
-
-[color "status"]
-  header = "#7e5053" bold
-  added = yellow
-  updated = blue
-  changed = green
-  untracked = red
-  branch = "#733e8b"
-  nobranch = "#dc3958" bold
-  unmerged = "#fe8019"
+  branch = "bold #7DAEA3"
+  remoteBranch = "bold #819C3B"
+  HEAD = "bold #7E82CC"
+  tag = "bold #98676A"
+  stash = "bold #D3869B"
+  grafted = "#EA6962"
 
 [color "interactive"]
-  prompt = "#fe8019" bold
-  header = "#7e5053" bold
+  prompt = "#FE8019" bold
+  header = "#7E5053" bold
   help = green bold
   error = red bold
 
-; [color "grep"]
-;   context = "#A06469" bold
-;   filename = "#A06469" bold
-;   function = "#A06469" bold
-;   linenumber = "#A06469" bold
-;   match = "#A06469" bold
-;   matchContext = "#A06469" bold
-;   matchSelected = "#A06469" bold
-;   selected = "#A06469" bold
-;   separator = "#A06469" bold
+# [color "grep"]
+#   context = "#A06469" bold
+#   filename = "#A06469" bold
+#   function = "#A06469" bold
+#   linenumber = "#A06469" bold
+#   match = "#A06469" bold
+#   matchContext = "#A06469" bold
+#   matchSelected = "#A06469" bold
+#   selected = "#A06469" bold
+#   separator = "#A06469" bold
+# ]]]
 
-[diff]
-  algorithm = patience
-  colorMoved = default
-  indentHeuristic = on
-  mnemonicPrefix = true
-  compactionHeuristic = true
-#  renames = copies
-[diff "ruby"]
-  funcname = "^ *\\(\\(def\\) .*\\)"
-[diff "image"]
-  textconv = identify
-
-[log]
-  decorate = auto
-  abbrevCommit = true
-
-[status]
-  short = true
-  branch = false
+# Subcommands [[[
+[commit]
+  gpgsign = true
+  # Use a template for commit message
+  template = ~/.config/git/gitmessage
+  # Show diff when preparing commit message
+  verbose = true
 
 [fetch]
   prune = true
@@ -147,41 +173,30 @@
   # Push to the set upstream branch being tracked by default.
   default = current
 
-# Forgot: what is this for?
-[diff "gpg"]
-  texconv = gpg --no-tty --decrypt --quiet
-
-[gpg]
-  program = /usr/bin/gpg
-  ; format = x509
-
-; [tag]
-;   gpgsign = true
-;
-; [gpg "x509"]
-;   program = gitsign
-
-[filter "lfs"]
-  required = true
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
-
-[checkout]
-  defaultRemote = origin
-
-[commit]
-  gpgsign = true
-  template = ~/.config/git/gitmessage
-  verbose = true
-
-[stash]
-  showPatch = true
-
 [pull]
   ff = only
   default = current
   rebase = false
+
+[status]
+  short = true
+  branch = false
+
+[log]
+  decorate = auto
+  abbrevCommit = true
+
+[checkout]
+  defaultRemote = origin
+
+[gc]
+  writeCommitGraph = true
+
+[pack]
+  sparse = true
+
+[stash]
+  showPatch = true
 
 [apply]
   # Cleanup whitespace by default when apply patches.
@@ -193,15 +208,11 @@
   # Auto-add `--autosquash` to `git rebase`
   autoSquash = true
 
-[pretty]
-  l  = * %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  lg = %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  rf = * %C(auto)%h%Creset - %<(10)%C(bold)%gD %Creset- %C(auto)%d %gs %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  y = %C(bold yellow)%h%C(reset) %C(cyan)%s%C(reset) %C(bold magenta)-%C(reset) %ar %C(bold blue)<%an>%C(reset)%C(auto)%d%C(reset)%n
-
 [merge]
   tool = nvim
+  # Display diffs between ancestor commit and each of the two merge parents
   conflictstyle = diff3
+  stat = true
 
 [mergetool]
   keepBackup = false
@@ -209,69 +220,334 @@
 
 [mergetool "nvim"]
   cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
-;   cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+  # cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
 
+[blame]
+  coloring = highlightRecent
+
+[blame "gpg"]
+  texconv = gpg --no-tty --decrypt --quiet
+
+[filter "lfs"]
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+
+[diff]
+  renames = copies
+  # algorithm = patience
+  algorithm = histogram
+  colorMoved = default
+  indentHeuristic = on
+  mnemonicPrefix = true
+  compactionHeuristic = true
+[diff "ruby"]
+  funcname = "^ *\\(\\(def\\) .*\\)"
+[diff "image"]
+  textconv = identify
+[diff "gpg"]
+  texconv = gpg --no-tty --decrypt --quiet
+
+[interactive]
+  diffFilter = delta --color-only
+
+[tag]
+  gpgsign = true
+
+[pretty]
+  l  = * %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  lg = %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  rf = * %C(auto)%h%Creset - %<(10)%C(bold)%gD %Creset- %C(auto)%d %gs %C(bold green)(%cr) %C(bold blue)<%an>%Creset
+  y = %C(bold yellow)%h%C(reset) %C(cyan)%s%C(reset) %C(bold magenta)-%C(reset) %ar %C(bold blue)<%an>%C(reset)%C(auto)%d%C(reset)%n
+
+[gpg]
+  program = /usr/bin/gpg
+  # format = x509
+
+# [gpg "x509"]
+#   program = gitsign
+# ]]]
+
+# ================== THIRD PARTY ============================== [[[
+[global]
+  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
+  basedir = /home/lucas/projects/github
+
+[ghq]
+  vcs = git
+  root = ~/ghq
+
+# [diff-so-fancy]
+#   markEmptyLines = true
+#   changeHunkIndicators = true
+#   stripLeadingSymbols = true
+#   useUnicodeRuler = true
+
+[color "diff-highlight"]
+  # oldNormal = red bold
+  # oldHighlight = red bold 52
+  # newNormal = green bold
+  # newHighlight = green bold 22
+  oldNormal = syntax "#461c16"
+  oldHighlight = syntax "#742d21"
+  newNormal = syntax "#182d09"
+
+[delta "unobtrusive-line-numbers"]
+  line-numbers = true
+  line-numbers-minus-style = "bold #EF1D55"
+  line-numbers-plus-style = "bold #819C3B"
+  line-numbers-zero-style = "#7E602C"
+  line-numbers-left-format = "{nm:>4}┊"
+  line-numbers-right-format = "{np:>4}│"
+  line-numbers-left-style = "#D9AE80"
+  line-numbers-right-style = "#D9AE80"
+
+[delta "decorations"]
+  commit-decoration-style = bold yellow box ul
+  file-style = bold yellow ul
+  file-decoration-style = none
+  hunk-header-decoration-style = yellow box newHighlight = syntax "#134d0d"
+
+[delta]
+  paging = auto
+  dark = true
+  syntax-theme = kimbox
+  tabs = 4
+  # features = decorations unobtrusive-line-numbers
+
+  # use n/N to navigate diff sections
+  navigate = true
+  side-by-side = true
+  hyperlinks = true
+  # hyperlinks-commit-link-format = "https://github.com/"
+
+  diff-stat-align-width = 48
+  wrap-left-symbol = "↵"
+  wrap-right-symbol = "↴"
+  wrap-right-prefix-symbol = "…"
+  wrap-max-lines = 2
+  wrap-right-percent = 37.0
+
+  zero-style = syntax
+  plus-style = syntax "#182d09"
+  plus-emph-style = syntax "#134d0d"
+  plus-non-emph-style = syntax "#182d09"
+  plus-empty-line-marker-style = syntax "#445321"
+  minus-style = syntax "#461c16"
+  minus-emph-style = syntax "#742d21"
+  minus-non-emph-style = syntax "#461c16"
+  minus-empty-line-marker-style = syntax "#961134"
+  whitespace-error-style = "reverse #938AA9"
+  keep-plus-minus-markers = false
+
+  inline-hint-style = "bold #A25BC4"
+
+  line-numbers = true
+  # line-fill-method = "ansi"  # ansi, spaces
+  line-numbers-left-format = "┊{nm:>4}┊"
+  line-numbers-left-style = "#D9AE80"
+  line-numbers-right-format = "│{np:>4}│"
+  line-numbers-right-style = "#D9AE80"
+  line-numbers-minus-style = "bold #EF1D55"
+  line-numbers-plus-style = "bold #819C3B"
+  line-numbers-zero-style = "#7E602C"
+  line-buffer-size = 32
+  ### within-line diff algorithm
+  max-line-distance = 0.3
+  max-line-length = 512
+
+  relative-paths = true
+  right-arrow = "⟶  "
+  file-added-label = [+]
+  file-copied-label = [C]
+  file-modified-label = [M]
+  file-removed-label = [-]
+  file-renamed-label = [R]
+  file-style = "bold ul #7EB2B1"
+  file-decoration-style = "box #4C96A8"
+  # file-transformation = 'sed command'
+
+  commit-style = raw
+  commit-decoration-style = bold ul "#98676A"
+
+  hunk-label = "• "
+  hunk-header-decoration-style = bold box ul "#FE8019"
+  hunk-header-file-style = bold "#DC3958"
+  hunk-header-line-number-style = "bold #938AA9"
+  hunk-header-style = file line-number syntax bold
+
+  ### Style string for non-matching lines of grep output. [zero-style]
+  # grep-context-line-style = syntax
+  ### Style string for file paths in grep output. [hunk-header-file-style]
+  grep-file-style = "bold #957FB8"
+  ### Style string for line numbers in grep output. [hunk-header-line-number-style]
+  grep-line-number-style = "bold #DC3958"
+  ### Style string for matching lines of grep output. [plus-style]
+  # grep-match-line-style = syntax "#182d09"
+  ### Style string for the matching substrings within a matching line of grep output. [plus-emph-style]
+  # grep-match-word-style = syntax "#134d0d"
+  ### Separator symbol printed after the file path and line number in grep output. ["keep"]
+  grep-separator-symbol = ":"
+
+  blame-format = "{author:<18} ({commit:>7}) ┊{timestamp:^16}┊ "
+  blame-palette = "#101010 #200020 #002800 #000028 #202000 #280000 #002020 #002800 #202020"
+  blame-code-style = syntax
+  # blame-separator-format = "{n:^4_block}"
+  blame-separator-format = "│{n:^4}│"
+  blame-separator-style = "#7E602C"
+  blame-timestamp-format = "%Y-%m-%d %H:%M:%S %z"
+
+  merge-conflict-begin-symbol = "▼"
+  merge-conflict-end-symbol = "▲"
+  merge-conflict-ours-diff-header-decoration-style = "box bold #77A172"
+  merge-conflict-ours-diff-header-style = "bold #A89984"
+  merge-conflict-theirs-diff-header-decoration-style = "box bold #7E5053"
+  merge-conflict-theirs-diff-header-style = "bold #A89984"
+
+  # ??
+  ; map-styles = \
+    ;     bold purple => syntax "#330f29", \
+    ;     bold blue => syntax "#271344", \
+    ;     bold cyan => syntax "#0d3531", \
+    ;     bold yellow => syntax "#222f14"
+# ]]]
+
+# ===================== ALIAS ================================= [[[
 [alias]
   # https://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git/2222920#2222920
   # HEAD~ = go back number of generations
   # HEAD^ = merge commits (2 or more immediate parents)
   sub = submodule
   subp = submodule foreach git pull
-  subc = submodule foreach git co master
+  subc = submodule foreach git checkout master
 
+  # aliases = config --get-regexp alias
   aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort | bat
   alias-grep = !git config --list | rg '^alias\\.' | cut -c 7- | grep -Ei --color \"$1\" "#"
+
+  root = rev-parse --show-toplevel
+  # Get remote url
+  origin = remote get-url origin
+  # Get name of default head branch
+  main = !git remote show $(git upstream) | awk '/HEAD branch/ {print $NF}'
+  # Get name of default remote
+  upstream = !git remote | grep -Eo '(upstream|origin)' | tail -1
+  # when Git loses upstream tracking branch (haven't figured out why exactly) run:
+  # git set-upstream; git pull;
+  set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
+
+  # Grab a pull request
+  pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
+  # Grep history
+  ghist = "!f() { git grep --color=always \"$1\" $(git rev-list --all); }; f"
+  ; ghistf = "!f() { git grep \"$1\" $(git rev-list --all -- \"$2\") -- \"$2\"; }; f"
+
+  # List contributors with number of commits.
+  contributors = shortlog --summary --numbered
+
   a = add
   # Add origin url
   addurl = remote set-url --add origin
   # Ammed to last commit
   amend = commit --amend --reuse-message=HEAD
-  b = branch
+  br = branch
   # List all branches - sorted
   branches = branch -a --sort=-authordate --color=always
   # Show all local and remote branches & commits within them
   sba = show-branch --color=always -a --more=10 --no-name
   # Create new branch off of default origin branch (origin/master or origin/main)
   newbranch = "!f() { [[ -n $@ ]] && git fetch origin && git checkout -b \"$@\" origin/$(git main) && git branch --unset-upstream; }; f"
-  bclone = clone --bare
-  # Rebase interactive for all commits on feature branch
-  rebase-branch = !git rebase -i `git merge-base master HEAD`
-  # Get remote url
-  origin = remote get-url origin
-  # Get name of default head branch
-  main = !git remote show $(git upstream) | awk '/HEAD branch/ {print $NF}'
-  unstage = reset -q HEAD --
-  uncommit = reset --mixed HEAD~
-  # Repeat last commit message
-  recommit = commit --reuse-message=HEAD
-  # when Git loses upstream tracking branch (haven't figured out why exactly) run:
-  # git set-upstream
-  # git pull
-  set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
 
-  root = rev-parse --show-toplevel
-  croot = !cd $(git rev-parse --show-toplevel)
+  # Rebase interactive for all commits on feature branch
+  rebase-branch = !git rebase -i $(git merge-base master HEAD)
 
   cl = clone
+  cl1 = clone --depth 1
+  cl2 = clone --depth 2
+  bclone = clone --bare
+
   co = checkout
+
   c = commit
   cm = commit -m
   csm = commit -S -m
   cs = commit -S
+  # Repeat last commit message
+  recommit = commit --reuse-message=HEAD
+  unstage = reset -q HEAD --
+  uncommit = reset --mixed HEAD~
+  undo = reset --soft HEAD^
+  r1 =  reset --hard HEAD~1
+  r2 =  reset --hard HEAD~2
+  r3 =  reset --hard HEAD~3
+  r4 =  reset --hard HEAD~4
+  r5 =  reset --hard HEAD~5
+  r6 =  reset --hard HEAD~6
+  r7 =  reset --hard HEAD~7
+  parent = merge-base  HEAD  #git merge-base  branch1 branch2
 
   conflicts = !git --no-pager diff --name-only --diff-filter=U | xargs grep -c '^=======$'
 
   d = diff
   dc = diff --cached
 
+  # Use difftool
+  vd = difftool --tool=nvimdiff --no-prompt
+  vdc = difftool --tool=nvimdiff --no-prompt --cached
+
+  m = merge
+  ms = merge --squash
+
+  pl = pull
+  plr = pull --rebase
+  # Push to all remotes
+  pa = !git remote | xargs -L1 git push --all
+
+  ps = push
+  pom = push origin master
+  psf = push --force
+
+  # git tag -d $(git tag -l)
+  mkshallow = !git pull --depth 1 && git gc --prune=all
+
+  rao = remote add origin
+  remotes = remote -v
+  rmc = rm --cached
+  s = status -sb
+  st = status
+  sh = stash
+  shp = stash pop
+  stashes = stash list
+  tags = tag --list
+
+  # List tracked files
+  tr = !git ls-tree -r $(git branch --show-current) --name-only
+  # List tracked files in an actual tree with 'as-tree'
+  trr = !git ls-tree -r $(git branch --show-current) --name-only | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
+  # List untracked files
+  utr = !git ls-files --other | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
+  ls-del = ls-files -d
+  ls-mod = ls-files -m
+  ls-new = ls-files --exclude-standard -o
+  ls-ign = ls-files --exclude-standard -o -i
+
+  # Generate changelog
+  chg = !git changelog -x > CHANGELOG.md
+
+  # Fzfgit
+  fs = !fstat
+  fa = !fadd
+  fu = !funtrack
+  # Open repository in the browser
+  open = brws
+  b = brws
+
+  # wip - save work in progress quickly and ready to push it if necessary
+  wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
+
   l = log -p
   lc = log ORIG_HEAD.. --stat --no-merges
-  ; lgs = log --graph --abbrev-commit --decorate --pretty=lg --all
-  ; lgf = log --graph --abbrev-commit --decorate --all --stat --pretty=l
-  ; lol = log --graph --decorate --pretty=oneline --abbrev-commit
-  ; lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
-  ; lp = log --pretty=format:"%hCred %a%Cgreen | %s%C(yellow)%d%C(magenta) [%an]" --graph --date=short
-  ; lhist = log --pretty=format:"%Cred%h %Cgreen%d | %s%C(yellow)%d%C(magenta) [%an%C(blue)]" --graph --date=short
   lp = "log --graph --abbrev-commit --date=relative \
         --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset'"
   lo = "log --oneline --decorate --stat --graph \
@@ -288,143 +564,6 @@
   details = log -n1 -p --format=fuller
   whenadded = log --diff-filter=A
 
-  m = merge
-  ms = merge --squash
+# ]]]
 
-  pl = pull
-  plr = pull --rebase
-  # Push to all remotes
-  pa = !git remote | xargs -L1 git push --all
-
-  ps = push
-  pom = push origin master
-  psf = push --force
-
-  mkshallow = gc --prune=all
-
-  rao = remote add origin
-  remotes = remote -v
-  rmc = rm --cached
-  s = status -sb
-  st = status
-  sh = stash
-  shp = stash pop
-  stashes = stash list
-  tags = tag --list
-  # List tracked files
-  tr = !git ls-tree -r $(git branch --show-current) --name-only
-  # List tracked files in an actual tree with 'as-tree'
-  trr = !git ls-tree -r $(git branch --show-current) --name-only | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
-
-  # List untracked files
-  utr = !git ls-files --other | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
-  ls-del = ls-files -d
-  ls-mod = ls-files -m
-  ls-new = ls-files --exclude-standard -o
-  ls-ign = ls-files --exclude-standard -o -i
-
-  # Get name of default remote
-  upstream = !git remote | egrep -o '(upstream|origin)' | tail -1
-  # Use difftool
-  vd = difftool --tool=nvimdiff --no-prompt
-  vdc = difftool --tool=nvimdiff --no-prompt --cached
-  # Generate changelog
-  chg = !git changelog -x > CHANGELOG.md
-  # Fzfgit
-  fs = !fstat
-  fa = !fadd
-  fu = !funtrack
-  # Grab a pull request
-  pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
-  # Open repository in the browser
-  open = "!handlr open $(git remote get-url origin)"
-
-  # Grep history
-  ghist = "!f() { git grep --color=always \"$1\" $(git rev-list --all); }; f"
-  ; ghistf = "!f() { git grep \"$1\" $(git rev-list --all -- \"$2\") -- \"$2\"; }; f"
-
-  # wip - save work in progress quickly and ready to push it if necessary
-  wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
-
-  undo = reset --soft HEAD^
-  r1 =  reset --hard HEAD~1
-  r2 =  reset --hard HEAD~2
-  r3 =  reset --hard HEAD~3
-  r4 =  reset --hard HEAD~4
-  r5 =  reset --hard HEAD~5
-  r6 =  reset --hard HEAD~6
-  r7 =  reset --hard HEAD~7
-  parent = merge-base  HEAD  #git merge-base  branch1 branch2
-
-[blame "gpg"]
-  texconv = gpg --no-tty --decrypt --quiet
-
-[global]
-  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
-  basedir = /home/lucas/projects/github
-
-[credential]
-  helper = cache
-
-# ================== THIRD PARTY ==============================
-[ghq]
-  vcs = git
-  root = ~/ghq
-
-[delta]
-  features = decorations color-moved # hyperlinks
-  # side-by-side unobstrusive-line-numbers
-  paging = auto
-  max-line-distance = 0.3
-  syntax-theme = kimbro
-  dark = true
-  whitespace-error-style = 22 reverse
-  zero-style = syntax
-
-  line-numbers = true
-  line-numbers-left-format = "┊{nm:>4}┊"
-  line-numbers-left-style = "#D9AE80"
-  line-numbers-right-format = "│{np:>4}│"
-  line-numbers-right-style = "#D9AE80"
-  line-numbers-minus-style = "#EF1D55"
-  line-numbers-plus-style = "#819C3B"
-  line-numbers-zero-style = "#7E602C"
-
-  commit-style = raw
-  commit-decoration-style = bold "#98676A" ul
-
-  file-added-label = [+]
-  file-copied-label = [C]
-  file-modified-label = [M]
-  file-removed-label = [-]
-  file-renamed-label = [R]
-  ; file-style = omit
-  file-style = bold "#7EB2B1" ul
-  file-decoration-style = "#4C96A8" box
-
-  ; hunk-header-style = syntax bold
-  hunk-header-style = file line-number syntax bold
-  hunk-header-decoration-style = 13 bold box ul
-  hunk-header-line-number-style = "#A06469"
-  hunk-header-file-style = "#dc3958" bold
-
-  blame-format = "{author:<18} ({commit:>7}) ┊{timestamp:^16}┊ "
-  blame-palette = "#101010 #200020 #002800 #000028 #202000 #280000 #002020 #002800 #202020"
-
-  plus-style = syntax "#182d09"
-  plus-emph-style = syntax "#134d0d"
-  minus-style = syntax "#461c16"
-  minus-emph-style = syntax "#742d21"
-  minus-empty-line-marker-style = syntax "#FF9500"
-
-  # ??
-  ; map-styles = \
-    ;     bold purple => syntax "#330f29", \
-    ;     bold blue => syntax "#271344", \
-    ;     bold cyan => syntax "#0d3531", \
-    ;     bold yellow => syntax "#222f14"
-
-[interactive]
-  diffFilter = delta --color-only
-
-; vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:
+# vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

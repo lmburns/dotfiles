@@ -34,16 +34,16 @@ end
 ---@param args AbbrOpts?
 function M.abbr(mode, lhs, rhs, args)
     args = args or {}
-    local command = {}
-    local mods = {}
+    local command = _t({})
+    local mods = _t({})
     local mode = M.modes[mode] or mode
 
     if args.buffer ~= nil then
-        table.insert(mods, "<buffer>")
+        mods:insert("<buffer>")
     end
 
     if (args.expr ~= nil and rhs ~= nil) or ((mode == "c" or mode == "command") and args.only_start ~= false) then
-        table.insert(mods, "<expr>")
+        mods:insert("<expr>")
     end
 
     for _, v in pairs(mods) do

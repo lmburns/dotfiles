@@ -500,8 +500,6 @@ function _G.map_cr()
         return fn["coc#pum#confirm"]()
     end
 
-    -- Start new undo sequence
-    utils.normal("n", "<C-]><C-g>u")
     return require("nvim-autopairs").autopairs_cr()
 end
 
@@ -734,7 +732,10 @@ function M.init()
         10
     )
 
-    g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
+    -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
+    g.coc_fzf_preview_fullscreen = 0
+    g.coc_fzf_preview_toggle_key = "?"
+
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
 

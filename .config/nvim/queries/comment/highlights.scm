@@ -34,9 +34,14 @@
 ("text" @constant (#lua-match? @constant "^[@][%w_-]+$"))
 
 ;; FIX: These doesn't work with spaces
+;((string ("string_content") @query) (#lua-match? @query "^%s*;+%s?query"))
+
 ; *Bold* *bold two*
-("text" @bold (#lua-match? @bold "^%*[%w%W_-]+%*$"))
-; ("text" @bold (#lua-match? @bold "%b**"))
+; ("text" @bold (#lua-match? @bold "%*[%w%W%s_-]+%*"))
+("text" @bold (#lua-match? @bold "^([*](.+)[*])$"))
+; ((tag ((name) @bold)) (#lua-match? @bold "(%b**)"))
+; ((comment ("text" @bold)) (#lua-match? @bold "(%b**)"))
+; ("text" @bold (#lua-match? @bold "(%b**)"))
 
 ; _Underline_ _underline two_
 ("text" @underline (#lua-match? @underline "^_[%w%s%p]+_$"))

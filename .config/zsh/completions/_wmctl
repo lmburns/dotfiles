@@ -84,6 +84,7 @@ _wmctl() {
             "1:shape directive to use against the window:(4x3 halfh halfw small medium large grow max shrink unmax)" \
             && ret=0
         ;;
+        # _message -e pipes "dummynet pipe"
         (static)
           _arguments "${argopts[@]}" \
             {-h,--help}'[prints help information]' \

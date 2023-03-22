@@ -382,10 +382,11 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
   compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
-  atload'vbindkey "Up" history-substring-search-up;
-         vbindkey "Down" history-substring-search-down' \
+  trackbinds atload'
+      vbindkey "Up" history-substring-search-up;
+      vbindkey "Down" history-substring-search-down' \
     zsh-users/zsh-history-substring-search \
-  trackbinds bindmap"^R -> ^W" \
+  trackbinds bindmap'^R -> \ew' \
     m42e/zsh-histdb-fzf
 #  ]]] === wait'0b' - patched ===
 
@@ -991,6 +992,8 @@ manpath=(
   "${manpath[@]}"
 )
 
+eval "$(luarocks path --bin)"
+
 # $HOME/.poetry/bin(N-/)
 path=(
   $HOME/mybin
@@ -1315,5 +1318,3 @@ zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
-
-alias luamake=/home/lucas/ghq/github.com/actboy168/luamake/luamake

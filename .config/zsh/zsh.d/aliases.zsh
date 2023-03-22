@@ -23,48 +23,6 @@ alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 
 alias {\$,%}=
 
-alias RGV='RG -g "*.lua" -g "*.vim"'
-alias RGL='RG -g "*.lua"'
-alias sane='stty sane'
-alias clear='clear -x' # don't clear scrollback buffer
-alias nd='neovide'
-alias tm='tmsu'
-alias ja="jaime"
-alias xx="xcompress"
-alias ca='cargo'
-alias cat="bat"
-alias thw="the-way"
-alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
-alias getcert='openssl s_client -connect'
-
-# --no-children
-alias perlr="rlwrap -Ar -pblue -S'perl> ' perl -wnE'say eval()//\$@'"
-alias luar="rlwrap -Ar -ppurple --always-readline lua"
-alias luajitr="rlwrap -Ar -ppurple --always-readline luajit"
-
-alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
-alias open="handlr open"
-alias jor="journalctl"
-alias jortoday="journalctl -xe --since=today"
-alias xmm="xmodmap"
-alias s="systemctl"
-alias se="systemctl --user"
-alias bctl="bluetoothctl"
-alias plast="last -20"
-
-alias fehh='feh \
-           --scale-down \
-           --auto-zoom \
-           --borderless \
-           --image-bg black \
-           --draw-filename'
-
-alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
-alias passverr="veracrypt --text --dismount ~/.password.vera"
-
-alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
-alias :q='exit'
-
 (( ${+commands[surfraw]} )) && {
   # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
@@ -119,11 +77,88 @@ alias :q='exit'
 # === zsh-help ==============================================================
 alias lynx="lynx -vikeys -accept-all-cookies"
 alias zman="BROWSER=$BROWSERCLI zman"
+alias info='info --vi-keys'
+
+alias wh="whence -Sacx4"   # list all, csh style
+alias wa="whence -Sav"     # where
+alias wm="whence -Smv"     # pattern, verbose
+alias wma="whence -Smav"   # pattern, list all, verbose
+alias wM="whence -Smafvx4" # pattern, list all, verbose, function content
 
 # === general ===================================================================
+# alias f='pushd'
+# alias b='popd'
+# alias dirs='dirs -v'
 alias usudo='sudo -E -s '
 alias _='sudo'
 alias __='doas'
+
+alias :q='exit'
+alias ngl="noglob"
+alias zstats='zstat -sF "%b %e %H:%M:%S"'
+alias clear='clear -x' # don't clear scrollback buffer
+alias sane='stty sane'
+alias plast="last -20"
+
+alias open="handlr open"
+alias jor="journalctl"
+alias jortoday="journalctl -xe --since=today"
+alias xmm="xmodmap"
+alias s="systemctl"
+alias se="systemctl --user"
+alias bctl="bluetoothctl"
+
+alias pl='print -rl --'
+alias pp='print -Pr --'
+alias pz='print -Pl --'
+alias plm='pl $match[@]'
+alias plM='pl $MATCH'
+alias plr='pl $reply[@]'
+alias plR='pl $REPLY'
+alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
+# alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
+
+alias chx='chmod ug+x'
+alias chmx='chmod -x'
+alias cp='command cp -ivp'
+alias cpl='command cp -ivpa'
+alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
+alias cpx='command cp -ivp --preserve=xattr'
+alias mv='command mv -iv'
+alias lns='command ln -siv'
+
+alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
+alias kall='killall'
+alias kid='kill -KILL'
+
+alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
+alias prg="rg --pcre2"
+alias frg="rg -F"
+alias irg="rg --no-ignore"
+alias RGV='RG -g "*.lua" -g "*.vim"'
+alias RGL='RG -g "*.lua"'
+
+# [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+alias pvim='nvim -u NONE'
+alias vi="$EDITOR"
+alias svi="sudo $EDITOR"
+alias vimdiff='nvim -d'
+alias nd='neovide'
+
+# xclip -in -selection clipboard -rmlastnl
+# xclip -out -selection clipboard
+alias pbcopy="xsel --clipboard --input --trim"
+alias pbpaste="xsel --clipboard --output"
+alias pbc='pbcopy'
+alias pbp='pbpaste'
+
+alias lsf='lsof -w'
+alias lsfp='lsof -w -p'
+
+alias vmst='vmstat -SM 1'
+alias iost='iostat -y -d -h -t 1'
+alias diff='diff --color=auto'
+alias sha='shasum -a 256'
 
 (( ${+commands[exa]} )) && {
   # --ignore-glob=".DS_Store|__*
@@ -190,52 +225,6 @@ alias __='doas'
   alias fdrd='fd --changed-within=30m'    # 'recent, depth'
   alias fdrr='fd --changed-within=1m'     # 'really recent'
 }
-
-alias pl='print -rl --'
-alias pp='print -Pr --'
-alias pz='print -Pl --'
-alias plm='pl $match[@]'
-alias plM='pl $MATCH'
-alias plr='pl $reply[@]'
-alias plR='pl $REPLY'
-alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
-# alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
-
-alias zstats='zstat -sF "%b %e %H:%M:%S"'
-alias ngl="noglob"
-
-alias chx='chmod ug+x'
-alias chmx='chmod -x'
-alias cp='command cp -ivp'
-alias cpl='command cp -ivpa'
-alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
-alias cpx='command cp -ivp --preserve=xattr'
-alias mv='command mv -iv'
-alias lns='command ln -siv'
-alias kall='killall'
-alias kid='kill -KILL'
-alias yt='yt-dlp --add-metadata -i'
-alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
-alias prg="rg --pcre2"
-alias frg="rg -F"
-alias irg="rg --no-ignore"
-alias diff='diff --color=auto'
-alias sha='shasum -a 256'
-alias wh="whence -f"
-alias wa="whence -va" # where
-alias wm="whence -vm"
-alias info='info --vi-keys'
-
-# [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
-alias pvim='nvim -u NONE'
-alias vi="$EDITOR"
-alias svi="sudo $EDITOR"
-#alias vim='/usr/bin/vim'
-alias vimdiff='nvim -d'
-
-# alias f='pushd'
-# alias b='popd'
-# alias dirs='dirs -v'
 
 # (( ${+commands[dua]} )) && alias ncdu='dua i'
 (( ${+commands[coreutils]} )) && alias cu='coreutils'
@@ -309,9 +298,9 @@ alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
   alias mwa='mw -Y'
 }
 
-alias nmm="/usr/bin/nm" # I don't use this program
-alias nm="notmuch"
-alias nmls="nm search --output=tags '*'"
+# alias nmm="/usr/bin/nm"
+alias nh="notmuch"
+alias nhls="nh search --output=tags '*'"
 
 # === locations ==================================================================
 alias prd='cd $HOME/projects'
@@ -380,7 +369,7 @@ alias g='hub'
 alias conf='/usr/bin/git --git-dir=$XDG_DATA_HOME/dotfiles-private --work-tree=$HOME'
 alias xav='/usr/bin/git --git-dir=$XDG_DATA_HOME/dottest --work-tree=$HOME'
 
-alias resetgit='mgit reset --hard HEAD && mgit clean -fd && mgit pull'
+alias gitreset='mgit reset --hard HEAD && mgit clean -fd && mgit pull'
 
 alias gua='git remote | xargs -L1 git push --all'
 alias grmssh='ssh git@lmburns.com -- grm'
@@ -389,7 +378,6 @@ alias gtrr='git ls-tree -r master --name-only | as-tree'
 alias glog='git log --oneline --decorate --graph'
 alias gloga='git log --oneline --decorate --graph --all'
 
-alias magit='nvim -c MagitOnly'
 alias cdg='cd "$(git rev-parse --show-toplevel)"'
 alias ngc='$EDITOR $(git rev-parse --show-toplevel)/.git/config'
 alias lgd='lg --git-dir=$XDG_DATA_HOME/dotfiles --work-tree=$HOME'
@@ -423,22 +411,31 @@ alias t="task"
 alias te='t edit'
 alias taske='t edit'
 
-# xclip -in -selection clipboard -rmlastnl
-# xclip -out -selection clipboard
-alias pbcopy="xsel --clipboard --input --trim"
-alias pbpaste="xsel --clipboard --output"
-alias pbc='pbcopy'
-alias pbp='pbpaste'
-
-alias lsf='lsof -w'
-alias lsfp='lsof -w -p'
-
-alias vmst='vmstat -SM 1'
-alias iost='iostat -y -d -h -t 1'
-
 alias jrnlw='jrnl wiki'
 alias nb='BROWSER=w3m nb'
 # alias jrnl='jrnl'
+
+alias tm='tmsu'
+alias ja="jaime"
+alias xx="xcompress"
+alias ca='cargo'
+alias cat="bat"
+alias thw="the-way"
+alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
+alias getcert='openssl s_client -connect'
+alias yt='yt-dlp --add-metadata -i'
+alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
+alias fehh='feh --scale-down --auto-zoom --borderless --image-bg black --draw-filename'
+
+
+alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
+alias passverr="veracrypt --text --dismount ~/.password.vera"
+
+(( $+commands[rlwrap] )) && {
+  alias perlr="rlwrap -Ar -pblue -S'perl> ' perl -wnE'say eval()//\$@'"
+  alias luar="rlwrap -Ar -ppurple --always-readline lua"
+  alias luajitr="rlwrap -Ar -ppurple --always-readline luajit"
+}
 
 (( ${+commands[tldr]} )) && alias tldru='tldr --update'
 (( ${+commands[assh]} )) && alias hssh="assh wrapper ssh"

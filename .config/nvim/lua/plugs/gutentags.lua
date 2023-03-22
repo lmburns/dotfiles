@@ -20,18 +20,26 @@ function M.setup()
     g.gutentags_generate_on_missing = 1
     g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
-    -- g.gutentags_file_list_command = "rg --files --hidden"
     g.gutentags_file_list_command =
         D.list(
         {
+            "fd",
             "--color=never",
             "--strip-cwd-prefix",
             "--type f",
             "--hidden",
             "--follow",
-            "--exclude .git",
-            "--exclude target",
-            "--exclude node_modules"
+            "--exclude=.git",
+            "--exclude=.svn",
+            "--exclude=target/*",
+            "--exclude=BUILD",
+            "--exclude=node_modules/*",
+            "--exclude=vendor/*",
+            "--exclude=log/*",
+            "--exclude=*.swp",
+            "--exclude=*.bak",
+            "--exclude=*.dll",
+            "--exclude=*~",
         },
         " "
     )
@@ -43,18 +51,19 @@ function M.setup()
     -- }
 
     -- Tips: If we need the tags for a project not managed by vcs, we can touch a .root file
-    g.gutentags_project_root = {".git", ".root", ".project", "package.json"}
+    g.gutentags_project_root = {".git", ".root", ".project", "package.json", "Cargo.toml", "go.mod"}
     g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local"}
 
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
 
     g.gutentags_ctags_extra_args = {
-        "--fields=+niazS",
+        "--fields=+niazS", -- mo
         "--extras=+q",
         "--c++-kinds=+px",
         "--c-kinds=+px",
-        "--rust-kinds=fPM"
+        "--rust-kinds=+fPM",
+        "--guess-language-eagerly"
     }
 
     -- --tag-relative=yes

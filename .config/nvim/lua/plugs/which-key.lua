@@ -185,12 +185,30 @@ local function init()
             ["zuW"] = "Remove from internal wordlist",
             ["zug"] = "Remove from spellfile",
             ["zuG"] = "Remove from internal wordlist",
+            --
+            ["[i"] = "1st line with keyword",
+            ["]i"] = "1st line w/ keyword after curline",
+            ["[I"] = "All lines with keyword",
+            ["]I"] = "All lines w/ keyword after curline",
+            ["[<C-i>"] = "Goto 1st line with keyword",
+            ["]<C-i>"] = "Goto 1st line w/ keyword after curline",
+            -- ["[d"] = "1st line with macro",
+            -- ["]d"] = "1st line w/ macro after curline",
+            ["[D"] = "All lines with macro",
+            ["]D"] = "All lines w/ macro after curline",
+            -- ["[<C-d>"] = "Goto 1st line with macro",
+            -- ["]<C-d>"] = "Goto 1st line w/ macro after curline",
+            ["[<C-s>"] = {[[<Cmd>lua utils.normal('n', '[<C-d>')<CR>]], "Goto 1st line with macro"},
+            ["]<C-s>"] = {
+                [[<Cmd>lua utils.normal('n', ']<C-d>')<CR>]],
+                "Goto 1st line w/ macro after curline"
+            }
         }
     )
 
     wk.register(
         {
-            ["="] = "Format operator (equalprg, indentexpr)",
+            ["="] = "Format operator (equalprg, indentexpr)"
         },
         {mode = "v"}
     )
@@ -199,15 +217,79 @@ local function init()
         {
             ["<C-w>"] = {
                 name = "+window",
-                ["<C-r>"] = "Rotate window down/right",
                 r = "Rotate window down/right",
+                ["<C-r>"] = "Rotate window down/right",
                 R = "Rotate window up/left",
                 K = "Move current window to top",
                 J = "Move current window to bottom",
                 H = "Move current window to left",
-                L = "Move current window to right"
+                L = "Move current window to right",
+                ["<C-x>"] = "Swap current with next",
+                --
+                -- ["z<Num>"] = "Set window height",
+                --
+                n = "Create new blank (horiz) window",
+                ["<C-n>"] = {
+                    "<Cmd>lua utils.normal('m', '<C-w>n<C-w>V')<CR>",
+                    "Create new blank (vert) window"
+                },
+                ["^"] = "Split window, edit alt file",
+                ["<C-^>"] = "Split window, edit alt file",
+                --
+                c = "Close current window",
+                o = "Close all windows except this",
+                z = "Close preview window",
+                --
+                ["<Down>"] = "Goto window below",
+                ["<C-j>"] = "Goto window below",
+                j = "Goto window below",
+                ["<Up>"] = "Goto window above",
+                ["<C-k>"] = "Goto window above",
+                k = "Goto window above",
+                ["<Left>"] = "Goto window to left",
+                ["<C-h>"] = "Goto window to left",
+                h = "Goto window to left",
+                ["<Right>"] = "Goto window to right",
+                ["<C-l>"] = "Goto window to right",
+                l = "Goto window to right",
+                w = "Goto below/right window",
+                W = "Goto above/left window",
+                t = "Goto top-left window",
+                ["<C-t>"] = "Goto top-left window",
+                b = "Goto bottom-right window",
+                ["<C-b>"] = "Goto bottom-right window",
+                p = "Goto previous window",
+                [","] = {"<C-w>p", "Goto previous window"},
+                ["<C-p>"] = "Goto previous window",
+                P = "Goto preview window",
+                --
+                f = "Split window, edit file under cursor",
+                ["<C-f>"] = "Split: edit file under cursor",
+                ["<C-F>"] = "Split: edit file under cursor, jump line",
+                ["gf"] = "Tab: edit file under cursor",
+                ["gF"] = "Tab: edit file under cursor, jump line",
+                ["gt"] = "Goto next tab",
+                ["gT"] = "Goto prev tab",
+                --
+                i = "Split: first line with keyword",
+                ["<C-i>"] = "Split: first line with keyword",
+                ["}"] = "Preview: ':ptag' under cursor",
+                ["g}"] = "Preview: ':ptjump' under cursor"
             }
         }
+    )
+
+    wk.register(
+        {
+            ["<C-w>"] = {
+                name = "+window",
+                ["]"] = "Split window, goto tag",
+                ["<C-]>"] = "Split window, goto tag",
+                ["g]"] = "Split window, ':tselect'",
+                ["g<C-]>"] = "Split window, ':tjump'"
+            }
+        },
+        {mode = {"n", "x"}}
     )
 
     -- <F-3> to show which-key help in any relevant mode

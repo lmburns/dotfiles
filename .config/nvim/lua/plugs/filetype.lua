@@ -24,7 +24,11 @@ function M.setup()
             extension = {
                 lock = "yaml",
                 gitignore = "gitignore",
+                gitconfig = "gitconfig",
                 tmTheme = "xml",
+                task = "taskedit",
+                eslintrc = "json",
+                prettierrc = "json",
                 pn = "potion",
                 conf = "conf",
                 jq = "jq",
@@ -43,7 +47,6 @@ function M.setup()
                 man = nroff_ft,
                 cpp = function()
                     b.filetype = "cpp"
-                    -- Remove annoying indent jumping
                     b.cinoptions = b.cinoptions .. "L0"
                 end,
                 pdf = function()
@@ -55,7 +58,6 @@ function M.setup()
                     g.c_syntax_for_h = 1
                 end,
                 json = function()
-                    -- cmd.syntax("match Comment +//.+$+")
                     o.shiftwidth = 2
                 end
             },
@@ -81,6 +83,7 @@ function M.setup()
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
                 -- [".*/completions/_.*"] = "zsh",
+                [".*/git/config"] = "gitconfig",
                 [".*/fontconfig/conf%.d/.*"] = "xml",
                 [".*/fd/ignore"] = "gitignore",
                 ["calcurse-note.*"] = "markdown",
@@ -89,14 +92,24 @@ function M.setup()
                 [".*sxhkdrc"] = "sxhkdrc",
                 ["/tmp/buku%-edit.*"] = "conf",
                 ["/tmp/neomutt.*"] = "mail",
-                ---@diagnostic disable-next-line: unused-local
-                ["README.(%a+)$"] = function(_path, bufnr, ext)
+                ["README.(%a+)$"] = function(_path, _bufnr, ext)
                     if ext == "md" then
                         return "vimwiki"
                     elseif ext == "rst" then
-                        return "rst"
+                        return "markdown"
                     end
-                end
+                end,
+                -- [".*"] = {
+                --     priority = -math.huge,
+                --     function(_path, bufnr)
+                --         local content = vim.filetype.getlines(bufnr, 1)
+                --         if vim.filetype.matchregex(content, [[^#!.*zsh]]) then
+                --             return "zsh"
+                --         elseif vim.filetype.matchregex(content, [[\<drawing\>]]) then
+                --             return "drawing"
+                --         end
+                --     end
+                -- }
             }
         }
     )
@@ -105,15 +118,7 @@ function M.setup()
     --     {
     --         overrides = {
     --             extensions = {
-    --                 task = "taskedit",
-    --                 tmTheme = "xml",
-    --                 pn = "potion",
-    --                 eslintrc = "json",
-    --                 prettierrc = "json",
-    --                 conf = "conf",
-    --                 mjml = "html",
     --                 sxhkdrc = "sxhkdrc",
-    --                 ztst = "ztst",
     --                 tl = "teal",
     --                 ["pre-commit"] = "sh",
     --                 md = "vimwiki",

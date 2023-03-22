@@ -372,17 +372,17 @@ local function init()
     g.rg_highlight = "true"
     g.rg_format = "%f:%l:%c:%m,%f:%l:%m"
 
+    -- g.fzf_history_dir = "~/.local/share/fzf-history"
     -- g.fzf_layout = { window = "call FloatingFZF()" }
     g.fzf_layout = {
         window = {
             width = 0.8,
             height = 0.8,
             highlight = "Comment",
-            border = "none",
+            border = "rounded",
             relative = true
         }
     }
-    g.fzf_history_dir = "~/.local/share/fzf-history"
     g.fzf_action = {
         ["ctrl-t"] = "tab drop",
         ["ctrl-s"] = "split",
@@ -392,9 +392,8 @@ local function init()
         ["alt-x"] = "split"
     }
 
-    vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbro"
-    -- Floating window doesn't have its own border anymore
-    g.fzf_vim_opts = {options = {"--border", "--no-separator", "--history=/dev/null"}}
+    vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbox"
+    g.fzf_vim_opts = {options = {"--no-separator", "--history=/dev/null", "--reverse"}}
     g.fzf_commands_expect = "enter"
     g.fzf_buffers_jump = 1 -- [Buffers] Jump to the existing window if possible
     g.fzf_preview_window = {"right:50%:+{2}-/2,nohidden", "?"}
@@ -411,7 +410,6 @@ local function init()
     -- g.fzf_preview_fzf_preview_window_option = 'nohidden'
     g.fzf_preview_default_fzf_options = {
         ["--no-separator"] = true,
-        ["--no-border"] = true,
         ["--reverse"] = true,
         ["--history"] = "/dev/null",
         ["--preview-window"] = "wrap"

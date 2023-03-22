@@ -198,7 +198,7 @@ M.setup_iswap = function()
     hl.set("ISwapSwap", {bg = colors.oni_violet})
 
     iswap.setup {
-        keys = "asdfghjkl;",
+        keys = "asdfghjklqwert;",
         grey = "disable",
         hl_snipe = "ISwapSwap",
         hl_selection = "WarningMsg",
@@ -210,7 +210,11 @@ M.setup_iswap = function()
     wk.register(
         {
             ["vs"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"},
-            ["sv"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"}
+            ["sv"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"},
+            ["so"] = {"<Cmd>ISwapNodeWith<CR>", "Swap current node (ISwap)"},
+            ["sp"] = {"<Cmd>ISwapNode<CR>", "Swap picked nodes (ISwap)"},
+            ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "Swap left node (ISwap)"},
+            ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "Swap right node (ISwap)"}
         }
     )
 end
@@ -838,6 +842,10 @@ end
 ---Setup treesitter
 ---@return TSConfig
 M.setup = function()
+    -- local rainbow = D.npcall(require, "ts-rainbow")
+    -- if not rainbow then
+    --     return
+    -- end
     return {
         ensure_installed = {
             "awk",
@@ -927,7 +935,7 @@ M.setup = function()
             end,
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
-            additional_vim_regex_highlighting = {"perl", "latex"},
+            additional_vim_regex_highlighting = {"perl", "latex", "vim"},
             custom_captures = custom_captures
         },
         autotag = {enable = true},
@@ -954,10 +962,10 @@ M.setup = function()
         },
         matchup = {
             enable = true,
-            disable_virtual_text = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
             include_match_words = true,
-            matchparen_offscreen = {method = "popup"}
+            -- disable_virtual_text = {"python"},
+            disable_virtual_text = false,
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"}
         },
         playground = {
             enable = true,
@@ -1046,7 +1054,38 @@ M.setup = function()
                 "git_rebase",
                 "gitattributes",
                 "markdown"
-            }
+            },
+            -- query = {
+            --     "rainbow-parens",
+            --     html = "rainbow-tags",
+            --     latex = "rainbow-blocks",
+            --     javascript = "rainbow-tags-react",
+            --     tsx = "rainbow-tags"
+            -- },
+            -- -- strategy = rainbow.strategy.global,
+            -- strategy = {
+            --     -- Use global strategy by default
+            --     -- rainbow.strategy["global"],
+            --     function()
+            --         -- Disabled for very large files
+            --         local c = api.nvim_buf_line_count(0)
+            --         if c > g.treesitter_highlight_maxlines then
+            --             return nil
+            --         elseif c > 1000 then
+            --             return rainbow.strategy["global"]
+            --         end
+            --         return rainbow.strategy["local"]
+            --     end
+            -- },
+            -- hlgroups = {
+            --     "TSRainbowRed",
+            --     "TSRainbowYellow",
+            --     "TSRainbowBlue",
+            --     "TSRainbowOrange",
+            --     "TSRainbowGreen",
+            --     "TSRainbowViolet",
+            --     "TSRainbowCyan"
+            -- }
         },
         textobjects = {
             lsp_interop = {enable = false},
@@ -1179,16 +1218,16 @@ M.setup = function()
             swap = {
                 enable = true,
                 swap_next = {
-                    ["s."] = {query = "@assignment.rhs", desc = "Swap next assignment"},
-                    ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
+                    ["s["] = {query = "@assignment.rhs", desc = "Swap next assignment"},
+                    -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
                     ["sf"] = {query = "@function.outer", desc = "Swap next function"},
                     ["sk"] = {query = "@class.outer", desc = "Swap next class"},
                     ["sb"] = {query = "@block.outer", desc = "Swap next block"},
                     ["sc"] = {query = "@call.outer", desc = "Swap next call"}
                 },
                 swap_previous = {
-                    ["s,"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
-                    ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
+                    ["s]"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
+                    -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
                     ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
                     ["sK"] = {query = "@class.outer", desc = "Swap prev class"},
                     ["sB"] = {query = "@block.outer", desc = "Swap prev block"},
@@ -1212,18 +1251,6 @@ function M.install_extra_parsers()
             requires_generate_from_grammar = true
         },
         filetype = "solidity"
-    }
-
-    -- Lua regex
-    parser_config.luap = {
-        install_info = {
-            url = "https://github.com/vhyrro/tree-sitter-luap", -- local path or git repo
-            files = {"src/parser.c"},
-            -- optional entries:
-            branch = "main", -- default branch in case of git repo if different from master
-            generate_requires_npm = false -- if stand-alone parser without npm dependencies
-        },
-        filetype = {"luap", "lua"} -- if filetype does not match the parser name
     }
 
     -- Log files

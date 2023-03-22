@@ -2,21 +2,16 @@
 ((identifier) @variable (#set! "priority" 95))
 
 [
-  "const"
   "default"
   "enum"
-  "extern"
-  "inline"
-  "static"
   "struct"
   "typedef"
   "union"
-  "volatile"
   "goto"
-  "register"
 ] @keyword
 
 "sizeof" @keyword.operator
+
 "return" @keyword.return
 
 [
@@ -34,7 +29,6 @@
  "switch"
 ] @conditional
 
-"#define" @constant.macro
 [
   "#if"
   "#ifdef"
@@ -44,6 +38,8 @@
   "#endif"
   (preproc_directive)
 ] @preproc
+
+"#define" @define
 
 "#include" @include
 
@@ -106,7 +102,7 @@
  (false)
 ] @boolean
 
-(conditional_expression [ "?" ":" ] @conditional)
+(conditional_expression [ "?" ":" ] @conditional.ternary)
 
 (string_literal) @string
 (system_lib_string) @string
@@ -134,12 +130,21 @@
 
 [
  (type_identifier)
- (primitive_type)
  (sized_type_specifier)
  (type_descriptor)
 ] @type
 
-(sizeof_expression value: (parenthesized_expression (identifier) @type))
+(storage_class_specifier) @storageclass
+
+(type_qualifier) @type.qualifier
+
+(linkage_specification
+  "extern" @storageclass)
+
+(type_definition
+  declarator: (type_identifier) @type.definition)
+
+(primitive_type) @type.builtin
 
 ((identifier) @constant
  (#lua-match? @constant "^[A-Z][A-Z0-9_]+$"))
@@ -171,6 +176,9 @@
 
 (comment) @comment @spell
 
+((comment) @comment.documentation
+  (#lua-match? @comment.documentation "^/[*][*][^*].*[*]/$"))
+
 ;; Parameters
 (parameter_declaration
   declarator: (identifier) @parameter)
@@ -197,9 +205,9 @@
 (ERROR) @error
 
 ;; ===== CUSTOM =====
-(
- function_definition
- (function_declarator
-   (identifier)@function_definition
-   )
- )
+; (
+;  function_definition
+;  (function_declarator
+;    (identifier)@function_definition
+;    )
+;  )

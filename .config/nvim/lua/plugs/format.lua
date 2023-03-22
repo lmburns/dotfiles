@@ -29,8 +29,7 @@ local function save_doc(bufnr)
     vim.schedule(
         function()
             api.nvim_buf_call(
-                bufnr,
-                function()
+                bufnr, function()
                     cmd("sil! up")
                 end
             )
@@ -43,21 +42,16 @@ end
 function M.neoformat(save)
     local bufnr = api.nvim_get_current_buf()
     -- This is a little dense
-    if
-        vim.bo[bufnr].ft == "lua" and
-            #F.if_nil(
-                scan.scan_dir(
-                    gittool.root() or fn.expand("%:p:h"),
-                    {
-                        search_pattern = "%.?stylua.toml$",
-                        hidden = true,
-                        silent = true,
-                        respect_gitignore = false
-                    }
-                ),
-                {}
-            ) > 0
-     then
+    if vim.bo[bufnr].ft == "lua" and #F.if_nil(
+        scan.scan_dir(
+            gittool.root() or fn.expand("%:p:h"), {
+                search_pattern    = "%.?stylua.toml$",
+                hidden            = true,
+                silent            = true,
+                respect_gitignore = false,
+            }
+        ), {}
+    ) > 0 then
         cmd("lockmarks keepjumps Neoformat stylua")
     else
         cmd("lockmarks keepjumps Neoformat")
@@ -84,7 +78,6 @@ function M.format_doc(save)
     gittool.root_exe(
         function()
             if coc.did_init() then
-
                 -- Takes to long to respond. Lua's format is disabled
                 if _t({"lua"}):contains(vim.bo[bufnr].ft) then
                     M.neoformat(save)
@@ -95,17 +88,14 @@ function M.format_doc(save)
 
                 if not err and res == true then
                     fn.CocActionAsync(
-                        "format",
-                        "",
-                        function(e, res)
+                        "format", "", function(e, res)
                             -- Now, result has to be checked as false here
-                            if
-                                e ~= vim.NIL or _t(prefer_neoformat):contains(vim.bo[bufnr].ft) or
-                                    res == false
-                             then
+                            if e ~= vim.NIL
+                                or _t(prefer_neoformat):contains(
+                                    vim.bo[bufnr].ft
+                                ) or res == false then
                                 api.nvim_buf_call(
-                                    bufnr,
-                                    function()
+                                    bufnr, function()
                                         -- local output = M.promisify()
                                         -- nvim.echo(
                                         --     {
@@ -153,20 +143,14 @@ function M.format_selected(mode, save)
 
     gittool.root_exe(
         function()
-            local err, res =
-                coc.a2sync(
-                "hasProvider",
-                {
-                    F.tern(mode, "formatRange", "format")
-                },
-                2000
-            )
+            local err, res = coc.a2sync(
+                                 "hasProvider",
+                                 {F.tern(mode, "formatRange", "format")}, 2000
+                             )
             if not err and res == true then
                 local bufnr = api.nvim_get_current_buf()
                 fn.CocActionAsync(
-                    mode and "formatSelected" or "format",
-                    mode,
-                    function(e, _)
+                    mode and "formatSelected" or "format", mode, function(e, _)
                         if e ~= vim.NIL then
                             log.warn(e)
                         else
@@ -187,37 +171,36 @@ end
 
 function M.juliaformat()
     g.JuliaFormatter_options = {
-        indent = 4,
-        margin = 92,
-        always_for_in = false,
-        whitespace_typedefs = false,
-        whitespace_ops_in_indices = true,
-        normalize_line_ends = "unix",
-        remove_extra_newlines = true,
-        import_to_using = false,
-        pipe_to_function_call = false,
-        short_to_long_function_def = false,
-        long_to_short_function_def = false,
-        always_use_return = false, -- implicit return
-        whitespace_in_kwargs = false,
+        indent                           = 4,
+        margin                           = 92,
+        always_for_in                    = false,
+        whitespace_typedefs              = false,
+        whitespace_ops_in_indices        = true,
+        normalize_line_ends              = "unix",
+        remove_extra_newlines            = true,
+        import_to_using                  = false,
+        pipe_to_function_call            = false,
+        short_to_long_function_def       = false,
+        long_to_short_function_def       = false,
+        always_use_return                = false, -- implicit return
+        whitespace_in_kwargs             = false,
         annotate_untyped_fields_with_any = true,
-        format_docstrings = true,
-        conditional_to_if = false, -- ternary to conditional
-        trailing_comma = true,
-        indent_submodule = true,
-        separate_kwargs_with_semicolon = false,
-        surround_whereop_typeparameters = true
+        format_docstrings                = true,
+        conditional_to_if                = false, -- ternary to conditional
+        trailing_comma                   = true,
+        indent_submodule                 = true,
+        separate_kwargs_with_semicolon   = false,
+        surround_whereop_typeparameters  = true,
     }
 
     augroup(
-        "lmb__FormattingJulia",
-        {
-            event = "FileType",
+        "lmb__FormattingJulia", {
+            event   = "FileType",
             pattern = "julia",
             command = function()
                 map("n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
                 map("x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
-            end
+            end,
         }
     )
 end
@@ -232,7 +215,6 @@ local function init()
     g.neoformat_basic_format_trim = 1
     g.neoformat_basic_format_align = 1
 
-    g.neoformat_enabled_lua = {"luafmtext"}
     g.neoformat_enabled_python = {"black"}
     g.neoformat_enabled_zsh = {"expand"}
     g.neoformat_enabled_java = {"prettier"}
@@ -242,55 +224,64 @@ local function init()
     g.neoformat_enabled_javascript = {"prettier"}
     g.neoformat_enabled_yaml = {"prettier"}
     g.neoformat_yaml_prettier = {
-        exe = "prettier",
-        args = {"--stdin-filepath", '"%:p"', "--tab-width=2"},
-        stdin = 1
+        exe   = "prettier",
+        args  = {"--stdin-filepath", "\"%:p\"", "--tab-width=2"},
+        stdin = 1,
     }
     g.neoformat_enabled_ruby = {"rubocop"}
     g.neoformat_ruby_rubocop = {
-        exe = "rubocop",
-        args = {
+        exe    = "rubocop",
+        args   = {
             "--auto-correct",
             "--stdin",
-            '"%:p"',
+            "\"%:p\"",
             "2>/dev/null",
             "|",
-            'sed "1,/^====================$/d"'
+            "sed \"1,/^====================$/d\"",
         },
-        stdin = 1,
-        stderr = 1
+        stdin  = 1,
+        stderr = 1,
     }
     g.neoformat_enabled_sql = {"sqlformatter"}
     g.neoformat_sql_sqlformatter = {
-        exe = "sql-formatter",
-        args = {"--indent", "4"},
-        stdin = 1
+        exe   = "sql-formatter",
+        args  = {"--indent", "4"},
+        stdin = 1,
     }
     g.neoformat_enabled_json = {"jq"}
     g.neoformat_json_jq = {
-        exe = "jq",
-        args = {"--indent", "4", "--tab"},
-        stdin = 1
+        exe   = "jq",
+        args  = {"--indent", "4", "--tab"},
+        stdin = 1,
     }
 
-    g.neoformat_enabled_lua = {"luafmtext", "stylua", "luaformat"}
+    g.neoformat_enabled_lua = {"luaformat", "luafmtext", "stylua"}
     g.neoformat_lua_luafmtext = {
         exe = "lua-fmt-ext",
         args = {"--stdin", "--line-width", "100"},
-        stdin = 1
+        stdin = 1,
     }
 
     map("n", ";ff", [[:lua require('plugs.format').format_doc()<CR>]])
-    map("x", ";ff", [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]])
+    map(
+        "x", ";ff",
+        [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]]
+    )
 
     augroup(
-        "lmb__Formatting",
-        {
-            event = "FileType",
+        "lmb__Formatting", {
+            event   = "FileType",
             pattern = "crystal",
-            command = function()
-                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = true})
-            end
+            command = function(args)
+                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = args.buf})
+            end,
+        }, {
+            event   = "FileType",
+            pattern = "vim",
+            command = function(args)
+                map("n", ";ff", "=ie", {buffer  = args.buf, noremap = false})
+                map("x", ";ff", "=", {buffer = args.buf})
+            end,
         }
     )
 end
