@@ -24,11 +24,15 @@
 #   path = ~/.config/github/gitconfig
 #   path = ~/.gitconfig-system
 
-[credential]
-  helper = cache
+# [credential]
+#   helper = cache
 
 [credential "https://github.com"]
-  helper = !gh auth git-credential
+  helper =
+  helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+  helper =
+  helper = !/usr/bin/gh auth git-credential
 
 [url "git@github.com:"]
   # Always use GitHub SSH protocol to push.

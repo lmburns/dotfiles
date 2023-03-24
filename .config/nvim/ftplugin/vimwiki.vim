@@ -202,17 +202,17 @@ if g:mkdx#settings.map.enable == 1
     endif
   endif
 
-  if (!hasmapto('<Plug>(mkdx-o)', 'n') && g:mkdx#settings.enter.o)
+  " if (!hasmapto('<Plug>(mkdx-o)', 'n') && g:mkdx#settings.enter.o)
     setlocal formatoptions-=r
     setlocal autoindent
     nmap <buffer><silent> o <Plug>(mkdx-o)
-  endif
+  " endif
 
-  if (!hasmapto('<Plug>(mkdx-shift-o)', 'n') && g:mkdx#settings.enter.shifto)
+  " if (!hasmapto('<Plug>(mkdx-shift-o)', 'n') && g:mkdx#settings.enter.shifto)
     setlocal formatoptions-=r
     setlocal autoindent
     nmap <buffer><silent> O <Plug>(mkdx-shift-o)
-  end
+  " end
 
   for [label, prefix, mapmode, binding, plug, cmd] in s:bindings
     let mapping = (prefix ? g:mkdx#settings.map.prefix : '') . binding
@@ -226,3 +226,6 @@ if g:mkdx#settings.map.enable == 1
     endif
   endfor
 endif
+
+nmap <buffer><silent> o <Plug>VimwikiListo
+nmap <buffer><silent> O <Plug>VimwikiListO

@@ -1,0 +1,2 @@
+autocmd BufRead,BufNewFile authorized_keys  setlocal filetype=ssh_authorized_keys
+autocmd BufRead,BufNewFile authorized_keys2 setlocal filetype=ssh_authorized_keys

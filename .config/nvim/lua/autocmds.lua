@@ -1,5 +1,4 @@
 ---@diagnostic disable:undefined-field
-
 -- local global = require("common.global")
 local D = require("dev")
 local hl = require("common.color")
@@ -33,11 +32,10 @@ local exclude_bt = _t({"nofile"})
 ---@param bufnr number
 ---@return boolean
 local function should_exclude(bufnr)
-    if
-        fn.expand("%") == "" or exclude_ft:contains(vim.bo[bufnr].ft) or
-            exclude_bt:contains(vim.bo[bufnr].bt) or
-            D.is_floating_window()
-     then
+    if fn.expand("%") == ""
+    or exclude_ft:contains(vim.bo[bufnr].ft)
+    or exclude_bt:contains(vim.bo[bufnr].bt)
+    or D.is_floating_window() then
         return true
     end
     return false
@@ -63,36 +61,32 @@ nvim.autocmd.lmb__GitEnv = {
                 --     return
                 -- end
 
-                local _, ret =
-                    Job:new(
+                local _, ret = Job:new(
                     {
                         command = "dotbare",
                         args = {"ls-files", "--error-unmatch", curr_file},
                         on_exit = function(_, ret)
                             return ret
-                        end
+                        end,
                     }
                 ):sync()
 
                 if ret == 0 then
                     if not has_sourced then
-                        has_sourced =
-                            debounce(
+                        has_sourced = debounce(
                             function()
                                 env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
                                 env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                            end,
-                            10
+                            end, 10
                         )
                     end
 
                     -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
                     has_sourced()
                 end
-            end,
-            1
+            end, 1
         )
-    end
+    end,
 }
 
 -- === Macro Recording === [[[
@@ -103,17 +97,19 @@ nvim.autocmd.lmb__MacroRecording = {
         command = function()
             local msg = (" 壘Recording @%s"):format(fn.reg_recording())
             log.info(msg, {title = "Macro", icon = ""})
-        end
+        end,
     },
     {
         event = "RecordingLeave",
         pattern = "*",
         command = function()
             local event = vim.v.event
-            local msg = ("  Recorded @%s\n%s"):format(event.regname, event.regcontents)
+            local msg = ("  Recorded @%s\n%s"):format(
+                event.regname, event.regcontents
+            )
             log.info(msg, {title = "Macro", icon = ""})
-        end
-    }
+        end,
+    },
 }
 -- ]]] === Macro Recording ===
 
@@ -141,20 +137,20 @@ nvim.autocmd.lmb__RestoreCursor = {
             --     }
             -- )
 
-            if
-                fn.expand("%") == "" or exclude_ft:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
-                    D.is_floating_window(0)
-             then
+            if fn.expand("%") == ""
+            or exclude_ft:contains(vim.bo.ft)
+            or vim.bo.bt == "nofile"
+            or D.is_floating_window(0) then
                 return
             end
 
-            local mark = nvim.mark['"']
+            local mark = nvim.mark["\""]
             local row, col = mark.row, mark.col
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 utils.set_cursor(0, row, 0)
                 funcs.center_next([[g`"zv']])
             end
-        end
+        end,
     },
     {
         -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
@@ -164,8 +160,8 @@ nvim.autocmd.lmb__RestoreCursor = {
         command = function(args)
             cmd.bdelete({bang = true})
             cmd.edit(vim.uri_to_fname(args.file))
-        end
-    }
+        end,
+    },
 }
 -- ]]] === Restore cursor ===
 
@@ -207,21 +203,22 @@ nvim.autocmd.lmb__FormatOptions = {
                     {
                         ["1"] = true, -- don't break a line after a one-letter word; break before
                         -- ["2"] = false, -- use indent from 2nd line of a paragraph
-                        q = true, -- format comments with gq"
-                        n = true, -- recognize numbered lists. Indent past formatlistpat not under
-                        M = true, -- when joining lines, don't insert a space before or after a multibyte char
-                        j = true, -- remove a comment leader when joining lines.
+                        q = true,     -- format comments with gq"
+                        n = true,     -- recognize numbered lists. Indent past formatlistpat not under
+                        M = true,     -- when joining lines, don't insert a space before or after a multibyte char
+                        j = true,     -- remove a comment leader when joining lines.
                         -- Only break if the line was not longer than 'textwidth' when the insert
                         -- started and only at a white character that has been entered during the
                         -- current insert command.
                         l = true,
-                        v = true, -- only break line at blank line I've entered
-                        c = true, -- auto-wrap comments using textwidth
-                        t = true, -- autowrap lines using text width value
-                        p = true, -- don't break lines at single spaces that follow periods
-                        ["/"] = true, -- when 'o' included: don't insert comment leader for // comment after statement
+                        v = true,                 -- only break line at blank line I've entered
+                        c = true,                 -- auto-wrap comments using textwidth
+                        t = true,                 -- autowrap lines using text width value
+                        p = true,                 -- don't break lines at single spaces that follow periods
+                        ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
                         r = funcs.set_formatopts, -- continue comments when pressing Enter
-                        o = funcs.set_formatopts -- automatically insert comment leader after 'o'/'O'
+                        o = funcs
+                            .set_formatopts,      -- automatically insert comment leader after 'o'/'O'
                     }
                 )
 
@@ -347,7 +344,7 @@ nvim.autocmd.lmb__DisableUndofile = {
             if D.plugin_loaded("fundo") then
                 require("fundo").disable()
             end
-        end
+        end,
     },
     {
         event = "FileType",
@@ -358,8 +355,8 @@ nvim.autocmd.lmb__DisableUndofile = {
             if D.plugin_loaded("fundo") then
                 require("fundo").disable()
             end
-        end
-    }
+        end,
+    },
 }
 -- ]]]
 
@@ -387,7 +384,7 @@ nvim.autocmd.lmb__Spellcheck = {
         pattern = "neomutt-archbox*",
         command = "setlocal spell",
         desc = "Automatically enable spelling"
-    }
+    },
 }
 -- ]]] === Spelling ===
 
@@ -443,10 +440,9 @@ nvim.autocmd.lmb__TermMappings = {
 local split_should_return = function()
     -- do nothing for floating windows
     local cfg = api.nvim_win_get_config(0)
-    if
-        cfg and (cfg.external or cfg.relative and #cfg.relative > 0) or
-            api.nvim_win_get_height(0) == 1
-     then
+    if  cfg
+    and (cfg.external or cfg.relative and #cfg.relative > 0)
+    or  api.nvim_win_get_height(0) == 1 then
         return true
     end
     -- do not run if Diffview is open
@@ -483,16 +479,14 @@ nvim.autocmd.lmb__Help = {
             local bufnr = args.buf
             if vim.bo[bufnr].bt == "help" then
                 if not debounced then
-                    debounced =
-                        debounce:new(
+                    debounced = debounce:new(
                         function()
                             -- pcall needed when opening a TOC inside a help page and returning to help page
                             pcall(cmd.wincmd, "L")
                             -- local width = math.floor(vim.o.columns * 0.75)
                             -- cmd("vertical resize " .. width)
                             cmd("vertical resize 82")
-                        end,
-                        0
+                        end, 0
                     )
                 end
                 debounced()
@@ -560,13 +554,12 @@ nvim.autocmd.lmb__Help = {
             end
         end,
         desc = "Delete hidden man buffers"
-    }
+    },
 }
 -- ]]] === Help ===
 
 -- === Smart Close === [[[
-local smart_close_filetypes =
-    _t(
+local smart_close_filetypes = _t(
     {
         -- 'help',
         -- 'qf',
@@ -612,10 +605,10 @@ nvim.autocmd.lmb__SmartClose = {
         command = function(args)
             local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
-            local is_eligible =
-                is_unmapped or vim.wo.previewwindow or
-                smart_close_filetypes:contains(vim.bo[bufnr].ft) or
-                smart_close_buftypes:contains(vim.bo[bufnr].bt)
+            local is_eligible = is_unmapped
+                or vim.wo.previewwindow
+                or smart_close_filetypes:contains(vim.bo[bufnr].ft)
+                or smart_close_buftypes:contains(vim.bo[bufnr].bt)
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
@@ -637,7 +630,7 @@ nvim.autocmd.lmb__SmartClose = {
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
                 ol.cursorline = false
-            -- vim.wo.cursorline = true
+                -- vim.wo.cursorline = true
             end
 
             -- if bufname:match("%[Wilder Float %d%]") then
@@ -658,7 +651,7 @@ nvim.autocmd.lmb__SmartClose = {
             end
         end,
         desc = "Close loclist when quitting window"
-    }
+    },
 }
 -- ]]]
 
@@ -693,14 +686,14 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
             local lazyredraw = vim.opt.lazyredraw
             local showmatch = vim.opt.showmatch
 
-            vim.bo[bufnr].undofile = false
-            vim.wo[winid].colorcolumn = ""
+            vim.bo[bufnr].undofile       = false
+            vim.wo[winid].colorcolumn    = ""
             vim.wo[winid].relativenumber = false
-            vim.wo[winid].foldmethod = "manual"
-            vim.wo[winid].spell = false
-            vim.opt.hlsearch = false
-            vim.opt.lazyredraw = true
-            vim.opt.showmatch = false
+            vim.wo[winid].foldmethod     = "manual"
+            vim.wo[winid].spell          = false
+            vim.opt.hlsearch             = false
+            vim.opt.lazyredraw           = true
+            vim.opt.showmatch            = false
 
             autocmd(
                 {
@@ -715,7 +708,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                 }
             )
         end
-    end
+    end,
 }
 -- ]]]
 
@@ -779,7 +772,7 @@ if env.TMUX ~= nil and env.NORENAME == nil then
                 pcall(os.execute, "tmux set-window automatic-rename on")
             end,
             desc = "Turn back on Tmux auto-rename"
-        }
+        },
     }
 end
 -- ]]] === Tmux ===
@@ -796,8 +789,7 @@ do
             if timer then
                 timer:stop()
             end
-            timer =
-                vim.defer_fn(
+            timer = vim.defer_fn(
                 function()
                     if utils.mode() == "n" then
                         api.nvim_echo({}, false, {})
@@ -806,7 +798,9 @@ do
                 timeout
             )
         end,
-        desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000)
+        desc = ("Clear command-line messages after %d seconds"):format(
+            timeout / 1000
+        ),
     }
 end
 
@@ -833,8 +827,7 @@ a.async_void(
     vim.schedule_wrap(
         function()
             augroup(
-                "lmb__TrimWhitespace",
-                {
+                "lmb__TrimWhitespace", {
                     event = "BufWritePre",
                     pattern = "*",
                     command = function(args)
@@ -849,7 +842,7 @@ a.async_void(
 
                         -- Delete blank lines if more than 2 in a row
                         -- utils.squeeze_blank_lines()
-                    end
+                    end,
                 }
             )
         end
@@ -864,11 +857,10 @@ nvim.autocmd.lmb__AutoReloadFile = {
         command = function(args)
             local bufnr = args.buf
             local name = api.nvim_buf_get_name(bufnr)
-            if
-                name == "" or -- Only check for normal files
-                    vim.bo[bufnr].buftype ~= "" or -- To avoid: E211: File "..." no longer available
-                    not fn.filereadable(name)
-             then
+            if name == ""
+            or vim.bo[bufnr].buftype ~= "" -- Only check for normal files
+            or not fn.filereadable(name)   -- To avoid: E211: File "..." no longer available
+            then
                 return
             end
 
@@ -888,7 +880,7 @@ nvim.autocmd.lmb__AutoReloadFile = {
             nvim.p.WarningMsg("File changed on disk. Buffer reloaded!")
         end,
         desc = "Display a message if the buffer is changed outside of instance"
-    }
+    },
 }
 -- ]]] === Buffer Reload ===
 
@@ -903,7 +895,7 @@ nvim.autocmd.RnuColumn = {
         pattern = "*",
         command = function()
             require("common.rnu").focus(false)
-        end
+        end,
     },
     {
         -- FIX: This works sometimes
@@ -911,7 +903,7 @@ nvim.autocmd.RnuColumn = {
         pattern = "*",
         command = function()
             require("common.rnu").focus(true)
-        end
+        end,
     },
     -- {
     --     -- FIX: Bufferize filetype
@@ -926,39 +918,37 @@ nvim.autocmd.RnuColumn = {
         pattern = "*",
         command = function()
             require("common.rnu").win_enter()
-        end
+        end,
     },
     {
         event = "CmdlineEnter",
         pattern = [[/,\?]],
         command = function()
             require("common.rnu").scmd_enter()
-        end
+        end,
     },
     {
         event = "CmdlineLeave",
         pattern = [[/,\?]],
         command = function()
             require("common.rnu").scmd_leave()
-        end
-    }
+        end,
+    },
 }
 -- ]]] === RNU Column ===
 
 augroup(
-    "lmb__SetFocus",
-    {
-        event = "FocusGained",
-        desc = "Set `nvim_focused` to true",
+    "lmb__SetFocus", {
+        event   = "FocusGained",
+        desc    = "Set `nvim_focused` to true",
         command = function()
             g.nvim_focused = true
-        end
-    },
-    {
-        event = "FocusLost",
-        desc = "Set `nvim_focused` to false",
+        end,
+    }, {
+        event   = "FocusLost",
+        desc    = "Set `nvim_focused` to false",
         command = function()
             g.nvim_focused = false
-        end
+        end,
     }
 )

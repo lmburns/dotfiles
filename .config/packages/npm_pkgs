@@ -2,7 +2,7 @@
 ├── @types/node@17.0.24
 ├── @vercel/ncc@0.34.0
 ├── ava@4.3.0
-├── awk-language-server@0.9.2
+├── awk-language-server@0.9.4
 ├── bash-language-server@3.0.3
 ├── bs-platform@9.0.2
 ├── coc.nvim@0.0.80
@@ -37,14 +37,17 @@
 ├── prettier@2.7.1
 ├── pyright@1.1.235
 ├── rimraf@3.0.2
+├── solc@0.8.18
+├── solidity-language-server@0.0.3
+├── solidity-ls@0.5.3
 ├── thumbs@0.1.1
 ├── thumbsup@2.16.0
 ├── ts-node@10.7.0
+├── turndown@7.1.1
 ├── typescript-formatter@7.2.2
 ├── typescript-language-server@0.9.7
 ├── typescript@4.7.2
 ├── urban-dictionary-cli@2.0.18
-├── vim-language-server@2.2.10
 ├── vscode-langservers-extracted@4.2.1
 ├── webpack-cli@4.10.0
 ├── webpack@5.73.0

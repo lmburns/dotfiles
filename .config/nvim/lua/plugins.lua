@@ -774,18 +774,18 @@ return packer.startup(
             use({"lukas-reineke/indent-blankline.nvim", conf = "plugs.indent_blankline"})
             -- ]]] === Indentline ===
 
-            -- use(
-            --     {
-            --         "folke/noice.nvim",
-            --         conf = "plugs.noice",
-            --         wants = {"nui.nvim", "nvim-notify"},
-            --         requires = {
-            --             {"MunifTanjim/nui.nvim", module = "nui"},
-            --             "rcarriga/nvim-notify"
-            --         },
-            --         event = {"UIEnter"}
-            --     }
-            -- )
+            use(
+                {
+                    "folke/noice.nvim",
+                    conf = "plugs.noice",
+                    wants = {"nui.nvim", "nvim-notify"},
+                    requires = {
+                        {"MunifTanjim/nui.nvim", module = "nui"},
+                        "rcarriga/nvim-notify"
+                    },
+                    event = {"UIEnter"}
+                }
+            )
 
             -- Eandrju/cellular-automaton.nvim
             -- tamton-aquib/zone.nvim
@@ -1139,7 +1139,9 @@ return packer.startup(
             use(
                 {
                     "https://gitlab.com/itaranto/id3.nvim",
-                    opt = true,
+                    opt = false,
+                    -- keeps removing on each update
+                    lock = true,
                     tag = "*",
                     config = function()
                         require("id3").setup(

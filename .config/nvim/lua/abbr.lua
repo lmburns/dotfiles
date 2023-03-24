@@ -4,10 +4,7 @@ local log = require("common.log")
 local fn = vim.fn
 local cmd = vim.cmd
 
-M.modes = {
-    insert = "i",
-    command = "c"
-}
+M.modes = {insert = "i", command = "c"}
 
 ---Only execute the given command if the abbreviation is in `command` mode
 ---and the command is at the start.
@@ -33,16 +30,17 @@ end
 ---@param rhs string? what the abbreviation stands for
 ---@param args AbbrOpts?
 function M.abbr(mode, lhs, rhs, args)
-    args = args or {}
+    args          = args or {}
     local command = _t({})
-    local mods = _t({})
-    local mode = M.modes[mode] or mode
+    local mods    = _t({})
+    local mode    = M.modes[mode] or mode
 
     if args.buffer ~= nil then
         mods:insert("<buffer>")
     end
 
-    if (args.expr ~= nil and rhs ~= nil) or ((mode == "c" or mode == "command") and args.only_start ~= false) then
+    if (args.expr ~= nil and rhs ~= nil)
+        or ((mode == "c" or mode == "command") and args.only_start ~= false) then
         mods:insert("<expr>")
     end
 
@@ -69,13 +67,17 @@ function M.abbr(mode, lhs, rhs, args)
 
             -- ((if_statement)
             if args.only_start ~= false then
-                rhs = ("v:lua.require'abbr'.command('%s', '%s')"):format(lhs, rhs)
+                rhs = ("v:lua.require'abbr'.command('%s', '%s')"):format(
+                    lhs, rhs
+                )
             end
 
             table.insert(command, rhs)
         end
     else
-        log.err(("Invalid mode: %s"):format(vim.inspect(mode)), {title = "Abbrs"})
+        log.err(
+            ("Invalid mode: %s"):format(vim.inspect(mode)), {title = "Abbrs"}
+        )
         return false
     end
 
@@ -86,18 +88,13 @@ function M.abbr(mode, lhs, rhs, args)
     cmd(table.concat(command, " "))
 end
 
-M =
-    setmetatable(
-    M,
-    {
+M = setmetatable(
+    M, {
         __index = function(super, k)
             local mode = rawget(super.modes, k)
             mode = mode or k
             return setmetatable(
-                {
-                    mode = mode
-                },
-                {
+                {mode = mode}, {
                     __call = function(self, lhs, rhs, opts)
                         super.abbr(self.mode, lhs, rhs, opts)
                     end
@@ -105,7 +102,9 @@ M =
             )
         end,
         __newindex = function(_, k, _)
-            log.err(("invalid mode given: %s"):format(k), {title = "Abbrs"})
+            log.err(
+                ("invalid mode given: %s"):format(k), {title = "Abbrs"}
+            )
         end,
         ---Can be used like so: `require("abbr").c(lhs, rhs, opts)`
         ---Can be used like so: `require("abbr")(mode, lhs, rhs, opts)`

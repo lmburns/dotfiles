@@ -36,8 +36,10 @@ endfunction
 
 let s:contained=s:ContainedGroup()
 
+" If '-' is added, $a[-1] refuses to highlight number
+syn iskeyword @,48-57,_,192-255,:,.,-,+
 " syn iskeyword @,48-57,_,192-255,#,-
-syn iskeyword @,48-57,_,192-255
+" syn iskeyword @,48-57,_,192-255,#,-,:,.
 if get(g:, 'zsh_fold_enable', 0)
     setlocal foldmethod=syntax
 endif
@@ -89,26 +91,29 @@ syn match   zshJobSpec      '%\(\d\+\|?\=\w\+\|[%+-]\)'
 " syn match   zshNumber       '[+-]\=\d\+\.\d\+\>'
 
 " syn match   zshNumber           '[+-]\=\<\d\+\>'
-syn match   zshNumber           '[-+]\=\<[0-9_]\+\>'          " number:       44   4_000
-syn match   zshNumber           '[-+]\=0x[[:xdigit:]_]\+\>' " c_bases hex:  0xA0 0x1_000
-syn match   zshNumber           '[-+]\=0[0-7_]\+\>'         " octal_zeroes: -077  01_000
-syn match   zshNumber           '[-+]\=\d\+#[-+]\=\d\+\>'     " octal:        8#77
-syn match   zshNumber           '[-+]\=\d\+\.\d\+\>'
-syn match   zshNumber           '\[#\=#\d\+\>\]'             " $(( [##16] ))  $(( [#16] ))
+syn match zshNumber '\<[-+]\=[0-9_]\+\>'                " number:       44   4_000
+syn match zshNumber '\<[-+]\=0x[[:xdigit:]_]\+\>'       " c_bases hex:  0xA0 0x1_000
+syn match zshNumber '\<[-+]\=0[0-7_]\+\>'               " octal_zeroes: -077  01_000
+syn match zshNumber '[-+]\=\d\+#[-+]\=[[:xdigit:]]\+\>' " octal/hex:        8#77 or 16#FF
+syn match zshNumber '\<[-+]\=\d\+\.\d\+\>'              " decimal
+" TODO: Doesn't highlight #
+syn match zshNumber '\[[#]\{1,2}[[:xdigit:]]\+\(_[[:xdigit:]]\)\=\>\]' contains=zshDelim
+      " \ containedin=zshMathSubst " $(( [##16] ))  $(( [#16] )) $(( [#16_4] ))
 
 
 " syn match   zshOperator         '||\|&&\|;\|&!\='
 syn match zshOperator     '+\{2}\|-\{2}\|!\|\~' " unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement
-syn match zshOperator     '<<\|>>' " bitwise shift left, right
+syn match zshOperator     '<<\|>>' containedin=zshMathSubst " bitwise shift left, right
 syn match zshOperator     '[&^|]' " bitwise AND XOR OR
-syn match zshOperator     '*\{1,2}\|\/\|%\|\(-\|+\)\%(\d\+\)\@!' " exponent, multiplication, division, modulus, add, subtract
+" exponent, multiplication, division, modulus, add, subtract
+syn match zshOperator     '*\{1,2}\|\/\|%\|\(-\|+\)\%(\d\+\)\@!' contained containedin=zshMathSubst
 syn match zshOperator     '[<>]=\?' " comparison < > <= >=
 syn match zshOperator     '[=!]=' " equality, inequality
 syn match zshOperator     '\v%(\&\&|\|\||\^\^)' " logical AND OR XOR
 syn match zshOperator     ';\|&!\=\|&|' " ; & &! &|
 syn match zshOperator     '\%([-+*/%&^|]\|[<>&|^*]\{2}\)\==' skipwhite nextgroup=zshPattern " assignment (math only)
 
-" logical AND OR XOR TODO: Add to $(( )) $[[  ]] -- zshPattern, zshString, zshNumber, zshDeref
+" logical AND OR XOR
 syn match zshTernary          '[?:]\@1<![?:][?:]\@1!' contained
 syn match zshSemicolon        ';'                    containedin=zshOperator
 syn match zshWrapLineOperator '\\$'
@@ -124,7 +129,7 @@ syn match zshCmdEnd '\v[[:space:]]+\-\-[[:space:]]+'
 
 
 syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshCommands,shCommands
-syn keyword zshPrecommand       noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands
+syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands
 
 syn keyword  zshDelimiter  do done end nextgroup=zshSemicolon,zshRedir,zshWrapLineOperator
 
@@ -267,9 +272,13 @@ syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ yabai    yes       sxhkd   bspwm    bspc
                               \ perl
 
-" TODO: keymap
-syn keyword zshKeymap contained
+syn keyword zshKeymap containedin=zshKeymapStart
             \ main emacs viins vicmd viopp visual isearch command .safe
+
+syn match zshKeymapStart
+          \ /\v%(builtin\s+)?bindkey\ze\s+.+/
+          \ transparent skipwhite
+          \ contains=zshKeymap,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
 
 " syn match zshKeymapStart
 "           \ /\v^\s*%(builtin\s+)?bindkey\s+%(%(-\a{1,3}\s+){,3}%([[:print:]]+\s+){,2}){,2}/
@@ -401,46 +410,49 @@ syn keyword zshTypes            float integer local typeset declare private read
 
 syn match zshConstant "\v/dev/\w+"
 
-" XXX: this may be too much
-
-" syn region shNoQuote  start='\S'  skip='\%(\\\\\)*\\.'  end='\ze\s' end="\ze['"]" contained contains=shDerefSimple,shDeref
-" syn region  shDblBrace matchgroup=Delimiter start="\[\["  skip=+\%(\\\\\)*\\$+ end="\]\]" contains=@shTestList,shAstQuote,shNoQuote,shComment
-" syn region  shDblParen matchgroup=Delimiter start="(("  skip=+\%(\\\\\)*\\$+ end="))" contains=@shTestList,shComment
-
-" TODO: $[...] is the same as $((...)), so add that as well.
 syn cluster zshSubst            contains=zshSubst,zshOldSubst,zshMathSubst
 " NOTE: zshMathSubst here causes problems "'((...))'"
+"       equals=$(( ${lf_ratios##*:} == 3 ? (($COLUMNS * 3/6) - ($#class + 2)) / 2 : 18 ))
 
 syn cluster zshSubstQuoted      contains=zshSubstQuoted,zshOldSubst,zshMathSubst
-exe 'syn region  zshSubst       matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)/ contains=' . s:contained . '  fold'
-exe 'syn region  zshSubstQuoted matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)/ contains=' . s:contained . '  fold'
+exe 'syn region  zshSubst '
+      \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
+      \ . s:contained . ' fold'
+exe 'syn region  zshSubstQuoted '
+      \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
+      \ . s:contained . '  fold'
 syn region  zshSubstQuoted      matchgroup=zshSubstDelim
                               \ start='\${' skip='\\}' end='}'
                               \ contains=@zshSubst,zshBrackets,zshQuoted,zshNumber,zshDelim,zshGlob fold
 
 " syn region  zshGlob             start='(#' end=')'
-" syn region  zshParentheses      matchgroup=Constant start='(' skip='\\)' end=')' contained fold
 " syn region  zshDblParenthesis   matchgroup=Operator start="((" end="))" contained contains=zshParentheses
-syn match   zshParenthesis      '(\zs[^]]\{-}\ze)' transparent contained
-"  equals=$(( ${lf_ratios##*:} == 3 ? (($COLUMNS * 3/6) - ($#class + 2)) / 2 : 18 ))
+" syn match   zshParenthesis      '(\zs[^]]\{-}\ze)' transparent contained contains=zshDelim
+
+syn region  zshParentheses      matchgroup=Constant start='(' skip='\\)' end=')' contained keepend
+" TODO: $[...], let '...'
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
                                 \ start='\%(\$\?\)[<=>]\@<!((' skip='\\)' end='))'
                                 \ contains=zshParenthesis,@zshSubst,zshNumber,
                                 \ @zshDerefs,zshString,zshOperator,zshTernary fold
+" TODO: highlights wrong echo $[ [#16_4] 42 ** 10 ]
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
                                 \ start='\$\[' skip='\\]' end='\]'
-                                \ contains=zshParentheses,@zshSubst,zshNumber,
+                                \ contains=zshDelim,@zshSubst,zshNumber,
                                 \ @zshDerefs,zshString,zshOperator,zshTernary fold
 
 " The ms=s+1 prevents matching zshBrackets several times on opening brackets
 " (see https://github.com/chrisbra/vim-zsh/issues/21#issuecomment-576330348)
 syn region  zshBrackets    contained transparent
-                         \ start='{'ms=s+1 skip='\\}' end='}' fold
-exe 'syn region  zshBrackets    transparent start=/{/ms=s+1 skip=/\\}/ end=/}/ contains='.s:contained. ' fold'
+                         \ start='{'ms=s+1
+                         \ skip='\\}' end='}'me=e-1 fold
+exe 'syn region  zshBrackets    transparent start=/{/ skip=/\\}/ end=/}/ contains='.s:contained. ' fold'
 
 syn region  zshSubst      matchgroup=zshSubstDelim
                         \ start='\${' skip='\\}' end='}'
                         \ contains=@zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
+                        " \ contains=zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
+
 exe 'syn region  zshOldSubst    matchgroup=zshSubstDelim start=/`/ skip=/\\[\\`]/ end=/`/ contains='.s:contained. ',zshOldSubst fold'
 
 
@@ -461,6 +473,7 @@ syn match   zshPreProc          '^\%1l#\%(!\|compdef\|autoload\).*$'
 syn match zshDelim '\v%(\(|\))' containedin=zshParentheses
 syn match zshDelim '\v%(\{|\})' containedin=zshBrackets
 syn match zshDelim '\v%(\[|\])' containedin=zshParentheses
+" TODO: Add all glob qualifiers
 syn match zshGlob              '(#\([iIlbBmMsequU]\|c\(\d\+\|\d\+,\d\+\)\|a\d+\)\+)' contains=zshDelim
 
 " TODO:
@@ -472,6 +485,7 @@ syn match zshGlob              '(#\([iIlbBmMsequU]\|c\(\d\+\|\d\+,\d\+\)\|a\d+\)
 hi def link zshTodo             Todo
 hi def link zshComment          Comment
 hi def link zshPreProc          PreProc
+hi def link zshWrapLineOperator SpecialChar
 hi def link zshQuoted           SpecialChar
 hi def link zshPOSIXQuoted      SpecialChar
 hi def link zshString           String

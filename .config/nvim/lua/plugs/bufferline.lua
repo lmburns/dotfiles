@@ -20,17 +20,15 @@ local diagnostics_signs = {
     error = icons.lsp.sb.error,
     warning = icons.lsp.sb.warn,
     hint = icons.lsp.sb.hint,
-    info = icons.lsp.sb.info
+    info = icons.lsp.sb.info,
 }
 
 ---Filter out filetypes you don't want to see
 local function custom_filter(bufnr, buf_nums)
     local bo = vim.bo[bufnr]
 
-    local logs =
-        D.filter(
-        buf_nums,
-        function(b)
+    local logs = D.filter(
+        buf_nums, function(b)
             return vim.bo[b].ft == "log"
         end
     )
@@ -54,7 +52,8 @@ local function custom_filter(bufnr, buf_nums)
     end
 
     -- only show log buffers in secondary tabs
-    return (tab_num == last_tab and is_log) or (tab_num ~= last_tab and not is_log)
+    return (tab_num == last_tab and is_log)
+               or (tab_num ~= last_tab and not is_log)
     -- return true
 end
 
@@ -94,10 +93,14 @@ function M.setup()
                     return ("%s"):format(opts.raise(opts.ordinal))
                 end,
                 close_command = function(bufnr)
-                    require("close_buffers").delete({type = bufnr})
+                    require("close_buffers").delete(
+                        {type = bufnr}
+                    )
                 end, -- can be a string | function, see "Mouse actions"
                 right_mouse_command = function(bufnr)
-                    require("close_buffers").delete({type = bufnr})
+                    require("close_buffers").delete(
+                        {type = bufnr}
+                    )
                 end, -- can be a string | function, see "Mouse actions"
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
                 middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
@@ -128,45 +131,45 @@ function M.setup()
                         text = "Undotree",
                         filetype = "undotree",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = "DiffView",
                         filetype = "DiffviewFiles",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = "Symbols",
                         filetype = "Outline",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = " Packer",
                         filetype = "packer",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = "Aerial",
                         filetype = "aerial",
                         text_align = "center",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = "CocTree",
                         filetype = "coctree",
                         highlight = "PanelHeading",
-                        separator = true
+                        separator = true,
                     },
                     {
                         text = "Vista",
                         filetype = "vista",
                         highlight = "PanelHeading",
-                        separator = true
-                    }
+                        separator = true,
+                    },
                 },
                 color_icons = true,
                 show_buffer_icons = true,
@@ -182,21 +185,28 @@ function M.setup()
                 sort_by = "insert_after_current",
                 groups = {
                     options = {
-                        toggle_hidden_on_enter = true
+                        toggle_hidden_on_enter = true,
                     },
                     items = {
-                        groups.builtin.pinned:with({icon = ""}),
+                        groups.builtin.pinned:with(
+                            {icon = ""}
+                        ),
                         groups.builtin.ungrouped,
                         {
                             name = "Dependencies",
                             icon = "",
-                            highlight = {fg = require("kimbox.colors").yellow},
+                            highlight = {
+                                fg = require("kimbox.colors").yellow,
+                            },
                             matcher = function(buf)
                                 return vim.startswith(
                                     buf.path,
                                     ("%s/site/pack/packer"):format(dirs.data)
-                                ) or vim.startswith(buf.path, fn.expand("$VIMRUNTIME"))
-                            end
+                                )
+                                           or vim.startswith(
+                                        buf.path, fn.expand("$VIMRUNTIME")
+                                    )
+                            end,
                         },
                         {
                             name = "Bufferize",
@@ -205,41 +215,46 @@ function M.setup()
                                 local match = buf.path:match("(Bufferize).*")
                                 -- p(('hi: %s'):format(match))
                                 return match
-                            end
+                            end,
                         },
                         {
                             name = "SQL",
                             matcher = function(buf)
                                 return buf.filename:match("%.sql$")
-                            end
+                            end,
                         },
                         {
                             name = "tests",
                             icon = "",
-                            highlight = {fg = "#418292", underline = true},
+                            highlight = {
+                                fg = "#418292",
+                                underline = true,
+                            },
                             matcher = function(buf)
                                 local name = buf.filename
                                 if name:match("%.sql$") == nil then
                                     return false
                                 end
                                 return name:match("_spec") or name:match("_test")
-                            end
+                            end,
                         },
                         {
                             name = "docs",
                             icon = "",
                             matcher = function(buf)
-                                for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
+                                for _, ext in ipairs(
+                                    {"md", "txt", "org", "norg", "wiki"}
+                                ) do
                                     if ext == fn.fnamemodify(buf.path, ":e") then
                                         return true
                                     end
                                 end
-                            end
-                        }
-                    }
-                }
+                            end,
+                        },
+                    },
+                },
             },
-            highlights = require("kimbox.bufferline").theme()
+            highlights = require("kimbox.bufferline").theme(),
         }
     )
 end
@@ -263,7 +278,7 @@ function M.setup_close_buffers()
                 for _, window in ipairs(windows) do
                     pcall(api.nvim_win_set_buf, window, bufnr)
                 end
-            end
+            end,
         }
     )
 
@@ -286,7 +301,10 @@ local function init_hl()
 
     hl.all(
         {
-            PanelHeading = {background = bg_color, bold = true}
+            PanelHeading = {
+                background = bg_color,
+                bold = true,
+            },
         }
     )
 end
@@ -306,9 +324,18 @@ local function init()
             ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
             ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
-            ["<Leader>bp"] = {"<Cmd>BufferLinePickClose<CR>", "Pick buffer to delete"},
-            ["<C-A-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
-            ["<C-A-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"}
+            ["<Leader>bp"] = {
+                "<Cmd>BufferLinePickClose<CR>",
+                "Pick buffer to delete",
+            },
+            ["<M-S-Left>"] = {
+                "<cmd>BufferLineMovePrev<CR>",
+                "Move buffer a slot left",
+            },
+            ["<M-S-Right>"] = {
+                "<cmd>BufferLineMoveNext<CR>",
+                "Move buffer a slot right",
+            },
         }
     )
 
@@ -323,12 +350,30 @@ local function init()
                 -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
                 -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
                 q = {
-                    pithunk(require("close_buffers").delete, {type = "this"}),
-                    "Delete this buffer"
+                    pithunk(
+                        require("close_buffers").delete, {
+                            type = "this",
+                        }
+                    ),
+                    "Delete this buffer",
                 },
-                w = {pithunk(require("close_buffers").wipe, {type = "other"}), "Delete all buffers except this"},
-                Q = {pithunk(require("close_buffers").wipe, {type = "all"}), "Close all buffers"}
-            }
+                w = {
+                    pithunk(
+                        require("close_buffers").wipe, {
+                            type = "other",
+                        }
+                    ),
+                    "Delete all buffers except this",
+                },
+                Q = {
+                    pithunk(
+                        require("close_buffers").wipe, {
+                            type = "all",
+                        }
+                    ),
+                    "Close all buffers",
+                },
+            },
         }
     )
 
@@ -340,9 +385,9 @@ local function init()
             {
                 [("<Leader><Leader>%d"):format(i)] = {
                     ("<cmd>BufferLineGoToBuffer %d<CR>"):format(i),
-                    "which_key_ignore"
+                    "which_key_ignore",
                     -- ("Go to buffer %d"):format(i)
-                }
+                },
             }
         )
 

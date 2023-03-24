@@ -146,6 +146,9 @@ function M.vimwiki()
 
                 wk.register(
                     {
+                        ["<CR>"] = {"<Plug>VimwikiFollowLink", "Follow link"},
+                        ["<S-CR>"] = {"<Plug>VimwikiSplitLink", "Split link"},
+                        ["<BS>"] = {"<Plug>VimwikiGoBackLink", "Go to previously visited link"},
                         ["<Leader>wh"] = {"<Plug>Vimwiki2HTML", "Convert page to HTML"},
                         ["<Leader>w<Leader>i"] = {"<Plug>VimwikiDiaryGenerateLinks", "Update diary"},
                         ["<Leader>ww"] = {"<Plug>VimwikiIndex", "Goto current index"},
@@ -199,15 +202,18 @@ function M.vimwiki()
                         ["gww"] = {"<Plug>VimwikiTableAlignW", "Align table (gw)"},
                         ["<Leader>t["] = {"<Plug>VimwikiTableMoveColumnLeft", "Move column left"},
                         ["<Leader>t]"] = {"<Plug>VimwikiTableMoveColumnRight", "Move column right"},
+                        -- ["o"] = {"<Plug>VimwikiListo"},
+                        -- ["O"] = {"<Plug>VimwikiListO"},
                         ["<Tab>"] = {">>", "Indent line"},
-                        ["<S-Tab>"] = {"<<", "De-indent line"}
+                        ["<S-Tab>"] = {"<<", "De-indent line"},
                     },
                     {mode = "n", buffer = bufnr}
                 )
 
                 wk.register(
                     {
-                        ["<S-CR>"] = "Don't continue list format",
+                        -- ["<S-CR>"] = "Don't continue list format",
+                        ["<S-CR>"] = {"<C-]><Esc>:VimwikiReturn 1 5<CR>", "Create list item"},
                         ["<C-t>"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "Increase list level"},
                         ["<C-d>"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "Decrease list level"},
                         ["<C-s><C-j>"] = {"<Plug>VimwikiListNextSymbol", "Change to next list type"},
@@ -292,13 +298,13 @@ function M.vimwiki_setup()
     g.vimwiki_key_mappings = {
         all_maps = 1,
         global = 1,
-        headers = 1,
-        text_objs = 1,
-        table_format = 1,
-        table_mappings = 0,
-        lists = 1,
-        links = 1,
-        html = 1,
+        headers = 0,
+        text_objs = 0,
+        table_format = 0,
+        table_mappings = 1,
+        lists = 0,
+        links = 0,
+        html = 0,
         mouse = 0
     }
 end

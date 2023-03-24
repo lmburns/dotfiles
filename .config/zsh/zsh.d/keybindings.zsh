@@ -193,12 +193,12 @@ zle -N stash_buffer
 
 # ============================= BINDINGS =============================
 # ====================================================================
-if [[ $TMUX ]]; then
-  zle -N tmux::attach-create
-  vbindkey 'M-t' tmt                 # alt-t
-  zle -N tmux::select-window
-  vbindkey 'M-w' tmux::select-window # alt-w
-fi
+# if [[ $TMUX ]]; then
+#   zle -N tmux::attach-create
+#   vbindkey 'M-t' tmt                 # alt-t
+#   zle -N tmux::select-window
+#   vbindkey 'M-w' tmux::select-window # alt-w
+# fi
 
 # bindkey '^I' expand-or-complete-prefix # Fix autopair completion within brackets
 # bindkey '^T' backward-kill-word

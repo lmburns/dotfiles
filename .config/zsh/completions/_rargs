@@ -1,0 +1,21 @@
+#compdef rargs
+
+# zsh completions for 'rargs'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-e,--dry-run}'[print the commands to be executed without actually execute]'
+  {-h,--help}'[prints help information]'
+  {-0,--read0}'[read input delimited by ASCII NUL(\0) characters]'
+  {-V,--version}'[prints version information]'
+  {-d,--delimiter}'[regex pattern used as delimiter (conflict with pattern)]'
+  {-p,--pattern}'[regex pattern that captures the input]'
+  {-s,--separator}'[separator for ranged fields \[default:  \]]'
+  {-n,--startnum}'[start value for line number \[default: 1\]]'
+  {-j,--threads}'[number of threads to be used \[default: 1\]]'
+  {-w,--worker}'[deprecated. Number of threads to be used (same as --threads) \[default: 1\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

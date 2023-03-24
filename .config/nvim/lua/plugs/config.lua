@@ -1021,7 +1021,7 @@ function M.grepper()
         stop = 50000,
         tools = {"rg", "git"},
         rg = {
-            grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never",
+            grepprg = "rg -H --no-heading --max-columns=200 --vimgrep --smart-case --color=never -g '!target/**' -g '!tags'",
             grepformat = "%f:%l:%c:%m,%f:%l:%m"
         }
     }

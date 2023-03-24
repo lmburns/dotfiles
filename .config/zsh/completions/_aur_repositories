@@ -1,0 +1,20 @@
+#autoload
+# Helper to complete names of local "file://"-based repositories
+#
+# If --all is given, also complete sync repositories, not just local file based
+# ones.
+
+_aur_repositories()
+{
+    if [[ $1 == '--all' ]]; then
+        _values repository $(pacconf --repo-list 2>/dev/null)
+    else
+        declare -a repos
+        repos=( $(aur repo --repo-list 2>/dev/null) )
+        if [[ ${#repos} -eq 0 ]]; then
+            _message "repository (none found)"
+        else
+            _values repository $repos
+        fi
+    fi
+}

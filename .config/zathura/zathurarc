@@ -3,12 +3,15 @@ set statusbar-h-padding 0
 set statusbar-v-padding 0
 set page-padding 1
 set selection-clipboard clipboard
-set window-title-basename "true"
+set window-title-basename true
 set incremental-search true
+# set continuous-hist-save true  # Save history at each page change
 set search-hadjust true
-set render-loading "false"
+set render-loading false
 set scroll-step 50
 set guioptions 'hv'
+set synctext-editor-command "nvim"
+
 # set adjust-open width
 
 set font "Fira Code Nerd Font"
@@ -85,46 +88,126 @@ map <C-l> nohlsearch
 #  ╭──────────────────────────────────────────────────────────╮
 #  │                         Theme 2                          │
 #  ╰──────────────────────────────────────────────────────────╯
-set notification-error-bg       "#ff5555" # Red
+# set notification-error-bg       "#ff5555" # Red
+# set notification-error-fg       "#f8f8f2" # Foreground
+# set notification-warning-bg     "#ffb86c" # Orange
+# set notification-warning-fg     "#44475a" # Selection
+# set notification-bg             "#282a36" # Background
+# set notification-fg             "#f8f8f2" # Foreground
+#
+# set completion-bg               "#282a36" # Background
+# set completion-fg               "#6272a4" # Comment
+# set completion-group-bg         "#282a36" # Background
+# set completion-group-fg         "#6272a4" # Comment
+# set completion-highlight-bg     "#44475a" # Selection
+# set completion-highlight-fg     "#f8f8f2" # Foreground
+#
+# set index-bg                    "#282a36" # Background
+# set index-fg                    "#f8f8f2" # Foreground
+# set index-active-bg             "#44475a" # Current Line
+# set index-active-fg             "#f8f8f2" # Foreground
+#
+# set inputbar-bg                 "#282a36" # Background
+# set inputbar-fg                 "#f8f8f2" # Foreground
+# set statusbar-bg                "#282a36" # Background
+# set statusbar-fg                "#f8f8f2" # Foreground
+#
+# set highlight-color             "#ffb86c" # Orange
+# set highlight-active-color      "#ff79c6" # Pink
+#
+# set default-bg                  "#282a36" # Background
+# set default-fg                  "#f8f8f2" # Foreground
+#
+# set render-loading              true
+# set render-loading-fg           "#282a36" # Background
+# set render-loading-bg           "#f8f8f2" # Foreground
+
+# set recolor-lightcolor          "#282a36" # Background
+# set recolor-darkcolor           "#f8f8f2" # Foreground
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                         Theme 3                          │
+#  ╰──────────────────────────────────────────────────────────╯
+
+set notification-error-bg       "#DC3958" # Red
 set notification-error-fg       "#f8f8f2" # Foreground
 set notification-warning-bg     "#ffb86c" # Orange
 set notification-warning-fg     "#44475a" # Selection
-set notification-bg             "#282a36" # Background
+set notification-bg             "#120c20" # Background
 set notification-fg             "#f8f8f2" # Foreground
 
-set completion-bg               "#282a36" # Background
+set completion-bg               "#120c20" # Background
 set completion-fg               "#6272a4" # Comment
-set completion-group-bg         "#282a36" # Background
+set completion-group-bg         "#120c20" # Background
 set completion-group-fg         "#6272a4" # Comment
 set completion-highlight-bg     "#44475a" # Selection
 set completion-highlight-fg     "#f8f8f2" # Foreground
 
-set index-bg                    "#282a36" # Background
+set index-bg                    "#120c20" # Background
 set index-fg                    "#f8f8f2" # Foreground
 set index-active-bg             "#44475a" # Current Line
 set index-active-fg             "#f8f8f2" # Foreground
 
-set inputbar-bg                 "#282a36" # Background
+set inputbar-bg                 "#120c20" # Background
 set inputbar-fg                 "#f8f8f2" # Foreground
-set statusbar-bg                "#282a36" # Background
+set statusbar-bg                "#120c20" # Background
 set statusbar-fg                "#f8f8f2" # Foreground
 
 set highlight-color             "#ffb86c" # Orange
-set highlight-active-color      "#ff79c6" # Pink
+set highlight-active-color      "#EA6962" # Pink
 
-set default-bg                  "#282a36" # Background
+set default-bg                  "#120c20" # Background
 set default-fg                  "#f8f8f2" # Foreground
 
 set render-loading              true
-set render-loading-fg           "#282a36" # Background
+set render-loading-fg           "#120c20" # Background
 set render-loading-bg           "#f8f8f2" # Foreground
 
-#
-# Recolor mode settings
-#
-
-set recolor-lightcolor          "#282a36" # Background
+set recolor-lightcolor          "#120c20" # Background
 set recolor-darkcolor           "#f8f8f2" # Foreground
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                         Theme 4                          │
+#  ╰──────────────────────────────────────────────────────────╯
+
+# set notification-error-bg       "#DC3958" # Red
+# set notification-error-fg       "#D9AE80" # Foreground
+# set notification-warning-bg     "#ffb86c" # Orange
+# set notification-warning-fg     "#44475a" # Selection
+# set notification-bg             "#221A02" # Background
+# set notification-fg             "#D9AE80" # Foreground
+#
+# set completion-bg               "#221A02" # Background
+# set completion-fg               "#6272a4" # Comment
+# set completion-group-bg         "#221A02" # Background
+# set completion-group-fg         "#6272a4" # Comment
+# set completion-highlight-bg     "#44475a" # Selection
+# set completion-highlight-fg     "#D9AE80" # Foreground
+#
+# set index-bg                    "#221A02" # Background
+# set index-fg                    "#D9AE80" # Foreground
+# set index-active-bg             "#44475a" # Current Line
+# set index-active-fg             "#D9AE80" # Foreground
+#
+# set inputbar-bg                 "#221A02" # Background
+# set inputbar-fg                 "#D9AE80" # Foreground
+# set statusbar-bg                "#221A02" # Background
+# set statusbar-fg                "#D9AE80" # Foreground
+#
+# set highlight-color             "#ffb86c" # Orange
+# set highlight-active-color      "#EA6962" # Pink
+#
+# set default-bg                  "#221A02" # Background
+# set default-fg                  "#D9AE80" # Foreground
+#
+# set render-loading              true
+# set render-loading-fg           "#221A02" # Background
+# set render-loading-bg           "#D9AE80" # Foreground
+#
+# set recolor-lightcolor          "#221A02" # Background
+# set recolor-darkcolor           "#D9AE80" # Foreground
+
+set recolor-reverse-video true  # Keep original color of images
 
 #
 # Startup options

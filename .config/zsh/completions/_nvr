@@ -1,0 +1,36 @@
+#compdef nvr
+
+# zsh completions for 'nvr'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--remote[...\]]'
+  '--remote-wait[...\]]'
+  '--remote-silent[...\]]'
+  '--remote-wait-silent[...\]]'
+  '--remote-tab[...\]]'
+  '--remote-tab-wait[...\]]'
+  '--remote-tab-silent[...\]]'
+  '--remote-tab-wait-silent[...\]]'
+  '--remote-send[send key presses.]'
+  '--remote-expr[evaluate expression and print result in shell.]'
+  '--servername[set the address to be used. This overrides the default]'
+  '--serverlist[print the TCPv4 and Unix domain socket addresses of]'
+  '-cc[execute a command before every other option.]'
+  '-c[execute a command after every other option.]'
+  '-d[diff mode. Use :diffthis on all to be opened buffers.]'
+  '-l[change to previous window via ":wincmd p".]'
+  '-o[\[<file> ...\]]'
+  '-O[\[<file> ...\]]'
+  '-p[\[<file> ...\]]'
+  '-q[read errorfile into quickfix list and display first]'
+  '-s[silence "no server found" message.]'
+  '-t[jump to file and position of given tag.]'
+  '--nostart[if no process is found, do not start a new one.]'
+  '--version[show the nvr version.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,9 +1,9 @@
-column_limit: 80
+column_limit: 100
 indent_width: 4
 continuation_indent_width: 4
 tab_width: 4
 use_tab: false
-spaces_before_call: 1
+spaces_before_call: 0
 
 keep_simple_control_block_one_line: false
 keep_simple_function_one_line: false
@@ -11,7 +11,7 @@ spaces_inside_functioncall_parens: false
 spaces_inside_functiondef_parens: false
 
 align_args: true
-align_parameter: true
+align_parameter: false
 chop_down_parameter: true
 
 break_after_functioncall_lp: true
@@ -22,15 +22,17 @@ line_breaks_after_function_body: 1
 
 table_sep: ","
 column_table_limit: 0
-column_table_limit_kv: 0
+column_table_limit_kv: 60
 chop_down_table: true
 chop_down_kv_table: true
 align_table_field: true
-align_table_equals: true
-align_local_equals: false
+
+# align_table_equals: false
+# align_local_equals: false
+
 break_after_table_lb: true
 break_before_table_rb: true
-extra_sep_at_table_end: true
+extra_sep_at_table_end: false
 spaces_around_equals_in_field: true
 spaces_inside_table_braces: false
 

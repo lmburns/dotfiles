@@ -1,0 +1,154 @@
+#compdef diffsitter
+
+autoload -U is-at-least
+
+_diffsitter() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'-t+[Manually set the file type for the given files]:FILE_TYPE: ' \
+'--file-type=[Manually set the file type for the given files]:FILE_TYPE: ' \
+'-c+[Use the config provided at the given path]:CONFIG:_files' \
+'--config=[Use the config provided at the given path]:CONFIG:_files' \
+'--color=[Set the color output policy. Valid values are: "auto", "on", "off"]:COLOR_OUTPUT: ' \
+'-d[Print debug output]' \
+'--debug[Print debug output]' \
+'-n[Ignore any config files and use the default config]' \
+'--no-config[Ignore any config files and use the default config]' \
+'-h[Print help information (use `--help` for more detail)]' \
+'--help[Print help information (use `--help` for more detail)]' \
+'-V[Print version information]' \
+'--version[Print version information]' \
+'::OLD -- The first file to compare against:_files' \
+'::NEW -- The file that the old file is compared against:_files' \
+":: :_diffsitter_commands" \
+"*::: :->diffsitter" \
+&& ret=0
+    case $state in
+    (diffsitter)
+        words=($line[3] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:diffsitter-command-$line[3]:"
+        case $line[3] in
+            (list)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+&& ret=0
+;;
+(dump-default-config)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information]' \
+'--help[Print help information]' \
+&& ret=0
+;;
+(gen-completion)
+_arguments "${_arguments_options[@]}" \
+'-h[Print help information (use `--help` for more detail)]' \
+'--help[Print help information (use `--help` for more detail)]' \
+':shell -- The shell to generate completion scripts for:' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+":: :_diffsitter__help_commands" \
+"*::: :->help" \
+&& ret=0
+
+    case $state in
+    (help)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:diffsitter-help-command-$line[1]:"
+        case $line[1] in
+            (list)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(dump-default-config)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(gen-completion)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_diffsitter_commands] )) ||
+_diffsitter_commands() {
+    local commands; commands=(
+'list:List the languages that this program was compiled for' \
+'dump-default-config:Dump the default config to stdout' \
+'gen-completion:Generate shell completion scripts for diffsitter' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'diffsitter commands' commands "$@"
+}
+(( $+functions[_diffsitter__dump-default-config_commands] )) ||
+_diffsitter__dump-default-config_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter dump-default-config commands' commands "$@"
+}
+(( $+functions[_diffsitter__help__dump-default-config_commands] )) ||
+_diffsitter__help__dump-default-config_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter help dump-default-config commands' commands "$@"
+}
+(( $+functions[_diffsitter__gen-completion_commands] )) ||
+_diffsitter__gen-completion_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter gen-completion commands' commands "$@"
+}
+(( $+functions[_diffsitter__help__gen-completion_commands] )) ||
+_diffsitter__help__gen-completion_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter help gen-completion commands' commands "$@"
+}
+(( $+functions[_diffsitter__help_commands] )) ||
+_diffsitter__help_commands() {
+    local commands; commands=(
+'list:List the languages that this program was compiled for' \
+'dump-default-config:Dump the default config to stdout' \
+'gen-completion:Generate shell completion scripts for diffsitter' \
+'help:Print this message or the help of the given subcommand(s)' \
+    )
+    _describe -t commands 'diffsitter help commands' commands "$@"
+}
+(( $+functions[_diffsitter__help__help_commands] )) ||
+_diffsitter__help__help_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter help help commands' commands "$@"
+}
+(( $+functions[_diffsitter__help__list_commands] )) ||
+_diffsitter__help__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter help list commands' commands "$@"
+}
+(( $+functions[_diffsitter__list_commands] )) ||
+_diffsitter__list_commands() {
+    local commands; commands=()
+    _describe -t commands 'diffsitter list commands' commands "$@"
+}
+
+_diffsitter "$@"

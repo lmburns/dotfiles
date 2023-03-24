@@ -61,7 +61,15 @@ syn match manHeader         display '^\%1l.*$'
 syn match manSubHeading     display '^ \{3\}\S.*$'
 syn match manHeaderFile      '\s\zs<\f\+\.h>\ze\(\W\|$\)'
 syn match manEmail           '<\?[a-zA-Z0-9_.+-]\+@[a-zA-Z0-9-]\+\.[a-zA-Z0-9-.]\+>\?'
-syn match manHighlight       +`.\{-}['`]'\?+
+
+syn match manHighlightCChar  '[‘’]'          contained conceal
+syn match manHighlight       '‘.\{-}’'       contains=manHighlightCChar
+syn match manHighlightCChar  '[`']'          contained conceal
+syn match manHighlight       +`.\{-}['`]'\?+ contains=manHighlightCChar
+
+syn include @sh syntax/zsh.vim
+syn match manShellDollar     '\$'          contained
+syn match manShellCode       '^\s\+\$.\+$' contains=@sh,manShellDollar
 
 syn match manFlagsDesc       '\v[^a-z0-9](-{1,2}|\+)[[:alnum:]-_?]+\zs(\[\=[[:alnum:]-_]+\]|\=[[:alnum:]-_]+)\ze' contained
 " syn match manFlags           '\v[^a-z0-9]\zs-{1,2}[[:alnum:]-_?]+\ze'
@@ -98,7 +106,7 @@ if get(b:, 'man_sect', '') =~# '^[023]'
   " syn match manCError           display '^\s\+\[E\(\u\|\d\)\+\]' contained
   " syn match manCFuncDefinition  display '\<\h\w*\>\s*('me=e-1 contained
   " syn match manSignal           display '\C\<\zs\(SIG\|SIG_\|SA_\)\(\d\|\u\)\+\ze\(\W\|$\)'
-  syn match manCFuncDefinition display '\<\h\w*\ze\(\s\|\n\)*(' contained
+  syn match manCFuncDefinition  display '\<\h\w*\ze\(\s\|\n\)*(' contained
   syn match manCError           display '^\s\+\zsE\(\u\|\d\)\+' contained
 
   " syn region manSynopsis
@@ -184,6 +192,7 @@ hi def link manEscapedChar     SpecialChar
 hi def link manString          String
 hi def link manPOSIXString     String
 hi def link manChar            Title
+hi def link manShellDollar     Function
 
 let b:current_syntax = 'man'
 

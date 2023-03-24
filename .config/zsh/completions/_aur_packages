@@ -1,0 +1,28 @@
+#autoload
+# Helper to complete AUR package names
+
+# $@ Optional extra arguments to aur pkglist, such as --pkgbase to complete base package names
+_aur_packages() {
+    # Because of the large number of items causing slowdowns, only do this completion if there is
+    # at least one letter. In addition we also skip processing if the current completion starts
+    # with a -, which would be an option. This speeds up generating the list of options in case
+    # _aur_packages is used for * (remaining positional arguments). Then we don't need to evaluate
+    # any of this when we already know we are completing a flag.
+    #
+    # Note that additional care needs to be taken to not give the wrong behaviour for a situation
+    # like "aur sync --ignore=a<tab>". That is what the IPREFIX stuff is about, it lets us skip
+    # the "--ignore=" part.
+    local working_data="${words[$CURRENT]#${IPREFIX}}"
+    if [[ ${working_data} == "" || ${working_data[1]} == '-' ]]; then
+        return
+    fi
+
+    declare -a pkgs
+    pkgs=( $(aur pkglist --ttl 86400 --systime --plain $@ 2>/dev/null) )
+    # Since we are dealing with very long lists of possible completions (~80k as of writing this),
+    # speed is of the utmost importance for a good user experience. A low level compadd call gave
+    # the best performance in testing.
+    local expl
+    _description packages expl 'package'
+    compadd "$expl[@]" - $pkgs
+}

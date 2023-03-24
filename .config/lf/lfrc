@@ -134,14 +134,14 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 
   # === mark ===
-  # typeset -gx LF_LAUNCH_MARK
-  #
-  # Save a mark of the opening directory
-  # if (( ! LF_LAUNCH_MARK )) {
-  #   lf -remote "send $id mark-save 'a'"
-  #   LF_LAUNCH_MARK=1
-  #   export LF_LAUNCH_MARK
-  # }
+  local fname="/tmp/lfid_$id"
+  [[ ! -e "$fname" ]] && {
+    print -R "$id" >> "$fname"
+    # Save a mark of the opening directory
+    lf -remote "send $id push maa"
+    # lf -remote "send $id push :mark-save<space>a<enter>"
+    # lf -remote "send $id mark-save a"
+  }
 
   # === recent dirs ===
   local -aU reply
@@ -1408,6 +1408,60 @@ map ]
 map [
 # ]]] Unmappings
 
+# === Command Mode Mappings ==================================== [[[
+cmap <c-j>
+cmap <c-k>
+
+cmap <a-i> set incsearch!     # toggle incremental search
+cmap <a-g> set globsearch!    # toggle glob search
+# cmap <c-;> :cmd-enter; open # accept command and open file
+
+cmap <esc>  cmd-escape             # quit command line mode
+cmap <c-c>  cmd-interrupt          # end current shell-pipe command
+cmap <tab>  cmd-complete           # show completion menu
+cmap <a-.>  cmd-menu-complete      # show completion menu and select forward
+cmap <a-,>  cmd-menu-complete-back # show completion menu and select backward
+cmap <down> cmd-history-next       # scroll forward in history
+cmap <up>   cmd-history-prev       # scroll backward in history
+cmap <c-j>  cmd-history-next       # scroll forward in history
+cmap <c-k>  cmd-history-prev       # scroll backward in history
+
+cmap <c-b>  cmd-left  # move cursor left
+cmap <c-f>  cmd-right # move cursor right
+cmap <a-o>  cmd-left  # move cursor left
+# cmap <a-i>  cmd-right # move cursor right
+cmap <home> cmd-home  # move cursor beginning of line
+cmap <end>  cmd-end   # move cursor end of line
+cmap <c-s>  cmd-home  # move cursor beginning of line
+cmap <c-e>  cmd-end   # move cursor end of line
+cmap <lt>   cmd-home  # move cursor beginning of line
+cmap <gt>   cmd-end   # move cursor end of line
+
+cmap <a-f> cmd-word      # move forward one word
+cmap <a-b> cmd-word-back # move backward one word
+
+cmap <delete>    cmd-delete      # delete char to right of cursor
+cmap <backspace> cmd-delete-back # delete char to left of cursor
+cmap <c-h>       cmd-delete      # delete char to right of cursor
+cmap <c-l>       cmd-delete-back # delete char to left of cursor
+
+cmap <a-[> cmd-delete-home # delete all text to left of cursor
+cmap <a-]> cmd-delete-end  # delete all text to right of cursor
+
+# cmap <a-c> cmd-delete-unix-word # delete word to left of cursor
+cmap <c-w> cmd-delete-unix-word # delete word to left of cursor
+cmap <a-d> cmd-delete-word      # delete word to right of cursor
+
+cmap <c-y>   cmd-yank # yank cli text
+
+cmap <a-c> cmd-capitalize-word # capitalize word
+cmap <a-u> cmd-uppercase-word  # uppercase word
+cmap <a-i> cmd-lowercase-word  # lowercase word
+
+cmap <c-t> cmd-transpose      # transpose last two chars
+cmap <a-t> cmd-transpose-word # transpose last two words
+# ]]] Command Mode Mappings
+
 # === General ================================================== [[[
 map . set hidden!         # toggle hidden files
 map <space> :toggle; down # toggle selection and move down
@@ -1635,11 +1689,12 @@ map mD newfold             # create dir and move selected files into it
 # ]]] File / Directory Creation
 
 # === Renaming ================================================= [[[
-map cn push A<c-u>          # change rename
-map A rename                # cursor at the very end
-map I push A<c-a>           # cursor at the beginning
-map i push A<a-b><a-b><a-f> # cursor before extention
-map aa push A<a-b>          # cursor after extention
+map <f-2> rename                 # cursor before extension
+map A push <f-2><end>            # cursor at very end
+map cn push <f-2><end><c-u>      # change entire
+map I push <f-2><home>           # cursor at the beginning
+map i push <f-2><end><a-b><left> # cursor before extention
+map aa push <f-2><end><a-b>      # cursor after extention
 
 map bf push :f2<space>      # use f2 to rename
 map bM push :massren<space> # bulk rename with massren glob
@@ -1735,7 +1790,7 @@ map <c-x>p $cat $fx | up                # cat file to up (unix piper)
 
 # === Tagging ================================================== [[[
 # map <c-_> mark-save
-# map ma mark-save
+map ma mark-save
 map <a-.> mark-save
 map <a-'> mark-save
 map "'" mark-load
@@ -1881,60 +1936,6 @@ map gdu ${{
 # ]]] Dotbare Mappings
 # ]]] Dotbare (dotfiles)
 # ]]] Git
-
-# === Command Mode Mappings ==================================== [[[
-cmap <c-j>
-cmap <c-k>
-
-cmap <a-i> set incsearch!     # toggle incremental search
-cmap <a-g> set globsearch!    # toggle glob search
-# cmap <c-;> :cmd-enter; open # accept command and open file
-
-cmap <esc>  cmd-escape             # quit command line mode
-cmap <c-c>  cmd-interrupt          # end current shell-pipe command
-cmap <tab>  cmd-complete           # show completion menu
-cmap <a-.>  cmd-menu-complete      # show completion menu and select forward
-cmap <a-,>  cmd-menu-complete-back # show completion menu and select backward
-cmap <down> cmd-history-next       # scroll forward in history
-cmap <up>   cmd-history-prev       # scroll backward in history
-cmap <c-j>  cmd-history-next       # scroll forward in history
-cmap <c-k>  cmd-history-prev       # scroll backward in history
-
-cmap <c-b>  cmd-left  # move cursor left
-cmap <c-f>  cmd-right # move cursor right
-cmap <a-o>  cmd-left  # move cursor left
-# cmap <a-i>  cmd-right # move cursor right
-cmap <home> cmd-home  # move cursor beginning of line
-cmap <end>  cmd-end   # move cursor end of line
-cmap <c-s>  cmd-home  # move cursor beginning of line
-cmap <c-e>  cmd-end   # move cursor end of line
-cmap <lt>   cmd-home  # move cursor beginning of line
-cmap <gt>   cmd-end   # move cursor end of line
-
-cmap <a-f> cmd-word      # move forward one word
-cmap <a-b> cmd-word-back # move backward one word
-
-cmap <delete>    cmd-delete      # delete char to right of cursor
-cmap <backspace> cmd-delete-back # delete char to left of cursor
-cmap <c-h>       cmd-delete      # delete char to right of cursor
-cmap <c-l>       cmd-delete-back # delete char to left of cursor
-
-cmap <a-[> cmd-delete-home # delete all text to left of cursor
-cmap <a-]> cmd-delete-end  # delete all text to right of cursor
-
-cmap <a-c> cmd-delete-unix-word # delete word to left of cursor
-cmap <c-w> cmd-delete-unix-word # delete word to left of cursor
-cmap <a-d> cmd-delete-word      # delete word to right of cursor
-
-cmap <c-y>   cmd-yank # yank cli text
-
-cmap <a-p> cmd-capitalize-word # capitalize word
-cmap <a-u> cmd-uppercase-word  # uppercase word
-cmap <a-l> cmd-lowercase-word  # lowercase word
-
-cmap <c-t> cmd-transpose      # transpose last two chars
-cmap <a-t> cmd-transpose-word # transpose last two words
-# ]]] Command Mode Mappings
 
 # === Mouse Mappings =========================================== [[[
 # map <m-1>

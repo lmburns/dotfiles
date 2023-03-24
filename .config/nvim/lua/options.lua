@@ -52,7 +52,7 @@ _t(
         -- "perl_provider",
         -- "python_provider",
         "ruby_provider",
-        "node_provider"
+        "node_provider",
     }
 ):map(
     function(p)
@@ -69,12 +69,49 @@ if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
 end
 
-g.c_syntax_for_h = 1
-g.c_comment_strings = 1
-g.c_no_if0 = 0
+--  ╭────────────────╮
+--  │ Syntax options │
+--  ╰────────────────╯
+g.c_gnu = 1 -- GNU gcc specific settings
+g.c_syntax_for_h = 1 -- use C syntax instead of C++ for .h
+g.c_space_errors = 1 -- highlight space errors
+-- g.c_no_trail_space_error = 0 -- don't highlight trailing space
+g.c_curly_error = 1 -- highlight missing '}'
+g.c_comment_strings = 1 -- strings and numbers in comment
+-- g.c_no_comment_fold = 0 -- don't fold comments
+-- g.c_no_cformat = 0 -- don't highlight %-formats in strings
+-- g.c_no_if0 = 0 -- don't highlight "#if 0" blocks as comments
+-- g.c_no_if0_fold = 0 -- don't fold #if 0 blocks
+g.c_ansi_typedefs = 1 -- do ANSI types
+g.c_ansi_constants = 1 -- do ANSI constants
+
+g.desktop_enable_nonstd = 1 -- highlight nonstd ext. of .desktop files
+g.load_doxygen_syntax = 1 -- enable doxygen syntax
+g.doxygen_enhanced_color = 1 -- use nonstd hl for doxygen comments
+
+g.html_syntax_folding = 1
+g.vim_json_conceal = 0 -- don't conceal json
+g.lifelines_deprecated = 1 -- hl deprecated funcs as errors
+
+g.nroff_is_groff = 1
+g.nroff_space_errors = 1
+-- b.preprocs_as_sections = 1
+
+-- g.perl_no_scope_in_variables = 0 -- don't hl pkgname differently in '$PkgName::Var'
+-- g.perl_no_extended_vars = 0 -- don't hl complex variables
+g.perl_string_as_statement = 1 -- highlight string different if 2 on same line
+g.perl_fold = 1
+g.perl_fold_blocks = 1
+g.perl_fold_anonymous_subs = 1
+
+g.ruby_operators = 1
+g.ruby_fold = 1
+
+g.sed_highlight_tabs = 1
 
 g.no_man_maps = 1
-g.vimsyn_embed = 1
+g.vimsyn_embed = "lPr"
+g.vimsyn_folding = "afP"
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -107,7 +144,7 @@ nvim.autocmd.lmb__BackupFilename = {
         -- Meaningful backup name, ex: filename@2023-03-05T14
         -- Overwrite each and keep one per day. Can add '_%M_%S'
         o.backupext = ("@%s"):format(fn.strftime("%FT%H"))
-    end
+    end,
 }
 
 o.swapfile = false -- no swap files
@@ -129,10 +166,18 @@ o.shada = {
     "/5000", -- search pattern history
     "@1000", -- input line history
     ":5000", -- command line history
-    "h" -- disable `hlsearch` on loading
+    "h", -- disable `hlsearch` on loading
 }
 
-o.sessionoptions = {"globals", "buffers", "curdir", "tabpages", "winsize", "winpos", "help"} -- :mksession
+o.sessionoptions = {
+    "globals",
+    "buffers",
+    "curdir",
+    "tabpages",
+    "winsize",
+    "winpos",
+    "help",
+} -- :mksession
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.viewdir = dirs.data .. "views"
 if not uv.fs_stat(vim.o.viewdir) then
@@ -160,7 +205,7 @@ o.incsearch = true -- incremental search highlight
 o.inccommand = "split"
 
 o.redrawtime = 2000 -- time it takes to redraw ('hlsearch', 'inccommand')
-o.lazyredraw = true -- screen not redrawn with macros, registers
+o.lazyredraw = false -- screen not redrawn with macros, registers
 -- I like to have a differeniation between CursorHold and updatetime
 -- Also, when only using updatetime, CursorHold doesn't seem to fire
 g.cursorhold_updatetime = 250
@@ -176,10 +221,10 @@ o.belloff = "all"
 o.visualbell = false
 o.errorbells = false
 o.confirm = true -- confirm when editing readonly
-o.report = 1 -- report if at least 1 line changed
+o.report = 2 -- report if at least 1 line changed
 
 o.title = true
-o.titlestring = '%(%m%)%(%{expand("%:~")}%)'
+o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
 o.titlelen = 70
 o.titleold = fs.basename(os.getenv("SHELL")) -- This doesn't seem to work
 -- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
@@ -199,7 +244,7 @@ o.switchbuf = {"useopen", "uselast"}
 o.jumpoptions = {
     -- behave like tagstack - relloc is preserved (sumneko jumps to top clearing a bunch)
     "stack",
-    "view" -- try to restore mark-view
+    "view", -- try to restore mark-view
 }
 
 o.cmdheight = 2 -- number of screen lines to use for the command-line
@@ -230,7 +275,16 @@ o.signcolumn = "yes:1"
 -- Fold
 o.foldenable = true
 -- want to add 'g;', 'g,'
-o.foldopen = {"block", "hor", "mark", "percent", "quickfix", "search", "tag", "undo"} -- commands that open a fold
+o.foldopen = {
+    "block",
+    "hor",
+    "mark",
+    "percent",
+    "quickfix",
+    "search",
+    "tag",
+    "undo",
+} -- commands that open a fold
 o.foldlevel = 99 -- folds higher than this will be closed (zm, zM, zR)
 o.foldlevelstart = 99 -- sets 'foldlevel' when editing buffer
 o.foldcolumn = "1" -- when to draw fold column
@@ -261,7 +315,7 @@ o.wildignore = {
     "*.lock",
     "*~",
     "*.git",
-    "node_modules/*"
+    "node_modules/*",
 }
 o.wildmenu = true
 o.wildmode = {"longest:full", "full"} -- Shows a menu bar as opposed to an enormous list
@@ -281,7 +335,7 @@ o.listchars = {
     trail = "•",
     precedes = "«",
     extends = "…", -- »
-    nbsp = "␣"
+    nbsp = "␣",
     -- leadmultispace = "---+"
 }
 
@@ -303,7 +357,7 @@ o.fillchars = {
     vertleft = "┫",
     vertright = "┣",
     verthoriz = "╋",
-    lastline = "@" -- 
+    lastline = "@", -- 
 }
 
 -- Vi-compatible options
@@ -315,7 +369,7 @@ o.cpoptions:append(
         I = true, -- cursor up/down after inserting indent doesn't delete it
         -- t = true, -- search pattern for tag command is remembered for 'n'/'N'
         -- ["%"] = true, -- matching pairs inside quotes is different from outside
-        M = false -- "%" matching takes into account backslashes
+        M = false, -- "%" matching takes into account backslashes
         -- n = true, -- signcolumn used for wraptext
         -- q = true, -- when joining multiple lines, leave cursor position at first spot
         -- r = true, -- redo uses '/' to repeat search
@@ -359,7 +413,7 @@ o.whichwrap = {
     b = true, --    <BS> (NV)
     h = true, --       h (NV)
     l = true, --       l (NV)
-    s = true -- <Space> (NV) (this is leader)
+    s = true, -- <Space> (NV) (this is leader)
 }
 o.wrap = true
 o.wrapmargin = 2
@@ -385,13 +439,14 @@ o.formatoptions:append(
         p = true, -- don't break lines at single spaces that follow periods
         r = false, -- continue comments when pressing Enter
         o = false, -- automatically insert comment leader after 'o'/'O'
-        ["/"] = true -- when 'o' included: don't insert comment leader for // comment after statement
+        ["/"] = true, -- when 'o' included: don't insert comment leader for // comment after statement
     }
 )
 
 -- recognize list header ('n' flag in 'formatoptions')
 -- o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*]]
-o.formatlistpat = [==[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:]==]
+o.formatlistpat =
+    [==[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:]==]
 -- o.formatlistpat=^\s*\w\+[.\)]\s\+\|^\s*[-+*]\+\s\+
 
 -- Indenting
@@ -418,7 +473,7 @@ o.breakindentopt = {
     "sbr", -- display 'showbreak' value before applying indent
     "list:2", -- add additional indent for lines matching 'formatlistpat'
     "min:20", --- min width kept after breaking line
-    "shift:2" -- all lines after break are shifted N
+    "shift:2", -- all lines after break are shifted N
 }
 o.linebreak = true -- lines wrap at words rather than random characters
 -- which chars cause break with 'linebreak'
@@ -456,56 +511,52 @@ o.linebreak = true -- lines wrap at words rather than random characters
 -- Builtin
 -- vim.o.cinoptions =
 --     "s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,N0,E0,ps,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,k0,m0,j0,J0,)20,*70,#0,P0"
--- vim.o.cino = "s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,N0,E0,p0,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,k0,m0,j0,J0,)20,*70,#0,P0"
 
--- o.cinoptions = {
---     ">1s", -- any: amount added for "normal" indent
---     "L0", -- placement of jump labels
---     "=1s", --? case: statement after case label: N chars from indent of label
---     "l1", -- N!=0 case: align w/ case label instead of statement after it on same line
---     "b1", -- N!=0 case: align final "break" w/ case label so it looks like block (0=break cinkeys)
---     "g1s", --? C++ scope decls: N chars from indent of block they're in
---     "h1s", --? C++: after scope decl: N chars from indent of label
---     "N0", --? C++: inside namespace: N chars extra
---     "E0", --? C++: inside linkage specifications: N chars extra
---     "p1s", --? K&R: function decl: N chars from margin
---     "t0", -- K&R: return type of function decl: N chars from margin
---     "i1s", --? C++: base class decl/constructor init if they start on newline
---     "+0", -- line continuation: N chars extra inside function; 2*N outside func if line end = '\'
---     "c1s", -- comment lines: N chars from comment opener if no other text to align with
---     "(1s", -- inside unclosed paren: N chars from line ('sw' for every unclosed paren)
---     "u1s", -- same as (N but one level deeper
---     "U1", -- N!=0 : do not ignore nested parens that are on line by themselves
---     -- "wN", "WN" --
---     "k1s", -- unclosed paren in 'if' 'for' 'while' override '(N'
---     "m1", -- N!=0 line up line starting w/ closing paren w/ 1st char of line w/ opening
---     "j1", -- java: anon classes
---     "J1", --javascript: object classes
---     ")40", -- search for parens N lines away
---     "*70", -- search for unclosed comments N lines away
---     "#0", -- N!=0 recognized '#' comments otherwise preproc (toggle this for files)
---     "P1" -- N!=0 format C pragmas
--- }
+o.cinoptions = {
+    ">1s", -- any: amount added for "normal" indent
+    "L0", -- placement of jump labels
+    "=1s", -- ? case: statement after case label: N chars from indent of label
+    "l1", -- N!=0 case: align w/ case label instead of statement after it on same line
+    "b1", -- N!=0 case: align final "break" w/ case label so it looks like block (0=break cinkeys)
+    "g1s", -- ? C++ scope decls: N chars from indent of block they're in
+    "h1s", -- ? C++: after scope decl: N chars from indent of label
+    "N0", -- ? C++: inside namespace: N chars extra
+    "E0", -- ? C++: inside linkage specifications: N chars extra
+    "p1s", -- ? K&R: function decl: N chars from margin
+    "t0", -- K&R: return type of function decl: N chars from margin
+    "i1s", -- ? C++: base class decl/constructor init if they start on newline
+    "+0", -- line continuation: N chars extra inside function; 2*N outside func if line end = '\'
+    "c1s", -- comment lines: N chars from comment opener if no other text to align with
+    "(1s", -- inside unclosed paren: N chars from line ('sw' for every unclosed paren)
+    "u1s", -- same as (N but one level deeper
+    "U1", -- N!=0 : do not ignore nested parens that are on line by themselves
+    -- "wN", "WN" --
+    "k1s", -- unclosed paren in 'if' 'for' 'while' override '(N'
+    "m1", -- N!=0 line up line starting w/ closing paren w/ 1st char of line w/ opening
+    "j1", -- java: anon classes
+    "J1", -- javascript: object classes
+    ")40", -- search for parens N lines away
+    "*70", -- search for unclosed comments N lines away
+    "#0", -- N!=0 recognized '#' comments otherwise preproc (toggle this for files)
+    "P1", -- N!=0 format C pragmas
+}
 
 -- keys in insert mode that cause reindenting of current line
 -- 0#
 o.cinkeys = {"0{", "0}", "0)", "0]", ":", "!^F", "o", "O", "e"}
 
-o.diffopt =
-    o.diffopt +
-    {
-        "vertical",
-        "iwhite",
-        "hiddenoff",
-        "foldcolumn:0",
-        "context:4",
-        "algorithm:patience",
-        "indent-heuristic"
-        -- "linematch:60"
-    }
+o.diffopt = o.diffopt + {
+    "vertical",
+    "iwhite",
+    "hiddenoff",
+    "foldcolumn:0",
+    "context:4",
+    "algorithm:patience",
+    "indent-heuristic",
+    -- "linematch:60"
+}
 
-o.grepprg =
-    D.list(
+o.grepprg = D.list(
     {
         "rg",
         "--with-filename",
@@ -517,9 +568,8 @@ o.grepprg =
         "--follow",
         "--glob='!.git'",
         "--glob='!target'",
-        "--glob='!node_modules'"
-    },
-    " "
+        "--glob='!node_modules'",
+    }, " "
 )
 -- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 o.grepformat:prepend({"%f:%l:%c:%m"})
@@ -537,12 +587,12 @@ g.guitablabel = "%M %t"
 o.guicursor = {
     [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
     [[a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor]],
-    [[sm:block-blinkwait175-blinkoff150-blinkon175]]
+    [[sm:block-blinkwait175-blinkoff150-blinkon175]],
 }
 o.guifont = [[FiraMono Nerd Font Mono:style=Medium:h12]]
 
 if fn.exists("g:neovide") then
-    map("n", "<C-p>", '"+p')
+    map("n", "<C-p>", "\"+p")
     map("i", "<C-p>", "<C-r>+")
 end
 
@@ -567,20 +617,20 @@ if env.DISPLAY and fn.executable("xsel") == 1 then
         name = "xsel",
         copy = {
             ["+"] = {"xsel", "--nodetach", "-i", "-b"},
-            ["*"] = {"xsel", "--nodetach", "-i", "-p"}
+            ["*"] = {"xsel", "--nodetach", "-i", "-p"},
         },
         paste = {
             ["+"] = {"xsel", "-o", "-b"},
-            ["*"] = {"xsel", "-o", "-p"}
+            ["*"] = {"xsel", "-o", "-p"},
         },
-        cache_enabled = true
+        cache_enabled = true,
     }
 elseif env.TMUX then
     clipboard = {
         name = "tmux",
         copy = {["+"] = {"tmux", "load-buffer", "-w", "-"}},
         paste = {["+"] = {"tmux", "save-buffer", "-"}},
-        cache_enabled = true
+        cache_enabled = true,
     }
     clipboard.copy["*"] = clipboard.copy["+"]
     clipboard.paste["*"] = clipboard.paste["+"]

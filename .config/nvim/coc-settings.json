@@ -237,6 +237,11 @@
   "prettier.singleQuote": true,
   "prettier.semi": true,
   "prettier.trailingComma": "es5",
+  // "prettier.formatterPriority": -1,
+  // "prettier.resolveGlobalModules": true,
+  "prettier.useEditorConfig": true,
+  // "prettier.configPath": "~/.config/prettier/prettierrc.json",
+  "prettier.arrowParens": "always",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                           Lighbulb
@@ -266,7 +271,8 @@
     "--completion-style=detailed",
     "--suggest-missing-includes",
     "--header-insertion=iwyu",
-    "--header-insertion-decorators", // prepend dot before completion to show "#include"
+    "--header-insertion-decorators=false",
+    // "--header-insertion-decorators", // prepend dot before completion to show "#include"
     "--folding-ranges",
     "--function-arg-placeholders", // add placeholder names when inserting
     "--enable-config"
@@ -519,7 +525,58 @@
     // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start"
   ],
-  "Lua.format.enable": false,
+  "Lua.format.enable": true,
+  "Lua.format.defaultConfig": {
+    "indent_style": "space",
+    "indent_size": "4",
+    "quote_style": "double",
+    "continuation_indent": "4",
+    "max_line_length": "80",
+    "end_of_line": "lf",
+
+    "trailing_table_separator": "smart",
+    "call_arg_parentheses": "always",
+    "space_around_table_field_list": "false",
+    "space_before_attribute": "false",
+    "space_before_function_open_parenthesis": "false",
+    "space_before_function_call_open_parenthesis": "false",
+    "space_before_closure_open_parenthesis": "false",
+    "space_before_function_call_single_arg": "false",
+    "space_before_open_square_bracket": "false",
+    "space_inside_function_call_parentheses": "false",
+    "space_inside_function_param_list_parentheses": "false",
+    "space_inside_square_brackets": "false",
+    "space_around_table_append_operator": "true",
+    "ignore_spaces_inside_function_call": "false",
+    "space_before_inline_comment": "1",
+    "space_around_math_operator": "true",
+    "space_after_comma": "true",
+    "space_after_comma_in_for_statement": "true",
+    "space_around_concat_operator": "true",
+
+    "align_call_args": "true",
+    "align_function_params": "true",
+    "align_continuous_assign_statement": "true",
+    "align_continuous_rect_table_field": "true",
+    "align_if_branch": "true",
+    "align_array_table": "true",
+    "align_continuous_inline_comment": "true",
+    "never_indent_before_if_condition": "false",
+    "never_indent_comment_on_if_branch": "false",
+    "line_space_after_if_statement": "keep",
+    "line_space_after_do_statement": "keep",
+    "line_space_after_while_statement": "keep",
+    "line_space_after_repeat_statement": "keep",
+    "line_space_after_for_statement": "keep",
+    "line_space_after_local_or_assign_statement": "keep",
+    "line_space_after_function_statement": "fixed(2)",
+    "line_space_after_expression_statement": "keep",
+    "line_space_after_comment": "keep",
+    "break_all_list_when_line_exceed": "true",
+    "auto_collapse_lines": "false",
+    "ignore_space_after_colon": "false",
+    "remove_call_expression_list_finish_comma": "true"
+  },
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Both",
@@ -564,7 +621,7 @@
   "Lua.diagnostics.groupFileStatus": {
     "ambiguity": "Opened",
     "await": "Opened",
-    "codestyle": "None",
+    // "codestyle": "None",
     "duplicate": "Opened",
     "global": "Fallback",
     "luadoc": "Opened",
@@ -578,7 +635,7 @@
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
     "different-requires": "None",
-    "codestyle-check": "None",
+    // "codestyle-check": "None",
     "redefined-local": "None",
     "lowercase-global": "None",
     "no-unknown": "None"
@@ -764,7 +821,7 @@
     {
       "description": "Prettier config",
       "fileMatch": [".prettierrc", ".prettierrc.json", "prettier.config.json"],
-      "url": "https://json.schemastore.org/prettierc"
+      "url": "https://json.schemastore.org/prettierrc.json"
     },
     {
       "description": "Bucklescript config",
@@ -862,6 +919,17 @@
   //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
   "eslint.trace.server": "off",
+  "eslint.enable": true,
+  // "eslint.experimental.useFlatConfig": true,
+  // "eslint.codeAction.showDocumentation": {
+  //   "enable": true
+  // },
+  // "eslint.codeAction.disableRuleComment": {
+  //   "enable": true,
+  //   "location": "separateLine"
+  // },
+  // "eslint.codeActionsOnSave.mode": "all",
+  // "eslint.rules.customizations": [],
   "eslint.packageManager": "yarn",
   "eslint.run": "onType",
   "eslint.autoFixOnSave": false,
@@ -873,7 +941,7 @@
   "tsserver.implicitProjectConfig.checkJs": true,
   "tsserver.experimental.enableProjectDiagnostics": true,
   "typescript.showUnused": true,
-  "typescript.preferences.quoteStyle": "double",
+  "typescript.preferences.quoteStyle": "single",
   "typescript.preferences.useAliasesForRenames": false,
   "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
@@ -1238,7 +1306,7 @@
   },
   "diagnostic-languageserver.formatters": {},
   "diagnostic-languageserver.filetypes": {
-    "cmake": ["cmake-lint"],
+    "cmake": ["cmake-lint", "cmakelint"],
     "systemd": "systemd-analyze",
     "jq": "jq",
     "vim": "vint",
@@ -1289,6 +1357,14 @@
       "command": "crystalline",
       "args": ["--stdio"],
       "filetypes": ["crystal"]
+    },
+    "cmake": {
+      "command": "cmake-language-server",
+      "filetypes": ["cmake"],
+      "rootPatterns": ["build/"],
+      "initializationOptions": {
+        "buildDirectory": "build"
+      }
     },
     "ccls": {
       "command": "ccls",

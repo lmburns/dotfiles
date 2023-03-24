@@ -1,0 +1,24 @@
+#compdef bsdtar
+
+# zsh completions for 'bsdtar'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,-r}'[/Replace  -t List  -u Update  -x Extract]'
+  '-b[use # 512-byte records per I/O block]'
+  '-f[location of archive (default /dev/st0)]'
+  '-v[verbose]'
+  '-w[interactive]'
+  {-z,-j,-J,--lzma}'[compress archive with gzip/bzip2/xz/lzma]'
+  '--format[}  Select archive format]'
+  '--exclude[skip files that match pattern]'
+  '-C[change to <dir> before processing remaining files]'
+  '-k[keep (dont overwrite) existing files]'
+  '-m[dont restore modification times]'
+  '-O[write entries to stdout, dont restore to disk]'
+  '-p[restore permissions (including ACLs, owner, file flags)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

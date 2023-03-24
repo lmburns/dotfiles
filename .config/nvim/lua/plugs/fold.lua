@@ -119,9 +119,9 @@ M.percentage = function(startl, endl)
     local str = tostring(pnum)
     if pnum == 0 then
         str = tostring(100 * folded_lines / total_lines):sub(2, 3)
-    -- elseif pnum < 10 then
-    --     pnum = " " .. pnum
-    --     pnum = pnum
+        -- elseif pnum < 10 then
+        --     pnum = " " .. pnum
+        --     pnum = pnum
     end
     return str .. "%"
 end
@@ -165,7 +165,10 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
             chunk_width = strwidth(chunk_text)
             -- str width returned from truncate() may less than 2nd argument, need padding
             if curr_width + chunk_width < target_width then
-                suffix = suffix .. (" "):rep(target_width - curr_width - chunk_width)
+                suffix = suffix
+                             .. (" "):rep(
+                                 target_width - curr_width - chunk_width
+                             )
             end
             break
         end
@@ -175,8 +178,10 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
     local foldlvl = ("+"):rep(v.foldlevel)
     local filler_right = ("•"):rep(3)
     -- This extra 1 comes from the space added on the line below the following
-    local filler =
-        ("•"):rep(target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1)
+    local filler = ("•"):rep(
+                       target_width - curr_width - strwidth(foldlvl)
+                           - strwidth(filler_right) - 1
+                   )
     table.insert(new_virt_text, {(" %s"):format(filler), "Comment"})
     table.insert(new_virt_text, {foldlvl, "UFOFoldLevel"})
     table.insert(new_virt_text, {percentage, "ErrorMsg"})
@@ -209,7 +214,7 @@ M.setup_ufo = function()
                 win_config = {
                     border = style.current.border,
                     winhighlight = "Normal:CocFloating",
-                    winblend = 5
+                    winblend = 5,
                 },
                 mappings = {
                     scrollB = "",
@@ -222,8 +227,8 @@ M.setup_ufo = function()
                     jumpBot = "gj",
                     close = "q",
                     switch = "<Tab>",
-                    trace = "<CR>"
-                }
+                    trace = "<CR>",
+                },
             },
             provider_selector = function(_bufnr, filetype)
                 -- return a string type use internal providers
@@ -234,7 +239,7 @@ M.setup_ufo = function()
                 -- if you prefer treesitter provider rather than lsp,
                 -- return ft_map[filetype] or {'treesitter', 'indent'}
                 return ft_map[filetype]
-            end
+            end,
         }
     )
 end
@@ -275,7 +280,9 @@ function M.set_foldlevel(bufnr)
     ):finally(
         function()
             -- set foldlevel to max after UFO is initialized
-            local max = api.nvim_eval("max(map(range(1, line('$')), 'foldlevel(v:val)'))")
+            local max = api.nvim_eval(
+                            "max(map(range(1, line('$')), 'foldlevel(v:val)'))"
+                        )
             vim.o.foldlevel = max == 0 and 99 or max
             -- vim.o.foldlevel = max
         end
@@ -304,17 +311,16 @@ local function init()
         fzf = "",
         telescope = "",
         scratchpad = "",
-        aerial = ""
+        aerial = "",
     }
 
     vim.defer_fn(
         function()
             hl.plugin(
-                "Ufo",
-                {
+                "Ufo", {
                     UFOFoldLevel = {fg = palette.blue, bold = true},
                     UfoPreviewThumb = {link = "PmenuThumb"},
-                    UfoPreviewSbar = {link = "PmenuSbar"}
+                    UfoPreviewSbar = {link = "PmenuSbar"},
                 }
             )
 
@@ -333,17 +339,30 @@ local function init()
             vim.o.foldlevel = 99 -- folds higher than this will be closed (zm, zM, zR)
 
             -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
-            map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top open fold (fold levels)"})
-            map({"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>", {desc = "Bottom open fold (fold levels)"})
-
-            map({"n", "x"}, "z]", "<Cmd>norm! zj_<CR>", {desc = "Start next fold"})
-            map({"n", "x"}, "z[", "<Cmd>norm! zk_<CR>", {desc = "Bottom previous fold"})
-
-            map({"n", "x"}, "zl", "<Cmd>norm! zj_<CR>", {desc = "Next start fold"})
             map(
-                "n",
-                "zh",
-                [[require('ufo').goPreviousStartFold()]],
+                {"n", "x"}, "[z", "<Cmd>norm! [z_<CR>",
+                {desc = "Top open fold (fold levels)"}
+            )
+            map(
+                {"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>",
+                {desc = "Bottom open fold (fold levels)"}
+            )
+
+            map(
+                {"n", "x"}, "z]", "<Cmd>norm! zj_<CR>",
+                {desc = "Start next fold"}
+            )
+            map(
+                {"n", "x"}, "z[", "<Cmd>norm! zk_<CR>",
+                {desc = "Bottom previous fold"}
+            )
+
+            map(
+                {"n", "x"}, "zl", "<Cmd>norm! zj_<CR>",
+                {desc = "Next start fold"}
+            )
+            map(
+                "n", "zh", [[require('ufo').goPreviousStartFold()]],
                 {luacmd = true, desc = "Previous start fold"}
             )
             -- map("n", "zl", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
@@ -351,37 +370,45 @@ local function init()
             -- map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
 
             map(
-                "n",
-                "z,",
-                [[require('ufo').goPreviousClosedFold()]],
+                "n", "z,", [[require('ufo').goPreviousClosedFold()]],
                 {luacmd = true, desc = "Previous closed fold"}
             )
             map(
-                "n",
-                "z.",
-                [[require('ufo').goNextClosedFold()]],
+                "n", "z.", [[require('ufo').goNextClosedFold()]],
                 {luacmd = true, desc = "Next closed fold"}
             )
 
-            map({"n", "x"}, "zL", D.ithunk(go_next_and_peek), {desc = "Go next closed fold & peek"})
-            map({"n", "x"}, "zH", D.ithunk(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
-            map({"n", "x"}, "zK", D.ithunk(ufo.closeFoldsWith), {desc = "Close folds with v:count"})
-            map("n", "zR", D.ithunk(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
-            map("n", "zM", D.ithunk(ufo.closeAllFolds), {desc = "Close all folds (keep 'fdl')"})
+            map(
+                {"n", "x"}, "zL", D.ithunk(go_next_and_peek),
+                {desc = "Go next closed fold & peek"}
+            )
+            map(
+                {"n", "x"}, "zH", D.ithunk(go_prev_and_peek),
+                {desc = "Go prev closed fold & peek"}
+            )
+            map(
+                {"n", "x"}, "zK", D.ithunk(ufo.closeFoldsWith),
+                {desc = "Close folds with v:count"}
+            )
+            map(
+                "n", "zR", D.ithunk(ufo.openAllFolds),
+                {desc = "Open all folds (keep 'fdl')"}
+            )
+            map(
+                "n", "zM", D.ithunk(ufo.closeAllFolds),
+                {desc = "Close all folds (keep 'fdl')"}
+            )
             -- map("n", "z<", "zR", {desc = "Open all folds: set 'fdl' to max"})
             -- map("n", "z>", "zM", {desc = "Close all folds: set 'fdl' to 0"})
 
             map(
-                "n",
-                "z;",
-                "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>",
+                "n", "z;", "@=((foldclosed(line('.')) < 0) ? 'zc' : 'zo')<CR>",
                 {silent = true, desc = "Toggle fold"}
             )
             -- "&foldlevel ? 'zM' :'zR'",
             -- [[execute(&foldlevel ? 'norm zM' : 'norm zR')]],
             map(
-                "n",
-                "z'",
+                "n", "z'",
                 [[execute((foldclosed(line('.')) < 0) ? 'norm zM' : 'norm zR')]],
                 {cmd = true, silent = true, desc = "Toggle all folds"}
             )
@@ -402,7 +429,7 @@ local function init()
                     ["zr"] = "Reduce folding: add v:count1 to 'fdl'",
                     ["zn"] = "Fold none: open all folds",
                     ["zN"] = "Fold normal: all folds remain",
-                    ["zi"] = "Invert 'foldenable'"
+                    ["zi"] = "Invert 'foldenable'",
                 }
             )
 
@@ -414,9 +441,8 @@ local function init()
                     ["zo"] = "Open one level of folds",
                     ["zO"] = "Open all levels of folds",
                     ["zc"] = "Close one level of folds",
-                    ["zC"] = "Close all level of folds"
-                },
-                {mode = "v"}
+                    ["zC"] = "Close all level of folds",
+                }, {mode = "v"}
             )
 
             -- local bufnr = api.nvim_get_current_buf()
@@ -435,8 +461,7 @@ local function init()
             --     end,
             --     desc = "Set 'foldlevel' to max when opening file. Allows 'zr' to work"
             -- }
-        end,
-        50
+        end, 50
     )
 end
 

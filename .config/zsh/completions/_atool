@@ -1,0 +1,34 @@
+#compdef atool
+
+# zsh completions for 'atool'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-l,--list}'[list files in archive (als)]'
+  {-x,--extract}'[extract files from archive (aunpack)]'
+  {-X,--extract-to}'[extract archive to specified directory]'
+  {-a,--add}'[create archive (apack)]'
+  {-c,--cat}'[extract file to standard out (acat)]'
+  {-d,--diff}'[generate a diff between two archives (adiff)]'
+  {-r,--repack}'[repack archives to a different format (arepack)]'
+  '--help[display this help and exit]'
+  '--version[output version information and exit]'
+  {-e,--each}'[execute command above for each file specified]'
+  {-F,--format}'[override archive format (see below)]'
+  {-O,--format-option}'[give specific options to the archiver]'
+  {-D,--subdir}'[always create subdirectory when extracting]'
+  {-f,--force}'[allow overwriting of local files]'
+  {-q,--quiet}'[decrease verbosity level by one]'
+  {-v,--verbose}'[increase verbosity level by one]'
+  {-V,--verbosity}'[specify verbosity (0, 1 or 2)]'
+  {-p,--page}'[send output through pager]'
+  {-0,--null}'[filenames from standard in are null-byte separated]'
+  {-E,--explain}'[explain what is being done by atool]'
+  {-S,--simulate}'[simulation mode - no filesystem changes are made]'
+  {-o,--option}'[VALUE   override a configuration option]'
+  '--config[load configuration defaults from file]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

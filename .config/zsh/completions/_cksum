@@ -1,0 +1,25 @@
+#compdef cksum
+
+# zsh completions for 'cksum'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--algorithm}'[select the digest type to use.  See DIGEST below.]'
+  {-c,--check}'[read checksums from the FILEs and check them]'
+  {-l,--length}'[digest length in bits; must not exceed the max for]'
+  '--tag[create a BSD-style checksum (the default)]'
+  '--untagged[create a reversed style checksum, without digest type]'
+  {-z,--zero}'[end each output line with NUL, not newline]'
+  '--ignore-missing[dont fail or report status for missing files]'
+  '--quiet[dont print OK for each successfully verified file]'
+  '--status[dont output anything, status code shows success]'
+  '--strict[exit non-zero for improperly formatted checksum lines]'
+  {-w,--warn}'[warn about improperly formatted checksum lines]'
+  '--debug[indicate which implementation used]'
+  '--help[display this help and exit]'
+  '--version[output version information and exit]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

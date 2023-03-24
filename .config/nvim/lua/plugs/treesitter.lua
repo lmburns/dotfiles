@@ -895,7 +895,7 @@ M.setup = function()
             -- "norg_meta",
             -- "norg_table",
             "ninja",
-            -- "perl", -- Syntax isn't parsed the greatest
+            "perl", -- Syntax isn't parsed the greatest
             "python",
             "query",
             "rasi",
@@ -935,7 +935,7 @@ M.setup = function()
             end,
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
-            additional_vim_regex_highlighting = {"perl", "latex", "vim"},
+            additional_vim_regex_highlighting = {"perl", "latex", "vim", "ruby", "sh", "awk"},
             custom_captures = custom_captures
         },
         autotag = {enable = true},
@@ -1341,7 +1341,8 @@ local function init()
             "cmake",
             "zsh",
             "solidity",
-            "sxhkdrc"
+            "sxhkdrc",
+            "perl"
             -- "toml",
         }
     )

@@ -1,12 +1,6 @@
 ---
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
-
-# Format like Rustfmt
-AlignAfterOpenBracket: BlockIndent
-AllowAllArgumentsOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: Empty # false Always
-AllowShortLoopsOnASingleLine: false
+Language: Cpp
 
 # RemoveBracesLLVM: false # remove optional braces
 # InsertBraces: false # true # Conflicts with AllowShortIfStatementsOnASingleLine
@@ -17,10 +11,8 @@ InsertBraces: true
 # RemoveBracesLLVM: true
 # InsertBraces: false
 
-# PointerAlignment: Right
-PointerAlignment: Left
-
 AccessModifierOffset: -2
+AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Right
 AlignConsecutiveAssignments: # Aligns assignment operators
   Enabled: true # false
@@ -40,12 +32,16 @@ AlignConsecutiveMacros:
 AlignEscapedNewlines: Left
 AlignOperands: Align # false
 AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 # AllowAllConstructorInitializersOnNextLine: false # PackConstructorInitializers [[deprecated]]
+AllowShortBlocksOnASingleLine: Empty # false Always
 AllowShortCaseLabelsOnASingleLine: false
 AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Empty # Empty, All
 AllowShortIfStatementsOnASingleLine: WithoutElse # WithoutElse, Never
 AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
 # AlwaysBreakAfterDefinitionReturnType: true [[deprecated]]
 AlwaysBreakAfterReturnType: AllDefinitions # All
 AlwaysBreakBeforeMultilineStrings: true # false
@@ -55,6 +51,7 @@ BinPackArguments: false
 BinPackParameters: false
 BitFieldColonSpacing: Both
 # BreakAfterAttributes: Always
+BreakAfterJavaFieldAnnotations: true
 # BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeBinaryOperators: All # NonAssignment, All
 BreakBeforeBraces: Attach
@@ -78,8 +75,10 @@ BraceWrapping:
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
 BreakBeforeConceptDeclarations: Always
+BreakBeforeInheritanceComma: false
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
+BreakConstructorInitializersBeforeComma: false
 BreakInheritanceList: AfterColon
 BreakStringLiterals: false # true, false
 CommentPragmas: '^([#!]| IWYU pragma:)' # //# or //!
@@ -90,32 +89,32 @@ ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always
-ExperimentalAutoDetectBinPacking: true
+ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
 ForEachMacros: ['RANGES_FOR', 'FOREACH', 'Q_FOREACH', 'foreach', 'each']
 IfMacros: ['IF', 'IFNULL', 'IFNIL']
 IncludeBlocks: Regroup
 IncludeCategories:
   # Current project headers
-  - Regex:           '"([A-Za-z0-9.\/-_])+"'
-    Priority:        1
+  - Regex: '"([A-Za-z0-9.\/-_])+"'
+    Priority: 1
   # 3rd party headers with extension
-  - Regex:           '<armnn.*>'
-    Priority:        2
+  - Regex: '<armnn.*>'
+    Priority: 2
   - Regex: '^((<|")(gtest|gmock|isl|json)/)'
     Priority: 3
     SortPriority: 0
     CaseSensitive: false
   # C system headers with extension
-  - Regex:           '<([A-Za-z0-9.\/-_])+\.h>'
-    Priority:        4
+  - Regex: '<([A-Za-z0-9.\/-_])+\.h>'
+    Priority: 4
   - Regex: '^<ext/.*\.h>'
     Priority: 5
     SortPriority: 0
     CaseSensitive: false
   # C++ standard library headers without extension
-  - Regex:           '<([A-Za-z0-9\/-_])+>'
-    Priority:        6
+  - Regex: '<([A-Za-z0-9\/-_])+>'
+    Priority: 6
 
   # - Regex: '^<ext/.*\.h>'
   #   Priority: 2
@@ -152,13 +151,43 @@ JavaScriptQuotes: Double
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: Signature
+MacroBlockBegin: ''
+MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All # Inner
 # NamespaceMacros: []
 PPIndentWidth: -1
 PackConstructorInitializers: CurrentLine
+PointerAlignment: Left # Right
 QualifierAlignment: Left # Custom
 # QualifierOrder: ['inline', 'volatile', 'restrict', 'static', 'constexpr', 'const', 'type']
+RawStringFormats:
+  - Language: Cpp
+    Delimiters:
+      - cc
+      - CC
+      - cpp
+      - Cpp
+      - CPP
+      - 'c++'
+      - 'C++'
+    CanonicalDelimiter: ''
+  - Language: TextProto
+    Delimiters:
+      - pb
+      - PB
+      - proto
+      - PROTO
+    EnclosingFunctions:
+      - EqualsProto
+      - EquivToProto
+      - PARSE_PARTIAL_TEXT_PROTO
+      - PARSE_TEST_PROTO
+      - PARSE_TEXT_PROTO
+      - ParseTextOrDie
+      - ParseTextProtoOrDie
+    CanonicalDelimiter: ''
+    BasedOnStyle: google
 ReferenceAlignment: Right
 ReflowComments: true
 # RemoveSemicolon: true
@@ -169,17 +198,17 @@ ShortNamespaceLines: 0
 SortIncludes: true
 SortJavaStaticImport: After
 SortUsingDeclarations: true
-SpaceAfterCStyleCast: false
+SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
 # SpaceAroundPointerQualifiers: Left
 SpaceAfterTemplateKeyword: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeCaseColon: false
 SpaceBeforeCpp11BracedList: true
-SpaceBeforeCtorInitializerColon: true
+SpaceBeforeCtorInitializerColon: false
 SpaceBeforeInheritanceColon: false
 SpaceBeforeParens: ControlStatementsExceptControlMacros # ControlStatements
-SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeRangeBasedForLoopColon: false
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
@@ -192,7 +221,7 @@ SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard: c++20 # c++11
 # StatementAttributeLikeMacros: []
-# StatementMacros: []
+StatementMacros: ['Q_UNUSED', 'QT_REQUIRE_VERSION']
 # TypenameMacros: []
 # WhitespaceSensitiveMacros: []
 TabWidth: 4
@@ -221,3 +250,163 @@ BreakAfterJavaFieldAnnotations: true
 # ---
 # Language: Json
 # BreakArrays: true
+
+---
+Language: JavaScript
+
+InsertBraces: true
+AccessModifierOffset: -2
+AlignArrayOfStructures: Right
+
+# AlignConsecutiveAssignments: # Aligns assignment operators
+#   Enabled: false # false
+#   AcrossEmptyLines: false
+#   AcrossComments: true
+#   AlignCompound: true
+#   PadOperators: true
+# AlignConsecutiveDeclarations: # Aligns variable names
+#   Enabled: false
+#   AcrossEmptyLines: false
+#   AcrossComments: true
+
+AlignAfterOpenBracket: BlockIndent
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveDeclarations: false
+AlignConsecutiveMacros: false
+AlignEscapedNewlines: Left
+AlignOperands: Align # false
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: Empty # false Always
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty # Empty, All
+AllowShortIfStatementsOnASingleLine: WithoutElse # WithoutElse, Never
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: true
+AlwaysBreakAfterReturnType: AllDefinitions # All
+AlwaysBreakBeforeMultilineStrings: true # false
+AlwaysBreakTemplateDeclarations: true
+BitFieldColonSpacing: After
+# AttributeMacros: ['__capability', '__output', '__ununsed']
+BinPackArguments: false
+BinPackParameters: false
+BreakAfterJavaFieldAnnotations: true
+BreakBeforeBinaryOperators: NonAssignment # NonAssignment, All
+BreakBeforeBraces: Attach
+BreakBeforeConceptDeclarations: Always
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializers: AfterColon
+BreakBeforeInheritanceComma: false
+BreakInheritanceList: AfterColon
+BreakStringLiterals: false # true, false
+CompactNamespaces: false
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+Cpp11BracedListStyle: true
+EmptyLineBeforeAccessModifier: Always
+ExperimentalAutoDetectBinPacking: true
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<React'
+    Priority: 4
+  - Regex: '^<[.a-z]+>'
+    Priority: 2
+  - Regex: '^<'
+    Priority: 3
+  - Regex: '.\*'
+    Priority: 10
+#
+# IncludeIsMainRegex: '([-_](test|unittest))?$'
+# IndentAccessModifiers: true # false
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentExternBlock: Indent
+IndentGotoLabels: true
+IndentPPDirectives: BeforeHash
+IndentRequiresClause: true
+IndentWidth: 4
+IndentWrappedFunctionNames: false
+InsertTrailingCommas: None
+# # IntegerLiteralSeparator:
+# #   Binary: 4
+# #   Decimal: 3
+# #   Hex: -1
+JavaScriptQuotes: Double
+JavaScriptWrapImports: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+LambdaBodyIndentation: Signature
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All # Inner
+ObjCBinPackProtocolList: Never
+ObjCBlockIndentWidth: 2
+ObjCSpaceAfterProperty: false
+ObjCSpaceBeforeProtocolList: false
+PackConstructorInitializers: CurrentLine
+QualifierAlignment: Left # Custom
+RawStringFormats:
+  - Language: JavaScript
+    Delimiters:
+      - js
+      - Js
+      - JS
+      - ts
+      - Ts
+      - TS
+      - javascript
+      - Javascript
+      - JavaScript
+      - typescript
+      - Typescript
+      - TypeScript
+    CanonicalDelimiter: ''
+  - Language: TextProto
+    Delimiters:
+      - pb
+      - PB
+      - proto
+      - PROTO
+    EnclosingFunctions:
+      - EqualsProto
+      - EquivToProto
+      - PARSE_PARTIAL_TEXT_PROTO
+      - PARSE_TEST_PROTO
+      - PARSE_TEXT_PROTO
+      - ParseTextOrDie
+      - ParseTextProtoOrDie
+    CanonicalDelimiter: ''
+    BasedOnStyle: google
+# ReferenceAlignment: Right
+ReflowComments: true
+# RemoveSemicolon: true
+SeparateDefinitionBlocks: Always
+ShortNamespaceLines: 0
+SortIncludes: true
+SortJavaStaticImport: After
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: false
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: false
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 2
+SpacesInAngles: false
+SpacesInConditionalStatement: false
+SpacesInContainerLiterals: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+ColumnLimit: 80 # 100

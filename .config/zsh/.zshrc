@@ -1051,8 +1051,7 @@ zt 0c light-mode run-atpull nocompile'!' for \
   id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
     zdharma-continuum/null \
   id-as'keychain_init' has'keychain' nocd \
-  eval'keychain --noask --agents ssh -q --inherit any --eval id_rsa \
-    && keychain --agents ssh -q --inherit any --eval git \
+  eval'keychain --agents ssh -q --inherit any --eval id_rsa git gitlab \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
       zdharma-continuum/null
 

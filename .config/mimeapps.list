@@ -16,6 +16,7 @@ application/pdf=zathura.desktop;
 application/rss+xml=rss.desktop;
 application/rtf=libreoffice-writer.desktop;
 application/schema+json=nvim.desktop;
+application/vnd.openxmlformats-officedocument.wordprocessingml.document=libreoffice-writer.desktop;
 application/x-bittorrent=torrent.desktop;
 application/x-gnome-saved-search=pcmanfm.desktop;
 application/x-perl=nvim.desktop;
