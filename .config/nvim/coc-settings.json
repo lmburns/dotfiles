@@ -1618,5 +1618,6 @@
     //     "bsconfig.json"
     //   ]
     // },
-  }
+  },
+  "snippets.ultisnips.pythonPrompt": false
 }

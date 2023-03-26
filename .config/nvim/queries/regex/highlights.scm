@@ -25,7 +25,6 @@
 ] @operator
 
 [
-  (identity_escape)
   (control_letter_escape)
   (character_class_escape)
   (control_escape)
@@ -34,6 +33,10 @@
   (boundary_assertion)
   (non_boundary_assertion)
 ] @constant.character.escape
+
+;; These are escaped special characters that lost their special meaning
+;; -> no special highlighting
+(identity_escape) @string.regex
 
 (group_name) @property
 

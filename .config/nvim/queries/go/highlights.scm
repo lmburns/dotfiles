@@ -5,12 +5,15 @@
 ; Identifiers
 
 (type_identifier) @type
+(type_spec name: (type_identifier) @type.definition)
 (field_identifier) @property
 (identifier) @variable
 (package_identifier) @namespace
 
 (parameter_declaration (identifier) @parameter)
 (variadic_parameter_declaration (identifier) @parameter)
+
+(label_name) @label
 
 ((identifier) @constant
  (#eq? @constant "_"))
@@ -193,23 +196,49 @@
 (float_literal) @float
 (imaginary_literal) @number
 
-(true) @boolean
-(false) @boolean
+[
+ (true)
+ (false)
+] @boolean
+
 (nil) @constant.builtin
 
 (keyed_element
   . (literal_element (identifier) @field))
 (field_declaration name: (field_identifier) @field)
 
+; Comments
+
 (comment) @comment @spell
+
+;; Doc Comments
+
+(source_file . (comment)+ @comment.documentation)
+
+(source_file
+  (comment)+ @comment.documentation
+  . (const_declaration))
+
+(source_file
+  (comment)+ @comment.documentation
+  . (function_declaration))
+
+(source_file
+  (comment)+ @comment.documentation
+  . (type_declaration))
+
+(source_file
+  (comment)+ @comment.documentation
+  . (var_declaration))
+
+; Errors
 
 (ERROR) @error
 
+; Spell
+
 ((interpreted_string_literal) @spell
-	(#not-has-parent? @spell
-		import_spec
-	)
-)
+  (#not-has-parent? @spell import_spec))
 
 ;; ===== CUSTOM =====
 (function_declaration

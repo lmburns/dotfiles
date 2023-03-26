@@ -3,6 +3,7 @@ local M = {}
 local utils = require("common.utils")
 local map = utils.map
 local g = vim.g
+local cmd = vim.cmd
 
 --[[
 | Key       | Option             | Values                                                     |
@@ -19,7 +20,6 @@ local g = vim.g
 | `<Right>` | `stick_to_left`    | `{ 'stick_to_left': 0, 'left_margin': 1 }`                 |
 | `<Down>`  | `*_margin`         | `{ 'left_margin': 0, 'right_margin': 0 }`                  |
 ]]
-
 --[[
 | Option           | Expression |
 | ================ | ========== |
@@ -48,7 +48,6 @@ local g = vim.g
 
 -- EXAMPLE 3: Example format
 -- `:EasyAlign * /[:;]\+/ { 'stick_to_left': 1, 'left_margin': 0 }`
-
 
 function M.setup()
     g.easy_align_bypass_fold = 1
@@ -139,6 +138,17 @@ local function init()
     -- <,'>:EasyAlign **/[\t]\+/
 
     map("n", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})
+
+    -- map(
+    --     "n",
+    --     "ga",
+    --     function()
+    --         cmd("Noice disable")
+    --         utils.normal("m", "<Plug>(EasyAlign)")
+    --         cmd("Noice enable")
+    --     end
+    -- )
+
     map("x", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})
     map("x", "<Leader>ga", "<Plug>(LiveEasyAlign)", {desc = "LiveEasyAlign"})
     map(

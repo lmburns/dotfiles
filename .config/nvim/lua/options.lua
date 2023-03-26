@@ -24,35 +24,82 @@ g.maplocalleader = [[,]]
 
 _t(
     {
-        "2html_plugin",
-        "ftplugin",
-        "getscript",
-        "getscriptPlugin",
-        "gzip",
-        "logiPat", -- boolean logical pattern matcher
         -- "man",
-        "matchit",
-        "matchparen",
-        "netrw",
-        "netrwFileHandlers",
-        "netrwPlugin",
-        "netrwSettings",
+        -- "shada",
+        -- "shada_plugin",
+        -- "spellfile",
+        -- "spellfile_plugin",
+        -- "spell",
+        -- "fzf",
+        -- "health",
         -- "remote_plugins", -- required for wilder.nvim
         -- "rplugin", -- involved with remote_plugins
-        "rrhelper",
-        "spec",
-        "tar",
-        "tarPlugin",
-        "tutor_mode_plugin",
-        "vimball",
-        "vimballPlugin",
-        -- "zip",
-        -- "zipPlugin",
+        --
+        "ada",
+        "clojurecomplete",
+        "context",
+        "contextcomplete",
+        "csscomplete",
+        "decada",
+        "freebasic",
+        "gnat",
+        "haskellcomplete",
+        "htmlcomplete",
+        "javascriptcomplete",
+        "phpcomplete",
+        "pythoncomplete",
+        "python3complete",
+        "RstFold",
+        "rubycomplete",
+        "sqlcomplete",
+        "vimexpect",
+        "xmlcomplete",
+        "xmlformat",
+        "syntax_completion",
         --
         -- "perl_provider",
-        -- "python_provider",
+        -- "python3_provider",
+        "pythonx_provider",
+        "python_provider",
         "ruby_provider",
         "node_provider",
+        --
+        "2html_plugin", -- convert to HTML
+        "getscript",
+        "getscriptPlugin",
+        "logiPat", -- boolean logical pattern matcher
+        "matchit",
+        "matchparen",
+        -- "netrw",
+        -- "netrwFileHandlers",
+        "netrwPlugin",
+        "netrwSettings",
+        "rrhelper",
+        "tutor_mode_plugin",
+        --
+        "spec",
+        "macmap",
+        "sleuth",
+        "gtags",
+        "gtags_cscope",
+        "editorconfig",
+        "tohtml",
+        "tutor",
+        --
+        "bugreport",
+        "compiler",
+        "synmenu",
+        -- "syntax",
+        -- "optwin", -- show window of options
+        -- "ftplugin",
+        --
+        "gzip",
+        "tar",
+        "tarPlugin",
+        "vimball",
+        "vimballPlugin",
+        "zip",
+        "zipPlugin",
     }
 ):map(
     function(p)
@@ -60,9 +107,13 @@ _t(
     end
 )
 
--- g.loaded_fzf = 1
--- g.loaded_gtags = 1
--- g.loaded_gtags_cscope = 1
+g.did_install_default_menus = 1
+g.did_install_syntax_menu = 1
+-- g.do_filetype_lua = 1
+-- g.did_load_filetypes = 0
+-- g.did_indent_on = 1
+-- g.did_load_ftplugin = 1
+-- g.loaded_nvim_hlslens = 1
 -- g.load_black = 1
 
 if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
@@ -109,9 +160,9 @@ g.ruby_fold = 1
 
 g.sed_highlight_tabs = 1
 
-g.no_man_maps = 1
 g.vimsyn_embed = "lPr"
 g.vimsyn_folding = "afP"
+g.no_man_maps = 1
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -129,23 +180,23 @@ o.fileformats = {"unix", "mac", "dos"}
 o.nrformats = {"octal", "hex", "bin", "unsigned", "alpha"} -- increment / decrement
 
 -- ================= Files ================= [[[
-o.backup = true -- backup files
-o.writebackup = true -- make backup before overwriting curbuf
+o.backup = false -- backup files
+o.writebackup = false -- make backup before overwriting curbuf
 o.backupcopy = "yes" -- overwrite original backup file
 o.backupdir = dirs.data .. "/backup/"
 if not uv.fs_stat(vim.o.backupdir) then
     fn.mkdir(vim.o.backupdir, "p")
 end
 
-nvim.autocmd.lmb__BackupFilename = {
-    event = "BufWritePre",
-    pattern = "*",
-    command = function()
-        -- Meaningful backup name, ex: filename@2023-03-05T14
-        -- Overwrite each and keep one per day. Can add '_%M_%S'
-        o.backupext = ("@%s"):format(fn.strftime("%FT%H"))
-    end,
-}
+-- nvim.autocmd.lmb__BackupFilename = {
+--     event = "BufWritePre",
+--     pattern = "*",
+--     command = function()
+--         -- Meaningful backup name, ex: filename@2023-03-05T14
+--         -- Overwrite each and keep one per day. Can add '_%M_%S'
+--         o.backupext = ("@%s"):format(fn.strftime("%FT%H"))
+--     end,
+-- }
 
 o.swapfile = false -- no swap files
 o.history = 10000
@@ -161,7 +212,7 @@ o.shadafile = dirs.data .. "/shada/main.shada"
 o.shada = {
     "!", -- save and restore global variables starting with uppercase
     "'1000", -- previously edited files
-    "<50", -- lines saved in each register
+    "<20", -- lines saved in each register
     "s100", -- maximum size of an item in KiB
     "/5000", -- search pattern history
     "@1000", -- input line history

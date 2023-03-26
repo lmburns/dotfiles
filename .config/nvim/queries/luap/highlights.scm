@@ -1,32 +1,35 @@
-
-(character) @character
-(set(range) @keyword)
-(negated_set(range) @keyword)
-
-(".") @punctuation.delimiter
+"." @character
 
 [
-    (anchor_end)
-    "^"
-] @punctuation.special
+  (anchor_begin)
+  (anchor_end)
+] @string.escape
 
 [
-    "["
-    "]"
-    "("
-    ")"
+  "[" "]"
+  "(" ")"
 ] @punctuation.bracket
 
 [
-    (zero_or_more)
-    (shortest_zero_or_more)
-    (one_or_more)
-    (zero_or_one)
+  (zero_or_more)
+  (shortest_zero_or_more)
+  (one_or_more)
+  (zero_or_one)
 ] @operator
+
+(range
+  from: (character) @constant
+  "-" @punctuation.delimiter
+  to: (character) @constant)
+
+(set
+  (character) @constant)
 
 (class) @keyword
 
+(negated_set
+  "^" @operator
+  (character) @constant)
+
 (balanced_match
-    first: (character) @parameter
-    last: (character) @parameter
-)
+  (character) @parameter)

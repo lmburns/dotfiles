@@ -74,6 +74,7 @@ syn match   zshPOSIXQuoted      '\\U[1-9a-fA-F]\{1,8}'
 " syn region  zshString           matchgroup=zshStringDelimiter start=+"+ end=+"+
 "                                 \ contains=@Spell,zshQuoted,@zshDerefs,@zshSubstQuoted fold
 
+" syn region  zshString    start=+\z(["'`]\)+ skip=+\\\z1+ end=+\z1+ contains=@Spell
 syn region  zshString       matchgroup=zshStringDelimiter start=+'+ end=+'+ fold
                             \ contains=@Spell
 syn region  zshString       matchgroup=zshStringDelimiter start='\%(\%(\\\\\)*\\\)\@<!"' end=+"+

@@ -13,14 +13,15 @@ local map = utils.map
 function M.setup()
     local presets = require("which-key.plugins.presets")
     presets.operators["!"] = nil
-    presets.operators["<lt>"] = nil
-    presets.operators["<gt>"] = nil
-    presets.operators["d"] = "Delete blackhole"
+    -- presets.operators["<lt>"] = nil
+    -- presets.operators["<gt>"] = nil
     -- presets.operators["gc"] = "Commenter (line)"
-    presets.operators["gb"] = "Commenter (block)"
+    -- presets.operators["gb"] = "Commenter (block)"
+    presets.operators["d"] = "Delete (blackhole)"
     presets.operators["gq"] = "Formatter"
     presets.operators["ga"] = "EasyAlign"
     presets.operators["ys"] = "Surround"
+    presets.operators["y"] = "Yank"
     presets.operators["sx"] = "Exchange"
     presets.operators["s"] = "Substitue"
 
@@ -69,8 +70,35 @@ function M.setup()
             }
         },
         -- NOTE: Only gq/s works here
-        operators = {gc = "Comments"},
-        key_labels = {},
+        operators = {
+            gc = "Comments",
+            s = "Substitute",
+            y = "Yank"
+            -- sx = "Exchange",
+        },
+        key_labels = {
+            -- override the label used to display some keys. It doesn't effect WK in any other way.
+            -- ["<space>"] = "SPC",
+            -- ["<Space>"] = "SPC",
+            -- ["<tab>"] = "TAB",
+            -- ["<cr>"] = "RET",
+            -- ["<CR>"] = "RET",
+            -- ["<Cr>"] = "RET",
+            -- ["<Tab>"] = "TAB",
+            -- ["<Cmd>"] = ":",
+            -- ["<CMD>"] = ":",
+            ["<c-w>"] = "<C-w>",
+            ["<leader>"] = "<Leader>",
+            ["<localleader>"] = "<LocalLeader>",
+            ["<C-Bslash>"] = [[<C-\>]],
+            ["<M-Bslash>"] = [[<M-\>]],
+            ["<A-Bslash>"] = [[<M-\>]],
+            ["<Backspace>"] = "<BS>",
+            ["<BACKSPACE>"] = "<BS>",
+            ["<2-LeftMouse>"] = "<2-LMouse>",
+            ["<PageUp>"] = "<PgUp>",
+            ["<PageDown>"] = "<PgDown>",
+        },
         motions = {
             count = true
         },
@@ -80,8 +108,8 @@ function M.setup()
             group = "󰫢" -- 󰫢 symbol prepended to a group
         },
         popup_mappings = {
-            scroll_down = "<c-d>", -- binding to scroll down inside the popup
-            scroll_up = "<c-u>" -- binding to scroll up inside the popup
+            scroll_down = "<C-d>", -- binding to scroll down inside the popup
+            scroll_up = "<C-u>" -- binding to scroll up inside the popup
         },
         window = {
             border = style.current.border, -- none, single, double, shadow
@@ -97,8 +125,10 @@ function M.setup()
             align = "left" -- align columns left, center or right
         },
         ignore_missing = false, -- enable this to hide mappings for which you didn't specify a label
+        -- hide mapping boilerplate
         -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
-        hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"}, -- hide mapping boilerplate
+        -- hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"},
+        hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", ": ", "<CR>"},
         show_help = true, -- show help message on the command line when the popup is visible
         show_keys = true, -- show the currently pressed key and its label as a message in the command line
         triggers = "auto",
@@ -169,6 +199,7 @@ local function init()
             ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
             ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
             ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+            ["'<Space>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
             ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"}
         }
     )
@@ -237,30 +268,30 @@ local function init()
                 ["<C-^>"] = "Split window, edit alt file",
                 --
                 c = "Close current window",
-                o = "Close all windows except this",
+                o = "Close all windows except current",
                 z = "Close preview window",
                 --
                 ["<Down>"] = "Goto window below",
-                ["<C-j>"] = "Goto window below",
+                -- ["<C-j>"] = "Goto window below",
                 j = "Goto window below",
                 ["<Up>"] = "Goto window above",
-                ["<C-k>"] = "Goto window above",
+                -- ["<C-k>"] = "Goto window above",
                 k = "Goto window above",
                 ["<Left>"] = "Goto window to left",
-                ["<C-h>"] = "Goto window to left",
+                -- ["<C-h>"] = "Goto window to left",
                 h = "Goto window to left",
                 ["<Right>"] = "Goto window to right",
-                ["<C-l>"] = "Goto window to right",
+                -- ["<C-l>"] = "Goto window to right",
                 l = "Goto window to right",
                 w = "Goto below/right window",
                 W = "Goto above/left window",
                 t = "Goto top-left window",
-                ["<C-t>"] = "Goto top-left window",
+                -- ["<C-t>"] = "Goto top-left window",
                 b = "Goto bottom-right window",
                 ["<C-b>"] = "Goto bottom-right window",
                 p = "Goto previous window",
-                [","] = {"<C-w>p", "Goto previous window"},
-                ["<C-p>"] = "Goto previous window",
+                -- [","] = {"<C-w>p", "Goto previous window"},
+                -- ["<C-p>"] = "Goto previous window",
                 P = "Goto preview window",
                 --
                 f = "Split window, edit file under cursor",
@@ -274,7 +305,9 @@ local function init()
                 i = "Split: first line with keyword",
                 ["<C-i>"] = "Split: first line with keyword",
                 ["}"] = "Preview: ':ptag' under cursor",
-                ["g}"] = "Preview: ':ptjump' under cursor"
+                ["g}"] = "Preview: ':ptjump' under cursor",
+                ["<lt>"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
+                [">"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"}
             }
         }
     )

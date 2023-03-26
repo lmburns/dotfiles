@@ -416,8 +416,8 @@ function M.diagnostic(winid, nr, keep)
     )
 end
 
----Provide a higlighting fallback on cursor hold
----i.e., this will show non-treesitter highlighting on cursor hold
+---Provide a highlighting fallback on cursor hold
+---This will not highlight keywords
 M.hl_fallback =
     (function()
     local fb_bl_ft = {
@@ -929,6 +929,8 @@ function M.init()
             ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
             ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
             ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
+            ["[x"] = {":CocCommand document.jumpToPrevSymbol<CR>", "Goto prev symbol"},
+            ["]x"] = {":CocCommand document.jumpToNextSymbol<CR>", "Goto next symbol"},
             ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
             ["<A-q>"] = {
                 ":lua vim.notify(require'plugs.coc'.getsymbol(), vim.log.levels.WARN)<CR>",

@@ -1,13 +1,21 @@
 ; inherits: css
 
 [
+  "@at-root"
+  "@debug"
+  "@error"
+  "@extend"
+  "@forward"
   "@mixin"
-  "@media"
-  "@include"
-  "@function"
+  "@use"
+  "@warn"
 ] @keyword
 
-("@return") @keyword.return
+"@function" @keyword.function
+
+"@return" @keyword.return
+
+"@include" @include
 
 [
   "@while"

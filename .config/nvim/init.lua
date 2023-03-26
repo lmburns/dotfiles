@@ -115,7 +115,7 @@ vim.schedule(
                         event = "FileType",
                         pattern = "*",
                         command = function()
-                            pcall(require("plugs.treesitter").hijack_synset)
+                            require("plugs.treesitter").hijack_synset()
                         end
                     }
                 )

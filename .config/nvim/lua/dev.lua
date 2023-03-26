@@ -1189,7 +1189,7 @@ end
 
 ---Return the buffer lines, proper line endings for 'dos' format
 ---@param bufnr number?
----@return string
+---@return string[]
 M.buf_lines = function(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf() --[==[@as number]==]
     local buftext = api.nvim_buf_get_lines(bufnr, 0, -1, false)
@@ -1437,7 +1437,7 @@ end
 ---Set a timeout
 ---@param callback function
 ---@param ms number
----@return userdata
+---@return uv_timer_t?
 M.setTimeout = function(callback, ms)
     local timer = uv.new_timer()
     timer:start(

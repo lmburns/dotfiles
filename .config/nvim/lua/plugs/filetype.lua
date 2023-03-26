@@ -40,6 +40,7 @@ function M.setup()
                 rasi = "rasi",
                 cr = "crystal",
                 ["pre-commit"] = "sh",
+                [".editorconfig"] = "ini",
                 log = "log",
                 ms = nroff_ft,
                 me = nroff_ft,
@@ -98,7 +99,7 @@ function M.setup()
                     elseif ext == "rst" then
                         return "markdown"
                     end
-                end,
+                end
                 -- [".*"] = {
                 --     priority = -math.huge,
                 --     function(_path, bufnr)

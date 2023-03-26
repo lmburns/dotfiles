@@ -622,7 +622,7 @@ function M.matchup()
 
     g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
     g.matchup_delim_noskips = 2 -- in comments -- 0: All, 1: Brackets
-    -- FIX: THIS ISN'T WORKING
+    -- FIX: This isn't working
     g.matchup_delim_nomids = 0 -- match func return end
 
     -- g.matchup_delim_stopline = 500
@@ -644,15 +644,21 @@ function M.matchup()
     map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
     map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)")
     map("o", "g5", "<Plug>(matchup-g%)")
-    map({"n", "x", "o"}, "[5", "<Plug>(matchup-[%)")
-    map({"n", "x", "o"}, "]5", "<Plug>(matchup-]%)")
+
     map({"n", "x", "o"}, "[%", "<Plug>(matchup-[%)")
     map({"n", "x", "o"}, "]%", "<Plug>(matchup-]%)")
-    map({"n", "x", "o"}, "<Leader>5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
-    map({"n", "x", "o"}, "z5", "<Plug>(matchup-z%)", {desc = "Jump inside matchup"})
+    map({"n", "x", "o"}, "[4", "<Plug>(matchup-[%)")
+    map({"n", "x", "o"}, "]4", "<Plug>(matchup-]%)")
+
+    map({"n", "x", "o"}, "[5", "<Plug>(matchup-Z%)")
+    map({"n", "x", "o"}, "]5", "<Plug>(matchup-z%)")
+    map({"n", "x", "o"}, "z{", "<Plug>(matchup-Z%)", {desc = "Inside prev matchup"})
+    map({"n", "x", "o"}, "z}", "<Plug>(matchup-z%)", {desc = "Inside next matchup"})
 
     map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
     map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
+
+    -- FIX: This isn't working
     map("n", "ds%", "<Plug>(matchup-ds%)")
     map("n", "cs%", "<Plug>(matchup-cs%)")
 

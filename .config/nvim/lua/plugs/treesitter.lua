@@ -63,7 +63,7 @@ function M.hijack_synset()
             configs.reattach_module("highlight", bufnr)
             vim.defer_fn(
                 function()
-                    configs.reattach_module("textobjects.move", bufnr)
+                    pcall(configs.reattach_module, "textobjects.move", bufnr)
                 end,
                 300
             )
@@ -73,6 +73,7 @@ function M.hijack_synset()
     end
 end
 
+---Setup `nvim-gps`
 M.setup_gps = function()
     cmd.packadd("nvim-gps")
     local gps = D.npcall(require, "nvim-gps")
@@ -125,6 +126,7 @@ M.setup_gps = function()
     )
 end
 
+---Setup `hlargs.nvim`
 M.setup_hlargs = function()
     cmd.packadd("hlargs.nvim")
     local hlargs = D.npcall(require, "hlargs")
@@ -144,7 +146,7 @@ M.setup_hlargs = function()
                 python = {"cls", "self"},
                 go = {"_"},
                 rust = {"_", "self"},
-                lua = {"_", "self", "use", "use_rocks"}
+                lua = {"_", "self", "use", "use_rocks", "super"}
             }
         },
         performance = {
@@ -162,6 +164,7 @@ M.setup_hlargs = function()
     }
 end
 
+---Setup `ssr.nvim`
 M.setup_ssr = function()
     cmd.packadd("ssr.nvim")
     local ssr = D.npcall(require, "ssr")
@@ -188,6 +191,7 @@ M.setup_ssr = function()
     map({"n", "x"}, "<Leader>s;", D.ithunk(ssr.open), {desc = "Open SSR"})
 end
 
+---Setup `iswap.nvim`
 M.setup_iswap = function()
     cmd.packadd("iswap.nvim")
     local iswap = D.npcall(require, "iswap")
@@ -219,6 +223,7 @@ M.setup_iswap = function()
     )
 end
 
+---Setup `nvim-ts-autotag`
 M.setup_autotag = function()
     cmd.packadd("nvim-ts-autotag")
     local autotag = D.npcall(require, "nvim-ts-autotag")
@@ -575,6 +580,8 @@ M.setup_context_vt = function()
     )
 end
 
+---Disabled for now
+---Setup `treesitter-context`
 M.setup_context = function()
     cmd.packadd("treesitter-context")
     local tctx = D.npcall(require, "treesitter-context")
@@ -885,8 +892,10 @@ M.setup = function()
             "julia",
             "kotlin",
             "latex",
+            "llvm",
             "log",
             "lua",
+            "luadoc",
             "luap",
             "make",
             "markdown",
@@ -894,13 +903,17 @@ M.setup = function()
             -- "norg",
             -- "norg_meta",
             -- "norg_table",
+            "meson",
             "ninja",
+            "passwd",
             "perl", -- Syntax isn't parsed the greatest
+            "proto",
             "python",
             "query",
             "rasi",
             "regex",
             "ron",
+            "rst",
             "ruby",
             "rust",
             "scheme",
@@ -913,6 +926,7 @@ M.setup = function()
             "toml",
             "tsx",
             "typescript",
+            "ungrammar",
             "vim",
             "vue",
             "yaml",
@@ -1036,8 +1050,8 @@ M.setup = function()
                     goto_definition = ";D", -- mapping to go to definition of symbol under cursor
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
                     list_definitions_toc = "<Leader>fo",
-                    goto_next_usage = "]x",
-                    goto_previous_usage = "[x"
+                    goto_next_usage = "]y",
+                    goto_previous_usage = "[y"
                 }
             }
         },
@@ -1054,7 +1068,7 @@ M.setup = function()
                 "git_rebase",
                 "gitattributes",
                 "markdown"
-            },
+            }
             -- query = {
             --     "rainbow-parens",
             --     html = "rainbow-tags",
@@ -1312,20 +1326,18 @@ local function init()
     cmd.packadd("nvim-treesitter")
     cmd.packadd("nvim-treesitter-textobjects")
 
-    custom_captures =
-        _t(
-        {
-            ["todo"] = "Todo",
-            ["require_call"] = "RequireCall",
-            ["function.bracket"] = "Type",
-            ["namespace.type"] = "TSNamespaceType",
-            ["function_definition"] = "FunctionDefinition",
-            ["quantifier"] = "Special",
-            ["utils"] = "Function",
-            ["code"] = "Comment",
-            ["rust_path"] = "String"
-        }
-    )
+    custom_captures = {
+        ["require_call"] = "RequireCall",
+        ["utils"] = "Function"
+        -- ["keyword.self"] = "@variable.builtin",
+        -- ["keyword.super"] = "@variable.builtin",
+        -- ["function.bracket"] = "Type",
+        -- ["namespace.type"] = "TSNamespaceType",
+        -- ["function_definition"] = "FunctionDefinition",
+        -- ["quantifier"] = "Special",
+        -- ["code"] = "Comment",
+        -- ["rust_path"] = "String"
+    }
 
     ts_hl_disabled =
         _t(
@@ -1355,6 +1367,12 @@ local function init()
     M.install_extra_parsers()
     local conf = M.setup()
     configs.setup(conf)
+
+    -- require("nvim-treesitter.highlight").set_custom_captures(
+    --     {
+    --         unpack(custom_captures)
+    --     }
+    -- )
 
     -- M.setup_comment_frame()
     -- M.setup_query_secretary()

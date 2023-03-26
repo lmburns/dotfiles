@@ -328,7 +328,6 @@
 
 [zsh]
     appname = zsh
-    new_icon = /usr/share/icons/Gruvbox/32x32/apps/terminal.png
 
 # Experimental features that may or may not work correctly. Do not expect them
 # to have a consistent behaviour across releases.

@@ -618,6 +618,27 @@ M.get_option = function(option, default)
     return opt
 end
 
+---@class CommandSMods
+---@field browse boolean
+---@field confirm boolean
+---@field emsg_silent boolean
+---@field hide boolean
+---@field horizontal boolean
+---@field keepalt boolean
+---@field keepjumps boolean
+---@field keepmarks boolean
+---@field keeppatterns boolean
+---@field lockmarks boolean
+---@field noautocmd boolean
+---@field noswapfile boolean
+---@field sandbox boolean
+---@field silent boolean
+---@field split string
+---@field tab number
+---@field unsilent boolean
+---@field verbose number
+---@field vertical boolean
+
 ---@class CommandArgs
 ---@field args string args passed to command
 ---@field fargs table args split by whitespace (more than one arg)
@@ -628,7 +649,7 @@ end
 ---@field count number any count supplied
 ---@field reg string optional register
 ---@field mods string command modifiers
----@field smods table command modifiers in structured format
+---@field smods CommandSMods command modifiers in structured format
 
 ---@class CommandOpts
 ---@field nargs number|string 0|1|'*'|'?'|'+'

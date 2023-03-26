@@ -45,6 +45,9 @@
   arguments: (argument_list . "(" . (_) @_start (_)? @_end . ")"
   (#make-range! "call.inner" @_start @_end)))
 
+(return_statement
+  (_)? @return.inner) @return.outer
+
 ; Statements
 
 ;(expression_statement ;; this is what we actually want to capture in most cases (";" is missing) probably
@@ -79,22 +82,4 @@
   . (_) @parameter.inner . ","? @_end)
  (#make-range! "parameter.outer" @parameter.inner @_end))
 
-;; ===== CUSTOM =====
-
-(function_definition
-  body: (_) @function.inside) @function.around
-
-(struct_specifier
-  body: (_) @class.inside) @class.around
-
-(enum_specifier
-  body: (_) @class.inside) @class.around
-
-(union_specifier
-  body: (_) @class.inside) @class.around
-
-(parameter_declaration) @parameter.inside
-
-(comment) @comment.inside
-
-(comment)+ @comment.around
+(number_literal) @number.inner

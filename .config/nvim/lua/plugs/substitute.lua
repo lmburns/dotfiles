@@ -81,6 +81,16 @@ local function init()
         }
     )
 
+    -- wk.register(
+    --     {
+    --         ["sx"] = {
+    --             "<Cmd>lua require('substitute.exchange').operator()<CR>",
+    --             "Substitute Exchange: <motion>"
+    --         }
+    --     },
+    --     {mode = "n", preset = true}
+    -- )
+
     -- TIP: ====================================================================
     -- `:h pattern-overview`
     -- {-}: matches 0 or more of the preceding atom, as few as possible
@@ -104,7 +114,10 @@ local function init()
     wk.register(
         {
             ["ss"] = {"<Cmd>lua require('substitute').visual()<CR>", "Substitute: visual"},
-            ["X"] = {"<Cmd>lua require('substitute.exchange').visual()<CR>", "Substitute Exchange: selection"},
+            ["X"] = {
+                "<Cmd>lua require('substitute.exchange').visual()<CR>",
+                "Substitute Exchange: selection"
+            },
             ["sr"] = {"<Cmd>lua require('substitute.range').visual()<CR>", "Substitute <motion>"}
         },
         {mode = "x"}

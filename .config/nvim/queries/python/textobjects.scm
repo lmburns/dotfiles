@@ -26,7 +26,16 @@
   condition: (_) @conditional.inner)
 
 (_ (block) @block.inner) @block.outer
-(comment) @comment.outer
+
+; leave space after comment marker if there is one
+((comment) @comment.inner @comment.outer
+           (#offset! @comment.inner 0 2 0)
+           (#lua-match? @comment.outer "# .*"))
+
+; else remove everything accept comment marker
+((comment) @comment.inner @comment.outer
+  (#offset! @comment.inner 0 1 0))
+
 
 (block (_) @statement.outer)
 (module (_) @statement.outer)
@@ -35,6 +44,9 @@
 (call
   arguments: (argument_list . "(" . (_) @_start (_)? @_end . ")"
   (#make-range! "call.inner" @_start @_end)))
+
+(return_statement
+  (_)? @return.inner) @return.outer
 
 ;; Parameters
 
@@ -158,6 +170,18 @@
     (_) @parameter.inner
   )
   (#make-range! "parameter.outer" @_start @parameter.inner))
+
+[
+  (integer)
+  (float)
+] @number.inner
+
+(assignment
+ left: (_) @assignment.lhs
+ right: (_) @assignment.inner @assignment.rhs) @assignment.outer
+
+(assignment
+ left: (_) @assignment.inner)
 
 ; TODO: exclude comments using the future negate syntax from tree-sitter
 

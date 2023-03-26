@@ -992,7 +992,7 @@ manpath=(
   "${manpath[@]}"
 )
 
-eval "$(luarocks path --bin)"
+# eval "$(luarocks path --bin)"
 
 # $HOME/.poetry/bin(N-/)
 path=(
@@ -1051,9 +1051,12 @@ zt 0c light-mode run-atpull nocompile'!' for \
   id-as'abra_hook' has'abra' nocd eval'abra hook zsh' \
     zdharma-continuum/null \
   id-as'keychain_init' has'keychain' nocd \
-  eval'keychain --agents ssh -q --inherit any --eval id_rsa git gitlab \
+  eval'keychain --agents ssh -q --inherit any --eval burnsac git gitlab \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
       zdharma-continuum/null
+
+  #     && keychain --agents ssh -q --inherit any --eval git \
+  #     && keychain --agents ssh -q --inherit any --eval gitlab \
 
 # id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
 #   zdharma-continuum/null \

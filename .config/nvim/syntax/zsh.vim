@@ -1,1 +1,1 @@
-../zsh/zsh.vim
+../0-zsh/zsh.vim

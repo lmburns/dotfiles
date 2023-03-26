@@ -285,7 +285,8 @@ nvim.autocmd.lmb__FormatOptions = {
 --                 if g.colors_name ~= "kimbox" then
 --                     hl.all(
 --                         {
---                             Hlargs = {link = "TSParameter"}
+--                             ["@keyword.self"] = {link = "@variable.builtin"},
+--                             ["@keyword.super"] = {link = "@variable.builtin"},
 --                         }
 --                     )
 --                 else
