@@ -51,6 +51,25 @@ end
 
 _G.pp = vim.pretty_print
 
+---Format a string
+---See: https://fmt.dev/latest/syntax.html
+---See: https://github.com/starwing/lua-fmt
+---format_spec ::=  [[fill]align][sign]["#"]["0"][width][grouping]["." precision][type]
+---fill        ::=  <a character other than '{' or '}'>
+---align       ::=  "<" | ">" | "^"
+---sign        ::=  "+" | "-" | " "
+---width       ::=  integer | "{" [arg_id] "}"
+---grouping    ::=  "_" | ","
+---precision   ::=  integer | "{" [arg_id] "}"
+---type        ::=  int_type | flt_type | str_type
+---int_type    ::=  "b" | "B" | "d" | "o" | "x" | "X" | "c"
+---flt_type    ::=  "e" | "E" | "f" | "F" | "g" | "G" | "%"
+---str_type    ::=  "p" | "s"
+---@param ... any
+_G.printf = function(...)
+    p(require("fmt")(...))
+end
+
 --  ╭────────╮
 --  │ String │
 --  ╰────────╯
@@ -174,6 +193,15 @@ string.rxcount = function(self, pattern)
     return require("rex_pcre2").count(self, pattern)
 end
 
+---Use `vim.regex` to match a string
+---@param self string
+---@param pattern string
+---@return number?
+---@return number?
+string.vmatch = function(self, pattern)
+    return vim.regex(pattern):match_str(self)
+end
+
 ---Load or `loadstring`
 ---@param str string
 ---@return fun(s: string): any
@@ -235,10 +263,22 @@ end
 M.ok_or_nil = function(status, ...)
     if not status then
         local args = {...}
-        local info = debug.getinfo(1, "S")
         local msg = vim.split(table.concat(args, "\n"), "\n")
         local mod = msg[1]:match("module '(%w.*)'")
-        log.err(msg, {title = ('Failed to require("%s"): %s'):format(mod, info)})
+        M.vec_insert(
+            msg,
+            ("File     : %s"):format(__FILE__()),
+            ("Traceback: %s"):format(__TRACEBACK__()),
+            ""
+        )
+        vim.schedule(
+            function()
+                log.err(msg, {
+                    title = ('Failed to require("%s")'):format(mod),
+                    once = true,
+                })
+            end
+        )
         return
     end
     return ...
@@ -280,19 +320,33 @@ end
 ---@param func function
 ---@vararg any
 ---@return boolean, any
----@overload fun(fun: function, ...): boolean, any
+---@overload fun(fn: function, ...): boolean, any
 M.wrap_err = function(msg, func, ...)
     local args = {...}
     if type(msg) == "function" then
         args, func, msg = {func, unpack(args)}, msg, nil
     end
+
+    local f = __FILE__()
+    local tb = __TRACEBACK__()
+
     return xpcall(
         func,
         function(err)
-            msg = msg and ("%s:\n%s"):format(msg, err) or err
+            local errsp = err:split("\n")
+            local title = utils.get_default(msg, errsp[1])
+            local body = F.tern(msg == nil, _t(errsp):slice(2), _t(errsp))
+            M.vec_insert(
+                body,
+                "",
+                ("File     : %s"):format(f),
+                ("Traceback: %s"):format(tb),
+                ""
+            )
+
             vim.schedule(
                 function()
-                    log.err(msg, {title = msg:split("\n")[1]})
+                    log.err(body, {title = title, once = true})
                 end
             )
         end,
@@ -555,7 +609,8 @@ end
 ---@param path string|string[]: Either a `.` separated string of table keys, or a list.
 ---@return T?
 M.tbl_access = function(t, path)
-    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or
+        vim.split(path, ".", {plain = true})
 
     local cur = t
 
@@ -575,7 +630,8 @@ end
 ---@param path string|string[]: Either a `.` separated string of table keys, or a list.
 ---@param value any
 M.tbl_set = function(t, path, value)
-    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or
+        vim.split(path, ".", {plain = true})
 
     local cur = t
 
@@ -596,7 +652,8 @@ end
 ---@param t table
 ---@param path string|string[]: Either a `.` separated string of table keys, or a list.
 M.tbl_ensure = function(t, path)
-    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or
+        vim.split(path, ".", {plain = true})
 
     if not M.tbl_access(t, keys) then
         M.tbl_set(t, keys, {})
@@ -646,7 +703,7 @@ M.vec_filter_dupes = function(vec)
 
     for _, v in ipairs(vec) do
         if not seen[v] then
-            ret[#ret + 1] = v
+            ret[#ret+1] = v
             seen[v] = true
         end
     end
@@ -701,12 +758,12 @@ M.vec_union = function(...)
         if type(args[i]) ~= "nil" then
             if type(args[i]) ~= "table" and not seen[args[i]] then
                 seen[args[i]] = true
-                result[#result + 1] = args[i]
+                result[#result+1] = args[i]
             else
                 for _, v in ipairs(args[i]) do
                     if not seen[v] then
                         seen[v] = true
-                        result[#result + 1] = v
+                        result[#result+1] = v
                     end
                 end
             end
@@ -770,7 +827,7 @@ M.vec_symdiff = function(...)
 
     for v, state in pairs(seen) do
         if state == 1 then
-            result[#result + 1] = v
+            result[#result+1] = v
         end
     end
 
@@ -811,7 +868,7 @@ end
 ---@param last? number Last index, inclusive
 ---@return any ...
 M.vec_select = function(vec, first, last)
-  return unpack(M.vec_slice(vec, first, last))
+    return unpack(M.vec_slice(vec, first, last))
 end
 
 ---Search for a value in a vector
@@ -844,7 +901,7 @@ end
 ---@return T[] vec #Vector with the pushed value
 M.vec_push = function(vec, ...)
     for _, v in ipairs({...}) do
-        vec[#vec + 1] = v
+        vec[#vec+1] = v
     end
     return vec
 end
@@ -853,7 +910,7 @@ end
 ---The items passed will be inserted in the same sequence.
 ---```
 ---local v = {1, 2, 3}
----M.vec_insert(v, 4, 5, 6) == {4, 5, 6, 1, 2, 3}
+---M.vec_insert(v, 4, 5, {6, 7}) == {4, 5, {6, 7}, 1, 2, 3}
 ---```
 ---@generic T
 ---@param vec Vector<T> Vector to push to
@@ -871,13 +928,13 @@ end
 ---@param v T
 ---@return boolean success True if the object was removed
 M.vec_remove = function(t, v)
-  local idx = M.vec_indexof(t, v)
-  if idx > -1 then
-    table.remove(t, idx)
+    local idx = M.vec_indexof(t, v)
+    if idx > -1 then
+        table.remove(t, idx)
 
-    return true
-  end
-  return false
+        return true
+    end
+    return false
 end
 
 --@generic T: table|any[], K: string|number, V: any
@@ -1010,7 +1067,7 @@ M.buf_is_empty = function(bufnr)
     return #lines == 1 and lines[1] == ""
 end
 
----`vim.api.nvim_is_buf_loaded` filters out all hidden buffers
+---`vim.api.nvim_buf_is_loaded` filters out all hidden buffers
 M.buf_is_valid = function(bufnr)
     if not bufnr or bufnr < 1 then
         return false
@@ -1023,14 +1080,14 @@ end
 ---@param bufnr number?
 ---@return boolean
 M.buf_is_modified = function(bufnr)
-    vim.validate {
+    vim.validate{
         bufnr = {
             bufnr,
             function(b)
                 return (type(b) == "number" and b >= 1) or type(b) == "nil"
             end,
             "number >= 1 or nil"
-        }
+        },
     }
 
     bufnr = bufnr or api.nvim_get_current_buf()
@@ -1063,7 +1120,7 @@ end
 M.list_bufs = function(opts)
     opts = opts or {}
 
-    vim.validate {
+    vim.validate{
         loaded = {opts.loaded, {"b"}, true},
         valid = {opts.valid, {"b"}, true},
         listed = {opts.listed, {"b"}, true},
@@ -1075,7 +1132,7 @@ M.list_bufs = function(opts)
         bufname = {opts.bufname, {"s"}, true},
         bufpath = {opts.bufpath, {"s"}, true},
         options = {opts.options, {"t"}, true},
-        vars = {opts.vars, {"t"}, true}
+        vars = {opts.vars, {"t"}, true},
     }
 
     ---@type number[]
@@ -1083,7 +1140,8 @@ M.list_bufs = function(opts)
 
     if opts.no_hidden or opts.tabpage then
         local wins =
-            opts.tabpage and api.nvim_tabpage_list_wins(opts.tabpage) or api.nvim_list_wins()
+            opts.tabpage and api.nvim_tabpage_list_wins(opts.tabpage) or
+            api.nvim_list_wins()
         local bufnr
         ---@type { [number]: boolean }
         local seen = {}
@@ -1188,7 +1246,7 @@ M.buf_info = function(opts)
 end
 
 ---Return the buffer lines, proper line endings for 'dos' format
----@param bufnr number?
+---@param bufnr? number
 ---@return string[]
 M.buf_lines = function(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf() --[==[@as number]==]
@@ -1202,10 +1260,11 @@ M.buf_lines = function(bufnr)
 end
 
 ---Check if the buffer name matches a terminal buffer name
----@param bufname string
+---@param bufname? string
 ---@return boolean
 M.is_term_bufname = function(bufname)
-    if bufname and bufname:match("term://") then
+    bufname = utils.get_default(bufname, fn.bufname())
+    if bufname:match("term://") then
         return true
     end
     return false
@@ -1245,8 +1304,8 @@ M.win_set_buf_noautocmd = function(win, buf)
     vim.o.eventignore = ei
 end
 
----Determine if the window is the only open one
----@param win_id number?
+---Determine if the window is the only one open
+---@param win_id? number
 ---@return boolean
 M.is_last_win = function(win_id)
     win_id = win_id or api.nvim_get_current_win()
@@ -1268,7 +1327,8 @@ end
 ---@param winid? number
 ---@return boolean
 M.is_floating_window = function(winid)
-    return fn.win_gettype() == "popup" or api.nvim_win_get_config(winid or 0).relative ~= ""
+    return fn.win_gettype() == "popup" or
+        api.nvim_win_get_config(winid or 0).relative ~= ""
     --
     -- These two commands here are not equivalent as the docs might suggest
     -- In the function below `M.find_win_except_float`,
@@ -1388,16 +1448,18 @@ local installed
 ---@return boolean
 M.plugin_installed = function(plugin_name)
     if not installed then
-        local dirs = fn.expand(fn.stdpath("data") .. "/site/pack/packer/start/*", true, true)
-        local opt = fn.expand(fn.stdpath("data") .. "/site/pack/packer/opt/*", true, true)
+        local dirs = fn.expand(fn.stdpath("data") .. "/site/pack/packer/start/*",
+                               true, true)
+        local opt = fn.expand(fn.stdpath("data") .. "/site/pack/packer/opt/*",
+                              true, true)
         vim.list_extend(dirs, opt)
         installed =
             vim.tbl_map(
-            function(path)
-                return fn.fnamemodify(path, ":t")
-            end,
-            dirs
-        )
+                function(path)
+                    return fn.fnamemodify(path, ":t")
+                end,
+                dirs
+            )
     end
     return vim.tbl_contains(installed, plugin_name)
 end
@@ -1515,7 +1577,7 @@ M.switch = function(c)
                     error("case " .. tostring(self.casevar) .. " not a function")
                 end
             end
-        end
+        end,
     }
     return swtbl
 end

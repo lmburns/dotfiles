@@ -5,7 +5,7 @@ if not D.npcall(require, "nvim-treesitter") then
     return
 end
 
-local _ = D.ithunk
+local it = D.ithunk
 local utils = require("common.utils")
 local map = utils.map
 local hl = require("common.color")
@@ -136,7 +136,7 @@ M.setup_hlargs = function()
 
     hlargs.setup {
         color = g.colors_name == "kimbox" and colors.salmon or nil,
-        excluded_filetypes = BLACKLIST_FT,
+        excluded_filetypes = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= 'luapad'")),
         paint_arg_declarations = true,
         paint_arg_usages = true,
         hl_priority = 10000,
@@ -746,15 +746,15 @@ M.setup_treesurfer = function()
         }
     )
 
-    -- map("n", "<C-A-.>", _(sts.targeted_jump, filter), {desc = "Jump to a main node"})
-    map("n", "<C-A-,>", _(sts.targeted_jump, filter), {desc = "Jump to any node"})
-    map("n", "<C-A-[>", _(sts.filtered_jump, filter, false), {desc = "Prev important node"})
-    map("n", "<C-A-]>", _(sts.filtered_jump, filter, true), {desc = "Next important node"})
-    map("n", "(", _(sts.filtered_jump, "default", false), {desc = "Prev main node"})
-    map("n", ")", _(sts.filtered_jump, "default", true), {desc = "Next main node"})
+    -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
+    map("n", "<C-A-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
+    map("n", "<C-A-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
+    map("n", "<C-A-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
+    map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
+    map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
 
-    map("n", "<M-S-{>", _(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
-    map("n", "<M-S-}>", _(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
+    map("n", "<M-S-{>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
+    map("n", "<M-S-}>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 
     map(
         "n",
@@ -878,7 +878,6 @@ M.setup = function()
             "gosum",
             "gowork",
             "graphql",
-            "help",
             "hjson",
             "html",
             "ini",
@@ -928,6 +927,7 @@ M.setup = function()
             "typescript",
             "ungrammar",
             "vim",
+            "vimdoc",
             "vue",
             "yaml",
             "zig"
@@ -949,7 +949,15 @@ M.setup = function()
             end,
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
-            additional_vim_regex_highlighting = {"perl", "latex", "vim", "ruby", "sh", "awk"},
+            additional_vim_regex_highlighting = {
+                "perl",
+                "latex",
+                "vim",
+                "ruby",
+                "sh",
+                "awk",
+                "css"
+            },
             custom_captures = custom_captures
         },
         autotag = {enable = true},
@@ -1456,17 +1464,16 @@ local function init()
     ft_enabled = {telescope = true}
     indent_enabled = {}
     for _, lang in ipairs(conf.ensure_installed) do
-        if not vim.tbl_contains(hl_disabled, lang) then
-            local parser = parsers.list[lang]
+        local parser = parsers.list[lang]
             local filetype = parser.filetype
-            ft_enabled[filetype or lang] = true
-        end
 
-        if not vim.tbl_contains(ts_indent_disabled, lang) then
-            local parser = parsers.list[lang]
-            local filetype = parser.filetype
-            indent_enabled[filetype or lang] = true
-        end
+            if not vim.tbl_contains(hl_disabled, lang) then
+                ft_enabled[filetype or lang] = true
+            end
+
+            if not vim.tbl_contains(ts_indent_disabled, lang) then
+                indent_enabled[filetype or lang] = true
+            end
     end
 
     -- This doesn't get loaded until the second file is opened

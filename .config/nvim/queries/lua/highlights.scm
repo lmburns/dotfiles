@@ -129,7 +129,7 @@
 
 ((identifier) @variable.builtin
  (#any-of? @variable.builtin "_VERSION" "debug" "io" "jit" "math" "os" "package" "string" "table" "utf8")
- (#set! "priority" 95))
+ (#set! "priority" 105))
 
 ((identifier) @keyword.coroutine
   (#eq? @keyword.coroutine "coroutine"))
@@ -216,13 +216,33 @@
 
 ;; ===== CUSTOM =====
 
+((identifier) @constant.blank
+  (#eq? @constant.blank "_"))
+
+(dot_index_expression
+  field: (identifier) @field.builtin
+ (#any-of? @field.builtin
+    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+ (#set! "priority" 105))
+
+(field
+  name: (identifier) @field.builtin
+ (#any-of? @field.builtin
+    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+ (#set! "priority" 105))
+
+;; I would like these to be variable.builtin.self but highlighting isn't correct with that
 ((identifier) @keyword.self
   (#eq? @keyword.self "self")
- (#set! "priority" 95))
+ (#set! "priority" 105))
 
 ((identifier) @keyword.super
   (#eq? @keyword.super "super")
- (#set! "priority" 95))
+ (#set! "priority" 105))
 
 ((identifier) @constant
   (#eq? @constant "_G"))

@@ -545,7 +545,8 @@ cmd link %{{
   fi
   case "$mode" in
     (copy)
-      command ln -sr -t . "$@"
+      # command ln -sr -t . "$@"
+      command ln -s -t . "$@"
       dunstify -a lf "Created symlink" "${@:t3}\n=> $PWD"
     ;;
     (move)
@@ -1957,4 +1958,5 @@ map gdu ${{
 # ]]] Mouse Mappings
 # ]]] Mappings
 
-# vim: ft=lf:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:
+# fdm=marker:fmr=[[[,]]]:
+# vim: ft=lf:et:sw=2:ts=2:sts=-1:

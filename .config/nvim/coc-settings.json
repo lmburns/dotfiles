@@ -558,9 +558,10 @@
     "align_function_params": "true",
     "align_continuous_assign_statement": "true",
     "align_continuous_rect_table_field": "true",
-    "align_if_branch": "true",
-    "align_array_table": "true",
     "align_continuous_inline_comment": "true",
+    "align_if_branch": "false",
+    "align_array_table": "false",
+
     "never_indent_before_if_condition": "false",
     "never_indent_comment_on_if_branch": "false",
     "line_space_after_if_statement": "keep",
@@ -572,7 +573,7 @@
     "line_space_after_function_statement": "fixed(2)",
     "line_space_after_expression_statement": "keep",
     "line_space_after_comment": "keep",
-    "break_all_list_when_line_exceed": "true",
+    "break_all_list_when_line_exceed": "false",
     "auto_collapse_lines": "false",
     "ignore_space_after_colon": "false",
     "remove_call_expression_list_finish_comma": "true"
@@ -1379,12 +1380,6 @@
         ".hg/"
       ],
       "initializationOptions": {
-        "cache": {
-          // "directory": "/tmp/ccls"
-          // "directory": ".ccls-cache"
-          "directory": "/home/lucas/.cache/ccls"
-        },
-        "cacheFormat": "json",
         "clang": {
           "extraArgs": [
             "-fms-extensions",
@@ -1393,17 +1388,31 @@
           ],
           "excludeArgs": []
         },
+        "cacheFormat": "json",
+        "cache": {
+          "directory": "/home/lucas/.cache/ccls"
+        },
         "client": {
-          "snippetSupport": true
+          "snippetSupport": true,
+          "diagnosticsRelatedInformation": true,
+          "hierarchicalDocumentSymbolSupport": true,
+          "linkSupport": true
+        },
+        "codeLens": {
+          "renderInLine": true,
+          "localVariables": true,
         },
         "completion": {
           "placeholder": false,
-          "detailedLabel": true,
+          "detailedLabel": false,
+          "duplicateOptional": false,
           "filterAndSort": false
         },
         "index": {
           "onChange": false,
-          "trackDependency": 1
+          "comments": 2,
+          "trackDependency": 1,
+          "parametersInDeclarations": true,
         }
       }
     },

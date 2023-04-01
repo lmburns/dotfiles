@@ -24,6 +24,10 @@ less_termcap[se]="$(tput rmso)" # tput rmso
 less_termcap[us]="$(tput setaf 2)"
 less_termcap[ue]="$(tput sgr0)"
 
+for k v ( "${(@kv)less_termcap}" ) {
+  eval "LESS_TERMCAP_${k}=${v}"
+}
+
 function man() {
   local -a environment
   local k v

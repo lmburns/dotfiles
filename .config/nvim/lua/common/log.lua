@@ -9,7 +9,7 @@ M.levels = {
     INFO = 2,
     WARN = 3,
     ERROR = 4,
-    OFF = 5
+    OFF = 5,
 }
 
 -- ---@type LogLevels
@@ -29,11 +29,13 @@ _G.__FUNC__ = function()
 end
 ---@return string module #calling module
 _G.__MODULE__ = function()
-    local src = debug.getinfo(2, "S").short_src
+    local src = debug.getinfo(3, "S").short_src
     local fname_p = fn.fnamemodify(src, ":r")
     local fname = fn.fnamemodify(fname_p, ":t")
     local dir = fn.fnamemodify(fname_p, ":h:t")
-    return F.tern(fname == "init", dir, F.tern(dir == "nvim", fname, ("%s.%s"):format(dir, fname)))
+    return F.tern(fname == "init", dir,
+                  F.tern(dir == "nvim", fname,
+                         ("%s.%s"):format(dir, fname)))
 end
 ---@return string #'<module>.<function>:line'
 _G.__TRACEBACK__ = function()
@@ -41,9 +43,21 @@ _G.__TRACEBACK__ = function()
     local fname_p = fn.fnamemodify(info.short_src, ":r")
     local fname = fn.fnamemodify(fname_p, ":t")
     local dir = fn.fnamemodify(fname_p, ":h:t")
-    local module =
-        F.tern(fname == "init", dir, F.tern(dir == "nvim", fname, ("%s.%s"):format(dir, fname)))
+    local module = F.tern(fname == "init", dir,
+                          F.tern(dir == "nvim", fname,
+                                 ("%s.%s"):format(dir, fname)))
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
+end
+
+---@return string module #calling module (callstack level 2)
+local __FMODULE__ = function()
+    local src = debug.getinfo(2, "S").short_src
+    local fname_p = fn.fnamemodify(src, ":r")
+    local fname = fn.fnamemodify(fname_p, ":t")
+    local dir = fn.fnamemodify(fname_p, ":h:t")
+    return F.tern(fname == "init", dir,
+                  F.tern(dir == "nvim", fname,
+                         ("%s.%s"):format(dir, fname)))
 end
 
 local default_config = {
@@ -64,13 +78,13 @@ local default_config = {
     modes = {
         {name = "trace", hl = "Comment"},
         {name = "debug", hl = "Comment"},
-        {name = "info", hl = "None"},
-        {name = "warn", hl = "WarningMsg"},
+        {name = "info",  hl = "None"},
+        {name = "warn",  hl = "WarningMsg"},
         {name = "error", hl = "ErrorMsg"},
-        {name = "fatal", hl = "ErrorMsg"}
+        {name = "fatal", hl = "ErrorMsg"},
     },
     -- Can limit the number of decimals displayed for floats
-    float_precision = 0.01
+    float_precision = 0.01,
 }
 
 local built = log.new(default_config, true)
@@ -85,12 +99,10 @@ M.logger = built
 M.trace = function(msg, opts)
     opts = opts or {}
     if opts.print then
-        nvim.echo(
-            {
-                {"[DEBUG]: ", "@text.trace"},
-                {msg, F.if_nil(opts.hl, "NotifyTRACEBody")}
-            }
-        )
+        nvim.echo({
+            {"[DEBUG]: ", "@text.trace"},
+            {msg,         F.if_nil(opts.hl, "NotifyTRACEBody")},
+        })
     else
         require("common.utils").notify(msg, M.levels.TRACE, opts)
     end
@@ -102,12 +114,10 @@ end
 M.debug = function(msg, opts)
     opts = opts or {}
     if opts.print then
-        nvim.echo(
-            {
-                {"[DEBUG]: ", "@text.debug"},
-                {msg, F.if_nil(opts.hl, "NotifyDEBUGBody")}
-            }
-        )
+        nvim.echo({
+            {"[DEBUG]: ", "@text.debug"},
+            {msg,         F.if_nil(opts.hl, "NotifyDEBUGBody")},
+        })
     else
         require("common.utils").notify(msg, M.levels.DEBUG, opts)
     end
@@ -124,10 +134,9 @@ M.info = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args =
-            require("dev").vec_insert(
+        args = require("dev").vec_insert(
             args,
-            {__MODULE__(), "Title"},
+            {__FMODULE__(), "Title"},
             {".", "Cursor"},
             {__FUNC__(), "Function"},
             {":", "Cursor"},
@@ -160,10 +169,9 @@ M.warn = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args =
-            require("dev").vec_insert(
+        args = require("dev").vec_insert(
             args,
-            {__MODULE__(), "Title"},
+            {__FMODULE__(), "Title"},
             {".", "Cursor"},
             {__FUNC__(), "Function"},
             {":", "Cursor"},
@@ -196,10 +204,9 @@ M.err = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args =
-            require("dev").vec_insert(
+        args = require("dev").vec_insert(
             args,
-            {__MODULE__(), "Title"},
+            {__FMODULE__(), "Title"},
             {".", "Cursor"},
             {__FUNC__(), "Function"},
             {":", "Cursor"},

@@ -44,7 +44,8 @@ command(
 command(
     "VG",
     function(tbl)
-        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1], tbl.fargs[2] or "%"))
+        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1],
+                                                  tbl.fargs[2] or "%"))
     end,
     {nargs = "+", desc = "Vimgrep"}
 )
@@ -62,25 +63,19 @@ command(
 
 command(
     "Jumps",
-    function()
-        require("common.builtin").jumps2qf()
-    end,
+    D.ithunk(require("common.builtin").jumps2qf),
     {nargs = 0, desc = "Show jumps in quickfix"}
 )
 
 command(
     "Changes",
-    function()
-        require("common.builtin").changes2qf()
-    end,
+    D.ithunk(require("common.builtin").changes2qf),
     {nargs = 0, desc = "Show changes in quickfix"}
 )
 
 command(
     "CleanEmptyBuf",
-    function()
-        require("common.utils").clean_empty_bufs()
-    end,
+    D.ithunk(utils.clean_empty_bufs),
     {nargs = 0, desc = "Remove empty buffers from stack"}
 )
 
@@ -113,22 +108,18 @@ command(
 command(
     "Reverse",
     "<line1>,<line2>g/^/m<line1>-1",
-    {
-        range = "%",
-        bar = true,
-        desc = "Reverse the selected lines"
-    }
+    {range = "%", bar = true, desc = "Reverse the selected lines"}
 )
 
 command(
     "MoveWrite",
     [[<line1>,<line2>write<bang> <args> | <line1>,<line2>delete _]],
     {
-        nargs = 1,
-        bang = true,
-        range = "%",
+        nargs    = 1,
+        bang     = true,
+        range    = "%",
         complete = "file",
-        desc = "Write selection to another file, placing in blackhole register"
+        desc     = "Write selection to another file, placing in blackhole register"
     }
 )
 
@@ -136,11 +127,11 @@ command(
     "MoveAppend",
     [[<line1>,<line2>write<bang> >> <args> | <line1>,<line2>delete _]],
     {
-        nargs = 1,
-        bang = true,
-        range = "%",
+        nargs    = 1,
+        bang     = true,
+        range    = "%",
         complete = "file",
-        desc = "Append selection to another file, placing in blackhole register"
+        desc     = "Append selection to another file, placing in blackhole register"
     }
 )
 
@@ -168,8 +159,7 @@ command(
 ---@return table?
 function M.name_syn_stack()
     local stack = fn.synstack(fn.line("."), fn.col("."))
-    stack =
-        vim.tbl_map(
+    stack = vim.tbl_map(
         function(v)
             return fn.synIDattr(v, "name")
         end,
@@ -182,13 +172,11 @@ end
 function M.print_syn_group()
     local id = fn.synID(fn.line("."), fn.col("."), 1)
     nvim.echo({{"Synstack: ", "WarningMsg"}, {vim.inspect(M.name_syn_stack())}})
-    nvim.echo(
-        {
-            {fn.synIDattr(id, "name"), "WarningMsg"},
-            {" => "},
-            {fn.synIDattr(fn.synIDtrans(id), "name")}
-        }
-    )
+    nvim.echo({
+        {fn.synIDattr(id, "name"), "WarningMsg"},
+        {" => "},
+        {fn.synIDattr(fn.synIDtrans(id), "name")},
+    })
 end
 
 ---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
@@ -200,9 +188,7 @@ end
 
 command(
     "SQ",
-    function()
-        require("functions").print_hi_group()
-    end,
+    D.ithunk(M.print_hi_group),
     {desc = "Show highlight group (non-treesitter)"}
 )
 
@@ -252,7 +238,7 @@ augroup(
                 ":FloatermNew --autoclose=0 ./%<CR>",
                 {desc = "Execute file in Floaterm"}
             )
-        end
+        end,
     }
 )
 
@@ -282,7 +268,7 @@ end
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("http[s]?://") then
-        return cmd.norm("gx")
+        return cmd.norm({"gx", bang = true})
     end
 
     -- Check whether it is a file
@@ -304,7 +290,7 @@ function M.open_path()
         return cmd.norm({"gf", bang = true})
     end
 
-    -- Consider anything that looks like string/string a github link
+    -- string/string = github link
     local plugin_url_regex = "[%a%d%-%.%_]*%/[%a%d%-%.%_]*"
     local link = path:match(plugin_url_regex)
     -- Check to make sure a path doesn't accidentally get picked up
@@ -322,7 +308,7 @@ end
 
 ---Add a delimiter to the end of the line if the delimiter isn't already present
 ---If the delimiter is present, remove it
----@param character string
+---@param character "','"|"';'"
 function M.modify_line_end_delimiter(character)
     local delimiters = {",", ";"}
     return function()
@@ -341,7 +327,12 @@ end
 -- map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
 -- map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
 map("n", "<C-,>,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
-map("n", "<C-,>;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+map(
+    "n",
+    "<C-,>;",
+    M.modify_line_end_delimiter(";"),
+    {desc = "Add semicolon to eol"}
+)
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                    Insert empty lines                    │
@@ -403,7 +394,7 @@ map(
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()
-    cmd [[
+    cmd[[
         setlocal number!
         setlocal rnu!
     ]]
@@ -421,9 +412,7 @@ end
 
 command(
     "TmuxCopyModeToggle",
-    function()
-        require("functions").tmux_copy_mode_toggle()
-    end,
+    D.ithunk(M.tmux_copy_mode_toggle),
     {nargs = 0, desc = "Toggle line numbers to copy with tmux"}
 )
 
@@ -473,7 +462,7 @@ if fn.executable("xsel") then
         pattern = "*",
         command = function()
             M.preserve_clipboard()
-        end
+        end,
     }
 
     map({"n", "v"}, "<C-z>", D.ithunk(M.preserve_clipboard_and_suspend))
@@ -497,12 +486,13 @@ function M.center_next(command)
     -- if view.topline ~= fn.winsaveview().topline then
 
     local topline = fn.line("w0")
-    local ok, msg = pcall(cmd.norm, {command, mods = {silent = true}, bang = true})
+    local ok, msg = pcall(cmd.norm,
+                          {command, mods = {silent = true}, bang = true})
 
     if topline ~= fn.line("w0") then
         cmd.norm({"zz", mods = {silent = true}, bang = true})
     elseif not ok then
-        local err = (msg:match "Vim:E486: Pattern not found:.*")
+        local err = (msg:match"Vim:E486: Pattern not found:.*")
         log.err(err or msg, {dprint = true})
     end
 end
@@ -512,6 +502,7 @@ M.set_formatopts = false
 ---Toggle 'r' in 'formatoptions'.
 ---This is the continuation of a comment on the next line
 function M.toggle_formatopts_r()
+    ---@diagnostic disable-next-line:undefined-field
     if ol.formatoptions:get().r then
         ol.formatoptions:append({r = false, o = false})
         M.set_formatopts = false
@@ -546,11 +537,14 @@ command("DiffSaved", D.ithunk(M.diffsaved), {desc = "Show diff of saved file"})
 ---When not to use the `mkview` command for an autocmd
 function M.makeview()
     local bufnr = api.nvim_get_current_buf()
-    if vim.bo[bufnr].bt ~= "" or fn.empty(fn.expand("%:p")) == 1 or not vim.o.modifiable then
+    if vim.bo[bufnr].bt ~= ""
+        or fn.empty(fn.expand("%:p")) == 1
+        or not vim.o.modifiable then
         return false
     end
     return true
 end
+
 -- ]]] === Functions ===
 
 return M

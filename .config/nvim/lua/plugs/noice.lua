@@ -16,6 +16,29 @@ local fn = vim.fn
 local cmd = vim.cmd
 
 -- TODO: EasyAlign open command line
+-- TODO: highlight output of 'hi'
+
+---
+---@return boolean
+local function is_focused()
+    return g.nvim_focused
+end
+
+---
+---@param find string
+---@param vimr? boolean
+---@return fun(m: NoiceMessage): boolean
+local function cmdline(find, vimr)
+    ---@param m NoiceMessage
+    return function(m)
+        if m.cmdline then
+            if (vimr and m.cmdline:get():vmatch(find)) or m.cmdline:get():rxfind(find) then
+                return true
+            end
+        end
+        return false
+    end
+end
 
 ---Setup `noice.nvim`
 function M.setup()
@@ -72,7 +95,7 @@ function M.setup()
     -- "center"        | "left"        | "right"     | "message-center" | "message-left"
     -- "message-right" | "line-center" | "line-left" | "line-right"
 
-    -- FORMAT:
+    -- FORMAT: NoiceFormatOptions
     -- level    : message level with optional `icon` and `hl_group` per level
     -- text     : any text with optional `hl_group`
     -- title    : message title with optional `hl_group`
@@ -85,22 +108,18 @@ function M.setup()
     -- progress : progress bar used by lsp progress
     -- spinner  : spinners used by lsp progress
     -- data     : render any custom data from `Message.opts`. Useful with `vim.notify`
-    --
-    -- FORMAT_DEFINITIONS:
-    -- {
-    --   default = { "{level} ", "{title} ", "{message}" },    -- default format
-    --   notify = { "{message}" },                             -- default format for vim.notify
-    --   details = {                                           -- default format for the history
-    --     "{level} ", "{date} ", "{event}",
-    --     { "{kind}", before = { ".", hl_group = "NoiceFormatKind" } },
-    --     " ", "{title} ", "{cmdline} ", "{message}",
-    --   },
-    --   telescope = ...,         -- formatter used to display telescope results
-    --   telescope_preview = ..., -- formatter used to preview telescope results
-    --   lsp_progress = ...,      -- formatter used by lsp progress
-    --   lsp_progress_done = ..., -- formatter used by lsp progress
-    -- }
-    --
+
+    -- CMDLINE_FORMAT: CmdlineFormat
+    -- kind          : string|NoiceKind
+    -- pattern       : string|string[]
+    -- view          : string
+    -- conceal       : boolean
+    -- icon          : string
+    -- icon_hl_group : string
+    -- opts          : NoiceViewOptions
+    -- title         : string
+    -- lang          : string
+
     -- FILTERS: NoiceFilter
     -- any          NoiceFilter[]               check at least one filter matches
     -- blocking     boolean                     are we in blocking mode?
@@ -168,9 +187,18 @@ function M.setup()
     -- reverse boolean
     -- count   number
 
-    local function is_focused()
-        return g.nvim_focused
-    end
+    -- NOICE_MESSAGE: NoiceMessage: NoiceBlock
+    -- super   : NoiceBlock
+    -- id      : number
+    -- event   : NoiceEvent
+    -- ctime   : number
+    -- mtime   : number
+    -- tick    : number
+    -- level   : NotifyLevel
+    -- kind    : NoiceKind
+    -- cmdline : NoiceCmdline
+    -- _debug  : boolean
+    -- opts    : table<string, any>
 
     -- ---@type NoiceViewBaseOptions|NoiceNuiOptions|NoiceNotifyOptions
     ---@type NoiceViewOptions
@@ -194,6 +222,7 @@ function M.setup()
                 winhighlight = {
                     Normal = "NormalFloat", -- change to NormalFloat to make normal
                     FloatBorder = "NoicePopupmenuBorder", -- border highlight
+                    FloatTitle = "Title",
                     PmenuMatch = "NoicePopupmenuMatch" -- part of the item that matches input
                 },
                 winblend = 10,
@@ -209,6 +238,41 @@ function M.setup()
         }
     )
 
+    ---@type NoiceViewOptions
+    local cmdline_notif =
+        vim.tbl_deep_extend(
+        "force",
+        views.mini,
+        {
+            view = "mini",
+            timeout = 6000,
+            reverse = false,
+            focusable = true,
+            zindex = 60,
+            relative = "editor",
+            align = "message-left",
+            size = {width = math.floor(vim.o.columns * 0.9), height = "auto"},
+            position = {row = vim.o.lines - 3, col = "50%"},
+            win_options = {
+                winhighlight = {
+                    Normal = "NormalFloat", -- change to NormalFloat to make normal
+                    FloatBorder = "NoicePopupmenuBorder", -- border highlight
+                    FloatTitle = "Title",
+                    PmenuMatch = "NoicePopupmenuMatch", -- part of the item that matches input
+                },
+                winblend = 10,
+                wrap = false,
+                cursorline = false
+            },
+            border = {style = style.current.border, padding = {0, 1}},
+            opts = {replace = true, merge = true, title = "Output"}
+        }
+    )
+
+    --  ╭──────────────────────────────────────────────────────────╮
+    --  │                          Routes                          │
+    --  ╰──────────────────────────────────────────────────────────╯
+    -- ---@type NoiceRoute[]
     ---@type NoiceRouteConfig[]
     local routes = {
         -- {
@@ -244,9 +308,9 @@ function M.setup()
                     {event = "msg_show", find = "%d+ lines >ed %d+ time"},
                     {event = "msg_show", find = "%d+ lines <ed %d+ time"},
                     {event = "msg_show", find = "No active Snippet"},
-                    {event = "msg_show", kind = "redraw"},
-                    {event = "msg_show", kind = "search_count"},
+                    {event = "msg_show", find = "redraw"},
                     {event = "msg_show", find = "Hop %d char"},
+                    {event = "msg_show", kind = "search_count"},
                     {event = "msg_show", kind = "emsg", find = "Pattern not found"}, -- search term is not found
                     -- Comes after easy align
                     {
@@ -257,6 +321,55 @@ function M.setup()
                             return m:content():rxfind([[^(\(|_|\))$]])
                         end
                     }
+                }
+            }
+        },
+        --  ╭────────────╮
+        --  │ Split Wrap │
+        --  ╰────────────╯
+        {
+            view = "split",
+            -- TODO: Wrap doesn't set to false
+            opts = {
+                win_options = {wrap = false, cursorline = true}
+            },
+            filter = {
+                any = {
+                    -- Output of :filter
+                    {event = "msg_show", cond = cmdline([[^filt(er)?.*]])}
+                }
+            }
+        },
+        --  ╭───────────────╮
+        --  │ Cmdline Notif │
+        --  ╰───────────────╯
+        {
+            -- view = "cmdline_popup",
+            view = "cmdline_notif",
+            opts = {
+                border = {text = {top = "cmdline"}},
+                enter = false,
+                focusable = true,
+                timeout = 5000,
+                win_options = {
+                    wrap = false,
+                    conceallevel = 0
+                    -- winhighlight = {Normal = "Function"}
+                }
+            },
+            filter = {
+                any = {
+                    -- Output of :echo
+                    {event = "msg_show", cond = cmdline([[^echo .*]])},
+                    {event = "msg_show", cond = cmdline([[^lua (?:p|pp|print)\(.*]])},
+                    -- Output of :map
+                    {event = "msg_show", cond = cmdline([[^[invxts]?(nore)?map.*]])},
+                    {event = "msg_show", find = "No mapping found"},
+                    -- Output of ls
+                    {event = "msg_show", cond = cmdline([[^ls!?.*]])},
+                    -- Output of hi
+                    {event = "msg_show", cond = cmdline([[\v^hi%[ghlight] .*]], true)},
+                    {event = "msg_show", cond = cmdline([[^!.*]])},
                 }
             }
         },
@@ -271,8 +384,8 @@ function M.setup()
                     -- always route any messages with more than 20 lines to the split view
                     {event = "msg_show", min_height = 20},
                     {event = "msg_show", find = "Last set from .+ line %d+"},
-                    {event = "msg_show", find = "No mapping found"},
-                    {event = "msg_show", find = "Last set from Lua"} -- result of verbose <cmd>
+                    {event = "msg_show", find = "Last set from Lua"}, -- result of 'verbose set opt?'
+                    {event = "msg_show", cond = cmdline([[^\d{0,2}verb(ose)? .*]])}
                 }
             }
         },
@@ -280,44 +393,6 @@ function M.setup()
             view = "split",
             opts = {lang = "lua"},
             filter = {event = "notify", kind = "debug"}
-        },
-        --  ╭────────────╮
-        --  │ Split Wrap │
-        --  ╰────────────╯
-        {
-            view = "split",
-            -- TODO: Wrap doesn't set to false
-            opts = {
-                win_options = {wrap = false},
-                winhighlight = {
-                    Normal = "NoiceSplit",
-                    FloatBorder = "NoiceSplitBorder"
-                }
-            },
-            filter = {
-                any = {
-                    -- Output of :map
-                    {
-                        event = "msg_show",
-                        cond = function(m)
-                            if m.cmdline and m.cmdline:get():rxfind([[^[invxts]?(nore)?map.*]]) then
-                                return true
-                            end
-                            return false
-                        end
-                    },
-                    -- Output of :filter
-                    {
-                        event = "msg_show",
-                        cond = function(m)
-                            if m.cmdline and m.cmdline:get():rxfind([[^filt(er)?.*]]) then
-                                return true
-                            end
-                            return false
-                        end
-                    }
-                }
-            }
         },
         --  ╭────────╮
         --  │ Notify │
@@ -400,26 +475,20 @@ function M.setup()
         --  ╭──────────────────────────╮
         --  │ Interactive Command Line │
         --  ╰──────────────────────────╯
-        -- {
-        --     view = "cmdline_popup",
-        --     filter = {
-        --         any = {
-        --             {event = "msg_show", kind = {"echo", ""}}
-        --         }
-        --     }
-        --     -- opts = {enter = true}
-        -- },
         {
             view = "mini",
+            -- view = "confirm",
+            -- don't think these work with anything other than 'notify'
+            opts = {merge = true, replace = true},
             filter = {
                 -- cmdline = "^:EasyAlign"
                 any = {
                     {event = "msg_show", kind = "echo", find = "^:EasyAlign"},
-                    {event = "msg_show", kind = "echo", find = "^:LiveEasyAlign"}
+                    {event = "msg_show", kind = "echo", find = "^:LiveEasyAlign"},
+                    {event = "msg_show", kind = "echo", find = "%(Unknown delimiter key: %w%)"},
                     -- {cmdline = ".*EasyAlign.*"}
                 }
             }
-            -- opts = {enter = true}
         },
         --  ╭──────╮
         --  │ Rest │
@@ -450,9 +519,255 @@ function M.setup()
     }
 
     --  ╭──────────────────────────────────────────────────────────╮
+    --  │                          Views                           │
+    --  ╰──────────────────────────────────────────────────────────╯
+    ---@type NoiceConfigViews
+    local views = {
+        --  ╭───────────╮
+        --  │ top_right │
+        --  ╰───────────╯
+        top_right = top_right,
+        --  ╭──────────────────────╮
+        --  │ cmdline notification │
+        --  ╰──────────────────────╯
+        cmdline_notif = cmdline_notif,
+        --  ╭───────╮
+        --  │ split │
+        --  ╰───────╯
+        split = {
+            backend = "split",
+            enter = true,
+            relative = "editor",
+            position = "bottom",
+            size = "20%",
+            close = {keys = {"qq"}},
+            win_options = {
+                winhighlight = {
+                    Normal = "NoiceSplit",
+                    FloatBorder = "NoiceSplitBorder",
+                    FloatTitle = "Title",
+                },
+                wrap = true,
+                linebreak = true
+            }
+        },
+        --  ╭───────────╮
+        --  │ popupmenu │
+        --  ╰───────────╯
+        popupmenu = {
+            relative = "editor",
+            zindex = 65,
+            position = "auto", -- when auto, then it will be positioned to the cmdline or cursor
+            size = {
+                width = "auto",
+                height = "auto",
+                max_height = 20
+                -- min_width = 10,
+            },
+            win_options = {
+                winhighlight = {
+                    Normal = "NoicePopupmenu", -- change to NormalFloat to make normal
+                    FloatBorder = "NoicePopupmenuBorder", -- border highlight
+                    FloatTitle = "Title",
+                    CursorLine = "NoicePopupmenuSelected", -- used for highlighting the selected item
+                    PmenuMatch = "NoicePopupmenuMatch" -- part of the item that matches input
+                }
+            },
+            border = {style = style.current.border, padding = {0, 1}}
+        },
+        --  ╭─────────────╮
+        --  │ virtualtext │
+        --  ╰─────────────╯
+        virtualtext = {
+            backend = "virtualtext",
+            format = {"{message}"},
+            hl_group = "NoiceVirtualText"
+        },
+        --  ╭────────╮
+        --  │ notify │
+        --  ╰────────╯
+        notify = {
+            backend = "notify",
+            fallback = "mini",
+            format = "notify",
+            replace = false,
+            merge = false,
+            timeout = 5000
+        },
+        --  ╭────────────────╮
+        --  │ cmdline_output │
+        --  ╰────────────────╯
+        cmdline_output = {format = "details", view = "split"},
+        --  ╭──────────╮
+        --  │ messages │
+        --  ╰──────────╯
+        messages = {view = "split"},
+        --  ╭────────╮
+        --  │ vsplit │
+        --  ╰────────╯
+        vsplit = {view = "split", position = "right"},
+        --  ╭───────╮
+        --  │ hover │
+        --  ╰───────╯
+        hover = {
+            view = "popup",
+            relative = "cursor",
+            zindex = 45,
+            enter = false,
+            anchor = "auto",
+            size = {
+                width = "auto",
+                height = "auto",
+                max_height = 20,
+                max_width = 120
+            },
+            border = {style = style.current.border, padding = {0, 2}},
+            position = {row = 1, col = 0},
+            win_options = {wrap = true, linebreak = true}
+        },
+        --  ╭──────╮
+        --  │ mini │
+        --  ╰──────╯
+        mini = {
+            backend = "mini",
+            relative = "editor",
+            align = "message-left",
+            timeout = 3000,
+            reverse = false,
+            focusable = false,
+            position = {
+                row = -2,
+                col = "100%"
+            },
+            -- size = "auto",
+            size = {
+                max_height = math.ceil(0.8 * vim.o.lines),
+                max_width = math.ceil(0.8 * vim.o.columns),
+                width = "auto",
+                height = "auto"
+            },
+            border = {style = style.current.border},
+            zindex = 60,
+            win_options = {
+                winblend = 10,
+                wrap = true,
+                linebreak = true,
+                cursorline = false,
+                winhighlight = {
+                    Normal = "NoiceMini",
+                    IncSearch = "",
+                    Search = "",
+                    FloatTitle = "Title",
+                }
+            }
+        },
+        --  ╭───────╮
+        --  │ popup │
+        --  ╰───────╯
+        popup = {
+            backend = "popup",
+            relative = "editor",
+            close = {events = {"BufLeave"}, keys = {"q"}},
+            enter = true,
+            border = {style = style.current.border},
+            position = "50%",
+            size = {width = "120", height = "20"},
+            win_options = {
+                winhighlight = {
+                    Normal = "NoicePopup",
+                    FloatBorder = "NoicePopupBorder",
+                    FloatTitle = "Title",
+                }
+            },
+            opts = {replace = true, merge = true, title = "Messages"}
+        },
+        --  ╭─────────╮
+        --  │ cmdline │
+        --  ╰─────────╯
+        cmdline = {
+            backend = "popup",
+            relative = "editor",
+            position = {row = "100%", col = 0},
+            size = {height = "auto", width = "100%"},
+            border = {style = "none"},
+            win_options = {
+                winhighlight = {
+                    Normal = "NoiceCmdline",
+                    IncSearch = "",
+                    Search = "",
+                }
+                -- conceallevel = 0
+            }
+        },
+        --  ╭───────────────╮
+        --  │ cmdline_popup │
+        --  ╰───────────────╯
+        cmdline_popup = {
+            backend = "popup",
+            relative = "editor",
+            focusable = true,
+            enter = true,
+            zindex = 60,
+            close = {events = {"BufLeave"}, keys = {"q"}},
+            position = {
+                -- row = "50%",
+                -- col = "50%"
+                row = vim.o.lines - 3,
+                col = "50%"
+            },
+            size = {
+                -- min_width = 60,
+                -- width = "auto",
+                width = math.floor(vim.o.columns * 0.9),
+                height = "auto"
+            },
+            border = {style = style.current.border, padding = {0, 1}},
+            win_options = {
+                winhighlight = {
+                    Normal = "NoiceCmdlinePopup",
+                    FloatBorder = "NoiceCmdlinePopupBorder",
+                    FloatTitle = "Title",
+                    IncSearch = "",
+                    Search = ""
+                },
+                cursorline = false,
+                conceallevel = 0
+            },
+            opts = {replace = true, merge = true, title = "Output"}
+        },
+        --  ╭─────────╮
+        --  │ confirm │
+        --  ╰─────────╯
+        confirm = {
+            backend = "popup",
+            relative = "editor",
+            focusable = false,
+            align = "center",
+            enter = false,
+            zindex = 60,
+            format = {"{confirm}"},
+            position = {row = "50%", col = "50%"},
+            size = "auto",
+            border = {
+                style = style.current.border,
+                padding = {0, 1},
+                text = {top = " Confirm "}
+            },
+            win_options = {
+                winhighlight = {
+                    Normal = "NoiceConfirm",
+                    FloatBorder = "NoiceConfirmBorder",
+                    FloatTitle = "Title",
+                }
+            }
+        }
+    }
+
+    --  ╭──────────────────────────────────────────────────────────╮
     --  │                          Setup                           │
     --  ╰──────────────────────────────────────────────────────────╯
     noice.setup(
+        ---@class NoiceConfig
         {
             --  ╭─────────╮
             --  │ cmdline │
@@ -460,22 +775,18 @@ function M.setup()
             cmdline = {
                 enabled = true, -- enables the Noice cmdline UI
                 view = "cmdline", -- view for rendering the cmdline. `cmdline` = Classic
-                -- opts = {buf_options = {filetype = "vim"}}, -- enable syntax highlighting in the cmdline
-                opts = {},
-                icons = {
-                    ["/"] = {icon = " ", hl_group = "MoreMsg"},
-                    ["?"] = {icon = " ", hl_group = "WarningMsg"},
-                    [":"] = {icon = " ", hl_group = "Macro", firstc = false}
-                },
-                win_options = {
-                    winhighlight = {
-                        Normal = "Normal", -- change to NormalFloat to make normal
-                        FloatBorder = "FloatBorder", -- border highlight
-                        CursorLine = "" -- used for highlighting the selected item
-                    },
-                    winblend = 10,
-                    cursorline = false,
-                    conceallevel = 0
+                opts = {
+                    win_options = {
+                        winhighlight = {
+                            Normal = "Normal", -- change to NormalFloat to make normal
+                            FloatBorder = "FloatBorder", -- border highlight
+                    FloatTitle = "Title",
+                            CursorLine = "" -- used for highlighting the selected item
+                        },
+                        winblend = 10,
+                        cursorline = false,
+                        conceallevel = 0
+                    }
                 },
                 ---@type table<string, CmdlineFormat>
                 format = {
@@ -506,33 +817,16 @@ function M.setup()
                         view = "cmdline",
                         icon_hl_group = "WarningMsg"
                     },
-                    lua = {
-                        pattern = "^:%s*lua%s+",
-                        icon = "",
-                        lang = "lua",
-                        view = "cmdline"
-                    },
                     inspect = {
                         pattern = {"^:%s*lua%s*=%s*", "^:%s*=%s*"},
-                        conceal = true,
                         icon = " ",
                         lang = "lua"
                     },
-                    help = {
-                        pattern = "^:%s*he?l?p?%s+",
-                        icon = "",
-                        view = "cmdline"
-                    },
-                    filter = {
-                        pattern = "^:%s*!",
-                        icon = "$",
-                        lang = "zsh"
-                    },
-                    man = {
-                        pattern = "^:%s*Man%s+",
-                        icon = "龎",
-                        lang = "bash"
-                    },
+                    lua = {pattern = "^:%s*lua%s+", icon = "", lang = "lua", view = "cmdline"},
+                    help = {pattern = "^:%s*he?l?p?%s+", icon = "", view = "cmdline"},
+                    filter = {pattern = "^:%s*!", icon = "$", lang = "zsh"},
+                    man = {pattern = "^:%s*Man%s+", icon = "龎", lang = "bash"},
+                    calculator = {pattern = "^=", icon = "", lang = "vimnormal"},
                     input = {} -- Used by input()
                 }
             },
@@ -558,85 +852,9 @@ function M.setup()
                 -- Icons for completion item kinds (see defaults at noice.config.icons.kinds)
                 kind_icons = {} -- set to `false` to disable icons
             },
-            --  ╭──────────╮
-            --  │ redirect │
-            --  ╰──────────╯
-            -- default options for require('noice').redirect
-            -- see the section on Command Redirection
-            ---@type NoiceRouteConfig
-            redirect = {
-                view = "cmdline_popup",
-                filter = {event = "msg_show"}
-            },
-            --  ╭──────────────────────────────────────────────────────────╮
-            --  │                         commands                         │
-            --  ╰──────────────────────────────────────────────────────────╯
-            -- You can add any custom commands below that will be available with `:Noice command`
-            ---@type table<string, NoiceCommand>
-            commands = {
-                history = {
-                    -- options for the message history that you get with `:Noice`
-                    -- view = "popup",
-                    view = "split",
-                    opts = {enter = true, format = "details", title = "History"},
-                    filter_opts = {reverse = true},
-                    filter = {
-                        any = {
-                            {error = true},
-                            {warning = true},
-                            {event = "msg_show", kind = {""}},
-                            {event = "lsp", kind = "message"},
-                            {
-                                event = {"msg_show", "notify"},
-                                ["not"] = {kind = {"search_count", "echo"}}
-                            }
-                        }
-                    }
-                },
-                notifs = {
-                    view = "split",
-                    opts = {enter = true, format = "details", title = "Notifications"},
-                    filter_opts = {reverse = true},
-                    filter = {
-                        any = {
-                            {event = "notify"},
-                            {event = {"msg_show"}, ["not"] = {kind = {"search_count", "echo"}}}
-                        }
-                    }
-                },
-                -- history = true
-                all = {
-                    view = "split",
-                    opts = {enter = true, format = "details", title = "All"},
-                    filter_opts = {reverse = true},
-                    filter = {
-                        any = {
-                            {event = "msg_show"},
-                            {event = "msg_showcmd"},
-                            {event = "notify"},
-                        }
-                    }
-                },
-                -- :Noice last
-                last = {
-                    view = "popup",
-                    opts = {enter = true, format = "details"},
-                    border = {style = style.current.border, text = {top = "Noice Last"}},
-                    filter_opts = {count = 1},
-                    filter = {
-                        event = {"msg_show", "notify"},
-                        ["not"] = {kind = {"search_count"}}
-                    }
-                },
-                -- :Noice errors
-                errors = {
-                    -- options for the message history that you get with `:Noice`
-                    view = "popup",
-                    opts = {enter = true, format = "details"},
-                    filter = {error = true},
-                    filter_opts = {reverse = true}
-                }
-            },
+            --  ╭────────╮
+            --  │ notify │
+            --  ╰────────╯
             notify = {
                 -- Noice can be used as `vim.notify` so you can route any notification like other messages
                 -- Notification messages have their level and other properties set.
@@ -646,14 +864,17 @@ function M.setup()
                 enabled = true,
                 view = "notify"
             },
+            --  ╭─────╮
+            --  │ lsp │
+            --  ╰─────╯
             lsp = {
                 progress = {
                     enabled = true,
                     -- Lsp Progress is formatted using the builtins for lsp_progress. See config.format.builtin
                     -- See the section on formatting for more details on how to customize.
-                    --- @type NoiceFormat|string
+                    ---@type NoiceFormat|string
                     format = "lsp_progress",
-                    --- @type NoiceFormat|string
+                    ---@type NoiceFormat|string
                     format_done = "lsp_progress_done",
                     throttle = 1000 / 30, -- frequency to update lsp progress message
                     view = "mini"
@@ -706,6 +927,9 @@ function M.setup()
                     }
                 }
             },
+            --  ╭──────────╮
+            --  │ markdown │
+            --  ╰──────────╯
             markdown = {
                 hover = {
                     ["|(%S-)|"] = cmd.help, -- vim help links
@@ -720,15 +944,98 @@ function M.setup()
                     ["{%S-}"] = "@parameter"
                 }
             },
-            health = {
-                checker = true -- Disable if you don't want health checks to run
+            --  ╭──────────────────────────────────────────────────────────╮
+            --  │                         commands                         │
+            --  ╰──────────────────────────────────────────────────────────╯
+            -- You can add any custom commands below that will be available with `:Noice command`
+            ---@type table<string, NoiceCommand>
+            commands = {
+                history = {
+                    -- options for the message history that you get with `:Noice`
+                    -- view = "popup",
+                    view = "split",
+                    opts = {enter = true, format = "details", title = "History"},
+                    filter_opts = {reverse = true},
+                    filter = {
+                        any = {
+                            {error = true},
+                            {warning = true},
+                            {event = "msg_show", kind = {""}},
+                            {event = "lsp", kind = "message"},
+                            {
+                                event = {"msg_show", "notify"},
+                                ["not"] = {kind = {"search_count", "echo"}}
+                            }
+                        }
+                    }
+                },
+                notifs = {
+                    view = "split",
+                    opts = {enter = true, format = "details", title = "Notifications"},
+                    filter_opts = {reverse = true},
+                    filter = {
+                        any = {
+                            {event = "notify"},
+                            {event = {"msg_show"}, ["not"] = {kind = {"search_count", "echo"}}}
+                        }
+                    }
+                },
+                -- history = true
+                all = {
+                    view = "split",
+                    opts = {enter = true, format = "details", title = "All"},
+                    filter_opts = {reverse = true},
+                    filter = {
+                        any = {
+                            {event = "msg_show"},
+                            {event = "msg_showcmd"},
+                            {event = "notify"}
+                        }
+                    }
+                },
+                -- :Noice last
+                last = {
+                    view = "popup",
+                    opts = {enter = true, format = "details"},
+                    border = {style = style.current.border, text = {top = "Noice Last"}},
+                    filter_opts = {count = 1},
+                    filter = {
+                        event = {"msg_show", "notify"},
+                        ["not"] = {kind = {"search_count"}}
+                    }
+                },
+                -- :Noice errors
+                errors = {
+                    -- options for the message history that you get with `:Noice`
+                    view = "popup",
+                    opts = {enter = true, format = "details"},
+                    filter = {error = true},
+                    filter_opts = {reverse = true}
+                }
             },
+            --  ╭────────────╮
+            --  │ smart move │
+            --  ╰────────────╯
             smart_move = {
                 -- noice tries to move out of the way of existing floating windows.
                 enabled = true, -- you can disable this behaviour here
                 -- add any filetypes here, that shouldn't trigger smart move.
                 excluded_filetypes = BLACKLIST_FT
             },
+            --  ╭──────────╮
+            --  │ redirect │
+            --  ╰──────────╯
+            -- default options for require('noice').redirect
+            -- see the section on Command Redirection
+            ---@type NoiceRouteConfig
+            redirect = {
+                view = "cmdline_popup",
+                -- view = "split",
+                -- view = "notify",
+                filter = {event = "msg_show"}
+            },
+            health = {checker = true}, -- disable to not run checkhealth
+            throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates?
             ---@type NoicePresets
             presets = {
                 -- you can enable a preset by setting it to true, or a table that will override the preset config
@@ -740,247 +1047,17 @@ function M.setup()
                 lsp_doc_border = false, -- add a border to hover docs and signature help
                 cmdline_output_to_split = false -- send the output of a command you executed in the cmdline to a split
             },
-            throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates?
             --  ╭──────────────────────────────────────────────────────────╮
             --  │                          views                           │
             --  ╰──────────────────────────────────────────────────────────╯
             ---@type NoiceConfigViews
-            views = {
-                --  ╭───────────╮
-                --  │ top_right │
-                --  ╰───────────╯
-                top_right = top_right,
-                --  ╭───────╮
-                --  │ split │
-                --  ╰───────╯
-                split = {
-                    backend = "split",
-                    enter = true,
-                    relative = "editor",
-                    position = "bottom",
-                    size = "20%",
-                    close = {keys = {"qq"}},
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoiceSplit",
-                            FloatBorder = "NoiceSplitBorder"
-                        },
-                        wrap = true,
-                        linebreak = true
-                    }
-                },
-                --  ╭───────────╮
-                --  │ popupmenu │
-                --  ╰───────────╯
-                popupmenu = {
-                    relative = "editor",
-                    zindex = 65,
-                    position = "auto", -- when auto, then it will be positioned to the cmdline or cursor
-                    size = {
-                        width = "auto",
-                        height = "auto",
-                        max_height = 20
-                        -- min_width = 10,
-                    },
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoicePopupmenu", -- change to NormalFloat to make normal
-                            FloatBorder = "NoicePopupmenuBorder", -- border highlight
-                            CursorLine = "NoicePopupmenuSelected", -- used for highlighting the selected item
-                            PmenuMatch = "NoicePopupmenuMatch" -- part of the item that matches input
-                        }
-                    },
-                    border = {style = style.current.border, padding = {0, 1}}
-                },
-                --  ╭─────────────╮
-                --  │ virtualtext │
-                --  ╰─────────────╯
-                virtualtext = {
-                    backend = "virtualtext",
-                    format = {"{message}"},
-                    hl_group = "NoiceVirtualText"
-                },
-                --  ╭────────╮
-                --  │ notify │
-                --  ╰────────╯
-                notify = {
-                    backend = "notify",
-                    fallback = "mini",
-                    format = "notify",
-                    replace = false,
-                    merge = false,
-                    timeout = 5000
-                },
-                --  ╭────────────────╮
-                --  │ cmdline_output │
-                --  ╰────────────────╯
-                cmdline_output = {format = "details", view = "split"},
-                --  ╭──────────╮
-                --  │ messages │
-                --  ╰──────────╯
-                messages = {view = "split"},
-                --  ╭────────╮
-                --  │ vsplit │
-                --  ╰────────╯
-                vsplit = {view = "split", position = "right"},
-                --  ╭───────╮
-                --  │ hover │
-                --  ╰───────╯
-                hover = {
-                    view = "popup",
-                    relative = "cursor",
-                    zindex = 45,
-                    enter = false,
-                    anchor = "auto",
-                    size = {
-                        width = "auto",
-                        height = "auto",
-                        max_height = 20,
-                        max_width = 120
-                    },
-                    border = {style = style.current.border, padding = {0, 2}},
-                    position = {row = 1, col = 0},
-                    win_options = {wrap = true, linebreak = true}
-                },
-                --  ╭──────╮
-                --  │ mini │
-                --  ╰──────╯
-                mini = {
-                    backend = "mini",
-                    relative = "editor",
-                    align = "message-right",
-                    timeout = 3000,
-                    reverse = false,
-                    focusable = false,
-                    position = {
-                        row = -2,
-                        col = "100%"
-                    },
-                    -- size = "auto",
-                    size = {
-                        max_height = math.ceil(0.8 * vim.o.lines),
-                        max_width = math.ceil(0.8 * vim.o.columns),
-                        width = "auto",
-                        height = "auto"
-                    },
-                    border = {style = style.current.border},
-                    zindex = 60,
-                    win_options = {
-                        winblend = 10,
-                        wrap = true,
-                        linebreak = true,
-                        cursorline = false,
-                        winhighlight = {
-                            Normal = "NoiceMini",
-                            IncSearch = "",
-                            Search = ""
-                        }
-                    }
-                },
-                --  ╭───────╮
-                --  │ popup │
-                --  ╰───────╯
-                popup = {
-                    backend = "popup",
-                    relative = "editor",
-                    close = {events = {"BufLeave"}, keys = {"q"}},
-                    enter = true,
-                    border = {style = style.current.border},
-                    position = "50%",
-                    size = {width = "120", height = "20"},
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoicePopup",
-                            FloatBorder = "NoicePopupBorder"
-                        }
-                    },
-                    opts = {replace = true, merge = true, title = "Messages"}
-                },
-                --  ╭─────────╮
-                --  │ cmdline │
-                --  ╰─────────╯
-                cmdline = {
-                    backend = "popup",
-                    relative = "editor",
-                    position = {row = "100%", col = 0},
-                    size = {height = "auto", width = "100%"},
-                    border = {style = "none"},
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoiceCmdline",
-                            IncSearch = "",
-                            Search = ""
-                        }
-                        -- conceallevel = 0
-                    }
-                },
-                --  ╭───────────────╮
-                --  │ cmdline_popup │
-                --  ╰───────────────╯
-                cmdline_popup = {
-                    backend = "popup",
-                    relative = "editor",
-                    focusable = true,
-                    enter = true,
-                    zindex = 60,
-                    close = {events = {"BufLeave"}, keys = {"q"}},
-                    position = {
-                        -- row = "50%",
-                        -- col = "50%"
-                        row = vim.o.lines - 3,
-                        col = "50%"
-                    },
-                    size = {
-                        -- min_width = 60,
-                        -- width = "auto",
-                        width = math.floor(vim.o.columns * 0.9),
-                        height = "auto"
-                    },
-                    border = {style = style.current.border, padding = {0, 1}},
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoiceCmdlinePopup",
-                            FloatBorder = "NoiceCmdlinePopupBorder",
-                            IncSearch = "",
-                            Search = ""
-                        },
-                        cursorline = false,
-                        conceallevel = 0
-                    },
-                    opts = {replace = true, merge = true, title = "Output"}
-                },
-                --  ╭─────────╮
-                --  │ confirm │
-                --  ╰─────────╯
-                confirm = {
-                    backend = "popup",
-                    relative = "editor",
-                    focusable = false,
-                    align = "center",
-                    enter = false,
-                    zindex = 60,
-                    format = {"{confirm}"},
-                    position = {row = "50%", col = "50%"},
-                    size = "auto",
-                    border = {
-                        style = style.current.border,
-                        padding = {0, 1},
-                        text = {top = " Confirm "}
-                    },
-                    win_options = {
-                        winhighlight = {
-                            Normal = "NoiceConfirm",
-                            FloatBorder = "NoiceConfirmBorder"
-                        }
-                    }
-                }
-            } --[[@see section on views]],
+            views = views, ---@see section on views
             ---@type NoiceRouteConfig[]
-            routes = routes --[[@see section on routes]],
-            ---@type table<string, NoiceFilter>
-            status = {} --[[@see section on statusline components]],
+            routes = routes, ---@see section on routes
             ---@type NoiceFormatOptions
-            format = {} --[[@see section on formatting]]
+            format = {}, ---@see section on formatting
+            ---@type table<string, NoiceFilter>
+            status = {} ---@see section on statusline components
         }
     )
 end
@@ -997,6 +1074,8 @@ local function init()
         end,
         {desc = "Redirect cmdline (noice)"}
     )
+
+    map("n", "<Leader>ao", ":lua require('noice.view.backend.mini'):hide()<CR>")
 
     require("telescope").load_extension("noice")
 end

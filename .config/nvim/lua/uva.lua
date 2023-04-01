@@ -1,12 +1,15 @@
 ---@class UvFS
 local M = {}
 
----Taken from promise-async.lua
+---@class Promise_t<T>: Promise
 
 local uv = require("luv")
 local promise = require("promise")
 local compat = require("promise-async.compat")
 
+---@param name string Function name to wrap
+---@param argc integer integer of function args
+---@return fun(...): Promise
 local function wrap(name, argc)
     return function(...)
         local argv = {...}
@@ -27,215 +30,266 @@ end
 
 ---@diagnostic disable unused-local
 
----@param fd number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@return Promise #boolean success Was operation successful?
 function M.close(fd)
 end
 
+---Return: integer? fd
 ---@param path string
----@param flags string|number
----@param mode number
----@return Promise
+---@param flags uv.aliases.fs_access_flags|integer
+---@param mode integer
+---@nodiscard
+---@return Promise_t<integer> fd File descriptor
 function M.open(path, flags, mode)
 end
 
----@param fd number
----@param size number
----@param offset? number
----@return Promise
+---Return: string? data
+---@param fd integer
+---@param size integer
+---@param offset? integer
+---@nodiscard
+---@return Promise_t<string> data File data
 function M.read(fd, size, offset)
 end
 
+---Return: boolean? success
 ---@param path string
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.unlink(path)
 end
 
----@param fd number
----@param data string
----@param offset? number
----@return Promise
+---Return: integer? bytes
+---@param fd integer
+---@param data uv.aliases.buffer
+---@param offset? integer
+---@return Promise_t<integer> bytes Bytes written
 function M.write(fd, data, offset)
 end
 
+---Return: boolean? success
 ---@param path string
----@param mode number
----@return Promise
+---@param mode integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.mkdir(path, mode)
 end
 
+---Return: string? path
 ---@param template string
----@return Promise
+---@nodiscard
+---@return Promise_t<string> string Path
 function M.mkdtemp(template)
 end
 
+---Return: integer? fd
 ---@param template string
----@return Promise
+---@nodiscard
+---@return Promise_t<integer> fd File descriptor
 function M.mkstemp(template)
 end
 
+---Return: boolean? success
 ---@param path string
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.rmdir(path)
 end
 
+---Return: uv_fs_t? success
 ---@param path string
----@return Promise
+---@nodiscard
+---@return Promise_t<uv_fs_t> success Was operation successful?
 function M.scandir(path)
 end
 
+---Return: uv.aliases.fs_stat_table? stat
 ---@param path string
----@return Promise
+---@nodiscard
+---@return Promise_t<uv.aliases.fs_stat_table> stat Stat table
 function M.stat(path)
 end
 
----@param fd number
----@return Promise
+---Return: uv.aliases.fs_stat_table? stat
+---@param fd integer
+---@nodiscard
+---@return Promise_t<uv.aliases.fs_stat_table> stat Stat table
 function M.fstat(fd)
 end
 
----@param path string
----@return Promise
+---Return: uv.aliases.fs_stat_table? stat
+---@param fd integer
+---@nodiscard
+---@return Promise_t<uv.aliases.fs_stat_table> stat Stat table
 function M.lstat(path)
 end
 
+---Return: boolean? success
 ---@param path string
 ---@param new_path string
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.rename(path, new_path)
 end
 
----@param fd number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.fsync(fd)
 end
 
----@param fd number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.fdatasync(fd)
 end
 
----@param fd number
----@param offset number
----@return Promise
+---Return: boolean? sucess
+---@param fd integer
+---@param offset integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.ftruncate(fd, offset)
 end
 
----@param out_fd number
----@param in_fd number
----@param in_offset number
----@param size number
----@return Promise
+---Return: integer? bytes
+---@param out_fd integer
+---@param in_fd integer
+---@param in_offset integer
+---@param size integer
+---@return Promise_t<integer> bytes Bytes written
 function M.sendfile(out_fd, in_fd, in_offset, size)
 end
 
+---Return: boolean? permission
 ---@param path string
----@param mode number
----@return Promise
+---@param mode uv.aliases.fs_access_mode|integer
+---@nodiscard
+---@return Promise_t<boolean> permission Indicate access permission
 function M.access(path, mode)
 end
 
+---Return: boolean? success
 ---@param path string
----@param mode number
----@return Promise
+---@param mode integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.chmod(path, mode)
 end
 
----@param fd number
----@param mode number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@param mode integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.fchmod(path, mode)
 end
 
+---Return: boolean? success
 ---@param path string
 ---@param atime number
 ---@param mtime number
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.utime(path, atime, mtime)
 end
 
----@param path string
+---Return: boolean? success
+---@param fd integer
 ---@param atime number
 ---@param mtime number
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.futime(path, atime, mtime)
 end
 
+---Return: boolean? success
 ---@param path string
 ---@param atime number
 ---@param mtime number
----@return Promise
+---@return Promise_t<boolean> success Was operation successful?
 function M.lutime(path, atime, mtime)
 end
 
+---Return: boolean? success
 ---@param path string
----@param newPath string
----@return Promise
+---@param new_path string
+---@return Promise_t<boolean> success Was operation successful?
 function M.link(path, newPath)
 end
 
+---Return: boolean? success
 ---@param path string
----@param newPath string
----@param flags? table|number
----@return Promise
+---@param new_path string
+---@param flags? uv.aliases.fs_symlink_flags|integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.symlink(path, newPath, flags)
 end
 
+---Return: string? path
 ---@param path string
----@return Promise
+---@nodiscard
+---@return Promise_t<string> path File path
 function M.readlink(path)
 end
 
+---Return: string? path
 ---@param path string
----@return Promise
+---@nodiscard
+---@return Promise_t<string> path File path
 function M.realpath(path)
 end
 
+---Return: boolean? succes
 ---@param path string
----@param uid number
----@param gid number
----@return Promise
+---@param uid integer
+---@param gid integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.chown(path, uid, gid)
 end
 
----@param path string
----@param uid number
----@param gid number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@param uid integer
+---@param gid integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.fchown(path, uid, gid)
 end
 
----@param path string
----@param uid number
----@param gid number
----@return Promise
+---Return: boolean? success
+---@param fd integer
+---@param uid integer
+---@param gid integer
+---@return Promise_t<boolean> success Was operation successful?
 function M.lchown(path, uid, gid)
 end
 
+---Return: boolean? success
 ---@param path string
----@param newPath string
----@param flags? table|number
----@return Promise
+---@param new_path string
+---@param flags? uv.aliases.fs_copyfile_flags
+---@return Promise_t<boolean> success Was operation successful?
 function M.copyfile(path, newPath, flags)
 end
 
----@param dir userdata
----@return Promise
+---Return: uv.aliases.fs_readdir_entries? entries
+---@param dir luv_dir_t
+---@nodiscard
+---@return Promise_t<uv.aliases.fs_readdir_entries> entries Directory entries
 function M.readdir(dir)
 end
 
----@param dir userdata
----@return Promise
+---Return: boolean? success
+---@param dir luv_dir_t
+---@return Promise_t<boolean> success Was operation successful?
 function M.closedir(dir)
 end
 
+---Return: uv.aliases.fs_statfs_stats? stat
 ---@param path string
----@return Promise
+---@nodiscard
+---@return Promise_t<uv.aliases.fs_statfs_stats> stat Stat table
 function M.statfs(path)
 end
 
 ---@diagnostic enable unused-local
 
+---Return: boolean? success
+---@param fd integer
+---@return Promise_t<boolean> success Was operation successful?
 M.close = wrap("close", 2)
 M.open = wrap("open", 4)
 M.read = wrap("read", 4)
@@ -270,9 +324,11 @@ M.lchown = wrap("lchown", 4)
 M.copyfile = wrap("copyfile", 4)
 
 -- TODO: Finish this
+---Return: luv_dir_t? dir
 ---@param path string
----@param entries number
----@return Promise
+---@param entries? integer
+---@nodiscard
+---@return Promise_t<luv_dir_t> dir Directory
 M.opendir = function(path, entries)
     return promise:new(
         function(resolve, reject)

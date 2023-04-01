@@ -63,7 +63,7 @@ function M.setup()
                 operators = true, -- adds help for operators like d, y, ... and registers them for motion
                 motions = true, -- adds help for motions
                 text_objects = true, -- help for text objects triggered after entering an operator
-                windows = true, -- default bindings on <c-w>
+                windows = false, -- default bindings on <c-w>
                 nav = true, -- misc bindings to work with windows
                 z = true, -- bindings for folds, spelling and others prefixed with z
                 g = true -- bindings for prefixed with g
@@ -97,7 +97,7 @@ function M.setup()
             ["<BACKSPACE>"] = "<BS>",
             ["<2-LeftMouse>"] = "<2-LMouse>",
             ["<PageUp>"] = "<PgUp>",
-            ["<PageDown>"] = "<PgDown>",
+            ["<PageDown>"] = "<PgDown>"
         },
         motions = {
             count = true
@@ -247,7 +247,7 @@ local function init()
     wk.register(
         {
             ["<C-w>"] = {
-                name = "+window",
+                name = "window",
                 r = "Rotate window down/right",
                 ["<C-r>"] = "Rotate window down/right",
                 R = "Rotate window up/left",
@@ -272,17 +272,17 @@ local function init()
                 z = "Close preview window",
                 --
                 ["<Down>"] = "Goto window below",
-                -- ["<C-j>"] = "Goto window below",
-                j = "Goto window below",
                 ["<Up>"] = "Goto window above",
-                -- ["<C-k>"] = "Goto window above",
-                k = "Goto window above",
                 ["<Left>"] = "Goto window to left",
-                -- ["<C-h>"] = "Goto window to left",
-                h = "Goto window to left",
                 ["<Right>"] = "Goto window to right",
-                -- ["<C-l>"] = "Goto window to right",
+                j = "Goto window below",
+                k = "Goto window above",
+                h = "Goto window to left",
                 l = "Goto window to right",
+                -- ["<C-j>"] = "Goto window below",
+                -- ["<C-k>"] = "Goto window above",
+                -- ["<C-h>"] = "Goto window to left",
+                -- ["<C-l>"] = "Goto window to right",
                 w = "Goto below/right window",
                 W = "Goto above/left window",
                 t = "Goto top-left window",
@@ -307,7 +307,18 @@ local function init()
                 ["}"] = "Preview: ':ptag' under cursor",
                 ["g}"] = "Preview: ':ptjump' under cursor",
                 ["<lt>"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
-                [">"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"}
+                [">"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
+                -- WhichKey builtin
+                s = "Split window",
+                v = "Split window vertically",
+                q = "Quit a window",
+                T = "Break out into a new tab",
+                x = "Swap current with next",
+                ["-"] = "Decrease height",
+                ["+"] = "Increase height",
+                ["|"] = "Max out the width",
+                ["_"] = "Max out the height",
+                ["="] = "Equally high and wide",
             }
         }
     )
@@ -315,8 +326,8 @@ local function init()
     wk.register(
         {
             ["<C-w>"] = {
-                name = "+window",
-                ["]"] = "Split window, goto tag",
+                name = "window",
+                ["]"] = "Split: window, goto tag",
                 ["<C-]>"] = "Split window, goto tag",
                 ["g]"] = "Split window, ':tselect'",
                 ["g<C-]>"] = "Split window, ':tjump'"

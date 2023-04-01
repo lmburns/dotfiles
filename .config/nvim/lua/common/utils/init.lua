@@ -32,35 +32,49 @@ local F = vim.F
 -- require("plenary.strings").truncate(str: string, len: any, dots: any, direction: any)
 -- require("plenary.strings").strdisplaywidth(string, col)
 
+---@class Void
+Void = setmetatable({}, {
+    ---@return Void
+    __index = function(self)
+        return self
+    end,
+    __newindex = function()
+    end,
+    __call = function()
+    end,
+})
+
 ---Safely check if a plugin is installed
----@param name string Module to check if is installed
----@param cb function
----@return table Module
-M.prequire = function(name, cb)
-    local ok, ret = pcall(require, name)
-    if ok then
-        if cb and type(cb) == "function" then
-            cb(ret)
+---@generic M string
+---@param mods `M`|`M`[] Module(s) to check if is installed
+---@param cb fun(mod: M):nil Function to call on successfully required modules
+---@param notify? boolean Whether to notify of an error
+---@return module
+M.prequire = function(mods, cb, notify)
+    local first_mod
+    local loaded = {}
+    mods = type(mods) == "string" and {mods} or mods
+    for _, m in ipairs(mods) do
+        local ok, mod = pcall(require, m)
+        if ok then
+            if not first_mod then
+                first_mod = mod
+            end
+            table.insert(loaded, mod)
+        else
+            if notify then
+                log.error(("Invalid module: %s"):format(m),
+                          {debug = true, once = true})
+            end
+            -- Return a dummy item that returns functions, so we can do things like
+            -- prequire("module").setup()
+            return Void
         end
-        return ret
-    else
-        log.warn(("Invalid module %s"):format(name))
-        -- Return a dummy item that returns functions, so we can do things like
-        -- prequire("module").setup()
-        local dummy = {}
-        setmetatable(
-            dummy,
-            {
-                __call = function()
-                    return dummy
-                end,
-                __index = function()
-                    return dummy
-                end
-            }
-        )
-        return dummy
     end
+    if type(cb) == "function" then
+        D.wrap_err(cb, unpack(loaded))
+    end
+    return first_mod
 end
 
 ---Return a value based on two values
@@ -100,10 +114,11 @@ end
 ---  - `table` == {}
 ---  - `number` == 0
 ---A number can be given to this function, with `{buffer = true}`,
----and the text in the buffer number as `item` will be checked to see if it is empty.
+---and the text as the parameter `item` will be treated as a buffer
+---and checked to see if it is empty.
 ---
 ---@param item string|table|buffer Item to check if empty
----@param buf? { buffer?: boolean|number }
+---@param buf? { buffer?: boolean }
 ---@return boolean?
 M.empty = function(item, buf)
     local item_t = type(item)
@@ -115,13 +130,10 @@ M.empty = function(item, buf)
     elseif item_t == "number" then
         buf = M.get_default(buf, {})
         if buf.buffer == true then
-            local lines = api.nvim_buf_get_lines(item, 0, -1, false)
-            return #lines == 1 and lines[1] == ""
+            return D.buf_is_empty(item)
         else
             return item == 0
         end
-    ---All values have been covered
-    ---@diagnostic disable-next-line:missing-return
     end
 end
 
@@ -153,7 +165,7 @@ M.set_cursor = function(winid, line, column)
         winid,
         {
             D.clamp(line or 1, 1, api.nvim_buf_line_count(bufnr)),
-            math.max(0, column or 0)
+            math.max(0, column or 0),
         }
     )
 end
@@ -226,25 +238,25 @@ M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     local autocmd_id =
         api.nvim_create_autocmd(
-        autocmd.event,
-        {
-            group = F.if_nil(id, autocmd.group),
-            pattern = autocmd.pattern,
-            desc = autocmd.desc or autocmd.description,
-            callback = F.tern(is_callback, autocmd.command, nil),
-            command = F.tern(not is_callback, autocmd.command, nil),
-            once = autocmd.once,
-            nested = autocmd.nested,
-            buffer = autocmd.buffer
-        }
-    )
+            autocmd.event,
+            {
+                group = F.if_nil(id, autocmd.group),
+                pattern = autocmd.pattern,
+                desc = autocmd.desc or autocmd.description,
+                callback = F.tern(is_callback, autocmd.command, nil),
+                command = F.tern(not is_callback, autocmd.command, nil),
+                once = autocmd.once,
+                nested = autocmd.nested,
+                buffer = autocmd.buffer,
+            }
+        )
 
     return disposable:create(
         function()
             api.nvim_del_autocmd(autocmd_id)
         end,
         {
-            id = autocmd_id
+            id = autocmd_id,
         }
     )
 end
@@ -253,16 +265,17 @@ end
 ---@param name_id string|number
 ---@return boolean
 M.del_augroup = function(name_id)
-    vim.validate {
+    vim.validate{
         name_id = {
             name_id,
             {"s", "n"},
             "augroup name must be a string or number"
-        }
+        },
     }
 
     local api_call =
-        F.tern(type(name_id) == "string", api.nvim_del_augroup_by_name, api.nvim_del_augroup_by_id)
+        F.tern(type(name_id) == "string", api.nvim_del_augroup_by_name,
+               api.nvim_del_augroup_by_id)
     local ok, _ = pcall(api_call, name_id)
     return ok
 end
@@ -337,14 +350,14 @@ end
 M.map = function(modes, lhs, rhs, opts)
     local ok, err =
         pcall(
-        vim.validate,
-        {
-            mode = {modes, {"s", "t"}},
-            lhs = {lhs, {"s", "t"}},
-            rhs = {rhs, {"s", "f"}},
-            opts = {opts, "t", true}
-        }
-    )
+            vim.validate,
+            {
+                mode = {modes, {"s", "t"}},
+                lhs = {lhs, {"s", "t"}},
+                rhs = {rhs, {"s", "f"}},
+                opts = {opts, "t", true},
+            }
+        )
 
     local l = type(l) == "string" and {l} or l --[==[@as string[]]==]
 
@@ -480,7 +493,7 @@ M.map = function(modes, lhs, rhs, opts)
                     true,
                     F.tern(bufnr or type(bufnr) == "number", true, false)
                 )
-            end
+            end,
         }
     )
 end
@@ -503,14 +516,15 @@ end
 ---@param lhs string: Keybinding that is to be deleted
 ---@param opts DelMapArgs: Options given to keybindings
 M.del_keymap = function(modes, lhs, opts)
-    vim.validate {
+    vim.validate{
         mode = {modes, {"s", "t"}},
         lhs = {lhs, "s"},
-        opts = {opts, "t", true}
+        opts = {opts, "t", true},
     }
 
     opts = vim.deepcopy(opts) or {} --[[@as DelMapArgs]]
-    local modes_tbl = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
+    local modes_tbl = type(modes) == "string" and {modes} or
+        modes --[==[@as string[]]==]
 
     local bufnr = false
     if opts.buffer ~= nil then
@@ -522,14 +536,16 @@ M.del_keymap = function(modes, lhs, opts)
         for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_del_keymap, mode, lhs)
             if not ok and opts.notify then
-                log.warn(("%s is not mapped"):format(lhs), {title = "Delete Keymap"})
+                log.warn(("%s is not mapped"):format(lhs),
+                         {title = "Delete Keymap"})
             end
         end
     else
         for _, mode in ipairs(modes_tbl) do
             local ok = pcall(api.nvim_buf_del_keymap, bufnr, mode, lhs)
             if not ok and opts.notify then
-                log.warn(("%s is not mapped"):format(lhs), {title = "Delete Keymap"})
+                log.warn(("%s is not mapped"):format(lhs),
+                         {title = "Delete Keymap"})
             end
         end
     end
@@ -545,7 +561,8 @@ end
 M.get_keymap = function(mode, search, lhs, buffer)
     lhs = M.get_default(lhs, true)
     local res = {}
-    local keymaps = F.tern(buffer, api.nvim_buf_get_keymap(0, mode), api.nvim_get_keymap(mode))
+    local keymaps = F.tern(buffer, api.nvim_buf_get_keymap(0, mode),
+                           api.nvim_get_keymap(mode))
     if search == nil then
         return keymaps
     end
@@ -667,10 +684,10 @@ end
 ---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts? CommandOpts
 M.command = function(name, rhs, opts)
-    vim.validate {
+    vim.validate{
         name = {name, "string"},
         rhs = {rhs, {"f", "s"}},
-        opts = {opts, "table", true}
+        opts = {opts, "table", true},
     }
 
     local is_buffer = false
@@ -691,7 +708,10 @@ M.command = function(name, rhs, opts)
                 lgnd.command(
                     {
                         (":%s"):format(name),
-                        opts = {desc = opts.desc, buffer = F.tern(is_buffer, 0, nil)}
+                        opts = {
+                            desc = opts.desc,
+                            buffer = F.tern(is_buffer, 0, nil),
+                        },
                     }
                 )
             end
@@ -713,9 +733,9 @@ end
 ---@param name string Command to delete
 ---@param buffer? boolean|number Whether to delete buffer command
 M.del_command = function(name, buffer)
-    vim.validate {
+    vim.validate{
         name = {name, "string"},
-        buffer = {buffer, {"boolean", "number"}, "a boolean or a number"}
+        buffer = {buffer, {"boolean", "number"}, "a boolean or a number"},
     }
 
     if buffer then
@@ -744,7 +764,7 @@ M.no_win_event_call = function(f)
     local ei = vim.o.eventignore
 
     vim.opt.eventignore:prepend(
-        D.list {
+        D.list{
             "WinEnter",
             "WinLeave",
             "WinNew",
@@ -767,9 +787,9 @@ end
 ---@param _ number? patch
 ---@return boolean
 M.version = function(major, minor, _)
-    vim.validate {
+    vim.validate{
         major = {major, "n", false},
-        minor = {minor, "n", false}
+        minor = {minor, "n", false},
     }
     local v = vim.version()
     return major >= v.major and minor >= v.minor
@@ -785,11 +805,11 @@ M.messages = function(count, str)
     local lines = messages:split("\n")
     lines =
         D.filter(
-        lines,
-        function(line)
-            return line ~= ""
-        end
-    )
+            lines,
+            function(line)
+                return line ~= ""
+            end
+        )
     count = count and tonumber(count) or nil
     count = (count ~= nil and count >= 0) and count - 1 or #lines
     local slice = vim.list_slice(lines, #lines - count)
@@ -867,7 +887,7 @@ end
 ---@field on_open? fun(winnr: number): nil Callback for when window opens
 ---@field on_close? fun(winnr: number): nil Callback for when window closes
 ---@field keep? fun(): boolean Keep window open after timeout
----@field render? RenderType|fun(): nil Render a notification buffer
+---@field render? RenderType|fun(buf: number, notif: notify.Record, hl: notify.Highlights, config) Render a notification buffer
 ---@field replace? integer|notify.Record Notification record or record `id` field
 ---@field hide_from_history? boolean Hide this notification from history
 ---@field animate? boolean If false, window will jump to the timed stage
@@ -892,12 +912,12 @@ do
 
         local _opts =
             ({
-            [log.levels.TRACE] = {timeout = 500},
-            [log.levels.DEBUG] = {timeout = 1000},
-            [log.levels.INFO] = {timeout = 1000},
-            [log.levels.WARN] = {timeout = 3000},
-            [log.levels.ERROR] = {timeout = 5000, keep = keep}
-        })[level]
+                [log.levels.TRACE] = {timeout = 500},
+                [log.levels.DEBUG] = {timeout = 1000},
+                [log.levels.INFO] = {timeout = 1000},
+                [log.levels.WARN] = {timeout = 3000},
+                [log.levels.ERROR] = {timeout = 5000, keep = keep},
+            })[level]
 
         opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as NotifyOpts]]
 
@@ -939,45 +959,45 @@ end
 ---This must be defined here instead of `global.lua` due to loading order.
 _G.N =
     setmetatable(
-    {},
-    {
-        __index = function(super, level)
-            level = M.get_default(rawget(super, level), level)
+        {},
+        {
+            __index = function(super, level)
+                level = M.get_default(rawget(super, level), level)
 
-            return setmetatable(
-                {},
-                {
-                    ---@param msg string
-                    ---@param title? string
-                    __call = function(_, msg, title)
-                        super(msg, title, level)
-                    end
-                }
-            )
-        end,
-        ---
-        ---@param msg string
-        ---@param title? string
-        ---@param level? string|number
-        __call = function(_, msg, title, level)
-            level =
-                ({
-                ["trace"] = 0,
-                ["debug"] = 1,
-                ["info"] = 2,
-                ["warn"] = 3,
-                ["error"] = 4,
-                ["err"] = 4
-            })[level] or level
+                return setmetatable(
+                    {},
+                    {
+                        ---@param msg string
+                        ---@param title? string
+                        __call = function(_, msg, title)
+                            super(msg, title, level)
+                        end,
+                    }
+                )
+            end,
+            ---
+            ---@param msg string
+            ---@param title? string
+            ---@param level? string|number
+            __call = function(_, msg, title, level)
+                level =
+                    ({
+                        ["trace"] = 0,
+                        ["debug"] = 1,
+                        ["info"] = 2,
+                        ["warn"] = 3,
+                        ["error"] = 4,
+                        ["err"] = 4,
+                    })[level] or level
 
-            M.notify(
-                vim.inspect(msg),
-                M.get_default(level, log.levels.INFO) --[[@as number]],
-                {title = title}
-            )
-        end
-    }
-)
+                M.notify(
+                    vim.inspect(msg),
+                    M.get_default(level, log.levels.INFO) --[[@as number]],
+                    {title = title}
+                )
+            end,
+        }
+    )
 
 ---Preserve cursor position when executing command
 M.preserve = function(arguments)
@@ -997,7 +1017,7 @@ end
 ---Remove duplicate blank lines (2 -> 1)
 M.squeeze_blank_lines = function()
     if vim.bo.binary == false and vim.o.ft ~= "diff" then
-        local old_query = fn.getreg("/") -- save search register
+        local old_query = fn.getreg("/")          -- save search register
         M.preserve("sil! 1,.s/^\\n\\{2,}/\\r/gn") -- set current search count number
         local result = fn.searchcount({maxcount = 1000, timeout = 500}).current
         local line, col = unpack(api.nvim_win_get_cursor(0))
@@ -1043,7 +1063,7 @@ M.save_win_positions = function(bufnr)
                     end
                 )
             end
-        end
+        end,
     }
 end
 
@@ -1089,20 +1109,19 @@ end
 
 ---Program to check if executable
 ---@param exec string
----@return boolean
+---@return boolean?
 M.executable = function(exec)
     vim.validate({exec = {exec, "string"}})
-    assert(exec ~= "", debug.traceback("Empty executable string"))
-    return fn.executable(exec) == 1
+    return not M.empty(exec) and fn.executable(exec) == 1
 end
 
 ---@param str string
 ---@param max_len integer
 ---@return string
 M.truncate = function(str, max_len)
-    vim.validate {
+    vim.validate{
         str = {str, "s", false},
-        max_len = {max_len, "n", false}
+        max_len = {max_len, "n", false},
     }
 
     return F.tern(
@@ -1115,27 +1134,26 @@ end
 ---Table of escaped termcodes
 M.termcodes =
     setmetatable(
-    {},
-    {
-        ---@param tbl table self
-        ---@param k string termcode to retrieve
-        ---@return string
-        __index = function(tbl, k)
-            local k_upper = k:upper()
-            local v_upper = rawget(tbl, k_upper)
-            local c = v_upper or utils.t(k, true, false, true)
-            rawset(tbl, k, c)
-            if not v_upper then
-                rawset(tbl, k_upper, c)
-            end
-            return c
-        end
-    }
-)
+        {},
+        {
+            ---@param tbl table self
+            ---@param k string termcode to retrieve
+            ---@return string
+            __index = function(tbl, k)
+                local k_upper = k:upper()
+                local v_upper = rawget(tbl, k_upper)
+                local c = v_upper or utils.t(k, true, false, true)
+                rawset(tbl, k, c)
+                if not v_upper then
+                    rawset(tbl, k_upper, c)
+                end
+                return c
+            end,
+        }
+    )
 
 ---Escaped ansi sequence
-M.ansi =
-    setmetatable(
+M.ansi = setmetatable(
     {},
     {
         ---@param t table
@@ -1145,7 +1163,7 @@ M.ansi =
             local v = M.render_str("%s", k)
             rawset(t, k, v)
             return v
-        end
+        end,
     }
 )
 
@@ -1169,8 +1187,7 @@ local function color2csi8b(color_num, fg)
     return ("%d;5;%d"):format(fg and 38 or 48, color_num)
 end
 
-M.render_str =
-    (function()
+M.render_str = (function()
     local ansi = {
         black = 30,
         red = 31,
@@ -1179,7 +1196,7 @@ M.render_str =
         blue = 34,
         magenta = 35,
         cyan = 36,
-        white = 37
+        white = 37,
     }
     local gui = vim.o.termguicolors
     local color2csi = gui and color2csi24b or color2csi8b
@@ -1190,20 +1207,17 @@ M.render_str =
     ---@param def_fg string?
     ---@param def_bg string?
     return function(str, group_name, def_fg, def_bg)
-        vim.validate(
-            {
-                str = {str, "string"},
-                group_name = {group_name, "string"},
-                def_fg = {def_fg, "string", true},
-                def_bg = {def_bg, "string", true}
-            }
-        )
+        vim.validate({
+            str = {str, "string"},
+            group_name = {group_name, "string"},
+            def_fg = {def_fg, "string", true},
+            def_bg = {def_bg, "string", true},
+        })
         local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
         if
-            not ok or
-                not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or
-                    hl.underline)
-         then
+            not ok
+            or not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline)
+        then
             return str
         end
         local fg, bg
@@ -1216,10 +1230,10 @@ M.render_str =
         end
         local escape_prefix =
             ("\x1b[%s%s%s"):format(
-            hl.bold and ";1" or "",
-            hl.italic and ";3" or "",
-            hl.underline and ";4" or ""
-        )
+                hl.bold and ";1" or "",
+                hl.italic and ";3" or "",
+                hl.underline and ";4" or ""
+            )
 
         local escape_fg, escape_bg = "", ""
         if fg and type(fg) == "number" then
@@ -1235,7 +1249,8 @@ M.render_str =
             escape_fg = ansi[def_bg]
         end
 
-        return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg, str)
+        return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg,
+                                          str)
     end
 end)()
 
@@ -1243,7 +1258,8 @@ end)()
 ---@param fname string filename to follow
 ---@param func string|function? action to execute after following symlink
 M.follow_symlink = function(fname, func)
-    fname = F.tern(not M.empty(fname), fn.fnamemodify(fname, ":p"), api.nvim_buf_get_name(0))
+    fname = F.tern(not M.empty(fname), fn.fnamemodify(fname, ":p"),
+                   api.nvim_buf_get_name(0))
     local linked_path = uv.fs_readlink(fname)
     if linked_path then
         cmd(("keepalt file %s"):format(linked_path))
@@ -1274,11 +1290,11 @@ end
 M.close_diff = function()
     local winids =
         D.filter(
-        api.nvim_tabpage_list_wins(0),
-        function(winid)
-            return vim.wo[winid].diff --[[@as boolean]]
-        end
-    )
+            api.nvim_tabpage_list_wins(0),
+            function(winid)
+                return vim.wo[winid].diff --[[@as boolean]]
+            end
+        )
 
     if #winids > 1 then
         for _, winid in ipairs(winids) do
@@ -1296,35 +1312,35 @@ end
 ---"Colored echo"
 M.cecho =
     (function()
-    local lastmsg
-    local debounced
-    ---Echo a colored message
-    ---@param msg string message to echo
-    ---@param hl string highlight group to link
-    ---@param history boolean? add message to history
-    ---@param wait number? amount of time to wait
-    return function(msg, hl, history, wait)
-        history = history == nil and true or history --[[@as boolean]]
-        vim.schedule(
-            function()
-                api.nvim_echo({{msg, hl}}, history, {})
-                lastmsg = api.nvim_exec("5message", true)
-            end
-        )
-        if not debounced then
-            debounced =
-                debounce(
+        local lastmsg
+        local debounced
+        ---Echo a colored message
+        ---@param msg string message to echo
+        ---@param hl string highlight group to link
+        ---@param history boolean? add message to history
+        ---@param wait number? amount of time to wait
+        return function(msg, hl, history, wait)
+            history = history == nil and true or history --[[@as boolean]]
+            vim.schedule(
                 function()
-                    if lastmsg == api.nvim_exec("5message", true) then
-                        api.nvim_echo({{"", ""}}, false, {})
-                    end
-                end,
-                wait or 2500
+                    api.nvim_echo({{msg, hl}}, history, {})
+                    lastmsg = api.nvim_exec("5message", true)
+                end
             )
+            if not debounced then
+                debounced =
+                    debounce(
+                        function()
+                            if lastmsg == api.nvim_exec("5message", true) then
+                                api.nvim_echo({{"", ""}}, false, {})
+                            end
+                        end,
+                        wait or 2500
+                    )
+            end
+            debounced()
         end
-        debounced()
-    end
-end)()
+    end)()
 
 ---Expand a tab in a string
 ---@param str string
@@ -1364,44 +1380,46 @@ end
 
 M.highlight =
     (function()
-    local ns = api.nvim_create_namespace("l-highlight")
+        local ns = api.nvim_create_namespace("l-highlight")
 
-    local function do_unpack(pos)
-        vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
-        local row, col
-        if type(pos) == "table" then
-            row, col = unpack(pos)
-        else
-            row = pos
+        local function do_unpack(pos)
+            vim.validate({
+                pos = {pos, {"t", "n"}, "must be table or number type"}})
+            local row, col
+            if type(pos) == "table" then
+                row, col = unpack(pos)
+            else
+                row = pos
+            end
+            col = col or 0
+            return row, col
         end
-        col = col or 0
-        return row, col
-    end
 
-    ---Wrapper to deal with extmarks
-    ---@param bufnr number
-    ---@param hl_group string
-    ---@param start number
-    ---@param finish number
-    ---@param opt? table
-    ---@param delay number
-    return function(bufnr, hl_group, start, finish, opt, delay)
-        local row, col = do_unpack(start)
-        local end_row, end_col = do_unpack(finish)
-        if end_col then
-            end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0), end_col)
+        ---Wrapper to deal with extmarks
+        ---@param bufnr number
+        ---@param hl_group string
+        ---@param start number
+        ---@param finish number
+        ---@param opt? table
+        ---@param delay number
+        return function(bufnr, hl_group, start, finish, opt, delay)
+            local row, col = do_unpack(start)
+            local end_row, end_col = do_unpack(finish)
+            if end_col then
+                end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0),
+                                   end_col)
+            end
+            local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
+            o = opt and vim.tbl_deep_extend("keep", o, opt) or o
+            local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
+            vim.defer_fn(
+                function()
+                    pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
+                end,
+                delay or 300
+            )
         end
-        local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
-        o = opt and vim.tbl_deep_extend("keep", o, opt) or o
-        local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
-        vim.defer_fn(
-            function()
-                pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
-            end,
-            delay or 300
-        )
-    end
-end)()
+    end)()
 
 ---Write a file using libuv
 ---@param path string
@@ -1450,24 +1468,24 @@ M.write_file = function(path, data, sync)
 end
 
 ---@param path string
----@return uv_fs_t
----@return table
+---@return uv_fs_t|string
+---@return uv.aliases.fs_stat_table?
 function M.read_file(path)
-  -- 292 == 0x444
-  local fd = assert(uv.fs_open(path, "r", 292))
-  local stat = assert(uv.fs_fstat(fd))
-  local buffer = assert(uv.fs_read(fd, stat.size, 0))
-  uv.fs_close(fd)
-  return buffer, stat
+    -- 292 == 0x444
+    local fd = assert(uv.fs_open(fn.expand(path), "r", 292))
+    local stat = assert(uv.fs_fstat(fd))
+    local buffer = assert(uv.fs_read(fd, stat.size, 0))
+    uv.fs_close(fd)
+    return buffer, stat
 end
 
 ---Read a file asynchronously (using Promises)
 ---@param path string
----@return Promise
+---@return Promise_t<string> data File data
 M.readFile = function(path)
     return async(
         function()
-            local fd = await(uva.open(path, "r", 438))
+            local fd = await(uva.open(fn.expand(path), "r", 438))
             local stat = await(uva.fstat(fd))
             local data = await(uva.read(fd, stat.size, 0))
             await(uva.close(fd))
@@ -1493,9 +1511,8 @@ M.writeFile = function(path, data)
 end
 
 ---Only stat a given file.
----This function does not require a file descriptor, instead it takes a string
 ---@param path string
----@return Promise
+---@return Promise<uv.aliases.fs_stat_table> stat Stat table
 M.stat = function(path)
     return async(
         function()

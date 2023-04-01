@@ -234,6 +234,7 @@ alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config'
 alias nx='$EDITOR $HOME/.xinitrc'
 
 alias nafew='$EDITOR $XDG_CONFIG_HOME/afew/config'
+alias nzath='$EDITOR $XDG_CONFIG_HOME/zathura/zathurarc'
 alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
 alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
 alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
@@ -410,6 +411,8 @@ alias tt="taskwarrior-tui"
 alias t="task"
 alias te='t edit'
 alias taske='t edit'
+alias th='threadwatcher'
+alias tha='th add'
 
 alias jrnlw='jrnl wiki'
 alias nb='BROWSER=w3m nb'

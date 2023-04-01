@@ -1192,13 +1192,18 @@ builtin.macroclip = function(opts)
     telescope.extensions.macroscope.default(opts)
 end
 
+builtin.possession = function(opts)
+    telescope.extensions.possession.list(opts)
+end
+
+builtin.noice = function(opts)
+    telescope.extensions.noice.noice(opts)
+end
+
 -- builtin.undo = function(opts)
 --     telescope.extensions.undo.undo(opts)
 -- end
 
--- builtin.possession = function(opts)
---     telescope.extensions.possession.list(opts)
--- end
 
 -- builtin.yanky = function(opts)
 --     telescope.extensions.yank_history.yank_history(opts)

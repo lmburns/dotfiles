@@ -20,50 +20,9 @@ local wk = require("which-key")
 -- map("n", "<Space>", "<Nop>")
 -- map("x", "<Space>", "<Nop>")
 
-wk.register(
-    {
-        [";q"] = {[[:q<CR>]], "Quit"},
-        [";w"] = {[[:update<CR>]], "Update file"}
-    }
-)
-
--- Map '-' to blackhole register
-map("n", "-", '"_', {desc = "Black hole register"})
-map("x", "-", '"_', {desc = "Black hole register"})
-map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
-
--- ╓                                                          ╖
--- ║                          Macro                           ║
--- ╙                                                          ╜
--- Use qq to record, q to stop, Q to play a macro
-map("n", "Q", "@q", {desc = "Play 'q' macro"})
-
--- Repeat last command
-map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
-
-map(
-    "x",
-    "@",
-    ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>",
-    {silent = false, desc = "Execute macro visually"}
-)
-
-map("x", ".", ":norm .<CR>", {desc = "Perform dot commands over visual blocks"})
-
--- Use qq to record and stop (only records q)
-map("n", "qq", D.ithunk(funcs.record_macro, "q"), {expr = true, desc = "Record macro"})
-map("n", "qj", D.ithunk(funcs.record_macro, "j"), {expr = true, desc = "Record macro"})
-map("n", "qk", D.ithunk(funcs.record_macro, "k"), {expr = true, desc = "Record macro"})
-map("n", "q:", "<Nop>")
-map("n", "q/", "<Nop>")
-map("n", "q?", "<Nop>")
-map("n", "q", "<Nop>", {silent = true})
-
--- map("v", "J", ":m '>+1<CR>gv=gv")
--- map("v", "K", ":m '<-2<CR>gv=gv")
--- map("n", "<C-,>", "<Cmd>m +1<CR>")
--- map("n", "<C-.>", "<Cmd>m -2<CR>")
-
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                       Insert Mode                        │
+--  ╰──────────────────────────────────────────────────────────╯
 map("i", '<M-S-">', "<Home>", {desc = "Goto begin of lne"})
 map("i", "<M-'>", "<End>", {desc = "Goto end of line"})
 map("i", "<M-b>", "<C-Left>", {desc = "Go word back"})
@@ -88,7 +47,6 @@ map("i", "<C-M-.>", "<C-o>g2p", {desc = "Paste commented", noremap = false})
 -- map("i", "<C-M-p>", "<C-p>", {desc = "Complete word (search backward)"})
 -- map("i", "<C-j>", "<C-o><Cmd>m +1<CR>")
 -- map("i", "<C-k>", "<C-o><Cmd>m -2<CR>")
--- map("i", "<C-o>", "<C-o>", {desc = "Run command, resume insert mode"})
 map("i", "<C-n>", "<C-o>:", {desc = "Command mode"})
 
 -- Start new undo sequence
@@ -126,6 +84,10 @@ map("i", "<M-i>", "<C-g>u<C-o>O", {desc = "Move current line down"})
 map("i", "<M-S-o>", "<C-g>u<C-o>O", {desc = "Move current line down"})
 map("i", "<C-M-i>", "<C-g>u<C-o>zk", {desc = "Insert line above", noremap = false})
 map("i", "<C-M-o>", "<C-g>u<C-o>zj", {desc = "Insert line below", noremap = false})
+map("i", "<M-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", {desc = "Fix last spelling mistake"})
+
+map("i", "<F1>", "<C-R>=expand('%')<CR>", {desc = "Insert file name"})
+map("i", "<F2>", "<C-R>=expand('%:p:h')<CR>", {desc = "Insert directory"})
 
 wk.register(
     {
@@ -140,27 +102,76 @@ wk.register(
     {mode = "i"}
 )
 
--- imap <C-F> <C-R>=expand("%")<CR>
--- cnoremap <M-e>  <C-R>=expand("%:p:h") . "/" <CR>
--- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
--- cnoremap <expr> * getcmdline() =~ '.*\*\*$' ? '/*' : '*' what
-
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                       Command Mode                       │
+--  ╰──────────────────────────────────────────────────────────╯
 map("c", "<C-b>", "<Left>")
 map("c", "<C-f>", "<Right>")
 map("c", "<C-,>", "<Home>")
 map("c", "<C-.>", "<End>")
-map("c", "<C-S-k>", "<Home>")
-map("c", "<C-S-j>", "<End>")
+map("c", '<M-S-">', "<Home>")
+map("c", "<M-'>", "<End>")
 map("c", "<C-h>", "<BS>")
 map("c", "<C-l>", "<Del>")
 map("c", "<C-d>", "<Del>")
-map("c", "<M-[>", "<Up>")
-map("c", "<M-]>", "<Down>")
-map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
-map("c", "<M-b>", "<C-Left>", {desc = "Move one word left"})
+map("c", "<C-S-k>", "<Up>")
+map("c", "<C-S-j>", "<Down>")
+map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line", silent = true})
+map("c", "<M-]>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line", silent = true})
+map("c", "<M-b>", "<C-Left>", {desc = "Move one word left", silent = true})
 map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
 map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
 map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
+map("c", "<F1>", "<C-r>=fnameescape(expand('%'))<CR>", {desc = "Insert current filename"})
+map("c", "<F2>", "<C-r>=fnameescape(expand('%:p:h'))<CR>/", {desc = "Insert current directory"})
+map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {desc = "Insert glob", expr = true})
+-- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                       Normal Mode                        │
+--  ╰──────────────────────────────────────────────────────────╯
+wk.register(
+    {
+        [";q"] = {[[:q<CR>]], "Quit"},
+        [";w"] = {[[:update<CR>]], "Update file"}
+    }
+)
+
+-- Map '-' to blackhole register
+map("n", "-", '"_', {desc = "Black hole register"})
+map("x", "-", '"_', {desc = "Black hole register"})
+map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
+
+-- ╓                                                          ╖
+-- ║                          Macro                           ║
+-- ╙                                                          ╜
+-- Use qq to record, q to stop, Q to play a macro
+map("n", "Q", "@q", {desc = "Play 'q' macro"})
+
+map(
+    "x",
+    "@",
+    ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>",
+    {silent = false, desc = "Execute macro visually"}
+)
+
+map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
+map("x", ".", ":norm .<CR>", {desc = "Perform dot commands over visual blocks"})
+
+-- Use qq to record and stop (only records q)
+map("n", "qq", D.ithunk(funcs.record_macro, "q"), {expr = true, desc = "Record macro"})
+map("n", "qj", D.ithunk(funcs.record_macro, "j"), {expr = true, desc = "Record macro"})
+map("n", "qk", D.ithunk(funcs.record_macro, "k"), {expr = true, desc = "Record macro"})
+map("n", "q:", "<Nop>")
+map("n", "q/", "<Nop>")
+map("n", "q?", "<Nop>")
+map("n", "q", "<Nop>", {silent = true})
+
+-- map("v", "J", ":m '>+1<CR>gv=gv")
+-- map("v", "K", ":m '<-2<CR>gv=gv")
+-- map("n", "<C-,>", "<Cmd>m +1<CR>")
+-- map("n", "<C-.>", "<Cmd>m -2<CR>")
+
 
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>")
@@ -182,6 +193,7 @@ map(
 
 map("n", "<Leader>a;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
 map("n", "<Leader>am", "<Cmd>:h index<CR>", {desc = "Help: mapping overview"})
+map("n", "<Leader>ab", "<Cmd>:h builtin<CR>", {desc = "Help: builtin overview"})
 
 map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn")
 map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
@@ -204,7 +216,6 @@ map(
     function()
         local scrolloff = vim.wo.scrolloff
         vim.wo.scrolloff = 0
-        -- utils.normal("n", "VHoLo0<Esc>/\\%V")
         utils.normal("n", "m`HVL<Esc>/\\%V")
 
         vim.defer_fn(
@@ -233,7 +244,7 @@ wk.register(
         [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         ["gI"] = {D.ithunk(utils.normal, "n", "`^"), "Goto last insert spot"},
         ["gA"] = {D.ithunk(utils.normal, "n", "ga"), "Get ASCII value"},
-        ["<C-g>"] = {"2<C-g>", "Show buffer info"},
+        ["<C-g>"] = {"2<C-g>", "Show buffer info"}
     }
 )
 
@@ -395,19 +406,19 @@ wk.register(
             name = "+buffer",
             ["<C-s>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf()<CR>]],
-                "Split last buffer (horizontally)"
+                "Split: last buffer (horiz)"
             },
-            -- ["<C-v>"] = {
-            --     [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
-            --     "Split last buffer (vertically)"
-            -- },
+            ["<C-v>"] = {
+                [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
+                "Split: last buffer (vert)"
+            },
             ["<C-,>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf()<CR>]],
-                "Split last buffer (horizontally)"
+                "Split: last buffer (horiz)"
             },
             ["<C-.>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
-                "Split last buffer (vertically)"
+                "Split: last buffer (verti)"
             },
             -- H = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
             -- V = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
@@ -418,7 +429,7 @@ wk.register(
             ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
             ["<C-t>"] = {"<Cmd>tab sp<CR>", "Open current window in tab"},
             O = {"<Cmd>tabo<CR>", "Close all tabs except current"},
-            ["0"] = {"<C-w>=", "Equally high and wide"},
+            ["0"] = {"<C-w>=", "Equally high and wide"}
         }
     }
 )

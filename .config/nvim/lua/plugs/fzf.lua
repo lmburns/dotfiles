@@ -153,7 +153,13 @@ function M.files()
     local b_list =
         _t(fn.getbufinfo({buflisted = 1})):map(
         function(b)
-            return {bufnr = b.bufnr, name = b.name, lnum = b.lnum, lastused = b.lastused, changed = b.changed}
+            return {
+                bufnr = b.bufnr,
+                name = b.name,
+                lnum = b.lnum,
+                lastused = b.lastused,
+                changed = b.changed
+            }
         end
     ):sort(
         function(a, b)
@@ -226,7 +232,12 @@ local function format_outline(symbols)
 end
 
 function M.outline()
-    local syms = coc.run_command("kvs.symbol.docSymbols", {"", {"Function", "Method", "Interface", "Struct", "Class"}})
+    local syms =
+        coc.run_command(
+        "kvs.symbol.docSymbols",
+        {"", {"Function", "Method", "Interface", "Struct", "Class"}}
+    )
+
     local opts = {
         options = {
             "+m",
@@ -656,13 +667,27 @@ local function init()
         }
     )
 
-    command("Helptags", [[call fzf#vim#helptags(<bang>0)]], {bang = true, bar = true, desc = "Help pages"})
-    command("Maps", [[call fzf#vim#maps(<q-args>, <bang>0)]], {nargs = "*", bang = true, bar = true, desc = "Mappings"})
+    command(
+        "Helptags",
+        [[call fzf#vim#helptags(<bang>0)]],
+        {bang = true, bar = true, desc = "Help pages"}
+    )
+    command(
+        "Maps",
+        [[call fzf#vim#maps(<q-args>, <bang>0)]],
+        {nargs = "*", bang = true, bar = true, desc = "Mappings"}
+    )
 
     wk.register(
         {
-            ["<Leader>fc"] = {[[:lua require('common.gittool').root_exe('BCommits')<CR>]], "BCommits Git (fzf)"},
-            ["<Leader>fg"] = {[[:lua require('common.gittool').root_exe('GFiles')<CR>]], "GFiles Git (fzf)"},
+            ["<Leader>fc"] = {
+                [[:lua require('common.gittool').root_exe('BCommits')<CR>]],
+                "BCommits Git (fzf)"
+            },
+            ["<Leader>fg"] = {
+                [[:lua require('common.gittool').root_exe('GFiles')<CR>]],
+                "GFiles Git (fzf)"
+            },
             ["<Leader>fi"] = {
                 [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],
                 "Files Git (fzf)"

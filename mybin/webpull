@@ -5,18 +5,37 @@
 # --mirror \
 # -A png,jpg
 
-wget \
+# wget \
+#   --recursive \
+#   --level inf \
+#   --timestamping \
+#   --no-remove-listing \
+#   --convert-links \
+#   --no-clobber \
+#   --page-requisites \
+#   --adjust-extension \
+#   --no-check-certificate \
+#   -e robots=off \
+#   --no-parent \
+#   --wait=3 \
+#   -U "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)" \
+#   "$@"
+
+# --no-clobber \
+
+wget2 \
   --recursive \
-  --level inf \
+  --level=inf \
   --timestamping \
-  --no-remove-listing \
   --convert-links \
-  --no-clobber \
+  --hyperlink \
   --page-requisites \
   --adjust-extension \
-  --no-check-certificate \
-  -e robots=off \
+  --check-certificate=off \
   --no-parent \
-  --wait=3 \
-  -U "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)" \
+  --execute=robots=off \
+  --robots=off \
+  --user-agent="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)" \
+  --max-threads=8 \
+  --progress=bar \
   "$@"

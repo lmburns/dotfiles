@@ -484,9 +484,9 @@ o.formatoptions:append(
         -- started and only at a white character that has been entered during the
         -- current insert command.
         l = true,
-        v = true, -- only break line at blank line I've entered
-        c = true, -- auto-wrap comments using textwidth
-        t = true, -- autowrap lines using text width value
+        v = false, -- only break line at blank line I've entered
+        c = false, -- auto-wrap comments using textwidth
+        t = false, -- autowrap lines using text width value
         p = true, -- don't break lines at single spaces that follow periods
         r = false, -- continue comments when pressing Enter
         o = false, -- automatically insert comment leader after 'o'/'O'

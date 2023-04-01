@@ -19,9 +19,10 @@ zle     -N    fzf-file-edit-widget
 function fe() {
   local -a sel
   sel=("$(
-    command fd -Hi -tf -d2 --strip-cwd-prefix | \
+    command fd -Hi -tf ${1:+-d${1}} --strip-cwd-prefix | \
       lscolors | \
-      fzf --query="$1" \
+      fzf \
+        --ansi \
         --multi \
         --select-1 \
         --exit-0 \

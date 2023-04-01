@@ -1,16 +1,49 @@
-# Desc: convert an mp4 to a webm
-
-ffmpeg \
-  -i $1 \
-  -c:v libvpx-vp9 \
-  -c:a libopus \
-  -crf 32 \
-  -b:v 0 \
-  -row-mt 1 \
-  -an \
-  output.webm
+# Desc: convert any video to a webm
 
 # -b:a 128k \
 # -c:a libopus \
+# -preset veryslow
+
+# -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+# -c:v libvpx-vp9 \
+# -row-mt 1 \
+# -ss 00:03:18 \
+# -to 00:03:48 \
+
+# ffmpeg \
+#   -i $1 \
+#   -c:v libvpx-vp9 \
+#   -c:a libopus \
+#   -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+#   -crf 44 \
+#   -b:v 0 \
+#   -an \
+#   -row-mt 1 \
+#   -threads 4 \
+#   output.webm
+
+
+# -i = input
+# -c:v = video codec
+# -c:a = audio codec
+# -b:v = maximum allowed bitrate
+# -vf = output video size
+# -crf = lower is higher quality
+# -an = disable audio stream selection
+# -ss = start video at this time
+# -to = end video at this time
+
+# -vf "scale=1280:-1" \
+# -ss 00:00:01 \
+# -to 00:00:03 \
+
+ffmpeg \
+  -i $1 \
+  -c:v libvpx \
+  -c:a libvorbis \
+  -b:v 1500K \
+  -crf 40 \
+  -an \
+  output.webm
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

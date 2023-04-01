@@ -1,7 +1,7 @@
 ---@diagnostic disable:undefined-field
 -- local global = require("common.global")
 local D = require("dev")
-local hl = require("common.color")
+-- local hl = require("common.color")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
@@ -28,14 +28,19 @@ local has_sourced
 local exclude_ft = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= ''"))
 local exclude_bt = _t({"nofile"})
 
+-- local _ = D.wrap_err("error here", require, 'xx')
+-- local _ = D.wrap_err(require, 'xx')
+-- local _ = D.npcall(require, 'xx')
+
 ---
 ---@param bufnr number
 ---@return boolean
 local function should_exclude(bufnr)
-    if fn.expand("%") == ""
-    or exclude_ft:contains(vim.bo[bufnr].ft)
-    or exclude_bt:contains(vim.bo[bufnr].bt)
-    or D.is_floating_window() then
+    if
+        fn.expand("%") == "" or exclude_ft:contains(vim.bo[bufnr].ft) or
+        exclude_bt:contains(vim.bo[bufnr].bt) or
+        D.is_floating_window()
+    then
         return true
     end
     return false
@@ -61,30 +66,34 @@ nvim.autocmd.lmb__GitEnv = {
                 --     return
                 -- end
 
-                local _, ret = Job:new(
-                    {
-                        command = "dotbare",
-                        args = {"ls-files", "--error-unmatch", curr_file},
-                        on_exit = function(_, ret)
-                            return ret
-                        end,
-                    }
-                ):sync()
+                local _, ret =
+                    Job:new(
+                        {
+                            command = "dotbare",
+                            args = {"ls-files", "--error-unmatch", curr_file},
+                            on_exit = function(_, ret)
+                                return ret
+                            end,
+                        }
+                    ):sync()
 
                 if ret == 0 then
                     if not has_sourced then
-                        has_sourced = debounce(
-                            function()
-                                env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                                env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                            end, 10
-                        )
+                        has_sourced =
+                            debounce(
+                                function()
+                                    env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                                    env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                                end,
+                                10
+                            )
                     end
 
                     -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
                     has_sourced()
                 end
-            end, 1
+            end,
+            1
         )
     end,
 }
@@ -104,9 +113,8 @@ nvim.autocmd.lmb__MacroRecording = {
         pattern = "*",
         command = function()
             local event = vim.v.event
-            local msg = ("  Recorded @%s\n%s"):format(
-                event.regname, event.regcontents
-            )
+            local msg = ("  Recorded @%s\n%s"):format(event.regname,
+                                                         event.regcontents)
             log.info(msg, {title = "Macro", icon = ""})
         end,
     },
@@ -137,14 +145,16 @@ nvim.autocmd.lmb__RestoreCursor = {
             --     }
             -- )
 
-            if fn.expand("%") == ""
-            or exclude_ft:contains(vim.bo.ft)
-            or vim.bo.bt == "nofile"
-            or D.is_floating_window(0) then
+            if
+                fn.expand("%") == ""
+                or exclude_ft:contains(vim.bo.ft)
+                or vim.bo.bt == "nofile"
+                or D.is_floating_window(0)
+            then
                 return
             end
 
-            local mark = nvim.mark["\""]
+            local mark = nvim.mark['"']
             local row, col = mark.row, mark.col
             if {row, col} ~= {0, 0} and row <= nvim.buf.line_count(0) then
                 utils.set_cursor(0, row, 0)
@@ -211,9 +221,9 @@ nvim.autocmd.lmb__FormatOptions = {
                         -- started and only at a white character that has been entered during the
                         -- current insert command.
                         l = true,
-                        v = true,                 -- only break line at blank line I've entered
-                        c = true,                 -- auto-wrap comments using textwidth
-                        t = true,                 -- autowrap lines using text width value
+                        v = false,                 -- only break line at blank line I've entered
+                        c = false,                 -- auto-wrap comments using textwidth
+                        t = false,                 -- autowrap lines using text width value
                         p = true,                 -- don't break lines at single spaces that follow periods
                         ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
                         r = funcs.set_formatopts, -- continue comments when pressing Enter
@@ -441,9 +451,10 @@ nvim.autocmd.lmb__TermMappings = {
 local split_should_return = function()
     -- do nothing for floating windows
     local cfg = api.nvim_win_get_config(0)
-    if  cfg
-    and (cfg.external or cfg.relative and #cfg.relative > 0)
-    or  api.nvim_win_get_height(0) == 1 then
+    if
+        cfg and (cfg.external or cfg.relative and #cfg.relative > 0) or
+        api.nvim_win_get_height(0) == 1
+    then
         return true
     end
     -- do not run if Diffview is open
@@ -480,20 +491,22 @@ nvim.autocmd.lmb__Help = {
             local bufnr = args.buf
             if vim.bo[bufnr].bt == "help" then
                 if not debounced then
-                    debounced = debounce:new(
-                        function()
-                            -- pcall needed when opening a TOC inside a help page and returning to help page
-                            pcall(cmd.wincmd, "L")
-                            -- local width = math.floor(vim.o.columns * 0.75)
-                            -- cmd("vertical resize " .. width)
-                            cmd("vertical resize 82")
-                        end, 0
-                    )
+                    debounced =
+                        debounce:new(
+                            function()
+                                -- pcall needed when opening a TOC inside a help page and returning to help page
+                                pcall(cmd.wincmd, "L")
+                                -- local width = math.floor(vim.o.columns * 0.75)
+                                -- cmd("vertical resize " .. width)
+                                cmd("vertical resize 82")
+                            end,
+                            0
+                        )
                 end
                 debounced()
             end
         end,
-        desc = "Equalize help page window"
+        desc = "Set help split width"
     },
     {
         event = "BufLeave",
@@ -506,7 +519,7 @@ nvim.autocmd.lmb__Help = {
                 end
             end
         end,
-        desc = "Equalize help page window (set debounce to empty)"
+        desc = "Set help split width (set debounce to empty)"
     },
     {
         event = "BufWinLeave",
@@ -518,7 +531,7 @@ nvim.autocmd.lmb__Help = {
                 debounced = nil
             end
         end,
-        desc = "Equalize help page window (reset debounce)"
+        desc = "Set help split width (reset debounce)"
     },
     {
         event = "FileType",
@@ -560,34 +573,36 @@ nvim.autocmd.lmb__Help = {
 -- ]]] === Help ===
 
 -- === Smart Close === [[[
-local smart_close_filetypes = _t(
-    {
-        -- 'help',
-        -- 'qf',
-        "LuaTree",
-        "Outline",
-        "aerial", -- has its own mapping but is slow
-        "bufferize",
-        "dbui",
-        "floggraph",
-        "fugitive",
-        "fugitiveblame",
-        "git",
-        "git-log",
-        "git-status",
-        "gitcommit",
-        "godoc",
-        "log",
-        "lspinfo",
-        "neotest-summary",
-        "scratchpad",
-        "startuptime",
-        "tsplayground",
-        "vista"
-    }
-)
+local smart_close_filetypes =
+    _t(
+        {
+            -- 'help',
+            -- 'qf',
+            "LuaTree",
+            "Outline",
+            "aerial", -- has its own mapping but is slow
+            "bufferize",
+            "dbui",
+            "floggraph",
+            "fugitive",
+            "fugitiveblame",
+            "git",
+            "git-log",
+            "git-status",
+            "gitcommit",
+            "godoc",
+            "log",
+            "lspinfo",
+            "neotest-summary",
+            "scratchpad",
+            "startuptime",
+            "tsplayground",
+            "vista"
+        }
+    )
 
 local smart_close_buftypes = _t({})
+local smart_close_title = _t({"option-window"})
 
 local function smart_close()
     if fn.winnr("$") ~= 1 then
@@ -606,16 +621,26 @@ nvim.autocmd.lmb__SmartClose = {
         command = function(args)
             local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
-            local is_eligible = is_unmapped
-                or vim.wo.previewwindow
-                or smart_close_filetypes:contains(vim.bo[bufnr].ft)
-                or smart_close_buftypes:contains(vim.bo[bufnr].bt)
+            local is_eligible =
+                is_unmapped or vim.wo.previewwindow or
+                smart_close_filetypes:contains(vim.bo[bufnr].ft) or
+                smart_close_buftypes:contains(vim.bo[bufnr].bt) or
+                smart_close_title:contains(fn.expand("%"))
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
             end
         end,
         desc = "Create a smart qq (close) mapping"
+    },
+    {
+        event = "BufEnter",
+        pattern = "option-window",
+        command = function(args)
+            local bufnr = args.buf
+            vim.bo[bufnr].bufhidden = "wipe"
+        end,
+        desc = "Delete hidden option-windows"
     },
     {
         -- Close quick fix window if the file containing it was closed
@@ -687,14 +712,14 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
             local lazyredraw = vim.opt.lazyredraw
             local showmatch = vim.opt.showmatch
 
-            vim.bo[bufnr].undofile       = false
-            vim.wo[winid].colorcolumn    = ""
+            vim.bo[bufnr].undofile = false
+            vim.wo[winid].colorcolumn = ""
             vim.wo[winid].relativenumber = false
-            vim.wo[winid].foldmethod     = "manual"
-            vim.wo[winid].spell          = false
-            vim.opt.hlsearch             = false
-            vim.opt.lazyredraw           = true
-            vim.opt.showmatch            = false
+            vim.wo[winid].foldmethod = "manual"
+            vim.wo[winid].spell = false
+            vim.opt.hlsearch = false
+            vim.opt.lazyredraw = true
+            vim.opt.showmatch = false
 
             autocmd(
                 {
@@ -790,18 +815,18 @@ do
             if timer then
                 timer:stop()
             end
-            timer = vim.defer_fn(
-                function()
-                    if utils.mode() == "n" then
-                        api.nvim_echo({}, false, {})
-                    end
-                end,
-                timeout
-            )
+            timer =
+                vim.defer_fn(
+                    function()
+                        if utils.mode() == "n" then
+                            api.nvim_echo({}, false, {})
+                        end
+                    end,
+                    timeout
+                )
         end,
-        desc = ("Clear command-line messages after %d seconds"):format(
-            timeout / 1000
-        ),
+        desc = ("Clear command-line messages after %d seconds"):format(timeout /
+            1000),
     }
 end
 
@@ -828,7 +853,8 @@ a.async_void(
     vim.schedule_wrap(
         function()
             augroup(
-                "lmb__TrimWhitespace", {
+                "lmb__TrimWhitespace",
+                {
                     event = "BufWritePre",
                     pattern = "*",
                     command = function(args)
@@ -858,10 +884,10 @@ nvim.autocmd.lmb__AutoReloadFile = {
         command = function(args)
             local bufnr = args.buf
             local name = api.nvim_buf_get_name(bufnr)
-            if name == ""
-            or vim.bo[bufnr].buftype ~= "" -- Only check for normal files
-            or not fn.filereadable(name)   -- To avoid: E211: File "..." no longer available
-            then
+            if
+                name == "" or vim.bo[bufnr].buftype ~= "" or -- Only check for normal files
+                not fn.filereadable(name)
+            then                                             -- To avoid: E211: File "..." no longer available
                 return
             end
 
@@ -939,15 +965,17 @@ nvim.autocmd.RnuColumn = {
 -- ]]] === RNU Column ===
 
 augroup(
-    "lmb__SetFocus", {
-        event   = "FocusGained",
-        desc    = "Set `nvim_focused` to true",
+    "lmb__SetFocus",
+    {
+        event = "FocusGained",
+        desc = "Set `nvim_focused` to true",
         command = function()
             g.nvim_focused = true
         end,
-    }, {
-        event   = "FocusLost",
-        desc    = "Set `nvim_focused` to false",
+    },
+    {
+        event = "FocusLost",
+        desc = "Set `nvim_focused` to false",
         command = function()
             g.nvim_focused = false
         end,

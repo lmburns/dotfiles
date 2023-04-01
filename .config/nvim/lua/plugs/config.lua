@@ -460,11 +460,17 @@ function M.luapad()
             eval_on_change = true,
             split_orientation = "vertical",
             on_init = function()
-                print("Luapad initialized")
+                if D.plugin_loaded("noice.nvim") then
+                    cmd("sil! Noice disable")
+                end
             end,
             -- Global variables provided on startup
             context = {
+                D = require("dev"),
+                U = require("common.utils"),
                 arr = {"abc", "def", "ghi", "jkl"},
+                narr = {1, 2, 3, 4, 5},
+                tblt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
                 tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
                 shout = function(str)
                     return ((str):upper() .. "!")
@@ -472,6 +478,18 @@ function M.luapad()
             }
         }
     )
+
+   nvim.autocmd.lmb__Luapad = {
+        event = "BufLeave",
+        pattern = "*Luapad.lua",
+        command = function()
+            if D.plugin_loaded("noice.nvim") then
+                cmd("sil! Noice enable")
+            end
+        end,
+        desc = "Enable noice when leaving Luapad"
+    ,
+    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1105,6 +1123,7 @@ function M.comment_box()
     map({"n", "v"}, "<Leader>bR", cb.rcbox, {desc = "Right fixed, right text (round)"})
 
     map({"n", "v"}, "<Leader>ba", cb.albox, {desc = "Left adapted (round)"})
+    map({"n", "v"}, "<Leader>be", _(cb.albox, 19), {desc = "Left adapted (side)"})
     map({"n", "v"}, "<Leader>bA", cb.acbox, {desc = "Center adapted (round)"})
 
     map({"n", "v"}, "<Leader>bc", cb.ccbox, {desc = "Center fixed, center text (round)"})

@@ -199,10 +199,12 @@ end
 
 ---------------------------KEYBINDS CUSTOMIZATION SETTINGS---------------------------------
 
-mp.add_key_binding("ctrl+r", "resume", resume)
-mp.add_key_binding("ctrl+R", "resumeCaps", resume)
+mp.add_key_binding("alt+r", "resume", resume)
+mp.add_key_binding("alt+R", "resumeCaps", resume)
+mp.add_key_binding("alt+[", "resume", resume)
 
-mp.add_key_binding("ctrl+l", "lastPlay", lastPlay)
-mp.add_key_binding("ctrl+L", "lastPlayCaps", lastPlay)
+mp.add_key_binding("alt+l", "lastPlay", lastPlay)
+mp.add_key_binding("alt+L", "lastPlayCaps", lastPlay)
+mp.add_key_binding("alt+]", "lastPlay", lastPlay)
 
 ---------------------END OF KEYBINDS CUSTOMIZATION SETTINGS---------------------------------

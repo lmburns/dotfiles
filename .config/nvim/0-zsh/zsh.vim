@@ -144,8 +144,8 @@ syn keyword zshConditional if then elif else fi esac select
 
 syn keyword zshCase             case nextgroup=zshCaseWord skipwhite
 syn match zshCaseWord           /\S\+/ nextgroup=zshCaseIn skipwhite contained transparent
-syn keyword zshCaseIn           in nextgroup=zshCasePattern skipwhite skipnl contained
-syn match zshCasePattern        /(\=\zs\S[^)]*\ze)/ contained contains=zshParenthesis
+syn keyword zshCaseIn           in nextgroup=zshCasePattern,zshComment skipwhite skipnl contained
+syn match zshCasePattern        /(\=\zs[^)]*\s*\ze)/ contained skipwhite contains=zshDelim,@zshDerefs,zshOperator,zshNumber,@zshSubst,zshString
 syn match zshCaseEnd            ';[;&|]' nextgroup=zshCasePattern,zshComment,zshCaseEsac skipwhite skipnl
 syn keyword zshCaseEsac         esac skipwhite
 
@@ -173,13 +173,13 @@ syn region  zshRepeatC     contained transparent start='\%(\$\?\)[<=>]\@<!((' en
 " syn match   zshFunction         '^\s*\k\+\ze\s*()'
 
 " My modification to allow for functions that start with or contain [:→.@+-]
-syn match   zshKSHFunction      contained '\(\w\|[:→.@+-]\)\S\+'
-syn match   zshFunction         '^\s*\(\k\|[:→.@+-]\)\+\ze\s*()'
+syn match   zshKSHFunction      contained '\(\w\|[:→.@+-/]\)\S\+'
+syn match   zshFunction         '^\s*\(\k\|[:→.@+-/]\)\+\ze\s*()'
 
-                                " <<<, <, <>, and variants.
-syn match   zshRedir            '\d\=\(<<<\|<&\s*[0-9p-]\=\|<>\?\)'
+                                " <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
+syn match   zshRedir            '\d\=\%(<<<\|<&\s*[0-9p-]\=\|<\%(\d\+-\%(\d\+\)\?>\)\@!\|<>\)'
                                 " >, >>, and variants.
-syn match   zshRedir            '\d\=\(>&\s*[0-9p-]\=\|&>>\?\|>>\?&\?\)[|!]\='
+syn match   zshRedir            '\d\=\%(>&\s*[0-9p-]\=\|&>>\?\|\%(\d\+-\%(\d\+\)\)&\?\)\@<!\%(>\%(=\)\@1!>\?\)[|!]\='
                                 " | and |&, but only if it's not preceeded or followed by a | to avoid matching ||.
 syn match   zshRedir            '|\@1<!|&\=|\@!'
 
@@ -247,6 +247,7 @@ syn keyword zshCommands         alias        autoload     bg          bindkey   
                               \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
                               \ sysopen      sysread      sysseek     syswrite      zsystem    systell
                               \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
+                              \ zstyle+
 
 syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ basename basenc    bash    brew     cat
@@ -273,7 +274,7 @@ syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ yabai    yes       sxhkd   bspwm    bspc
                               \ perl
 
-syn keyword zshKeymap containedin=zshKeymapStart
+syn keyword zshKeymap contained containedin=zshKeymapStart
             \ main emacs viins vicmd viopp visual isearch command .safe
 
 syn match zshKeymapStart

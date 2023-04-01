@@ -213,8 +213,9 @@ declare -gA keybindings; keybindings=(
   # 'End'                   end-of-line
   # 'Delete'                delete-char
   ';z'                    zbrowse               # Bring up zbrowse TUI
-  'Esc-f'                 fzf-file-edit-widget  # Edit file with fzf
-  'Esc-i'                 fe                    # Edit file with fzf
+  # 'Esc-f'                 fzf-file-edit-widget  # Edit file with fzf
+  'Esc-f'                 fe                    # Edit file with fzf
+  'Esc-i'                 'fe 2'                # Edit file with fzf
   'M-\'                   list-keys             # List keybindings in mode
   'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
   'M-S-R'                 per-dir-fzf           # Toggle per-dir hist & bring up Fzf

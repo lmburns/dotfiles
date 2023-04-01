@@ -35,6 +35,7 @@ function M.setup()
                 mdx = "markdown",
                 md = "vimwiki",
                 mjml = "html",
+                moon = "moon",
                 sxhkdrc = "sxhkdrc",
                 ztst = "ztst",
                 rasi = "rasi",

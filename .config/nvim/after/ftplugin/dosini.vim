@@ -1,2 +1,2 @@
 setlocal comments=:#,:;
-setlocal commentstring=#\ %s,;\ %s
+setlocal commentstring=#\ %s

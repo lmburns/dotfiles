@@ -336,7 +336,6 @@ zt 0a light-mode for \
 
 # === wait'0a' block === [[[
 zt 0a light-mode for \
-    OMZ::lib/completion.zsh \
   as'completion' atpull'zinit cclear' blockf \
     zsh-users/zsh-completions \
   ver'develop' atload'_zsh_autosuggest_start' \
@@ -349,7 +348,7 @@ zt 0a light-mode for \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' \
     kazhala/dotbare \
-  pick'timewarrior.plugin.zsh' \
+  pick'timewarrior.plugin.zsh' nocompile blockf \
     svenXY/timewarrior \
   pick'async.zsh' \
     mafredri/zsh-async \
@@ -362,6 +361,7 @@ zt 0a light-mode for \
     mattmc3/zman \
     anatolykopyl/doas-zsh-plugin
 
+# OMZ::lib/completion.zsh \
 # wait'[[ -n ${ZLAST_COMMANDS[(r)n-#(alias|c|en|func|hel|hist|kil|opt|panel)]} ]]' \
 # ]]] === wait'0a' block ===
 
@@ -380,7 +380,7 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
     kadaan/per-directory-history \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
-  compile'.*fast*~*.zwc' nocompletions atpull'%atclone' \
+  compile'.*fast*~*.zwc' atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
   trackbinds atload'
       vbindkey "Up" history-substring-search-up;
@@ -992,7 +992,7 @@ manpath=(
   "${manpath[@]}"
 )
 
-# eval "$(luarocks path --bin)"
+eval "$(luarocks path --bin --lua-version=5.1)"
 
 # $HOME/.poetry/bin(N-/)
 path=(

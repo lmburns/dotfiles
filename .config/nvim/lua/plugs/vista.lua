@@ -5,6 +5,7 @@ local map = utils.map
 local augroup = utils.augroup
 
 local g = vim.g
+local cmd = vim.cmd
 
 function M.setup()
     -- g.vista_fzf_opt = {"--no-border"}
@@ -19,6 +20,10 @@ function M.setup()
         pandoc = "markdown",
         markdown = "toc"
     }
+end
+
+function M.vista()
+
 end
 
 -- Why does this only work on some projects with coc?
