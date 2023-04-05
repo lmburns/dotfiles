@@ -514,6 +514,7 @@
 
   # git tag -d $(git tag -l)
   mkshallow = !git pull --depth 1 && git gc --prune=all
+  unshallow = fetch --unshallow
 
   rao = remote add origin
   remotes = remote -v

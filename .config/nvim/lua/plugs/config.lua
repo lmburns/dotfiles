@@ -612,8 +612,9 @@ end
 -- │                         MatchUp                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.matchup()
-    g.loaded_matchit = 1
-    g.matchup_enabled = 1
+    -- g.loaded_matchit = 1
+    -- g.matchup_enabled = 1
+
     g.matchup_mappings_enabled = 0
     g.matchup_matchparen_enabled = 1
     g.matchup_motion_enabled = 1
@@ -632,18 +633,18 @@ function M.matchup()
     g.matchup_matchparen_deferred_hide_delay = 300
     g.matchup_matchparen_hi_surround_always = 1
 
+    -- g.matchup_delim_stopline = 500
+    g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
+    g.matchup_delim_noskips = 2 -- in comments -- 0: All, 1: Brackets
+    -- FIX: This isn't working
+    g.matchup_delim_nomids = 0 -- match func return end
+
     -- This window opens and closes automatically really quickly in Lua
     --   status_manual -- MatchupStatusOffscreen
     -- g.matchup_matchparen_offscreen = {}
     -- g.matchup_matchparen_offscreen = {method = "popup", highlight = "MatchParenCur", border = true}
     g.matchup_matchparen_offscreen = {method = "status_manual"}
 
-    g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
-    g.matchup_delim_noskips = 2 -- in comments -- 0: All, 1: Brackets
-    -- FIX: This isn't working
-    g.matchup_delim_nomids = 0 -- match func return end
-
-    -- g.matchup_delim_stopline = 500
 
     hl.plugin(
         "Matchup",

@@ -33,7 +33,7 @@ function M.setup()
                 conf = "conf",
                 jq = "jq",
                 mdx = "markdown",
-                md = "vimwiki",
+                -- md = "markdown",
                 mjml = "html",
                 moon = "moon",
                 sxhkdrc = "sxhkdrc",
@@ -96,7 +96,8 @@ function M.setup()
                 ["/tmp/neomutt.*"] = "mail",
                 ["README.(%a+)$"] = function(_path, _bufnr, ext)
                     if ext == "md" then
-                        return "vimwiki"
+                        -- return "vimwiki"
+                        return "markdown"
                     elseif ext == "rst" then
                         return "markdown"
                     end

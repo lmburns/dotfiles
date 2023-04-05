@@ -29,18 +29,18 @@ local cmoved_au
 local function enable_cmoved_au()
     cmoved_au =
         autocmd(
-        {
-            event = {"CursorMoved", "CursorMovedI"},
-            once = true,
-            command = function()
-                if win then
-                    api.nvim_win_close(win, true)
-                    win = nil
-                end
-                cmoved_au = nil
-            end
-        }
-    )
+            {
+                event = {"CursorMoved", "CursorMovedI"},
+                once = true,
+                command = function()
+                    if win then
+                        api.nvim_win_close(win, true)
+                        win = nil
+                    end
+                    cmoved_au = nil
+                end,
+            }
+        )
 end
 
 local function disable_cmoved_au()
@@ -59,7 +59,7 @@ local function refresh_win(height, width)
             win,
             {
                 width = width,
-                height = height
+                height = height,
             }
         )
     else
@@ -67,8 +67,7 @@ local function refresh_win(height, width)
             return
         end
 
-        win =
-            api.nvim_open_win(
+        win = api.nvim_open_win(
             buf,
             false,
             {
@@ -80,7 +79,7 @@ local function refresh_win(height, width)
                 width = width,
                 height = height,
                 style = "minimal",
-                border = style.current.border
+                border = style.current.border,
             }
         )
 
@@ -128,7 +127,7 @@ local function render_buf(lines, current_line)
             {
                 virt_text = l,
                 hl_mode = "combine",
-                line_hl_group = F.tern(i == current_line, "Visual", nil)
+                line_hl_group = F.tern(i == current_line, "Search", nil),
             }
         )
     end
@@ -152,7 +151,7 @@ local function get_text(jumplist, current)
                 lines,
                 {
                     {bufname},
-                    {(":%d:%d"):format(j.lnum, j.col), "Directory"}
+                    {(":%d:%d"):format(j.lnum, j.col), "Directory"},
                 }
             )
             if current == i then

@@ -134,7 +134,7 @@ syn keyword zshPrecommand           noglob nocorrect exec command builtin - time
 
 syn keyword  zshDelimiter  do done end nextgroup=zshSemicolon,zshRedir,zshWrapLineOperator
 
-syn keyword zshConditional if then elif else fi esac select
+syn keyword zshConditional if then elif else fi select
 
 " syn keyword zshCase        case nextgroup=zshCaseWord skipwhite
 " syn match zshCaseWord      /\S\+/ nextgroup=zshCaseIn skipwhite contained transparent
@@ -409,12 +409,12 @@ syn keyword zshOption nextgroup=zshOption,zshComment skipwhite contained
 syn case match
 
 syn keyword zshTypes            float integer local typeset declare private readonly
-
-syn match zshConstant "\v/dev/\w+"
+syn match zshConstant           '\v/dev/\w+'
 
 syn cluster zshSubst            contains=zshSubst,zshOldSubst,zshMathSubst
 " NOTE: zshMathSubst here causes problems "'((...))'"
 "       equals=$(( ${lf_ratios##*:} == 3 ? (($COLUMNS * 3/6) - ($#class + 2)) / 2 : 18 ))
+"       tmp_mode=$(( ( mode % $#histdb_fzf_modes ) + 1 ))
 
 syn cluster zshSubstQuoted      contains=zshSubstQuoted,zshOldSubst,zshMathSubst
 exe 'syn region  zshSubst '
@@ -431,12 +431,26 @@ syn region  zshSubstQuoted      matchgroup=zshSubstDelim
 " syn region  zshDblParenthesis   matchgroup=Operator start="((" end="))" contained contains=zshParentheses
 " syn match   zshParenthesis      '(\zs[^]]\{-}\ze)' transparent contained contains=zshDelim
 
-syn region  zshParentheses      matchgroup=Constant start='(' skip='\\)' end=')' contained keepend
+syn region  zshParentheses      start='(' skip='\\)' end=')' contained
 " TODO: $[...], let '...'
+
+" syn match zshMathSubstInner     '\%(\$\?\)[<=>]\@<!((.\{-}\(\\\)\@1!))' contains=zshDelim contained transparent
+" syn region  zshMathSubstInner   matchgroup=zshSubstDelim transparent
+"                                 \ start='\%(\$\?\)[<=>]\@<!((' skip='\\)' end='))'
+"                                 \ contains=@zshSubst,zshNumber,
+"                                 \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
+
+" syn match zshMathSubstDelim     '\$((\|))' contained
+" syn match zshMathSubst          '\%(\$\?\)[<=>]\@<!((.*\(\\\)\@1!))'
+"                                 \ transparent
+"                                 \ contains=zshMathSubstDelim,@zshSubst,zshNumber,
+"                                 \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
+
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
                                 \ start='\%(\$\?\)[<=>]\@<!((' skip='\\)' end='))'
-                                \ contains=zshParenthesis,@zshSubst,zshNumber,
-                                \ @zshDerefs,zshString,zshOperator,zshTernary fold
+                                \ contains=zshMathSubstInner,@zshSubst,zshNumber,
+                                \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
+
 " TODO: highlights wrong echo $[ [#16_4] 42 ** 10 ]
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
                                 \ start='\$\[' skip='\\]' end='\]'
@@ -499,6 +513,8 @@ hi def link zshDelimiter        Keyword
 hi def link zshConditional      Conditional
 hi def link zshCase             zshConditional
 hi def link zshCaseIn           zshCase
+hi def link zshCaseEnd          zshSemicolon
+hi def link zshCaseEsac         zshCase
 hi def link zshException        Exception
 hi def link zshRepeat           Repeat
 hi def link zshRepeatIn         Repeat
@@ -525,6 +541,7 @@ hi def link zshNumber           Number
 hi def link zshSubst            PreProc
 hi def link zshSubstQuoted      zshSubst
 hi def link zshMathSubst        zshSubst
+hi def link zshMathSubstDelim   Number
 hi def link zshOldSubst         zshSubst
 hi def link zshSubstDelim       zshSubst
 hi def link zshGlob             Constant

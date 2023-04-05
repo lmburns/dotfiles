@@ -1100,15 +1100,16 @@ return packer.startup(
                             "make",
                             -- "perl",
                             -- "python",
-                            "query",
+                            -- "query",
                             -- "ruby",
                             "rust",
                             "scss",
                             -- "vim",
                             -- "solidity",
-                            "teal",
-                            "tsx",
-                            "typescript",
+                            -- "teal",
+                            -- "tsx",
+                            -- "typescript",
+                            -- "javascript",
                             "zig",
                             "zsh",
                             "sh"
@@ -1663,13 +1664,13 @@ return packer.startup(
                     after = {colorscheme, "telescope.nvim"}
                 }
             )
-            use(
-                {
-                    "simrat39/desktop-notify.nvim",
-                    setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-                    config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
-                }
-            )
+            -- use(
+            --     {
+            --         "simrat39/desktop-notify.nvim",
+            --         setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
+            --         config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
+            --     }
+            -- )
         end
     }
 )

@@ -223,8 +223,9 @@ declare -gA keybindings; keybindings=(
   # 'M-S-R'                 fzf-history-widget    # Builtin fzf history widget
   'C-o'                   clipboard-fzf         # Greenclip fzf (insert into cli)
   'M-p'                   pw                    # Fzf pueue
-  'M-g'                   get-line           # Get line from buffer-stack
+  'M-g'                   get-line              # Get line from buffer-stack
   'M-q'                   push-line-or-edit     # Push line onto buffer stack
+  # 'M-S-q'                 push-input            # Push multi-line onto buffer stack
   'M-u'                   __unicode_translate   # Translate 0000 to unicode
   'M-x'                   cd-fzf-ghqlist-widget # CD GHQ with fzf
   'M-S-P'                 toggle-right-prompt   # Toggle p10k right promp
@@ -272,6 +273,7 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd M-\'        list-keys            # List keybindings in mode
   'mode=vicmd ='          list-choices         # List choices (i.e., alias, command, vars, etc)
   'mode=vicmd ga'         what-cursor-position
+  'mode=vicmd #'          vi-pound-insert
   'mode=vicmd %'          vi-match-bracket
   'mode=vicmd <'          vi-up-line-or-history
   'mode=vicmd >'          vi-down-line-or-history
@@ -280,15 +282,13 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd \$'         expand-all         # Expand alias etc under keyboard
   'mode=vicmd \-'         zvm_switch_keyword # Decrement item under keyboard
   'mode=vicmd \+'         zvm_switch_keyword # Increment item under keyboard
-  'mode=vicmd ,.'         get-line           # Get line from buffer-stack
-  'mode=vicmd ,,'         push-line-or-edit  # Push line to buffer-stack
   'mode=visual M-\'       list-keys            # List keybindings in mode
   'mode=visual S'         add-surround         # Add 'surrounders'
   'mode=visual x'         vi-delete-visual     # Cut text
   'mode=viopp M-\'        list-keys            # List keybindings in mode
   'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
   'mode=viins kj'         vi-cmd-mode        # Switch to vi-cmd mode
-  # "mode=str M-S-'"          ncd                 # Lf change dir
+  # "mode=str M-S-'"          ncd             # Lf change dir
   'mode=str M-o'          lc                 # Lf change dir
   'mode=str M-S-O'        lfub               # Lf ueberzug
   'mode=str C-u'          lf                 # Regular lf

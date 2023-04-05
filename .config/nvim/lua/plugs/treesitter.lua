@@ -953,10 +953,12 @@ M.setup = function()
                 "perl",
                 "latex",
                 "vim",
+                "vimdoc",
                 "ruby",
                 "sh",
                 "awk",
-                "css"
+                "css",
+                "markdown"
             },
             custom_captures = custom_captures
         },
@@ -964,7 +966,7 @@ M.setup = function()
         autopairs = {
             enable = true,
             disable = {
-                "help",
+                -- "vimdoc",
                 "comment",
                 "log",
                 "gitignore",
@@ -975,7 +977,7 @@ M.setup = function()
         },
         indent = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"}
         },
         fold = {enable = false},
         endwise = {
@@ -1024,7 +1026,7 @@ M.setup = function()
         context_commentstring = {
             enable = true,
             enable_autocmd = false,
-            disable = {"help"},
+            disable = {"vimdoc"},
             config = {
                 c = {__default = "// %s", __multiline = "/* %s */"},
                 cpp = {__default = "// %s", __multiline = "/* %s */"},
@@ -1066,10 +1068,10 @@ M.setup = function()
         rainbow = {
             enable = true,
             extended_mode = true,
-            max_file_lines = 1500,
+            max_file_lines = context_vt_max_lines,
             disable = {
                 "html",
-                "help",
+                "vimdoc",
                 "comment",
                 "log",
                 "gitignore",
@@ -1350,12 +1352,12 @@ local function init()
     ts_hl_disabled =
         _t(
         {
-            "help",
+            -- "vimdoc",
             "html",
             "comment",
-            "markdown",
+            -- "markdown",
             "yaml",
-            "css",
+            -- "css",
             "latex",
             "make",
             "cmake",

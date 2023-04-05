@@ -72,21 +72,20 @@ function M.table_mode()
     -- g.table_mode_always_active = 1 -- permanently enable the table mode
     -- g.table_mode_disable_mappings = 0 -- disable all mappings
 
-    g.table_mode_delete_column_map = "<Leader>tdc"
-    g.table_mode_sort_map = "<Leader>ts"
-
-    g.table_mode_tableize_map = "<Leader>tt"
-    g.table_mode_tableize_d_map = "<Leader>T"
-    g.table_mode_realign_map = "<Leader>tr"
-    g.table_mode_echo_cell_map = "<Leader>t?"
-    g.table_mode_map_prefix = "<Leader>t"
-    g.table_mode_delete_row_map = "<Leader>tdd"
-    g.table_mode_insert_column_after_map = "<Leader>tic"
+    -- g.table_mode_delete_column_map = "<Leader>tdc"
+    -- g.table_mode_sort_map = "<Leader>ts"
+    -- g.table_mode_tableize_map = "<Leader>tt"
+    -- g.table_mode_tableize_d_map = "<Leader>T"
+    -- g.table_mode_realign_map = "<Leader>tr"
+    -- g.table_mode_echo_cell_map = "<Leader>t?"
+    -- g.table_mode_map_prefix = "<Leader>t"
+    -- g.table_mode_delete_row_map = "<Leader>tdd"
+    -- g.table_mode_insert_column_after_map = "<Leader>tic"
 
     g.table_mode_tableize_auto_border = 1 -- add row borders to when using tableize
     g.table_mode_disable_tableize_mappings = 0 -- disables mappings for tableize
 
-    g.table_mode_syntax = 1 -- should define table syntax definitions or not
+    g.table_mode_syntax = 0 -- should define table syntax definitions or not
     g.table_mode_auto_align = 1 -- auto align as you type when table mode is active
 
     g.table_mode_corner = "|"
@@ -96,19 +95,19 @@ function M.table_mode()
     g.table_mode_header_fillchar = "="
     g.table_mode_align_char = ":" -- alignments for cols in table header border
 
-    g.table_mode_motion_up_map = "{|" -- move up a cell vertically
-    g.table_mode_motion_down_map = "}|" -- move down a cell vertically
-    g.table_mode_motion_left_map = "[|" -- move to the left cell
-    g.table_mode_motion_right_map = "]|" -- move to the right cell
-    g.table_mode_cell_text_object_a_map = "a|" -- text object for around cell object
-    g.table_mode_cell_text_object_i_map = "i|" -- text object for inner cell object
+    g.table_mode_motion_up_map = "{<Bar>" -- move up a cell vertically
+    g.table_mode_motion_down_map = "}<Bar>" -- move down a cell vertically
+    g.table_mode_motion_left_map = "[<Bar>" -- move to the left cell
+    g.table_mode_motion_right_map = "]<Bar>" -- move to the right cell
+    g.table_mode_cell_text_object_a_map = "a<Bar>" -- text object for around cell object
+    g.table_mode_cell_text_object_i_map = "i<Bar>" -- text object for inner cell object
 
     wk.register(
         {
-            ["[|"] = "Move to previous cell",
-            ["]|"] = "Move to next cell",
-            ["{|"] = "Move to the cell above",
-            ["}|"] = "Move to the cell below",
+            ["[<Bar>"] = "Move to previous cell",
+            ["]<Bar>"] = "Move to next cell",
+            ["{<Bar>"] = "Move to the cell above",
+            ["}<Bar>"] = "Move to the cell below",
             ["<Leader>tm"] = "Toggle table mode for the current buffer",
             ["<Leader>tS"] = {
                 "<Cmd>TableModeDisable<CR>",
@@ -137,7 +136,7 @@ function M.vimwiki()
         "VimwikiMarkdownFix",
         {
             event = "FileType",
-            pattern = {"markdown", "vimwiki"},
+            pattern = {"vimwiki"},
             command = function(args)
                 local bufnr = args.buf
                 map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
@@ -169,7 +168,10 @@ function M.vimwiki()
                             "Goto prev header with same level"
                         },
                         ["gli"] = {"<Plug>VimwikiToggleListItem", "Toggle checkbox of list"},
-                        ["glx"] = {"<Plug>VimwikiToggleRejectedListItem", "Toggle checkbox status list"},
+                        ["glx"] = {
+                            "<Plug>VimwikiToggleRejectedListItem",
+                            "Toggle checkbox status list"
+                        },
                         ["gl<Space>"] = {"<Plug>VimwikiRemoveSingleCB", "Remove checkbox from item"},
                         ["gL<Space>"] = {
                             "<Plug>VimwikiRemoveCBInList",
@@ -205,7 +207,7 @@ function M.vimwiki()
                         -- ["o"] = {"<Plug>VimwikiListo"},
                         -- ["O"] = {"<Plug>VimwikiListO"},
                         ["<Tab>"] = {">>", "Indent line"},
-                        ["<S-Tab>"] = {"<<", "De-indent line"},
+                        ["<S-Tab>"] = {"<<", "De-indent line"}
                     },
                     {mode = "n", buffer = bufnr}
                 )
@@ -263,19 +265,39 @@ end
 
 function M.vimwiki_setup()
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
-    g.vimwiki_folding = ""
-    g.vimwiki_hl_headers = 1 -- Highlight headers with VimWikiHeader1...
-    g.vimwiki_global_ext = 1 -- Enable/disable temporary wikis
-    g.vimwiki_auto_header = 1 -- Auto gen level 1 header
+    -- g.vimwiki_filetypes = {"markdown"}
+    g.vimwiki_folding = "expr" -- '', 'expr', 'list', 'syntax', 'custom'
     g.vimwiki_conceallevel = 0
     g.vimwiki_conceal_onechar_markers = 1
-    g.vimwiki_dir_link = "index" -- Open index.md if given a direcory
+    g.vimwiki_conceal_pre = 0 -- conceal preformatted text
+    g.vimwiki_hl_headers = 1 -- highlight headers with VimWikiHeader1...
+    g.vimwiki_hl_cb_checked = 0 -- highlight checked list items -- (1, 2) (can SLOW)
+    g.vimwiki_listsyms = " .oOX" -- text used for checkbox items -- ( ○◐●X)
+    g.vimwiki_listsym_rejected = "-" -- text used for checkbox items not to be done
+    g.vimwiki_url_maxsave = 15 -- max length of URL before shortened
+    g.vimwiki_markdown_header_style = 1 -- number of lines to insert after header
+    -- g.vimwiki_markdown_link_ext = 1 -- append .wiki to .md files (can SLOW)
+    g.vimwiki_auto_header = 1 -- auto gen level 1 header
+    g.vimwiki_dir_link = "index" -- open index.md if given a direcory
     g.vimwiki_map_prefix = "<Leader>w"
-    g.vimwiki_commentstring = "<!--%s-->"
-    g.vimwiki_toc_header = "Table of Contents"
-    g.vimwiki_toc_header_level = 1
-    g.vimwiki_toc_link_format = 0 -- 0 = Extended, 1 = Brief
-    g.vimwiki_html_header_numbering_sym = "." -- End in '.' or ')'
+    -- g.vimwiki_commentstring = "<!--%s-->"
+    g.vimwiki_table_auto_fmt = 1
+    g.vimwiki_table_reduce_last_col = 1 -- enable autoformat for last table col
+
+    g.vimwiki_links_header = "Generated Links" -- where to generated links are located
+    g.vimwiki_links_header_level = 1 -- header level of generated links
+    g.vimwiki_tags_header = "Generated Tags" -- where to generated tags are located
+    g.vimwiki_tags_header_level = 1 -- header level of generated tags
+    g.vimwiki_toc_header = "Contents" -- where TOC is located
+    g.vimwiki_toc_header_level = 1 -- header level of TOC
+    g.vimwiki_toc_link_format = 1 -- 0 = extended, 1 = brief (links in TOC)
+    g.vimwiki_html_header_numbering = 1 -- auto number headers in HTML
+    g.vimwiki_html_header_numbering_sym = "." -- end in '.' or ')' in HTML
+    g.vimwiki_list_ignore_newline = 1 -- convert \n to <br> for HTML multi-line
+    g.vimwiki_text_ignore_newline = 1 -- convert \n to <br> for HTML text
+    g.vimwiki_valid_html_tags = "b,i,s,u,sub,sup,kbd,br,hr" -- allowed HTML tags in vimwiki syntax
+
+    g.vimwiki_global_ext = 0 -- enable temporary wikis
 
     g.vimwiki_ext2syntax = {
         [".Rmd"] = "markdown",
@@ -288,11 +310,28 @@ function M.vimwiki_setup()
         {
             name = "My Wiki",
             path = "~/vimwiki",
+            path_html = "~/Documents/vimwiki-html",
             syntax = "markdown",
             ext = ".md",
             bullet_types = {"-", "*", "+"},
-            nested_syntax = {python = "python", ["c++"] = "cpp"},
-            auto_toc = 0
+            automatic_nested_syntaxes = 1,
+            nested_syntax = {
+                python = "python",
+                ["c++"] = "cpp",
+                cpp = "cpp",
+                rust = "rust"
+            },
+            exclude_files = {
+                "**/README.md",
+                "**/.git/**"
+            },
+            auto_toc = 0,
+            auto_tags = 0, -- update tag metadata when saved
+            auto_generate_tags = 0, -- update generated tags when saved
+            auto_diary_index = 1, -- update diary index when opened
+            auto_generate_links = 0, -- update generated links when saved
+            links_space_char = "_", -- spaces replaced with '_' for URL
+            maxhi = 0 -- highlight non-existent files (SLOW)
         }
     }
     g.vimwiki_key_mappings = {

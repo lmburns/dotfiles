@@ -312,7 +312,7 @@ local function init()
                 s = "Split window",
                 v = "Split window vertically",
                 q = "Quit a window",
-                T = "Break out into a new tab",
+                ["<C-t>"] = {"<C-w>T", "Break out into a new tab"},
                 x = "Swap current with next",
                 ["-"] = "Decrease height",
                 ["+"] = "Increase height",

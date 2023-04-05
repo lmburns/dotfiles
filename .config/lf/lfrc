@@ -695,6 +695,15 @@ cmd harden ${{
   lf -remote "send clear"
 }}
 
+# === Symlinks: absolute to relative ===========================
+# Turn an absolute symlink into a relative one
+# TODO: finish up. Doesn't take file as arg, takes dirs
+cmd abs2rel_link ${{
+  for file ($fx) { symlinks -c "$file" }
+  lf -remote "send unselect"
+  lf -remote "send clear"
+}}
+
 # === Attributes: directory size, etc. =========================
 cmd disk-info ${{
   clear -x
@@ -1656,10 +1665,11 @@ map Ma $neomutt -a "$fx"           # mail a file
 # ]]] File Movement
 
 # === File Attributes ========================================== [[[
-map -  harden # turn a symlink into a real file
-map ch chmod  # change file permissions
-map =  chmod  # change file permissions
-map cH chown  # change file owner
+map -  harden       # turn a symlink into a real file
+map ch chmod        # change file permissions
+map =  chmod        # change file permissions
+map cH chown        # change file owner
+map cr abs2rel_link # turn absolute symlink into relative
 
 map ad disk-info # get disk information
 map as ${{

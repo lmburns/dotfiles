@@ -68,7 +68,7 @@ _t(
         "getscript",
         "getscriptPlugin",
         "logiPat", -- boolean logical pattern matcher
-        "matchit",
+        -- "matchit",
         "matchparen",
         -- "netrw",
         -- "netrwFileHandlers",

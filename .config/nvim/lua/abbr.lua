@@ -135,6 +135,7 @@ local function init()
     M.abbr("c", "tel", "Telescope")
     M.abbr("c", "Review", "DiffviewOpen")
     M.abbr("c", "ld", "Linediff")
+    M.abbr("c", "noice", "Noice")
 
     M.abbr("c", "PI", "PackerInstall")
     M.abbr("c", "PU", "PackerUpdate")

@@ -1,5 +1,5 @@
 #!/bin/sh
-# elvis: mdn	-- Search mdn (developer.mozilla.org)
+# elvis: pdfdrive	-- Search pdfdrive (pdfdrive.com)
 # Generated-By: mkelvis (surfraw-tools) 0.2.0
 # NOTE: Any double underscore-prefixed names (i.e., variables and functions)
 #       are reserved for `mkelvis` and are an implementation detail.
@@ -11,7 +11,7 @@ w3_usage_hook ()
 	cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search mdn (developer.mozilla.org)
+  Search pdfdrive (pdfdrive.com)
 EOF
 	w3_global_usage
 }
@@ -27,26 +27,26 @@ w3_parse_args "$@"
 
 # Any variables in the url should have values now
 if test -z "$w3_args"; then
-	w3_browse_url "https://developer.mozilla.org"
+	w3_browse_url "https://pdfdrive.com"
 	exit
 fi
 
 # Map inline variables
 # Map each value of inline list variables
-##__mkelvis_inline_variable "$SURFRAW_mdn_variable" keyword
+##__mkelvis_inline_variable "$SURFRAW_pdfdrive_variable" keyword
 
 # Map variables to parameters
 # Map each value of list variables to parameters
 ## First parameter
-##mappings="param1=$(w3_url_escape "$SURFRAW_mdn_variable1")"
+##mappings="param1=$(w3_url_escape "$SURFRAW_pdfdrive_variable1")"
 ## Successive parameters
-##mappings="$mappings&param2=$(w3_url_escape "$SURFRAW_mdn_variable2")"
+##mappings="$mappings&param2=$(w3_url_escape "$SURFRAW_pdfdrive_variable2")"
 
 # Add the search to url
 ## Disable globbing to avoid accidental exposure of directory contents.
 set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
 it="$escaped_args"
-search_url="https://developer.mozilla.org/en-US/search?q="
+search_url="https://pdfdrive.com/search?q="
 search_url="$search_url$escaped_args"
 w3_browse_url "$search_url"

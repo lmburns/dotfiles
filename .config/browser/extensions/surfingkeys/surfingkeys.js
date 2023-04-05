@@ -1,0 +1,1 @@
+/home/lucas/.config/surfingkeys/surfingkeys.js

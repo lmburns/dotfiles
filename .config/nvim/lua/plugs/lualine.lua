@@ -49,30 +49,30 @@ local sections_1 = {
                     plugs.sep()
                 )
             end,
-            padding = only_pad_right
-        }
+            padding = only_pad_right,
+        },
     },
     lualine_b = {
         -- Separators aren't shown here
         {
             "filetype",
-            icon_only = false
+            icon_only = false,
         },
         {
             "filesize",
             cond = function()
                 return conds.hide_in_width() and conds.buffer_not_empty()
             end,
-            color = {fg = colors.green}
+            color = {fg = colors.green},
         },
         {
             plugs.vm.fn,
             cond = plugs.vm.toggle,
-            color = {fg = colors.green}
+            color = {fg = colors.green},
         },
         {
             plugs.file_encoding.fn,
-            cond = plugs.file_encoding.toggle
+            cond = plugs.file_encoding.toggle,
         },
         {
             plugs.spell.fn,
@@ -88,7 +88,7 @@ local sections_1 = {
                 modified = icons.misc.modified,
                 readonly = icons.misc.readonly,
                 unnamed = icons.misc.unnamed,
-                shorting_target = 40
+                shorting_target = 40,
             },
             color = function(_section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
@@ -98,7 +98,7 @@ local sections_1 = {
                         vim.b.fugitive_fname,
                         colors.orange,
                         F.tern(vim.bo.readonly, colors.beaver, "none")
-                    )
+                    ),
                 }
             end,
             fmt = function(str)
@@ -112,14 +112,14 @@ local sections_1 = {
                 end
 
                 return F.tern(fugitive_name, fugitive_name, str)
-            end
+            end,
         },
         {
             "%w",
             cond = function()
                 return vim.wo.previewwindow
-            end
-        }
+            end,
+        },
     },
     lualine_c = {plugs.coc_status.fn},
     lualine_x = {},
@@ -128,8 +128,15 @@ local sections_1 = {
             plugs.gps.fn,
             color = {fg = colors.sea_green, gui = "bold"},
             cond = function()
-                return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
-            end
+                return conds.is_available_gps() and
+                    conds.hide_in_width() -- and conds.coc_status_width()
+            end,
+        },
+        {plugs.vim_matchup.fn},
+        {
+            plugs.noice.command.fn,
+            cond = plugs.noice.command.toggle,
+            color = {fg = colors.orange, gui = "bold"},
         },
         -- {
         --     "aerial",
@@ -147,33 +154,33 @@ local sections_1 = {
                 error = icons.lsp.sb.error,
                 warn = icons.lsp.sb.warn,
                 info = icons.lsp.sb.info,
-                hint = icons.lsp.sb.hint
-            }
+                hint = icons.lsp.sb.hint,
+            },
         },
         -- FIX: When gps isn't shown there's a white seperator visible
         {
             "diff",
             colored = true,
             diff_color = {
-                added = "GitSignsAdd", -- "DiffAdd",
+                added = "GitSignsAdd",       -- "DiffAdd",
                 modified = "GitSignsChange", --  "DiffChange",
-                removed = "GitSignsDelete" -- "DiffDelete"
+                removed = "GitSignsDelete"   -- "DiffDelete"
             },
             symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
-            source = plugs.diff.fn
+            source = plugs.diff.fn,
             -- separator = {left = ""}
         },
         {plugs.luapad.fn, cond = plugs.luapad.toggle},
-        {plugs.debugger.fn, cond = plugs.debugger.toggle}
+        {plugs.debugger.fn, cond = plugs.debugger.toggle},
     },
     lualine_z = {
         {
             plugs.gitbuf.fn,
-            color = {fg = colors.light_red, gui = "bold"}
+            color = {fg = colors.light_red, gui = "bold"},
         },
         {
             plugs.recording.fn,
-            color = {fg = colors.orange, gui = "bold"}
+            color = {fg = colors.orange, gui = "bold"},
         },
         {
             -- "branch",
@@ -187,28 +194,28 @@ local sections_1 = {
                 g.colors_name == "kimbox",
                 {fg = colors.dyellow, gui = "bold"},
                 {gui = "bold"}
-            )
+            ),
         },
         {
             plugs.quickfix_count.fn,
             separator = {left = plugs.sep()},
-            color = {fg = colors.oni_violet, gui = "bold"}
+            color = {fg = colors.oni_violet, gui = "bold"},
         },
         {
             plugs.loclist_count.fn,
             separator = {left = plugs.sep()},
-            color = {fg = colors.oni_violet, gui = "bold"}
+            color = {fg = colors.oni_violet, gui = "bold"},
         },
         {
             "%3l %3v",
             fmt = function(s)
                 return ("%s %s"):format(icons.misc.line, s)
             end,
-            color = {fg = colors.slate_grey, gui = "bold"}
+            color = {fg = colors.slate_grey, gui = "bold"},
         },
         {
             plugs.foldlevel.fn,
-            color = {fg = colors.yellow, gui = "bold"}
+            color = {fg = colors.yellow, gui = "bold"},
         },
         F.tern(
             g.colors_name == "kimbox",
@@ -234,7 +241,7 @@ local sections_1 = {
         -- "%l:%c",
         -- "%p%%/%L",
         -- plugs.search_result.fn
-    }
+    },
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -254,9 +261,9 @@ local sections_2 = {
             symbols = {
                 modified = icons.misc.modified,
                 readonly = icons.misc.readonly,
-                unnamed = icons.misc.unnamed
-            }
-        }
+                unnamed = icons.misc.unnamed,
+            },
+        },
     },
     lualine_c = {},
     lualine_x = {
@@ -264,21 +271,25 @@ local sections_2 = {
             -- { 'aerial', sep = '', dense = true, dense_sep = '  ' },
             plugs.gps.fn,
             cond = function()
-                return conds.is_available_gps() and conds.hide_in_width() -- and conds.coc_status_width()
+                return conds.is_available_gps() and
+                    conds.hide_in_width() -- and conds.coc_status_width()
             end,
-            color = {fg = colors.red}
+            color = {fg = colors.red},
         },
         {
             "branch",
             icon = icons.git.branch,
-            cond = conds.check_git_workspace
-        }
+            cond = conds.check_git_workspace,
+        },
     },
     lualine_y = {
         plugs.progress.fn,
-        {plugs.gutentags_progress.fn, cond = plugs.gutentags_progress.toggle}
+        {
+            plugs.gutentags_progress.fn,
+            cond = plugs.gutentags_progress.toggle,
+        },
     },
-    lualine_z = {"location"}
+    lualine_z = {"location"},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -327,7 +338,7 @@ function M.autocmds()
             command = function()
                 require("lualine.components.diff.git_diff").update_diff_args()
                 require("lualine.components.diff.git_diff").update_git_diff()
-            end
+            end,
         },
         {
             event = {"RecordingEnter", "RecordingLeave", "BufWritePost", "BufModifiedSet"},
@@ -335,7 +346,7 @@ function M.autocmds()
             desc = "Update statusline on macro enter/exit, and buffer modification",
             command = function()
                 lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
-            end
+            end,
         },
         -- This has been fixed, but it redraws too often
         {
@@ -343,22 +354,21 @@ function M.autocmds()
             pattern = "*",
             desc = "Update statusline to show operator pending mode",
             command = function()
-                -- Lazy redraw just now started causing me problems
                 if _t({"no", "nov", "noV"}):contains(vim.v.event.new_mode) then
                     lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
                 end
-            end
+            end,
         },
         {
             event = "BufEnter",
             pattern = "*",
             desc = "Update Lualine statusline refresh to match against Wilder",
             command = function()
-                local bufname = api.nvim_buf_get_name(0)
+                local bufname = fn.bufname()
                 if not bufname:match("%[Wilder Float %d%]") then
                     lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
                 end
-            end
+            end,
         }
     )
 end
@@ -383,8 +393,8 @@ local function init()
                     fmt = function(str)
                         return ("%s %s"):format(str, plugs.sep())
                     end,
-                    padding = only_pad_right
-                }
+                    padding = only_pad_right,
+                },
             },
             lualine_b = {"filetype"},
             lualine_c = {},
@@ -393,7 +403,7 @@ local function init()
             lualine_z = {
                 "%l:%c",
                 "%p%%/%L"
-            }
+            },
         },
         filetypes = {
             -- aerial
@@ -412,7 +422,7 @@ local function init()
             "tsplayground",
             "undotree",
             "vista"
-        }
+        },
     }
 
     lualine.setup(
@@ -428,7 +438,7 @@ local function init()
                 refresh = {
                     statusline = 1000,
                     tabline = 0,
-                    winbar = 0
+                    winbar = 0,
                 },
                 disabled_filetypes = {
                     statusline = {
@@ -436,8 +446,8 @@ local function init()
                         "quickmenu",
                         "wilder"
                     },
-                    winbar = {}
-                }
+                    winbar = {},
+                },
             },
             sections = sections_1,
             -- Inactive sections don't change with FocusLost
@@ -450,7 +460,7 @@ local function init()
                         cond = function()
                             return conds.hide_in_width() and conds.buffer_not_empty()
                         end,
-                        color = {fg = colors.green}
+                        color = {fg = colors.green},
                     },
                     {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
                     {
@@ -459,18 +469,18 @@ local function init()
                         symbols = {
                             modified = icons.misc.modified,
                             readonly = icons.misc.readonly,
-                            unnamed = icons.misc.unnamed
+                            unnamed = icons.misc.unnamed,
                         },
                         color = function(_section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                             return {gui = F.tern(vim.bo.modified, "bold", "none")}
-                        end
-                    }
+                        end,
+                    },
                 },
                 lualine_c = {},
                 lualine_x = {"location"},
                 lualine_y = {},
-                lualine_z = {}
+                lualine_z = {},
             },
             winbar = {},
             inactive_winbar = {},
@@ -485,7 +495,7 @@ local function init()
                 "fzf",
                 "fugitive",
                 "nvim-dap-ui"
-            }
+            },
         }
     )
 end

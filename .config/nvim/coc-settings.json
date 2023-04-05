@@ -42,6 +42,7 @@
   "snippets.shortcut": "",
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "snippets.ultisnips.pythonPrompt": false,
   "snippets.extends": {
     "cpp": ["c"],
     "typescript": ["javascript"]
@@ -463,6 +464,12 @@
   // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
   // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
   // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Zig
+  // ╘══════════════════════════════════════════════════════════╛
+  "zig.path": "/usr/bin/zls",
+  "zig.startUpMessage": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                            Golang
   // ╘══════════════════════════════════════════════════════════╛
@@ -516,6 +523,7 @@
   "Lua.workspace.maxPreload": 7000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 3000,
+  "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
     // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
@@ -531,7 +539,7 @@
     "indent_size": "4",
     "quote_style": "double",
     "continuation_indent": "4",
-    "max_line_length": "80",
+    "max_line_length": "100",
     "end_of_line": "lf",
 
     "trailing_table_separator": "smart",
@@ -578,9 +586,10 @@
     "ignore_space_after_colon": "false",
     "remove_call_expression_list_finish_comma": "true"
   },
+  "Lua.typeFormat.config": {"auto_complete_table_sep": "true"},
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
-  "Lua.completion.callSnippet": "Both",
+  "Lua.completion.callSnippet": "Replace",
   "Lua.completion.displayContext": 1,
   "Lua.completion.keywordSnippet": "Both",
   "Lua.completion.postfix": ".",
@@ -607,6 +616,8 @@
   "Lua.window.statusBar": true,
   "Lua.window.progressBar": false,
   "Lua.type.castNumberToInteger": true,
+  "Lua.type.weakNilCheck": true,
+  "Lua.type.weakUnionCheck": true,
   "Lua.semantic.enable": false,
   "Lua.semantic.annotation": true,
   "Lua.semantic.variable": true,
@@ -639,9 +650,9 @@
     // "codestyle-check": "None",
     "redefined-local": "None",
     "lowercase-global": "None",
-    "no-unknown": "None"
+    "no-unknown": "None",
     // "param-type-mismatch": "None",
-    // "need-check-nil": "None",
+    "need-check-nil": "None",
     // "missing-parameter": "None",
     // "redundant-parameter": "None",
 
@@ -678,28 +689,16 @@
     "redefined-local",
     "no-unknown",
     //
-    "redundant-parameter",
-    "missing-parameter",
-    "param-type-mismatch",
-    "need-check-nil"
+    // "redundant-parameter",
+    // "missing-parameter",
+    // "param-type-mismatch",
+    // "need-check-nil"
   ],
   "Lua.diagnostics.globals": [
     "dev",
-    // "a",
-    // "async",
     "Path",
     "Job",
     "List",
-    // "ex",
-    // "F",
-    // "uv",
-    // "api",
-    // "fn",
-    // "cmd",
-    // "env",
-    // "o",
-    // "b",
-    // "w",
     "p",
     "R",
     "P",
@@ -779,18 +778,74 @@
   "java.import.maven.enabled": true,
   "java.maven.downloadSources": false,
   // ╒══════════════════════════════════════════════════════════╕
-  //                            Dlang
+  //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
-  // "d.enabled": true,
-  // "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
-  // "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
-  // "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
+  "eslint.trace.server": "off",
+  "eslint.enable": true,
+  // "eslint.experimental.useFlatConfig": true,
+  // "eslint.codeAction.showDocumentation": {
+  //   "enable": true
+  // },
+  // "eslint.codeAction.disableRuleComment": {
+  //   "enable": true,
+  //   "location": "separateLine"
+  // },
+  // "eslint.codeActionsOnSave.mode": "all",
+  // "eslint.rules.customizations": [],
+  "eslint.packageManager": "yarn",
+  "eslint.run": "onType",
+  "eslint.autoFixOnSave": false,
+  "eslint.format.enable": true,
+  // Typescript
+  "tsserver.enable": true,
+  "tsserver.trace.server": "off",
+  "tsserver.useLocalTsdk": true,
+  "tsserver.implicitProjectConfig.checkJs": true,
+  "tsserver.experimental.enableProjectDiagnostics": true,
+  "typescript.showUnused": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.format.enable": true,
+  "typescript.format.semicolons": "insert",
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
+  "typescript.referencesCodeLens.enabled": false,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  // Javascript
+  "javascript.preferences.quoteStyle": "double",
+  "javascript.referencesCodeLens.enabled": false,
+  "javascript.format.enable": true,
+  "javascript.format.semicolons": "insert",
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+  "javascript.inlayHints.variableTypes.enabled": true,
+  "javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "javascript.inlayHints.parameterTypes.enabled": true,
+  "javascript.inlayHints.enumMemberValues.enabled": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   // ╒══════════════════════════════════════════════════════════╕
-  //                             SQL
+  //                             Vim
   // ╘══════════════════════════════════════════════════════════╛
-  "sql.formatOptions": {
-    "indent": "    "
-  },
+  "vimlsp.trace.server": "off",
+  "vimlsp.diagnostic.enable": true,
+  "vimlsp.indexes.runtimepath": true,
+  "vimlsp.suggest.fromVimruntime": true,
+  "vimlsp.suggest.fromRuntimepath": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                             JSON
   // ╘══════════════════════════════════════════════════════════╛
@@ -917,75 +972,6 @@
     ]
   },
   // ╒══════════════════════════════════════════════════════════╕
-  //                         ECMA Scripts
-  // ╘══════════════════════════════════════════════════════════╛
-  "eslint.trace.server": "off",
-  "eslint.enable": true,
-  // "eslint.experimental.useFlatConfig": true,
-  // "eslint.codeAction.showDocumentation": {
-  //   "enable": true
-  // },
-  // "eslint.codeAction.disableRuleComment": {
-  //   "enable": true,
-  //   "location": "separateLine"
-  // },
-  // "eslint.codeActionsOnSave.mode": "all",
-  // "eslint.rules.customizations": [],
-  "eslint.packageManager": "yarn",
-  "eslint.run": "onType",
-  "eslint.autoFixOnSave": false,
-  "eslint.format.enable": true,
-  // Typescript
-  "tsserver.enable": true,
-  "tsserver.trace.server": "off",
-  "tsserver.useLocalTsdk": true,
-  "tsserver.implicitProjectConfig.checkJs": true,
-  "tsserver.experimental.enableProjectDiagnostics": true,
-  "typescript.showUnused": true,
-  "typescript.preferences.quoteStyle": "single",
-  "typescript.preferences.useAliasesForRenames": false,
-  "typescript.format.enable": true,
-  "typescript.format.semicolons": "insert",
-  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
-  // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
-  "typescript.referencesCodeLens.enabled": false,
-  "typescript.referencesCodeLens.showOnAllFunctions": true,
-  "typescript.implementationsCodeLens.enabled": true,
-  "typescript.inlayHints.parameterNames.enabled": "literals",
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.enumMemberValues.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
-  // Javascript
-  "javascript.preferences.quoteStyle": "double",
-  "javascript.referencesCodeLens.enabled": false,
-  "javascript.format.enable": true,
-  "javascript.format.semicolons": "insert",
-  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
-  "javascript.inlayHints.parameterNames.enabled": "all",
-  "javascript.inlayHints.variableTypes.enabled": true,
-  "javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
-  "javascript.inlayHints.parameterTypes.enabled": true,
-  "javascript.inlayHints.enumMemberValues.enabled": true,
-  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
-  // ╒══════════════════════════════════════════════════════════╕
-  //                             Vim
-  // ╘══════════════════════════════════════════════════════════╛
-  "vimlsp.trace.server": "off",
-  "vimlsp.diagnostic.enable": true,
-  "vimlsp.indexes.runtimepath": true,
-  "vimlsp.suggest.fromVimruntime": true,
-  "vimlsp.suggest.fromRuntimepath": true,
-  // ╒══════════════════════════════════════════════════════════╕
   //                             XML
   // ╘══════════════════════════════════════════════════════════╛
   "xml.trace.server": "off",
@@ -993,21 +979,94 @@
   "xml.format.enabled": true,
   "xml.symbols.enabled": true,
   "xml.codeLens.enabled": true,
-
   // ╒══════════════════════════════════════════════════════════╕
-  //                         Trace Server
+  //                             CSS
+  // ╘══════════════════════════════════════════════════════════╛
+  "css.trace.server": "off",
+  "css.completion.triggerPropertyValueCompletion": true,
+  "css.completion.completePropertyWithSemicolon": true,
+  "css.hover.documentation": true,
+  "css.hover.references": true,
+  "css.lint.duplicateProperties": "error",
+  "css.lint.emptyRules": "ignore",
+  "css.lint.boxModel": "ignore",
+  "css.lint.universalSelector": "ignore",
+  "css.lint.zeroUnits": "warning",
+  "css.lint.fontFaceProperties": "warning",
+  "css.lint.hexColorLength": "error",
+  "css.lint.argumentsInColorFunction": "error",
+  "css.lint.unknownProperties": "warning",
+  "css.lint.propertyIgnoredDueToDisplay": "warning",
+  "css.lint.important": "ignore",
+  "css.lint.vendorPrefix": "ignore", // MAYBE: change
+  "css.format.enable": true,
+  "css.format.newlineBetweenSelectors": true,
+  "css.format.spaceAroundSelectorSeparator": true,
+  "css.format.braceStyle": "collapse",
+
+  "scss.format.enable": true,
+
+  "stylelintplus.enable": true,
+  "stylelintplus.trace.server": "verbose",
+  // "stylelintplus.autoFixOnFormat": false,
+  // "stylelintplus.autoFixOnSave": false,
+  "stylelintplus.validateOnSave": true,
+  "stylelintplus.validateOnType": true,
+  "stylelintplus.configFile": "/home/lucas/.config/stylelint/config.js",
+
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             HTML
   // ╘══════════════════════════════════════════════════════════╛
   "html.trace.server": "off",
-  "css.trace.server": "off",
-  "zig.path": "/usr/bin/zls",
+  "html.filetypes": ["html", "handlebars", "htmldjango", "blade"],
+  "html.completion.attributeDefaultValue": "doublequotes",
+  "html.autoClosingTags": true,
+  "html.autoCreateQuotes": true,
+  "html.validate.scripts": true,
+  "html.validate.styles": true,
+  "html.suggest.html5": true,
+  "html.hover.documentation": true,
+  "html.hover.references": true,
+  "html.format.enable": true,
+  "html.format.wrapLineLength": 100,
+  "html.format.extraLiners": "head, body, /html",
+  "html.format.contentUnformatted": "pre,code,textarea",
+  "html.format.unformatted": "wbr",
+  // "html.format.unformattedContentDelimiter": "",
+  "html.format.indentInnerHtml": true,
+  "html.format.indentHandlebars": true,
+  "html.format.preserveNewLines": true,
+  "html.format.maxPreserveNewLines": 2,
+  "html.format.wrapAttributes": "aligned-multiple",
+  // "html.format.wrapAttributes": "force-aligned",
+  "html.format.wrapAttributesIndentSize": 4,
+  "html.format.templating": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             SQL
+  // ╘══════════════════════════════════════════════════════════╛
+  "sql.lintOnChange": true,
+  "sql.formatOptions": { "indent": "    " },
 
   // ╒══════════════════════════════════════════════════════════╕
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
+  "coc.preferences.enableMarkdown": true,
   "markdownlint.config": {
+    "MD001": false,
     "default": true,
     "line-length": false
   },
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                            Dlang
+  // ╘══════════════════════════════════════════════════════════╛
+  // "d.enabled": true,
+  // "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
+  // "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
+  // "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                  Diagnostic Language Server
@@ -1314,6 +1373,7 @@
     "email": "languagetool",
     "dockerfile": "hadolint",
     "ruby": ["rubocop"]
+    // "css": "stylelint"
     // "lua": "selene"
     // "perl": "perl",
     // "python": ["ruff"],
@@ -1400,7 +1460,7 @@
         },
         "codeLens": {
           "renderInLine": true,
-          "localVariables": true,
+          "localVariables": true
         },
         "completion": {
           "placeholder": false,
@@ -1412,7 +1472,7 @@
           "onChange": false,
           "comments": 2,
           "trackDependency": 1,
-          "parametersInDeclarations": true,
+          "parametersInDeclarations": true
         }
       }
     },
@@ -1627,6 +1687,5 @@
     //     "bsconfig.json"
     //   ]
     // },
-  },
-  "snippets.ultisnips.pythonPrompt": false
+  }
 }

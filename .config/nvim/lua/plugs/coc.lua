@@ -1,8 +1,3 @@
----@diagnostic disable:param-type-mismatch
----@diagnostic disable:redundant-parameter
----@diagnostic disable:missing-parameter
----@diagnostic disable:undefined-field
-
 local M = {}
 
 local D = require("dev")
@@ -106,7 +101,7 @@ function M.go2def()
                         end
                     end
                 )
-             then
+            then
                 fn.searchdecl(cword)
                 by = "search"
             end
@@ -125,7 +120,10 @@ end
 function M.show_documentation()
     local winid
     if vim.wo.foldenable and vim.wo.foldmethod == "manual" then
-        winid = require("ufo").peekFoldedLinesUnderCursor()
+        -- Required, else it picks up 'HlsLens.ufo'
+        ---@module "ufo.main"
+        local ufo = require("ufo")
+        winid = ufo.peekFoldedLinesUnderCursor()
     end
 
     if not winid then
@@ -154,8 +152,8 @@ end
 
 ---CocActionAsync
 ---@param action string: CocAction to run
----@param args table: Arguments to pass to that CocAction
----@param time number?: Time to wait for action to be performed
+---@param args? table: Arguments to pass to that CocAction
+---@param time? number: Time to wait for action to be performed
 ---@return boolean Error
 ---@return string result
 function M.a2sync(action, args, time)
@@ -178,12 +176,12 @@ function M.a2sync(action, args, time)
     fn.CocActionAsync(action, unpack(args))
     local wait_ret =
         vim.wait(
-        time or 1000,
-        function()
-            ---@diagnostic disable-next-line:redundant-return-value
-            return done
-        end
-    )
+            time or 1000,
+            function()
+                ---@diagnostic disable-next-line:redundant-return-value
+                return done
+            end
+        )
     err = err or not wait_ret
     if not wait_ret then
         res = "timeout"
@@ -193,8 +191,8 @@ end
 
 ---Run an asynchronous CocAction using a Javascript type framework of Promise
 ---@param action string
----@param args table?
----@param timeout number?
+---@param args? table
+---@param timeout? number
 ---@return Promise
 function M.action(action, args, timeout)
     args = vim.deepcopy(F.if_nil(args, {}))
@@ -366,10 +364,10 @@ function M.diagnostic(winid, nr, keep)
             for _, d in ipairs(res) do
                 local text =
                     ("[%s%s] %s"):format(
-                    (d.source == "" and "coc.nvim" or d.source),
-                    ((d.code == vim.NIL or d.code == nil) and "" or " " .. d.code),
-                    d.message:match("([^\n]+)\n*")
-                )
+                        (d.source == "" and "coc.nvim" or d.source),
+                        ((d.code == vim.NIL or d.code == nil) and "" or " " .. d.code),
+                        d.message:match("([^\n]+)\n*")
+                    )
                 local item = {
                     filename = d.file,
                     lnum = d.lnum,
@@ -377,7 +375,7 @@ function M.diagnostic(winid, nr, keep)
                     col = d.col,
                     end_col = d.end_col,
                     text = text,
-                    type = d.severity
+                    type = d.severity,
                 }
                 table.insert(items, item)
             end
@@ -395,7 +393,7 @@ function M.diagnostic(winid, nr, keep)
                 {
                     id = id ~= 0 and id or nil,
                     title = "CocDiagnosticList",
-                    items = items
+                    items = items,
                 }
             )
 
@@ -420,56 +418,57 @@ end
 ---This will not highlight keywords
 M.hl_fallback =
     (function()
-    local fb_bl_ft = {
-        "c",
-        "cpp",
-        "css",
-        "fzf",
-        "go",
-        -- "help",
-        "html",
-        "java",
-        "javascript",
-        "lua",
-        "python",
-        "qf",
-        "rust",
-        "sh",
-        "typescript",
-        "typescriptreact",
-        "vim",
-        "xml"
-    }
-    local hl_fb_tbl = {}
-    local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
+        local fb_bl_ft = {
+            "c",
+            "cpp",
+            "css",
+            "fzf",
+            "go",
+            -- "help",
+            "html",
+            "java",
+            "javascript",
+            "lua",
+            "python",
+            "qf",
+            "rust",
+            "sh",
+            "typescript",
+            "typescriptreact",
+            "vim",
+            "xml"
+        }
+        local hl_fb_tbl = {}
+        local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
 
-    local function cur_word_pat()
-        local lnum, col = unpack(nvim.cursor(0))
-        local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
-        local _, e_off = re_e:match_str(line:sub(col + 1, -1))
-        local pat = ""
-        if e_off ~= 0 then
-            local s, e = re_s:match_str(line:sub(1, col + 1))
-            local word = line:sub(s + 1, e + e_off - 1)
-            pat = ([[\<%s\>]]):format(word:gsub("[\\/~]", [[\%1]]))
-        end
-        return pat
-    end
-
-    return function()
-        local ft = vim.bo.ft
-        if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
-            return
+        local function cur_word_pat()
+            ---@diagnostic disable:need-check-nil
+            local lnum, col = unpack(nvim.cursor(0))
+            local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
+            local _, e_off = re_e:match_str(line:sub(col + 1, -1))
+            local pat = ""
+            if e_off ~= 0 then
+                local s, e = re_s:match_str(line:sub(1, col + 1))
+                local word = line:sub(s + 1, e + e_off - 1)
+                pat = ([[\<%s\>]]):format(word:gsub("[\\/~]", [[\%1]]))
+            end
+            return pat
         end
 
-        local m_id, winid = unpack(hl_fb_tbl)
-        pcall(fn.matchdelete, m_id, winid)
+        return function()
+            local ft = vim.bo.ft
+            if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
+                return
+            end
 
-        winid = api.nvim_get_current_win()
-        m_id = fn.matchadd("CocHighlightText", cur_word_pat(), -1, -1, {window = winid})
-        hl_fb_tbl = {m_id, winid}
-    end
-end)()
+            local m_id, winid = unpack(hl_fb_tbl)
+            pcall(fn.matchdelete, m_id, winid)
+
+            winid = api.nvim_get_current_win()
+            m_id = fn.matchadd("CocHighlightText", cur_word_pat(), -1, -1, {window = winid})
+            hl_fb_tbl = {m_id, winid}
+        end
+    end)()
 
 -- This doesn't seem to set value locally anymore. But also doesn't seem needed
 ---Function that is ran on `CocOpenFloat`
@@ -504,11 +503,11 @@ function _G.map_cr()
 end
 
 ---Check whether Coc has been initialized
----@param silent boolean
+---@param echo? boolean
 ---@return boolean
-function M.did_init(silent)
+function M.did_init(echo)
     if g.coc_service_initialized == 0 then
-        if silent then
+        if echo then
             log.warn("coc.nvim hasn't initialized")
         end
         return false
@@ -544,8 +543,8 @@ end
 function M.scroll_insert(right)
     if
         #fn["coc#float#get_float_win_list"]() > 0 and fn["coc#pum#visible"]() == 0 and
-            api.nvim_get_current_win() ~= g.coc_last_float_win
-     then
+        api.nvim_get_current_win() ~= g.coc_last_float_win
+    then
         return fn["coc#float#scroll"](right)
     else
         return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
@@ -588,7 +587,7 @@ function M.tag_cmd()
             },
             command = function()
                 map("n", "<C-]>", "<Plug>(coc-definition)", {silent = true})
-            end
+            end,
         }
     )
 end
@@ -614,6 +613,7 @@ M.get_lua_runtime = function()
         -- end
 
         for _, path in ipairs(fn.expand(lib .. "/lua", false, true)) do
+            ---@cast path +?
             path = uv.fs_realpath(path)
             if path then
                 local stat = uv.fs_stat(path)
@@ -621,8 +621,8 @@ M.get_lua_runtime = function()
                     result[path] = true
                 end
 
-            -- path = fn.fnamemodify(path, ":h")
-            -- result[path] = true
+                -- path = fn.fnamemodify(path, ":h")
+                -- result[path] = true
             end
         end
 
@@ -747,7 +747,7 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").jump2loc()
-            end
+            end,
         },
         {
             event = "User",
@@ -756,7 +756,7 @@ function M.init()
             command = function()
                 require("plugs.coc").diagnostic_change()
                 -- require("plugs.coc").diagnostics_tracker()
-            end
+            end,
         },
         -- {
         --     event = "BufEnter",
@@ -785,17 +785,18 @@ function M.init()
         {
             event = "CursorHold",
             pattern = "*",
-            command = [[sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]]
+            command =
+            [[sil! call CocActionAsync('highlight', '', v:lua.require('plugs.coc').hl_fallback)]],
         },
         {
             event = "FileType",
             pattern = {"typescript", "json"},
-            command = [[setl formatexpr=CocActionAsync('formatSelected')]]
+            command = [[setl formatexpr=CocActionAsync('formatSelected')]],
         },
         {
             event = "User",
             pattern = "CocJumpPlaceholder",
-            command = [[call CocActionAsync('showSignatureHelp')]]
+            command = [[call CocActionAsync('showSignatureHelp')]],
         },
         {
             event = "FileType",
@@ -803,7 +804,7 @@ function M.init()
             command = function()
                 cmd.packadd("nvim-bqf")
                 require("bqf.magicwin.handler").attach()
-            end
+            end,
         },
         {
             event = "VimLeavePre",
@@ -812,14 +813,14 @@ function M.init()
                 if api.nvim_get_var("coc_process_pid") ~= nil then
                     os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
                 end
-            end
+            end,
         },
         {
             event = "FileType",
             pattern = "log",
             command = function()
                 vim.b.coc_enabled = 0
-            end
+            end,
         },
         {
             event = "BufReadPost",
@@ -829,14 +830,14 @@ function M.init()
                 if vim.bo[bufnr].readonly then
                     vim.b.coc_diagnostic_disable = 1
                 end
-            end
+            end,
         },
         {
             event = "User",
             pattern = "CocOpenFloat",
             command = function()
                 require("plugs.coc").post_open_float()
-            end
+            end,
         }
     )
 
@@ -853,7 +854,7 @@ function M.init()
             CocUnderline = {gui = "none"},
             CocSemStatic = {gui = "bold"},
             CocSemDefaultLibrary = {link = "Constant"},
-            CocSemDocumentation = {link = "Number"}
+            CocSemDocumentation = {link = "Number"},
         }
     )
 
@@ -863,50 +864,50 @@ function M.init()
                 ":CocMarket",
                 [[:CocFzfList marketplace]],
                 description = "Fzf Marketplace",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":Format",
                 [[:call CocAction('format')]],
                 description = "Format file with coc",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":Prettier",
                 [[:call CocAction('runCommand', 'prettier.formatFile')]],
                 description = "Format file with prettier",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":OR",
                 [[:call CocAction('runCommand', 'editor.action.organizeImport')]],
                 description = "Organize imports",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":CocOutput",
                 [[CocCommand workspace.showOutput]],
                 description = "Show workspace output",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":DiagnosticToggleBuffer",
                 [[call CocAction('diagnosticToggleBuffer')]],
                 description = "Turn off diagnostics for buffer",
-                opts = {nargs = 0}
+                opts = {nargs = 0},
             },
             {
                 ":Tsc",
                 [[:call CocAction('runCommand', 'tsserver.watchBuild')]],
                 description = "Typescript watch build",
-                opts = {}
+                opts = {},
             },
             {
                 ":Tslint",
                 [[:call CocAction('runCommand', 'tslint.lintProject')]],
                 description = "Typescript ESLint",
-                opts = {}
-            }
+                opts = {},
+            },
         }
     )
 
@@ -956,7 +957,7 @@ function M.init()
             ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"}
+            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
         }

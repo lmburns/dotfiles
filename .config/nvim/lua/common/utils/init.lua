@@ -927,21 +927,12 @@ do
         end
 
         local function notify()
-            if vim.g.nvim_focused then
-                local ok, notify = pcall(require, "notify")
-                if not ok then
-                    vim.defer_fn(
-                        function()
-                            vim.notify(msg, level, opts)
-                        end,
-                        100
-                    )
-                    return
-                end
-                return notify.notify(msg, level, opts)
-            else
-                return require("desktop-notify").notify(msg, level, opts)
-            end
+            -- if vim.g.nvim_focused then
+                -- vim.notify is already set to nvim-notify
+                vim.notify(msg, level, opts)
+            -- else
+            --     return require("desktop-notify").notify(msg, level, opts)
+            -- end
         end
 
         if opts.once then

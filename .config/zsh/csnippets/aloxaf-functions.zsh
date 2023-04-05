@@ -28,9 +28,9 @@ zle -N fz-find
 
 autoload -U edit-command-line
 function edit-command-line-as-zsh {
-    TMPSUFFIX=.zsh
-    edit-command-line
-    unset TMPSUFFIX
+  TMPSUFFIX=.zsh
+  edit-command-line
+  unset TMPSUFFIX
 }
 zle -N edit-command-line-as-zsh
 

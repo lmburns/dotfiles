@@ -9,3 +9,50 @@ InlayHints:
 
 Hover:
   ShowAKA: Yes
+
+Diagnostics:
+  UnusedIncludes: Strict
+  Suppress: [-Wunused-result, -Wunused, -Wunused-variable]
+  # ClangTidy:
+  # Add: modernize*
+  # Remove: modernize-use-trailing-return-type
+
+Index:
+  StandardLibrary: Yes
+
+# -g = Add debugging
+# -fverbose-asm = If compiling with '-S' examine assemble output
+# -finstrument-functions = Adds code to call user supplied profiling functions
+# --coverage = gcov
+# -fsanitize={address,thread,undefined}
+# -save-temps = Leave behind results of preprocess and assembly
+
+CompileFlags:
+  Add: [
+      -std=c2x,
+      -Wall,               # all warnings
+      -Wextra,             # extra warnings
+      -Wpedantic,
+      -Wfloat-equal,       # testing floats for equality
+      -Wundef,             # unitialized identifier evaluated in an #if
+      -Wshadow,            # variable shadows another
+      -Wpointer-arith,     # anything dpends upon size of func or void
+      -Wcast-align,        # pointer is cast such that required alignment of target is increased
+      -Wstrict-prototypes, # func declared/defined without specifying variables
+      -Wstrict-overflow=5,
+      -Wwrite-strings,     # string constants 'const'
+      -Waggregate-return,  # funcs that return structs/unions are defined
+      -Wcast-qual,         # pointer is cast to remove a type qualifier from target type
+      -Wswitch-default,    # switch statement does not have default
+      -Wswitch-enum,       # switch statement has index of enum type last a case for an enumeration
+      -Wconversion,        # implicit conversions that may alter value
+      -Wunreachable-code,  # self explanatory
+      -Wformat=2,
+      -Winit-self,
+      -fsanitize=address,
+      # -fsanitize=thread,
+      -fsanitize=undefined,
+    ]
+  Remove: [-Wunused-result, -Wunused, -Wunused-variable]
+  # Remove: -W*
+  Compiler: gcc

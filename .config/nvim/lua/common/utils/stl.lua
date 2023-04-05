@@ -57,7 +57,7 @@ M.conditions = {
         return fn.empty(fn.expand("%:t")) ~= 1
     end,
     has_file_type = function()
-        return vim.bo.ft or not vim.bo.ft == ""
+        return vim.bo.ft and not vim.bo.ft == ""
     end,
     is_lsp_attached = function()
         return not vim.tbl_isempty(vim.lsp.get_active_clients())
@@ -67,7 +67,7 @@ M.conditions = {
         -- local gitdir = fn.finddir(".git", filepath .. ";")
         -- return gitdir and #gitdir > 0 and #gitdir < #filepath
         return #gittool.root() > 0
-    end
+    end,
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -84,7 +84,7 @@ M.plugins.keymap = {
             return ("%s %s"):format(icons.misc.keyboard, vim.b.keymap_name)
         end
         return ""
-    end
+    end,
 }
 
 M.plugins.diff = {
@@ -93,9 +93,8 @@ M.plugins.diff = {
         if gs then
             return {added = gs.added, modified = gs.changed, removed = gs.removed}
         end
-
         return {added = nil, modified = nil, removed = nil}
-    end
+    end,
 }
 
 M.plugins.blame = {
@@ -106,7 +105,7 @@ M.plugins.blame = {
             return ("%s - %s"):format(info.author, date_time)
         end
         return ""
-    end
+    end,
 }
 
 M.plugins.recording = {
@@ -114,10 +113,9 @@ M.plugins.recording = {
         local reg = fn.reg_recording()
         if reg ~= "" then
             return ("Recording[%s]"):format(reg)
-        else
-            return ""
         end
-    end
+        return ""
+    end,
 }
 
 M.plugins.gitbuf = {
@@ -127,16 +125,16 @@ M.plugins.gitbuf = {
             ---@diagnostic disable-next-line:unused-local
             local _, _, commit, relpath = name:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
             return ("fugitive@%s"):format(commit:sub(1, 7))
-        -- name = relpath .. "@" .. commit:sub(1, 7)
+            -- name = relpath .. "@" .. commit:sub(1, 7)
         end
         if vim.startswith(name, "gitsigns://") then
             ---@diagnostic disable-next-line:unused-local
             local _, _, revision, relpath = name:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
             return ("gitsigns@%s"):format(revision:sub(1, 7))
-        -- name = relpath .. "@" .. revision:sub(1, 7)
+            -- name = relpath .. "@" .. revision:sub(1, 7)
         end
         return ""
-    end
+    end,
 }
 
 -- p(api.nvim_eval_statusline('+ 10', {}))
@@ -146,7 +144,7 @@ M.plugins.coc_status = {
         local s = vim.trim(g.coc_status or "")
         s, _ --[[@as any]] = s:gsub("%% ", "%%%% ")
         return s
-    end
+    end,
 }
 
 ---Display an icon if spelling is on
@@ -154,14 +152,14 @@ M.plugins.spell = {
     toggle = function()
         return api.nvim_win_get_option(0, "spell")
     end,
-    fn = ([[%s]]):format(icons.misc.spell)
+    fn = ([[%s]]):format(icons.misc.spell),
 }
 
 M.plugins.wrap = {
     toggle = function()
         return api.nvim_win_get_option(0, "wrap")
     end,
-    fn = [[%"w]]
+    fn = [[%"w]],
 }
 
 ---Display 'foldlevel'
@@ -173,7 +171,7 @@ M.plugins.foldlevel = {
     ---@return string
     fn = function()
         return ("%s %s"):format(icons.misc.fold, vim.o.foldlevel)
-    end
+    end,
 }
 
 ---Show space information about the buffer
@@ -190,7 +188,7 @@ M.plugins.file_encoding = {
     ---@return string
     fn = function()
         return vim.o.fileencoding
-    end
+    end,
 }
 
 M.plugins.search_result = {
@@ -210,7 +208,7 @@ M.plugins.search_result = {
         end
 
         return last_search .. "[" .. searchcount.current .. "/" .. searchcount.total .. "]"
-    end
+    end,
 }
 
 ---Alternate progress indicator
@@ -232,7 +230,7 @@ M.plugins.progress = {
         local line_ratio = current_line / total_lines
         local index = math.ceil(line_ratio * #chars)
         return chars[index]
-    end
+    end,
 }
 
 ---Show number of items in locationlist
@@ -243,7 +241,7 @@ M.plugins.loclist_count = {
         local count = ll.size
         local current = ll.idx
         return count == 0 and "" or ("%s %d/%d "):format(icons.misc.loclist, current, count)
-    end
+    end,
 }
 
 ---Show number of items in quickfix
@@ -254,7 +252,7 @@ M.plugins.quickfix_count = {
         local count = qf.size
         local current = qf.idx
         return count == 0 and "" or ("%s %d/%d "):format(icons.misc.quickfix, current, count)
-    end
+    end,
 }
 
 -- FIX: Runs way to often
@@ -265,7 +263,7 @@ M.plugins.todo_comment_count = {
     end,
     fn = function()
         return require("plugs.todo-comments").get_todo_count()
-    end
+    end,
 }
 
 ---Show function is statusbar with vista
@@ -275,7 +273,7 @@ M.plugins.vista_nearest_method = {
     end,
     fn = function()
         return vim.b.vista_nearest_method_or_function
-    end
+    end,
 }
 
 M.plugins.coc_function = {
@@ -284,7 +282,7 @@ M.plugins.coc_function = {
     end,
     fn = function()
         return g.coc_current_function
-    end
+    end,
 }
 
 M.plugins.gutentags_progress = {
@@ -293,7 +291,7 @@ M.plugins.gutentags_progress = {
     end,
     fn = function()
         return fn["gutentags#statusline"]("[", "]")
-    end
+    end,
 }
 
 -- Visual Multi
@@ -309,19 +307,38 @@ M.plugins.vm = {
             vm_infos.total,
             vm_infos.patterns[1]
         )
+    end,
+}
+
+M.plugins.vim_matchup = {
+    fn = function()
+        return fn.MatchupStatusOffscreen()
     end
 }
 
+M.plugins.noice = {
+    command = {
+        toggle = function()
+            return D.plugin_loaded("noice.nvim") and require("noice").api.status.command.has()
+        end,
+        fn = function()
+            local ok, noice = pcall(require, "noice")
+            return ok and noice.api.status.command.get()
+        end
+    }
+}
+
+-- nvim-gps
 M.plugins.gps = {
     toggle = function()
         return D.plugin_loaded("nvim-gps")
     end,
     fn = function()
         local opts = {
-            disable_icons = false
+            disable_icons = false,
         }
         return require("nvim-gps").get_location(opts)
-    end
+    end,
 }
 
 M.plugins.luapad = {
@@ -337,12 +354,12 @@ M.plugins.luapad = {
         end
 
         return ""
-    end
+    end,
 }
 
 M.plugins.debugger = {
     toggle = function()
-        return D.plugin_loaded("dap")
+        return D.plugin_loaded("nvim-dap")
     end,
     fn = function()
         -- local session = require('dap').session()
@@ -350,7 +367,7 @@ M.plugins.debugger = {
 
         local ok, dap = pcall(require, "dap")
         return ok and dap.status()
-    end
+    end,
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -362,7 +379,7 @@ local function terminal_status_color(status)
         Finished = colors.purple,
         Success = colors.blue,
         Error = colors.red,
-        Command = colors.magenta
+        Command = colors.magenta,
     }
 
     return mode_colors[status]
@@ -387,7 +404,7 @@ local function terminal_status()
             [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaF"))]],
             true
         ) ~= ""
-     then
+    then
         local result = get_exit_status()
         if result == nil then
             return "Finished"
@@ -403,7 +420,7 @@ local function terminal_status()
             [[echo trim(execute("filter /" . escape(nvim_buf_get_name(bufnr()), '~/') . "/ ls! uaR"))]],
             true
         ) ~= ""
-     then
+    then
         return "Running"
     end
     return "Command"
@@ -436,9 +453,9 @@ M.extensions.toggleterm = {
     sections = {
         lualine_a = {toggleterm_statusline},
         -- lualine_b = {{term_title, color = {fg = colors.green}}},
-        lualine_z = {{get_terminal_status, color = "LualineToggleTermStatus"}}
+        lualine_z = {{get_terminal_status, color = "LualineToggleTermStatus"}},
     },
-    filetypes = {"toggleterm"}
+    filetypes = {"toggleterm"},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -475,18 +492,18 @@ M.extensions.qf = {
         lualine_b = {
             {
                 quickfix,
-                color = {fg = colors.green}
+                color = {fg = colors.green},
             },
             {
                 "%p%% [%L]",
-                color = {fg = colors.orange, gui = "bold"}
-            }
+                color = {fg = colors.orange, gui = "bold"},
+            },
         },
         lualine_c = {
-            {qf_cmd, color = {fg = colors.yellow}}
-        }
+            {qf_cmd, color = {fg = colors.yellow}},
+        },
     },
-    filetypes = {"qf"}
+    filetypes = {"qf"},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -509,7 +526,7 @@ function M.document_diagnostics()
         error = utils.get_default(data.error, 0),
         warn = utils.get_default(data.warning, 0),
         info = utils.get_default(data.information, 0),
-        hint = utils.get_default(data.hint, 0)
+        hint = utils.get_default(data.hint, 0),
     }
 
     -- fn.CocActionAsync(
@@ -549,8 +566,8 @@ M.extensions.trouble = {
                 fmt = function(str)
                     return ("%s %s"):format(str, M.plugins.sep())
                 end,
-                padding = M.other.only_pad_right
-            }
+                padding = M.other.only_pad_right,
+            },
         },
         lualine_b = {
             {
@@ -558,8 +575,8 @@ M.extensions.trouble = {
                 fmt = function(str)
                     return ("[%s] %s"):format(icons.misc.list, str)
                 end,
-                color = {fg = colors.red, gui = "bold"}
-            }
+                color = {fg = colors.red, gui = "bold"},
+            },
         },
         lualine_c = {
             {
@@ -569,18 +586,18 @@ M.extensions.trouble = {
                     error = icons.lsp.sb.error,
                     warn = icons.lsp.sb.warn,
                     info = icons.lsp.sb.info,
-                    hint = icons.lsp.sb.hint
-                }
-            }
+                    hint = icons.lsp.sb.hint,
+                },
+            },
         },
         lualine_x = {},
         lualine_y = {},
         lualine_z = {
             "%l:%c",
             "%p%%/%L"
-        }
+        },
     },
-    filetypes = {"Trouble"}
+    filetypes = {"Trouble"},
 }
 
 return M

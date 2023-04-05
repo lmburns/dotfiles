@@ -1,0 +1,31 @@
+ ╭─────────╮
+ │ Enabled │
+ ╰─────────╯
+4chan X
+  https://greasyfork.org/en/scripts/7750
+anti-anti-copy
+  https://greasyfork.org/en/scripts/7197
+Simple YouTube Age Restriction Bypass
+  https://greasyfork.org/en/scripts/423851
+Image Downloader
+  https://greasyfork.org/en/scripts/419894
+MathJax for All
+  https://greasyfork.org/en/scripts/392667
+Twitter Show Sensitive Content
+  https://greasyfork.org/en/scripts/437634
+HTML5 video player enhanced script
+  https://greasyfork.org/scripts/381682
+Login reminder popup remover
+  https://greasyfork.org/en/scripts/395497
+Picviewer CE+
+  https://greasyfork.org/en/scripts/24204
+
+ ╭──────────╮
+ │ Disabled │
+ ╰──────────╯
+TeXify the World MathJax
+ChatJax
+MathJax for Reddit
+  https://greasyfork.org/en/scripts/392667
+Pagetual
+  https://greasyfork.org/en/scripts/438684

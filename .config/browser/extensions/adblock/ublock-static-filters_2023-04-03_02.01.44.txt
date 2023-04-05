@@ -1,0 +1,19 @@
+boards.4channel.org##.center.middlead
+boards.4channel.org##.middlead.center
+boards.4chan.org##body > .adc-resp-bg
+boards.4chan.org##.center.middlead
+boards.4chan.org##.middlead.center
+boards.4chan.org##.adl
+! boards.4chan.org##.boardBanner
+! boards.4chan.org##[id^=p]:has(.postertrip)
+! boards.4chan.org##[id^=p]:has(.countryFlag)
+
+! 2023-04-03 https://boards.4chan.org
+boards.4chan.org##.desktop.title
+boards.4chan.org##.hideMobile.globalMessage
+boards.4chan.org###blotter
+boards.4chan.org##hr:nth-of-type(4)
+boards.4chan.org##hr:nth-of-type(3)
+boards.4chan.org##body > .aboveMidAd
+boards.4chan.org##.passNotice
+

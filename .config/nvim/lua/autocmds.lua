@@ -104,8 +104,8 @@ nvim.autocmd.lmb__MacroRecording = {
         event = "RecordingEnter",
         pattern = "*",
         command = function()
-            local msg = (" 壘Recording @%s"):format(fn.reg_recording())
-            log.info(msg, {title = "Macro", icon = ""})
+            local msg = ("壘Recording @%s"):format(fn.reg_recording())
+            vim.notify(msg, vim.log.levels.INFO, {title = "Macro", icon = ""})
         end,
     },
     {
@@ -113,8 +113,7 @@ nvim.autocmd.lmb__MacroRecording = {
         pattern = "*",
         command = function()
             local event = vim.v.event
-            local msg = ("  Recorded @%s\n%s"):format(event.regname,
-                                                         event.regcontents)
+            local msg = (" Recorded @%s\n%s"):format(event.regname, event.regcontents)
             log.info(msg, {title = "Macro", icon = ""})
         end,
     },
@@ -146,10 +145,8 @@ nvim.autocmd.lmb__RestoreCursor = {
             -- )
 
             if
-                fn.expand("%") == ""
-                or exclude_ft:contains(vim.bo.ft)
-                or vim.bo.bt == "nofile"
-                or D.is_floating_window(0)
+                fn.expand("%") == "" or exclude_ft:contains(vim.bo.ft) or vim.bo.bt == "nofile" or
+                D.is_floating_window(0)
             then
                 return
             end
@@ -221,9 +218,9 @@ nvim.autocmd.lmb__FormatOptions = {
                         -- started and only at a white character that has been entered during the
                         -- current insert command.
                         l = true,
-                        v = false,                 -- only break line at blank line I've entered
-                        c = false,                 -- auto-wrap comments using textwidth
-                        t = false,                 -- autowrap lines using text width value
+                        v = false,                -- only break line at blank line I've entered
+                        c = false,                -- auto-wrap comments using textwidth
+                        t = false,                -- autowrap lines using text width value
                         p = true,                 -- don't break lines at single spaces that follow periods
                         ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
                         r = funcs.set_formatopts, -- continue comments when pressing Enter
@@ -265,11 +262,11 @@ nvim.autocmd.lmb__FormatOptions = {
                 local bufnr = api.nvim_get_current_buf()
                 local ft = vim.bo[bufnr].ft
 
-                o.conceallevel = 2
-                o.concealcursor = "c"
+                vim.wo.conceallevel = 2
+                vim.wo.concealcursor = "c"
 
                 if ft == "jsonc" or ft == "json" then
-                    o.conceallevel = 0
+                    vim.wo.conceallevel = 0
                 end
 
                 -- Allows a shared statusline
@@ -602,12 +599,13 @@ local smart_close_filetypes =
     )
 
 local smart_close_buftypes = _t({})
-local smart_close_title = _t({"option-window"})
+local smart_close_title = _t({"option-window", "%[Command Line%]", "Luapad"})
 
 local function smart_close()
     if fn.winnr("$") ~= 1 then
         api.nvim_win_close(0, true)
     end
+
     -- For floggraph
     -- if fn.tabpagewinnr("$") ~= 1 then
     --     cmd.tabc()
@@ -622,10 +620,15 @@ nvim.autocmd.lmb__SmartClose = {
             local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
             local is_eligible =
-                is_unmapped or vim.wo.previewwindow or
-                smart_close_filetypes:contains(vim.bo[bufnr].ft) or
-                smart_close_buftypes:contains(vim.bo[bufnr].bt) or
-                smart_close_title:contains(fn.expand("%"))
+                is_unmapped
+                or vim.wo.previewwindow
+                or smart_close_filetypes:contains(vim.bo[bufnr].ft)
+                or smart_close_buftypes:contains(vim.bo[bufnr].bt)
+                or smart_close_title:contains_fn(
+                    function(t)
+                        return fn.bufname():find(t)
+                    end
+                )
 
             if is_eligible then
                 map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
@@ -739,33 +742,29 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
--- vim.opt.cursorline = false
---
--- nvim.autocmd.lmb__CursorLineControl = {
---     {
---         event = {"BufWinEnter", "WinEnter", "FocusGained", "CmdlineLeave"},
---         pattern = "*",
---         command = function()
---             local winid = api.nvim_get_current_win()
---             -- Initial cursorline needs to be set to false
---             vim.wo[winid].cursorline = not vim.wo[winid].cursorline
---         end,
---         desc = "Control cursorline when (re|)focusing"
---     },
---     {
---         event = {"WinLeave", "FocusLost", "CmdlineEnter"},
---         pattern = "*",
---         command = function(args)
---             local bufnr = args.buf
---             local bufs = D.list_bufs({loaded = true, buftype = {"", "terminal"}})
---             if _t(bufs):contains(bufnr) and not vim.b[bufnr].keep_cursor_on_leave then
---                 local winid = fn.bufwinid(bufnr)
---                 vim.wo[winid].cursorline = false
---             end
---         end,
---         desc = "Control cursorline when un-focusing"
---     }
--- }
+nvim.autocmd.lmb__CursorLineCurrWin = {
+    {
+        event = {"WinEnter", "FocusGained", "CmdlineLeave"}, -- "InsertLeave"
+        command = function()
+            if vim.w.auto_cursorline then
+                vim.wo.cursorline = true
+                vim.w.auto_cursorline = nil
+            end
+        end,
+        desc = "Hide cursorline when entering window"
+    },
+    {
+        event = {"WinLeave", "FocusLost", "CmdlineEnter"}, -- "InsertEnter"
+        command = function()
+            local cl = vim.wo.cursorline
+            if cl then
+                vim.w.auto_cursorline = cl
+                vim.wo.cursorline = false
+            end
+        end,
+        desc = "Hide cursorline when leaving window"
+    },
+}
 -- ]]]
 
 -- === Tmux === [[[
@@ -825,8 +824,7 @@ do
                     timeout
                 )
         end,
-        desc = ("Clear command-line messages after %d seconds"):format(timeout /
-            1000),
+        desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000),
     }
 end
 

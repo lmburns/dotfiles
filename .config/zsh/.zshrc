@@ -1089,7 +1089,18 @@ typeset -gx ZSH_AUTOSUGGEST_MANUAL_REBIND=set
 typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE=$'(*\n*|?(#c100,))' # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
-typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(histdb_top_here dir_history custom_history match_prev_cmd completion)
+typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(
+  histdb_top_here   dir_history
+  custom_history    match_prev_cmd
+  completion
+)
+typeset -gx ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
+  vi-find-next-char  vi-find-next-char-skip
+  forward-word       vi-forward-blank-word   vi-forward-blank-word-end
+  vi-forward-word    vi-forward-word-end
+  forward-char       vi-forward-char
+  end-of-line        vi-add-eol              vi-end-of-line
+)
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"

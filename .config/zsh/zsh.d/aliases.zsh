@@ -24,7 +24,6 @@ alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
 alias {\$,%}=
 
 (( ${+commands[surfraw]} )) && {
-  # alias srg='surfraw -browser=$BROWSER'
   alias srg='sr -g'
   alias srh='srg github'
   alias srl='BROWSER=$BROWSERCLI sr'
@@ -453,9 +452,6 @@ alias .ts='TS_SOCKET=/tmp/ts1 tsp'
 alias .nq='NQDIR=/tmp/nq1 nq'
 alias .fq='NQDIR=/tmp/nq1 fq'
 alias .fnq='FNQDIR=/tmp/fnq1 fnq'
-
-# alias sr='sr -browser=w3m'
-# alias srg='sr -browser="$BROWSER"'
 
 alias getmime='file --dereference --brief --mime-type'
 

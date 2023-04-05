@@ -497,7 +497,7 @@ function M.center_next(command)
     end
 end
 
-M.set_formatopts = false
+M.set_formatopts = true
 
 ---Toggle 'r' in 'formatoptions'.
 ---This is the continuation of a comment on the next line

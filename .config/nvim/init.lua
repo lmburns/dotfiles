@@ -88,9 +88,8 @@ require("common.jump")
 
 ---@diagnostic disable-next-line:duplicate-set-field
 vim.notify = function(...)
-    -- vim.notify = require("notify")
     require("plugins").loader("nvim-notify")
-    require("plugins").loader("desktop-notify.nvim")
+    -- require("plugins").loader("desktop-notify.nvim")
     vim.notify = require("common.utils").notify
     vim.notify(...)
 end
@@ -212,6 +211,7 @@ vim.schedule(
                     "coc-json",
                     "coc-clangd",
                     "coc-css",
+                    "coc-stylelintplus",
                     "coc-go",
                     -- "coc-graphql",
                     "coc-html",
@@ -244,7 +244,7 @@ vim.schedule(
                     "coc-tabnine",
                     "coc-tag",
                     "coc-word",
-                    "coc-lightbulb"
+                    -- "coc-lightbulb"
                     -- "coc-highlight" -- Highlight words under cursor without language server
                 }
 

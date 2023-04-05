@@ -427,7 +427,7 @@ wk.register(
             [";"] = {[[<Cmd>lua require('common.win').go2recent()<CR>]], "Focus last buffer"},
             X = {utils.close_all_floating_wins, "Close all floating windows"},
             ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
-            ["<C-t>"] = {"<Cmd>tab sp<CR>", "Open current window in tab"},
+            T = {"<Cmd>tab sp<CR>", "Open current window in tab"},
             O = {"<Cmd>tabo<CR>", "Close all tabs except current"},
             ["0"] = {"<C-w>=", "Equally high and wide"}
         }

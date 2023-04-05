@@ -9,7 +9,7 @@ w3_usage_hook ()
 	cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search rust_docs (doc.rust-lang.org)
+  Search rust_std (doc.rust-lang.org)
 EOF
 	w3_global_usage
 }
