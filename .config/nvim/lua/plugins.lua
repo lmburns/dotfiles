@@ -70,9 +70,9 @@ packer.init(
         auto_clean = true,
         auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
         autoremove = false,
-        compile_on_sync = true, -- During sync(), run packer.compile()
-        ensure_dependencies = true, -- Should packer install plugin dependencies?
-        transitive_disable = true, -- Automatically disable dependencies of disabled plugins
+        compile_on_sync = true,      -- During sync(), run packer.compile()
+        ensure_dependencies = true,  -- Should packer install plugin dependencies?
+        transitive_disable = true,   -- Automatically disable dependencies of disabled plugins
         display = {
             non_interactive = false,
             header_lines = 2,
@@ -94,10 +94,10 @@ packer.init(
             },
             open_fn = function()
                 return require("packer.util").float({border = "rounded"})
-            end
+            end,
         },
         log = {level = "info"},
-        profile = {enable = true}
+        profile = {enable = true},
     }
 )
 
@@ -129,15 +129,15 @@ local handlers = {
         -- local run_hook = plugin_utils.post_update_hook
 
         -- This is preferred because you can provide own error message
-        vim.validate {
+        vim.validate{
             value = {
                 value,
                 function(n)
                     local t = type(n)
                     return t == "string" or t == "boolean"
                 end,
-                ("%s: must be a string or boolean"):format(plugin.short_name)
-            }
+                ("%s: must be a string or boolean"):format(plugin.short_name),
+            },
         }
 
         if type(value) == "string" then
@@ -161,14 +161,14 @@ local handlers = {
                                     "ErrorMsg"
                                 )
                             end
-                        end
+                        end,
                     }
                 ):start()
             else
                 nvim.p("Patch file does not exist", "ErrorMsg")
             end
         end
-    end
+    end,
 }
 
 ---Specify a configuration in `common.config` or its own file
@@ -207,10 +207,9 @@ end
 return packer.startup(
     {
         function(use, use_rocks)
-            use_rocks("lpeg")
-            -- use_rocks("pcre2")
             -- https://rrthomas.github.io/lrexlib/manual.html
             use_rocks("lrexlib-pcre2") -- rex_pcre2
+            -- use_rocks("lpeg")
 
             ---@type fun(v: PackerPlugin)
             local use = use
@@ -228,7 +227,7 @@ return packer.startup(
                                 end
                             )
                         end
-                    end
+                    end,
                 }
             )
 
@@ -241,7 +240,7 @@ return packer.startup(
                     config = function()
                         vim.g.startuptime_tries = 15
                         vim.g.startuptime_exe_args = {"+let g:auto_session_enabled = 0"}
-                    end
+                    end,
                 }
             )
 
@@ -268,7 +267,7 @@ return packer.startup(
                 {
                     "mrjones2014/legendary.nvim",
                     conf = "plugs.legendary",
-                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"}
+                    requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"},
                 }
             )
             -- ]]] === Keybinding ===
@@ -300,7 +299,14 @@ return packer.startup(
                 }
             )
             use({"AndrewRadev/bufferize.vim", cmd = "Bufferize"}) -- replace builtin pager
-            use({"inkarkat/vim-SpellCheck", requires = {"inkarkat/vim-ingo-library"}})
+            use(
+                {
+                    "inkarkat/vim-SpellCheck",
+                    requires = {"inkarkat/vim-ingo-library"},
+                    cmd = {"SpellLCheck", "SpellCheck"},
+                    keys = {{"n", "qs"}},
+                }
+            )
 
             -- FIX: causes error when viewing command window
             -- use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
@@ -320,7 +326,7 @@ return packer.startup(
                     "AndrewRadev/linediff.vim",
                     conf = "linediff",
                     cmd = "Linediff",
-                    keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}}
+                    keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}},
                 }
             )
 
@@ -346,10 +352,10 @@ return packer.startup(
                         {"n", "g[p"}, -- Paste linewise (like glp but adjust indent)
                         {"n", "g[P"},
                         {"n", "gsp"}, -- Paste with [count] spaces around lines
-                        {"n", "gsP"}
+                        {"n", "gsP"},
                         -- {"i", "<C-M-p>"},
                         -- {"i", "<M-p>"},
-                    }
+                    },
                 }
             )
 
@@ -394,11 +400,11 @@ return packer.startup(
                         {"x", ";F"},
                         {"x", ";C"},
                         {"n", "<Leader>gs"},
-                        {"n", "g/"}
+                        {"n", "g/"},
                     },
                     cmd = {"VMSearch"},
                     conf = "visualmulti",
-                    wants = {"nvim-hlslens", "nvim-autopairs"}
+                    wants = {"nvim-hlslens", "nvim-autopairs"},
                 }
             )
 
@@ -440,6 +446,8 @@ return packer.startup(
 
             -- use({"KeitaNakamura/neodark.vim"})
             -- use({"arturgoms/moonbow.nvim"})
+            -- use({"ackyshake/Spacegray.vim"})
+            -- use({"vv9k/bogster"})
 
             -- use({"tiagovla/tokyodark.nvim"})
             -- use({"bluz71/vim-nightfly-guicolors"})
@@ -447,8 +455,6 @@ return packer.startup(
             -- Need to make a new theme for this
             -- use({"tyrannicaltoucan/vim-deep-space"})
             -- Need to make a new theme for this
-            -- use({"ackyshake/Spacegray.vim"})
-            -- use({"vv9k/bogster"})
             -- use({"ghifarit53/daycula-vim"})
             -- use({"rmehri01/onenord.nvim"})
             -- use({"kyazdani42/blue-moon"})
@@ -475,7 +481,7 @@ return packer.startup(
                         {
                             "nvim-telescope/telescope-dap.nvim",
                             after = "nvim-dap",
-                            config = [[require("telescope").load_extension("dap")]]
+                            config = [[require("telescope").load_extension("dap")]],
                         },
                         {
                             "rcarriga/nvim-dap-ui",
@@ -485,8 +491,8 @@ return packer.startup(
                             "mfussenegger/nvim-dap-python",
                             after = "nvim-dap",
                             wants = "nvim-dap"
-                        }
-                    }
+                        },
+                    },
                 }
             )
 
@@ -505,7 +511,7 @@ return packer.startup(
                         "nvim-neotest/neotest-plenary",
                         "nvim-neotest/neotest-vim-test"
                         -- "vim-test/vim-test"
-                    }
+                    },
                 }
             )
 
@@ -542,7 +548,6 @@ return packer.startup(
                 }
             )
 
-            -- Most docs are already available through coc.nvim
             use({"milisims/nvim-luaref", ft = "lua"})
             use({"nanotee/luv-vimdocs", ft = "lua"})
             use({"tjdevries/nlua.nvim", ft = "lua", conf = "nlua", patch = true})
@@ -574,7 +579,7 @@ return packer.startup(
                     -- keys = {{"n", "<A-o>"}},
                     after = {colorscheme, "toggleterm.nvim"},
                     wants = "toggleterm.nvim",
-                    requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"}
+                    requires = {"nvim-lua/plenary.nvim", "akinsho/toggleterm.nvim"},
                 }
             )
             use({"ptzz/lf.vim", conf = "lf"})
@@ -610,9 +615,9 @@ return packer.startup(
                         {"x", "ga"},
                         {"x", "<Leader>ga"},
                         {"x", "<Leader>gi"},
-                        {"x", "<Leader>gs"}
+                        {"x", "<Leader>gs"},
                     },
-                    cmd = {"EasyAlign", "LiveEasyAlign"}
+                    cmd = {"EasyAlign", "LiveEasyAlign"},
                 }
             )
             -- ]]] === EasyAlign ===
@@ -621,7 +626,6 @@ return packer.startup(
             use({"tyru/open-browser.vim", conf = "open_browser"})
             use({"axieax/urlview.nvim", conf = "urlview", after = "telescope.nvim"})
             use({"xiyaowong/link-visitor.nvim", conf = "link_visitor"})
-            -- use({"itchyny/vim-highlighturl"})
             -- ]]] === Open Browser ===
 
             -- ============================ Limelight ============================= [[[
@@ -635,8 +639,8 @@ return packer.startup(
                         conf = "plugs.twilight",
                         after = "zen-mode.nvim",
                         cmd = "Twilight",
-                        keys = {{"n", "<Leader>li"}, {"n", "<Leader>zm"}}
-                    }
+                        keys = {{"n", "<Leader>li"}, {"n", "<Leader>zm"}},
+                    },
                 }
             )
             -- ]]] === Limelight ===
@@ -715,9 +719,9 @@ return packer.startup(
             use(
                 {
                     "lmburns/trouble.nvim",
-                    requires = {"kyazdani42/nvim-web-devicons", opt = true},
+                    requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
                     conf = "plugs.trouble",
-                    cmd = {"Trouble", "TroubleToggle", "TodoTrouble"},
+                    cmd = {"Trouble", "TroubleToggle"},
                     keys = {
                         {"n", "]v"},
                         {"n", "[v"},
@@ -731,8 +735,8 @@ return packer.startup(
                         {"n", "<Leader>xi"},
                         {"n", "<Leader>x;"},
                         {"n", "<Leader>x,"},
-                        {"n", "<Leader>xk"}
-                    }
+                        {"n", "<Leader>xk"},
+                    },
                 }
             )
             -- ]]] === Trouble ===
@@ -783,7 +787,7 @@ return packer.startup(
                         {"MunifTanjim/nui.nvim", module = "nui"},
                         "rcarriga/nvim-notify"
                     },
-                    event = {"UIEnter"}
+                    event = {"UIEnter"},
                 }
             )
 
@@ -822,17 +826,6 @@ return packer.startup(
             -- ]]] === Fzf ===
 
             -- ============================= Operator ============================== [[[
-            -- bennypowers/splitjoin.nvim
-            -- "AckslD/nvim-trevJ.lua"
-            use(
-                {
-                    "aarondiel/spread.nvim",
-                    conf = "spread",
-                    keys = {{"n", "gJ"}, {"n", "gS"}},
-                    requires = "nvim-treesitter/nvim-treesitter"
-                }
-            )
-
             use(
                 {
                     "phaazon/hop.nvim",
@@ -860,12 +853,12 @@ return packer.startup(
                         {"n", "<Leader><Leader>o"},
                         {"n", "<C-S-<>"},
                         {"n", "<C-S-:>"}, -- for nvim-treehopper
-                        {"n", "[n"}, -- for nvim-treehopper
-                        {"n", "]n"}, -- for nvim-treehopper
-                        {"n", "vx"}, -- for nvim-treehopper
-                        {"o", ","}, -- for nvim-treehopper
-                        {"x", ","} -- for nvim-treehopper
-                    }
+                        {"n", "[n"},      -- for nvim-treehopper
+                        {"n", "]n"},      -- for nvim-treehopper
+                        {"n", "vx"},      -- for nvim-treehopper
+                        {"o", ","},       -- for nvim-treehopper
+                        {"x", ","},       -- for nvim-treehopper
+                    },
                 }
             )
             use(
@@ -874,7 +867,7 @@ return packer.startup(
                     desc = "Region selection with hints on the AST nodes",
                     wants = "nvim-treesitter",
                     after = "hop.nvim",
-                    requires = {"nvim-treesitter/nvim-treesitter", "phaazon/hop.nvim"}
+                    requires = {"nvim-treesitter/nvim-treesitter", "phaazon/hop.nvim"},
                     -- keys = {
                     --     {"n", "<C-S-:>"},
                     --     {"n", "[n"},
@@ -926,7 +919,7 @@ return packer.startup(
                     "sQVe/sort.nvim",
                     conf = "sort",
                     cmd = {"Sort"},
-                    keys = {{"n", "gW"}, {"x", "gW"}, {"v", "gW"}}
+                    keys = {{"n", "gW"}, {"x", "gW"}, {"v", "gW"}},
                 }
             )
 
@@ -967,7 +960,7 @@ return packer.startup(
                     "mbbill/undotree",
                     conf = "plugs.undotree",
                     cmd = "UndoTreeToggle",
-                    keys = {{"n", "<Leader>ut"}}
+                    keys = {{"n", "<Leader>ut"}},
                 }
             )
 
@@ -979,7 +972,7 @@ return packer.startup(
                     -- run = [[require("fundo").install()]]
                     run = function()
                         require("fundo").install()
-                    end
+                    end,
                 }
             )
             -- ]]] === UndoTree ===
@@ -997,7 +990,7 @@ return packer.startup(
             -- ]]] === Commenter ===
 
             -- =============================== Python ============================== [[[
-            use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
+            -- use({"jpalardy/vim-slime", ft = "python", conf = "slime"})
             -- ]]] === Python ===
 
             -- ============================= Javascript ============================ [[[
@@ -1020,18 +1013,18 @@ return packer.startup(
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
-            use(
-                {
-                    "plasticboy/vim-markdown",
-                    ft = {"markdown", "vimwiki"},
-                    conf = "plugs.markdown.markdown"
-                }
-            )
+            -- use(
+            --     {
+            --         "plasticboy/vim-markdown",
+            --         ft = {"markdown", "vimwiki"},
+            --         conf = "plugs.markdown.markdown"
+            --     }
+            -- )
             use({"dhruvasagar/vim-table-mode", conf = "plugs.markdown.table_mode"})
             use(
                 {
                     "SidOfc/mkdx",
-                    config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]]
+                    config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]],
                 }
             )
 
@@ -1043,7 +1036,7 @@ return packer.startup(
                     setup = [[require("plugs.markdown").vimwiki_setup()]],
                     ft = {"markdown", "vimwiki"},
                     conf = "plugs.markdown.vimwiki",
-                    after = colorscheme
+                    after = colorscheme,
                 }
             )
 
@@ -1114,7 +1107,7 @@ return packer.startup(
                             "zsh",
                             "sh"
                         }
-                    end
+                    end,
                 }
             )
 
@@ -1134,7 +1127,7 @@ return packer.startup(
             use(
                 {
                     "fidian/hexmode",
-                    config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']]
+                    config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
                 }
             )
             use(
@@ -1151,7 +1144,7 @@ return packer.startup(
                                 flac_tool = "metaflac"
                             }
                         )
-                    end
+                    end,
                 }
             )
 
@@ -1190,6 +1183,7 @@ return packer.startup(
             --         conf = "plugs.paint"
             --     }
             -- )
+            -- use({"itchyny/vim-highlighturl"})
 
             use(
                 {
@@ -1197,7 +1191,7 @@ return packer.startup(
                     keys = {
                         {"n", "<Leader>pc"},
                         {"n", "<Leader>yb"},
-                        {"n", "<Leader>yr"}
+                        {"n", "<Leader>yr"},
                     },
                     setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
                     conf = "vcoolor"
@@ -1239,10 +1233,15 @@ return packer.startup(
                     config = [[require('plugs.coc').tag_cmd()]],
                     requires = {
                         -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                        {"antoinemadec/coc-fzf", after = "coc.nvim"},
+                        {"antoinemadec/coc-fzf",               after = "coc.nvim"},
                         {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
-                        {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"}
-                    }
+                        {
+                            "kevinhwang91/coc-kvs",
+                            after = "coc.nvim",
+                            run =
+                            "yarn install"
+                        },
+                    },
                 }
             )
 
@@ -1254,8 +1253,17 @@ return packer.startup(
             use(
                 {
                     "mizlan/iswap.nvim",
+                    conf = "plugs.treesitter.setup_iswap",
                     requires = "nvim-treesitter/nvim-treesitter",
-                    after = "nvim-treesitter"
+                    after = "nvim-treesitter",
+                    keys = {
+                        {"n", "vs"},
+                        {"n", "sv"},
+                        {"n", "so"},
+                        {"n", "sp"},
+                        {"n", "s,"},
+                        {"n", "s."},
+                    },
                 }
             )
             use(
@@ -1263,6 +1271,26 @@ return packer.startup(
                     "cshuaimin/ssr.nvim",
                     requires = "nvim-treesitter/nvim-treesitter",
                     after = "nvim-treesitter"
+                }
+            )
+            -- aarondiel/spread.nvim
+            -- Wansmer/treesj
+            use(
+                {
+                    "Wansmer/treesj",
+                    conf = "plugs.treesitter.setup_treesj",
+                    keys = {{"n", "gJ"}, {"n", "gS"}},
+                    requires = {
+                        {"nvim-treesitter/nvim-treesitter"},
+                        {
+                            "AndrewRadev/splitjoin.vim",
+                            config = function()
+                                vim.g.splitjoin_split_mapping = ""
+                                vim.g.splitjoin_join_mapping  = ""
+                            end,
+                        },
+                    },
+                    -- after = "nvim-treesitter"
                 }
             )
             use(
@@ -1292,7 +1320,18 @@ return packer.startup(
                         {
                             "windwp/nvim-ts-autotag",
                             desc = "Html/CSS/JSX tagging",
-                            after = "nvim-treesitter"
+                            after = "nvim-treesitter",
+                            ft = {
+                                "html",
+                                "xml",
+                                "xhtml",
+                                "phtml",
+                                "javascript",
+                                "javascriptreact",
+                                "typescriptreact",
+                                "svelte",
+                                "vue"
+                            },
                         },
                         {
                             "haringsrob/nvim_context_vt",
@@ -1328,8 +1367,8 @@ return packer.startup(
                             keys = {
                                 {"n", "<Leader>dg"},
                                 {"n", "<Leader>df"},
-                                {"n", "<Leader>dc"}
-                            }
+                                {"n", "<Leader>dc"},
+                            },
                         },
                         {
                             "mrjones2014/nvim-ts-rainbow",
@@ -1347,8 +1386,8 @@ return packer.startup(
                             desc = "Create treesitter queries",
                             -- cmd = {"Architext", "ArchitextREPL"},
                             after = "nvim-treesitter"
-                        }
-                    }
+                        },
+                    },
                 }
             )
 
@@ -1382,54 +1421,54 @@ return packer.startup(
                         {
                             "nvim-telescope/telescope-ghq.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("ghq")]]
+                            config = [[require("telescope").load_extension("ghq")]],
                         },
                         {
                             "nvim-telescope/telescope-github.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("gh")]]
+                            config = [[require("telescope").load_extension("gh")]],
                         },
                         {
                             "nvim-telescope/telescope-frecency.nvim",
                             after = "telescope.nvim",
                             requires = "tami5/sqlite.lua",
-                            config = [[require("telescope").load_extension("frecency")]]
+                            config = [[require("telescope").load_extension("frecency")]],
                         },
                         {
                             "fannheyward/telescope-coc.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("coc")]]
+                            config = [[require("telescope").load_extension("coc")]],
                         },
                         {
                             "fhill2/telescope-ultisnips.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("ultisnips")]]
+                            config = [[require("telescope").load_extension("ultisnips")]],
                         },
                         {
                             "nvim-telescope/telescope-fzf-native.nvim",
                             after = "telescope.nvim",
                             run = "make",
-                            config = [[require("telescope").load_extension("fzf")]]
+                            config = [[require("telescope").load_extension("fzf")]],
                         },
                         {
                             "dhruvmanila/telescope-bookmarks.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("bookmarks")]]
+                            config = [[require("telescope").load_extension("bookmarks")]],
                         },
                         {
                             "nvim-telescope/telescope-file-browser.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("file_browser")]]
+                            config = [[require("telescope").load_extension("file_browser")]],
                         },
                         {
                             "nvim-telescope/telescope-hop.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("hop")]]
+                            config = [[require("telescope").load_extension("hop")]],
                         },
                         {
                             "crispgm/telescope-heading.nvim",
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("heading")]]
+                            config = [[require("telescope").load_extension("heading")]],
                         },
                         {
                             "nvim-telescope/telescope-smart-history.nvim",
@@ -1441,19 +1480,19 @@ return packer.startup(
                                 if not path:exists() then
                                     path:mkdir()
                                 end
-                            end
+                            end,
                         },
                         {
                             "jvgrootveld/telescope-zoxide",
                             after = "telescope.nvim",
                             requires = "nvim-telescope/telescope.nvim",
-                            config = [[require("telescope").load_extension("zoxide")]]
+                            config = [[require("telescope").load_extension("zoxide")]],
                         },
                         {
                             prefer_local("telescope-rualdi.nvim"),
                             after = "telescope.nvim",
-                            config = [[require("telescope").load_extension("rualdi")]]
-                        }
+                            config = [[require("telescope").load_extension("rualdi")]],
+                        },
                         -- {
                         --     "debugloop/telescope-undo.nvim",
                         --     after = "telescope.nvim",
@@ -1464,7 +1503,7 @@ return packer.startup(
                         --     after = {"telescope.nvim"},
                         --     config = [[require("telescope").load_extension("ui-select")]]
                         -- },
-                    }
+                    },
                 }
             )
 
@@ -1473,7 +1512,7 @@ return packer.startup(
                 {
                     "AckslD/nvim-neoclip.lua",
                     requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
-                    after = {"telescope.nvim", "sqlite.lua"}
+                    after = {"telescope.nvim", "sqlite.lua"},
                     -- conf = "plugs.neoclip"
                 }
             )
@@ -1497,7 +1536,7 @@ return packer.startup(
                             require("telescope").load_extension("packer")
                             require("telescope").extensions.packer.packer(opts)
                         end
-                    end
+                    end,
                 }
             )
 
@@ -1554,7 +1593,7 @@ return packer.startup(
                     --     {"n", "<LocalLeader>gd"},
                     --     {"n", "<LocalLeader>gt"}
                     -- },
-                    requires = {"tpope/vim-rhubarb"}
+                    requires = {"tpope/vim-rhubarb"},
                 }
             )
 
@@ -1564,7 +1603,7 @@ return packer.startup(
                     cmd = {"Flog", "Flogsplit"},
                     keys = {
                         {"n", "<Leader>gl"},
-                        {"n", "<Leader>gi"}
+                        {"n", "<Leader>gi"},
                     },
                     wants = "vim-fugitive",
                     requires = "tpope/vim-fugitive",
@@ -1588,7 +1627,7 @@ return packer.startup(
                 {
                     "TimUntersberger/neogit",
                     conf = "plugs.neogit",
-                    requires = {"nvim-lua/plenary.nvim"}
+                    requires = {"nvim-lua/plenary.nvim"},
                 }
             )
 
@@ -1597,7 +1636,7 @@ return packer.startup(
                     "ruanyl/vim-gh-line",
                     keys = {
                         {"n", "<Leader>go"},
-                        {"n", "<Leader>gL"}
+                        {"n", "<Leader>gL"},
                     },
                     setup = [[vim.g.gh_line_blame_map_default = 0]],
                     conf = "ghline"
@@ -1620,8 +1659,8 @@ return packer.startup(
                     keys = {
                         {"n", "<Leader>g;"},
                         {"n", "<Leader>g."},
-                        {"n", "<Leader>gh"}
-                    }
+                        {"n", "<Leader>gh"},
+                    },
                 }
             )
 
@@ -1661,7 +1700,7 @@ return packer.startup(
                 {
                     "rcarriga/nvim-notify",
                     conf = "plugs.notify",
-                    after = {colorscheme, "telescope.nvim"}
+                    after = {colorscheme, "telescope.nvim"},
                 }
             )
             -- use(
@@ -1671,6 +1710,6 @@ return packer.startup(
             --         config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
             --     }
             -- )
-        end
+        end,
     }
 )

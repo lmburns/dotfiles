@@ -1045,7 +1045,7 @@ key_bindings:
   #
   #  1. key:   Output of `sudo showkey --scancode`.
   #  2. chars: Output of `sudo showkey --ascii`. First column
-  #            Output of `xev`'s 'keysym' (0x22). Convert 0x22 to decimal
+  #            or Output of `xev`'s 'keysym' (0x22). Convert 0x22 to decimal
   #  3. chars: After the semicolon, see table below.
   #
   # https://www.eso.org/~ndelmott/ascii.html
@@ -1092,23 +1092,23 @@ key_bindings:
   #  ╭────────────────────╮
   #  │ Control + <letter> │
   #  ╰────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: H, mods: Control, chars: "\x1b[104;5u" }
-  - { key: I, mods: Control, chars: "\x1b[105;5u" }
-  - { key: J, mods: Control, chars: "\x1b[106;5u" }
-  - { key: M, mods: Control, chars: "\x1b[109;5u" }
+  - { key: H,          mods: Control, chars: "\x1b[104;5u" }
+  - { key: I,          mods: Control, chars: "\x1b[105;5u" }
+  - { key: J,          mods: Control, chars: "\x1b[106;5u" }
+  - { key: M,          mods: Control, chars: "\x1b[109;5u" }
   # - { key: Space, mods: Control, chars: "\x1b[32;5u" }
-  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
-  - { key: Grave, mods: Control, chars: "\x1b[96;5u" }
-  - { key: Minus, mods: Control, chars: "\x1b[45;5u" }
-  - { key: Equals, mods: Control, chars: "\x1b[61;5u" }
-  - { key: LBracket, mods: Control, chars: "\x1b[91;5u" }
-  - { key: RBracket, mods: Control, chars: "\x1b[93;5u" }
-  - { key: Backslash, mods: Control, chars: "\x1b[92;5u" }
+  - { key: Return,     mods: Control, chars: "\x1b[13;5u"  }
+  - { key: Grave,      mods: Control, chars: "\x1b[96;5u"  }
+  - { key: Minus,      mods: Control, chars: "\x1b[45;5u"  }
+  - { key: Equals,     mods: Control, chars: "\x1b[61;5u"  }
+  - { key: LBracket,   mods: Control, chars: "\x1b[91;5u"  }
+  - { key: RBracket,   mods: Control, chars: "\x1b[93;5u"  }
+  - { key: Backslash,  mods: Control, chars: "\x1b[92;5u"  }
   # - { key: Semicolon, mods: Control, chars: "\x1b[59;5u" }
-  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
-  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
-  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
-  - { key: 0x35, mods: Control, chars: "\x1b[47;5u" } # Forward slash (/)
+  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u"  }
+  - { key: Comma,      mods: Control, chars: "\x1b[44;5u"  }
+  - { key: Period,     mods: Control, chars: "\x1b[46;5u"  }
+  - { key: 0x35,       mods: Control, chars: "\x1b[31;5u"  } # Forward slash (/)
 
   #  ╭──────────────────────────╮
   #  │ Control + Alt + <letter> │
@@ -1127,7 +1127,7 @@ key_bindings:
   - { key: Apostrophe, mods: Control|Alt, chars: "\x1b[39;7u" }
   - { key: Comma, mods: Control|Alt, chars: "\x1b[44;7u" }
   - { key: Period, mods: Control|Alt, chars: "\x1b[46;7u" }
-  - { key: 0x35, mods: Control|Alt, chars: "\x1b[47;7u" } # Forward slash (/)
+  - { key: 0x35, mods: Control|Alt, chars: "\x1b[31;7u" } # Forward slash (/)
 
   #  ╭──────────────────────────────────╮
   #  │ Control + Alt + Shift + <letter> │
@@ -1279,7 +1279,7 @@ key_bindings:
   - { key: Apostrophe, mods: Alt, chars: "\x1b[39;3u" }
   - { key: Comma, mods: Alt, chars: "\x1b[44;3u" }
   - { key: Period, mods: Alt, chars: "\x1b[46;3u" }
-  - { key: 0x35, mods: Alt, chars: "\x1b[47;3u" } # Forward slash (/)
+  - { key: 0x35, mods: Alt, chars: "\x1b[31;3u" } # Forward slash (/)
 
   # - { key: Grave,      mods: Alt, chars: "\x1b`"  }
   # - { key: Minus,      mods: Alt, chars: "\x1b-"  }

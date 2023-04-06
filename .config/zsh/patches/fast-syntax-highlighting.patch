@@ -1,13 +1,80 @@
-# Fix loss of highlight when tab completion return nothing - NICHOLAS85
-diff --git a/fast-syntax-highlighting.plugin.zsh b/fast-syntax-highlighting.plugin.zsh
-index f8ffced..33ae86c 100644
---- a/fast-syntax-highlighting.plugin.zsh
-+++ b/fast-syntax-highlighting.plugin.zsh
-@@ -144,7 +144,6 @@ _zsh_highlight()
-
+diff --git i/fast-highlight w/fast-highlight
+index 0da9044..55eefe0 100644
+--- i/fast-highlight
++++ w/fast-highlight
+@@ -186,7 +186,8 @@ FAST_HIGHLIGHT+=(
+   chroma-ssh           →chroma/-ssh.ch
+ 
+   chroma-git           →chroma/main-chroma.ch%git
+-  chroma-hub           →chroma/-hub.ch
++  chroma-hub           →chroma/main-chroma.ch%git
++  # chroma-hub           →chroma/-hub.ch
+   chroma-lab           →chroma/-lab.ch
+   chroma-svn           →chroma/-subversion.ch
+   chroma-svnadmin      →chroma/-subversion.ch
+diff --git i/fast-syntax-highlighting.plugin.zsh w/fast-syntax-highlighting.plugin.zsh
+index 84abef9..35dec9b 100644
+--- i/fast-syntax-highlighting.plugin.zsh
++++ w/fast-syntax-highlighting.plugin.zsh
+@@ -147,7 +147,6 @@ _zsh_highlight()
+ 
    } always {
      typeset -g _ZSH_HIGHLIGHT_PRIOR_BUFFER="$BUFFER"
 -    typeset -g _ZSH_HIGHLIGHT_PRIOR_RACTIVE="$REGION_ACTIVE"
      typeset -gi _ZSH_HIGHLIGHT_PRIOR_CURSOR=$CURSOR
    }
  }
+@@ -269,7 +268,7 @@ _zsh_highlight_bind_widgets()
+               zle -N -- $cur_widget _zsh_highlight_widget_$prefix-$cur_widget;;
+ 
+       # Completion widget: override and rebind old one with prefix "orig-".
+-      completion:*) zle -C $prefix-$cur_widget ${${(s.:.)widgets[$cur_widget]}[2,3]} 
++      completion:*) zle -C $prefix-$cur_widget ${${(s.:.)widgets[$cur_widget]}[2,3]}
+                     eval "_zsh_highlight_widget_${(q)prefix}-${(q)cur_widget}() { _zsh_highlight_call_widget ${(q)prefix}-${(q)cur_widget} -- \"\$@\" }"
+                     zle -N -- $cur_widget _zsh_highlight_widget_$prefix-$cur_widget;;
+ 
+@@ -278,7 +277,7 @@ _zsh_highlight_bind_widgets()
+                zle -N -- $cur_widget _zsh_highlight_widget_$prefix-$cur_widget;;
+ 
+       # Incomplete or nonexistent widget: Bind to z-sy-h directly.
+-      *) 
++      *)
+          if [[ $cur_widget == zle-* ]] && [[ -z ${widgets[$cur_widget]-} ]]; then
+            _zsh_highlight_widget_${cur_widget}() { :; _zsh_highlight }
+            zle -N -- $cur_widget _zsh_highlight_widget_$cur_widget
+diff --git i/themes/sv-orple.ini w/themes/sv-orple.ini
+index f7e8fc5..430b5a8 100644
+--- i/themes/sv-orple.ini
++++ w/themes/sv-orple.ini
+@@ -18,9 +18,6 @@
+ ;   #211f37 -> 16 (17)
+ 
+ [base]
+-default          = none
+-unknown-token    = 124
+-commandseparator = 146
+ redirection      = none
+ here-string-tri  = 138
+ here-string-text = bg:25
+@@ -50,7 +47,7 @@ double-paren   = 138
+ 
+ [paths]
+ path          = 182
+-pathseparator = 
++pathseparator =
+ path-to-dir   = 182,underline
+ globbing      = 138
+ globbing-ext  = 141
+diff --git "i/\342\206\222chroma/-git.ch" "w/\342\206\222chroma/-git.ch"
+index 12a97b3..fd27c99 100644
+--- "i/\342\206\222chroma/-git.ch"
++++ "w/\342\206\222chroma/-git.ch"
+@@ -624,7 +624,7 @@ fsh__git__chroma__def=(
+     _result=( ${(M)fsh__chroma__git__aliases[@]:#${_wrd}[[:space:]]##*} )
+     →chroma/main-chroma-print "Got is-alias-_result: $_result"
+     [[ -n "$_result" ]] && \
+-	FAST_HIGHLIGHT[chroma-${FAST_HIGHLIGHT[chroma-current]}-subcommand]="${${${_result#* }## ##}%% *}"
++    FAST_HIGHLIGHT[chroma-${FAST_HIGHLIGHT[chroma-current]}-subcommand]="${${${_result#* }## ##}%% *}"
+ }
+ 
+ # A hook that returns the list of git's

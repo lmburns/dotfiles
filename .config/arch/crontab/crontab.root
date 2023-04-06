@@ -1,0 +1,4 @@
+0 8 * * * /usr/bin/updatedb
+0 9 * * * /usr/bin/mandb --create
+
+# 0 1 * * 0 root /usr/bin/clamdscan --fdpass --log=/var/log/clamav/clamdscan.log --move=/root/quarantine /

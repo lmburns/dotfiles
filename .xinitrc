@@ -13,7 +13,13 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 # xsettingsd
 
 # Kill process if it hangs
-bustd &
+# bustd &
+systembus-notify &
+earlyoom \
+    -r 10 \
+    -n \
+    --avoid '(^|/)(init|systemd|Xorg|sshd|brave|librewolf)$' \
+    --prefer '^(lua-language-se|rust-analyzer|nvim)$' &
 
 #  ╭───────────╮
 #  │ clipboard │

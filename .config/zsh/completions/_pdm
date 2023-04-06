@@ -21,13 +21,15 @@ _pdm() {
     'completion:Generate completion scripts for the given shell'
     'config:Display the current configuration'
     'export:Export the locked packages set to other formats'
+    'fix:Fix the project problems according to the latest version of PDM'
     'import:Import project metadata from other formats'
     'info:Show the project information'
     'init:Initialize a pyproject.toml for PDM'
     'install:Install dependencies from lock file'
     'list:List packages installed in the current working set'
     'lock:Resolve and lock dependencies'
-    'plugin:Manage the PDM plugins'
+    'self:Manage the PDM program itself (previously known as plugin)'
+    'publish:Build and publish the project to PyPI'
     'remove:Remove packages from pyproject.toml'
     'run:Run commands or scripts with local packages loaded'
     'search:Search for PyPI packages'
@@ -35,13 +37,15 @@ _pdm() {
     'sync:Synchronize the current working set with lock file'
     'update:Update package(s) in pyproject.toml'
     'use:Use the given python version or path as base interpreter'
+    'venv:Virtualenv management'
   )
 
   _arguments -s -C -A '-*' \
     $arguments \
+    {-c,--config}'[Specify another config file path(env var: PDM_CONFIG_FILE)]' \
     {-V,--version}'[Show the version and exit]' \
-    {-I,--ignore-python}'[Ignore the Python path saved in the pdm.toml config]' \
-    '--pep582=[Print the command line to be eval by the shell]:shell:(zsh bash fish tcsh csh)' \
+    {-I,--ignore-python}'[Ignore the Python path saved in .pdm-python]' \
+    '--pep582:Print the command line to be eval by the shell:shell:(zsh bash fish tcsh csh)' \
     '*:: :->_subcmds' \
     && return 0
 
@@ -58,16 +62,22 @@ _pdm() {
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-d,--dev}'[Add packages into dev dependencies]'
         {-G,--group}'[Specify the target dependency group to add into]:group:_pdm_groups'
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
         '--no-sync[Only write pyproject.toml and do not sync the working set]'
         '--save-compatible[Save compatible version specifiers]'
         '--save-wildcard[Save wildcard version specifiers]'
         '--save-exact[Save exact version specifiers]'
+        '--save-minimum[Save minimum version specifiers]'
         '--update-reuse[Reuse pinned versions already present in lock file if possible]'
         '--update-eager[Try to update the packages and their dependencies recursively]'
-        '--no-editalbe[Install non-editable versions for all packages]'
+        '--update-all[Update all dependencies and sub-dependencies]'
+        '--no-editable[Install non-editable versions for all packages]'
         "--no-self[Don't install the project itself]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
         {-u,--unconstrained}'[Ignore the version constraint of packages]'
+        {--pre,--prerelease}'[Allow prereleases to be pinned]'
         {-e+,--editable+}'[Specify editable packages]:packages'
+        {-x,--fail-fast}'[Abort on first installation error]'
         "--no-isolation[do not isolate the build in a clean environment]"
         "--dry-run[Show the difference only without modifying the lockfile content]"
         '*:packages:_pdm_pip_packages'
@@ -78,6 +88,7 @@ _pdm() {
         "--no-sdist[Don't build source tarballs]"
         "--no-wheel[Don't build wheels]"
         {-d+,--dest+}'[Target directory to put artifacts]:directory:_files -/'
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
         '--no-clean[Do not clean the target directory]'
         {-C,--config-setting}'[Pass options to the backend. options with a value must be specified after "=": "--config-setting=--opt(=value)" or "-C--opt(=value)"]'
         "--no-isolation[do not isolate the build in a clean environment]"
@@ -101,7 +112,7 @@ _pdm() {
         args)
           case $words[1] in
             clear)
-              compadd -X type 'hashes' 'http' 'wheels' 'metadata' && ret=0
+              compadd -X type 'hashes' 'http' 'wheels' 'metadata' 'packages' && ret=0
               ;;
             *)
               _message "pattern" && ret=0
@@ -114,7 +125,7 @@ _pdm() {
     config)
       _arguments -s  \
          {-g,--global}'[Use the global project, supply the project root with `-p` option]' \
-         {-l,--local}"[Set config in the project's local configuration filie]" \
+         {-l,--local}"[Set config in the project's local configuration file]" \
          {-d,--delete}'[Unset a configuration key]' \
          '1:key:->keys' \
          '2:value:_files' && return 0
@@ -133,11 +144,19 @@ _pdm() {
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-f+,--format+}"[Specify the export file format]:format:(pipfile poetry flit requirements setuppy)"
         "--without-hashes[Don't include artifact hashes]"
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
         {-o+,--output+}"[Write output to the given file, or print to stdout if not given]:output file:_files"
         {-G+,--group+}'[Select group of optional-dependencies or dev-dependencies(with -d). Can be supplied multiple times, use ":all" to include all groups under the same species]:group:_pdm_groups'
         {-d,--dev}"[Select dev dependencies]"
         {--prod,--production}"[Unselect dev dependencies]"
         "--no-default[Don't include dependencies from the default group]"
+      )
+      ;;
+    fix)
+      arguments+=(
+        {-g,--global}'[Use the global project, supply the project root with `-p` option]'
+        '--dry-run[Only show the problems]'
+        '1:problem:'
       )
       ;;
     import)
@@ -160,6 +179,10 @@ _pdm() {
       arguments+=(
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-n,--non-interactive}"[Don't ask questions but use default values]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
+        '--backend[Specify the build backend]:backend:(pdm-backend setuptools hatchling flit pdm-pep517)'
+        '--lib[Create a library project]'
+        '--python[Specify the Python version/path to use]:python:'
       )
       ;;
     install)
@@ -167,31 +190,50 @@ _pdm() {
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-G+,--group+}'[Select group of optional-dependencies or dev-dependencies(with -d). Can be supplied multiple times, use ":all" to include all groups under the same species]:group:_pdm_groups'
         {-d,--dev}"[Select dev dependencies]"
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
         {--prod,--production}"[Unselect dev dependencies]"
-        "--no-lock[Don't do lock if lockfile is not found or outdated]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
+        "--no-lock[Don't do lock if lock file is not found or outdated]"
         "--no-default[Don\'t include dependencies from the default group]"
-        '--no-editalbe[Install non-editable versions for all packages]'
+        '--no-editable[Install non-editable versions for all packages]'
         "--no-self[Don't install the project itself]"
+        {-x,--fail-fast}'[Abort on first installation error]'
         "--no-isolation[do not isolate the build in a clean environment]"
-        "--dry-run[Show the difference only without modifying the lockfile content]"
+        "--dry-run[Show the difference only without modifying the lock file content]"
+        "--check[Check if the lock file is up to date and fail otherwise]"
       )
       ;;
     list)
       arguments+=(
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-r,--reverse}'[Reverse the dependency graph]'
-        '--json[Show the installed dependencies in JSON document format]'
+        '--fields[Select information to output as a comma separated string.]:fields:'
+        "--sort[Sort the output using a given field name. If nothing is set, no sort is applied. Multiple fields can be combined with ',']:sort:"
+        '--json[Output dependencies in JSON document format]'
+        '--csv[Output dependencies in CSV document format]'
+        '--markdown[Output dependencies and legal notices in markdown document format - best effort basis]'
         '--graph[Display a graph of dependencies]'
         "--freeze[Show the installed dependencies as pip's requirements.txt format]"
+        "--include[Dependency groups to include in the output. By default all are included]:include:"
+        "--exclude[Dependency groups to exclude from the output]:exclude:"
+        "--resolve[Resolve all requirements to output licenses (instead of just showing those currently installed)"
       )
       ;;
     lock)
       arguments+=(
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
-        "--no-isolation[do not isolate the build in a clean environment]"
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
+        "--no-isolation[Do not isolate the build in a clean environment]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
+        "--refresh[Don't update pinned versions, only refresh the lock file]"
+        "--check[Check if the lock file is up to date and quit]"
+        {-G+,--group+}'[Select group of optional-dependencies or dev-dependencies(with -d). Can be supplied multiple times, use ":all" to include all groups under the same species]:group:_pdm_groups'
+        {-d,--dev}"[Select dev dependencies]"
+        {--prod,--production}"[Unselect dev dependencies]"
+        "--no-default[Don\'t include dependencies from the default group]"
       )
       ;;
-    plugin)
+    self)
       _arguments -C \
         $arguments \
         ': :->command' \
@@ -199,11 +241,12 @@ _pdm() {
       case $state in
         command)
           local -a actions=(
-            "add:Install new plugins with PDM"
-            "remove:Remove plugins from PDM's environment"
-            "list:List all plugins installed with PDM"
+            "add:Install packages to the PDM's environment"
+            "remove:Remove packages from PDM's environment"
+            "list:List all packages installed with PDM"
+            "update:Update PDM itself"
           )
-          _describe -t command 'pdm plugin actions' actions && ret=0
+          _describe -t command 'pdm self actions' actions && ret=0
           ;;
         args)
           case $words[1] in
@@ -220,6 +263,18 @@ _pdm() {
                 '*:packages:_pdm_pip_packages'
               )
               ;;
+            list)
+              arguments+=(
+                '--plugins[List plugins only]'
+              )
+              ;;
+            update)
+              arguments+=(
+                '--head[Update to the latest commit on the main branch]'
+                '--pre[Update to the latest prerelease version]'
+                '--pip-args[Arguments that will be passed to pip uninstall]:pip args:'
+              )
+              ;;
             *)
               ;;
           esac
@@ -227,14 +282,30 @@ _pdm() {
       esac
       return $ret
       ;;
+    publish)
+      arguments+=(
+        {-r,--repository}'[The repository name or url to publish the package to }[env var: PDM_PUBLISH_REPO]]:repository:'
+        {-u,--username}'[The username to access the repository [env var: PDM_PUBLISH_USERNAME]]:username:'
+        {-P,--password}'[The password to access the repository [env var: PDM_PUBLISH_PASSWORD]]:password:'
+        {-S,--sign}'[Upload the package with PGP signature]'
+        {-i,--identity}'[GPG identity used to sign files.]:gpg identity:'
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
+        {-c,--comment}'[The comment to include with the distribution file.]:comment:'
+        "--ca-certs[The path to a PEM-encoded Certificate Authority bundle to use for publish server validation]:cacerts:_files"
+        "--no-build[Don't build the package before publishing]"
+      )
+      ;;
     remove)
       arguments+=(
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-G,--group}'[Specify the target dependency group to remove from]:group:_pdm_groups'
         {-d,--dev}"[Remove packages from dev dependencies]"
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
         "--no-sync[Only write pyproject.toml and do not uninstall packages]"
-        '--no-editalbe[Install non-editable versions for all packages]'
+        '--no-editable[Install non-editable versions for all packages]'
         "--no-self[Don't install the project itself]"
+        {-x,--fail-fast}'[Abort on first installation error]'
         "--no-isolation[do not isolate the build in a clean environment]"
         "--dry-run[Show the difference only without modifying the lockfile content]"
         "*:packages:_pdm_packages"
@@ -244,7 +315,8 @@ _pdm() {
       _arguments -s \
         {-g,--global}'[Use the global project, supply the project root with `-p` option]' \
         {-l,--list}'[Show all available scripts defined in pyproject.toml]' \
-        {-s,--site-packages}'[Load site-packages from system interpreter]' \
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]' \
+        {-s,--site-packages}'[Load site-packages from the selected interpreter]' \
         '(-)1:command:->command' \
         '*:arguments: _normal ' && return 0
       if [[ $state == command ]]; then
@@ -276,13 +348,16 @@ _pdm() {
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-G+,--group+}'[Select group of optional-dependencies or dev-dependencies(with -d). Can be supplied multiple times, use ":all" to include all groups under the same species]:group:_pdm_groups'
         {-d,--dev}"[Select dev dependencies]"
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
         {--prod,--production}"[Unselect dev dependencies]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
         '--dry-run[Only prints actions without actually running them]'
         {-r,--reinstall}"[Force reinstall existing dependencies]"
         '--clean[Clean unused packages]'
-        "--no-clean[Don't clean unused packages]"
+        "--only-keep[Only keep the selected packages]"
         "--no-default[Don\'t include dependencies from the default group]"
-        '--no-editalbe[Install non-editable versions for all packages]'
+        {-x,--fail-fast}'[Abort on first installation error]'
+        '--no-editable[Install non-editable versions for all packages]'
         "--no-self[Don't install the project itself]"
         "--no-isolation[do not isolate the build in a clean environment]"
       )
@@ -291,21 +366,27 @@ _pdm() {
       arguments+=(
         {-g,--global}'[Use the global project, supply the project root with `-p` option]'
         {-G+,--group+}'[Select group of optional-dependencies or dev-dependencies(with -d). Can be supplied multiple times, use ":all" to include all groups under the same species]:group:_pdm_groups'
+        {-L,--lockfile}'[Specify another lockfile path, or use `PDM_LOCKFILE` env variable. Default: pdm.lock]:lockfile:_files'
         '--save-compatible[Save compatible version specifiers]'
         '--save-wildcard[Save wildcard version specifiers]'
         '--save-exact[Save exact version specifiers]'
+        '--save-minimum[Save minimum version specifiers]'
         '--update-reuse[Reuse pinned versions already present in lock file if possible]'
         '--update-eager[Try to update the packages and their dependencies recursively]'
-        '--no-editalbe[Install non-editable versions for all packages]'
+        '--update-all[Update all dependencies and sub-dependencies]'
+        '--no-editable[Install non-editable versions for all packages]'
         "--no-self[Don't install the project itself]"
         "--no-sync[Only update lock file but do not sync packages]"
+        {-k,--skip}'[Skip some tasks and/or hooks by their comma-separated names]'
         {-u,--unconstrained}'[Ignore the version constraint of packages]'
+        {--pre,--prerelease}'[Allow prereleases to be pinned]'
         {-d,--dev}'[Select dev dependencies]'
         {--prod,--production}"[Unselect dev dependencies]"
         "--no-default[Don\'t include dependencies from the default group]"
         {-t,--top}'[Only update those list in pyproject.toml]'
         "--dry-run[Show the difference only without modifying the lockfile content]"
         "--outdated[Show the difference only without modifying the lockfile content]"
+        {-x,--fail-fast}'[Abort on first installation error]'
         "--no-isolation[do not isolate the build in a clean environment]"
         "*:packages:_pdm_packages"
       )
@@ -313,8 +394,57 @@ _pdm() {
     use)
       arguments+=(
         {-f,--first}'[Select the first matched interpreter]'
+        {-i,--ignore-remembered}'[Ignore the remembered selection]'
         '*:python:_files'
       )
+      ;;
+    venv)
+      _arguments -C \
+        $arguments \
+        ': :->command' \
+        '*:: :->args' && ret=0
+      case $state in
+        command)
+          local -a actions=(
+            "create:Create a virtualenv"
+            "list:List all virtualenvs associated with this project"
+            "remove:Remove the virtualenv with the given name"
+            "activate:Activate the virtualenv with the given name"
+            "purge:Purge selected/all created Virtualenvs"
+          )
+          arguments+=(
+            '--path[Show the path to the given virtualenv]'
+            '--python[Show the Python interpreter path of the given virtualenv]'
+          )
+          _describe -t command 'pdm venv actions' actions && ret=0
+          ;;
+        args)
+          case $words[1] in
+            create)
+              arguments+=(
+                {-w,--with}'[Specify the backend to create the virtualenv]:backend:(virtualenv venv conda)'
+                '--with-pip[Install pip with the virtualenv]'
+                {-n,--name}'[Specify the name of the virtualenv]:name:'
+                {-f,--force}'[Recreate if the virtualenv already exists]'
+              )
+              ;;
+            remove)
+              arguments+=(
+                {-y,--yes}'[Answer yes on the following question]'
+              )
+              ;;
+            purge)
+              arguments+=(
+                {-f,--force}'[Force purging without prompting for confirmation]'
+                {-i,--interactive}'[Interactively purge selected Virtualenvs]'
+              )
+              ;;
+            *)
+              ;;
+          esac
+          ;;
+      esac
+      return $ret
       ;;
   esac
 
@@ -346,13 +476,18 @@ _pdm_groups() {
 
 _get_packages_with_python() {
   command ${PDM_PYTHON} - << EOF
-import os, re, toml
+import sys
+if sys.version_info >= (3, 11):
+  import tomllib
+else:
+  import tomli as tomllib
+import os, re
 PACKAGE_REGEX = re.compile(r'^[A-Za-z][A-Za-z0-9._-]*')
 def get_packages(lines):
     return [PACKAGE_REGEX.match(line).group() for line in lines]
 
 with open('pyproject.toml', 'rb') as f:
-    data = tomli.load(f)
+    data = tomllib.load(f)
 packages = get_packages(data.get('project', {}).get('dependencies', []))
 for reqs in data.get('project', {}).get('optional-dependencies', {}).values():
     packages.extend(get_packages(reqs))

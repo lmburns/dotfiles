@@ -105,15 +105,17 @@ function M.mappings()
     if not debounced then
         debounced =
             debounce(
-            function()
-                n_keymap = utils.get_keymap("n", "n").rhs
-                s_keymap = utils.get_keymap("n", "s").rhs
+                function()
+                    n_keymap = utils.get_keymap("n", "n").rhs
+                    s_keymap = utils.get_keymap("n", "s").rhs
 
-                require("registers").setup({bind_keys = {false}})
-                utils.del_keymap("n", '"')
-            end,
-            10
-        )
+                    utils.prequire("registers", function(reg)
+                         reg.setup({bind_keys = {false}})
+                         utils.del_keymap("n", '"')
+                    end)
+                end,
+                10
+            )
         debounced()
     end
 
@@ -122,33 +124,33 @@ function M.mappings()
     dispose1 = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
     dispose2 =
         bmap(
-        "n",
-        "v",
-        ":call b:VM_Selection.Global.extend_mode()<CR>",
-        {silent = true, noremap = false}
-    )
+            "n",
+            "v",
+            ":call b:VM_Selection.Global.extend_mode()<CR>",
+            {silent = true, noremap = false}
+        )
     dispose3 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     dispose4 =
         bmap(
-        "i",
-        "<CR>",
-        [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
-        {expr = true, noremap = false}
-    )
+            "i",
+            "<CR>",
+            [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
+            {expr = true, noremap = false}
+        )
     dispose5 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     dispose6 =
         bmap(
-        "n",
-        "<Esc>",
-        function()
-            if M.mode() == MODE.VISUAL then
-                cmd("call b:VM_Selection.Global.cursor_mode()")
-            else
-                utils.normal("n", "<Plug>(VM-Exit)")
-            end
-        end,
-        {nowait = true}
-    )
+            "n",
+            "<Esc>",
+            function()
+                if M.mode() == MODE.VISUAL then
+                    cmd("call b:VM_Selection.Global.cursor_mode()")
+                else
+                    utils.normal("n", "<Plug>(VM-Exit)")
+                end
+            end,
+            {nowait = true}
+        )
     dispose7 = bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     dispose8 = bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
     dispose9 = bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})

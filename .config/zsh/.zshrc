@@ -340,8 +340,6 @@ zt 0a light-mode for \
     zsh-users/zsh-completions \
   ver'develop' atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
-  as'completion' nocompile mv'*.zsh -> _git' \
-    felipec/git-completion \
   pick'you-should-use.plugin.zsh' \
     MichaelAquilina/zsh-you-should-use \
   lbin'!' patch"${pchf}/%PLUGIN%.patch" reset nocompletions \
@@ -487,6 +485,8 @@ zt 0c light-mode binary for \
 # atpull'%atclone' \
 #   tmux-plugins/tpm \
 #  ]]] === wait'0c' - programs - sourced ===
+
+# RUSTFLAGS="-C target-cpu=native" cargo build --release --features 'simd-accel pcre2'
 
 #  === wait'0c' - programs + man === [[[
 zt 0c light-mode binary lbin lman from'gh-r' for \
@@ -644,8 +644,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     lmburns/hoard \
   lbin'ruplacer-* -> ruplacer' from'gh-r' atinit'alias rup="ruplacer"' \
     your-tools/ruplacer \
-  lbin patch"${pchf}/%PLUGIN%.patch" reset atclone'cargo br' \
-  atclone"$(mv_clean rgr)" lman \
+  lbin reset atclone'cargo br' atclone"$(mv_clean rgr)" lman \
     acheronfail/repgrep \
   lbin'* -> renamer' from'gh-r' \
     adriangoransson/renamer \
@@ -1007,8 +1006,8 @@ path=(
   $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $XDG_DATA_HOME/neovim/bin(N-/)
+  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   /usr/bin                   # add again to be ahead of /bin
@@ -1331,3 +1330,5 @@ zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
+
+alias luamake=/home/lucas/projects/lua/_repos_example/_NONVIM/luamake/luamake

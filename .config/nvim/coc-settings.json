@@ -3,7 +3,7 @@
   //                           General
   // ╘══════════════════════════════════════════════════════════╛
   "coc.preferences.useQuickfixForLocations": true,
-  "coc.preferences.extensionUpdateCheck": "daily",
+  "coc.preferences.extensionUpdateCheck": "never",
   "coc.preferences.messageLevel": "error",
   "coc.preferences.currentFunctionSymbolAutoUpdate": true,
   "coc.preferences.formatOnType": false,
@@ -242,19 +242,19 @@
   // "prettier.resolveGlobalModules": true,
   "prettier.useEditorConfig": true,
   // "prettier.configPath": "~/.config/prettier/prettierrc.json",
-  "prettier.arrowParens": "always",
+  "prettier.arrowParens": "avoid",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                           Lighbulb
   // ╘══════════════════════════════════════════════════════════╛
-  "lightbulb.text": { "quickfix": "", "default": "" }, // 💡
-  "lightbulb.enableSign": false,
-  "lightbulb.signPriority": 20,
-  "lightbulb.enableVirtualText": true,
-  "lightbulb.virtualTextPriority": 50,
-  "lightbulb.virtualTextPosition": "eol",
-  "lightbulb.followDiagnostic": true,
-  "lightbulb.excludeFiletypes": [],
+  // "lightbulb.text": { "quickfix": "", "default": "" }, // 💡
+  // "lightbulb.enableSign": false,
+  // "lightbulb.signPriority": 20,
+  // "lightbulb.enableVirtualText": true,
+  // "lightbulb.virtualTextPriority": 50,
+  // "lightbulb.virtualTextPosition": "eol",
+  // "lightbulb.followDiagnostic": true,
+  // "lightbulb.excludeFiletypes": [],
 
   // ╒══════════════════════════════════════════════════════════╕
   //                            Clangd
@@ -520,9 +520,9 @@
   "Lua.workspace.useGitIgnore": true,
   // "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
-  "Lua.workspace.maxPreload": 7000,
+  "Lua.workspace.maxPreload": 2000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
-  "Lua.workspace.preloadFileSize": 3000,
+  "Lua.workspace.preloadFileSize": 1500,
   "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
@@ -543,11 +543,11 @@
     "end_of_line": "lf",
 
     "trailing_table_separator": "smart",
-    "call_arg_parentheses": "always",
+    "call_arg_parentheses": "keep", // would be nice for 'always'
     "space_around_table_field_list": "false",
     "space_before_attribute": "false",
     "space_before_function_open_parenthesis": "false",
-    "space_before_function_call_open_parenthesis": "false",
+    "space_before_function_call_open_parenthesis": "always",
     "space_before_closure_open_parenthesis": "false",
     "space_before_function_call_single_arg": "false",
     "space_before_open_square_bracket": "false",
@@ -564,11 +564,11 @@
 
     "align_call_args": "true",
     "align_function_params": "true",
-    "align_continuous_assign_statement": "true",
-    "align_continuous_rect_table_field": "true",
+    "align_continuous_assign_statement": " when_extra_space", // when_extra_space always
+    "align_continuous_rect_table_field": "when_extra_space",
+    "align_array_table": "normal", // contain_curly, normal
     "align_continuous_inline_comment": "true",
     "align_if_branch": "false",
-    "align_array_table": "false",
 
     "never_indent_before_if_condition": "false",
     "never_indent_comment_on_if_branch": "false",
@@ -583,10 +583,10 @@
     "line_space_after_comment": "keep",
     "break_all_list_when_line_exceed": "false",
     "auto_collapse_lines": "false",
-    "ignore_space_after_colon": "false",
+    "ignore_space_after_colon": "true",
     "remove_call_expression_list_finish_comma": "true"
   },
-  "Lua.typeFormat.config": {"auto_complete_table_sep": "true"},
+  "Lua.typeFormat.config": { "auto_complete_table_sep": "true", "format_line": "false" },
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace",
@@ -622,12 +622,14 @@
   "Lua.semantic.annotation": true,
   "Lua.semantic.variable": true,
   "Lua.semantic.keyword": false,
+  // "Lua.doc.privateName": ["__*"],
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.workspaceDelay": -1,
   // "Lua.diagnostics.workspaceDelay": 5000,
   "Lua.diagnostics.workspaceRate": 85,
   "Lua.diagnostics.workspaceEvent": "OnSave",
   "Lua.diagnostics.libraryFiles": "Opened",
+  "Lua.diagnostics.ignoredFiles": "Opened",
   "Lua.diagnostics.disableScheme": ["git"],
   "Lua.diagnostics.unusedLocalExclude": ["_*"],
   "Lua.diagnostics.groupFileStatus": {
@@ -652,7 +654,7 @@
     "lowercase-global": "None",
     "no-unknown": "None",
     // "param-type-mismatch": "None",
-    "need-check-nil": "None",
+    "need-check-nil": "None"
     // "missing-parameter": "None",
     // "redundant-parameter": "None",
 
@@ -687,7 +689,7 @@
     "different-requires",
     "lowercase-global",
     "redefined-local",
-    "no-unknown",
+    "no-unknown"
     //
     // "redundant-parameter",
     // "missing-parameter",

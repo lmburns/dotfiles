@@ -9,7 +9,7 @@ map("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
 
 map(
     "n",
-    "<Leader>re",
+    "<Leader>rE",
     function()
         coc.run_command("sumneko-lua.restart", {})
     end,

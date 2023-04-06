@@ -94,7 +94,7 @@ M.logger = built
 -- api.nvim_err_writeln()
 
 ---TRACE message
----@param msg string
+---@param msg string|string[]
 ---@param opts? NotifyOpts
 M.trace = function(msg, opts)
     opts = opts or {}
@@ -109,7 +109,7 @@ M.trace = function(msg, opts)
 end
 
 ---DEBUG message
----@param msg string
+---@param msg string|string[]
 ---@param opts? NotifyOpts
 M.debug = function(msg, opts)
     opts = opts or {}
@@ -124,7 +124,7 @@ M.debug = function(msg, opts)
 end
 
 ---INFO message
----@param msg string
+---@param msg string|string[]
 ---@param opts? NotifyOpts
 M.info = function(msg, opts)
     opts = opts or {}
@@ -159,7 +159,7 @@ M.info = function(msg, opts)
 end
 
 ---WARN message
----@param msg string
+---@param msg string|string[]
 ---@param opts? NotifyOpts
 M.warn = function(msg, opts)
     opts = opts or {}
@@ -194,7 +194,7 @@ M.warn = function(msg, opts)
 end
 
 ---ERROR message
----@param msg string
+---@param msg string|string[]
 ---@param opts? NotifyOpts
 M.err = function(msg, opts)
     opts = opts or {}

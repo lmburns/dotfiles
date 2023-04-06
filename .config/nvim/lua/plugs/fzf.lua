@@ -443,7 +443,7 @@ local function init()
 
     -- Colors
     command(
-        "Colors",
+        "Colorschemes",
         function()
             fn["fzf#vim#colors"](g.fzf_vim_opts)
         end,
@@ -463,18 +463,22 @@ local function init()
     -- Files
     command(
         "Files",
-        function(tbl)
+        function(args)
             local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
-            fn["fzf#vim#files"](tbl.args, preview)
+            fn["fzf#vim#files"](args.args, preview)
         end,
         {nargs = "?", complete = "dir", bang = true}
     )
 
     -- Conf
-    cmd [[
-  command! -bang Conf
-    \ call fzf#vim#files('~/.config', <bang>0)
-  ]]
+    command(
+        "Conf",
+        function(args)
+            local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
+            fn["fzf#vim#files"]("~/.config", preview)
+        end,
+        {nargs = "?", complete = "dir", bang = true}
+    )
 
     -- Proj
     cmd [[
@@ -697,11 +701,10 @@ local function init()
             -- ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
             -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
             -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
-            ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
-            ["<Leader>hf"] = {":History<CR>", "File history (fzf)"},
-            ["<Leader>hc"] = {":History:<CR>", "Command history (fzf)"},
+            -- ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
+            ["<LocalLeader>hf"] = {":History<CR>", "File history (fzf)"},
+            ["<LocalLeader>hc"] = {":History:<CR>", "Command history (fzf)"},
             ["q:"] = {":History:<CR>", "Command history (fzf)"},
-            ["<Leader>ls"] = {":LS<CR>", "LS (fzf)"}
         }
     )
 

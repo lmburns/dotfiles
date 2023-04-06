@@ -28,10 +28,6 @@ local has_sourced
 local exclude_ft = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= ''"))
 local exclude_bt = _t({"nofile"})
 
--- local _ = D.wrap_err("error here", require, 'xx')
--- local _ = D.wrap_err(require, 'xx')
--- local _ = D.npcall(require, 'xx')
-
 ---
 ---@param bufnr number
 ---@return boolean

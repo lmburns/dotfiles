@@ -135,11 +135,26 @@ M.setup_hlargs = function()
     end
 
     hlargs.setup {
-        color = g.colors_name == "kimbox" and colors.salmon or nil,
         excluded_filetypes = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= 'luapad'")),
+        -- color = g.colors_name == "kimbox" and colors.salmon or nil,
+        color = "#DE9A4E",
+        hl_priority = 10000,
+        -- use_colorpalette = false,
+        -- colorpalette = {
+        --   { fg = "#DE9A4E" },
+        --   { fg = "#BBEA87" },
+        --   { fg = "#EEF06D" },
+        --   { fg = "#8FB272" },
+        -- },
         paint_arg_declarations = true,
         paint_arg_usages = true,
-        hl_priority = 10000,
+        paint_catch_blocks = {
+          declarations = true,
+          usages = true
+        },
+        extras = {
+          named_parameters = true,
+        },
         excluded_argnames = {
             declarations = {"use", "use_rocks", "_"},
             usages = {
@@ -580,62 +595,9 @@ M.setup_context_vt = function()
     )
 end
 
----Disabled for now
----Setup `treesitter-context`
-M.setup_context = function()
-    cmd.packadd("treesitter-context")
-    local tctx = D.npcall(require, "treesitter-context")
-    if not tctx then
-        return
-    end
-
-    tctx.setup {
-        enable = true,
-        max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
-        trim_scope = "outer", -- Choices: 'inner', 'outer'
-        patterns = {
-            -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
-            -- For all filetypes
-            -- Note that setting an entry here replaces all other patterns for this entry.
-            -- By setting the 'default' entry below, you can control which nodes you want to
-            -- appear in the context window.
-            default = {
-                "class",
-                "function",
-                "method",
-                "for", -- These won't appear in the context
-                "field",
-                "if"
-                -- 'while',
-                -- 'if',
-                -- 'switch',
-                -- 'case',
-            },
-            rust = {
-                "impl_item"
-            },
-            json = {
-                "pair"
-            },
-            typescript = {
-                "export_statement"
-            },
-            yaml = {
-                "block_mapping_pair"
-            }
-        },
-        exact_patterns = {},
-        -- [!] The options below are exposed but shouldn't require your attention,
-        --     you can safely ignore them.
-
-        zindex = 20, -- The Z-index of the context window
-        mode = "topline", -- Line used to calculate context. Choices: 'cursor', 'topline'
-        -- Separator between context and content. Should be a single character string, like '-'.
-        -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-        separator = "-"
-    }
-end
-
+--  ╭────────────────────╮
+--  │ syntax-tree-surfer │
+--  ╰────────────────────╯
 M.setup_treesurfer = function()
     cmd.packadd("syntax-tree-surfer")
     local sts = D.npcall(require, "syntax-tree-surfer")
@@ -843,6 +805,89 @@ M.setup_treesurfer = function()
         "<C-A-[>",
         '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
         {desc = "Swap previous node"}
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          TreeSJ                          │
+--  ╰──────────────────────────────────────────────────────────╯
+M.setup_treesj = function()
+    cmd.packadd("treesj")
+    local tsj = D.npcall(require, "treesj")
+    if not tsj then
+        return
+    end
+
+    local langs = require("treesj.langs")
+    local lu = require("treesj.langs.utils")
+
+    local langs_t = {
+        unpack(langs.presets),
+        lua = {
+            table_constructor = {
+                both = {separator = ","},
+                split = {last_separator = true},
+                join = {space_in_brackets = false},
+            },
+            arguments = lu.set_preset_for_args(),
+            parameters = lu.set_preset_for_args(),
+            block = {
+                both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
+                join = {space_in_brackets = true},
+            },
+            variable_declaration = {target_nodes = {"table_constructor", "block"}},
+            assignment_statement = {
+                target_nodes = {"table_constructor", "block"},
+            },
+            if_statement = {target_nodes = {"block"}},
+            else_statement = {target_nodes = {"block"}},
+            function_definition = {target_nodes = {"block"}},
+            function_declaration = {
+                both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
+                join = {
+                    space_in_brackets = true,
+                    -- force_insert = ";",
+                    -- no_insert_if = {lu.if_penultimate},
+                },
+            },
+            -- function_definition = {target_nodes = {"block"}},
+        },
+        -- When merging multiple lines, use colon separator
+    }
+
+    tsj.setup(
+        {
+            use_default_keymaps = false,
+            check_syntax_error = true,
+            max_join_length = 100,
+            -- hold  = cursor follows the node/place on which it was called
+            -- start = cursor jumps to the first symbol of the node being formatted
+            -- end   = cursor jumps to the last symbol of the node being formatted
+            cursor_behavior = "hold",
+            notify = true,     -- notify about possible problems or not
+            dot_repeat = true, -- use `dot` for repeat action
+            -- langs = {langs_t},
+            langs = lu._prepare_presets(langs_t),
+        }
+    )
+
+    -- These mappings might seem like they should be reversed
+    -- But I like it like this
+    -- map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
+    -- map("n", "gS", D.ithunk(tsj.join), {desc = "Spread: combine"})
+
+    -- These are like this rather than an autocmd so I can lazy load it
+    map(
+        "n",
+        "gJ",
+        F.tern(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
+        {desc = "Spread: out"}
+    )
+    map(
+        "n",
+        "gS",
+        F.tern(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
+        {desc = "Spread: out"}
     )
 end
 
@@ -1268,14 +1313,14 @@ function M.install_extra_parsers()
 
     -- Using this parsers own queries does not work
     -- Solidity
-    parser_config.solidity = {
-        install_info = {
-            url = "https://github.com/JoranHonig/tree-sitter-solidity",
-            files = {"src/parser.c"},
-            requires_generate_from_grammar = true
-        },
-        filetype = "solidity"
-    }
+    -- parser_config.solidity = {
+    --     install_info = {
+    --         url = "https://github.com/JoranHonig/tree-sitter-solidity",
+    --         files = {"src/parser.c"},
+    --         requires_generate_from_grammar = true
+    --     },
+    --     filetype = "solidity"
+    -- }
 
     -- Log files
     parser_config.log = {
@@ -1288,44 +1333,6 @@ function M.install_extra_parsers()
         },
         filetype = "log"
     }
-
-    -- parser_config.jq = {
-    --     install_info = {
-    --         url = "https://github.com/flurie/tree-sitter-jq",
-    --         files = {"src/parser.c"},
-    --         branch = "main", -- default branch in case of git repo if different from master
-    --         generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-    --         requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
-    --     },
-    --     filetype = "jq"
-    -- }
-
-    -- Norg
-    -- parser_config.norg = {
-    --     install_info = {
-    --         url = "https://github.com/nvim-neorg/tree-sitter-norg",
-    --         files = {"src/parser.c", "src/scanner.cc"},
-    --         branch = "main"
-    --     }
-    -- }
-
-    -- Norg Table
-    -- parser_config.norg_table = {
-    --     install_info = {
-    --         url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
-    --         files = {"src/parser.c"},
-    --         branch = "main"
-    --     }
-    -- }
-
-    -- Norg Meta
-    -- parser_config.norg_meta = {
-    --     install_info = {
-    --         url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
-    --         branch = "main",
-    --         files = {"src/parser.c"}
-    --     }
-    -- }
 end
 
 -- M.setup_query_secretary = function()
@@ -1388,9 +1395,10 @@ local function init()
     -- M.setup_query_secretary()
     -- M.setup_context()
 
+    -- M.setup_treesj()
+    -- M.setup_iswap()
     M.setup_ssr()
     M.setup_gps()
-    M.setup_iswap()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()

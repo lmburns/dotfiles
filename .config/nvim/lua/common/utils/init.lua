@@ -46,7 +46,7 @@ Void = setmetatable({}, {
 
 ---Safely check if a plugin is installed
 ---@generic M string
----@param mods `M`|`M`[] Module(s) to check if is installed
+---@param mods M|M[] Module(s) to check if is installed
 ---@param cb fun(mod: M):nil Function to call on successfully required modules
 ---@param notify? boolean Whether to notify of an error
 ---@return module
@@ -79,10 +79,10 @@ end
 
 ---Return a value based on two values
 ---@generic T, V
----@param condition boolean|nil Statement to be tested
----@param is_if `T` Return if condition is truthy
----@param is_else `V` Return if condition is not truthy
----@return `T` | `V`
+---@param condition? boolean|fun():boolean Statement to be tested
+---@param is_if T Return if condition is truthy
+---@param is_else V Return if condition is not truthy
+---@return T | V
 F.tern = function(condition, is_if, is_else)
     if condition then
         return is_if
@@ -93,18 +93,18 @@ end
 ---Similar to `vim.F.nil` except that an alternate default value can be given
 ---@generic T, V
 ---@param x any: Value to check if `nil`
----@param is_nil `T`: Value to return if `x` is `nil`
----@param is_not_nil `V`: Value to return if `x` is not `nil`
----@return `T` | `V`
+---@param is_nil T: Value to return if `x` is `nil`
+---@param is_not_nil V: Value to return if `x` is not `nil`
+---@return T | V
 M.ife_nil = function(x, is_nil, is_not_nil)
     return F.tern(x == nil, is_nil, is_not_nil)
 end
 
 ---Return a default value if `x` is nil
 ---@generic T, V
----@param x `T`: Value to check if not `nil`
----@param default `V`: Default value to return if `x` is `nil`
----@return `T` | `V`
+---@param x T: Value to check if not `nil`
+---@param default V: Default value to return if `x` is `nil`
+---@return T | V
 M.get_default = function(x, default)
     return M.ife_nil(x, default, x)
 end
@@ -112,8 +112,8 @@ end
 ---Will determine whether:
 ---  - `string` == ""
 ---  - `table` == {}
----  - `number` == 0
----A number can be given to this function, with `{buffer = true}`,
+---  - `integer` == 0
+---An integer can be given to this function, with `{buffer = true}`,
 ---and the text as the parameter `item` will be treated as a buffer
 ---and checked to see if it is empty.
 ---
@@ -127,7 +127,7 @@ M.empty = function(item, buf)
         return item == ""
     elseif item_t == "table" then
         return vim.tbl_isempty(item)
-    elseif item_t == "number" then
+    elseif item_t == "integer" or item_t == "number" then
         buf = M.get_default(buf, {})
         if buf.buffer == true then
             return D.buf_is_empty(item)
@@ -927,12 +927,21 @@ do
         end
 
         local function notify()
-            -- if vim.g.nvim_focused then
-                -- vim.notify is already set to nvim-notify
-                vim.notify(msg, level, opts)
-            -- else
-            --     return require("desktop-notify").notify(msg, level, opts)
-            -- end
+            if vim.g.nvim_focused then
+                local ok, notify = pcall(require, "notify")
+                if not ok then
+                    vim.defer_fn(
+                        function()
+                            vim.notify(msg, level, opts)
+                        end,
+                        100
+                    )
+                    return
+                end
+                return notify.notify(msg, level, opts)
+            else
+                return require("desktop-notify").notify(msg, level, opts)
+            end
         end
 
         if opts.once then

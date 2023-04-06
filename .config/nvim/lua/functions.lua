@@ -246,12 +246,10 @@ augroup(
 -- │                     Open Links/Files                     │
 -- ╰──────────────────────────────────────────────────────────╯
 
----Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
----Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
 ---Generic open function used with other functions
 function M.open(path)
     fn.jobstart({"handlr", "open", path}, {detach = true})
-    log.warn(("Opening %s"):format(path))
+    log.info(("Opening %s"):format(path))
 end
 
 ---Open a directory or a link
@@ -265,6 +263,8 @@ function M.open_link()
 end
 
 ---Open a file or a link
+---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
+---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("http[s]?://") then

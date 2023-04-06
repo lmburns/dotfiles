@@ -246,7 +246,7 @@ function M.setup()
             views.mini,
             {
                 view = "mini",
-                timeout = 6000,
+                timeout = 3000,
                 reverse = false,
                 focusable = true,
                 zindex = 60,
@@ -563,6 +563,8 @@ function M.setup()
                     {event = "msg_show", find = "redraw"},
                     {event = "msg_show", find = "Hop %d char"},
                     {event = "msg_show", kind = "search_count"},
+                    -- An error is displayed on top of this message (sometimes)
+                    {event = "msg_show", kind = "echo", find = "Mark not set"},
                     -- search term is not found
                     {event = "msg_show", kind = "emsg", find = "Pattern not found"},
                     -- shows macro recording (I have custom func)
@@ -1028,6 +1030,20 @@ function M.setup()
                         },
                     },
                 },
+                allp = {
+                    view = "popup",
+                    opts = {enter = true, title = "Last"},
+                    border = {style = style.current.border, text = {top = " Last "}},
+                    filter_opts = {reverse = true, history = true},
+                    filter = {
+                        any = {
+                            {error = true},
+                            {warning = true},
+                            {event = {"msg_show"},["not"] = {kind = {"search_count"}}},
+                            {event = {"notify", "cmdline", "lsp"}},
+                        },
+                    },
+                },
                 -- :Noice last
                 last = {
                     view = "popup",
@@ -1045,8 +1061,18 @@ function M.setup()
                 },
                 -- :Noice errors
                 errors = {
-                    -- options for the message history that you get with `:Noice`
                     view = "popup",
+                    opts = {enter = true, format = "details"},
+                    filter_opts = {reverse = true},
+                    filter = {
+                        any = {
+                            {error = true},
+                            {warning = true},
+                        },
+                    },
+                },
+                errorssp = {
+                    view = "split",
                     opts = {enter = true, format = "details"},
                     filter_opts = {reverse = true},
                     filter = {

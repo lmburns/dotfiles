@@ -361,10 +361,10 @@ end
 
 ---Bind a function to some arguments and return a new function (the thunk) that can be called later
 ---Useful for setting up callbacks without anonymous functions
----@generic T, V: ...
----@param fn fun(v1: T, v2?: V)
----@param ... T
----@return fun(v2: V)
+---@generic T: ..., V: ..., R
+---@param fn fun(v1: T): R Function to be called
+---@param ... T Arguments that are passed to `fn`
+---@return fun(v2: V): R fn Function that will accept more arguments
 M.thunk = function(fn, ...)
     local bound = {...}
     return function(...)
@@ -373,31 +373,14 @@ M.thunk = function(fn, ...)
 end
 
 ---Like `thunk()`, but arguments passed to the thunk are ignored
----
---- ### Example 1: Only string
----```lua
---- map("n", "yd", ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p:h'))<CR>")
----```
----
---- ### Example 2: Anonymous functions
----```lua
---- map(
----     "n",
----     "yd",
----     function()
----         require("common.yank").yank_reg(vim.v.register, fn.expand("%:p:h"))
----     end
---- )
----```
----
---- ### Example 3: Thunk
+--- ### Example
 ---```lua
 ---  map("n", "yd", dev.ithunk(require("common.yank").yank_reg, vim.v.register, fn.expand("%:p:h")))
 ---```
----@generic T
----@param fn fun(v: T)
----@param ... T
----@return fun()
+---@generic T: ..., R
+---@param fn fun(v1: T): R Function to be called
+---@param ... T Arguments that are passed to `fn`
+---@return fun(none: nil): R fn Function that will not accept more arguments
 M.ithunk = function(fn, ...)
     local bound = {...}
     return function()
@@ -406,10 +389,10 @@ M.ithunk = function(fn, ...)
 end
 
 ---Same as `ithunk()`, except prefixed with a `pcall`
----@generic T
----@param fn fun(v: T)
----@param ... T
----@return fun()
+---@generic T: ..., R
+---@param fn fun(v1: T): R Function to be called
+---@param ... T Arguments that are passed to `fn`
+---@return fun(none: nil): R fn Function that will not accept more arguments
 M.pithunk = function(fn, ...)
     return M.ithunk(pcall, fn, ...)
 end

@@ -44,7 +44,7 @@ function RG() {
 
   ffiltered=( ${${${${(@)fopts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )
 
-  RG_PREFIX="rg --column --hidden --line-number --no-heading --color=always --smart-case ${(j: :)filtered}"
+  RG_PREFIX="rg --follow --column --hidden --line-number --no-heading --color=always --smart-case ${(j: :)filtered}"
   INITIAL_QUERY="${*:-}"
   FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY} || true" \
   fzf ${(j: :)ffiltered} --ansi \

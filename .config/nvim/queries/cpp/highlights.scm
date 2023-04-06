@@ -5,6 +5,7 @@
 
 (parameter_declaration
   declarator: (reference_declarator) @parameter)
+
 ; function(Foo ...foo)
 (variadic_parameter_declaration
   declarator: (variadic_declarator
@@ -24,6 +25,9 @@
      (field_identifier) @method)) @_parent
  (#has-parent? @_parent template_method function_declarator call_expression))
 
+(field_declaration
+  (field_identifier) @field)
+
 (field_initializer
  (field_identifier) @property)
 
@@ -31,17 +35,19 @@
   declarator: (field_identifier) @method)
 
 (concept_definition
-  name: (identifier) @type)
+  name: (identifier) @type.definition)
+
+(alias_declaration
+  name: (type_identifier) @type.definition)
+
+(auto) @type.builtin
 
 (namespace_identifier) @namespace
 ((namespace_identifier) @type
                         (#lua-match? @type "^[A-Z]"))
-((namespace_identifier) @constant
-                        (#lua-match? @constant "^[A-Z][A-Z_0-9]*$"))
+
 (case_statement
   value: (qualified_identifier (identifier) @constant))
-(namespace_definition
-  name: (identifier) @namespace)
 
 (using_declaration . "using" . "namespace" . [(qualified_identifier) (identifier)] @namespace)
 
@@ -105,7 +111,7 @@
 ; Constants
 
 (this) @variable.builtin
-(nullptr) @constant
+(nullptr) @constant.builtin
 
 (true) @boolean
 (false) @boolean
@@ -127,32 +133,33 @@
 [
  "class"
  "decltype"
- "constexpr"
  "explicit"
- "final"
  "friend"
- "mutable"
  "namespace"
  "override"
- "private"
- "protected"
- "public"
  "template"
  "typename"
  "using"
- "virtual"
- "co_await"
  "concept"
  "requires"
- "consteval"
- "constinit"
- (auto)
 ] @keyword
+
+[
+  "co_await"
+] @keyword.coroutine
 
 [
  "co_yield"
  "co_return"
-] @keyword.return
+] @keyword.coroutine.return
+
+[
+ "public"
+ "private"
+ "protected"
+ "virtual"
+ "final"
+] @type.qualifier
 
 [
  "new"
@@ -174,6 +181,9 @@
 "<=>" @operator
 
 "::" @punctuation.delimiter
+
+(template_argument_list
+  ["<" ">"] @punctuation.bracket)
 
 (literal_suffix) @operator
 

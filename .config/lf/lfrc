@@ -18,25 +18,26 @@ set shellopts '-ey:--rcquotes:--extendedglob:--shortloops'
 set ifs "\n"
 set filesep "\n"  # default already
 
+set info "size"      # list directory information on the right
+set ratios '1:2:3'   # ratio of pane widths
+set history          # save history across sessions
 set tabstop 4        # number of spaces for a tab
 set scrolloff 10     # space on top and bottom of screen
 set icons            # show icons next to files
-set history          # save history across sessions
+set preview          # preview file on the right pane
+set drawbox          # draw a border around all panes
 set period 1         # interval to check for directory updates
-set hidden           # show hidden files by default
 set incsearch        # jump to first match after each keystroke in search
 set incfilter        # apply filter after each keystroke
 set smartcase        # if capital letter then case sensitive
+set sortby "natural" # don't sort files in any special way
+set hidden           # show hidden files by default
 set dirfirst         # show directories before regular files
 set dircounts        # show number of items in directory instead of size
 # set dirpreviews      # pass directories to the previewer script
-set info "size"      # list directory information on the right
-set sortby "natural" # don't sort files in any special way
-set preview          # preview file on the right pane
-set drawbox          # draw a border around all panes
-set ratios '1:2:3'   # ratio of pane widths
 
-# set number on         # show number of items index in dir
+set number         # show number of items index in dir
+# set relativenumber # show relative number of items index in dir
 # set globsearch        # search with globs
 
 # * '%u' username
@@ -137,8 +138,16 @@ cmd on-cd &{{
   local fname="/tmp/lfid_$id"
   [[ ! -e "$fname" ]] && {
     print -R "$id" >> "$fname"
-    # Save a mark of the opening directory
-    lf -remote "send $id push maa"
+    # Save mark 'a' as the opening directory
+    lf -remote "send $id mark-save"
+    lf -remote "send $id push a"
+    # The redraw makes it look better
+    lf -remote "send $id redraw"
+
+    # This also works. By simulating the key bound to 'mark-save'
+    # lf -remote "send $id push maa"
+
+    # These do not work
     # lf -remote "send $id push :mark-save<space>a<enter>"
     # lf -remote "send $id mark-save a"
   }
@@ -462,8 +471,13 @@ cmd link-homebin ${{
       lf -remote "send $id echoe '%B$file%b is not executable'"
       continue
     }
-    command ln -siv -- "$file" "$HOME/bin/" && \
-      dunstify -a lf " Linked to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+    if [[ "$1" == "copy" ]] {
+      command cp -piv -- "$file" "$HOME/bin/" && \
+        dunstify -a lf " Copied to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+    } else {
+      command ln -siv -- "$file" "$HOME/bin/" && \
+        dunstify -a lf " Linked to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+    }
   }
   lf -remote "send clear"
 }}
@@ -891,7 +905,6 @@ cmd nvim_diff ${{
 cmd diffsitter ${{
   local -a files; files=( ${(@f)fx} )
   (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
-  dunstify "$#files"
   diffsitter --color=on "$files[1]" "$files[2]" | bat -pf --pager="$LF_LESS" --paging=always
 }}
 
@@ -1529,7 +1542,8 @@ map y copy                # copy actual file
 map Yr copy-realpath      # copy file from absolute path
 map Yc copy-file-contents # copy file(s) contents
 
-map Yb link-homebin  # link file to ~/bin
+map Ybl link-homebin         # link file to ~/bin
+map Ybc link-homebin 'copy'  # copy file to ~/bin
 
 map YR yank-realpath # yank absolute path
 map Yp yank-path     # yank file path
@@ -1563,6 +1577,7 @@ map Ph ${{
 # ]]] Cut / Copy / Paste
 
 # === File Openers ============================================= [[[
+map Ee $sudo -A nvim "$f"                               # open file in editor as root
 map ee $$EDITOR "$f"                                    # open file in editor
 map Ev $vim "$fx"                                       # edit a file with vim
 map ec edit_config                                      # edit & source lfrc

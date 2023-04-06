@@ -415,7 +415,8 @@ function M.diagnostic(winid, nr, keep)
 end
 
 ---Provide a highlighting fallback on cursor hold
----This will not highlight keywords
+---This will not highlight keywords, (.e.g., won't highlight `local` in Lua)
+---@return fun()
 M.hl_fallback =
     (function()
         local fb_bl_ft = {
@@ -470,7 +471,6 @@ M.hl_fallback =
         end
     end)()
 
--- This doesn't seem to set value locally anymore. But also doesn't seem needed
 ---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
     local winid = g.coc_last_float_win

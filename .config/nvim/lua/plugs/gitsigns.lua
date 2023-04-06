@@ -29,9 +29,9 @@ local autocmd_id
 local function echo(status, toggled)
     nvim.echo(
         {
-            {"Gitsigns [", "SpellCap"},
-            {status, "MoreMsg"},
-            {("] %s"):format(toggled), "SpellCap"}
+            {"Gitsigns [",             "SpellCap"},
+            {status,                   "MoreMsg"},
+            {("] %s"):format(toggled), "SpellCap"},
         }
     )
 end
@@ -67,8 +67,8 @@ end
 
 function M.toggle_signs()
     gs.toggle_signs()
-    local status = F.tern(config.sign_column, "enable", "disable")
-    echo(status, "sign_column")
+    local status = F.tern(config.signcolumn, "enable", "disable")
+    echo(status, "signcolumn")
 end
 
 function M.toggle_linehl()
@@ -87,10 +87,7 @@ local function mappings(bufnr)
     wk.register(
         {
             ["<Leader>hp"] = {"<Cmd>Gitsigns preview_hunk<CR>", "Preview hunk (git)"},
-            ["<Leader>hi"] = {
-                "<Cmd>Gitsigns preview_hunk_inline<CR>",
-                "Preview hunk inline (git)"
-            },
+            ["<Leader>hi"] = {"<Cmd>Gitsigns preview_hunk_inline<CR>", "Preview hunk inline (git)"},
             ["<Leader>hs"] = {"<Cmd>Gitsigns stage_hunk<CR>", "Stage hunk (git)"},
             ["<Leader>hS"] = {"<Cmd>Gitsigns stage_buffer<CR>", "Stage buffer (git)"},
             ["<Leader>hu"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
@@ -129,7 +126,7 @@ local function mappings(bufnr)
             ["<Leader>hb"] = {
                 D.ithunk(gs.blame_line, {full = true}),
                 "Blame line virt (git)"
-            }
+            },
         },
         {buffer = bufnr}
     )
@@ -164,20 +161,20 @@ end
 function M.setup_autocmd()
     local id =
         augroup(
-        "lmb__GitSignsBlameToggle",
-        {
-            event = {"InsertEnter"},
-            command = function()
-                gs.toggle_current_line_blame(false)
-            end
-        },
-        {
-            event = {"InsertLeave"},
-            command = function()
-                gs.toggle_current_line_blame(true)
-            end
-        }
-    )
+            "lmb__GitSignsBlameToggle",
+            {
+                event = {"InsertEnter"},
+                command = function()
+                    gs.toggle_current_line_blame(false)
+                end,
+            },
+            {
+                event = {"InsertLeave"},
+                command = function()
+                    gs.toggle_current_line_blame(true)
+                end,
+            }
+        )
     return id
 end
 
@@ -205,21 +202,21 @@ function M.setup()
                     text = "▍",
                     numhl = "Type",
                     linehl = "GitSignsAddLn",
-                    show_count = false
+                    show_count = false,
                 },
                 change = {
                     hl = "GitSignsChange",
                     text = "▍",
                     numhl = "Constant",
                     linehl = "GitSignsChangeLn",
-                    show_count = false
+                    show_count = false,
                 },
                 changedelete = {
                     hl = "GitSignsChange",
                     text = "~",
                     numhl = "Character",
                     linehl = "GitSignsChangeLn",
-                    show_count = true
+                    show_count = true,
                 },
                 delete = {
                     hl = "GitSignsDelete",
@@ -227,7 +224,7 @@ function M.setup()
                     text = "▁",
                     numhl = "ErrorMsg",
                     linehl = "GitSignsDeleteLn",
-                    show_count = true
+                    show_count = true,
                 },
                 topdelete = {
                     hl = "GitSignsDelete",
@@ -235,15 +232,15 @@ function M.setup()
                     text = "▔",
                     numhl = "ErrorMsg",
                     linehl = "GitSignsDeleteLn",
-                    show_count = true
+                    show_count = true,
                 },
                 untracked = {
                     hl = "GitSignsUntracked",
                     text = "┆",
                     numhl = "Tag",
                     linehl = "GitSignsUntrackedLn",
-                    show_count = true
-                }
+                    show_count = true,
+                },
             },
             count_chars = {
                 [1] = "",
@@ -260,15 +257,15 @@ function M.setup()
             worktrees = {
                 {
                     toplevel = env.DOTBARE_TREE,
-                    gitdir = env.DOTBARE_DIR
-                }
+                    gitdir = env.DOTBARE_DIR,
+                },
             },
             watch_gitdir = {
                 enable = true,
                 -- Interval the watcher waits between polls of the gitdir in milliseconds.
                 interval = 1000,
                 -- If a file is moved with `git mv`, switch the buffer to the new location.
-                follow_files = true
+                follow_files = true,
             },
             on_attach = function(bufnr)
                 mappings(bufnr)
@@ -302,7 +299,7 @@ function M.setup()
                 virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
                 virt_text_priority = 100,
                 delay = 1000,
-                ignore_whitespace = false
+                ignore_whitespace = false,
             },
             -- When a string, accepts the following format specifiers:
             --
@@ -320,7 +317,8 @@ function M.setup()
             --     • `<summary>`
             --     • `<previous>`
             --     • `<filename>`
-            current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - [<abbrev_sha>]: <summary>",
+            current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - " ..
+                "[<abbrev_sha>]: <summary>",
             current_line_blame_formatter_opts = {relative_time = true},
             current_line_blame_formatter_nc = " <author>",
             attach_to_untracked = true,
@@ -334,10 +332,10 @@ function M.setup()
                 relative = "cursor",
                 noautocmd = true,
                 row = 0,
-                col = 1
+                col = 1,
             },
             trouble = false,
-            yadm = {enable = false}
+            yadm = {enable = false},
         }
     )
     config = require("gitsigns.config").config
@@ -351,7 +349,6 @@ local function init()
     if config.current_line_blame then
         autocmd_id = M.setup_autocmd()
     end
-
 end
 
 init()

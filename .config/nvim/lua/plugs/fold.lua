@@ -246,8 +246,7 @@ M.setup_ufo = function()
                 -- return ft_map[ft]
 
                 -- If file is nil, use indent
-                return ((ft == "" or buftype == "nofile") and "indent")
-                    or ft_map[ft]
+                return ft_map[ft]
                     or function(bufnr)
                         return ufo
                             .getFolds(bufnr, "lsp")

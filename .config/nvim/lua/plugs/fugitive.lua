@@ -26,7 +26,7 @@ function M.index()
     end
 end
 
--- placeholder for Git difftool --name-only :)
+-- placeholder for Git difftool --name-only
 function M.diff_hist()
     local info = fn.getqflist({idx = 0, context = 0})
     ---@diagnostic disable-next-line:undefined-field
@@ -70,27 +70,27 @@ local function init()
         a = "",
         d2o = "d2o",
         d3o = "d3o",
-        dd = "dd", -- :Gdiffsplit
-        dh = "dh", -- :Ghdiffsplit
-        dp = "dp", -- Git diff
-        dq = "", -- Close all but one diff buffer
-        ds = "ds", -- :Ghdiffsplit
-        dv = "dv", -- :Gvdiffsplit
-        p = "p", -- Open file in preview window
-        s = "s", -- Stage file
-        u = "u", -- Unstage file
-        gO = "gO", -- Open file in new vertical split
-        o = "o", -- Open file in a split
-        C = "C", -- Open the commit containing the current file
-        ["("] = "(", -- Jump to the previous file, hunk, or revision
-        [")"] = ")", -- Jump to the next file, hunk, or revision
-        ["#"] = "", -- Search forward
-        ["*"] = "", -- Search backwards
-        ["-"] = "a", -- Stage/unstage file or hunk under cursor
+        dd = "dd",       -- :Gdiffsplit
+        dh = "dh",       -- :Ghdiffsplit
+        dp = "dp",       -- Git diff
+        dq = "",         -- Close all but one diff buffer
+        ds = "ds",       -- :Ghdiffsplit
+        dv = "dv",       -- :Gvdiffsplit
+        p = "p",         -- Open file in preview window
+        s = "s",         -- Stage file
+        u = "u",         -- Unstage file
+        gO = "gO",       -- Open file in new vertical split
+        o = "o",         -- Open file in a split
+        C = "C",         -- Open the commit containing the current file
+        ["("] = "(",     -- Jump to the previous file, hunk, or revision
+        [")"] = ")",     -- Jump to the next file, hunk, or revision
+        ["#"] = "",      -- Search forward
+        ["*"] = "",      -- Search backwards
+        ["-"] = "a",     -- Stage/unstage file or hunk under cursor
         ["<C-W>gf"] = "gF",
         ["="] = "<Tab>", -- toggle inline diff
-        ["[m"] = "[f", -- jump to previous file, close inline diffs
-        ["]m"] = "]f", -- jump to next file, close inline diffs
+        ["[m"] = "[f",   -- jump to previous file, close inline diffs
+        ["]m"] = "]f",   -- jump to next file, close inline diffs
         ["d?"] = "d?"
     }
 
@@ -108,14 +108,14 @@ local function init()
             pattern = {"FugitiveIndex", "FugitiveCommit"},
             command = function()
                 require("plugs.fugitive").map()
-            end
+            end,
         },
         {
             event = "BufReadPost",
             pattern = "fugitive://*",
             command = function()
                 vim.o.bufhidden = "delete"
-            end
+            end,
         }
     )
 
@@ -159,7 +159,7 @@ local function init()
             ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive commit"},
             ["<LocalLeader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
             ["<LocalLeader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
-            ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"}
+            ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"},
         },
         {silent = false}
     )

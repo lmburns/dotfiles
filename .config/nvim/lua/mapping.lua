@@ -116,8 +116,6 @@ map("c", "<C-l>", "<Del>")
 map("c", "<C-d>", "<Del>")
 map("c", "<C-S-k>", "<Up>")
 map("c", "<C-S-j>", "<Down>")
-map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line", silent = true})
-map("c", "<M-]>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line", silent = true})
 map("c", "<M-b>", "<C-Left>", {desc = "Move one word left", silent = true})
 map("c", "<M-f>", "<C-Right>", {desc = "Move one word right"})
 map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
@@ -125,6 +123,19 @@ map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
 map("c", "<F1>", "<C-r>=fnameescape(expand('%'))<CR>", {desc = "Insert current filename"})
 map("c", "<F2>", "<C-r>=fnameescape(expand('%:p:h'))<CR>/", {desc = "Insert current directory"})
 map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {desc = "Insert glob", expr = true})
+map(
+    "c",
+    "<C-o>",
+    [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]],
+    {desc = "Delete to end of line", silent = true}
+)
+map(
+    "c",
+    "<M-]>",
+    [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]],
+    {desc = "Delete to end of line", silent = true}
+)
+
 -- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -133,7 +144,7 @@ map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {desc = "Insert glob",
 wk.register(
     {
         [";q"] = {[[:q<CR>]], "Quit"},
-        [";w"] = {[[:update<CR>]], "Update file"}
+        [";w"] = {[[:update<CR>]], "Update file"},
     }
 )
 
@@ -203,7 +214,7 @@ wk.register(
     {
         ["<Leader>sg"] = {":%s//g<Left><Left>", "Global replace"},
         ["dM"] = {[[:%s/<C-r>//g<CR>]], "Delete all search matches"},
-        ["cm"] = {[[:%s/<C-r>///g<Left><Left>]], "Change all matches"}
+        ["cm"] = {[[:%s/<C-r>///g<Left><Left>]], "Change all matches"},
         -- ["dM"] = {":%g/<C-r>//d<CR>", "Delete all lines with search matches"},
         -- ["z/"] = {[[/\%><C-r>=line("w0")-1<CR>l\%<<C-r>=line("w$")+1<CR>l]], "Search in visible screen"},
     },
@@ -244,7 +255,7 @@ wk.register(
         [";u"] = {"<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", "Return to earlier state"},
         ["gI"] = {D.ithunk(utils.normal, "n", "`^"), "Goto last insert spot"},
         ["gA"] = {D.ithunk(utils.normal, "n", "ga"), "Get ASCII value"},
-        ["<C-g>"] = {"2<C-g>", "Show buffer info"}
+        ["<C-g>"] = {"2<C-g>", "Show buffer info"},
     }
 )
 
@@ -262,7 +273,7 @@ wk.register(
         ["yp"] = {
             ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>",
             "Copy full path"
-        }
+        },
     }
 )
 
@@ -271,7 +282,7 @@ wk.register(
         ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
         ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
         ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
-        ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"}
+        ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"},
     },
     {expr = true}
 )
@@ -299,7 +310,7 @@ wk.register(
         ["<C-g>"] = {[[g<C-g>]], "Show word count"},
         ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
         ["/"] = {"<Esc>/\\%V", "Search visual selection"},
-        ["&"] = {":&&<CR>", "Repeat last substitution"}
+        ["&"] = {":&&<CR>", "Repeat last substitution"},
         -- ["c"] = {[["_c]], "Change (blackhole)"},
         -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
     },
@@ -321,7 +332,7 @@ map(
 map(
     "x",
     "L",
-    [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.') - 2] == ' ' ? 'norm! ge' : '')<CR>]],
+    [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.')] == ' ' ? 'norm! ge' : '')<CR>]],
     {desc = "End of line"}
 )
 map("o", "L", "g$", {desc = "End of screen-line"})
@@ -372,7 +383,7 @@ wk.register(
         ["[E"] = {"<Cmd>lolder<CR>", "Prev loclist"},
         -- Tab
         ["[t"] = {"<Cmd>tabp<CR>", "Previous tab"},
-        ["]t"] = {"<Cmd>tabn<CR>", "Next tab"}
+        ["]t"] = {"<Cmd>tabn<CR>", "Next tab"},
     }
 )
 
@@ -393,10 +404,6 @@ map(
     ),
     {expr = true, desc = "Center or top current line"}
 )
-
--- Keep focused in center of screen when searching
--- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
--- map("n", "N", "(v:searchforward ? 'Nzzzv' : 'nzzzv')", { expr = true })
 
 -- Window/Buffer
 -- Grepping for keybindings is more difficult with this
@@ -429,8 +436,8 @@ wk.register(
             ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
             T = {"<Cmd>tab sp<CR>", "Open current window in tab"},
             O = {"<Cmd>tabo<CR>", "Close all tabs except current"},
-            ["0"] = {"<C-w>=", "Equally high and wide"}
-        }
+            ["0"] = {"<C-w>=", "Equally high and wide"},
+        },
     }
 )
 
@@ -468,7 +475,7 @@ wk.register(
         ["<Leader>fa"] = {
             [[<Cmd>lua require('common.qfext').outline_aerial()<CR>]],
             "Quickfix outline (aerial)"
-        }
+        },
     }
 )
 
@@ -486,9 +493,9 @@ wk.register(
                 a = {"zg", "Add word to spell list"},
                 ["?"] = {"z=", "Offer spell corrections"},
                 u = {"zuw", "Undo add to spell list"},
-                l = {"<c-g>u<Esc>[s1z=`]a<c-g>u", "Correct next spelling mistake"}
-            }
-        }
+                l = {"<c-g>u<Esc>[s1z=`]a<c-g>u", "Correct next spelling mistake"},
+            },
+        },
     }
 )
 -- ]]] === Spelling ===
@@ -506,11 +513,11 @@ wk.register(
                 c = {"<cmd>CocConfig<CR>", "Edit coc-settings"},
                 v = {":e $NVIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"},
-                p = {":e $NVIMD/lua/plugins.lua<CR>", "Edit plugins"}
+                p = {":e $NVIMD/lua/plugins.lua<CR>", "Edit plugins"},
             },
-            ["sv"] = {":luafile $NVIMRC<CR>", "Source neovim config"}
+            ["sv"] = {":luafile $NVIMRC<CR>", "Source neovim config"},
         },
-        ["<C-S-N>"] = {require("notify").dismiss, "Dismiss notification"}
+        ["<C-S-N>"] = {require("notify").dismiss, "Dismiss notification"},
     }
 )
 -- ]]] === Other ===
@@ -540,5 +547,9 @@ end
 -- This works if Alacritty is configured correctly and Tmux is recompiled
 -- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
 -- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
+
+-- Keep focused in center of screen when searching
+-- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
+-- map("n", "N", "(v:searchforward ? 'Nzzzv' : 'nzzzv')", { expr = true })
 
 return M

@@ -111,7 +111,7 @@ end
 ---TODO: Finish this
 ---Translate spelling mistakes to quickfix
 function M.spell2qf()
-    vim.opt.spell = true
+    vim.wo.spell = true
     cmd.norm({"gg", bang = true})
 
     local bufnr = api.nvim_get_current_buf()

@@ -765,22 +765,9 @@ end
 function init()
     M.setup()
 
-    -- map_fzf("n", "<A-f>", "files")
-    -- map_fzf("n", "<Leader>qo", "quickfix")
-    -- map_fzf("n", "<Leader>ll", "loclist")
-    -- map_fzf("n", "<A-,>", "oldfiles")
-    -- map_fzf("n", "<LocalLeader>e", "live_grep")
-    -- map_fzf("n", "<LocalLeader>h", "man_pages")
-    -- map_fzf("n", "<Leader>ht", "help_tags")
-    -- map_fzf("n", "<Leader>cs", "colorschemes")
-    -- map_fzf("n", "<Leader>cm", "commands")
-    -- map_fzf("n", "<Leader>ch", "changes")
-    -- map_fzf("n", "<C-l>k", "keymaps")
-    -- map_fzf("n", "<Leader>jf", "jumps")
-    -- map_fzf("n", "<Leader>pa", "packadd")
-    -- map_fzf("n", "<LocalLeader>v", "builtin")
+    local wk = require("which-key")
 
-    require("which-key").register(
+    wk.register(
         {
             -- ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
             ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},

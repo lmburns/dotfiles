@@ -73,7 +73,7 @@ M.on_call_rec = function(base, fn, indices)
                     return fn(target, ...)
                 end
                 return target(...)
-            end
+            end,
         }
     )
 end
@@ -93,7 +93,7 @@ M.require_on_index = function(require_path)
             end,
             __newindex = function(_, key, value)
                 require(require_path)[key] = value
-            end
+            end,
         }
     )
 end
@@ -108,7 +108,7 @@ M.require_on_module_call = function(require_path)
             __call = function(_, ...)
                 local args = {...}
                 return require(require_path)(unpack(args))
-            end
+            end,
         }
     )
 end
@@ -134,7 +134,7 @@ M.require_on_exported_call = function(require_path)
                     local args = {...}
                     return require(require_path)[k](unpack(args))
                 end
-            end
+            end,
         }
     )
 end
