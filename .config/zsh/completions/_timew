@@ -1,0 +1,4 @@
+#compdef timew
+
+autoload -U +X bashcompinit && bashcompinit -i
+complete -o nospace -F $ZINIT_HOME/plugins/svenXY---timewarrior/_timew timew

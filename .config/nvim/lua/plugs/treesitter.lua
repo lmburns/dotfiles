@@ -873,22 +873,21 @@ M.setup_treesj = function()
 
     -- These mappings might seem like they should be reversed
     -- But I like it like this
-    -- map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
-    -- map("n", "gS", D.ithunk(tsj.join), {desc = "Spread: combine"})
+    map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
+    map("n", "gS", D.ithunk(tsj.join), {desc = "Spread: combine"})
 
-    -- These are like this rather than an autocmd so I can lazy load it
-    map(
-        "n",
-        "gJ",
-        F.tern(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
-        {desc = "Spread: out"}
-    )
-    map(
-        "n",
-        "gS",
-        F.tern(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
-        {desc = "Spread: out"}
-    )
+    -- map(
+    --     "n",
+    --     "gJ",
+    --     F.tern(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
+    --     {desc = "Spread: out"}
+    -- )
+    -- map(
+    --     "n",
+    --     "gS",
+    --     F.tern(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
+    --     {desc = "Spread: out"}
+    -- )
 end
 
 ---Setup treesitter

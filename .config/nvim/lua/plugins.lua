@@ -1282,13 +1282,13 @@ return packer.startup(
                     keys = {{"n", "gJ"}, {"n", "gS"}},
                     requires = {
                         {"nvim-treesitter/nvim-treesitter"},
-                        {
-                            "AndrewRadev/splitjoin.vim",
-                            config = function()
-                                vim.g.splitjoin_split_mapping = ""
-                                vim.g.splitjoin_join_mapping  = ""
-                            end,
-                        },
+                        -- {
+                        --     "AndrewRadev/splitjoin.vim",
+                        --     config = function()
+                        --         vim.g.splitjoin_split_mapping = ""
+                        --         vim.g.splitjoin_join_mapping  = ""
+                        --     end,
+                        -- },
                     },
                     -- after = "nvim-treesitter"
                 }

@@ -1,0 +1,27 @@
+#compdef earlyoom
+
+# zsh completions for 'earlyoom'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-m[KILL_PERCENT\] set available memory minimum to PERCENT of total]'
+  '-s[KILL_PERCENT\] set free swap minimum to PERCENT of total (default]'
+  '-M[KILL_SIZE\]       set available memory minimum to SIZE KiB]'
+  '-S[KILL_SIZE\]       set free swap minimum to SIZE KiB]'
+  '-n[enable d-bus notifications]'
+  '-N[/TO/SCRIPT        call script after oom kill]'
+  '-g[kill all processes within a process group]'
+  '-d[enable debugging messages]'
+  '-v[print version information and exit]'
+  '-r[memory report interval in seconds (default 1), set]'
+  '-p[set niceness of earlyoom to -20 and oom_score_adj to]'
+  '-100[]'
+  '--prefer[prefer to kill processes matching REGEX]'
+  '--avoid[avoid killing processes matching REGEX]'
+  '--dryrun[dry run (do not kill any processes)]'
+  {-h,--help}'[this help text]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

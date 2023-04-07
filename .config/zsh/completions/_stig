@@ -686,7 +686,7 @@ _stig () {
 
           [[ "$line[2]" = "scroll" ]] && {
             typeset -a scroll; scroll=(
-              up down "page up", "page down", top bottom
+              up down "page up" "page down" top bottom
             )
             _describe -t scroll-cmds "scroll options" scroll
           }

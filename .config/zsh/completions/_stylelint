@@ -1,0 +1,39 @@
+#compdef stylelint
+
+# zsh completions for 'stylelint'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {--config,-c}'[]'
+  '--config-basedir[]'
+  '--print-config[]'
+  {--ignore-path,-i}'[]'
+  {--ignore-pattern,--ip}'[]'
+  '--fix[]'
+  '--custom-syntax[]'
+  '--stdin[]'
+  '--stdin-filename[]'
+  {--ignore-disables,--id}'[]'
+  {--disable-default-ignores,--di}'[]'
+  '--cache[\[default: false\]]'
+  '--cache-location[\[default: .stylelintcache\]]'
+  '--cache-strategy[\[default: "metadata"\]]'
+  {--formatter,-f}'[\[default: "string"\]]'
+  '--custom-formatter[]'
+  {--quiet,-q}'[]'
+  '--quiet-deprecation-warnings[]'
+  '--color[]'
+  '--no-color[]'
+  {--report-needless-disables,--rd}'[]'
+  {--report-invalid-scope-disables,--risd}'[]'
+  {--report-descriptionless-disables,--rdd}'[]'
+  {--max-warnings,--mw}'[]'
+  {--output-file,-o}'[]'
+  {--version,-v}'[]'
+  {--allow-empty-input,--aei}'[]'
+  {--globby-options,--go}'[]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments
