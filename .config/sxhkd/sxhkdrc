@@ -158,8 +158,8 @@ super + ctrl + {_,shift + }0
 # bspc node {@/,_} --balance
 
 # Resize: {left,down,up,right} by 50 (float: sides in)
-super + ctrl + {h,j,k,l}
-  bspwm-resize {west,south,north,east} 50
+# super + ctrl + {h,j,k,l}
+#   bspwm-resize {west,south,north,east} 50
 
 # Resize: {left,down,up,right} by 20 (float: sides in)
 ctrl + alt + {h,j,k,l}

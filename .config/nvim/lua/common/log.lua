@@ -2,6 +2,10 @@ local M = {}
 
 local log = require("plenary.log")
 
+local api = vim.api
+local fn = vim.fn
+local uv = vim.loop
+
 ---@enum LogLevels
 M.levels = {
     TRACE = 0,
@@ -60,6 +64,54 @@ local __FMODULE__ = function()
                          ("%s.%s"):format(dir, fname)))
 end
 
+---Get current file name
+---@return string
+function M.get_loc()
+    local me = debug.getinfo(1, "S")
+    local level = 2
+    local info = debug.getinfo(level, "S")
+    while info and info.source == me.source do
+        level = level + 1
+        info = debug.getinfo(level, "S")
+    end
+    info = info or me
+    local source = info.source:sub(2)
+    source = uv.fs_realpath(source) or source
+    return source .. ":" .. info.linedefined
+end
+
+---@param value any
+---@param opts? {loc: string, level: number}
+function M.dump(value, opts)
+    opts = opts or {}
+    opts.loc = opts.loc or M.get_loc()
+    if vim.in_fast_event() then
+        return vim.schedule(
+            function()
+                M.dump(value, opts)
+            end
+        )
+    end
+    opts.loc = fn.fnamemodify(opts.loc, ":~:.")
+    local msg = vim.inspect(value)
+    vim.notify(
+        msg,
+        opts.level or vim.log.levels.INFO,
+        {
+            title = "Debug: " .. opts.loc,
+            on_open = function(win)
+                vim.wo[win].conceallevel = 3
+                vim.wo[win].concealcursor = ""
+                vim.wo[win].spell = false
+                local buf = api.nvim_win_get_buf(win)
+                if not pcall(vim.treesitter.start, buf, "lua") then
+                    vim.bo[buf].ft = "lua"
+                end
+            end,
+        }
+    )
+end
+
 local default_config = {
     -- Name of the plugin. Prepended to log messages
     plugin = "nvim",
@@ -90,8 +142,6 @@ local default_config = {
 local built = log.new(default_config, true)
 
 M.logger = built
-
--- api.nvim_err_writeln()
 
 ---TRACE message
 ---@param msg string|string[]

@@ -266,6 +266,7 @@
   // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
   "clangd.arguments": [
     "--query-driver=/usr/bin/clang++",
+    // "--query-driver=/usr/bin/clang",
     "--background-index",
     "--clang-tidy", // show clang-tidy diagnostics
     "--all-scopes-completion",
@@ -1429,10 +1430,11 @@
         "buildDirectory": "build"
       }
     },
+    // https://www.reddit.com/r/neovim/comments/s41si3/extension_like_rusttoolsnvim_but_for_clangd_c_c
     "ccls": {
       "command": "ccls",
-      // "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
-      "filetypes": [],
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      // "filetypes": [],
       "rootPatterns": [
         ".ccls",
         ".ccls-root",
@@ -1440,6 +1442,21 @@
         ".vim/",
         ".git/",
         ".hg/"
+      ],
+      // "disableDynamicRegister": true,
+      "disabledFeatures": [
+        "completion",
+        "diagnostics",
+        "signatureHelp",
+        "codeAction",
+        "hover",
+        "rename",
+        "workspaceSymbol",
+        "documentSymbol",
+        "documentHighlight",
+        "formatting",
+        "documentFormatting",
+        "documentRangeFormatting"
       ],
       "initializationOptions": {
         "clang": {
@@ -1455,10 +1472,10 @@
           "directory": "/home/lucas/.cache/ccls"
         },
         "client": {
-          "snippetSupport": true,
-          "diagnosticsRelatedInformation": true,
-          "hierarchicalDocumentSymbolSupport": true,
-          "linkSupport": true
+          "snippetSupport": false,
+          "diagnosticsRelatedInformation": false,
+          "hierarchicalDocumentSymbolSupport": false,
+          "linkSupport": false
         },
         "codeLens": {
           "renderInLine": true,
@@ -1474,7 +1491,7 @@
           "onChange": false,
           "comments": 2,
           "trackDependency": 1,
-          "parametersInDeclarations": true
+          "parametersInDeclarations": false
         }
       }
     },

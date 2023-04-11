@@ -308,6 +308,12 @@ return packer.startup(
                 }
             )
 
+            use({
+                "qtc-de/vve",
+                conf = "vve",
+                desc = "Encoding capabilities",
+            })
+
             -- FIX: causes error when viewing command window
             -- use({"m4xshen/smartcolumn.nvim", conf = "smartcolumn"})
 
@@ -1066,6 +1072,7 @@ return packer.startup(
                 {
                     "sheerun/vim-polyglot",
                     setup = function()
+                        vim.g.no_csv_maps = 1
                         vim.g.polyglot_disabled = {
                             "ftdetect",
                             -- "sensible",
@@ -1222,6 +1229,7 @@ return packer.startup(
             use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
             use({"vim-perl/vim-perl", ft = "perl"})
+            use({"m-pilia/vim-ccls", ft = {"cpp", "c"}, conf = "ccls"})
             use({"teal-language/vim-teal", ft = "teal"})
             use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
 
@@ -1279,7 +1287,11 @@ return packer.startup(
                 {
                     "Wansmer/treesj",
                     conf = "plugs.treesitter.setup_treesj",
-                    keys = {{"n", "gJ"}, {"n", "gS"}},
+                    keys = {
+                        {"n", "gJ"},
+                        {"n", "gK"},
+                        {"n", "gS"},
+                    },
                     requires = {
                         {"nvim-treesitter/nvim-treesitter"},
                         -- {
@@ -1703,13 +1715,13 @@ return packer.startup(
                     after = {colorscheme, "telescope.nvim"},
                 }
             )
-            -- use(
-            --     {
-            --         "simrat39/desktop-notify.nvim",
-            --         setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-            --         config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
-            --     }
-            -- )
+            use(
+                {
+                    "simrat39/desktop-notify.nvim",
+                    setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
+                    config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
+                }
+            )
         end,
     }
 )

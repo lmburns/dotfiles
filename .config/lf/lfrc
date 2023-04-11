@@ -731,7 +731,8 @@ cmd disk-info ${{
 
 # === Renaming ====================================== [[[
 cmd f2 !f2 -f "$1"
-cmd rmspace $f2 -f '\s' -r '_' -RFx
+cmd rmspace $f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHdx
+cmd tolower $f2 -r '{.lw}' -RFHdx
 cmd massren ${{
   setopt unset
   local -a files; files=( ${(@f)fx} )
@@ -1727,6 +1728,7 @@ map bM push :massren<space> # bulk rename with massren glob
 map bm massren              # bulk rename with massren
 map bs swap                 # swap two filenames
 map bp rmspace              # remove spaces from filenames
+map bl tolower              # conver filename to lowercase
 map bc backup               # backup file with `cp`
 map bdi backup_date_iso     # backup using ISO suffix
 map bdt backup_date_today   # backup using today's date

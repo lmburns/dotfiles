@@ -995,6 +995,7 @@ eval "$(luarocks path --bin --lua-version=5.1)"
 
 # $HOME/.poetry/bin(N-/)
 path=(
+  /usr/lib/ccache/bin
   $HOME/mybin
   $HOME/texlive/2021/bin/x86_64-linux
   $HOME/mybin/linux
@@ -1012,7 +1013,9 @@ path=(
   $NPM_PACKAGES/bin(N-/)
   /usr/bin                   # add again to be ahead of /bin
   /usr/lib/w3m
-  $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
+  $HOME/.ghcup/bin(N-/)
+  $HOME/.cabal/bin(N-/)
+  # $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
   "${path[@]}"
 )
 # ]]]
@@ -1182,8 +1185,8 @@ $FZF_COLORS
 --bind='alt-right:last'
 --bind='page-up:prev-history'
 --bind='page-down:next-history'
---bind='alt-{:prev-history'
---bind='alt-}:next-history'
+--bind='alt-up:prev-history'
+--bind='alt-down:next-history'
 --bind='alt-(:prev-selected'
 --bind='alt-):next-selected'
 --bind='ctrl-u:half-page-up'
@@ -1208,6 +1211,13 @@ $FZF_COLORS
 --bind='ctrl-\\:rebind(?)'
 --bind='change:first'"
 
+# --bind='alt-shift-up:'
+# --bind='alt-shift-down:'
+# --bind='alt-shift-left:'
+# --bind='alt-shift-right:'
+
+# --bind='alt-{:prev-history'
+# --bind='alt-}:next-history'
 # --bind='ctrl-\\:rebind(?)+rebind(<)+rebind(>)'
 # --bind='alt-!:unbind(<)'
 # --bind='alt-@:unbind(>)'

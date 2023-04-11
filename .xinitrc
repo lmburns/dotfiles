@@ -15,11 +15,11 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 # Kill process if it hangs
 # bustd &
 systembus-notify &
-earlyoom \
-    -r 10 \
-    -n \
-    --avoid '(^|/)(init|systemd|Xorg|sshd|brave|librewolf)$' \
-    --prefer '^(lua-language-se|rust-analyzer|nvim)$' &
+# earlyoom \
+#     -r 10 \
+#     -n \
+#     --avoid '(^|/)(init|systemd|Xorg|sshd|brave|librewolf)$' \
+#     --prefer '^(lua-language-se|rust-analyzer|nvim)$' &
 
 #  ╭───────────╮
 #  │ clipboard │
@@ -96,8 +96,7 @@ mpd &
 #  ╭────────────╮
 #  │ compositor │
 #  ╰────────────╯
-# Now used as a systemd service
-# picom -b --experimental-backends &
+/usr/bin/picom -b &
 # picom-rounded -b --experimental-backends &
 
 # use x11 compositor (transparent windows, blur background, ...) if not inside a VM

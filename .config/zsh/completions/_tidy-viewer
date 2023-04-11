@@ -1,0 +1,27 @@
+#compdef tidy-viewer
+
+# zsh completions for 'tidy-viewer'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-d,--debug-mode}'[print object details to make it easier for the maintainer to find and resolve bugs.]'
+  {-e,--extend-width-and-length}'[extended width beyond term width (do not truncate). Useful with `less -S`.]'
+  {-f,--force-all-rows}'[print all rows in file. May be piped to less -S. Example `tidy-viewer]'
+  {-a,--color-always}'[always force color output. Example `tv -a starwars.csv | less -R` or `tv -a]'
+  {-h,--help}'[prints help information]'
+  {-D,--no-dimensions}'[turns off dimensions of the data]'
+  {-R,--no-row-numbering}'[turns off row numbering]'
+  {-V,--version}'[prints version information]'
+  {-c,--color}'[there are 5 preconfigured color palettes (Defaults to nord):]'
+  {-s,--delimiter}'[the delimiter separating the columns.]'
+  {-F,--footer}'[add a footer to your tv. Example footer info \[default: NA\]]'
+  {-l,--lower-column-width}'[the lower (minimum) width of columns. Must be 2 or larger. \[default: 2\]]'
+  {-n,--number}'[rows to output <row-display>     Show how many rows to display. \[default: 25\]]'
+  {-g,--sigfig}'[significant Digits. Default 3. Max is 7 \[default: 3\]]'
+  {-t,--title}'[add a title to your tv. Example Test Data \[default: NA\]]'
+  {-u,--upper-column-width}'[the upper (maximum) width of columns. \[default: 20\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

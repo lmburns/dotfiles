@@ -329,12 +329,13 @@ map(
     [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.') - 1] == ' ' ? 'norm! ge' : '')<CR>]],
     {desc = "End of line"}
 )
-map(
-    "x",
-    "L",
-    [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.')] == ' ' ? 'norm! ge' : '')<CR>]],
-    {desc = "End of line"}
-)
+-- map(
+--     "x",
+--     "L",
+--     [[<Cmd>norm! g$<CR><Cmd>exe (getline('.')[col('.')] == ' ' ? 'norm! ge' : '')<CR>]],
+--     {desc = "End of line"}
+-- )
+map("x", "L", "g_", {desc = "End of line"})
 map("o", "L", "g$", {desc = "End of screen-line"})
 -- fn.nr2char(fn.strgetchar(fn.getline('.'):sub(fn.col('.')), 0))
 

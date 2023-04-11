@@ -1,37 +1,148 @@
 #compdef wmctrl
 
-# zsh completions for 'wmctrl'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+# Arguments:
+#   <DESK>               A desktop number. Desktops are counted from zero.
 
-arguments=(
-  '-m[show information about the window manager and]'
-  '-l[list windows managed by the window manager.]'
-  '-d[list desktops. The current desktop is marked]'
-  '-s[switch to the specified desktop.]'
-  '-a[activate the window by switching to its desktop and]'
-  '-c[close the window gracefully.]'
-  '-R[move the window to the current desktop and]'
-  {-r,-t}'[move the window to the specified desktop.]'
-  {-r,-e}'[resize and move the window around the desktop.]'
-  {-r,-b}'[change the state of the window. Using this option its]'
-  {-r,-N}'[set the name (long title) of the window.]'
-  {-r,-I}'[set the icon name (short title) of the window.]'
-  {-r,-T}'[set both the name and the icon name of the window.]'
-  '-k[)          Activate or deactivate window managers]'
-  '-o[<Y>           Change the viewport for the current desktop.]'
-  '-n[change number of desktops.]'
-  '-g[<H>           Change geometry (common size) of all desktops.]'
-  '-h[print help.]'
-  '-i[interpret <WIN> as a numerical window ID.]'
-  '-p[include PIDs in the window list. Very few]'
-  '-G[include geometry in the window list.]'
-  '-x[include WM_CLASS in the window list or]'
-  '-u[override auto-detection and force UTF-8 mode.]'
-  '-F[modifies the behavior of the window title matching]'
-  '-v[be verbose. Useful for debugging.]'
-  '-w[use a workaround. The option may appear multiple]'
-  '*:filename:_files'
-)
+#   <MVARG>              Specifies a change to the position and size
+#                        of the window. The format of the argument is:
 
-_arguments -s $arguments
+#                        <G>,<X>,<Y>,<W>,<H>
+
+#                        <G>: Gravity specified as a number. The numbers are
+#                           defined in the EWMH specification. The value of
+#                           zero is particularly useful, it means "use the
+#                           default gravity of the window".
+#                        <X>,<Y>: Coordinates of new position of the window.
+#                        <W>,<H>: New width and height of the window.
+
+#                        The value of -1 may appear in place of
+#                        any of the <X>, <Y>, <W> and <H> properties
+#                        to left the property unchanged.
+
+#   <STARG>              Specifies a change to the state of the window
+#                        by the means of _NET_WM_STATE request.
+#                        This option allows two properties to be changed
+#                        simultaneously, specifically to allow both
+#                        horizontal and vertical maximization to be
+#                        altered together.
+
+#                        The format of the argument is:
+
+#                        (remove|add|toggle),<PROP1>[,<PROP2>]
+
+#                        The EWMH specification defines the
+#                        following properties:
+
+#                            modal, sticky, maximized_vert, maximized_horz,
+#                            shaded, skip_taskbar, skip_pager, hidden,
+#                            fullscreen, above, below
+
+# Workarounds:
+
+#   DESKTOP_TITLES_INVALID_UTF8      Print non-ASCII desktop titles correctly
+#                                    when using Window Maker.
+
+# The format of the window list:
+
+#   <window ID> <desktop ID> <client machine> <window title>
+
+# The format of the desktop list:
+
+#   <desktop ID> [-*] <geometry> <viewport> <workarea> <title>
+
+#   <WIN>                This argument specifies the window. By default it's
+#                        interpreted as a string. The string is matched
+#                        against the window titles and the first matching
+#                        window is used. The matching isn't case sensitive
+#                        and the string may appear in any position
+#                        of the title.
+
+#                        The -i option may be used to interpret the argument
+#                        as a numerical window ID represented as a decimal
+#                        number. If it starts with "0x", then
+#                        it will be interpreted as a hexadecimal number.
+
+#                        The -x option may be used to interpret the argument
+#                        as a string, which is matched against the window's
+#                        class name (WM_CLASS property). Th first matching
+#                        window is used. The matching isn't case sensitive
+#                        and the string may appear in any position
+#                        of the class name. So it's recommended to  always use
+#                        the -F option in conjunction with the -x option.
+
+#                        The special string ":SELECT:" (without the quotes)
+#                        may be used to instruct wmctrl to let you select the
+#                        window by clicking on it.
+
+#                        The special string ":ACTIVE:" (without the quotes)
+#                        may be used to instruct wmctrl to use the currently
+#                        active window for the action.
+
+
+_wmctrl() {
+  local curcontext="$curcontext" state line context
+  local ret=1
+  local -a options arguments
+
+  options=(
+    '-i[Interpret <WIN> as a numerical window ID]'
+    '-p[Include PIDs in window list. Very few X applications support this]'
+    '-G[Include geometry in window list]'
+    '-x[Include WM_CLASS in window list or interpret <WIN> as WM_CLASS name]'
+    '-u[Override auto-detection and force UTF-8 mode]'
+    '-F[Case sensitive, full title window matching (instead of substring)]'
+    '-v[Be verbose]'
+    '-w[Use a workaround. May appear multiple times]:workaround:'
+  )
+
+  arguments=(
+    '-m[Information about the window manager and about the environment]'
+    '-l[List windows managed by the window manager]'
+    '-d[List desktops (current is marked with an asterisk)]'
+
+    '-s[Switch to the specified desktop]:desktop:_wmctrl_desktops'
+    '-a[Activate the window by switching to its desktop and raising it]:window:->wins'
+    '-c[Close the window gracefully]:window:->wins'
+    '-R[Move the window to the current desktop and activate it]:window:->wins'
+
+    '-r[Perform following action on window]:window:->wins'
+    '-t[Move the window to the specified desktop]:desktop:_wmctrl_desktops'
+    '-e[Resize and move the window around the desktop]:mvarg:_wmctrl_mvarg'
+    '-b[Change the state of the window (minimize, maximize, fullscreen)]:starg:_wmctrl_starg'
+
+    '-N[Set the name of the window]:long title:'
+    '-I[Set the icon name of the window]:short title:'
+    '-T[Set both the name and the icon name of the window]:short and long title:'
+
+    "-k[Toggle window manager's 'showing the desktop']:showing desktop:(on off)"
+
+    # TODO:
+    '-o[Change the viewport for the current desktop]: :_guard "[0-9]##,[0-9]##" "x-value,y-value"'
+    '-g[Change geometry (common size) of all desktops]: :_guard "[0-9]##,[0-9]##" "width,height"'
+
+    '-n[Change number of desktops]:number of desktops:'
+    '-h[Print help]'
+  )
+
+  _arguments -s -S -C \
+    "$arguments[@]" \
+    "$options[@]" \
+    && ret=0
+
+  case $state in
+    (wins)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:wmctrl-wins-$line[1]:"
+      if (( ${(z)words[(I)-*i*]} )); then
+        _wanted id expl 'window ids' _x_window -
+      else
+        _alternative \
+          'window names:window:_x_window -n' \
+          'select:extra:(("\:SELECT\:":"select the window by clicking" "\:ACTIVE\:":"currently active window"))'
+      fi
+  esac
+
+}
+
+_wmctrl "$@"

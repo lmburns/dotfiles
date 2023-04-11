@@ -4,7 +4,7 @@ M.border = {
     line = {"🭽", "▔", "🭾", "▕", "🭿", "▁", "🭼", "▏"},
     rectangle = {"┌", "─", "┐", "│", "┘", "─", "└", "│"},
     rounded = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"},
-    double = {"╔", "═", "╗", "║", "╝", "═", "╚", "║"}
+    double = {"╔", "═", "╗", "║", "╝", "═", "╚", "║"},
 }
 
 M.icons = {
@@ -19,15 +19,15 @@ M.icons = {
             warn = " ",
             info = " ", --  
             hint = " " -- 
-        }
+        },
     },
     separators = {
         vert_bottom_half_block = "▄",
         vert_top_half_block = "▀"
     },
     git = {
-        add = " ", -- + '',
-        mod = " ", -- ~
+        add = " ",  -- + '',
+        mod = " ",  -- ~
         remove = " ", -- - '',
         ignore = "",
         rename = "",
@@ -51,17 +51,16 @@ M.icons = {
         null = "[]",
         float = ""
     },
+    lang = {
+        lua = "",
+    },
     misc = {
         -- ellipsis = utf8.char(0x2026), -- "…"
         block = "▌",
         bug = "", -- 'ﴫ'
-        calendar = "",
-        chevron_right = "",
         code = "",
         comment = "",
         dashboard = "",
-        double_chevron_right = "»",
-        down = "⇣",
         ellipsis = "…",
         fire = "",
         gear = "",
@@ -75,17 +74,16 @@ M.icons = {
         list = "",
         list_alt = "",
         lock = "",
+        lock_alt = "",
         loclist = "",
-        modified = "[+]",
         note = "",
         package = "",
         pencil = "",
         project = "",
-        question = "",
+        question_round = "",
+        question_bold = "",
         quickfix = "",
-        readonly = "[]",
         robot = "ﮧ",
-        search = "",
         sign_in = "",
         spell = "",
         star = "",
@@ -94,27 +92,76 @@ M.icons = {
         tab = "⇥",
         table = "",
         tag = "",
-        telescope = "",
         tools = "",
+        watch = "",
+
+        modified = "[+]",
+        readonly = "[]",
         unnamed = "[No Name]",
-        up = "⇡",
-        watch = ""
+
+        bracket = {
+            w = {
+                lparen = "⦅",
+                rparen = "⦆",
+                lbrace = "〚",
+                rbrace = "〛",
+                lcbrace = "⦃",
+                rcbrace = "⦄",
+            },
+            a = {
+                tl = "「",
+                br = "」"
+                -- 〈 〉 《 》 【 】
+            },
+            -- wa = 『 』 〖 〗 〘 〙
+            m = {
+                lparen = "⟮",
+                rparen = "⟯",
+                lbrace = "⟦",
+                rbrace = "⟧",
+                tl = "⌈",
+                br = "⌊",
+                tr = "⌉",
+                bl = "⌋",
+            }
+            -- ⟨ ⟩ ⟪ ⟫ ⟬ ⟭ ⦇ ⦈ ⦉ ⦊
+        }
     },
     ui = {
-        arrow_closed = "",
-        arrow_open = "",
+        up = "⇡",
+        down = "⇣",
+
+        chevron = {
+            left = "",
+            right = "",
+            up = "",
+            down = "",
+            double = {
+                left = "",
+                right = "",
+                up = "",
+                down = "",
+            },
+            thin = {
+                left = "",
+                right = "",
+                up = "",
+                down = "",
+            },
+        },
+
         arrow_swap = "",
         bookmark_unfilled = "",
         bookmark_filled = "",
         bookmark_double = "󰸕",
         bookmark_star = "",
         bug = "",
+        calculator = "",
         calendar = "",
         check_thin = "",
         check_thick = "",
         check_box = "",
         check_circle = "",
-        chevron_right = "",
         circle = "",
         circle_hollow = "", -- ○
         circle_bullseye = "◉",
@@ -122,13 +169,10 @@ M.icons = {
         close = "",
         close_thick = "",
         cloud_download = "",
-        code = "",
-        comment = "",
         dashboard = "",
         fire = "",
         gear = "",
         history = "",
-        lightbulb = "",
         list = "",
         lock = "",
         new_file = "",
@@ -137,7 +181,8 @@ M.icons = {
         pencil = "",
         plus = "",
         project = "",
-        search = "",
+        search = "",
+        search_alt = "",
         signin = "",
         signout = "",
         table = "",
@@ -160,18 +205,24 @@ M.icons = {
             ignore = "I",
             branch = ""
         },
-        wait = "☕", -- W
+        chevron = {
+            double = {
+                left = "«",
+                right = "»"
+            },
+        },
+        wait = "☕",  -- W
         build = "⛭", -- b
         success = "✓", -- ✓ -- ✔ -- 
         fail = "✗",
-        bug = "B", -- 🐛' -- B
+        bug = "B",
         todo = "⦿",
         hack = "☠",
-        perf = "✈", -- 🚀
+        perf = "✈",
         note = "🗈",
         test = "⏲",
-        virtual_text = "❯", -- '❯', -- '➤',
-        readonly = "🔒", -- '',
+        virtual_text = "❯",
+        readonly = "🔒",
         bar = "|",
         sep_triangle_left = ">",
         sep_triangle_right = "<", -- ⟪
@@ -179,7 +230,7 @@ M.icons = {
         sep_circle_left = ")",
         sep_arrow_left = ">",
         sep_arrow_right = "<"
-    }
+    },
 }
 
 M.plugins = {
@@ -194,7 +245,7 @@ M.plugins = {
         ERROR = " ",
         WARN = " ",
         INFO = " ",
-        DEBUG = " ",
+        DEBUG = ("%s "):format(M.icons.misc.bug),
         TRACE = " "
     },
     lualine = {
@@ -208,9 +259,9 @@ M.plugins = {
             arrow_left = "",
             arrow_right = "",
             slant = "",
-        }
+        },
         --
-    }
+    },
 }
 
 M.lsp = {
@@ -239,32 +290,32 @@ M.lsp = {
         TypeParameter = "Type"
     },
     kinds = {
-        Text = "", -- 
-        Method = "", -- 
-        Function = "", -- ƒ
+        Text = "",       -- 
+        Method = "",     -- 
+        Function = "",   -- ƒ
         Constructor = "", -- 
-        Field = "", -- 料  
-        Variable = "", --  
-        Class = "", -- ﴯ 
-        Interface = "", -- 
-        Module = "", -- 
-        Property = "", -- ﰠ
-        Unit = "", --  塞
+        Field = "",      -- 料  
+        Variable = "",   --  
+        Class = "",      -- ﴯ 
+        Interface = "",  -- 
+        Module = "",     -- 
+        Property = "",   -- ﰠ
+        Unit = "",       --  塞
         Value = "",
-        Enum = "", -- 
-        Keyword = "", -- 
-        Snippet = "", --    
+        Enum = "",       -- 
+        Keyword = "",    -- 
+        Snippet = "",    --    
         Color = "",
-        File = "", -- 
-        Reference = "", --  渚
-        Folder = "", -- 
+        File = "",       -- 
+        Reference = "",  --  渚
+        Folder = "",     -- 
         EnumMember = "", -- 
-        Constant = "", -- 
-        Struct = "פּ", -- 
-        Event = "", -- 鬒
-        Operator = "Ψ", -- 
+        Constant = "",   -- 
+        Struct = "פּ",     -- 
+        Event = "",      -- 鬒
+        Operator = "Ψ",    -- 
         TypeParameter = "" --   
-    }
+    },
 }
 
 ---Add alternative names for icons
@@ -275,7 +326,7 @@ M.icons.lsp.message = M.icons.lsp.hint
 M.icons.lsp.msg = M.icons.lsp.hint
 
 M.current = {
-    border = M.border.rounded
+    border = M.border.rounded,
 }
 
 return M

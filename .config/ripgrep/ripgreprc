@@ -27,7 +27,7 @@
 --glob=!vendor/*
 
 # Set the colors.
---color=always
+--color=auto
 # --colors=line:none
 --colors=line:style:bold
 --colors=match:fg:magenta

@@ -20,10 +20,10 @@ local api = vim.api
 local fn = vim.fn
 local F = vim.F
 
--- local Path = require("plenary.path")
 local scan = require("plenary.scandir")
 
-local prefer_neoformat
+-- local prefer_neoformat
+local prefer_coc
 
 local function save_doc(bufnr)
     vim.schedule(
@@ -84,7 +84,7 @@ function M.format_doc(save)
     gittool.root_exe(
         function()
             if coc.did_init() then
-                if _t(prefer_neoformat):contains(vim.bo[bufnr].ft) then
+                if not _t(prefer_coc):contains(vim.bo[bufnr].ft) then
                     M.neoformat(save)
                     return
                 end
@@ -209,7 +209,8 @@ end
 --       g; moves to last line after format
 local function init()
     M.juliaformat()
-    prefer_neoformat = {"json", "typescriptreact", "typescript", "javascript"}
+    -- prefer_neoformat = {"json", "typescriptreact", "typescript", "javascript"}
+    prefer_coc = {"lua"}
 
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1

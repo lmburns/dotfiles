@@ -2,11 +2,11 @@
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 Language: Cpp
 
-# RemoveBracesLLVM: false # remove optional braces
-# InsertBraces: false # true # Conflicts with AllowShortIfStatementsOnASingleLine
+# RemoveBracesLLVM: false # Remove optional braces
+# InsertBraces: false     # Conflicts with AllowShortIfStatementsOnASingleLine
 
 RemoveBracesLLVM: false
-InsertBraces: true
+InsertBraces: false
 
 # RemoveBracesLLVM: true
 # InsertBraces: false
@@ -30,7 +30,7 @@ AlignConsecutiveMacros:
   AcrossEmptyLines: false
   AcrossComments: true
 AlignEscapedNewlines: Left
-AlignOperands: Align # false
+AlignOperands: Align # false AlignAfterOperator
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -50,8 +50,10 @@ AttributeMacros: ['__capability', '__output', '__ununsed']
 BinPackArguments: false
 BinPackParameters: false
 BitFieldColonSpacing: Both
+# CLANG16
 # BreakAfterAttributes: Always
 BreakAfterJavaFieldAnnotations: true
+# CLANG16
 # BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeBinaryOperators: All # NonAssignment, All
 BreakBeforeBraces: Attach
@@ -153,6 +155,7 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
+# Macros: []
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All # Inner
 # NamespaceMacros: []
@@ -190,8 +193,10 @@ RawStringFormats:
     BasedOnStyle: google
 ReferenceAlignment: Right
 ReflowComments: true
+# CLANG16
 # RemoveSemicolon: true
 RequiresClausePosition: OwnLine # WithPreceding
+# CLANG16
 # RequiresExpressionIndentation: OuterScope
 # SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 0
@@ -241,11 +246,6 @@ PenaltyReturnTypeOnItsOwnLine: 10
 ---
 Language: Java
 BreakAfterJavaFieldAnnotations: true
-
-# ---
-# Language: Cpp
-# BreakAfterAttributes: Always
-# BreakBeforeInlineASMColon: OnlyMultiline
 
 # ---
 # Language: Json

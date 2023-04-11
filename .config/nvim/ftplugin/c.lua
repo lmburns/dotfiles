@@ -3,7 +3,7 @@ local map = require("common.utils").map
 map(
     "n",
     "<Leader>r<CR>",
-    "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc -std=c2x % -o %< && ./%< <CR>"
+    "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc -std=gnu2x % -o %< && ./%< <CR>"
 )
 map(
     "n",

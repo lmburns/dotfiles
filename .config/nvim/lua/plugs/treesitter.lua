@@ -134,7 +134,7 @@ M.setup_hlargs = function()
         return
     end
 
-    hlargs.setup {
+    hlargs.setup{
         excluded_filetypes = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= 'luapad'")),
         -- color = g.colors_name == "kimbox" and colors.salmon or nil,
         color = "#DE9A4E",
@@ -149,11 +149,11 @@ M.setup_hlargs = function()
         paint_arg_declarations = true,
         paint_arg_usages = true,
         paint_catch_blocks = {
-          declarations = true,
-          usages = true
+            declarations = true,
+            usages = true,
         },
         extras = {
-          named_parameters = true,
+            named_parameters = true,
         },
         excluded_argnames = {
             declarations = {"use", "use_rocks", "_"},
@@ -161,8 +161,8 @@ M.setup_hlargs = function()
                 python = {"cls", "self"},
                 go = {"_"},
                 rust = {"_", "self"},
-                lua = {"_", "self", "use", "use_rocks", "super"}
-            }
+                lua = {"_", "self", "use", "use_rocks", "super"},
+            },
         },
         performance = {
             parse_delay = 1,
@@ -173,9 +173,9 @@ M.setup_hlargs = function()
                 partial_parse = 3,
                 partial_insert_mode = 100,
                 total_parse = 700,
-                slow_parse = 5000
-            }
-        }
+                slow_parse = 5000,
+            },
+        },
     }
 end
 
@@ -199,7 +199,7 @@ M.setup_ssr = function()
                 prev_match = "N",
                 replace_confirm = "<CR>",
                 replace_all = "<S-CR>"
-            }
+            },
         }
     )
 
@@ -216,14 +216,14 @@ M.setup_iswap = function()
 
     hl.set("ISwapSwap", {bg = colors.oni_violet})
 
-    iswap.setup {
+    iswap.setup{
         keys = "asdfghjklqwert;",
         grey = "disable",
         hl_snipe = "ISwapSwap",
         hl_selection = "WarningMsg",
         flash_style = "simultaneous", -- sequential
         hl_flash = "ModeMsg",
-        autoswap = true
+        autoswap = true,
     }
 
     wk.register(
@@ -233,7 +233,7 @@ M.setup_iswap = function()
             ["so"] = {"<Cmd>ISwapNodeWith<CR>", "Swap current node (ISwap)"},
             ["sp"] = {"<Cmd>ISwapNode<CR>", "Swap picked nodes (ISwap)"},
             ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "Swap left node (ISwap)"},
-            ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "Swap right node (ISwap)"}
+            ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "Swap right node (ISwap)"},
         }
     )
 end
@@ -246,7 +246,7 @@ M.setup_autotag = function()
         return
     end
 
-    autotag.setup {
+    autotag.setup{
         filetypes = {
             "html",
             "xml",
@@ -277,7 +277,7 @@ M.setup_autotag = function()
             "track",
             "wbr",
             "menuitem"
-        }
+        },
     }
 end
 
@@ -316,7 +316,7 @@ M.setup_aerial = function()
                 --   window - open aerial to the right/left of the current window
                 placement = "window",
                 -- Preserve window size equality with (:help CTRL-W_=)
-                preserve_equality = false
+                preserve_equality = false,
             },
             -- Determines how the aerial window decides which buffer to display symbols for
             --   window - aerial window will display symbols for the buffer in the window from which it was opened
@@ -473,7 +473,7 @@ M.setup_aerial = function()
                     -- This is the config that will be passed to nvim_open_win.
                     -- Change values here to customize the layout
                     return conf
-                end
+                end,
             },
             lsp = {
                 -- Fetch document symbols when LSP diagnostics update.
@@ -483,20 +483,20 @@ M.setup_aerial = function()
                 update_when_errors = true,
                 -- How long to wait (in ms) after a buffer change before updating
                 -- Only used when diagnostics_trigger_update = false
-                update_delay = update_delay
+                update_delay = update_delay,
             },
             treesitter = {
                 -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay
+                update_delay = update_delay,
             },
             markdown = {
                 -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay
+                update_delay = update_delay,
             },
             man = {
                 -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay
-            }
+                update_delay = update_delay,
+            },
         }
     )
 
@@ -506,7 +506,7 @@ M.setup_aerial = function()
             ["[["] = {aerial.prev_up, "Aerial previous up"},
             ["]]"] = {aerial.next_up, "Aerial next up"},
             ["{"] = {aerial.prev, "Aerial previous (anon)"},
-            ["}"] = {aerial.next, "Aerial next (anon)"}
+            ["}"] = {aerial.next, "Aerial next (anon)"},
         }
     )
 
@@ -515,7 +515,7 @@ M.setup_aerial = function()
             ["[["] = {aerial.prev_up, "Aerial previous"},
             ["]]"] = {aerial.next_up, "Aerial next"},
             ["{"] = {aerial.prev, "Aerial previous (anon)"},
-            ["}"] = {aerial.next, "Aerial next (anon)"}
+            ["}"] = {aerial.next, "Aerial next (anon)"},
         },
         {mode = "x"}
     )
@@ -590,7 +590,7 @@ M.setup_context_vt = function()
             custom_resolver = function(nodes, ft, opts)
                 -- By default the last node is used
                 return nodes[#nodes]
-            end
+            end,
         }
     )
 end
@@ -613,51 +613,51 @@ M.setup_treesurfer = function()
 
     local default =
         _t(
-        {
-            "function",
-            "arrow_function",
-            "function_definition",
-            "function_declaration",
-            "function_item",
-            "FnProto", -- zig Function
-            "method_definition",
-            "macro_definition",
-            "closure_expression",
-            "IfPrefix", -- zig If
-            "if_statement",
-            "if_expression",
-            "if_let_expression",
-            "else_clause",
-            "else_statement",
-            "elseif_statement",
-            "ForPrefix", -- zig For
-            "for_statement",
-            "for_expression",
-            "while_statement",
-            "SwitchExpr", -- zig Switch
-            "SwitchCase", -- zig Switch else
-            "switch_statement",
-            "match_expression",
-            "struct_item",
-            "enum_item",
-            "interface_declaration",
-            "class_declaration",
-            "class_name",
-            "impl_item",
-            "try_statement",
-            "catch_clause",
-            "ContainerDecl"
-        }
-    )
+            {
+                "function",
+                "arrow_function",
+                "function_definition",
+                "function_declaration",
+                "function_item",
+                "FnProto", -- zig Function
+                "method_definition",
+                "macro_definition",
+                "closure_expression",
+                "IfPrefix", -- zig If
+                "if_statement",
+                "if_expression",
+                "if_let_expression",
+                "else_clause",
+                "else_statement",
+                "elseif_statement",
+                "ForPrefix", -- zig For
+                "for_statement",
+                "for_expression",
+                "while_statement",
+                "SwitchExpr", -- zig Switch
+                "SwitchCase", -- zig Switch else
+                "switch_statement",
+                "match_expression",
+                "struct_item",
+                "enum_item",
+                "interface_declaration",
+                "class_declaration",
+                "class_name",
+                "impl_item",
+                "try_statement",
+                "catch_clause",
+                "ContainerDecl"
+            }
+        )
 
     local filter =
         default:merge(
-        {
-            -- "function_call",
-            "field_declaration", -- rust struct
-            "enum_variant" -- rust enum
-        }
-    )
+            {
+                -- "function_call",
+                "field_declaration", -- rust struct
+                "enum_variant"       -- rust enum
+            }
+        )
 
     sts.setup(
         {
@@ -692,7 +692,7 @@ M.setup_treesurfer = function()
                 ["method_definition"] = "",
                 ["variable_declaration"] = "",
                 ["let_declaration"] = "",
-                ["VarDecl"] = "", -- zig Variable Declaration
+                ["VarDecl"] = "",     -- zig Variable Declaration
                 ["ContainerDecl"] = "פּ", -- zig Enum/Struct
                 ["struct_item"] = "פּ",
                 ["enum_item"] = "",
@@ -704,7 +704,7 @@ M.setup_treesurfer = function()
                 ["impl_item"] = "ﴯ",
                 ["try_statement"] = "",
                 ["catch_clause"] = ""
-            }
+            },
         }
     )
 
@@ -821,36 +821,42 @@ M.setup_treesj = function()
     local langs = require("treesj.langs")
     local lu = require("treesj.langs.utils")
 
+    -- lu.merge_preset(langs.lua, {})
+
+    langs.presets["lua"] = nil
+
     local langs_t = {
         unpack(langs.presets),
         lua = {
-            table_constructor = {
-                both = {separator = ","},
-                split = {last_separator = true},
-                join = {space_in_brackets = false},
-            },
-            arguments = lu.set_preset_for_args(),
+            table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
+            arguments = lu.set_preset_for_args({
+                split = {
+                    recursive_ignore = {"arguments", "parameters", "table_constructor"},
+                    recursive = true,
+                },
+            }),
             parameters = lu.set_preset_for_args(),
-            block = {
-                both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
-                join = {space_in_brackets = true},
-            },
+            block = lu.set_preset_for_non_bracket({
+                split = {
+                    recursive_ignore = {"arguments", "parameters"},
+                },
+            }),
             variable_declaration = {target_nodes = {"table_constructor", "block"}},
-            assignment_statement = {
-                target_nodes = {"table_constructor", "block"},
-            },
+            assignment_statement = {target_nodes = {"table_constructor", "block"}},
             if_statement = {target_nodes = {"block"}},
             else_statement = {target_nodes = {"block"}},
             function_definition = {target_nodes = {"block"}},
             function_declaration = {
-                both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
-                join = {
-                    space_in_brackets = true,
-                    -- force_insert = ";",
-                    -- no_insert_if = {lu.if_penultimate},
-                },
+                target_nodes = {"block"},
+                -- both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
+                -- join = {
+                --     space_in_brackets = true,
+                --     force_insert = ";",
+                --     no_insert_if = {lu.helpers.if_penultimate},
+                -- },
             },
-            -- function_definition = {target_nodes = {"block"}},
+            function_call = {target_nodes = {"arguments"}},
+            field = {target_nodes = {"table_constructor"}},
         },
         -- When merging multiple lines, use colon separator
     }
@@ -866,15 +872,15 @@ M.setup_treesj = function()
             cursor_behavior = "hold",
             notify = true,     -- notify about possible problems or not
             dot_repeat = true, -- use `dot` for repeat action
-            -- langs = {langs_t},
-            langs = lu._prepare_presets(langs_t),
+            langs = langs_t,
+            -- langs = lu._prepare_presets(langs_t),
         }
     )
 
-    -- These mappings might seem like they should be reversed
-    -- But I like it like this
+    -- map("n", "gK", D.ithunk(tsj.split, {recursive = true}), {desc = "Spread: out"})
     map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
-    map("n", "gS", D.ithunk(tsj.join), {desc = "Spread: combine"})
+    map("n", "gK", D.ithunk(tsj.join), {desc = "Spread: combine"})
+    map("n", "gS", D.ithunk(tsj.toggle), {desc = "Spread: toggle"})
 
     -- map(
     --     "n",
@@ -980,12 +986,12 @@ M.setup = function()
         auto_install = true,
         ignore_install = {}, -- List of parsers to ignore installing
         highlight = {
-            enable = true, -- false will disable the whole extension
+            enable = true,   -- false will disable the whole extension
             disable = function(ft, bufnr)
                 if
                     ts_hl_disabled:contains(ft) or
-                        api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines
-                 then
+                    api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines
+                then
                     return true
                 end
 
@@ -1004,7 +1010,7 @@ M.setup = function()
                 "css",
                 "markdown"
             },
-            custom_captures = custom_captures
+            custom_captures = custom_captures,
         },
         autotag = {enable = true},
         autopairs = {
@@ -1017,28 +1023,28 @@ M.setup = function()
                 "git_rebase",
                 "gitattributes",
                 "markdown"
-            }
+            },
         },
         indent = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
         },
         fold = {enable = false},
         endwise = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"},
         },
         matchup = {
             enable = true,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = false,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"}
+            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
         },
         playground = {
             enable = true,
             disable = {},
-            updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+            updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false, -- Whether the query persists across vim sessions
             keybindings = {
                 toggle_query_editor = "o",
@@ -1051,21 +1057,21 @@ M.setup = function()
                 update = "R",
                 goto_node = "<cr>",
                 show_help = "?"
-            }
+            },
         },
         query_linter = {
             enable = true,
             use_virtual_text = true,
-            lint_events = {"BufWrite", "CursorHold"}
+            lint_events = {"BufWrite", "CursorHold"},
         },
         incremental_selection = {
             enable = true,
             keymaps = {
-                init_selection = "<M-n>", -- maps in normal mode to init the node/scope selection
+                init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                node_incremental = "'", -- increment to the upper named parent
-                node_decremental = '"' -- decrement to the previous node
-            }
+                node_incremental = "'",      -- increment to the upper named parent
+                node_decremental = '"'       -- decrement to the previous node
+            },
         },
         context_commentstring = {
             enable = true,
@@ -1087,7 +1093,7 @@ M.setup = function()
                 typescript = {__default = "// %s", __multiline = "/* %s */"},
                 vim = '" %s',
                 vimwiki = "<!-- %s -->"
-            }
+            },
         },
         refactor = {
             highlight_definitions = {enable = false},
@@ -1096,18 +1102,18 @@ M.setup = function()
                 enable = true,
                 keymaps = {
                     smart_rename = "<A-r>" -- mapping to rename reference under cursor
-                }
+                },
             },
             navigation = {
                 enable = true,
                 keymaps = {
-                    goto_definition = ";D", -- mapping to go to definition of symbol under cursor
+                    goto_definition = ";D",          -- mapping to go to definition of symbol under cursor
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
                     list_definitions_toc = "<Leader>fo",
                     goto_next_usage = "]y",
                     goto_previous_usage = "[y"
-                }
-            }
+                },
+            },
         },
         rainbow = {
             enable = true,
@@ -1122,7 +1128,7 @@ M.setup = function()
                 "git_rebase",
                 "gitattributes",
                 "markdown"
-            }
+            },
             -- query = {
             --     "rainbow-parens",
             --     html = "rainbow-tags",
@@ -1182,7 +1188,7 @@ M.setup = function()
                     ["ix"] = {query = "@assignment.lhs", desc = "Assignment LHS"},
                     ["ax"] = {query = "@assignment.rhs", desc = "Assignment RHS"},
                     ["al"] = {query = "@loop.outer", desc = "Around loop"},
-                    ["il"] = {query = "@loop.inner", desc = "Inner loop"}
+                    ["il"] = {query = "@loop.inner", desc = "Inner loop"},
                 },
                 -- You can choose the select mode (default is charwise 'v')
                 --
@@ -1193,8 +1199,8 @@ M.setup = function()
                 -- mapping query_strings to modes.
                 selection_modes = {
                     ["@parameter.outer"] = "v", -- charwise
-                    ["@function.outer"] = "V", -- linewise
-                    ["@class.outer"] = "<c-v>" -- blockwise
+                    ["@function.outer"] = "V",  -- linewise
+                    ["@class.outer"] = "<c-v>"  -- blockwise
                 },
                 -- If you set this to `true` (default is `false`) then any textobject is
                 -- extended to include preceding or succeeding whitespace. Succeeding
@@ -1205,7 +1211,7 @@ M.setup = function()
                 -- * query_string: eg '@function.inner'
                 -- * selection_mode: eg 'v'
                 -- and should return true of false
-                include_surrounding_whitespace = true
+                include_surrounding_whitespace = true,
             },
             -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
 
@@ -1252,13 +1258,13 @@ M.setup = function()
                     ["]j"] = {query = "@parameter.inner", desc = "Next parameter start"},
                     ["]a"] = {query = "@call.inner", desc = "Next call start"},
                     ["]l"] = {query = "@loop.inner", desc = "Next loop start"},
-                    ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"}
+                    ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"},
                 },
                 goto_next_end = {
                     ["]F"] = {query = "@function.outer", desc = "Next function end"},
                     ["]K"] = {query = "@class.outer", desc = "Next class end"},
                     ["]R"] = {query = "@block.outer", desc = "Next block end"},
-                    ["]A"] = {query = "@call.outer", desc = "Next call end"}
+                    ["]A"] = {query = "@call.outer", desc = "Next call end"},
                 },
                 goto_previous_start = {
                     ["[f"] = {query = "@function.outer", desc = "Previous function start"},
@@ -1268,20 +1274,20 @@ M.setup = function()
                     ["[j"] = {query = "@parameter.inner", desc = "Previous parameter start"},
                     ["[a"] = {query = "@call.inner", desc = "Previous call start"},
                     ["[l"] = {query = "@loop.inner", desc = "Previous loop start"},
-                    ["[d"] = {query = "@conditional.inner", desc = "Previous conditional start"}
+                    ["[d"] = {query = "@conditional.inner", desc = "Previous conditional start"},
                 },
                 goto_previous_end = {
                     ["[F"] = {query = "@function.outer", desc = "Previous function end"},
                     ["[R"] = {query = "@block.outer", desc = "Previous block end"},
                     ["[K"] = {query = "@class.outer", desc = "Previous class end"},
-                    ["[A"] = {query = "@call.outer", desc = "Previous call end"}
+                    ["[A"] = {query = "@call.outer", desc = "Previous call end"},
                 },
                 goto_next = {
-                    ["]X"] = {query = "@return.inner", desc = "Next return"}
+                    ["]X"] = {query = "@return.inner", desc = "Next return"},
                 },
                 goto_previous = {
-                    ["[X"] = {query = "@return.inner", desc = "Previous return"}
-                }
+                    ["[X"] = {query = "@return.inner", desc = "Previous return"},
+                },
             },
             swap = {
                 enable = true,
@@ -1291,7 +1297,7 @@ M.setup = function()
                     ["sf"] = {query = "@function.outer", desc = "Swap next function"},
                     ["sk"] = {query = "@class.outer", desc = "Swap next class"},
                     ["sb"] = {query = "@block.outer", desc = "Swap next block"},
-                    ["sc"] = {query = "@call.outer", desc = "Swap next call"}
+                    ["sc"] = {query = "@call.outer", desc = "Swap next call"},
                 },
                 swap_previous = {
                     ["s]"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
@@ -1299,10 +1305,10 @@ M.setup = function()
                     ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
                     ["sK"] = {query = "@class.outer", desc = "Swap prev class"},
                     ["sB"] = {query = "@block.outer", desc = "Swap prev block"},
-                    ["sC"] = {query = "@call.outer", desc = "Swap prev call"}
-                }
-            }
-        }
+                    ["sC"] = {query = "@call.outer", desc = "Swap prev call"},
+                },
+            },
+        },
     }
 end
 
@@ -1326,9 +1332,9 @@ function M.install_extra_parsers()
         install_info = {
             url = "https://github.com/lpraneis/tree-sitter-tracing-log",
             files = {"src/parser.c"},
-            branch = "main", -- default branch in case of git repo if different from master
-            generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-            requires_generate_from_grammar = false -- if folder contains pre-generated src/parser.c
+            branch = "main",                        -- default branch in case of git repo if different from master
+            generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
+            requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
         },
         filetype = "log"
     }
@@ -1357,23 +1363,23 @@ local function init()
 
     ts_hl_disabled =
         _t(
-        {
-            -- "vimdoc",
-            "html",
-            "comment",
-            -- "markdown",
-            "yaml",
-            -- "css",
-            "latex",
-            "make",
-            "cmake",
-            "zsh",
-            "solidity",
-            "sxhkdrc",
-            "perl"
-            -- "toml",
-        }
-    )
+            {
+                -- "vimdoc",
+                "html",
+                "comment",
+                -- "markdown",
+                "yaml",
+                -- "css",
+                "latex",
+                "make",
+                "cmake",
+                "zsh",
+                "solidity",
+                "sxhkdrc",
+                "perl"
+                -- "toml",
+            }
+        )
 
     ts_indent_disabled = _t({})
 
@@ -1474,15 +1480,15 @@ local function init()
     indent_enabled = {}
     for _, lang in ipairs(conf.ensure_installed) do
         local parser = parsers.list[lang]
-            local filetype = parser.filetype
+        local filetype = parser.filetype
 
-            if not vim.tbl_contains(hl_disabled, lang) then
-                ft_enabled[filetype or lang] = true
-            end
+        if not vim.tbl_contains(hl_disabled, lang) then
+            ft_enabled[filetype or lang] = true
+        end
 
-            if not vim.tbl_contains(ts_indent_disabled, lang) then
-                indent_enabled[filetype or lang] = true
-            end
+        if not vim.tbl_contains(ts_indent_disabled, lang) then
+            indent_enabled[filetype or lang] = true
+        end
     end
 
     -- This doesn't get loaded until the second file is opened

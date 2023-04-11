@@ -79,7 +79,7 @@ function handle_mime() {
       MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat --color=always -l man -p'" man -- "${filepath}"
     ;;
     (text/csv)
-      tidy-viewer -n 30 <$filepath
+      tidy-viewer --color 3 -a -n 28 <$filepath
       # bat -Pf -l csv ${filepath} ;;
     ;;
     (text/* | */xml | application/javascript)

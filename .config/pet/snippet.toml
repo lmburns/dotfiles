@@ -102,6 +102,19 @@ output = ""
 tag = ["pacman"]
 
 [[snippets]]
+description = "pacman - search unneeded (fzf)"
+command = """
+  paru -Qdtq \
+    | fzf --preview 'paru --color=always -Qil {}' \
+          --layout=reverse \
+          --bind 'enter:execute(paru -Qil {} | bat)' \
+          --bind '-:execute(paru -R {})' \
+          --preview-window=':nohidden'
+"""
+output = ""
+tag = ["pacman"]
+
+[[snippets]]
 description = "pacman - search all (fzf)"
 command = """
   paru -Slq \

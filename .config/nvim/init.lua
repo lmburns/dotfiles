@@ -89,7 +89,7 @@ require("common.jump")
 ---@diagnostic disable-next-line:duplicate-set-field
 vim.notify = function(...)
     require("plugins").loader("nvim-notify")
-    -- require("plugins").loader("desktop-notify.nvim")
+    require("plugins").loader("desktop-notify.nvim")
     vim.notify = require("common.utils").notify
     vim.notify(...)
 end

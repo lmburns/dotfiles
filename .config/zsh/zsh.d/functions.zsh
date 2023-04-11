@@ -243,8 +243,9 @@ function rmsymr() { command rm -- **/*(-@D); }
 # Remove ansi from file
 function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
 # Remove space from file name
-function rmspace() { f2 -f '\s' -r '_' -RF $@ }
+function rmspace() { f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHd $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
+function tolower() { f2 -r '{.lw}' -RFHd $@ }
 
 # ============================= Typescript ===========================
 # ====================================================================
@@ -366,8 +367,8 @@ function o2h() { print $(( [##16] 0$1 )); print -- -1 } # print 'obase=16; ibase
 function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
 
 # Move items out of a directory
-function mvout-clean() { command rsync -vua --delete-after ${1:?Invalid directory} . ; }
-function mvout() { command rsync -vua ${1:?Invalid directory} . ; }
+function mvout() { command cp -vaR ${1:?Invalid directory}/ . }
+function mvoutc() { command cp -vaR ${1:?Invalid directory}/ . && rmdir ${1}/ }
 
 # Create 'gif' and 'video' dirs, then move those filetypes into the directory
 function mvmedia() {

@@ -1,0 +1,22 @@
+#compdef dmenu
+
+local arguments
+
+arguments=(
+  {-h,--help}'[show usage]'
+  '-b[appears at the bottom of the screen]'
+  '-f[grabs kb before reading stdin if not from TTY (faster, but locks up X until stdin reaches EOF)]'
+  '-i[matches menu items case insensitively]'
+  '-l[list items vertically]: : _guard "[0-9]#" "number of lines"'
+  '-m[displayed on the monitor number supplied (starting from 0)]: : _guard "[0-9]#" "monitor"'
+  '-p[prompt to be displayed to the left of the input field]:prompt:'
+  '-fn[font or font set used]:font:_xft_fonts'
+  '-nb[normal background color (#RGB, #RRGGBB, and X color names are supported)]:normal background color:'
+  '-nf[normal foreground color]:normal foreground color:'
+  '-sb[selected background color]:selected background color:'
+  '-sf[selected foreground color]:selected foreground color:'
+  '-v[prints version information to stdout, then exits]'
+  '-w[embed into windowid]:window:_x_window -n'
+)
+
+_arguments -s -S $arguments

@@ -1279,7 +1279,7 @@ key_bindings:
   - { key: Apostrophe, mods: Alt, chars: "\x1b[39;3u" }
   - { key: Comma, mods: Alt, chars: "\x1b[44;3u" }
   - { key: Period, mods: Alt, chars: "\x1b[46;3u" }
-  - { key: 0x35, mods: Alt, chars: "\x1b[31;3u" } # Forward slash (/)
+  # - { key: 0x35, mods: Alt, chars: "\x1b[31;3u" } # Forward slash (/)
 
   # - { key: Grave,      mods: Alt, chars: "\x1b`"  }
   # - { key: Minus,      mods: Alt, chars: "\x1b-"  }

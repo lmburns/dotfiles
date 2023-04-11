@@ -12,9 +12,11 @@ Hover:
 
 Diagnostics:
   UnusedIncludes: Strict
-  Suppress: [-Wunused-result, -Wunused, -Wunused-variable]
-  # ClangTidy:
-  # Add: modernize*
+  # Suppress: [-Wunused-result, -Wunused, -Wunused-variable]
+  # https://clang.llvm.org/extra/clang-tidy/checks/list.html
+  ClangTidy:
+    # modernize-* misc-*
+    Add: bugprone-*
   # Remove: modernize-use-trailing-return-type
 
 Index:
@@ -25,11 +27,9 @@ Index:
 # -finstrument-functions = Adds code to call user supplied profiling functions
 # --coverage = gcov
 # -fsanitize={address,thread,undefined}
-# -save-temps = Leave behind results of preprocess and assembly
 
 CompileFlags:
   Add: [
-      -std=c2x,
       -Wall,               # all warnings
       -Wextra,             # extra warnings
       -Wpedantic,
@@ -52,7 +52,60 @@ CompileFlags:
       -fsanitize=address,
       # -fsanitize=thread,
       -fsanitize=undefined,
+      -save-temps,           # leave behind results of preprocess and assembly
+
+      # Disable
+      -Wno-unused-result,
+      -Wno-unused,
+      -Wno-unused-variable
     ]
-  Remove: [-Wunused-result, -Wunused, -Wunused-variable]
+  Remove: []
   # Remove: -W*
-  Compiler: gcc
+---
+
+# Flags for .c files
+If:
+  PathMatch: .*\.c
+CompileFlags:
+  Add: [
+    -xc,
+    -std=gnu2x,            # c standard  c2x
+  ]
+Compiler: clang
+---
+# Flags for .h files
+If:
+  PathMatch: .*\.h
+CompileFlags:
+  Add: [
+    -xc-header,
+    -std=gnu2x,            # c standard  c2x
+    --include=Global.h,
+  ]
+Compiler: clang  # gcc
+---
+# Flags for .cpp files
+If:
+  PathMatch: .*\.(cc|cpp|c++)
+CompileFlags:
+  Add: [
+    -xc++,
+    -std=gnu++2b,            # c++ standard  c++2b
+  ]
+Compiler: clang++
+ClangTidy:
+  Add: modernize-*
+# Remove: modernize-use-trailing-return-type
+---
+# Flags for .hpp files
+If:
+  PathMatch: .*\.(hh|hpp|h++)
+CompileFlags:
+  Add: [
+    -xc++,
+    -std=gnu++2b,            # c++ standard  c++2b
+    --include=Global.h,
+  ]
+Compiler: clang++
+ClangTidy:
+  Add: modernize-*

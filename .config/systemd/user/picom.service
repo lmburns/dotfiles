@@ -4,7 +4,8 @@ After=graphical.target
 
 [Service]
 Environment=DISPLAY=:0
-ExecStart=/home/lucas/bin/picom-rounded --experimental-backends
+# ExecStart=/home/lucas/bin/picom-rounded --experimental-backends
+ExecStart=/usr/bin/picom --experimental-backends
 Restart=on-failure
 RestartSec=3s
 

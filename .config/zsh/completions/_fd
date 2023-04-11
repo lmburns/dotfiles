@@ -13,6 +13,29 @@ _fd() {
         _arguments_options=(-s -C)
     fi
 
+    local -a ftype_s ftype_l
+    ftype_s=(
+        f:"normal file"
+        d:"directory"
+        l:"symlink"
+        x:"executable"
+        e:"empty"
+        s:"socket"
+        p:"pipe"
+     )
+
+     ftype_l=(
+        file:"normal file"
+        directory:"directory / folder"
+        symlink:"symlink"
+        executable:"file which is executable by current user"
+        empty:"empty file"
+        socket:"socket"
+        pipe:"pipe / fifo"
+     )
+
+# '*-t+[Filter by type]:filetype:{_alternative "ftype_s:short filetype:compadd -a - ftype_s" "ftype_l:long filetype:compadd -a - ftype_l"}' \
+
     local context curcontext="$curcontext" state line
     _arguments "${_arguments_options[@]}" \
 '*--and=[Additional search patterns that need to be matched]:pattern: ' \
@@ -22,20 +45,16 @@ _fd() {
 '(-d --max-depth --min-depth)--exact-depth=[Only show search results at the exact given depth]:depth: ' \
 '*-E+[Exclude entries that match the given glob pattern]:pattern: ' \
 '*--exclude=[Exclude entries that match the given glob pattern]:pattern: ' \
-'*-t+[Filter by type: file (f), directory (d), symlink (l), executable (x), empty (e), socket (s), pipe (p)]:filetype:((file\:""
+'*-t+[Filter by type]:filetype:{_alternative "users:user:_users"}' \
+'*--type=[Filter by type]:filetype:((
+file\:""
 directory\:""
 symlink\:""
 executable\:"A file which is executable by the current effective user"
 empty\:""
 socket\:""
-pipe\:""))' \
-'*--type=[Filter by type: file (f), directory (d), symlink (l), executable (x), empty (e), socket (s), pipe (p)]:filetype:((file\:""
-directory\:""
-symlink\:""
-executable\:"A file which is executable by the current effective user"
-empty\:""
-socket\:""
-pipe\:""))' \
+pipe\:""
+))' \
 '*-e+[Filter by file extension]:ext: ' \
 '*--extension=[Filter by file extension]:ext: ' \
 '*-S+[Limit results based on the size of files]:size: ' \

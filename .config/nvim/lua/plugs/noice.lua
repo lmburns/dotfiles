@@ -9,6 +9,7 @@ end
 local utils = require("common.utils")
 local map = utils.map
 local style = require("style")
+local icons = style.icons
 
 local views = require("noice.config.views").defaults
 
@@ -850,14 +851,22 @@ function M.setup()
                     },
                     help = {
                         pattern = "^:%s*he?l?p?%s+",
-                        icon = "",
+                        icon = icons.misc.question_bold,
                         view = "cmdline"
                     },
-                    filter = {pattern = "^:%s*!", icon = "$", lang = "zsh"},
-                    man = {pattern = "^:%s*Man%s+", icon = "龎", lang = "bash"},
+                    filter = {
+                        pattern = "^:%s*!",
+                        icon = "$",
+                        lang = "zsh",
+                    },
+                    man = {
+                        pattern = "^:%s*Man%s+",
+                        icon = "龎",
+                        lang = "bash",
+                    },
                     calculator = {
                         pattern = "^=",
-                        icon = "",
+                        icon = icons.ui.calculator,
                         lang = "vimnormal"
                     },
                     input = {}, -- Used by input()

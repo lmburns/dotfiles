@@ -1,5 +1,7 @@
 #compdef fzf
 
+setopt extendedglob
+
 _fzf_arg_preview_window() {
   _values -s , 'preview-window' \
     up down left right \
@@ -201,7 +203,90 @@ _fzf_arg_bind() {
 }
 
 _fzf() {
-  local arguments
+  local -a arguments expl state_descr
+  local curcontext="$curcontext" state line context
+  integer ret=1
+
+  local -a _color_base _ansi _ansi_insert _ansi_attrs
+  _color_base=(
+    'fg:normal text'
+    'bg:normal background'
+    'hl:highlighted substrings'
+    'fg+:current line text'
+    'bg+:current line background'
+    'hl+:current line highlighted substrings'
+    'preview-fg:preview window text'
+    'preview-bg:preview window background'
+    'gutter:gutter on the left'
+    'query:query string'
+    'disabled:query string when search is disabled (--disabled)'
+    'info:info line (match counters)'
+    'border:border around the window (--border and --preview)'
+    'separator:horizontal separator on info line'
+    'scrollbar:scrollbar'
+    'label:border label (--border-label & --preview-label)'
+    'preview-label:border label of the preview window (--preview-label)'
+    'prompt:prompt'
+    'pointer:pointer to the current line'
+    'marker:multi-select marker'
+    'spinner:streaming input indicator'
+    'header:header'
+  )
+  _ansi=(
+     '-1:default color'
+     'black:ANSI 0'
+     'red:ANSI 1'
+     'green:ANSI 2'
+     'yellow:ANSI 3'
+     'blue::ANSI 4'
+     'magenta:ANSI 5'
+     'cyan:ANSI 6'
+     'white:ANSI 7'
+     'grey:ANSI 8'
+     'bright-black:ANSI 8'
+     'bright-red:ANSI 9'
+     'bright-green:ANSI 10'
+     'bright-yellow:ANSI 11'
+     'bright-blue:ANSI 12'
+     'bright-magenta:ANSI 13'
+     'bright-cyan:ANSI 14'
+     'bright-white:ANSI 15'
+     '1-255:ANSI 256 colors'
+     '#rrggbb:24-bit colors'
+  )
+  _ansi_insert=(
+     '-1'
+     '0'
+     '1'
+     '2'
+     '3'
+     '4'
+     '5'
+     '6'
+     '7'
+     '8'
+     '8'
+     '9'
+     '10'
+     '11'
+     '12'
+     '13'
+     '14'
+     '15'
+     ''
+     '#'
+  )
+
+  # Only applies to FG
+  _ansi_attrs=(
+    'regular:clears previously set attributes; should precede the other ones'
+    bold
+    underline
+    reverse
+    dim
+    italic
+    strikethrough
+  )
 
   arguments=(
     # Search
@@ -211,7 +296,7 @@ _fzf() {
     '(extended)'{\+x,--no-extended}'[disable extended-search mode]'
 
     + '(exact)'
-    {-e,--exact}'[enable Exact-match]'
+    {-e,--exact}'[enable exact-match]'
 
     + '(case-sensitivity)'
     '-i[case-insensitive match (default: smart-case match)]'
@@ -340,7 +425,7 @@ _fzf() {
     + '(tabstop)'
     '--tabstop=[number of spaces for a tab character (default: 8)]:spaces:'
     + color
-    '*--color=[base scheme (dark|light|16|bw) and/or custom colors]:[BASE_SCHEME][,COLOR_NAME[\:ANSI_COLOR][\:ANSI_ATTRIBUTES]]:'
+    '*--color=[base scheme (dark|light|16|bw) and/or custom colors]:[BASE_SCHEME][,COLOR_NAME[\:ANSI_COLOR][\:ANSI_ATTRIBUTES]]:->color'
 
     + '(no-bold)'
     '--no-bold[do not use bold text]'
@@ -398,7 +483,60 @@ _fzf() {
     '*:filename:_files'
   )
 
-  _arguments -s $arguments
+  _arguments -s -S -C $arguments
+
+  # TODO: Finish
+  case $state in
+    (color)
+      # words=($line[1] "${words[@]}")
+      # local -a qwords
+      # qwords=( ${words//(#m)[\[\]()\\*?#<>~\^\|]/\\$MATCH} )
+
+      (( CURRENT++ ))
+
+      # dunstify "words: $words"
+      # dunstify "line: $line"
+      # dunstify "qwords: $qwords"
+
+      # [BASE_SCHEME][,COLOR_NAME[\:ANSI_COLOR][\:ANSI_ATTRIBUTES]]
+
+      # local -a color_desc; color_desc=( "${(@)_color_base##*:}" )
+
+      # _description colors expl 'base scheme'
+      # _description color_base expl "$state_descr"
+
+      # _sequence -s ',' _wanted color expl 'base scheme' \
+      #   compadd -l -d _color_base - "${(@)_color_base%%:*}" && \
+      #       ret=0
+
+      # _sequence -s ',' _wanted color expl 'base scheme' \
+      #   compadd -ld _color_base -a _color_base && \
+      #       ret=0
+
+
+      # _describe 'base scheme' _color_base -qS ':'
+      # _describe 'base scheme' _color_base -S ':'
+
+      # _wanted color expl color \
+      #   compadd -qS, -ld _ansi -a _ansi_insert && \
+      #   ret=0
+
+
+      # _values -s ',' -S ':' 'colors' \
+      #   ': : _describe "base scheme" _color_base' \
+      #   ': : _wanted color expl color compadd -qS, -ld _ansi -a _ansi_insert' \
+      #   ': : compadd -qS, -ld _ansi -a _ansi_insert'
+
+
+      # case $line[1] in
+      #   (help|man)
+      #     _arguments "${_arguments_options[@]}" \
+      #       {-h,--help}'[Display help about the subcommand]' \
+      #       ":: :_stig_topics" \
+      #       && ret=0
+      #   ;;
+      # esac
+  esac
 }
 
 _fzf "$@"

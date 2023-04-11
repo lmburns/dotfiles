@@ -939,6 +939,7 @@ do
                     return
                 end
                 return notify.notify(msg, level, opts)
+                -- return vim.notify(msg, level, opts)
             else
                 return require("desktop-notify").notify(msg, level, opts)
             end
@@ -990,11 +991,7 @@ _G.N =
                         ["err"] = 4,
                     })[level] or level
 
-                M.notify(
-                    vim.inspect(msg),
-                    M.get_default(level, log.levels.INFO) --[[@as number]],
-                    {title = title}
-                )
+                log.dump( msg, {title = title, level = level})
             end,
         }
     )

@@ -21,6 +21,7 @@ application/x-bittorrent=torrent.desktop;
 application/x-gnome-saved-search=pcmanfm.desktop;
 application/x-perl=nvim.desktop;
 application/x-zerosize=nvim.desktop;
+application/xhtml+xml=brave-browser.desktop;
 application/xml=nvim.desktop;
 image/gif=sxiv.desktop;
 image/jpeg=sxiv.desktop;
