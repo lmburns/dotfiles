@@ -858,7 +858,29 @@ M.setup_treesj = function()
             function_call = {target_nodes = {"arguments"}},
             field = {target_nodes = {"table_constructor"}},
         },
-        -- When merging multiple lines, use colon separator
+        teal = {
+            table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
+            arguments = lu.set_preset_for_args({
+                split = {
+                    recursive_ignore = {"arguments", "table_constructor"},
+                    recursive = true,
+                },
+            }),
+            block = lu.set_preset_for_non_bracket({
+                split = {
+                    recursive_ignore = {"arguments"},
+                },
+            }),
+            var_declaration = {target_nodes = {"table_constructor", "block"}},
+            -- assignment_statement = {target_nodes = {"table_constructor", "block"}},
+            if_statement = {target_nodes = {"block"}},
+            else_block = {target_nodes = {"block"}},
+            -- function_definition = {target_nodes = {"block"}},
+            function_statement = {target_nodes = {"block"}},
+            function_call = {target_nodes = {"arguments"}},
+            field = {target_nodes = {"table_constructor"}},
+
+        },
     }
 
     tsj.setup(
@@ -942,7 +964,7 @@ M.setup = function()
             "kotlin",
             "latex",
             "llvm",
-            "log",
+            -- "log",
             "lua",
             "luadoc",
             "luap",
@@ -1008,7 +1030,8 @@ M.setup = function()
                 "sh",
                 "awk",
                 "css",
-                "markdown"
+                "markdown",
+                -- "teal"
             },
             custom_captures = custom_captures,
         },
@@ -1017,8 +1040,8 @@ M.setup = function()
             enable = true,
             disable = {
                 -- "vimdoc",
+                -- "log",
                 "comment",
-                "log",
                 "gitignore",
                 "git_rebase",
                 "gitattributes",
@@ -1027,19 +1050,19 @@ M.setup = function()
         },
         indent = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
+            disable = {"comment", "gitignore", "git_rebase", "gitattributes", "teal"},
         },
         fold = {enable = false},
         endwise = {
             enable = true,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes", "markdown"},
+            disable = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
         },
         matchup = {
             enable = true,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = false,
-            disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
+            disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
         },
         playground = {
             enable = true,
@@ -1123,7 +1146,6 @@ M.setup = function()
                 "html",
                 "vimdoc",
                 "comment",
-                "log",
                 "gitignore",
                 "git_rebase",
                 "gitattributes",
@@ -1168,7 +1190,7 @@ M.setup = function()
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
                 lookbehind = true,
-                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
+                disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
                 keymaps = {
                     ["af"] = {query = "@function.outer", desc = "Around function"},
                     ["if"] = {query = "@function.inner", desc = "Inner function"},
@@ -1247,7 +1269,7 @@ M.setup = function()
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "log", "gitignore", "git_rebase", "gitattributes"},
+                disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
                 -- ["]o"] = "@loop.*",
                 -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
                 goto_next_start = {
@@ -1292,7 +1314,9 @@ M.setup = function()
             swap = {
                 enable = true,
                 swap_next = {
-                    ["s["] = {query = "@assignment.rhs", desc = "Swap next assignment"},
+                    ["s["] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
+                    -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
+                    -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
                     -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
                     ["sf"] = {query = "@function.outer", desc = "Swap next function"},
                     ["sk"] = {query = "@class.outer", desc = "Swap next class"},
@@ -1300,7 +1324,8 @@ M.setup = function()
                     ["sc"] = {query = "@call.outer", desc = "Swap next call"},
                 },
                 swap_previous = {
-                    ["s]"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
+                    ["s]"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
+                    ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
                     -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
                     ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
                     ["sK"] = {query = "@class.outer", desc = "Swap prev class"},
@@ -1314,7 +1339,7 @@ end
 
 ---Install extra Treesitter parsers
 function M.install_extra_parsers()
-    local parser_config = parsers.get_parser_configs()
+    -- local parser_config = parsers.get_parser_configs()
 
     -- Using this parsers own queries does not work
     -- Solidity
@@ -1328,16 +1353,16 @@ function M.install_extra_parsers()
     -- }
 
     -- Log files
-    parser_config.log = {
-        install_info = {
-            url = "https://github.com/lpraneis/tree-sitter-tracing-log",
-            files = {"src/parser.c"},
-            branch = "main",                        -- default branch in case of git repo if different from master
-            generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
-            requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-        },
-        filetype = "log"
-    }
+    -- parser_config.log = {
+    --     install_info = {
+    --         url = "https://github.com/lpraneis/tree-sitter-tracing-log",
+    --         files = {"src/parser.c"},
+    --         branch = "main",                        -- default branch in case of git repo if different from master
+    --         generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
+    --         requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+    --     },
+    --     filetype = "log"
+    -- }
 end
 
 -- M.setup_query_secretary = function()
@@ -1459,8 +1484,8 @@ local function init()
             [";D"] = "Go to definition under cursor",
             ["<Leader>fd"] = "Quickfix definitions (treesitter)",
             ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
-            ["[x"] = "Previous usage",
-            ["]x"] = "Next usage",
+            ["[y"] = "Previous usage",
+            ["]y"] = "Next usage",
             ["<M-n>"] = "Start scope selection/Increment"
         },
         {mode = "n"}
@@ -1471,6 +1496,12 @@ local function init()
         "<Leader>sh",
         "TSHighlightCapturesUnderCursor", -- "Inspect"
         {cmd = true, desc = "Highlight capture group"}
+    )
+    map(
+        "n",
+        "<Leader>sd",
+        "TSPlaygroundToggle", -- "Inspect"
+        {cmd = true, desc = "Toggle TSPlayground"}
     )
 
     queries = require("nvim-treesitter.query")

@@ -17,7 +17,7 @@ feedlist-format    " %n %4i %13u %t -- %T"
 articlelist-format "%4i %f %D  %?T?|%-17T|  ?%t"
 datetime-format    "%b %d %Y" # date example: Mar 01 2017
 
-bookmark-cmd "~/mybin/srb"
+bookmark-cmd "~/mybin/srbook"
 # bookmark-cmd "~/.config/newsboat/dangerzone/bookmark.sh"
 # bookmark-interactive yes
 # bookmark-autopilot no

@@ -131,11 +131,12 @@ alias kall='killall'
 alias kid='kill -KILL'
 
 alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
-alias prg="rg --pcre2"
-alias frg="rg -F"
-alias irg="rg --no-ignore"
-alias RGV='RG -g "*.lua" -g "*.vim"'
-alias RGL='RG -g "*.lua"'
+alias prg="rg --pcre2"               # pcre rg
+alias frg="rg --files-with-matches"  # only return filenames
+alias lrg="rg -F"                    # string literal
+alias irg="rg --no-ignore"           # don't respect ignore files
+alias RGV='RG -g "*.lua" -g "*.vim"' # grep lua and vim files only (interactively)
+alias RGL='RG -g "*.lua"'            # grep lua files only (interactively)
 
 # [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
@@ -190,6 +191,8 @@ alias sha='shasum -a 256'
   alias lszb='lsz *(.OL[1,10])'
   # 10 smallest files
   alias lszs='lsz *(.oL[1,10])'
+  # List empty files
+  alias lsz0='lsz *(.L0)'
 
   alias lsd='exa -D --icons --git'
   alias lsdl='ll -D'
@@ -355,12 +358,13 @@ alias updateantivirus="sudo freshclam"
 alias vw='$EDITOR $HOME/vimwiki/index.md'
 alias vwd='$EDITOR $HOME/vimwiki/dotfiles/index.md'
 alias vws='$EDITOR $HOME/vimwiki/scripting/index.md'
-alias vwb='$EDITOR $HOME/vimwiki/blog/index.md'
+alias vwB='$EDITOR $HOME/vimwiki/blog/index.md'
 alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
 alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
 alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
 alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
 alias vwt='$EDITOR $HOME/vimwiki/todos.md'
+alias vwb='$EDITOR $HOME/vimwiki/browser/index.md'
 
 # === github ====================================================================
 alias h='git'

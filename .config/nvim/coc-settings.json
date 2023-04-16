@@ -260,7 +260,7 @@
   //                            Clangd
   // ╘══════════════════════════════════════════════════════════╛
   "clangd.enabled": true,
-  "clangd.trace.server": "off",
+  "clangd.trace.server": "verbose",
   "clangd.checkUpdates": true,
   // "clangd.inlayHints.enable": true,
   // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
@@ -271,7 +271,6 @@
     "--clang-tidy", // show clang-tidy diagnostics
     "--all-scopes-completion",
     "--completion-style=detailed",
-    "--suggest-missing-includes",
     "--header-insertion=iwyu",
     "--header-insertion-decorators=false",
     // "--header-insertion-decorators", // prepend dot before completion to show "#include"
@@ -1056,7 +1055,7 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
-  "coc.preferences.enableMarkdown": true,
+  // "coc.preferences.enableMarkdown": true,
   "markdownlint.config": {
     "MD001": false,
     "default": true,

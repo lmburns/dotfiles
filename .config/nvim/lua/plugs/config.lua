@@ -174,9 +174,8 @@ end
 function M.open_browser()
     wk.register(
         {
-            -- ["gX"] = {":lua R('functions').go_github()<CR>", "Open link under cursor"},
-            ["gX"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
-            ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
+            -- ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
+            ["gY"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
             ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
             ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
         }
@@ -207,7 +206,9 @@ function M.link_visitor()
         }
     )
 
-    map("n", "gw", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+    map("n", "gx", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link nearest"})
+    -- map("n", "gw", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
 
     local function link_visitor_map(bufnr)
         bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})

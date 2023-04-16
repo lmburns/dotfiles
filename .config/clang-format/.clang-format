@@ -47,6 +47,7 @@ AlwaysBreakAfterReturnType: AllDefinitions # All
 AlwaysBreakBeforeMultilineStrings: true # false
 AlwaysBreakTemplateDeclarations: true
 AttributeMacros: ['__capability', '__output', '__ununsed']
+# NOTE: Messes up struct without trailing comma
 BinPackArguments: false
 BinPackParameters: false
 BitFieldColonSpacing: Both
@@ -55,7 +56,9 @@ BitFieldColonSpacing: Both
 BreakAfterJavaFieldAnnotations: true
 # CLANG16
 # BreakBeforeInlineASMColon: OnlyMultiline
-BreakBeforeBinaryOperators: All # NonAssignment, All
+
+BreakBeforeBinaryOperators: All # NonAssignment
+
 BreakBeforeBraces: Attach
 # BreakBeforeBraces: Custom
 BraceWrapping:
@@ -140,6 +143,7 @@ IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExternBlock: Indent
 IndentGotoLabels: true
+# IndentPPDirectives: AfterHash
 IndentPPDirectives: BeforeHash
 IndentRequiresClause: true
 IndentWidth: 4
@@ -233,15 +237,16 @@ TabWidth: 4
 UseTab: Never
 
 ColumnLimit: 90 # 100
-PenaltyBreakAssignment: 10
-PenaltyBreakBeforeFirstCallParameter: 10
-# PenaltyBreakComment: 100
-PenaltyBreakFirstLessLess: 10
-PenaltyBreakOpenParenthesis: 10
-# PenaltyBreakString: 100
-# PenaltyIndentedWhitespace: 10
-PenaltyExcessCharacter: 10
-PenaltyReturnTypeOnItsOwnLine: 10
+
+# PenaltyBreakAssignment: 0
+# PenaltyBreakBeforeFirstCallParameter: 10
+# # PenaltyBreakComment: 100
+# PenaltyBreakFirstLessLess: 10
+# PenaltyBreakOpenParenthesis: 10
+# # PenaltyBreakString: 100
+# # PenaltyIndentedWhitespace: 10
+# PenaltyExcessCharacter: 10
+# PenaltyReturnTypeOnItsOwnLine: 10
 
 ---
 Language: Java

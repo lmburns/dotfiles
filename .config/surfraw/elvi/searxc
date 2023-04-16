@@ -1,0 +1,33 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-13 11:53
+#
+# DESC: Elvi to search with searx (coppedge.info)
+# elvis: searxc		-- Search searxc (coppedge.info)
+. surfraw || exit 1
+
+w3_usage_hook ()
+{
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search searxc (coppedge.info)
+EOF
+  w3_global_usage
+}
+
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://coppedge.info"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://coppedge.info/search?q=${escaped_args}&language=en-US&safesearch=0"
+w3_browse_url "$search_url"

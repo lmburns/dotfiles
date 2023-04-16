@@ -1,0 +1,35 @@
+diff --git i/autoload/tablemode.vim w/autoload/tablemode.vim
+index d601634..04b6ff3 100644
+--- i/autoload/tablemode.vim
++++ w/autoload/tablemode.vim
+@@ -49,8 +49,8 @@ function! s:ToggleMapping() "{{{2
+       call s:UnMap(g:table_mode_motion_left_map, 'n')
+       call s:UnMap(g:table_mode_motion_right_map, 'n')
+ 
+-      call s:UnMap(g:table_mode_cell_text_object_a_map, 'ox')
+-      call s:UnMap(g:table_mode_cell_text_object_i_map, 'ox')
++      " call s:UnMap(g:table_mode_cell_text_object_a_map, 'ox')
++      " call s:UnMap(g:table_mode_cell_text_object_i_map, 'ox')
+ 
+       call s:UnMap(g:table_mode_realign_map, 'n')
+       call s:UnMap(g:table_mode_delete_row_map, 'n')
+diff --git i/autoload/tablemode/spreadsheet.vim w/autoload/tablemode/spreadsheet.vim
+index f4c6128..09463cf 100644
+--- i/autoload/tablemode/spreadsheet.vim
++++ w/autoload/tablemode/spreadsheet.vim
+@@ -418,7 +418,14 @@ function! tablemode#spreadsheet#Sort(bang, ...) range "{{{2
+     let [firstRow, lastRow] = [a:firstline, a:lastline]
+   endif
+   call tablemode#spreadsheet#MoveToStartOfCell()
+-  exec ':undojoin | '.firstRow.','.lastRow . 'sort'.bang opts '/.*\%'.col.'v/'
++  " exec ':undojoin | '.firstRow.','.lastRow . 'sort'.bang opts '/.*\%'.col.'v/'
++  try
++    undojoin
++    exec firstRow.','.lastRow . 'sort'.bang opts '/.*\%'.col.'v/'
++  catch /^Vim\%((\a\+)\)\=:E790/
++  finally
++    exec firstRow.','.lastRow . 'sort'.bang opts '/.*\%'.col.'v/'
++  endtry
+ endfunction
+ 
+ function! tablemode#spreadsheet#EchoCell()

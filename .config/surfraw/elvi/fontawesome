@@ -1,0 +1,32 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-15 18:53
+#
+# DESC: Elvi to search fontawesome glyphs (fontawesome.com)
+# elvis: fontawesome	-- Search fontawesome (fontawesome.com)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search fontawesome glyphs (fontawesome.com)
+EOF
+  w3_global_usage
+}
+
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://fontawesome.com"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://fontawesome.com/v6/search?q=${escaped_args}&o=r&m=free"
+w3_browse_url "$search_url"

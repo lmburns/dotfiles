@@ -161,6 +161,20 @@
 # --regex-lua=/[ \t]*([a-zA-Z0-9_]+)[ \t]*=[ \t]*module_define.*$/\1/m,module/
 # ]]]
 
+# === Teal === [[[
+--langdef=teal
+--langmap=teal:.tl
+--regex-teal=/^ *M\.([a-zA-Z0-9_]+) *=/\1/v,variable/
+--regex-teal=/^ *local +([a-zA-Z0-9_]+)/\1/v,variable/
+--regex-teal=/^ *([a-zA-Z0-9_]+) *=/\1/v,variable/
+--regex-teal=/^.*\s*function[ \t]*([a-zA-Z0-9_]+):([a-zA-Z0-9_]+).*$/\2/f,function/
+--regex-teal=/^.*(local)?\s*function[ \t]*([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+).*$/\3/f,function/
+--regex-teal=/^.*(local)?\s*function[ \t]*([a-zA-Z0-9_]+)\s*\(.*$/\2/f,function/
+--regex-teal=/([a-zA-Z0-9_]+) = require[ (]"([^"]+)"/\1/r,require/
+--regex-teal=/[ \t]{1}([a-zA-Z0-9_]+)[ \t]*[=][^=]/\1/v,variable/
+--regex-teal=/record[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/t,type/
+# ]]]
+
 # === CSS === [[[
 # --langdef=css
 # --langmap=css:.css

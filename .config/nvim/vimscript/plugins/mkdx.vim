@@ -9,7 +9,7 @@ let g:mkdx#settings = {
       \ 'image_extension_pattern': 'a\?png\|jpe\?g\|gif',
       \ 'insert_indent_mappings':  0,
       \ 'gf_on_steroids':          0,
-      \ 'restore_visual':          1,
+      \ 'restore_visual':          0,
       \ 'enter':                   {
       \                              'enable': 1,
       \                              'shift': 1,
@@ -78,7 +78,7 @@ let g:mkdx#settings = {
       \                              },
       \                            },
       \ 'highlight':               {
-      \                              'enable': 1,
+      \                              'enable': 0,
       \                              'frontmatter': {
       \                                'yaml': 1,
       \                                'toml': 0,
@@ -116,7 +116,7 @@ endfunction
 augroup lmb__MkdxBindings
   autocmd!
   autocmd FileType vimwiki,markdown
-      \ nnoremap <silent> <Leader>I :call <SID>MkdxFzfQuickfixHeaders()<Cr>|
+      \ nnoremap <silent> <LocalLeader>i :call <SID>MkdxFzfQuickfixHeaders()<Cr>|
       \ nnoremap <silent> Mc <Plug>(mkdx-text-inline-code-n)|
       \ nnoremap <silent> mB :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>|
       \ nnoremap <silent> m, :<C-U>call mkdx#WrapText('n', '***', '***', 'custom-bold-italic')<CR>|
@@ -144,6 +144,7 @@ augroup lmb__MkdxBindings
       \ vmap <silent> mB :<C-U>call mkdx#WrapText('v', '***', '***', 'custom-bold-italic')<CR>|
       \ vmap <silent> m, :<C-U>call mkdx#WrapText('v', '***', '***', 'custom-bold-italic')<CR>|
       \ vmap <silent> m: :<C-U>call mkdx#WrapText('v', ':', ':', 'custom-tag')<CR>|
+      \ vmap <silent> <Leader>tc <Plug>(mkdx-tableize)|
 augroup END
 " \ nunmap M[ |
 " \ nunmap M]

@@ -1,52 +1,32 @@
 #!/bin/sh
-# elvis: rust_docs	-- Search rust_docs (docs.rs)
-# Generated-By: mkelvis (surfraw-tools) 0.1.0
-# NOTE: Any double underscore-prefixed names (i.e., variables and functions)
-#       are reserved for `mkelvis` and are an implementation detail.
-#       Depend on at your own risk.
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-13 11:53
+#
+# DESC: Elvi to search Rust documentation (docs.rs)
+# elvis: rust_docs	-- Search Rust documentation (docs.rs)
 . surfraw || exit 1
 
-w3_usage_hook ()
-{
-	cat <<EOF
+w3_usage_hook () {
+  cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search rust_docs (docs.rs)
+  Search Rust documentation (docs.rs)
 EOF
-	w3_global_usage
+  w3_global_usage
 }
-
 
 w3_config
 w3_parse_args "$@"
-# `w3_args` now contains a list of arguments.
 
-# Check enums
-
-# Collapse variables
-
-# Any variables in the url should have values now
 if test -z "$w3_args"; then
-	w3_browse_url "https://docs.rs"
-	exit
+  w3_browse_url "https://docs.rs"
+  exit
 fi
 
-# Map inline variables
-# Map each value of inline list variables
-##__mkelvis_inline_variable "$SURFRAW_rust_docs_variable" keyword
-
-# Map variables to parameters
-# Map each value of list variables to parameters
-## First parameter
-##mappings="param1=$(w3_url_escape "$SURFRAW_rust_docs_variable1")"
-## Successive parameters
-##mappings="$mappings&param2=$(w3_url_escape "$SURFRAW_rust_docs_variable2")"
-
-# Add the search to url
-## Don't expand pathnames so that '*' characters are passed to browser verbatim.
 set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
-_="$escaped_args"
+it="$escaped_args"
 search_url="https://docs.rs/releases/search?query=?"
 search_url="$search_url$escaped_args"
 w3_browse_url "$search_url"

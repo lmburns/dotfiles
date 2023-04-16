@@ -449,8 +449,9 @@ zt 0c light-mode binary for \
     jszczerbinsky/ptSh \
   lbin atclone"mkdir -p $XDG_CONFIG_HOME/ytfzf; cp **/conf.sh $XDG_CONFIG_HOME/ytfzf" \
     pystardust/ytfzf \
-  wait"$(has surfraw)" lbin from'gl' atclone'./prebuild; ./configure --prefix="$ZPFX"; make' \
-  make"install"  atpull'%atclone' \
+  wait"$(has surfraw)" lbin from'gl' \
+  atclone'./prebuild; ./configure --prefix="$ZPFX"; make' make"install"  atpull'%atclone' \
+  atinit'SURFRAW_google_safe=off' \
     surfraw/Surfraw \
   wait"$(has xsel)" lbin atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
   make"install" atpull'%atclone' lman \

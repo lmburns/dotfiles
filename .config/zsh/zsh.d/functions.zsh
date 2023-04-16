@@ -515,6 +515,20 @@ function log::dump() {
 # === TIP: =========================================================== [[[
 # print -P '%15>...>%d' => /home/lucas/...
 # print -P '%15<...<%d' => ...fig/nvim/lua
+
+# Longest element
+# ${arr[(r)${(l.${#${(O@)arr//?/X}[1]}..?.)}]}
+# ${(M)array:#${~${(O@)array//?/?}[1]}}
+
+# Reverse word
+# ${(j::)${(@Oa)${(s::):-word}}}
+
+# All .c files with no matching .o
+# *.c(e_'[[ ! -e $REPLY:r.o ]]'_)
+
+# Save arrays
+# print -r -- ${(qq)m} > $fname
+# m=( "${(@Q)${(z)"$(<$fname)"}}" )
 # ]]]
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]

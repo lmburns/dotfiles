@@ -69,9 +69,11 @@ If:
 CompileFlags:
   Add: [
     -xc,
-    -std=gnu2x,            # c standard  c2x
+    -std=gnu18,            # c standard  c2x
+    # -std=gnu2x,            # c standard  c2x
   ]
-Compiler: clang
+  Compiler: clang
+  # Compiler: gcc
 ---
 # Flags for .h files
 If:
@@ -82,30 +84,32 @@ CompileFlags:
     -std=gnu2x,            # c standard  c2x
     --include=Global.h,
   ]
-Compiler: clang  # gcc
+  Compiler: clang  # gcc
 ---
 # Flags for .cpp files
 If:
-  PathMatch: .*\.(cc|cpp|c++)
+  PathMatch: .*\.(cc|cpp|c\+\+)
 CompileFlags:
   Add: [
     -xc++,
     -std=gnu++2b,            # c++ standard  c++2b
   ]
-Compiler: clang++
-ClangTidy:
-  Add: modernize-*
+  Compiler: clang++
+Diagnostics:
+  ClangTidy:
+    Add: modernize-*
 # Remove: modernize-use-trailing-return-type
 ---
 # Flags for .hpp files
 If:
-  PathMatch: .*\.(hh|hpp|h++)
+  PathMatch: .*\.(hh|hpp|h\+\+)
 CompileFlags:
   Add: [
     -xc++,
     -std=gnu++2b,            # c++ standard  c++2b
     --include=Global.h,
   ]
-Compiler: clang++
-ClangTidy:
-  Add: modernize-*
+  Compiler: clang++
+Diagnostics:
+  ClangTidy:
+    Add: modernize-*

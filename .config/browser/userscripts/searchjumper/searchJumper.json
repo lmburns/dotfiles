@@ -1,0 +1,421 @@
+[
+  {
+    "type": "Video",
+    "icon": "video",
+    "sites": [
+      {
+        "name": "YouTube",
+        "url": "https://www.youtube.com/results?search_query=%s"
+      },
+      {
+        "name": "Bitchute",
+        "url": "https://bitchute.com/search/?query=%s",
+        "icon": "https://logowik.com/content/uploads/images/bitchute6384.logowik.com.webp"
+      }
+    ]
+  },
+  {
+    "type": "Image",
+    "icon": "image",
+    "sites": [
+      {
+        "name": "Flickr",
+        "url": "http://www.flickr.com/search/?q=%s"
+      },
+      {
+        "name": "Pinterest",
+        "url": "https://www.pinterest.com/search/pins/?q=%s&rs=typed&term_meta"
+      },
+      {
+        "name": "Yandex",
+        "url": "https://yandex.com/images/search?text=%s"
+      },
+      {
+        "name": "Pixabay",
+        "url": "https://pixabay.com/images/search/%s/",
+        "icon": "https://pixabay.com/favicon-32x32.png"
+      },
+      {
+        "name": "Unsplash",
+        "url": "https://unsplash.com/s/photos/%s"
+      }
+    ]
+  },
+  {
+    "type": "Search Engine",
+    "icon": "search",
+    "sites": [
+      {
+        "name": "Google",
+        "url": "https://www.google.com/search?q=%s&ie=utf-8&oe=utf-8",
+        "match": "https://www\\.google\\..*/search"
+      },
+      {
+        "name": "Bing",
+        "url": "https://www.bing.com/search?q=%s",
+        "match": "^https://(www|cn|global)\\.bing\\.com/search"
+      },
+      {
+        "name": "Brave",
+        "url": "https://search.brave.com/search?q=%s",
+        "icon": "https://upload.wikimedia.org/wikipedia/commons/5/51/Brave_icon_lionface.png"
+      },
+      {
+        "name": "DuckDuckGo",
+        "url": "https://duckduckgo.com/html?q=%s"
+      },
+      {
+        "name": "SearxB",
+        "url": "https://baresearch.org/search?q=%s&language=en-US&safesearch=0",
+        "icon": "https://cdn-icons-png.flaticon.com/512/639/639375.png"
+      },
+      {
+        "name": "SearxC",
+        "url": "https://coppedge.info/search?q=%s&language=en-US&safesearch=0",
+        "icon": "https://cdn-icons-png.flaticon.com/512/3714/3714975.png"
+      }
+    ]
+  },
+  {
+    "type": "Reverse Image",
+    "icon": "eye",
+    "selectImg": true,
+    "openInNewTab": true,
+    "sites": [
+      {
+        "name": "Google Reverse",
+        "url": "https://www.google.com/searchbyimage?sbisrc=cr_1_0_0&image_url=%T"
+      },
+      {
+        "name": "Yandex Reverse",
+        "url": "https://yandex.com/images/search?source=collections&rpt=imageview&url=%t"
+      },
+      {
+        "name": "SauceNAO",
+        "url": "https://saucenao.com/search.php?db=999&url=%t"
+      },
+      {
+        "name": "IQDB",
+        "url": "https://iqdb.org/?url=%t"
+      },
+      {
+        "name": "3D IQDB",
+        "url": "https://3d.iqdb.org/?url=%t"
+      },
+      {
+        "name": "Lunapic",
+        "url": "https://www.lunapic.com/editor/index.php?action=url&url=%t",
+        "description": "使用 Lunapic 编辑图片"
+      },
+      {
+        "name": "Pixlr Easy",
+        "url": "https://pixlr.com/x/#p{click(#home-open-url)&#image-url=%t&click(.dialog>.buttons>a.button.positive)}",
+        "description": "使用 Pixlr easy 编辑图片"
+      },
+      {
+        "name": "Bing Reverse",
+        "url": "https://www.bing.com/images/search?view=detailv2&iss=sbi&form=SBIVSP&sbisrc=UrlPaste&q=imgurl:%t"
+      },
+      {
+        "name": "TinEye",
+        "url": "https://www.tineye.com/search?url=%t"
+      },
+      {
+        "name": "Ascii2D",
+        "url": "https://ascii2d.net/search/url/%t"
+      },
+      {
+        "name": "KarmaDecay",
+        "url": "http://karmadecay.com/%t"
+      },
+      {
+        "name": "ImgOps",
+        "url": "https://imgops.com/%b"
+      }
+    ]
+  },
+  {
+    "type": "Scientific",
+    "icon": "graduation-cap",
+    "sites": [
+      {
+        "name": "Scholar",
+        "url": "http://scholar.google.com/scholar?hl=zh-CN&q=%s"
+      },
+      {
+        "name": "Google Book",
+        "url": "https://www.google.com/search?q=%s&btnG=搜索图书&tbm=bks&tbo=1&hl=zh-CN&gws_rd=ssl"
+      },
+      {
+        "name": "Krugle",
+        "url": "http://opensearch.krugle.org/document/search/#query=%s",
+        "icon": "https://opensearch.krugle.org/media/images/favicon.ico"
+      }
+    ]
+  },
+  {
+    "type": "Info",
+    "icon": "book-open-reader",
+    "sites": [
+      {
+        "name": "Wikipedia",
+        "url": "http://wikipedia.org/wiki/%s"
+      },
+      {
+        "name": "Quora",
+        "url": "https://www.quora.com/search?q=%s"
+      },
+      {
+        "name": "Wikibooks",
+        "url": "https://en.wikibooks.org/w/index.php?fulltext=Search&search=%s"
+      },
+      {
+        "name": "Wikidata",
+        "url": "https://wikidata.org/w/index.php?fulltext=Search&search=%s"
+      },
+      {
+        "name": "Wikileaks",
+        "url": "https://search.wikileaks.org/?q=%s"
+      },
+      {
+        "name": "Wikimedia",
+        "url": "https://commons.wikimedia.org/w/index.php?fulltext=Search&title=Special%3AMediaSearch&type=image&search=%s"
+      },
+      {
+        "name": "Wikiquote",
+        "url": "https://en.wikiquote.org/w/index.php?fulltext=Search&search=%s"
+      },
+      {
+        "name": "Wikisource",
+        "url": "https://en.wikisource.org/w/index.php?fulltext=Search&search=%s"
+      },
+      {
+        "name": "Wikispooks",
+        "url": "https://wikispooks.com/w/index.php?search=%s&title=Special%3ASearch&fulltext=Search"
+      },
+      {
+        "name": "Wikitionary",
+        "url": "https://en.wiktionary.org/w/index.php?fulltext=Search&search=%s"
+      }
+    ]
+  },
+  {
+    "type": "Docs",
+    "icon": "code",
+    "sites": [
+      {
+        "name": "MDN",
+        "url": "https://developer.mozilla.org/zh-CN/search?q=%s"
+      },
+      {
+        "name": "StackOverflow",
+        "url": "https://stackoverflow.com/search?q=%s"
+      },
+      {
+        "name": "Can I Use",
+        "url": "http://caniuse.com/#search=%s",
+        "icon": "https://caniuse.com/img/favicon-128.png"
+      },
+      {
+        "name": "GitHub",
+        "url": "https://github.com/search?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/733/733553.png",
+        "match": "https://github\\.com/search\\?.*[&?]q="
+      },
+      {
+        "name": "GreasyFork",
+        "url": "https://greasyfork.org/scripts?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/1828/1828231.png"
+      },
+      {
+        "name": "docs.rs",
+        "url": "https://docs.rs/releases/search?query=?%s"
+      },
+      {
+        "name": "Rust STD",
+        "url": "https://doc.rust-lang.org/std/index.html?search=%s",
+        "icon": "https://www.nicepng.com/png/full/308-3084680_rust-programming-language-rust-programming-language-logo.png"
+      },
+      {
+        "name": "Arch Wiki",
+        "url": "https://wiki.archlinux.org/index.php?search=%s&title=Special%3ASearch&profile=default&fulltext=1"
+      },
+      {
+        "name": "perldoc",
+        "url": "https://perldoc.perl.org/search?q=%s"
+      },
+      {
+        "name": "Docker",
+        "url": "https://docs.docker.com/search/?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/5969/5969059.png"
+      }
+    ]
+  },
+  {
+    "type": "Packages",
+    "icon": "cloud-download",
+    "sites": [
+      {
+        "name": "npm",
+        "url": "https://www.npmjs.org/search?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/5968/5968322.png"
+      },
+      {
+        "name": "crates.io",
+        "url": "https://crates.io/search?q=%s"
+      },
+      {
+        "name": "lib.rs",
+        "url": "https://lib.rs/search?q=?%s"
+      },
+      {
+        "name": "Arch Packages",
+        "url": "https://archlinux.org/packages/?sort=&q=%s"
+      },
+      {
+        "name": "AUR",
+        "url": "https://aur.archlinux.org/packages?O=0&K=%s"
+      },
+      {
+        "name": "PyPi",
+        "url": "https://pypi.python.org/pypi?%3Aaction=search&term=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/5968/5968350.png"
+      },
+      {
+        "name": "RDoc",
+        "url": "https://www.rdocumentation.org/search?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/2103/2103665.png"
+      },
+      {
+        "name": "Ruby Gems",
+        "url": "https://rubygems.org/search?utf8=✓&query=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/4085/4085915.png"
+      },
+      {
+        "name": "DockerHub",
+        "url": "https://hub.docker.com/search/&q=%s"
+      }
+    ]
+  },
+  {
+    "type": "GitHub",
+    "icon": "fa-brands fa-github",
+    "match": "github\\.com",
+    "selectLink": true,
+    "selectPage": true,
+    "openInNewTab": true,
+    "sites": [
+      {
+        "name": "Fastgit",
+        "url": "%u.replace(/https:\\/\\/github\\.com/,\"https://hub.fastgit.xyz\")",
+        "icon": "https://cdn-icons-png.flaticon.com/512/5241/5241859.png",
+        "match": "https:\\/\\/github\\.com",
+        "hideNotMatch": true
+      },
+      {
+        "name": "Raw - Fastgit",
+        "url": "%u.replace(/raw\\.githubusercontent\\.com/,\"raw.fastgit.org\").replace(/github.com(.*)\\/blob\\/(.*)/,\"raw.fastgit.org$1/$2\")",
+        "icon": "https://cdn-icons-png.flaticon.com/512/7640/7640419.png",
+        "match": "github.com.*\\/blob\\/",
+        "hideNotMatch": true
+      },
+      {
+        "name": "Assets - Fastgit",
+        "url": "%u.replace(/github\\.githubassets\\.com/,\"assets.fastgit.orgz\")",
+        "icon": "https://cdn-icons-png.flaticon.com/512/8042/8042893.png",
+        "match": "github\\.githubassets\\.com",
+        "hideNotMatch": true
+      },
+      {
+        "name": "Download - Fastgit",
+        "url": "%u.replace(/github\\.com(.*\\/download\\/)/,\"download.fastgit.org$1\")",
+        "icon": "https://cdn-icons-png.flaticon.com/512/2550/2550364.png",
+        "match": "github\\.com.*\\/download\\/",
+        "hideNotMatch": true
+      },
+      {
+        "name": "Archive - Fastgit",
+        "url": "%u.replace(/github\\.com(.*\\/archive\\/)/,\"download.fastgit.org$1\")",
+        "icon": "https://cdn-icons-png.flaticon.com/512/179/179468.png",
+        "match": "github\\.com.*\\/archive\\/",
+        "hideNotMatch": true
+      },
+      {
+        "name": "GhProxy",
+        "url": "https://ghproxy.com/%u",
+        "icon": "https://cdn-icons-png.flaticon.com/512/2704/2704265.png"
+      }
+    ]
+  },
+  {
+    "type": "Social",
+    "icon": "list-alt",
+    "selectTxt": true,
+    "selectImg": true,
+    "selectAudio": true,
+    "selectVideo": true,
+    "selectLink": true,
+    "selectPage": true,
+    "openInNewTab": true,
+    "sites": [
+      {
+        "name": "Twitter",
+        "url": "https://twitter.com/intent/tweet?url=%T"
+      },
+      {
+        "name": "Reddit",
+        "url": "http://www.reddit.com/search?q=%s"
+      }
+    ]
+  },
+  {
+    "type": "Archive",
+    "icon": "archive",
+    "sites": [
+      {
+        "name": "4plebs",
+        "url": "https://archive.4plebs.org/pol/search/text/%s",
+        "icon": "https://avatars.githubusercontent.com/u/13073695?s=280&v=4"
+      },
+      {
+        "name": "Wayback Machine (url)",
+        "url": "https://web.archive.org/web/%u",
+        "icon": "https://cdn-icons-png.flaticon.com/512/9922/9922211.png"
+      },
+      {
+        "name": "archive.is (url)",
+        "url": "https://archive.is/newest/%u",
+        "icon": "https://cdn-icons-png.flaticon.com/512/1750/1750866.png"
+      },
+      {
+        "name": "Google Cache",
+        "url": "https://webcache.googleusercontent.com/search?q=cache:%U",
+        "icon": "https://cdn-icons-png.flaticon.com/512/3128/3128287.png"
+      },
+      {
+        "name": "archive.org (keyword)",
+        "url": "https://archive.org/search?query=%s"
+      },
+      {
+        "name": "archive.org (web keyword)",
+        "url": "https://web.archive.org/web/*/%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/3071/3071733.png"
+      }
+    ]
+  },
+  {
+    "type": "Piracy",
+    "icon": "file-arrow-down",
+    "sites": [
+      {
+        "name": "PDF Drive",
+        "url": "https://pdfdrive.com/search?q=%s",
+        "icon": "https://cdn-icons-png.flaticon.com/512/2889/2889358.png"
+      },
+      {
+        "name": "LibGen",
+        "url": "http://libgen.rs/search.php?req=%s"
+      }
+    ]
+  }
+]

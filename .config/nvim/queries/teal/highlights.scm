@@ -9,7 +9,6 @@
 (identifier) @variable
 ((identifier) @variable.builtin
   (#eq? @variable.builtin "self"))
-(nil) @constant.builtin
 (number) @number
 (string) @string
 (table_constructor ["{" "}"] @constructor)
@@ -23,7 +22,7 @@
 [ "if" "then" "elseif" "else" ] @conditional
 [ "for" "while" "repeat" "until" ] @repeat
 "return" @keyword.return
-[ "in" "local" (break) (goto) "do" "end" ] @keyword
+[ "in" "local" (break) (goto) "do"] @keyword
 (label) @label
 
 ;; Global isn't a real keyword, but it gets special treatment in these places
@@ -34,14 +33,12 @@
 (enum_declaration "global" @keyword)
 
 ;; Ops
-(bin_op (op) @operator)
-(unary_op (op) @operator)
 [ "=" "as" ] @operator
 
 ;; Functions
-(function_statement
-  "function" @keyword.function
-  . name: (_) @function)
+; (function_statement
+;   "function" @keyword.function
+;   . name: (_) @function)
 (anon_function
   "function" @keyword.function)
 (function_body "end" @keyword.function)
@@ -63,8 +60,6 @@
   (identifier) @function . (arguments))
 (function_call
   (index (_) key: (identifier) @function) . (arguments))
-(function_call
-  (method_index (_) key: (identifier) @function) . (arguments))
 
 ;; Types
 (record_declaration
@@ -97,7 +92,6 @@
 (simple_type name: (identifier) @type)
 (type_index (identifier) @type)
 (type_union "|" @operator)
-(function_type "function" @type)
 
 ;; The rest of it
 (var_declaration
@@ -134,15 +128,133 @@
 (ERROR) @error
 
 ;; ===== CUSTOM =====
-(function_name
-  base: (identifier) @constant)
+; (function_name
+;   base: (identifier) @constant)
+; (function_name
+;   entry: (identifier) @function)
+; (function_name
+;   method: (identifier) @function)
 
-(function_name
-  entry: (identifier) @function)
+; toggle_query_editor = "o",
+; toggle_hl_groups = "i",
+; toggle_injected_languages = "t",
+; toggle_anonymous_nodes = "a",
+; toggle_language_display = "I",
+; focus_language = "f",
+; unfocus_language = "F",
+; update = "R",
+; goto_node = "<cr>",
+; show_help = "?"
 
-(function_name
-  method: (identifier) @function)
+(bin_op (op) @keyword)
+(unary_op (op) @keyword)
+(nil) @operator
+["end"] @repeat
 
-;; TODO: Finish this
-(arg
-  type: (function_type)  @keyword.function)
+((identifier) @constant
+ (#lua-match? @constant "^[A-Z][A-Z_0-9]*$"))
+
+((identifier) @constant
+  (#eq? @constant "_G"))
+
+; ((identifier) @constant.blank
+;   (#eq? @constant.blank "_"))
+
+;; Change capital letter field names to be constants
+; ((dot_index_expression field: (identifier) @constant)
+;  (#lua-match? @constant "^[A-Z_][A-Z_0-9]*$"))
+
+((identifier) @keyword.coroutine
+  (#eq? @keyword.coroutine "coroutine"))
+
+;; I would like these to be variable.builtin.self but highlighting isn't correct with that
+((identifier) @keyword.self
+  (#eq? @keyword.self "self")
+ (#set! "priority" 105))
+
+((identifier) @keyword.super
+  (#eq? @keyword.super "super")
+ (#set! "priority" 105))
+
+((identifier) @variable.builtin
+ (#any-of? @variable.builtin "_VERSION" "debug" "io" "jit" "math" "os" "package" "table" "utf8")
+ (#set! "priority" 105))
+
+; (dot_index_expression
+;   field: (identifier) @field.builtin
+;  (#any-of? @field.builtin
+;     "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+;     "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+;     "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+;  (#set! "priority" 105))
+
+(index
+  ((identifier)?
+   key: (identifier) @field.builtin)+
+ (#any-of? @field.builtin
+    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+ (#set! "priority" 105))
+
+; (field
+;   name: (identifier) @field.builtin
+;  (#any-of? @field.builtin
+;     "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+;     "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+;     "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+;  (#set! "priority" 105))
+
+; (index
+;   (identifier)
+;   key: (identifier) @field)
+
+;; idx.one.two
+(index ((identifier)? key: (identifier) @field)+)
+
+;; table.insert()
+(function_call
+  called_object: (index
+                   (identifier)
+                   key: (identifier) @function))
+
+;; M.func()
+(function_statement
+  "function" @keyword.function
+  . name: (function_name
+              base: (identifier) @constant
+              entry: (identifier) @function))
+;; func()
+(function_statement
+  "function" @keyword.function
+  . name: (identifier) @function)
+
+;; me:method()
+(function_call
+  (method_index (_) key: (identifier) @method) . (arguments))
+
+;; Two chars doesn't work
+; (function_statement
+;   signature: (function_signature ":" @conceal (#set! conceal "->")))
+(function_statement
+  signature: (function_signature ":" @conceal (#set! conceal "")))
+
+;function_statement [195, 0] - [218, 3]
+;  name: function_name [195, 9] - [195, 21]
+;    base: identifier [195, 9] - [195, 10]
+;    entry: identifier [195, 11] - [195, 21]
+;  signature: function_signature [195, 21] - [195, 57]
+
+((simple_type name: (identifier) @type.builtin)
+ (#any-of? @type.builtin
+    "any"
+    "boolean"
+    "string"
+    "number"
+    "integer"
+    "function"
+    "table"
+    "thread"
+    "userdata"
+    "lightuserdata"))
+(function_type "function" @type.builtin)

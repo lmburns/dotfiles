@@ -12,6 +12,7 @@ activestorage 6.1.4.1,7.0.3,7.0.4
 activesupport 6.1.4.1,7.0.3,7.0.4
 addressable 2.8.0,2.8.1
 ansi256 0.3.0
+asciidoctor 2.0.18
 ast 2.4.2
 backport 1.2.0
 base64 0.1.1
@@ -126,7 +127,7 @@ optparse 0.1.1,0.2.0,0.3.1
 ostruct 0.3.1,0.5.5
 paint 2.2.1,2.3.0
 parallel 1.21.0,1.22.1
-parser 3.0.2.0,3.1.0.0,3.1.2.0,3.2.0.0,3.2.1.0
+parser 3.0.2.0,3.1.0.0,3.1.2.0,3.2.0.0,3.2.1.0,3.2.2.0
 pathname 0.1.0,0.2.0,0.2.1
 patron 0.13.3
 pp 0.2.1,0.3.0,0.4.0
@@ -187,7 +188,7 @@ set 1.0.1,1.0.2,1.0.3
 shellany 0.0.1
 shellwords 0.1.0
 singleton 0.1.1
-solargraph 0.44.0,0.44.2,0.44.3,0.45.0,0.46.0,0.47.2,0.48.0
+solargraph 0.44.0,0.44.2,0.44.3,0.45.0,0.46.0,0.47.2,0.48.0,0.49.0
 sorbet 0.5.10676
 sorbet-runtime 0.5.10676
 sorbet-static 0.5.10676

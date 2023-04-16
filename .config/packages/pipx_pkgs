@@ -21,9 +21,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - flash_window
     - flashfocus
     - nc_flash_window
-   package fmdpy 0.5.2, installed using Python 3.10.0
+   package fmdpy 0.6.2, installed using Python 3.10.0
     - fmdpy
-   package gallery-dl 1.24.5, installed using Python 3.10.0
+   package gallery-dl 1.25.1, installed using Python 3.10.0
     - gallery-dl
    package glances 3.3.1.1, installed using Python 3.10.0
     - glances
@@ -46,7 +46,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - mplug
    package mycli 1.26.1, installed using Python 3.10.0
     - mycli
-   package mypy 1.0.1, installed using Python 3.10.0
+   package mypy 1.2.0, installed using Python 3.10.0
     - dmypy
     - mypy
     - mypyc
@@ -56,18 +56,18 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - nvr
    package organize-tool 2.4.0, installed using Python 3.10.0
     - organize
-   package pdm 2.4.6, installed using Python 3.10.0
+   package pdm 2.5.0b0, installed using Python 3.10.0
     - pdm
-   package pipdeptree 2.5.0, installed using Python 3.10.0
+   package pipdeptree 2.7.0, installed using Python 3.10.0
     - pipdeptree
-   package pipenv 2023.2.18, installed using Python 3.10.0
+   package pipenv 2023.3.20, installed using Python 3.10.0
     - pipenv
     - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
     - pire
-   package poetry 1.3.2, installed using Python 3.10.0
+   package poetry 1.4.2, installed using Python 3.10.0
     - poetry
-   package pre-commit 3.0.4, installed using Python 3.10.0
+   package pre-commit 3.2.2, installed using Python 3.10.0
     - pre-commit
     - pre-commit-validate-config
     - pre-commit-validate-manifest
@@ -85,7 +85,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package solc-select 1.0.3, installed using Python 3.10.0
     - solc
     - solc-select
-   package sqlfluff 1.4.5, installed using Python 3.10.0
+   package sqlfluff 2.0.3, installed using Python 3.10.0
     - sqlfluff
    package stig 0.12.3a0, installed using Python 3.10.0
     - stig
@@ -95,6 +95,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package sxhkhm 0.4.4, installed using Python 3.10.0
     - hkhelper.py
     - sxhkhmenu
+   package trezor 0.13.5, installed using Python 3.10.0
+    - trezorctl
    package ueberzug 18.1.9, installed using Python 3.10.0
     - ueberzug
    package vim-vint 0.3.21, installed using Python 3.10.0
@@ -107,5 +109,5 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - youtube-dl
    package yt-dlp 2023.3.4, installed using Python 3.10.0
     - yt-dlp
-   package ytmdl 2022.12.25, installed using Python 3.10.0
+   package ytmdl 2023.2.28, installed using Python 3.10.0
     - ytmdl

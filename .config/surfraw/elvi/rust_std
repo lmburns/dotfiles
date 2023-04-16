@@ -1,41 +1,33 @@
 #!/bin/sh
-
-# elvis: rust_docs	-- Search rust_docs (doc.rust-lang.org)
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-13 11:53
+#
+# DESC: Elvi to search Rust STD documentation (doc.rust-lang.org)
+# elvis: rust_docs	-- Search Rust STD documentation (doc.rust-lang.org)
 
 . surfraw || exit 1
 
-w3_usage_hook ()
-{
-	cat <<EOF
+w3_usage_hook () {
+  cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search rust_std (doc.rust-lang.org)
+  Search Rust STD documentation (doc.rust-lang.org)
 EOF
-	w3_global_usage
+  w3_global_usage
 }
-
 
 w3_config
 w3_parse_args "$@"
 
 if test -z "$w3_args"; then
-	w3_browse_url "https://doc.rust-lang.org"
-	exit
+  w3_browse_url "https://doc.rust-lang.org"
+  exit
 fi
-
-# Map each value of inline list variables
-##__mkelvis_inline_variable "$SURFRAW_rust_docs_variable" keyword
-
-# Map variables to parameters
-# Map each value of list variables to parameters
-## First parameter
-##mappings="param1=$(w3_url_escape "$SURFRAW_rust_docs_variable1")"
-## Successive parameters
-##mappings="$mappings&param2=$(w3_url_escape "$SURFRAW_rust_docs_variable2")"
 
 set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
-_="$escaped_args"
+it="$escaped_args"
 search_url="https://doc.rust-lang.org/std/index.html?search="
 search_url="$search_url$escaped_args"
 w3_browse_url "$search_url"

@@ -170,9 +170,9 @@ map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
 map("x", ".", ":norm .<CR>", {desc = "Perform dot commands over visual blocks"})
 
 -- Use qq to record and stop (only records q)
-map("n", "qq", D.ithunk(funcs.record_macro, "q"), {expr = true, desc = "Record macro"})
-map("n", "qj", D.ithunk(funcs.record_macro, "j"), {expr = true, desc = "Record macro"})
-map("n", "qk", D.ithunk(funcs.record_macro, "k"), {expr = true, desc = "Record macro"})
+map("n", "qq", D.ithunk(funcs.record_macro, "q"), {expr = true, desc = "Record macro 'q'"})
+map("n", "ql", D.ithunk(funcs.record_macro, "l"), {expr = true, desc = "Record macro 'l'"})
+map("n", "qk", D.ithunk(funcs.record_macro, "k"), {expr = true, desc = "Record macro 'k'"})
 map("n", "q:", "<Nop>")
 map("n", "q/", "<Nop>")
 map("n", "q?", "<Nop>")
@@ -307,12 +307,12 @@ wk.register(
     {
         ["d"] = {[["_d]], "Delete (blackhole)"},
         ["y"] = {[[ygv<Esc>]], "Place the cursor at end of yank"},
-        ["<C-g>"] = {[[g<C-g>]], "Show word count"},
-        ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
-        ["/"] = {"<Esc>/\\%V", "Search visual selection"},
-        ["&"] = {":&&<CR>", "Repeat last substitution"},
         -- ["c"] = {[["_c]], "Change (blackhole)"},
-        -- ["//"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}
+        ["<C-g>"] = {[[g<C-g>]], "Show word count"},
+        -- ["<C-CR>"] = {[[g<C-g>]], "Show word count"},
+        ["&"] = {":&&<CR>", "Repeat last substitution"},
+        ["z/"] = {"<Esc>/\\%V", "Search visual selection"},
+        ["g/"] = {[[y/<C-R>"<CR>]], "Search for visual selection"}, -- can use '*' or '#'
     },
     {mode = "x"}
 )
@@ -388,10 +388,18 @@ wk.register(
     }
 )
 
-map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
+-- map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
+-- map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
+-- map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
+-- map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
+
+map("x", "iz", [[<Cmd>keepj norm [zjo]zkL<CR>]], {desc = "Inside folding block"})
 map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
-map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
-map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
+map("x", "az", [[<Cmd>keepj norm [zo]zjLV<CR>]], {desc = "Around fold block"})
+map("o", "az", [[:norm vaz<CR>]], {desc = "Around fold block"})
+
+-- map("x", "aZ", [[<Cmd>keepj norm [zo]zL<CR>]], {desc = "Around fold block (exclude last line)"})
+-- map("o", "aZ", [[:norm vaZ<CR>]], {desc = "Around fold block (exclude last line)"})
 
 -- Refocus folds
 map("n", "<LocalLeader>z", [[zMzvzz]], {noremap = false})
@@ -412,10 +420,6 @@ wk.register(
     {
         ["<C-w>"] = {
             name = "+buffer",
-            ["<C-s>"] = {
-                [[<Cmd>lua require('common.builtin').split_lastbuf()<CR>]],
-                "Split: last buffer (horiz)"
-            },
             ["<C-v>"] = {
                 [[<Cmd>lua require('common.builtin').split_lastbuf(true)<CR>]],
                 "Split: last buffer (vert)"
@@ -445,18 +449,19 @@ wk.register(
 wk.register(
     {
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
+        ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
+        ["qD"] = {
+            [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
+            "Close diff"
+        },
         ["qC"] = {[[:lua require("common.qfext").conflicts2qf()<CR>]], "Conflicts to quickfix"},
         ["qs"] = {
             [[:lua require("common.builtin").spellcheck()<CR>]],
             "Spelling mistakes to quickfix"
         },
+        ["qj"] = {[[:lua require("common.builtin").jumps2qf()<CR>]], "Jumps to quickfix"},
         ["qz"] = {[[:lua require("common.builtin").changes2qf()<CR>]], "Changes to quickfix"},
-        ["qD"] = {
-            [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
-            "Close diff"
-        },
-        ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
         ["<A-u>"] = {
             [[:lua require('common.builtin').switch_lastbuf()<CR>]],
             "Switch to last buffer"
@@ -502,8 +507,6 @@ wk.register(
 -- ]]] === Spelling ===
 
 -- ==================== Other =================== [[[
-
-map("n", "<Leader>jj", "Jumps", {cmd = true})
 
 wk.register(
     {

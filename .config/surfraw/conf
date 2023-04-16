@@ -1,5 +1,62 @@
+# name/path of text browser executable
 SURFRAW_text_browser="$BROWSERCLI"
+# name/path of browser executable
 SURFRAW_graphical_browser="$BROWSER"
+# graphical browser? defaults to yes for meatminds
 SURFRAW_graphical=no
+# name of screen command to run
 SURFRAW_screen=tmux
+
+# text browser arguments, or "none"
+SURFRAW_text_browser_args=none
+# graphical browser arguments, or "none"
+SURFRAW_graphical_browser_args=none
+# arguments for the screen command
+SURFRAW_screen_args=""
+
+# use -remote openURL for graphical browser
+SURFRAW_graphical_remote=no
+
+# when using the -remote, open a new window?
+SURFRAW_new_window=no
+# If surfraw is running under screen(1), start a new screen
+# for each text browser invocation?
 SURFRAW_new_screen=no
+
+# "quote" arguments
+SURFRAW_quote_args=no
+# requote arguments if they have spaces in
+# ie so:
+#  sr google foo "bar baz" bam
+# works.
+SURFRAW_quote_ifs=yes
+# escape [% "@$%&+,/:;<=>?@@[\^{|}~'] characters in command line arguments
+# subsequently used to construct a url
+SURFRAW_escape_url_args=yes
+
+# default number of results to return
+SURFRAW_results=30
+# just print search url?
+SURFRAW_print=no
+# fetch and dump url?
+SURFRAW_dump=no
+
+# Language/country (for elvi that support it)
+# Should be a 2-letter iso country code
+# SURFRAW_lang="EN"
+
+# provider for searches that use a search engine with (eg) site: specifiers
+# supported: google duckduckgo
+SURFRAW_customsearch_provider="google"
+
+# Do useful but potentially expensive default completions for the
+# arguments of an elvis?
+# This can be useful for completion interfaces (e.g., Bash, Zsh, Emacs)
+# to provide better default suggestions than surfraw.
+# For example, this option applies to (1) but not to (2) or (3):
+#   1. surfraw <TAB>
+#   2. surfraw -<TAB>
+#   3. surfraw -opt=<TAB>
+SURFRAW_default_arg_completions=yes
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

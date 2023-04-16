@@ -518,14 +518,14 @@ function M.various_textobjs()
 
     -- exclude start exclude end
     map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
-    map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, true))
+    map({"o", "x"}, "aI", D.ithunk(vobjs.indentation, false, true))
     map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))
-    map({"o", "x"}, "aI", D.ithunk(vobjs.indentation, false, false))
+    map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, false))
 
     wk.register(
         {
-            ["ai"] = "Indentation level (+ line above)",
-            ["aI"] = "Indention level (+ lines above/below)",
+            ["aI"] = "Indentation level (+ line above)",
+            ["ai"] = "Indention level (+ lines above/below)",
             ["iI"] = "Inner Indentation level (+ line below)",
             ["ii"] = "Inner Indentation level"
         },

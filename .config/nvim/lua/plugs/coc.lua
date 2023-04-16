@@ -251,7 +251,11 @@ function M.run_command(name, args, cb)
     return action_fn("runCommand", name, unpack(args))
 end
 
+---@alias CodeAction "''"|"'cursor'"|"'line'"|"'refactor'"
+
 ---Code actions
+---@param mode CodeAction|CodeAction[]
+---@param only? boolean
 function M.code_action(mode, only)
     if type(mode) == "string" then
         mode = {mode}
@@ -425,7 +429,7 @@ M.hl_fallback =
             "css",
             "fzf",
             "go",
-            -- "help",
+            "help",
             "html",
             "java",
             "javascript",
@@ -951,12 +955,12 @@ function M.init()
                 "Coc toggle diagnostic target"
             },
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
-            ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected (action)"},
+            ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected"},
             [";x"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
             ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
-            ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
             ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
+            ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
             ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
@@ -975,8 +979,6 @@ function M.init()
         "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>"
     )
     map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-
-    map("x", "<Leader>fm", "<Plug>(coc-format-selected)", {desc = "Format selected"})
 
     -- map("s", "<C-h>", '<C-g>"_c')
     -- map("s", "<C-w>", "<Esc>a")

@@ -1,0 +1,35 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-13
+#
+# DESC: Elvi to search cryptome (cryptome.org)
+# elvis: cryptome	-- Search cryptome (cryptome.org)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search cryptome (cryptome.org)
+EOF
+  w3_custom_search_usage
+  w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://cryptome.org"
+  exit
+fi
+
+set -f
+# escaped_args="$(w3_url_of_arg $w3_args)"
+# it="$escaped_args"
+# search_url="https://google.com/search?q=site%3Acryptome.org+"
+# search_url="$search_url$escaped_args"
+# w3_browse_url "$search_url"
+
+w3_custom_search -s=cryptome.org "$w3_shquoted_args"

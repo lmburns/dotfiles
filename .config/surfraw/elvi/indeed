@@ -1,48 +1,32 @@
 #!/bin/sh
-# elvis: indeed	-- Search indeed (indeed.com)
-# Generated-By: mkelvis (surfraw-tools) 0.1.0
-#       are reserved for `mkelvis` and are an implementation detail.
-#       Depend on at your own risk.
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-13 11:53
+#
+# DESC: Elvi to search for local jobs (indeed.com)
+# elvis: indeed		-- Search for local jobs (indeed.com)
 . surfraw || exit 1
 
-w3_usage_hook ()
-{
-	cat <<EOF
+w3_usage_hook () {
+  cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
   Search indeed (indeed.com)
 EOF
-	w3_global_usage
+  w3_global_usage
 }
-
 
 w3_config
 w3_parse_args "$@"
-# `w3_args` now contains a list of arguments.
 
 if test -z "$w3_args"; then
-	w3_browse_url "https://indeed.com"
-	exit
+  w3_browse_url "https://indeed.com"
+  exit
 fi
 
-# Map inline variables
-# Map each value of inline list variables
-##__mkelvis_inline_variable "$SURFRAW_indeed_variable" keyword
-
-# Map variables to parameters
-# Map each value of list variables to parameters
-## First parameter
-##mappings="param1=$(w3_url_escape "$SURFRAW_indeed_variable1")"
-## Successive parameters
-##mappings="$mappings&param2=$(w3_url_escape "$SURFRAW_indeed_variable2")"
-
-# Add the search to url
-## Don't expand pathnames so that '*' characters are passed to browser verbatim.
 set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
-_="$escaped_args"
+it="$escaped_args"
 search_url="https://www.indeed.com/jobs?q="
 search_url="$search_url$escaped_args&l=65202"
 w3_browse_url "$search_url"
-
-# &l=Columbia
