@@ -1,6 +1,26 @@
+! Font settings (for programs that do not support fontconfig)
+! ===========================================================
 Xft.dpi: 96
-URxvt.font: xft:JetBrains Mono Medium:size=12
-URxvt.boldFont: xft:JetBrains Mono Medium:size=12
+Xft*antialias: 1
+Xft*rgba: rgb
+Xft*autohint: 0
+Xft*hinting: 1
+Xft*hintstyle: hintslight
+Xft*lcdfilter: lcddefault
+
+xterm*termName: xterm-256color
+xterm*locale: true
+xterm*utf8: 1
+xterm*utf8Fonts: always
+xterm*dynamicColors: true
+
+xterm*toolBar: false
+xterm*scrollBar: false
+xterm*geometry: 80x24
+xterm*internalBorder: 0
+
+URxvt.font: xft:FuraMono Nerd Font Mono Regular:size=12
+URxvt.boldFont: xft:FuraMono Nerd Font Mono Bold:size=12
 URxvt.scrollBar: false
 URxvt.perl-ext-common:resize-font
 URxvt.keysym.C-minus:resize-font:smaller
@@ -48,10 +68,6 @@ URxvt.keysym.C-0:resize-font:reset
 *.color15:      #D9AE80
 
 ! kimbie
-*.orange:         #F06431
-*.purple:         #733E8B
-*.dark-yellow:    #FE8019
-
 *.bright-blue:    #8AB1B0
 *.bright-cyan:    #4C96A8
 *.bright-green:   #A3B95A
@@ -65,6 +81,65 @@ URxvt.keysym.C-0:resize-font:reset
 *.magenta:        #7E5053
 *.red:            #DC3958
 *.yellow:         #F79A32
+
+*.orange:           #F06431
+*.philippine-green: #088649
+*.sea-green:        #77A172
+*.russian-green:    #689D6A
+*.jade-green:       #2AB074
+*.morning-blue:     #83A598
+*.jelly-bean-blue:  #418292
+*.slate-grey:       #719190
+*.teal:             #7DAEA3
+*.tuscan-red:       #7E5053
+*.magenta-alt:      #A06469
+*.purple-taupe:     #4F3552
+*.maximum-purple:   #733E8B
+*.deep-lilac:       #A25BC4
+*.opera-muave:      #BB80B3
+*.heliotrope:       #D484FF
+*.vista-blue:       #7E9CD8
+*.ube:              #7E82CC
+*.amethyst:         #938AA9
+*.oni-violet:       #957FB8
+*.oni-violet-alt:   #8e77b3
+*.old-rose:         #BD798B
+*.puce:             #D3869B
+*.salmon:           #EA6962
+*.wave-red:         #E46876
+*.peach-red:        #FF5D62
+*.infra-red:        #F14A68
+*.pumpkin:          #FE8019
+*.surimi-orange:    #FFA066
+*.jasper-orange:    #E78A4E
+*.bg-red:           #DC3958
+*.light-red:        #CC6666
+*.dark-red:         #A83232
+
+*.maroon-x11:          #A43A57
+*.watermelon:          #EC5F91
+*.begonia:             #FF747C
+*.middle-green-yellow: #A3B95A
+*.olive-green:         #989719
+*.deep-saffron:        #F79A32
+*.dark-electric-blue:  #586081
+*.coconut:             #9A5534
+*.russet:              #79491d
+
+*.grullo-grey:       #A89984
+*.philippine-silver: #B2B2B2
+*.wenge-grey:        #625A5A
+*.beaver:            #A0936A
+*.light-taupe:       #AF8D6E
+*.foreground2:       #D9AE80
+*.foreground3:       #E8C097
+*.foreground4:       #C2A383
+*.background2:       #39260E
+*.background3:       #362712
+
+! #89B482
+! #5E452B
+! #FF5813
 
 ! gruvbox
 *.gruvbox-black:          #665c54

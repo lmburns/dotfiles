@@ -94,7 +94,7 @@ function M.sandwich()
             bra = "(",
             ket = ")",
             footer = ""
-        }
+        },
     }
 
     cmd.runtime("macros/sandwich/keymap/surround.vim")
@@ -364,7 +364,11 @@ function M.sandwich()
             ["``;"] = {
                 "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
                 "Surround with code block (```zsh)"
-            }
+            },
+            ["``,"] = {
+                "<esc>`<O<esc>S```perl<esc>`>o<esc>S```<esc>k$|",
+                "Surround with code block (```perl)"
+            },
         },
         {mode = "x"}
     )
@@ -397,8 +401,8 @@ function M.targets()
                             argument = {
                                 {o = "(", c = ")", s = ","},
                                 {o = "{", c = "}", s = ","},
-                                {o = "[", c = "]", s = ","}
-                            }
+                                {o = "[", c = "]", s = ","},
+                            },
                         },
                         a = {pair = {{o = "<", c = ">"}}},
                         r = {pair = {{o = "[", c = "]"}}},
@@ -406,15 +410,15 @@ function M.targets()
                         b = {
                             pair = {
                                 {o = "(", c = ")"},
-                                {o = "{", c = "}"}
-                            }
+                                {o = "{", c = "}"},
+                            },
                         },
                         A = {
                             pair = {
                                 {o = "(", c = ")"},
                                 {o = "{", c = "}"},
-                                {o = "[", c = "]"}
-                            }
+                                {o = "[", c = "]"},
+                            },
                         },
                         ["-"] = {separator = {{d = "-"}}},
                         L = {line = {{c = 1}}},
@@ -436,20 +440,20 @@ function M.targets()
                                 {d = [[\]]},
                                 {d = "|"},
                                 {d = "&"},
-                                {d = "$"}
+                                {d = "$"},
                             },
                             pair = {
                                 {o = "(", c = ")"},
                                 {o = "[", c = "]"},
                                 {o = "{", c = "}"},
-                                {o = "<", c = ">"}
+                                {o = "<", c = ">"},
                             },
                             quote = {{d = "'"}, {d = '"'}, {d = "`"}},
-                            tag = {{}}
-                        }
+                            tag = {{}},
+                        },
                     }
                 )
-            end
+            end,
         }
     )
 
@@ -485,7 +489,7 @@ function M.targets()
     -- A: above cursor off screen
     -- B: below cursor off screen
     g.targets_seekRanges =
-        "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
+    "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
     g.targets_jumpRanges = g.targets_seekRanges
     g.targets_aiAI = "aIAi"
     -- g.targets_mapped_aiAI = 'aiAI'
@@ -509,9 +513,9 @@ function M.various_textobjs()
         return
     end
 
-    vobjs.setup {
-        lookForwardLines = 5, -- set to 0 to only look in the current line
-        useDefaultKeymaps = false -- use suggested keymaps (see README)
+    vobjs.setup{
+        lookForwardLines = 5,     -- set to 0 to only look in the current line
+        useDefaultKeymaps = false, -- use suggested keymaps (see README)
     }
 
     -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
@@ -548,7 +552,7 @@ function M.various_textobjs()
                 },
                 {mode = "o"}
             )
-        end
+        end,
     }
 end
 

@@ -1131,8 +1131,8 @@ cmd cd-realpath ${{
   local origin
   local -a files; files=( ${(@f)fx} )
   (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
-  # origin="$(realpath -- "$fx")"
-  origin=${files[1]:A}
+  origin="${files[1]:A}"
+  [[ ! -d "$origin" ]] && origin="$origin:h"
   lf -remote "send $id cd '$origin'"
 }}
 # ]]] CD
@@ -1452,17 +1452,17 @@ cmap <c-k>  cmd-history-prev       # scroll backward in history
 
 cmap <c-b>  cmd-left  # move cursor left
 cmap <c-f>  cmd-right # move cursor right
-cmap <a-o>  cmd-left  # move cursor left
-# cmap <a-i>  cmd-right # move cursor right
 cmap <home> cmd-home  # move cursor beginning of line
 cmap <end>  cmd-end   # move cursor end of line
 cmap <c-s>  cmd-home  # move cursor beginning of line
 cmap <c-e>  cmd-end   # move cursor end of line
-cmap <lt>   cmd-home  # move cursor beginning of line
-cmap <gt>   cmd-end   # move cursor end of line
+# cmap <lt>   cmd-home  # move cursor beginning of line
+# cmap <gt>   cmd-end   # move cursor end of line
 
 cmap <a-f> cmd-word      # move forward one word
 cmap <a-b> cmd-word-back # move backward one word
+cmap <a-i> cmd-word      # move forward one word
+cmap <a-o> cmd-word-back # move backward one word
 
 cmap <delete>    cmd-delete      # delete char to right of cursor
 cmap <backspace> cmd-delete-back # delete char to left of cursor
@@ -1595,6 +1595,12 @@ map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh              # edit lf colors/icons
 map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf         # edit tmux conf
 map eo $$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json # open coc-settings
 map Et :nvim-tmux                               # edit file by opening split of tmux
+
+map ex ${{
+  for x (${=fx}) {
+    xz -d "$x" && gzip "${x:r}"
+  }
+}}
 
 map v ${{
   # bat view file

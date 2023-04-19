@@ -277,6 +277,13 @@
 --_mtable-regex-zsh=vardef/([\n;\}\)\|\&])///{tleave}{exclusive}
 --_mtable-regex-zsh=vardef/^\s*[\#][^\n]*///{tenter=comment}{exclusive}
 --_mtable-regex-zsh=vardef/.//
+
+# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
+# a       alias    yes     no      0      NONE   aliases
+# f       function yes     no      0      NONE   functions
+# h       heredoc  yes     no      1      NONE   label for here document
+# s       script   yes     yes     1      NONE   script files
+# v       variable yes     no      0      NONE   variables
 # ]]]
 
 # vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

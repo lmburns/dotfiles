@@ -1744,8 +1744,8 @@ function M.eregex()
     g.eregex_forward_delim = "/"
     g.eregex_backward_delim = "?"
 
-    map("n", "<Leader>es", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
-    map("n", ",/", "<cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", "<Leader>es", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", ",/", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
     map("n", "<Leader>S", ":%S//g<Left><Left>", {desc = "Global replace (E2v)"})
 end
 

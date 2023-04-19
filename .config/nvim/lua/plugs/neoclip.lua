@@ -102,7 +102,7 @@ M.setup = function()
                         paste = "<C-j>",
                         paste_behind = "<C-k>",
                         delete = "<C-d>", -- delete an entry
-                        edit = "<C-e>", -- edit an entry
+                        edit = "<C-e>",   -- edit an entry
                         replay = "<C-q>",
                         custom = {
                             ["<A-[>"] = function(opts)
@@ -144,9 +144,9 @@ M.setup = function()
                             ["<CR>"] = function(opts)
                                 -- yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
                                 nvim.reg[v.register] = table.concat(
-                                                           opts.entry.contents,
-                                                           "\n"
-                                                       )
+                                    opts.entry.contents,
+                                    "\n"
+                                )
                                 local handlers = require("neoclip.handlers")
 
                                 -- handlers.set_registers(opts.register_names, opts.entry)
@@ -165,9 +165,9 @@ M.setup = function()
                             ["<CR>"] = function(opts)
                                 -- yank.yank_reg(v.register, opts.entry.contents[1])
                                 nvim.reg[v.register] = table.concat(
-                                                           opts.entry.contents,
-                                                           "\n"
-                                                       )
+                                    opts.entry.contents,
+                                    "\n"
+                                )
                             end,
                             ["gcp"] = function(opts)
                                 M.charwise(opts, "p", true)
@@ -238,7 +238,7 @@ end
 ---@param opts NeoclipEntry
 ---@param action 'p'|'P'
 ---@param trim boolean Whether space at the beginning should be trimmed
----@param comment boolean Whether line should be commented
+---@param comment? boolean Whether line should be commented
 function M.linewise(opts, action, trim, comment)
     local handlers = require("neoclip.handlers")
     local new_entries = {}
@@ -253,10 +253,10 @@ function M.linewise(opts, action, trim, comment)
         for _, entry in ipairs(opts.entry.contents) do
             local bufnr = api.nvim_get_current_buf()
             local commentstring = vim.trim(
-                                      fn.split(
-                                          vim.bo[bufnr].commentstring, "%s"
-                                      )[1] or "#"
-                                  )
+                fn.split(
+                    vim.bo[bufnr].commentstring, "%s"
+                )[1] or "#"
+            )
             local txt = commentstring .. entry
             table.insert(new_entries, txt)
         end

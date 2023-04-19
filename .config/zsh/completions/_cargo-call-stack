@@ -1,0 +1,37 @@
+#compdef cargo-call-stack
+
+# _cargo_target_triple() {
+#   local -a targets
+#   targets=( ${(f)"$(rustc --print target-list)"} )
+#   _describe 'target triple' targets
+# }
+#
+# _cargo_example_names() {
+#   if [[ -d examples ]]; then
+#     local -a files=(${(@f)$(echo examples/*.rs(:t:r))})
+#     _values 'example' "${files[@]}"
+#   fi
+# }
+
+_cargo-call-stack() {
+  local curcontext="$curcontext" state line state_descr
+  typeset -a _arguments_options
+  typeset -A opt_args
+  local ret=1
+
+   _arguments_options=(-s -S -C)
+
+  _arguments "${_arguments_options[@]}" \
+    '--all-features[activate all available features]' \
+    '--bin=[build only the specified binary]:binary:' \
+    '--example=[build only the specified example]:example name:_cargo_example_names'
+    '--features=[space-separated list of features to activate]:features:' \
+    '--target=[target triple for which the code is compiled]:target:_cargo_target_triple' \
+    {-v,--verbose}'[use verbose output]' \
+    '(- 1 *)'{-V,--version}'[show version information]' \
+    '(- 1 *)'{-h,--help}'[show help message]' \
+    '*:start:' \
+    && ret=0
+}
+
+_cargo-call-stack "$@"

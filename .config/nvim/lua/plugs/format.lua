@@ -210,7 +210,7 @@ end
 local function init()
     M.juliaformat()
     -- prefer_neoformat = {"json", "typescriptreact", "typescript", "javascript"}
-    prefer_coc = {"lua"}
+    prefer_coc = {"lua", "json", "typescriptreact", "typescript", "javascript"}
 
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1
@@ -280,12 +280,30 @@ local function init()
         stdin = 1,
     }
 
-    map("n", ";ff", [[:lua require('plugs.format').format_doc()<CR>]], {silent = true})
+    map(
+        "n",
+        ";ff",
+        [[<Cmd>lua require('plugs.format').format_doc()<CR>]],
+        {silent = true, desc = "Format document"}
+    )
     map(
         "x",
         ";ff",
         [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]],
-        {silent = true}
+        {silent = true, desc = "Format selected"}
+    )
+
+    map(
+        "n",
+        ";fn",
+        [[<Cmd>lua require('plugs.format').neoformat()<CR>]],
+        {silent = true, desc = "NeoFormat document"}
+    )
+    map(
+        "n",
+        ";fm",
+        [[<Cmd>Format<CR>]],
+        {silent = true, desc = "CocFormat document"}
     )
 
     augroup(
@@ -294,15 +312,25 @@ local function init()
             event = "FileType",
             pattern = "crystal",
             command = function(args)
-                map("n", ";ff", "<Cmd>CrystalFormat<CR>", {buffer = args.buf})
+                map(
+                    "n",
+                    ";ff",
+                    "<Cmd>CrystalFormat<CR>",
+                    {buffer = args.buf, silent = true, desc = "Format document"}
+                )
             end,
         },
         {
             event = "FileType",
             pattern = "vim",
             command = function(args)
-                map("n", ";ff", "=ie", {buffer = args.buf, noremap = false})
-                map("x", ";ff", "=", {buffer = args.buf})
+                map(
+                    "n",
+                    ";ff",
+                    "=ie",
+                    {buffer = args.buf, noremap = false, desc = "Format document"}
+                )
+                map("x", ";ff", "=", {buffer = args.buf, desc = "Format selected"})
             end,
         }
     )

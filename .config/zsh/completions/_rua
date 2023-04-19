@@ -1,0 +1,195 @@
+#compdef rua
+
+autoload -U is-at-least
+
+_rua() {
+    typeset -A opt_args
+    typeset -a _arguments_options
+    local ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S -C)
+    else
+        _arguments_options=(-s -C)
+    fi
+
+    local context curcontext="$curcontext" state line
+    _arguments "${_arguments_options[@]}" \
+'--color=[Set colors. Respects NO_COLOR environment and CLICOLOR specification]: :(auto never always)' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+":: :_rua_commands" \
+"*::: :->rua" \
+&& ret=0
+    case $state in
+    (rua)
+        words=($line[1] "${words[@]}")
+        (( CURRENT += 1 ))
+        curcontext="${curcontext%:*:*}:rua-command-$line[1]:"
+        case $line[1] in
+            (builddir)
+_arguments "${_arguments_options[@]}" \
+'-o[Forbid internet access while building packages.
+Sources are downloaded using .SRCINFO only]' \
+'--offline[Forbid internet access while building packages.
+Sources are downloaded using .SRCINFO only]' \
+'-f[Use --force option with makepkg, see makepkg(8)]' \
+'--force[Use --force option with makepkg, see makepkg(8)]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::target -- Target directory. Defaults to current directory '.' if not specified.:_files' \
+&& ret=0
+;;
+(info)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':target -- Target to show for:_files' \
+&& ret=0
+;;
+(install)
+_arguments "${_arguments_options[@]}" \
+'--asdeps[Install package as dependency]' \
+'-o[Forbid internet access while building packages.
+Sources are downloaded using .SRCINFO only]' \
+'--offline[Forbid internet access while building packages.
+Sources are downloaded using .SRCINFO only]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':target -- Target package:_files' \
+&& ret=0
+;;
+(search)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':target -- Target to search for:_files' \
+&& ret=0
+;;
+(shellcheck)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+'::target -- PKGBUILD or directory to check. Defaults to /dev/stdin if not specified. Appends ./PKGBUILD for directories:_files' \
+&& ret=0
+;;
+(tarcheck)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+':target -- Archive to check:_files' \
+&& ret=0
+;;
+(upgrade)
+_arguments "${_arguments_options[@]}" \
+'--ignore=[Don'\''t upgrade the specified package(s). Accepts multiple arguments separated by `,`.]' \
+'-d[Also rebuild development packages.
+Supports: git, hg, bzr, svn, cvs, darcs. Currently by suffix only.]' \
+'--devel[Also rebuild development packages.
+Supports: git, hg, bzr, svn, cvs, darcs. Currently by suffix only.]' \
+'--printonly[Print the list of outdated packages to stdout, delimited by newline. Don'\''t upgrade anything, don'\''t ask questions (for use in scripts). Exits with code 7 if no upgrades are available.]' \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+(help)
+_arguments "${_arguments_options[@]}" \
+'-h[Prints help information]' \
+'--help[Prints help information]' \
+'-V[Prints version information]' \
+'--version[Prints version information]' \
+&& ret=0
+;;
+        esac
+    ;;
+esac
+}
+
+(( $+functions[_rua_commands] )) ||
+_rua_commands() {
+    local commands; commands=(
+        "builddir:Build package in specified directory, in jail" \
+"info:Show package information" \
+"install:Download a package by name and build it in jail" \
+"search:Search for packages by name or description. If multiple keywords are used, all of them must match." \
+"shellcheck:Run shellcheck on a PKGBUILD, taking care of PKGBUILD-specific variables" \
+"tarcheck:Check *.pkg.tar or *.pkg.tar.xz  or *.pkg.tar.gz or *.pkg.tar.zst archive" \
+"upgrade:Upgrade AUR packages. To ignore packages, add them to IgnorePkg in /etc/pacman.conf" \
+"help:Prints this message or the help of the given subcommand(s)" \
+    )
+    _describe -t commands 'rua commands' commands "$@"
+}
+(( $+functions[_rua__builddir_commands] )) ||
+_rua__builddir_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua builddir commands' commands "$@"
+}
+(( $+functions[_rua__help_commands] )) ||
+_rua__help_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua help commands' commands "$@"
+}
+(( $+functions[_rua__info_commands] )) ||
+_rua__info_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua info commands' commands "$@"
+}
+(( $+functions[_rua__install_commands] )) ||
+_rua__install_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua install commands' commands "$@"
+}
+(( $+functions[_rua__search_commands] )) ||
+_rua__search_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua search commands' commands "$@"
+}
+(( $+functions[_rua__shellcheck_commands] )) ||
+_rua__shellcheck_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua shellcheck commands' commands "$@"
+}
+(( $+functions[_rua__tarcheck_commands] )) ||
+_rua__tarcheck_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua tarcheck commands' commands "$@"
+}
+(( $+functions[_rua__upgrade_commands] )) ||
+_rua__upgrade_commands() {
+    local commands; commands=(
+        
+    )
+    _describe -t commands 'rua upgrade commands' commands "$@"
+}
+
+_rua "$@"

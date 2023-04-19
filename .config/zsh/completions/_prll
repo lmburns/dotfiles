@@ -1,0 +1,15 @@
+#compdef prll
+
+local -a arguments
+arguments=(
+  "-s[Use string 'str' as shell code to run]:string:"
+  "-p[Read lines from standard input and use them instead of 'fun_args']"
+  "-0[Same as -p, but reads null-delimited input]"
+  "-B[Enable output buffering, which is the default]"
+  "-b[Disable output buffering]"
+  "-c[Set number of parallel tasks to 'num']:num:"
+  "-q[Disable progress messages]"
+  "-Q[Disable all messages except errors]"
+)
+
+_arguments -s -S -C "${arguments[@]}"

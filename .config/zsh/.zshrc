@@ -998,8 +998,8 @@ eval "$(luarocks path --bin --lua-version=5.1)"
 path=(
   /usr/lib/ccache/bin
   $HOME/mybin
-  $HOME/texlive/2021/bin/x86_64-linux
   $HOME/mybin/linux
+  $HOME/mybin/gtk
   $HOME/bin(N-/)
   $HOME/.ghg/bin(N-/)
   $PYENV_ROOT/{shims,bin}(N-/)
@@ -1012,6 +1012,7 @@ path=(
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
+  $HOME/texlive/2021/bin/x86_64-linux
   /usr/bin                   # add again to be ahead of /bin
   /usr/lib/w3m
   $HOME/.ghcup/bin(N-/)
@@ -1046,8 +1047,6 @@ zt 0c light-mode run-atpull nocompile'!' for \
     zdharma-continuum/null \
   id-as'navi_comp' has'navi' nocd eval'navi widget zsh' \
     zdharma-continuum/null \
-  id-as'go_env' has'goenv' nocd eval'goenv init -' \
-    zdharma-continuum/null \
   id-as'zoxide_init' has'zoxide' nocd eval'zoxide init --no-cmd --hook prompt zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     zdharma-continuum/null \
@@ -1062,6 +1061,8 @@ zt 0c light-mode run-atpull nocompile'!' for \
   #     && keychain --agents ssh -q --inherit any --eval gitlab \
 
 # id-as'antidot_conf' has'antidot' nocd eval'antidot init' \
+#   zdharma-continuum/null \
+# id-as'go_env' has'goenv' nocd eval'goenv init -' \
 #   zdharma-continuum/null \
 # id-as'ruby_env' has'rbenv' nocd eval'rbenv init - | sed "s|source .*|source $ZDOTDIR/extra/rbenv.zsh|"' \
 #   zdharma-continuum/null \
@@ -1307,12 +1308,16 @@ zt 0b light-mode null id-as for \
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";
   export PERLBREW_HOME="${XDG_DATA_HOME}/perl5/perlbrew-h";
   export PERL_CPANM_HOME="${XDG_DATA_HOME}/perl5/cpanm"' \
-  atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -f "$x" ] && source "$x"' \
+  atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -s "$x" ] && source "$x"' \
     zdharma-continuum/null \
   atinit'
   export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
   export NVM_COMPLETION=true' \
   atload'local x="$NVM_DIR/nvm.sh"; [ -s "$x" ] && source "$x"' \
+    zdharma-continuum/null \
+  atload'local x="$ZDOTDIR/zsh.d/non-config/goenv.zsh"; [ -s "$x" ] && source "$x"' \
+    zdharma-continuum/null \
+  atload'local x="$ZDOTDIR/zsh.d/non-config/prll.sh"; [ -s "$x" ] && source "$x"' \
     zdharma-continuum/null \
   atload'export FAST_WORK_DIR=XDG;
   fast-theme XDG:kimbox.ini &>/dev/null' \

@@ -115,7 +115,7 @@ vim.schedule(
                         pattern = "*",
                         command = function()
                             require("plugs.treesitter").hijack_synset()
-                        end
+                        end,
                     }
                 )
             end,
@@ -146,19 +146,19 @@ vim.schedule(
                             pattern = "*:s",
                             command = function()
                                 vim.o.clipboard = nil
-                            end
+                            end,
                         },
                         {
                             event = "ModeChanged",
                             pattern = "s:*",
                             command = function()
                                 vim.o.clipboard = "unnamedplus"
-                            end
+                            end,
                         }
                     )
-                -- else
-                -- cmd.packadd("nvim-hclipboard")
-                -- require("hclipboard").start()
+                    -- else
+                    -- cmd.packadd("nvim-hclipboard")
+                    -- require("hclipboard").start()
                 end
 
                 augroup(
@@ -183,7 +183,7 @@ vim.schedule(
                             pattern = "*",
                             command = function()
                                 require("common.builtin").search_wrap()
-                            end
+                            end,
                         }
                     )
                 end
@@ -194,28 +194,39 @@ vim.schedule(
         vim.defer_fn(
             function()
                 vim.g.coc_global_extensions = {
-                    -- "coc-docker",
-                    -- "coc-lua",
-                    -- "coc-git",
-                    -- "coc-lists",
-                    -- "coc-sh",
-                    -- "coc-tslint",
                     -- "coc-vimtex",
-                    -- "coc-rescript",
-                    -- "coc-dlang",
-                    -- "coc-yank",
+                    -- "coc-texlab",
                     --
-                    -- "coc-rls",
+                    -- "coc-teal",
+                    -- "coc-class-css",
+                    -- "coc-react-refactor",
+                    -- "coc-jest",
+                    -- "coc-inline-jest",
+                    -- "coc-apollo",
+                    -- "coc-apollo-graphql",
+                    -- "coc-lightbulb",
+
+                    "coc-sql",
+                    "coc-toml",
+                    "coc-xml",
+                    "coc-yaml",
+                    "coc-markdownlint",
+                    "coc-markdown-preview-enhanced",
+                    "coc-webview",
+                    --
+                    "coc-stylelintplus", -- FIX: Need to make this work
+                    "coc-html-css-support",
+                    "coc-css",
+                    "coc-html",
+                    "coc-json",
+                    "coc-tsserver",
+                    "coc-eslint",
+                    --
                     "coc-rust-analyzer",
                     "coc-sumneko-lua",
-                    "coc-json",
                     "coc-clangd",
-                    "coc-css",
-                    "coc-stylelintplus",
                     "coc-go",
-                    -- "coc-graphql",
-                    "coc-html",
-                    "coc-markdownlint",
+                    -- "coc-gocode",
                     "coc-java",
                     "coc-julia",
                     "coc-perl",
@@ -223,17 +234,8 @@ vim.schedule(
                     "coc-r-lsp",
                     "coc-solargraph",
                     "coc-solidity",
-                    "coc-sql",
-                    "coc-toml",
                     "coc-vimlsp",
-                    "coc-xml",
-                    "coc-yaml",
                     "coc-zig",
-                    "coc-tsserver",
-                    "coc-eslint",
-                    "coc-texlab",
-                    "coc-vimtex",
-                    -- "coc-nav",
                     --
                     -- "coc-snippets",
                     "coc-syntax",
@@ -244,8 +246,7 @@ vim.schedule(
                     "coc-tabnine",
                     "coc-tag",
                     "coc-word",
-                    -- "coc-lightbulb"
-                    -- "coc-highlight" -- Highlight words under cursor without language server
+                    "coc-import-cost",
                 }
 
                 g.coc_enable_locationlist = 0
@@ -267,7 +268,7 @@ vim.schedule(
                         once = true,
                         command = function()
                             require("plugs.coc").init()
-                        end
+                        end,
                     }
                 )
 

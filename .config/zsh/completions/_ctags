@@ -1,99 +1,167 @@
 #compdef ctags
 
-# zsh completions for 'ctags'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+# Usage: ctags [options] [file(s)]
+# TODO: Get list of langs
 
-arguments=(
-  '--exclude[exclude files and directories matching <pattern>.]'
-  '--exclude-exception[dont exclude files and directories matching <pattern> even if]'
-  '--filter[(yes|no)\]]'
-  '--filter-terminator[specify <string> to print to stdout following the tags for each file]'
-  '--links[(yes|no)\]]'
-  '--maxdepth[specify maximum recursion depth.]'
-  '--recurse[(yes|no)\]]'
-  '-R[equivalent to --recurse.]'
-  '-L[A list of input file names is read from the specified <file>.]'
-  '--append[(yes|no)\]]'
-  '-a[append the tags to an existing tag file.]'
-  '-f[write tags to specified <tagfile>. Value of "-" writes tags to stdout]'
-  '-o[alternative for -f.]'
-  '--format[1|2)]'
-  '--output-format[)]'
-  '-e[output tag file for use with Emacs.]'
-  '-x[print a tabular cross reference file to standard output.]'
-  '--sort[)]'
-  '-u[equivalent to --sort=no.]'
-  '--etags-include[include reference to <file> in Emacs-style tag file (requires -e).]'
-  '--input-encoding[specify <encoding> of all input files.]'
-  '--input-encoding-[<LANG>=<encoding>]'
-  '--output-encoding[the <encoding> to write the tag file in. Defaults to UTF-8 if --input-encoding]'
-  '--language-force[)]'
-  '--languages[+|-\](<list>|all)]'
-  '--alias-[<LANG>=\[+|-\](<pattern>|default)]'
-  '--guess-language-eagerly[guess the language of input file more eagerly]'
-  '-G[equivalent to --guess-language-eagerly.]'
-  '--langmap[<map>\[...\]\]]'
-  '--map-[<LANG>=\[+|-\]<extension>|<pattern>]'
-  '--excmd[)]'
-  '-n[equivalent to --excmd=number.]'
-  '-N[equivalent to --excmd=pattern.]'
-  '--extras[+|-\]\[<flags>|*\]]'
-  '--extras-[(<LANG>|all)=\[+|-\]\[<flags>|*\]]'
-  '--fields[+|-\]\[<flags>|*\]]'
-  '--fields-[(<LANG>|all)=\[+|-\]\[<flags>|*\]]'
-  '--kinds-[(<LANG>|all)=\[+|-\](<kinds>|*)]'
-  '--pattern-length-limit[cutoff patterns of tag entries after <N> characters. Disable by setting to 0. \[96\]]'
-  '--pseudo-tags[+|-\](<pseudo-tag>|*)]'
-  '--put-field-prefix[put "UCTAGS" as prefix for the name of fields newly introduced in]'
-  '--roles-[(<LANG>|all).(<kind>|all)=\[+|-\]\[<roles>|*\]]'
-  '--tag-relative[)]'
-  '-B[use backward searching patterns (?...?).]'
-  '-F[use forward searching patterns (/.../; default).]'
-  '--options[specify file (or directory) <pathname> from which command line options should be read.]'
-  '--options-maybe[do the same as --options but this doesnt make an error for non-existing file.]'
-  '--optlib-dir[+\]<directory>]'
-  '--kinddef-[<LANG>=<letter>,<name>,<description>]'
-  '--langdef[define a new language to be parsed with regular expressions.]'
-  '--mline-regex-[<LANG>=/<line_pattern>/<name_pattern>/<kind-spec>/\[<flags>\]]'
-  '--regex-[<LANG>=/<line_pattern>/<name_pattern>/<kind-spec>/\[<flags>\]]'
-  '--if0[(yes|no)\]]'
-  '--line-directives[(yes|no)\]]'
-  '-D[<definition>]'
-  '-h[)]'
-  '-I[+|-\]<list>|@<file>]'
-  '--param-[<LANG>:<name>=<argument>]'
-  '--list-aliases[(<language>|all)\]]'
-  '--list-excludes[output list of exclude patterns for excluding files/directories.]'
-  '--list-extras[(<language>|all)\]]'
-  '--list-features[output list of compiled features.]'
-  '--list-fields[(<language>|all)\]]'
-  '--list-kinds[(<language>|all)\]]'
-  '--list-kinds-full[(<language>|all)\]]'
-  '--list-languages[output list of supported languages.]'
-  '--list-map-extensions[(<language>|all)\]]'
-  '--list-map-patterns[(<language>|all)\]]'
-  '--list-maps[(<language>|all)\]]'
-  '--list-mline-regex-flags[output list of flags which can be used in a multiline regex parser definition.]'
-  '--list-params[(<language>|all)\]]'
-  '--list-pseudo-tags[output list of pseudo tags.]'
-  '--list-regex-flags[output list of flags which can be used in a regex parser definition.]'
-  '--list-roles[(<language>|all)\[.(<kindspecs>|*)\]\]]'
-  '--list-subparsers[(<baselang>|all)\]]'
-  '--machinable[(yes|no)\]]'
-  '--list-[{aliases,extras,features,fields,kind-full,langdef-flags,params]'
-  '--with-list-header[(yes|no)\]]'
-  '--list-[{aliases,extras,features,fields,kind-full,langdef-flags,params]'
-  '--help[print this option summary.]'
-  '--help-full[print this option summary including experimental features.]'
-  '--license[print details of software license.]'
-  '--print-language[dont make tags file but just print the guessed language name for]'
-  '--quiet[(yes|no)\]]'
-  '--totals[(yes|no|extra)\]]'
-  '--verbose[(yes|no)\]]'
-  '--version[print version identifier to standard output.]'
-  '-V[equivalent to --verbose.]'
-  '*:filename:_files'
+local -a io_args
+io_args=(
+  '--exclude=[exclude files and directories matching <patt>]:pattern:'
+  "--exclude-exception=[don't exclude files matching <patt> even if they match --exclude patt]:pattern:"
+  '--filter=[behave as filter, read file names from STDIN & writing tags to STDOUT]: :(yes no)'
+  '--filter-terminator=[specify <str> to print to STDOUT following tags for each file]:string terminator:'
+  '--links=[indicate whether symbolic links should be followed (yes)]: :(yes no)'
+  '--maxdepth=[specify maximum recursion depth]:depth:'
+  '--recurse=[recurse into directories supplied on command line (no)]: :(yes no)'
+  '-R[equivalent to --recurse]'
+  '-L[list of input file names is read from the specified <file>]:file:_files'
+  '--append=[should tags should be appended to existing tag file (no)]: :(yes no)'
+  '-a[append the tags to an existing tag file]'
+  '-f[write tags to specified <tagfile> ("-" writes tags to stdout)]:tagfile:_files'
+  '-o[alternative for -f]'
 )
 
-_arguments -s $arguments
+local -a output_format_args
+output_format_args=(
+  '--format=[force output of specified tag file format (2)]: :(1 2)'
+  '--output-format=[specify the output format (u-ctags)]:format:(u-ctags e-ctags etags xref json)'
+  '-e[output tag file for use with Emacs]'
+  '-x[print a tabular cross reference file to standard output]'
+  '--sort=[should tags be sorted (optionally ignoring case) (yes)]:sort:(yes no foldcase)'
+  '-u[equivalent to --sort=no]'
+  '--etags-include=[include reference to <file> in Emacs-style tag file (requires -e)]:file:_files'
+  '--input-encoding=[specify <encoding> of all input files]:encoding:'
+  '--input-encoding-=[specify <encoding> of the <LANG> input files]:input-encoding-<LANG>=encoding:'
+  '--output-encoding=[encoding to write tag file in (UTF-8 if --input-encoding)]:encoding:'
+  '--_xformat=[give format for tabular cross ref (e.g., 10N %10l:%K @ %-20F:%-20n) (-x)]:field format:'
+)
+
+local -a lang_sel_map_args
+lang_sel_map_args=(
+  '--language-force=[force all files to be interpreted using specified <language>]:language OR auto:'
+  '--languages=[restrict files scanned for tags to those mapped to langs specified (comma sep)]:[+|-] (list|all):'
+  '--alias-=[add <patt> detecting name, used as alt. name for <LANG>]:alias-<LANG>=[+|-] (patt|default):'
+  '--guess-language-eagerly[guess the language of input file more eagerly]'
+  '-G[equivalent to --guess-language-eagerly]'
+  '--langmap=[override default mapping of language to input file extension]:comma sep map:'
+  '--map-=[set, add(+), remove(-) map for <LANG> (one pattern)]:map-<LANG>=[+|-] (extension|pattern):'
+)
+
+local -a tag_file_content_args
+tag_file_content_args=(
+  '--excmd=[uses the specified type of EX command to locate tags (mix)]:ex cmd:(number pattern mix combine):'
+  '-n[equivalent to --excmd=number]'
+  '-N[equivalent to --excmd=pattern]'
+  '--extras=[extra tag for selected info (<flags>: "fFgpqrs") (F)]:[+|-] [flags|*]:'
+  '--extras-=[extra tag for selected info (<flags>: see --list-extras=<LANG>)]:extras-<LANG>=[+|-] [flags|*]:'
+  '--extras-all=[extra tag for selected info (<flags>: see --list-extras=all)]:[+|-] [flags|*]:'
+  '--fields=[include ext fields (<flags>: "aCeEfFikKlmnNpPrRsStxzZ") (fks)]:[+|-] [flags|*]:'
+  '--fields-=[include LANG ext fields (<flags>: see output --list-fields=<LANG>)]:fields-<LANG>=[+|-] [flags|*]:'
+  '--fields-all=[include all ext fields (<flags>: see output --list-fields=all)]:[+|-] [flags|*]:'
+  '--kinds-=[toggle tag <kinds> for language <LANG>]:kinds-<LANG>=[+|-] (kinds|*):'
+  '--kinds-all=[toggle tag <kinds> for all]:[+|-] (kinds|*):'
+  '--pattern-length-limit=[cutoff patt of tags after <N> chars (disable with 0) (96)]:cutoff length:'
+  '--pseudo-tags=[toggle emitting pseudo-tag (* = emit all pseudo tags)]:[+|-] (pseudo-tag|*):'
+  '--put-field-prefix[put "UCTAGS" as prefix for the name of fields newly introduced in ctags]'
+  '--roles-=[toggle tag roles for language]:roles-<LANG>.(<kind>|*)=[+|-] [roles|*]:'
+  '--roles-all=[toggle tag roles for all]:all..(<kind>|*)=[+|-] [roles|*]:'
+  '--roles-all.*=[toggle tag roles for all]:[+|-] [roles|*]:'
+  '--tag-relative=[paths be relative to loc of tag file (no; yes when -e)]: :(yes no always never)'
+  '-B[use backward searching patterns (?...?)]'
+  '-F[use forward searching patterns (/.../; default)]'
+)
+
+local -a option_file_args
+option_file_args=(
+  '--options=[specify file (or dir) from which cli options should be read]: :_files'
+  '--options-maybe=[same as --options but doesnt make error for non-existing file]: :_files'
+  '--optlib-dir=[add or set <directory> to optlib search path]:\[+\] directory:_directories'
+  '--_echo=[echo <msg> to stderr. useful to debug chain of loading opt files]:msg:'
+  '--_force-quit[quit when loading the option files is processed]:[=num]:'
+)
+
+local -a optlib_args
+optlib_args=(
+  '--kinddef-=[define new kind for LANG]:kinddef-<LANG>=<letter>,<name>,<description>:'
+  '--langdef=[define a new language to be parsed with regex]:language:'
+  '--mline-regex-=[define multiline regex for locating tags in lang]:mline-regex-<LANG>=/<line_p>/<name_p>/<kind-spec>/[<flags>]:'
+  '--regex-=[define single line regex for locating tags in lang]:regex-<LANG>=/<line_p>/<name_p>/<kind-spec>/[<flags>]:'
+  '--_extradef-=[define new extra for LANG (--extras-<LANG>=+{name} enables it)]:_extradef-<LANG>=<name>,<description>:'
+  '--_fielddef-=[define new field for LANG]:_fielddef-<LANG>=<name>,<description>:'
+  '--_mtable-extend-=[copy patts of regex table to another regex table]:_mtable-extend-<LANG>=disttable+srctable:'
+  '--_mtable-regex-=[def multitable regex for locating tags lang]:_mtable-regex-<LANG>=<tbl>/<line_p>/<name_p>/[<flags>]:'
+  '--_prelude-=[specify code run before parsing with LANG parser]:_prelude-<LANG>=optscript-code:'
+  '--_pretend-=[make NEWLANG parser pretend OLDLANG parser in lang field]:_pretend-<NEWLANG>=<OLDLANG>:'
+  '--_roledef-=[define new role for kind in LANG]:_roledef-<LANG>.<kind>=<name>,<description>:'
+  '--_scopesep-=[scope sep between <PARENT_KIND> & KIND]:_scopesep-<LANG>=[<parent_kind_letter>|*]/(<child_kind_letter>|*)\:<sep>\::'
+  '--_sequel-=[specify code run after parsing with LANG parser]:_sequel-<LANG>=optscript-code:'
+  '--_tabledef-=[define new regex table for LANG]:_tabledef-<LANG>=name:'
+)
+
+local -a lang_specific_args
+lang_specific_args=(
+  '--if0=[should code within #if 0 conditional branches be parsed (no)]:optional after =:(yes no)'
+  '--line-directives=[should "#line" directives be processed (no)]:optional after =:(yes no)'
+  '-D[(CPreProcessor) give <def> for <macro>]:<macro>=<definition>:'
+  '-h[specify list of file ext to be treated as include files (".h.H.hh.hpp.hxx.h++.inc.def")]:(<list>|default):'
+  '-I[list of tokens to be handled read from cli or file]:[+|-](<list>|@<file>):'
+  '--param-=[set LANG specific param (see --list-params)]:param-<LANG>.<name>=argument:'
+)
+
+local -a list_args
+list_args=(
+  '--list-aliases=[output list of alias patterns]:<language>|all:'
+  '--list-excludes[output list of exclude patterns for excluding files/directories]'
+  '--list-extras=[output list of extra tag flags]:<language>|all:'
+  '--list-features[output list of compiled features]'
+  '--list-fields=[output list of fields]:<language>|all:'
+  '--list-kinds=[output a list of all tag kinds for specified <language> or all]:<language>|all:'
+  '--list-kinds-full=[list details of all tag kinds for specified <language> or all]:<language>|all:'
+  '--list-languages[output list of supported languages]'
+  '--list-map-extensions=[output list of language extensions in mapping]:<language>|all:'
+  '--list-map-patterns=[output list of language patterns in mapping]:<language>|all:'
+  '--list-maps=[output list of language mappings (both ext and patt)]:<language>|all:'
+  '--list-mline-regex-flags[output list of flags which can be used in a multiline regex parser def]'
+  '--list-params=[output list of language params (works with --machinable)]:<language>|all:'
+  '--list-pseudo-tags[output list of pseudo tags]'
+  '--list-regex-flags[output list of flags which can be used in a regex parser def]'
+  '--list-roles=[output list of all roles of tag kind(s) for lang (e.g. =C.{header}d)]:(<language>|all) [.(<kindspecs>|*)]:'
+  '--list-subparsers=[output list of subparsers for the base language]:<baselang>|all:'
+  '--machinable=[tab separated rep in --list-* output (use before --list-*) (no)]:optional after =:(yes no)'
+  '--with-list-header=[prepend column desc in --list-* output (use before --list-*) (yes)]:optional after =:(yes no)'
+  '--_list-kinddef-flags[output list of flags which can be used with --kinddef option]'
+  '--_list-langdef-flags[output list of flags which can be used with --langdef option]'
+  '--_list-mtable-regex-flags[output list of flags which can be used in a multitable regex parser definition]'
+  '--_list-operators[output list of optscript operators]'
+)
+
+local -a miscellaneous_args
+miscellaneous_args=(
+  {-?,--help}'[print this option summary]'
+  '--help-full[print this option summary including experimental features]'
+  '--license[print details of software license]'
+  '--print-language[dont make tags file but just print the guessed language name for]'
+  '--quiet=[dont print NOTICE class messages (no)]:optional after =:(yes no)'
+  '--totals[print statistics about input and tag files (no)]:optional after =:(yes no extra)'
+  '--verbose[enable verbose messages describing actions on each input file]:optional after =:(yes no)'
+  '--version=[print version identifier to standard output of program or lang]:optional after =:language:'
+  '-V[equivalent to --verbose]'
+  '--_anonhash=[used in u-ctags test harness]:file:_files'
+  '--_dump-keywords[dump keywords of initialized parser(s)]'
+  '--_dump-options[ump options]'
+  '--_dump-prelude[dump contents of optscript prelude]'
+  '--_fatal-warnings[make all warnings fatal]'
+  '--_force-initializing[initialize all parsers in early stage]'
+  '--_interactive=[enter file I/O limited mode if sandbox (default)]: :(default sandbox)'
+)
+
+_arguments -s -S -C \
+  "$io_args[@]" \
+  "$output_format_args[@]" \
+  "$lang_sel_map_args[@]" \
+  "$tag_file_content_args[@]" \
+  "$option_file_args[@]" \
+  "$optlib_args[@]" \
+  "$lang_specific_args[@]" \
+  "$list_args[@]" \
+  "$miscellaneous_args[@]" \
+  '*:filename:_files'

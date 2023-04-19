@@ -630,7 +630,7 @@ _stig () {
         (dump)
           _arguments "${_arguments_options[@]}" \
               {-h,--help}'[Display help about the subcommand]' \
-              {-v,--version}'[Overwrite FILE if it exists]' \
+              {-f,--force}'[Overwrite FILE if it exists]' \
               '*::Configuration:_files' \
               && ret=0
         ;;

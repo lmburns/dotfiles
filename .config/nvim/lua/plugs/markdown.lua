@@ -167,7 +167,7 @@ function M.vimwiki()
                         ["<CR>"] = {"<Plug>VimwikiFollowLink", "Follow link"},
                         ["<S-CR>"] = {"<Plug>VimwikiSplitLink", "Split link"},
                         ["<BS>"] = {"<Plug>VimwikiGoBackLink", "Go to previously visited link"},
-                        ["<Leader>wh"] = {"<Plug>Vimwiki2HTML", "Convert page to HTML"},
+                        ["<Leader>wH"] = {"<Plug>Vimwiki2HTML", "Convert page to HTML"},
                         ["<Leader>w<Leader>i"] = {"<Plug>VimwikiDiaryGenerateLinks", "Update diary"},
                         ["<Leader>ww"] = {"<Plug>VimwikiIndex", "Goto current index"},
                         ["]u"] = {"<Plug>VimwikiNextLink", "Goto next link"},

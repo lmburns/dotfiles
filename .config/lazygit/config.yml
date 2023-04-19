@@ -1,15 +1,16 @@
 reporting: 'off'
 startuppopupversion: 1
 splashUpdatesIndex: 0
-confirmOnQuit: false
+confirmOnQuit: true
 quitOnTopLevelReturn: false
 update:
   days: 14
   method: 'prompt'
 
-# os:
-#   editCommand: "nvr -d"
-#   openCommand: 'nvim {{filename}}'
+os:
+  # editCommand: "nvr -d"
+  # openCommand: 'nvim {{filename}}'
+  editCommandTemplate: "{{editor}} +{{line}} -- {{filename}}"
 
 gui:
   showIcons: true # Show nerdfont icons

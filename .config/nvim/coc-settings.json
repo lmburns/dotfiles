@@ -4,41 +4,65 @@
   // ╘══════════════════════════════════════════════════════════╛
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "never",
+  "coc.preferences.silentAutoupdate": true,
   "coc.preferences.messageLevel": "error",
-  "coc.preferences.currentFunctionSymbolAutoUpdate": true,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": false,
   "coc.preferences.formatOnType": false,
-  "coc.preferences.bracketEnterImprove": false, // Autopairs does this
+  "coc.preferences.formatOnSave": false,
   "coc.preferences.willSaveHandlerTimeout": 1000,
-  "coc.preferences.enableMessageDialog": false, // MAYBE: change
   "coc.preferences.promptInput": true,
+  "coc.preferences.enableMessageDialog": true, // MAYBE: change
+  // "coc.preferences.watchmanPath": "",
   // "coc.preferences.watchmanPath": "/usr/bin/watchman",
-  // "coc.preferences.formatOnSaveFiletypes": [],
+
+  "coc.preferences.enableMarkdown": true,
+  "coc.preferences.bracketEnterImprove": false, // Autopairs does this
+
+  // "[lua]": {
+  //   "coc.preferences.enableMessageDialog": false
+  // },
+
+  "workspace.ignoredFolders": [
+    // "$HOME",
+    "$XDG_DATA_HOME/cargo/**",
+    "$XDG_DATA_HOME/rustup/**",
+    "/etc/**"
+  ],
+  "workspace.bottomUpFiletypes": ["python"],
 
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
   "coc.source.around.enable": true,
-  "coc.source.around.priority": 11,
+  "coc.source.around.priority": 49,
   "coc.source.around.shortcut": "ARO", // "",
   "coc.source.buffer.enable": true,
-  "coc.source.buffer.priority": 12,
+  "coc.source.buffer.priority": 50,
   "coc.source.buffer.shortcut": "BUF", // "",
   "coc.source.file.enable": true,
-  "coc.source.file.priority": 13,
+  "coc.source.file.priority": 55,
   "coc.source.file.shortcut": "", // "", "FIL"
+  "coc.source.file.trimSameExts": [".ts", ".js"],
   "coc.source.syntax.enable": true,
-  "coc.source.syntax.priority": 10,
+  "coc.source.syntax.priority": 51,
   "coc.source.syntax.shortcut": "SYN",
+  "coc.source.syntax.firstMatch": true,
   "coc.source.tag.enable": true,
-  "coc.source.tag.priority": 3,
+  "coc.source.tag.priority": 48,
   "coc.source.tag.shortcut": "TAG", // "",
   "coc.source.word.enable": true,
   "coc.source.word.priority": 10,
   "coc.source.word.shortcut": "WRD",
 
-  "tabnine.priority": 98,
+  "coc.source.requirements.enable": true,
+  "coc.source.requirements.priority": 40,
+  "coc.source.requirements.shortcut": "PIP",
+  "coc.source.vimtex.enable": true,
+
+  "suggest.languageSourcePriority": 101,
+  "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
 
-  "snippets.priority": 99,
+  "snippets.priority": 100,
   "snippets.shortcut": "",
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
@@ -65,7 +89,11 @@
   "tree.key.selectNext": "<C-j>",
   "tree.key.selectPrevious": "<C-k>",
 
-  "colors.enable": true,
+  "links.enable": true,
+  "links.tooltip": true,
+  "links.highlight": true,
+
+  "colors.enable": false,
   "colors.highlightPriority": 1000,
   "documentHighlight.priority": 1,
   "documentHighlight.timeout": 300,
@@ -99,6 +127,8 @@
   "diagnostic.virtualTextFormat": "%message",
   "diagnostic.format": "%message [%source%code]", // %source code severity message
   "diagnostic.messageTarget": "float",
+  "diagnostic.showUnused": true,
+  "diagnostic.showDeprecated": true,
 
   "diagnostic.autoRefresh": true,
   "diagnostic.refreshOnInsertMode": false,
@@ -115,8 +145,8 @@
   "inlayHint.enableParameter": true,
   "inlayHint.typeSeparator": "« ", // "‣
   "inlayHint.parameterSeparator": "» ",
-  // "inlayHint.subSeparator": " | ",
   "inlayHint.subSeparator": " ",
+  // "inlayHint.subSeparator": " | ",
 
   // ╭──────────╮
   // │ CodeLens │
@@ -124,10 +154,13 @@
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
-  "codeLens.position": "eol",
+  // "codeLens.position": "eol",
+  "codeLens.position": "top",
 
   "list.indicator": "»",
   "list.floatPreview": true,
+  "list.smartCase": true,
+  "list.normalMappings": { "q": "do:exit" },
 
   "signature.enable": true,
   "signature.target": "float",
@@ -140,9 +173,9 @@
   "dialog.floatHighlight": "CocFloating",
 
   "notification.border": true,
-  "notification.focusable": true,
+  "notification.focusable": false,
   "notification.highlightGroup": "CocFloating",
-  "notification.statusLineProgress": false,
+  "notification.statusLineProgress": true,
   "notification.timeout": 5000,
 
   // Float
@@ -193,16 +226,23 @@
     "highlight": "CocSuggestFloating"
   },
 
-  "suggest.enableFloat": true,
+  "snippet.statusText": "SNIP",
+
   "suggest.snippetIndicator": "",
-  "suggest.languageSourcePriority": 99,
+  "suggest.enableFloat": true,
   "suggest.removeDuplicateItems": true,
+  "suggest.insertMode": "replace",
   "suggest.detailField": "abbr",
   "suggest.labelMaxLength": 100,
-  "suggest.defaultSortMethod": "none",
+  "suggest.maxCompleteItemCount": 1000,
+  "suggest.defaultSortMethod": "length",
   "suggest.selection": "recentlyUsedByPrefix", // first
   "suggest.virtualText": false,
   "suggest.acceptSuggestionOnCommitCharacter": true,
+  "suggest.localityBonus": true,
+  "suggest.filterGraceful": true,
+  // "suggest.reversePumAboveCursor": false, // true
+  "suggest.formatItems": ["abbr", "menu", "kind", "shortcut"],
   "suggest.completionItemKindLabels": {
     "default": "θ", // 
     "folder": "", // 
@@ -234,15 +274,25 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                           Prettier
   // ╘══════════════════════════════════════════════════════════╛
-  "prettier.tabWidth": 2,
-  "prettier.singleQuote": true,
-  "prettier.semi": true,
-  "prettier.trailingComma": "es5",
+  "prettier.enable": true,
   // "prettier.formatterPriority": -1,
   // "prettier.resolveGlobalModules": true,
   "prettier.useEditorConfig": true,
   // "prettier.configPath": "~/.config/prettier/prettierrc.json",
+  "prettier.useTabs": false,
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.trailingComma": "es5",
   "prettier.arrowParens": "avoid",
+  "prettier.endOfLine": "lf",
+  "prettier.proseWrap": "preserve",
+  "prettier.quoteProps": "as-needed",
+  "prettier.jsxSingleQuote": false,
+  "prettier.bracketSpacing": true,
+  "prettier.bracketSameLine": false,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.embeddedLanguageFormatting": "auto",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                           Lighbulb
@@ -260,7 +310,7 @@
   //                            Clangd
   // ╘══════════════════════════════════════════════════════════╛
   "clangd.enabled": true,
-  "clangd.trace.server": "verbose",
+  "clangd.trace.server": "off",
   "clangd.checkUpdates": true,
   // "clangd.inlayHints.enable": true,
   // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
@@ -407,6 +457,8 @@
   "rust-analyzer.diagnostics.enable": true,
   // "rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"],
 
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.cachePriming.enable": true,
   "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.debug.vimspector.configuration.name": "launch",
   "rust-analyzer.procMacro.enable": true,
@@ -417,6 +469,10 @@
   "rust-analyzer.joinLines.removeTrailingComma": true,
   "rust-analyzer.joinLines.unwrapTrivialBlock": true,
 
+  "rust-analyzer.assist.emitMustUse": true,
+  "rust-analyzer.assist.expressionFillDefault": "todo",
+
+  "rust-analyzer.completion.privateEditable.enable": true,
   "rust-analyzer.completion.autoimport.enable": true,
   "rust-analyzer.completion.autoself.enable": true,
   "rust-analyzer.completion.callable.snippets": "fill_arguments",
@@ -434,9 +490,10 @@
   "rust-analyzer.highlightRelated.yieldPoints.enable": true,
 
   "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.location": "above_name",
   "rust-analyzer.lens.implementations.enable": true,
   "rust-analyzer.lens.references.adt.enable": true,
-  "rust-analyzer.lens.references.enumVariant.enable": false,
+  "rust-analyzer.lens.references.enumVariant.enable": true,
   "rust-analyzer.lens.references.method.enable": true,
   "rust-analyzer.lens.references.trait.enable": true,
   "rust-analyzer.lens.run.enable": true,
@@ -474,8 +531,16 @@
   //                            Golang
   // ╘══════════════════════════════════════════════════════════╛
   "go.trace.server": "off",
+  "go.enable": true,
+  "go.checkForUpdates": "install",
   "go.goplsPath": "gopls",
   "go.goplsUseDaemon": false,
+  "go.tags": {
+    "tags": "json",
+    "options": "json=omitempty",
+    "transform": "snakecase",
+    "skipUnexported": false
+  },
   "go.goplsOptions": {
     "gofumpt": true,
     "usePlaceholders": true,
@@ -586,7 +651,10 @@
     "ignore_space_after_colon": "true",
     "remove_call_expression_list_finish_comma": "true"
   },
-  "Lua.typeFormat.config": { "auto_complete_table_sep": "true", "format_line": "false" },
+  "Lua.typeFormat.config": {
+    "auto_complete_table_sep": "true",
+    "format_line": "false"
+  },
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace",
@@ -776,9 +844,17 @@
   // ╘══════════════════════════════════════════════════════════╛
   "java.trace.server": "off",
   "java.enabled": true,
+  "java.format.enabled": true,
+  "java.format.onType.enabled": false,
   "java.codeGeneration.useBlocks": true,
   "java.import.maven.enabled": true,
   "java.maven.downloadSources": false,
+  "java.referencesCodeLens.enabled": true,
+  "java.implementationsCodeLens.enabled": true,
+  "java.inlayHints.parameterNames.enabled": "all",
+  "java.signatureHelp.enabled": true,
+  "java.signatureHelp.description.enabled": true,
+  "java.quickfix.showAt": "line",
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
@@ -792,28 +868,47 @@
   //   "enable": true,
   //   "location": "separateLine"
   // },
-  // "eslint.codeActionsOnSave.mode": "all",
-  // "eslint.rules.customizations": [],
+  // "eslint.rules.customizations": [{"rule": "", "severity": ""}],
   "eslint.packageManager": "yarn",
   "eslint.run": "onType",
   "eslint.autoFixOnSave": false,
+  // "eslint.codeActionsOnSave.mode": "all",
   "eslint.format.enable": true,
   // Typescript
   "tsserver.enable": true,
   "tsserver.trace.server": "off",
   "tsserver.useLocalTsdk": true,
-  "tsserver.implicitProjectConfig.checkJs": true,
-  "tsserver.experimental.enableProjectDiagnostics": true,
   "typescript.showUnused": true,
+  "tsserver.experimental.enableProjectDiagnostics": true,
+  "typescript.updateImportsOnFileMove.enabled": "prompt",
   "typescript.preferences.quoteStyle": "single",
   "typescript.preferences.useAliasesForRenames": false,
+  "typescript.preferences.importModuleSpecifier": "shortest", // "non-relative"
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "typescript.preferences.jsxAttributeCompletionStyle": "auto", // "braces"
+  "typescript.preferences.includePackageJsonAutoImports": "auto", // "on"
+  "tsserver.implicitProjectConfig.checkJs": true,
+  "typescript.workspaceSymbols.scope": "allOpenProjects",
   "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
-  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
   "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+  "typescript.format.insertSpaceAfterConstructor": false,
+  "typescript.format.insertSpaceAfterTypeAssertion": false,
+  "typescript.format.insertSpaceAfterCommaDelimiter": true,
+  "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
+  "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
+  "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
   // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
-  "typescript.referencesCodeLens.enabled": false,
+  "typescript.referencesCodeLens.enabled": true,
   "typescript.referencesCodeLens.showOnAllFunctions": true,
   "typescript.implementationsCodeLens.enabled": true,
   "typescript.inlayHints.parameterNames.enabled": "literals",
@@ -825,8 +920,10 @@
   "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
   "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   // Javascript
-  "javascript.preferences.quoteStyle": "double",
-  "javascript.referencesCodeLens.enabled": false,
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.showOnAllFunctions": true,
+  "javascript.implementationsCodeLens.enabled": true,
   "javascript.format.enable": true,
   "javascript.format.semicolons": "insert",
   "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
@@ -977,10 +1074,22 @@
   //                             XML
   // ╘══════════════════════════════════════════════════════════╛
   "xml.trace.server": "off",
-  "xml.format.quotations": "doubleQuotes",
-  "xml.format.enabled": true,
   "xml.symbols.enabled": true,
   "xml.codeLens.enabled": true,
+  "xml.format.enabled": true,
+  "xml.format.quotations": "doubleQuotes",
+  "xml.format.emptyElements": "expand",
+  "xml.format.joinCDATALines": false,
+  "xml.format.splitAttributes": false,
+  "xml.format.joinCommentLines": false,
+  "xml.format.joinContentLines": false,
+  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.preserveEmptyContent": false,
+  "xml.format.preserveAttributeLineBreaks": false,
+  "xml.format.preservedNewlines": 2,
+  "xml.format.trimFinalNewlines": false,
+  "xml.format.trimTrailingWhitespace": true,
+  "xml.format.spaceBeforeEmptyCloseTag": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                             CSS
   // ╘══════════════════════════════════════════════════════════╛
@@ -1046,6 +1155,21 @@
   // "html.format.wrapAttributes": "force-aligned",
   "html.format.wrapAttributesIndentSize": 4,
   "html.format.templating": true,
+
+  "html-css-support.enable": true,
+  "html-css-support.styleSheets": [
+    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
+    "/style.css",
+    "style.css"
+  ],
+  "html-css-support.enabledLanguages": [
+    "html",
+    "vue",
+    "blade",
+    "htmldjango",
+    "typescriptreact",
+    "javascriptreact"
+  ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             SQL
   // ╘══════════════════════════════════════════════════════════╛
@@ -1061,6 +1185,9 @@
     "default": true,
     "line-length": false
   },
+
+  "markdown-preview-enhanced.previewTheme": "github-dark.css",
+  "webview.colorStrategy": "dark",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                            Dlang

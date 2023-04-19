@@ -126,6 +126,12 @@ function creinstall() {
   unfunction 'creinstall'
 }
 
+# Search for a keyword in a manpage
+function man-search() {
+  man -P "less -p $2" "$1"
+}
+
+
 # ================================ Wifi ==============================
 # ====================================================================
 # lsof open fd
@@ -411,6 +417,15 @@ function __ngl_compdef() {
 # Git change root
 function cr() {
   builtin cd "$(git rev-parse --show-toplevel)"
+}
+
+# Check what master branch's name is
+function git_main_branch() {
+  local b branch="master"
+  for b (main trunk) {
+    command git show-ref -q --verify refs/heads/$b && { branch=$b; break; }
+  }
+  print -Pr -- "%B$branch%b"
 }
 
 # ================================ X11 ===============================

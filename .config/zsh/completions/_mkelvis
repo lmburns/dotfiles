@@ -1,0 +1,39 @@
+#compdef mkelvis
+
+# zsh completions for 'mkelvis'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--version[show programs version number and exit]'
+  {--verbose,-v}'[show more output]'
+  {--quiet,-q}'[show less output]'
+  {--no-completions,--disable-completions}'[dont include completion code in output elvis]'
+  {--output,-o}'[write elvis code to FILE instead of elvis name]'
+  '--description[description for the elvis, excluding the domain name]'
+  {--query-parameter,-Q}'[define the parameter for the query arguments (needed]'
+  '--no-append-args[dont automatically append search to url]'
+  '--no-append-mappings[dont automatically append --map and --list-map values]'
+  '--insecure[use http instead of https]'
+  '--num-tabs[define the number of tabs after the elvis name in `sr]'
+  '-elvi[` output for alignment]'
+  '--metavar[define a metavar for an option; it will be UPPERCASE]'
+  '--describe[define a description for an option]'
+  {--flag,-F}'[specify an alias to a value(s) of a defined bool]'
+  {--yes-no,-Y}'[specify a boolean option for the elvis]'
+  '--enum[1,VAL2,..., -E VARIABLE_NAME:DEFAULT_VALUE:VAL1,VAL2,...]'
+  {--anything,-A}'[specify an option that is not checked]'
+  '--alias[make an alias to another defined option]'
+  '--list[1,DEFAULT2,...\[:VALID_VALUES_IF_ENUM\]]'
+  '--use-results-option[define a -results=NUM option]'
+  '--use-language-option[define a -language=ISOCODE option]'
+  '--map[map a variable to a URL parameter; by default]'
+  '--list-map[map the values of a list variable to multiple URL]'
+  '--inline[map a variable to a keyword in the search query (e.g.]'
+  '--list-inline[map the values of a list variable to multiple keywords]'
+  '--collapse[1,VAL2,RESULT:VAL_A,VAL_B,VAL_C,RESULT_D:...]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

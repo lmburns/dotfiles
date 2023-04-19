@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+gsettings list-recursively \
+  | sed 's/  */\n/;s/  */\n/;s/\&/\&amp;/g' \
+  | yad \
+     --list                \
+     --title "gsettings"   \
+     --item-seperator='\n' \
+     --width=1800          \
+     --height=800          \
+     --wrap-width=600      \
+     --column=Group        \
+     --column=Key          \
+     --column=Setting      \
+     --no-markup           \

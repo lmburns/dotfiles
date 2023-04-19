@@ -6,8 +6,8 @@ if not sub then
     return
 end
 
-local utils = require("common.utils")
-local map = utils.map
+-- local utils = require("common.utils")
+-- local map = utils.map
 local wk = require("which-key")
 
 function M.setup()
@@ -30,10 +30,10 @@ function M.setup()
                 -- Will ask for confirmation for each substitutions
                 confirm = false,
                 -- Use the content of this register as replacement value
-                register = nil
+                register = nil,
                 -- motion1 = true,
                 -- motion2 = true,
-            }
+            },
             -- exchange = {
             --     motion = false
             -- }
@@ -48,77 +48,33 @@ local function init()
     M.setup()
 
     local range = require("substitute.range")
+    local exchange = require("substitute.exchange")
 
     wk.register(
         {
-            ["s"] = {"<Cmd>lua require('substitute').operator()<CR>", "Substitute: <motion>"},
-            ["ss"] = {"<Cmd>lua require('substitute').line()<CR>", "Substitute: line"},
-            ["se"] = {"<Cmd>lua require('substitute').eol()<CR>", "Substitute: EOL"},
-            ["sx"] = {
-                "<Cmd>lua require('substitute.exchange').operator()<CR>",
-                "Substitute Exchange: <motion>"
-            },
-            ["sxx"] = {
-                "<Cmd>lua require('substitute.exchange').line()<CR>",
-                "Substitute Exchange: line"
-            },
-            ["sxc"] = {
-                "<Cmd>lua require('substitute.exchange').cancel()<CR>",
-                "Substitute Exchange: cancel"
-            },
-            ["<Leader>sr"] = {
-                "<Cmd>lua require('substitute.range').operator()<CR>",
-                "Substitute Range: <motion><motion>"
-            },
-            ["sr"] = {
-                "<Cmd>lua require('substitute.range').word()<CR>",
-                "Substitute Range: <word><motion>"
-            },
-            ["sS"] = {
-                "<Cmd>lua require('substitute.range').operator({confirm = true})<CR>",
-                "Substitute Range: <motion><motion> confirm"
-            }
+            ["s"] = {D.ithunk(sub.operator), "Substitute: <motion>"},
+            ["ss"] = {D.ithunk(sub.line), "Substitute: line"},
+            ["se"] = {D.ithunk(sub.eol), "Substitute: EOL"},
+            ["sx"] = {D.ithunk(exchange.operator), "SubExchange: <motion>"},
+            ["sxx"] = {D.ithunk(exchange.line), "SubExchange: line"},
+            ["sxc"] = {D.ithunk(exchange.cancel), "SubExchange: cancel"},
+            ["<Leader>sr"] = {D.ithunk(range.operator), "SubRange: <motion><motion>"},
+            ["sr"] = {D.ithunk(range.word), "SubRange: <word><motion>"},
+            ["sS"] = {D.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
+            ["s;"] = {D.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
         }
     )
 
-    -- wk.register(
-    --     {
-    --         ["sx"] = {
-    --             "<Cmd>lua require('substitute.exchange').operator()<CR>",
-    --             "Substitute Exchange: <motion>"
-    --         }
-    --     },
-    --     {mode = "n", preset = true}
-    -- )
-
-    -- TIP: ====================================================================
-    -- `:h pattern-overview`
-    -- {-}: matches 0 or more of the preceding atom, as few as possible
-    --
-    -- Replace Nth occurence:        s/\v(.{-}\zsPATT.){N}/REPL/
-    -- Replace every Nth occurrence: s/\v(\zsPATT.{-}){N}/REPL/g
-    -- Sort on a given column:       :sort f /\v^(.{-},){2}/
-
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
-
-    map(
-        "n",
-        "s;",
-        D.ithunk(range.word, {motion2 = "ie"}),
-        {desc = "Substitute Range: <word><file>", silent = false}
-    )
-
     -- map("x", "p", "<cmd>lua require('substitute').visual()<cr>")
     -- map("x", "P", "<cmd>lua require('substitute').visual()<cr>")
 
     wk.register(
         {
-            ["ss"] = {"<Cmd>lua require('substitute').visual()<CR>", "Substitute: visual"},
-            ["X"] = {
-                "<Cmd>lua require('substitute.exchange').visual()<CR>",
-                "Substitute Exchange: selection"
-            },
-            ["sr"] = {"<Cmd>lua require('substitute.range').visual()<CR>", "Substitute <motion>"}
+            ["ss"] = {D.ithunk(sub.visual), "Substitute: visual"},
+            ["X"] = {D.ithunk(exchange.visual), "SubExchange: selection"},
+            ["sr"] = {D.ithunk(range.visual), "SubRange: <motion>"},
+            ["s;"] = {D.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
         },
         {mode = "x"}
     )

@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
+# https://protesilaos.com/codelog/multihead-bspwm-polybar/
+
+# Remove all previous rules
 bspc rule -r "*"
 
 # Hotkey daemon
@@ -12,78 +15,224 @@ pgrep -x rss-watch >/dev/null || run-rss-watch
 pgrep -x keynav    >/dev/null || keynav &
 # Pulseaudio applet
 pgrep -x pasystray >/dev/null || pasystray &
+# Extra hotkey daemon for what sxhkd can't do
+pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
+
+# Clipboard daemon
+# pgrep -x copyq >/dev/null || copyq &
 
 # File manager
 # pgrep -x thunar >/dev/null || thunar --daemon &
 # pgrep -x spacefm >/dev/null || spacefm -d &
 pgrep -x pcmanfm >/dev/null || pcmanfm -d &
-# Extra hotkey daemon for what sxhkd can't do
-pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
 
-# pgrep -x copyq >/dev/null || copyq &
-
+# Start polybar
 launchpolybar &
-
+# Run xmodmap script
 remaps &
-# remaps-mode_shift &
-
 # Set the cursor
 xsetroot -cursor_name left_ptr &
+# Set GTK settings
+pgrep -x xsettingsd >/dev/null || xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf &
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                          bspwm                           │
+#  ╰──────────────────────────────────────────────────────────╯
+# Desktop names
 
 bspc monitor -d I II III IV V
 
-bspc config automatic_scheme alternate
-bspc config initial_polarity second_child
+# bspc monitor DP-1 -d I II III IV V
+# if (( ${#${(@f)"$(bspc query -M)"}} == 2 )) {
+#   bspc monitor HDMI-1 -d VI VII VIII IV V
+# }
 
-bspc config split_ratio          0.50
+# bspc monitor -d i ii iii iv v
+# bspc monitor -d • • • • •
+# bspc monitor -d ₁ ₂ ₃ ₄ ₅
 
-bspc config window_gap           10
-bspc config top_padding          30
-bspc config bottom_padding       0
-bspc config left_padding         0
-bspc config right_padding        0
-bspc config click_to_focus       true
+# ⁰'²³⁴⁵⁶⁷⁸⁹
+# ₀₁₂₃₄₅₆₇₈₉
 
-bspc config single_monocle       true
-bspc config gapless_monocle      false
-bspc config borderless_monocle   false
-
-bspc config border_width          5
+#  ╭──────╮
+#  │ Look │
+#  ╰──────╯
+## Window border width
+bspc config border_width           5
+## Unfocused window
 bspc config normal_border_color   "#4c566a"
-bspc config active_border_color   "#1e1e1e"
+## Focused window of an unfocused monitor
+bspc config active_border_color   "#28081f"
+## Focused window of a focused monitor
 bspc config focused_border_color  "#a98698"
+## Color of the node --presel-{dir,ratio} message feedback area
 bspc config presel_feedback_color "#4C96A8"
-bspc config urgent_border_color   "#dd2727"
 
-# bspc config focus_by_distance           true
+## Padding space added at the top of the screen for the monocle desktop layout
+bspc config top_monocle_padding    0
+## Padding space added at the bottom of the screen for the monocle desktop layout
+bspc config bottom_monocle_padding 0
+## Padding space added at the left of the screen for the monocle desktop layout
+bspc config left_monocle_padding   0
+## Padding space added at the right of the screen for the monocle desktop layout
+bspc config right_monocle_padding  0
+
+## Padding space added at the top of the monitor or desktop
+bspc config top_padding            30
+## Padding space added at the bottom of the monitor or desktop
+bspc config bottom_padding         0
+## Padding space added at the left of the monitor or desktop
+bspc config left_padding           0
+## Padding space added at the right of the monitor or desktop
+bspc config right_padding          0
+
+## Size of the gap that separates windows
+bspc config window_gap             10
+## Draw the preselection feedback area. Defaults to true
+bspc config presel_feedback        true
+
+## Remove gaps of tiled windows for the monocle desktop layout
+bspc config gapless_monocle        false
+## Remove borders of tiled windows for the monocle desktop layout
+bspc config borderless_monocle     false
+
+#  ╭───────╮
+#  │ Input │
+#  ╰───────╯
+## Minimum interval, in milliseconds, between two motion notify events
+bspc config pointer_motion_interval     17
+## Focus the window under the pointer
 bspc config focus_follows_pointer       true
-# bspc config remove_disabled_monitors    true
-# bspc config remove_unplugged_monitors   true
-# bspc config merge_overlapping_monitors  true
+## When focusing a window, put the pointer at its center
+bspc config pointer_follows_focus       false
+## When focusing a monitor, put the pointer at its center # MAYBE: change
+bspc config pointer_follows_monitor     true
+## Button used for focusing a window (or a monitor).
+##    - button1, button2, button3, any, none (default: button1)
+bspc config click_to_focus               any
+## Don’t replay the click that makes a window focused if click_to_focus isn’t none
+bspc config swallow_first_click          false
 
+## Modifier used for moving or resizing windows.
+##    - shift, control, lock, mod1, mod2, mod3, mod4, mod5
 bspc config pointer_modifier control
-bspc config pointer_action1 resize_corner
-bspc config pointer_action2 resize_side
-bspc config pointer_action3 move
+## Action performed when pressing pointer_modifier + button<n>
+##    - move, resize_side, resize_corner, focus, none
+## Left-click
+bspc config pointer_action1  resize_corner
+## Middle-click ??
+bspc config pointer_action2  resize_side
+## Right-click
+bspc config pointer_action3  move
+
+#  ╭──────────╮
+#  │ Behavior │
+#  ╰──────────╯
+# Insertion scheme used when the insertion point is in automatic mode.
+#     - longest_side, alternate, spiral
+bspc config automatic_scheme            alternate    # spiral
+# Which child should a new win be attached when adding win on single win tree in automatic mode
+#     - first_child, second_child.
+bspc config initial_polarity            second_child
+## Tightness of algorithm used to decide if a window is on DIR side of another
+##    - high, low
+bspc config directional_focus_tightness high
+## Adjust brother when unlinking node from the tree in accordance with automatic insertion scheme
+bspc config removal_adjustment          true
+
+## Ignore EWMH focus requests coming from applications
+bspc config ignore_ewmh_focus      false
+## Block the fullscreen state transitions that originate from an EWMH request.
+##    - none, all, comma separated list of (enter, exit)
+bspc config ignore_ewmh_fullscreen none
+## Ignore strut hinting from clients requesting to reserve space (i.e. task bars).
+bspc config ignore_ewmh_struts     false
+## Apply ICCCM window size hints # MAYBE: change
+## Will prevent some windows from getting too small
+bspc config honor_size_hints       false
+
+## Set the desktop layout to monocle if there’s only one tiled window in the tree
+bspc config single_monocle       true
+## Center pseudo tiled windows into their tiling rectangles. Defaults to true.
+bspc config center_pseudo_tiled  true
+
+## Prefix prepended to each of the status lines
+bspc config status_prefix   "W"
+## Default split ratio
+bspc config split_ratio     0.50
+
+## Handle the next mapping_events_count mapping notify events.
+## A negative value implies that every event needs to be handled
+bspc config mapping_events_count 0
+
+## Consider disabled monitors as disconnected # MAYBE: change
+bspc config remove_disabled_monitors    false
+## Remove unplugged monitors
+bspc config remove_unplugged_monitors   true
+## Merge overlapping monitors (the bigger remains)
+bspc config merge_overlapping_monitors  true
+
+## Absolute path to the command used to retrieve rule consequences.
+## The command will receive the following arguments:
+##    - window ID
+##    - class name
+##    - instance name
+##    - intermediate consequences.
+## The output of that command must have the following format:
+##    - key1=value1
+##    - key2=value2 ...
+## (the valid key/value pairs are given in the description of the rule command).
+# (( ${+commands[bspwm_external_rules]} )) && \
+#   bspc config external_rules_command \
+#       ${${:-bspwm_external_rules}:A}
+
+#  ╭───────╮
+#  │ Rules │
+#  ╰───────╯
+## add
+#   (<class_name>|*)[:(<instance_name>|*)[:(<name>|*)]] [-o|--one-shot]
+#     [monitor=MONITOR_SEL|desktop=DESKTOP_SEL|node=NODE_SEL]
+#         [state=STATE] [layer=LAYER] [split_dir=DIR] [split_ratio=RATIO]
+#     [(hidden|sticky|private|locked|marked|center|follow|manage|focus|border)=(on|off)] [rectangle=WxH+X+Y]
+
+## remove
+#   ^<n>|head|tail|(<class_name>|*)[:(<instance_name>|*)[:(<name>|\*)]]...
 
 # xdo below -t $(xdo id -n root) $(xdo id -a polybar-main_DisplayPort-0)
 
-bspc rule -a Firefox desktop='^2'
-bspc rule -a Screenkey manage=off
-# bspc rule -a Screenkey --unmanage
-# bspc rule -a mpv state=fullscreen
-bspc rule -a Zathura state=tiled
-bspc rule -a Sxiv state=floating follow=on
+# bspc rule -a Firefox desktop='^2'
+# bspc rule -a mpv     state=floating
+
+bspc rule -a Screenkey        manage=off
+bspc rule -a Zathura          state=tiled
+bspc rule -a transmission-gtk state=pseudo_tiled
+bspc rule -a Ulauncher        state=floating follow=on border=off
+bspc rule -a systemsettings   state=floating follow=on
+bspc rule -a lxappearance     state=floating center=on
+bspc rule -a Pinentry         state=floating center=on
+bspc rule -a Nautilus         state=floating
+bspc rule -a Pavucontrol      state=floating center=on
+bspc rule -a Gimp             state=floating follow=on
+bspc rule -a yad              state=floating center=on
+
+bspc rule -a conky            sticky=on manage=off lower=on
+
+bspc rule -a Sxiv  state=floating follow=on
 bspc rule -a Nsxiv state=floating follow=on
-bspc rule -a feh state=floating
-bspc rule -a Ulauncher border=off follow=on state=floating
-bspc rule -a "System Settings"  state=floating follow=on
-bspc rule -a Pinentry state=floating center=on
+bspc rule -a feh   state=floating follow=on
 
-bspc rule -a Alacritty:cmatrixterm state=fullscreen
-bspc rule -a Alacritty:dropdown state=floating
+# bspc rule -a "Brave-browser:*:uBlock₀ — Logger" state=floating
+bspc rule -a 'Brave-browser:crx_cjpalhdlnbpafiamejdnhcphjbkeiagm' state=floating
+bspc rule -a Alacritty:cmatrixterm            state=fullscreen
+bspc rule -a Alacritty:dropdown               state=floating
+bspc rule -a Alacritty:ncmpcpp                state=floating
+bspc rule -a Alacritty:neomutt                state=floating
+bspc rule -a Alacritty:fzf-bluetooth          state=floating  center=on
 
-# bspc rule -a lattedock layer=below manage=off border=off
-#bspc rule -a lattedock manage=off
+# bspc rule -a Firefox:SessionManager desktop='^2' state=floating layer=above
+# bspc rule -a Toplevel:Firefox   state=floating
+# bspc rule -a Firefox:Dialog   state=floating
+# bspc rule -a chromium private=on
+# bspc rule -a firefox private=on
 
-# bspc rule -a Gimp desktop='^8' state=floating follow=on
+# bspc rule -a mutt

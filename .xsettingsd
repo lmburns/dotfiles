@@ -1,6 +1,0 @@
-Net/ThemeName "Gruvbox-Material-Dark"
-Net/IconThemeName "Gruvbox-Material-Dark"
-Gtk/CursorThemeName "breeze_cursors"
-
-Net/EnableEventSounds 1
-Net/EnableInputFeedbackSounds 1

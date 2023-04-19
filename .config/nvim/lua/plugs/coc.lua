@@ -236,7 +236,7 @@ end
 
 ---Run a Coc command
 ---@param name string Command to run
----@param args table Arguments to the command
+---@param args? table Arguments to the command
 ---@param cb? function
 ---@return string[]
 function M.run_command(name, args, cb)
@@ -251,7 +251,27 @@ function M.run_command(name, args, cb)
     return action_fn("runCommand", name, unpack(args))
 end
 
----@alias CodeAction "''"|"'cursor'"|"'line'"|"'refactor'"
+---@alias CodeAction
+---| "''"
+---| "'cursor'"
+---| "'line'"
+---| "'currline'"
+---| "'refactor'" base kind for refactoring actions
+---| "'quickfix'" base kind for quickfix actions
+---| "'refactor.extract'" base kind for refactoring extraction actions
+---| "'refactor.inline'" base kind for refactoring inline actions
+---| "'refactor.rewrite'" base kind for refactoring rewrite actions
+---| "'source'" base kind for source actions
+---| "'source.organizeImports'" base kind for an organize imports source action
+---| "'source.fixAll'" base kind for auto-fix source actions
+
+---CocAction('codeLensAction')
+---CocAction('codeAction')
+---
+---CocAction('codeActions')
+---CocAction('organizeImport')
+---CocAction('fixAll')
+---CocAction('quickfixes')
 
 ---Code actions
 ---@param mode CodeAction|CodeAction[]
@@ -736,12 +756,16 @@ function M.init()
         10
     )
 
+    -- TODO: checkout coc-status
+
     -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
     g.coc_fzf_preview_fullscreen = 0
     g.coc_fzf_preview_toggle_key = "?"
 
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
+
+    g.coc_open_url_command = "handlr open"
 
     augroup(
         "CocNvimSetup",
@@ -759,7 +783,7 @@ function M.init()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
-                -- require("plugs.coc").diagnostics_tracker()
+                require("plugs.coc").diagnostics_tracker()
             end,
         },
         -- {
@@ -784,7 +808,7 @@ function M.init()
         --                 1000
         --             )
         --         end
-        --     end
+        --     end,
         -- },
         {
             event = "CursorHold",
@@ -794,7 +818,7 @@ function M.init()
         },
         {
             event = "FileType",
-            pattern = {"typescript", "json"},
+            pattern = {"typescript", "json", "lua"},
             command = [[setl formatexpr=CocActionAsync('formatSelected')]],
         },
         {
@@ -822,17 +846,24 @@ function M.init()
         {
             event = "FileType",
             pattern = "log",
-            command = function()
-                vim.b.coc_enabled = 0
+            command = function(args)
+                vim.b[args.buf].coc_enabled = 0
+            end,
+        },
+        {
+            event = "FileType",
+            pattern = {"css", "zsh"},
+            command = function(args)
+                vim.b[args.buf].coc_additional_keywords = {"-"}
             end,
         },
         {
             event = "BufReadPost",
             pattern = "*",
-            command = function()
-                local bufnr = api.nvim_get_current_buf()
+            command = function(args)
+                local bufnr = args.buf
                 if vim.bo[bufnr].readonly then
-                    vim.b.coc_diagnostic_disable = 1
+                    vim.b[bufnr].coc_diagnostic_disable = 1
                 end
             end,
         },
@@ -866,25 +897,28 @@ function M.init()
         {
             {
                 ":CocMarket",
-                [[:CocFzfList marketplace]],
+                [[CocFzfList marketplace]],
                 description = "Fzf Marketplace",
                 opts = {nargs = 0},
             },
             {
                 ":Format",
-                [[:call CocAction('format')]],
+                [[call CocAction('format')]],
                 description = "Format file with coc",
                 opts = {nargs = 0},
             },
             {
                 ":Prettier",
-                [[:call CocAction('runCommand', 'prettier.formatFile')]],
+                [[call CocAction('runCommand', 'prettier.formatFile')]],
                 description = "Format file with prettier",
                 opts = {nargs = 0},
             },
             {
                 ":OR",
-                [[:call CocAction('runCommand', 'editor.action.organizeImport')]],
+                -- [[call CocAction('runCommand', 'editor.action.organizeImport')]],
+                -- [[call CocAction('runCommand', 'tsserver.organizeImports')]],
+                -- [[call CocAction('organizeImport')]]
+                [[lua require('plugs.coc').organize_import()]],
                 description = "Organize imports",
                 opts = {nargs = 0},
             },
@@ -895,6 +929,25 @@ function M.init()
                 opts = {nargs = 0},
             },
             {
+                ":CocCodeAction",
+                [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
+                description = "Coc code action",
+                opts = {nargs = 0, range = "%"},
+            },
+            {
+                ":CocQuickfix",
+                [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
+                -- [[call CocAction('quickfixes')]]
+                description = "Coc code action fix",
+                opts = {nargs = "*", range = "%"},
+            },
+            {
+                ":CocFixAll",
+                [[call CocActionAsync('fixAll')]],
+                description = "Coc code action fix all",
+                opts = {nargs = "*", range = "%"},
+            },
+            {
                 ":DiagnosticToggleBuffer",
                 [[call CocAction('diagnosticToggleBuffer')]],
                 description = "Turn off diagnostics for buffer",
@@ -902,13 +955,13 @@ function M.init()
             },
             {
                 ":Tsc",
-                [[:call CocAction('runCommand', 'tsserver.watchBuild')]],
+                [[call CocAction('runCommand', 'tsserver.watchBuild')]],
                 description = "Typescript watch build",
                 opts = {},
             },
             {
-                ":Tslint",
-                [[:call CocAction('runCommand', 'tslint.lintProject')]],
+                ":Eslint",
+                [[call CocAction('runCommand', 'eslint.lintProject')]],
                 description = "Typescript ESLint",
                 opts = {},
             },
@@ -919,14 +972,8 @@ function M.init()
         {
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
-            ["gy"] = {
-                ":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>",
-                "Goto type definition"
-            },
-            ["gi"] = {
-                ":call CocActionAsync('jumpImplementation', 'drop')<CR>",
-                "Goto implementation"
-            },
+            ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type def"},
+            ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
             ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
             ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
             ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
@@ -936,10 +983,14 @@ function M.init()
             ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
             ["[x"] = {":CocCommand document.jumpToPrevSymbol<CR>", "Goto prev symbol"},
             ["]x"] = {":CocCommand document.jumpToNextSymbol<CR>", "Goto next symbol"},
-            ["<Leader>?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
             ["<A-q>"] = {
                 ":lua vim.notify(require'plugs.coc'.getsymbol(), vim.log.levels.WARN)<CR>",
                 "Get current symbol"
+            },
+            ["<Leader>j?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
+            ["<Leader>jl"] = {
+                ":CocCommand workspace.diagnosticRelated<CR>",
+                "Goto related diagnostics",
             },
             ["<Leader>j;"] = {
                 ":lua require('plugs.coc').diagnostic()<CR>",
@@ -954,16 +1005,19 @@ function M.init()
                 ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
                 "Coc toggle diagnostic target"
             },
+            ["<Leader>jo"] = {"<Cmd>DiagnosticToggleBuffer<CR>", "Coc toggle diagnostics"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
-            ["<Leader>fm"] = {"<Plug>(coc-format-selected)", "Format selected"},
-            [";x"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
-            ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
-            ["<Leader>qi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
-            ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-            ["<Leader><Leader>;"] = {"<Plug>(coc-codelens-action)", "Coc codelens"},
-            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "Code action"},
+            ["<Leader>rf"] = {":call CocAction('refactor')<CR>", "Coc refactor"},
+            ["<Leader>rp"] = {"<Plug>(coc-command-repeat)", "Coc repeat"},
+            -- ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
+            [";fs"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
+            [";fi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
+            [";fc"] = {"<Plug>(coc-codelens-action)", "Coc codelens action"},
+            ["<C-w>D"] = {"<Plug>(coc-float-hide)", "Coc hide float"},
+            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
             -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
             -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
+            ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
         }
     )
 
@@ -971,19 +1025,21 @@ function M.init()
     map(
         "n",
         "<A-CR>",
-        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>"
+        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>",
+        {desc = "CodeAction: cursor"}
     )
     map(
         "n",
         "<C-A-CR>",
-        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>"
+        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>",
+        {desc = "CodeAction: line"}
     )
-    map("x", "<A-CR>", [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]])
-
-    -- map("s", "<C-h>", '<C-g>"_c')
-    -- map("s", "<C-w>", "<Esc>a")
-    -- map("s", "<C-o>", "<Nop>")
-    -- map("s", "<C-o>o", "<Esc>a<C-o>o")
+    map(
+        "x",
+        "<A-CR>",
+        [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]],
+        {desc = "CodeAction: visual"}
+    )
 
     -- Refresh coc completions
     map("i", "<C-'>", "coc#refresh()", shexpr)
@@ -1014,7 +1070,21 @@ function M.init()
         [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
         {expr = true, noremap = false}
     )
-    map("s", "<C-]>", [[v:lua.require'plugs.coc'.skip_snippet()]], {expr = true})
+    map(
+        "s",
+        "<C-]>",
+        [[v:lua.require'plugs.coc'.skip_snippet()]],
+        {expr = true, desc = "Skip snippet"}
+    )
+    map("s", "<C-h>", '<C-g>"_c')
+    map("s", "<C-w>", "<Esc>a")
+    map("s", "<C-o>", "<Nop>")
+    map("s", "<C-o>o", "<Esc>a<C-o>o")
+
+    --  snoremap <silent> <BS> <c-g>c
+    --  snoremap <silent> <DEL> <c-g>c
+    --  snoremap <silent> <c-h> <c-g>c
+    --  snoremap <c-r> <c-g>"_c<c-r>
 
     -- Fzf
     -- add_list_source(name, description, command)

@@ -7,8 +7,7 @@
 # elvis: perldoc		-- Search perldoc (perldoc.perl.org)
 . surfraw || exit 1
 
-w3_usage_hook ()
-{
+w3_usage_hook () {
   cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:

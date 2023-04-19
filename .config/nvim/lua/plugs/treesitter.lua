@@ -1390,19 +1390,21 @@ local function init()
         _t(
             {
                 -- "vimdoc",
+                -- "markdown",
+                -- "css",
+                -- "PKGBUILD",
+                -- "toml",
                 "html",
                 "comment",
-                -- "markdown",
                 "yaml",
-                -- "css",
                 "latex",
                 "make",
                 "cmake",
                 "zsh",
                 "solidity",
                 "sxhkdrc",
-                "perl"
-                -- "toml",
+                "perl",
+                "ini"
             }
         )
 

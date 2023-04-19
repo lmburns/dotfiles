@@ -1,4 +1,5 @@
 local coc = require("plugs.coc")
+local D = require("dev")
 local utils = require("common.utils")
 local map = utils.map
 
@@ -10,8 +11,8 @@ map(
     "n",
     "<Leader>re",
     function()
-        coc.run_command("tsserver.restart", {})
-        coc.run_command("eslint.restart", {})
+        coc.run_command("tsserver.restart")
+        coc.run_command("eslint.restart")
     end,
     {buffer = true, desc = "Restart TSServer"}
 )
@@ -19,17 +20,20 @@ map(
 map(
     "n",
     ";fa",
-    function()
-        coc.run_command("eslint.executeAutofix")
-    end,
+    D.ithunk(coc.run_command, "eslint.executeAutofix"),
     {buffer = true, desc = "ESLint autofix"}
 )
 
 map(
     "n",
+    ";fd",
+    D.ithunk(coc.run_command, "tsserver.executeAutofix"),
+    {buffer = true, desc = "TSServer autofix"}
+)
+
+map(
+    "n",
     ";fo",
-    function()
-        coc.run_command("tsserver.organizeImports")
-    end,
+    D.ithunk(coc.run_command, "tsserver.organizeImports"),
     {buffer = true, desc = "TSServer organizeImports"}
 )

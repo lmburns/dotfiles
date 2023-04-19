@@ -1,0 +1,33 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 2023-04-16
+#
+# DESC: Elvi to search presearch (presearch.com)
+# elvis: presearch	 -- Search presearch (presearch.com)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search presearch (presearch.com)
+EOF
+  w3_global_usage
+}
+
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://presearch.com"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://presearch.com/search?q="
+search_url="$search_url$escaped_args"
+w3_browse_url "$search_url"

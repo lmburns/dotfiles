@@ -87,8 +87,6 @@ mpd &
 # transmission-daemon &
 # transmission-rss -f &
 
-# xrdb ~/.Xresources &
-
 #  ╭──────────╮
 #  │ redshift │
 #  ╰──────────╯
@@ -137,7 +135,8 @@ xbanish &
 sxhkd &
 
 xsetroot -cursor_name left_ptr &
-xrdb -merge ~/.Xresources &
+# xrdb -merge ~/.Xresources &
+xrdb -I $HOME -merge ${HOME}/.Xresources &
 xmodmap ~/.Xmodmap &
 
 # To be able to use gnome-keyring

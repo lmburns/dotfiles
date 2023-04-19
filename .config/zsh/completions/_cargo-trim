@@ -1,0 +1,143 @@
+#compdef cargo-trim
+
+_cargo-trim_cmds() {
+  local -a commands
+  commands=(
+    init:'initialize current working directory as cargo trim directory'
+    clear:'clear current working directory from cargo cache config'
+    config:'query about config file data used by CLI'
+    set:'set config file values'
+    unset:'unset values from config file'
+    list:'list out crates'
+    git:'perform operation only to git related cache file'
+    registry:'perform operation only to registry related cache file'
+    help:'print this message or the help of the given subcommand(s)'
+
+  )
+  _describe -t commands 'command' commands
+}
+
+_cargo-trim() {
+  local curcontext="$curcontext" state line state_descr
+  typeset -a _arguments_options
+  typeset -A opt_args
+  local ret=1
+
+   _arguments_options=(-s -S -C)
+
+  _arguments "${_arguments_options[@]}" \
+    {-a,--all}'[clean up all registry & git crates]' \
+    {-d,--directory=}'[extra list of directory of Rust projects for current command]:dir:_directories' \
+    {-g,--gc=}'[git compress to reduce size of .cargo]: :(aggressive-checkout aggressive-db aggressive-index checkout db index)' \
+    {-i,--ignore=}'[extra list of ignore file name which should be ignored]:ignored:_files' \
+    {-l,--light}'[light cleanup without removing files required for future compilation without internet]' \
+    {-o,--old}'[clean old cache crates]' \
+    {-z,--old-orphan}'[clean crates which is both old and orphan]' \
+    {-x,--orphan}'[clean orphan cache crates i.e all crates which are not present in lock file generated till now]' \
+    {-q,--query}'[return size of different .cargo/cache folders]' \
+    '--scan-hidden-folder[scan hidden folder for current command]' \
+    '--scan-target-folder[scan target folder for current command]' \
+    '--no-scan-hidden-folder[do not scan hidden folder for current command]' \
+    '---no-scan-target-folder[do not scan target folder for current command]' \
+    {-t,--top=}'[show certain number of top crates which have highest size]:number:' \
+    {-u,--update}'[generate and Update Cargo.lock file present inside config directory folder path]' \
+    {-w,--wipe=}'[wipe folder]:folder:(git checkouts db registry cache index index-cache src)' \
+    {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+    '(- 1 *)'{-V,--version}'[show version information]' \
+    '(- 1 *)'{-h,--help}'[show help message]' \
+    '1: :_cargo-trim_cmds' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*}-${words[1]}:"
+      case ${words[1]} in
+        (init|clear)
+          _arguments "${_arguments_options[@]}" \
+             {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (config)
+          _arguments "${_arguments_options[@]}" \
+              {-d,--directory}'[query about directory data]' \
+              {-i,--ignore}'[query about ignored file name data]' \
+              {-l,--location}'[return config file location]' \
+              {-p,--print}'[display config file content]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (set)
+          _arguments "${_arguments_options[@]}" \
+             {-d,--directory=}'[set directory of Rust project]:dir:_directories' \
+             {-i,--ignore=}'[add file name/directory name to ignore list in configuration]:file:_files' \
+             {-l,--location}'[return config file location]' \
+             {-p,--print}'[display config file content]' \
+             {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+             '--scan-hidden-folder[set scan hidden folder as true]' \
+             '--scan-target-folder[set scan hidden folder as true]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (unset)
+          _arguments "${_arguments_options[@]}" \
+             {-d,--directory=}'[unset directory of Rust project]:dir:_directories' \
+             {-i,--ignore=}'[remove file name/directory name to ignore list in configuration]:file:_files' \
+             {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+             '--scan-hidden-folder[unset scan hidden folder as true]' \
+             '--scan-target-folder[unset scan hidden folder as true]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (list)
+          _arguments "${_arguments_options[@]}" \
+             {-o,--old}'[list out old crates]' \
+             {-a,--all}'[list out all installed crates]' \
+             {-z,--old-orphan}'[list out both old and orphan]' \
+             {-x,--orphan}'[list out orphan crates]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (git)
+          _arguments "${_arguments_options[@]}" \
+             {-a,--all}'[clean up all git crates]' \
+             {-l,--light}'[light cleanup repo by removing git checkout but stores git db for future compilation]' \
+             {-o,--old}'[clean old git cache crates]' \
+             {-z,--old-orphan}'[clean git crates which is both old and orphan]' \
+             {-x,--orphan}'[clean orphan cache git crates i.e all crates which are not present in lock file]' \
+             {-q,--query}'[return size of different .cargo/cache folders]' \
+             {-t,--top=}'[show certain number of top crates which have highest size]:number:' \
+             {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (registry)
+          _arguments "${_arguments_options[@]}" \
+             {-a,--all}'[clean up all registry crates]' \
+             {-l,--light}'[light cleanup repo by removing registry checkout but stores registry db for future compilation]' \
+             {-o,--old}'[clean old registry cache crates]' \
+             {-z,--old-orphan}'[clean registry crates which is both old and orphan]' \
+             {-x,--orphan}'[clean orphan cache registry crates i.e all crates which are not present in lock file]' \
+             {-q,--query}'[return size of different .cargo/cache folders]' \
+             {-t,--top=}'[show certain number of top crates which have highest size]:number:' \
+             {-n,--dry-run}'[run command in dry run mode to see what would be done]' \
+             '(- 1 *)'{-V,--version}'[show version information]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (help)
+          _cargo-cache_cmds
+        ;;
+      esac
+    ;;
+  esac
+}
+
+_cargo-trim "$@"

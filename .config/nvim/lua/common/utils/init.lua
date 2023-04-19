@@ -359,10 +359,8 @@ M.map = function(modes, lhs, rhs, opts)
             }
         )
 
-    local l = type(l) == "string" and {l} or l --[==[@as string[]]==]
-
     if not ok then
-        log.err(("%s: %s"):format(err, lhs), {debug = true})
+        log.err(("%s\nlhs: %s\nrhs: %s"):format(err, lhs, rhs), {debug = true})
         return
     end
 
@@ -1560,6 +1558,10 @@ end
 -- LPEG:
 --    https://www.inf.puc-rio.br/~roberto/lpeg/
 --    https://www.inf.puc-rio.br/~roberto/lpeg/re.html
+--
+-- Replace Nth occurence:        s/\v(.{-}\zsPATT.){N}/REPL/
+-- Replace every Nth occurrence: s/\v(\zsPATT.{-}){N}/REPL/g
+-- Sort on a given column:       :sort f /\v^(.{-},){2}/
 -- ]]] === Tips ===
 
 -- Allows us to use utils globally

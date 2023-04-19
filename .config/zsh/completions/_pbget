@@ -1,0 +1,26 @@
+#compdef pbget
+
+# zsh completions for 'pbget'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--arch[set the desired package architecture.]'
+  '--aur[search the AUR. (requires python3-aur)]'
+  '--aur-only[only search the AUR. (requires python3-aur)]'
+  '--clear[clear the ABS Git cache.]'
+  '--config[pacman configuration file. Default: /etc/pacman.conf]'
+  '--debug[display debugging messages.]'
+  '--dir[set the output directory. Default: .]'
+  '--maintainer[retrieve all AUR packages from the given maintainer.]'
+  '--no-pull[fetch Git sources instead of pulling them.]'
+  '--trunk[retrieve PKGBUILDs from the ABS trunk, which may]'
+  '--resolve-pkgbases[attempt to resolve package bases. This requires]'
+  '--testing[search the testing branches of the ABS tree.]'
+  '--ttl[the cache time-to-live, in minutes. Default: 5]'
+  '--upgradable[search for all upgradable packages. (requires pyalpm]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

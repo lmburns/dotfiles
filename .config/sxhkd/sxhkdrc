@@ -338,15 +338,15 @@ super + ctrl + shift + y
   bspc node -n last.!automatic.local
 
 # Enters manual-tiling mode that splits the current node
-# Preselect:  {left,down,up,right}
+# Preselect:  {left,down,up,right} (cancel)
 super + ctrl + shift + {h,j,k,l}
-  bspc node --presel-dir {west,south,north,east}
+  bspc node --presel-dir '~{west,south,north,east}'
 
 # Preselect: cancel {current node,desktop}
 super + ctrl + {_,shift +} c
   {bspc node -p cancel,bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel}
 
-# Preselect: automatically detect direction
+# Preselect: auto detect direction (cancel)
 super + ctrl + Return
   bspwm-auto-presel
 
@@ -389,8 +389,12 @@ super + shift + bracket{left,right}
   bspc desktop -f {prev.occupied,next.occupied}
 
 # Desktop: focus {prev,next} occupied
-super + shift + {Left,Right}
-  bspc desktop -f {prev.occupied,next.occupied}
+# super + shift + {Left,Right}
+#   bspc desktop -f {prev.occupied,next.occupied}
+
+# Desktop: transpose {without,with} following
+super + {_, shift + }u
+  bspc desktop --swap next.active {_,--follow}
 # ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -404,6 +408,10 @@ super + shift + {Left,Right}
 #      <monitor_id>|<monitor_name>
 #     )[.[!]focused][.[!]occupied]
 # ]]]
+
+# Monitor: focus {prev,next} occupied
+super + shift + {Left,Right}
+  bspc monitor -f {prev,next}
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                          Other                           │
@@ -485,7 +493,8 @@ super + alt + c
 
 # Launch: ncmpcpp
 super + F1
-  $TERMINAL -e ncmpcpp
+  alacritty --class ncmpcpp -e 'ncmpcpp'
+# $TERMINAL -e ncmpcpp
 
 # amixer-notify "toggle"
 # amixer-notify "set" "{5%-,5%+}"
@@ -510,7 +519,8 @@ mod3 + a
 
 # Launch: fzf-bluetooth
 super + F7
-  $TERMINAL -e "fzf-bluetooth" &
+  alacritty --class fzf-bluetooth -e 'fzf-bluetooth'
+# $TERMINAL -e "fzf-bluetooth" &
 
 # Launch: mailsync
 super + F8
@@ -526,7 +536,8 @@ F11
 
 # Launch: neomutt
 alt + F12
-  $TERMINAL -e neomutt
+  alacritty --class neomutt -e 'neomutt'
+# $TERMINAL -e neomutt
 # ]]]
 
 # ╭───────────────╮
@@ -597,5 +608,10 @@ super + ctrl + alt + u
   prtwindow
 # ]]]
 # ]]]
+
+# NOTE: the presence of the tilde ~.
+# If current state matches the given state, then the argument is interpreted as the last state
+# mod4 + {shift + space,space,f}
+#   bspc node -t ~{tiled,floating,fullscreen}
 
 # vim: ft=sxhkdrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

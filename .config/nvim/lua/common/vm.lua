@@ -16,7 +16,8 @@ local lens_backup
 
 local dispose0, dispose1, dispose2, dispose3, dispose4, dispose5, dispose6, dispose7
 local dispose8, dispose9
-local n_keymap, s_keymap
+local n_keymap
+-- local s_keymap
 local debounced
 
 local MODE = {
@@ -89,7 +90,7 @@ function M.exit()
     dispose8:dispose()
     dispose9:dispose()
     map("n", "n", n_keymap, {silent = true})
-    map("n", "s", s_keymap, {silent = true})
+    -- map("n", "s", s_keymap, {silent = true})
 
     require("plugs.config").registers()
 
@@ -107,7 +108,7 @@ function M.mappings()
             debounce(
                 function()
                     n_keymap = utils.get_keymap("n", "n").rhs
-                    s_keymap = utils.get_keymap("n", "s").rhs
+                    -- s_keymap = utils.get_keymap("n", "s").rhs
 
                     utils.prequire("registers", function(reg)
                          reg.setup({bind_keys = {false}})

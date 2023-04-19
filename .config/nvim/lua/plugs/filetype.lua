@@ -30,7 +30,7 @@ function M.setup()
                 eslintrc = "json",
                 prettierrc = "json",
                 pn = "potion",
-                conf = "conf",
+                -- conf = "conf",
                 jq = "jq",
                 mdx = "markdown",
                 -- md = "markdown",
@@ -61,7 +61,7 @@ function M.setup()
                 end,
                 json = function()
                     o.shiftwidth = 2
-                end
+                end,
             },
             filename = {
                 ["tsconfig.json"] = "jsonc",
@@ -80,11 +80,13 @@ function M.setup()
                 [".npmignore"] = "gitignore",
                 [".clang-format"] = "yaml",
                 [".lua-format"] = "yaml",
-                ["fonts.conf"] = "xml"
+                ["fonts.conf"] = "xml",
+                -- PKGBUILD = "PKGBUILD",
             },
             pattern = {
                 -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
-                -- [".*/completions/_.*"] = "zsh",
+                [".*/completions/_.*"] = "zsh",
+                ["*/xorg.conf.d/*.conf"] = "xf86conf",
                 [".*/git/config"] = "gitconfig",
                 [".*/fontconfig/conf%.d/.*"] = "xml",
                 [".*/fd/ignore"] = "gitignore",
@@ -101,7 +103,7 @@ function M.setup()
                     elseif ext == "rst" then
                         return "markdown"
                     end
-                end
+                end,
                 -- [".*"] = {
                 --     priority = -math.huge,
                 --     function(_path, bufnr)
@@ -113,7 +115,7 @@ function M.setup()
                 --         end
                 --     end
                 -- }
-            }
+            },
         }
     )
 

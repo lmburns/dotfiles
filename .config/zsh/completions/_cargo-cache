@@ -1,25 +1,110 @@
 #compdef cargo-cache
 
-# zsh completions for 'cargo-cache'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+_cargo-cache_cmds() {
+  local -a commands
+  commands=(
+    clean-unref:"remove crates that are not referenced in a Cargo.toml from the cache"
+    help:"print this message or the help of the given subcommand(s)"
+    l:"check local build cache (target) of a rust project"
+    local:"check local build cache (target) of a rust project"
+    q:"run a query"
+    query:"run a query"
+    r:"query each package registry separately"
+    registry:"query each package registry separately"
+    sc:"gather stats on a local sccache cache"
+    sccache:"gather stats on a local sccache cache"
+    toolchain:"print stats on installed toolchains"
+    trim:"trim old items from the cache until maximum cache size limit is reached"
+    verify:"verify crate sources"
+  )
+  _describe -t commands 'command' commands
+}
 
-arguments=(
-  {-a,--autoclean}'[removes crate source checkouts and git repo checkouts]'
-  {-e,--autoclean-expensive}'[as --autoclean, but also recompresses git repositories]'
-  {-n,--dry-run}'[dont remove anything, just pretend]'
-  {-f,--fsck}'[fsck git repositories]'
-  {-g,--gc}'[recompress git repositories (may take some time)]'
-  {-h,--help}'[prints help information]'
-  {-i,--info}'[print information cache directories, what they are for and what]'
-  {-l,--list-dirs}'[list all found directory paths]'
-  {-V,--version}'[prints version information]'
-  {-k,--keep-duplicate-crates}'[remove all but N versions of crate in the source archives directory]'
-  {-r,--remove-dir}'[1,dir2,dir3>]'
-  {-o,--remove-if-older-than}'[removes items older than specified date: YYYY.MM.DD or HH:MM:SS]'
-  {-y,--remove-if-younger-than}'[removes items younger than the specified date: YYYY.MM.DD or HH:MM:SS]'
-  {-t,--top-cache-items}'[list the top N items taking most space in the cache]'
-  '*:filename:_files'
-)
+_cargo-cache() {
+  local curcontext="$curcontext" state line state_descr
+  typeset -a _arguments_options
+  typeset -A opt_args
+  local ret=1
 
-_arguments -s $arguments
+   _arguments_options=(-s -S -C)
+
+  _arguments "${_arguments_options[@]}" \
+    {-a,--autoclean}'[removes crate source checkouts and git repo checkouts]' \
+    {-e,--autoclean-expensive}'[as --autoclean, but also recompresses git repositories]' \
+    {-f,--fsck}'[fsck git repositories]' \
+    {-g,--gc}'[recompress git repositories (may take some time)]' \
+    {-k,--keep-duplicate-crates=}'[remove all but N versions of crate in the source archives directory]:number:' \
+    {-l,--list-dirs}'[list all found directory paths]' \
+    {-n,--dry-run}'[dont remove anything, just pretend]' \
+    {-o,--remove-if-older-than=}'[removes items older than specified date: YYYY.MM.DD or HH:MM:SS]:date:' \
+    {-r,--remove-dir=}'[remove directories]:dir:(all git-db git-repos registry-sources registry-crate-cache registry-index registry)' \
+    {-t,--top-cache-items=}'[list the top N items taking most space in the cache]:number:' \
+    {-y,--remove-if-younger-than=}'[removes items younger than the specified date: YYYY.MM.DD or HH:MM:SS]:date:' \
+    {-i,--info}'[print information cache directories, what they are for and what can be safely deleted]' \
+    '(- 1 *)'{-V,--version}'[show version information]' \
+    '(- 1 *)'{-h,--help}'[show help message]' \
+    '1: :_cargo-cache_cmds' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*}-${words[1]}:"
+      case ${words[1]} in
+        (clean-unref)
+          _arguments "${_arguments_options[@]}" \
+             '--manifest-path=[Cargo.toml for the root crate]:manifest:_files -g "*Cargo.toml"' \
+             {-n,--dry-run}'[dont remove anything, just pretend]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (l|local)
+          _arguments "${_arguments_options[@]}" \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (q|query)
+            _arguments "${_arguments_options[@]}" \
+             '--human-readable[print sizes in human readable format]' \
+             {-s,--sort-by=}'[sort files alphabetically or by file size]:sort:(size name)' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (r|registry)
+           _arguments "${_arguments_options[@]}" \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (sc|sccache)
+           _arguments "${_arguments_options[@]}" \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (toolchain)
+           _arguments "${_arguments_options[@]}" \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (trim)
+           _arguments "${_arguments_options[@]}" \
+             {-l,--limit=}"[size that the cache will be reduced to ('6B', '1K', '4M', '5G' or '1T')]:limit:" \
+             {-n,--dry-run}'[dont remove anything, just pretend]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (verify)
+           _arguments "${_arguments_options[@]}" \
+             {-c,--clean-corrupted}'[automatically remove corrupted cache entries]' \
+             {-n,--dry-run}'[dont remove anything, just pretend]' \
+             '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (help)
+          _cargo-cache_cmds
+        ;;
+      esac
+    ;;
+  esac
+}
+
+_cargo-cache "$@"

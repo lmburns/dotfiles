@@ -1,0 +1,103 @@
+#compdef cargo-about
+
+_cargo-about_cmds() {
+    local -a commands
+    commands=(
+       clarify:'computes a clarification for a file'
+       generate:'outputs a listing of all licenses and the crates that use them'
+       help:'print this message or the help of the given subcommand(s)'
+       init:'initializes an about.toml configuration'
+    )
+    _describe -t commands 'command' commands
+}
+
+_cargo-about-clarify_cmds() {
+    local -a commands
+    commands=(
+       crate:'retrieves file from git repo & commit associated with crate & version'
+       help:'print this message or the help of the given subcommand(s)'
+       path:'reads the license information from a path on disk'
+       repo:'pulls the file from a git repository'
+    )
+    _describe -t commands 'command' commands
+}
+
+
+_cargo-about() {
+  local curcontext="$curcontext" state line state_descr
+  typeset -a _arguments_options
+  typeset -A opt_args
+  local ret=1
+
+   _arguments_options=(-s -S -C)
+
+  _arguments "${_arguments_options[@]}" \
+    {-c,--color=}'[specify colorization option]:coloring:(auto always never)' \
+    '-L[the log level for messages]:level:(trace debug error warn)' \
+    '(- 1 *)'{-V,--version}'[show version information]' \
+    '(- 1 *)'{-h,--help}'[show help message]' \
+    '1: :_cargo-about_cmds' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*}-${words[1]}:"
+      case ${words[1]} in
+        (clarify)
+          _arguments "${_arguments_options[@]}" \
+             {-s,--subsections=}'[one or more subsections in file which is itself its own license]:subsection:' \
+             '--threshold=[minimum confidence score a license must have (default: 0.8)]:subsection:' \
+            '(- 1 *)'{-h,--help}'[show help message]' \
+             "1: :_files" \
+             "2: :_cargo-about-clarify_cmds" \
+            "*::: :->clarify" \
+             && ret=0
+
+          case $state in
+            (clarify)
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (crate)
+                ;;
+                (help)
+                ;;
+                (path)
+                ;;
+                (repo)
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+        (generate)
+           _arguments "${_arguments_options[@]}" \
+            '--all-features[activate all available features]' \
+            {-c,--config=}'[path to the config to use]:config:_files' \
+            '--features=[space-separated list of features to activate]:feature:' \
+            {-m,--manifest-path=}'[Cargo.toml for the root crate]:manifest:_files -g "*Cargo.toml"' \
+            {-n,--name=}'[template to use when rendering (if single template file not used)]:template:' \
+            '--no-default-features[do not activate the "default" feature]' \
+            {-o,--output-file=}'[<OUTPUT_FILE> write the generated output to (typically .html)]:output:_files' \
+            '--threshold=[confidence threshold required for license files to be positively identified (0.0-1.0)]:threshold:' \
+            '--workspace[scan licenses for the entire workspace, not just the active package]' \
+            '(- 1 *)'{-h,--help}'[show help message]' \
+            ':template:' \
+             && ret=0
+        ;;
+        (init)
+           _arguments "${_arguments_options[@]}" \
+            '--no-handlebars[disables the handlebars generation]' \
+            '--overwrite[forces cargo-about to overwrite the local config file]' \
+            '(- 1 *)'{-h,--help}'[show help message]' \
+             && ret=0
+        ;;
+        (help)
+          _cargo-about_cmds
+        ;;
+      esac
+    ;;
+  esac
+}
+
+_cargo-about "$@"

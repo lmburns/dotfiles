@@ -49,26 +49,26 @@ ZINIT+=(
 
 # === established === [[[
 
-function _my-cache-policy() { [[ ! -f $1 && -n "$1"(Nm+14) ]]; }
+function _my-cache-policy() { [[ ! -f "$1" && -n "$1"(Nm+14) ]]; }
 zstyle ':completion:complete:*' cache-policy _my-cache-policy
 
-# function compctl() {
-#   print::error "Don't use compctl";
-#   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
-#
-#   (
-#     for k v ( ${functrace:^funcfiletrace} ) {
-#       print -Pac "%F{13}${(D)k}%f" "%F{2}${(D)v}%f"
-#     } | column -t
-#   ) 1>&2
-#
-#   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
-#
-#   # print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
-#   # print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
-#   # print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
-#   # print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
-# }
+function compctl() {
+  print::error "Don't use compctl";
+  print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
+
+  (
+    for k v ( ${functrace:^funcfiletrace} ) {
+      print -Pac "%F{13}${(D)k}%f" "%F{2}${(D)v}%f"
+    } | column -t
+  ) 1>&2
+
+  print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
+
+  # print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
+  # print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
+  # print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
+  # print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
+}
 
 function defer_completion() {
 
@@ -546,6 +546,7 @@ compdef _aliases       ealias
 compdef _functions     efunc
 compdef _command_names from-where whichcomp wim
 compdef _functions     fim freload
+compdef _man           man-search
 compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer rofi tlmgr zstd \
   brotli

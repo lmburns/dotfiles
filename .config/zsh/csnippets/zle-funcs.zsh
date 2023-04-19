@@ -88,20 +88,20 @@ function @replace-string-again() {
       # to \digit.
       local rep=$_replace_string_rep
       while [[ $rep = (#b)([^\\]#)(\\\\)#(\\|)(\&|\\<->|\\\{<->\})(*) ]]; do
-    if [[ -n $match[3] ]]; then
-        # Expression is quoted, strip quotes
-        rep2="${match[1]}${match[2]}${match[4]}"
-    else
-        rep2+="${match[1]}${match[2]}"
-        if [[ $match[4] = \& ]]; then
-      rep2+='${MATCH}'
-        elif [[ $match[4] = \\\{* ]]; then
-      rep2+='${match['${match[4][3,-2]}']}'
+        if [[ -n $match[3] ]]; then
+            # Expression is quoted, strip quotes
+            rep2="${match[1]}${match[2]}${match[4]}"
         else
-      rep2+='${match['${match[4][2,-1]}']}'
+            rep2+="${match[1]}${match[2]}"
+            if [[ $match[4] = \& ]]; then
+          rep2+='${MATCH}'
+            elif [[ $match[4] = \\\{* ]]; then
+          rep2+='${match['${match[4][3,-2]}']}'
+            else
+          rep2+='${match['${match[4][2,-1]}']}'
+            fi
         fi
-    fi
-    rep=${match[5]}
+        rep=${match[5]}
       done
       rep2+=$rep
       if [[ $curwidget = *regex* ]]; then

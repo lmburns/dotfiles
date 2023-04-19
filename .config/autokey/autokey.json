@@ -1,5 +1,5 @@
 {
-    "version": "0.95.4",
+    "version": "0.96.0",
     "userCodeDir": null,
     "settings": {
         "isFirstRun": true,
@@ -25,8 +25,11 @@
         "notificationIcon": "autokey-status-dark",
         "workAroundApps": ".*VirtualBox.*|krdc.Krdc",
         "triggerItemByInitial": false,
+        "disabledModifiers": [],
         "scriptGlobals": {},
-        "disabledModifiers": []
+        "gtkTheme": "classic",
+        "gtkExpandedRows": [],
+        "pathLastOpen": "0"
     },
     "folders": [],
     "toggleServiceHotkey": {

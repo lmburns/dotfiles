@@ -1,0 +1,18 @@
+#compdef ulauncher
+
+# zsh completions for 'ulauncher'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--version[show programs version number and exit]'
+  {-h,--help}'[show this help message and exit]'
+  {-v,--verbose}'[show debug messages]'
+  '--hide-window[hide window upon application startup]'
+  '--no-extensions[do not run extensions]'
+  '--no-window-shadow[removes window shadow. On DEs without a compositor this]'
+  '--dev[enables context menu in the Preferences UI]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

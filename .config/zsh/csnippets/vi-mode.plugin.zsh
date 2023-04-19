@@ -3,7 +3,7 @@ declare -g VI_MODE_SET_CURSOR # change cursor on mode change
 declare -g VI_KEYMAP=main
 
 function _vi-mode-set-cursor-shape-for-keymap() {
-  [[ "$VI_MODE_SET_CURSOR" = true ]] || return
+  [[ $VI_MODE_SET_CURSOR = true ]] || return
 
   integer _shape=0
   case "${1:-${VI_KEYMAP:-main}}" in
@@ -30,7 +30,7 @@ function zle-keymap-select() {
   # update keymap variable for the prompt
   declare -g VI_KEYMAP=$KEYMAP
 
-  if [[ "${VI_MODE_RESET_PROMPT_ON_MODE_CHANGE:-}" = true ]]; then
+  if [[ ${VI_MODE_RESET_PROMPT_ON_MODE_CHANGE:-} = true ]]; then
     zle reset-prompt
     zle -R
   fi
@@ -64,13 +64,13 @@ bindkey -v
 # bindkey '^N' down-history
 
 # allow ctrl-h, ctrl-w, ctrl-? for char and word deletion (standard behaviour)
-bindkey '^?' backward-delete-char
-bindkey '^h' backward-delete-char
-bindkey '^w' backward-kill-word
+# bindkey '^?' backward-delete-char
+# bindkey '^h' backward-delete-char
+# bindkey '^w' backward-kill-word
 
 # allow ctrl-r and ctrl-s to search the history
-bindkey '^r' history-incremental-search-backward
-bindkey '^s' history-incremental-search-forward
+# bindkey '^r' history-incremental-search-backward
+# bindkey '^s' history-incremental-search-forward
 
 function wrap_clipboard_widgets() {
   local verb="$1"; shift
@@ -105,6 +105,8 @@ unfunction wrap_clipboard_widgets
 # if mode indicator wasn't setup by theme, define default
 if [[ -z "$MODE_INDICATOR" ]]; then
   MODE_INDICATOR='%B%F{red}<%b<<%f'
+  # : ${VI_NORMAL_MODE_INDICATOR="%(?.%F{blue}•%f%F{cyan}•%f%F{green}•%f.%F{red}•••%f) "}
+  # : ${VI_INSERT_MODE_INDICATOR="%(?.%F{blue}❯%f%F{cyan}❯%f%F{green}❯%f.%F{red}❯❯❯%f) "}
 fi
 
 function vi_mode_prompt_info() {

@@ -94,6 +94,12 @@ command(
 )
 
 command(
+    "RmCtrl",
+    [=[<line1>,<line2>s/[[:cntrl:]]//g]=],
+    {nargs = 0, range = "%", desc = "Remove control characters"}
+)
+
+command(
     "Camel2Snake",
     [[:%s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
     {nargs = 0, desc = "Convert camelCase to snake_case"}
