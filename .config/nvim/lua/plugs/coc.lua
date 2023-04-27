@@ -1,8 +1,8 @@
 local M = {}
 
--- local D = require("dev")
 -- local mpi = require("common.api")
 
+local D = require("dev")
 local log = require("common.log")
 local hl = require("common.color")
 local A = require("common.utils.async")
@@ -26,7 +26,9 @@ local F = vim.F
 
 local diag_qfid
 
--- TODO: Remove stylelint
+--  autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
+--        \ let b:coc_enabled=0 |
+--        \ endif
 --
 -- CocCommand document.renameCurrentWord  - Rename current word multi cursor
 --
@@ -143,7 +145,6 @@ function M.a2sync(action, args, timeout)
     return err, res
 end
 
----@async
 ---Run an asynchronous CocAction using 'promise-async'
 ---@param action string CocAction to run
 ---@param args? any[] Arguments to pass to that CocAction
@@ -183,7 +184,7 @@ end
 
 ---Run a Coc command using Promises
 ---@param name string Command to run
----@vararg any
+---@param ... any
 ---@return Promise
 function M.runCommand(name, ...)
     return M.action("runCommand", {name, ...})
@@ -798,10 +799,7 @@ function M.init()
                 -- Without this, everything won't load correctly
                 pcall(
                     function()
-                        M.runCommand("sumneko-lua.restart"):catch(
-                            function(_)
-                            end
-                        )
+                        M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
                     end
                 )
             end,
@@ -903,17 +901,6 @@ function M.init()
                 vim.b[args.buf].coc_enabled = 0
             end,
         },
-        -- {
-        --     event = "BufAdd",
-        --     pattern = "*",
-        --     command = function(args)
-        --         vim.notify('BUFADD')
-        --         -- vim.b[args.buf].coc_enabled = 0
-        --     end,
-        -- },
-        --  autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
-        --        \ let b:coc_enabled=0 |
-        --        \ endif
         {
             event = "FileType",
             pattern = {"css", "zsh"},

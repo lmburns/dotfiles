@@ -11,6 +11,7 @@ local mpi = require("common.api")
 local map = mpi.map
 local hl = require("common.color")
 
+local style = require("style")
 local colors = require("kimbox.colors")
 local wk = require("which-key")
 
@@ -118,11 +119,11 @@ M.setup_gps = function()
                 ["tag-name"] = "炙",
                 ["time-name"] = " ",
                 ["title-name"] = "# ",
-                ["typedef-name"] = " "
+                ["typedef-name"] = " ",
             },
             separator = " » ", --  淪輪‣ »
             depth = 4,
-            depth_limit_indicator = ".."
+            depth_limit_indicator = "..",
         }
     )
 end
@@ -199,7 +200,7 @@ M.setup_ssr = function()
                 next_match = "n",
                 prev_match = "N",
                 replace_confirm = "<CR>",
-                replace_all = "<S-CR>"
+                replace_all = "<S-CR>",
             },
         }
     )
@@ -257,7 +258,7 @@ M.setup_autotag = function()
             "javascriptreact",
             "typescriptreact",
             "svelte",
-            "vue"
+            "vue",
         },
         skip_tags = {
             "area",
@@ -277,7 +278,7 @@ M.setup_autotag = function()
             "source",
             "track",
             "wbr",
-            "menuitem"
+            "menuitem",
         },
     }
 end
@@ -330,6 +331,14 @@ M.setup_aerial = function()
             close_automatic_events = {},
             -- Set to false to remove the default keybindings for the aerial buffer
             default_bindings = true,
+
+            -- Keymaps in aerial window. Can be any value that `vim.keymap.set` accepts OR a table of keymap
+            -- options with a `callback` (e.g. { callback = function() ... end, desc = "", nowait = true })
+            -- Additionally, if it is a string that matches "actions.<name>",
+            -- it will use the mapping at require("aerial.actions").<name>
+            -- keymaps = {},
+            --
+            -- Set to `false` to remove a keymap
             -- When true, don't load aerial until a command or function is called
             -- Defaults to true, unless `on_attach` is provided, then it defaults to false
             lazy_load = true,
@@ -353,7 +362,7 @@ M.setup_aerial = function()
                 "Type",
                 --
                 "Field",
-                "Array"
+                "Array",
             },
             -- Determines line highlighting mode when multiple splits are visible.
             -- split_width   Each open window will have its cursor location marked in the
@@ -389,7 +398,7 @@ M.setup_aerial = function()
             -- function.
             ignore = {
                 -- Ignore unlisted buffers. See :help buflisted
-                unlisted_buffers = true,
+                unlisted_buffers = false,
                 -- List of filetypes to ignore.
                 filetypes = _t(BLACKLIST_FT):merge({"gomod", "help"}),
                 -- Ignored buftypes.
@@ -411,11 +420,11 @@ M.setup_aerial = function()
                 -- function     - A function that returns true if the window should be
                 --                ignored or false if it should not be ignored.
                 --                Takes two arguments, `winid` and `wintype`.
-                wintypes = "special"
+                wintypes = "special",
             },
             -- Use symbol tree for folding. Set to true or false to enable/disable
             -- 'auto' will manage folds if your previous foldmethod was 'manual'
-            manage_folds = false,
+            manage_folds = true,
             -- When you fold code with za, zo, or zc, update the aerial tree as well.
             -- Only works when manage_folds = true
             link_folds_to_tree = false,
@@ -451,12 +460,12 @@ M.setup_aerial = function()
                 -- When there are nested child guides to the right
                 nested_top = "│ ",
                 -- Raw indentation
-                whitespace = "  "
+                whitespace = "  ",
             },
             -- Options for opening aerial in a floating win
             float = {
                 -- Controls border appearance. Passed to nvim_open_win
-                border = "rounded",
+                border = style.current.border,
                 -- Determines location of floating window
                 --   cursor - Opens float on top of the cursor
                 --   editor - Opens float centered in the editor
@@ -476,6 +485,32 @@ M.setup_aerial = function()
                     return conf
                 end,
             },
+            -- Options for the floating nav windows
+            nav = {
+                border = style.current.border,
+                max_height = 0.9,
+                min_height = {10, 0.1},
+                max_width = 0.5,
+                min_width = {0.2, 20},
+                win_opts = {
+                    cursorline = true,
+                    winblend = 10,
+                },
+                -- Jump to symbol in source window when the cursor moves
+                autojump = false,
+                -- Show a preview of the code in the right column, when there are no child symbols
+                preview = false,
+                -- Keymaps in the nav window
+                keymaps = {
+                    ["<CR>"] = "actions.jump",
+                    ["<2-LeftMouse>"] = "actions.jump",
+                    ["<C-v>"] = "actions.jump_vsplit",
+                    ["<C-s>"] = "actions.jump_split",
+                    ["h"] = "actions.left",
+                    ["l"] = "actions.right",
+                    ["<C-c>"] = "actions.close",
+                },
+            },
             lsp = {
                 -- Fetch document symbols when LSP diagnostics update.
                 -- If false, will update on buffer changes.
@@ -486,24 +521,19 @@ M.setup_aerial = function()
                 -- Only used when diagnostics_trigger_update = false
                 update_delay = update_delay,
             },
-            treesitter = {
-                -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay,
-            },
-            markdown = {
-                -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay,
-            },
-            man = {
-                -- How long to wait (in ms) after a buffer change before updating
-                update_delay = update_delay,
-            },
+            -- How long to wait (in ms) after a buffer change before updating
+            treesitter = {update_delay = update_delay},
+            -- How long to wait (in ms) after a buffer change before updating
+            markdown = {update_delay = update_delay},
+            -- How long to wait (in ms) after a buffer change before updating
+            man = {update_delay = update_delay},
         }
     )
 
     wk.register(
         {
             ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
+            ["<A-'>"] = {"<Cmd>AerialNavToggle<CR>", "Toggle AerialNav"},
             ["[["] = {aerial.prev_up, "Aerial previous up"},
             ["]]"] = {aerial.next_up, "Aerial next up"},
             ["{"] = {aerial.prev, "Aerial previous (anon)"},
@@ -609,7 +639,7 @@ M.setup_treesurfer = function()
     local vars = {
         "variable_declaration",
         "let_declaration",
-        "VarDecl" -- zig Variable declaration
+        "VarDecl", -- zig Variable declaration
     }
 
     local default =
@@ -647,7 +677,7 @@ M.setup_treesurfer = function()
                 "impl_item",
                 "try_statement",
                 "catch_clause",
-                "ContainerDecl"
+                "ContainerDecl",
             }
         )
 
@@ -656,7 +686,7 @@ M.setup_treesurfer = function()
             {
                 -- "function_call",
                 "field_declaration", -- rust struct
-                "enum_variant"       -- rust enum
+                "enum_variant",      -- rust enum
             }
         )
 
@@ -704,7 +734,7 @@ M.setup_treesurfer = function()
                 ["class_name"] = "",
                 ["impl_item"] = "ﴯ",
                 ["try_statement"] = "",
-                ["catch_clause"] = ""
+                ["catch_clause"] = "",
             },
         }
     )
@@ -1003,7 +1033,7 @@ M.setup = function()
             "vimdoc",
             "vue",
             "yaml",
-            "zig"
+            "zig",
         },
         sync_install = false,
         auto_install = true,
@@ -1047,7 +1077,7 @@ M.setup = function()
                 "gitignore",
                 "git_rebase",
                 "gitattributes",
-                "markdown"
+                "markdown",
             },
         },
         indent = {
@@ -1081,7 +1111,7 @@ M.setup = function()
                 unfocus_language = "F",
                 update = "R",
                 goto_node = "<cr>",
-                show_help = "?"
+                show_help = "?",
             },
         },
         query_linter = {
@@ -1095,7 +1125,7 @@ M.setup = function()
                 init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
                 node_incremental = "'",      -- increment to the upper named parent
-                node_decremental = '"'       -- decrement to the previous node
+                node_decremental = '"',      -- decrement to the previous node
             },
         },
         context_commentstring = {
@@ -1117,7 +1147,7 @@ M.setup = function()
                 sql = "-- %s",
                 typescript = {__default = "// %s", __multiline = "/* %s */"},
                 vim = '" %s',
-                vimwiki = "<!-- %s -->"
+                vimwiki = "<!-- %s -->",
             },
         },
         refactor = {
@@ -1126,7 +1156,7 @@ M.setup = function()
             smart_rename = {
                 enable = true,
                 keymaps = {
-                    smart_rename = "<A-r>" -- mapping to rename reference under cursor
+                    smart_rename = "<A-r>", -- mapping to rename reference under cursor
                 },
             },
             navigation = {
@@ -1136,7 +1166,7 @@ M.setup = function()
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
                     list_definitions_toc = "<Leader>fo",
                     goto_next_usage = "]y",
-                    goto_previous_usage = "[y"
+                    goto_previous_usage = "[y",
                 },
             },
         },
@@ -1151,7 +1181,7 @@ M.setup = function()
                 "gitignore",
                 "git_rebase",
                 "gitattributes",
-                "markdown"
+                "markdown",
             },
             -- query = {
             --     "rainbow-parens",
@@ -1224,7 +1254,7 @@ M.setup = function()
                 selection_modes = {
                     ["@parameter.outer"] = "v", -- charwise
                     ["@function.outer"] = "V",  -- linewise
-                    ["@class.outer"] = "<c-v>"  -- blockwise
+                    ["@class.outer"] = "<c-v>", -- blockwise
                 },
                 -- If you set this to `true` (default is `false`) then any textobject is
                 -- extended to include preceding or succeeding whitespace. Succeeding
@@ -1377,7 +1407,7 @@ local function init()
 
     custom_captures = {
         ["require_call"] = "RequireCall",
-        ["utils"] = "Function"
+        ["utils"] = "Function",
         -- ["keyword.self"] = "@variable.builtin",
         -- ["keyword.super"] = "@variable.builtin",
         -- ["function.bracket"] = "Type",
@@ -1477,7 +1507,7 @@ local function init()
             ["ie"] = "Entire buffer",
             ["ae"] = "Entire visible buffer",
             ["au"] = "Around unit",
-            ["iu"] = "Inner unit"
+            ["iu"] = "Inner unit",
         },
         {mode = "o"}
     )
@@ -1490,7 +1520,7 @@ local function init()
             ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
             ["[y"] = "Previous usage",
             ["]y"] = "Next usage",
-            ["<M-n>"] = "Start scope selection/Increment"
+            ["<M-n>"] = "Start scope selection/Increment",
         },
         {mode = "n"}
     )

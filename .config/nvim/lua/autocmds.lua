@@ -625,40 +625,41 @@ nvim.autocmd.lmb__SmartClose = {
 -- ]]]
 
 -- === Autoscroll === [[[
-nvim.autocmd.__lmbFixAutoScroll = {
-    {
-        event = "BufLeave",
-        pattern = "*",
-        command = function()
-            -- current buf is the buffer we've left
-            -- but current window already changed,
-            -- verify neither source nor destination are floating windows
-            local from_buf = api.nvim_get_current_buf()
-            local from_win = fn.bufwinid(from_buf)
-            local to_win = api.nvim_get_current_win()
-            if not W.win_is_float(to_win) and not W.win_is_float(from_win) then
-                -- vim.b.__VIEWSTATE = W.win_save_positions(from_buf)
-                vim.b.__VIEWSTATE = fn.winsaveview()
-            end
-        end,
-        desc = "Avoid autoscroll when switching buffers",
-    },
-    {
-        event = "BufEnter",
-        pattern = "*",
-        command = function()
-            if vim.b.__VIEWSTATE then
-                local to_win = api.nvim_get_current_win()
-                if not W.win_is_float(to_win) then
-                    -- vim.b.__VIEWSTATE.restore()
-                    fn.winrestview(vim.b.__VIEWSTATE)
-                end
-                vim.b.__VIEWSTATE = nil
-            end
-        end,
-        desc = "Avoid autoscroll when switching buffers",
-    },
-}
+-- TODO: Works but breaks aerial
+-- nvim.autocmd.__lmbFixAutoScroll = {
+--     {
+--         event = "BufLeave",
+--         pattern = "*",
+--         command = function()
+--             -- current buf is the buffer we've left
+--             -- but current window already changed,
+--             -- verify neither source nor destination are floating windows
+--             local from_buf = api.nvim_get_current_buf()
+--             local from_win = fn.bufwinid(from_buf)
+--             local to_win = api.nvim_get_current_win()
+--             if not W.win_is_float(to_win) and not W.win_is_float(from_win) then
+--                 -- vim.b.__VIEWSTATE = W.win_save_positions(from_buf)
+--                 vim.b.__VIEWSTATE = fn.winsaveview()
+--             end
+--         end,
+--         desc = "Avoid autoscroll when switching buffers",
+--     },
+--     {
+--         event = "BufEnter",
+--         pattern = "*",
+--         command = function()
+--             if vim.b.__VIEWSTATE then
+--                 local to_win = api.nvim_get_current_win()
+--                 if not W.win_is_float(to_win) then
+--                     -- vim.b.__VIEWSTATE.restore()
+--                     fn.winrestview(vim.b.__VIEWSTATE)
+--                 end
+--                 vim.b.__VIEWSTATE = nil
+--             end
+--         end,
+--         desc = "Avoid autoscroll when switching buffers",
+--     },
+-- }
 -- ]]]
 
 -- === Filetype Detection === [[[

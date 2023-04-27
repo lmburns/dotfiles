@@ -773,7 +773,7 @@ function init()
             ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
             ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
             -- I prefer oldfiles with FZF, but buffers aren't added immediately
-            ["<A-'>"] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
+            ['<A-S-">'] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
             ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},
             ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
             ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
