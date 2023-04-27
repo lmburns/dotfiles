@@ -7,6 +7,7 @@ if not bufferline then
 end
 
 -- local utils = require("common.utils")
+-- local mpi = require("common.api")
 local icons = require("style").icons
 local hl = require("common.color")
 local groups = require("bufferline.groups")
@@ -53,7 +54,7 @@ local function custom_filter(bufnr, buf_nums)
 
     -- only show log buffers in secondary tabs
     return (tab_num == last_tab and is_log)
-               or (tab_num ~= last_tab and not is_log)
+        or (tab_num ~= last_tab and not is_log)
     -- return true
 end
 
@@ -101,9 +102,9 @@ function M.setup()
                     require("close_buffers").delete(
                         {type = bufnr}
                     )
-                end, -- can be a string | function, see "Mouse actions"
+                end,                              -- can be a string | function, see "Mouse actions"
                 left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
-                middle_mouse_command = nil, -- can be a string | function, see "Mouse actions"
+                middle_mouse_command = nil,       -- can be a string | function, see "Mouse actions"
                 indicator = {style = "NONE"},
                 buffer_close_icon = "",
                 modified_icon = "●",
@@ -174,8 +175,10 @@ function M.setup()
                 color_icons = true,
                 show_buffer_icons = true,
                 show_buffer_close_icons = false,
-                show_buffer_default_icon = true,
                 show_close_icon = false,
+                -- get_element_icon = function(buf)
+                --     return require("nvim-web-devicons").get_icon(buf.ft, {default_ = false})
+                -- end,
                 show_tab_indicators = true,
                 show_duplicate_prefix = true,
                 enforce_regular_tabs = true,
@@ -199,12 +202,10 @@ function M.setup()
                                 fg = require("kimbox.colors").yellow,
                             },
                             matcher = function(buf)
-                                return vim.startswith(
-                                    buf.path,
-                                    ("%s/site/pack/packer"):format(dirs.data)
-                                )
-                                           or vim.startswith(
-                                        buf.path, fn.expand("$VIMRUNTIME")
+                                return vim.startswith(buf.path, vim.env.VIMRUNTIME)
+                                    or vim.startswith(
+                                        buf.path,
+                                        ("%s/site/pack/packer"):format(dirs.data)
                                     )
                             end,
                         },
@@ -220,7 +221,7 @@ function M.setup()
                         {
                             name = "SQL",
                             matcher = function(buf)
-                                return buf.filename:match("%.sql$")
+                                return buf.name:match("%.sql$")
                             end,
                         },
                         {
@@ -231,20 +232,18 @@ function M.setup()
                                 underline = true,
                             },
                             matcher = function(buf)
-                                local name = buf.filename
-                                if name:match("%.sql$") == nil then
-                                    return false
-                                end
-                                return name:match("_spec") or name:match("_test")
+                                local name = buf.name
+                                return name:match("[_%.]spec") or name:match("[_%.]test")
                             end,
                         },
                         {
                             name = "docs",
                             icon = "",
                             matcher = function(buf)
-                                for _, ext in ipairs(
-                                    {"md", "txt", "org", "norg", "wiki"}
-                                ) do
+                                if vim.bo[buf.id].ft == "man" or buf.path:match("man://") then
+                                    return true
+                                end
+                                for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
                                     if ext == fn.fnamemodify(buf.path, ":e") then
                                         return true
                                     end
@@ -259,6 +258,7 @@ function M.setup()
     )
 end
 
+---Setup `close-buffers.nvim`
 function M.setup_close_buffers()
     local close = D.npcall(require, "close_buffers")
     if not close then
@@ -267,8 +267,8 @@ function M.setup_close_buffers()
 
     close.setup(
         {
-            filetype_ignore = {}, -- Filetype to ignore when running deletions
-            file_glob_ignore = {}, -- File name glob pattern to ignore when running deletions (e.g. '*.md')
+            filetype_ignore = {},   -- Filetype to ignore when running deletions
+            file_glob_ignore = {},  -- File name glob pattern to ignore when running deletions (e.g. '*.md')
             file_regex_ignore = {}, -- File name regex pattern to ignore when running deletions (e.g. '.*[.]md')
             preserve_window_layout = {"this", "nameless"},
             next_buffer_cmd = function(windows)
@@ -324,18 +324,9 @@ local function init()
             ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
             ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
-            ["<Leader>bp"] = {
-                "<Cmd>BufferLinePickClose<CR>",
-                "Pick buffer to delete",
-            },
-            ["<M-S-Left>"] = {
-                "<cmd>BufferLineMovePrev<CR>",
-                "Move buffer a slot left",
-            },
-            ["<M-S-Right>"] = {
-                "<cmd>BufferLineMoveNext<CR>",
-                "Move buffer a slot right",
-            },
+            ["<Leader>bp"] = {"<Cmd>BufferLinePickClose<CR>", "Pick buffer to delete"},
+            ["<M-S-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
+            ["<M-S-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"},
         }
     )
 

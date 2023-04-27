@@ -3,15 +3,15 @@ if ok then
     impatient.enable_profile()
 end
 
-local dirs = require("common.global").dirs
-local _ = require("common.global")
+local global = require("common.global")
+local dirs = global.dirs
 
 local D = require("dev")
-local utils = require("common.utils")
-local augroup = utils.augroup
-local autocmd = utils.autocmd
-local command = utils.command
-local map = utils.map
+local mpi = require("common.api")
+local augroup = mpi.augroup
+local autocmd = mpi.autocmd
+local command = mpi.command
+local map = mpi.map
 
 local g = vim.g
 local fn = vim.fn
@@ -194,31 +194,46 @@ vim.schedule(
         vim.defer_fn(
             function()
                 vim.g.coc_global_extensions = {
-                    -- "coc-vimtex",
-                    -- "coc-texlab",
-                    --
                     -- "coc-teal",
+                    -- "coc-ccls",
+                    -- "coc-pydoc",
+                    -- "coc-ruff",
+                    -- "coc-golines",
+                    -- "coc-gocode",
+                    -- "coc-godot",
+                    -- "coc-cmake",
+                    --
                     -- "coc-class-css",
                     -- "coc-react-refactor",
                     -- "coc-jest",
                     -- "coc-inline-jest",
                     -- "coc-apollo",
                     -- "coc-apollo-graphql",
-                    -- "coc-lightbulb",
-
+                    -- "coc-tailwindcss",
+                    -- "coc-cssmodules",
+                    -- "coc-htmlhint",
+                    -- "coc-nginx",
+                    -- "coc-styled-components",
+                    -- "coc-style-helper",
+                    -- "coc-jsref",
+                    --
+                    -- "coc-copilot",
+                    --
+                    -- "coc-markdown-preview-enhanced",
+                    -- "coc-webview",
+                    --
+                    -- "coc-stylelintplus", -- FIX: Need to make this work
+                    --
+                    "coc-markdownlint",
                     "coc-sql",
                     "coc-toml",
                     "coc-xml",
                     "coc-yaml",
-                    "coc-markdownlint",
-                    "coc-markdown-preview-enhanced",
-                    "coc-webview",
+                    "coc-json",
                     --
-                    "coc-stylelintplus", -- FIX: Need to make this work
-                    "coc-html-css-support",
                     "coc-css",
                     "coc-html",
-                    "coc-json",
+                    "coc-html-css-support",
                     "coc-tsserver",
                     "coc-eslint",
                     --
@@ -226,18 +241,16 @@ vim.schedule(
                     "coc-sumneko-lua",
                     "coc-clangd",
                     "coc-go",
-                    -- "coc-gocode",
                     "coc-java",
-                    "coc-julia",
                     "coc-perl",
                     "coc-pyright",
+                    -- "coc-ruff",
                     "coc-r-lsp",
                     "coc-solargraph",
                     "coc-solidity",
                     "coc-vimlsp",
                     "coc-zig",
                     --
-                    -- "coc-snippets",
                     "coc-syntax",
                     "coc-prettier",
                     "coc-diagnostic",
@@ -246,7 +259,6 @@ vim.schedule(
                     "coc-tabnine",
                     "coc-tag",
                     "coc-word",
-                    "coc-import-cost",
                 }
 
                 g.coc_enable_locationlist = 0

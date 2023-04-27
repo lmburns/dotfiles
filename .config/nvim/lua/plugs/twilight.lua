@@ -2,8 +2,8 @@ local M = {}
 
 local D = require("dev")
 
-local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local w = vim.wo
 local g = vim.g

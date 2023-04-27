@@ -1,4 +1,5 @@
-local map = require("common.utils").map
+local mpi = require("common.api")
+local map = mpi.map
 
 map("n", "gu", "<Plug>(InfoUp)", {buffer = true})
 map("n", "gn", "<Plug>(InfoNext)", {buffer = true})

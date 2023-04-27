@@ -1,12 +1,17 @@
 #!/bin/sh
-# elvis: brave		-- Search brave (search.brave.com)
+# AUTHOR: lmburns
+#
+# DATE: 04-20-2023
+#
+# DESC: Elvi to search brave (search engine) (search.brave.com)
+# elvis: brave		-- Search brave (search engine) (search.brave.com)
 . surfraw || exit 1
 
 w3_usage_hook () {
   cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search brave (search.brave.com)
+  Search brave (search engine) (search.brave.com)
 EOF
   w3_global_usage
 }

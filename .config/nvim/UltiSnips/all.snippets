@@ -277,6 +277,12 @@ snippet uuid "Random UUID" w
 `!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
 endsnippet
 
+snippet codeb "add backtics codes" w
+`!v repeat(nr2char(96),3)` ${1:zsh}
+${0:${VISUAL:type here}}
+`!v repeat(nr2char(96),3)`
+endsnippet
+
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Disabled                         │
 # ╰──────────────────────────────────────────────────────────╯

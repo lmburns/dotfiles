@@ -6,6 +6,7 @@ if not lush then
     return
 end
 
+local utils = require("common.utils")
 local log = require("common.log")
 local dirs = require("common.global").dirs
 
@@ -37,7 +38,7 @@ let g:colors_name = '%s'
 
     -- FIX: This whole thing stopped working
     -- RELOAD("lush_theme")
-    D.reload_module("lush_theme")
+    utils.mod.reload_module("lush_theme")
     local ok, res = pcall(require, "lush_theme." .. name)
     if ok then
         local module = res

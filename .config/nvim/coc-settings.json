@@ -3,32 +3,38 @@
   //                           General
   // ╘══════════════════════════════════════════════════════════╛
   "coc.preferences.useQuickfixForLocations": true,
-  "coc.preferences.extensionUpdateCheck": "never",
+  "coc.preferences.extensionUpdateCheck": "daily", // "never"
   "coc.preferences.silentAutoupdate": true,
-  "coc.preferences.messageLevel": "error",
   "coc.preferences.currentFunctionSymbolAutoUpdate": false,
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
   "coc.preferences.willSaveHandlerTimeout": 1000,
   "coc.preferences.promptInput": true,
+  "coc.preferences.messageLevel": "error",
   "coc.preferences.enableMessageDialog": true, // MAYBE: change
   // "coc.preferences.watchmanPath": "",
   // "coc.preferences.watchmanPath": "/usr/bin/watchman",
 
-  "coc.preferences.enableMarkdown": true,
-  "coc.preferences.bracketEnterImprove": false, // Autopairs does this
+  "coc.preferences.bracketEnterImprove": false,
+
+  "[zsh][teal]": {
+    "coc.preferences.bracketEnterImprove": true
+  },
 
   // "[lua]": {
   //   "coc.preferences.enableMessageDialog": false
   // },
 
+  "workspace.bottomUpFiletypes": ["python"],
   "workspace.ignoredFolders": [
-    // "$HOME",
+    "$HOME",
     "$XDG_DATA_HOME/cargo/**",
     "$XDG_DATA_HOME/rustup/**",
+    // "$XDG_CONFIG_HOME/**",
     "/etc/**"
   ],
-  "workspace.bottomUpFiletypes": ["python"],
+
+  // "pullDiagnostic.ignored": ["repos/**"],
 
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
@@ -91,7 +97,7 @@
 
   "links.enable": true,
   "links.tooltip": true,
-  "links.highlight": true,
+  // "links.highlight": true,
 
   "colors.enable": false,
   "colors.highlightPriority": 1000,
@@ -154,8 +160,8 @@
   "codeLens.enable": true,
   "codeLens.separator": "‣",
   "codeLens.subseparator": " | ",
-  // "codeLens.position": "eol",
-  "codeLens.position": "top",
+  "codeLens.position": "eol",
+  // "codeLens.position": "top",
 
   "list.indicator": "»",
   "list.floatPreview": true,
@@ -173,10 +179,13 @@
   "dialog.floatHighlight": "CocFloating",
 
   "notification.border": true,
+  // I would like them to be focusable, but it causes problems
   "notification.focusable": false,
   "notification.highlightGroup": "CocFloating",
   "notification.statusLineProgress": true,
-  "notification.timeout": 5000,
+  "notification.timeout": 4000,
+  "notification.winblend": 30,
+  "notification.marginRight": 10,
 
   // Float
   "floatFactory.floatConfig": {
@@ -201,6 +210,7 @@
     "highlight": "CocFloating",
     "maxWidth": 120,
     "focusable": true
+    // "title": "Error"
   },
   "hover.floatConfig": {
     "border": true,
@@ -241,7 +251,7 @@
   "suggest.acceptSuggestionOnCommitCharacter": true,
   "suggest.localityBonus": true,
   "suggest.filterGraceful": true,
-  // "suggest.reversePumAboveCursor": false, // true
+  "suggest.reversePumAboveCursor": false, // true
   "suggest.formatItems": ["abbr", "menu", "kind", "shortcut"],
   "suggest.completionItemKindLabels": {
     "default": "θ", // 
@@ -305,6 +315,24 @@
   // "lightbulb.virtualTextPosition": "eol",
   // "lightbulb.followDiagnostic": true,
   // "lightbulb.excludeFiletypes": [],
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Perl
+  // ╘══════════════════════════════════════════════════════════╛
+  "perl.enable": true,
+  "perl.perlInc": [
+    "/usr/lib/perl5/5.36/site_perl",
+    "/usr/share/perl5/site_perl",
+    "/usr/lib/perl5/5.36/vendor_perl",
+    "/usr/share/perl5/vendor_perl",
+    "/usr/lib/perl5/5.36/core_perl",
+    "/usr/share/perl5/core_perl",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4/x86_64-linux",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4",
+  ],
+  "perl.showLocalVars": true,
 
   // ╒══════════════════════════════════════════════════════════╕
   //                            Clangd
@@ -591,6 +619,7 @@
   "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
+    "/home/lucas/.config/nvim/types",
     // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/typings",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua"
@@ -627,7 +656,7 @@
     "space_after_comma_in_for_statement": "true",
     "space_around_concat_operator": "true",
 
-    "align_call_args": "true",
+    "align_call_args": "false",
     "align_function_params": "true",
     "align_continuous_assign_statement": " when_extra_space", // when_extra_space always
     "align_continuous_rect_table_field": "when_extra_space",
@@ -653,11 +682,12 @@
   },
   "Lua.typeFormat.config": {
     "auto_complete_table_sep": "true",
-    "format_line": "false"
+    "format_line": "true",
+    "auto_complete_end": "true"
   },
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
-  "Lua.completion.callSnippet": "Replace",
+  "Lua.completion.callSnippet": "Replace", // Both
   "Lua.completion.displayContext": 1,
   "Lua.completion.keywordSnippet": "Both",
   "Lua.completion.postfix": ".",
@@ -666,7 +696,7 @@
   "Lua.completion.showWord": "Enable",
   "Lua.completion.workspaceWord": true,
   "Lua.signatureHelp.enable": true,
-  "Lua.codeLens.enable": false,
+  "Lua.codeLens.enable": true,
   "Lua.hint.enable": true,
   "Lua.hint.await": true,
   "Lua.hint.paramName": "Literal", // "All"
@@ -687,8 +717,8 @@
   "Lua.type.weakNilCheck": true,
   "Lua.type.weakUnionCheck": true,
   "Lua.semantic.enable": false,
-  "Lua.semantic.annotation": true,
-  "Lua.semantic.variable": true,
+  "Lua.semantic.annotation": false,
+  "Lua.semantic.variable": false,
   "Lua.semantic.keyword": false,
   // "Lua.doc.privateName": ["__*"],
   "Lua.diagnostics.enable": true,
@@ -704,6 +734,7 @@
     "ambiguity": "Opened",
     "await": "Opened",
     // "codestyle": "None",
+    "codestyle": "Opened",
     "duplicate": "Opened",
     "global": "Fallback",
     "luadoc": "Opened",
@@ -720,9 +751,9 @@
     // "codestyle-check": "None",
     "redefined-local": "None",
     "lowercase-global": "None",
-    "no-unknown": "None",
+    // "no-unknown": "None",
+    // "need-check-nil": "None"
     // "param-type-mismatch": "None",
-    "need-check-nil": "None"
     // "missing-parameter": "None",
     // "redundant-parameter": "None",
 
@@ -753,12 +784,13 @@
     // "unknown-cast-variable": "Opened"
   },
   "Lua.diagnostics.disable": [
-    "codestyle-check",
-    "different-requires",
     "lowercase-global",
     "redefined-local",
-    "no-unknown"
-    //
+    "spell-check",
+    "codestyle-check",
+    // "different-requires",
+    // "no-unknown"
+
     // "redundant-parameter",
     // "missing-parameter",
     // "param-type-mismatch",
@@ -809,11 +841,13 @@
   "python.linting.lintOnSave": true,
   "python.linting.flake8Enabled": true,
   "python.linting.flake8Args": ["--config=/home/lucas/.config/python/flake8"],
-  "python.linting.ruffEnabled": true,
+  // "python.sortImports.path": "","
+  // "python.linting.ruffEnabled": true,
   "python.linting.mypyEnabled": false,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintArgs": ["--rcfile=/home/lucas/.config/python/pylintrc"],
-  "python.pythonPath": "~/.local/share/pyenv/shims/python",
+  // "python.pythonPath": "~/.local/share/pyenv/shims/python",
+  "python.pythonPath": "/usr/bin/python",
   "python.analysis.diagnosticMode": "workspace",
   "python.analysis.stubPath": "~/projects/python/stub-types",
   "python.analysis.autoImportCompletions": true,
@@ -877,6 +911,7 @@
   // Typescript
   "tsserver.enable": true,
   "tsserver.trace.server": "off",
+  "tsserver.log": "normal",
   "tsserver.useLocalTsdk": true,
   "typescript.showUnused": true,
   "tsserver.experimental.enableProjectDiagnostics": true,
@@ -1041,6 +1076,7 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             YAML
   // ╘══════════════════════════════════════════════════════════╛
+  "yaml.enable": true,
   "yaml.trace.server": "off",
   "yaml.format.enable": true,
   "yaml.format.singleQuote": true,
@@ -1174,35 +1210,27 @@
   //                             SQL
   // ╘══════════════════════════════════════════════════════════╛
   "sql.lintOnChange": true,
+  "sql.lintOnSave": true,
   "sql.formatOptions": { "indent": "    " },
 
   // ╒══════════════════════════════════════════════════════════╕
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
-  // "coc.preferences.enableMarkdown": true,
+  "coc.preferences.enableMarkdown": false,
   "markdownlint.config": {
     "MD001": false,
     "default": true,
     "line-length": false
   },
+  "markdownlint.onChange": false,
+  "markdownlint.onSave": false,
 
-  "markdown-preview-enhanced.previewTheme": "github-dark.css",
-  "webview.colorStrategy": "dark",
-
-  // ╒══════════════════════════════════════════════════════════╕
-  //                            Dlang
-  // ╘══════════════════════════════════════════════════════════╛
-  // "d.enabled": true,
-  // "d.servedPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/serve-d",
-  // "d.dcdServerPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-server",
-  // "d.dcdClientPath": "/home/lucas/.config/coc/extensions/coc-dlang-data/dcd-client",
+  // "markdown-preview-enhanced.previewTheme": "github-dark.css",
+  // "webview.colorStrategy": "dark",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                  Diagnostic Language Server
   // ╘══════════════════════════════════════════════════════════╛
-  "diagnostic-languageserver.enable": true,
-  "diagnostic-languageserver.trace.server": "off",
-  "diagnostic-languageserver.mergeConfig": true,
   "diagnostic-languageserver.linters": {
     "jq": {
       "command": "jq",
@@ -1259,15 +1287,6 @@
         "--strict",
         "%file"
       ],
-      // "formatPattern": [
-      //   "^.*:(\\d+?):(\\d+?): ([a-z]+?): (.*)$",
-      //   {
-      //     "line": 1,
-      //     "column": 2,
-      //     "security": 3,
-      //     "message": 4
-      //   }
-      // ],
       "formatPattern": [
         "^.*:(\\d+):(\\d+):(\\d+):(\\d+): ([a-z]+): (.*)$",
         {
@@ -1283,53 +1302,6 @@
         "error": "error",
         "note": "info"
       }
-    },
-    "ruff": {
-      "sourceName": "ruff",
-      "command": "ruff",
-      "args": ["--quiet", "%file"],
-      "formatPattern": [
-        "^[\\w/\\.]+:(\\d+):(\\d+):\\s([A-Z]{1,3}\\d+)\\s(.+)$",
-        {
-          "line": 1,
-          "column": 2,
-          "security": 3,
-          "message": 4
-        }
-      ],
-      "securities": {
-        "F": "error",
-        "E": "warning",
-        "W": "warning",
-        "I": "info",
-        "D": "warning",
-        "U": "info",
-        "N": "warning",
-        "S": "info",
-        "C": "warning",
-        "FBT": "warning",
-        "B": "warning",
-        "A": "info",
-        "T": "hint",
-        "Q": "hint",
-        "ANN": "warning",
-        "M": "hint"
-      }
-      // "args": [
-      //   "--format=json",
-      //   "--stdin-filename",
-      //   "%filepath",
-      //   "-"
-      // ],
-      // "parseJson": {
-      //   "line": "location.row",
-      //   "column": "location.column",
-      //   "endLine": "end_location.row",
-      //   "endColumn": "end_location.column",
-      //   "message": "${message} [Ruff ${code}]",
-      //   // "sourceName": "filename",
-      //   "sourceNameFilter": true
-      // },
     },
     "rubocop": {
       "command": "rubocop",
@@ -1426,27 +1398,6 @@
         "error": "error",
         "warning": "warning"
       }
-      // "args": [
-      //   "--display-style",
-      //   "json",
-      //   "--config",
-      //   "/home/lucas/.config/nvim/selene.toml",
-      //   "-"
-      // ],
-      // "parseJson": {
-      //   "line": "primary_label.span.start_line",
-      //   "column": "primary_label.span.start_column",
-      //   "endLine": "primary_label.span.end_line",
-      //   "endColumn": "primary_label.span.end_column",
-      //   "message": "${message}",
-      //   "security": "severity",
-      //   "sourceName": "primary_label.filename",
-      //   "sourceNameFilter": true
-      // },
-      // "securities": {
-      //   "Error": "error",
-      //   "Warning": "warning"
-      // }
     },
     "shellcheck": {
       "command": "shellcheck",
@@ -1501,24 +1452,35 @@
     "vim": "vint",
     "email": "languagetool",
     "dockerfile": "hadolint",
-    "ruby": ["rubocop"]
+    "ruby": ["rubocop"],
+    // "yaml": ["yamllint"]
     // "css": "stylelint"
     // "lua": "selene"
     // "perl": "perl",
-    // "python": ["ruff"],
     // "python": ["mypy"],
     // "sh": ["shellcheck"]
   },
   "diagnostic-languageserver.formatFiletypes": {},
+  "diagnostic-languageserver.enable": true,
+  "diagnostic-languageserver.trace.server": "off",
+  "diagnostic-languageserver.mergeConfig": true,
 
   // ╒══════════════════════════════════════════════════════════╕
   //                       Language Server
   // ╘══════════════════════════════════════════════════════════╛
   "languageserver": {
-    // "ruff-lsp": {
-    //   "command": "ruff-lsp",
-    //   "filetypes": ["python"]
-    // },
+    "ruff-lsp": {
+      "command": "ruff-lsp",
+      "filetypes": ["python"],
+      // "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+      "settings": {
+        "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+        "showNotifications": true,
+        "logLevel": "error",
+        "organizeImports": true,
+        "fixAll": true,
+      },
+    },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
@@ -1628,7 +1590,8 @@
     //     "-e",
     //     "Perl::LanguageServer::run",
     //     "--",
-    //     "--port 13603",
+    //     "--port",
+    //     "13603",
     //     "--nostdio 0",
     //     "--version 2.1.0"
     //   ],
@@ -1801,36 +1764,5 @@
         }
       }
     }
-    // "R": {
-    //   "command": "/usr/bin/R",
-    //   "args": ["--slave", "-e", "languageserver::run()"],
-    //   "filetypes": ["r"]
-    // },
-    // "zls": {
-    //   "command": "/usr/bin/zls",
-    //   "filetypes": ["zig"]
-    // },
-    // "serve-d": {
-    //   "command": "/usr/bin/serve-d",
-    //   "filetypes": ["d"]
-    // },
-    // "bash": {
-    //   "command": "bash-language-server",
-    //   "args": ["start"],
-    //   "filetypes": ["sh"]
-    // },
-    // "rescript": {
-    //   "enable": true,
-    //   "module": "~/.local/share/nvim/site/pack/packer/start/vim-rescript/server/out/server.js",
-    //   "args": [
-    //     "--node-ipc"
-    //   ],
-    //   "filetypes": [
-    //     "rescript"
-    //   ],
-    //   "rootPatterns": [
-    //     "bsconfig.json"
-    //   ]
-    // },
   }
 }

@@ -1,10 +1,9 @@
 local M = {}
 
 local D = require("dev")
-local utils = require("common.utils")
-local bmap = utils.bmap
-local augroup = utils.augroup
-local command = utils.command
+local mpi = require("common.api")
+local augroup = mpi.augroup
+local command = mpi.command
 
 local fn = vim.fn
 local api = vim.api
@@ -85,12 +84,12 @@ local function init()
         {
             event = "FileType",
             pattern = "go",
-            command = function()
-                local bufnr = api.nvim_get_current_buf()
+            command = function(args)
+                local bufnr = args.buf
                 vim.opt_local.list = false
 
                 local bmap = function(...)
-                    bmap(bufnr, ...)
+                    mpi.bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>rp", ":GORUNS<CR>")

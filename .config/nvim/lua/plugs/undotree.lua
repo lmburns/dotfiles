@@ -1,12 +1,10 @@
 local M = {}
 
--- if not _G.packer_plugins["undotree"] then
---     return
--- end
+local mpi = require("common.api")
+-- local map = mpi.map
+local command = mpi.command
 
-local utils = require("common.utils")
--- local map = utils.map
-local command = utils.command
+local wk = require("which-key")
 
 local g = vim.g
 local fn = vim.fn
@@ -14,7 +12,7 @@ local cmd = vim.cmd
 
 ---@diagnostic disable:unused-function, unused-local
 local bmap = function(...)
-    utils.bmap(0, ...)
+    mpi.bmap(0, ...)
 end
 
 function M.toggle()
@@ -46,6 +44,7 @@ end
 -- end
 
 local function init()
+    cmd.packadd("undotree")
     g.undotree_SplitWidth = 45
     g.undotree_SetFocusWhenToggle = 1
     g.undotree_RelativeTimestamp = 1
@@ -66,8 +65,6 @@ local function init()
     ]]
     )
 
-    cmd.packadd("undotree")
-
     -- <plug>UndotreeHelp
     -- <plug>UndotreeClose
     -- <plug>UndotreeFocusTarget
@@ -82,7 +79,7 @@ local function init()
     -- <plug>UndotreeUndo
     -- <plug>UndotreeEnter
 
-    require("which-key").register(
+    wk.register(
         {
             ["<Leader>ut"] = {":UndotreeToggle<CR>", "Toggle undotree"}
         }

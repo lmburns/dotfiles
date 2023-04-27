@@ -32,8 +32,9 @@ local wk = require("which-key")
 local dirs = require("common.global").dirs
 local log = require("common.log")
 local utils = require("common.utils") -- "builtin" utils
-local command = utils.command
-local map = utils.map
+local mpi = require("common.api")
+local command = mpi.command
+local map = mpi.map
 
 local fn = vim.fn
 local api = vim.api
@@ -82,7 +83,7 @@ local c_actions = {
     end,
     insert_space = function(_)
         -- api.nvim_input(" ")
-        api.nvim_feedkeys(utils.termcodes["<Space>"], "n", false)
+        utils.normal("n", "<Space>")
     end,
     single_selection_hop = function(prompt_bufnr)
         telescope.extensions.hop.hop(prompt_bufnr)
@@ -971,7 +972,7 @@ builtin.git_grep = function(opts)
         "--show-toplevel"
     }[1]
 
-    if utils.empty(opts.search_dirs) or utils.empty(opts.search_dirs[1]) then
+    if utils.is.empty(opts.search_dirs) or utils.empty(opts.search_dirs[1]) then
         log.err("Not in a git directory")
         return
     end

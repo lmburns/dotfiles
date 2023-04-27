@@ -6,11 +6,13 @@ if not possession then
     return
 end
 
+local B = require("common.api.buf")
 local log = require("common.log")
 local Path = require("plenary.path")
 
 local utils = require("common.utils")
-local command = utils.command
+local mpi = require("common.api")
+local command = mpi.command
 
 local cmd = vim.cmd
 local api = vim.api
@@ -19,7 +21,7 @@ local uv = vim.loop
 
 local function is_restorable(buffer)
     local n = api.nvim_buf_get_name(buffer)
-    return D.buf_is_valid(buffer) and fn.filereadable(n) == 1
+    return B.buf_is_valid(buffer) and fn.filereadable(n) == 1
 end
 
 function M.setup()

@@ -8,8 +8,8 @@ end
 
 local act = require("diffview.actions")
 
-local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local cmd = vim.cmd
 local api = vim.api

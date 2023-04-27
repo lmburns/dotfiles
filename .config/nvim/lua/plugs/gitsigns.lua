@@ -7,10 +7,10 @@ if not gs then
 end
 
 local style = require("style")
-local utils = require("common.utils")
-local map = utils.map
-local bmap = utils.bmap
-local augroup = utils.augroup
+local mpi = require("common.api")
+local map = mpi.map
+local bmap = mpi.bmap
+local augroup = mpi.augroup
 
 local log = require("common.log")
 local wk = require("which-key")
@@ -38,19 +38,19 @@ end
 
 function M.toggle_deleted()
     gs.toggle_deleted()
-    local status = F.tern(config.show_deleted, "enable", "disable")
+    local status = F.if_expr(config.show_deleted, "enable", "disable")
     echo(status, "show_deleted")
 end
 
 function M.toggle_word_diff()
     gs.toggle_word_diff()
-    local status = F.tern(config.word_diff, "enable", "disable")
+    local status = F.if_expr(config.word_diff, "enable", "disable")
     echo(status, "word_diff")
 end
 
 function M.toggle_blame()
     gs.toggle_current_line_blame()
-    local status = F.tern(config.current_line_blame, "enable", "disable")
+    local status = F.if_expr(config.current_line_blame, "enable", "disable")
     echo(status, "current_line_blame")
 
     if status == "enable" then
@@ -58,7 +58,7 @@ function M.toggle_blame()
             autocmd_id = M.setup_autocmd()
         end
     else
-        local ok = utils.del_augroup(autocmd_id)
+        local ok = mpi.del_augroup(autocmd_id)
         if not ok then
             log.err("Gitsigns: failed to delete autocommand")
         end
@@ -67,19 +67,19 @@ end
 
 function M.toggle_signs()
     gs.toggle_signs()
-    local status = F.tern(config.signcolumn, "enable", "disable")
+    local status = F.if_expr(config.signcolumn, "enable", "disable")
     echo(status, "signcolumn")
 end
 
 function M.toggle_linehl()
     gs.toggle_linehl()
-    local status = F.tern(config.linehl, "enable", "disable")
+    local status = F.if_expr(config.linehl, "enable", "disable")
     echo(status, "linehl")
 end
 
 function M.toggle_numhl()
     gs.toggle_numhl()
-    local status = F.tern(config.numhl, "enable", "disable")
+    local status = F.if_expr(config.numhl, "enable", "disable")
     echo(status, "numhl")
 end
 

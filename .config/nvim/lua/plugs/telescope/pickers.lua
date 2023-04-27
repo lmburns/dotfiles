@@ -1,6 +1,6 @@
 local P = {}
 
-local action_set = require "telescope.actions.set"
+local action_set = require"telescope.actions.set"
 local action_state = require("telescope.actions.state")
 local actions = require("telescope.actions")
 local builtin = require("telescope.builtin")
@@ -18,6 +18,7 @@ local Job = require("plenary.job")
 local scan = require("plenary.scandir")
 
 local b_utils = require("common.utils") -- "builtin" utils
+local mpi = require("common.api")
 
 local g = vim.g
 local fn = vim.fn
@@ -36,21 +37,21 @@ P.use_highlighter = true
 P.tags = function(opts)
     opts =
         vim.tbl_deep_extend(
-        "force",
-        {
-            path_display = {"smart"},
-            bufnr = api.nvim_get_current_buf(),
-            preview = {
-                check_mime_type = true,
-                filesize_limit = 5,
-                hide_on_startup = false,
-                msg_bg_fillchar = "╱",
-                timeout = 150,
-                treesitter = true
-            }
-        },
-        opts or {}
-    )
+            "force",
+            {
+                path_display = {"smart"},
+                bufnr = api.nvim_get_current_buf(),
+                preview = {
+                    check_mime_type = true,
+                    filesize_limit = 5,
+                    hide_on_startup = false,
+                    msg_bg_fillchar = "╱",
+                    timeout = 150,
+                    treesitter = true,
+                },
+            },
+            opts or {}
+        )
 
     local tagfiles = opts.ctags_file and {opts.ctags_file} or fn.tagfiles()
     if vim.tbl_isempty(tagfiles) then
@@ -58,7 +59,7 @@ P.tags = function(opts)
             "builtin.tags",
             {
                 msg = "No tags file found. Create one with ctags -R",
-                level = "ERROR"
+                level = "ERROR",
             }
         )
         return
@@ -67,7 +68,7 @@ P.tags = function(opts)
     local results = {}
     for _, ctags_file in ipairs(tagfiles) do
         for line in Path:new(fn.expand(ctags_file, true)):iter() do
-            results[#results + 1] = line
+            results[#results+1] = line
         end
     end
 
@@ -75,39 +76,39 @@ P.tags = function(opts)
         opts,
         {
             prompt_title = "Tags",
-            finder = finders.new_table {
+            finder = finders.new_table{
                 results = results,
-                entry_maker = make_entry.gen_from_ctags(opts)
+                entry_maker = make_entry.gen_from_ctags(opts),
             },
             previewer = previewers.ctags.new(opts),
             sorter = conf.generic_sorter(opts),
             attach_mappings = function()
-                action_set.select:enhance {
+                action_set.select:enhance{
                     post = function()
-                        local selection = action_state.get_selected_entry()
+                        local sel = action_state.get_selected_entry()
 
-                        if selection.scode then
+                        if sel.scode then
                             -- un-escape / then escape required
                             -- special chars for fn.search()
                             -- ] ~ *
                             local scode =
-                                selection.scode:gsub([[\/]], "/"):gsub(
-                                "[%]~*]",
-                                function(x)
-                                    return "\\" .. x
-                                end
-                            )
+                                sel.scode:gsub([[\/]], "/"):gsub(
+                                    "[%]~*]",
+                                    function(x)
+                                        return "\\" .. x
+                                    end
+                                )
 
                             cmd.norm({"gg", bang = true})
                             fn.search(scode)
                             cmd.norm({"zz", bang = true})
                         else
-                            api.nvim_win_set_cursor(0, {selection.lnum, 0})
+                            mpi.set_cursor(0, sel.lnum, 0)
                         end
-                    end
+                    end,
                 }
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -121,7 +122,7 @@ P.current_buffer_tags = function(opts)
             {
                 prompt_title = "Current Buffer Tags",
                 only_current_file = true,
-                path_display = "hidden"
+                path_display = "hidden",
             },
             opts or {}
         )
@@ -158,7 +159,7 @@ P.project_vista = function(opts)
                         lnum = value.lnum,
                         filename = fn.expand("%:p"),
                         kind = ("[%s]"):format(kind),
-                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text)
+                        tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text),
                     }
                 )
             end
@@ -166,18 +167,18 @@ P.project_vista = function(opts)
     else
         local buffers =
             _t(fn.getbufinfo({buflisted = 1})):map(
-            function(buf)
-                return {bufnr = buf.bufnr, loaded = buf.loaded, name = buf.name}
-            end
-        )
+                function(buf)
+                    return {bufnr = buf.bufnr, loaded = buf.loaded, name = buf.name}
+                end
+            )
 
         local files =
             scan.scan_dir(
-            fn.expand("%:p:h") or uv.cwd(),
-            {
-                hidden = true
-            }
-        )
+                fn.expand("%:p:h") or uv.cwd(),
+                {
+                    hidden = true,
+                }
+            )
 
         for kind, values in pairs(result) do
             for _, value in pairs(values) do
@@ -203,7 +204,7 @@ P.project_vista = function(opts)
                         filename = filename or value.tagfile,
                         kind = ("[%s]"):format(kind),
                         tag = ("%s %s"):format(fn["vista#renderer#IconFor"](kind), value.text),
-                        text = vim.trim(value.taginfo)
+                        text = vim.trim(value.taginfo),
                     }
                 )
             end
@@ -211,21 +212,21 @@ P.project_vista = function(opts)
     end
 
     local displayer =
-        entry_display.create {
-        separator = "▏",
-        items = {
-            {width = 25},
-            {width = 12},
-            {width = 30},
-            {remaining = true}
+        entry_display.create{
+            separator = "▏",
+            items = {
+                {width = 25},
+                {width = 12},
+                {width = 30},
+                {remaining = true},
+            },
         }
-    }
 
     local make_display = function(entry)
         local filename = utils.transform_path(opts, entry.filename)
         local tbl = {
-            {entry.tag, "DiagnosticWarn"},
-            {entry.kind, "SpellCap"}
+            {entry.tag,  "DiagnosticWarn"},
+            {entry.kind, "SpellCap"},
         }
         if not opts.only_current_file then
             table.insert(tbl, {entry.text, "Comment"})
@@ -241,7 +242,7 @@ P.project_vista = function(opts)
         opts,
         {
             prompt_title = "Project Tags",
-            finder = finders.new_table {
+            finder = finders.new_table{
                 results = results,
                 entry_maker = function(e)
                     return {
@@ -252,21 +253,21 @@ P.project_vista = function(opts)
                         tag = e.tag,
                         kind = e.kind,
                         text = e.text,
-                        filename = e.filename
+                        filename = e.filename,
                     }
-                end
+                end,
             },
             previewer = conf.grep_previewer(opts),
             sorter = conf.generic_sorter(opts),
             attach_mappings = function()
-                action_set.select:enhance {
+                action_set.select:enhance{
                     post = function()
-                        local selection = action_state.get_selected_entry()
-                        nvim.win.set_cursor(0, {selection.lnum, 0})
-                    end
+                        local sel = action_state.get_selected_entry()
+                        mpi.set_cursor(0, sel.lnum, 0)
+                    end,
                 }
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -278,7 +279,7 @@ P.current_buffer_vista = function(opts)
             {
                 prompt_title = "Current Buffer Tags",
                 only_current_file = true,
-                path_display = "hidden"
+                path_display = "hidden",
             },
             opts or {}
         )
@@ -299,7 +300,7 @@ P.gutentags = function()
             "No gutentags file found",
             vim.log.levels.ERROR,
             {
-                title = "Telescope"
+                title = "Telescope",
             }
         )
         return
@@ -307,9 +308,9 @@ P.gutentags = function()
 
     file = file["ctags"]
 
-    builtin.tags {
+    builtin.tags{
         cwd = g.gutentags_cache_dir,
-        ctags_file = file
+        ctags_file = file,
     }
 end
 
@@ -344,7 +345,7 @@ P.live_grep_in_folder = function(opts)
             respect_gitignore = opts.respect_gitignore,
             on_insert = function(entry)
                 table.insert(data, entry .. "/")
-            end
+            end,
         }
     )
     table.insert(data, 1, "." .. "/")
@@ -353,7 +354,7 @@ P.live_grep_in_folder = function(opts)
         opts,
         {
             prompt_title = "Folders for Live Grep",
-            finder = finders.new_table {results = data, entry_maker = make_entry.gen_from_file(opts)},
+            finder = finders.new_table{results = data, entry_maker = make_entry.gen_from_file(opts)},
             previewer = conf.file_previewer(opts),
             sorter = conf.file_sorter(opts),
             attach_mappings = function(prompt_bufnr)
@@ -371,11 +372,12 @@ P.live_grep_in_folder = function(opts)
                         end
                         -- Initial mode as insert isn't working
                         actions._close(prompt_bufnr, current_picker.initial_mode == "insert")
-                        require("telescope.builtin").live_grep {search_dirs = dirs, initial_mode = "insert"}
+                        require("telescope.builtin").live_grep{search_dirs = dirs, initial_mode =
+                        "insert"}
                     end
                 )
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -389,57 +391,57 @@ P.marks = function(opts)
     opts.path_display = {"smart"}
     -- opts.layout_config = {preview_width = 0.4}
 
-    local marks_output = api.nvim_command_output("marks")
-    local marks = fn.split(marks_output, "\n")
+    local marks = mpi.get_ex_output("marks")
 
     -- Pop off the header.
     table.remove(marks, 1)
 
     for i = #marks - 1, 3, -1 do
-        local mark, line, col, filename = marks[i]:match([[([%w<>%."'%^%]%[]+)%s+(%d+)%s+(%d+)%s+(.*)]])
+        local mark, line, col, filename = marks[i]:match(
+            [[([%w<>%."'%^%]%[]+)%s+(%d+)%s+(%d+)%s+(.*)]])
         table.insert(
             results,
             {
                 mark = mark,
                 lnum = tonumber(line),
                 col = tonumber(col),
-                text = filename
+                text = filename,
             }
         )
     end
 
-    local all_builtin = {"<", ">", "[", "]", ".", "^", '"', "'"}
-    local builtin_marks = require("marks").mark_state.builtin_marks
+    local all_builtin = _t({"<", ">", "[", "]", ".", "^", '"', "'"})
+    local builtin_marks = _t(require("marks").mark_state.builtin_marks)
 
     results =
         vim.tbl_filter(
-        function(line)
-            if _t(all_builtin):contains(line.mark) and not _t(builtin_marks):contains(line.mark) then
-                return false
-            end
-            return true
-        end,
-        results
-    ) --[[@as table]]
+            function(line)
+                if all_builtin:contains(line.mark) and not builtin_marks:contains(line.mark) then
+                    return false
+                end
+                return true
+            end,
+            results
+        ) --[[@as table]]
 
     local displayer =
-        entry_display.create {
-        separator = "▏",
-        items = {
-            {width = 3},
-            {width = 4},
-            {width = 3},
-            {remaining = true}
+        entry_display.create{
+            separator = "▏",
+            items = {
+                {width = 3},
+                {width = 4},
+                {width = 3},
+                {remaining = true},
+            },
         }
-    }
 
     local make_display = function(entry)
         local filename = utils.transform_path(opts, entry.filename)
-        return displayer {
+        return displayer{
             {entry.mark, "WarningMsg"},
             {entry.lnum, "SpellCap"},
-            {entry.col, "Comment"},
-            {filename, "ErrorMsg"}
+            {entry.col,  "Comment"},
+            {filename,   "ErrorMsg"},
         }
     end
 
@@ -447,7 +449,7 @@ P.marks = function(opts)
         opts,
         {
             prompt_title = "Marks",
-            finder = finders.new_table {
+            finder = finders.new_table({
                 results = results,
                 entry_maker = function(e)
                     -- local bufnr, _, _, _ = unpack(fn.getpos(("'"):format(e.mark)))
@@ -469,13 +471,13 @@ P.marks = function(opts)
                         col = e.col,
                         start = e.col,
                         text = e.text,
-                        filename = filename
+                        filename = filename,
                     }
-                end
-            },
+                end,
+            }),
             previewer = conf.grep_previewer(opts),
             sorter = conf.generic_sorter(opts),
-            push_cursor_on_edit = true
+            push_cursor_on_edit = true,
         }
     ):find()
 end
@@ -498,17 +500,17 @@ P.windows = function(opts)
         opts,
         {
             prompt_title = "Windows",
-            finder = finders.new_table {
+            finder = finders.new_table({
                 results = results,
                 entry_maker = function(line)
                     return {
                         ordinal = line[2],
                         value = line[1],
                         display = line[2],
-                        path = line[2] or ""
+                        path = line[2] or "",
                     }
-                end
-            },
+                end,
+            }),
             sorter = conf.generic_sorter(opts),
             previewer = previewers.cat.new(opts),
             attach_mappings = function(prompt_bufnr)
@@ -520,7 +522,7 @@ P.windows = function(opts)
                     end
                 )
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -536,8 +538,7 @@ P.scriptnames = function(opts)
     opts.path_display = {"smart"}
     opts.layout_config = {preview_width = 0.4}
 
-    local snames = api.nvim_command_output("scriptnames")
-    snames = vim.split(snames, "\n")
+    local snames = mpi.get_ex_output("scriptnames")
     local bufnr = api.nvim_get_current_buf()
 
     for i = #snames - 1, 2, -1 do
@@ -547,25 +548,25 @@ P.scriptnames = function(opts)
             {
                 bufnr = tonumber(bufnr),
                 scriptn = n,
-                filename = filename
+                filename = filename,
             }
         )
     end
 
     local displayer =
-        entry_display.create {
-        separator = "▏",
-        items = {
-            {width = 4},
-            {remaining = true}
+        entry_display.create{
+            separator = "▏",
+            items = {
+                {width = 4},
+                {remaining = true},
+            },
         }
-    }
 
     local make_display = function(entry)
         local filename = utils.transform_path(opts, entry.filename)
-        return displayer {
+        return displayer{
             {entry.scriptn, "WarningMsg"},
-            filename
+            filename,
         }
     end
 
@@ -573,7 +574,7 @@ P.scriptnames = function(opts)
         opts,
         {
             prompt_title = "scriptnames",
-            finder = finders.new_table {
+            finder = finders.new_table({
                 results = results,
                 entry_maker = function(e)
                     return {
@@ -582,10 +583,10 @@ P.scriptnames = function(opts)
                         ordinal = e.scriptn,
                         bufnr = e.bufnr,
                         scriptn = e.scriptn,
-                        filename = e.filename
+                        filename = e.filename,
                     }
-                end
-            },
+                end,
+            }),
             sorter = conf.generic_sorter(opts),
             previewer = conf.file_previewer(opts),
             attach_mappings = function(prompt_bufnr)
@@ -597,7 +598,7 @@ P.scriptnames = function(opts)
                     end
                 )
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -611,8 +612,7 @@ P.changes = function(opts)
     -- local default = require("telescope.themes")["get_ivy"](opts)
     -- opts = vim.tbl_deep_extend("force", opts, default)
 
-    local changes = api.nvim_command_output("changes")
-    changes = vim.split(changes, "\n")
+    local changes = mpi.get_ex_output("changes")
     local bufnr = api.nvim_get_current_buf()
 
     for i = #changes - 1, 3, -1 do
@@ -625,29 +625,29 @@ P.changes = function(opts)
                 lnum = tonumber(line),
                 col = tonumber(col),
                 text = text,
-                filename = api.nvim_buf_get_name(bufnr)
+                filename = api.nvim_buf_get_name(bufnr),
             }
         )
     end
 
     local displayer =
-        entry_display.create {
-        separator_hl = "SpellCap",
-        separator = "▏",
-        items = {
-            {width = 4}, -- change
-            {width = 5}, -- line
-            {width = 3}, -- col
-            {remaining = true} -- text
-        }
-    }
+        entry_display.create({
+            separator_hl = "SpellCap",
+            separator = "▏",
+            items = {
+                {width = 4},   -- change
+                {width = 5},   -- line
+                {width = 3},   -- col
+                {remaining = true}, -- text
+            },
+        })
 
     local make_display = function(entry)
-        return displayer {
+        return displayer{
             {entry.change, "WarningMsg"},
-            {entry.lnum, "SpellCap"},
-            {entry.col, "ErrorMsg"},
-            entry.text
+            {entry.lnum,   "SpellCap"},
+            {entry.col,    "ErrorMsg"},
+            entry.text,
         }
     end
 
@@ -655,7 +655,7 @@ P.changes = function(opts)
         opts,
         {
             prompt_title = "Changes",
-            finder = finders.new_table {
+            finder = finders.new_table({
                 results = results,
                 -- entry_maker = make_entry.gen_from_quickfix(opts)
                 entry_maker = function(e)
@@ -668,10 +668,10 @@ P.changes = function(opts)
                         lnum = e.lnum,
                         col = e.col,
                         text = e.text,
-                        filename = e.filename
+                        filename = e.filename,
                     }
-                end
-            },
+                end,
+            }),
             sorter = conf.generic_sorter(opts),
             previewer = conf.qflist_previewer(opts),
             attach_mappings = function(prompt_bufnr)
@@ -679,11 +679,11 @@ P.changes = function(opts)
                     function()
                         local sel = action_state.get_selected_entry()
                         actions.close(prompt_bufnr)
-                        api.nvim_win_set_cursor(0, {sel.lnum, sel.col})
+                        mpi.set_cursor(0, sel.lnum, sel.col)
                     end
                 )
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -702,7 +702,7 @@ P.args = function(opts)
     for i, path in ipairs(arglist) do
         local element = {
             path = path,
-            index = i
+            index = i,
         }
         table.insert(args, element)
     end
@@ -711,19 +711,19 @@ P.args = function(opts)
         opts,
         {
             prompt_title = "Args",
-            finder = finders.new_table {
+            finder = finders.new_table{
                 results = args,
                 entry_maker = function(entry)
                     return {
                         value = entry,
-                        display = string.format("%s\t%s", entry.index, entry.path),
-                        ordinal = string.format("%s\t%s", entry.index, entry.path),
-                        path = entry.path
+                        display = ("%s\t%s"):format(entry.index, entry.path),
+                        ordinal = ("%s\t%s"):format(entry.index, entry.path),
+                        path = entry.path,
                     }
-                end
+                end,
             },
             previewer = conf.grep_previewer(opts),
-            sorter = conf.generic_sorter(opts)
+            sorter = conf.generic_sorter(opts),
         }
     ):find()
 end
@@ -735,8 +735,8 @@ P.XXX = function(opts)
         opts,
         {
             prompt_title = "colors",
-            finder = finders.new_table {
-                results = {"red", "green", "blue"}
+            finder = finders.new_table{
+                results = {"red", "green", "blue"},
             },
             sorter = conf.generic_sorter(opts),
             ---@diagnostic disable-next-line:unused-local
@@ -745,12 +745,11 @@ P.XXX = function(opts)
                     function()
                         actions.close(prompt_bufnr)
                         local selection = action_state.get_selected_entry()
-                        -- print(vim.inspect(selection))
                         api.nvim_put({selection[1]}, "", false, true)
                     end
                 )
                 return true
-            end
+            end,
         }
     ):find()
 end
@@ -763,33 +762,27 @@ P.find = function(opts)
     opts = opts or {}
 
     local sfs =
-        finders._new {
-        fn_command = function(_, prompt)
-            if opts.cwd then
-                cmd.cd(opts.cwd)
-            end
-            local prefix = (fn.getcwd()) .. ".*"
+        finders._new{
+            fn_command = function(_, prompt)
+                if opts.cwd then
+                    cmd.cd(opts.cwd)
+                end
+                local prefix = (fn.getcwd()) .. ".*"
 
-            local args = {
-                "-ptf",
-                prefix .. (opts.pattern or "")
-            }
+                local args = {"-ptf", prefix .. (opts.pattern or "")}
 
-            if opts.path then
-                table.insert(args, opts.path)
-            end
+                if opts.path then
+                    table.insert(args, opts.path)
+                end
 
-            return {
-                writer = Job:new {
-                    command = "fd",
-                    args = args
-                },
-                command = "fzy",
-                args = {"-e", prompt}
-            }
-        end,
-        entry_maker = make_entry.gen_from_file(opts)
-    }
+                return {
+                    writer = Job:new({ command = "fd", args = args, }),
+                    command = "fzy",
+                    args = {"-e", prompt},
+                }
+            end,
+            entry_maker = make_entry.gen_from_file(opts),
+        }
 
     pickers.new(
         opts,
@@ -798,7 +791,7 @@ P.find = function(opts)
             finder = sfs,
             -- previewer = previewers.cat.new(opts),
             previewer = R("telescope.previewers").cat.new(opts),
-            sorter = P.use_highlighter and sorters.highlighter_only(opts)
+            sorter = P.use_highlighter and sorters.highlighter_only(opts),
         }
     ):find()
 end

@@ -121,35 +121,48 @@ scrolling:
 #  ╰──────────────────────────────────────────────────────────╯
 
 font:
+  # Point size
+  size: 13
+
   normal:
-    # family: FiraMono Nerd Font Mono
-    # family:  FiraCode Nerd Font Mono
-    # family: FuraMono Nerd Font
-    family: FuraMono Nerd Font Mono
-    # family: FiraMono Nerd Font
-    # family: FiraMono Nerd Font
-    # family:  FiraCode Nerd Font
-    # family:  Go Mono Nerd Font Mono
-    # family:  Hasklug Nerd Font Mono
-    # family:  Roboto Mono Nerd Font
-    # family:  Roboto Mono Nerd Font Mono
-    # family:  BitstreamVeraSansMono Nerd Font Mono
-    # family:  JetBrainsMono Nerd Font Mono
-    # family:  Hack Nerd Font Mono
+    family: FiraCode Nerd Font Mono
+    # family: FiraMono Nerd Font Mono  # 12
+    # family: FuraMono Nerd Font Mono   # 12
+    # family: BlexMono Nerd Font Mono # 13
+
+    # family: Sudo Nerd Font           # 17
+
+    # family: BlexMono Nerd Font Mono # 13
+    # family: Lilex Nerd Font Mono # 13
+
+    # family: JetBrainsMono Nerd Font Mono # 13
+    # family: JetBrainsMonoNL Nerd Font Mono # 13
+    # family: RobotoMono Nerd Font Mono  # 14
+
+    # family: Hasklug Nerd Font Mono     # 13
+    # family: SauceCodePro Nerd Font Mono # 13
+
+    # family: CaskaydiaCove Nerd Font Mono # 13
+    # family: Mononoki Nerd Font Mono # 13
+    # family: BitstreamVeraSansMono Nerd Font Mono  # 13
+    # family: DroidSansMono Nerd Font Mono # 13
+    # family: Hack Nerd Font Mono  # 13
+    # family: Iosevka Nerd Font Mono # 13
+    # family: CodeNewRoman Nerd Font Mono # 14
+    # family: DejaVuSansMono Nerd Font Mono # 13
+    # family: FantasqueSansMono Nerd Font Mono # 14
+    # family: NotoMono Nerd Font Mono # 13
     style: Medium
 
   bold:
-    family: FuraMono Nerd Font Mono
+    family: FiraCode Nerd Font Mono
     style: Bold
   italic:
-    family: FuraMono Nerd Font Mono
+    family: FiraCode Nerd Font Mono
     style: Italic
   bold_italic:
-    family: FuraMono Nerd Font Mono
+    family: FiraCode Nerd Font Mono
     style: Bold Italic
-
-  # Point size
-  size: 12
 
   # Offset is the extra space around each character. `offset.y` can be thought
   # of as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -347,7 +360,7 @@ schemes:
       - { index: 51, color: '#98676A' }
       - { index: 52, color: '#A06469' }
       - { index: 53, color: '#A3B95A' }
-      - { index: 54, color: '#A0936A' }
+      - { index: 54, color: '#A0936A'}
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
@@ -1092,23 +1105,23 @@ key_bindings:
   #  ╭────────────────────╮
   #  │ Control + <letter> │
   #  ╰────────────────────╯┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-  - { key: H,          mods: Control, chars: "\x1b[104;5u" }
-  - { key: I,          mods: Control, chars: "\x1b[105;5u" }
-  - { key: J,          mods: Control, chars: "\x1b[106;5u" }
-  - { key: M,          mods: Control, chars: "\x1b[109;5u" }
+  - { key: H, mods: Control, chars: "\x1b[104;5u" }
+  - { key: I, mods: Control, chars: "\x1b[105;5u" }
+  - { key: J, mods: Control, chars: "\x1b[106;5u" }
+  - { key: M, mods: Control, chars: "\x1b[109;5u" }
   # - { key: Space, mods: Control, chars: "\x1b[32;5u" }
-  - { key: Return,     mods: Control, chars: "\x1b[13;5u"  }
-  - { key: Grave,      mods: Control, chars: "\x1b[96;5u"  }
-  - { key: Minus,      mods: Control, chars: "\x1b[45;5u"  }
-  - { key: Equals,     mods: Control, chars: "\x1b[61;5u"  }
-  - { key: LBracket,   mods: Control, chars: "\x1b[91;5u"  }
-  - { key: RBracket,   mods: Control, chars: "\x1b[93;5u"  }
-  - { key: Backslash,  mods: Control, chars: "\x1b[92;5u"  }
+  - { key: Return, mods: Control, chars: "\x1b[13;5u" }
+  - { key: Grave, mods: Control, chars: "\x1b[96;5u" }
+  - { key: Minus, mods: Control, chars: "\x1b[45;5u" }
+  - { key: Equals, mods: Control, chars: "\x1b[61;5u" }
+  - { key: LBracket, mods: Control, chars: "\x1b[91;5u" }
+  - { key: RBracket, mods: Control, chars: "\x1b[93;5u" }
+  - { key: Backslash, mods: Control, chars: "\x1b[92;5u" }
   # - { key: Semicolon, mods: Control, chars: "\x1b[59;5u" }
-  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u"  }
-  - { key: Comma,      mods: Control, chars: "\x1b[44;5u"  }
-  - { key: Period,     mods: Control, chars: "\x1b[46;5u"  }
-  - { key: 0x35,       mods: Control, chars: "\x1b[31;5u"  } # Forward slash (/)
+  - { key: Apostrophe, mods: Control, chars: "\x1b[39;5u" }
+  - { key: Comma, mods: Control, chars: "\x1b[44;5u" }
+  - { key: Period, mods: Control, chars: "\x1b[46;5u" }
+  - { key: 0x35, mods: Control, chars: "\x1b[31;5u" } # Forward slash (/)
 
   #  ╭──────────────────────────╮
   #  │ Control + Alt + <letter> │

@@ -1,10 +1,13 @@
 local M = {}
 
 local log = require("plenary.log")
+local lazy = require("common.lazy")
+local D = lazy.require_on_exported_call("dev")
 
 local api = vim.api
 local fn = vim.fn
 local uv = vim.loop
+local F = vim.F
 
 ---@enum LogLevels
 M.levels = {
@@ -19,72 +22,78 @@ M.levels = {
 -- ---@type LogLevels
 -- vim.log.levels = vim.log.levels
 
+---Format a module name
+---@param src string
+---@return string
+local function module(src)
+    -- /home/lucas/.config/nvim/lua/autocmds.lua
+    -- local src = debug.getinfo(2, "S").source:gsub("@", "")
+
+    -- /home/lucas/.config/nvim/lua/autocmds
+    local fname_p = fn.fnamemodify(src:gsub("@", ""), ":r")
+    -- autocmds
+    local fname = fn.fnamemodify(fname_p, ":t")
+    -- lua
+    local dir = fn.fnamemodify(fname_p, ":h:t")
+    -- If the file is an init.lua, use the module name
+    return F.if_expr(fname == "init", dir,
+        F.if_expr(dir == "nvim", fname, ("%s.%s"):format(dir, fname))
+    )
+end
+
 ---@return string file #calling file name
 _G.__FILE__ = function()
     return debug.getinfo(3, "S").source
 end
----@return integer line #calling line
+---@return number line #calling line
 _G.__LINE__ = function()
     return debug.getinfo(3, "l").currentline
 end
 ---@return string funcname #calling func
 _G.__FUNC__ = function()
-    return debug.getinfo(3, "n").name
+    return debug.getinfo(3, "n").name or "NA"
 end
 ---@return string module #calling module
 _G.__MODULE__ = function()
-    local src = debug.getinfo(3, "S").short_src
-    local fname_p = fn.fnamemodify(src, ":r")
-    local fname = fn.fnamemodify(fname_p, ":t")
-    local dir = fn.fnamemodify(fname_p, ":h:t")
-    return F.tern(fname == "init", dir,
-                  F.tern(dir == "nvim", fname,
-                         ("%s.%s"):format(dir, fname)))
+    return module(debug.getinfo(3, "S").source)
 end
 ---@return string #'<module>.<function>:line'
 _G.__TRACEBACK__ = function()
     local info = debug.getinfo(3)
-    local fname_p = fn.fnamemodify(info.short_src, ":r")
-    local fname = fn.fnamemodify(fname_p, ":t")
-    local dir = fn.fnamemodify(fname_p, ":h:t")
-    local module = F.tern(fname == "init", dir,
-                          F.tern(dir == "nvim", fname,
-                                 ("%s.%s"):format(dir, fname)))
+    local module = module(info.source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
 end
 
 ---@return string module #calling module (callstack level 2)
 local __FMODULE__ = function()
-    local src = debug.getinfo(2, "S").short_src
-    local fname_p = fn.fnamemodify(src, ":r")
-    local fname = fn.fnamemodify(fname_p, ":t")
-    local dir = fn.fnamemodify(fname_p, ":h:t")
-    return F.tern(fname == "init", dir,
-                  F.tern(dir == "nvim", fname,
-                         ("%s.%s"):format(dir, fname)))
+    return module(debug.getinfo(2, "S").source)
 end
 
 ---Get current file name
+---@param thread? number
 ---@return string
-function M.get_loc()
-    local me = debug.getinfo(1, "S")
-    local level = 2
-    local info = debug.getinfo(level, "S")
+function M.get_loc(thread)
+    thread = F.unwrap_or(thread, 1)
+    local me = debug.getinfo(thread)
+    local level = thread + 1
+    local info = debug.getinfo(level)
     while info and info.source == me.source do
         level = level + 1
-        info = debug.getinfo(level, "S")
+        info = debug.getinfo(level)
     end
     info = info or me
     local source = info.source:sub(2)
     source = uv.fs_realpath(source) or source
-    return source .. ":" .. info.linedefined
+    local module = module(source)
+    return ("%s.%s:%d"):format(module, info.name, info.currentline)
+    -- return source .. ":" .. info.linedefined
 end
 
 ---@param value any
----@param opts? {loc: string, level: number}
+---@param opts? {loc?: string, level?: number, thread?: number}
 function M.dump(value, opts)
     opts = opts or {}
-    opts.loc = opts.loc or M.get_loc()
+    opts.loc = opts.loc or M.get_loc(opts.thread)
     if vim.in_fast_event() then
         return vim.schedule(
             function()
@@ -92,7 +101,7 @@ function M.dump(value, opts)
             end
         )
     end
-    opts.loc = fn.fnamemodify(opts.loc, ":~:.")
+    -- opts.loc = fn.fnamemodify(opts.loc, ":~:.")
     local msg = vim.inspect(value)
     vim.notify(
         msg,
@@ -121,17 +130,17 @@ local default_config = {
     -- Should highlighting be used in console (using echohl)
     highlights = true,
     -- Should write to a file
-    use_file = true,
+    use_file = false,
     -- Should write to the quickfix list
     use_quickfix = false,
     -- Any messages above this level will be logged.
     level = "info",
     -- Level configuration
     modes = {
-        {name = "trace", hl = "Comment"},
-        {name = "debug", hl = "Comment"},
-        {name = "info",  hl = "None"},
-        {name = "warn",  hl = "WarningMsg"},
+        {name = "trace", hl = "@bold"},
+        {name = "debug", hl = "Title"},
+        {name = "info",  hl = "MoreMsg"},
+        {name = "warn",  hl = "@text.warning"},
         {name = "error", hl = "ErrorMsg"},
         {name = "fatal", hl = "ErrorMsg"},
     },
@@ -139,9 +148,66 @@ local default_config = {
     float_precision = 0.01,
 }
 
-local built = log.new(default_config, true)
+local built = log.new(default_config, false)
+local qf_built
+local file_built
 
-M.logger = built
+---@return fun(): table
+M.qf_config = (function()
+    local qf_config
+    return function()
+        if not qf_config then
+            qf_config = D.tbl_clone(default_config)
+        end
+        qf_config.use_quickfix = true
+        qf_config.use_console = false
+
+        if not qf_built then
+            qf_built = log.new(qf_config, false)
+        end
+        return qf_built
+    end
+end)()
+
+---@return fun(): table
+M.file_config = (function()
+    local file_config
+    return function()
+        if not file_config then
+            file_config = D.tbl_clone(default_config)
+        end
+        file_config.use_file = true
+        file_config.use_console = false
+
+        if not file_built then
+            file_built = log.new(file_config, false)
+        end
+        return file_built
+    end
+end)()
+
+---logger.info("these", "are", "separated")
+---logger.fmt_info("These are %s strings", "formatted")
+---logger.lazy_info(expensive_to_calculate)
+---logger.file_info("do not print")
+M.logger =
+    setmetatable(
+        {
+            qf = M.qf_config,
+            file = M.file_config,
+        },
+        {
+            __index = function(_, fn)
+                local tocall = built[fn]
+                if type(tocall) == "function" then
+                    return tocall
+                end
+            end,
+            __call = function(self, ...)
+                self.info(...)
+            end,
+        }
+    )
 
 ---TRACE message
 ---@param msg string|string[]
@@ -184,12 +250,12 @@ M.info = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args = require("dev").vec_insert(
+        args = D.vec_insert(
             args,
             {__FMODULE__(), "Title"},
-            {".", "Cursor"},
+            {".", "Normal"},
             {__FUNC__(), "Function"},
-            {":", "Cursor"},
+            {":", "Normal"},
             {("%d: "):format(__LINE__()), "MoreMsg"}
         )
     end
@@ -219,12 +285,12 @@ M.warn = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args = require("dev").vec_insert(
+        args = D.vec_insert(
             args,
             {__FMODULE__(), "Title"},
-            {".", "Cursor"},
+            {".", "Normal"},
             {__FUNC__(), "Function"},
-            {":", "Cursor"},
+            {":", "Normal"},
             {("%d: "):format(__LINE__()), "MoreMsg"}
         )
     end
@@ -254,12 +320,12 @@ M.err = function(msg, opts)
         opts.print = true
     end
     if opts.debug and opts.print then
-        args = require("dev").vec_insert(
+        args = D.vec_insert(
             args,
             {__FMODULE__(), "Title"},
-            {".", "Cursor"},
+            {".", "Normal"},
             {__FUNC__(), "Function"},
-            {":", "Cursor"},
+            {":", "Normal"},
             {("%d: "):format(__LINE__()), "MoreMsg"}
         )
     end

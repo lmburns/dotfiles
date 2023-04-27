@@ -1,3 +1,5 @@
+; extends
+
 (h1) @text.title
 (h2) @text.title
 (h3) @text.title

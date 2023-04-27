@@ -4,8 +4,9 @@ local D = require("dev")
 local wk = require("which-key")
 
 local utils = require("common.utils")
-local map = utils.map
-local augroup = utils.augroup
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -374,6 +375,15 @@ function M.sandwich()
     )
 
     map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
+    map(
+        "x",
+        "zF",
+        function()
+            local cms = vsm.split(vim.bo.cms, "%s", {trimempty = true})[1] or "#"
+            utils.normal("n", ("<Esc>`<O<Esc>S%s [[[<Esc>`>o<Esc>S%s ]]]<Esc>k$|"):format(cms, cms))
+        end,
+        {desc = "Surround with foldmarker"}
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -423,7 +433,7 @@ function M.targets()
                         ["-"] = {separator = {{d = "-"}}},
                         L = {line = {{c = 1}}},
                         -- Closest delimiter
-                        ["2"] = {
+                        O = {
                             separator = {
                                 {d = ","},
                                 {d = "."},
@@ -459,20 +469,24 @@ function M.targets()
 
     wk.register(
         {
-            ["ir"] = "Inner brace",
-            ["ar"] = "Around brace",
-            ["ia"] = "Inner angle bracket",
-            ["aa"] = "Around angle bracket",
-            ["iA"] = "Inner any bracket",
-            ["aA"] = "Around any bracket",
+            ["ir"] = "Inner brace [ ]",
+            ["ar"] = "Around brace [ ]",
+            ["iB"] = "Inner brace { }",
+            ["aB"] = "Around brace { }",
+            ["ib"] = "Inner brace ({ })",
+            ["ab"] = "Around brace ({ })",
+            ["ia"] = "Inner angle bracket < >",
+            ["aa"] = "Around angle bracket < >",
+            ["iA"] = "Inner any bracket [({ })]",
+            ["aA"] = "Around any bracket [({ })]",
             ["iq"] = "Inner quote",
             ["aq"] = "Around quote",
             ["in"] = "Next object",
             ["im"] = "Previous object",
             ["an"] = "Next object",
             ["am"] = "Previous object",
-            ["i2"] = "Inner nearest object",
-            ["a2"] = "Around nearest object",
+            ["iO"] = "Inner nearest object",
+            ["aO"] = "Around nearest object",
             ["iJ"] = "Inner parameter (comma)",
             ["aJ"] = "Around parameter (comma)",
             ["iL"] = "Inner line",
@@ -514,7 +528,7 @@ function M.various_textobjs()
     end
 
     vobjs.setup{
-        lookForwardLines = 5,     -- set to 0 to only look in the current line
+        lookForwardLines = 5,      -- set to 0 to only look in the current line
         useDefaultKeymaps = false, -- use suggested keymaps (see README)
     }
 

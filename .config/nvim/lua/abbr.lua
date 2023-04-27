@@ -18,12 +18,6 @@ function M.command(cmd, match)
     end
 end
 
----@class AbbrOpts
----@field expr boolean
----@field buffer boolean
----@field silent boolean
----@field only_start boolean
-
 ---Create an abbreviation, until an API command is created
 ---@param mode string mode commands is to be mapped
 ---@param lhs string text that is converted
@@ -45,25 +39,25 @@ function M.abbr(mode, lhs, rhs, args)
     end
 
     for _, v in pairs(mods) do
-        table.insert(command, v)
+        command:insert(v)
     end
 
     if mode == "i" or mode == "insert" then
         if rhs == nil then
-            table.insert(command, 1, "iunabbrev")
-            table.insert(command, lhs)
+            command:insert(1, "iunabbrev")
+            command:insert(lhs)
         else
-            table.insert(command, 1, "iabbrev")
-            table.insert(command, lhs)
-            table.insert(command, rhs)
+            command:insert(1, "iabbrev")
+            command:insert(lhs)
+            command:insert(rhs)
         end
     elseif mode == "c" or mode == "command" then
         if rhs == nil then
-            table.insert(command, 1, "cunabbrev")
-            table.insert(command, lhs)
+            command:insert(1, "cunabbrev")
+            command:insert(lhs)
         else
-            table.insert(command, 1, "cabbrev")
-            table.insert(command, lhs)
+            command:insert(1, "cabbrev")
+            command:insert(lhs)
 
             -- ((if_statement)
             if args.only_start ~= false then
@@ -72,7 +66,7 @@ function M.abbr(mode, lhs, rhs, args)
                 )
             end
 
-            table.insert(command, rhs)
+            command:insert(rhs)
         end
     else
         log.err(
@@ -82,10 +76,10 @@ function M.abbr(mode, lhs, rhs, args)
     end
 
     if args.silent ~= nil then
-        table.insert(command, 1, "silent!")
+        command:insert(1, "silent!")
     end
 
-    cmd(table.concat(command, " "))
+    cmd(command:concat(" "))
 end
 
 M = setmetatable(
@@ -97,7 +91,7 @@ M = setmetatable(
                 {mode = mode}, {
                     __call = function(self, lhs, rhs, opts)
                         super.abbr(self.mode, lhs, rhs, opts)
-                    end
+                    end,
                 }
             )
         end,
@@ -115,7 +109,7 @@ M = setmetatable(
         ---@param opts AbbrOpts?
         __call = function(self, mode, lhs, rhs, opts)
             self.abbr(mode, lhs, rhs, opts)
-        end
+        end,
     }
 )
 
@@ -146,6 +140,7 @@ local function init()
     M.abbr("c", "vg", "vimgrep", {only_start = false})
     M.abbr("c", "grep", "Grep", {only_start = false})
     M.abbr("c", "lgrep", "LGrep", {only_start = false})
+    M.abbr("c", "hg", "helpgrep", {only_start = false})
     M.abbr("c", "buf", "Bufferize")
     M.abbr("c", "req", "lua require('")
     M.abbr("c", "cfilter", "Cfilter")

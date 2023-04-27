@@ -8,8 +8,9 @@ end
 
 local wk = require("which-key")
 local utils = require("common.utils")
-local map = utils.map
-local command = utils.command
+local mpi = require("common.api")
+local map = mpi.map
+local command = mpi.command
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -91,7 +92,7 @@ function M.setup()
                 enabled = false
             },
             consumers = {
-                overseer = utils.prequire("neotest.consumers.overseer")
+                overseer = utils.mod.prequire("neotest.consumers.overseer")
             },
             diagnostic = {
                 enabled = true

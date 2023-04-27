@@ -6,11 +6,12 @@ local M = {}
 
 local D = require("dev")
 local log = require("common.log")
--- local H = require("common.color")
-local utils = require("common.utils")
-local command = utils.command
-local map = utils.map
-local augroup = utils.augroup
+
+local B = require("common.api.buf")
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
+local command = mpi.command
 
 local Path = require("plenary.path")
 
@@ -44,8 +45,10 @@ command(
 command(
     "VG",
     function(tbl)
-        cmd(([[:vimgrep '%s' %s | copen]]):format(tbl.fargs[1],
-                                                  tbl.fargs[2] or "%"))
+        cmd( ([[:vimgrep '%s' %s | copen]]):format(
+            tbl.fargs[1],
+            tbl.fargs[2] or "%"
+        ))
     end,
     {nargs = "+", desc = "Vimgrep"}
 )
@@ -75,14 +78,14 @@ command(
 
 command(
     "CleanEmptyBuf",
-    D.ithunk(utils.clean_empty_bufs),
+    D.ithunk(B.buf_clean_empty),
     {nargs = 0, desc = "Remove empty buffers from stack"}
 )
 
 command(
     "FollowSymlink",
     function(tbl)
-        require("common.utils").follow_symlink(tbl.args)
+        require("common.utils.fs").follow_symlink(tbl.fargs[1], tbl.fargs[2])
     end,
     {nargs = "?", complete = "buffer", desc = "Follow buffer's symlink"}
 )
@@ -101,14 +104,14 @@ command(
 
 command(
     "Camel2Snake",
-    [[:%s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
-    {nargs = 0, desc = "Convert camelCase to snake_case"}
+    [[<line1>,<line2>s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
+    {nargs = 0, range = "%", desc = "Convert camelCase to snake_case"}
 )
 
 command(
     "Snake2Camel",
-    [[:%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
-    {nargs = 0, desc = "Convert snake_case to camelCase"}
+    [[<line1>,<line2>%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
+    {nargs = 0, range = "%", desc = "Convert snake_case to camelCase"}
 )
 
 command(
@@ -125,7 +128,7 @@ command(
         bang     = true,
         range    = "%",
         complete = "file",
-        desc     = "Write selection to another file, placing in blackhole register"
+        desc     = "Write selection to another file, placing in blackhole register",
     }
 )
 
@@ -137,26 +140,9 @@ command(
         bang     = true,
         range    = "%",
         complete = "file",
-        desc     = "Append selection to another file, placing in blackhole register"
+        desc     = "Append selection to another file, placing in blackhole register",
     }
 )
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                         Unicode                          │
---  ╰──────────────────────────────────────────────────────────╯
--- TODO:
--- cmd [[
---     command! -range Codepoint2Icon
---           \  let s:save = @a
---           \| if <count> is# -1
---           \|   let @a = strcharpart(strpart(getline('.'), col('.') - 1), 0, 1)
---           \| else
---           \|   exe 'normal! gv"ay'
---           \| endif
---           \| echo system('uni -c i', @a)[:-2]
---           \| let @a = s:save
---           \| unlet s:save
--- ]]
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Syntax                          │
@@ -180,7 +166,7 @@ function M.print_syn_group()
     local id = fn.synID(fn.line("."), fn.col("."), 1)
     nvim.echo({{"Synstack: ", "WarningMsg"}, {vim.inspect(M.name_syn_stack())}})
     nvim.echo({
-        {fn.synIDattr(id, "name"), "WarningMsg"},
+        {fn.synIDattr(id, "name"),               "WarningMsg"},
         {" => "},
         {fn.synIDattr(fn.synIDtrans(id), "name")},
     })
@@ -333,7 +319,12 @@ end
 
 -- map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
 -- map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
-map("n", "<C-,>,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+map(
+    "n",
+    "<C-,>,",
+    M.modify_line_end_delimiter(","),
+    {desc = "Add comma to eol"}
+)
 map(
     "n",
     "<C-,>;",
@@ -483,7 +474,7 @@ end
 ---@param register string
 ---@return string
 function M.record_macro(register)
-    return F.tern(fn.reg_recording() == "", "q" .. register, "q")
+    return F.if_expr(fn.reg_recording() == "", "q" .. register, "q")
 end
 
 ---Run a command like `n`/`N` and center the screen
@@ -494,7 +485,7 @@ function M.center_next(command)
 
     local topline = fn.line("w0")
     local ok, msg = pcall(cmd.norm,
-                          {command, mods = {silent = true}, bang = true})
+        {command, mods = {silent = true}, bang = true})
 
     if topline ~= fn.line("w0") then
         cmd.norm({"zz", mods = {silent = true}, bang = true})
@@ -553,5 +544,32 @@ function M.makeview()
 end
 
 -- ]]] === Functions ===
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Cache                           │
+--  ╰──────────────────────────────────────────────────────────╯
+
+M.cache = {}
+
+M.callbacks = {}
+M.quiet = false
+M.captured = {}
+
+---Register global anonymous callback
+---Returns an id that can be passed to M.callback() to call the function
+function M.new_callback(fn)
+    table.insert(M.callbacks, fn)
+    return #M.callbacks
+end
+
+---Call the callback associated with the given `id`
+function M.callback(id, ...)
+    return M.callbacks[id](...)
+end
+
+M.cache = {
+    new_callback = M.new_callback,
+    callback = M.callback,
+}
 
 return M

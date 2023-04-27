@@ -1,8 +1,8 @@
 local M = {}
 
-local utils = require("common.utils")
-local map = utils.map
-local augroup = utils.augroup
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
 
 local wk = require("which-key")
 
@@ -160,7 +160,7 @@ function M.vimwiki()
                 local bufnr = args.buf
                 map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
 
-                utils.del_keymap("n", "<Leader>whh", {buffer = bufnr})
+                mpi.del_keymap("n", "<Leader>whh", {buffer = bufnr})
 
                 wk.register(
                     {

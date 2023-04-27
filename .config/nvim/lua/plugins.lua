@@ -210,6 +210,7 @@ return packer.startup(
             -- https://rrthomas.github.io/lrexlib/manual.html
             use_rocks("lrexlib-pcre2") -- rex_pcre2
             -- use_rocks("lpeg")
+            use_rocks("carray")
 
             ---@type fun(v: PackerPlugin)
             local use = use
@@ -561,16 +562,18 @@ return packer.startup(
             -- ]]] === Debugging ===
 
             -- ============================ Neo/Floaterm =========================== [[[
-            use({"voldikss/fzf-floaterm", requires = {"voldikss/vim-floaterm"}, conf = "floaterm"})
+            use({
+                "voldikss/fzf-floaterm",
+                requires = {"voldikss/vim-floaterm"},
+                conf = "plugs.neoterm.floaterm",
+            })
 
-            use(
-                {
-                    "akinsho/toggleterm.nvim",
-                    conf = "plugs.neoterm"
-                    -- keys = {"gzo", "gzz", "<C-\\>"},
-                    -- cmd = {"T", "TR", "TP", "VT"}
-                }
-            )
+            use({
+                "akinsho/toggleterm.nvim",
+                conf = "plugs.neoterm"
+                -- keys = {"gzo", "gzz", "<C-\\>"},
+                -- cmd = {"T", "TR", "TP", "VT"}
+            })
 
             use({"willothy/flatten.nvim", conf = "plugs.neoterm.flatten"})
             -- ]]] === Floaterm ===
@@ -992,7 +995,7 @@ return packer.startup(
                     requires = "nvim-treesitter/nvim-treesitter"
                 }
             )
-            use({"LudoPinelli/comment-box.nvim", conf = "comment_box"})
+            use({"LudoPinelli/comment-box.nvim", conf = "plugs.comment.comment_box"})
             -- ]]] === Commenter ===
 
             -- =============================== Python ============================== [[[
@@ -1004,16 +1007,16 @@ return packer.startup(
             use(
                 {
                     "axelvc/template-string.nvim",
-                    conf = "template_string",
+                    conf = "plugs.ecma.template_string",
                     requires = "nvim-treesitter/nvim-treesitter"
                 }
             )
             use(
                 {
                     "vuki656/package-info.nvim",
+                    conf = "plugs.ecma.package_info",
                     requires = {"MunifTanjim/nui.nvim", module = "nui"},
                     event = "BufRead package.json",
-                    conf = "package_info"
                 }
             )
             -- ]]] === Javascript ===
@@ -1719,7 +1722,8 @@ return packer.startup(
                 {
                     "simrat39/desktop-notify.nvim",
                     setup = [[pcall(vim.cmd, 'delcommand Notifications')]],
-                    config = [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]]
+                    config =
+                    [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]],
                 }
             )
         end,

@@ -4,8 +4,9 @@ local M = {}
 
 -- TODO: Get sign column to show in bqfpreview
 
-local command = require("common.utils").command
 local log = require("common.log")
+local mpi = require("common.api")
+local command = mpi.command
 local abbr = require("abbr")
 local style = require("style")
 
@@ -16,6 +17,8 @@ local fn = vim.fn
 local g = vim.g
 
 -- FINISH
+---@param is_loc boolean
+---@param pat_rep string
 function M.batch_sub(is_loc, pat_rep)
     local matches = fn.matchlist(pat_rep, [[\v(([^|"\\a-zA-Z0-9]).*\2.*\2=)([cgeiI]*)\s*$]])
     if vim.tbl_isempty(matches) then
@@ -29,7 +32,7 @@ function M.batch_sub(is_loc, pat_rep)
     local pat, rep = pr_tbl[2], pr_tbl[3]
     if pat == "" then
         pat = nvim.reg["/"]
-    -- pat = fn.getreg("/")
+        -- pat = fn.getreg("/")
     end
     if vim.o.gdefault then
         flag:gsub("g", "")
@@ -61,7 +64,7 @@ function M.batch_sub(is_loc, pat_rep)
         local e = old[i]
         local bufnr = e.bufnr
         if not bp_list[bufnr] then
-            buf_list[#buf_list + 1] = bufnr
+            buf_list[#buf_list+1] = bufnr
             bp_list[bufnr] = {}
         end
         local plist = bp_list[bufnr]
@@ -77,31 +80,30 @@ function M.batch_sub(is_loc, pat_rep)
     for _, bufnr in ipairs(buf_list) do
         local plist = bp_list[bufnr]
         for _, pos in ipairs(plist) do
-            new[#new + 1] = {bufnr = bufnr, lnum = pos[1], col = pos[2]}
+            new[#new+1] = {bufnr = bufnr, lnum = pos[1], col = pos[2]}
         end
     end
 
     local set_cmd = is_loc and function(...)
-            return fn.setloclist(0, ...)
-        end or fn.setqflist
+        return fn.setloclist(0, ...)
+    end or fn.setqflist
 
     local function silent_setqf(items)
-        local ei = vim.go.ei
-        vim.go.ei = "all"
-        pcall(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""})
-        vim.go.ei = ei
+        mpi.noautocmd(function()
+            pcall(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""})
+        end)
     end
 
     silent_setqf(new)
 
     local ok, res =
         pcall(
-        function()
-            local concat = ([[%s\%%#%s%s%s%s%s]]):format(delm, pat, delm, rep, delm, flag)
-            local do_cmd = is_loc and "ldo" or "cdo"
-            cmd(([[%s s%s]]):format(do_cmd, concat))
-        end
-    )
+            function()
+                local concat = ([[%s\%%#%s%s%s%s%s]]):format(delm, pat, delm, rep, delm, flag)
+                local do_cmd = is_loc and "ldo" or "cdo"
+                cmd(([[%s s%s]]):format(do_cmd, concat))
+            end
+        )
 
     fn.histdel("/", -1)
     fn.histadd("/", pat)
@@ -170,19 +172,19 @@ function M.close()
             local bufnr = api.nvim_create_buf(false, true)
             local winid =
                 api.nvim_open_win(
-                bufnr,
-                false,
-                {
-                    relative = "cursor",
-                    width = #prompt,
-                    height = 1,
-                    row = 1,
-                    col = 1,
-                    style = "minimal",
-                    border = style.current.border,
-                    noautocmd = true
-                }
-            )
+                    bufnr,
+                    false,
+                    {
+                        relative = "cursor",
+                        width = #prompt,
+                        height = 1,
+                        row = 1,
+                        col = 1,
+                        style = "minimal",
+                        border = style.current.border,
+                        noautocmd = true,
+                    }
+                )
             vim.wo[winid].winhl = "Normal:Normal"
             vim.wo[winid].winbl = 8
             api.nvim_buf_set_lines(bufnr, 0, 1, false, {prompt})
@@ -199,7 +201,7 @@ function M.close()
                             cmd.ccl()
                         elseif charstr == "l" then
                             cmd.lcl()
-                        -- cmd("lcl")
+                            -- cmd("lcl")
                         end
                     end
                     cmd(("noa bw %d"):format(bufnr))
@@ -220,7 +222,7 @@ function M.syntax()
     if title:match("^%**[Oo]utline") then
         require("common.qfext").outline_syntax()
     else
-        cmd [[
+        cmd[[
           syn match qfFileName /^[^│]*/ nextgroup=qfSeparatorLeft
           syn match qfSeparatorLeft /│/ contained nextgroup=qfLineNr
           syn match qfLineNr /[^│]*/ contained nextgroup=qfSeparatorRight
@@ -248,13 +250,15 @@ local function init()
     g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    abbr("c", "cdos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>", {only_start = false})
-    abbr("c", "ldos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>", {only_start = false})
+    abbr("c", "cdos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>",
+        {only_start = false})
+    abbr("c", "ldos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>",
+        {only_start = false})
 
     command(
         "Cdos",
         function(tbl)
-            require("common.qf").batch_sub(false, tbl.args)
+            M.batch_sub(false, tbl.args)
         end,
         {nargs = 1, desc = "Execute a command on quickfix list, writing to file"}
     )
@@ -262,7 +266,7 @@ local function init()
     command(
         "Ldos",
         function(tbl)
-            require("common.qf").batch_sub(true, tbl.args)
+            M.batch_sub(true, tbl.args)
         end,
         {nargs = 1, desc = "Execute a command on location list, writing to file"}
     )

@@ -1,7 +1,7 @@
 local M = {}
 
-local utils = require("common.utils")
-local augroup = utils.augroup
+local mpi = require("common.api")
+local augroup = mpi.augroup
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -10,7 +10,7 @@ local g = vim.g
 local api = vim.api
 
 local bmap = function(...)
-    utils.bmap(0, ...)
+    mpi.bmap(0, ...)
 end
 
 function M.index()
@@ -134,15 +134,15 @@ local function init()
                 "Fugitive blame split"
             },
             ["<LocalLeader>gw"] = {
-                [[<Cmd>lua require('common.utils').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+                [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
                 "Fugitive Gwrite"
             },
             ["<LocalLeader>gW"] = {
-                [[<Cmd>lua require('common.utils').follow_symlink("Gwrite")<CR>]],
+                [[<Cmd>lua require('common.utils.fs').follow_symlink("Gwrite")<CR>]],
                 "Fugitive Gwrite"
             },
             ["<LocalLeader>gr"] = {
-                [[<Cmd>lua require('common.utils').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+                [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
                 "Fugitive Gread"
             },
             ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},

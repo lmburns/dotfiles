@@ -58,13 +58,13 @@ function M.setup()
             render = function(bufnr, notif, highlights, config)
                 ---@type RenderType
                 local style =
-                    F.tern(
+                    F.if_expr(
                     notif.title[1] == "",
                     "minimal",
-                    F.tern(
+                    F.if_expr(
                         notif.title[2] and not notif.title[2]:match("%d%d:%d%d"),
                         "default",
-                        F.tern(
+                        F.if_expr(
                             #notif.title[1] + #notif.message[1] <= max_width,
                             "compact",
                             "default"

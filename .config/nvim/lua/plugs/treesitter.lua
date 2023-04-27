@@ -6,8 +6,9 @@ if not D.npcall(require, "nvim-treesitter") then
 end
 
 local it = D.ithunk
-local utils = require("common.utils")
-local map = utils.map
+-- local utils = require("common.utils")
+local mpi = require("common.api")
+local map = mpi.map
 local hl = require("common.color")
 
 local colors = require("kimbox.colors")
@@ -44,8 +45,8 @@ function M.do_textobj(obj, inner, visual)
     local ret = false
     if queries.has_query_files(vim.bo.ft, "textobjects") then
         require("nvim-treesitter.textobjects.select").select_textobject(
-            ("@%s.%s"):format(obj, F.tern(inner, "inner", "outer")),
-            F.tern(visual, "x", "o")
+            ("@%s.%s"):format(obj, F.if_expr(inner, "inner", "outer")),
+            F.if_expr(visual, "x", "o")
         )
         ret = true
     end
@@ -135,7 +136,7 @@ M.setup_hlargs = function()
     end
 
     hlargs.setup{
-        excluded_filetypes = _t(BLACKLIST_FT):filter(D.lambda("x -> x ~= 'luapad'")),
+        excluded_filetypes = _t(BLACKLIST_FT):filter(utils.lambda("x -> x ~= 'luapad'")),
         -- color = g.colors_name == "kimbox" and colors.salmon or nil,
         color = "#DE9A4E",
         hl_priority = 10000,
@@ -907,13 +908,13 @@ M.setup_treesj = function()
     -- map(
     --     "n",
     --     "gJ",
-    --     F.tern(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
+    --     F.if_expr(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
     --     {desc = "Spread: out"}
     -- )
     -- map(
     --     "n",
     --     "gS",
-    --     F.tern(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
+    --     F.if_expr(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
     --     {desc = "Spread: out"}
     -- )
 end
@@ -1031,6 +1032,7 @@ M.setup = function()
                 "awk",
                 "css",
                 "markdown",
+                "jq",
                 -- "teal"
             },
             custom_captures = custom_captures,
@@ -1061,7 +1063,7 @@ M.setup = function()
             enable = true,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
-            disable_virtual_text = false,
+            disable_virtual_text = true,
             disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
         },
         playground = {
@@ -1109,7 +1111,7 @@ M.setup = function()
                 json = "",
                 jsonc = {__default = "// %s", __multiline = "/* %s */"},
                 lua = {__default = "-- %s", __multiline = "--[[ %s ]]", doc = "---%s"},
-                markdown = "<!-- %s -->",
+                markdown = "<!-- %s -->", -- %%
                 python = {__default = "# %s", __multiline = '""" %s """'},
                 rust = {__default = "// %s", __multiline = "/* %s */", doc = "/// %s"},
                 sql = "-- %s",
@@ -1403,8 +1405,8 @@ local function init()
                 "zsh",
                 "solidity",
                 "sxhkdrc",
-                "perl",
-                "ini"
+                "ini",
+                -- "perl",
             }
         )
 
@@ -1504,6 +1506,12 @@ local function init()
         "<Leader>sd",
         "TSPlaygroundToggle", -- "Inspect"
         {cmd = true, desc = "Toggle TSPlayground"}
+    )
+    map(
+        "n",
+        "<Leader>s,",
+        "TSBufToggle highlight", -- "Inspect"
+        {cmd = true, desc = "Toggle TS highlight"}
     )
 
     queries = require("nvim-treesitter.query")

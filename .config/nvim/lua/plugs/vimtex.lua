@@ -1,7 +1,7 @@
 local M = {}
 
-local utils = require("common.utils")
-local augroup = utils.augroup
+local mpi = require("common.api")
+local augroup = mpi.augroup
 
 local g = vim.g
 

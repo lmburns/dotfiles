@@ -3,22 +3,20 @@ local M = {}
 local D = require("dev")
 local _ = D.ithunk
 local utils = require("common.utils")
-local map = utils.map
+
+local W = require("common.api.win")
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
+local autocmd = mpi.autocmd
+
 local funcs = require("functions")
 
--- local ex = nvim.ex
--- local api = vim.api
--- local fn = vim.fn
--- local F = vim.F
-
--- Legendary needs to be called again in this file for the keybindings to register
--- Not sure why these options only work from here
-require("legendary").setup({include_builtin = false, include_legendary_cmds = false})
+-- TODO:
+-- require("legendary").setup({include_builtin = true, include_legendary_cmds = false})
 local wk = require("which-key")
 
 -- ============== General mappings ============== [[[
--- map("n", "<Space>", "<Nop>")
--- map("x", "<Space>", "<Nop>")
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                       Insert Mode                        │
@@ -270,7 +268,7 @@ wk.register(
             ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:t'))<CR>",
             "Copy file name"
         },
-        ["yp"] = {
+        ["yP"] = {
             ":lua require('common.yank').yank_reg(vim.v.register, vim.fn.expand('%:p'))<CR>",
             "Copy full path"
         },
@@ -282,9 +280,18 @@ wk.register(
         ["y"] = {[[v:lua.require'common.yank'.wrap()]], "Yank motion"},
         ["yw"] = {[[v:lua.require'common.yank'.wrap('iw')]], "Yank word (iw)"},
         ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
+        ["yl"] = {[[v:lua.require'common.yank'.wrap('aL')]], "Yank line (aL)"},
+        ["yL"] = {[[v:lua.require'common.yank'.wrap('iL')]], "Yank line, no newline (iL)"},
+        ["yh"] = {[[v:lua.require'common.yank'.wrap('au')]], "Yank unit (au)"},
+        ["yH"] = {[[v:lua.require'common.yank'.wrap('ai')]], "Yank indent (ai)"},
+        ["yp"] = {[[v:lua.require'common.yank'.wrap('ip')]], "Yank paragraph (ip)"},
+        ["yo"] = {[[v:lua.require'common.yank'.wrap('iss')]], "Yank inside nearest object (iss)"},
+        ["yO"] = {[[v:lua.require'common.yank'.wrap('ass')]], "Yank around nearest object (ass)"},
+        ["yq"] = {[[v:lua.require'common.yank'.wrap('iq')]], "Yank inside quote (iq)"},
+        ["yQ"] = {[[v:lua.require'common.yank'.wrap('aq')]], "Yank around quote (aq)"},
         ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"},
     },
-    {expr = true}
+    {expr = true, remap = true}
 )
 
 wk.register(
@@ -358,25 +365,19 @@ map(
 
 wk.register(
     {
-        ["gm"] = "Half screenwidth to right (screen-line)",
-        ["gM"] = "Halfway screen-line (count = % of line)",
-        ["g^"] = "First non-blank char of screen-line",
-        ["g_"] = "Last non-blank char",
-        ["g0"] = "First char of screen-line",
-        ["g<Home>"] = "First char of screen-line",
-        ["g$"] = "Last char of screen-line",
-        ["g<End>"] = "Last char of screen-line",
-        ["|"] = "Screen column (count)",
         -- Quickfix
-        ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
+        ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Prev item in quickfix"},
         ["]q"] = {[[<Cmd>execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
         ["[Q"] = {"<Cmd>cfirst<CR>", "First item in quickfix"},
         ["]Q"] = {"<Cmd>clast<CR>", "Last item in quickfix"},
         ["]e"] = {"<Cmd>cnewer<CR>", "Next quickfix list"},
         ["[e"] = {"<Cmd>colder<CR>", "Prev quickfix list"},
+        ["qi"] = {"<Cmd>cc<CR>", "Show curr quickfix item"},
+        ["qn"] = {"<Cmd>cnfile<CR>", "Goto next file in quickfix"},
+        ["qp"] = {"<Cmd>cpfile<CR>", "Goto prev file in quickfix"},
         -- Loclist
         ["qw"] = {"<Cmd>lopen<CR>", "Open loclist"},
-        ["[w"] = {[[<Cmd>execute(v:count1 . 'lprev')<CR>]], "Previous item in loclist"},
+        ["[w"] = {[[<Cmd>execute(v:count1 . 'lprev')<CR>]], "Prev item in loclist"},
         ["]w"] = {[[<Cmd>execute(v:count1 . 'lnext')<CR>]], "Next item in loclist"},
         ["[W"] = {"<Cmd>lfirst<CR>", "First item in loclist"},
         ["]W"] = {"<Cmd>llast<CR>", "Last item in loclist"},
@@ -437,8 +438,8 @@ wk.register(
             ["<lt>"] = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
             [">"] = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
             [";"] = {[[<Cmd>lua require('common.win').go2recent()<CR>]], "Focus last buffer"},
-            X = {utils.close_all_floating_wins, "Close all floating windows"},
-            ["<C-w>"] = {utils.focus_floating_win, "Focus floating window"},
+            X = {W.win_close_all_floating, "Close all floating windows"},
+            ["<C-w>"] = {W.win_focus_floating, "Focus floating window"},
             T = {"<Cmd>tab sp<CR>", "Open current window in tab"},
             O = {"<Cmd>tabo<CR>", "Close all tabs except current"},
             ["0"] = {"<C-w>=", "Equally high and wide"},
@@ -449,8 +450,8 @@ wk.register(
 wk.register(
     {
         ["qc"] = {[[:lua require('common.qf').close()<CR>]], "Close quickfix"},
+        ["qd"] = {W.win_close_diff, "Close diff"},
         ["qt"] = {[[<Cmd>tabc<CR>]], "Close tab"},
-        ["qd"] = {[[:lua require('common.utils').close_diff()<CR>]], "Close diff"},
         ["qD"] = {
             [[<Cmd>tabdo lua require('common.utils').close_diff()<CR><Cmd>noa tabe<Bar> noa bw<CR>]],
             "Close diff"
@@ -513,7 +514,6 @@ wk.register(
         ["<Leader>"] = {
             e = {
                 name = "+edit",
-                -- c = {":e $XDG_CONFIG_HOME/nvim/coc-settings.json<CR>", "Edit coc-settings"},
                 c = {"<cmd>CocConfig<CR>", "Edit coc-settings"},
                 v = {":e $NVIMRC<CR>", "Edit neovim config"},
                 z = {":e $ZDOTDIR/.zshrc<CR>", "Edit .zshrc"},

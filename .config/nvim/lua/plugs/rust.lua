@@ -1,8 +1,8 @@
 local M = {}
 
 local D = require("dev")
-local utils = require("common.utils")
-local augroup = utils.augroup
+local mpi = require("common.api")
+local augroup = mpi.augroup
 
 local style = require("style")
 local coc = require("plugs.coc")
@@ -93,7 +93,7 @@ function M.crates()
                 local bufnr = args.buf
 
                 local bmap = function(...)
-                    utils.bmap(bufnr, ...)
+                    mpi.bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>ca", crates.upgrade_all_crates)
@@ -158,7 +158,7 @@ local function init()
                 local bufnr = args.buf
 
                 local bmap = function(...)
-                    utils.bmap(bufnr, ...)
+                    mpi.bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})

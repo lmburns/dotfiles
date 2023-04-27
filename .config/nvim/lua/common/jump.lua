@@ -2,10 +2,9 @@
 
 local hl = require("common.color")
 local style = require("style")
-local utils = require("common.utils")
--- local augroup = utils.augroup
-local autocmd = utils.autocmd
-local map = utils.map
+local mpi = require("common.api")
+local autocmd = mpi.autocmd
+local map = mpi.map
 
 local api = vim.api
 local fn = vim.fn
@@ -127,7 +126,7 @@ local function render_buf(lines, current_line)
             {
                 virt_text = l,
                 hl_mode = "combine",
-                line_hl_group = F.tern(i == current_line, "Search", nil),
+                line_hl_group = F.if_expr(i == current_line, "Search", nil),
             }
         )
     end
@@ -197,9 +196,9 @@ local function show_list(changelist, forward)
 
     disable_cmoved_au()
 
-    local list, last_pos = unpack(F.tern(changelist, fn.getchangelist(), fn.getjumplist()))
+    local list, last_pos = unpack(F.if_expr(changelist, fn.getchangelist(), fn.getjumplist()))
 
-    local current = last_pos + 1 + (F.tern(forward, 1, -1))
+    local current = last_pos + 1 + (F.if_expr(forward, 1, -1))
     if current == 0 then
         current = 1
     end

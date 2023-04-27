@@ -1,3 +1,4 @@
+; extends
 (function_declaration
   body: (statement_block)) @function.outer
 

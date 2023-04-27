@@ -1,11 +1,12 @@
 local M = {}
 
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
+-- local api = vim.api
 local cmd = vim.cmd
 local fn = vim.fn
-local api = vim.api
 local F = vim.F
 
 -- This is meant to be used in concert with `vim-grepper`
@@ -31,7 +32,26 @@ end
 ---@param motion string text motion
 function M.vg_motion(motion)
     vim.o.operatorfunc = "v:lua.require'common.grepper'.vimgrep_qf"
-    api.nvim_feedkeys("g@" .. (motion or ""), "i", false)
+    utils.normal("i", "g@" .. (motion or ""))
+end
+
+---Execute `helpgrep`
+---@param mode string
+function M.helpgrep_qf(mode)
+    local regions = M.get_regions(mode)
+    local text = table.concat(M.get_text(regions), " ")
+    cmd.helpgrep(([[%s]]):format(text))
+    vim.defer_fn(function()
+        cmd.copen()
+        cmd.wincmd("k")
+    end, 300)
+end
+
+---'Operator function' function
+---@param motion string text motion
+function M.hg_motion(motion)
+    vim.o.operatorfunc = "v:lua.require'common.grepper'.helpgrep_qf"
+    utils.normal("i", "g@" .. (motion or ""))
 end
 
 -- Credit: gbprod/substitute.nvim
@@ -74,7 +94,7 @@ function M.get_regions(vmode)
                     start_row = row,
                     start_col = start[2],
                     end_row = row,
-                    end_col = F.tern(current_row_len >= finish[2], finish[2], current_row_len)
+                    end_col = F.if_expr(current_row_len >= finish[2], finish[2], current_row_len)
                 }
             )
         end
@@ -95,7 +115,7 @@ function M.get_regions(vmode)
     return {
         {
             start_row = start[1],
-            start_col = F.tern(vmode ~= "line", start[2], 0),
+            start_col = F.if_expr(vmode ~= "line", start[2], 0),
             end_row = finish[1],
             end_col = (end_row_len >= finish[2] and vmode ~= "line") and finish[2] or end_row_len
         }
@@ -131,7 +151,7 @@ M.telescope_grep = function(type, only_curr)
         layout_strategy = "vertical",
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
-        search_dirs = {F.tern(only_curr, curr, (#root == 0 and cwd or root))},
+        search_dirs = {F.if_expr(only_curr, curr, (#root == 0 and cwd or root))},
         search = nvim.reg["@"]
     }
 
@@ -151,6 +171,8 @@ end
 local function init()
     map("n", "go", [[:lua R('common.grepper').vg_motion()<CR>]], {desc = "Grep current file"})
     map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<CR>]], {desc = "Grep current file"})
+
+    map("n", "gH", [[:lua R('common.grepper').hg_motion()<CR>]], {desc = "Help grep"})
 
     map(
         "n",
@@ -192,15 +214,6 @@ function M.grep_operator(type)
         return
     end
 
-
-    -- Use Winnr to check if the cursor has moved it if has restore it
-    -- local winnr = fn.winnr()
-    --
-    -- For grep across multiple files
-    -- if fn.winnr() ~= winnr then
-    --    cmd("wincmd p")
-    -- end
-
     -- local row, col = unpack(api.nvim_win_get_cursor(0))
     local escaped = fn.shellescape(fn.getreg("@@"))
 
@@ -209,7 +222,7 @@ function M.grep_operator(type)
     -- vim.cmd([[silent execute 'grep! ' . shellescape(@@) . ' %%']])
 
     -- fn.setreg("@@", saved_unnamed_register)
-    -- api.nvim_win_set_cursor(0, {row, col})
+    -- mpi.set_cursor(0, row, col)
 
     -- p(("%s %s"):format(winnr, fn.winnr()))
 

@@ -1,0 +1,9 @@
+init-author-name=Lucas Burns
+init-author-email=burnsac@me.com
+init-author-url=lmburns.com
+init-license=MIT
+init-version=0.0.1
+
+sign-git-commit=true
+sign-git-tag=true
+prefix=/home/lucas/.local/share/npm-packages

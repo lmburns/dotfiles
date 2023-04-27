@@ -5,7 +5,7 @@ loglevel: 1
 root-markers:
   - .git/
 commands:
-  - command: vi
+  - command: nvim
     arguments:
       - ${INPUT}
     title: EDITOR

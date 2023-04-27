@@ -1,19 +1,22 @@
 local M = {}
 
-local utils = require("common.utils")
 local dirs = require("common.global").dirs
 local debounce = require("common.debounce")
+
+local fs = require("common.utils.fs")
+local fss = fs.sync
+-- local fsa = fs.async
+
 -- local log = require("common.log")
 -- local uva = require("uva")
 -- local async = require("async")
 
-local bufs
-local mru = {}
-
 local fn = vim.fn
 local api = vim.api
 local uv = vim.loop
--- local cmd = vim.cmd
+
+local bufs
+local mru = {}
 
 local function list(file)
     local mru_list = {}
@@ -55,7 +58,7 @@ local function list(file)
         fd:close()
     end
 
-    -- utils.readFile(file):thenCall(
+    -- fsa.read_file(file):thenCall(
     --     function(data)
     --         for _, fname in ipairs(vim.split(data, "\n")) do
     --             if not add_list(fname) then
@@ -74,8 +77,8 @@ end
 
 function M.list()
     local mru_list = list(mru.db)
-    utils.write_file(mru.db, table.concat(mru_list, "\n"))
-    -- utils.writeFile(mru.db, table.concat(mru_list, "\n")):catch(
+    fss.write_file(mru.db, table.concat(mru_list, "\n"))
+    -- fsa.writeFile(mru.db, table.concat(mru_list, "\n")):catch(
     --     function(e)
     --         vim.notify(e)
     --     end
@@ -88,20 +91,19 @@ M.flush =
     local debounced
     return function(force)
         if force then
-            -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n")):catch(
+            -- fsa.write_file(mru.db, table.concat(list(mru.db), "\n")):catch(
             --     function(e)
             --         vim.notify(e)
             --     end
             -- )
-            utils.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
+            fss.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
         else
             if not debounced then
                 debounced =
                     debounce:new(
                     function()
-                        utils.write_file(mru.db, table.concat(list(mru.db), "\n"))
-
-                        -- utils.writeFile(mru.db, table.concat(list(mru.db), "\n")):catch(
+                        fss.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                        -- fsa.write_file(mru.db, table.concat(list(mru.db), "\n")):catch(
                         --     function(e)
                         --         vim.notify(e)
                         --     end

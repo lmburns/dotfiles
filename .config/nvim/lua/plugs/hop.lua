@@ -6,8 +6,8 @@ if not hop then
     return
 end
 
-local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local hint_direction = require("hop.hint").HintDirection
 

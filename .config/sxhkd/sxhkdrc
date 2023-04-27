@@ -471,7 +471,7 @@ mod3 + d
 # mod3 x ; {x,b}
 #    rofi -show {drun,window}
 
-# Launch: {librewolf,brave,chromium,pcmanfm,thunderbird,signal}
+# Launch: {librewolf,brave,mullvad-browser,chromium,pcmanfm,thunderbird,signal}
 mod3 + {b,v,o,g,p,period,s}
   {librewolf,brave,mullvad-browser,chromium,pcmanfm,thunderbird,signal-desktop}
 

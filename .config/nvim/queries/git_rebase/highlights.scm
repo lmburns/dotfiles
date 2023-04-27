@@ -1,3 +1,4 @@
+; extends
 ; (operation operator: ["p" "pick" "r" "reword" "e" "edit" "s" "squash" "m" "merge" "d" "drop" "b" "break" "x" "exec"] @keyword)
 ; (operation operator: ["l" "label" "t" "reset"] @function)
 ; (operation operator: ["f" "fixup"] @function.special)

@@ -2,17 +2,19 @@ local M = {}
 
 local D = require("dev")
 local autopairs = D.npcall(require, "nvim-autopairs")
-
 if not autopairs then
     return
 end
+
+local mpi = require("common.api")
 
 local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
-local utils = require("common.utils")
-local map = utils.map
+-- local utils = require("common.utils")
+-- local mpi = require("common.api")
+-- local map = mpi.map
 
 local api = vim.api
 

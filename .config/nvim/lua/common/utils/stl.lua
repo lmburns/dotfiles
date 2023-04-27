@@ -37,7 +37,7 @@ M.other.only_pad_right = {left = 1, right = 0}
 M.conditions = {
     -- Show function in statusbar
     is_available_gps = function()
-        if D.plugin_loaded("nvim-gps") then
+        if utils.mod.plugin_loaded("nvim-gps") then
             return require("nvim-gps").is_available()
         end
         return false
@@ -142,7 +142,7 @@ M.plugins.gitbuf = {
 M.plugins.coc_status = {
     fn = function()
         local s = vim.trim(g.coc_status or "")
-        s, _ --[[@as any]] = s:gsub("%% ", "%%%% ")
+        s, _ --[[@as any]] = s:gsub("%%", "%%%%")
         return s
     end,
 }
@@ -259,7 +259,7 @@ M.plugins.quickfix_count = {
 ---Show number of TODO comments in buffer
 M.plugins.todo_comment_count = {
     toggle = function()
-        return D.plugin_loaded("todo-comments.nvim")
+        return utils.mod.plugin_loaded("todo-comments.nvim")
     end,
     fn = function()
         return require("plugs.todo-comments").get_todo_count()
@@ -269,7 +269,7 @@ M.plugins.todo_comment_count = {
 ---Show function is statusbar with vista
 M.plugins.vista_nearest_method = {
     toggle = function()
-        return D.plugin_loaded("vista.vim")
+        return utils.mod.plugin_loaded("vista.vim")
     end,
     fn = function()
         return vim.b.vista_nearest_method_or_function
@@ -287,7 +287,7 @@ M.plugins.coc_function = {
 
 M.plugins.gutentags_progress = {
     toggle = function()
-        return D.plugin_loaded("vim-gutentags")
+        return utils.mod.plugin_loaded("vim-gutentags")
     end,
     fn = function()
         return fn["gutentags#statusline"]("[", "]")
@@ -319,7 +319,7 @@ M.plugins.vim_matchup = {
 M.plugins.noice = {
     command = {
         toggle = function()
-            return D.plugin_loaded("noice.nvim") and require("noice").api.status.command.has()
+            return utils.mod.plugin_loaded("noice.nvim") and require("noice").api.status.command.has()
         end,
         fn = function()
             local ok, noice = pcall(require, "noice")
@@ -331,7 +331,7 @@ M.plugins.noice = {
 -- nvim-gps
 M.plugins.gps = {
     toggle = function()
-        return D.plugin_loaded("nvim-gps")
+        return utils.mod.plugin_loaded("nvim-gps")
     end,
     fn = function()
         local opts = {
@@ -343,7 +343,7 @@ M.plugins.gps = {
 
 M.plugins.luapad = {
     toggle = function()
-        return D.plugin_loaded("nvim-luapad")
+        return utils.mod.plugin_loaded("nvim-luapad")
     end,
     fn = function()
         local status = fn["luapad#lightline_status"]()
@@ -359,7 +359,7 @@ M.plugins.luapad = {
 
 M.plugins.debugger = {
     toggle = function()
-        return D.plugin_loaded("nvim-dap")
+        return utils.mod.plugin_loaded("nvim-dap")
     end,
     fn = function()
         -- local session = require('dap').session()
@@ -523,10 +523,10 @@ function M.document_diagnostics()
     -- Use a default {} to prevent indexing errors
     local data = vim.b[bufnr].coc_diagnostic_info or {}
     return {
-        error = utils.get_default(data.error, 0),
-        warn = utils.get_default(data.warning, 0),
-        info = utils.get_default(data.information, 0),
-        hint = utils.get_default(data.hint, 0),
+        error = F.unwrap_or(data.error, 0),
+        warn = F.unwrap_or(data.warning, 0),
+        info = F.unwrap_or(data.information, 0),
+        hint = F.unwrap_or(data.hint, 0),
     }
 
     -- fn.CocActionAsync(

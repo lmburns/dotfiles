@@ -8,8 +8,8 @@ if not marks then
     return
 end
 
-local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 local icons = require("style").icons
 local wk = require("which-key")
 

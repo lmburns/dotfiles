@@ -6,7 +6,6 @@ if not paint then
     return
 end
 
-local utils = require("common.utils")
 local hl = require("common.color")
 local colors = require("kimbox.palette").colors
 
@@ -15,14 +14,14 @@ local F = vim.F
 local ignore
 
 local function filter(bufnr)
-    return F.tern(ignore:contains(vim.bo[bufnr].ft), false, true)
+    return F.if_expr(ignore:contains(vim.bo[bufnr].ft), false, true)
 end
 
 function M.setup()
     -- Use this to make sure the highlighting starts at the beginning of comment
     --
     -- local bufnr = api.nvim_get_current_buf()
-    -- local comment = vim.trim(fn.split(vim.bo[bufnr].commentstring, "%s")[1] or "#")
+    -- local comment = vim.split(vim.bo[bufnr].commentstring, "%s", {trimempty = true})[1] or "#"
 
     paint.setup(
         {
@@ -110,7 +109,7 @@ function M.setup()
                 --         end
                 --         return true
                 --     end,
-                --     pattern = utils.escape(comment) .. "%s?([%u_]+):", -- TITLE_CASE:
+                --     pattern = comment:escape() .. "%s?([%u_]+):", -- TITLE_CASE:
                 --     hl = "PaintTag"
                 -- },
                 -- {
@@ -122,7 +121,7 @@ function M.setup()
                 --     end,
                 --     -- #33: Issue number
                 --     -- (#33): Issue number
-                --     pattern = utils.escape(comment) .. "%s?(%(?#[%d]+%)?):",
+                --     pattern = comment:escape() .. "%s?(%(?#[%d]+%)?):",
                 --     hl = "PaintTag"
                 -- }
             }

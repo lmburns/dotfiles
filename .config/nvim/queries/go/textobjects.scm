@@ -1,3 +1,5 @@
+; extends
+
 ;; inner function textobject
 (function_declaration
   body: (block . "{" . (_) @_start @_end (_)? @_end . "}"

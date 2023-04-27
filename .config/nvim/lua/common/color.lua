@@ -3,12 +3,13 @@
 local M = {}
 
 local D = require("dev")
-local utils = require("common.utils")
+local mpi = require("common.api")
 local log = require("common.log")
 
 local F = vim.F
 local cmd = vim.cmd
 local api = {
+    -- TODO: update
     set = vim.api.nvim_set_hl,
     get = vim.api.nvim_get_hl_by_name,
     defs = vim.api.nvim__get_hl_defs
@@ -462,7 +463,7 @@ end
 function M.plugin(name, hls)
     name = name:gsub("^%l", string.upper)
     M.all(hls)
-    utils.augroup(
+    mpi.augroup(
         ("%sHighlightOverrides"):format(name),
         {
             event = "ColorScheme",
@@ -586,11 +587,10 @@ M.colors = function(filter, exact)
         end
         ::continue::
     end
-    -- utils.dump(defs)
     return defs
 end
 
-utils.command(
+mpi.command(
     "Color",
     function(tbl)
         require("common.color").colors(tbl.args)

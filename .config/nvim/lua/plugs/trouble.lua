@@ -10,8 +10,8 @@ end
 local icon = require("style").icons
 local coc = require("plugs.coc")
 local log = require("common.log")
-local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local cmd = vim.cmd
 

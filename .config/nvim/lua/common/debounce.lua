@@ -44,7 +44,7 @@ function Debounce:call(...)
         timer:start(
             wait,
             wait,
-            F.tern(
+            F.if_expr(
                 self.leading,
                 function()
                     self:cancel()

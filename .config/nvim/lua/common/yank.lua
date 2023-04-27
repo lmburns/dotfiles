@@ -1,15 +1,21 @@
 local M = {}
 
 local utils = require("common.utils")
-local augroup = utils.augroup
+local mpi = require("common.api")
+local W = require("common.api.win")
+local augroup = mpi.augroup
 
 local api = vim.api
+local F = vim.F
 
 local wv
 local winid
 local bufnr
 local report
 
+---
+---@param suffix string
+---@return string
 function M.wrap(suffix)
     if utils.mode() == "n" then
         M.set_wv()
@@ -23,7 +29,7 @@ end
 function M.set_wv()
     winid = api.nvim_get_current_win()
     bufnr = api.nvim_get_current_buf()
-    wv = utils.save_win_positions(bufnr)
+    wv = W.win_save_positions(bufnr)
     report = vim.o.report
     -- skip `update_topline_redraw` in `op_yank_reg` caller
     vim.o.report = 65535

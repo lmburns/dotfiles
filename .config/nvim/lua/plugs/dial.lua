@@ -7,18 +7,20 @@ if not augend then
 end
 
 local dmap = require("dial.map")
+local dconf = require("dial.config")
 
 -- local debounce = require("common.debounce")
 local utils = require("common.utils")
-local augroup = utils.augroup
-local map = utils.map
+local mpi = require("common.api")
+local augroup = mpi.augroup
+local map = mpi.map
 
 M.filetypes = {}
 
 ---Define an augend constant
 ---@param elements table
----@param word boolean
----@param cyclic boolean
+---@param word? boolean
+---@param cyclic? boolean
 ---@return table
 local function aug(elements, word, cyclic)
     return augend.constant.new(
@@ -26,17 +28,36 @@ local function aug(elements, word, cyclic)
             -- { "and", "or" }
             elements = elements,
             -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
-            word = utils.get_default(word, true),
+            word = F.unwrap_or(word, true),
             -- "or" is incremented into "and"
-            cyclic = utils.get_default(cyclic, true),
+            cyclic = F.unwrap_or(cyclic, true),
         }
     )
+end
+
+---@alias date_t '"year"'|'"month"'|'"day"'|'"hour"'|'"min"'|'"sec"'
+
+--FIX: Doesn't work properly
+---Translate dates with the format 'X/Y/Z' -> 'X-Y-Z'
+---@param fmt string Must contain '/'
+---@param kind? date_t Kind to modify
+---@return {[1]: Augend, [2]: Augend}
+---@diagnostic disable-next-line:unused-function,unused-local
+local function gen_date(fmt, kind)
+    local alt = fmt:gsub("/", "-")
+    kind = F.unwrap_or(kind, "day")
+    return
+        augend.date.new({pattern = fmt, default_kind = kind}),
+        augend.date.new({pattern = alt, default_kind = kind})
 end
 
 ---Returns a list of all characters in the given string.
 ---@param str string The string to get the characters from
 ---@return table
+---@diagnostic disable-next-line:unused-function,unused-local
 local function generate_list(str)
+    -- aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
+    -- aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
     local ret = {}
     for i = 1, #str, 1 do
         table.insert(ret, str:sub(i, i))
@@ -61,18 +82,85 @@ function M.setup()
         augend.integer.alias.hex,         -- nonnegative hex number  (0x01, 0x1a20, etc.)
         augend.integer.alias.octal,       -- 0o00, 0o11, 0o24,
         augend.integer.alias.binary,      -- 0b0101, 0b11000111
-        augend.date.alias["%m/%d"],
-        augend.date.alias["%-m/%-d"],
-        augend.date.alias["%H:%M"], -- hour/minute
-        augend.date.alias["%H:%M:%S"],
-        augend.date.alias["%Y-%m-%d"],
-        augend.date.alias["%m/%d/%y"],
-        augend.date.alias["%d/%m/%y"],
-        augend.date.alias["%Y/%m/%d"],
-        augend.date.alias["%m/%d/%Y"],
-        augend.date.alias["%d/%m/%Y"],
-        augend.constant.alias.bool,            -- boolean value (true <-> false)
-        augend.semver.alias.semver,            -- 4.3.0
+        -- %a = "Sun", "Mon", "Tue"
+        -- %A = "Sunday", "Monday", "Tuesday"
+        -- %b = "Jan", "Feb", "Mar"
+        -- %B = "January", "February", "March"
+        -- %p = "AM", "PM"
+        -- augend.date.alias["%Y/%m/%d"], -- 2023/01/20
+        -- augend.date.alias["%d/%m/%Y"], -- 20/01/2023
+        -- augend.date.alias["%d/%m/%y"], -- 20/01/23
+        -- augend.date.alias["%m/%d/%Y"], -- 01/20/2023
+        -- augend.date.alias["%m/%d/%y"], -- 01/20/23
+        -- augend.date.alias["%m/%d"],    -- 01/20
+        -- augend.date.alias["%Y-%m-%d"], -- 2023-01-20
+        -- augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
+        -- augend.date.alias["%d.%m.%Y"], -- 20.01.2023
+        -- augend.date.alias["%d.%m.%y"], -- 20.01.23
+        -- augend.date.alias["%d.%m."],   -- 20.01
+        -- augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
+        -- FIX: Skips 2 on each
+        augend.date.alias["%H:%M:%S"], -- 13:49:23
+        augend.date.alias["%H:%M"],    -- hour/minute 13:49
+        augend.date.new({
+            pattern = "%I:%M%p",
+            default_kind = "hour",
+            -- only_valid = false,
+            clamp = true,
+            -- cyclic = true,
+        }), -- 03:30PM
+        -- augend.date.new({pattern = "%b. %d, %Y", default_kind = "day"}), -- Apr. 21, 2023
+        -- augend.date.new({pattern = "%B. %d, %Y", default_kind = "day"}), -- April 21, 2023
+        augend.date.new({
+            pattern = "%b.",
+            default_kind = "month",
+            word = false,
+            cyclic = true,
+            end_sensitive = true,
+        }), -- May.
+        augend.date.new({
+            pattern = "%B",
+            default_kind = "month",
+            only_valid = false, -- stops at current month
+            word = true,
+            cyclic = true,
+            end_sensitive = true,
+        }), -- May
+        -- FIX: Always only_valid (I think, goes from Sun->Tue and stops)
+        -- augend.date.new({
+        --     pattern = "%a.",
+        --     default_kind = "day",
+        --     -- only_valid = false,
+        --     -- clamp = false,
+        --     word = false,
+        --     cyclic = true,
+        --     end_sensitive = true,
+        -- }), -- Sun.
+        -- augend.date.new({
+        --     pattern = "%A",
+        --     default_kind = "day",
+        --     only_valid = false,
+        --     word = true,
+        --     cyclic = true,
+        --     -- clamp = false,
+        --     -- end_sensitive = true,
+        -- }), -- Tuesday
+        -- FIX: This has higher priority than Months
+        augend.case.new({
+            types = {"camelCase", "snake_case", "PascalCase", "SCREAMING_SNAKE_CASE"},
+            cyclic = true,
+            word = true,
+        }),
+        augend.date.new({pattern = "%m-%d-%Y", default_kind = "day"}),
+        augend.date.new({pattern = "%m-%d-%y", default_kind = "day"}),
+        augend.date.new({pattern = "%-H:%M:%S", default_kind = "min"}),
+        augend.date.new({pattern = "%-H:%M", default_kind = "min"}),
+        augend.constant.alias.bool,  -- boolean value (true <-> false)
+        augend.constant.alias.alpha, -- a b c d
+        augend.constant.alias.Alpha, -- A B C D
+        augend.semver.alias.semver,  -- 4.3.0
+        -- augend.paren.alias.brackets, -- ( [ {  } ] )
+        -- augend.paren.alias.quote,    -- " -> ' | ' -> "
         augend.hexcolor.new({case = "lower"}), -- color #b4c900
         aug({"above", "below"}),
         aug({"forward", "backward"}),
@@ -100,33 +188,27 @@ function M.setup()
                 "Wednesday",
                 "Thursday",
                 "Friday",
-                "Saturday"
+                "Saturday",
             }
         ),
         aug(
             {
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            }
+                "Sun.",
+                "Mon.",
+                "Tue.",
+                "Wed.",
+                "Thu.",
+                "Fri.",
+                "Sat.",
+            },
+            false
         ),
         aug({"+", "-", "*", "/", "%"}, false),
         aug({"&&", "||"}, false),
         aug({"==", "!="}, false),
         aug({">=", "<="}, false),
         aug({">>", "<<"}, false),
-        aug({"++", "--"}, false),
-        aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
-        aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
+        aug({"++", "--"}, false), -- ++ --
         -- Word => Number. Doesn't work Number => Word
         aug({"one", "1"}),
         aug({"two", "2"}),
@@ -138,14 +220,8 @@ function M.setup()
         aug({"eight", "8"}),
         aug({"nine", "9"}),
         aug({"ten", "10"}),
-        augend.case.new({
-            types = {"camelCase", "snake_case", "PascalCase", "SCREAMING_SNAKE_CASE"},
-            cyclic = true,
-        }),
     }
 
-    -- Extend the default table
-    -- Is there a better way to extend the default?
     local lua =
         extend(
             "lua",
@@ -155,6 +231,9 @@ function M.setup()
                 aug({"==", "~="}, false),
                 aug({"pairs", "ipairs"}),
                 aug({"number", "integer"}),
+                -- FIX: Bracket has higher priority than quotes
+                -- augend.paren.alias.brackets, -- ( [ {  } ] )
+                augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
             },
             default
         )
@@ -166,8 +245,18 @@ function M.setup()
             "zsh",
             {
                 aug({"elif", "if"}),
-                aug({"((:))", "[[:]]"}, false),
                 aug({"local", "typeset", "integer", "private"}),
+                augend.case.new({
+                    types = {"camelCase", "snake_case", "kebab-case"},
+                    cyclic = true,
+                }),
+                augend.paren.alias.quote, -- " -> ' | ' -> "
+                augend.paren.new({
+                    patterns = {{"[[", "]]"}, {"((", "))"}},
+                    nested = false,
+                    cyclic = true,
+                }),
+                -- augend.paren.alias.brackets, -- ( [ {  } ] )
             },
             default
         )
@@ -220,47 +309,45 @@ function M.setup()
                 end,
             }
         )
-    local zig = extend("zig", octal, default)
-    local rust = extend("rust", octal, default)
+    local zig = extend("zig", {octal}, default)
+    local rust = extend(
+        "rust",
+        {
+            octal,
+            augend.paren.alias.rust_str_literal, -- " r# r## r###
+        },
+        default
+    )
 
     local markdown =
         extend(
             "markdown",
             default,
-            augend.user.new(
-                {
-                    desc = "Markdown Header (# Title)",
-                    find = function(line)
-                        local from, to = line:find("^#+")
-                        if from == nil or to > 7 then
-                            return nil
-                        end
-                        return {from = from, to = to}
-                    end,
-                    add = function(text, addend)
-                        local n = #text
-                        n = n + addend
-                        if n < 1 then
-                            n = 1
-                        end
-                        if n > 6 then
-                            n = 6
-                        end
-                        text = ("#"):rep(n)
-                        return {text = text, cursor = 1}
-                    end,
-                }
-            )
+            augend.misc.alias.markdown_header
         )
 
-    require("dial.config").augends:register_group(
+    dconf.augends:register_group(
         {
             -- default augends used when no group name is specified
             default = default,
             visual = {
+                augend.date.alias["%Y/%m/%d"], -- 2023/01/20
+                augend.date.alias["%d/%m/%Y"], -- 20/01/2023
+                augend.date.alias["%d/%m/%y"], -- 20/01/23
+                augend.date.alias["%m/%d/%Y"], -- 01/20/2023
+                augend.date.alias["%m/%d/%y"], -- 01/20/23
+                augend.date.alias["%m/%d"],    -- 01/20
+                augend.date.alias["%Y-%m-%d"], -- 2023-01-20
+                augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
+                augend.date.alias["%d.%m.%Y"], -- 20.01.2023
+                augend.date.alias["%d.%m.%y"], -- 20.01.23
+                augend.date.alias["%d.%m."],   -- 20.01
+                augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
+                augend.date.alias["%H:%M:%S"], -- 12:49:23
+                augend.date.alias["%H:%M"],    -- hour/minute
                 augend.integer.alias.decimal,
                 augend.integer.alias.hex,
-                augend.date.alias["%Y/%m/%d"],
+                augend.constant.alias.bool, -- boolean value (true <-> false)
                 augend.constant.alias.alpha,
                 augend.constant.alias.Alpha,
             },
@@ -275,22 +362,29 @@ function M.setup()
             markdown = markdown,
             rust = rust,
             zig = zig,
-            -- Maybe use a group for something?
-            mygroup = {
-                augend.date.alias["%m/%d/%Y"], -- date (02/19/2022, etc.)
-                augend.constant.alias.bool,    -- boolean value (true <-> false)
-                augend.integer.alias.decimal,
-                augend.integer.alias.hex,
-                augend.semver.alias.semver,
-            },
         }
     )
+
+    dconf.augends:on_filetype({
+        typescript = typescript,
+        javascript = typescript,
+        lua = lua,
+        python = python,
+        sh = sh,
+        zsh = zsh,
+        vim = vim_,
+        go = go,
+        markdown = markdown,
+        rust = rust,
+        zig = zig,
+    })
 end
 
 -- == ~=
 
 ---Create an autocmd for a given filetype
 ---@param ft string
+---@diagnostic disable-next-line:unused-function,unused-local
 local function inc_dec_augroup(ft)
     -- Overwrite the default dial mappings that are set below
     augroup(
@@ -300,7 +394,7 @@ local function inc_dec_augroup(ft)
             pattern = ft,
             command = function(args)
                 local bmap = function(...)
-                    utils.bmap(args.buf, ...)
+                    mpi.bmap(args.buf, ...)
                 end
 
                 bmap("n", "+", dmap.inc_normal(ft))
@@ -343,9 +437,9 @@ local function init()
     map("v", "g_", dmap.dec_gvisual())
 
     -- TODO: Figure out how to lazy load but also run autocommand after load
-    for _, ft in pairs(M.filetypes) do
-        inc_dec_augroup(ft)
-    end
+    -- for _, ft in pairs(M.filetypes) do
+    --     inc_dec_augroup(ft)
+    -- end
 end
 
 init()

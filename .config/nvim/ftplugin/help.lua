@@ -1,11 +1,13 @@
-local map = require("common.utils").map
-
+local mpi = require("common.api")
 local opt = vim.opt_local
-local fn = vim.fn
 
 opt.colorcolumn = "+1"
 opt.signcolumn = "yes"
 opt.textwidth = 85
+
+local bmap = function(...)
+    return mpi.bmap(0, ...)
+end
 
 -- if expand('%') =~# '^'.$VIMRUNTIME || &readonly
 --   " autocmd BufWinEnter <buffer> wincmd L | vertical resize 80
@@ -14,102 +16,102 @@ opt.textwidth = 85
 --   setlocal spell spelllang=en_us
 -- endif
 
-map("n", "<CR>", "<C-]>", {buffer = true, desc = "Go to definition"})
-map("n", "<BS>", "<C-^>", {buffer = true, desc = "Go to previous buffer"})
+-- nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>
+-- nnoremap <silent><buffer> S ?\|\zs\S\+\ze\|<CR>
 
-map("n", "]t", "<Cmd>norm! ta<CR>", {buffer = true, desc = "Go to next tag"})
-map("n", "[t", "<C-T>", {buffer = true, desc = "Go to previous tag"})
+bmap("n", "<CR>", "<C-]>", {desc = "Go to definition"})
+bmap("n", "<BS>", "<C-^>", {desc = "Go to prev buffer"})
 
-map(
+bmap("n", "]f", "<Cmd>norm! ta<CR>", {desc = "Go to next tag"})
+bmap("n", "[f", "<C-T>", {desc = "Go to prev tag"})
+
+bmap(
     "n",
     "]x",
     [[:<C-u>call search('\<<C-R><C-W>\>', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Next occurrence of word"}
+    {silent = true, desc = "Next occurrence of word"}
 )
-map(
+bmap(
     "n",
     "[x",
     [[:<C-u>call search('\<<C-R><C-W>\>', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Prev occurrence of word"}
+    {silent = true, desc = "Prev occurrence of word"}
 )
 
-map(
+bmap(
     "n",
     "o",
     [[:<C-u>call search('''\l\{2,}''', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Next quoted word"}
+    {silent = true, desc = "Next quoted word"}
 )
-map(
+bmap(
     "n",
     "O",
     [[:<C-u>call search('''\l\{2,}''', 'wb')<CR>]],
-    {silent = true, buffer = true, desc = "Prev quoted word"}
+    {silent = true, desc = "Prev quoted word"}
 )
 
-map(
+bmap(
     "n",
     "]]",
     [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Next link", nowait = true}
+    {silent = true, desc = "Next link", nowait = true}
 )
-map(
+bmap(
     "n",
     "[[",
     [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'wb')<CR>]],
-    {silent = true, buffer = true, desc = "Prev link", nowait = true}
+    {silent = true, desc = "Prev link", nowait = true}
 )
 
-map(
+bmap(
     "n",
     "}",
     [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'w')<CR>]],
-    {silent = true, buffer = true, desc = "Next link", nowait = true}
+    {silent = true, desc = "Next link", nowait = true}
 )
-map(
+bmap(
     "n",
     "{",
     [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'wb')<CR>]],
-    {silent = true, buffer = true, desc = "Prev link", nowait = true}
+    {silent = true, desc = "Prev link", nowait = true}
 )
 
-map(
+bmap(
     "n",
     ">",
     [[<Cmd>norm! }<CR>]],
-    {silent = true, buffer = true, desc = "Next blank line", nowait = true}
+    {silent = true, desc = "Next blank line", nowait = true}
 )
-map(
+bmap(
     "n",
     "<",
     [[<Cmd>norm! {<CR>]],
-    {silent = true, buffer = true, desc = "Prev blank line", nowait = true}
+    {silent = true, desc = "Prev blank line", nowait = true}
 )
 
---   nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>
---   nnoremap <silent><buffer> S ?\|\zs\S\+\ze\|<CR>
-
--- map(
+-- bmap(
 --     "n",
 --     "]]",
 --     [[/\v\<Bar>[^<Bar>]+\<Bar><CR>]],
---     {silent = true, buffer = true, desc = "Next link (highlight)"}
+--     {silent = true, desc = "Next link (highlight)"}
 -- )
--- map(
+-- bmap(
 --     "n",
 --     "[[",
 --     [[?\v\<Bar>[^<Bar>]+\<Bar><CR>]],
---     {silent = true, buffer = true, desc = "Prev link (highlight)"}
+--     {silent = true, desc = "Prev link (highlight)"}
 -- )
 
--- map(
+-- bmap(
 --     "n",
 --     "]x",
 --     "/<C-R><C-W><CR>:nohl<CR>",
---     {silent = true, buffer = true, desc = "Next occurrence of word (highlight)"}
+--     {silent = true, desc = "Next occurrence of word (highlight)"}
 -- )
--- map(
+-- bmap(
 --     "n",
 --     "[x",
 --     "?<C-R><C-W><CR>:nohl<CR>",
---     {silent = true, buffer = true, desc = "Prev occurrence of word (highlight)"}
+--     {silent = true, desc = "Prev occurrence of word (highlight)"}
 -- )

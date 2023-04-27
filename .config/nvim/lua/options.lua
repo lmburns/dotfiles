@@ -1,8 +1,8 @@
 local M = {}
 
-local D = require("dev")
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 local dirs = require("common.global").dirs
 
 local env = vim.env
@@ -11,12 +11,16 @@ local g = vim.g
 local fn = vim.fn
 local fs = vim.fs
 local uv = vim.loop
+local F = vim.F
 
 ---Notify with nvim-notify if nvim is focused,
 ---Otherwise send a desktop notification.
 g.nvim_focused = true
 g.treesitter_refactor_maxlines = 10 * 1024
 g.treesitter_highlight_maxlines = 12 * 1024
+
+-- env.NVIM_COC_LOG_LEVEL = "trace"
+-- env.NVIM_COC_LOG_FILE = "/tmp/coc1.log"
 
 -- Leader/local leader
 g.mapleader = [[ ]]
@@ -103,7 +107,7 @@ _t(
     }
 ):map(
     function(p)
-        g["loaded_" .. p] = F.tern(vim.endswith(p, "provider"), 0, 1)
+        g["loaded_" .. p] = F.if_expr(vim.endswith(p, "provider"), 0, 1)
     end
 )
 
@@ -607,7 +611,7 @@ o.diffopt = o.diffopt + {
     -- "linematch:60"
 }
 
-o.grepprg = D.list(
+o.grepprg = utils.list(
     {
         "rg",
         "--with-filename",

@@ -1,8 +1,8 @@
 local M = {}
 
-local D = require("dev")
 local utils = require("common.utils")
-local augroup = utils.augroup
+local mpi = require("common.api")
+local augroup = mpi.augroup
 
 local fn = vim.fn
 local o = vim.opt
@@ -11,17 +11,17 @@ local g = vim.g
 function M.setup()
     o.tags = {"tags", "./tags", "./.tags", ".tags"}
 
-    g.gutentags_enabled = 1
+    g.gutentags_enabled = 0
     g.gutentags_define_advanced_commands = 1
     g.gutentags_cache_dir = fn.expand("$XDG_CACHE_HOME/tags")
 
-    g.gutentags_generate_on_write = 1
+    g.gutentags_generate_on_write = 0
     g.gutentags_generate_on_new = 1
     g.gutentags_generate_on_missing = 1
     g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
     g.gutentags_file_list_command =
-        D.list(
+        utils.list(
         {
             "fd",
             "--color=never",
@@ -57,33 +57,16 @@ function M.setup()
     g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
 
+    -- --tag-relative=yes
     g.gutentags_ctags_extra_args = {
-        "--fields=+niazS", -- mo
+        "--fields=+niazS", -- molt
         "--extras=+q",
-        "--c++-kinds=+px",
-        "--c-kinds=+px",
-        "--rust-kinds=+fPM",
+        -- "--c++-kinds=+px",
+        -- "--c-kinds=+px",
+        -- "--rust-kinds=+fPM",
         "--guess-language-eagerly"
     }
 
-    -- --tag-relative=yes
-    -- g.gutentags_ctags_extra_args = {
-    --     "--append",
-    --     "--recurse=yes",
-    --     "--c-kinds=+px",
-    --     "--c++-kinds=+plx",
-    --     "--fields=+n",
-    --     "--fields=+i",
-    --     "--fields=+a",
-    --     "--fields=+z",
-    --     "--fields=+S",
-    --     "--fields=+m",
-    --     "--fields=+l",
-    --     "--fields=+t",
-    --     "--extras=+q"
-    -- }
-
-    -- Tag file name for ctags
     g.gutentags_ctags_tagfile = ".tags"
 
     g.gutentags_exclude_filetypes = {

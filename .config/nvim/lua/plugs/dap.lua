@@ -22,8 +22,8 @@ local wk = require("which-key")
 
 local global = require("common.global")
 local icons = require("style").plugins.dap
-local utils = require("common.utils")
-local command = utils.command
+local mpi = require("common.api")
+local command = mpi.command
 
 local fn = vim.fn
 local uv = vim.loop

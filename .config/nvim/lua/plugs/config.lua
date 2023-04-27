@@ -5,6 +5,7 @@
 local M = {}
 
 local D = require("dev")
+local utils = require("common.utils")
 local style = require("style")
 local lazy = require("common.lazy")
 local log = require("common.log")
@@ -14,12 +15,12 @@ local dirs = require("common.global").dirs
 
 local wk = require("which-key")
 
-local utils = require("common.utils")
-local bmap = utils.bmap
-local map = utils.map
-local command = utils.command
-local augroup = utils.augroup
--- local autocmd = utils.autocmd
+local mpi = require("common.api")
+local bmap = mpi.bmap
+local map = mpi.map
+local command = mpi.command
+local augroup = mpi.augroup
+-- local autocmd = mpi.autocmd
 
 local fs = vim.fs
 local cmd = vim.cmd
@@ -31,14 +32,14 @@ local api = vim.api
 --  │                          FSRead                          │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.fsread()
-    g.flow_strength = 0.7 -- low: 0.3, middle: 0.5, high: 0.7 (default)
+    g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
     g.skip_flow_default_hl = true -- If you want to override default highlights
 
     hl.plugin(
         "FSRead",
         {
             FSPrefix = {fg = "#cdd6f4"},
-            FSSuffix = {fg = "#6C7086"}
+            FSSuffix = {fg = "#6C7086"},
         }
     )
 end
@@ -55,16 +56,16 @@ function M.listish()
     listish.config(
         {
             theme_list = false,
-            clearqflist = "ClearQuickfix", -- command
-            clearloclist = "ClearLoclist", -- command
+            clearqflist = "ClearQuickfix",  -- command
+            clearloclist = "ClearLoclist",  -- command
             clear_notes = "ClearListNotes", -- command
-            lists_close = "<Nop>", -- closes both qf/local lists
-            in_list_dd = "dd", -- delete current item in the list
+            lists_close = "<Nop>",          -- closes both qf/local lists
+            in_list_dd = "dd",              -- delete current item in the list
             quickfix = {
                 open = "qo",
                 on_cursor = "qa", -- add current position to the list
-                add_note = "qn", -- add current position with your note to the list
-                clear = "qi", -- clear all items
+                add_note = "qA",  -- add current position with your note to the list
+                clear = "qe",     -- clear all items
                 close = "<Nop>",
                 next = "<Nop>",
                 prev = "<Nop>"
@@ -77,15 +78,15 @@ function M.listish()
                 close = "<Nop>",
                 next = "<Nop>",
                 prev = "<Nop>"
-            }
+            },
         }
     )
 
     require("legendary").commands(
         {
-            {":ClearQuickfix", description = "Clear quickfix list"},
-            {":ClearLoclist", description = "Clear location list"},
-            {":ClearListNotes", description = "Clear quickfix notes"}
+            {":ClearQuickfix",  description = "Clear quickfix list"},
+            {":ClearLoclist",   description = "Clear location list"},
+            {":ClearListNotes", description = "Clear quickfix notes"},
         }
     )
 
@@ -95,8 +96,8 @@ function M.listish()
                 name = "+quickfix",
                 o = "Quickfix open",
                 a = "Quickfix add current line",
-                n = "Quickfix add note",
-                i = "Quickfix clear items"
+                A = "Quickfix add note",
+                e = "Quickfix clear items (empty)"
             },
             ["<Leader>wo"] = "Loclist open",
             ["<Leader>wa"] = "Loclist add current line",
@@ -104,151 +105,18 @@ function M.listish()
             ["<Leader>wi"] = "Loclist clear items"
         }
     )
-
-    --         ["[q"] = {[[<Cmd>execute(v:count1 . 'cprev')<CR>]], "Previous item in quickfix"},
-    --         ["]q"] = {[[<Cmd>execute(v:count1 . 'cnext')<CR>]], "Next item in quickfix"},
-    --         ["[Q"] = {"<Cmd>cfirst<CR>", "First item in quickfix"},
-    --         ["]Q"] = {"<Cmd>clast<CR>", "Last item in quickfix"},
-    --         ["[S"] = {"<Cmd>lfirst<CR>", "First item in loclist"},
-    --         ["]S"] = {"<Cmd>llast<CR>", "Last item in loclist"},
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                       PackageInfo                        │
+-- │                          eregex                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.package_info()
-    local pi = D.npcall(require, "package-info")
-    if not pi then
-        return
-    end
+function M.eregex()
+    g.eregex_forward_delim = "/"
+    g.eregex_backward_delim = "?"
 
-    pi.setup(
-        {
-            colors = {
-                up_to_date = "#3C4048", -- Text color for up to date package virtual text
-                outdated = "#d19a66" -- Text color for outdated package virtual text
-            },
-            icons = {
-                enable = true, -- Whether to display icons
-                style = {
-                    up_to_date = "|  ", -- Icon for up to date packages
-                    outdated = "|  " -- Icon for outdated packages
-                }
-            },
-            autostart = true, -- Whether to autostart when `package.json` is opened
-            hide_up_to_date = true, -- It hides up to date versions when displaying virtual text
-            hide_unstable_versions = false, -- It hides unstable versions from version list
-            -- `npm`, `yarn`
-            package_manager = "yarn"
-        }
-    )
-
-    augroup(
-        "lmb__PackageInfoBindings",
-        {
-            event = "BufEnter",
-            pattern = "package.json",
-            command = function(args)
-                local bufnr = args.buf
-                map("n", "<Leader>cu", D.ithunk(pi.update), {buffer = bufnr})
-                map("n", "<Leader>ci", D.ithunk(pi.install), {buffer = bufnr})
-                map("n", "<Leader>ch", D.ithunk(pi.change_version), {buffer = bufnr})
-                map("n", "<Leader>cr", D.ithunk(pi.reinstall), {buffer = bufnr})
-
-                wk.register(
-                    {
-                        ["<Leader>cu"] = "Update package",
-                        ["<Leader>ci"] = "Install package",
-                        ["<Leader>ch"] = "Change version",
-                        ["<Leader>cr"] = "Reinstall package"
-                    }
-                )
-            end
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       open-browser                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.open_browser()
-    wk.register(
-        {
-            -- ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
-            ["gY"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
-            ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
-            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
-        }
-    )
-
-    wk.register(
-        {
-            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"}
-        },
-        {mode = "x"}
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       LinkVisitor                        │
--- ╰──────────────────────────────────────────────────────────╯
-function M.link_visitor()
-    local lv = D.npcall(require, "link-visitor")
-    if not lv then
-        return
-    end
-
-    lv.setup(
-        {
-            open_cmd = "handlr open",
-            silent = true, -- disable all prints
-            skip_confirmation = false -- Skip the confirmation step, default: false
-        }
-    )
-
-    map("n", "gx", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link nearest"})
-    -- map("n", "gw", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
-
-    local function link_visitor_map(bufnr)
-        bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-        bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
-    end
-
-    augroup(
-        "lmb__LinkVisitor",
-        {
-            event = "User",
-            pattern = "CocOpenFloat",
-            command = function()
-                local winid = g.coc_last_float_win
-                if winid and api.nvim_win_is_valid(winid) then
-                    local bufnr = api.nvim_win_get_buf(winid)
-                    api.nvim_buf_call(
-                        bufnr,
-                        function()
-                            link_visitor_map(bufnr)
-                        end
-                    )
-                end
-            end
-        },
-        {
-            event = "WinEnter",
-            pattern = "*",
-            command = function(args)
-                local bufnr = args.buf
-                if vim.bo[bufnr].ft == "crates.nvim" then
-                    api.nvim_buf_call(
-                        bufnr,
-                        function()
-                            link_visitor_map(bufnr)
-                        end
-                    )
-                end
-            end
-        }
-    )
+    map("n", "<Leader>es", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", ",/", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
+    map("n", "<Leader>S", ":%S//g<Left><Left>", {desc = "Global replace (E2v)"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -270,72 +138,12 @@ function M.linediff()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                          GHLine                          │
+-- │                         VCooler                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.ghline()
-    wk.register(
-        {
-            ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
-            ["<Leader>gL"] = {"<Plug>(gh-line)", "Open git line"}
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Floaterm                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.floaterm()
-    map("n", "<Leader>fll", ":Floaterms<CR>")
-    map("n", ";fl", ":FloatermToggle<CR>")
-
-    g.fzf_floaterm_newentries = {
-        ["+lazygit"] = {
-            title = "lazygit",
-            height = 0.9,
-            width = 0.9,
-            cmd = "lazygit"
-        },
-        ["+gitui"] = {title = "gitui", height = 0.9, width = 0.9, cmd = "gitui"},
-        ["+taskwarrior-tui"] = {
-            title = "taskwarrior-tui",
-            height = 0.99,
-            width = 0.99,
-            cmd = "taskwarrior-tui"
-        },
-        ["+flf"] = {
-            title = "full screen lf",
-            height = 0.9,
-            width = 0.9,
-            cmd = "lf"
-        },
-        ["+slf"] = {
-            title = "split screen lf",
-            wintype = "split",
-            height = 0.5,
-            cmd = "lf"
-        },
-        ["+xplr"] = {title = "xplr", cmd = "xplr"},
-        ["+gpg-tui"] = {
-            title = "gpg-tui",
-            height = 0.9,
-            width = 0.9,
-            cmd = "gpg-tui"
-        },
-        ["+tokei"] = {title = "tokei", height = 0.9, width = 0.9, cmd = "tokei"},
-        ["+dust"] = {title = "dust", height = 0.9, width = 0.9, cmd = "dust"},
-        ["+zsh"] = {title = "zsh", height = 0.9, width = 0.9, cmd = "zsh"}
-    }
-
-    g.floaterm_shell = "zsh"
-    g.floaterm_wintype = "float"
-    g.floaterm_height = 0.85
-    g.floaterm_width = 0.9
-    g.floaterm_borderchars = "─│─│╭╮╯╰"
-
-    hl.plugin("Floaterm", {FloatermBorder = {fg = "#A06469", gui = "none"}})
-
-    -- Stackoverflow helper
-    map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>")
+function M.vcoolor()
+    map("n", "<Leader>pc", ":VCoolor<CR>", {desc = "Insert hex color"})
+    map("n", "<Leader>yb", ":VCoolIns h<CR>", {desc = "Insert HSL color"})
+    map("n", "<Leader>yr", ":VCoolIns r<CR>", {desc = "Insert RGB color"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -390,7 +198,7 @@ function M.neogen()
         {
             enabled = true,
             input_after_comment = true,
-            languages = {lua = {template = {annotation_convention = "emmylua"}}}
+            languages = {lua = {template = {annotation_convention = "emmylua"}}},
         }
     )
     map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
@@ -399,15 +207,6 @@ function M.neogen()
     map("n", "<Leader>dn", [[<Cmd>Neogen<CR>]], {desc = "Neogen default"})
     map("n", "<Leader>df", [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]])
     map("n", "<Leader>dc", [[<Cmd>lua require("neogen").generate({ type = "class" })<CR>]])
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         VCooler                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.vcoolor()
-    map("n", "<Leader>pc", ":VCoolor<CR>", {desc = "Insert hex color"})
-    map("n", "<Leader>yb", ":VCoolIns h<CR>", {desc = "Insert HSL color"})
-    map("n", "<Leader>yr", ":VCoolIns r<CR>", {desc = "Insert RGB color"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -430,7 +229,7 @@ function M.luapad()
             eval_on_change = true,
             split_orientation = "vertical",
             on_init = function()
-                if D.plugin_loaded("noice.nvim") then
+                if utils.mod.plugin_loaded("noice.nvim") then
                     cmd("sil! Noice disable")
                 end
             end,
@@ -440,12 +239,13 @@ function M.luapad()
                 U = require("common.utils"),
                 arr = {"abc", "def", "ghi", "jkl"},
                 narr = {1, 2, 3, 4, 5},
-                tblt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
-                tbl = {abc = 123, def = 456, ghi = 789, jkl = 1011},
+                tt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
+                t = {abc = 123, def = 456, ghi = 789, jkl = 1011},
+                mix = {["34"] = 123, def = "str",[5] = 789,["-0-"] = 1011},
                 shout = function(str)
                     return ((str):upper() .. "!")
-                end
-            }
+                end,
+            },
         }
     )
 
@@ -453,7 +253,7 @@ function M.luapad()
         event = "BufLeave",
         pattern = "*Luapad.lua",
         command = function()
-            if D.plugin_loaded("noice.nvim") then
+            if utils.mod.plugin_loaded("noice.nvim") then
                 cmd("sil! Noice enable")
             end
         end,
@@ -483,7 +283,7 @@ function M.hlslens()
             virt_priority = 100,
             build_position_cb = function(plist, _, _, _)
                 require("scrollbar.handlers.search").handler.show(plist.start_pos)
-            end
+            end,
         }
     )
 
@@ -561,20 +361,29 @@ end
 -- │                          Caser                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.caser()
-    -- crm|crp  => MixedCase, PascalCase
-    -- crc      => camelCase
-    -- cr_      => snake_case
-    -- cru|crU  => UPPER_CASE
-    -- crt      => Title case
-    -- crs      => Sentence case
-    -- cr<spce> => space case
-    -- cr-|crk  => dash-case, kebab-case
-    -- crK      => Title-Dash-Case, Title-Kebab-Case
-    -- cr.      => dot.case
-
     g.caser_prefix = "cr"
-    map("n", "crS", " <Plug>CaserSentenceCase")
-    map("n", "crs", "<Plug>CaserSnakeCase")
+
+    wk.register(
+        {
+            ["crm"] = "Caser: PascalCase (MixedCase)",
+            ["crp"] = "Caser: PascalCase (MixedCase)",
+            ["crc"] = "Caser: camelCase",
+            ["crt"] = "Caser: Title case",
+            ["cr<Space>"] = "Caser: space case",
+            ["cr-"] = "Caser: kebab-case (dash-case)",
+            ["crk"] = "Caser: kebab-case (dash-case)",
+            ["crK"] = "Caser: Title-Kebab-Case",
+            ["cr."] = "Caser: dot.case",
+            ["cr_"] = "Caser: snake_case",
+            ["crU"] = "Caser: UPPER_SNAKE_CASE",
+            ["cru"] = {"gU", "Caser: UPPER CASE"},
+            ["crl"] = {"gu", "Caser: lower case"},
+            ["crs"] = {"<Plug>CaserSnakeCase", "Caser: snake_case"},
+            ["crd"] = {"<Plug>CaserDotCase", "Caser: dot.case"},
+            ["crS"] = {"<Plug>CaserSentenceCase", "Caser: Sentence case"},
+        },
+        {mode = {"n", "x"}}
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -604,9 +413,9 @@ function M.matchup()
 
     -- g.matchup_delim_stopline = 500
     g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
-    g.matchup_delim_noskips = 2 -- in comments -- 0: All, 1: Brackets
+    g.matchup_delim_noskips = 2         -- in comments -- 0: All, 1: Brackets
     -- FIX: This isn't working
-    g.matchup_delim_nomids = 0 -- match func return end
+    g.matchup_delim_nomids = 0          -- match func return end
 
     -- This window opens and closes automatically really quickly in Lua
     --   status_manual -- MatchupStatusOffscreen
@@ -618,7 +427,7 @@ function M.matchup()
         "Matchup",
         {
             MatchWord = {link = "Underlined"},
-            MatchParen = {bg = "#5e452b", underline = true}
+            MatchParen = {bg = "#5e452b", underline = true},
             -- MatchParen = {
             --     fg = require("kimbox.colors").bg_red,
             --     -- bg = "#5e452b",
@@ -658,7 +467,7 @@ function M.matchup()
                 local bufnr = args.buf
                 vim.b[bufnr].matchup_matchparen_enabled = 0
                 vim.b[bufnr].matchup_matchparen_fallback = 0
-            end
+            end,
         },
         {
             event = "FileType",
@@ -667,7 +476,7 @@ function M.matchup()
                 local bufnr = args.buf
                 vim.b[bufnr].matchup_matchparen_enabled = 0
                 vim.b[bufnr].matchup_matchparen_fallback = 0
-            end
+            end,
         }
     )
 end
@@ -687,7 +496,8 @@ function M.better_esc()
             -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
             timeout = 375,
             clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-            keys = "<Esc>" -- keys used for escaping, if it is a function will use the result everytime
+            keys =
+            "<Esc>"                    -- keys used for escaping, if it is a function will use the result everytime
             -- keys = function()
             --   return api.nvim_win_get_cursor(0)[2] > 1 and "<esc>l" or "<esc>"
             -- end,
@@ -715,16 +525,11 @@ function M.smartsplits()
             -- place the cursor on the same row of the *screen*
             -- regardless of line numbers. False by default.
             -- Can be overridden via function parameter, see Usage.
-            move_cursor_same_row = false
+            move_cursor_same_row = false,
         }
     )
 
     -- Can be achieved with custom function, but this has more functionality
-
-    -- map("n", "<C-Up>", [[:lua require('common.utils').resize(false, -1)<CR>]])
-    -- map("n", "<C-Down>", [[:lua require('common.utils').resize(false, 1)<CR>]])
-    -- map("n", "<C-Right>", [[:lua require('common.utils').resize(true, 1)<CR>]])
-    -- map("n", "<C-Left>", [[:lua require('common.utils').resize(true, -1)<CR>]])
 
     -- Move between windows
     wk.register(
@@ -736,7 +541,7 @@ function M.smartsplits()
             ["<C-Up>"] = {D.ithunk(ss.resize_up), "Resize window up"},
             ["<C-Down>"] = {D.ithunk(ss.resize_down), "Resize window down"},
             ["<C-Right>"] = {D.ithunk(ss.resize_right), "Resize window right"},
-            ["<C-Left>"] = {D.ithunk(ss.resize_left), "Resize window left"}
+            ["<C-Left>"] = {D.ithunk(ss.resize_left), "Resize window left"},
         }
     )
 end
@@ -777,7 +582,7 @@ function M.tmux()
                 -- overwriting the unnamed register. Thus, ddp would not be possible.
                 sync_deletes = false,
                 -- syncs the unnamed register with the first buffer entry from tmux.
-                sync_unnamed = true
+                sync_unnamed = true,
             },
             navigation = {
                 -- cycles to opposite pane while navigating into the border
@@ -785,7 +590,7 @@ function M.tmux()
                 -- enables default keybindings (C-hjkl) for normal mode
                 enable_default_keybindings = false,
                 -- prevents unzoom tmux when navigating beyond vim border
-                persist_zoom = true
+                persist_zoom = true,
             },
             resize = {
                 -- enables default keybindings (A-hjkl) for normal mode
@@ -793,8 +598,8 @@ function M.tmux()
                 -- sets resize steps for x axis
                 resize_step_x = 1,
                 -- sets resize steps for y axis
-                resize_step_y = 1
-            }
+                resize_step_y = 1,
+            },
         }
     )
 
@@ -803,7 +608,7 @@ function M.tmux()
             ["<C-j>"] = {D.ithunk(tmux.move_bottom), "Move to below window/pane"},
             ["<C-k>"] = {D.ithunk(tmux.move_top), "Move to above window/pane"},
             ["<C-h>"] = {D.ithunk(tmux.move_left), "Move to left window/pane"},
-            ["<C-l>"] = {D.ithunk(tmux.move_right), "Move to right window/pane"}
+            ["<C-l>"] = {D.ithunk(tmux.move_right), "Move to right window/pane"},
         }
     )
 end
@@ -817,15 +622,15 @@ function M.move()
     wk.register(
         {
             ["J"] = {":MoveBlock(1)<CR>", "Move selected text down"},
-            ["K"] = {":MoveBlock(-1)<CR>", "Move selected text up"}
+            ["K"] = {":MoveBlock(-1)<CR>", "Move selected text up"},
         },
-        {mode = "v"}
+        {mode = "x"}
     )
 
     wk.register(
         {
             ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>", "Move line down"},
-            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>", "Move line up"}
+            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>", "Move line up"},
         },
         {mode = "i"}
     )
@@ -835,34 +640,10 @@ function M.move()
             ["<C-S-l>"] = {":MoveHChar(1)<CR>", "Move character one left"},
             ["<C-S-h>"] = {":MoveHChar(-1)<CR>", "Move character one right"},
             ["<C-S-j>"] = {":MoveLine(1)<CR>", "Move line down"},
-            ["<C-S-k>"] = {":MoveLine(-1)<CR>", "Move line up"}
+            ["<C-S-k>"] = {":MoveLine(-1)<CR>", "Move line up"},
         },
         {mode = "n"}
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         LazyGit                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.lazygit()
-    g.lazygit_floating_window_winblend = 0 -- transparency of floating window
-    -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
-    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
-    -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
-    -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
-
-    -- autocmd(
-    --     {
-    --         event = "BufEnter",
-    --         pattern = "*",
-    --         command = function()
-    --             require("lazygit.utils").project_root_dir()
-    --         end
-    --     }
-    -- )
-
-    require("telescope").load_extension("lazygit")
-    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -874,22 +655,22 @@ function M.specs()
         return
     end
 
-    --This is pretty cool, but it causes a BufEnter to happen on each call
     specs.setup(
         {
             show_jumps = true,
+            ---@diagnostic disable-next-line: param-type-mismatch
             min_jump = fn.winheight("%"),
             popup = {
                 delay_ms = 0, -- delay before popup displays
-                inc_ms = 20, -- time increments used for fade/resize effects
-                blend = 20, -- starting blend, between 0-100 (fully transparent), see :h winblend
+                inc_ms = 20,  -- time increments used for fade/resize effects
+                blend = 20,   -- starting blend, between 0-100 (fully transparent), see :h winblend
                 width = 20,
                 winhl = "PMenu",
                 fader = specs.linear_fader,
-                resizer = specs.shrink_resizer
+                resizer = specs.shrink_resizer,
             },
             ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
-            ignore_buftypes = {nofile = true}
+            ignore_buftypes = {nofile = true},
         }
     )
 end
@@ -961,11 +742,14 @@ function M.colorizer()
             filetypes = {
                 "conf",
                 "css",
+                "dosini",
                 "gitconfig",
+                "ini",
                 "javascript",
                 "json",
                 "lua",
                 "markdown",
+                "noice",
                 "python",
                 "ron",
                 "sh",
@@ -974,30 +758,35 @@ function M.colorizer()
                 "typescript",
                 "typescriptreact",
                 "vim",
+                "vimwiki",
+                "xdefaults",
                 "xml",
                 "yaml",
                 "zsh"
             },
             user_default_options = {
-                RGB = true, -- #RGB hex codes
-                RRGGBB = true, -- #RRGGBB hex codes
-                RRGGBBAA = true, -- #RRGGBBAA hex codes
-                names = false, -- "Name" codes like Blue
+                RGB = true,                                -- #RGB hex codes
+                RRGGBB = true,                             -- #RRGGBB hex codes
+                RRGGBBAA = true,                           -- #RRGGBBAA hex codes
+                AARRGGBB = true,                           -- 0xAARRGGBB hex codes
+                names = false,                             -- "Name" codes like Blue
                 -- rgb_0x = false, -- 0xAARRGGBB hex codes
-                rgb_fn = true, -- CSS rgb() and rgba() functions
-                hsl_fn = true, -- CSS hsl() and hsla() functions
-                css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-                css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-                -- Available modes: foreground, background, virtualtext
-                mode = "background", -- Set the display mode.
+                rgb_fn = true,                             -- CSS rgb() and rgba() functions
+                hsl_fn = true,                             -- CSS hsl() and hsla() functions
+                css = false,                               -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+                css_fn = false,                            -- Enable all CSS *functions*: rgb_fn, hsl_fn
+                -- Available modes for `mode`: foreground, background, virtualtext
+                mode = "background",                       -- Set the display mode.
                 -- Available methods are false / true / "normal" / "lsp" / "both"
-                tailwind = false, -- Enalbe tailwind colors
+                tailwind = true,                           -- Enable tailwind colors
                 -- parsers can contain values used in |user_default_options|
-                sass = {enable = false, parsers = {"css"}}, -- Enable sass colors
-                virtualtext = "■"
+                sass = {enable = true, parsers = {"css"}}, -- Enable sass colors
+                virtualtext = "■",
+                -- update color values even if buffer is not focused
+                always_update = true,
             },
             -- all the sub-options of filetypes apply to buftypes
-            buftypes = {}
+            buftypes = {"nofile"},
         }
     )
 end
@@ -1014,7 +803,7 @@ function M.grepper()
         stop = 50000,
         tools = {"rg", "git"},
         rg = {
-            grepprg = D.list(
+            grepprg = utils.list(
                 {
                     "rg",
                     "--with-filename",
@@ -1032,7 +821,7 @@ function M.grepper()
                 " "
             ),
             grepformat = "%f:%l:%c:%m,%f:%l:%m"
-        }
+        },
     }
 
     -- $. = current file
@@ -1052,75 +841,9 @@ function M.grepper()
             command = function()
                 -- \%# = cursor position
                 fn.setqflist({}, "r", {context = {bqf = {pattern_hl = [[\%#]] .. nvim.reg["/"]}}})
-            end
+            end,
         }
     )
-end
-
--- ╓                                                          ╖
--- ║                        CommentBox                        ║
--- ╙                                                          ╜
-function M.comment_box()
-    local cb = D.npcall(require, "comment-box")
-    if not cb then
-        return
-    end
-
-    cb.setup(
-        {
-            doc_width = 80, -- width of the document
-            box_width = 60, -- width of the boxes
-            borders = {
-                -- symbols used to draw a box
-                top = "─",
-                bottom = "─",
-                left = "│",
-                right = "│",
-                top_left = "╭",
-                top_right = "╮",
-                bottom_left = "╰",
-                bottom_right = "╯"
-            },
-            line_width = 70, -- width of the lines
-            line = {
-                -- symbols used to draw a line
-                line = "─",
-                line_start = "─",
-                line_end = "─"
-            },
-            outer_blank_lines = false, -- insert a blank line above and below the box
-            inner_blank_lines = false, -- insert a blank line above and below the text
-            line_blank_line_above = false, -- insert a blank line above the line
-            line_blank_line_below = false -- insert a blank line below the line
-        }
-    )
-
-    local _ = D.ithunk
-
-    -- 21 20 19 18 7
-    map({"n", "v"}, "<Leader>bb", cb.lcbox, {desc = "Left fixed, center text (round)"})
-    map({"n", "v"}, "<Leader>bs", _(cb.lcbox, 19), {desc = "Left fixed, center text (sides)"})
-    map({"n", "v"}, "<Leader>bd", _(cb.lcbox, 7), {desc = "Left fixed, center text (double)"})
-    map({"n", "v"}, "<Leader>blc", _(cb.lcbox, 13), {desc = "Left fixed, center text (side)"})
-    map({"n", "v"}, "<Leader>bll", cb.llbox, {desc = "Left fixed, left text (round)"})
-    map({"n", "v"}, "<Leader>blr", cb.lrbox, {desc = "Left fixed, right text (side)"})
-    map({"n", "v"}, "<Leader>br", cb.rcbox, {desc = "Right fixed, center text (round)"})
-    map({"n", "v"}, "<Leader>bR", cb.rcbox, {desc = "Right fixed, right text (round)"})
-
-    map({"n", "v"}, "<Leader>ba", cb.albox, {desc = "Left adapted (round)"})
-    map({"n", "v"}, "<Leader>be", _(cb.albox, 19), {desc = "Left adapted (side)"})
-    map({"n", "v"}, "<Leader>bA", cb.acbox, {desc = "Center adapted (round)"})
-
-    map({"n", "v"}, "<Leader>bc", cb.ccbox, {desc = "Center fixed, center text (round)"})
-
-    map({"n", "v"}, "<Leader>cc", _(cb.lcbox, 21), {desc = "Left fixed, center text (top/bottom)"})
-    map({"n", "v"}, "<Leader>cb", _(cb.lcbox, 8), {desc = "Left fixed, center text (thick)"})
-    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Center adapted (top/bottom)"})
-
-    -- 2 6 7
-    map({"n", "i"}, "<M-w>", _(cb.cline, 6), {desc = "Insert thick line"})
-
-    map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1155,14 +878,14 @@ function M.registers()
                 -- Clear the register of the highlighted line when pressing <DEL>
                 delete = registers.clear_highlighted_register(),
                 -- Clear the register of the highlighted line when pressing <BS>
-                backspace = registers.clear_highlighted_register()
+                backspace = registers.clear_highlighted_register(),
             },
             events = {
                 -- When a register line is highlighted, show a preview in the main buffer with how
                 -- the register will be applied, but only if the register will be inserted or pasted
                 on_register_highlighted = registers.preview_highlighted_register(
                     {if_mode = {"insert", "paste"}}
-                )
+                ),
             },
             symbols = {
                 newline = "⏎",
@@ -1176,7 +899,7 @@ function M.registers()
                 max_width = 100,
                 highlight_cursorline = true,
                 border = style.current.border,
-                transparency = 10
+                transparency = 10,
             },
             sign_highlights = {
                 cursorline = "Visual",
@@ -1192,24 +915,7 @@ function M.registers()
                 yank = "Delimiter",
                 history = "Number",
                 named = "Todo"
-            }
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                     Template String                      │
--- ╰──────────────────────────────────────────────────────────╯
-function M.template_string()
-    local ts = D.npcall(require, "template-string")
-    if not ts then
-        return
-    end
-
-    ts.setup(
-        {
-            filetypes = {"typescript", "javascript", "typescriptreact", "javascriptreact"},
-            jsx_brackets = true -- should add brackets to jsx attributes
+            },
         }
     )
 end
@@ -1239,14 +945,97 @@ function M.lfnvim()
             border = style.current.border,
             highlights = {
                 NormalFloat = {link = "Normal"},
-                FloatBorder = {guifg = require("kimbox.palette").colors.magenta}
-            }
+                FloatBorder = {guifg = require("kimbox.palette").colors.magenta},
+            },
         }
     )
 
     map("n", "<A-o>", ":Lfnvim<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")
     -- map("n", "<A-o>", ":Lfnvim<CR>")
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       open-browser                       │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.open_browser()
+    wk.register(
+        {
+            -- ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
+            ["<Leader>oo"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
+            ["<Leader>os"] = {"<Plug>(openbrowser-search)", "Search under cursor"},
+            ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
+        }
+    )
+
+    wk.register(
+        {
+            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"},
+        },
+        {mode = "x"}
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       LinkVisitor                        │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.link_visitor()
+    local lv = D.npcall(require, "link-visitor")
+    if not lv then
+        return
+    end
+
+    lv.setup(
+        {
+            open_cmd = "handlr open",
+            silent = true,            -- disable all prints
+            skip_confirmation = false, -- Skip the confirmation step, default: false
+        }
+    )
+
+    map("n", "gx", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link nearest"})
+    -- map("n", "gw", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+
+    local function link_visitor_map(bufnr)
+        bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
+        bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+    end
+
+    augroup(
+        "lmb__LinkVisitor",
+        {
+            event = "User",
+            pattern = "CocOpenFloat",
+            command = function()
+                local winid = g.coc_last_float_win
+                if winid and api.nvim_win_is_valid(winid) then
+                    local bufnr = api.nvim_win_get_buf(winid)
+                    api.nvim_buf_call(
+                        bufnr,
+                        function()
+                            link_visitor_map(bufnr)
+                        end
+                    )
+                end
+            end,
+        },
+        {
+            event = "WinEnter",
+            pattern = "*",
+            command = function(args)
+                local bufnr = args.buf
+                if vim.bo[bufnr].ft == "crates.nvim" then
+                    api.nvim_buf_call(
+                        bufnr,
+                        function()
+                            link_visitor_map(bufnr)
+                        end
+                    )
+                end
+            end,
+        }
+    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1286,7 +1075,7 @@ function M.urlview()
             jump = {
                 prev = "[u",
                 next = "]u"
-            }
+            },
         }
     )
 
@@ -1340,7 +1129,138 @@ function M.devicons()
                 color = "#89e051",
                 cterm_color = "113",
                 name = "Sh"
-            }
+            },
+        }
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                        NerdIcons                         │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.nerdicons()
+    local nerd = D.npcall(require, "nerdicons")
+    if not nerd then
+        return
+    end
+
+    nerd.setup(
+        {
+            border = style.current.border, -- Border
+            prompt = " ",               -- Prompt Icon
+            preview_prompt = " ",       -- Preview Prompt Icon
+            up = "<C-k>",                  -- Move up in preview
+            down = "<C-j>",                -- Move down in preview
+            copy = "<C-y>"                 -- Copy to the clipboard
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                          GHLine                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.ghline()
+    wk.register(
+        {
+            ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
+            ["<Leader>gL"] = {"<Plug>(gh-line)", "Open git line"},
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         LazyGit                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.lazygit()
+    g.lazygit_floating_window_winblend = 0                        -- transparency of floating window
+    -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
+    -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
+    -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+
+    -- autocmd(
+    --     {
+    --         event = "BufEnter",
+    --         pattern = "*",
+    --         command = function()
+    --             require("lazygit.utils").project_root_dir()
+    --         end
+    --     }
+    -- )
+
+    require("telescope").load_extension("lazygit")
+    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                       Git Conflict                       │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.git_conflict()
+    local conflict = D.npcall(require, "git-conflict")
+    if not conflict then
+        return
+    end
+
+    conflict.setup(
+        {
+            {
+                default_mappings = false,
+                disable_diagnostics = false, -- will disable diagnostics while conflicted
+                highlights = {
+                    incoming = "DiffText",
+                    current = "DiffAdd"
+                },
+            },
+        }
+    )
+
+    -- hl.plugin(
+    --     "GitConflict",
+    --     {
+    --         GitConflictCurrent = {link = "DiffAdd"},
+    --         GitConflictIncoming = {link = "DiffText"},
+    --         GitConflictAncestor = {link = "DiffChange"}
+    --     }
+    -- )
+
+    augroup(
+        "lmb__GitConflict",
+        {
+            event = "User",
+            pattern = "GitConflictDetected",
+            command = function()
+                local bufnr = api.nvim_get_current_buf()
+                local bufname = api.nvim_buf_get_name(bufnr)
+
+                -- Why does this need to be deferred? There is an error otherwise
+                vim.defer_fn(
+                    function()
+                        log.warn(
+                            ("Conflict detected in %s"):format(fs.basename(bufname)),
+                            {title = "GitConflict"}
+                        )
+                    end,
+                    100
+                )
+
+                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)", {desc = "Conflict: ours"})
+                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)", {desc = "Conflict: both"})
+                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)", {desc = "Conflict: theirs"})
+                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)", {desc = "Conflict: none"})
+                bmap(
+                    bufnr,
+                    "n",
+                    "[n",
+                    "<Plug>(git-conflict-next-conflict)",
+                    {desc = "Next conflict"}
+                )
+                bmap(
+                    bufnr,
+                    "n",
+                    "]n",
+                    "<Plug>(git-conflict-prev-conflict)",
+                    {desc = "Previous conflict"}
+                )
+            end,
         }
     )
 end
@@ -1394,7 +1314,7 @@ function M.project()
             scope_chdir = "global",
             -- Path where project.nvim will store the project history for use in
             -- telescope
-            datapath = dirs.data
+            datapath = dirs.data,
         }
     )
 
@@ -1414,7 +1334,7 @@ function M.visualmulti()
     g.VM_case_setting = "smart"
     g.VM_recursive_operations_at_cursors = true
 
-    g.VM_Mono_hl = "DiffText" -- ErrorMsg DiffText
+    g.VM_Mono_hl = "DiffText"  -- ErrorMsg DiffText
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
     g.VM_Cursor_hl = "Visual"
     g.VM_Insert_hl = "DiffChange"
@@ -1442,15 +1362,15 @@ function M.visualmulti()
     -- g.VM_custom_commands = {}
 
     g.VM_user_operators = {
-        "dss", -- delete surround automatic detection
-        {css = 1}, -- change surround automatic detection
-        {yss = 1}, -- surround line
-        {cs = 2}, -- change surround
-        {ds = 1}, -- delete surround
-        "gc", -- comment
+        "dss",          -- delete surround automatic detection
+        {css = 1},      -- change surround automatic detection
+        {yss = 1},      -- surround line
+        {cs = 2},       -- change surround
+        {ds = 1},       -- delete surround
+        "gc",           -- comment
         {ys = 3},
-        {cr = 3}, -- FIX: change case
-        {["<C-s>"] = 2} -- FIX: substitute (replaces with second letter or only last line)
+        {cr = 3},       -- FIX: change case
+        {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
     -- g.VM_custom_remaps = {
@@ -1474,18 +1394,18 @@ function M.visualmulti()
         -- ["Add Cursor Down"] = "<A-S-o>",
         -- ["Select Cursor Up"] = "<C-S-Up>",
         -- ["Select Cursor Down"] = "<C-S-Down>",
-        ["Slash Search"] = "g/", -- Extend/move cursors with /
-        ["Move Left"] = "<C-S-i>", -- Move region left
-        ["Move Right"] = "<C-S-o>", -- Move region right
+        ["Slash Search"] = "g/",              -- Extend/move cursors with /
+        ["Move Left"] = "<C-S-i>",            -- Move region left
+        ["Move Right"] = "<C-S-o>",           -- Move region right
         -- Region cycling and removal
-        ["Find Next"] = "]", -- Same as "n"
-        ["Find Prev"] = "[", -- Same as "N"
-        ["Goto Next"] = "}", -- Go to next selected region
-        ["Goto Prev"] = "{", -- Go to prev selected region
-        ["Seek Next"] = "<C-f>", -- Fast go to next (from next page)
-        ["Seek Prev"] = "<C-b>", -- Fast go to previous (from previous page)
-        ["Skip Region"] = "q", -- Skip and find to next
-        ["Remove Region"] = "Q", -- Remove region under cursor
+        ["Find Next"] = "]",                  -- Same as "n"
+        ["Find Prev"] = "[",                  -- Same as "N"
+        ["Goto Next"] = "}",                  -- Go to next selected region
+        ["Goto Prev"] = "{",                  -- Go to prev selected region
+        ["Seek Next"] = "<C-f>",              -- Fast go to next (from next page)
+        ["Seek Prev"] = "<C-b>",              -- Fast go to previous (from previous page)
+        ["Skip Region"] = "q",                -- Skip and find to next
+        ["Remove Region"] = "Q",              -- Remove region under cursor
         ["Remove Last Region"] = "<Leader>q", -- Remove last added region
         ["Remove Every n Regions"] = "<Leader>R",
         -- Special Commands
@@ -1499,23 +1419,23 @@ function M.visualmulti()
         -- ["Alpha-Decrease"] = "<C-S-o>",
 
         -- Commands
-        ["Invert Direction"] = "o", -- Change direction cursor is within region
-        ["Shrink"] = "<", -- Reduce regions from the sides
-        ["Enlarge"] = ">", -- Enlarge regions from the sides
-        ["Transpose"] = "<Leader>t", -- Transpose selected regions
-        ["Align"] = "<Leader>a", -- Align regions
-        ["Align Char"] = "<Leader><", -- Align by character
-        ["Align Regex"] = "<Leader>>", -- Align by regex
-        ["Split Regions"] = "<Leader>s", -- Subtract pattern from regions
-        ["Filter Regions"] = "<Leader>f", -- Filter regions by pattern/expression
-        ["Merge Regions"] = "<Leader>m", -- Merge overlapping regions
-        ["Transform Regions"] = "<Leader>e", -- Transform regions with expression
-        ["Rewrite Last Search"] = "<Leader>r", -- Rewrite last pattern to match current region
-        ["Duplicate"] = "<Leader>d", -- Duplicate regions
-        ["One Per Line"] = "<Leader>L", -- Keep at most one region per line
-        ["Numbers"] = "<Leader>n", -- Insert numbers before cursor
-        ["Numbers Append"] = "<Leader>N", -- Insert numbers after cursor
-        ["Zero Numbers"] = "<Leader>0n", -- Insert numbers before cursor
+        ["Invert Direction"] = "o",             -- Change direction cursor is within region
+        ["Shrink"] = "<",                       -- Reduce regions from the sides
+        ["Enlarge"] = ">",                      -- Enlarge regions from the sides
+        ["Transpose"] = "<Leader>t",            -- Transpose selected regions
+        ["Align"] = "<Leader>a",                -- Align regions
+        ["Align Char"] = "<Leader><",           -- Align by character
+        ["Align Regex"] = "<Leader>>",          -- Align by regex
+        ["Split Regions"] = "<Leader>s",        -- Subtract pattern from regions
+        ["Filter Regions"] = "<Leader>f",       -- Filter regions by pattern/expression
+        ["Merge Regions"] = "<Leader>m",        -- Merge overlapping regions
+        ["Transform Regions"] = "<Leader>e",    -- Transform regions with expression
+        ["Rewrite Last Search"] = "<Leader>r",  -- Rewrite last pattern to match current region
+        ["Duplicate"] = "<Leader>d",            -- Duplicate regions
+        ["One Per Line"] = "<Leader>L",         -- Keep at most one region per line
+        ["Numbers"] = "<Leader>n",              -- Insert numbers before cursor
+        ["Numbers Append"] = "<Leader>N",       -- Insert numbers after cursor
+        ["Zero Numbers"] = "<Leader>0n",        -- Insert numbers before cursor
         ["Zero Numbers Append"] = "<Leader>0N", -- Insert numbers after cursor
         --
         ["Run Normal"] = "<Leader>z",
@@ -1527,21 +1447,21 @@ function M.visualmulti()
         ["Run Macro"] = "<Leader>@",
         ["Run Dot"] = "<Leader>.",
         --
-        ["Tools Menu"] = "<Leader>`", -- Filter lines to buffer, etc
-        ["Case Setting"] = "<Leader>c", -- Cycle case setting ('scs' -> 'noic' -> 'ic')
+        ["Tools Menu"] = "<Leader>`",           -- Filter lines to buffer, etc
+        ["Case Setting"] = "<Leader>c",         -- Cycle case setting ('scs' -> 'noic' -> 'ic')
         ["Case Conversion Menu"] = "<Leader>C", -- Works better in extend mode
         ["Search Menu"] = "<Leader>S",
-        ["Show Registers"] = '<Leader>"', -- Show VM registers in the command line
-        ["Show Infoline"] = "<Leader>l", -- Shows information about current regions and patterns and modes
+        ["Show Registers"] = '<Leader>"',       -- Show VM registers in the command line
+        ["Show Infoline"] = "<Leader>l",        -- Shows information about current regions and patterns and modes
         --
-        ["Toggle Whole Word"] = "<Leader>w", -- Toggle whole word search
+        ["Toggle Whole Word"] = "<Leader>w",    -- Toggle whole word search
         ["Toggle Block"] = "<Leader><BS>",
         ["Toggle Multiline"] = "<Leader>M",
         ["Toggle Single Region"] = "<Leader><CR>", -- Toggle single region mode
-        ["Toggle Mappings"] = "<Leader><Leader>", -- Toggle VM buffer mappings
+        ["Toggle Mappings"] = "<Leader><Leader>",  -- Toggle VM buffer mappings
         -- Visual
-        ["Visual Subtract"] = "<Leader>s", -- Remove visual from region
-        ["Visual Find"] = "<Leader>f", -- Find from visually selection region
+        ["Visual Subtract"] = "<Leader>s",         -- Remove visual from region
+        ["Visual Find"] = "<Leader>f",             -- Find from visually selection region
         ["Visual Add"] = "<Leader>a",
         ["Visual All"] = "<Leader>A",
         -- Insert Mode
@@ -1595,17 +1515,17 @@ function M.visualmulti()
         {
             event = "User",
             pattern = "visual_multi_start",
-            command = D.ithunk(vm.start)
+            command = D.ithunk(vm.start),
         },
         {
             event = "User",
             pattern = "visual_multi_exit",
-            command = D.ithunk(vm.exit)
+            command = D.ithunk(vm.exit),
         },
         {
             event = "User",
             pattern = "visual_multi_mappings",
-            command = D.ithunk(vm.mappings)
+            command = D.ithunk(vm.mappings),
         }
     )
 end
@@ -1625,8 +1545,8 @@ function M.neodev()
                 enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
                 -- these settings will be used for your Neovim config directory
                 runtime = false, -- runtime path
-                types = true, -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-                plugins = true -- installed opt or start plugins in packpath
+                types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+                plugins = true,  -- installed opt or start plugins in packpath
                 -- you can also specify the list of plugins to make available as a workspace library
                 -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
             },
@@ -1641,7 +1561,7 @@ function M.neodev()
             -- With lspconfig, Neodev will automatically setup your lua-language-server
             -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
             -- in your lsp start options
-            lspconfig = false
+            lspconfig = false,
         }
     )
 end
@@ -1658,114 +1578,7 @@ function M.fundo()
     fundo.setup(
         {
             archives_dir = ("%s/%s"):format(dirs.cache, "fundo"),
-            limit_archives_size = 512
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       Git Conflict                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.git_conflict()
-    local conflict = D.npcall(require, "git-conflict")
-    if not conflict then
-        return
-    end
-
-    conflict.setup(
-        {
-            {
-                default_mappings = false,
-                disable_diagnostics = false, -- will disable diagnostics while conflicted
-                highlights = {
-                    incoming = "DiffText",
-                    current = "DiffAdd"
-                }
-            }
-        }
-    )
-
-    -- hl.plugin(
-    --     "GitConflict",
-    --     {
-    --         GitConflictCurrent = {link = "DiffAdd"},
-    --         GitConflictIncoming = {link = "DiffText"},
-    --         GitConflictAncestor = {link = "DiffChange"}
-    --     }
-    -- )
-
-    augroup(
-        "lmb__GitConflict",
-        {
-            event = "User",
-            pattern = "GitConflictDetected",
-            command = function()
-                local bufnr = api.nvim_get_current_buf()
-                local bufname = api.nvim_buf_get_name(bufnr)
-
-                -- Why does this need to be deferred? There is an error otherwise
-                vim.defer_fn(
-                    function()
-                        log.warn(
-                            ("Conflict detected in %s"):format(fs.basename(bufname)),
-                            {title = "GitConflict"}
-                        )
-                    end,
-                    100
-                )
-
-                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)", {desc = "Conflict: ours"})
-                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)", {desc = "Conflict: both"})
-                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)", {desc = "Conflict: theirs"})
-                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)", {desc = "Conflict: none"})
-                bmap(
-                    bufnr,
-                    "n",
-                    "[n",
-                    "<Plug>(git-conflict-next-conflict)",
-                    {desc = "Next conflict"}
-                )
-                bmap(
-                    bufnr,
-                    "n",
-                    "]n",
-                    "<Plug>(git-conflict-prev-conflict)",
-                    {desc = "Previous conflict"}
-                )
-            end
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          eregex                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.eregex()
-    g.eregex_forward_delim = "/"
-    g.eregex_backward_delim = "?"
-
-    map("n", "<Leader>es", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
-    map("n", ",/", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
-    map("n", "<Leader>S", ":%S//g<Left><Left>", {desc = "Global replace (E2v)"})
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                        NerdIcons                         │
---  ╰──────────────────────────────────────────────────────────╯
-function M.nerdicons()
-    local nerd = D.npcall(require, "nerdicons")
-    if not nerd then
-        return
-    end
-
-    nerd.setup(
-        {
-            border = style.current.border, -- Border
-            prompt = " ", -- Prompt Icon
-            preview_prompt = " ", -- Preview Prompt Icon
-            up = "<C-k>", -- Move up in preview
-            down = "<C-j>", -- Move down in preview
-            copy = "<C-y>" -- Copy to the clipboard
+            limit_archives_size = 512,
         }
     )
 end
@@ -1802,27 +1615,27 @@ function M.ccls()
             bmap("n", "Q", "<Plug>(yggdrasil-close-node)", {desc = "Close CCLS tree"})
             bmap("n", "<CR>", "<Plug>(yggdrasil-execute-node)", {desc = "Execute CCLS node"})
             bmap("n", "qq", ":q<CR>", {desc = "Close CCLS window"})
-        end
+        end,
     }
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
-function M.smartcolumn()
-    local sc = D.npcall(require, "smartcolumn")
-    if not sc then
-        return
-    end
-
-    sc.setup(
-        {
-            colorcolumn = 100,
-            disabled_filetypes = BLACKLIST_FT,
-            custom_colorcolumn = {},
-            limit_to_window = false
-        }
-    )
-end
+-- function M.smartcolumn()
+--     local sc = D.npcall(require, "smartcolumn")
+--     if not sc then
+--         return
+--     end
+--
+--     sc.setup(
+--         {
+--             colorcolumn = 100,
+--             disabled_filetypes = BLACKLIST_FT,
+--             custom_colorcolumn = {},
+--             limit_to_window = false
+--         }
+--     )
+-- end
 
 return M

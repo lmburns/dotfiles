@@ -13,6 +13,8 @@ local M = {}
 -- | \v     | "very magic": omit \'s   | :help \v      |
 -- +--------+--------------------------+---------------+
 
+---@alias RexRegex userdata
+
 local api = vim.api
 
 -- WIP
@@ -51,6 +53,16 @@ function M.search_all(pattern, bufnr)
     -- info('gsub')
     -- info(vim.loop.hrtime() - start)
     return pos
+end
+
+-- local flgs = rex.flags()
+-- flgs.CASELESS
+
+---Create a new compiled regex
+---@param pattern string
+---@return RexRegex
+function M.new(pattern)
+    return rex.new(pattern)
 end
 
 return M

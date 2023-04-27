@@ -1,13 +1,870 @@
 #compdef perlbrew
 
-# zsh completions for 'perlbrew'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+_perlbrew_cmds() {
+    local -a commands
+    commands=(
+      alias:'give perl installations a new name'
+      available:'list perls available to install'
+      clean:'purge tarballs and build directories'
+      clone-modules:'Re-installs all CPAN modules from one installation to another'
+# compgen
+# display-bashrc
+# display-cshrc
+# display-installation-failure-message
+# display-pristine-manpath
+# display-pristine-path
+# display-system-perl-executable
+# display-system-perl-shebang
+      download:'download the specified perl distribution tarball'
+      exec:'Exec programs with specified perl environments'
+      env:'see list of environment variables that are set by perlbrew'
+      info:'show useful information about the perlbrew installation'
+      init:'initialize perlbrew environment'
+# init-in-bash
+      install:'install perl'
+# install-cpm
+      install-cpanm:'install cpanm, a friendly companion'
+      install-multiple:'install multiple versions and flavors of perl'
+      install-patchperl:'install patchperl'
+      lib:'manage local::lib directories'
+# lib-create
+# lib-delete
+# lib-list
+      list:'list perl installations'
+      list-modules:'list all installed cpan modules for the current perl'
+      off:'turn off perlbrew in current shell'
+      self-install:'install perlbrew itself under PERLBREW_ROOT/bin'
+      self-upgrade:'upgrade perlbrew itself'
+      switch:'permanently use the specified perl as default'
+      switch-off:'permanently turn off perlbrew (revert to system perl)'
+      symlink-executables:'create perl executable symlink'
+      uninstall:'uninstall the given installation'
+      upgrade-perl:'upgrade the current perl'
+      use:'use the specified perl in current shell'
+      version:'display version'
+      help:'read more detailed instructions'
+    )
+    _describe -t commands 'command' commands
+}
 
-arguments=(
-  {-q,--quiet}'[be quiet on informative output message.]'
-  {-v,--verbose}'[tell me more about it.]'
-  '*:filename:_files'
-)
+perlbrew-alias_cmds() {
+    local -a commands
+    commands=(
+      "create:create an alias"
+      "rename:create an alias"
+      "delete:create an alias"
+    )
+    _describe -t commands 'command' commands
+}
+perlbrew-DO_cmds() {
+    local -a commands
+    commands=(
+    )
+    _describe -t commands 'command' commands
+}
+perlbrew-DO_cmds() {
+    local -a commands
+    commands=(
+    )
+    _describe -t commands 'command' commands
+}
+perlbrew-DO_cmds() {
+    local -a commands
+    commands=(
+    )
+    _describe -t commands 'command' commands
+}
+perlbrew-DO_cmds() {
+    local -a commands
+    commands=(
+    )
+    _describe -t commands 'command' commands
+}
+perlbrew-DO_cmds() {
+    local -a commands
+    commands=(
+    )
+    _describe -t commands 'command' commands
+}
 
-_arguments -s $arguments
+_perlbrew() {
+  local curcontext="$curcontext" state line state_descr
+  typeset -a _arguments_options
+  typeset -A opt_args
+  local ret=1
+
+   local -a global_args; global_args=(
+    {-q,--quiet}'[be quiet on informative output message]'
+    {-v,--verbose}'[be verbose]'
+    '(- 1 *)--version[show version information]'
+    '(- 1 *)'{-h,--help}'[show help message]'
+   )
+
+   _arguments_options=(-s -S -C)
+
+  _arguments "${_arguments_options[@]}" \
+    "${global_args[@]}" \
+    '1: :_perlbrew_cmds' \
+    '*:: :->args' \
+    && ret=0
+
+  case $state in
+    (args)
+      curcontext="${curcontext%:*}-${words[1]}:"
+      case ${words[1]} in
+        (alias)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            '-f[force]' \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            (alias-c)
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    '2:alias:' \
+                    && ret=0
+                ;;
+                (rename)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:old alias:' \
+                    '2:new alias:' \
+                    && ret=0
+                ;;
+                (delete)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:alias:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: AVAILABLE
+#     Usage: perlbrew available [--all]
+
+#     List the recently available versions of perl on CPAN.
+
+#     The list is retrieved from the web page
+#     <http://www.cpan.org/src/README.html>, and is not the list of *all* perl
+#     versions ever released in the past.
+
+#     To get a list of all perls ever released, use the "--all" option.
+
+#     NOTICE: This command might be gone in the future and become an option of
+#     'list' command.
+        (available)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            '-f[force]' \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            (available-c)
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    '2:alias:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: CLEAN
+#     Usage: perlbrew clean
+
+#     Removes all previously downloaded Perl tarballs and build directories.
+        (clean)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->clean-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: CLONE-MODULES
+#     This command re-installs all CPAN modules found from one installation to
+#     another.
+
+#     Usage: perlbrew clone-modules <src_version> <dst_version>
+
+#     for example
+
+#         perlbrew clone-modules 5.26.1 5.27.7
+        (clone-modules)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: DOWNLOAD
+#     Usage:
+
+#         perlbrew download perl-5.14.2
+#         perlbrew download perl-5.16.1
+#         perlbrew download perl-5.17.3
+
+#     Download the specified version of perl distribution tarball under
+#     "$PERLBREW_ROOT/dists/" directory.
+        (download)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: ENV
+#     Usage: perlbrew env [ <name> ]
+
+#     Low-level command. Invoke this command to see the list of environment
+#     variables that are set by "perlbrew" itself for shell integration.
+
+#     The output is something similar to this (if your shell is bash/zsh):
+
+#         export PERLBREW_ROOT=/Users/gugod/perl5/perlbrew
+#         export PERLBREW_VERSION=0.31
+#         export PERLBREW_PATH=/Users/gugod/perl5/perlbrew/bin:/Users/gugod/perl5/perlbrew/perls/current/bin
+#         export PERLBREW_PERL=perl-5.14.1
+        (env)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+#         perlbrew exec --with perl-5.12 cpanm Moose
+#         perlbrew exec --with perl-5.12,perl-5.12-debug,perl-5.14.2 cpanm Moo
+#         perlbrew exec --with '5.12 5.12,debug 5.14.2@nobita @shizuka' cpanm Moo
+        (exec)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            '--with[only execute with these versions]:perl version [...,...]:' \
+            '--min[minimum perl version]:perl version [n.nnnnn]:' \
+            '--max[maximum perl version]:perl version [n.nnnnn]:' \
+            '--halt-on-error[stop on first nonzero exit status]' \
+            '1:command:' \
+            '*:args:' \
+            && ret=0
+        ;;
+#         Usage: perlbrew info [ <module> ]
+        (info)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*:module name:" \
+            && ret=0
+        ;;
+#     Usage: perlbrew init
+        (init)
+        ;;
+#     /dir/ build and install from the given git checkout dir
+#     /perl-5.14.0.tar.gz build and install from the given archive file
+#     build and install from the given URL:_urls
+        (install)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            {-f,--force}'[force installation]' \
+            '-j[parallel building and testing. ex. C<perlbrew install -j 5 perl-5.14.2>]:number:' \
+            {-n,--notest}'[skip testing]' \
+            '--switch[automatically switch to this Perl once successfully installed]' \
+            '--as[install the given version of perl by a name]' \
+            '--noman[skip installation of manpages]' \
+            '--thread[build perl with usethreads enabled]' \
+            '--multi[build perl with usemultiplicity enabled]' \
+            '--64int[Perl with use64bitint enabled]' \
+            '--64all[build perl with use64bitall enabled]' \
+            '--ld[build perl with uselongdouble enabled]' \
+            '--debug[build perl with DEBUGGING enabled]' \
+            '--clang[build perl using the clang compiler]' \
+            '--no-patchperl[skip calling patchperl]' \
+            '-D[switches passed to perl Configure script]' \
+            '-U[switches passed to perl Configure script]' \
+            '-A[switches passed to perl Configure script]' \
+            '--destdir[install perl as per "make install DESTDIR=$path"]:path:_directories' \
+            '--sitecustomize[specify a file to be installed as sitecustomize.pl]:file:_files' \
+            '--mirror[to specify the URL of mirror site]:url:_urls' \
+            '1:perl kind:((
+              perl-\:"specify version after perl (perl- is optional)"
+              cperl-\:"specify version, install the cperl distribution released from"
+              perl-stable\:"install the most recent stable version of Perl"
+              stable\:"install the most recent stable version of Perl"
+              perl-blead\:"install the blead version of Perl"
+              blead\:"install the blead version of Perl"
+            ))' \
+            && ret=0
+        ;;
+# COMMAND: INSTALL-CPANM
+#     Usage: perlbrew install-cpanm
+
+#     Install the "cpanm" standalone executable in "$PERLBREW_ROOT/bin".
+
+#     For more rationale about the existence of this command, read
+#     <http://perlbrew.pl/Perlbrew-and-Friends.html>
+        (install-cpanm)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: INSTALL-MULTIPLE
+#     Usage: perlbrew install-multiple [options] <perl-version-1>
+#     <perl-version-2> ...
+
+#     Build and install the given versions of perl.
+
+#     "install-multiple" accepts the same set of options as the command
+#     "install" plus the following ones:
+
+#         --both $flavor       Where $flavor is one of C<thread>, C<multi>, C<ld>,
+#                              C<64int>, C<64all>, C<debug> and C<clang>.
+
+#                              For every given perl version, install two
+#                              flavors, one with the flag C<--$flavor> set
+#                              and the other with out. C<--both> can be
+#                              passed multiple times with different values
+#                              and in that case, all the possible
+#                              combinations are generated.
+
+#         --common-variations  equivalent to C<--both thread --both ld --both 64int>
+
+#         --all-variations     generates all the possible flavor combinations
+
+#         --append $string     Appends the given string to the generated names
+
+#     For instance:
+
+#         perlbrew install-multiple 5.18.0 blead --both thread --both debug
+
+#     Installs the following perls:
+
+#         perl-blead
+#         perl-blead-debug
+#         perl-blead-thread-multi
+#         perl-blead-thread-multi-debug
+#         perl-5.18.0
+#         perl-5.18.0-debug
+#         perl-5.18.0-thread-multi
+#         perl-5.18.0-thread-multi-debug
+
+#     (note that the "multi" flavor is selected automatically because "thread"
+#     requires it)
+
+#     Another example using custom compilation flags:
+
+#         perlbrew install-multiple 5.18.0 --both thread -Doptimize='-O3' --append='-O3'
+        (install-multiple)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: INSTALL-PATCHPERL
+#     Usage: perlbrew install-patchperl
+
+#     Install the "patchperl" standalone executable in "$PERLBREW_ROOT/bin".
+#     This is automatically invoked if your perlbrew installation is done with
+#     the installer, but not with cpan.
+
+#     For more rationale about the existence of this command, read
+#     <http://perlbrew.pl/Perlbrew-and-Friends.html>
+        (install-patchperl)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: LIB
+#     Usage: perlbrew lib <action> <lib-name>
+
+#         perlbrew lib list
+#         perlbrew lib create <lib-name>
+#         perlbrew lib delete <lib-name>
+
+#     The `lib` command is used to manipulate local::lib roots inside perl
+#     installations. Effectively it is similar to `perl
+#     -Mlocal::lib=/path/to/lib-name`, but a little bit more than just that.
+
+#     A lib name can be a short name, containing alphanumeric, like 'awesome',
+#     or a full name, prefixed by a perl installation name and a '@' sign, for
+#     example, 'perl-5.14.2@awesome'.
+
+#     Here are some a brief examples to invoke the `lib` command:
+
+#         # Create lib perl-5.12.3@shizuka
+#         perlbrew lib create perl-5.12.3@shizuka
+
+#         # Create lib perl-5.14.2@nobita and perl-5.14.2@shizuka
+#         perlbrew use perl-5.14.2
+#         perlbrew lib create nobita
+#         perlbrew lib create shizuka
+
+#         # See the list of use/switch targets
+#         perlbrew list
+
+#         # Activate a lib in current shell
+#         perlbrew use perl-5.12.3@shizuka
+#         perlbrew use perl-5.14.2@nobita
+#         perlbrew use perl-5.14.2@shizuka
+
+#         # Activate a lib as default
+#         perlbrew switch perl-5.12.3@shizuka
+#         perlbrew switch perl-5.14.2@nobita
+#         perlbrew switch perl-5.14.2@shizuka
+
+#         # Delete lib perl-5.14.2@nobita and perl-5.14.2@shizuka
+#         perlbrew use perl-5.14.2
+#         perlbrew lib delete nobita
+#         perlbrew lib delete shizuka
+
+#         # Delete lib perl-5.12.3@shizuka
+#         perlbrew lib delete perl-5.12.3@shizuka
+
+#     Short lib names are local to current perl. A lib name 'nobita' can refer
+#     to 'perl-5.12.3@nobita' or 'perl-5.14.2@nobita', depending on your
+#     current perl.
+
+#     When "use"ing or "switch"ing to a lib, always provide the long name. A
+#     simple rule: the argument to "use" or "switch" command should appear in
+#     the output of "perlbrew list".
+        (lib)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: LIST
+#     Usage: perlbrew list
+
+#     List all perl installations inside perlbrew root specified by
+#     $PERLBREW_ROOT environment variable. By default, the value is
+#     "~/perl5/perlbrew".
+
+#     If there are libs associated to some perl installations, they will be
+#     included as part of the name. The output items in this list can be the
+#     argument in various other commands.
+        (list)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: LIST-MODULES
+#     List all installed cpan modules for the current perl.
+
+#     This command can be used in conjunction with `perlbrew exec` to migrate
+#     your module installation to different perl. The following command
+#     re-installs all modules under perl-5.16.0:
+
+#         perlbrew list-modules | perlbrew exec --with perl-5.16.0 cpanm
+
+#     Note that this installs the latest versions of the Perl modules on the
+#     new perl, which are not necessarily the same module versions you had
+#     installed previously.
+        (list-modules)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: OFF
+#     Usage: perlbrew off
+
+#     Temporarily disable perlbrew in the current shell. Effectively
+#     re-enables the default system Perl, whatever that is.
+
+#     This command works only if you add the statement of `source
+#     $PERLBREW_ROOT/etc/bashrc` in your shell initialization (bashrc /
+#     zshrc).
+        (off)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: SELF-INSTALL
+#     Usage: perlbrew self-install
+
+#     NOTICE: You should not need to run this command in your daily routine.
+
+#     This command installs perlbrew itself to "$PERLBREW_ROOT/bin". It is
+#     intended to be used by the perlbrew installer. However, you could
+#     manually do the following to re-install only the "perlbrew" executable:
+
+#         curl https://raw.githubusercontent.com/gugod/App-perlbrew/master/perlbrew -o perlbrew
+#         perl ./perlbrew self-install
+
+#     It is slightly different from running the perlbrew installer because
+#     "patchperl" is not installed in this case.
+        (self-install)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: SELF-UPGRADE
+#     Usage: perlbrew self-upgrade
+
+#     This command upgrades Perlbrew to its latest version.
+        (self-upgrade)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: SWITCH
+#     Usage: perlbrew switch [ <name> ]
+
+#     Switch to the given version, and makes it the default for this and all
+#     future terminal sessions.
+
+#     Without a parameter, shows the version of perl currently selected.
+        (switch)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: SYMLINK-EXECUTABLES
+#     Usage: perlbrew symlink-executables [ <name> ]
+
+#     Low-level command. This command is used to create the "perl" executable
+#     symbolic link to, say, "perl5.13.6". This is only required for
+#     development version of perls.
+
+#     You don't need to do this unless you have been using old perlbrew to
+#     install perls, and you find yourself confused because the perl that you
+#     just installed appears to be missing after invoking `use` or `switch`.
+#     perlbrew changes its installation layout since version 0.11, which
+#     generates symlinks to executables in a better way.
+
+#     If you just upgraded perlbrew (from 0.11 or earlier versions) and
+#     "perlbrew switch" failed to work after you switch to a development
+#     release of perl, say, perl-5.13.6, run this command:
+
+#         perlbrew symlink-executables perl-5.13.6
+
+#     This essentially creates this symlink:
+
+#        ${PERLBREW_ROOT}/perls/perl-5.13.6/bin/perl
+#        -> ${PERLBREW_ROOT}/perls/perl-5.13.6/bin/perl5.13.6
+
+#     Newly installed perls, whether they are development versions or not,
+#     does not need manually treatment with this command.
+        (symlink-executables)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: SWITCH-OFF
+#     Usage: perlbrew switch-off
+
+#     Permananently disable perlbrew. Use "switch" command to re-enable it.
+#     Invoke "use" command to enable it only in the current shell.
+
+#     Re-enables the default system Perl, whatever that is.
+        (switch-off)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: UNINSTALL
+#     Usage: perlbrew uninstall <name>
+
+#     Uninstalls the given perl installation. The name is the installation
+#     name as in the output of `perlbrew list`. This effectively deletes the
+#     specified perl installation, and all libs associated with it.
+        (uninstall)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: UPGRADE-PERL
+#     Usage: perlbrew upgrade-perl
+
+#     Minor Perl releases (ex. 5.x.*) are binary compatible with one another,
+#     so this command offers you the ability to upgrade older perlbrew
+#     environments in place.
+
+#     It upgrades the currently activated perl to its latest released
+#     brothers. If you have a shell with 5.14.0 activated, it upgrades it to
+#     5.14.2.
+        (upgrade-perl)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: USE
+#     Usage: perlbrew use [perl-<version> | <version> | <name>]
+
+#     Use the given version perl in current shell. This will not effect newly
+#     opened shells.
+
+#     Without a parameter, shows the version of perl currently in use.
+        (use)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+# COMMAND: VERSION
+#     Usage: perlbrew version
+
+#     Show the version of perlbrew.
+        (version)
+          _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+            "*::: :->alias-c" \
+            && ret=0
+
+          case $state in
+            ()
+              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+              case ${words[2]} in
+                (create)
+                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+                    '1:name:' \
+                    && ret=0
+                ;;
+              esac
+            ;;
+          esac
+        ;;
+        (help)
+          _perlbrew_cmds
+        ;;
+      esac
+    ;;
+  esac
+
+}
+
+_perlbrew "$@"

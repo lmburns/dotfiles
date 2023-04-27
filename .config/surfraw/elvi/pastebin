@@ -22,5 +22,5 @@ if test -z "$w3_args"; then
     w3_browse_url "https://www.pastebin.com"
 else
     escaped_args=`w3_url_of_arg $w3_args`
-    w3_browse_url "http://pastebin.com/search?cx=partner-pub-7089230323117142%3A2864958357&cof=FORID%3A10&ie=UTF-8&q=${escaped_args}"
+    w3_browse_url "http://pastebin.com/search?ie=UTF-8&q=${escaped_args}"
 fi

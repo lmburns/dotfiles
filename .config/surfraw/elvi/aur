@@ -5,7 +5,10 @@
 #
 # DESC: Search the Arch User Repository
 # $ID$
-# elvis: aur		-- Search aur.archlinux.org for PKGBUILDs
+# elvis: aur    -- Search aur.archlinux.org for PKGBUILDs
+
+# arch=x86_64
+
 . surfraw || exit 1
 
 w3_config_hook () {
@@ -58,11 +61,11 @@ w3_complete_hook_opt ()
 {
         local opt="$1"
         case "$opt" in
-		# What are the categories for the AUR?  It seems to have been removed from the web interface.
-		-language=*) echo ca cs de en es fr hr hu it nb_no nb_NO pl pt ro ru sr tr uk zh_cn zh_CN ;;
-		-order=*) echo ascending descending ;;
-		-search=*) echo name maintainer submitter ;;
-		-sort=*) echo name location votes maintainer age ;;
+    # What are the categories for the AUR?  It seems to have been removed from the web interface.
+    -language=*) echo ca cs de en es fr hr hu it nb_no nb_NO pl pt ro ru sr tr uk zh_cn zh_CN ;;
+    -order=*) echo ascending descending ;;
+    -search=*) echo name maintainer submitter ;;
+    -sort=*) echo name location votes maintainer age ;;
                 *) return 1 ;;
         esac
 }

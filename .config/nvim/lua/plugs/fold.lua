@@ -5,7 +5,9 @@ local palette = require("kimbox.palette").colors
 local style = require("style")
 local hl = require("common.color")
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
+local W = require("common.api.win")
 
 local wk = require("which-key")
 
@@ -13,6 +15,7 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 local v = vim.v
+local F = vim.F
 -- local uv = vim.loop
 -- local g = vim.g
 
@@ -50,7 +53,7 @@ M.nav_fold = function(forward)
     end
 
     local cnt = v.count1
-    local wv = utils.save_win_positions(0)
+    local wv = W.win_save_positions(0)
     local cur_l = get_cur_lnum()
     cmd.norm({"m`", bang = true})
     -- local prev_lnum
@@ -305,7 +308,7 @@ function M.set_foldlevel(bufnr)
             local max = api.nvim_eval(
                 "max(map(range(1, line('$')), 'foldlevel(v:val)'))"
             )
-            vim.o.foldlevel = max == 0 and 99 or max
+            vim.o.foldlevel = F.if_expr(max == 0, 99, max)
             -- vim.o.foldlevel = max
         end
     )
@@ -376,6 +379,7 @@ local function init()
             map({"n", "x"}, "z.", it(ufo.goNextClosedFold), {desc = "Next closed fold"})
             map({"n", "x"}, "zL", it(go_next_and_peek), {desc = "Go next closed fold & peek"})
             map({"n", "x"}, "zH", it(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
+            map({"n", "x"}, "zP", it(ufo.peekFoldedLinesUnderCursor), {desc = "Peek fold"})
             map({"n", "x"}, "zK", it(ufo.closeFoldsWith), {desc = "Close folds with v:count"})
             map("n", "zR", it(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
             map("n", "zM", it(ufo.closeAllFolds), {desc = "Close all folds (keep 'fdl')"})

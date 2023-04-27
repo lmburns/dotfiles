@@ -6,9 +6,9 @@ if not wilder then
     return
 end
 
-local utils = require("common.utils")
-local autocmd = utils.autocmd
-local map = utils.map
+local mpi = require("common.api")
+local autocmd = mpi.autocmd
+local map = mpi.map
 
 local fn = vim.fn
 
@@ -286,7 +286,7 @@ local function init()
             )
 
             -- map("i", "<Leader>", " ", {nowait = true})
-            utils.reset_keymap("i", "<C-r>", {buffer = true})
+            mpi.reset_keymap("i", "<C-r>", {buffer = true})
         end,
         desc = "Disable Wilder in Telescope"
     }

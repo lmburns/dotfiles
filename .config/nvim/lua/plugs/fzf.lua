@@ -1,9 +1,10 @@
 local M = {}
 
 local utils = require("common.utils")
-local augroup = utils.augroup
-local map = utils.map
-local command = utils.command
+local mpi = require("common.api")
+local augroup = mpi.augroup
+local map = mpi.map
+local command = mpi.command
 
 local mru = require("common.mru")
 local coc = require("plugs.coc")
@@ -86,7 +87,7 @@ local function do_action(expect, path, bufnr, lnum, col)
 
     if lnum then
         col = col or 1
-        api.nvim_win_set_cursor(0, {lnum, col - 1})
+        mpi.set_cursor(0, lnum, col - 1)
     end
 end
 
@@ -644,7 +645,7 @@ local function init()
                 local bufnr = args.buf
                 require("plugs.fzf").prepare_ft()
                 map("t", "<Esc>", "<C-c>", {buffer = bufnr, desc = "Use escape with FZF"})
-                utils.del_keymap("t", "<C-c>", {buffer = bufnr})
+                mpi.del_keymap("t", "<C-c>", {buffer = bufnr})
             end
         },
         {

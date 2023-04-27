@@ -3,15 +3,15 @@
 #
 # DATE: 2023-04-15 21:17
 #
-# DESC: Elvi to yandex (yandex.com)
-# elvis: yandex	-- Search yandex (yandex.com)
+# DESC: Elvi to yandex (search engine) (yandex.com)
+# elvis: yandex	-- Search yandex (search engine) (yandex.com)
 . surfraw || exit 1
 
 w3_usage_hook () {
   cat <<EOF
 Usage: $w3_argv0 [options] [search words]...
 Description:
-  Search yandex (yandex.com)
+  Search yandex (search engine) (yandex.com)
 EOF
   w3_global_usage
 }

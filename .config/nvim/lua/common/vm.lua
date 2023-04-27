@@ -3,7 +3,8 @@ local M = {}
 local D = require("dev")
 local debounce = require("common.debounce")
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local cmd = vim.cmd
 local g = vim.g
@@ -34,7 +35,7 @@ M.mode = function()
 end
 
 local bmap = function(...)
-    return utils.bmap(0, ...)
+    return mpi.bmap(0, ...)
 end
 
 local override_lens = function(render, plist, nearest, idx, r_idx)
@@ -53,7 +54,7 @@ local override_lens = function(render, plist, nearest, idx, r_idx)
 end
 
 function M.start()
-    if D.plugin_loaded("noice.nvim") then
+    if utils.mod.plugin_loaded("noice.nvim") then
         cmd("silent! Noice disable")
         -- FIX: This bounces back and forth between 2 and 1
         last_cmdheight = vim.opt.cmdheight:get()
@@ -69,7 +70,7 @@ function M.start()
 end
 
 function M.exit()
-    if D.plugin_loaded("noice.nvim") then
+    if utils.mod.plugin_loaded("noice.nvim") then
         cmd("silent! Noice enable")
         vim.opt_local.cmdheight = last_cmdheight
     end
@@ -107,12 +108,12 @@ function M.mappings()
         debounced =
             debounce(
                 function()
-                    n_keymap = utils.get_keymap("n", "n").rhs
-                    -- s_keymap = utils.get_keymap("n", "s").rhs
+                    n_keymap = mpi.get_keymap("n", "n").rhs
+                    -- s_keymap = mpi.get_keymap("n", "s").rhs
 
-                    utils.prequire("registers", function(reg)
+                    utils.mod.prequire("registers", function(reg)
                          reg.setup({bind_keys = {false}})
-                         utils.del_keymap("n", '"')
+                         mpi.del_keymap("n", '"')
                     end)
                 end,
                 10

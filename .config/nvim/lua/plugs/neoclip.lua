@@ -8,7 +8,8 @@ end
 
 local dirs = require("common.global").dirs
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 local hl = require("common.color")
 local yank = require("common.yank")
 
@@ -19,6 +20,7 @@ local api = vim.api
 local fn = vim.fn
 local v = vim.v
 local cmd = vim.cmd
+-- local F = vim.F
 
 ---@class NeoclipEntryInner
 ---@field contents string[]
@@ -329,10 +331,10 @@ end
 ---@param reg string Register to use
 ---@param command? string Command to run after pasting
 function M.do_put(binding, reg, command)
-    reg = utils.get_default(reg, v.register)
+    reg = F.unwrap_or(reg, v.register)
     local cnt = v.count1
     -- local is_visual = fn.visualmode():match("[vV]")
-    -- local ok = pcall(cmd, ('norm! %s"%s%s%s'):format(F.tern(is_visual, "gv", ""), reg, cnt, binding))
+    -- local ok = pcall(cmd, ('norm! %s"%s%s%s'):format(F.if_expr(is_visual, "gv", ""), reg, cnt, binding))
     local ok = pcall(cmd, ("norm! \"%s%d%s"):format(reg, cnt, binding))
 
     if ok then

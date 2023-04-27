@@ -8,8 +8,8 @@ end
 
 local debounce = require("common.debounce")
 local hl = require("common.color")
-local utils = require("common.utils")
-local autocmd = utils.autocmd
+local mpi = require("common.api")
+local autocmd = mpi.autocmd
 
 local fn = vim.fn
 local api = vim.api

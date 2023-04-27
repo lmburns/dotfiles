@@ -1,12 +1,13 @@
-local coc = require("plugs.coc")
-local map = require("common.utils").map
+local mpi = require("common.api")
+local map = mpi.map
 local D = require("dev")
+local coc = require("plugs.coc")
 
 map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
 
 map(
     "n",
-    "<Leader>re",
+    "<Leader>jR",
     function()
         coc.run_command("tsserver.restart")
         coc.run_command("eslint.restart")

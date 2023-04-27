@@ -2,9 +2,9 @@
 
 local M = {}
 
-local D = require("dev")
 local utils = require("common.utils")
 local hl = require("common.color")
+local B = require("common.api.buf")
 
 local api = vim.api
 local fn = vim.fn
@@ -26,7 +26,7 @@ function M.wipe_empty_buf()
         function()
             M.wipe_empty_buf = nil
             if
-                D.buf_is_valid(bufnr)
+                B.buf_is_valid(bufnr)
                 and api.nvim_buf_get_name(bufnr) == ""
                 and not vim.bo[bufnr].modified
                 and api.nvim_buf_get_offset(bufnr, 1) <= 0

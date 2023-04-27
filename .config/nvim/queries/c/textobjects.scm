@@ -1,3 +1,5 @@
+; extends
+
 ;; TODO: supported by official Tree-sitter  if (_)* is more than one node
 ;; Neovim: will only match if (_) is exactly one node
 ;(function_definition

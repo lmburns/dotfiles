@@ -4,12 +4,12 @@ local M = {}
 
 local D = require("dev")
 local coc = require("plugs.coc")
--- local log = require("common.log")
 local gittool = require("common.gittool")
 local utils = require("common.utils")
-local map = utils.map
-
-local augroup = utils.augroup
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
+local W = require("common.api.win")
 
 -- local promise = require("promise")
 local async = require("async")
@@ -71,14 +71,14 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(D.get_vim_output("lua require('plugs.format').neoformat()"))
+    return unpack(mpi.get_vim_output("lua require('plugs.format').neoformat()"))
 end
 
 ---Format the document using `Neoformat`
 ---@param save boolean whether to save the document
 function M.format_doc(save)
-    save = utils.get_default(save, true)
-    local view = utils.save_win_positions(0)
+    save = F.unwrap_or(save, true)
+    local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
     gittool.root_exe(
@@ -136,8 +136,8 @@ function M.format_selected(mode, save)
         return
     end
 
-    save = utils.get_default(save, true)
-    local view = utils.save_win_positions(0)
+    save = F.unwrap_or(save, true)
+    local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
     gittool.root_exe(
@@ -145,12 +145,12 @@ function M.format_selected(mode, save)
             async(function()
                 local hasfmt = await(coc.action(
                     "hasProvider",
-                    {F.tern(mode, "formatRange", "format")}
+                    {F.if_expr(mode, "formatRange", "format")}
                 ))
                 -- TODO: make sure this actually returns an error string
                 if hasfmt then
                     local _, err = await(coc.action(
-                        F.tern(mode, "formatSelected", "format"),
+                        F.if_expr(mode, "formatSelected", "format"),
                         {mode}
                     ))
                     if err then

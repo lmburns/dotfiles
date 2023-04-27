@@ -1,12 +1,15 @@
+--@module common.win
+---@description: Interaction with windows
 local M = {}
 
-local D = require("dev")
+local W = require("common.api.win")
 
 local api = vim.api
 local fn = vim.fn
 
 local mru_list
 
+---Add window to MRU list
 function M.record()
     local cur_winid = api.nvim_get_current_win()
     local new_list = {}
@@ -28,11 +31,12 @@ function M.record()
     mru_list = new_list
 end
 
+---Go to last window
 function M.go2recent()
     local cur_winid = api.nvim_get_current_win()
     for _, winid in ipairs(mru_list) do
         if cur_winid ~= winid and api.nvim_win_is_valid(winid) then
-            if not D.is_floating_window(winid) then
+            if not W.win_is_float(winid) then
                 fn.win_gotoid(winid)
                 break
             end

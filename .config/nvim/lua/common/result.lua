@@ -29,7 +29,7 @@ setmetatable(
             if type(r.ok) == "nil" then
                 return "Result::Ok(nil)"
             elseif type(r.ok) == "table" then
-                return ("Result::Ok(%s)"):format(vim.tbl_map(require("dev").inspect, r.ok))
+                return ("Result::Ok(%s)"):format(vim.tbl_map(vim.inspect, r.ok))
             else
                 return ("Result::Ok(%s)"):format(r.ok)
             end

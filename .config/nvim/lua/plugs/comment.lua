@@ -12,11 +12,14 @@ end
 
 local wk = require("which-key")
 local utils = require("common.utils")
-local map = utils.map
+local mpi = require("common.api")
+local map = mpi.map
 
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
+local fs = vim.fs
+local g = vim.g
 
 local ft = require("Comment.ft")
 local U = require("Comment.utils")
@@ -27,6 +30,7 @@ local internal = require("ts_context_commentstring.internal")
 
 -- TODO: Doc comments
 
+---Setup `comment.nvim`
 function M.setup()
     comment.setup(
         {
@@ -101,7 +105,7 @@ function M.setup()
                 -- end
 
                 -- if ctx.cmotion >= 3 and ctx.cmotion <= 5 then
-                --     local cr, cc = utils.get_cursor()
+                --     local cr, cc = unpack(api.nvim_win_get_cursor(0))
                 --     local m = {
                 --         ["<"] = {ctx.range.srow, ctx.range.scol},
                 --         [">"] = {ctx.range.erow, ctx.range.ecol}
@@ -135,7 +139,7 @@ function M.setup()
             --                 cmd [[norm! gv]]
             --                 local cr, cc = unpack(state.cursor)
             --                 local diff = #fn.getline(".") - state.cursor_line_len
-            --                 utils.set_cursor(0, cr, cc + diff)
+            --                 mpi.set_cursor(0, cr, cc + diff)
             --                 state = {}
             --             end
             --         end
@@ -152,52 +156,71 @@ function M.setup()
     ft({"go", "rust"}, {"//%s", "/*%s*/"})
 end
 
----Flip the comment modes:
----Example:
---      print("first")               # print("first")
---      print("second")      ==>     # print("second")
---      # print("third")             print("third")
---      # print("fourth")            print("fourth")
--- ---@param opmode string
+-- ╓                                                          ╖
+-- ║                        CommentBox                        ║
+-- ╙                                                          ╜
+function M.comment_box()
+    local cb = D.npcall(require, "comment-box")
+    if not cb then
+        return
+    end
 
--- function M.flip_flop_comment(opmode)
---     local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
---     local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
---
---     local range = U.get_region(opmode)
---     local lines = U.get_lines(range)
---     local ctx = {
---         ctype = U.ctype.linewise,
---         range = range
---     }
---     local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
---     local lcs, rcs = U.unwrap_cstr(cstr)
---     local padding = U.get_pad(true)
---
---     local min_indent = -1
---     for _, line in ipairs(lines) do
---         if not U.is_empty(line) and not U.is_commented(lcs, rcs, padding)(line) then
---             local cur_indent = U.indent_len(line)
---             if min_indent == -1 or min_indent > cur_indent then
---                 min_indent = cur_indent
---             end
---         end
---     end
---
---     for i, line in ipairs(lines) do
---         local is_commented = U.is_commented(lcs, rcs, padding)(line)
---         if line == "" then
---         elseif is_commented then
---             lines[i] = U.uncommenter(lcs, rcs, padding)(line)
---         else
---             lines[i] = U.commenter(lcs, rcs, padding, min_indent)(line)
---         end
---     end
---     api.nvim_buf_set_lines(0, range.srow - 1, range.erow, false, lines)
---
---     api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
---     api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
--- end
+    cb.setup(
+        {
+            doc_width = 80, -- width of the document
+            box_width = 60, -- width of the boxes
+            borders = {
+                -- symbols used to draw a box
+                top = "─",
+                bottom = "─",
+                left = "│",
+                right = "│",
+                top_left = "╭",
+                top_right = "╮",
+                bottom_left = "╰",
+                bottom_right = "╯"
+            },
+            line_width = 70, -- width of the lines
+            line = {
+                -- symbols used to draw a line
+                line = "─",
+                line_start = "─",
+                line_end = "─"
+            },
+            outer_blank_lines = false, -- insert a blank line above and below the box
+            inner_blank_lines = false, -- insert a blank line above and below the text
+            line_blank_line_above = false, -- insert a blank line above the line
+            line_blank_line_below = false -- insert a blank line below the line
+        }
+    )
+
+    local _ = D.ithunk
+
+    -- 21 20 19 18 7
+    map({"n", "v"}, "<Leader>bb", cb.lcbox, {desc = "Left fixed, center text (round)"})
+    map({"n", "v"}, "<Leader>bs", _(cb.lcbox, 19), {desc = "Left fixed, center text (sides)"})
+    map({"n", "v"}, "<Leader>bd", _(cb.lcbox, 7), {desc = "Left fixed, center text (double)"})
+    map({"n", "v"}, "<Leader>blc", _(cb.lcbox, 13), {desc = "Left fixed, center text (side)"})
+    map({"n", "v"}, "<Leader>bll", cb.llbox, {desc = "Left fixed, left text (round)"})
+    map({"n", "v"}, "<Leader>blr", cb.lrbox, {desc = "Left fixed, right text (side)"})
+    map({"n", "v"}, "<Leader>br", cb.rcbox, {desc = "Right fixed, center text (round)"})
+    map({"n", "v"}, "<Leader>bR", cb.rcbox, {desc = "Right fixed, right text (round)"})
+
+    map({"n", "v"}, "<Leader>ba", cb.albox, {desc = "Left adapted (round)"})
+    map({"n", "v"}, "<Leader>be", _(cb.albox, 19), {desc = "Left adapted (side)"})
+    map({"n", "v"}, "<Leader>bA", cb.acbox, {desc = "Center adapted (round)"})
+
+    map({"n", "v"}, "<Leader>bc", cb.ccbox, {desc = "Center fixed, center text (round)"})
+
+    map({"n", "v"}, "<Leader>cc", _(cb.lcbox, 21), {desc = "Left fixed, center text (top/bottom)"})
+    map({"n", "v"}, "<Leader>cb", _(cb.lcbox, 8), {desc = "Left fixed, center text (thick)"})
+    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Center adapted (top/bottom)"})
+
+    -- 2 6 7
+    map({"n", "i"}, "<M-w>", _(cb.cline, 6), {desc = "Insert thick line"})
+
+    map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
+end
 
 local function init()
     M.setup()

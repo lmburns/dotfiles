@@ -15,10 +15,10 @@ local llicons = style.plugins.lualine
 
 -- local overseer = require("overseer")
 
-local utils = require("common.utils")
-local map = utils.map
-local augroup = utils.augroup
--- local autocmd = utils.autocmd
+local mpi = require("common.api")
+local map = mpi.map
+local augroup = mpi.augroup
+-- local autocmd = mpi.autocmd
 
 local fs = vim.fs
 local fn = vim.fn
@@ -93,11 +93,11 @@ local sections_1 = {
             color = function(_section)
                 -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                 return {
-                    gui = F.tern(vim.bo.modified, "bold", "none"),
-                    fg = F.tern(
+                    gui = F.if_expr(vim.bo.modified, "bold", "none"),
+                    fg = F.if_expr(
                         vim.b.fugitive_fname,
                         colors.orange,
-                        F.tern(vim.bo.readonly, colors.beaver, "none")
+                        F.if_expr(vim.bo.readonly, colors.beaver, "none")
                     ),
                 }
             end,
@@ -111,7 +111,7 @@ local sections_1 = {
                     end
                 end
 
-                return F.tern(fugitive_name, fugitive_name, str)
+                return F.if_expr(fugitive_name, fugitive_name, str)
             end,
         },
         {
@@ -190,7 +190,7 @@ local sections_1 = {
             cond = function()
                 return conds.check_git_workspace()
             end,
-            color = F.tern(
+            color = F.if_expr(
                 g.colors_name == "kimbox",
                 {fg = colors.dyellow, gui = "bold"},
                 {gui = "bold"}
@@ -217,7 +217,7 @@ local sections_1 = {
             plugs.foldlevel.fn,
             color = {fg = colors.yellow, gui = "bold"},
         },
-        F.tern(
+        F.if_expr(
             g.colors_name == "kimbox",
             {"%p%%/%-3L", color = {fg = colors.light_red, gui = "bold"}},
             {"%p%%/%-3L"}
@@ -303,7 +303,6 @@ function M.toggle_mode()
     local lutils = require("lualine.utils.utils")
 
     if D.tbl_equivalent(current_config.sections, sections_1) then
-        -- if vim.inspect(current_config.sections) == vim.inspect(sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)
@@ -369,6 +368,12 @@ function M.autocmds()
                     lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
                 end
             end,
+        },
+        {
+            event = "User",
+            pattern = "CocStatusChange",
+            desc = "Update Lualine statusline when Coc status changes",
+            command = "redrawstatus",
         }
     )
 end
@@ -473,7 +478,7 @@ local function init()
                         },
                         color = function(_section)
                             -- return { fg = vim.bo.modified and colors.purple or colors.fg }
-                            return {gui = F.tern(vim.bo.modified, "bold", "none")}
+                            return {gui = F.if_expr(vim.bo.modified, "bold", "none")}
                         end,
                     },
                 },
