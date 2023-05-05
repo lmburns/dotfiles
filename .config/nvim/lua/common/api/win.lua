@@ -1,4 +1,4 @@
---@module common.api.win
+---@module "common.api.win"
 ---@description: Interaction with windows
 local M = {}
 
@@ -88,14 +88,7 @@ end
 ---@return number[]
 M.win_find_buf = function(bufnr, tabpage)
     local result = {}
-    local wins
-
-    if tabpage then
-        wins = api.nvim_tabpage_list_wins(tabpage)
-    else
-        wins = api.nvim_list_wins()
-    end
-
+    local wins = F.if_expr(tabpage, api.nvim_tabpage_list_wins(tabpage), api.nvim_list_wins())
     for _, id in ipairs(wins) do
         if api.nvim_win_get_buf(id) == bufnr then
             table.insert(result, id)

@@ -20,7 +20,6 @@ local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
-local global = require("common.global")
 local icons = require("style").plugins.dap
 local mpi = require("common.api")
 local command = mpi.command
@@ -371,7 +370,7 @@ local function init()
         command = "node",
         args = {
             ("%s/%s"):format(
-                global.home,
+                lb.dirs.home,
                 "/.vscode/extensions/firefox-devtools.vscode-firefox-debug-2.9.6/dist/adapter.bundle.js"
             )
         }

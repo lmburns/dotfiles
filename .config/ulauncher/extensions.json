@@ -54,5 +54,12 @@
         "updated_at": "2023-04-14T15:05:24.583234",
         "last_commit": "ee3ea43e905cf184449c328f0dadaa4395f3ec0c",
         "last_commit_time": "2022-01-14T13:46:35"
+    },
+    "com.github.diggit.ulauncher-lolcate": {
+        "id": "com.github.diggit.ulauncher-lolcate",
+        "url": "https://github.com/diggit/ulauncher-lolcate",
+        "updated_at": "2023-04-30T09:59:05.891353",
+        "last_commit": "8f24b7c898a89e42ca36525f6b833cccee387a23",
+        "last_commit_time": "2021-10-17T17:27:07"
     }
 }

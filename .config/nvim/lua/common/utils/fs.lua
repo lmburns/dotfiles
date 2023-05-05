@@ -1,5 +1,5 @@
---@module common.utils.fs
 ---@description: Utility functions that interact with the filesystem
+---@module "common.utils.fs"
 local M = {}
 
 local utils = require("common.utils")
@@ -68,7 +68,7 @@ end
 ---@return uv_fs_t|string
 ---@return uv.aliases.fs_stat_table?
 M.sync.read_file = function(path)
-    -- 292 == 0x444
+    -- tonumber(444, 8) == 292
     local fd = assert(uv.fs_open(fn.expand(path), "r", 292))
     local stat = assert(uv.fs_fstat(fd))
     local buffer = assert(uv.fs_read(fd, stat.size, 0))
@@ -86,6 +86,7 @@ M.async = {}
 ---@param path string
 ---@return Promise_t<string> data File data
 M.read_file = function(path)
+    -- tonumber(666, 8)
     return async(
         function()
             local fd = await(uva.open(fn.expand(path), "r", 438))
@@ -104,18 +105,32 @@ end
 M.write_file = function(path, data)
     return async(
         function()
-            local path_ = path .. "_"
-            local fd = await(uva.open(path_, "w", 438))
+            local p = path .. ".__"
+            local fd = await(uva.open(p, "w", 438))
             await(uva.write(fd, data))
             await(uva.close(fd))
-            await(uva.rename(path_, path))
+            pcall(await, uva.rename(p, path))
         end
     )
 end
 
----Only stat a given file.
+---Copy a file
 ---@param path string
----@return Promise<uv.aliases.fs_stat_table> stat Stat table
+---@param new_path string
+---@return Promise
+M.copy_file = function(path, new_path)
+    return async(
+        function()
+            local p = new_path .. ".__"
+            await(uva.copyfile(path, p))
+            pcall(await, uva.rename(p, new_path))
+        end
+    )
+end
+
+---Stat a given file
+---@param path string
+---@return Promise_t<uv.aliases.fs_stat_table> stat Stat table
 M.stat = function(path)
     return async(
         function()
@@ -141,11 +156,8 @@ M.async = {
 ---@param fname string filename to follow
 ---@param func string|fun() action to execute after following symlink
 M.follow_symlink = function(fname, func)
-    fname = F.if_expr(
-        not utils.is.empty(fname),
-        fn.fnamemodify(fname, ":p"),
-        api.nvim_buf_get_name(0)
-    )
+    fname =
+        F.if_expr(not utils.is.empty(fname), fn.fnamemodify(fname, ":p"), api.nvim_buf_get_name(0))
     local linked_path = uv.fs_readlink(fname)
     if linked_path then
         cmd(("keepalt file %s"):format(linked_path))
@@ -160,5 +172,8 @@ M.follow_symlink = function(fname, func)
         end
     end
 end
+
+local M2 = require("common.utils")
+M2.fs = M
 
 return M

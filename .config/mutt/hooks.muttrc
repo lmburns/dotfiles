@@ -1,0 +1,19 @@
+# folder-hook . 'source ~/.config/mutt/default.rc'
+
+folder-hook .       'set read_inc = 1000'
+folder-hook (^imap) 'set read_inc = 100'
+
+# The MUTT_EDITOR variable can be used in the mailcap file to change how MIME
+# messages are decoded in replies
+send-hook ~A  'setenv MUTT_EDITOR 1'
+send2-hook ~A 'unsetenv MUTT_EDITOR'
+
+# Highlight git diffs in messages
+message-hook ~A 'unset display_filter allow_ansi'
+message-hook '~b "^diff --git"' 'set allow_ansi display_filter="awk -f ~/.config/mutt/scripts/hldiff.awk"'
+
+# Show failed SPF checks
+message-hook ~A  'ignore received-spf'
+message-hook '~h "^received-spf: (soft)?fail"' 'unignore received-spf'
+
+# vim: ft=neomuttrc:et:sw=0:ts=2:sts=2

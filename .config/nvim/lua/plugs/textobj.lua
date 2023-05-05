@@ -379,7 +379,7 @@ function M.sandwich()
         "x",
         "zF",
         function()
-            local cms = vsm.split(vim.bo.cms, "%s", {trimempty = true})[1] or "#"
+            local cms = vim.split(vim.bo.cms, "%s", {trimempty = true})[1] or "#"
             utils.normal("n", ("<Esc>`<O<Esc>S%s [[[<Esc>`>o<Esc>S%s ]]]<Esc>k$|"):format(cms, cms))
         end,
         {desc = "Surround with foldmarker"}

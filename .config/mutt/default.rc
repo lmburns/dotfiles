@@ -1,0 +1,20 @@
+unmailboxes *
+unalternates *
+unalias *
+
+unset from
+# unset envelope_from_address
+unset query_command
+unset hostname
+unset alias_file
+# unset signature
+# unmy_hdr Organization
+
+#  ══════════════════════════════════════════════════════════════════════
+
+# unset hostname
+# unmailboxes *
+# unalternates *
+# unset signature
+
+# vim: ft=neomuttrc:et:sw=0:ts=2:sts=2

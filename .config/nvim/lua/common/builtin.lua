@@ -49,7 +49,7 @@ function M.jump0()
         -- expr = "0"
         expr = "g0" -- screen-line
     else
-        nvim.buf.set_mark(0, "`", lnum, col, {})
+        nvim.mark["`"] = {lnum, col}
         -- expr = "^"
         expr = "g^" -- screen-line
     end
@@ -207,7 +207,7 @@ function M.switch_lastbuf()
 
                 -- Cursor position when last exiting
                 -- I already have an autocmd for this
-                cmd.norm({'`"', bang = true, mods = {silent = true}})
+                pcall(cmd.norm, {'`"', bang = true, mods = {silent = true}})
                 break
             end
         end

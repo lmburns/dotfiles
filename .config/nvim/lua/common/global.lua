@@ -1,42 +1,102 @@
+---@module 'common.global'
+---@author 'lmburns'
+---@license 'BSD3'
 local M = {}
 
 local fn = vim.fn
 local uv = vim.loop
-local api = vim.api
-local env = vim.env
-local F = vim.F
+
+_G.lb = {}
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Global
 -- ╘══════════════════════════════════════════════════════════╛
 
+-- Identity assignments for vim objects without a type
+
+---@class vim.g
+---@field [string] any
+vim.g = vim.g
+
+---@class vim.fn
+vim.fn = vim.fn
+
+---@class vim.cmd
+vim.cmd = vim.cmd
+
+---@class vim.env
+vim.env = vim.env
+
+---@class vim.F
+vim.F = vim.F
+
 --  ╭───────────╮
 --  │ Variables │
 --  ╰───────────╯
 
-_G.o = vim.opt -- vim options: behaves like `:set`
+-- Want these global for lua commands
+
+---vim options: behaves like `set`
+---@type vim.opt
+_G.o = vim.opt
+
+---local options: behaves like `setlocal`
+---@type vim.opt
 _G.opt_local = vim.opt_local
+
+---global options: behaves like `setglobal`
+---@type vim.opt
 _G.opt_global = vim.opt_global
--- o           --  behaves like `:set` (global)
--- opt         --  behaves like `:set` (global and local)
--- opt_global  --  behaves like `:setglobal`
--- opt_local   --  behaves like `:setlocal`
 
-_G.g = vim.g -- global variables:
-_G.go = vim.go -- global options
-_G.w = vim.wo -- window options: behaves like `:setlocal` (alias for vim.wo)
-_G.b = vim.bo -- buffer options: behaves like `:setlocal` (alias for vim.bo)
+---global variables
+---@type table<string, any>|vim.g
+_G.g = vim.g
 
-_G.fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
-_G.cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
-_G.env = vim.env -- environment variable access
+---global options. like `setglobal`
+---@type table<number, vim.go>|vim.go
+_G.go = vim.go
+
+---window options: behaves like `:setlocal` (alias for vim.wo)
+---@type table<number, vim.wo>|vim.wo
+_G.w = vim.wo
+
+---buffer options: behaves like `:setlocal` (alias for vim.bo)
+---@type table<number, vim.bo>|vim.bo
+_G.b = vim.bo
+
+--  ══════════════════════════════════════════════════════════════════════
+
+---@type vim.fn
+_G.fn = vim.fn
+---@type vim.cmd
+_G.cmd = vim.cmd
+---@type vim.env
+_G.env = vim.env
+---@type vim.api
 _G.api = vim.api
+---@type uv
 _G.uv = vim.loop
+---@type vim.F
 _G.F = vim.F
 
+---@type UvFS
+_G.uva = require("uva")
+---@type DevL
 _G.dev = require("dev")
+---@type Log
+_G.log = require("common.log")
+---@type UtilCommon|UtilFuncs
+_G.utils = require("common.utils")
+---@type API
+_G.mpi = require("common.api")
+---@type PCRE
+-- _G.rex = require("rex_pcre2")
+
+---@type List
 _G.List = require("plenary.collections.py_list")
+---@type Enum
 _G.Enum = require("plenary.enum")
+---@type Path
 _G.Path = require("plenary.path")
 
 -- _G.Job = require("plenary.job")
@@ -44,17 +104,20 @@ _G.Path = require("plenary.path")
 -- _G.a = require("plenary.async_lib")
 -- _G.op = require("plenary.operators")
 
+---@type Promise
 _G.promise = require("promise")
+---@type Async
 _G.async = require("async")
-_G.await = require("async").wait
+_G.await = _G.async.wait
 
----@type Nvim
+---@type Nvim|Neovim
 _G.nvim = require("nvim")
 
 -- ---@type {[string]: {[string]: any}}
 -- ---@type Dict<Dict<any>>
 
----@type Dict<{[string]: any}>
+---@class PackerPlugins
+---@field [string] any
 _G.packer_plugins = _G.packer_plugins
 
 -- Makes `_t` global
@@ -70,6 +133,7 @@ _G.Void =
     setmetatable(
     {},
     {
+        ---@param self self
         ---@return Void
         __index = function(self)
             return self
@@ -110,7 +174,7 @@ end
 ---Print text nicely, joined with newlines
 ---@param ... any
 _G.pln = function(...)
-    local msg_tbl = dev.map({...}, vim.inspect)
+    local msg_tbl = dev.map({...}, utils.inspect)
     -- print(unpack(msg_tbl))
     print(table.concat(msg_tbl, "\n\n"))
 end
@@ -118,9 +182,9 @@ end
 ---Print text nicely, joined with spaces
 ---@param ... any
 _G.p = function(...)
-    local msg_tbl = dev.map({...}, vim.inspect)
-    -- print(unpack(msg_tbl))
-    print(table.concat(msg_tbl, " "))
+    local msg_tbl = dev.map({...}, utils.inspect)
+    print(unpack(msg_tbl))
+    -- print(table.concat(msg_tbl, " "))
 end
 
 ---Print text nicely
@@ -161,6 +225,22 @@ end
 ---@return string
 string.escape = function(self)
     return vim.pesc(self)
+end
+
+---Tests if string starts with `prefix`
+---@param self string
+---@param prefix string
+---@return boolean
+string.startswith = function(self, prefix)
+    return vim.startswith(self, prefix)
+end
+
+---Tests if string ends with `suffix`
+---@param self string
+---@param suffix string
+---@return boolean
+string.endswith = function(self, suffix)
+    return vim.endswith(self, suffix)
 end
 
 ---Trims whitespace on left and right side by default.
@@ -217,7 +297,7 @@ string.capitalize = function(self)
     return ret
 end
 
----Split a string on ` ` by default. Optional delimiter.
+---Split a string on <space> by default. Optional delimiter.
 ---@param self string
 ---@param delim? string
 ---@param opts? {plain?: boolean, trimempty?: boolean}
@@ -229,9 +309,6 @@ end
 --  ╭──────╮
 --  │ PCRE │
 --  ╰──────╯
-
----@alias PCRERet0 string|number|nil
----@alias PCRERet1 string|false|nil
 
 ---Use PCRE regular expressions. Equivalent to `string.match`
 ---See: https://rrthomas.github.io/lrexlib/manual.html#match
@@ -313,9 +390,9 @@ end
 --  │ Table │
 --  ╰───────╯
 
-table.pack = function(_, ...)
-    return {n = select("#", ...), ...}
-end
+-- table.pack = function(_, ...)
+--     return {n = select("#", ...), ...}
+-- end
 
 --  ╭──────────╮
 --  │ Iterator │
@@ -474,25 +551,37 @@ _G.BLACKLIST_FT = {
     -- "vimwiki",
 }
 
--- ╓                                                          ╖
--- ║       Global variables referenced from this module       ║
--- ╙                                                          ╜
-
+-- Universal variables that can be referenced from this file
 M.user = uv.os_get_passwd()
 M.username = M.user.username
-M.home = os.getenv("HOME") -- vim.loop.os_homedir()
-M.name = uv.os_uname().sysname -- jit.os:lower()
-M.luajit = vim.split(jit.version, " ")[2]
-M.version = {
-    vim.version().major,
-    vim.version().minor,
-    vim.version().patch
-}
+M.shell = M.user.shell
+M.uname = uv.os_uname()
+M.sysname = M.uname.sysname -- jit.os:lower()
+M.luajit = jit.version:split()[2]
+M.pid = uv.os_getpid()
 M.dirs = {
+    home = M.user.homedir,
     config = fn.stdpath("config"),
     cache = fn.stdpath("cache"),
     data = fn.stdpath("data"),
-    run = fn.stdpath("run")
+    run = fn.stdpath("run"),
+    tmp = uv.os_tmpdir()
 }
+-- vim.version() doesn't return a metatable
+local version = {vim.version().major, vim.version().minor, vim.version().patch}
+M.version = vim.version.parse(("%s.%s.%s"):format(unpack(version)))
+
+-- Globalize
+_G.lb.vars = {
+    user = M.user,
+    username = M.username,
+    shell = M.shell,
+    uname = M.uname,
+    sysname = M.sysname,
+    luajit = M.luajit,
+    pid = M.pid,
+    version = M.version
+}
+_G.lb.dirs = M.dirs
 
 return M

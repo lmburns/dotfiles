@@ -10,7 +10,6 @@ local style = require("style")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
-local dirs = require("common.global").dirs
 -- local coc = require("plugs.coc")
 
 local wk = require("which-key")
@@ -68,7 +67,7 @@ function M.listish()
                 clear = "qe",     -- clear all items
                 close = "<Nop>",
                 next = "<Nop>",
-                prev = "<Nop>"
+                prev = "<Nop>",
             },
             locallist = {
                 open = "<Leader>wo",
@@ -77,15 +76,15 @@ function M.listish()
                 clear = "<Leader>wi",
                 close = "<Nop>",
                 next = "<Nop>",
-                prev = "<Nop>"
+                prev = "<Nop>",
             },
         }
     )
 
     require("legendary").commands(
         {
-            {":ClearQuickfix",  description = "Clear quickfix list"},
-            {":ClearLoclist",   description = "Clear location list"},
+            {":ClearQuickfix", description = "Clear quickfix list"},
+            {":ClearLoclist", description = "Clear location list"},
             {":ClearListNotes", description = "Clear quickfix notes"},
         }
     )
@@ -97,12 +96,12 @@ function M.listish()
                 o = "Quickfix open",
                 a = "Quickfix add current line",
                 A = "Quickfix add note",
-                e = "Quickfix clear items (empty)"
+                e = "Quickfix clear items (empty)",
             },
             ["<Leader>wo"] = "Loclist open",
             ["<Leader>wa"] = "Loclist add current line",
             ["<Leader>wn"] = "Loclist add note",
-            ["<Leader>wi"] = "Loclist clear items"
+            ["<Leader>wi"] = "Loclist clear items",
         }
     )
 end
@@ -171,8 +170,8 @@ function M.sort()
 
     sort.setup({delimiters = {",", "|", ";", ":", "s", "t"}})
 
-    map("n", "gW", "Sort", {cmd = true})
-    map("x", "gW", ":Sort<CR>", {desc = "Sort selection"})
+    map("n", "gz", "Sort", {cmd = true, desc = "Sort operator"})
+    map("x", "gz", ":Sort<CR>", {desc = "Sort selection"})
     -- map("v", "gW", "<Esc><Cmd>Sort<CR>", {desc = "Sort selection"})
 
     -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
@@ -198,15 +197,42 @@ function M.neogen()
         {
             enabled = true,
             input_after_comment = true,
-            languages = {lua = {template = {annotation_convention = "emmylua"}}},
+            languages = {
+                lua = {
+                    template = {
+                        annotation_convention = "emmylua",
+                        emmylua = {
+                            {nil, "- $1", {type = {"class", "func"}}},
+                            {nil, "- $1", {no_results = true, type = {"class", "func"}}},
+                            {nil, "-@module $1", {no_results = true, type = {"file"}}},
+                            {nil, "-@author $1", {no_results = true, type = {"file"}}},
+                            {nil, "-@license $1", {no_results = true, type = {"file"}}},
+                            {nil, "", {no_results = true, type = {"file"}}},
+                            {"parameters", "-@param %s $1|any"},
+                            {"varargs", "-@param ... $1|any"},
+                            {"return_statement", "-@return $1|any"},
+                            {"class_name", "-@class $1|any"},
+                            {"type", "-@type $1"},
+                        },
+                    },
+                },
+                python = {
+                    template = {annotation_convention = "numpydoc"},
+                },
+                c = {
+                    template = {annotation_convention = "doxygen"},
+                },
+            },
         }
     )
     map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
     map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
     map("n", "<Leader>dg", [[:Neogen<Space>]], {desc = "Neogen <text>"})
     map("n", "<Leader>dn", [[<Cmd>Neogen<CR>]], {desc = "Neogen default"})
-    map("n", "<Leader>df", [[<Cmd>lua require('neogen').generate({ type = 'func' })<CR>]])
-    map("n", "<Leader>dc", [[<Cmd>lua require("neogen").generate({ type = "class" })<CR>]])
+    map("n", "<Leader>df", D.ithunk(neogen.generate, {type = "func"}), {desc = "Neogen: func"})
+    map("n", "<Leader>dc", D.ithunk(neogen.generate, {type = "class"}), {desc = "Neogen: class"})
+    map("n", "<Leader>dt", D.ithunk(neogen.generate, {type = "type"}), {desc = "Neogen: type"})
+    map("n", "<Leader>dF", D.ithunk(neogen.generate, {type = "file"}), {desc = "Neogen: file"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -241,7 +267,7 @@ function M.luapad()
                 narr = {1, 2, 3, 4, 5},
                 tt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
                 t = {abc = 123, def = 456, ghi = 789, jkl = 1011},
-                mix = {["34"] = 123, def = "str",[5] = 789,["-0-"] = 1011},
+                mix = {["34"] = 123, def = "str", [5] = 789, ["-0-"] = 1011},
                 shout = function(str)
                     return ((str):upper() .. "!")
                 end,
@@ -257,7 +283,7 @@ function M.luapad()
                 cmd("sil! Noice enable")
             end
         end,
-        desc = "Enable noice when leaving Luapad"
+        desc = "Enable noice when leaving Luapad",
     }
 end
 
@@ -497,7 +523,7 @@ function M.better_esc()
             timeout = 375,
             clear_empty_lines = false, -- clear line after escaping if there is only whitespace
             keys =
-            "<Esc>"                    -- keys used for escaping, if it is a function will use the result everytime
+            "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
             -- keys = function()
             --   return api.nvim_win_get_cursor(0)[2] > 1 and "<esc>l" or "<esc>"
             -- end,
@@ -689,15 +715,7 @@ function M.scratchpad()
     -- g.scratchpad_daily_location = '~/.cache/scratchpad_daily.md'
     -- g.scratchpad_daily_format = '%Y-%m-%d'
 
-    map("n", "<Leader>sc", "<cmd>lua R'scratchpad'.invoke()<CR>")
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                           NLua                           │
--- ╰──────────────────────────────────────────────────────────╯
---- This involves the original mapping in `nlua` to be commented out
-function M.nlua()
-    map("n", "M", [[<cmd>lua require("nlua").keyword_program()<CR>]])
+    map("n", "<Leader>sc", "<cmd>lua require'scratchpad'.invoke()<CR>")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -723,7 +741,7 @@ function M.paperplanes()
             provider = "paste.rs",
             provider_options = {},
             notifier = vim.notify,
-            cmd = "curl"
+            cmd = "curl",
         }
     )
 end
@@ -762,7 +780,7 @@ function M.colorizer()
                 "xdefaults",
                 "xml",
                 "yaml",
-                "zsh"
+                "zsh",
             },
             user_default_options = {
                 RGB = true,                                -- #RGB hex codes
@@ -816,11 +834,11 @@ function M.grepper()
                     "--glob='!.git/**'",
                     "--glob='!target/**'",
                     "--glob='!node_modules/**'",
-                    "--glob='!ccache/**'"
+                    "--glob='!ccache/**'",
                 },
                 " "
             ),
-            grepformat = "%f:%l:%c:%m,%f:%l:%m"
+            grepformat = "%f:%l:%c:%m,%f:%l:%m",
         },
     }
 
@@ -893,7 +911,7 @@ function M.registers()
                 tab = "‣",
                 register_type_charwise = "ᶜ",
                 register_type_linewise = "ˡ",
-                register_type_blockwise = "ᵇ"
+                register_type_blockwise = "ᵇ",
             },
             window = {
                 max_width = 100,
@@ -914,7 +932,7 @@ function M.registers()
                 delete = "Special",
                 yank = "Delimiter",
                 history = "Number",
-                named = "Todo"
+                named = "Todo",
             },
         }
     )
@@ -945,7 +963,7 @@ function M.lfnvim()
             border = style.current.border,
             highlights = {
                 NormalFloat = {link = "Normal"},
-                FloatBorder = {guifg = require("kimbox.palette").colors.magenta},
+                FloatBorder = {guifg = require("kimbox.colors").magenta},
             },
         }
     )
@@ -988,7 +1006,7 @@ function M.link_visitor()
     lv.setup(
         {
             open_cmd = "handlr open",
-            silent = true,            -- disable all prints
+            silent = true,             -- disable all prints
             skip_confirmation = false, -- Skip the confirmation step, default: false
         }
     )
@@ -1074,7 +1092,7 @@ function M.urlview()
             -- Keymaps for jumping to previous / next URL in buffer
             jump = {
                 prev = "[u",
-                next = "]u"
+                next = "]u",
             },
         }
     )
@@ -1082,7 +1100,7 @@ function M.urlview()
     wk.register(
         {
             ["[u"] = "Previous URL",
-            ["]u"] = "Next URL"
+            ["]u"] = "Next URL",
         }
     )
 
@@ -1107,28 +1125,28 @@ function M.devicons()
             scratchpad = {
                 icon = "",
                 color = "#6d8086",
-                name = "Scratchpad"
+                name = "Scratchpad",
             },
             NeogitStatus = {
                 icon = "",
                 color = "#F14C28",
-                name = "BranchCycle"
+                name = "BranchCycle",
             },
             org = {
                 icon = "◉",
                 color = "#75A899",
-                name = "Org"
+                name = "Org",
             },
             sol = {
                 icon = "♦",
                 color = "#a074c4",
-                name = "Sol"
+                name = "Sol",
             },
             sh = {
                 icon = "",
                 color = "#89e051",
                 cterm_color = "113",
-                name = "Sh"
+                name = "Sh",
             },
         }
     )
@@ -1150,7 +1168,7 @@ function M.nerdicons()
             preview_prompt = " ",       -- Preview Prompt Icon
             up = "<C-k>",                  -- Move up in preview
             down = "<C-j>",                -- Move down in preview
-            copy = "<C-y>"                 -- Copy to the clipboard
+            copy = "<C-y>",                -- Copy to the clipboard
         }
     )
 end
@@ -1207,7 +1225,7 @@ function M.git_conflict()
                 disable_diagnostics = false, -- will disable diagnostics while conflicted
                 highlights = {
                     incoming = "DiffText",
-                    current = "DiffAdd"
+                    current = "DiffAdd",
                 },
             },
         }
@@ -1314,7 +1332,7 @@ function M.project()
             scope_chdir = "global",
             -- Path where project.nvim will store the project history for use in
             -- telescope
-            datapath = dirs.data,
+            datapath = lb.dirs.data,
         }
     )
 
@@ -1350,26 +1368,26 @@ function M.visualmulti()
 
     g.VM_custom_motions = {
         ["L"] = "$",
-        ["H"] = "^"
+        ["H"] = "^",
     }
 
     g.VM_custom_noremaps = {
         ["=="] = "==",
         ["<<"] = "<<",
-        [">>"] = ">>"
+        [">>"] = ">>",
     }
 
     -- g.VM_custom_commands = {}
 
     g.VM_user_operators = {
-        "dss",          -- delete surround automatic detection
-        {css = 1},      -- change surround automatic detection
-        {yss = 1},      -- surround line
-        {cs = 2},       -- change surround
-        {ds = 1},       -- delete surround
-        "gc",           -- comment
+        "dss",           -- delete surround automatic detection
+        {css = 1},       -- change surround automatic detection
+        {yss = 1},       -- surround line
+        {cs = 2},        -- change surround
+        {ds = 1},        -- delete surround
+        "gc",            -- comment
         {ys = 3},
-        {cr = 3},       -- FIX: change case
+        {cr = 3},        -- FIX: change case
         {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
@@ -1472,7 +1490,7 @@ function M.visualmulti()
         ["I Arrow ge"] = "<C-Up>",
         ["I Arrow e"] = "<C-Down>",
         ["I Arrow gE"] = "<C-S-Up>",
-        ["I Arrow E"] = "<C-S-Down>"
+        ["I Arrow E"] = "<C-S-Down>",
         -- ["I Prev"] = "<C-k>", -- Insert mode to go prev cursor
         -- ["I Next"] = "<C-j>", -- Insert mode to go next cursor
     }
@@ -1577,17 +1595,10 @@ function M.fundo()
 
     fundo.setup(
         {
-            archives_dir = ("%s/%s"):format(dirs.cache, "fundo"),
+            archives_dir = ("%s/%s"):format(lb.dirs.cache, "fundo"),
             limit_archives_size = 512,
         }
     )
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                           vve                            │
---  ╰──────────────────────────────────────────────────────────╯
-function M.vve()
-
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -1622,20 +1633,34 @@ end
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
--- function M.smartcolumn()
---     local sc = D.npcall(require, "smartcolumn")
---     if not sc then
---         return
---     end
---
---     sc.setup(
---         {
---             colorcolumn = 100,
---             disabled_filetypes = BLACKLIST_FT,
---             custom_colorcolumn = {},
---             limit_to_window = false
+function M.smartcolumn()
+    local sc = D.npcall(require, "smartcolumn")
+    if not sc then
+        return
+    end
+
+    sc.setup(
+        {
+            colorcolumn = 100,
+            disabled_filetypes = BLACKLIST_FT,
+            custom_colorcolumn = {},
+            limit_to_window = false,
+        }
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                           vve                            │
+--  ╰──────────────────────────────────────────────────────────╯
+-- function M.vve()
+--     wk.register({
+--         ["<Leader>e"] = {
+--             a = "Encode: ASCII (op)",
+--             b = "Encode: binary (op)",
+--             B = "Encode: base64 (op)",
+--             e = "Encode: HTML (op)",
 --         }
---     )
+--     })
 -- end
 
 return M

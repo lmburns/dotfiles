@@ -6,10 +6,11 @@ if not wk then
     return
 end
 
-local style = require("style")
 local utils = require("common.utils")
 local mpi = require("common.api")
 local map = mpi.map
+local style = require("style")
+local icons = style.icons
 
 function M.setup()
     local presets = require("which-key.plugins.presets")
@@ -107,9 +108,9 @@ function M.setup()
             count = true,
         },
         icons = {
-            breadcrumb = "»", -- symbol used in the command line area that shows active key combo
-            separator = "", -- 輪淪‣ symbol used between a key and it's label
-            group = "󰫢"    -- 󰫢 symbol prepended to a group
+            breadcrumb = icons.ui.chevron.double.right, -- symbol used in the command line area that shows active key combo
+            separator = icons.ui.chevron.right, -- symbol used between a key and it's label
+            group = icons.misc.star_small    -- symbol prepended to a group
         },
         popup_mappings = {
             scroll_down = "<C-d>", -- binding to scroll down inside the popup
@@ -130,9 +131,20 @@ function M.setup()
         },
         ignore_missing = false,           -- enable this to hide mappings for which you didn't specify a label
         -- hide mapping boilerplate
-        -- hidden = { "<silent>", "<cmd>", "<Cmd>", "<CR>", "call", "lua", "^:", "^ "},
-        -- hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", "<CR>"},
-        hidden = {"lua", "^ ", "<silent>", "<cmd> ", "<Cmd> ", "<cmd>", "<Cmd>", ": ", "<CR>"},
+        hidden = {
+            "call",
+            "lua",
+            "^ ",
+            "^: ",
+            ": ",
+            "<silent>",
+            "<MouseMove>",
+            "<cmd> ",
+            "<Cmd> ",
+            "<cmd>",
+            "<Cmd>",
+            "<CR>",
+        },
         show_help = true, -- show help message on the command line when the popup is visible
         show_keys = true, -- show the currently pressed key and its label as a message in the command line
         triggers = "auto",
@@ -167,8 +179,7 @@ end
 ---
 ---@param mode string
 local function wk_help(mode)
-    -- wk.show_command("", utils.mode())
-    wk.show_command("", mode)
+    wk.show_command("", mode or utils.mode())
 end
 
 local function init()
@@ -375,11 +386,11 @@ local function init()
         {mode = {"n", "x"}}
     )
 
-    -- <F-3> to show which-key help in any relevant mode
+    -- <F3> to show which-key help in any relevant mode
     local _modes = {"n", "i", "t", "v", "x", "s", "o"}
     for m = 1, #_modes do
         wk.register(
-            {["<F3>"] = {wk_help, "Show which-key help menu", noremap = true}},
+            {["<F3>"] = {D.ithunk(wk_help, _modes[m]), "Show which-key help menu"}},
             {mode = _modes[m]}
         )
     end

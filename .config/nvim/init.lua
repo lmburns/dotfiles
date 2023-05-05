@@ -2,9 +2,9 @@ local ok, impatient = pcall(require, "impatient")
 if ok then
     impatient.enable_profile()
 end
+vim.loader.enable()
 
-local global = require("common.global")
-local dirs = global.dirs
+require("common.global")
 
 local D = require("dev")
 local mpi = require("common.api")
@@ -20,11 +20,12 @@ local cmd = vim.cmd
 
 require("common.nvim")
 require("options")
+require("plugs.legendary").setup()
 
-local conf_dir = dirs.config
+local conf_dir = lb.dirs.config
 if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
     local packer_loader_complete = [[customlist,v:lua.require'packer'.loader_complete]]
-    local config = ("%s/%s"):format(dirs.config, "lua")
+    local config = ("%s/%s"):format(lb.dirs.config, "lua")
     cmd(
         ([[
         com! PackerUpdate lua require('plugins').update()
@@ -72,19 +73,10 @@ if uv.fs_stat(conf_dir .. "/plugin/packer_compiled.lua") then
         {nargs = "+", complete = ("%s.snapshot"):format(snargs)}
     )
 else
-    require("plugins").compile()
+    require("plenary.async_lib").async_void(function()
+        require("plugins").compile()
+    end)
 end
-
-cmd.packadd("cfilter")
-require("mapping")
-require("abbr")
-require("functions")
-require("autocmds")
-require("lsp")
-require("common.qf")
-require("common.mru")
-require("common.grepper")
-require("common.jump")
 
 ---@diagnostic disable-next-line:duplicate-set-field
 vim.notify = function(...)
@@ -93,19 +85,37 @@ vim.notify = function(...)
     vim.notify = require("common.utils").notify
     vim.notify(...)
 end
+
+require("autocmds")
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
+require("functions")
+local maps = require("mapping")
 
+require("lsp")
 require("plugs.filetype")
 
 vim.schedule(
     function()
+        vim.defer_fn(
+            function()
+                cmd.syntax("on")
+                cmd.filetype("on")
+                cmd.packadd("cfilter")
+
+                vim.iter(maps.deferred):each(function(m)
+                    map(unpack(m))
+                end)
+            end,
+            5
+        )
+
         -- === Treesitter
         vim.defer_fn(
             function()
                 -- cmd("doau filetypedetect BufRead")
-                cmd.syntax("on")
-                cmd.filetype("on")
+                -- cmd.syntax("on")
+                -- cmd.filetype("on")
                 require("plugs.treesitter")
 
                 augroup(
@@ -122,6 +132,27 @@ vim.schedule(
             15
         )
 
+        -- === Clipboard
+        vim.defer_fn(
+            function()
+                g.loaded_clipboard_provider = nil
+                cmd.runtime("autoload/provider/clipboard.vim")
+                require("plugs.neoclip") -- Needs to be loaded after clipboard is set
+            end,
+            50
+        )
+
+        vim.defer_fn(
+            function()
+                require("abbr")
+                require("common.qf")
+                require("common.mru")
+                require("common.grepper")
+                require("common.jump")
+            end,
+            80
+        )
+
         -- === Folding
         -- Deferring this function will override any modeline with foldelevel=0
         vim.defer_fn(
@@ -131,77 +162,16 @@ vim.schedule(
             200
         )
 
-        -- === Clipboard
-        vim.defer_fn(
-            function()
-                g.loaded_clipboard_provider = nil
-                cmd.runtime("autoload/provider/clipboard.vim")
-                require("plugs.neoclip") -- Needs to be loaded after clipboard is set
-
-                if fn.exists("##ModeChanged") == 1 then
-                    augroup(
-                        "SelectModeNoYank",
-                        {
-                            event = "ModeChanged",
-                            pattern = "*:s",
-                            command = function()
-                                vim.o.clipboard = nil
-                            end,
-                        },
-                        {
-                            event = "ModeChanged",
-                            pattern = "s:*",
-                            command = function()
-                                vim.o.clipboard = "unnamedplus"
-                            end,
-                        }
-                    )
-                    -- else
-                    -- cmd.packadd("nvim-hclipboard")
-                    -- require("hclipboard").start()
-                end
-
-                augroup(
-                    "lmb__Packer",
-                    {
-                        event = "BufWritePost",
-                        pattern = {"*/plugins.lua", "*/common/control.lua"},
-                        command = function()
-                            cmd.source("<afile>")
-                            cmd.PackerCompile()
-                        end,
-                        description = "Source plugins file"
-                    }
-                )
-
-                -- Highlight syntax
-                if nvim.exists("##SearchWrapped") then
-                    augroup(
-                        "SearchWrappedHighlight",
-                        {
-                            event = "SearchWrapped",
-                            pattern = "*",
-                            command = function()
-                                require("common.builtin").search_wrap()
-                            end,
-                        }
-                    )
-                end
-            end,
-            200
-        )
-
         vim.defer_fn(
             function()
                 vim.g.coc_global_extensions = {
+                    --
                     -- "coc-teal",
                     -- "coc-ccls",
                     -- "coc-pydoc",
-                    -- "coc-ruff",
                     -- "coc-golines",
                     -- "coc-gocode",
                     -- "coc-godot",
-                    -- "coc-cmake",
                     --
                     -- "coc-class-css",
                     -- "coc-react-refactor",
@@ -222,8 +192,8 @@ vim.schedule(
                     -- "coc-markdown-preview-enhanced",
                     -- "coc-webview",
                     --
-                    -- "coc-stylelintplus", -- FIX: Need to make this work
-                    --
+                    "coc-vimtex",
+                    "coc-texlab",
                     "coc-markdownlint",
                     "coc-sql",
                     "coc-toml",
@@ -232,6 +202,7 @@ vim.schedule(
                     "coc-json",
                     --
                     "coc-css",
+                    "coc-stylelintplus", -- FIX: Need to make this work
                     "coc-html",
                     "coc-html-css-support",
                     "coc-tsserver",
@@ -240,11 +211,12 @@ vim.schedule(
                     "coc-rust-analyzer",
                     "coc-sumneko-lua",
                     "coc-clangd",
+                    "coc-cmake",
                     "coc-go",
                     "coc-java",
                     "coc-perl",
                     "coc-pyright",
-                    -- "coc-ruff",
+                    "@yaegassy/coc-ruff",
                     "coc-r-lsp",
                     "coc-solargraph",
                     "coc-solidity",
@@ -288,7 +260,7 @@ vim.schedule(
                 cmd.packadd("coc.nvim")
                 cmd.packadd("nvim-autopairs")
             end,
-            1
+            50
         )
     end
 )

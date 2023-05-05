@@ -5,7 +5,10 @@
 local M = {}
 
 local D = require("dev")
+local utils = require("common.utils")
 local log = require("common.log")
+local op = require("common.op")
+local uva = require("uva")
 
 local B = require("common.api.buf")
 local mpi = require("common.api")
@@ -45,7 +48,7 @@ command(
 command(
     "VG",
     function(tbl)
-        cmd( ([[:vimgrep '%s' %s | copen]]):format(
+        cmd(([[:vimgrep /%s/ %s | copen]]):format(
             tbl.fargs[1],
             tbl.fargs[2] or "%"
         ))
@@ -166,7 +169,7 @@ function M.print_syn_group()
     local id = fn.synID(fn.line("."), fn.col("."), 1)
     nvim.echo({{"Synstack: ", "WarningMsg"}, {vim.inspect(M.name_syn_stack())}})
     nvim.echo({
-        {fn.synIDattr(id, "name"),               "WarningMsg"},
+        {fn.synIDattr(id, "name"), "WarningMsg"},
         {" => "},
         {fn.synIDattr(fn.synIDtrans(id), "name")},
     })
@@ -201,7 +204,6 @@ end
 ---Execute the buffer. Used for interpreted languages
 function M.execute_buffer()
     local f = fn.expand("%")
-
     if f ~= "" then
         cmd.write({mods = {silent = true}})
         fn.system("chmod +x " .. f)
@@ -240,6 +242,7 @@ augroup(
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Generic open function used with other functions
+---@param path string
 function M.open(path)
     fn.jobstart({"handlr", "open", path}, {detach = true})
     log.info(("Opening %s"):format(path))
@@ -258,6 +261,7 @@ end
 ---Open a file or a link
 ---Supports plugin names commonly found in `zinit`, `packer`, `Plug`, etc.
 ---Will open something like 'lmburns/lf.nvim' and if that fails will open an actual url
+---@return nil
 function M.open_path()
     local path = fn.expand("<cfile>")
     if path:match("http[s]?://") then
@@ -273,9 +277,12 @@ function M.open_path()
 
     -- Expand relative links, e.g., ../lua/abbr.lua
     local abs = Path:new(path):absolute()
-    if uv.fs_stat(abs) then
-        return cmd.norm({"gf", bang = true})
-    end
+    uva.stat(abs)
+        :thenCall(function()
+            return cmd.norm({"gf", bang = true})
+        end)
+        :catch(function()
+        end)
 
     -- Any URI with a protocol segment
     local protocol_uri_regex = "%a*:%/%/[%a%d%#%[%]%-%%+:;!$@/?&=_.,~*()]*"
@@ -287,12 +294,11 @@ function M.open_path()
     local plugin_url_regex = "[%a%d%-%.%_]*%/[%a%d%-%.%_]*"
     local link = path:match(plugin_url_regex)
     -- Check to make sure a path doesn't accidentally get picked up
-    local num_slashes = #vim.split(path, "/") - 1
+    local num_slashes = #(path:split("/")) - 1
     if link and num_slashes == 1 then
         return M.open(("https://www.github.com/%s"):format(link))
     end
     return cmd.norm({"gf", bang = true})
-    -- M.open(path)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -336,17 +342,17 @@ map(
 -- │                    Insert empty lines                    │
 -- ╰──────────────────────────────────────────────────────────╯
 
--- arsham/archer.nvim
 ---Insert an empty line `count` lines above the cursor
----@param count number
----@param add number: Number to modify row
-function M.insert_empty_lines(count, add) --{{{2
+---@param add number direction to add/subtract (neg=above, pos=below)
+---@param count? number
+function M.insert_empty_lines(add, count) --{{{2
     -- ["oo"] = {"printf('m`%so<ESC>``', v:count1)", "Insert line below cursor"},
     -- ["OO"] = {"printf('m`%sO<ESC>``', v:count1)", "Insert line above cursor"}
     -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     local lines = {}
-    for i = 1, F.if_nil(count, 1) < 1 and 1 or count do
+    local c = count or (F.if_expr(vim.v.count > 1, vim.v.count, 1))
+    for i = 1, count or (F.if_expr(vim.v.count > 1, vim.v.count, 1)) do
         lines[i] = ""
     end
 
@@ -357,62 +363,30 @@ end
 
 ---Add an empty line above the cursor
 function M.empty_line_above()
-    M.insert_empty_lines(vim.v.count, -1)
+    M.insert_empty_lines(-1)
 end
 
 ---Add an empty line below the cursor
 function M.empty_line_below()
-    M.insert_empty_lines(vim.v.count, 0)
+    M.insert_empty_lines(0)
 end
 
 map(
     "n",
     "zk",
-    function()
-        vim.o.opfunc = "v:lua.require'functions'.empty_line_above"
-        return "g@l"
-    end,
-    {expr = true, desc = "Insert empty line above"}
+    D.ithunk(op.operator, {cb = "require'functions'.empty_line_above", motion = "l"}),
+    {desc = "Insert empty line above"}
 )
-
 map(
     "n",
     "zj",
-    function()
-        -- M.insert_empty_lines(vim.v.count, 0)
-        vim.o.opfunc = "v:lua.require'functions'.empty_line_below"
-        return "g@l"
-    end,
-    {expr = true, desc = "Insert empty line below"}
+    D.ithunk(op.operator, {cb = "require'functions'.empty_line_below", motion = "l"}),
+    {desc = "Insert empty line below"}
 )
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                           TMUX                           │
 --  ╰──────────────────────────────────────────────────────────╯
-
----Hide number & sign columns to do tmux copy
-function M.tmux_copy_mode_toggle()
-    cmd[[
-        setlocal number!
-        setlocal rnu!
-    ]]
-    -- opt_local.number = not opt_local.number
-    -- opt_local.rnu = not opt_local.rnu
-
-    if vim.o.signcolumn == "no" then
-        vim.opt_local.signcolumn = "yes:1"
-        vim.opt_local.foldcolumn = "1"
-    else
-        vim.opt_local.signcolumn = "no"
-        vim.opt_local.foldcolumn = "0"
-    end
-end
-
-command(
-    "TmuxCopyModeToggle",
-    D.ithunk(M.tmux_copy_mode_toggle),
-    {nargs = 0, desc = "Toggle line numbers to copy with tmux"}
-)
 
 ---Return the filetype icon and color
 ---@return string?, string?
@@ -444,7 +418,7 @@ function M.title_string()
 end
 
 -- Prevent vim clearing the system clipboard
-if fn.executable("xsel") then
+if utils.executable("xsel") then
     -- Doesn't call xsel. Vimscript version works
     function M.preserve_clipboard()
         fn.system("xsel -ib", nvim.reg["+"])
@@ -484,13 +458,17 @@ function M.center_next(command)
     -- if view.topline ~= fn.winsaveview().topline then
 
     local topline = fn.line("w0")
-    local ok, msg = pcall(cmd.norm,
-        {command, mods = {silent = true}, bang = true})
+    -- local ok, msg = pcall(utils.normal, "n", command)
+    local ok, msg = pcall(
+        cmd.norm,
+        {command, mods = {silent = true}, bang = true}
+    )
 
     if topline ~= fn.line("w0") then
-        cmd.norm({"zz", mods = {silent = true}, bang = true})
+        -- utils.normal("n", "zz")
+        cmd("norm! zz")
     elseif not ok then
-        local err = (msg:match"Vim:E486: Pattern not found:.*")
+        local err = msg:match("Vim:E486: Pattern not found:.*")
         log.err(err or msg, {dprint = true})
     end
 end
@@ -504,11 +482,11 @@ function M.toggle_formatopts_r()
     if ol.formatoptions:get().r then
         ol.formatoptions:append({r = false, o = false})
         M.set_formatopts = false
-        log.info("state: false", {title = "Comment Continuation"})
+        log.info(("state: %s"):format(M.set_formatopts), {title = "Comment Continuation"})
     else
         ol.formatoptions:append({r = true, o = true})
         M.set_formatopts = true
-        log.warn("state: true", {title = "Comment Continuation"})
+        log.warn(("state: %s"):format(M.set_formatopts), {title = "Comment Continuation"})
     end
 end
 
@@ -532,44 +510,10 @@ end
 
 command("DiffSaved", D.ithunk(M.diffsaved), {desc = "Show diff of saved file"})
 
----When not to use the `mkview` command for an autocmd
-function M.makeview()
-    local bufnr = api.nvim_get_current_buf()
-    if vim.bo[bufnr].bt ~= ""
-        or fn.empty(fn.expand("%:p")) == 1
-        or not vim.o.modifiable then
-        return false
-    end
-    return true
-end
-
 -- ]]] === Functions ===
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          Cache                           │
 --  ╰──────────────────────────────────────────────────────────╯
-
-M.cache = {}
-
-M.callbacks = {}
-M.quiet = false
-M.captured = {}
-
----Register global anonymous callback
----Returns an id that can be passed to M.callback() to call the function
-function M.new_callback(fn)
-    table.insert(M.callbacks, fn)
-    return #M.callbacks
-end
-
----Call the callback associated with the given `id`
-function M.callback(id, ...)
-    return M.callbacks[id](...)
-end
-
-M.cache = {
-    new_callback = M.new_callback,
-    callback = M.callback,
-}
 
 return M

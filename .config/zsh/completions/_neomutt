@@ -1,41 +1,84 @@
 #compdef neomutt
 
-# zsh completions for 'neomutt'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+_neomutt_folder() {
+  local ret=1 expl
+  local maildir="$(notmuch config get database.mail_root)"
+  [[ -d $maildir ]] || { _message -e "database.mail_root not found" ; return $ret }
 
-arguments=(
-  '-A[print an expanded version of the given alias to stdout and exit]'
-  '-a[attach one or more files to a message (must be the last option)]'
-  '-B[run in batch mode (do not start the ncurses UI)]'
-  '-b[specify a blind carbon copy (Bcc) recipient]'
-  '-c[specify a carbon copy (Cc) recipient]'
-  '-D[dump all config variables as name=value pairs to stdout]'
-  {-D,-O}'[like -D, but show one-liner documentation]'
-  {-D,-S}'[like -D, but hide the value of sensitive variables]'
-  '-d[log debugging output to a file (default is "~/.neomuttdebug0")]'
-  '-E[edit draft (-H) or include (-i) file during message composition]'
-  '-e[specify a command to be run after reading the config files]'
-  '-F[specify an alternative initialization file to read]'
-  '-f[specify a mailbox (as defined with mailboxes command) to load]'
-  '-G[start NeoMutt with a listing of subscribed newsgroups]'
-  '-g[like -G, but start at specified news server]'
-  '-H[specify a draft file with header and body for message composing]'
-  '-h[print this help message and exit]'
-  '-i[specify an include file to be embedded in the body of a message]'
-  '-l[specify a file for debugging output (default "~/.neomuttdebug0")]'
-  '-m[specify a default mailbox format type for newly created folders]'
-  '-n[do not read the system-wide configuration file]'
-  '-p[resume a prior postponed message, if any]'
-  '-Q[query a configuration variable and print its value to stdout]'
-  '-R[open mailbox in read-only mode]'
-  '-s[specify a subject (must be enclosed in quotes if it has spaces)]'
-  '-v[print the NeoMutt version and compile-time definitions and exit]'
-  '-vv[print the NeoMutt license and copyright information and exit]'
-  '-y[start NeoMutt with a listing of all defined mailboxes]'
-  '-Z[open the first mailbox with new message or exit immediately with]'
-  '-z[open the first or specified (-f) mailbox if it holds any message]'
-  '*:filename:_files'
-)
+  _description notmuch-folder expl 'maildir folder'
+  local ignoredfolders=( '*/(cur|new|tmp)' )
+  _files "$expl[@]" -W $maildir -F ignoredfolders -/ && ret=0
+  return $ret
+}
 
-_arguments -s $arguments
+_neomutt_vars() {
+  local ret=1 expl
+  local -a vars
+  vars=(${${${(@f)"$(_call_program variables neomutt -D 2>/dev/null)"}%% (is|=)*}##set })
+  _describe -t variables 'neomutt vars' vars && ret=0
+  return $ret
+}
+
+_neomutt() {
+  local arguments
+
+  # NeoMutt 20230407
+  # usage:
+  #   neomutt [-Enx] [-e <command>] [-F <config>] [-H <draft>] [-i <include>]
+  #           [-b <address>] [-c <address>] [-s <subject>] [-a <file> [...] --]
+  #           <address> [...]
+  #   neomutt [-nx] [-e <command>] [-F <config>] [-b <address>] [-c <address>]
+  #           [-s <subject>] [-a <file> [...] --] <address> [...] < message
+  #   neomutt [-nRy] [-e <command>] [-F <config>] [-f <mailbox>] [-m <type>]
+  #   neomutt [-n] [-e <command>] [-F <config>] -A <alias>
+  #   neomutt [-n] [-e <command>] [-F <config>] -B
+  #   neomutt [-n] [-e <command>] [-F <config>] -D [-S] [-O]
+  #   neomutt [-n] [-e <command>] [-F <config>] -d <level> -l <file>
+  #   neomutt [-n] [-e <command>] [-F <config>] -G
+  #   neomutt [-n] [-e <command>] [-F <config>] -g <server>
+  #   neomutt [-n] [-e <command>] [-F <config>] -p
+  #   neomutt [-n] [-e <command>] [-F <config>] -Q <variable> [-O]
+  #   neomutt [-n] [-e <command>] [-F <config>] -Z
+  #   neomutt [-n] [-e <command>] [-F <config>] -z [-f <mailbox>]
+  #   neomutt -v[v]
+
+
+  arguments=(
+    '(- :)-A[print an expanded version of the given alias to stdout and exit]:alias:'
+    '*-a[attach one or more files to a message (must be the last option)]::file:_files'
+    '-B[run in batch mode (do not start the ncurses UI)]'
+    '*-b[specify a blind carbon copy (Bcc) recipient]:Bcc recipient:_email_addresses -c'
+    '*-c[specify a carbon copy (Cc) recipient]:Cc recipient:_email_addresses -c'
+    '(- :)-D[dump all config variables as name=value pairs to stdout]'
+    '(- :)-DO[like -D, but show one-liner documentation]'
+    '(- :)-DS[like -D, but hide the value of sensitive variables]'
+    '-d+[log debugging output to a file]:level:(1 2 3 4 5)'
+    '-E[edit draft (-H) or include (-i) file during message composition]'
+    '-e+[specify a command to be run after reading the config files]:command:_command_names'
+    '-F+[specify an alternative initialization file to read]:config:_files'
+    '-f[specify a mailbox (as defined with mailboxes command) to load]:mailbox:_neomutt_folder'
+    '-G[start NeoMutt with a listing of subscribed newsgroups]'
+    '-g[like -G, but start at specified news server]:server:'
+    '-H+[specify a draft file with header and body for message composing]:draft:_files'
+    '-i+[specify an include file to be embedded in the body of a message]:include:_files'
+    '-l[specify a file for debugging output]:debug file:_files'
+    '-m+[specify a default mailbox format type for newly created folders]:type:(mbox MMDF MH Maildir)'
+    '-n[do not read the system-wide configuration file]'
+    '-p[resume a prior postponed message, if any]'
+    '(- :)-Q+[query a configuration variable and print its value to stdout]:variable:_neomutt_vars'
+    '-R[open mailbox in read-only mode]'
+    '-s+[specify a subject (must be enclosed in quotes if it has spaces)]:subject:'
+    '-y[start NeoMutt with a listing of all defined mailboxes]'
+    '-Z[open the first mailbox with new message or exit immediately with]'
+    '-z[open the first or specified (-f) mailbox if it holds any message]'
+    '(- :)-v[print the NeoMutt version and compile-time definitions and exit]'
+    '(- :)-vv[print the NeoMutt license and copyright information and exit]'
+    '(- :)-h[print this help message and exit]'
+   '::recipient:_email_addresses -c'
+   # '::recipient:_email_addresses -n mutt'
+  )
+
+  _arguments -s -S -C $arguments
+}
+
+_neomutt "$@"

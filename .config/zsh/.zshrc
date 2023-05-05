@@ -1113,7 +1113,6 @@ typeset -g PER_DIRECTORY_HISTORY_BASE="${ZPFX}/share/per-directory-history"
 typeset -gx NQDIR="/tmp/nq" FNQ_DIR="$HOME/tmp/fnq"
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
 typeset -gx FZFGIT_DEFAULT_OPTS="--preview-window=':nohidden,right:65%:wrap'"
-
 typeset -gx PASSWORD_STORE_ENABLE_EXTENSIONS='true'
 # ]]]
 
@@ -1274,18 +1273,18 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 export SKIM_COMPLETION_TRIGGER='~~'
 export FZF_COMPLETION_TRIGGER='**'
-(( $+commands[fd] )) && {
-    _fzf_compgen_path() { fd --hidden --follow --exclude ".git" . "$1" }
-    _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
-}
+# (( $+commands[fd] )) && {
+#     _fzf_compgen_path() { fd --hidden --follow --exclude ".git" . "$1" }
+#     _fzf_compgen_dir()  { fd --type d --hidden --follow --exclude ".git" . "$1" }
+# }
 
-export FZF_ALT_C_COMMAND="fd --no-ignore --hidden --follow --strip-cwd-prefix --exclude '.git' --type d -d 1 | lscolors"
+export FZF_ALT_C_COMMAND="\
+  fd --no-ignore --hidden --follow --strip-cwd-prefix --exclude '.git' --type d -d 1 | lscolors"
 export SKIM_ALT_C_COMMAND="$FZF_ALT_C_COMMAND"
 export FZF_ALT_C_OPTS="
 --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
 --bind='alt-e:execute($EDITOR {} >/dev/tty </dev/tty)'
---preview-window default:right:60%
-"
+--preview-window default:right:60%"
 export FORGIT_FZF_DEFAULT_OPTS="--preview-window='right:60%:nohidden' --bind='ctrl-e:become(nvim {2})'"
 export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview='(exa -T {2} | less) 2>/dev/null | head -200'"
 
@@ -1309,6 +1308,7 @@ zt 0b light-mode null id-as for \
   export PERLBREW_HOME="${XDG_DATA_HOME}/perl5/perlbrew-h";
   export PERL_CPANM_HOME="${XDG_DATA_HOME}/perl5/cpanm"' \
   atload'local x="$PERLBREW_ROOT/etc/bashrc"; [ -s "$x" ] && source "$x"' \
+  has'perlbrew' \
     zdharma-continuum/null \
   atinit'
   export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
@@ -1316,6 +1316,7 @@ zt 0b light-mode null id-as for \
   atload'local x="$NVM_DIR/nvm.sh"; [ -s "$x" ] && source "$x"' \
     zdharma-continuum/null \
   atload'local x="$ZDOTDIR/zsh.d/non-config/goenv.zsh"; [ -s "$x" ] && source "$x"' \
+  has'goenv' \
     zdharma-continuum/null \
   atload'local x="$ZDOTDIR/zsh.d/non-config/prll.sh"; [ -s "$x" ] && source "$x"' \
     zdharma-continuum/null \

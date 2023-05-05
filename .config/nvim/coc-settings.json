@@ -2,30 +2,32 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                           General
   // ╘══════════════════════════════════════════════════════════╛
-  "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.extensionUpdateCheck": "daily", // "never"
   "coc.preferences.silentAutoupdate": true,
-  "coc.preferences.currentFunctionSymbolAutoUpdate": false,
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
   "coc.preferences.willSaveHandlerTimeout": 1000,
   "coc.preferences.promptInput": true,
   "coc.preferences.messageLevel": "error",
   "coc.preferences.enableMessageDialog": true, // MAYBE: change
+  "coc.preferences.maxFileSize": "5MB",
+  "coc.preferences.jumpCommand": "edit",
+  "coc.preferences.useQuickfixForLocations": true,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": false,
+
   // "coc.preferences.watchmanPath": "",
   // "coc.preferences.watchmanPath": "/usr/bin/watchman",
 
   "coc.preferences.bracketEnterImprove": false,
-
   "[zsh][teal]": {
     "coc.preferences.bracketEnterImprove": true
   },
-
   // "[lua]": {
   //   "coc.preferences.enableMessageDialog": false
   // },
 
   "workspace.bottomUpFiletypes": ["python"],
+  "workspace.ignoredFiletypes": [],
   "workspace.ignoredFolders": [
     "$HOME",
     "$XDG_DATA_HOME/cargo/**",
@@ -33,8 +35,6 @@
     // "$XDG_CONFIG_HOME/**",
     "/etc/**"
   ],
-
-  // "pullDiagnostic.ignored": ["repos/**"],
 
   "coc.source.file.triggerCharacters": ["/"],
   "coc.source.file.ignoreHidden": false,
@@ -67,125 +67,73 @@
   "suggest.languageSourcePriority": 101,
   "tabnine.priority": 99,
   "tabnine.shortcut": "TN",
+  "tabnine.enablePreselect": false,
+  "tabnine.disable_filetypes": [],
 
+  "snippets.trace": "error",
   "snippets.priority": 100,
   "snippets.shortcut": "",
-  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.loadFromExtensions": true,
+  "snippets.loadVSCodeProjectSnippets": true,
+  "snippets.editSnippetsCommand": "edit",
   "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
-  "snippets.ultisnips.pythonPrompt": false,
   "snippets.extends": {
     "cpp": ["c"],
     "typescript": ["javascript"]
   },
+  "snippets.ultisnips.trace": false,
+  "snippets.ultisnips.enable": true,
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.ultisnips.pythonPrompt": false,
 
-  "outline.keepWindow": true,
-  "outline.sortBy": "position",
-  "outline.splitCommand": "botright 40vs",
-  "outline.showLineNumber": true,
-  "outline.followCursor": true,
-  "outline.switchSortKey": "<C-s>",
+  "snippet.statusText": "SNIP",
 
-  "tree.key.activeFilter": "zf",
-  "tree.key.close": "qq",
-  "tree.key.toggle": "t",
-  "tree.key.toggleSelection": "T",
-  "tree.key.actions": "<Tab>",
-  "tree.key.invoke": "<CR>",
-  "tree.key.collapseAll": "zM",
-  "tree.key.selectNext": "<C-j>",
-  "tree.key.selectPrevious": "<C-k>",
-
-  "links.enable": true,
-  "links.tooltip": true,
-  // "links.highlight": true,
-
-  "colors.enable": false,
-  "colors.highlightPriority": 1000,
-  "documentHighlight.priority": 1,
-  "documentHighlight.timeout": 300,
-
-  // Filetypes that enable semanticTokens highlighting
-  "[go][html][java]": {
-    "semanticTokens.enable": true
+  "suggest.snippetsSupport": true,
+  "suggest.snippetIndicator": "",
+  "suggest.enablePreselect": true,
+  "suggest.noselect": false,
+  "suggest.enableFloat": true,
+  "suggest.removeDuplicateItems": true,
+  "suggest.insertMode": "replace",
+  "suggest.detailField": "abbr",
+  "suggest.labelMaxLength": 100,
+  "suggest.maxCompleteItemCount": 1000,
+  "suggest.defaultSortMethod": "none",
+  "suggest.selection": "recentlyUsedByPrefix", // first
+  "suggest.virtualText": false,
+  "suggest.acceptSuggestionOnCommitCharacter": true,
+  "suggest.localityBonus": true,
+  "suggest.filterGraceful": true,
+  "suggest.reversePumAboveCursor": false, // true
+  "suggest.formatItems": ["abbr", "menu", "kind", "shortcut"],
+  "suggest.completionItemKindLabels": {
+    "default": "θ", // 
+    "folder": "", // 
+    "file": "", // 
+    "module": "", //  
+    "class": "", // ﴯ  
+    "method": "", // 
+    "property": "", // ﰠ 
+    "field": "", // 料  
+    "constructor": "", //  
+    "struct": "פּ", //  
+    "enum": "練", //  
+    "enumMember": "", // 
+    "interface": "", // 
+    "function": "", // ƒ
+    "variable": "", //  
+    "constant": "", //    󰐀
+    "text": "", //  
+    "value": "",
+    "event": "", // 鬒
+    "typeParameter": "", //   
+    "reference": "", //  渚
+    "operator": "Ψ", // 
+    "unit": "", //  塞
+    "keyword": "", // 
+    "snippet": "", //    
+    "color": ""
   },
-
-  // ╭────────────╮
-  // │ Diagnostic │
-  // ╰────────────╯
-  "diagnostic.enable": true,
-  "diagnostic.enableSign": true,
-  "diagnostic.signPriority": 50,
-  "diagnostic.errorSign": "", //   ••
-  "diagnostic.warningSign": "", //   •
-  "diagnostic.infoSign": "", //  •
-  "diagnostic.hintSign": "", //  •
-  "diagnostic.checkCurrentLine": false,
-  "diagnostic.level": "hint",
-  "diagnostic.locationlistUpdate": true,
-  "diagnostic.enableMessage": "always",
-  "diagnostic.enableHighlightLineNumber": true,
-  "diagnostic.highlightLimit": 1000,
-  // "diagnostic.separateRelatedInformationAsDiagnostics": true,
-  "diagnostic.virtualText": true,
-  "diagnostic.virtualTextCurrentLineOnly": true,
-  "diagnostic.virtualTextLineSeparator": " \\ ",
-  "diagnostic.virtualTextPrefix": " | ",
-  "diagnostic.virtualTextFormat": "%message",
-  "diagnostic.format": "%message [%source%code]", // %source code severity message
-  "diagnostic.messageTarget": "float",
-  "diagnostic.showUnused": true,
-  "diagnostic.showDeprecated": true,
-
-  "diagnostic.autoRefresh": true,
-  "diagnostic.refreshOnInsertMode": false,
-  "pullDiagnostic.onChange": true,
-  "pullDiagnostic.onSave": true,
-  "pullDiagnostic.workspace": true,
-
-  // ╭───────────╮
-  // │ InlayHint │
-  // ╰───────────╯
-  "inlayHint.enable": true,
-  "inlayHint.display": true,
-  "inlayHint.refreshOnInsertMode": false,
-  "inlayHint.enableParameter": true,
-  "inlayHint.typeSeparator": "« ", // "‣
-  "inlayHint.parameterSeparator": "» ",
-  "inlayHint.subSeparator": " ",
-  // "inlayHint.subSeparator": " | ",
-
-  // ╭──────────╮
-  // │ CodeLens │
-  // ╰──────────╯
-  "codeLens.enable": true,
-  "codeLens.separator": "‣",
-  "codeLens.subseparator": " | ",
-  "codeLens.position": "eol",
-  // "codeLens.position": "top",
-
-  "list.indicator": "»",
-  "list.floatPreview": true,
-  "list.smartCase": true,
-  "list.normalMappings": { "q": "do:exit" },
-
-  "signature.enable": true,
-  "signature.target": "float",
-  "signature.hideOnTextChange": false,
-  "signature.preferShownAbove": true,
-
-  // "dialog.floatHighlight": "Normal",
-  "dialog.rounded": true,
-  "dialog.floatBorderHighlight": "Normal",
-  "dialog.floatHighlight": "CocFloating",
-
-  "notification.border": true,
-  // I would like them to be focusable, but it causes problems
-  "notification.focusable": false,
-  "notification.highlightGroup": "CocFloating",
-  "notification.statusLineProgress": true,
-  "notification.timeout": 4000,
-  "notification.winblend": 30,
-  "notification.marginRight": 10,
 
   // Float
   "floatFactory.floatConfig": {
@@ -236,70 +184,144 @@
     "highlight": "CocSuggestFloating"
   },
 
-  "snippet.statusText": "SNIP",
+  "outline.keepWindow": true,
+  "outline.sortBy": "position",
+  "outline.splitCommand": "botright 40vs",
+  "outline.showLineNumber": true,
+  "outline.followCursor": true,
+  "outline.switchSortKey": "<C-s>",
+  "outline.togglePreviewKey": "p",
+  "outline.previewBorder": true,
+  "outline.previewBorderRounded": true,
+  "outline.previewBorderHighlightGroup": "FloatBorder",
+  "outline.codeActionKinds": ["", "quickfix", "refactor"],
 
-  "suggest.snippetIndicator": "",
-  "suggest.enableFloat": true,
-  "suggest.removeDuplicateItems": true,
-  "suggest.insertMode": "replace",
-  "suggest.detailField": "abbr",
-  "suggest.labelMaxLength": 100,
-  "suggest.maxCompleteItemCount": 1000,
-  "suggest.defaultSortMethod": "length",
-  "suggest.selection": "recentlyUsedByPrefix", // first
-  "suggest.virtualText": false,
-  "suggest.acceptSuggestionOnCommitCharacter": true,
-  "suggest.localityBonus": true,
-  "suggest.filterGraceful": true,
-  "suggest.reversePumAboveCursor": false, // true
-  "suggest.formatItems": ["abbr", "menu", "kind", "shortcut"],
-  "suggest.completionItemKindLabels": {
-    "default": "θ", // 
-    "folder": "", // 
-    "file": "", // 
-    "module": "", //  
-    "class": "", // ﴯ  
-    "method": "", // 
-    "property": "", // ﰠ 
-    "field": "", // 料  
-    "constructor": "", //  
-    "struct": "פּ", //  
-    "enum": "練", //  
-    "enumMember": "", // 
-    "interface": "", // 
-    "function": "", // ƒ
-    "variable": "", //  
-    "constant": "", //    󰐀
-    "text": "", //  
-    "value": "",
-    "event": "", // 鬒
-    "typeParameter": "", //   
-    "reference": "", //  渚
-    "operator": "Ψ", // 
-    "unit": "", //  塞
-    "keyword": "", // 
-    "snippet": "", //    
-    "color": ""
+  "tree.key.activeFilter": "zf",
+  "tree.key.close": "qq",
+  "tree.key.toggle": "t",
+  "tree.key.toggleSelection": "T",
+  "tree.key.actions": "<Tab>",
+  "tree.key.invoke": "<CR>",
+  "tree.key.collapseAll": "zM",
+  "tree.key.selectNext": "<C-j>",
+  "tree.key.selectPrevious": "<C-k>",
+
+  "list.indicator": "»",
+  "list.floatPreview": true,
+  "list.smartCase": true,
+  "list.normalMappings": { "q": "do:exit" },
+  "list.source.diagnostics.pathFormat": "short",
+
+  "signature.enable": true,
+  "signature.target": "float",
+  "signature.hideOnTextChange": false,
+  "signature.preferShownAbove": true,
+
+  // "dialog.floatHighlight": "Normal",
+  "dialog.rounded": true,
+  "dialog.floatBorderHighlight": "Normal",
+  "dialog.floatHighlight": "CocFloating",
+
+  "notification.border": true,
+  // I would like them to be focusable, but it causes problems
+  "notification.focusable": false,
+  "notification.highlightGroup": "CocFloating",
+  "notification.statusLineProgress": true,
+  "notification.timeout": 4000,
+  "notification.winblend": 30,
+  "notification.marginRight": 10,
+
+  "callHierarchy.enableTooltip": true,
+  "typeHierarchy.enableTooltip": true,
+
+  "links.enable": true,
+  "links.tooltip": true,
+  "links.highlight": true,
+
+  "colors.enable": false,
+  "colors.highlightPriority": 1000,
+  "documentHighlight.priority": 1,
+  "documentHighlight.timeout": 300,
+
+  // Filetypes that enable semanticTokens highlighting
+  "[go][html][java]": {
+    "semanticTokens.enable": true
   },
+
+  // ╭────────────╮
+  // │ Diagnostic │
+  // ╰────────────╯
+  "diagnostic.enable": true,
+  "diagnostic.enableSign": true,
+  "diagnostic.signPriority": 50,
+  "diagnostic.errorSign": "", //   ••
+  "diagnostic.warningSign": "", //   •
+  "diagnostic.infoSign": "", //  •
+  "diagnostic.hintSign": "", //  •
+  "diagnostic.checkCurrentLine": false,
+  "diagnostic.level": "hint",
+  "diagnostic.locationlistUpdate": true,
+  "diagnostic.enableMessage": "always",
+  "diagnostic.enableHighlightLineNumber": true,
+  "diagnostic.highlightLimit": 1000,
+  // "diagnostic.separateRelatedInformationAsDiagnostics": true,
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": true,
+  "diagnostic.virtualTextLineSeparator": " \\ ",
+  "diagnostic.virtualTextPrefix": " | ",
+  "diagnostic.virtualTextFormat": "%message",
+  "diagnostic.format": "%message [%source%code]", // %source code severity message
+  "diagnostic.messageTarget": "float",
+  "diagnostic.showUnused": true,
+  "diagnostic.showDeprecated": true,
+
+  "diagnostic.autoRefresh": true,
+  "diagnostic.refreshOnInsertMode": false,
+  "pullDiagnostic.onChange": true,
+  "pullDiagnostic.onSave": true,
+  "pullDiagnostic.workspace": true,
+  // "pullDiagnostic.ignored": ["repos/**"],
+
+  // ╭───────────╮
+  // │ InlayHint │
+  // ╰───────────╯
+  "inlayHint.enable": true,
+  "inlayHint.display": true,
+  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.enableParameter": true,
+  "inlayHint.typeSeparator": "« ", // "‣
+  "inlayHint.parameterSeparator": "» ",
+  "inlayHint.subSeparator": " ",
+  // "inlayHint.subSeparator": " | ",
+
+  // ╭──────────╮
+  // │ CodeLens │
+  // ╰──────────╯
+  "codeLens.enable": true,
+  "codeLens.separator": "‣",
+  "codeLens.subseparator": " | ",
+  "codeLens.position": "eol",
+  // "codeLens.position": "top",
+
   // ╒══════════════════════════════════════════════════════════╕
   //                           Prettier
   // ╘══════════════════════════════════════════════════════════╛
   "prettier.enable": true,
   // "prettier.formatterPriority": -1,
   // "prettier.resolveGlobalModules": true,
-  "prettier.useEditorConfig": true,
+  "prettier.useEditorConfig": false,
   // "prettier.configPath": "~/.config/prettier/prettierrc.json",
   "prettier.useTabs": false,
   "prettier.tabWidth": 2,
-  "prettier.singleQuote": true,
-  "prettier.semi": true,
-  "prettier.trailingComma": "es5",
+  "prettier.singleQuote": false,
+  "prettier.semi": false,
+  "prettier.trailingComma": "all",
   "prettier.arrowParens": "avoid",
   "prettier.endOfLine": "lf",
   "prettier.proseWrap": "preserve",
   "prettier.quoteProps": "as-needed",
   "prettier.jsxSingleQuote": false,
-  "prettier.bracketSpacing": true,
+  "prettier.bracketSpacing": false,
   "prettier.bracketSameLine": false,
   "prettier.htmlWhitespaceSensitivity": "css",
   "prettier.embeddedLanguageFormatting": "auto",
@@ -326,7 +348,7 @@
     "/usr/lib/perl5/5.36/vendor_perl",
     "/usr/share/perl5/vendor_perl",
     "/usr/lib/perl5/5.36/core_perl",
-    "/usr/share/perl5/core_perl",
+    "/usr/share/perl5/core_perl"
     // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4/x86_64-linux",
     // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4",
     // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
@@ -361,9 +383,8 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust
   // ╘══════════════════════════════════════════════════════════╛
-  // "rust.clippy_preference": "on",
   "rust-analyzer.enable": true,
-  "rust-analyzer.trace.server": "verbose",
+  "rust-analyzer.trace.server": "off",
   "rust-analyzer.updates.channel": "nightly",
   "rust-analyzer.updates.checkOnStartup": false,
   "rust-analyzer.updates.prompt": true,
@@ -371,7 +392,10 @@
   //   // "RA_LOG": "project_model=debug",
   //   // "RA_LOG": "rust_analyzer=info",
   // },
-  // "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.files.excludeDirs": [],
+  "rust-analyzer.cargo.autoreload": true,
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.cargo.features": "all",
   "rust-analyzer.check.invocationLocation": "workspace",
   "rust-analyzer.check.invocationStrategy": "per_workspace",
   // "rust-analyzer.check.command": "clippy",
@@ -476,21 +500,21 @@
     // "--allow=clippy::unreachable",
     // "--allow=clippy::single_match_else",
   ],
-  "rust-analyzer.cargo.autoreload": true,
-  "rust-analyzer.cargo.buildScripts.enable": true,
-  "rust-analyzer.cargo.features": "all",
   "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
   "rust-analyzer.rustfmt.rangeFormatting.enable": true,
 
   "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.diagnostics.experimental.enable": true,
   // "rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"],
 
   "rust-analyzer.checkOnSave": true,
   "rust-analyzer.cachePriming.enable": true,
   "rust-analyzer.notifications.cargoTomlNotFound": true,
-  "rust-analyzer.debug.vimspector.configuration.name": "launch",
   "rust-analyzer.procMacro.enable": true,
   "rust-analyzer.procMacro.attributes.enable": true,
+
+  "rust-analyzer.debug.runtime": "vimspector",
+  "rust-analyzer.debug.vimspector.configuration.name": "launch",
 
   "rust-analyzer.joinLines.joinAssignments": true,
   "rust-analyzer.joinLines.joinElseIf": true,
@@ -500,17 +524,29 @@
   "rust-analyzer.assist.emitMustUse": true,
   "rust-analyzer.assist.expressionFillDefault": "todo",
 
+  "rust-analyzer.imports.prefix": "self", // "plain"
+  // "rust-analyzer.imports.granularity.enforce": true,
+
   "rust-analyzer.completion.privateEditable.enable": true,
   "rust-analyzer.completion.autoimport.enable": true,
   "rust-analyzer.completion.autoself.enable": true,
   "rust-analyzer.completion.callable.snippets": "fill_arguments",
   "rust-analyzer.completion.postfix.enable": true,
 
+  "rust-analyzer.hover.links.enable": true,
   "rust-analyzer.hover.documentation.enable": true,
   "rust-analyzer.hover.documentation.keywords.enable": true,
-  "rust-analyzer.hover.links.enable": true,
+  "rust-analyzer.signatureInfo.detail": "full",
+  "rust-analyzer.signatureInfo.documentation.enable": true,
 
+  "[rust]": { "semanticTokens.enable": false },
+  "rust-analyzer.semanticHighlighting.operator.enable": true,
   "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": true,
+  "rust-analyzer.semanticHighlighting.operator.specialization.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": true,
+  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": true,
+  "rust-analyzer.semanticHighlighting.strings.enable": true,
 
   "rust-analyzer.highlightRelated.breakPoints.enable": true,
   "rust-analyzer.highlightRelated.exitPoints.enable": true,
@@ -610,19 +646,21 @@
   "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
-  "Lua.workspace.useGitIgnore": true,
+  "Lua.addonManager.enable": true,
   // "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 2000,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 1500,
+  "Lua.workspace.useGitIgnore": true,
   "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
     "/home/lucas/.config/nvim/lua",
     "/home/lucas/.config/nvim/types",
-    // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
+    "/home/lucas/.config/nvim/plugin/packer_compiled.lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/typings",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua"
+    // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly"
     // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
     // "/home/lucas/.local/share/nvim/site/pack/packer/start"
@@ -658,10 +696,12 @@
 
     "align_call_args": "false",
     "align_function_params": "true",
+    "align_chain_expr": "always",
     "align_continuous_assign_statement": " when_extra_space", // when_extra_space always
     "align_continuous_rect_table_field": "when_extra_space",
-    "align_array_table": "normal", // contain_curly, normal
     "align_continuous_inline_comment": "true",
+    "align_continous_line_space": "2",
+    "align_array_table": "false", // contain_curly, normal
     "align_if_branch": "false",
 
     "never_indent_before_if_condition": "false",
@@ -679,6 +719,11 @@
     "auto_collapse_lines": "false",
     "ignore_space_after_colon": "true",
     "remove_call_expression_list_finish_comma": "true"
+
+    // OLD
+    // "local_assign_continuation_align_to_first_expression": "true",
+    // "label_no_indent": "true",
+    // "do_statement_no_indent": "false",
   },
   "Lua.typeFormat.config": {
     "auto_complete_table_sep": "true",
@@ -688,8 +733,8 @@
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace", // Both
-  "Lua.completion.displayContext": 1,
-  "Lua.completion.keywordSnippet": "Both",
+  "Lua.completion.displayContext": 20,
+  "Lua.completion.keywordSnippet": "Disable",
   "Lua.completion.postfix": ".",
   "Lua.completion.requireSeparator": ".",
   "Lua.completion.showParams": true,
@@ -714,12 +759,13 @@
   "Lua.window.statusBar": true,
   "Lua.window.progressBar": false,
   "Lua.type.castNumberToInteger": true,
-  "Lua.type.weakNilCheck": true,
+  "Lua.type.weakNilCheck": false,
   "Lua.type.weakUnionCheck": true,
   "Lua.semantic.enable": false,
   "Lua.semantic.annotation": false,
   "Lua.semantic.variable": false,
   "Lua.semantic.keyword": false,
+  // "Lua.doc.packageName": ["__*],
   // "Lua.doc.privateName": ["__*"],
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.workspaceDelay": -1,
@@ -746,53 +792,54 @@
     "unused": "Opened"
   },
   "Lua.diagnostics.neededFileStatus": {
-    // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
-    "different-requires": "None",
-    // "codestyle-check": "None",
-    "redefined-local": "None",
-    "lowercase-global": "None",
-    // "no-unknown": "None",
-    // "need-check-nil": "None"
-    // "param-type-mismatch": "None",
-    // "missing-parameter": "None",
-    // "redundant-parameter": "None",
+  // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
+  "different-requires": "None",
+  "codestyle-check": "None",
+  // "redefined-local": "None",
+  // "lowercase-global": "None"
+  // "no-unknown": "None",
+  // "need-check-nil": "None"
+  // "param-type-mismatch": "None",
+  // "missing-parameter": "None",
+  // "redundant-parameter": "None",
 
-    // "assign-type-mismatch": "Opened",
-    // "cast-local-type": "Opened",
-    // "undefined-field": "Any",
-    //
-    // "ambiguity-1": "Opened",
-    // "circle-doc-class": "Opened",
-    // "close-non-object": "Opened",
-    // "count-down-loop": "Opened",
-    // "doc-field-no-class": "Opened",
-    // "duplicate-doc-alias": "Opened",
-    // "duplicate-doc-field": "Opened",
-    // "duplicate-doc-param": "Opened",
-    // "duplicate-index": "Opened",
-    // "duplicate-set-field": "Opened",
-    // "global-in-nil-env": "Opened",
-    // "newfield-call": "Opened",
-    // "newline-call": "Opened",
-    // "unbalanced-assignments": "Opened",
-    // "undefined-doc-class": "Opened",
-    // "undefined-doc-name": "Opened",
-    // "undefined-doc-param": "Opened",
-    // "undefined-env-child": "Opened",
-    // "undefined-global": "Opened",
-    // "unknown-diag-code": "Opened",
-    // "unknown-cast-variable": "Opened"
+  // "assign-type-mismatch": "Opened",
+  // "cast-local-type": "Opened",
+  // "undefined-field": "Any",
+  //
+  // "ambiguity-1": "Opened",
+  // "circle-doc-class": "Opened",
+  // "close-non-object": "Opened",
+  // "count-down-loop": "Opened",
+  // "doc-field-no-class": "Opened",
+  // "duplicate-doc-alias": "Opened",
+  // "duplicate-doc-field": "Opened",
+  // "duplicate-doc-param": "Opened",
+  // "duplicate-index": "Opened",
+  // "duplicate-set-field": "Opened",
+  // "global-in-nil-env": "Opened",
+  // "newfield-call": "Opened",
+  // "newline-call": "Opened",
+  // "unbalanced-assignments": "Opened",
+  // "undefined-doc-class": "Opened",
+  // "undefined-doc-name": "Opened",
+  // "undefined-doc-param": "Opened",
+  // "undefined-env-child": "Opened",
+  // "undefined-global": "Opened",
+  // "unknown-diag-code": "Opened",
+  // "unknown-cast-variable": "Opened"
   },
   "Lua.diagnostics.disable": [
     "lowercase-global",
     "redefined-local",
     "spell-check",
     "codestyle-check",
-    // "different-requires",
+    "different-requires"
     // "no-unknown"
-
+    //
     // "redundant-parameter",
     // "missing-parameter",
+    // "assign-type-mismatch"
     // "param-type-mismatch",
     // "need-check-nil"
   ],
@@ -835,28 +882,54 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                            Python
   // ╘══════════════════════════════════════════════════════════╛
-  "python.formatting.provider": "black",
-  "python.formatting.blackArgs": ["--line-length", "100"],
+  "ruff.enable": true,
+  "ruff.trace.server": "off",
+  "ruff.args": ["--config=/home/lucas/.config/ruff/ruff.toml"],
+  // "ruff.disableHover": true,
+
+  "python.linting.ruffEnabled": false,
+  "python.linting.ruffArgs": ["--config=/home/lucas/.config/ruff/ruff.toml"],
+
+  "python.pythonPath": "/usr/bin/python",
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
-  "python.linting.flake8Enabled": true,
-  "python.linting.flake8Args": ["--config=/home/lucas/.config/python/flake8"],
-  // "python.sortImports.path": "","
-  // "python.linting.ruffEnabled": true,
-  "python.linting.mypyEnabled": false,
-  "python.linting.pylintEnabled": true,
-  "python.linting.pylintArgs": ["--rcfile=/home/lucas/.config/python/pylintrc"],
-  // "python.pythonPath": "~/.local/share/pyenv/shims/python",
-  "python.pythonPath": "/usr/bin/python",
+  "python.linting.maxNumberOfProblems": 100,
+  "python.linting.ignorePatterns": [".vscode/*.py", "**/site-packages/**/*.py"],
+  "python.linting.flake8Args": [
+    "--config=/home/lucas/.config/languages/python/flake8"
+  ],
+  "python.linting.mypyArgs": [
+    "--no-pretty",
+    "--ignore-missing-imports",
+    "--follow-imports=silent",
+    "--show-column-numbers",
+    "--config=/home/lucas/.config/mypy/config"
+  ],
+  "python.linting.pylintArgs": [
+    "--rcfile=/home/lucas/.config/languages/python/pylintrc"
+  ],
+  "python.linting.mypyEnabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": false,
+  "python.linting.pytypeEnabled": false,
+  "python.linting.pydocstyleEnabled": false,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "100"],
+
+  // "python.sortImports.path": "",
+
+  "python.analysis.indexing": true,
+  "python.analysis.logLevel": "Information", // "openFilesOnly"
+  "python.analysis.extraPaths": [],
   "python.analysis.diagnosticMode": "workspace",
-  "python.analysis.stubPath": "~/projects/python/stub-types",
+  // "python.analysis.stubPath": "/home/lucas/projects/python/stub-types",
+  "python.analysis.stubPath": "typings",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoSearchPaths": true,
   "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.typeCheckingMode": "basic", // "strict"
+  "python.analysis.typeshedPaths": [".venv/Lib/site-packages", "typings"],
   //https://github.com/microsoft/pyright/blob/main/docs/configuration.md
-  // "python.analysis.typeCheckingMode": "strict",
-  "python.analysis.typeCheckingMode": "basic",
-  // "python.analysis.diagnosticMode": "openFilesOnly",
   "python.analysis.diagnosticSeverityOverrides": {
     "reportDuplicateImport": "information",
     "reportUnusedCallResult": "information",
@@ -864,15 +937,20 @@
     "reportUnusedFunction": "information",
     "reportUnusedImport": "information",
     //
-    "reportUnusedVariable": "none",
-    "reportUndefinedVariable": "none"
+    // "reportUnusedVariable": "none",
+    // "reportUndefinedVariable": "none",
+    "reportMissingModuleSource": "none"
   },
 
   "pyright.enable": true,
-  "pyright.trace.server": "off",
+  "pyright.trace.server": "messages",
   "pyright.inlayHints.functionReturnTypes": true,
   "pyright.inlayHints.variableTypes": true,
   "pyright.organizeimports.provider": "isort",
+  "pyright.completion.importSupport": true,
+  "pyright.completion.snippetSupport": true,
+  // "pyright.disableDiagnostics": false,
+
   // ╒══════════════════════════════════════════════════════════╕
   //                             Java
   // ╘══════════════════════════════════════════════════════════╛
@@ -892,8 +970,8 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
-  "eslint.trace.server": "off",
   "eslint.enable": true,
+  "eslint.trace.server": "off",
   // "eslint.experimental.useFlatConfig": true,
   // "eslint.codeAction.showDocumentation": {
   //   "enable": true
@@ -903,12 +981,22 @@
   //   "location": "separateLine"
   // },
   // "eslint.rules.customizations": [{"rule": "", "severity": ""}],
-  "eslint.packageManager": "yarn",
   "eslint.run": "onType",
+  "eslint.debug": false,
+  "eslint.packageManager": "yarn",
   "eslint.autoFixOnSave": false,
-  // "eslint.codeActionsOnSave.mode": "all",
+  "eslint.codeActionsOnSave.mode": "all",
   "eslint.format.enable": true,
-  // Typescript
+  "eslint.options": {
+    "cache": true,
+    // "configFile": "/home/lucas/.config/languages/typescript/.eslintrc.js",
+    // "baseConfig": "",
+    // "overrideConfigFile": "",
+  },
+
+  // ╭─────────────╮
+  // │  Typescript │
+  // ╰─────────────╯
   "tsserver.enable": true,
   "tsserver.trace.server": "off",
   "tsserver.log": "normal",
@@ -1164,6 +1252,7 @@
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
+
   // ╒══════════════════════════════════════════════════════════╕
   //                             HTML
   // ╘══════════════════════════════════════════════════════════╛
@@ -1452,7 +1541,7 @@
     "vim": "vint",
     "email": "languagetool",
     "dockerfile": "hadolint",
-    "ruby": ["rubocop"],
+    "ruby": ["rubocop"]
     // "yaml": ["yamllint"]
     // "css": "stylelint"
     // "lua": "selene"
@@ -1469,22 +1558,26 @@
   //                       Language Server
   // ╘══════════════════════════════════════════════════════════╛
   "languageserver": {
-    "ruff-lsp": {
-      "command": "ruff-lsp",
-      "filetypes": ["python"],
-      // "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
-      "settings": {
-        "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
-        "showNotifications": true,
-        "logLevel": "error",
-        "organizeImports": true,
-        "fixAll": true,
-      },
-    },
+    // "ruff-lsp": {
+    //   "command": "ruff-lsp",
+    //   "filetypes": ["python"],
+    //   // "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+    //   "settings": {
+    //     "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+    //     "showNotifications": true,
+    //     "logLevel": "error",
+    //     "organizeImports": true,
+    //     "fixAll": true,
+    //   },
+    // },
     "dockerfile": {
       "command": "docker-langserver",
       "filetypes": ["dockerfile"],
       "args": ["--stdio"]
+    },
+    "jq": {
+      "command": "jq-lsp",
+      "filetypes": ["jq"]
     },
     "teal": {
       "command": "teal-language-server",
@@ -1510,14 +1603,14 @@
       "args": ["--stdio"],
       "filetypes": ["crystal"]
     },
-    "cmake": {
-      "command": "cmake-language-server",
-      "filetypes": ["cmake"],
-      "rootPatterns": ["build/"],
-      "initializationOptions": {
-        "buildDirectory": "build"
-      }
-    },
+    // "cmake": {
+    //   "command": "cmake-language-server",
+    //   "filetypes": ["cmake"],
+    //   "rootPatterns": ["build/"],
+    //   "initializationOptions": {
+    //     "buildDirectory": "build"
+    //   }
+    // },
     // https://www.reddit.com/r/neovim/comments/s41si3/extension_like_rusttoolsnvim_but_for_clangd_c_c
     "ccls": {
       "command": "ccls",
@@ -1553,12 +1646,14 @@
             "-fms-compatibility",
             "-fdelayed-template-parsing"
           ],
+          "resourceDir": "/usr/lib/clang/15.0.7",
           "excludeArgs": []
         },
         "cacheFormat": "json",
         "cache": {
           "directory": "/home/lucas/.cache/ccls"
         },
+        "highlight": { "lsRanges": true },
         "client": {
           "snippetSupport": false,
           "diagnosticsRelatedInformation": false,

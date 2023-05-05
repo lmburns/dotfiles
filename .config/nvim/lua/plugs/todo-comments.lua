@@ -77,7 +77,7 @@ function M.setup()
                     alt = {"NEW", "FEAT"},
                 },
                 MAYBE = {
-                    icon = pad(icons.ui.circle_hollow),
+                    icon = pad(icons.ui.circle_empty),
                     color = "#FF5D62",
                     alt = {"POSSIBLY", "TODO_MAYBE"},
                 },
@@ -104,11 +104,7 @@ function M.setup()
                 CHECK = {
                     icon = pad(icons.ui.check_circle),
                     color = "#e78a4e",
-                    alt = {"EXPLAIN", "DISCOVER", "SECTION"},
-                },
-                QUESTION = {
-                    icon = pad(icons.misc.question_bold),
-                    color = "#38A89D",
+                    alt = {"EXPLAIN", "DISCOVER", "SECTION", "REVISIT"},
                 },
             },
             gui_style = {

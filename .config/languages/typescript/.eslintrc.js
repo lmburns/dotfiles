@@ -61,7 +61,7 @@ module.exports = {
     // 'no-await-in-loop': [],
     'no-class-assign': ['error'],
     'no-compare-neg-zero': ['error'],
-    'no-cond-assign': 'error',
+    'no-cond-assign': ['error', 'except-parens'],
     'no-const-assign': ['error'],
     // 'no-constant-binary-expression': [],
     'no-constant-condition': ['error'],
@@ -328,7 +328,7 @@ module.exports = {
     'arrow-spacing': ['error', { before: true, after: true }],
     'block-spacing': ['error', 'always'],
     'brace-style': ['error', '1tbs'],
-    'comma-dangle': ['error', 'always-multiline'],
+    'comma-dangle': ['warn', 'always-multiline'],
     // 'comma-spacing': ['error', {before: false, after: true}],
     'comma-style': ['error', 'last'],
     'computed-property-spacing': ['error', 'never'],
@@ -342,7 +342,20 @@ module.exports = {
     'implicit-arrow-linebreak': ['error', 'beside'],
     // indent: ['error', 4],
     'jsx-quotes': ['error', 'prefer-double'],
-    // 'key-spacing': [],
+    'key-spacing': [
+      'warn',
+      {
+        singleLine: {
+          beforeColon: false,
+          afterColon: true
+        },
+        multiLine: {
+          beforeColon: false,
+          afterColon: true,
+          align: 'value'
+        }
+      }
+    ],
     // 'keyword-spacing': [],
     // 'line-comment-position': [],
     'linebreak-style': [1, 'unix'],
@@ -375,6 +388,8 @@ module.exports = {
     'no-whitespace-before-property': 'error',
     'nonblock-statement-body-position': ['error', 'below'],
     'object-curly-newline': ['error', { multiline: true }],
+    'object-curly-newline': ['error', { multiline: true }],
+    'object-curly-spacing': ['warn', 'never'],
     // 'object-property-newline': ['error'],
     'operator-linebreak': ['error', 'after'],
     // 'padded-blocks': [],
@@ -399,6 +414,9 @@ module.exports = {
     'wrap-iife': ['error', 'inside', { functionPrototypeMethods: true }],
     'wrap-regex': 'error',
     'yield-star-spacing': ['error', 'after'],
+
+    'import/extensions': 'off',
+    'import/no-extraneous-dependencies': 'off',
 
     // ╭────────╮
     // │  JSDoc │
@@ -503,23 +521,24 @@ module.exports = {
     // ╭───────────╮
     // │  Prettier │
     // ╰───────────╯
-    'prettier/prettier': [
-      'error',
-      {
-        useTabs: false,
-        printWidth: 100,
-        semi: true,
-        singleQuote: true,
-        quoteProps: 'as-needed',
-        endOfLine: 'lf',
-        trailingComma: 'all',
-        parser: 'typescript',
-        bracketSameLine: false,
-        arrowParens: 'always',
-        jsxSingleQuote: false,
-        bracketSpacing: true,
-      },
-    ],
+    // 'prettier/prettier': [
+    //   'error',
+    //   {
+    //     useTabs: false,
+    //     printWidth: 100,
+    //     semi: false,
+    //     singleQuote: true,
+    //     quoteProps: 'as-needed',
+    //     endOfLine: 'lf',
+    //     trailingComma: 'all',
+    //     parser: 'typescript',
+    //     bracketSameLine: false,
+    //     arrowParens: 'always',
+    //     // arrowParens: 'avoid',
+    //     jsxSingleQuote: false,
+    //     bracketSpacing: true,
+    //   },
+    // ],
   },
   overrides: [
     {

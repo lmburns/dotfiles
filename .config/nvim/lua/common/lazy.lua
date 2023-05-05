@@ -1,3 +1,5 @@
+---@module 'common.lazy'
+---@class Lazy
 local M = {}
 
 ---@version >5.2,JIT
@@ -8,6 +10,8 @@ local M = {}
 ---To work, requires LuaJIT compiled with -DLUAJIT_ENABLE_LUA52COMPAT.
 ---If not, the result of the callback will be returned immediately.
 ---See: https://luajit.org/extensions.html
+---@param cb fun(): any
+---@return table|any
 M.table = function(cb)
     local log = require("common.log")
 
@@ -81,6 +85,8 @@ end
 ---Require on index.
 ---Will only require the module after the first index of a module.
 ---Only works for modules that export a table.
+---@param require_path string
+---@return table
 M.require_on_index = function(require_path)
     return setmetatable(
         {},
@@ -106,6 +112,8 @@ end
 ---  -- ...later
 ---  s() <- only loads the module now
 ---```
+---@param require_path string
+---@return table
 M.require_on_module_call = function(require_path)
     return setmetatable(
         {},
@@ -131,6 +139,8 @@ end
 ---  -- ...later
 ---  lazy_func(42)  -- <- only loads the module now
 ---```
+---@param require_path string
+---@return table
 M.require_on_exported_call = function(require_path)
     return setmetatable(
         {},
@@ -148,6 +158,8 @@ end
 ---Require when any descendant is called
 ---This is like `require_on_module_call` plus `require_on_exported_call` but also
 ---works with arbitrarily nested indices.
+---@param require_path string
+---@return table
 M.require_on_call_rec = function(require_path)
     return M.on_call_rec(
         function()

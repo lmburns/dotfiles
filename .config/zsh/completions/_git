@@ -227,9 +227,9 @@ _git-bisect () {
       case $line[1] in
         (start)
           _arguments -C \
-	    --term-{good,old}'=[specify alternate term for good revisions]:term' \
-	    --term-{bad,new}'=[specify alternate term for bad revisions]:term' \
-	    '--no-checkout[set BISECT_HEAD reference instead of doing checkout at each iteration]' \
+      --term-{good,old}'=[specify alternate term for good revisions]:term' \
+      --term-{bad,new}'=[specify alternate term for bad revisions]:term' \
+      '--no-checkout[set BISECT_HEAD reference instead of doing checkout at each iteration]' \
             '--first-parent[follow only the first parent commit upon seeing a merge commit]' \
             ':bad revision:__git_commits' \
             '*: :->revision-or-path' && ret=0
@@ -263,8 +263,8 @@ _git-bisect () {
             '*:: : _normal' && ret=0
           ;;
         (terms)
-	  _arguments --term-good --term-bad && ret=0
-	  ;;
+    _arguments --term-good --term-bad && ret=0
+    ;;
         (view|visualize)
           local -a log_options revision_options
           __git_setup_log_options
@@ -1215,11 +1215,11 @@ _git-log () {
   case $state in
     (first-commit-ranges-or-files)
       if [[ -n ${opt_args[(I)--]} ]]; then
-	__git_tree_files ${PREFIX:-.} HEAD && ret=0
+  __git_tree_files ${PREFIX:-.} HEAD && ret=0
       else
-	_alternative \
-	  'commit-ranges::__git_commit_ranges' \
-	  'cached-files::__git_tree_files ${PREFIX:-.} HEAD' && ret=0
+  _alternative \
+    'commit-ranges::__git_commit_ranges' \
+    'cached-files::__git_tree_files ${PREFIX:-.} HEAD' && ret=0
       fi
     ;;
     (commit-ranges-or-files)
@@ -1232,11 +1232,11 @@ _git-log () {
       # committish range or committish and calls __git_tree_files
       # appropriately.
       if __git_is_committish_range $line[1]; then
-	__git_tree_files ${PREFIX:-.} $(__git_committish_range_last $line[1]) && ret=0
+  __git_tree_files ${PREFIX:-.} $(__git_committish_range_last $line[1]) && ret=0
       elif __git_is_committish $line[1]; then
-	__git_tree_files ${PREFIX:-.} $line[1] && ret=0
+  __git_tree_files ${PREFIX:-.} $line[1] && ret=0
       else
-	__git_tree_files ${PREFIX:-.} HEAD && ret=0
+  __git_tree_files ${PREFIX:-.} HEAD && ret=0
       fi
     ;;
   esac
@@ -1389,26 +1389,26 @@ _git-notes () {
             ': :__git_commits' \
             ': :__git_commits' && ret=0
           ;;
-	(edit)
-	  _arguments -S $endopt --allow-empty ':object:__git_commits' && ret=0
-	  ;;
+  (edit)
+    _arguments -S $endopt --allow-empty ':object:__git_commits' && ret=0
+    ;;
         (merge)
           _arguments -S -s $endopt \
             '(-s --strategy)--abort[abort an in-progress notes merge]' \
             '(-s --strategy)--commit[finalize an in-progress notes merge]' \
-	    '(-q --quiet)'{-q,--quiet}'[be quiet]' \
+      '(-q --quiet)'{-q,--quiet}'[be quiet]' \
             '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
             '(--abort --commit)'{-s,--strategy=}'[resolve conflicts using the given strategy]' \
             ': :__git_notes_refs' && ret=0
           ;;
-	(prune)
-	  _arguments -s -S $endopt \
-	    '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
-	    '(-n --dry-run)'{-n,--dry-run}"[don't remove anything, just report what would be deleted]" && ret=0
+  (prune)
+    _arguments -s -S $endopt \
+      '(-v --verbose)'{-v,--verbose}'[be more verbose]' \
+      '(-n --dry-run)'{-n,--dry-run}"[don't remove anything, just report what would be deleted]" && ret=0
           ;;
-	(remove)
-	  _arguments -S $endopt --ignore-missing --stdin ':object:__git_commits' && ret=0
-	  ;;
+  (remove)
+    _arguments -S $endopt --ignore-missing --stdin ':object:__git_commits' && ret=0
+    ;;
         (append)
           _arguments -S -s $endopt \
             '*'{-m+,--message=}'[use given note message]:message' \
@@ -1498,8 +1498,8 @@ _git-push () {
     '--recurse-submodules=[submodule handling]:submodule handling:((
         check\:"refuse to push if submodule commit not to be found on remote"
         on-demand\:"push all changed submodules"
-	only\:"submodules will be recursively pushed while the superproject is left unpushed"
-	no\:"no submodule handling"))' \
+  only\:"submodules will be recursively pushed while the superproject is left unpushed"
+  no\:"no submodule handling"))' \
     "(--no-signed --signed)--sign=-[GPG sign the push]::signing enabled:(($^^sign))" \
     '(--no-signed --sign)--signed[GPG sign the push]' \
     "(--sign --signed)--no-signed[don't GPG sign the push]" \
@@ -2028,7 +2028,7 @@ _git-submodule () {
         set-url:'set URL of the specified submodule'
         summary:'show commit summary between given commit and working tree/index'
         foreach:'evaluate shell command in each checked-out submodule'
-	absorbgitdirs:'move the git directory of a submodule into its superprojects'
+  absorbgitdirs:'move the git directory of a submodule into its superprojects'
         sync:'synchronize submodule settings')
 
       _describe -t commands command commands && ret=0
@@ -2064,7 +2064,7 @@ _git-submodule () {
         (deinit)
           _arguments -S \
             '(-f --force)'{-f,--force}'[remove submodule worktree even if local modifications are present]' \
-	    '(*)--all[remove all submodules]' \
+      '(*)--all[remove all submodules]' \
             '*: :__git_ignore_line_inside_arguments __git_submodules' && ret=0
           ;;
         (update)
@@ -2072,10 +2072,10 @@ _git-submodule () {
           _arguments -S \
             '(-q --quiet)'{-q,--quiet}'[suppress all output]' \
             '(-N --no-fetch)'{-N,--no-fetch}'[do not fetch new objects from repository]' \
-	    '(--merge --rebase)--checkout[checkout commit recorded in the superproject in the submodule on a detached HEAD]' \
-	    '(--checkout --rebase)--merge[merge commit recorded in superproject into current branch of submodule]' \
-	    '(--checkout --merge)--rebase[rebase current branch onto commit recorded in superproject]' \
-	    '--no-recommend-shallow[ignore submodule.<name>.shallow from .gitmodules]' \
+      '(--merge --rebase)--checkout[checkout commit recorded in the superproject in the submodule on a detached HEAD]' \
+      '(--checkout --rebase)--merge[merge commit recorded in superproject into current branch of submodule]' \
+      '(--checkout --merge)--rebase[rebase current branch onto commit recorded in superproject]' \
+      '--no-recommend-shallow[ignore submodule.<name>.shallow from .gitmodules]' \
             '--reference=[remote repository to clone]: :__git_any_repositories' \
             '--recursive[traverse submodules recursively]' \
             '--remote[use the status of the submodule''s remote-tracking branch]' \
@@ -2083,14 +2083,14 @@ _git-submodule () {
             '--init[initialize uninitialized submodules]' \
             '--single-branch[clone only one branch]' \
             '*: :__git_ignore_line_inside_arguments __git_submodules' && ret=0
-	;;
-	(set-branch)
+  ;;
+  (set-branch)
           _arguments -C -A '-*' \
-	    '(-d --default)'{-d,--default}'[remove config key to cause the tracking branch to default to master]' \
-	    '(-b --branch)'{-b,--branch=}'[specify the remote branch]:remote branch' \
-	    '1:path:_directories'
+      '(-d --default)'{-d,--default}'[remove config key to cause the tracking branch to default to master]' \
+      '(-b --branch)'{-b,--branch=}'[specify the remote branch]:remote branch' \
+      '1:path:_directories'
         ;;
-	(set-url)
+  (set-url)
           _arguments -C -A '-*' \
             '1:path:_directories' \
             '2:url:_urls' && ret=0
@@ -2129,11 +2129,11 @@ _git-submodule () {
             '(-q --quiet)'{-q,--quiet}'[suppress all output]' \
             '*: :__git_ignore_line_inside_arguments __git_submodules' && ret=0
           ;;
-	(absorbgitdirs)
-	  _arguments -S \
+  (absorbgitdirs)
+    _arguments -S \
             '(-q --quiet)'{-q,--quiet}'[suppress all output]' \
-	    '*:path:_directories'
-	;;
+      '*:path:_directories'
+  ;;
         (*)
           _default
           ;;
@@ -2185,7 +2185,7 @@ _git-subtree () {
           # complete "foo:bar" values which git-subtree(1) doesn't take.  What
           # we should complete here is what's on *one* side of the colon in
           # __git_ref_specs.
-	;;
+  ;;
         (merge)
           _arguments -S \
             '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
@@ -2193,7 +2193,7 @@ _git-subtree () {
             '(-m --message)'{-m+,--message=}'[use the given message as the commit message for the merge commit]:message' \
             '--squash[import only a single commit from the subproject]' \
             ': :__git_references' && ret=0
-	;;
+  ;;
         (pull)
           _arguments -S \
             '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
@@ -2202,7 +2202,7 @@ _git-subtree () {
             '--squash[import only a single commit from the subproject]' \
             ': :__git_any_repositories' \
             ':: :__git_ref_specs' && ret=0
-	;;
+  ;;
         (push)
           _arguments -S \
             '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
@@ -2210,10 +2210,10 @@ _git-subtree () {
             '(-m --message)'{-m+,--message=}'[use the given message as the commit message for the merge commit]:message' \
             ': :__git_any_repositories' \
             ':: :__git_ref_specs' && ret=0
-	;;
+  ;;
         (split)
           _arguments -S \
-	    '--annotate[add a prefix to commit message of new commits]:prefix' \
+      '--annotate[add a prefix to commit message of new commits]:prefix' \
             '(-q --quiet)'{-q,--quiet}'[suppress progress output]' \
             '(-P --prefix)'{-P+,--prefix=}'[specify path to the subtree in the repository to manipulate]: :_directories' \
             '(-b --branch)'{-b,--branch=}'[create a new branch]' \
@@ -2223,10 +2223,10 @@ _git-subtree () {
             '--onto=[try connecting new tree to an existing one]: :__git_ref_specs' \
             '--rejoin[merge the new branch back into HEAD]' \
             '*: :__git_references' && ret=0
-	;;
+  ;;
         (*)
           _default && ret=0
-	;;
+  ;;
       esac
     ;;
   esac
@@ -2263,22 +2263,22 @@ _git-switch() {
   case $state in
     branches)
       if [[ -n ${opt_args[(i)--guess]} ]]; then
-	# --guess is the default but if it has been explicitly specified,
-	# we'll only complete remote branches
-	__git_remote_branch_names_noprefix && ret=0
+  # --guess is the default but if it has been explicitly specified,
+  # we'll only complete remote branches
+  __git_remote_branch_names_noprefix && ret=0
       else
-	_alternative \
-	  'branches::__git_branch_names' \
-	  'remote-branch-names-noprefix::__git_remote_branch_names_noprefix' && ret=0
+  _alternative \
+    'branches::__git_branch_names' \
+    'remote-branch-names-noprefix::__git_remote_branch_names_noprefix' && ret=0
       fi
     ;;
     start-points)
       if [[ -n ${opt_args[(I)-t|--track|--no-track]} ]]; then
-	# with an explicit --track, stick to remote branches
-	# same for --no-track because it'd be meaningless with anything else
-	__git_heads_remote && ret=0
+  # with an explicit --track, stick to remote branches
+  # same for --no-track because it'd be meaningless with anything else
+  __git_heads_remote && ret=0
       else
-	__git_revisions && ret=0
+  __git_revisions && ret=0
       fi
     ;;
   esac
@@ -2341,10 +2341,10 @@ _git-worktree() {
         add:'create a new working tree'
         prune:'prune working tree information'
         list:'list details of each worktree'
-	lock:'prevent a working tree from being pruned'
-	move:'move a working tree to a new location'
-	remove:'remove a working tree'
-	unlock:'allow working tree to be pruned, moved or deleted'
+  lock:'prevent a working tree from being pruned'
+  move:'move a working tree to a new location'
+  remove:'remove a working tree'
+  unlock:'allow working tree to be pruned, moved or deleted'
       )
 
       _describe -t commands command commands && ret=0
@@ -2353,49 +2353,49 @@ _git-worktree() {
       curcontext=${curcontext%:*}-$line[1]:
       case $line[1] in
         (add)
-	  if (( $words[(I)--detach] )); then
-	    args=( ':branch:__git_branch_names' )
-	  else
-	    args=( ':commit:__git_commits' )
-	  fi
+    if (( $words[(I)--detach] )); then
+      args=( ':branch:__git_branch_names' )
+    else
+      args=( ':commit:__git_commits' )
+    fi
           _arguments -S $endopt \
-	    '(-f --force)'{-f,--force}'[checkout branch even if already checked out in another worktree]' \
-	    '(-B --detach)-b+[create a new branch]: :__git_branch_names' \
-	    '(-b --detach)-B+[create or reset a branch]: :__git_branch_names' \
-	    '(-b -B)--detach[detach HEAD at named commit]' \
-	    '--no-checkout[suppress file checkout in new worktree]' \
-	    '--lock[keep working tree locked after creation]' \
-	    ':path:_directories' $args && ret=0
-	;;
+      '(-f --force)'{-f,--force}'[checkout branch even if already checked out in another worktree]' \
+      '(-B --detach)-b+[create a new branch]: :__git_branch_names' \
+      '(-b --detach)-B+[create or reset a branch]: :__git_branch_names' \
+      '(-b -B)--detach[detach HEAD at named commit]' \
+      '--no-checkout[suppress file checkout in new worktree]' \
+      '--lock[keep working tree locked after creation]' \
+      ':path:_directories' $args && ret=0
+  ;;
         (prune)
           _arguments -S $endopt \
-	    '(-n --dry-run)'{-n,--dry-run}"[don't remove, show only]" \
-	    '(-v --verbose)'{-v,--verbose}'[report pruned objects]' \
+      '(-n --dry-run)'{-n,--dry-run}"[don't remove, show only]" \
+      '(-v --verbose)'{-v,--verbose}'[report pruned objects]' \
             '--expire=[expire objects older than specified time]: :_git_approxidates' && ret=0
-	;;
+  ;;
         (list)
           _arguments -S $endopt \
             '(-v --verbose --porcelain -z)'{-v,--verbose}'[output additional information about worktrees]' \
             "--expire=[add 'prunable' annotation to worktrees older than specified time]: :_git_approxidates" \
             '(-v)--porcelain[machine-readable output]' \
             '(-v)-z[terminate each line with a NUL rather than a newline]' && ret=0
-	;;
-	(lock)
-	  _arguments -C -S $endopt '--reason=[specify reason for locking]:reason' ': :->worktrees' && ret=0
-	;;
-	(move)
-	  _arguments -C \
+  ;;
+  (lock)
+    _arguments -C -S $endopt '--reason=[specify reason for locking]:reason' ': :->worktrees' && ret=0
+  ;;
+  (move)
+    _arguments -C \
             ': :->worktrees' \
             ':location:_directories' && ret=0
-	;;
-	(remove)
+  ;;
+  (remove)
           _arguments -C -S $endopt \
             '(-f --force)'{-f,--force}'[remove working trees that are not clean or that have submodules]' \
             ': :->worktrees' && ret=0
-	;;
-	(unlock)
-	  state=worktrees
-	;;
+  ;;
+  (unlock)
+    state=worktrees
+  ;;
       esac
       if [[ $state = worktrees ]]; then
         __git_worktrees && ret=0
@@ -3889,7 +3889,7 @@ _git-reflog () {
           'delete:delete entries from reflog'
           'show:show log of ref'
           'exists:check whether a ref has a reflog'
-	)
+  )
 
         _alternative \
           'commands:: _describe -t commands command commands' \
@@ -3930,9 +3930,9 @@ _git-reflog () {
               $revision_options \
               ':: :__git_references' && ret=0
             ;;
-	  (exists)
-	    __git_references && ret=0
-	    ;;
+    (exists)
+      __git_references && ret=0
+      ;;
         esac
     esac
 
@@ -3956,9 +3956,9 @@ _git-remote () {
 
       commands=(
         'add:add a new remote'
-	'get-url:retrieves the URLs for a remote'
+  'get-url:retrieves the URLs for a remote'
         'rename:rename a remote and update all associated tracking branches'
-	{rm,remove}':remove a remote and all associated tracking branches'
+  {rm,remove}':remove a remote and all associated tracking branches'
         'set-head:set or delete default branch for a remote'
         'set-branches:change list of branches tracked by a remote'
         'set-url:change URL for a remote'
@@ -3981,7 +3981,7 @@ _git-remote () {
             '(--tags          )--no-tags[tell git fetch to not import every tag from remote repository]' \
             '*'{-t,--track=}'[track given branch instead of default glob refspec]: :__git_branch_names' \
             '(-m --master)'{-m,--master=}'[set HEAD of remote to point to given master branch]: :__git_branch_names' \
-	    '--mirror[do not use separate remotes]::mirror type:(fetch pull)' \
+      '--mirror[do not use separate remotes]::mirror type:(fetch pull)' \
             ':name:__git_remotes' \
             ':repository:__git_repositories_or_urls' && ret=0
           ;;
@@ -4035,9 +4035,9 @@ _git-remote () {
             '(-p --prune)'{-p,--prune}'[prune all updated remotes]' \
             ': :__git_remote-groups' && ret=0
           ;;
-	(*) # rm, remove and fallback for any new subcommands
-	  __git_remotes && ret=0
-	  ;;
+  (*) # rm, remove and fallback for any new subcommands
+    __git_remotes && ret=0
+    ;;
       esac
       ;;
   esac
@@ -4657,92 +4657,92 @@ _git-svn () {
 
       case $line[1] in
         (clone|dcommit|fetch|init|migrate|rebase|set-tree)
-	  # TODO: --no-auth-cache is undocumented.
-	  # TODO: --config-dir is undocumented.
-	  opts+=(
-	    '--config-dir=:configuration directory:_directories'
-	    '--ignore-paths[regular expression of paths to not check out]:perl regex'
-	    '--include-paths[regular expression of paths to check out]:perl regex'
-	    '--ignore-refs:ref'
-	    '--no-auth-cache'
-	    '--username=[username to use for SVN transport]: :_users'
-	  )
-	;|
+    # TODO: --no-auth-cache is undocumented.
+    # TODO: --config-dir is undocumented.
+    opts+=(
+      '--config-dir=:configuration directory:_directories'
+      '--ignore-paths[regular expression of paths to not check out]:perl regex'
+      '--include-paths[regular expression of paths to check out]:perl regex'
+      '--ignore-refs:ref'
+      '--no-auth-cache'
+      '--username=[username to use for SVN transport]: :_users'
+    )
+  ;|
         (clone|dcommit|fetch|log|rebase|set-tree)
-	  opts+=(
-	    '(-A --authors-file)'{-A,--authors-file}'[specify author-conversion file]:author-conversion file:_files'
-	  )
-	;|
+    opts+=(
+      '(-A --authors-file)'{-A,--authors-file}'[specify author-conversion file]:author-conversion file:_files'
+    )
+  ;|
         (clone|dcommit|fetch|rebase|set-tree)
-	  # TODO: --repack-flags can be improved by actually completing the legal
-	  # flags to git-repack.
-	  # TODO: --no-checkout is undocumented.
-	  opts+=(
-	    "--add-author-from[when committing to svn, append a From: line based on the git commit's author string]"
-	    '--authors-prog=[specify program used to generate authors]: :_cmdstring'
-	    '(--no-follow-parent)--follow-parent[follow parent commit]'
-	    "(--follow-parent)--no-follow-parent[don't follow parent commit]"
-	    '--localtime[store Git commit times in local timezone]'
-	    '--log-window-size=[fetch specified number of log entries per-request]:entries [100]'
-	    '--no-checkout'
-	    '(-q --quiet)'{-q,--quiet}'[make git-svn less verbose]'
-	    '(--repack-flags --repack-args --repack-opts)'{--repack-flags=,--repack-args=,--repack-opts=}'[flags to pass to git-repack]:git-repack flags'
-	    '--repack=[repack files (for given number of revisions)]:: :__git_guard_number "revision limit"'
-	    '--use-log-author[use author from the first From: or Signed-Off-By: line, when fetching into git]'
-	  )
-	;|
-	(clone|init)
-	  opts+=(
-	    '(-T --trunk)'{-T-,--trunk=}'[set trunk sub-directory]:trunk sub-directory:->subdirectory'
-	    '(-t --tags)*'{-t-,--tags=}'[add tags sub-directory]:tags sub-directory:->subdirectory'
-	    '(-b --branches)*'{-b-,--branches=}'[add branches sub-directory]:branches sub-directory:->subdirectory'
-	    '(-s --stdlayout)'{-s,--stdlayout}'[shorthand for setting trunk, tags, branches as relative paths, the SVN default]'
-	    '--no-metadata[get rid of git-svn-id: lines at the end of every commit]'
-	    '--rewrite-root=[set svn-remote.*.rewriteRoot]:new root:_urls'
-	    '--rewrite-uuid=[set svn-remote.*.rewriteUUID]:uuid'
-	    '--prefix=[prefix to use for names of remotes]:path prefix:_directories -r ""'
-	    '(               --no-minimize-url)--minimize-url[minimize URLs]'
-	    "(--minimize-url                  )--no-minimize-url[don't minimize URLs]"
-	    '--shared=[share repository amongst several users]:: :__git_repository_permissions'
-	    '--template=[directory to use as a template for the object database]: :_directories'
-	    '--use-svm-props[re-map repository URLs and UUIDs from mirrors created with SVN::Mirror]'
-	    '--use-svnsync-props[re-map repository URLs and UUIDs from mirrors created with svnsync]'
-	  )
-	;|
-	(commitdiff|dcommit|set-tree)
-	  # TODO: -C and --copy-similarity are undocumented.
-	  opts+=(
-	    '(-C --copy-similarity)'{-C-,--copy-similarity=}': :_guard "[[\:digit:\]]#" number'
-	    '(-e --edit)'{-e,--edit}'[edit commit message before committing]'
-	    '-l-[limit number of rename/copy targets to run]: :__git_guard_number'
-	    '--find-copies-harder[try harder to find copies]'
-	    '--rmdir[remove empty directories from SVN tree after commit]'
-	    ':: :__git_svn-remotes'
-	  )
-	;|
-	(fetch|clone)
-	  opts+=(
-	    '(-r --revision)'{-r,--revision}'[only fetch given revision or revision range]: :__git_svn_revisions'
-	    ':: :__git_svn-remotes'
-	  )
+    # TODO: --repack-flags can be improved by actually completing the legal
+    # flags to git-repack.
+    # TODO: --no-checkout is undocumented.
+    opts+=(
+      "--add-author-from[when committing to svn, append a From: line based on the git commit's author string]"
+      '--authors-prog=[specify program used to generate authors]: :_cmdstring'
+      '(--no-follow-parent)--follow-parent[follow parent commit]'
+      "(--follow-parent)--no-follow-parent[don't follow parent commit]"
+      '--localtime[store Git commit times in local timezone]'
+      '--log-window-size=[fetch specified number of log entries per-request]:entries [100]'
+      '--no-checkout'
+      '(-q --quiet)'{-q,--quiet}'[make git-svn less verbose]'
+      '(--repack-flags --repack-args --repack-opts)'{--repack-flags=,--repack-args=,--repack-opts=}'[flags to pass to git-repack]:git-repack flags'
+      '--repack=[repack files (for given number of revisions)]:: :__git_guard_number "revision limit"'
+      '--use-log-author[use author from the first From: or Signed-Off-By: line, when fetching into git]'
+    )
+  ;|
+  (clone|init)
+    opts+=(
+      '(-T --trunk)'{-T-,--trunk=}'[set trunk sub-directory]:trunk sub-directory:->subdirectory'
+      '(-t --tags)*'{-t-,--tags=}'[add tags sub-directory]:tags sub-directory:->subdirectory'
+      '(-b --branches)*'{-b-,--branches=}'[add branches sub-directory]:branches sub-directory:->subdirectory'
+      '(-s --stdlayout)'{-s,--stdlayout}'[shorthand for setting trunk, tags, branches as relative paths, the SVN default]'
+      '--no-metadata[get rid of git-svn-id: lines at the end of every commit]'
+      '--rewrite-root=[set svn-remote.*.rewriteRoot]:new root:_urls'
+      '--rewrite-uuid=[set svn-remote.*.rewriteUUID]:uuid'
+      '--prefix=[prefix to use for names of remotes]:path prefix:_directories -r ""'
+      '(               --no-minimize-url)--minimize-url[minimize URLs]'
+      "(--minimize-url                  )--no-minimize-url[don't minimize URLs]"
+      '--shared=[share repository amongst several users]:: :__git_repository_permissions'
+      '--template=[directory to use as a template for the object database]: :_directories'
+      '--use-svm-props[re-map repository URLs and UUIDs from mirrors created with SVN::Mirror]'
+      '--use-svnsync-props[re-map repository URLs and UUIDs from mirrors created with svnsync]'
+    )
+  ;|
+  (commitdiff|dcommit|set-tree)
+    # TODO: -C and --copy-similarity are undocumented.
+    opts+=(
+      '(-C --copy-similarity)'{-C-,--copy-similarity=}': :_guard "[[\:digit:\]]#" number'
+      '(-e --edit)'{-e,--edit}'[edit commit message before committing]'
+      '-l-[limit number of rename/copy targets to run]: :__git_guard_number'
+      '--find-copies-harder[try harder to find copies]'
+      '--rmdir[remove empty directories from SVN tree after commit]'
+      ':: :__git_svn-remotes'
+    )
+  ;|
+  (fetch|clone)
+    opts+=(
+      '(-r --revision)'{-r,--revision}'[only fetch given revision or revision range]: :__git_svn_revisions'
+      ':: :__git_svn-remotes'
+    )
         ;|
         (fetch|rebase|dcommit)
-	  # TODO: --fetch-all and --all are undocumented.
-	  opts+=( '(--fetch-all --all)'{--fetch-all,--all} )
+    # TODO: --fetch-all and --all are undocumented.
+    opts+=( '(--fetch-all --all)'{--fetch-all,--all} )
         ;|
         (rebase|dcommit)
-	  opts+=(
-	    '(-M -m --merge)'{-M,-m,--merge}'[use merging strategies, if necessary]'
-	    '*'{-s,--strategy=-}'[use given merge strategy]:merge strategy:__git_merge_strategies'
-	  )
+    opts+=(
+      '(-M -m --merge)'{-M,-m,--merge}'[use merging strategies, if necessary]'
+      '*'{-s,--strategy=-}'[use given merge strategy]:merge strategy:__git_merge_strategies'
+    )
         ;|
         (rebase|dcommit|branch|tag)
-	  opts+=(
-	    '(-n --dry-run)'{-n,--dry-run}'[only display what would be done]'
-	  )
+    opts+=(
+      '(-n --dry-run)'{-n,--dry-run}'[only display what would be done]'
+    )
         ;|
         (rebase|dcommit|log)
-	  opts+=( '(-v --verbose)'{-v,--verbose}'[display extra information]' )
+    opts+=( '(-v --verbose)'{-v,--verbose}'[display extra information]' )
         ;|
         (branch|tag)
           # TODO: -d/--destination should complete output of
@@ -4756,79 +4756,79 @@ _git-svn () {
             '(-d --destination)'{-d,--destination}"[location of $line[1] to create in SVN repository]: :_directories"
             '--username[specify SVN username to perform commit as]: :_users'
             '--commit-url[specify URL to connect to destination SVN repository]: :_urls'
-	    '--parents[create parent folders]'
-	  )
-	;|
+      '--parents[create parent folders]'
+    )
+  ;|
         (commit-diff|create-ignore|dcommit|show-ignore|mkdirs|proplist|propget|show-externals)
           # TODO: -r and --revision is undocumented for dcommit, show-ignore and mkdirs.
           opts+=(
             '(-r --revision)'{-r,--revision}'[specify SVN revision]: :__git_svn_revisions'
-	  )
-	;|
-	(propset|propget)
-	  opts+=( '1:property:(svn:ignore svn:keywords svn:executable svn:eol-style svn:mime-type svn:externals svn:needs-lock)' )
+    )
+  ;|
+  (propset|propget)
+    opts+=( '1:property:(svn:ignore svn:keywords svn:executable svn:eol-style svn:mime-type svn:externals svn:needs-lock)' )
         ;|
 
-	# ;| style fall-throughs end; here on each command covered once
+  # ;| style fall-throughs end; here on each command covered once
         (blame)
           opts+=(
             '--git-format[produce output in git-blame format, with SVN revision numbers instead of git commit hashes]'
-	    '*:file:__git_cached_files'
-	  )
-	;;
+      '*:file:__git_cached_files'
+    )
+  ;;
         (branch)
-	  opts+=( '(-t --tag)'{-t,--tag}'[create a tag]' )
-	;;
+    opts+=( '(-t --tag)'{-t,--tag}'[create a tag]' )
+  ;;
         (clone)
           opts+=(
-	    '--preserve-empty-dirs[create a placeholder file for each empty directory]'
-	    '--placeholder-filename=[specify name of placeholder files created by --preserve-empty-dirs]:filename [.gitignore]:_files'
+      '--preserve-empty-dirs[create a placeholder file for each empty directory]'
+      '--placeholder-filename=[specify name of placeholder files created by --preserve-empty-dirs]:filename [.gitignore]:_files'
             ':url:_urls'
             '::directory:_directories'
-	  )
-	;;
+    )
+  ;;
         (commit-diff)
           # TODO: -m and --message is undocumented.
           # TODO: -F and --file is undocumented.
           opts+=(
             '(-m --message)'{-m-,--message=}':message'
             '(-F --file)'{-F-,--file=}':file:_files'
-	    ':original tree:__git_tree_ishs'
-	    ':new tree result:__git_tree_ishs'
-	    ':target:_urls'
-	  )
-	;;
+      ':original tree:__git_tree_ishs'
+      ':new tree result:__git_tree_ishs'
+      ':target:_urls'
+    )
+  ;;
         (dcommit)
-	  # TODO: --set-svn-props is undocumented
+    # TODO: --set-svn-props is undocumented
           opts+=(
             '--commit-url[commit to a different SVN url]:SVN URL:_url'
-	    '(-i --interactive)'{-i,--interactive}'[ask for confirmation that a patch should be sent to SVN]'
-	    '--mergeinfo[add specified merge information during the dcommit]:mergeinfo' \
+      '(-i --interactive)'{-i,--interactive}'[ask for confirmation that a patch should be sent to SVN]'
+      '--mergeinfo[add specified merge information during the dcommit]:mergeinfo' \
             "--no-rebase[don't rebase or reset after committing]"
-	    '--set-svn-props:arg'
-	  )
-	;;
+      '--set-svn-props:arg'
+    )
+  ;;
         (fetch)
           opts+=(
-	    '(-p --parent)'{-p,--parent}'[fetch only from SVN parent of current HEAD]'
-	  )
-	;;
+      '(-p --parent)'{-p,--parent}'[fetch only from SVN parent of current HEAD]'
+    )
+  ;;
         (info)
           opts+=(
-	    '--url[output only value of URL field]'
-	    ':file:__git_cached_files'
-	  )
-	;;
+      '--url[output only value of URL field]'
+      ':file:__git_cached_files'
+    )
+  ;;
         (init)
-	  opts+=( ':SVN URL:_urls' ':target directory:_directories' )
+    opts+=( ':SVN URL:_urls' ':target directory:_directories' )
         ;;
-	(find-rev)
-	  opts+=(
-	    '(-A --after -B --before)'{-B,--before}'[with no exact match, find last commit for current branch]'
-	    '(-A --after -B --before)'{-A,--after}'[with no exact match, find closest match searching forwards]'
-	    ':revision: _alternative "svn-revisions\:svn revision number\:__git_svn_revision_numbers -p r" "git-revisions\:git revision\:__git_revisions"'
-	  )
-	;;
+  (find-rev)
+    opts+=(
+      '(-A --after -B --before)'{-B,--before}'[with no exact match, find last commit for current branch]'
+      '(-A --after -B --before)'{-A,--after}'[with no exact match, find closest match searching forwards]'
+      ':revision: _alternative "svn-revisions\:svn revision number\:__git_svn_revision_numbers -p r" "git-revisions\:git revision\:__git_revisions"'
+    )
+  ;;
         (log)
           declare -a revision_options
           __git_setup_revision_options
@@ -4845,35 +4845,35 @@ _git-svn () {
             '--color'
             '--pager:pager:_cmdstring'
             '--non-recursive'
-	    ':file:__git_cached_files'
-	  )
-	;;
+      ':file:__git_cached_files'
+    )
+  ;;
         (migrate)
           opts+=( '--minimize' )
         ;;
-	(propset)
-	  opts+=( ':value' )
-	;&
-	(proplist|propget)
+  (propset)
+    opts+=( ':value' )
+  ;&
+  (proplist|propget)
           opts+=( '*:file:__git_cached_files' )
-	;;
+  ;;
         (rebase)
           opts+=(
             '(-l --local)'{-l,--local}"[don't fetch remotely, rebase against the last fetched commit from SVN]"
             '!--preserve-merges'
             '(--rebase-merges -p)'{--rebase-merges,-p}'[try to recreate merges instead of ignoring them]'
-	  )
-	;;
+    )
+  ;;
         (reset)
           opts+=(
             '(-r --revision)'{-r,--revision}'[specify most recent SVN revision to keep]: :__git_svn_revisions'
             '(-p --parent)'{-p,--parent}'[discard specified revision as well, keeping nearest parent instead]'
-	  )
-	;;
+    )
+  ;;
         (set-tree)
           opts+=( '--stdin[read list of commits to commit from stdin]' )
-	;;
-	(create-ignore|gc|mkdirs|show-externals|show-ignore|tag) ;;
+  ;;
+  (create-ignore|gc|mkdirs|show-externals|show-ignore|tag) ;;
         (*) # fallback to files on any new/unrecognised commands
           opts+=( '*:file:_files' )
         ;;
@@ -6312,7 +6312,7 @@ _git_commands () {
   for cmdtype in $cmdtypes aliases; do
     if [[ $cmdtype = aliases ]]; then
       for dup in ${${aliases%:*}:*allcmds}; do
-	aliases=( ${aliases:#$dup:*} )
+  aliases=( ${aliases:#$dup:*} )
       done
     fi
     local -a ${cmdtype}_m
@@ -6693,43 +6693,43 @@ __git_ref_fields () {
   if compset -P 1 '(#b)(*):'; then
     case $match[1] in
       push|upstream)
-	append=(
-	  'trackshort[show terse version: > (ahead) < (behind) = (in sync)]'
-	  'track[print gone whenever unknown upstream ref is encountered]'
-	  'track,nobracket[tracking information without brackets]'
+  append=(
+    'trackshort[show terse version: > (ahead) < (behind) = (in sync)]'
+    'track[print gone whenever unknown upstream ref is encountered]'
+    'track,nobracket[tracking information without brackets]'
         )
       ;&
       refname|upstream|symref)
-	append+=(
-	  {strip,lstrip}'[strip elements from the left]:elements to strip / -remain'
-	  'rstrip[strip elements from the right]:elements to strip / -remain'
-	  'short[strip to non-ambiguous short name]'
-	)
+  append+=(
+    {strip,lstrip}'[strip elements from the left]:elements to strip / -remain'
+    'rstrip[strip elements from the right]:elements to strip / -remain'
+    'short[strip to non-ambiguous short name]'
+  )
       ;;
       objectname)
         append=(
-	  'short[strip to non-ambiguous short name]:length'
-	)
+    'short[strip to non-ambiguous short name]:length'
+  )
       ;;
       color)
-	_alternative \
-	  'colors::__git_colors' \
-	  'attributes::__git_color_attributes'
-	return
+  _alternative \
+    'colors::__git_colors' \
+    'attributes::__git_color_attributes'
+  return
       ;;
       align)
-	append=(
-	  'width[specify width]:width'
-	  'position[specify alignment]:alignment:(left right middle)'
-	)
+  append=(
+    'width[specify width]:width'
+    'position[specify alignment]:alignment:(left right middle)'
+  )
       ;;
       if) append=( {,not}'equals:string' ) ;;
       contents) append=( subject body signature lines:lines ) ;;
       tailers) append=( only unfold ) ;;
       v|version)
-	append=(
-	  'refname[sort by versions]'
-	)
+  append=(
+    'refname[sort by versions]'
+  )
       ;;
     esac
     (( $#append )) || return 1
@@ -7186,9 +7186,9 @@ __git_commit_ranges () {
     if ! compset -S '..*'; then
       local match mbegin mend
       if [[ ${PREFIX} = (#b)((\\|)\^)* ]]; then
-	compset -p ${#match[1]}
+  compset -p ${#match[1]}
       else
-	suf=( -S .. -r '@~ \^:\t\n\-' )
+  suf=( -S .. -r '@~ \^:\t\n\-' )
       fi
     fi
     expl=( $* $suf )
@@ -7882,66 +7882,66 @@ __git_format_placeholders() {
     fi
     if [[ -prefix %G ]]; then
       placeholders=(
-	'GG:raw verification message'
-	'G?:indicate [G]ood, [B]ad, [U]ntrusted or [N]o signature'
-	'GS:name of signer'
-	'GK:signing key'
-	'GF:fingerprint of signing key'
-	'GP:fingerprint of primary key whose subkey was used to sign'
+  'GG:raw verification message'
+  'G?:indicate [G]ood, [B]ad, [U]ntrusted or [N]o signature'
+  'GS:name of signer'
+  'GK:signing key'
+  'GF:fingerprint of signing key'
+  'GP:fingerprint of primary key whose subkey was used to sign'
       )
       disp=( -l )
     elif [[ -prefix %g ]]; then
       placeholders=(
-	gD:'reflog selector'
-	gd:'short reflog selector'
-	gn:'reflog identity'
-	gN:'reflog identity name'
-	ge:'reflog identity email'
-	gE:'reflog identity email (use .mailmap)'
-	gs:'reflog subject'
+  gD:'reflog selector'
+  gd:'short reflog selector'
+  gn:'reflog identity'
+  gN:'reflog identity name'
+  ge:'reflog identity email'
+  gE:'reflog identity email (use .mailmap)'
+  gs:'reflog subject'
       )
       disp=( -l )
     elif [[ $PREFIX = (#b)%([ac]) ]]; then
       placeholders=(
-	n:'name'
-	N:'name (use .mailmap)'
-	e:'email'
-	E:'email (use .mailmap)'
-	d:'date'
-	D:'date, RFC2822 style'
-	r:'date, relative'
-	t:'date, UNIX timestamp'
-	i:'date, like ISO 8601'
-	I:'date, strict ISO 8601'
+  n:'name'
+  N:'name (use .mailmap)'
+  e:'email'
+  E:'email (use .mailmap)'
+  d:'date'
+  D:'date, RFC2822 style'
+  r:'date, relative'
+  t:'date, UNIX timestamp'
+  i:'date, like ISO 8601'
+  I:'date, strict ISO 8601'
       )
       placeholders=( $match[1]$^placeholders )
     else
       placeholders=(
-	H:commit\ hash
-	h:'abbreviated commit hash'
-	T:'tree hash'
-	t:'abbreviated tree hash'
-	P:'parent hashes'
-	p:'abbreviated parent hashes'
-	a:'author details'
-	c:'committer details'
-	d:'ref name in brackets'
-	D:'ref name'
-	S:'ref name used to reach commit'
-	e:encoding
-	s:subject
-	f:'sanitized subject'
-	g:reflog
-	b:body
-	B:'raw body'
-	N:notes
-	G:GPG\ details
-	C:color
-	m:mark
-	n:newline
-	%:raw\ %
-	x:'hex code'
-	w:'switch line wrapping'
+  H:commit\ hash
+  h:'abbreviated commit hash'
+  T:'tree hash'
+  t:'abbreviated tree hash'
+  P:'parent hashes'
+  p:'abbreviated parent hashes'
+  a:'author details'
+  c:'committer details'
+  d:'ref name in brackets'
+  D:'ref name'
+  S:'ref name used to reach commit'
+  e:encoding
+  s:subject
+  f:'sanitized subject'
+  g:reflog
+  b:body
+  B:'raw body'
+  N:notes
+  G:GPG\ details
+  C:color
+  m:mark
+  n:newline
+  %:raw\ %
+  x:'hex code'
+  w:'switch line wrapping'
       )
     fi
     names=( ${placeholders%%:*} )
@@ -8523,15 +8523,15 @@ _git() {
         curcontext=${curcontext%:*:*}:git-$words[1]:
         (( $+opt_args[--git-dir] )) && local -x GIT_DIR=${(Q)${~opt_args[--git-dir]}}
         (( $+opt_args[--work-tree] )) && local -x GIT_WORK_TREE=${(Q)${~opt_args[--work-tree]}}
-	if ! _call_function ret _git-$words[1]; then
-	  if [[ $words[1] = \!* ]]; then
-	    words[1]=${words[1]##\!}
-	    _normal && ret=0
-	  elif zstyle -T :completion:$curcontext: use-fallback; then
-	    _default && ret=0
-	  else
-	    _message "unknown sub-command: $words[1]"
-	  fi
+  if ! _call_function ret _git-$words[1]; then
+    if [[ $words[1] = \!* ]]; then
+      words[1]=${words[1]##\!}
+      _normal && ret=0
+    elif zstyle -T :completion:$curcontext: use-fallback; then
+      _default && ret=0
+    else
+      _message "unknown sub-command: $words[1]"
+    fi
         fi
         ;;
       (configuration)

@@ -1,3 +1,6 @@
+---@module 'plugs.bufferline'
+---@author 'lmburns'
+---@license 'BSD3'
 local M = {}
 
 local D = require("dev")
@@ -6,13 +9,16 @@ if not bufferline then
     return
 end
 
+local close = D.npcall(require, "close_buffers")
+if not close then
+    return
+end
+
 -- local utils = require("common.utils")
 -- local mpi = require("common.api")
 local icons = require("style").icons
 local hl = require("common.color")
 local groups = require("bufferline.groups")
-local dirs = require("common.global").dirs
-local pithunk = D.pithunk
 
 local fn = vim.fn
 local api = vim.api
@@ -25,14 +31,19 @@ local diagnostics_signs = {
 }
 
 ---Filter out filetypes you don't want to see
+---@param bufnr integer
+---@param buf_nums integer[]
+---@return boolean
 local function custom_filter(bufnr, buf_nums)
     local bo = vim.bo[bufnr]
 
-    local logs = D.filter(
-        buf_nums, function(b)
-            return vim.bo[b].ft == "log"
-        end
-    )
+    local logs =
+        D.filter(
+            buf_nums,
+            function(b)
+                return vim.bo[b].ft == "log"
+            end
+        )
     if vim.tbl_isempty(logs) then
         return true
     end
@@ -53,14 +64,16 @@ local function custom_filter(bufnr, buf_nums)
     end
 
     -- only show log buffers in secondary tabs
-    return (tab_num == last_tab and is_log)
-        or (tab_num ~= last_tab and not is_log)
+    return (tab_num == last_tab and is_log) or (tab_num ~= last_tab and not is_log)
     -- return true
 end
 
 ---Function to show diagnostics in the bufferline
+---@param _count integer
+---@param _level string
+---@param diagnostics table<string, integer>
+---@param _context string
 ---@return string
----@diagnostic disable-next-line:unused-local
 local function diagnostics_indicator(_count, _level, diagnostics, _context)
     local result = {}
     for name, count in pairs(diagnostics) do
@@ -72,8 +85,16 @@ local function diagnostics_indicator(_count, _level, diagnostics, _context)
     return #str > 0 and str or ""
 end
 
+---@class BufferLineNameFmtBuf
+---@field name string basename of the active file
+---@field path string full path of the active file
+---@field bufnr integer (buf only) number of the active buffer
+---@field buffers integer[] (tabs only) numbers of the buffers in the tab
+---@field tabnr integer (tabs only) "handle" of the tab, convert to its ordinal`api.nvim_tabpage_get_number(buf.tabnr)`
+
 ---Can be used to change the buffer's label in the bufferline.
----@param buf table contains a "name", "path" and "bufnr"
+---@param buf BufferLineNameFmtBuf contains a "name", "path" and "bufnr"
+---@return string?
 local function name_formatter(buf)
     -- Remove extension from markdown files for example
     if buf.name:match("%.md") then
@@ -82,11 +103,10 @@ local function name_formatter(buf)
 end
 
 function M.setup()
-    -- __TEST = true
     bufferline.setup(
         {
             options = {
-                debug = {logging = true},
+                -- debug = {logging = true},
                 -- navigation = {mode = "uncentered"},
                 mode = "buffers",
                 themable = true, -- whether or not bufferline highlights can be overridden externally
@@ -94,39 +114,32 @@ function M.setup()
                     return ("%s"):format(opts.raise(opts.ordinal))
                 end,
                 close_command = function(bufnr)
-                    require("close_buffers").delete(
-                        {type = bufnr}
-                    )
+                    close.delete({type = bufnr})
                 end, -- can be a string | function, see "Mouse actions"
                 right_mouse_command = function(bufnr)
-                    require("close_buffers").delete(
-                        {type = bufnr}
-                    )
-                end,                              -- can be a string | function, see "Mouse actions"
-                left_mouse_command = "buffer %d", -- can be a string | function, see "Mouse actions"
-                middle_mouse_command = nil,       -- can be a string | function, see "Mouse actions"
-                indicator = {style = "NONE"},
+                    close.delete({type = bufnr})
+                end,
+                left_mouse_command = "buffer %d",
+                middle_mouse_command = nil,
+                -- indicator = {style = "NONE"},
+                indicator = {
+                    icon = "▎", -- this should be omitted if indicator style is not 'icon'
+                    style = "icon",
+                },
                 buffer_close_icon = "",
                 modified_icon = "●",
                 close_icon = "",
                 left_trunc_marker = "",
                 right_trunc_marker = "",
-                -- can also be a table containing 2 custom separators
-                -- [focused and unfocused]. eg: { '|', '|' }
-                separator_style = "slant",
+                separator_style = "slope", -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
                 max_name_length = 20,
-                max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+                max_prefix_length = 15,    -- prefix used when a buffer is de-duplicated
                 tab_size = 20,
-                -- name_formatter = nil,
                 name_formatter = name_formatter,
-                -- diagnostics = false,
+                custom_filter = custom_filter,
                 diagnostics = "coc", -- false
                 diagnostics_indicator = diagnostics_indicator,
                 diagnostics_update_in_insert = false,
-                custom_filter = custom_filter,
-                -- offsets = {
-                --   {filetype = "NvimTree", text = "File Explorer", text_align = "left" | "center" | "right"}
-                -- },
                 offsets = {
                     {
                         text = "Undotree",
@@ -149,14 +162,14 @@ function M.setup()
                     {
                         text = " Packer",
                         filetype = "packer",
-                        highlight = "PanelHeading",
+                        highlight = "Title",
                         separator = true,
                     },
                     {
                         text = "Aerial",
                         filetype = "aerial",
                         text_align = "center",
-                        highlight = "PanelHeading",
+                        highlight = "Function",
                         separator = true,
                     },
                     {
@@ -168,7 +181,7 @@ function M.setup()
                     {
                         text = "Vista",
                         filetype = "vista",
-                        highlight = "PanelHeading",
+                        highlight = "Function",
                         separator = true,
                     },
                 },
@@ -176,48 +189,75 @@ function M.setup()
                 show_buffer_icons = true,
                 show_buffer_close_icons = false,
                 show_close_icon = false,
-                -- get_element_icon = function(buf)
-                --     return require("nvim-web-devicons").get_icon(buf.ft, {default_ = false})
-                -- end,
                 show_tab_indicators = true,
                 show_duplicate_prefix = true,
-                enforce_regular_tabs = true,
+                -- get_element_icon = function(buf)
+                --     -- {filetype: string, path: string, extension: string, directory: string}
+                --     local icon, hl = require("nvim-web-devicons").get_icon_by_filetype(
+                --         opts.filetype,
+                --         {default = false}
+                --     )
+                --     return icon, hl
+                --     -- or
+                --     -- local custom_map = {my_thing_ft: {icon = "my_thing_icon", hl}}
+                --     -- return custom_map[element.filetype]
+                -- end,
+                enforce_regular_tabs = false,
                 always_show_bufferline = true,
                 persist_buffer_sort = true,
-                -- sort_by = "id", -- 'relative_directory'
+                -- insert_after_current|insert_at_end|id|extension|relative_directory|directory|tabs
                 sort_by = "insert_after_current",
+                -- sort_by =  function(buffer_a, buffer_b)
+                --     return buffer_a.modified > buffer_b.modified
+                -- end,
+                hover = {
+                    enabled = true,
+                    delay = 200,
+                    reveal = {"close"},
+                },
                 groups = {
                     options = {
                         toggle_hidden_on_enter = true,
                     },
                     items = {
-                        groups.builtin.pinned:with(
-                            {icon = ""}
-                        ),
+                        groups.builtin.pinned:with({icon = ""}),
                         groups.builtin.ungrouped,
-                        {
-                            name = "Dependencies",
-                            icon = "",
-                            highlight = {
-                                fg = require("kimbox.colors").yellow,
-                            },
-                            matcher = function(buf)
-                                return vim.startswith(buf.path, vim.env.VIMRUNTIME)
-                                    or vim.startswith(
-                                        buf.path,
-                                        ("%s/site/pack/packer"):format(dirs.data)
-                                    )
-                            end,
-                        },
-                        {
-                            name = "Bufferize",
-                            icon = "",
-                            matcher = function(buf)
-                                local match = buf.path:match("(Bufferize).*")
-                                -- p(('hi: %s'):format(match))
-                                return match
-                            end,
-                        },
+                        -- {
+                        --     name = "Dependencies",
+                        --     icon = "",
+                        --     highlight = {
+                        --         fg = require("kimbox.colors").yellow,
+                        --     },
+                        --     matcher = function(buf)
+                        --         return buf.path:startswith(vim.env.VIMRUNTIME)
+                        --             or buf.path:startswith(("%s/site/pack/packer"):format(lb.dirs.data))
+                        --     end,
+                        -- },
+                        -- {
+                        --     name = "Bufferize",
+                        --     icon = "",
+                        --     matcher = function(buf)
+                        --         -- FIX: pattern with parens fails
+                        --         --   name = "Bufferize: lua p(fn.api_info())",
+                        --         --   name = "Bufferize: lua p 'hi'",
+                        --
+                        --         -- return buf.name:match("Bufferize")
+                        --
+                        --         -- local fend = fn.fnamemodify(buf.path, ":t")
+                        --         -- local sp = fend:split()[1]
+                        --         -- return fend:match("Bufferize")
+                        --
+                        --         -- return sp == "Bufferize:"
+                        --
+                        --         -- local name = buf.name:split(":")[1]
+                        --         -- local match = name:match("Bufferize$")
+                        --         -- if match then
+                        --         --     N(match)
+                        --         --     return true
+                        --         -- end
+                        --         -- return false
+                        --     end,
+                        -- },
                         {
                             name = "SQL",
                             matcher = function(buf)
@@ -260,11 +300,6 @@ end
 
 ---Setup `close-buffers.nvim`
 function M.setup_close_buffers()
-    local close = D.npcall(require, "close_buffers")
-    if not close then
-        return
-    end
-
     close.setup(
         {
             filetype_ignore = {},   -- Filetype to ignore when running deletions
@@ -283,16 +318,16 @@ function M.setup_close_buffers()
     )
 
     -- -- bdelete
-    -- require('close_buffers').delete({ type = 'hidden', force = true }) -- Delete all non-visible buffers
-    -- require('close_buffers').delete({ type = 'nameless' }) -- Delete all buffers without name
-    -- require('close_buffers').delete({ type = 'this' }) -- Delete the current buffer
-    -- require('close_buffers').delete({ type = 1 }) -- Delete the specified buffer number
-    -- require('close_buffers').delete({ regex = '.*[.]md' }) -- Delete all buffers matching the regex
+    -- .delete({ type = 'hidden', force = true }) -- Delete all non-visible buffers
+    -- .delete({ type = 'nameless' })             -- Delete all buffers without name
+    -- .delete({ type = 'this' })                 -- Delete the current buffer
+    -- .delete({ type = 1 })                      -- Delete the specified buffer number
+    -- .delete({ regex = '.*[.]md' })             -- Delete all buffers matching the regex
     --
     -- -- bwipeout
-    -- require('close_buffers').wipe({ type = 'all', force = true }) -- Wipe all buffers
-    -- require('close_buffers').wipe({ type = 'other' }) -- Wipe all buffers except the current focused
-    -- require('close_buffers').wipe({ type = 'hidden', glob = '*.lua' }) -- Wipe all buffers matching the glob
+    -- .wipe({ type = 'all', force = true })      -- Wipe all buffers
+    -- .wipe({ type = 'other' })                  -- Wipe all buffers except the current focused
+    -- .wipe({ type = 'hidden', glob = '*.lua' }) -- Wipe all buffers matching the glob
 end
 
 local function init_hl()
@@ -330,7 +365,6 @@ local function init()
         }
     )
 
-    -- Builtin
     wk.register(
         {
             ["<Leader>b"] = {
@@ -340,36 +374,12 @@ local function init()
                 -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
                 -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
                 -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
-                q = {
-                    pithunk(
-                        require("close_buffers").delete, {
-                            type = "this",
-                        }
-                    ),
-                    "Delete this buffer",
-                },
-                w = {
-                    pithunk(
-                        require("close_buffers").wipe, {
-                            type = "other",
-                        }
-                    ),
-                    "Delete all buffers except this",
-                },
-                Q = {
-                    pithunk(
-                        require("close_buffers").wipe, {
-                            type = "all",
-                        }
-                    ),
-                    "Close all buffers",
-                },
+                q = {D.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
+                w = {D.pithunk(close.wipe, {type = "other"}), "Delete all buffers except this"},
+                Q = {D.pithunk(close.wipe, {type = "all"}), "Close all buffers"},
             },
         }
     )
-
-    -- map("n", "[b", [[:execute(v:count1 . 'bprev')<CR>]])
-    -- map("n", "]b", [[:execute(v:count1 . 'bnext')<CR>]])
 
     for i = 1, 9 do
         wk.register(

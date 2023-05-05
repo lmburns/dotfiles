@@ -13,6 +13,7 @@ local F = vim.F
 ---@param bufnr? integer
 ---@return boolean
 M.buf_is_empty = function(bufnr)
+    -- fn.empty(fn.expand("%:t")) ~= 1
     local lines = api.nvim_buf_get_lines(bufnr or 0, 0, -1, false)
     return #lines == 1 and lines[1] == ""
 end
@@ -73,7 +74,6 @@ M.list_bufs = function(opts)
         bufpath = {opts.bufpath, {"s"}, true},
         options = {opts.options, {"t"}, true},
         vars = {opts.vars, {"t"}, true},
-
         winid = {opts.winid, {"n", "t"}, true},
         winnr = {opts.winnr, {"n", "t"}, true},
     }

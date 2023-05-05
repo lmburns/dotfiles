@@ -64,10 +64,64 @@ ORDER BY places.dir != '${PWD//'/''}',
 }
 zle -N fzf-histdb-widget
 
+  # local REPO
+  # REPO=$(ghq list -p | xargs ls -dt1 | sed -e 's;'${GHQ_ROOT}/';;g' | $(__fzfcmd) +m --prompt 'GHQ> ' --height 40% --reverse --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
+  # if [ -n "${REPO}" ]; then
+  #   cd ${GHQ_ROOT}/${REPO}
+  # fi
+
+
+function fzf-ghq() {
+  local repo
+  repo=$(\
+    command ghq list -p \
+      | xargs ls -dt1 \
+      | lscolors \
+      | fzf --ansi \
+            --no-multi \
+            --prompt='GHQ> ' \
+            --reverse \
+            --height 50% \
+            --preview="\
+            bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
+            --preview-window="right:50%" \
+            --delimiter / \
+            --with-nth 5..
+  )
+  # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+  [[ -d "$repo" ]] && builtin cd "$repo"
+}
+
+
+function fzf-ghq-widget() {
+  local repo
+  repo=$(\
+    command ghq list -p \
+      | xargs ls -dt1 \
+      | lscolors \
+      | fzf --ansi \
+            --no-multi \
+            --prompt='GHQ> ' \
+            --reverse \
+            --height 50% \
+            --preview="\
+            bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
+            --preview-window="right:50%" \
+            --delimiter / \
+            --with-nth 5..
+  )
+  [[ -d "$repo" ]] && {
+    BUFFER="cd $repo"
+  }
+  zle accept-line
+}
+zle -N fzf-ghq-widget
+
 
 function fg-fzf() {
   job="$(jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && echo '' && fg %$job;
 }
+
 
 function fancy-ctrl-z() {
   if [[ $#BUFFER -eq 0 ]]; then
@@ -78,7 +132,6 @@ function fancy-ctrl-z() {
     zle clear-screen -w
   fi
 }
-
 zle -N fancy-ctrl-z
 
 # vim:ft=zsh:et

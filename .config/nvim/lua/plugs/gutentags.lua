@@ -22,27 +22,27 @@ function M.setup()
     g.gutentags_resolve_symlinks = 1
     g.gutentags_file_list_command =
         utils.list(
-        {
-            "fd",
-            "--color=never",
-            "--strip-cwd-prefix",
-            "--type f",
-            "--hidden",
-            "--follow",
-            "--exclude=.git",
-            "--exclude=.svn",
-            "--exclude=target/*",
-            "--exclude=BUILD",
-            "--exclude=node_modules/*",
-            "--exclude=vendor/*",
-            "--exclude=log/*",
-            "--exclude=*.swp",
-            "--exclude=*.bak",
-            "--exclude=*.dll",
-            "--exclude=*~",
-        },
-        " "
-    )
+            {
+                "fd",
+                "--color=never",
+                "--strip-cwd-prefix",
+                "--type f",
+                "--hidden",
+                "--follow",
+                "--exclude=.git",
+                "--exclude=.svn",
+                "--exclude=target/*",
+                "--exclude=BUILD",
+                "--exclude=node_modules/*",
+                "--exclude=vendor/*",
+                "--exclude=log/*",
+                "--exclude=*.swp",
+                "--exclude=*.bak",
+                "--exclude=*.dll",
+                "--exclude=*~",
+            },
+            " "
+        )
 
     -- g.gutentags_file_list_command = {
     --     markers = {
@@ -64,7 +64,7 @@ function M.setup()
         -- "--c++-kinds=+px",
         -- "--c-kinds=+px",
         -- "--rust-kinds=+fPM",
-        "--guess-language-eagerly"
+        "--guess-language-eagerly",
     }
 
     g.gutentags_ctags_tagfile = ".tags"
@@ -84,7 +84,7 @@ function M.setup()
         "Telescope",
         "TelescopePrompt",
         "TelescopeResults",
-        "fugitive"
+        "fugitive",
     }
 
     g.gutentags_ctags_exclude = {
@@ -142,7 +142,7 @@ function M.setup()
         "*.docx",
         "*.ppt",
         "*.pptx",
-        "*.xls"
+        "*.xls",
     }
 end
 
@@ -163,9 +163,9 @@ function M.setup_rubytags()
     else
         g.gutentags_ctags_extra_args =
             vim.list_extend(
-            g.gutentags_ctags_extra_args,
-            {"/home/lucas/.local/share/rbenv/versions/3.1.0/lib/ruby/3.1.0"}
-        )
+                g.gutentags_ctags_extra_args,
+                {"/home/lucas/.local/share/rbenv/versions/3.1.0/lib/ruby/3.1.0"}
+            )
     end
 end
 
@@ -176,9 +176,9 @@ end
 function M.setup_perltags()
     g.gutentags_ctags_extra_args =
         vim.list_extend(
-        g.gutentags_ctags_extra_args,
-        {"/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4"}
-    )
+            g.gutentags_ctags_extra_args,
+            {"/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4"}
+        )
 end
 
 function M.setup_luatags()
@@ -200,7 +200,7 @@ local function init()
         {
             event = "User",
             pattern = "vim-gutentags",
-            command = [[call gutentags#setup_gutentags()]]
+            command = [[call gutentags#setup_gutentags()]],
         },
         -- {
         --     event = "FileType",
@@ -235,15 +235,15 @@ local function init()
             pattern = "ruby",
             command = function()
                 require("plugs.gutentags").setup_rubytags()
-            end
+            end,
         }
-        -- {
-        --     event = "FileType",
-        --     pattern = "lua",
-        --     command = function()
-        --         require("plugs.gutentags").setup_luatags()
-        --     end
-        -- }
+    -- {
+    --     event = "FileType",
+    --     pattern = "lua",
+    --     command = function()
+    --         require("plugs.gutentags").setup_luatags()
+    --     end
+    -- }
     )
 end
 

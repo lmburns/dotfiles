@@ -14,7 +14,9 @@ let b:did_ftplugin = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
-setlocal comments=:# commentstring=#\ %s formatoptions-=t formatoptions+=croql
+setl comments=:#
+setl commentstring=#\ %s
+setl formatoptions-=t formatoptions+=croql
 
 " setlocal iskeyword=@,48-57,_,192-255,#,-
 " setlocal iskeyword=@,48-57,_,192-255

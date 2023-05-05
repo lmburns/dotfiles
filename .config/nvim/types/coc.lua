@@ -13,3 +13,36 @@
 ---| "'source'" base kind for source actions
 ---| "'source.organizeImports'" base kind for an organize imports source action
 ---| "'source.fixAll'" base kind for auto-fix source actions
+
+---@alias SymbolKind
+---|  '"Array"'
+---|  '"Boolean"'
+---|  '"Class"'
+---|  '"Constant"'
+---|  '"Constructor"'
+---|  '"Enum"'
+---|  '"EnumMember"'
+---|  '"Event"'
+---|  '"Field"'
+---|  '"File"'
+---|  '"Function"'
+---|  '"Interface"'
+---|  '"Key"'
+---|  '"Method"'
+---|  '"Module"'
+---|  '"Namespace"'
+---|  '"Null"'
+---|  '"Number"'
+---|  '"Object"'
+---|  '"Operator"'
+---|  '"Package"'
+---|  '"Property"'
+---|  '"String"'
+---|  '"Struct"'
+---|  '"TypeParameter"'
+---|  '"Variable"'
+
+---@class Outline
+---@field filter_kind SymbolKind[]
+---@field fzf boolean
+---@field bufnr number?

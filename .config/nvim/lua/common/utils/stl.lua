@@ -4,11 +4,12 @@
 local M = {}
 
 M.plugins = {}
+M.builtin = {}
 M.extensions = {}
 M.conditions = {}
 M.other = {}
 
-local D = require("dev")
+local B = require("common.api.buf")
 local utils = require("common.utils")
 local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
@@ -22,6 +23,7 @@ local llicons = style.plugins.lualine
 local api = vim.api
 local fn = vim.fn
 local g = vim.g
+local F = vim.F
 
 -- TODO: Create a statusline changelist showing current change/total
 -- TODO: Create a statusline jumplist showing current jump/total
@@ -54,7 +56,7 @@ M.conditions = {
         return true
     end,
     buffer_not_empty = function()
-        return fn.empty(fn.expand("%:t")) ~= 1
+        return not B.buf_is_empty()
     end,
     has_file_type = function()
         return vim.bo.ft and not vim.bo.ft == ""
@@ -174,6 +176,25 @@ M.plugins.foldlevel = {
     end,
 }
 
+M.plugins.location = {
+    ---@return string
+    fn = function(opts, icon)
+        icon = F.unwrap_or(icon, true)
+        local str = icon and "%3l%-2v" or "%3l:%-2v"
+        local settings = {
+            str,
+            fmt = function(s)
+                if icon then
+                    return ("%s %s"):format(icons.misc.line, s)
+                end
+                return s
+            end,
+            color = {fg = colors.slate_grey, gui = "bold"},
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
+
 ---Show space information about the buffer
 M.plugins.space_info = function()
     return "%{&expandtab?'Spc:'.&shiftwidth:'Tab:'.&shiftwidth}"
@@ -225,7 +246,7 @@ M.plugins.progress = {
             "▅▅",
             "▆▆",
             "▇▇",
-            "██"
+            "██",
         }
         local line_ratio = current_line / total_lines
         local index = math.ceil(line_ratio * #chars)
@@ -297,7 +318,7 @@ M.plugins.gutentags_progress = {
 -- Visual Multi
 M.plugins.vm = {
     toggle = function()
-        return fn.exists("b:VM_Selection") == 1 and api.nvim_eval("empty(b:VM_Selection)") == 0
+        return fn.exists("b:VM_Selection") == 1 and fn.empty("b:VM_Selection") == 0
     end,
     fn = function()
         local vm_infos = fn.VMInfos()
@@ -313,19 +334,22 @@ M.plugins.vm = {
 M.plugins.vim_matchup = {
     fn = function()
         return fn.MatchupStatusOffscreen()
-    end
+    end,
 }
 
 M.plugins.noice = {
     command = {
         toggle = function()
-            return utils.mod.plugin_loaded("noice.nvim") and require("noice").api.status.command.has()
+            return utils.mod.prequirer("noice", function(noice)
+                return noice.api.status.command.has()
+            end, true)
         end,
         fn = function()
-            local ok, noice = pcall(require, "noice")
-            return ok and noice.api.status.command.get()
-        end
-    }
+            return utils.mod.prequirer("noice", function(noice)
+                return noice.api.status.command.get()
+            end, true)
+        end,
+    },
 }
 
 -- nvim-gps
@@ -334,10 +358,27 @@ M.plugins.gps = {
         return utils.mod.plugin_loaded("nvim-gps")
     end,
     fn = function()
-        local opts = {
-            disable_icons = false,
-        }
+        local opts = {disable_icons = false}
         return require("nvim-gps").get_location(opts)
+    end,
+}
+
+-- nvim-gps
+M.plugins.treesitter = {
+    toggle = function()
+        return utils.mod.plugin_loaded("nvim-treesitter")
+    end,
+    fn = function()
+        local opts = {
+            indicator_size = 100,
+            type_patterns = {"class", "function", "method"},
+            transform_fn = function(line, _node)
+                return line:gsub("%s*[%[%(%]*%s*$", "")
+            end,
+            separator = " -> ",
+            allow_duplicates = false,
+        }
+        return fn["nvim_treesitter#statusline"](opts)
     end,
 }
 
@@ -364,15 +405,97 @@ M.plugins.debugger = {
     fn = function()
         -- local session = require('dap').session()
         -- return session ~= nil and session.config ~= nil and session.config.type or ''
+        return utils.mod.prequirer("dap", function(dap)
+            return dap.status()
+        end, true)
+    end,
+}
 
-        local ok, dap = pcall(require, "dap")
-        return ok and dap.status()
+--  ╒══════════════════════════════════════════════════════════╕
+--                            Builtin
+--  ╘══════════════════════════════════════════════════════════╛
+
+M.builtin.filename = {
+    fn = function(opts)
+        local settings = {
+            "filename",
+            path = 0,
+            file_status = true,
+            newfile_status = true,
+            shorting_target = 40,
+            symbols = {
+                modified = icons.file.modified,
+                readonly = icons.file.readonly,
+                unnamed = icons.file.unnamed,
+                newfile = icons.file.newfile,
+            },
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
+
+M.builtin.filetype = {
+    fn = function(opts)
+        local settings = {
+            "filetype",
+            icon_only = true,
+            colored = true,
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
+
+M.builtin.filesize = {
+    fn = function(opts)
+        local settings = {
+            "filesize",
+            cond = function()
+                return M.conditions.hide_in_width() and M.conditions.buffer_not_empty()
+            end,
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
+
+M.builtin.mode = {
+    fn = function(opts, full)
+        full = F.unwrap_or(full, false)
+        local settings = {
+            "mode",
+            fmt = function(str)
+                local ret = "%s "
+                if full then
+                    ret = ret:format(str)
+                else
+                    ret = ret:format(
+                        (str == "V-LINE" and "VL") or (str == "V-BLOCK" and "VB") or str:sub(1, 1)
+                    )
+                end
+                return ret .. M.plugins.sep()
+            end,
+            padding = M.other.only_pad_right,
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
+
+M.builtin.selectioncount = {
+    fn = function(opts)
+        local settings = {
+            "selectioncount",
+            fmt = function(s)
+                return s ~= "" and ("S:%s"):format(s) or ""
+            end,
+            color = {fg = colors.peach_red, gui = "bold"},
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
     end,
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                           Terminal
 -- ╘══════════════════════════════════════════════════════════╛
+
 local function terminal_status_color(status)
     local mode_colors = {
         Running = colors.orange,
@@ -406,9 +529,7 @@ local function terminal_status()
         ) ~= ""
     then
         local result = get_exit_status()
-        if result == nil then
-            return "Finished"
-        elseif result == 0 then
+        if result == 0 then
             return "Success"
         elseif result >= 1 then
             return "Error"
@@ -431,10 +552,11 @@ local function get_terminal_status()
         return ""
     end
     local status = terminal_status()
-    hl.set(
-        "LualineToggleTermStatus",
-        {fg = terminal_status_color(status), bg = colors.bg0, bold = true}
-    )
+    hl.set("LualineToggleTermStatus", {
+        fg = terminal_status_color(status),
+        bg = colors.bg0,
+        bold = true,
+    })
     return status
 end
 
@@ -461,6 +583,7 @@ M.extensions.toggleterm = {
 -- ╒══════════════════════════════════════════════════════════╕
 --                           Quickfix
 -- ╘══════════════════════════════════════════════════════════╛
+
 local function is_loclist()
     local winid = api.nvim_get_current_win()
     return fn.getwininfo(winid)[1].loclist == 1
@@ -490,20 +613,51 @@ M.extensions.qf = {
         -- lualine_a = {quickfix},
         lualine_a = {qf_title},
         lualine_b = {
-            {
-                quickfix,
-                color = {fg = colors.green},
-            },
-            {
-                "%p%% [%L]",
-                color = {fg = colors.orange, gui = "bold"},
-            },
+            {quickfix, color = {fg = colors.green}},
+            {"%p%% [%L]", color = {fg = colors.orange, gui = "bold"}},
         },
-        lualine_c = {
-            {qf_cmd, color = {fg = colors.yellow}},
-        },
+        lualine_c = {{qf_cmd, color = {fg = colors.yellow}}},
     },
     filetypes = {"qf"},
+}
+
+--  ╒══════════════════════════════════════════════════════════╕
+--                              Man
+--  ╘══════════════════════════════════════════════════════════╛
+
+M.extensions.man = {
+    sections = {
+        lualine_a = {
+            function()
+                return ("man %s"):format(M.plugins.sep())
+            end,
+        },
+        lualine_b = {
+            M.builtin.filename.fn({
+                path = 0,
+                file_status = false,
+                newfile_status = false,
+                color = {fg = colors.green, gui = "bold"},
+            }),
+        },
+        lualine_y = {},
+        lualine_z = {
+            {
+                M.plugins.quickfix_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            {
+                M.plugins.loclist_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            M.builtin.selectioncount.fn(),
+            M.plugins.location.fn(),
+            {"progress"},
+        },
+    },
+    filetypes = {"man"},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -560,15 +714,7 @@ end
 
 M.extensions.trouble = {
     sections = {
-        lualine_a = {
-            {
-                "mode",
-                fmt = function(str)
-                    return ("%s %s"):format(str, M.plugins.sep())
-                end,
-                padding = M.other.only_pad_right,
-            },
-        },
+        lualine_a = {M.builtin.mode.fn()},
         lualine_b = {
             {
                 "filetype",
@@ -594,7 +740,7 @@ M.extensions.trouble = {
         lualine_y = {},
         lualine_z = {
             "%l:%c",
-            "%p%%/%L"
+            "%p%%/%L",
         },
     },
     filetypes = {"Trouble"},

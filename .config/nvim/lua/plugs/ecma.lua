@@ -5,7 +5,6 @@ local style = require("style")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
-local dirs = require("common.global").dirs
 -- local coc = require("plugs.coc")
 
 local wk = require("which-key")

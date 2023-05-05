@@ -5,6 +5,8 @@
 # TODO: add clone dir and cd
 # TODO: bkpdir g1zip
 # TODO: fastmod fw lolcate
+# TODO: keep track of directories for session even after close
+# TODO: findlen change function
 
 #function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 #function ng() { command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()" }
@@ -29,16 +31,19 @@ set drawbox          # draw a border around all panes
 set period 1         # interval to check for directory updates
 set incsearch        # jump to first match after each keystroke in search
 set incfilter        # apply filter after each keystroke
+set wrapscan         # wrap when searching
+# set wrapscroll       # wrap when scrolling
 set smartcase        # if capital letter then case sensitive
 set sortby "natural" # don't sort files in any special way
 set hidden           # show hidden files by default
 set dirfirst         # show directories before regular files
 set dircounts        # show number of items in directory instead of size
 # set dirpreviews      # pass directories to the previewer script
+# set calcdirsize      # calculate directory size (conflicts dircounts)
 
-set number         # show number of items index in dir
+set number           # show number of items index in dir
 # set relativenumber # show relative number of items index in dir
-# set globsearch        # search with globs
+# set globsearch     # search with globs
 
 # * '%u' username
 # * '%h' hostname
@@ -56,10 +61,8 @@ set number         # show number of items index in dir
 # \033[34;1m%d\033[0m
 # \033[1;38;2;42;176;116m%d\033[0m
 
-# set cursorfmt="\033[4m"
-# set cursorpreviewfmt="\033[4m"
-# set cursorfmt="%s"
-# set cursorpreviewfmt="%s"
+# use the `dim` attribute instead of underline for the cursor in preview pane
+set cursorpreviewfmt "\033[7;2m"
 
 set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 set tagfmt "\033[1;38;5;018m"
@@ -138,9 +141,9 @@ cmd on-cd &{{
   local fname="/tmp/lfid_$id"
   [[ ! -e "$fname" ]] && {
     print -R "$id" >> "$fname"
-    # Save mark 'a' as the opening directory
+    # Save mark 'A' as the opening directory
     lf -remote "send $id mark-save"
-    lf -remote "send $id push a"
+    lf -remote "send $id push A"
     # The redraw makes it look better
     lf -remote "send $id redraw"
 
@@ -1056,7 +1059,7 @@ cmd jump_dirstack ${{
   local t dir
   t=${(@fQ)$(<$LF_DIRSTACK_FILE 2>/dev/null)}
   dirstack=( ${(u)^t[@]:#(\.|$PWD|/tmp/*)}(N-/) )
-  dir=$(print -rl -- "$dirstack[@]" | lscolors | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf +m)
+  dir=$(print -rl -- "$dirstack[@]" | lscolors | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf --no-multi)
   [[ -d "$dir" ]] && lf -remote "send $id cd '$dir'"
 }}
 
@@ -1089,6 +1092,43 @@ cmd jump_interactive ${{
         | sed 's#.*→  ##')
     [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
   }
+}}
+
+# === Jump: using FZF and GHQ ==================================
+cmd jump_ghq ${{
+  local repo res
+  (( $+commands[ghq] )) && {
+    repo=$(\
+      command ghq list -p \
+        | xargs ls -dt1 \
+        | lscolors \
+        | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
+            fzf --ansi \
+                --no-multi \
+                --prompt='GHQ> ' \
+                --reverse \
+                --preview="\
+                bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
+                --preview-window="right:50%" \
+                --delimiter / \
+                --with-nth 5.. \
+            || { dunstify 'No repo selected'; exit })
+    )
+    # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+    res="${GHQ_ROOT}/${repo}"
+    [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
+  }
+}}
+
+# === FZF: cd to nvim plugin directory =========================
+cmd jump_packer ${{
+  clear -x
+  local d; d="$(\
+    fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
+        | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf --exit-0 --delimiter / --with-nth 10..
+  )"
+
+  [[ -d "$d" ]] && lf -remote "send $id cd '$d'"
 }}
 
 # === CD: using FZF (depth=1) ==================================
@@ -1278,17 +1318,6 @@ cmd fd_edit ${{
       --preview-window=':nohidden,right:65%:wrap' \
       --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
 }}
-
-# === FZF: cd to nvim plugin directory =========================
-cmd packer ${{
-  clear -x
-  local d; d="$(\
-    fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
-        | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf --exit-0 --delimiter / --with-nth 10..
-  )"
-
-  [[ -d "$d" ]] && lf -remote "send $id cd '$d'"
-}}
 # ]]] Finding
 
 # === Git ====================================================== [[[
@@ -1408,9 +1437,6 @@ cmd zle-init :{{
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
 # === Unmappings =============================================== [[[
-# map n
-# map "'"
-# map '"'
 map m
 map M
 map d
@@ -1422,6 +1448,7 @@ map c
 map f
 map gh
 map .
+map ,
 map r
 map t
 map <c-l>
@@ -1493,8 +1520,8 @@ map <tab> :toggle; down   # toggle selection and move down
 map <backtab> :toggle; up # toggle selection and move up
 
 map @ :terminal
-map <a-4> dump-env
-map <a-3> get-id
+map <a-1> get-id
+map <a-2> dump-env
 map <esc> quit # quit lf
 map ZZ quit    # quit lf
 map R reload   # reload lf
@@ -1505,8 +1532,9 @@ map <c-n> &{{
 }}
 
 # === Cursor Movement =============================== [[[
-map gg top -- []   # move to the top
-map G bottom -- [] # move to the bottom
+# map gg top -- []   # move to the top
+# FIX: After update, two G's are required for whatever reason
+# map GG bottom -- [] # move to the bottom
 map J half-down    # move halfway down
 map K half-up      # move halfway up
 # ]]] Cursor Movement
@@ -1522,6 +1550,7 @@ map sn :{{ set sortby natural; set info size; set noreverse; }} # revert back to
 map sa :{{ set sortby atime; set info atime; set reverse; }}
 map sc :{{ set sortby ctime; set info ctime; set reverse; }}
 map st :{{ set sortby time; set info time; set reverse; }}
+map sz :{{ set sortby size; set info size; set reverse; }}
 map se :{{ set sortby ext; set info; set noreverse; }}
 
 map S :{{
@@ -1529,6 +1558,16 @@ map S :{{
   set sortby natural; set info size;     set noreverse ;
   set preview;        set ratios 1:2:3;
 }}
+
+map zh set hidden!
+map zr set reverse!
+map zp set preview!
+map zn set info
+map zs set info size
+map zt set info time
+map zc set info ctime
+map zA set info atime
+map za set info size:time
 # ]]] Sorting / Preview
 # ]]] General
 
@@ -1648,9 +1687,11 @@ map fa push :rga<space>     # search all files (including pdf etc) with rg
 map <c-f> push :rg<space>   # search with rg
 map F push :rgu<space>      # search interactively with rg and fzf
 
-map U unselect                # unselect all selected items
-map , :{{ clear; unselect; }} # clear prev selection and unselect all
-map V invert                  # invert selection
+map U unselect                    # unselect all selected items
+# map , :{{ clear; unselect; }}    # clear prev selection and unselect all
+map <a-i> :{{ clear; unselect; }} # clear prev selection and unselect all
+map ";5" :{{ clear; unselect; }}  # clear prev selection and unselect all NOTE: ";5" = "<C-i>"
+map V invert                      # invert selection
 
 map sf select-files
 map sd select-dirs
@@ -1664,11 +1705,15 @@ map ss set globsearch!            # toggle glob search
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
+# map ,F setfilter
+map ,f filter
 map ff filter
 map rl find
 map rh find-back
 map ] find-next
 map [ find-prev
+map <gt> find-next
+map <lt> find-prev
 # ]]] File Selection
 
 # === File Movement ============================================ [[[
@@ -1734,7 +1779,7 @@ map bM push :massren<space> # bulk rename with massren glob
 map bm massren              # bulk rename with massren
 map bs swap                 # swap two filenames
 map bp rmspace              # remove spaces from filenames
-map bl tolower              # conver filename to lowercase
+map bl tolower              # convert filename to lowercase
 map bc backup               # backup file with `cp`
 map bdi backup_date_iso     # backup using ISO suffix
 map bdt backup_date_today   # backup using today's date
@@ -1743,9 +1788,10 @@ map bdt backup_date_today   # backup using today's date
 # === CD ======================================================= [[[
 map <a-/> fzf_zoxide    # fzf zioxide
 map cc fzf_zoxide       # fzf zioxide
-map ci jump_interactive # rualdi fzf
+map ci jump_interactive # fzf with rualdi
 map cs jump_dirstack    # fzf cd with dirstack
-map cp packer           # cd to plugin directory
+map cg jump_ghq         # fzf with ghq
+map cp jump_packer      # fzf cd to plugin directory
 map cd fzf_cd           # fzf cd (only lists directories)
 map cf fzf_cd_file      # fzf cd to file parent (only lists files)
 map cD fzf_cd_depth     # fzf cd further depth
@@ -1758,9 +1804,25 @@ map L jump-next       # go to next directory in history
 # map <lt> jump-prev       # go to previous directory in history
 # map <gt> jump-next       # go to next directory in history
 
-map Bc cd ~/.config
-map Bi cd /run/media/lucas
-map Bh cd ~
+map ";"
+map ";h" cd ~
+map ";c" cd ~/.config
+map ";n" cd ~/.config/nvim
+map ";z" cd ~/.config/zsh
+map ";Z" cd ~/.config/zsh/zinit/plugins
+map ";C" cd ~/.cache
+map ";o" cd ~/.local
+map ";s" cd ~/.local/share
+map ";a" cd ~/.local/share/nvim/site/pack/packer
+map ";p" cd ~/projects
+map ";g" cd ~/projects/github
+map ";l" cd ~/projects/lua
+map ";r" cd ~/projects/rust
+map ";t" cd ~/projects/script/typescript
+map ";j" cd ~/projects/script/javascript
+map ";e" cd /etc
+map ";S" cd /usr/share
+map ";M" cd /run/media/lucas
 # ]]] CD
 
 # === Archive ================================================== [[[
@@ -1832,6 +1894,7 @@ map '"' mark-remove
 # map ; :{{ mark-save "'"; }}
 
 map <a-,> push :tag<space>
+map * tag-toggle
 map X tag-toggle
 map Tj jump_tag
 

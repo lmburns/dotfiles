@@ -46,7 +46,7 @@ M.cmd = function(args, cb)
 end
 
 ---Get the root path of the git directory
----@param path string? optional path
+---@param path? string optional path
 ---@return string
 function M.root(path)
     if path then

@@ -51,8 +51,8 @@ bspc monitor -d I II III IV V
 # bspc monitor -d • • • • •
 # bspc monitor -d ₁ ₂ ₃ ₄ ₅
 
-# ⁰'²³⁴⁵⁶⁷⁸⁹
 # ₀₁₂₃₄₅₆₇₈₉
+# ⁰'²³⁴⁵⁶⁷⁸⁹
 
 #  ╭──────╮
 #  │ Look │
@@ -120,7 +120,7 @@ bspc config pointer_modifier control
 ##    - move, resize_side, resize_corner, focus, none
 ## Left-click
 bspc config pointer_action1  resize_corner
-## Middle-click ??
+## Middle-click
 bspc config pointer_action2  resize_side
 ## Right-click
 bspc config pointer_action3  move

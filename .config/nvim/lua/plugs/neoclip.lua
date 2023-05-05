@@ -6,8 +6,6 @@ if not neoclip then
     return
 end
 
-local dirs = require("common.global").dirs
-local utils = require("common.utils")
 local mpi = require("common.api")
 local map = mpi.map
 local hl = require("common.color")
@@ -20,7 +18,7 @@ local api = vim.api
 local fn = vim.fn
 local v = vim.v
 local cmd = vim.cmd
--- local F = vim.F
+local F = vim.F
 
 ---@class NeoclipEntryInner
 ---@field contents string[]
@@ -65,148 +63,6 @@ end
 M.dropdown_macroclip = function()
     local dropdown = require("telescope.themes").get_dropdown(opts)
     telescope.extensions.macroscope.default(dropdown)
-end
-
-M.setup = function()
-    neoclip.setup(
-        {
-            history = 500,
-            enable_persistent_history = true,
-            length_limit = 1048576,
-            continious_sync = false,
-            db_path = ("%s/%s"):format(dirs.data, "databases/neoclip.sqlite3"),
-            -- filter = nil,
-            filter = function(data)
-                return not D.all(data.event.regcontents, is_whitespace)
-            end,
-            preview = true,
-            prompt = "Paste: ",
-            default_register = "+",
-            default_register_macros = "q",
-            enable_macro_history = true,
-            content_spec_column = false,
-            on_select = {move_to_front = false, close_telescope = true},
-            on_paste = {
-                set_reg = false,
-                move_to_front = false,
-                close_telescope = true,
-            },
-            on_replay = {
-                set_reg = true,
-                move_to_front = false,
-                close_telescope = true,
-            },
-            on_custom_action = {close_telescope = true},
-            keys = {
-                telescope = {
-                    i = {
-                        select = "<C-n>",
-                        paste = "<C-j>",
-                        paste_behind = "<C-k>",
-                        delete = "<C-d>", -- delete an entry
-                        edit = "<C-e>",   -- edit an entry
-                        replay = "<C-q>",
-                        custom = {
-                            ["<A-[>"] = function(opts)
-                                p(opts)
-                            end,
-                            ["gcp"] = function(opts)
-                                M.charwise(opts, "p", true)
-                            end,
-                            ["gcP"] = function(opts)
-                                M.charwise(opts, "P", true)
-                            end,
-                            ["glp"] = function(opts)
-                                M.linewise(opts, "p", true)
-                            end,
-                            ["glP"] = function(opts)
-                                M.linewise(opts, "P", true)
-                            end,
-                            ["ghp"] = function(opts)
-                                M.linewise(opts, "p", false)
-                            end,
-                            ["ghP"] = function(opts)
-                                M.linewise(opts, "P", false)
-                            end,
-                            ["gbp"] = function(opts)
-                                M.blockwise(opts, "p", false)
-                            end,
-                            ["gbP"] = function(opts)
-                                M.blockwise(opts, "P", false)
-                            end,
-                            ["g#p"] = function(opts)
-                                M.linewise(opts, "p", false, true)
-                            end,
-                            ["g#P"] = function(opts)
-                                M.linewise(opts, "P", false, true)
-                            end,
-                            ["<C-y>"] = function(opts)
-                                yank.yank_reg(v.register, opts.entry.contents[1])
-                            end,
-                            ["<CR>"] = function(opts)
-                                -- yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
-                                nvim.reg[v.register] = table.concat(
-                                    opts.entry.contents,
-                                    "\n"
-                                )
-                                local handlers = require("neoclip.handlers")
-
-                                -- handlers.set_registers(opts.register_names, opts.entry)
-                                handlers.paste(opts.entry, "p")
-                            end,
-                        },
-                    },
-                    n = {
-                        select = "<C-n>",
-                        paste = "p",
-                        paste_behind = "P",
-                        replay = "q",
-                        delete = "d",
-                        edit = "e",
-                        custom = {
-                            ["<CR>"] = function(opts)
-                                -- yank.yank_reg(v.register, opts.entry.contents[1])
-                                nvim.reg[v.register] = table.concat(
-                                    opts.entry.contents,
-                                    "\n"
-                                )
-                            end,
-                            ["gcp"] = function(opts)
-                                M.charwise(opts, "p", true)
-                            end,
-                            ["gcP"] = function(opts)
-                                M.charwise(opts, "P", true)
-                            end,
-                            ["glp"] = function(opts)
-                                M.linewise(opts, "p", true)
-                            end,
-                            ["glP"] = function(opts)
-                                M.linewise(opts, "P", true)
-                            end,
-                            ["ghp"] = function(opts)
-                                M.linewise(opts, "p", false)
-                            end,
-                            ["ghP"] = function(opts)
-                                M.linewise(opts, "P", false)
-                            end,
-                            ["gbp"] = function(opts)
-                                M.blockwise(opts, "p", false)
-                            end,
-                            ["gbP"] = function(opts)
-                                M.blockwise(opts, "P", false)
-                            end,
-                            ["g#p"] = function(opts)
-                                M.linewise(opts, "p", false, true)
-                            end,
-                            ["g#P"] = function(opts)
-                                M.linewise(opts, "P", false, true)
-                            end,
-                        },
-                    },
-                },
-            },
-        }
-    )
 end
 
 ---Trim and join lines of text
@@ -346,19 +202,194 @@ function M.do_put(binding, reg, command)
     end
 end
 
+function M.setup()
+    neoclip.setup({
+        history = 500,
+        enable_persistent_history = true,
+        length_limit = 1048576,
+        continious_sync = true,
+        db_path = ("%s/%s"):format(lb.dirs.data, "databases/neoclip.sqlite3"),
+        -- filter = nil,
+        filter = function(data)
+            return not D.all(data.event.regcontents, is_whitespace)
+        end,
+        preview = true,
+        prompt = "Paste: ",
+        default_register = "+, extra=star,plus,unnamed",
+        default_register_macros = "q",
+        enable_macro_history = true,
+        content_spec_column = false,
+
+        on_select = {move_to_front = false, close_telescope = true},
+        on_paste = {set_reg = false, move_to_front = false, close_telescope = true},
+        on_replay = {set_reg = true, move_to_front = false, close_telescope = true},
+        on_custom_action = {close_telescope = true},
+        keys = {
+            telescope = {
+                i = {
+                    select = "<C-n>",
+                    paste = "<C-j>",
+                    paste_behind = "<C-k>",
+                    delete = "<C-d>", -- delete an entry
+                    edit = "<C-e>",   -- edit an entry
+                    replay = "<C-q>",
+                    custom = {
+                        ["<A-[>"] = function(opts)
+                            p(opts)
+                        end,
+                        ["gcp"] = function(opts)
+                            M.charwise(opts, "p", true)
+                        end,
+                        ["gcP"] = function(opts)
+                            M.charwise(opts, "P", true)
+                        end,
+                        ["glp"] = function(opts)
+                            M.linewise(opts, "p", true)
+                        end,
+                        ["glP"] = function(opts)
+                            M.linewise(opts, "P", true)
+                        end,
+                        ["ghp"] = function(opts)
+                            M.linewise(opts, "p", false)
+                        end,
+                        ["ghP"] = function(opts)
+                            M.linewise(opts, "P", false)
+                        end,
+                        ["gbp"] = function(opts)
+                            M.blockwise(opts, "p", false)
+                        end,
+                        ["gbP"] = function(opts)
+                            M.blockwise(opts, "P", false)
+                        end,
+                        ["g#p"] = function(opts)
+                            M.linewise(opts, "p", false, true)
+                        end,
+                        ["g#P"] = function(opts)
+                            M.linewise(opts, "P", false, true)
+                        end,
+                        ["<C-y>"] = function(opts)
+                            yank.yank_reg(v.register, opts.entry.contents[1])
+                        end,
+                        ["<CR>"] = function(opts)
+                            -- yank.yank_reg(v.register, table.concat(opts.entry.contents, "\n"))
+                            nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
+                            local handlers = require("neoclip.handlers")
+
+                            -- handlers.set_registers(opts.register_names, opts.entry)
+                            handlers.paste(opts.entry, "p")
+                        end,
+                    },
+                },
+                n = {
+                    select = "<C-n>",
+                    paste = "p",
+                    paste_behind = "P",
+                    replay = "q",
+                    delete = "d",
+                    edit = "e",
+                    custom = {
+                        ["<CR>"] = function(opts)
+                            -- yank.yank_reg(v.register, opts.entry.contents[1])
+                            nvim.reg[v.register] = table.concat(opts.entry.contents, "\n")
+                        end,
+                        ["gcp"] = function(opts)
+                            M.charwise(opts, "p", true)
+                        end,
+                        ["gcP"] = function(opts)
+                            M.charwise(opts, "P", true)
+                        end,
+                        ["glp"] = function(opts)
+                            M.linewise(opts, "p", true)
+                        end,
+                        ["glP"] = function(opts)
+                            M.linewise(opts, "P", true)
+                        end,
+                        ["ghp"] = function(opts)
+                            M.linewise(opts, "p", false)
+                        end,
+                        ["ghP"] = function(opts)
+                            M.linewise(opts, "P", false)
+                        end,
+                        ["gbp"] = function(opts)
+                            M.blockwise(opts, "p", false)
+                        end,
+                        ["gbP"] = function(opts)
+                            M.blockwise(opts, "P", false)
+                        end,
+                        ["g#p"] = function(opts)
+                            M.linewise(opts, "p", false, true)
+                        end,
+                        ["g#P"] = function(opts)
+                            M.linewise(opts, "P", false, true)
+                        end,
+                    },
+                },
+            },
+        },
+    })
+end
+
+function M.setup_yanky()
+    local yanky = D.npcall(require, "yanky")
+    if not yanky then
+        return
+    end
+
+    local ymap = require("yanky.telescope.mapping")
+
+    yanky.setup({
+        ring = {
+            history_length = 100,
+            storage = "sqlite", -- "shada"
+            sync_with_numbered_registers = true,
+            cancel_event = "update",
+        },
+        picker = {
+            telescope = {
+                mappings = {
+                    default = ymap.put("p"),
+                    i = {
+                        ["<C-j>"] = ymap.put("p"),
+                        ["<C-k>"] = ymap.put("P"),
+                        ["<C-x>"] = ymap.delete(),
+                    },
+                    n = {
+                        p = ymap.put("p"),
+                        P = ymap.put("P"),
+                        d = ymap.delete(),
+                    },
+                },
+            },
+        },
+        system_clipboard = {sync_with_ring = true},
+        highlight = {on_put = true, on_yank = false, timer = 300},
+        preserve_cursor_position = {enabled = false},
+    })
+
+    hl.set("YankyPut", {bg = "#cc6666"})
+    -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
+    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
+    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
+    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
+    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
+    map("n", "<M-p>", "<Plug>(YankyCycleForward)")
+    map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
+end
+
 local function init()
     M.setup()
     M.setup_hl()
+    M.setup_yanky()
 
     -- require('neoclip.fzf')({'a', 'star', 'plus', 'b'})
-
-    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
-    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
-    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
-    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
+    -- map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
+    -- map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
+    -- map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
+    -- map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
 
     map(
-        "n", "gZ",
+        "n",
+        "gZ",
         ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
         {desc = "Paste and reselect text", silent = true}
     )
@@ -402,10 +433,10 @@ local function init()
                     contents = vim.split(fn.getreg("+"), "\n"),
                 }
 
-                if args.event == "VimEnter" or vim.g.system_clipboard ~= nil
-                    and not vim.deep_equal(
-                        vim.g.system_clipboard, system_clipboard
-                    ) then
+                if args.event == "VimEnter"
+                    or vim.g.system_clipboard ~= nil
+                    and not vim.deep_equal(vim.g.system_clipboard, system_clipboard)
+                then
                     require("neoclip")
                     require("neoclip.storage").insert(system_clipboard, "yanks")
                 end
@@ -417,6 +448,7 @@ local function init()
     }
 
     -- telescope.load_extension("neoclip")
+   telescope.load_extension("yank_history")
 end
 
 init()

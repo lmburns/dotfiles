@@ -1,8 +1,10 @@
 local M = {}
 
-local D = require("dev")
+-- local D = require("dev")
 local debounce = require("common.debounce")
+local disposable = require("common.disposable")
 local utils = require("common.utils")
+local prequire = utils.mod.prequire
 local mpi = require("common.api")
 local map = mpi.map
 
@@ -11,19 +13,17 @@ local g = vim.g
 
 local last_cmdheight
 
-local hlslens
-local config
-local lens_backup
-
-local dispose0, dispose1, dispose2, dispose3, dispose4, dispose5, dispose6, dispose7
-local dispose8, dispose9
+local hlslens, noice
+local config, lens_backup
 local n_keymap
--- local s_keymap
+
+---@type Disposable[]
+local disposables
 local debounced
 
 local MODE = {
     NORMAL = "NORMAL",
-    VISUAL = "VISUAL"
+    VISUAL = "VISUAL",
 }
 
 M.mode = function()
@@ -35,7 +35,8 @@ M.mode = function()
 end
 
 local bmap = function(...)
-    return mpi.bmap(0, ...)
+    local d = mpi.bmap(0, ...)
+    disposables:insert(d)
 end
 
 local override_lens = function(render, plist, nearest, idx, r_idx)
@@ -54,24 +55,29 @@ local override_lens = function(render, plist, nearest, idx, r_idx)
 end
 
 function M.start()
-    if utils.mod.plugin_loaded("noice.nvim") then
-        cmd("silent! Noice disable")
-        -- FIX: This bounces back and forth between 2 and 1
-        last_cmdheight = vim.opt.cmdheight:get()
-        vim.opt_local.cmdheight = 1
-    end
+    prequire("noice"):thenCall(function(n)
+        local c = require("noice.config")
+        if c.is_running() then
+            n.disable()
+            -- cmd("silent! Noice disable")
+            last_cmdheight = vim.opt.cmdheight:get()
+            vim.opt_local.cmdheight = 1
+            noice = n
+        end
+    end)
 
-    if hlslens then
+    prequire("hlslens"):thenCall(function(h)
         config = require("hlslens.config")
         lens_backup = config.override_lens
         config.override_lens = override_lens
-        hlslens.start()
-    end
+        h.start()
+        hlslens = h
+    end)
 end
 
 function M.exit()
-    if utils.mod.plugin_loaded("noice.nvim") then
-        cmd("silent! Noice enable")
+    if noice then
+        noice.enable()
         vim.opt_local.cmdheight = last_cmdheight
     end
 
@@ -80,20 +86,8 @@ function M.exit()
         hlslens.start()
     end
 
-    dispose0:dispose()
-    dispose1:dispose()
-    dispose2:dispose()
-    dispose3:dispose()
-    dispose4:dispose()
-    dispose5:dispose()
-    dispose6:dispose()
-    dispose7:dispose()
-    dispose8:dispose()
-    dispose9:dispose()
+    disposable.dispose_all(disposables)
     map("n", "n", n_keymap, {silent = true})
-    -- map("n", "s", s_keymap, {silent = true})
-
-    require("plugs.config").registers()
 
     -- Sometimes this doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
@@ -105,15 +99,14 @@ end
 
 function M.mappings()
     if not debounced then
+        -- FIX: This needs to not call setup again
         debounced =
             debounce(
                 function()
                     n_keymap = mpi.get_keymap("n", "n").rhs
-                    -- s_keymap = mpi.get_keymap("n", "s").rhs
-
-                    utils.mod.prequire("registers", function(reg)
-                         reg.setup({bind_keys = {false}})
-                         mpi.del_keymap("n", '"')
+                    prequire("registers"):thenCall(function(reg)
+                        reg.setup({bind_keys = {false}})
+                        mpi.del_keymap("n", '"')
                     end)
                 end,
                 10
@@ -121,50 +114,41 @@ function M.mappings()
         debounced()
     end
 
-    -- Adding keymaps
-    dispose0 = bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
-    dispose1 = bmap("n", "n", "<C-n>", {silent = true, noremap = false})
-    dispose2 =
-        bmap(
-            "n",
-            "v",
-            ":call b:VM_Selection.Global.extend_mode()<CR>",
-            {silent = true, noremap = false}
-        )
-    dispose3 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
-    dispose4 =
-        bmap(
-            "i",
-            "<CR>",
-            [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
-            {expr = true, noremap = false}
-        )
-    dispose5 = bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
-    dispose6 =
-        bmap(
-            "n",
-            "<Esc>",
-            function()
-                if M.mode() == MODE.VISUAL then
-                    cmd("call b:VM_Selection.Global.cursor_mode()")
-                else
-                    utils.normal("n", "<Plug>(VM-Exit)")
-                end
-            end,
-            {nowait = true}
-        )
-    dispose7 = bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
-    dispose8 = bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
-    dispose9 = bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})
-
     -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
+    bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
+    bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+    bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
+    bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
+    bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
+    bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})
+    bmap(
+        "n",
+        "v",
+        ":call b:VM_Selection.Global.extend_mode()<CR>",
+        {silent = true, noremap = false}
+    )
+    bmap(
+        "i",
+        "<CR>",
+        [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
+        {expr = true, noremap = false}
+    )
+    bmap(
+        "n",
+        "<Esc>",
+        function()
+            if M.mode() == MODE.VISUAL then
+                cmd("call b:VM_Selection.Global.cursor_mode()")
+            else
+                utils.normal("n", "<Plug>(VM-Exit)")
+            end
+        end,
+        {nowait = true}
+    )
 end
 
 local function init()
-    local ok, res = pcall(require, "hlslens")
-    if ok then
-        hlslens = res
-    end
+    disposables = _t({})
 end
 
 init()

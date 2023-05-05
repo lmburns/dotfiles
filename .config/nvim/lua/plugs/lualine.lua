@@ -31,40 +31,20 @@ local g = vim.g
 local stl = require("common.utils.stl")
 local conds = stl.conditions
 local plugs = stl.plugins
+local builtin = stl.builtin
 local only_pad_right = stl.other.only_pad_right
+
+-- on_click
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
 -- ╘══════════════════════════════════════════════════════════╛
 local sections_1 = {
-    lualine_a = {
-        {
-            "mode",
-            fmt = function(str)
-                -- if api.nvim_get_mode().mode == "no" then
-                --     return "OP"
-                -- end
-                return ("%s %s"):format(
-                    (str == "V-LINE" and "VL") or (str == "V-BLOCK" and "VB") or str:sub(1, 1),
-                    plugs.sep()
-                )
-            end,
-            padding = only_pad_right,
-        },
-    },
+    lualine_a = {builtin.mode.fn()},
     lualine_b = {
         -- Separators aren't shown here
-        {
-            "filetype",
-            icon_only = false,
-        },
-        {
-            "filesize",
-            cond = function()
-                return conds.hide_in_width() and conds.buffer_not_empty()
-            end,
-            color = {fg = colors.green},
-        },
+        builtin.filetype.fn(),
+        builtin.filesize.fn({color = {fg = colors.green}}),
         {
             plugs.vm.fn,
             cond = plugs.vm.toggle,
@@ -79,19 +59,10 @@ local sections_1 = {
             cond = plugs.spell.toggle,
             color = "SpellCap",
             padding = only_pad_right,
-            type = "stl"
+            type = "stl",
         },
-        {
-            "filename",
-            path = 0,
-            symbols = {
-                modified = icons.misc.modified,
-                readonly = icons.misc.readonly,
-                unnamed = icons.misc.unnamed,
-                shorting_target = 40,
-            },
+        builtin.filename.fn({
             color = function(_section)
-                -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                 return {
                     gui = F.if_expr(vim.bo.modified, "bold", "none"),
                     fg = F.if_expr(
@@ -113,7 +84,7 @@ local sections_1 = {
 
                 return F.if_expr(fugitive_name, fugitive_name, str)
             end,
-        },
+        }),
         {
             "%w",
             cond = function()
@@ -121,18 +92,19 @@ local sections_1 = {
             end,
         },
     },
-    lualine_c = {plugs.coc_status.fn},
+    lualine_c = {{plugs.coc_status.fn}},
     lualine_x = {},
     lualine_y = {
         {
             plugs.gps.fn,
             color = {fg = colors.sea_green, gui = "bold"},
             cond = function()
-                return conds.is_available_gps() and
-                    conds.hide_in_width() -- and conds.coc_status_width()
+                return conds.is_available_gps() and conds.hide_in_width()
+                -- and conds.coc_status_width()
             end,
         },
-        {plugs.vim_matchup.fn},
+        -- {plugs.treesitter.fn},
+        -- {plugs.vim_matchup.fn},
         {
             plugs.noice.command.fn,
             cond = plugs.noice.command.toggle,
@@ -164,7 +136,7 @@ local sections_1 = {
             diff_color = {
                 added = "GitSignsAdd",       -- "DiffAdd",
                 modified = "GitSignsChange", --  "DiffChange",
-                removed = "GitSignsDelete"   -- "DiffDelete"
+                removed = "GitSignsDelete",  -- "DiffDelete"
             },
             symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
             source = plugs.diff.fn,
@@ -206,17 +178,12 @@ local sections_1 = {
             separator = {left = plugs.sep()},
             color = {fg = colors.oni_violet, gui = "bold"},
         },
-        {
-            "%3l %3v",
-            fmt = function(s)
-                return ("%s %s"):format(icons.misc.line, s)
-            end,
-            color = {fg = colors.slate_grey, gui = "bold"},
-        },
+        plugs.location.fn(),
         {
             plugs.foldlevel.fn,
             color = {fg = colors.yellow, gui = "bold"},
         },
+        builtin.selectioncount.fn(),
         F.if_expr(
             g.colors_name == "kimbox",
             {"%p%%/%-3L", color = {fg = colors.light_red, gui = "bold"}},
@@ -248,22 +215,12 @@ local sections_1 = {
 --                          Section 2
 -- ╘══════════════════════════════════════════════════════════╛
 local sections_2 = {
-    lualine_a = {"mode"},
+    lualine_a = {builtin.mode.fn({}, true)},
     lualine_b = {
-        {"filetype", icon_only = true},
-        {"filesize", cond = conds.hide_in_width},
-        -- "fileformat",
+        builtin.filetype.fn(),
+        builtin.filesize.fn({cond = conds.hide_in_width}),
         {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
-        {
-            "filename",
-            file_status = 1,
-            path = 1,
-            symbols = {
-                modified = icons.misc.modified,
-                readonly = icons.misc.readonly,
-                unnamed = icons.misc.unnamed,
-            },
-        },
+        builtin.filename.fn({path = 1}),
     },
     lualine_c = {},
     lualine_x = {
@@ -289,7 +246,7 @@ local sections_2 = {
             cond = plugs.gutentags_progress.toggle,
         },
     },
-    lualine_z = {"location"},
+    lualine_z = {plugs.location.fn({}, false)},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -317,7 +274,7 @@ function M.autocmds()
     -- Clear the builtin Lualine ModeChanged
     vim.defer_fn(
         function()
-            cmd("au! lualine_stl_refresh  CursorMoved") -- Messes up certain languages (like Rust)
+            -- cmd("au! lualine_stl_refresh  CursorMoved") -- Messes up certain languages (like Rust)
             cmd("au! lualine_stl_refresh  ModeChanged")
             cmd("au! lualine_stl_refresh  BufEnter")
         end,
@@ -328,11 +285,7 @@ function M.autocmds()
         "lmb__Lualine",
         {
             event = "User",
-            pattern = {
-                "NeogitPushComplete",
-                "NeogitCommitComplete",
-                "NeogitStatusRefresh"
-            },
+            pattern = {"NeogitPushComplete", "NeogitCommitComplete", "NeogitStatusRefresh"},
             desc = "Update branch and diff statusline components",
             command = function()
                 require("lualine.components.diff.git_diff").update_diff_args()
@@ -373,7 +326,9 @@ function M.autocmds()
             event = "User",
             pattern = "CocStatusChange",
             desc = "Update Lualine statusline when Coc status changes",
-            command = "redrawstatus",
+            command = function()
+                lualine.refresh({kind = "window", place = {"statusline"}, trigger = "timer"})
+            end,
         }
     )
 end
@@ -383,31 +338,18 @@ end
 -- ╘══════════════════════════════════════════════════════════╛
 local function init()
     M.autocmds()
-    map(
-        "n",
-        "!",
-        ":lua require('plugs.lualine').toggle_mode()<CR>",
-        {silent = true, desc = "Change Lualine"}
-    )
+    map("n", "!", M.toggle_mode, {silent = true, desc = "Change Lualine"})
 
     local my_extension = {
         sections = {
-            lualine_a = {
-                {
-                    "mode",
-                    fmt = function(str)
-                        return ("%s %s"):format(str, plugs.sep())
-                    end,
-                    padding = only_pad_right,
-                },
-            },
-            lualine_b = {"filetype"},
+            lualine_a = {builtin.mode.fn({}, true)},
+            lualine_b = {builtin.filetype.fn()},
             lualine_c = {},
             lualine_x = {},
             lualine_y = {},
             lualine_z = {
                 "%l:%c",
-                "%p%%/%L"
+                "%p%%/%L",
             },
         },
         filetypes = {
@@ -421,12 +363,11 @@ local function init()
             "dapui_stacks",
             "dapui_watches",
             "floaterm",
-            "man",
             "neoterm",
             "packer",
             "tsplayground",
             "undotree",
-            "vista"
+            "vista",
         },
     }
 
@@ -439,6 +380,12 @@ local function init()
                 always_divide_middle = true,
                 section_separators = {left = llicons.sep.tri_left, right = llicons.sep.tri_right},
                 component_separators = {left = llicons.sep.slant, right = llicons.sep.slant},
+                -- If current filetype is in this list it'll
+                -- always be drawn as inactive statusline
+                -- and the last window will be drawn as active statusline.
+                -- for example if you don't want statusline of
+                -- your file tree / sidebar window to have active
+                -- statusline you can add their filetypes here.
                 ignore_focus = {},
                 refresh = {
                     statusline = 1000,
@@ -449,7 +396,7 @@ local function init()
                     statusline = {
                         "NvimTree",
                         "quickmenu",
-                        "wilder"
+                        "wilder",
                     },
                     winbar = {},
                 },
@@ -459,31 +406,21 @@ local function init()
             inactive_sections = {
                 lualine_a = {},
                 lualine_b = {
-                    {"filetype", icon_only = false},
+                    builtin.filetype.fn(),
+                    builtin.filesize.fn({color = {fg = colors.green}}),
                     {
-                        "filesize",
-                        cond = function()
-                            return conds.hide_in_width() and conds.buffer_not_empty()
-                        end,
-                        color = {fg = colors.green},
+                        plugs.file_encoding.fn,
+                        cond = plugs.file_encoding.toggle,
                     },
-                    {plugs.file_encoding.fn, cond = plugs.file_encoding.toggle},
-                    {
-                        "filename",
-                        path = 0,
-                        symbols = {
-                            modified = icons.misc.modified,
-                            readonly = icons.misc.readonly,
-                            unnamed = icons.misc.unnamed,
-                        },
+                    builtin.filename.fn({
+                        path = 1,
                         color = function(_section)
-                            -- return { fg = vim.bo.modified and colors.purple or colors.fg }
                             return {gui = F.if_expr(vim.bo.modified, "bold", "none")}
                         end,
-                    },
+                    }),
                 },
                 lualine_c = {},
-                lualine_x = {"location"},
+                lualine_x = {plugs.location.fn()},
                 lualine_y = {},
                 lualine_z = {},
             },
@@ -494,12 +431,13 @@ local function init()
                 stl.extensions.qf,
                 stl.extensions.toggleterm,
                 stl.extensions.trouble,
+                stl.extensions.man,
                 my_extension,
                 "symbols-outline",
                 "aerial",
                 "fzf",
                 "fugitive",
-                "nvim-dap-ui"
+                "nvim-dap-ui",
             },
         }
     )

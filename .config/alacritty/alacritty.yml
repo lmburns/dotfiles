@@ -44,7 +44,7 @@ window:
   #
   # Specified in number of pixels.
   # If the position is not set, the window manager will handle the placement.
-  #position:
+  # position:
   #  x: 0
   #  y: 0
 
@@ -208,8 +208,8 @@ schemes:
 
     # Cursor colors
     #
-    # Colors which should be used to draw the terminal cursor. If these are unset,
-    # the cursor color will be the inverse of the cell color.
+    # Colors which should be used to draw the terminal cursor.
+    # If these are unset, the cursor color will be the inverse of the cell color.
     cursor:
       text: '#221a02'
       cursor: '#f79a32'

@@ -1,0 +1,22 @@
+#compdef pacolog
+
+_pacman_completions_installed_packages() {
+  local -a cmd packages packages_long
+  packages_long=(/var/lib/pacman/local/*(/))
+  packages=( ${${packages_long#/var/lib/pacman/local/}%-*-*} )
+  compadd "$@" -a packages
+}
+
+_pacolog() {
+  local -a options
+
+  options=(
+    '-h[shows help]'
+    '-l[only display NUM latest entries]:num:'
+  )
+
+  _describe 'options' options
+  _arguments : '*:package:_pacman_completions_installed_packages'
+}
+
+_pacolog "$@"

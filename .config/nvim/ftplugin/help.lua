@@ -1,4 +1,5 @@
 local mpi = require("common.api")
+local wk = require("which-key")
 local opt = vim.opt_local
 
 opt.colorcolumn = "+1"
@@ -18,6 +19,8 @@ end
 
 -- nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>
 -- nnoremap <silent><buffer> S ?\|\zs\S\+\ze\|<CR>
+
+wk.register({gO = "Open TOC"})
 
 bmap("n", "<CR>", "<C-]>", {desc = "Go to definition"})
 bmap("n", "<BS>", "<C-^>", {desc = "Go to prev buffer"})

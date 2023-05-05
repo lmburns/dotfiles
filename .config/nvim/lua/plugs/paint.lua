@@ -1,3 +1,6 @@
+---@module 'plugs.paint'
+---@author 'lmburns'
+---@license 'BSD3'
 local M = {}
 
 local D = require("dev")
@@ -7,7 +10,7 @@ if not paint then
 end
 
 local hl = require("common.color")
-local colors = require("kimbox.palette").colors
+local colors = require("kimbox.colors")
 
 local F = vim.F
 

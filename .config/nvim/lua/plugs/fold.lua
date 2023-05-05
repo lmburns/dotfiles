@@ -1,7 +1,7 @@
 local M = {}
 
 local D = require("dev")
-local palette = require("kimbox.palette").colors
+local colors = require("kimbox.colors")
 local style = require("style")
 local hl = require("common.color")
 local utils = require("common.utils")
@@ -345,7 +345,7 @@ local function init()
             hl.plugin(
                 "Ufo",
                 {
-                    UFOFoldLevel = {fg = palette.blue, bold = true},
+                    UFOFoldLevel = {fg = colors.blue, bold = true},
                     UfoPreviewThumb = {link = "PmenuThumb"},
                     UfoPreviewSbar = {link = "PmenuSbar"},
                 }

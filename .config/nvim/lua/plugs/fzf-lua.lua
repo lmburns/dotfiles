@@ -7,7 +7,6 @@ if not fzf_lua then
 end
 
 local utils = require("common.utils")
-local dirs = require("common.global").dirs
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -680,7 +679,7 @@ M.branch_compare = function(opts)
     end
     opts.prompt = "BranchCompare❯ "
     opts.actions = {["default"] = branch_compare}
-    require"fzf-lua".git_branches(opts)
+    require("fzf-lua").git_branches(opts)
 end
 
 M.installed_plugins = function(opts)
@@ -688,7 +687,7 @@ M.installed_plugins = function(opts)
         opts = {}
     end
     opts.prompt = "Plugins❯ "
-    opts.cwd = dirs.data .. "/site/pack/packer/"
+    opts.cwd = lb.dirs.data .. "/site/pack/packer/"
     fzf_lua.files(opts)
 end
 

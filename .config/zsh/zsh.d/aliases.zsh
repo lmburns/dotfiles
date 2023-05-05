@@ -232,48 +232,46 @@ alias sha='shasum -a 256'
 (( ${+commands[coreutils]} )) && alias cu='coreutils'
 
 # === configs ===================================================================
-alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config'
 alias nx='$EDITOR $HOME/.xinitrc'
-
-alias nafew='$EDITOR $XDG_CONFIG_HOME/afew/config'
-alias nzath='$EDITOR $XDG_CONFIG_HOME/zathura/zathurarc'
-alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
-alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
-alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
-alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
-alias nwez='$EDITOR $XDG_CONFIG_HOME/wezterm/wezterm.lua'
-alias nprof='$EDITOR $HOME/.profile'
+alias ezsh='$EDITOR $HOME/.zshenv'
 alias nzsh='$EDITOR $ZDOTDIR/.zshrc'
 alias azsh='$EDITOR $ZDOTDIR/zsh.d/aliases.zsh'
-alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lficons.zsh'
 alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
 alias czsh='$EDITOR $ZDOTDIR/zsh.d/completions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
-alias ndir='$EDITOR $ZDOTDIR/gruv.dircolors'
-alias ezsh='$EDITOR $HOME/.zshenv'
-alias ncoc='$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json'
+alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lficons.zsh'
+alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
+alias nbsh='$EDITOR $HOME/.bashrc'
+alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
+alias nwez='$EDITOR $XDG_CONFIG_HOME/wezterm/wezterm.lua'
+alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config.ini'
+alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
+alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
+alias nssh='$EDITOR $HOME/.ssh/config'
+alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
+alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
 alias ntask='$EDITOR $XDG_CONFIG_HOME/task/taskrc'
 alias nlfr='$EDITOR $XDG_CONFIG_HOME/lf/lfrc'
 alias nlfrs='$EDITOR $XDG_CONFIG_HOME/lf/scope'
 alias nxplr='$EDITOR $XDG_CONFIG_HOME/xplr/init.lua'
-alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
-alias nurls='$EDITOR $XDG_CONFIG_HOME/newsboat/urls'
-alias nnews='$EDITOR $XDG_CONFIG_HOME/newsboat/config'
 alias nw3m='$EDITOR $HOME/.w3m/keymap'
+alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
 alias ntig='$EDITOR $TIGRC_USER'
+alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
 alias nmpc='$EDITOR $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias nncm='$EDITOR $XDG_CONFIG_HOME/ncmpcpp/bindings'
+alias nurls='$EDITOR $XDG_CONFIG_HOME/newsboat/urls'
+alias nnews='$EDITOR $XDG_CONFIG_HOME/newsboat/config'
+alias nafew='$EDITOR $XDG_CONFIG_HOME/afew/config'
+alias nzath='$EDITOR $XDG_CONFIG_HOME/zathura/zathurarc'
 alias nmutt='$EDITOR $XDG_CONFIG_HOME/mutt/muttrc'
 alias nmuch='$EDITOR $XDG_DATA_HOME/mail/.notmuch/hooks/post-new'
-alias nsnip='$EDITOR $XDG_CONFIG_HOME/nvim/UltiSnips/all.snippets'
 alias nticker='$EDITOR $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias njaime='$EDITOR $XDG_CONFIG_HOME/jaime/config.yml'
-alias nssh='$EDITOR $HOME/.ssh/config'
-alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
-alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
-alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
 
-alias ninitv='/usr/bin/vim $XDG_CONFIG_HOME/nvim/init.lua'
+alias nsnip='$EDITOR $XDG_CONFIG_HOME/nvim/UltiSnips/all.snippets'
+alias ncoc='$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json'
+alias ninitv='vim $XDG_CONFIG_HOME/nvim/init.lua'
 alias ninitp='pvim $XDG_CONFIG_HOME/nvim/init.lua'
 alias ninit='$EDITOR $XDG_CONFIG_HOME/nvim/init.lua'
 # alias niniti='$EDITOR $XDG_CONFIG_HOME/nvim/vimscript/plug.vim +PlugInstall'
@@ -290,22 +288,8 @@ alias ninit='$EDITOR $XDG_CONFIG_HOME/nvim/init.lua'
   alias nskhdh='$EDITOR $XDG_CONFIG_HOME/sxhkd/mappings'
 }
 
-# ═══ Sourcing ═════════════════════════════════════════════════════════════════
-alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
-alias srce='source $HOME/.zshenv'
-alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
-
-# === mail ======================================================================
-(( ${+commands[mw]} )) && {
-  alias mwme='mw -y burnsac@me.com'
-  alias mwa='mw -Y'
-}
-
-# alias nmm="/usr/bin/nm"
-alias nh="notmuch"
-alias nhls="nh search --output=tags '*'"
-
 # === locations ==================================================================
+# don't really use these anymore
 alias prd='cd $HOME/projects'
 alias unx='cd $HOME/Desktop/unix/mac'
 alias zshd='cd $ZDOTDIR/zsh.d'
@@ -327,7 +311,23 @@ alias cvd='cd $HOME/Documents/cv'
 alias downd='cd $HOME/Downloads'
 alias mbd='cd $HOME/mybin'
 alias vwdir='cd $HOME/vimwiki'
-alias nvimd='cd /usr/local/share/nvim/runtime'
+alias nvimd='cd $GHQ_ROOT/github.com/neovim/neovim'
+
+# ═══ Sourcing ═════════════════════════════════════════════════════════════════
+alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
+alias srce='source $HOME/.zshenv'
+alias srcp='source $ZDOTDIR/themes/p10k-post.zsh'
+
+# === mail ======================================================================
+(( ${+commands[mw]} )) && {
+  alias mwme='mw -y burnsac@me.com'
+  alias mwa='mw -Y'
+}
+
+# alias nmm="/usr/bin/nm"
+alias nm="notmuch"
+alias nh="notmuch"
+alias nhls="nh search --output=tags '*'"
 
 # === internet / vpn / etc ======================================================
 # alias b='buku --suggest --colors gMclo'

@@ -220,21 +220,21 @@ declare -gA keybindings; keybindings=(
   'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
   'M-S-R'                 per-dir-fzf           # Toggle per-dir hist & bring up Fzf
   'M-v'                   describe-key-briefly  # Describe what key does
-  # 'M-S-R'                 fzf-history-widget    # Builtin fzf history widget
+  # 'M-S-R'                 fzf-history-widget  # Builtin fzf history widget
   'C-o'                   clipboard-fzf         # Greenclip fzf (insert into cli)
   'M-p'                   pw                    # Fzf pueue
   'M-g'                   get-line              # Get line from buffer-stack
   'M-q'                   push-line-or-edit     # Push line onto buffer stack
-  # 'M-S-q'                 push-input            # Push multi-line onto buffer stack
+  # 'M-S-q'                 push-input          # Push multi-line onto buffer stack
   'M-u'                   __unicode_translate   # Translate 0000 to unicode
-  'M-x'                   cd-fzf-ghqlist-widget # CD GHQ with fzf
+  'M-x'                   fzf-ghq-widget        # cd GHQ with fzf
   'M-S-P'                 toggle-right-prompt   # Toggle p10k right promp
   'C-]'                   macho-zle             # Fzf man pages
   'C-a'                   autosuggest-execute   # Execute the autosuggestion
-  'C-t'                   fzf-file-widget # Insert file into cli
-  'C-y'                   yank            # Insert the contents of the kill buffer at the cursor position
-  'C-z'                   fancy-ctrl-z    # Bring up jobs with fzf
-  'C-x r'                 fzf-histdb-widget # Fzf histdb
+  'C-t'                   fzf-file-widget       # Insert file into cli
+  'C-y'                   yank                  # Insert the contents of the kill buffer at the cursor position
+  'C-z'                   fancy-ctrl-z          # Bring up jobs with fzf
+  'C-x r'                 fzf-histdb-widget     # Fzf histdb
   'C-x t'                 pick_torrent             # Fzf torrent
   'C-x C-b'               fcq                      # Copyq fzf (copy contents)
   'C-x C-g'               fcq-zle                  # Copyq zle (insert contents)

@@ -1,5 +1,6 @@
----@diagnostic disable:undefined-field
-
+---@module 'common.nvim'
+---@author 'lmburns'
+---@license 'BSD3'
 local M = {}
 
 local D = require("dev")
@@ -10,13 +11,6 @@ local log = require("common.log")
 local api = vim.api
 local F = vim.F
 local fn = vim.fn
-
----@diagnostic disable-next-line:assign-type-mismatch
----@type Nvim
-local nvim = require("nvim")
----@diagnostic disable-next-line:assign-type-mismatch
----@type Nvim
-_G.nvim = require("nvim")
 
 ---Get an autocmd
 ---@param opts RetrieveAutocommand
@@ -370,8 +364,8 @@ do
         if type(mk) ~= "string" or #mk ~= 1 then
             error("mark must be a single letter")
         end
-        if type(val) ~= "table" or ((val.row == nil or val.col == nil) or #val <= 2) then
-            error("must pass table {row, col}")
+        if type(val) ~= "table" and (#val ~= 2 or #val ~= 5) then
+            error(("must pass table {row, col} or Nvim.Mark. Got: %s"):format(val))
         end
         local row = val.row or val[1]
         local col = val.col or val[2]
@@ -444,16 +438,11 @@ nvim.exists =
     )
 
 ---Global access to check whether something is executable
----@param exec string
----@return boolean
 nvim.executable = utils.executable
-
 ---@type Nvim.Command
 nvim.cmd = nvim.command
-
 ---Equivalent to `api.nvim_win_get_cursor`
 nvim.cursor = api.nvim_win_get_cursor
-
 ---Equivalent to `api.nvim_get_mode`
 nvim.mode = api.nvim_get_mode
 
@@ -484,6 +473,7 @@ nvim.p =
                 return setmetatable(
                     {},
                     {
+                        ---@param _ nil
                         ---@param msg string message to echo
                         ---@param history? boolean add message to history
                         ---@param wait? number amount of time to wait
@@ -494,7 +484,7 @@ nvim.p =
                     }
                 )
             end,
-            ---
+            ---@param _ nil
             ---@param ... any
             __call = function(_, ...)
                 utils.cecho(...)
@@ -650,12 +640,12 @@ do
             {
                 __index = function(self, k)
                     local mt = getmetatable(self)
-                    local x = mt[k]
+                    local x = rawget(mt, k)
                     if x ~= nil then
                         return x
                     end
                     local f = api["nvim_buf_" .. k]
-                    mt[k] = f
+                    rawset(mt, k, f)
                     return f
                 end,
                 ---Call a function with buf as temporary current buf
@@ -674,31 +664,6 @@ do
                 end,
             }
         )
-
-    -- {
-    --     ---@param var string variable to get
-    --     ---@param bufnr? integer
-    --     ---@return NvimOptRet
-    --     get = function(var, bufnr)
-    --         local ok, value = pcall(api.nvim_buf_get_var, bufnr or 0, var)
-    --         return ok and value or nil
-    --     end,
-    --     ---@param var string variable to set
-    --     ---@param val any variable value
-    --     ---@param bufnr? integer
-    --     ---@return NvimOptRet
-    --     set = function(_, var, val, bufnr)
-    --         local ok, value = pcall(api.nvim_buf_set_var, bufnr or 0, var, val)
-    --         return ok and value or nil
-    --     end,
-    --     ---@param var string variable to delete
-    --     ---@param bufnr? integer
-    --     ---@return NvimOptRet
-    --     del = function(_, var, bufnr)
-    --         local ok, value = pcall(api.nvim_buf_del_var, bufnr or 0, var)
-    --         return ok and value or nil
-    --     end,
-    -- },
 end
 
 --  ╭────────╮
@@ -742,7 +707,7 @@ do
             },
             {
                 __index = D.thunk(get, nil),
-                __newindex = new_idx(del, sel),
+                __newindex = new_idx(del, set),
             }
         )
 
@@ -756,12 +721,12 @@ do
             {
                 __index = function(self, k)
                     local mt = getmetatable(self)
-                    local x = mt[k]
+                    local x = rawget(mt, k)
                     if x ~= nil then
                         return x
                     end
                     local f = api["nvim_win_" .. k]
-                    mt[k] = f
+                    rawset(mt, k, f)
                     return f
                 end,
                 ---Calls a function with window as temporary current window
@@ -837,12 +802,12 @@ do
             {
                 __index = function(self, k)
                     local mt = getmetatable(self)
-                    local x = mt[k]
+                    local x = rawget(mt, k)
                     if x ~= nil then
                         return x
                     end
                     local f = api["nvim_tabpage_" .. k]
-                    mt[k] = f
+                    rawset(mt, k, f)
                     return f
                 end,
                 __call = function(_)

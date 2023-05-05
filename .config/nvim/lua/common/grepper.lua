@@ -1,45 +1,43 @@
+---This is meant to be used in concert with `vim-grepper`
+---Vim-grepper searches the current directory, this searches the current buffer
+---@module "common.grepper"
 local M = {}
 
+local D = require("dev")
 local utils = require("common.utils")
 local mpi = require("common.api")
 local map = mpi.map
+local op = require("common.op")
 
 -- local api = vim.api
 local cmd = vim.cmd
 local fn = vim.fn
 local F = vim.F
 
--- This is meant to be used in concert with `vim-grepper`
--- Vim-grepper searches the current directory, this searches the current buffer
---
--- There was an issue with some operators
---      got| => works all the time
---      gof| => works some of the time
--- Fix the text that is grabbed when the operator is hit
+--TODO: Reverse lines as an operatorfunc
 
 ---Execute `vimgrep`
 ---@param mode string
 function M.vimgrep_qf(mode)
-    local regions = M.get_regions(mode)
-    -- Multiline in unsupported, so concatenate with a space
-    local text = table.concat(M.get_text(regions), " ")
-    -- Vimgrep doesn't respect smartcase
-    cmd.vimgrep(([['\C%s' %%]]):format(text))
+    local regions = op.get_region(mode)
+    local txt = op.get_text(regions, mode)
+    -- FIX: Multiline
+    local text = table.concat(txt, "\n")
+    cmd.vimgrep(([[/\C%s/]]):format(text), "%")
     cmd.copen()
 end
 
 ---'Operator function' function
 ---@param motion string text motion
 function M.vg_motion(motion)
-    vim.o.operatorfunc = "v:lua.require'common.grepper'.vimgrep_qf"
-    utils.normal("i", "g@" .. (motion or ""))
+    op.operator({cb = "v:lua.require'common.grepper'.vimgrep_qf", motion = motion})
 end
 
 ---Execute `helpgrep`
 ---@param mode string
 function M.helpgrep_qf(mode)
-    local regions = M.get_regions(mode)
-    local text = table.concat(M.get_text(regions), " ")
+    local regions = op.get_region(mode)
+    local text = table.concat(op.get_text(regions, mode), " ")
     cmd.helpgrep(([[%s]]):format(text))
     vim.defer_fn(function()
         cmd.copen()
@@ -50,76 +48,42 @@ end
 ---'Operator function' function
 ---@param motion string text motion
 function M.hg_motion(motion)
-    vim.o.operatorfunc = "v:lua.require'common.grepper'.helpgrep_qf"
-    utils.normal("i", "g@" .. (motion or ""))
+    op.operator({cb = "v:lua.require'common.grepper'.helpgrep_qf", motion = motion})
 end
 
--- Credit: gbprod/substitute.nvim
----Turn region markers into text
----@param regions table
----@return table
-function M.get_text(regions)
-    local all_lines = {}
-    for _, region in ipairs(regions) do
-        local lines = nvim.buf.get_lines(0, region.start_row - 1, region.end_row, true)
-        lines[vim.tbl_count(lines)] = string.sub(lines[vim.tbl_count(lines)], 0, region.end_col + 1)
-        lines[1] = string.sub(lines[1], region.start_col + 1)
-
-        for _, line in ipairs(lines) do
-            table.insert(all_lines, line)
-        end
-    end
-
-    return all_lines
+---Execute `Ggrep`
+---@param path? string
+---@param mode? string
+function M.gitgrep_qf(path, mode)
+    local regions = op.get_region(mode)
+    local txt = op.get_text(regions, mode)
+    local text = table.concat(txt, "\n")
+    cmd.Ggrep({([["%s" "%s"]]):format(text, path or ".config/nvim"), bang = true})
+    utils.mod.prequire("noice.message.router"):thenCall(function(noice)
+        vim.defer_fn(function()
+            noice.dismiss()
+        end, 1)
+    end)
+    cmd.copen()
 end
 
----Credit: gbprod/substitute.nvim
----Get motion region
----@param vmode string
----@return table
-function M.get_regions(vmode)
-    if vmode == utils.termcodes["<c-v>"] then
-        local start = nvim.buf.get_mark(0, "<")
-        local finish = nvim.buf.get_mark(0, ">")
+---'Operator function' function
+---@param motion string text motion
+function M.gg_motion(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.ggrep_qf", motion = motion})
+end
 
-        local regions = {}
+---Execute `Ggrep` on nvim dir
+---@param path? string
+---@param mode? string
+function M.nvimgrep_qf(path, mode)
+    M.gitgrep_qf(".config/nvim", mode)
+end
 
-        for row = start[1], finish[1], 1 do
-            ---@diagnostic disable-next-line:undefined-field
-            local current_row_len = fn.getline(row):len() - 1
-
-            table.insert(
-                regions,
-                {
-                    start_row = row,
-                    start_col = start[2],
-                    end_row = row,
-                    end_col = F.if_expr(current_row_len >= finish[2], finish[2], current_row_len)
-                }
-            )
-        end
-
-        return regions
-    end
-
-    local start_mark, end_mark = "[", "]"
-    if vmode:match("[vV]") then
-        start_mark, end_mark = "<", ">"
-    end
-
-    local start = nvim.buf.get_mark(0, start_mark)
-    local finish = nvim.buf.get_mark(0, end_mark)
-    ---@diagnostic disable-next-line:undefined-field
-    local end_row_len = fn.getline(finish[1]):len() - 1
-
-    return {
-        {
-            start_row = start[1],
-            start_col = F.if_expr(vmode ~= "line", start[2], 0),
-            end_row = finish[1],
-            end_col = (end_row_len >= finish[2] and vmode ~= "line") and finish[2] or end_row_len
-        }
-    }
+---'Operator function' function
+---@param motion string text motion
+function M.ng_motion(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.nvimgrep_qf", motion = motion})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -152,7 +116,7 @@ M.telescope_grep = function(type, only_curr)
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
         search_dirs = {F.if_expr(only_curr, curr, (#root == 0 and cwd or root))},
-        search = nvim.reg["@"]
+        search = nvim.reg["@"],
     }
 
     require("telescope.builtin").grep_string(opts)
@@ -168,30 +132,70 @@ M.telescope_grep_current_buffer = function(type)
     M.telescope_grep(type, true)
 end
 
+--  ══════════════════════════════════════════════════════════════════════
+
+-- TODO: Finish
+
+function M.reverse_cb(motion)
+    -- local select_save = vim.o.selection
+    -- vim.o.selection = "inclusive"
+    -- local reg_save = nvim.reg["@"]
+
+    local regions = op.get_region(mode)
+    nvim.mark["<"] = {regions.start.row, regions.start.col}
+    nvim.mark[">"] = {regions.finish.row, regions.finish.col}
+
+    -- vim.o.selection = select_save
+    -- nvim.reg["@"] = reg_save
+
+    cmd.Reverse()
+end
+
+---'Operator function' function
+---@param motion string text motion
+function M.reverse_motion(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.reverse_cb", motion = motion})
+end
+
+--  ══════════════════════════════════════════════════════════════════════
+
 local function init()
-    map("n", "go", [[:lua R('common.grepper').vg_motion()<CR>]], {desc = "Grep current file"})
-    map("x", "go", [[:lua R('common.grepper').vimgrep_qf(vim.fn.visualmode())<CR>]], {desc = "Grep current file"})
+    map("n", "go", M.vg_motion, {desc = "Grep current file"})
+    map("x", "go", D.ithunk(M.vimgrep_qf, fn.visualmode()), {desc = "Grep current file"})
+    map("n", "gH", M.hg_motion, {desc = "Help grep"})
+    map("n", "gt", M.ng_motion, {desc = "Ggrep .config/nvim"})
+    map("x", "gt", D.ithunk(M.nvimgrep_qf, fn.visualmode()), {desc = "Grep .config/nvim"})
 
-    map("n", "gH", [[:lua R('common.grepper').hg_motion()<CR>]], {desc = "Help grep"})
+    -- map(
+    --     "n",
+    --     "gY",
+    --     [[:lua R('common.grepper').reverse_motion()<CR>]],
+    --     {desc = "Grep current file"}
+    -- )
 
-    map(
-        "n",
-        "gt",
-        [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep<cr>g@]],
-        {desc = "Telescope grep"}
-    )
-    map("x", "gt", [[:call v:lua.R'common.grepper'.telescope_grep(visualmode())<cr>]], {desc = "Telescope grep"})
+    -- map(
+    --     "n",
+    --     "gt",
+    --     [[:sil! set operatorfunc=v:lua.require'common.grepper'.telescope_grep<cr>g@]],
+    --     {desc = "Telescope grep"}
+    -- )
+    -- map(
+    --     "x",
+    --     "gt",
+    --     [[:call v:lua.require'common.grepper'.telescope_grep(visualmode())<cr>]],
+    --     {desc = "Telescope grep"}
+    -- )
 
     map(
         "n",
         "gT",
-        [[:silent! set operatorfunc=v:lua.R'common.grepper'.telescope_grep_current_buffer<cr>g@]],
+        D.ithunk(op.operator, {cb = "require'common.grepper'.telescope_grep_current_buffer"}),
         {desc = "Telescope grep (current buf)"}
     )
     map(
         "x",
         "gT",
-        [[:call v:lua.R'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]],
+        [[:call v:lua.require'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]],
         {desc = "Telescope grep (current buf)"}
     )
 end
@@ -223,13 +227,9 @@ function M.grep_operator(type)
 
     -- fn.setreg("@@", saved_unnamed_register)
     -- mpi.set_cursor(0, row, col)
-
     -- p(("%s %s"):format(winnr, fn.winnr()))
 
     cmd.copen()
 end
-
--- map("n", "gt", [[:silent! set operatorfunc=v:lua.R'common.grepper'.grep_operator<cr>g@]])
--- map("x", "gt", [[:call v:lua.R'common.grepper'.grep_operator(visualmode())<cr>]])
 
 return M

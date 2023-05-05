@@ -15,6 +15,7 @@ local map = mpi.map
 local command = mpi.command
 local style = require("style")
 local hl = require("common.color")
+local op = require("common.op")
 
 local wk = require("which-key")
 
@@ -99,33 +100,33 @@ function M.floaterm()
             title = "lazygit",
             height = 0.9,
             width = 0.9,
-            cmd = "lazygit"
+            cmd = "lazygit",
         },
         ["+gitui"] = {title = "gitui", height = 0.9, width = 0.9, cmd = "gitui"},
         ["+taskwarrior-tui"] = {
             title = "taskwarrior-tui",
             height = 0.99,
             width = 0.99,
-            cmd = "taskwarrior-tui"
+            cmd = "taskwarrior-tui",
         },
         ["+flf"] = {
             title = "full screen lf",
             height = 0.9,
             width = 0.9,
-            cmd = "lf"
+            cmd = "lf",
         },
         ["+slf"] = {
             title = "split screen lf",
             wintype = "split",
             height = 0.5,
-            cmd = "lf"
+            cmd = "lf",
         },
         ["+xplr"] = {title = "xplr", cmd = "xplr"},
         ["+gpg-tui"] = {
             title = "gpg-tui",
             height = 0.9,
             width = 0.9,
-            cmd = "gpg-tui"
+            cmd = "gpg-tui",
         },
         ["+tokei"] = {title = "tokei", height = 0.9, width = 0.9, cmd = "tokei"},
         ["+dust"] = {title = "dust", height = 0.9, width = 0.9, cmd = "dust"},
@@ -161,7 +162,7 @@ function M.term_autocmds()
                 end
             )
         end,
-        desc = "Clear matches & highlights when entering a terminal"
+        desc = "Clear matches & highlights when entering a terminal",
     }
 
     nvim.autocmd.lmb__TermMappings = {
@@ -176,7 +177,7 @@ function M.term_autocmds()
             vim.bo.bufhidden = "hide"
             cmd.startinsert()
         end,
-        desc = "Set terminal mappings"
+        desc = "Set terminal mappings",
     }
 
     -- nvim.autocmd.lmb__TermClose = {
@@ -496,25 +497,22 @@ local function init()
 
     map(
         "n",
-        "gzz",
+        "<Leader>tX",
         function()
             return term_exec(fn.getline("."))
         end,
         {desc = "REPL current line"}
     )
 
-    map(
-        "v",
-        "gz",
-        function()
-            local mode = utils.mode()
-            if mode == "v" or mode == "V" or mode == "" then
-                local text = utils.get_visual_selection()
-                term_exec(text)
-            end
-        end,
-        {desc = "REPL current selection"}
-    )
+    -- map(
+    --     "v",
+    --     "<Leader>tx",
+    --     function()
+    --         -- N(op.get_visual_selection())
+    --         term_exec(utils.get_visual_selection())
+    --     end,
+    --     {desc = "REPL current selection"}
+    -- )
 
     -- map("n", "", "<Cmd>ToggleTermSendCurrentLine <T_ID><CR>", {desc = "REPL: whole line"})
     -- map("x", "", "<Cmd>ToggleTermSendVisualLines <T_ID><CR>", {desc = "REPL: whole line visual sel"})
@@ -555,7 +553,7 @@ local function init()
         {
             [open_key] = "Open ToggleTerm",
             ["<Leader>tw"] = {"<Cmd>TaskwarriorTUI<CR>", "Term: Taskwarrior TUI"},
-            gzo = {"<Cmd>T<CT>", "Term: open"},
+            ["<Leader>tx"] = {"<Cmd>T<CT>", "Term: open"},
         },
         {mode = "n"}
     )

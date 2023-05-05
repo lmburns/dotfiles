@@ -22,14 +22,13 @@ local sorters = require("telescope.sorters")
 local tutils = require("telescope.utils")
 
 -- local fb_utils = require "telescope._extensions.file_browser.utils"
-local z_utils = require("telescope._extensions.zoxide.utils")
+local z_utils = lazy.require_on_exported_call("telescope._extensions.zoxide.utils")
 
 local P = R("plugs.telescope.pickers")
 local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
-local dirs = require("common.global").dirs
 local log = require("common.log")
 local utils = require("common.utils") -- "builtin" utils
 local mpi = require("common.api")
@@ -184,7 +183,7 @@ telescope.setup(
     {
         defaults = {
             history = {
-                path = dirs.data .. "/databases/telescope_history.sqlite3",
+                path = lb.dirs.data .. "/databases/telescope_history.sqlite3",
                 limit = 1000,
             },
             dynamic_preview_title = true,
@@ -569,7 +568,7 @@ telescope.setup(
                 reset_selection = true,
             },
             frecency = {
-                db_root = dirs.data .. "/databases",
+                db_root = lb.dirs.data .. "/databases",
                 show_scores = true,
                 show_unindexed = true,
                 ignore_patterns = {
@@ -972,7 +971,7 @@ builtin.git_grep = function(opts)
         "--show-toplevel"
     }[1]
 
-    if utils.is.empty(opts.search_dirs) or utils.empty(opts.search_dirs[1]) then
+    if utils.is.empty(opts.search_dirs) or utils.is.empty(opts.search_dirs[1]) then
         log.err("Not in a git directory")
         return
     end
@@ -1061,9 +1060,7 @@ end
 ---@param opts table?
 M.edit_dotfiles = function(opts)
     opts = opts or {}
-    local home = require("common.global").home
-
-    opts.cwd = home
+    opts.cwd = lb.dirs.home
     opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
 
     pickers.new(
@@ -1106,7 +1103,7 @@ end
 
 builtin.installed_plugins = function(_opts)
     builtin.find_files{
-        cwd = dirs.data .. "/site/pack/packer/"
+        cwd = lb.dirs.data .. "/site/pack/packer/"
     }
 end
 
@@ -1144,36 +1141,13 @@ builtin.noice = D.thunk(telescope.extensions.noice.noice)
 --     telescope.extensions.undo.undo(opts)
 -- end
 
-
--- builtin.yanky = function(opts)
---     telescope.extensions.yank_history.yank_history(opts)
--- end
+builtin.yanky = function(opts)
+    telescope.extensions.yank_history.yank_history(opts)
+end
 
 -- builtin.aerial = function(opts)
 --     telescope.extensions.aerial.aerial(opts)
 -- end
-
----@generic T: ..., V: ..., R
----@param fn fun(v1: T): R
----@param ... T
----@return fun(v2: V): R
-M.thunk = function(fn, ...)
-    local bound = {...}
-    return function(...)
-        return fn(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
-    end
-end
-
----@generic T: ..., R
----@param fn fun(v: T): R
----@param ... T
----@return fun(none: nil): R
-M.ithunk = function(fn, ...)
-    local bound = {...}
-    return function()
-        return fn(unpack(bound))
-    end
-end
 
 local function init()
     map("n", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
@@ -1316,9 +1290,9 @@ local function init()
 
     -- ========================== Highlight ==========================
     local c = require("kimbox.colors")
-    local color = require("common.color")
+    local hl = require("common.color")
 
-    color.plugin(
+    hl.plugin(
         "Telescope", {
             TelescopeBorder = {fg = c.magenta},
             TelescopeBufferLoaded = {fg = c.red},

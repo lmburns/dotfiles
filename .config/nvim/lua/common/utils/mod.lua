@@ -1,5 +1,5 @@
---@module common.utils.mod
 ---@description: Utililty functions for dealing with modules
+---@module "common.utils.mod"
 local M = {}
 
 local D = require("dev")
@@ -9,12 +9,51 @@ local fn = vim.fn
 local env = vim.env
 
 ---Safely check if a plugin is installed
----@generic M string
 ---@param mods string|string[] Module(s) to check if is installed
----@param cb fun(mod: table<any, any>):nil Function to call on successfully required modules
 ---@param notify? boolean Whether to notify of an error
----@return module
-M.prequire = function(mods, cb, notify)
+---@return Promise
+M.prequire = function(mods, notify)
+    local first_mod
+    local loaded = {}
+    mods = type(mods) == "string" and {mods} or mods
+    return promise:new(function(resolve, reject)
+        for _, m in ipairs(mods) do
+            local ok, mod = pcall(require, m)
+            if ok then
+                if not first_mod then
+                    first_mod = mod
+                end
+                table.insert(loaded, mod)
+            else
+                if notify then
+                    log.error(("Invalid module: %s"):format(m), {dprint = true})
+                end
+                reject(mod)
+            end
+        end
+        return resolve(#loaded == 1 and unpack(loaded) or loaded)
+    end)
+    -- return first_mod
+end
+
+---Note: this function returns the currently loaded state
+---Given certain assumptions i.e. it will only be true if the plugin has been
+---loaded e.g. lazy loading will return false
+---@param plugin_name string
+---@return boolean?
+M.plugin_loaded = function(plugin_name)
+    local plugins = packer_plugins or {}
+    return plugins[plugin_name] and plugins[plugin_name].loaded
+end
+
+---Safely check if a plugin is installed. Allow returning values
+---@generic M table<any, any>
+---@param mods string|string[] Module(s) to check if is installed
+---@param cb fun(mod1: M, ...: M): any? Function to call on successfully required modules
+---@param ret_cb_ret? boolean If true, the value returned by the callback is returned from this function
+---@param notify? boolean Whether to notify of an error
+---@return M|Void module First required module
+M.prequirer = function(mods, cb, ret_cb_ret, notify)
     local first_mod
     local loaded = {}
     mods = type(mods) == "string" and {mods} or mods
@@ -27,18 +66,23 @@ M.prequire = function(mods, cb, notify)
             table.insert(loaded, mod)
         else
             if notify then
-                log.error(
-                    ("Invalid module: %s"):format(m),
-                    {debug = true, once = true}
-                )
+                log.error(("Invalid module: %s"):format(m), {debug = true})
             end
             -- Return a dummy item that returns functions, so we can do things like
             -- prequire("module").setup()
             return Void
         end
     end
+    local ok, ret
     if type(cb) == "function" then
-        D.wrap_err(cb, unpack(loaded))
+        ok, ret = D.xpcall(cb, unpack(loaded))
+    end
+    if ret_cb_ret then
+        if ok then
+            return ret
+        elseif notify then
+            log.error("Callback failed", {debug = true, once = true})
+        end
     end
     return first_mod
 end
@@ -49,7 +93,7 @@ M.reload_config = function()
     ---@diagnostic disable-next-line:undefined-field
     local luacache = (_G.__luacache or {}).modpaths.cache
 
-    -- local lua_dirs = fn.glob(("%s/lua/*"):format(dirs.config), 0, 1)
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(lb.dirs.config), 0, 1)
     -- require("plenary.reload").reload_module(dir)
 
     for name, _ in pairs(package.loaded) do
@@ -96,16 +140,6 @@ M.reload_module = function(path, recursive, req)
             return require(path)
         end
     end
-end
-
----Note: this function returns the currently loaded state
----Given certain assumptions i.e. it will only be true if the plugin has been
----loaded e.g. lazy loading will return false
----@param plugin_name string
----@return boolean?
-M.plugin_loaded = function(plugin_name)
-    local plugins = packer_plugins or {}
-    return plugins[plugin_name] and plugins[plugin_name].loaded
 end
 
 local installed

@@ -50,14 +50,15 @@ text:
       - .conf
       - .config
       - .hjson
-      - .ini
       - .json
+      - .jsonc
+      - .ini
       - .properties
       - .ron
       - .tml
       - .toml
-      - .yaml
       - .yml
+      - .yaml
 
     metadata:
       - .xmp
@@ -266,26 +267,20 @@ programming:
         - CMakeLists.txt
         - cmakelists.txt
         - .cmake.in
-
       make:
         - Makefile
         - .make
-
-      just:
-        - justfile
-        - Justfile
-
       automake:
         - Makefile.am
-
       configure:
         - configure
         - configure.ac
-
+      just:
+        - justfile
+        - Justfile
       scons:
         - SConscript
         - SConstruct
-
       pip:
         - requirements.txt
 
@@ -307,6 +302,7 @@ programming:
         - .gem
       lua:
         - .rockspec
+        - init.lua
 
     code-style:
       python:

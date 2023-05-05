@@ -1,0 +1,18 @@
+#compdef aurphan
+
+# zsh completions for 'aurphan'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-p[/--packages is for devs/TUs and searches the official repos for orphans.  (mobile) means the package can be safely moved to a less exclusive repo.]'
+  '-m[/--maintainer \[nick\] finds packages from a dev/TU, useful when they feel overworked.]'
+  '-f[/--flag lists packages flagged out of date.]'
+  '-t[/--todo searches the master todo list for pkgbuilds that need an update.]'
+  '-b[/--bugs checks the bugtracker for packages with open bugs.]'
+  '-e[/--eligible searches the AUR for packages that could enter \[community\].]'
+  '-a[/--aur searches the AUR for packages that need a maintainer.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

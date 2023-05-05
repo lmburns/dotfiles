@@ -18,7 +18,6 @@ function M.index()
     if fn.winnr("$") == 1 and bufname == "" then
         cmd.Git()
     else
-        -- cmd('tab Git')
         cmd.Git({mods = {tab = 1}})
     end
     if bufname == "" then
@@ -40,16 +39,15 @@ function M.diff_hist()
     end
 end
 
--- TODO: Fix fugitive buffer command autocommand
 function M.map()
     bmap(
         "n",
-        "st",
+        "dt",
         ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>",
-        {noremap = false, silent = true, desc = "Gtabedit"}
+        {desc = "Gtabedit", silent = true, noremap = false}
     )
-    bmap("n", "<Leader>gb", ":GBrowse<CR>", {desc = "GBrowse"})
-    bmap("n", "<A-p>", "<Cmd>Git pull<CR>", {buffer = "Git pull"})
+    bmap("n", "<Leader>gb", "GBrowse", {desc = "GBrowse", cmd = true})
+    bmap("n", "<A-p>", "Git pull", {desc = "Git pull", cmd = true})
 end
 
 local function init()
@@ -62,12 +60,10 @@ local function init()
         )
     end
 
-    -- How does this work?
     g.nremap = {
         O = "T", -- Open file in a new tab
         X = "x", -- Discard the change under the cursor.
         U = "U", -- Unstage everything
-        a = "",
         d2o = "d2o",
         d3o = "d3o",
         dd = "dd",       -- :Gdiffsplit
@@ -91,14 +87,15 @@ local function init()
         ["="] = "<Tab>", -- toggle inline diff
         ["[m"] = "[f",   -- jump to previous file, close inline diffs
         ["]m"] = "]f",   -- jump to next file, close inline diffs
-        ["d?"] = "d?"
+        ["d?"] = "d?",
+        a = "",
     }
 
     g.xremap = {
         s = "S",
         u = "<C-u>",
         ["-"] = "a",
-        X = "x"
+        X = "x",
     }
 
     augroup(
@@ -108,6 +105,16 @@ local function init()
             pattern = {"FugitiveIndex", "FugitiveCommit"},
             command = function()
                 require("plugs.fugitive").map()
+            end,
+        },
+        {
+            event = "User",
+            pattern = "FugitiveChanged",
+            command = function()
+                local neogit = package.loaded.neogit
+                if neogit then
+                    neogit.dispatch_refresh()
+                end
             end,
         },
         {
@@ -125,25 +132,25 @@ local function init()
         {
             ["<LocalLeader>gg"] = {
                 [[<Cmd>lua require('plugs.fugitive').index()<CR>]],
-                "Fugitive index"
+                "Fugitive index",
             },
             ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
             ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive Gread (plain)"},
             ["<LocalLeader>gB"] = {
                 "<Cmd>Git blame -w<Bar>winc p<CR>",
-                "Fugitive blame split"
+                "Fugitive blame split",
             },
             ["<LocalLeader>gw"] = {
                 [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
-                "Fugitive Gwrite"
+                "Fugitive Gwrite",
             },
             ["<LocalLeader>gW"] = {
                 [[<Cmd>lua require('common.utils.fs').follow_symlink("Gwrite")<CR>]],
-                "Fugitive Gwrite"
+                "Fugitive Gwrite",
             },
             ["<LocalLeader>gr"] = {
                 [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
-                "Fugitive Gread"
+                "Fugitive Gread",
             },
             ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
             ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},

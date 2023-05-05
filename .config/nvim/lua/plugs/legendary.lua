@@ -1,12 +1,11 @@
 local M = {}
 
 local D = require("dev")
+-- vim.cmd.packadd("legendary.nvim")
 local legend = D.npcall(require, "legendary")
 if not legend then
     return
 end
-
-local dirs = require("common.global").dirs
 
 function M.setup()
     legend.setup(
@@ -24,7 +23,7 @@ function M.setup()
             default_opts = {
                 keymaps = {},
                 commands = {},
-                autocmds = {}
+                autocmds = {},
             },
             -- Customize the prompt that appears on your vim.ui.select() handler
             -- Can be a string or a function that returns a string.
@@ -60,7 +59,7 @@ function M.setup()
                 -- controls whether legendary.nvim actually binds they keymaps,
                 -- or if you want to let which-key.nvim handle the bindings.
                 -- if not passed, true by default
-                do_binding = true
+                do_binding = false,
             },
             scratchpad = {
                 -- How to open the scratchpad buffer,
@@ -73,10 +72,13 @@ function M.setup()
                 -- Border style for floating windows related to the scratchpad
                 float_border = "rounded",
                 -- Whether to restore scratchpad contents from a cache file
-                keep_contents = true
+                keep_contents = true,
             },
             -- Directory used for caches
-            cache_path = ("%s/legendary/"):format(dirs.cache)
+            cache_path = ("%s/legendary/"):format(lb.dirs.cache),
+            extensions = {
+                diffview = true
+            }
         }
     )
 end
@@ -96,7 +98,7 @@ local function init()
                     legend.find({filters = {filters.mode("n"), filters.keymaps()}})
                 end,
                 description = "Show Legendary keymaps (normal)",
-                mode = "n"
+                mode = "n",
             },
             {
                 "<C-_>",
@@ -104,7 +106,7 @@ local function init()
                     legend.find({filters = {filters.mode("i"), filters.keymaps()}})
                 end,
                 description = "Show Legendary keymaps (insert)",
-                mode = "i"
+                mode = "i",
             },
             {
                 "<C-_>",
@@ -112,8 +114,8 @@ local function init()
                     legend.find({filters = {filters.mode("v"), filters.keymaps()}})
                 end,
                 description = "Show Legendary keymaps (visual)",
-                mode = "v"
-            }
+                mode = "v",
+            },
         }
     )
 end

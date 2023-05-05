@@ -7,6 +7,7 @@
 ---@class Hash<T>:   { [string]: T }
 
 ---@alias module table
+---@alias char string
 ---@alias str string
 ---@alias bool boolean
 

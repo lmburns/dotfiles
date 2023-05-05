@@ -1,6 +1,5 @@
 local M = {}
 
-local dirs = require("common.global").dirs
 local debounce = require("common.debounce")
 
 local fs = require("common.utils.fs")
@@ -166,7 +165,7 @@ local function init()
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
-        db = ("%s/%s"):format(dirs.data, "mru_file")
+        db = ("%s/%s"):format(lb.dirs.data, "mru_file")
     }
 
     if M.list()[1] ~= fn.expand("%:p") then

@@ -8,14 +8,15 @@ M.modes = {insert = "i", command = "c"}
 
 ---Only execute the given command if the abbreviation is in `command` mode
 ---and the command is at the start.
+---`"<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>"`
 ---@param cmd string
 ---@param match string
+---@return string
 function M.command(cmd, match)
     if fn.getcmdtype() == ":" and fn.getcmdline():match("^" .. cmd) then
         return match
-    else
-        return cmd
     end
+    return cmd
 end
 
 ---Create an abbreviation, until an API command is created
@@ -72,7 +73,7 @@ function M.abbr(mode, lhs, rhs, args)
         log.err(
             ("Invalid mode: %s"):format(vim.inspect(mode)), {title = "Abbrs"}
         )
-        return false
+        return
     end
 
     if args.silent ~= nil then
@@ -114,7 +115,7 @@ M = setmetatable(
 )
 
 local function init()
-    -- I can't get insert mode to work
+    -- FIX: insert mode abbrs don't work
     M.abbr("i", "funciton", "function")
 
     M.abbr("c", "Qall!", "qll!")
@@ -137,6 +138,8 @@ local function init()
     M.abbr("c", "PC", "PackerCompile")
 
     M.abbr("c", "man", "Man")
+    M.abbr("c", "gg", "Ggrep", {only_start = false})
+    M.abbr("c", "ggrep", "Ggrep", {only_start = false})
     M.abbr("c", "vg", "vimgrep", {only_start = false})
     M.abbr("c", "grep", "Grep", {only_start = false})
     M.abbr("c", "lgrep", "LGrep", {only_start = false})

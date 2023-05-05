@@ -16,6 +16,19 @@ local api = vim.api
 local fn = vim.fn
 local g = vim.g
 
+local function gt(e1, e2)
+    local ret = false
+    if e1[1] > e2[1] then
+        ret = true
+    elseif e1[1] == e2[1] then
+        if e1[2] < e2[2] then
+            ret = true
+        end
+    end
+
+    return ret
+end
+
 -- FINISH
 ---@param is_loc boolean
 ---@param pat_rep string
@@ -42,19 +55,6 @@ function M.batch_sub(is_loc, pat_rep)
     local old = is_loc and fn.getloclist(0) or fn.getqflist()
     if #old == 0 then
         return
-    end
-
-    local function gt(e1, e2)
-        local ret = false
-        if e1[1] > e2[1] then
-            ret = true
-        elseif e1[1] == e2[1] then
-            if e1[2] < e2[2] then
-                ret = true
-            end
-        end
-
-        return ret
     end
 
     -- Bucket sort + Insertion sort
@@ -138,7 +138,7 @@ function M.qftf(qinfo)
                 if fname == "" then
                     fname = "[No Name]"
                 else
-                    fname = fname:gsub("^" .. vim.env.HOME, "~")
+                    fname = fname:gsub("^" .. lb.dirs.home, "~")
                 end
                 -- char in fname may occur more than 1 width
                 if #fname <= limit then
@@ -168,6 +168,24 @@ function M.close()
         if qf_winid == 0 then
             cmd.lcl()
         else
+            -- vim.ui.select(
+            --     {"quickfix", "location"},
+            --     {
+            --         prompt = "Close quickfix or location list:",
+            --         format_item = function(item)
+            --             return "Close " .. item
+            --         end,
+            --     },
+            --     function(choice)
+            --         if choice == "quickfix" then
+            --             cmd.ccl()
+            --         elseif choice == "location" then
+            --             cmd.lcl()
+            --         end
+            --         cmd(("noa bw %d"):format(bufnr))
+            --     end
+            -- )
+
             local prompt = " [q]uickfix, [l]ocation ? "
             local bufnr = api.nvim_create_buf(false, true)
             local winid =
@@ -197,15 +215,12 @@ function M.close()
                     if type(char) == "number" then
                         local charstr = fn.nr2char(char)
                         if charstr == "q" then
-                            -- cmd("ccl")
                             cmd.ccl()
                         elseif charstr == "l" then
                             cmd.lcl()
-                            -- cmd("lcl")
                         end
                     end
                     cmd(("noa bw %d"):format(bufnr))
-                    -- cmd(("noa bw %d"):format(bufnr))
                 end
             )
         end
@@ -250,10 +265,8 @@ local function init()
     g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    abbr("c", "cdos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>",
-        {only_start = false})
-    abbr("c", "ldos", "<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Ldos' : 'ldos')<CR>",
-        {only_start = false})
+    abbr("c", "cdos", "Cdos", {only_start = true})
+    abbr("c", "ldos", "Ldos", {only_start = true})
 
     command(
         "Cdos",

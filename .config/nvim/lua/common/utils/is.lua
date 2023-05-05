@@ -1,9 +1,9 @@
---@module common.utils.is
 ---@description Easy way to check type of object
+---@module "common.utils.is"
 local M = {}
 
-local utils = require("common.utils")
 local B = require("common.api.buf")
+local F = vim.F
 
 ---Will determine whether:
 ---  - `string` == ""
@@ -25,7 +25,7 @@ function M.empty(item, buf)
         return vim.tbl_isempty(item)
     elseif item_t == "boolean" then
         return item_t == false
-    elseif item_t == "integer" or item_t == "number" then
+    elseif item_t == "number" then
         buf = F.unwrap_or(buf, {})
         if buf.buffer == true then
             return B.buf_is_empty(item)
@@ -111,5 +111,8 @@ end
 function M.null(null)
     return null == nil
 end
+
+-- local M2 = require("common.utils")
+-- M2.is = M
 
 return M

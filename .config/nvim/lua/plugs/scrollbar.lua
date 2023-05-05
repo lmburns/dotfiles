@@ -10,22 +10,19 @@ function M.setup()
     local colors = require("kimbox.colors")
 
     local keep = {"markdown", "vimwiki"}
-    local bl =
-        _t(BLACKLIST_FT):filter(
-        function(f)
-            if _t(keep):contains(f) then
-                return false
-            end
-            return true
+    local bl = _t(BLACKLIST_FT):filter(function(f)
+        if _t(keep):contains(f) then
+            return false
         end
-    )
+        return true
+    end)
 
     scrollbar.setup(
         {
             show = true,
             show_in_active_only = false,
             set_highlights = true,
-            folds = 1000, -- handle folds, set to number to disable folds if no. of lines in buffer exceeds this
+            folds = 1000,                -- handle folds, set to number to disable folds if no. of lines in buffer exceeds this
             maxlines = false,
             hide_if_all_visible = false, -- Hides everything if all lines are visible
             throttle_ms = 100,
@@ -34,7 +31,7 @@ function M.setup()
                 color = "#7E602C",
                 cterm = nil,
                 highlight = "CursorColumn",
-                hide_if_all_visible = true -- Hides handle if all lines are visible
+                hide_if_all_visible = true, -- Hides handle if all lines are visible
             },
             marks = {
                 Cursor = {
@@ -42,71 +39,71 @@ function M.setup()
                     priority = 0,
                     color = colors.orange,
                     cterm = nil,
-                    highlight = "Normal"
+                    highlight = "Normal",
                 },
                 Search = {
                     text = {"-", "="},
                     priority = 0,
                     color = colors.blue,
                     cterm = nil,
-                    highlight = "Search"
+                    highlight = "Search",
                 },
                 Error = {
                     text = {"-", "="},
                     priority = 1,
                     color = colors.red,
                     cterm = nil,
-                    highlight = "DiagnosticVirtualTextError"
+                    highlight = "DiagnosticVirtualTextError",
                 },
                 Warn = {
                     text = {"-", "="},
                     priority = 2,
                     color = colors.yellow,
                     cterm = nil,
-                    highlight = "DiagnosticVirtualTextWarn"
+                    highlight = "DiagnosticVirtualTextWarn",
                 },
                 Info = {
                     text = {"-", "="},
                     priority = 3,
                     color = colors.green,
                     cterm = nil,
-                    highlight = "DiagnosticVirtualTextInfo"
+                    highlight = "DiagnosticVirtualTextInfo",
                 },
                 Hint = {
                     text = {"-", "="},
                     priority = 4,
                     color = nil,
                     cterm = nil,
-                    highlight = "DiagnosticVirtualTextHint"
+                    highlight = "DiagnosticVirtualTextHint",
                 },
                 Misc = {
                     text = {"-", "="},
                     priority = 5,
                     color = colors.magenta,
                     cterm = nil,
-                    highlight = "Normal"
+                    highlight = "Normal",
                 },
                 GitAdd = {
                     text = "┆",
                     priority = 7,
                     color = nil,
                     cterm = nil,
-                    highlight = "GitSignsAdd"
+                    highlight = "GitSignsAdd",
                 },
                 GitChange = {
                     text = "┆",
                     priority = 7,
                     color = nil,
                     cterm = nil,
-                    highlight = "GitSignsChange"
+                    highlight = "GitSignsChange",
                 },
                 GitDelete = {
                     text = "▁",
                     priority = 7,
                     color = nil,
                     cterm = nil,
-                    highlight = "GitSignsDelete"
-                }
+                    highlight = "GitSignsDelete",
+                },
             },
             excluded_buftypes = {"terminal"},
             excluded_filetypes = bl,
@@ -119,22 +116,22 @@ function M.setup()
                     "CmdwinLeave",
                     "TextChanged",
                     "VimResized",
-                    "WinScrolled"
+                    "WinScrolled",
                 },
                 clear = {
                     "BufWinLeave",
                     "TabLeave",
                     "TermLeave",
-                    "WinLeave"
-                }
+                    "WinLeave",
+                },
             },
             handlers = {
                 cursor = true,
                 diagnostic = false, -- FIX: once coc is supported
-                gitsigns = false, -- Requires gitsigns
+                gitsigns = false,
                 handle = true,
-                search = true
-            }
+                search = true,
+            },
         }
     )
 end

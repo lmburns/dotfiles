@@ -4,29 +4,53 @@ local M = {}
 ---@class Promise_t<T>: Promise
 
 local uv = require("luv")
-
----home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua/promise
----file:///home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua/promise.lua
----@module "promise"
+---@type Promise
 local promise = require("promise")
-local compat = require("promise-async.compat")
 
 ---@param name string Function name to wrap
----@param argc integer integer of function args
----@return fun(...): Promise
-local function wrap(name, argc)
-    return function(...)
-        local argv = {...}
-        return promise:new(
+local function assign2(name)
+    M[name] = function(a1)
+        return promise(
             function(resolve, reject)
-                argv[argc] = function(err, data)
-                    if err then
-                        reject(err)
-                    else
-                        resolve(data)
-                    end
-                end
-                uv["fs_" .. name](compat.unpack(argv))
+                uv["fs_" .. name](a1, function(err, data)
+                    if err then reject(err) else resolve(data) end
+                end)
+            end)
+    end
+end
+
+---@param name string Function name to wrap
+local function assign3(name)
+    M[name] = function(a1, a2)
+        return promise(
+            function(resolve, reject)
+                uv["fs_" .. name](a1, a2, function(err, data)
+                    if err then reject(err) else resolve(data) end
+                end)
+            end)
+    end
+end
+
+---@param name string Function name to wrap
+local function assign4(name)
+    M[name] = function(a1, a2, a3)
+        return promise(
+            function(resolve, reject)
+                uv["fs_" .. name](a1, a2, a3, function(err, data)
+                    if err then reject(err) else resolve(data) end
+                end)
+            end)
+    end
+end
+
+---@param name string Function name to wrap
+local function assign5(name)
+    M[name] = function(a1, a2, a3, a4)
+        return promise(
+            function(resolve, reject)
+                uv["fs_" .. name](a1, a2, a3, a4, function(err, data)
+                    if err then reject(err) else resolve(data) end
+                end)
             end
         )
     end
@@ -109,6 +133,7 @@ function M.rmdir(path)
 end
 
 --@return Promise_t<uv_fs_t> success Was operation successful?
+---Userdata returned is always syncrhonous
 ---Return: uv_fs_t? success
 ---@param path string
 ---@nodiscard
@@ -361,38 +386,38 @@ end
 --@type fun(dir: luv_dir_t): Promise_t<uv.aliases.fs_readdir_entries>
 --@type fun(path: string): Promise_t<uv.aliases.fs_statfs_stats>
 
-M.close = wrap("close", 2)
-M.open = wrap("open", 4)
-M.read = wrap("read", 4)
-M.unlink = wrap("unlink", 2)
-M.write = wrap("write", 4)
-M.mkdir = wrap("mkdir", 3)
-M.mkdtemp = wrap("mkdtemp", 2)
-M.mkstemp = wrap("mkstemp", 2)
-M.rmdir = wrap("rmdir", 2)
-M.scandir = wrap("scandir", 2)
-M.stat = wrap("stat", 2)
-M.fstat = wrap("fstat", 2)
-M.lstat = wrap("lstat", 2)
-M.rename = wrap("rename", 3)
-M.fsync = wrap("fsync", 2)
-M.fdatasync = wrap("fdatasync", 2)
-M.ftruncate = wrap("ftruncate", 3)
-M.sendfile = wrap("sendfile", 5)
-M.access = wrap("access", 3)
-M.chmod = wrap("chmod", 3)
-M.fchmod = wrap("fchmod", 3)
-M.utime = wrap("utime", 4)
-M.futime = wrap("futime", 4)
-M.lutime = wrap("lutime", 4)
-M.link = wrap("link", 3)
-M.symlink = wrap("symlink", 4)
-M.readlink = wrap("readlink", 2)
-M.realpath = wrap("realpath", 2)
-M.chown = wrap("chown", 4)
-M.fchown = wrap("fchown", 4)
-M.lchown = wrap("lchown", 4)
-M.copyfile = wrap("copyfile", 4)
+assign2("close")
+assign4("open")
+assign4("read")
+assign2("unlink")
+assign4("write")
+assign3("mkdir")
+assign2("mkdtemp")
+assign2("mkstemp")
+assign2("rmdir")
+assign2("scandir")
+assign2("stat")
+assign2("fstat")
+assign2("lstat")
+assign3("rename")
+assign2("fsync")
+assign2("fdatasync")
+assign3("ftruncate")
+assign5("sendfile")
+assign3("access")
+assign3("chmod")
+assign3("fchmod")
+assign4("utime")
+assign4("futime")
+assign4("lutime")
+assign3("link")
+assign4("symlink")
+assign2("readlink")
+assign2("realpath")
+assign4("chown")
+assign4("fchown")
+assign4("lchown")
+assign4("copyfile")
 
 --@return Promise_t<luv_dir_t> dir Directory
 -- TODO: Finish this
@@ -419,8 +444,8 @@ M.opendir = function(path, entries)
     )
 end
 
-M.readdir = wrap("readdir", 2)
-M.closedir = wrap("closedir", 2)
-M.statfs = wrap("statfs", 2)
+assign2("readdir")
+assign2("closedir")
+assign2("statfs")
 
 return M

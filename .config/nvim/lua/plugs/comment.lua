@@ -12,14 +12,11 @@ end
 
 local wk = require("which-key")
 local utils = require("common.utils")
+local op = require("common.op")
 local mpi = require("common.api")
 local map = mpi.map
 
-local cmd = vim.cmd
 local fn = vim.fn
-local api = vim.api
-local fs = vim.fs
-local g = vim.g
 
 local ft = require("Comment.ft")
 local U = require("Comment.utils")
@@ -52,7 +49,7 @@ function M.setup()
                 -- line-comment keymap
                 line = "gcc",
                 -- block-comment keymap
-                block = "gbc"
+                block = "gbc",
             },
             -- LHS of operator-pending mappings in NORMAL + VISUAL mode
             -- @type table
@@ -60,7 +57,7 @@ function M.setup()
                 -- line-comment keymap
                 line = "gc",
                 -- block-comment keymap
-                block = "gb"
+                block = "gb",
             },
             ---LHS of extra mappings
             ---@type table
@@ -70,7 +67,7 @@ function M.setup()
                 ---Add comment on the line below
                 below = "gco",
                 ---Add comment at the end of line
-                eol = "gcA"
+                eol = "gcA",
             },
             -- Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
             -- @type table
@@ -83,7 +80,7 @@ function M.setup()
                 extra = true,
                 -- extended mapping
                 -- Includes `g>`, `g<`, `g>[count]{motion}` and `g<[count]{motion}`
-                extended = false
+                extended = false,
             },
             -- Pre-hook, called before commenting the line
             -- @type fun(ctx: CommentCtx):string
@@ -123,9 +120,9 @@ function M.setup()
                 --     state = {}
                 -- end
 
-                return internal.calculate_commentstring {
+                return internal.calculate_commentstring{
                     key = type,
-                    location = location
+                    location = location,
                 }
             end,
             -- Post-hook, called after commenting is done
@@ -167,8 +164,8 @@ function M.comment_box()
 
     cb.setup(
         {
-            doc_width = 80, -- width of the document
-            box_width = 60, -- width of the boxes
+            doc_width = 100, -- width of the document
+            box_width = 60,  -- width of the boxes
             borders = {
                 -- symbols used to draw a box
                 top = "─",
@@ -178,48 +175,53 @@ function M.comment_box()
                 top_left = "╭",
                 top_right = "╮",
                 bottom_left = "╰",
-                bottom_right = "╯"
+                bottom_right = "╯",
             },
             line_width = 70, -- width of the lines
+            -- symbols used to draw a line
             line = {
-                -- symbols used to draw a line
-                line = "─",
-                line_start = "─",
-                line_end = "─"
+                line = "=",
+                -- line_start = "=== ",
+                line_start = "=",
+                line_end = "=",
             },
-            outer_blank_lines = false, -- insert a blank line above and below the box
-            inner_blank_lines = false, -- insert a blank line above and below the text
+            outer_blank_lines = false,     -- insert a blank line above and below the box
+            inner_blank_lines = false,     -- insert a blank line above and below the text
             line_blank_line_above = false, -- insert a blank line above the line
-            line_blank_line_below = false -- insert a blank line below the line
+            line_blank_line_below = false, -- insert a blank line below the line
         }
     )
 
     local _ = D.ithunk
+    local ms = {"n", "x"}
 
-    -- 21 20 19 18 7
-    map({"n", "v"}, "<Leader>bb", cb.lcbox, {desc = "Left fixed, center text (round)"})
-    map({"n", "v"}, "<Leader>bs", _(cb.lcbox, 19), {desc = "Left fixed, center text (sides)"})
-    map({"n", "v"}, "<Leader>bd", _(cb.lcbox, 7), {desc = "Left fixed, center text (double)"})
-    map({"n", "v"}, "<Leader>blc", _(cb.lcbox, 13), {desc = "Left fixed, center text (side)"})
-    map({"n", "v"}, "<Leader>bll", cb.llbox, {desc = "Left fixed, left text (round)"})
-    map({"n", "v"}, "<Leader>blr", cb.lrbox, {desc = "Left fixed, right text (side)"})
-    map({"n", "v"}, "<Leader>br", cb.rcbox, {desc = "Right fixed, center text (round)"})
-    map({"n", "v"}, "<Leader>bR", cb.rcbox, {desc = "Right fixed, right text (round)"})
+    map(ms, "<Leader>bb", cb.lcbox, {desc = "L:fix,C:txt (round)"})
+    map(ms, "<Leader>bs", _(cb.lcbox, 19), {desc = "L:fix,C:txt (sides)"})
+    map(ms, "<Leader>bd", _(cb.lcbox, 7), {desc = "L:fix,C:txt (double)"})
+    map(ms, "<Leader>blc", _(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
+    map(ms, "<Leader>bll", cb.llbox, {desc = "L:fix,L:txt (round)"})
+    map(ms, "<Leader>blr", _(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
+    map(ms, "<Leader>br", cb.rcbox, {desc = "R:fix,C:txt (round)"})
+    map(ms, "<Leader>bR", cb.rcbox, {desc = "R:fix,R:txt (round)"})
+    map(ms, "<Leader>bc", cb.ccbox, {desc = "C:fix,C:txt (round)"})
 
-    map({"n", "v"}, "<Leader>ba", cb.albox, {desc = "Left adapted (round)"})
-    map({"n", "v"}, "<Leader>be", _(cb.albox, 19), {desc = "Left adapted (side)"})
-    map({"n", "v"}, "<Leader>bA", cb.acbox, {desc = "Center adapted (round)"})
+    map(ms, "<Leader>ba", cb.albox, {desc = "L:adapted (round)"})
+    map(ms, "<Leader>be", _(cb.albox, 19), {desc = "L:adapted (l-side)"})
+    map(ms, "<Leader>bA", cb.acbox, {desc = "C:adapted (round)"})
 
-    map({"n", "v"}, "<Leader>bc", cb.ccbox, {desc = "Center fixed, center text (round)"})
+    -- 20
+    map(ms, "<Leader>cc", _(cb.lcbox, 21), {desc = "L:fix, c:txt (top/bot)"})
+    map(ms, "<Leader>cb", _(cb.lcbox, 8), {desc = "L:fix, c:txt (t=dbl,s=single)"})
+    map(ms, "<Leader>ce", _(cb.lcbox, 9), {desc = "L:fix, c:txt (t=single,s=dbl)"})
+    map(ms, "<Leader>ca", _(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
 
-    map({"n", "v"}, "<Leader>cc", _(cb.lcbox, 21), {desc = "Left fixed, center text (top/bottom)"})
-    map({"n", "v"}, "<Leader>cb", _(cb.lcbox, 8), {desc = "Left fixed, center text (thick)"})
-    map({"n", "v"}, "<Leader>ca", _(cb.acbox, 21), {desc = "Center adapted (top/bottom)"})
+    -- 2 6 7 9 10
+    map({"n", "i"}, "<M-w>", _(cb.line, 6), {desc = "Double line"})
+    map({"n"}, "<Leader>cn", _(cb.line, 7), {desc = "Double confined line"})
+    map({"n"}, "<Leader>ct", _(cb.line, 7), {desc = "Simple heavy line"})
+    map({"n"}, "<Leader>cT", _(cb.line, 7), {desc = "Heavy confined line"})
 
-    -- 2 6 7
-    map({"n", "i"}, "<M-w>", _(cb.cline, 6), {desc = "Insert thick line"})
-
-    map("n", "<Leader>b?", cb.catalog, {desc = "Comment box catalog"})
+    map("n", "<Leader>b?", cb.catalog, {desc = "CommentBox catalog"})
 end
 
 local function init()
@@ -237,22 +239,21 @@ local function init()
     map(
         "x",
         "<C-.>",
-        [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise.current")()<CR>]]
+        [[<Esc><Cmd>lua require("Comment.api").locked("toggle.linewise")(vim.fn.visualmode())<CR>]]
     )
 
     map(
         "x",
         "<C-A-.>",
         function()
-            local selection = utils.get_visual_selection()
+            local selection = op.get_visual_selection()
             fn.setreg(vim.v.register, selection)
-            utils.normal("n", "gv")
-            -- cmd("normal! gv")
-            require("Comment.api").locked("toggle.linewise.current")()
+            require("Comment.api").locked("toggle.linewise")(fn.visualmode())
         end,
         {desc = "Copy text and comment it out"}
     )
 
+    -- FIX: Pastes below
     map("n", "g1p", "<Cmd>norm! gcA<Esc>p<CR>", {desc = "Paste as comment at EOL"})
 
     wk.register(
@@ -263,7 +264,7 @@ local function init()
             ["gbc"] = "Toggle block comment",
             ["gco"] = "Start comment on line below",
             ["gcO"] = "Start comment on line above",
-            ["gcA"] = "Start comment at end of line"
+            ["gcA"] = "Start comment at end of line",
         },
         {mode = "n"}
     )

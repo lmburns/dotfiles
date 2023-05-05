@@ -539,6 +539,15 @@ zstyle ':completion:*:command-descriptions' \
 # zicompdef _gnu_generic
 # compdef _which         ww
 
+# zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
+
+function set_hub_commands() {
+  zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
+  zstyle ':completion:*:*:hub:*' user-commands $existing_user_commands
+  unset -f set_hub_commands
+}
+defer -t 2 -c set_hub_commands
+
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _hub           g
 compdef _git           h

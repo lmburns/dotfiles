@@ -1,7 +1,13 @@
+---@module 'common.log'
+---@author 'lmburns'
+---@license 'BSD3'
+---@class Log
 local M = {}
 
 local log = require("plenary.log")
+---@type Lazy
 local lazy = require("common.lazy")
+---@type DevL
 local D = lazy.require_on_exported_call("dev")
 
 local api = vim.api
@@ -9,7 +15,7 @@ local fn = vim.fn
 local uv = vim.loop
 local F = vim.F
 
----@enum LogLevels
+---@enum Log.Levels
 M.levels = {
     TRACE = 0,
     DEBUG = 1,
@@ -57,7 +63,7 @@ end
 _G.__MODULE__ = function()
     return module(debug.getinfo(3, "S").source)
 end
----@return string #'<module>.<function>:line'
+---@return string #'module.function:line'
 _G.__TRACEBACK__ = function()
     local info = debug.getinfo(3)
     local module = module(info.source)
@@ -90,7 +96,8 @@ function M.get_loc(thread)
 end
 
 ---@param value any
----@param opts? {loc?: string, level?: number, thread?: number}
+---@param opts? {loc?: string, level?: number, thread?: number, title?: string}
+---@return nil
 function M.dump(value, opts)
     opts = opts or {}
     opts.loc = opts.loc or M.get_loc(opts.thread)
@@ -107,7 +114,7 @@ function M.dump(value, opts)
         msg,
         opts.level or vim.log.levels.INFO,
         {
-            title = "Debug: " .. opts.loc,
+            title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
             on_open = function(win)
                 vim.wo[win].conceallevel = 3
                 vim.wo[win].concealcursor = ""
@@ -121,6 +128,7 @@ function M.dump(value, opts)
     )
 end
 
+---@class Log.Config
 local default_config = {
     -- Name of the plugin. Prepended to log messages
     plugin = "nvim",
@@ -169,13 +177,14 @@ M.qf_config = (function()
     end
 end)()
 
----@return fun(): table
+---@return fun(fname: string): table
 M.file_config = (function()
     local file_config
-    return function()
+    return function(fname)
         if not file_config then
             file_config = D.tbl_clone(default_config)
         end
+        file_config.plugin = fname
         file_config.use_file = true
         file_config.use_console = false
 
@@ -186,10 +195,14 @@ M.file_config = (function()
     end
 end)()
 
----logger.info("these", "are", "separated")
----logger.fmt_info("These are %s strings", "formatted")
----logger.lazy_info(expensive_to_calculate)
----logger.file_info("do not print")
+---# Examples
+---```lua
+---  logger.info("these", "are", "separated")
+---  logger.fmt_info("These are %s strings", "formatted")
+---  logger.lazy_info(expensive_to_calculate)
+---  logger.file_info("do not print")
+---```
+---@class Logger
 M.logger =
     setmetatable(
         {

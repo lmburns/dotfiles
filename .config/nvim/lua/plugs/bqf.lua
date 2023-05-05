@@ -42,7 +42,7 @@ local function trap_cleanup(qwinid)
                 cleanup_preview_bufs(qwinid)
                 traps[qwinid] = nil
             end,
-            desc = "Clean up quickfix preview buffers"
+            desc = "Clean up quickfix preview buffers",
         }
     )
 end
@@ -56,28 +56,21 @@ end
 local function preview_fugitive(bufnr, ...)
     local debounced
     if not debounced then
-        debounced =
-            debounce:new(
-            function(bufnr, qwinid, bufname)
-                if not api.nvim_buf_is_loaded(bufnr) then
-                    api.nvim_buf_call(
-                        bufnr,
-                        function()
-                            cmd(("doau fugitive BufReadCmd %s"):format(bufname))
-                        end
-                    )
-                end
+        debounced = debounce:new(function(bufnr, qwinid, bufname)
+            if not api.nvim_buf_is_loaded(bufnr) then
+                api.nvim_buf_call(bufnr, function()
+                    cmd(("doau fugitive BufReadCmd %s"):format(bufname))
+                end)
+            end
 
-                require("bqf.preview.handler").open(qwinid, nil, true)
-                local fbufnr = require("bqf.preview.session").floatBufnr()
-                if not fbufnr then
-                    return
-                end
-                vim.bo[fbufnr].ft = "git"
-                register_preview_buf(qwinid, bufnr)
-            end,
-            10
-        )
+            require("bqf.preview.handler").open(qwinid, nil, true)
+            local fbufnr = require("bqf.preview.session").floatBufnr()
+            if not fbufnr then
+                return
+            end
+            vim.bo[fbufnr].ft = "git"
+            register_preview_buf(qwinid, bufnr)
+        end, 10)
     end
 
     if api.nvim_buf_is_loaded(bufnr) then
@@ -112,7 +105,7 @@ function M.setup()
                         return preview_fugitive(bufnr, qwinid, bufname)
                     end
                     return ret
-                end
+                end,
             },
             func_map = {
                 open = "<CR>",
@@ -122,7 +115,7 @@ function M.setup()
                 vsplit = "<C-v>",
                 tab = "t",
                 tabb = "T",
-                tabc = "",
+                tabc = "<M-t>",
                 tabdrop = "<C-t>",
                 ptogglemode = "z,",
                 ptoggleitem = "p",
@@ -142,7 +135,7 @@ function M.setup()
                 sclear = "z<Tab>",
                 filter = "zn",
                 filterr = "zN",
-                fzffilter = "zf"
+                fzffilter = "zf",
             },
             filter = {
                 fzf = {
@@ -152,11 +145,11 @@ function M.setup()
                         ["ctrl-t"] = "tab drop",
                         ["ctrl-x"] = "",
                         ["ctrl-q"] = "signtoggle",
-                        ["ctrl-c"] = "closeall"
+                        ["ctrl-c"] = "closeall",
                     },
-                    extra_opts = {"--delimiter", "│", "--bind", "alt-a:toggle-all"}
-                }
-            }
+                    extra_opts = {"--delimiter", "│", "--bind", "alt-a:toggle-all"},
+                },
+            },
         }
     )
 end

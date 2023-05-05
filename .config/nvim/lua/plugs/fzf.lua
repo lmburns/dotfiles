@@ -693,7 +693,7 @@ local function init()
                 [[:lua require('common.gittool').root_exe('GFiles')<CR>]],
                 "GFiles Git (fzf)"
             },
-            ["<Leader>fi"] = {
+            ["<Leader>fz"] = {
                 [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],
                 "Files Git (fzf)"
             },

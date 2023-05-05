@@ -1,3 +1,7 @@
+---@module "plugs.coc"
+---@author "lmburns"
+---@license BSD3
+
 local M = {}
 
 -- local mpi = require("common.api")
@@ -14,7 +18,7 @@ local augroup = mpi.augroup
 local W = require("common.api.win")
 
 local wk = require("which-key")
----@module "promise-async"
+---@type Promise
 local promise = require("promise")
 
 local fn = vim.fn
@@ -226,7 +230,7 @@ function M.getsymbol(notify)
     ret = gps.get_location()
 
     if notify then
-        vim.notify(ret, vim.log.levels.INFO, {title = "Location"})
+        log.info(ret, {title = "Location"})
         return
     end
     return ret
@@ -247,8 +251,7 @@ function M.go2def()
             log.warn("Go to reference timeout")
         else
             local cword = fn.expand("<cword>")
-            if
-                not pcall(
+            if not pcall(
                     function()
                         local wv = W.win_save_positions()
                         cmd.ltag(cword)
@@ -604,13 +607,14 @@ end
 
 function M.scroll_insert(right)
     if
-        #fn["coc#float#get_float_win_list"]() > 0 and fn["coc#pum#visible"]() == 0 and
-        api.nvim_get_current_win() ~= g.coc_last_float_win
+        #fn["coc#float#get_float_win_list"]() > 0
+        and fn["coc#pum#visible"]() == 0
+        and api.nvim_get_current_win() ~= g.coc_last_float_win
     then
         return fn["coc#float#scroll"](right)
-    else
-        return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
     end
+
+    return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
 end
 
 ---Change the diagnostic target
@@ -837,16 +841,24 @@ function M.init()
                 require("plugs.coc").diagnostics_tracker()
             end,
         },
-        -- {
-        --     event = "BufEnter",
-        --     pattern = "*",
-        --     command = function(args)
-        --         local bufnr = args.buf
-        --         require("plugs.coc").diagnostics_tracker()
-        --         vim.b[bufnr].coc_trim_trailing_whitespace = 1
-        --         vim.b[bufnr].coc_trim_final_newlines = 1
-        --     end
-        -- },
+        {
+            event = "BufEnter",
+            pattern = "*",
+            command = function(a)
+                local bufnr = a.buf
+                -- require("plugs.coc").diagnostics_tracker()
+                -- vim.b[bufnr].coc_trim_trailing_whitespace = 1
+                -- vim.b[bufnr].coc_trim_final_newlines = 1
+
+                if vim.bo[bufnr].ft == "coctree" and fn.winnr("$") == 1 then
+                    if fn.tabpagenr("$") ~= 1 then
+                        cmd.close()
+                    else
+                        cmd.bdelete()
+                    end
+                end
+            end,
+        },
         -- {
         --     event = "CursorHold",
         --     pattern = "*",
@@ -1027,7 +1039,6 @@ function M.init()
             ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
             ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
             ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type def"},
-            ["gY"] = {":call CocActionAsync('jumpDefinition', 'drop')<CR>", "Goto definition"},
             ["gi"] = {
                 ":call CocActionAsync('jumpImplementation', 'drop')<CR>",
                 "Goto implementation",
@@ -1060,7 +1071,8 @@ function M.init()
                 ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
                 "Coc toggle diagnostic target",
             },
-            ["<Leader>jo"] = {"<Cmd>DiagnosticToggleBuffer<CR>", "Coc toggle diagnostics"},
+            ["<Leader>jo"] = {"<Cmd>CocDiagnosticsToggleBuf<CR>", "Coc toggle diagnostics"},
+            ["<Leader>jd"] = {"<Cmd>CocDisable<CR>", "Coc disable"},
             ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
             ["<Leader>rf"] = {":call CocAction('refactor')<CR>", "Coc refactor"},
             ["<Leader>rp"] = {"<Plug>(coc-command-repeat)", "Coc repeat"},

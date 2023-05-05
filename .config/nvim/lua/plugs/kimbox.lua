@@ -10,7 +10,6 @@ local D = require("dev")
 local cmd = vim.cmd
 local g = vim.g
 local uv = vim.loop
-local dirs = require("common.global").dirs
 
 -- General configurations for various themes
 
@@ -235,7 +234,7 @@ M.nightfox = function()
     nightfox.setup(
         {
             options = {
-                compile_path = dirs.cache .. "/nightfox",
+                compile_path = lb.dirs.cache .. "/nightfox",
                 compile_file_suffix = "_compiled", -- Compiled file suffix
                 transparent = false, -- Disable setting background
                 terminal_colors = true, -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
@@ -579,12 +578,12 @@ end
 
 -- === Kimbox ===
 M.kimbox = function()
+    cmd.packadd("kimbox")
     local kimbox = D.npcall(require, "kimbox")
     if not kimbox then
         return
     end
 
-    cmd.packadd("kimbox")
     kimbox.setup(
         {
             style = "ocean",
@@ -599,7 +598,7 @@ M.kimbox = function()
                 background = false -- use background color for pmenu
             },
             toggle_style_key = "<Leader>tS",
-            toggle_style_list = require("kimbox").bgs_list
+            toggle_style_list = require("kimbox").KimboxBgColors
         }
     )
     -- require("kimbox").load()
@@ -608,29 +607,29 @@ end
 local function init()
     local colorscheme = cmd.colorscheme
 
-    nvim.autocmd.LushTheme = {
-        event = "BufWritePost",
-        pattern = "*/lua/lush_theme/*.lua",
-        command = function()
-            require("plugs.lush").write_post()
-        end
-    }
+    -- nvim.autocmd.LushTheme = {
+    --     event = "BufWritePost",
+    --     pattern = "*/lua/lush_theme/*.lua",
+    --     command = function()
+    --         require("plugs.lush").write_post()
+    --     end
+    -- }
 
     M.kimbox()
 
     M.catppuccin()
-    M.edge()
-    M.everforest()
-    M.gruvbox()
-    M.gruvbox_flat()
     M.kanagawa()
-    M.material()
-    M.meliora()
-    M.miramare()
-    M.nightfox()
-    M.oceanic_material()
-    M.rose_pine()
     M.tokyodark()
+    -- M.edge()
+    -- M.everforest()
+    -- M.gruvbox()
+    -- M.gruvbox_flat()
+    -- M.material()
+    -- M.meliora()
+    -- M.miramare()
+    -- M.nightfox()
+    -- M.oceanic_material()
+    -- M.rose_pine()
     -- M.nightfly()
     -- M.onenord()
     -- M.tokyonight()
@@ -657,14 +656,15 @@ local function init()
     -- local theme = "tundra"
     -- local theme = "kanagawa"
     local theme = "kimbox"
+    pcall(colorscheme, theme)
 
-    if not pcall(colorscheme, theme) then
-        if uv.fs_stat(("%s/%s/%s.lua"):format(dirs.config, "lua/lush_theme", theme)) then
-            require("plugs.lush").dump(theme)
-        -- else
-        --     log.err("theme file does not exist")
-        end
-    end
+    -- if not pcall(colorscheme, theme) then
+    --     if uv.fs_stat(("%s/%s/%s.lua"):format(lb.dirs.config, "lua/lush_theme", theme)) then
+    --         require("plugs.lush").dump(theme)
+    --     -- else
+    --     --     log.err("theme file does not exist")
+    --     end
+    -- end
 end
 
 init()

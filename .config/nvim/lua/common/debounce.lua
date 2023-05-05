@@ -1,29 +1,30 @@
 local uv = vim.loop
 local F = vim.F
 
----@class Debounce
+---@generic T
+---@class Debounce<T>
 ---@field timer userdata|nil
----@field fn function
----@field args table
+---@field fn fun(...: any) fun(...: T)
+---@field args any[] T[]
 ---@field wait number
 ---@field leading? boolean
+---@operator call():nil
+---@overload fun(fn: fun(...: any), wait: number, leading?: boolean): Debounce
 local Debounce = {}
 
 ---Create a new `Debounce` instance
----@param fn function
+---@generic T
+---@param fn fun(...: T[])
 ---@param wait number
 ---@param leading? boolean
----@return Debounce
+---@return Debounce<T>
 function Debounce:new(fn, wait, leading)
-    vim.validate(
-        {
-            fn = {fn, "function"},
-            wait = {wait, "number"},
-            leading = {leading, "boolean", true}
-        }
-    )
-    local obj = {}
-    setmetatable(obj, self)
+    vim.validate({
+        fn = {fn, "function"},
+        wait = {wait, "number"},
+        leading = {leading, "boolean", true},
+    })
+    local obj = setmetatable({}, self)
     obj.timer = nil
     obj.fn = vim.schedule_wrap(fn)
     obj.args = nil
@@ -33,11 +34,12 @@ function Debounce:new(fn, wait, leading)
 end
 
 ---Execute the function
----@vararg any
+---@param ... any
 function Debounce:call(...)
     local timer = self.timer
     self.args = {...}
     if not timer then
+        ---@type userdata
         timer = uv.new_timer()
         self.timer = timer
         local wait = self.wait
@@ -88,6 +90,7 @@ end
 ---calls `Debounce:call()` bound to the original instance.
 ---
 ---Useful for using Debounce with an API that doesn't accept callable tables.
+---@return fun(...)
 function Debounce:ref()
     return function(...)
         self:call(...)
@@ -99,9 +102,6 @@ Debounce.__call = Debounce.call
 
 ---Calling this module will create a new `Debounce` instance
 ---Calling the returned value of the aforementioned call will call `Debouce.call`
-return setmetatable(
-    Debounce,
-    {
-        __call = Debounce.new
-    }
-)
+return setmetatable(Debounce, {
+    __call = Debounce.new,
+})

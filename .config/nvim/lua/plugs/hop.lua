@@ -9,7 +9,7 @@ end
 local mpi = require("common.api")
 local map = mpi.map
 
-local hint_direction = require("hop.hint").HintDirection
+local hdir = require("hop.hint").HintDirection
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -17,7 +17,7 @@ local api = vim.api
 
 -- =============================== Hop ================================
 function M.setup()
-    hop.setup({keys = "abcdefghijklmnopqrstuvwxyz;',."})
+    hop.setup({keys = "abcdefghijklmnopqrstuvwxyz;'"})
 end
 
 ---Setup nvim-treehopper
@@ -54,7 +54,7 @@ local function repeatable_hop(chars)
             builtin_targets.regex_by_case_searching(
                 chars,
                 true,
-                {direction = hint_direction.AFTER_CURSOR, current_line_only = true}
+                {direction = hdir.AFTER_CURSOR, current_line_only = true}
             )
         ),
         hop.opts
@@ -100,21 +100,66 @@ local function init()
     M.setup()
     M.setup_treehopper()
 
-    -- map("n", "<Leader><Leader>k", ":HopLineBC<CR>")
-    -- map("n", "<Leader><Leader>j", ":HopLineAC<CR>")
     map("n", "<Leader><Leader>k", ":HopLineStartBC<CR>")
     map("n", "<Leader><Leader>j", ":HopLineStartAC<CR>")
 
     map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>", {desc = "Hop current line AC"})
     map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>", {desc = "Hop current line BC"})
-    map("n", "<Leader><Leader>K", ":HopWordBC<CR>", {desc = "Hop any word BC"})
-    map("n", "<Leader><Leader>J", ":HopWordAC<CR>", {desc = "Hop any word AC"})
-    map("n", "<Leader><Leader>/", ":HopPattern<CR>", {desc = "Hop pattern"})
-    -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
-    map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
 
-    map("n", "g(", "require'hop'.hint_patterns({}, '(')", {desc = "Previous brace", luacmd = true})
-    map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Next brace", luacmd = true})
+    -- map("n", "<Leader><Leader>K", ":HopWordBC<CR>", {desc = "Hop any word BC"})
+    -- map("n", "<Leader><Leader>J", ":HopWordAC<CR>", {desc = "Hop any word AC"})
+    -- map("n", "<Leader><Leader>/", ":HopPattern<CR>", {desc = "Hop pattern"})
+    -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
+
+    -- map("n", "g[", ":HopVertical<CR>", {desc = "Hop vertical"})
+    map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
+    map("n", ";a", ":HopWordMW<CR>", {desc = "Hop any word"})
+
+    -- map("n", "g(", "require'hop'.hint_patterns({}, '(')", {desc = "Hop left brace", luacmd = true})
+    -- map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Hop right brace", luacmd = true})
+    -- map("n", "g{", "require'hop'.hint_patterns({}, '{')", {desc = "Hop left cbrace", luacmd = true})
+    -- map("n", "g}", "require'hop'.hint_patterns({}, '}')", {desc = "Hop right cbrace", luacmd = true})
+
+    map(
+        "n",
+        "g(",
+        D.ithunk(
+            hop.hint_patterns,
+            {direction = hdir.BEFORE_CURSOR},
+            "("
+        ),
+        {desc = "Hop prev brace"}
+    )
+    map(
+        "n",
+        "g)",
+        D.ithunk(
+            hop.hint_patterns,
+            {direction = hdir.AFTER_CURSOR},
+            ")"
+        ),
+        {desc = "Hop next brace"}
+    )
+    map(
+        "n",
+        "g{",
+        D.ithunk(
+            hop.hint_patterns,
+            {direction = hdir.BEFORE_CURSOR},
+            "{"
+        ),
+        {desc = "Hop prev cbrace"}
+    )
+    map(
+        "n",
+        "g}",
+        D.ithunk(
+            hop.hint_patterns,
+            {direction = hdir.AFTER_CURSOR},
+            "}"
+        ),
+        {desc = "Hop next cbrace"}
+    )
 
     -- ========================== f-Mapping ==========================
 
@@ -124,66 +169,55 @@ local function init()
     map(
         "n",
         "f",
-        function()
-            hop.hint_char1({direction = hint_direction.AFTER_CURSOR, current_line_only = true})
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+        })
     )
-
-    -- Normal
     map(
         "n",
         "F",
-        function()
-            hop.hint_char1({direction = hint_direction.BEFORE_CURSOR, current_line_only = true})
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+        })
     )
 
     -- Motions
     map(
         "o",
         "f",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true,
-                    inclusive_jump = true
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+            inclusive_jump = true,
+        })
     )
-
-    -- Motions
     map(
         "o",
         "F",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true
-                    -- inclusive_jump = true
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+        })
     )
 
     -- Visual mode
     map(
         "x",
         "f",
-        function()
-            hop.hint_char1({direction = hint_direction.AFTER_CURSOR, current_line_only = true})
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+        })
     )
-
-    -- Visual mode
     map(
         "x",
         "F",
-        function()
-            hop.hint_char1({direction = hint_direction.BEFORE_CURSOR, current_line_only = true})
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+        })
     )
 
     -- ========================== t-Mapping ==========================
@@ -192,95 +226,65 @@ local function init()
     map(
         "n",
         "t",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true,
-                    hint_offset = -1
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+            hint_offset = -1,
+        })
     )
-
-    -- Normal
     map(
         "n",
         "T",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true,
-                    hint_offset = 1,
-                    inclusive_jump = false
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+            hint_offset = 1,
+            inclusive_jump = false,
+        })
     )
 
     -- Motions
     map(
         "o",
         "t",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true,
-                    hint_offset = -1,
-                    inclusive_jump = false
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+            hint_offset = -1,
+            inclusive_jump = false,
+        })
     )
-
-    -- Motions
     map(
         "o",
         "T",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true,
-                    hint_offset = 1,
-                    inclusive_jump = false
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+            hint_offset = 1,
+            inclusive_jump = false,
+        })
     )
 
     -- Visual mode
     map(
         "x",
         "t",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.AFTER_CURSOR,
-                    current_line_only = true,
-                    hint_offset = -1,
-                    inclusive_jump = false
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.AFTER_CURSOR,
+            current_line_only = true,
+            hint_offset = -1,
+            inclusive_jump = false,
+        })
     )
-
-    -- Visual mode
     map(
         "x",
         "T",
-        function()
-            hop.hint_char1(
-                {
-                    direction = hint_direction.BEFORE_CURSOR,
-                    current_line_only = true,
-                    hint_offset = 1,
-                    inclusive_jump = false
-                }
-            )
-        end
+        D.ithunk(hop.hint_char1, {
+            direction = hdir.BEFORE_CURSOR,
+            current_line_only = true,
+            hint_offset = 1,
+            inclusive_jump = false,
+        })
     )
 end
 

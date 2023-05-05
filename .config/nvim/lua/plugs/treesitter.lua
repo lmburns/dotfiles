@@ -6,13 +6,12 @@ if not D.npcall(require, "nvim-treesitter") then
 end
 
 local it = D.ithunk
--- local utils = require("common.utils")
 local mpi = require("common.api")
 local map = mpi.map
 local hl = require("common.color")
+local op = require("common.op")
 
 local style = require("style")
-local colors = require("kimbox.colors")
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -21,12 +20,9 @@ local fn = vim.fn
 local api = vim.api
 local F = vim.F
 
-local custom_captures
-local ts_hl_disabled, ft_enabled
-local ts_indent_disabled, indent_enabled
-local queries
-local parsers
-local configs
+---@type TSPlugin
+local ts
+local queries, parsers, configs
 
 local context_vt_max_lines = 2000
 
@@ -61,7 +57,7 @@ function M.hijack_synset()
     local bytes = api.nvim_buf_get_offset(bufnr, lcount)
 
     if bytes / lcount < 500 then
-        if ft_enabled[ft] then
+        if ts.enable.ft[ft] then
             configs.reattach_module("highlight", bufnr)
             vim.defer_fn(
                 function()
@@ -83,49 +79,47 @@ M.setup_gps = function()
         return
     end
 
-    gps.setup(
-        {
-            enabled = true,
-            disable_icons = false,
-            icons = {
-                ["action-name"] = " ",
-                ["array-name"] = " ",
-                ["augment-path"] = " ",
-                ["boolean-name"] = "ﰰﰴ ",
-                ["class-name"] = " ",
-                ["container-name"] = "ﮅ ", -- 
-                ["date-name"] = " ",
-                ["date-time-name"] = " ",
-                ["float-name"] = " ",
-                ["function-name"] = " ",
-                ["grouping-name"] = " ",
-                ["hook-name"] = "ﯠ ",
-                ["identity-name"] = " ",
-                ["inline-table-name"] = " ",
-                ["integer-name"] = "# ", -- 
-                ["label-name"] = " ",
-                ["leaf-list-name"] = " ",
-                ["leaf-name"] = " ",
-                ["list-name"] = " ",
-                ["mapping-name"] = " ",
-                ["method-name"] = " ",
-                ["module-name"] = " ", -- 
-                ["null-name"] = "[] ",
-                ["number-name"] = "# ",
-                ["object-name"] = " ",
-                ["sequence-name"] = " ",
-                ["string-name"] = " ",
-                ["table-name"] = " ",
-                ["tag-name"] = "炙",
-                ["time-name"] = " ",
-                ["title-name"] = "# ",
-                ["typedef-name"] = " ",
-            },
-            separator = " » ", --  淪輪‣ »
-            depth = 4,
-            depth_limit_indicator = "..",
-        }
-    )
+    gps.setup({
+        enabled = true,
+        disable_icons = false,
+        icons = {
+            ["action-name"] = " ",
+            ["array-name"] = " ",
+            ["augment-path"] = " ",
+            ["boolean-name"] = "ﰰﰴ ",
+            ["class-name"] = " ",
+            ["container-name"] = "ﮅ ",   -- 
+            ["date-name"] = " ",
+            ["date-time-name"] = " ",
+            ["float-name"] = " ",
+            ["function-name"] = " ",
+            ["grouping-name"] = " ",
+            ["hook-name"] = "ﯠ ",
+            ["identity-name"] = " ",
+            ["inline-table-name"] = " ",
+            ["integer-name"] = "# ",     -- 
+            ["label-name"] = " ",
+            ["leaf-list-name"] = " ",
+            ["leaf-name"] = " ",
+            ["list-name"] = " ",
+            ["mapping-name"] = " ",
+            ["method-name"] = " ",
+            ["module-name"] = " ",   -- 
+            ["null-name"] = "[] ",
+            ["number-name"] = "# ",
+            ["object-name"] = " ",
+            ["sequence-name"] = " ",
+            ["string-name"] = " ",
+            ["table-name"] = " ",
+            ["tag-name"] = "炙",
+            ["time-name"] = " ",
+            ["title-name"] = "# ",
+            ["typedef-name"] = " ",
+        },
+        separator = " » ",    --  淪輪‣ »
+        depth = 4,
+        depth_limit_indicator = "..",
+    })
 end
 
 ---Setup `hlargs.nvim`
@@ -216,6 +210,7 @@ M.setup_iswap = function()
         return
     end
 
+    local colors = require("kimbox.colors")
     hl.set("ISwapSwap", {bg = colors.oni_violet})
 
     iswap.setup{
@@ -256,6 +251,7 @@ M.setup_autotag = function()
             "phtml",
             "javascript",
             "javascriptreact",
+            "typescript",
             "typescriptreact",
             "svelte",
             "vue",
@@ -330,18 +326,19 @@ M.setup_aerial = function()
             --   unsupported   - close aerial when attaching to a buffer that has no symbol source
             close_automatic_events = {},
             -- Set to false to remove the default keybindings for the aerial buffer
-            default_bindings = true,
+            -- default_bindings = true,
 
             -- Keymaps in aerial window. Can be any value that `vim.keymap.set` accepts OR a table of keymap
             -- options with a `callback` (e.g. { callback = function() ... end, desc = "", nowait = true })
             -- Additionally, if it is a string that matches "actions.<name>",
             -- it will use the mapping at require("aerial.actions").<name>
-            -- keymaps = {},
-            --
-            -- Set to `false` to remove a keymap
+            keymaps = {
+                ["<"] = "actions.tree_decrease_fold_level",
+                [">"] = "actions.tree_increase_fold_level",
+            },
             -- When true, don't load aerial until a command or function is called
             -- Defaults to true, unless `on_attach` is provided, then it defaults to false
-            lazy_load = true,
+            lazy_load = false,
             -- Disable aerial on files with this many lines
             disable_max_lines = 10000,
             -- Disable aerial on files this size or larger (in bytes)
@@ -424,10 +421,13 @@ M.setup_aerial = function()
             },
             -- Use symbol tree for folding. Set to true or false to enable/disable
             -- 'auto' will manage folds if your previous foldmethod was 'manual'
-            manage_folds = true,
+            -- manage_folds = true,
+            manage_folds = {
+                ["_"] = true,
+            },
             -- When you fold code with za, zo, or zc, update the aerial tree as well.
             -- Only works when manage_folds = true
-            link_folds_to_tree = false,
+            link_folds_to_tree = true,
             -- Fold code when you open/collapse symbols in the tree.
             -- Only works when manage_folds = true
             link_tree_to_folds = true,
@@ -554,6 +554,8 @@ M.setup_aerial = function()
     -- require("telescope").load_extension("aerial")
 end
 
+--  ══════════════════════════════════════════════════════════════════════
+
 ---Setup `nvim_context_vt`
 M.setup_context_vt = function()
     cmd.packadd("nvim_context_vt")
@@ -626,9 +628,9 @@ M.setup_context_vt = function()
     )
 end
 
---  ╭────────────────────╮
---  │ syntax-tree-surfer │
---  ╰────────────────────╯
+--  ══════════════════════════════════════════════════════════════════════
+
+---Setup `syntax-tree-surfer`
 M.setup_treesurfer = function()
     cmd.packadd("syntax-tree-surfer")
     local sts = D.npcall(require, "syntax-tree-surfer")
@@ -642,206 +644,152 @@ M.setup_treesurfer = function()
         "VarDecl", -- zig Variable declaration
     }
 
-    local default =
-        _t(
-            {
-                "function",
-                "arrow_function",
-                "function_definition",
-                "function_declaration",
-                "function_item",
-                "FnProto", -- zig Function
-                "method_definition",
-                "macro_definition",
-                "closure_expression",
-                "IfPrefix", -- zig If
-                "if_statement",
-                "if_expression",
-                "if_let_expression",
-                "else_clause",
-                "else_statement",
-                "elseif_statement",
-                "ForPrefix", -- zig For
-                "for_statement",
-                "for_expression",
-                "while_statement",
-                "SwitchExpr", -- zig Switch
-                "SwitchCase", -- zig Switch else
-                "switch_statement",
-                "match_expression",
-                "struct_item",
-                "enum_item",
-                "interface_declaration",
-                "class_declaration",
-                "class_name",
-                "impl_item",
-                "try_statement",
-                "catch_clause",
-                "ContainerDecl",
-            }
-        )
+    local default = _t({
+        "function",
+        "arrow_function",
+        "function_definition",
+        "function_declaration",
+        "function_item",
+        "FnProto", -- zig Function
+        "method_definition",
+        "macro_definition",
+        "closure_expression",
+        "IfPrefix", -- zig If
+        "if_statement",
+        "if_expression",
+        "if_let_expression",
+        "else_clause",
+        "else_statement",
+        "elseif_statement",
+        "ForPrefix", -- zig For
+        "for_statement",
+        "for_expression",
+        "while_statement",
+        "SwitchExpr", -- zig Switch
+        "SwitchCase", -- zig Switch else
+        "switch_statement",
+        "match_expression",
+        "struct_item",
+        "enum_item",
+        "interface_declaration",
+        "class_declaration",
+        "class_name",
+        "impl_item",
+        "try_statement",
+        "catch_clause",
+        "ContainerDecl",
+    })
 
-    local filter =
-        default:merge(
-            {
-                -- "function_call",
-                "field_declaration", -- rust struct
-                "enum_variant",      -- rust enum
-            }
-        )
+    local filter = default:merge({
+        -- "function_call",
+        "field_declaration", -- rust struct
+        "enum_variant",      -- rust enum
+    })
 
-    sts.setup(
-        {
-            highlight_group = "STS_highlight", -- HopNextKey
-            disable_no_instance_found_report = false,
-            default_desired_types = default,
-            left_hand_side = "fdsawervcxqtzb",
-            right_hand_side = "jkl;oiu.,mpy/n",
-            icon_dictionary = {
-                ["if_statement"] = "",
-                ["if_expression"] = "",
-                ["if_let_expression"] = "",
-                ["IfPrefix"] = "", -- zig If
-                ["else_clause"] = "",
-                ["else_statement"] = "",
-                ["elseif_statement"] = "",
-                ["ForPrefix"] = "", -- zig For
-                ["for_statement"] = "",
-                ["for_expression"] = "",
-                ["while_statement"] = "菱",
-                ["SwitchExpr"] = "", -- zig Switch
-                ["SwitchCase"] = "", -- zig Switch else
-                ["switch_statement"] = "",
-                ["match_expression"] = "",
-                ["macro_definition"] = "",
-                ["closure_expression"] = "",
-                ["function_item"] = "",
-                ["function_definition"] = "",
-                ["function"] = "",
-                ["FnProto"] = "", -- zig Function
-                ["arrow_function"] = "",
-                ["method_definition"] = "",
-                ["variable_declaration"] = "",
-                ["let_declaration"] = "",
-                ["VarDecl"] = "",     -- zig Variable Declaration
-                ["ContainerDecl"] = "פּ", -- zig Enum/Struct
-                ["struct_item"] = "פּ",
-                ["enum_item"] = "",
-                ["enum_variant"] = "",
-                ["field_declaration"] = "",
-                ["interface_declaration"] = "",
-                ["class_declaration"] = "",
-                ["class_name"] = "",
-                ["impl_item"] = "ﴯ",
-                ["try_statement"] = "",
-                ["catch_clause"] = "",
-            },
-        }
-    )
+    sts.setup({
+        highlight_group = "STS_highlight", -- HopNextKey
+        disable_no_instance_found_report = false,
+        default_desired_types = default,
+        left_hand_side = "fdsawervcxqtzb",
+        right_hand_side = "jkl;oiu.,mpy/n",
+        icon_dictionary = {
+            ["if_statement"] = "",
+            ["if_expression"] = "",
+            ["if_let_expression"] = "",
+            ["IfPrefix"] = "", -- zig If
+            ["else_clause"] = "",
+            ["else_statement"] = "",
+            ["elseif_statement"] = "",
+            ["ForPrefix"] = "", -- zig For
+            ["for_statement"] = "",
+            ["for_expression"] = "",
+            ["while_statement"] = "菱",
+            ["SwitchExpr"] = "", -- zig Switch
+            ["SwitchCase"] = "", -- zig Switch else
+            ["switch_statement"] = "",
+            ["match_expression"] = "",
+            ["macro_definition"] = "",
+            ["closure_expression"] = "",
+            ["function_item"] = "",
+            ["function_definition"] = "",
+            ["function"] = "",
+            ["FnProto"] = "", -- zig Function
+            ["arrow_function"] = "",
+            ["method_definition"] = "",
+            ["variable_declaration"] = "",
+            ["let_declaration"] = "",
+            ["VarDecl"] = "",     -- zig Variable Declaration
+            ["ContainerDecl"] = "פּ", -- zig Enum/Struct
+            ["struct_item"] = "פּ",
+            ["enum_item"] = "",
+            ["enum_variant"] = "",
+            ["field_declaration"] = "",
+            ["interface_declaration"] = "",
+            ["class_declaration"] = "",
+            ["class_name"] = "",
+            ["impl_item"] = "ﴯ",
+            ["try_statement"] = "",
+            ["catch_clause"] = "",
+        },
+    })
 
     -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
-    map("n", "<C-A-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
-    map("n", "<C-A-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
-    map("n", "<C-A-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
+    map("n", "<C-M-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
+
+    map("n", "<C-M-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
+    map("n", "<C-M-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
     map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
     map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
-
     map("n", "<M-S-{>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
     map("n", "<M-S-}>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 
     map(
         "n",
         "vu",
-        function()
-            vim.opt.opfunc = "v:lua.STSSwapUpNormal_Dot"
-            return "g@l"
-        end,
-        {silent = true, expr = true, desc = "Swap node up"}
+        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node up"}
     )
 
     map(
         "n",
         "vd",
-        function()
-            vim.opt.opfunc = "v:lua.STSSwapDownNormal_Dot"
-            return "g@l"
-        end,
-        {silent = true, expr = true, desc = "Swap node down"}
+        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node down"}
     )
 
     map(
         "n",
         "vD",
-        function()
-            vim.opt.opfunc = "v:lua.STSSwapCurrentNodeNextNormal_Dot"
-            return "g@l"
-        end,
-        {silent = true, expr = true, desc = "Swap cursor node w/ next sibling"}
+        it(op.operator, {cb = "v:lua.STSSwapCurrentNodeNextNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap cursor node w/ next sibling"}
     )
 
     map(
         "n",
         "vU",
-        function()
-            vim.opt.opfunc = "v:lua.STSSwapCurrentNodePrevNormal_Dot"
-            return "g@l"
-        end,
-        {silent = true, expr = true, desc = "Swap cursor node w/ prev sibling"}
+        it(op.operator, {cb = "v:lua.STSSwapCurrentNodePrevNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap cursor node w/ prev sibling"}
     )
 
-    -- map("n", "vd", '<cmd>lua require("syntax-tree-surfer").move("n", false)<cr>', {desc = "Swap next node"})
-    -- map("n", "vu", '<cmd>lua require("syntax-tree-surfer").move("n", true)<cr>', {desc = "Swap previous node"})
+    -- map("n", "vd", it(sts.move, "n", false), {desc = "Swap next node"})
+    -- map("n", "vu", it(sts.move, "n", true), {desc = "Swap prev node"})
 
-    map("n", "vn", '<cmd>lua require("syntax-tree-surfer").select()<cr>', {desc = "Select node"})
-    map(
-        "n",
-        "vm",
-        '<cmd>lua require("syntax-tree-surfer").select_current_node()<cr>',
-        {desc = "Select current node"}
-    )
+    map("n", "vj", it(sts.select), {desc = "Select node"})
+    map("n", "vk", it(sts.select_current_node), {desc = "Select current node"})
+    map("n", "vh", it(sts.select_master_node), {desc = "Select master node"})
 
-    map(
-        "x",
-        "<A-]>",
-        '<cmd>lua require("syntax-tree-surfer").surf("next", "visual")<cr>',
-        {desc = "Next node"}
-    )
-    map(
-        "x",
-        "<A-[>",
-        '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual")<cr>',
-        {desc = "Prev node"}
-    )
-    map(
-        "x",
-        "<C-k>",
-        '<cmd>lua require("syntax-tree-surfer").surf("parent", "visual")<cr>',
-        {desc = "Parent node"}
-    )
-    map(
-        "x",
-        "<C-j>",
-        '<cmd>lua require("syntax-tree-surfer").surf("child", "visual")<cr>',
-        {desc = "Child node"}
-    )
+    map("x", "<A-]>", it(sts.surf, "next", "visual"), {desc = "Next node"})
+    map("x", "<A-[>", it(sts.surf, "prev", "visual"), {desc = "Prev node"})
+    map("x", "<C-k>", it(sts.surf, "parent", "visual"), {desc = "Parent node"})
+    map("x", "<C-j>", it(sts.surf, "child", "visual"), {desc = "Child node"})
 
-    map(
-        "x",
-        "<C-A-]>",
-        '<cmd>lua require("syntax-tree-surfer").surf("next", "visual", true)<cr>',
-        {desc = "Swap next node"}
-    )
-    map(
-        "x",
-        "<C-A-[>",
-        '<cmd>lua require("syntax-tree-surfer").surf("prev", "visual", true)<cr>',
-        {desc = "Swap previous node"}
-    )
+    map("x", "<C-A-]>", it(sts.surf, "next", "visual", true), {desc = "Swap next node"})
+    map("x", "<C-A-[>", it(sts.surf, "prev", "visual", true), {desc = "Swap prev node"})
 end
 
---  ╭──────────────────────────────────────────────────────────╮
---  │                          TreeSJ                          │
---  ╰──────────────────────────────────────────────────────────╯
+--  ══════════════════════════════════════════════════════════════════════
+
+---Setup `treesj`
 M.setup_treesj = function()
     cmd.packadd("treesj")
     local tsj = D.npcall(require, "treesj")
@@ -853,11 +801,10 @@ M.setup_treesj = function()
     local lu = require("treesj.langs.utils")
 
     -- lu.merge_preset(langs.lua, {})
-
     langs.presets["lua"] = nil
 
     local langs_t = {
-        unpack(langs.presets),
+        -- unpack(langs.presets),
         lua = {
             table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
             arguments = lu.set_preset_for_args({
@@ -935,27 +882,69 @@ M.setup_treesj = function()
     map("n", "gK", D.ithunk(tsj.join), {desc = "Spread: combine"})
     map("n", "gS", D.ithunk(tsj.toggle), {desc = "Spread: toggle"})
 
-    -- map(
-    --     "n",
-    --     "gJ",
-    --     F.if_expr(ft_enabled[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
-    --     {desc = "Spread: out"}
-    -- )
-    -- map(
-    --     "n",
-    --     "gS",
-    --     F.if_expr(ft_enabled[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
-    --     {desc = "Spread: out"}
-    -- )
+    -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
+    -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
 end
 
----Setup treesitter
----@return TSConfig
+--  ══════════════════════════════════════════════════════════════════════
+
+---Setup `query-secretary`
+M.setup_query_secretary = function()
+    cmd.packadd("query-secretary")
+    local qs = D.npcall(require, "query-secretary")
+    if not qs then
+        return
+    end
+
+    qs.setup({
+        open_win_opts = {
+            row = 0,
+            col = 9999,
+            width = 50,
+            height = 15,
+        },
+        buf_set_opts = {
+            tabstop = 2,
+            softtabstop = 2,
+            shiftwidth = 2,
+        },
+        -- when press "c"
+        capture_group_names = {"cap", "second", "third"},
+        -- when press "p"
+        predicates = {"eq", "any-of", "contains", "match", "lua-match"},
+        -- when moving cursor around
+        visual_hl_group = "Visual",
+        keymaps = {
+            close = {"q", "Esc"},
+            next_predicate = {"p"},
+            previous_predicate = {"P"},
+            remove_predicate = {"d"},
+            toggle_field_name = {"f"},
+            yank_query = {"y"},
+            next_capture_group = {"c"},
+            previous_capture_group = {"C"},
+        },
+    })
+
+    map(
+        "n",
+        "<Leader>qu",
+        "require('query-secretary').query_window_initiate()",
+        {luacmd = true, desc = "Start query secretary"}
+    )
+end
+
+--  ══════════════════════════════════════════════════════════════════════
+
+---Setup `nvim-treesitter`
+---@return TSSetupConfig
 M.setup = function()
     -- local rainbow = D.npcall(require, "ts-rainbow")
     -- if not rainbow then
     --     return
     -- end
+
+    ---@type TSSetupConfig
     return {
         ensure_installed = {
             "awk",
@@ -999,6 +988,7 @@ M.setup = function()
             "lua",
             "luadoc",
             "luap",
+            "luau",
             "make",
             "markdown",
             "markdown_inline",
@@ -1042,7 +1032,7 @@ M.setup = function()
             enable = true,   -- false will disable the whole extension
             disable = function(ft, bufnr)
                 if
-                    ts_hl_disabled:contains(ft) or
+                    ts.disable.hl:contains(ft) or
                     api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines
                 then
                     return true
@@ -1065,40 +1055,32 @@ M.setup = function()
                 "jq",
                 -- "teal"
             },
-            custom_captures = custom_captures,
+            custom_captures = ts.enable.custom_captures,
         },
+        fold = {enable = false},
         autotag = {enable = true},
         autopairs = {
             enable = true,
-            disable = {
-                -- "vimdoc",
-                -- "log",
-                "comment",
-                "gitignore",
-                "git_rebase",
-                "gitattributes",
-                "markdown",
-            },
+            disable = ts.disable.autopairs,
         },
         indent = {
             enable = true,
-            disable = {"comment", "gitignore", "git_rebase", "gitattributes", "teal"},
+            disable = ts.disable.indent,
         },
-        fold = {enable = false},
         endwise = {
             enable = true,
-            disable = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
+            disable = ts.disable.endwise,
         },
         matchup = {
             enable = true,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
-            disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
+            disable = ts.disable.matchup,
         },
         playground = {
             enable = true,
-            disable = {},
+            disable = ts.disable.playground,
             updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false, -- Whether the query persists across vim sessions
             keybindings = {
@@ -1131,7 +1113,7 @@ M.setup = function()
         context_commentstring = {
             enable = true,
             enable_autocmd = false,
-            disable = {"vimdoc"},
+            disable = ts.disable.ctx_commentstr,
             config = {
                 c = {__default = "// %s", __multiline = "/* %s */"},
                 cpp = {__default = "// %s", __multiline = "/* %s */"},
@@ -1155,9 +1137,7 @@ M.setup = function()
             highlight_current_scope = {enable = false},
             smart_rename = {
                 enable = true,
-                keymaps = {
-                    smart_rename = "<A-r>", -- mapping to rename reference under cursor
-                },
+                keymaps = {smart_rename = "<A-r>"},
             },
             navigation = {
                 enable = true,
@@ -1174,15 +1154,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = context_vt_max_lines,
-            disable = {
-                "html",
-                "vimdoc",
-                "comment",
-                "gitignore",
-                "git_rebase",
-                "gitattributes",
-                "markdown",
-            },
+            disabled = ts.disable.rainbow,
             -- query = {
             --     "rainbow-parens",
             --     html = "rainbow-tags",
@@ -1222,7 +1194,7 @@ M.setup = function()
                 -- Automatically jump forward to textobj, similar to targets.vim
                 lookahead = true,
                 lookbehind = true,
-                disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
+                disable = ts.disable.textobjects.select,
                 keymaps = {
                     ["af"] = {query = "@function.outer", desc = "Around function"},
                     ["if"] = {query = "@function.inner", desc = "Inner function"},
@@ -1269,39 +1241,25 @@ M.setup = function()
             },
             -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
 
-            -- @attribute.inner
-            -- @attribute.outer
-            -- @assignment.inner
-            -- @assignment.outer
-            -- @assignment.lhs
-            -- @assignment.rhs
-            -- @block.inner
-            -- @block.outer
-            -- @call.inner
-            -- @call.outer
-            -- @class.inner
-            -- @class.outer
-            -- @comment.outer
-            -- @conditional.inner
-            -- @conditional.outer
-            -- @frame.inner
-            -- @frame.outer
-            -- @function.inner
-            -- @function.outer
-            -- @loop.inner
-            -- @loop.outer
-            -- @number.inner
-            -- @number.outer
-            -- @parameter.inner
-            -- @parameter.outer
-            -- @return.inner
-            -- @return.outer
-            -- @scopename.inner
-            -- @statement.outer
+            -- @attribute.inner   @attribute.outer
+            -- @assignment.inner  @assignment.outer
+            -- @assignment.lhs    @assignment.rhs
+            -- @block.inner       @block.outer
+            -- @call.inner        @call.outer
+            -- @class.inner       @class.outer
+            --                    @comment.outer
+            -- @conditional.inner @conditional.outer
+            -- @frame.inner       @frame.outer
+            -- @function.inner    @function.outer
+            -- @loop.inner        @loop.outer
+            -- @number.inner      @number.outer
+            -- @parameter.inner   @parameter.outer
+            -- @return.inner      @return.outer
+            -- @scopename.inner   @statement.outer
             move = {
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = {"comment", "gitignore", "git_rebase", "gitattributes"},
+                disable = ts.disable.textobjects.move,
                 -- ["]o"] = "@loop.*",
                 -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
                 goto_next_start = {
@@ -1345,6 +1303,7 @@ M.setup = function()
             },
             swap = {
                 enable = true,
+                disable = ts.disable.textobjects.swap,
                 swap_next = {
                     ["s["] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
                     -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
@@ -1397,50 +1356,83 @@ function M.install_extra_parsers()
     -- }
 end
 
--- M.setup_query_secretary = function()
---     map("n", "<Leader>qu", "require('query-secretary').query_window_initiate()", {luacmd = true})
--- end
+--  ══════════════════════════════════════════════════════════════════════
 
 local function init()
     cmd.packadd("nvim-treesitter")
     cmd.packadd("nvim-treesitter-textobjects")
 
-    custom_captures = {
-        ["require_call"] = "RequireCall",
-        ["utils"] = "Function",
-        -- ["keyword.self"] = "@variable.builtin",
-        -- ["keyword.super"] = "@variable.builtin",
-        -- ["function.bracket"] = "Type",
-        -- ["namespace.type"] = "TSNamespaceType",
-        -- ["function_definition"] = "FunctionDefinition",
-        -- ["quantifier"] = "Special",
-        -- ["code"] = "Comment",
-        -- ["rust_path"] = "String"
+    ---@class TSPlugin
+    ts = {disable = {}, enable = {}}
+
+    ---@class TSPlugin.Enable
+    ts.enable = {
+        ft = {telescope = true},
+        hl = {},
+        indent = {},
+        autopairs = {},
+        fold = {},
+        endwise = {},
+        matchup = {},
+        refactor = {},
+        rainbow = {},
+        textobjects = {
+            select = {},
+            move = {},
+            swap = {},
+        },
+        playground = {},
+        ctx_commentstr = {},
+        query_linter = {},
+        incremental_selection = {},
+        custom_captures = {
+            ["require_call"] = "RequireCall",
+            ["utils"] = "Function",
+        },
     }
 
-    ts_hl_disabled =
-        _t(
-            {
-                -- "vimdoc",
-                -- "markdown",
-                -- "css",
-                -- "PKGBUILD",
-                -- "toml",
-                "html",
-                "comment",
-                "yaml",
-                "latex",
-                "make",
-                "cmake",
-                "zsh",
-                "solidity",
-                "sxhkdrc",
-                "ini",
-                -- "perl",
-            }
-        )
-
-    ts_indent_disabled = _t({})
+    ---@class TSPlugin.Disabled
+    ts.disable = {
+        ft = {},
+        -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
+        hl = _t({
+            "cmake",
+            "comment",
+            "html",
+            "ini",
+            "latex",
+            "make",
+            "solidity",
+            "sxhkdrc",
+            "yaml",
+            "zsh",
+        }),
+        indent = {"comment", "git_rebase", "gitattributes", "gitignore", "teal"},
+        -- "vimdoc", "log",
+        autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
+        fold = {},
+        endwise = {"comment", "git_rebase", "gitattributes", "gitignore", "markdown"},
+        matchup = {"comment", "git_rebase", "gitattributes", "gitignore"},
+        refactor = {},
+        rainbow = {
+            "comment",
+            "git_rebase",
+            "gitattributes",
+            "gitignore",
+            "html",
+            "markdown",
+            "vimdoc",
+        },
+        textobjects = {
+            select = {"comment", "gitignore", "git_rebase", "gitattributes"},
+            move = {"comment", "gitignore", "git_rebase", "gitattributes"},
+            swap = {"comment", "gitignore", "git_rebase", "gitattributes"},
+        },
+        playground = {},
+        ctx_commentstr = {},
+        query_linter = {},
+        incremental_selection = {},
+    }
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
@@ -1449,24 +1441,18 @@ local function init()
     local conf = M.setup()
     configs.setup(conf)
 
-    -- require("nvim-treesitter.highlight").set_custom_captures(
-    --     {
-    --         unpack(custom_captures)
-    --     }
-    -- )
-
     -- M.setup_comment_frame()
-    -- M.setup_query_secretary()
     -- M.setup_context()
 
     -- M.setup_treesj()
     -- M.setup_iswap()
-    M.setup_ssr()
+    -- M.setup_treesurfer()
+    -- M.setup_query_secretary()
+    -- M.setup_ssr()
     M.setup_gps()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
-    M.setup_treesurfer()
     M.setup_autotag()
 
     local ts_repeat = require("nvim-treesitter.textobjects.repeatable_move")
@@ -1535,7 +1521,7 @@ local function init()
         "n",
         "<Leader>sd",
         "TSPlaygroundToggle", -- "Inspect"
-        {cmd = true, desc = "Toggle TSPlayground"}
+        {cmd = true, desc = "Playground: toggle"}
     )
     map(
         "n",
@@ -1546,19 +1532,13 @@ local function init()
 
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
-    local hl_disabled = type(cfhl) == "function" and ts_hl_disabled or cfhl
-    ft_enabled = {telescope = true}
-    indent_enabled = {}
+    local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl
     for _, lang in ipairs(conf.ensure_installed) do
         local parser = parsers.list[lang]
         local filetype = parser.filetype
 
         if not vim.tbl_contains(hl_disabled, lang) then
-            ft_enabled[filetype or lang] = true
-        end
-
-        if not vim.tbl_contains(ts_indent_disabled, lang) then
-            indent_enabled[filetype or lang] = true
+            ts.disable.ft[filetype or lang] = true
         end
     end
 
@@ -1566,7 +1546,7 @@ local function init()
     -- Need to fix lazy loading treesitter
     -- nvim.autocmd.lmb__TreesitterIndent = {
     --     event = "FileType",
-    --     pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(indent_enabled)), ","),
+    --     pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(ts.indent.enabled)), ","),
     --     command = function(args)
     --         local bufnr = args.buf
     --         vim.bo[bufnr].indentexpr = "nvim_treesitter#indent()"

@@ -1,16 +1,14 @@
---@module dev
----@description: Lowest level utility functions that will also be used in `common.utils`
-
+---@module 'dev'
+---@author 'lmburns'
+---@license 'BSD3'
+---@description Lowest level utility functions that will also be used in `common.utils`
+---@class DevL
 local M = {}
 
-local lazy = require("common.lazy")
-local utils = lazy.require_on_exported_call("common.utils")
+-- local lazy = require("common.lazy")
+-- local utils = lazy.require_on_exported_call("common.utils")
 local log = require("common.log")
 
-local fn = vim.fn
-local api = vim.api
-local uv = vim.loop
-local env = vim.env
 local F = vim.F
 
 --  ╭──────╮
@@ -58,7 +56,7 @@ end
 
 ---Return a value based on two values
 ---@generic T, V
----@param cond? boolean|fun():boolean Statement to be tested
+---@param cond boolean|nil Statement to be tested
 ---@param is_if T Return if condition is truthy
 ---@param is_else V Return if condition is not truthy
 ---@return T | V
@@ -66,9 +64,10 @@ F.if_expr = function(cond, is_if, is_else)
     return F.tern(cond, is_if, is_else, true)
 end
 
----"if else nil"
+---## if else nil
 ---Similar to `vim.F.nil` except that:
----   - an alternate default value can be given
+---   - a default value can be given
+---   - `if cond == nil then want else default`
 ---@generic T, V
 ---@param cond any Value to check if `nil`
 ---@param is_nil T Value to return if `cond` is `nil`
@@ -78,10 +77,11 @@ F.ife_nil = function(cond, is_nil, is_not_nil)
     return F.if_expr(cond == nil, is_nil, is_not_nil)
 end
 
----"if else not nil"
+---## if else not nil
 ---Similar to `vim.F.nil` except that:
----   - an alternate default value can be given
+---   - a default value can be given
 ---   - value is checked to be not nil
+---   - `if cond ~= nil then want else default`
 ---@generic T, V
 ---@param cond any Value to check if `not nil`
 ---@param is_not_nil T Value to return if `cond` is `not nil`
@@ -91,10 +91,11 @@ F.ife_nnil = function(cond, is_not_nil, is_not_not_nil)
     return F.if_expr(cond ~= nil, is_not_nil, is_not_not_nil)
 end
 
----"if else true"
+---## if else true
 ---Similar to `vim.F.nil` except that:
----   - an alternate default value can be given
+---   - a default value can be given
 ---   - value is checked to be true
+---   - `if cond == true then want else default`
 ---@generic T, V
 ---@param cond any Value to check if `true`
 ---@param is_true T Value to return if `cond` is `true`
@@ -104,10 +105,11 @@ F.ife_true = function(cond, is_true, is_not_true)
     return F.if_expr(cond == true, is_true, is_not_true)
 end
 
----"if else false"
+---## if else false
 ---Similar to `vim.F.nil` except that:
----   - an alternate default value can be given
+---   - a default value can be given
 ---   - value is checked to be false
+---   - `if cond == false then want else default`
 ---@generic T, V
 ---@param cond any Value to check if `false`
 ---@param is_false T Value to return if `cond` is `false`
@@ -117,10 +119,24 @@ F.ife_false = function(cond, is_false, is_not_false)
     return F.if_expr(cond == false, is_false, is_not_false)
 end
 
----Return a default value if `val` is nil
+---## if then
+---Return a default value if `val` is truthy
+---   - `if val then want else val`
 ---@generic T, V
----@param val T: Value to check if not `nil`
----@param default V: Default value to return if `val` is `nil`
+---@param val T value to check
+---@param thenv V default value to return if `val` is truthy
+---@return T|V
+F.if_then = function(val, thenv)
+    return F.if_expr(val, thenv, val)
+end
+
+---## if nil then
+---Return a default value if `val` is nil
+---   - `if val == nil then default else val`
+---   - `ifn_then`
+---@generic T, V
+---@param val T value to check if `nil`
+---@param default V default value to return if `val` is `nil`
 ---@return T | V
 F.unwrap_or = function(val, default)
     if type(val) ~= "table" then
@@ -135,6 +151,66 @@ F.unwrap_or = function(val, default)
     return val
 end
 
+---## if not nil then
+---Return a default value if `val` is `not nil`
+---   - `if val ~= nil then want else val`
+---   - `ifnn_then`
+---@generic T, V
+---@param val T value to check if not `nil`
+---@param is_nnil V default value to return if `val` is `not nil`
+---@return T | V
+F.nnil_or = function(val, is_nnil)
+    return F.ife_nnil(val, is_nnil, val)
+end
+
+---## if true then
+---Return a default value if `val` is `true`
+---   - `if val == true then want else val`
+---   - `ift_then`
+---@generic T, V
+---@param val T value to check if `true`
+---@param is_true V default value to return if `val` is `true`
+---@return T | V
+F.true_or = function(val, is_true)
+    return F.ife_true(val, is_true, val)
+end
+
+---## if false then
+---Return a default value if `val` is `false`
+---   - `if val == false then want else val`
+---   - `iff_then`
+---@generic T, V
+---@param val T value to check if `false`
+---@param is_false V default value to return if `val` is `false`
+---@return T | V
+F.false_or = function(val, is_false)
+    return F.ife_false(val, is_false, val)
+end
+
+---@generic T any
+---@param eq any
+---@return fun(...: T[]): T?
+local function if_fn(eq)
+    return function(...)
+        local nargs = select("#", ...)
+        for i = 1, nargs do
+            local v = select(i, ...)
+            if v == eq then
+                return v
+            end
+        end
+        return nil
+    end
+end
+
+---Returns the first argument which is true.
+---If no arguments are true, nil is returned.
+F.if_true = if_fn(true)
+
+---Returns the first argument which is false.
+---If no arguments are false, nil is returned.
+F.if_false = if_fn(false)
+
 ---Use in combination with pcall
 ---@generic T
 ---@param status boolean
@@ -142,8 +218,8 @@ end
 ---@return T?
 M.ok_or_nil = function(status, ...)
     if not status then
-        local args = {...}
-        local msg = vim.split(table.concat(args, "\n"), "\n")
+        local args = _t({...})
+        local msg = args:concat("\n"):split("\n")
         local mod = msg[1]:match("module '(%w.*)'")
         M.vec_insert(
             msg,
@@ -153,13 +229,10 @@ M.ok_or_nil = function(status, ...)
         )
         vim.schedule(
             function()
-                log.err(
-                    msg,
-                    {
-                        title = ('Failed to require("%s")'):format(mod),
-                        once = true,
-                    }
-                )
+                log.err(msg, {
+                    title = ('Failed to require("%s")'):format(mod),
+                    once = true,
+                })
             end
         )
         return
@@ -194,6 +267,44 @@ M.nil_wrap = function(fn)
     return function(...)
         return M.npcall(fn, ...)
     end
+end
+
+-- ---@overload fun(func: fun(...<T:unknown>):<R:any>, ...<T:unknown>): boolean, <R:any>
+
+---Call the given function and use `vim.notify` to notify of any errors
+---this function is a wrapper around `xpcall` which allows having a single
+---error handler for all errors
+---@generic T: ..., R: any
+---@param msg string
+---@param func fun(...: T): R Function to be called
+---@param ... T Arguments that are passed to `func`
+---@return boolean, R
+---@overload fun(func: fun(...: T): R, ...: T): boolean, R
+function M.xpcall(msg, func, ...)
+    local args = {...}
+    if type(msg) == "function" then
+        func, args, msg = msg, {func, unpack(args)}, nil --[[@as nil]]
+    end
+
+    local f = __FILE__()
+    local tb = __TRACEBACK__()
+
+    return xpcall(
+        func,
+        function(err)
+            local errsp = err:split("\n")
+            local title = F.unwrap_or(msg, errsp[1])
+            local body = F.if_expr(msg == nil, _t(errsp):slice(2), _t(errsp))
+            M.vec_insert(body, "", ("File     : %s"):format(f), ("Traceback: %s"):format(tb), "")
+
+            vim.schedule(
+                function()
+                    log.err(body, {title = title, once = true})
+                end
+            )
+        end,
+        unpack(args)
+    )
 end
 
 -- ---@generic T: ..., R
@@ -278,41 +389,7 @@ M.memoize = function(func)
     end
 end
 
----Call the given function and use `vim.notify` to notify of any errors
----this function is a wrapper around `xpcall` which allows having a single
----error handler for all errors
----@param msg string|fun()|nil
----@param func function
----@vararg any
----@return boolean, any
----@overload fun(fn: function, ...): boolean, any
-M.wrap_err = function(msg, func, ...)
-    local args = {...}
-    if type(msg) == "function" then
-        args, func, msg = {func, unpack(args)}, msg, nil
-    end
-
-    local f = __FILE__()
-    local tb = __TRACEBACK__()
-
-    return xpcall(
-        func,
-        function(err)
-            local errsp = err:split("\n")
-            local title = F.unwrap_or(msg, errsp[1])
-            local body = F.if_expr(msg == nil, _t(errsp):slice(2), _t(errsp))
-            M.vec_insert(body, "", ("File     : %s"):format(f), ("Traceback: %s"):format(tb), "")
-
-            vim.schedule(
-                function()
-                    log.err(body, {title = title, once = true})
-                end
-            )
-        end,
-        unpack(args)
-    )
-end
-
+--  ══════════════════════════════════════════════════════════════════════
 
 ---@param value number
 ---@return number
@@ -979,11 +1056,9 @@ M.flatten = function(tbl, shallow, ret)
         function(val, _key)
             if type(val) == "table" then
                 if shallow then
-                    M.for_each(
-                        val,
-                        function(v, _k)
-                            table.insert(ret, v)
-                        end
+                    M.for_each(val, function(v, _k)
+                        table.insert(ret, v)
+                    end
                     )
                 else
                     M.flatten(val, false, ret)
@@ -1037,5 +1112,7 @@ M.vec = {
     map = M.map,
     fold = M.fold,
 }
+
+vim.F = F
 
 return M

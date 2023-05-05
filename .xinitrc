@@ -24,9 +24,6 @@ udiskie --tray -n --file-manager="$TERMINAL" &
 
 # xsettingsd
 
-#  ╭───────────╮
-#  │ clipboard │
-#  ╰───────────╯
 # greenclip daemon &
 # setsid -f greenclip daemon > /dev/null 2>&1 &!
 

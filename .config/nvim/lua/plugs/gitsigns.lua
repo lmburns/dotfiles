@@ -9,10 +9,8 @@ end
 local style = require("style")
 local mpi = require("common.api")
 local map = mpi.map
-local bmap = mpi.bmap
 local augroup = mpi.augroup
 
-local log = require("common.log")
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -20,68 +18,49 @@ local fn = vim.fn
 local env = vim.env
 local F = vim.F
 
-local config
-local autocmd_id
+local event = require("common.event")
+
+-- Don't know why having an empty augroup allows the cursor
+-- to come out of insert mode and immediately update the blame on the line.
+-- The default doesn't update until CursorMoved
+local function setup_events()
+    augroup("lmb__GitSignsBlameToggle", {
+        event = {"InsertEnter", "InsertLeave"},
+        command = function(a) event:emit({a.event, "GitSigns"}) end,
+    })
+end
 
 ---Echo a message to `:messages`
 ---@param status string
 ---@param toggled string
 local function echo(status, toggled)
-    nvim.echo(
-        {
-            {"Gitsigns [",             "SpellCap"},
-            {status,                   "MoreMsg"},
-            {("] %s"):format(toggled), "SpellCap"},
-        }
-    )
+    nvim.echo({
+        {"Gitsigns [", "SpellCap"},
+        {status, "MoreMsg"},
+        {("] %s"):format(toggled), "SpellCap"},
+    })
 end
 
-function M.toggle_deleted()
-    gs.toggle_deleted()
-    local status = F.if_expr(config.show_deleted, "enable", "disable")
-    echo(status, "show_deleted")
+---@param func fun()
+---@param value string
+---@return "enable"|"disable"
+local function toggle(func, value)
+    func()
+    local status = F.if_expr(config[value], "enable", "disable")
+    echo(status, value)
+    return status
 end
 
-function M.toggle_word_diff()
-    gs.toggle_word_diff()
-    local status = F.if_expr(config.word_diff, "enable", "disable")
-    echo(status, "word_diff")
-end
+M.toggle_deleted = D.ithunk(toggle, gs.toggle_deleted, "show_deleted")
+M.toggle_word_diff = D.ithunk(toggle, gs.toggle_word_diff, "word_diff")
+M.toggle_signs = D.ithunk(toggle, gs.toggle_signs, "signcolumn")
+M.toggle_linehl = D.ithunk(toggle, gs.toggle_linehl, "linehl")
+M.toggle_numhl = D.ithunk(toggle, gs.toggle_numhl, "numhl")
+M.toggle_blame = D.ithunk(toggle, gs.toggle_current_line_blame, "current_line_blame")
 
-function M.toggle_blame()
-    gs.toggle_current_line_blame()
-    local status = F.if_expr(config.current_line_blame, "enable", "disable")
-    echo(status, "current_line_blame")
-
-    if status == "enable" then
-        if not autocmd_id then
-            autocmd_id = M.setup_autocmd()
-        end
-    else
-        local ok = mpi.del_augroup(autocmd_id)
-        if not ok then
-            log.err("Gitsigns: failed to delete autocommand")
-        end
-    end
-end
-
-function M.toggle_signs()
-    gs.toggle_signs()
-    local status = F.if_expr(config.signcolumn, "enable", "disable")
-    echo(status, "signcolumn")
-end
-
-function M.toggle_linehl()
-    gs.toggle_linehl()
-    local status = F.if_expr(config.linehl, "enable", "disable")
-    echo(status, "linehl")
-end
-
-function M.toggle_numhl()
-    gs.toggle_numhl()
-    local status = F.if_expr(config.numhl, "enable", "disable")
-    echo(status, "numhl")
-end
+-- function M.toggle_blame()
+--     local status = toggle(gs.toggle_current_line_blame, "current_line_blame")
+-- end
 
 local function mappings(bufnr)
     wk.register(
@@ -99,42 +78,19 @@ local function mappings(bufnr)
             ["<Leader>gd"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
             ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
             ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
-            ["<Leader>hv"] = {
-                [[<Cmd>lua require('plugs.gitsigns').toggle_deleted()<CR>]],
-                "Toggle deleted hunks (git)"
-            },
-            ["<Leader>hl"] = {
-                "<Cmd>lua require('plugs.gitsigns').toggle_linehl()<CR>",
-                "Toggle line highlight (git)"
-            },
-            ["<Leader>hw"] = {
-                "<Cmd>lua require('plugs.gitsigns').toggle_word_diff()<CR>",
-                "Toggle word diff (git)"
-            },
-            ["<Leader>hB"] = {
-                "<Cmd>lua require('plugs.gitsigns').toggle_blame()<CR>",
-                "Toggle blame line virt (git)"
-            },
-            ["<Leader>hc"] = {
-                "<Cmd>lua require('plugs.gitsigns').toggle_signs()<CR>",
-                "Toggle sign column (git)"
-            },
-            ["<Leader>hn"] = {
-                "<Cmd>lua require('plugs.gitsigns').toggle_numhl()<CR>",
-                "Toggle number highlight (git)"
-            },
-            ["<Leader>hb"] = {
-                D.ithunk(gs.blame_line, {full = true}),
-                "Blame line virt (git)"
-            },
+            ["<Leader>hv"] = {M.toggle_deleted, "Toggle deleted hunks (git)"},
+            ["<Leader>hl"] = {M.toggle_linehl, "Toggle line highlight (git)"},
+            ["<Leader>hw"] = {M.toggle_word_diff, "Toggle word diff (git)"},
+            ["<Leader>hB"] = {M.toggle_blame, "Toggle blame line virt (git)"},
+            ["<Leader>hc"] = {M.toggle_signs, "Toggle sign column (git)"},
+            ["<Leader>hn"] = {M.toggle_numhl, "Toggle number highlight (git)"},
+            ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"},
         },
         {buffer = bufnr}
     )
 
     map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']], {expr = true})
     map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']], {expr = true})
-
-    -- map("x", "<Leader>he", ":Gitsigns stage_hunk<CR>")
 
     map(
         "x",
@@ -144,7 +100,6 @@ local function mappings(bufnr)
         end,
         {buffer = bufnr, desc = "Stage hunk (git)"}
     )
-
     map(
         "x",
         "<Leader>hr",
@@ -154,28 +109,8 @@ local function mappings(bufnr)
         {buffer = bufnr, desc = "Reset hunk (git)"}
     )
 
-    bmap(bufnr, "o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
-    bmap(bufnr, "x", "ih", ":<C-u>Gitsigns select_hunk<CR>", {desc = "Git hunk"})
-end
-
-function M.setup_autocmd()
-    local id =
-        augroup(
-            "lmb__GitSignsBlameToggle",
-            {
-                event = {"InsertEnter"},
-                command = function()
-                    gs.toggle_current_line_blame(false)
-                end,
-            },
-            {
-                event = {"InsertLeave"},
-                command = function()
-                    gs.toggle_current_line_blame(true)
-                end,
-            }
-        )
-    return id
+    map("o", "ih", "<Cmd>Gitsigns select_hunk<CR>", {buffer = bufnr, desc = "Git hunk"})
+    map("x", "ih", ":<C-u>Gitsigns select_hunk<CR>", {buffer = bufnr, desc = "Git hunk"})
 end
 
 function M.setup()
@@ -252,7 +187,7 @@ function M.setup()
                 [7] = "₇",
                 [8] = "₈",
                 [9] = "₉",
-                ["+"] = "₊"
+                ["+"] = "₊",
             },
             worktrees = {
                 {
@@ -293,7 +228,7 @@ function M.setup()
             --     -- Requires `internal=true`.
             --     linematch = false
             -- },
-            current_line_blame = false,
+            current_line_blame = true,
             current_line_blame_opts = {
                 virt_text = true,
                 virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
@@ -345,10 +280,7 @@ local function init()
     cmd.packadd("plenary.nvim")
 
     M.setup()
-
-    if config.current_line_blame then
-        autocmd_id = M.setup_autocmd()
-    end
+    setup_events()
 end
 
 init()

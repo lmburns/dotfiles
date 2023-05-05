@@ -20,42 +20,42 @@ function M.setup()
         {
             debug = false,
             position = "bottom", -- position of the list can be: bottom, top, left, right
-            height = 15, -- height of the trouble list when position is top or bottom
-            width = 50, -- width of the list when position is left or right
-            icons = true, -- use devicons for filenames
+            height = 15,         -- height of the trouble list when position is top or bottom
+            width = 50,          -- width of the list when position is left or right
+            icons = true,        -- use devicons for filenames
             -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
             mode = "workspace_diagnostics",
             fold_open = "", -- icon used for open folds
             fold_closed = "", -- icon used for closed folds
-            group = true, -- group results by file
-            padding = true, -- add an extra new line on top of the list
+            group = true,      -- group results by file
+            padding = true,    -- add an extra new line on top of the list
             action_keys = {
                 -- key mappings for actions in the trouble list
                 -- map to {} to remove a mapping, for example:
                 -- close = {},
-                close = "q", -- close the list
-                cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
-                refresh = "r", -- manually refresh
-                jump = {"<cr>", "<tab>"}, -- jump to the diagnostic or open / close folds
-                open_split = {"<c-x>"}, -- open buffer in new split
-                open_vsplit = {"<c-v>"}, -- open buffer in new vsplit
-                open_tab = {"<c-t>"}, -- open buffer in new tab
-                jump_close = {"o"}, -- jump to the diagnostic and close the list
-                toggle_mode = "m", -- toggle between "workspace" and "document" diagnostics mode
-                toggle_preview = "P", -- toggle auto_preview
-                hover = "K", -- opens a small popup with the full multiline message
-                preview = "p", -- preview the diagnostic location
-                close_folds = {"zC", "zc"}, -- close all folds
-                open_folds = {"zR", "zo"}, -- open all folds
-                toggle_fold = {"zA", "za"}, -- toggle fold of current file
-                previous = "k", -- preview item
-                next = "j" -- next item
+                close = "q",                 -- close the list
+                cancel = "<esc>",            -- cancel the preview and get back to your last window / buffer / cursor
+                refresh = "r",               -- manually refresh
+                jump = {"<cr>", "<tab>"},    -- jump to the diagnostic or open / close folds
+                open_split = {"<c-x>"},      -- open buffer in new split
+                open_vsplit = {"<c-v>"},     -- open buffer in new vsplit
+                open_tab = {"<c-t>"},        -- open buffer in new tab
+                jump_close = {"o"},          -- jump to the diagnostic and close the list
+                toggle_mode = "m",           -- toggle between "workspace" and "document" diagnostics mode
+                toggle_preview = "P",        -- toggle auto_preview
+                hover = "K",                 -- opens a small popup with the full multiline message
+                preview = "p",               -- preview the diagnostic location
+                close_folds = {"zC", "zc"},  -- close all folds
+                open_folds = {"zR", "zo"},   -- open all folds
+                toggle_fold = {"zA", "za"},  -- toggle fold of current file
+                previous = "k",              -- preview item
+                next = "j",                  -- next item
             },
-            indent_lines = true, -- add an indent guide below the fold icons
-            auto_open = false, -- automatically open the list when you have diagnostics
-            auto_close = false, -- automatically close the list when you have no diagnostics
-            auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview
-            auto_fold = false, -- automatically fold a file trouble list at creation
+            indent_lines = true,             -- add an indent guide below the fold icons
+            auto_open = false,               -- automatically open the list when you have diagnostics
+            auto_close = false,              -- automatically close the list when you have no diagnostics
+            auto_preview = true,             -- automatically preview the location of the diagnostic. <esc> to close preview
+            auto_fold = false,               -- automatically fold a file trouble list at creation
             auto_jump = {"lsp_definitions"}, -- for the given modes, automatically jump if there is only a single result
             signs = {
                 -- icons / text used for a diagnostic
@@ -63,10 +63,10 @@ function M.setup()
                 warning = icon.lsp.warn,
                 hint = icon.lsp.hint,
                 information = icon.lsp.info,
-                other = "﫠"
+                other = "﫠",
             },
             use_diagnostic_signs = true, -- enabling this will use the signs defined in your lsp client
-            track_cursor = true -- automatically track the cursor and update the selected item
+            track_cursor = true,         -- automatically track the cursor and update the selected item
         }
     )
 end
@@ -90,41 +90,11 @@ end
 local function init()
     M.setup()
 
-    map(
-        "n",
-        "]v",
-        function()
-            require("trouble").next({skip_groups = true, jump = true})
-        end,
-        {desc = "Trouble next"}
-    )
-
-    map(
-        "n",
-        "[v",
-        function()
-            require("trouble").previous({skip_groups = true, jump = true})
-        end,
-        {desc = "Trouble previous"}
-    )
-
-    map(
-        "n",
-        "]V",
-        function()
-            require("trouble").last({skip_groups = true, jump = true})
-        end,
-        {desc = "Trouble last"}
-    )
-
-    map(
-        "n",
-        "[V",
-        function()
-            require("trouble").first({skip_groups = true, jump = true})
-        end,
-        {desc = "Trouble first"}
-    )
+    local opts = {skip_groups = true, jump = true}
+    map("n", "]v", D.ithunk(trouble.next, opts), {desc = "Trouble next"})
+    map("n", "[v", D.ithunk(trouble.previous, opts), {desc = "Trouble previous"})
+    map("n", "]V", D.ithunk(trouble.last, opts), {desc = "Trouble last"})
+    map("n", "[V", D.ithunk(trouble.first, opts), {desc = "Trouble first"})
 
     map(
         "n",
